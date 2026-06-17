@@ -993,8 +993,11 @@
                     <!-- ═══ MULTI: выбор и таблица кандидатов ═══ -->
                     <template v-else-if="uploadMode==='multi'">
                         <p class="modal-subtitle">
-                            Выберите родительскую папку. Каждая подпапка 1-го уровня = отдельный проект
-                            (ровно один PDF). Загрузка последовательная, дубли блокируются.
+                            Выберите <strong>одну родительскую папку</strong>, внутри которой лежат
+                            папки проектов (по одной на проект, в каждой ровно один PDF). Браузер
+                            позволяет выбрать только одну папку за раз — выберите общую родительскую.
+                            Если выбрать одну папку-проект напрямую — она станет одним кандидатом.
+                            Загрузка последовательная, дубли блокируются.
                         </p>
                         <div class="upload-form">
                             <div class="form-row">
@@ -1105,12 +1108,11 @@
                                     <span v-if="uploadDetectedDiscipline" class="disc-auto-badge"
                                           :style="{borderColor: getDisciplineColor(uploadDetectedDiscipline)}"
                                           :title="'Определено ' + disciplineSourceLabel(uploadDisciplineSource)">
-                                        авто: {{ uploadDetectedDiscipline }}
-                                        <template v-if="uploadDisciplineSource==='fallback'"> (по умолчанию)</template>
+                                        авто: {{ uploadDetectedDiscipline }} ({{ disciplineSourceLabel(uploadDisciplineSource) }})
                                     </span>
                                 </label>
                                 <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading"
-                                        @change="runSinglePrecheck">
+                                        @change="onUploadDisciplineChange">
                                     <option value="" disabled>— выберите дисциплину —</option>
                                     <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
                                         {{ d.short_name }} — {{ d.name }}

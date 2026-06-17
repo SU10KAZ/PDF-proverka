@@ -4629,6 +4629,7 @@ const app = createApp({
         const uploadFolderName = ref('');         // имя выбранной папки (для детекции)
         const uploadAddMode = ref('new_project'); // 'new_project' | 'new_version'
         const uploadTargetProjectId = ref('');
+        const uploadDisciplineManual = ref(false); // пользователь выбрал дисциплину вручную
 
         const _DISC_SOURCE_LABEL = {
             folder_name: 'по имени папки', pdf_name: 'по имени PDF',
@@ -4705,6 +4706,7 @@ const app = createApp({
             uploadResult.value = null; uploadError.value = '';
             uploadAddMode.value = 'new_project'; uploadTargetProjectId.value = '';
             uploadDetectedDiscipline.value = ''; uploadDisciplineSource.value = '';
+            uploadDiscipline.value = ''; uploadDisciplineManual.value = false;
         }
 
         function goToUploadFolder() {
@@ -4717,8 +4719,11 @@ const app = createApp({
         }
 
         function resetUploadFolder() {
-            // сохраняем объект/дисциплину/режим для удобства повторной загрузки
+            // объект сохраняем; дисциплину СБРАСЫВАЕМ — иначе она «залипает» от
+            // прошлой загрузки и расходится с авто-определением.
             uploadProjectName.value = '';
+            uploadDiscipline.value = '';
+            uploadDisciplineManual.value = false;
             uploadFiles.value = [];
             uploadScan.value = null;
             uploadScanError.value = '';
@@ -4733,6 +4738,12 @@ const app = createApp({
             uploadBatchProgress.value = '';
         }
 
+        // пользователь вручную сменил дисциплину → фиксируем и перепроверяем
+        function onUploadDisciplineChange() {
+            uploadDisciplineManual.value = true;
+            runSinglePrecheck();
+        }
+
         function onUploadFolderSelected(ev) {
             uploadError.value = '';
             uploadPrecheck.value = null;
@@ -4741,6 +4752,7 @@ const app = createApp({
             uploadTargetProjectId.value = '';
             uploadDetectedDiscipline.value = '';
             uploadDisciplineSource.value = '';
+            uploadDisciplineManual.value = false;  // новая папка → снова авто-детект
             const all = Array.from(ev.target.files || []);
             uploadFiles.value = all;
             uploadFolderName.value = (all[0] && (all[0].webkitRelativePath || '').split('/')[0]) || '';
@@ -4804,7 +4816,11 @@ const app = createApp({
                     uploadDetectedDiscipline.value = pc.detected_discipline || '';
                     uploadDisciplineSource.value = pc.discipline_source || '';
                     // если пользователь ещё не выбрал дисциплину — подставить определённую
-                    if (!uploadDiscipline.value && pc.discipline) uploadDiscipline.value = pc.discipline;
+                    // синхронизируем дропдаун с авто-определением, пока пользователь
+                    // не выбрал дисциплину вручную (иначе бейдж и дропдаун расходятся)
+                    if (!uploadDisciplineManual.value && pc.detected_discipline) {
+                        uploadDiscipline.value = pc.detected_discipline;
+                    }
                     // авто-предложение версии: если нашёлся target и пользователь не
                     // переключал режим вручную — предложить «новая версия»
                     if (pc.suggested_target_project && uploadAddMode.value === 'new_project'
@@ -4890,13 +4906,21 @@ const app = createApp({
             const all = Array.from(ev.target.files || []);
             if (!all.length) { uploadCandidates.value = []; return; }
             // группировка по подпапке 1-го уровня из webkitRelativePath:
-            // "parent/sub/.../file" → ключ = sub. Файлы прямо в parent пропускаем.
+            // "parent/sub/.../file" → ключ = sub.
             const groups = {};
+            let hasSub = false;
             for (const f of all) {
                 const rel = (f.webkitRelativePath || f.name).split('/');
                 if (rel.length < 3) continue;
+                hasSub = true;
                 const sub = rel[1];
                 (groups[sub] = groups[sub] || []).push(f);
+            }
+            // выбрали ОДНУ папку-проект напрямую (без подпапок) → считаем её
+            // одним кандидатом, чтобы мультирежим не выдавал «пусто».
+            if (!hasSub) {
+                const top = ((all[0].webkitRelativePath || all[0].name || '').split('/')[0]) || 'project';
+                groups[top] = all;
             }
             const cands = [];
             for (const sub of Object.keys(groups).sort()) {
@@ -16294,6 +16318,7 @@ const app = createApp({
             uploadDetectedDiscipline, uploadDisciplineSource, uploadAddMode,
             uploadTargetProjectId, uploadTargetOptions, versionLabelForTarget,
             disciplineSourceLabel, recheckCandidate, candTargetOptions, candVersionLabel,
+            onUploadDisciplineChange,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,
