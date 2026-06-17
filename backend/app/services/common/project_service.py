@@ -2507,6 +2507,162 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     return info
 
 
+# ── projects_v2 arm для clean (read-cutover делает legacy-очистку невидимой) ──
+
+# Generated/runtime подпапки версии в projects_v2, отвечающие за состояние аудита
+# и pipeline status (то, что читает UI при v2-read). Source (01_input) и
+# метаданные (version.json) сюда НЕ входят — они сохраняются.
+_V2_GENERATED_VERSION_DIRS = ("02_work", "03_analysis", "04_review", "05_export", "99_service")
+
+
+def _resolve_v2_version_id(adapter, doc_dir, current, legacy_version_id):
+    """legacy version_id (`v1`) → v2-форма (`v001`). Неизвестный → current.
+
+    Зеркалит read_canary._resolve_version, чтобы clean целился ТОЧНО в ту версию,
+    из которой UI читает статус.
+    """
+    try:
+        vids = [v.get("version_id") for v in adapter.list_versions(doc_dir)]
+    except Exception:
+        vids = []
+    r = str(legacy_version_id or "").strip().lower()
+    if r and r in vids:
+        return r
+    if r.startswith("v") and r[1:].isdigit():
+        cand = "v%03d" % int(r[1:])
+        if cand in vids:
+            return cand
+    return current
+
+
+def _clean_projects_v2_artifacts(project_id: str, legacy_version_id: Optional[str],
+                                 *, object_id: Optional[str] = None) -> dict:
+    """Очистить generated/runtime артефакты версии проекта в projects_v2.
+
+    Срабатывает ТОЛЬКО когда включён v2-read default
+    (`AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED`) — т.е. когда UI читает статус из
+    projects_v2 и legacy-очистка визуально невидима. Иначе — no-op (поведение
+    как раньше: чистится только legacy).
+
+    Удаляет (backup-move в `projects_v2/_system/clean_backups/` ПЕРЕД удалением):
+      `versions/<vid>/{02_work,03_analysis,04_review,05_export,99_service}`
+    Сохраняет: `01_input` (source), `version.json`, doc-метаданные
+    (`document.json`, `current_version.txt`, `versions/`), соседние версии.
+
+    Безопасность: path-safe (target строго внутри
+    `projects_v2/objects/.../versions/<vid>/`), version-scoped, fail-soft (любая
+    ошибка → warning, не исключение — legacy-очистка не должна падать из-за v2).
+    """
+    out = {
+        "v2_attempted": False, "v2_cleaned": False,
+        "v2_doc_dir": None, "v2_version_id": None,
+        "v2_removed": [], "v2_backup": None, "warnings": [],
+    }
+    try:
+        from backend.app.services.storage import read_canary
+    except Exception:
+        return out  # v2-read слой отсутствует (legacy-only ветка) → no-op
+    try:
+        if not read_canary.default_read_enabled():
+            return out  # v2-read не активен → UI читает legacy, v2 не трогаем
+
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            out["warnings"].append("projects_v2 storage недоступно")
+            return out
+        out["v2_attempted"] = True
+
+        if object_id is None:
+            try:
+                from backend.app.services.common import object_service
+                object_id = object_service.get_current_id()
+            except Exception:
+                object_id = None
+
+        # Маппинг как в read_canary: document_code = basename(project_id) − «(main)».
+        document_code = Path(project_id).name.replace("(main)", "").strip()
+        doc = adapter.find_document(document_code, object_id=object_id)
+        if doc is None and object_id is not None:
+            # Мягкий fallback (как read_canary без object_id) — первое совпадение.
+            doc = adapter.find_document(document_code, object_id=None)
+        if doc is None:
+            out["warnings"].append(f"projects_v2: документ '{document_code}' не найден")
+            return out
+
+        doc_dir = Path(doc["doc_dir"])
+        v2vid = _resolve_v2_version_id(
+            adapter, doc_dir, doc.get("current_version"), legacy_version_id,
+        )
+        if not v2vid:
+            out["warnings"].append("projects_v2: версия не определена")
+            return out
+        vdir = adapter.version_dir(doc_dir, v2vid)
+        out["v2_doc_dir"] = str(doc_dir)
+        out["v2_version_id"] = v2vid
+
+        # --- safety guards (деструктив) ---
+        objects_root = adapter.objects_root.resolve()
+        try:
+            vdir_res = vdir.resolve()
+        except Exception:
+            out["warnings"].append("projects_v2: не удалось резолвить version_dir")
+            return out
+        # (1) version_dir строго внутри projects_v2/objects/
+        if not str(vdir_res).startswith(str(objects_root) + os.sep):
+            out["warnings"].append("projects_v2: version_dir вне objects-root — пропуск (safety)")
+            return out
+        # (2) это именно .../versions/<vid> (не doc root, не вся versions/)
+        if vdir.parent.name != "versions":
+            out["warnings"].append("projects_v2: неожиданная структура version_dir — пропуск (safety)")
+            return out
+        if not vdir.exists():
+            out["warnings"].append(f"projects_v2: version_dir '{v2vid}' отсутствует")
+            return out
+
+        # --- backup-move generated подпапок ---
+        removed: list[str] = []
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup_root = (adapter.v2_root / "_system" / "clean_backups"
+                       / f"{ts}_{document_code}_{v2vid}")
+        for name in _V2_GENERATED_VERSION_DIRS:
+            d = vdir / name
+            if not d.exists():
+                continue
+            # (3) каждый target строго внутри version_dir (анти-traversal)
+            try:
+                if not str(d.resolve()).startswith(str(vdir_res) + os.sep):
+                    out["warnings"].append(f"projects_v2: '{name}' вне version_dir — пропуск (safety)")
+                    continue
+            except Exception:
+                continue
+            try:
+                backup_root.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(d), str(backup_root / name))
+                removed.append(name)
+            except Exception as e:
+                out["warnings"].append(f"projects_v2: не удалось убрать '{name}': {e}")
+
+        out["v2_removed"] = removed
+        out["v2_backup"] = str(backup_root) if removed else None
+        out["v2_cleaned"] = bool(removed)
+
+        try:
+            print(
+                f"[clean v2] project_id={project_id} discipline={doc.get('discipline')} "
+                f"document={document_code} version={v2vid} legacy_version={legacy_version_id} "
+                f"doc_dir={doc_dir} removed={removed} backup={out['v2_backup']} "
+                f"warnings={out['warnings']}"
+            )
+        except Exception:
+            pass
+        return out
+    except Exception as e:
+        # Fail-soft: v2-arm не должен валить legacy-очистку.
+        out["warnings"].append(f"projects_v2 clean failed: {e}")
+        return out
+
+
 def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> dict:
     """Очистить все результаты аудита, сохранив только исходные документы.
 
@@ -2604,6 +2760,20 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> 
 
     # 4. Пересоздаём пустую _output/
     output_dir.mkdir(exist_ok=True)
+
+    # 5. projects_v2 arm: при включённом v2-read default UI читает статус из
+    #    projects_v2, поэтому одной legacy-очистки недостаточно (визуально «ничего
+    #    не очистилось»). Дочищаем generated/runtime артефакты ТОЙ ЖЕ версии в v2.
+    #    Fail-soft: не влияет на успех legacy-очистки. object_id резолвится из
+    #    активного объекта внутри helper'а.
+    result["legacy_cleaned"] = True
+    v2 = _clean_projects_v2_artifacts(project_id, target_vid)
+    result["v2_attempted"] = v2.get("v2_attempted", False)
+    result["v2_cleaned"] = v2.get("v2_cleaned", False)
+    for k in ("v2_doc_dir", "v2_version_id", "v2_removed", "v2_backup"):
+        if v2.get(k):
+            result[k] = v2[k]
+    result["warnings"] = v2.get("warnings", [])
 
     return result
 
