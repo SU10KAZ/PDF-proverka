@@ -366,12 +366,45 @@ def _v2_pipeline_summary(a, doc_dir, vid):
 
     Передаём родительскую папку pipeline_log.json как output_dir, так как
     _build_pipeline_summary ищет pipeline_log.json именно там. Fail-soft.
+    Fallback: если pipeline_log нет в projects_v2 (аудит ещё не запускался по
+    новому пути), пробуем legacy project_service по document_code + discipline.
     """
     try:
         from backend.app.services.common.project_service import _build_pipeline_summary
         log_path = a.pipeline_log_path(doc_dir, vid)
         if log_path and log_path.is_file():
             return _build_pipeline_summary(log_path.parent)
+    except Exception:
+        pass
+    # Fallback: pipeline_log живёт только в legacy projects/ (аудит не
+    # мигрировал). Читаем legacy_path из object.json и ищем _output папку.
+    # doc_dir = .../objects/<obj_folder>/disciplines/<disc>/documents/<code>
+    try:
+        import re as _re, json as _json
+        from backend.app.services.common.project_service import _build_pipeline_summary
+        code = doc_dir.name
+        discipline = doc_dir.parent.parent.name
+        obj_folder_dir = doc_dir.parent.parent.parent.parent  # .../objects/<obj_folder>
+        obj_json = obj_folder_dir / "object.json"
+        if not obj_json.is_file():
+            return []
+        legacy_root = Path(_json.loads(obj_json.read_text()).get("legacy_path", ""))
+        if not legacy_root.is_dir():
+            return []
+        m = _re.match(r'v0*(\d+)$', vid)
+        ver_n = int(m.group(1)) if m else 1
+        # Контейнерная раскладка: <legacy_root>/<disc>/<code>(main)/<code [V{n}]>/_output
+        container = legacy_root / discipline / f"{code}(main)"
+        candidates = [
+            container / (f"{code} V{ver_n}" if ver_n > 1 else code) / "_output",
+            container / code / "_output",  # V1 в контейнере
+            legacy_root / discipline / code / "_output",  # без контейнера
+        ]
+        for cand in candidates:
+            if cand.is_dir():
+                ps = _build_pipeline_summary(cand)
+                if ps:
+                    return ps
     except Exception:
         pass
     return []
