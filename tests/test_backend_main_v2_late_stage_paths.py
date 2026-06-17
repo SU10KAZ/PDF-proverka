@@ -330,31 +330,52 @@ def test_load_document_graph_v2_via_bind(v1_v2_with_artefacts):
     assert graph.get("version_marker") == "V2"
 
 
-# ─── 5. Pre-crop loop guard: V2 project skipped ─────────────────────────
+# ─── 5. Pre-crop version-aware (V1-only guard removed, Task 2/6) ────────
 
 
 @pytest.mark.asyncio
-async def test_precrop_skips_v2_project(v1_v2_with_artefacts, monkeypatch):
-    """_precrop_project с проектом, у которого latest_version_id='v2',
-    должен skip — не запускать subprocess."""
-    _projects_dir, _pdir, _v2 = v1_v2_with_artefacts
+async def test_precrop_v2_is_version_aware_not_guard_blocked(
+    v1_v2_with_artefacts, monkeypatch
+):
+    """Guard `latest_version_id != 'v1'` УДАЛЁН (Task 2/6). Pre-crop теперь
+    version-aware: для latest=v2 он инспектирует папку ВЕРСИИ V2.
+
+    Случай A: в V2 нет `*_result.json` → skip по причине «не OCR-проект»,
+    БЕЗ старого V2-guard-лога.
+    Случай B: положили `*_result.json` в V2 → pre-crop запускается и кропит
+    именно V2-папку (а не V1 root)."""
+    _projects_dir, _pdir, v2_dir = v1_v2_with_artefacts
     from backend.app.pipeline import manager as mgr
 
-    captured_subprocess = []
+    captured_subprocess: list = []
+    captured_logs: list = []
 
-    async def _fake_run_script(*args, **kwargs):
-        captured_subprocess.append(args)
+    async def _fake_run_script(script, arglist, *, project_id=None, **kwargs):
+        captured_subprocess.append(list(arglist))
         return (0, "", "")
 
+    async def _fake_broadcast(msg):
+        captured_logs.append(getattr(msg, "message", str(msg)))
+
     monkeypatch.setattr(mgr, "run_script", _fake_run_script)
+    monkeypatch.setattr(mgr.ws_manager, "broadcast_global", _fake_broadcast)
 
     pm = mgr.PipelineManager()
-    result = await pm._precrop_project("M31A")
 
-    assert result is False, "Pre-crop должен возвращать False для V2 project"
-    assert len(captured_subprocess) == 0, (
-        "Pre-crop НЕ должен запускать subprocess для V2 project — он V1-only"
-    )
+    # Случай A: V2 без result.json (фикстура не кладёт его в V2).
+    result_a = await pm._precrop_project("M31A")
+    assert result_a is False, "без result.json в V2 → skip (не OCR-проект)"
+    assert len(captured_subprocess) == 0
+    for log in captured_logs:
+        assert "latest_version_id" not in log, "старый V2-guard-лог не должен возникать"
+
+    # Случай B: кладём result.json в V2 → pre-crop кропит V2-папку.
+    (v2_dir / "M31A_result.json").write_text("{}", encoding="utf-8")
+    result_b = await pm._precrop_project("M31A")
+    assert result_b is True, "с result.json в V2 → pre-crop выполняется (guard убран)"
+    assert len(captured_subprocess) == 1
+    crop_path = captured_subprocess[0][1]  # ["crop", <path>, ...]
+    assert "M31A V2" in crop_path, f"кроп должен идти в V2 dir, получено: {crop_path}"
 
 
 @pytest.mark.asyncio

@@ -208,6 +208,17 @@ class BatchResumeBlockedError(RuntimeError):
 # на первом не готовом проекте. Порядок основной очереди НЕ меняется.
 BATCH_PREGEMMA_WINDOW = max(1, int(os.environ.get("BATCH_PREGEMMA_WINDOW", "4")))
 
+# Сколько проектов вперёд (после текущего running) готовит pre-crop. Раньше
+# pre-crop кропил ВСЮ очередь без ограничения и racing'ом с основным pipeline
+# жёг CPU/IO (тот же класс контеншена, что Gemma-лок). Окно делает опережение
+# предсказуемым: pre-crop держит готовыми ровно N следующих pending и скользит
+# вместе с current_index. Обязательно >= pre-Gemma окна — иначе pre-Gemma выбрал
+# бы проект без готовых crops. Default = pregemma + 2 (crops всегда впереди Gemma).
+BATCH_PRECROP_WINDOW = max(
+    BATCH_PREGEMMA_WINDOW,
+    int(os.environ.get("BATCH_PRECROP_WINDOW", str(BATCH_PREGEMMA_WINDOW + 2))),
+)
+
 
 class PipelineManager:
     """Управляет запущенными аудитами. Singleton."""
@@ -233,6 +244,14 @@ class PipelineManager:
         # текущим воркером. Pre-Gemma loop проверяет _is_current_running_past_gemma()
         # перед попыткой захвата общего Gemma-лока.
         self._current_gemma_stage_done: dict[str, bool] = {}
+
+        # Gemma-lock priority: основной (main) audit поднимает счётчик перед тем
+        # как ждать/держать общий Gemma-лок. Pre-Gemma prefetch при счётчике > 0
+        # уступает — не встаёт в очередь за локом и освобождает только что
+        # захваченный лок, не начав дорогой run. Делает prefetch opportunistic:
+        # он никогда не задерживает основной running audit. Один event loop →
+        # обычный int без блокировок.
+        self._main_gemma_lock_intent: int = 0
 
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
 
@@ -383,6 +402,24 @@ class PipelineManager:
         пока текущий running-проект ещё держит Gemma.
         """
         self._current_gemma_stage_done[pid] = True
+
+    def _begin_main_gemma_lock_intent(self) -> None:
+        """Main audit заявляет намерение захватить общий Gemma-лок.
+
+        Поднимается ДО ожидания лока и держится пока main его не отпустит.
+        Pre-Gemma prefetch видит это и уступает приоритет.
+        """
+        self._main_gemma_lock_intent += 1
+
+    def _end_main_gemma_lock_intent(self) -> None:
+        """Main audit отпустил Gemma-лок — снимаем приоритет."""
+        if self._main_gemma_lock_intent > 0:
+            self._main_gemma_lock_intent -= 1
+
+    def _main_wants_gemma_lock(self) -> bool:
+        """True если основной audit ждёт/держит общий Gemma-лок.
+        Pre-Gemma prefetch при True уступает (opportunistic)."""
+        return self._main_gemma_lock_intent > 0
 
     def _is_current_running_past_gemma(self) -> bool:
         """True если все running batch items уже прошли свой Gemma этап.
@@ -538,6 +575,9 @@ class PipelineManager:
         for item in queue.items:
             if item.status == "running":
                 item.status = "interrupted"
+                # Понятная причина для UI/диагностики (раньше reason отсутствовал).
+                if not item.error:
+                    item.error = "Прервано рестартом сервера"
                 changed = True
 
         if queue.status == "running":
@@ -1119,6 +1159,24 @@ class PipelineManager:
         self._tasks.pop(project_id, None)
         _schedule_lmstudio_post_queue_cleanup("pipeline queue drained")
 
+    def _cleanup_batch_worker(self, meta_job: "AuditJob") -> None:
+        """Identity-aware финализация worker'а очереди (__BATCH__).
+
+        Снимаем регистрацию __BATCH__ ТОЛЬКО если она всё ещё принадлежит этому
+        worker'у. Гонка close+enqueue: пока старый worker доходит до finally,
+        enqueue под _enqueue_lock мог уже поднять НОВЫЙ worker (новый task/meta_job
+        под тем же ключом __BATCH__). Безусловный `_cleanup("__BATCH__")` снёс бы
+        регистрацию нового worker'а → он осиротел бы (жив, но _batch_worker_alive
+        врёт False → дубль-worker на следующем enqueue). Сверяем по identity.
+        """
+        current = asyncio.current_task()
+        if self._tasks.get("__BATCH__") is current:
+            self._tasks.pop("__BATCH__", None)
+        if self.active_jobs.get("__BATCH__") is meta_job:
+            self.active_jobs.pop("__BATCH__", None)
+        self._stop_heartbeat("__BATCH__")
+        _schedule_lmstudio_post_queue_cleanup("pipeline queue drained")
+
     async def _run_script(self, project_id: str, *args, **kwargs):
         """Обёртка run_script с автоматическим project_id для трекинга процессов."""
         return await run_script(*args, project_id=project_id, **kwargs)
@@ -1436,7 +1494,9 @@ class PipelineManager:
         pid = job.project_id
         job.stage = AuditStage.GEMMA_ENRICHMENT
 
-        proj_dir = resolve_project_dir(pid)
+        # Version-aware: double-check'и должны смотреть в папку ВЕРСИИ, не в V1-root.
+        # _resolve_job_paths использует job.version_id → возвращает правильную папку.
+        _, proj_dir, _ = self._resolve_job_paths(job)
         item = self._find_batch_item(pid)
 
         # === Double-check #1: до ожидания lock ===
@@ -1453,38 +1513,45 @@ class PipelineManager:
                     "warn",
                 )
 
-        async with prepare_state.get_lock():
-            # === Double-check #2: после захвата lock ===
-            # Пере-получить item — pre-Gemma мог изменить состояние пока main ждал.
-            item = self._find_batch_item(pid)
-            if not force and item is not None and item.gemma_prefetched:
-                ok, reason = gemma_outputs_are_valid(proj_dir)
-                if ok:
-                    await self._log(
-                        job,
-                        f"⚡ Gemma OCR пропущен — outputs готовы после ожидания lock ({reason})",
-                        "info",
-                    )
-                    self._mark_gemma_stage_done(pid)
+        # Gemma-lock priority: заявляем намерение ДО ожидания лока, чтобы
+        # opportunistic prefetch уступил и не задержал основной audit. Снимаем
+        # в finally — при любом исходе (skip/return/raise) приоритет очищается.
+        self._begin_main_gemma_lock_intent()
+        try:
+            async with prepare_state.get_lock():
+                # === Double-check #2: после захвата lock ===
+                # Пере-получить item — pre-Gemma мог изменить состояние пока main ждал.
+                item = self._find_batch_item(pid)
+                if not force and item is not None and item.gemma_prefetched:
+                    ok, reason = gemma_outputs_are_valid(proj_dir)
+                    if ok:
+                        await self._log(
+                            job,
+                            f"⚡ Gemma OCR пропущен — outputs готовы после ожидания lock ({reason})",
+                            "info",
+                        )
+                        self._mark_gemma_stage_done(pid)
+                        return
+
+                ctx = self._make_stage_context(job)
+                result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+
+                if result.cancelled:
+                    job.status = JobStatus.CANCELLED
                     return
 
-            ctx = self._make_stage_context(job)
-            result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+                if not result.success:
+                    job.status = JobStatus.FAILED
+                    job.error_message = result.error
+                    raise RuntimeError(result.error or "Gemma enrichment: ошибка")
 
-            if result.cancelled:
-                job.status = JobStatus.CANCELLED
-                return
-
-            if not result.success:
-                job.status = JobStatus.FAILED
-                job.error_message = result.error
-                raise RuntimeError(result.error or "Gemma enrichment: ошибка")
-
-            # Успех или partial: маркер прохождения Gemma этапа на текущем проекте.
-            # Pre-Gemma loop увидит _is_current_running_past_gemma()=True и сможет
-            # начать работу над следующим pending проектом пока main pipeline
-            # переходит на Stage 01+.
-            self._mark_gemma_stage_done(pid)
+                # Успех или partial: маркер прохождения Gemma этапа на текущем проекте.
+                # Pre-Gemma loop увидит _is_current_running_past_gemma()=True и сможет
+                # начать работу над следующим pending проектом пока main pipeline
+                # переходит на Stage 01+.
+                self._mark_gemma_stage_done(pid)
+        finally:
+            self._end_main_gemma_lock_intent()
 
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
@@ -1957,52 +2024,71 @@ class PipelineManager:
             task.cancel()
 
     async def _heartbeat_loop(self, job: AuditJob):
-        """Отправлять heartbeat каждые 15 секунд."""
+        """Отправлять heartbeat каждые 15 секунд.
+
+        Устойчивость: исключение В ОДНОЙ итерации (сбой broadcast / парсинга
+        времени / расчёта ETA) логируется и НЕ убивает цикл — следующий тик
+        продолжается. Раньше `except Exception` оборачивал весь `while` →
+        единичный сбой молча гасил heartbeat, джоба «замолкала», и
+        cleanup_zombies через ZOMBIE_TIMEOUT_SEC ложно признавал живой аудит
+        зомби (инцидент 10.06.2026). last_heartbeat обновляется ПЕРВЫМ — даже
+        если тело тика частично упадёт, маркер живости свежий.
+        """
         try:
             while True:
                 await asyncio.sleep(15)
                 if job.status != JobStatus.RUNNING:
                     break
-
-                now = datetime.now()
-                job.last_heartbeat = now.isoformat()
-
-                # Вычислить elapsed (чистое время без пауз на rate limit)
-                ref_time = job.batch_started_at or job.started_at
-                if ref_time:
-                    started = datetime.fromisoformat(ref_time)
-                    elapsed_sec = (now - started).total_seconds() - job.pause_total_sec
-                    elapsed_sec = max(0, elapsed_sec)
-                else:
-                    elapsed_sec = 0
-
-                # Вычислить ETA
-                eta_sec = self._calculate_eta(job)
-
-                # Получить текущие счётчики usage
                 try:
-                    counters = usage_tracker.get_counters()
-                    tokens_data = counters.model_dump()
-                except Exception:
-                    tokens_data = None
+                    now = datetime.now()
+                    # Обновляем маркер живости ПЕРВЫМ — чтобы даже при сбое
+                    # broadcast/ETA джоба не выглядела «замолчавшей» для зомби-чистки.
+                    job.last_heartbeat = now.isoformat()
 
-                await ws_manager.broadcast_to_project(
-                    job.project_id,
-                    WSMessage.heartbeat(
-                        project=job.project_id,
-                        stage=job.stage.value,
-                        elapsed_sec=elapsed_sec,
-                        process_alive=True,
-                        batch_current=job.progress_current,
-                        batch_total=job.progress_total,
-                        eta_sec=eta_sec,
-                        tokens=tokens_data,
-                    ),
-                )
+                    # Вычислить elapsed (чистое время без пауз на rate limit)
+                    ref_time = job.batch_started_at or job.started_at
+                    if ref_time:
+                        started = datetime.fromisoformat(ref_time)
+                        elapsed_sec = (now - started).total_seconds() - job.pause_total_sec
+                        elapsed_sec = max(0, elapsed_sec)
+                    else:
+                        elapsed_sec = 0
+
+                    # Вычислить ETA
+                    eta_sec = self._calculate_eta(job)
+
+                    # Получить текущие счётчики usage
+                    try:
+                        counters = usage_tracker.get_counters()
+                        tokens_data = counters.model_dump()
+                    except Exception:
+                        tokens_data = None
+
+                    await ws_manager.broadcast_to_project(
+                        job.project_id,
+                        WSMessage.heartbeat(
+                            project=job.project_id,
+                            stage=job.stage.value,
+                            elapsed_sec=elapsed_sec,
+                            process_alive=True,
+                            batch_current=job.progress_current,
+                            batch_total=job.progress_total,
+                            eta_sec=eta_sec,
+                            tokens=tokens_data,
+                        ),
+                    )
+                except asyncio.CancelledError:
+                    raise  # отмена task'а — выходим штатно (внешний handler)
+                except Exception as e:
+                    # Один сбойный тик не должен гасить heartbeat. Логируем и
+                    # продолжаем — иначе джоба «замолкнет» и попадёт в зомби-чистку.
+                    print(f"[heartbeat] {job.project_id}: сбой итерации (продолжаю): {e}")
+                    continue
         except asyncio.CancelledError:
             pass
-        except Exception:
-            pass  # Heartbeat не должен ронять основной процесс
+        except Exception as e:
+            # Совсем неожиданный сбой вне тела тика — логируем (раньше глоталось молча).
+            print(f"[heartbeat] {job.project_id}: цикл остановлен из-за ошибки: {e}")
 
     def _calculate_eta(self, job: AuditJob) -> Optional[float]:
         """Рассчитать ETA на основе среднего времени пакетов."""
@@ -4646,104 +4732,122 @@ class PipelineManager:
 
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
 
-    async def _precrop_project(self, pid: str) -> bool:
+    async def _precrop_project(self, pid: str, version_id: Optional[str] = None) -> bool:
         """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе.
 
-        Safety guard: pre-crop loop V1-only. Если у проекта `latest_version_id`
-        не V1 — skip с warn. Это защищает V1 _output/blocks_gemma_100 от
-        перезаписи crop'ами под V2 source. Полная версионность batch queue
-        отложена в отдельный pass (TODO: make pre-crop queue version-aware
-        before enabling V2 batch pre-crop).
+        Version-aware: использует папку активной версии (V1 = root, V2+ = _versions/v{N}/).
         """
         try:
-            proj_dir = resolve_project_dir(pid)
-            # Safety guard: skip V2+ projects from V1-only pre-crop path.
+            root_dir = resolve_project_dir(pid)
+            # Резолвим версионную папку — для V1 это root, для V2+ это _versions/v{N}/.
+            from backend.app.services.common import version_service as _vs
             try:
-                from backend.app.services.common import version_service
-                latest_vid = version_service.get_latest_version_id(proj_dir, pid) or "v1"
-                if latest_vid != "v1":
-                    msg = (
-                        f"[PRE-CROP] {pid}: skip — latest_version_id={latest_vid} "
-                        f"(pre-crop queue ещё не version-aware; V2+ pre-crop отключён)"
-                    )
-                    print(msg)
-                    try:
-                        await ws_manager.broadcast_global(
-                            WSMessage.log("__BATCH__", msg, "warn")
-                        )
-                    except Exception:
-                        pass
-                    return False
+                proj_dir = _vs.get_version_dir(root_dir, pid, version_id)
             except Exception:
-                # Manifest не найден — это V1-only project, продолжаем.
-                pass
+                proj_dir = root_dir
 
             # Пропустить если блоки уже есть
-            blocks_dir = gemma_blocks_dir(proj_dir)
             index_file = gemma_blocks_index_path(proj_dir)
             if index_file.exists() and _existing_crop_matches_policy(
                 index_file, gemma_enrichment_crop_policy()
             ):
-                print(f"[PRE-CROP] {pid}: блоки уже есть, пропуск")
+                print(f"[PRE-CROP] {pid} ({version_id}): блоки уже есть, пропуск")
                 return True
             # Пропустить если нет result.json (не OCR-проект)
             if not list(proj_dir.glob("*_result.json")):
                 return False
 
-            print(f"[PRE-CROP] {pid}: начинаю фоновый кроп блоков...")
+            print(f"[PRE-CROP] {pid} ({version_id}): начинаю фоновый кроп блоков...")
             await ws_manager.broadcast_global(
-                WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid}", "info")
+                WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid} ({version_id})", "info")
             )
-            # NOTE: pre-crop работает только над V1 root — batch queue ещё
-            # не version-aware. V2 проекты сюда не попадают (queue не различает
-            # версии), поэтому здесь явно используем V1 _project_path(pid).
-            # Если в будущем queue научится таскать V2 — заменить на
-            # version-aware path (см. _project_path_for_job).
+            # Путь для blocks.py выводим из ТОГО ЖЕ proj_dir, что и проверки выше —
+            # единый источник истины. Иначе version_id=None (latest) рассинхронил бы
+            # check-dir (get_version_dir→latest) и crop-path (_project_path→V1 root).
+            try:
+                crop_rel_path = str(proj_dir.relative_to(BASE_DIR))
+            except ValueError:
+                crop_rel_path = str(proj_dir)
             exit_code, _, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
                 _build_crop_args(
-                    _project_path(pid),
+                    crop_rel_path,
                     policy=gemma_enrichment_crop_policy(),
                     output_dir_name=GEMMA_BLOCKS_DIRNAME,
                 ),
                 project_id=f"__PRECROP_{pid}__",
             )
             if exit_code == 0:
-                print(f"[PRE-CROP] {pid}: OK")
+                print(f"[PRE-CROP] {pid} ({version_id}): OK")
                 return True
             else:
-                print(f"[PRE-CROP] {pid}: ошибка (код {exit_code})")
+                print(f"[PRE-CROP] {pid} ({version_id}): ошибка (код {exit_code})")
                 return False
         except Exception as e:
-            print(f"[PRE-CROP] {pid}: исключение: {e}")
+            print(f"[PRE-CROP] {pid} ({version_id}): исключение: {e}")
             return False
 
-    async def _run_precrop_loop(self, queue: BatchQueueStatus):
-        """Фоновый цикл: кропит блоки для pending-проектов из очереди."""
-        precropped = set()
-        while queue.status == "running":
-            # Найти следующий pending OCR-проект для pre-crop
-            target = None
-            for item in queue.items:
-                if item.status != "pending":
-                    continue
-                if item.project_id in precropped:
-                    continue
-                action = item.action or queue.action
-                if action == "optimization":
-                    continue  # оптимизация не нуждается в кропе
-                proj_dir = resolve_project_dir(item.project_id)
-                if list(proj_dir.glob("*_result.json")):
-                    target = item.project_id
-                    break
+    def _select_precrop_candidate(
+        self,
+        queue: BatchQueueStatus,
+        precropped: set[tuple[str, Optional[str]]],
+    ) -> Optional[BatchQueueItem]:
+        """Следующий pending OCR-проект для pre-crop В ОКНЕ lookahead (или None).
 
-            if not target:
-                # Нет проектов для pre-crop, подождём и проверим снова
+        Симметрично `_select_pregemma_candidate`: bounded lookahead до
+        BATCH_PRECROP_WINDOW проектов вперёд от current_index, в порядке очереди
+        (ближайший pending первым → предсказуемое опережение B → C → D). Skip-ahead
+        тихо пропускает проекты без result.json (OCR ещё не готов), не «залипая».
+        Чистая (без async/IO над состоянием очереди) — детерминированно тестируема.
+        """
+        from backend.app.services.common import version_service as _vs
+
+        running_idx = queue.current_index
+        for idx, item in enumerate(queue.items):
+            if item.status != "pending":
+                continue
+            # Bounded lookahead: не уезжаем дальше окна впереди running.
+            # distance может быть 0, когда очередь ещё не стартовала и
+            # current_index указывает на сам pending item — это валидно (кропим).
+            if idx - running_idx > BATCH_PRECROP_WINDOW:
+                break  # дальше items только ещё дальше — выходим из скана
+            dedup_key = (item.project_id, item.version_id)
+            if dedup_key in precropped:
+                continue
+            action = item.action or queue.action
+            if action == "optimization":
+                continue  # оптимизация не нуждается в кропе
+            # Ищем result.json в папке ВЕРСИИ, а не в V1-root.
+            root_dir = resolve_project_dir(item.project_id)
+            try:
+                item_dir = _vs.get_version_dir(root_dir, item.project_id, item.version_id)
+            except Exception:
+                item_dir = root_dir
+            if list(item_dir.glob("*_result.json")):
+                return item
+        return None
+
+    async def _run_precrop_loop(self, queue: BatchQueueStatus):
+        """Фоновый цикл: кропит блоки для pending-проектов из очереди.
+
+        Lookahead bounded: готовит только проекты в пределах BATCH_PRECROP_WINDOW
+        вперёд от current_index. Опережение предсказуемо (ровно N следующих
+        pending) и не racing'ует всю очередь, конкурируя с основным pipeline.
+        Окно скользит вместе с current_index — далёкие проекты кропятся just-in-time.
+        """
+        # Ключ дедупа: (project_id, version_id) — V1 и V2 одного проекта независимы.
+        precropped: set[tuple[str, Optional[str]]] = set()
+        while queue.status == "running":
+            target_item = self._select_precrop_candidate(queue, precropped)
+
+            if not target_item:
+                # Нет проектов для pre-crop в окне, подождём и проверим снова
+                # (окно сдвинется когда main advance'нёт current_index).
                 await asyncio.sleep(5)
                 continue
 
-            precropped.add(target)
-            await self._precrop_project(target)
+            precropped.add((target_item.project_id, target_item.version_id))
+            await self._precrop_project(target_item.project_id, target_item.version_id)
             # Небольшая пауза между кропами
             await asyncio.sleep(1)
 
@@ -4889,8 +4993,22 @@ class PipelineManager:
                     await asyncio.sleep(5)
                     continue
 
-                proj_dir = resolve_project_dir(target.project_id)
+                # Version-aware: для V2+ используем папку версии, а не V1-root.
+                _target_root_dir = resolve_project_dir(target.project_id)
+                try:
+                    from backend.app.services.common import version_service as _vs
+                    proj_dir = _vs.get_version_dir(
+                        _target_root_dir, target.project_id, target.version_id
+                    )
+                except Exception:
+                    proj_dir = _target_root_dir
                 lock = prepare_state.get_lock()
+
+                # Gemma-lock priority: если основной audit хочет/держит лок —
+                # уступаем и НЕ встаём в очередь за ним (prefetch opportunistic).
+                if self._main_wants_gemma_lock():
+                    await asyncio.sleep(2)
+                    continue
 
                 # Короткий timeout: не висим в очереди перед main pipeline.
                 # Явный флаг acquired гарантирует что release вызывается только
@@ -4909,6 +5027,11 @@ class PipelineManager:
                     # === Полная переверификация после захвата lock ===
                     if queue.status != "running":
                         break
+                    # Gemma-lock priority: main мог заявить намерение в окне между
+                    # проверкой выше и захватом лока. Дорогой run ещё не начат —
+                    # сразу освобождаем (через finally) и уступаем main'у.
+                    if self._main_wants_gemma_lock():
+                        continue
                     if not self._is_current_running_past_gemma():
                         # Главный мог снова уйти в Gemma за это время.
                         continue
@@ -4961,9 +5084,11 @@ class PipelineManager:
                     try:
                         # Создаём «фантомный» job для трассировки. Не регистрируем
                         # в active_jobs (это операторский pre-fetch, не реальный аудит).
+                        # version_id обязателен — иначе _make_stage_context резолвит V1 root.
                         phantom_job = AuditJob(
                             job_id=f"__PREGEMMA_{target.project_id}__",
                             project_id=target.project_id,
+                            version_id=target.version_id,
                             stage=AuditStage.GEMMA_ENRICHMENT,
                             status=JobStatus.RUNNING,
                         )
@@ -5235,7 +5360,9 @@ class PipelineManager:
             # Очистить per-project маркеры — long-running PipelineManager не
             # должен копить старые project_id между запусками batch.
             self._current_gemma_stage_done.clear()
-            self._cleanup("__BATCH__")
+            # Identity-aware: не сносим регистрацию нового worker'а, если enqueue
+            # успел поднять его пока мы доходили до finally (гонка close+enqueue).
+            self._cleanup_batch_worker(meta_job)
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(
@@ -5661,16 +5788,25 @@ class PipelineManager:
         if self._has_live_project_audit():
             return False
         changed = False
+        demoted_pids = []
         for it in q.items:
             if it.status == "running":
                 it.status = "interrupted"
                 if not it.error:
                     it.error = "Прервано (воркер очереди не активен)"
+                demoted_pids.append(it.project_id)
                 changed = True
         if q.status == "running":
             q.status = "interrupted"
             changed = True
         if changed:
+            # Диагностика: почему очередь вдруг стала interrupted (worker мёртв,
+            # живого аудита нет). Без лога «зависшая running» расследуется вслепую.
+            print(
+                f"[BATCH] _reconcile_stale_queue: worker не активен, очередь → "
+                f"interrupted; демотировано running-итемов: {len(demoted_pids)}"
+                + (f" ({', '.join(demoted_pids)})" if demoted_pids else "")
+            )
             try:
                 self._persist_queue()
             except Exception:
