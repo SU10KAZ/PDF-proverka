@@ -4901,47 +4901,67 @@ const app = createApp({
         }
 
         // ─── Multi-folder upload ───
+        // один кандидат из набора файлов (label = подпапка или basename PDF)
+        function _buildUploadCandidate(label, files) {
+            const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
+            const md = files.find(f => /_document\.md$/i.test(f.name)) || files.find(f => /\.md$/i.test(f.name)) || null;
+            const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
+            const ocr = files.find(f => /_ocr\.html?$/i.test(f.name)) || null;
+            const pdf = pdfs.length === 1 ? pdfs[0] : null;
+            return {
+                folder: label, files, pdf,
+                pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
+                md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
+                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : label,
+                discipline: '', detectedDiscipline: '', disciplineSource: '',
+                addMode: 'new_project', targetProjectId: '',
+                status: 'pending', message: '', checked: false, precheck: null,
+            };
+        }
+
         function onMultiFolderSelected(ev) {
             uploadError.value = ''; uploadBatchResult.value = null;
             const all = Array.from(ev.target.files || []);
             if (!all.length) { uploadCandidates.value = []; return; }
-            // группировка по подпапке 1-го уровня из webkitRelativePath:
-            // "parent/sub/.../file" → ключ = sub.
-            const groups = {};
-            let hasSub = false;
+            // Две поддерживаемые раскладки внутри выбранной родительской папки:
+            //  (A) подпапки-проекты: "parent/sub/.../file" (глубина ≥3) → группа = sub;
+            //  (B) плоские файлы: "parent/file" (глубина 2) → каждый PDF = отдельный
+            //      кандидат-проект, sidecar'ы (_document.md / _result.json / _ocr.html)
+            //      привязываются по префиксу имени PDF.
+            const groups = {};           // sub → файлы (раскладка A)
+            const flat = [];             // файлы прямо в выбранной папке (раскладка B)
             for (const f of all) {
                 const rel = (f.webkitRelativePath || f.name).split('/');
-                if (rel.length < 3) continue;
-                hasSub = true;
-                const sub = rel[1];
-                (groups[sub] = groups[sub] || []).push(f);
-            }
-            // выбрали ОДНУ папку-проект напрямую (без подпапок) → считаем её
-            // одним кандидатом, чтобы мультирежим не выдавал «пусто».
-            if (!hasSub) {
-                const top = ((all[0].webkitRelativePath || all[0].name || '').split('/')[0]) || 'project';
-                groups[top] = all;
+                if (rel.length >= 3) {
+                    const sub = rel[1];
+                    (groups[sub] = groups[sub] || []).push(f);
+                } else if (rel.length === 2) {
+                    flat.push(f);
+                }
             }
             const cands = [];
+            // (A) кандидаты из подпапок
             for (const sub of Object.keys(groups).sort()) {
-                const files = groups[sub];
-                const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
-                const md = files.find(f => /_document\.md$/i.test(f.name)) || files.find(f => /\.md$/i.test(f.name)) || null;
-                const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
-                const ocr = files.find(f => /_ocr\.html?$/i.test(f.name)) || null;
-                const pdf = pdfs.length === 1 ? pdfs[0] : null;
-                cands.push({
-                    folder: sub, files, pdf,
-                    pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
-                    md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
-                    name: pdf ? pdf.name.replace(/\.pdf$/i, '') : sub,
-                    discipline: '', detectedDiscipline: '', disciplineSource: '',
-                    addMode: 'new_project', targetProjectId: '',
-                    status: 'pending', message: '', checked: false, precheck: null,
-                });
+                cands.push(_buildUploadCandidate(sub, groups[sub]));
+            }
+            // (B) кандидаты из плоских PDF — каждый PDF отдельный проект
+            const flatPdfs = flat.filter(f => /\.pdf$/i.test(f.name))
+                .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+            for (const pdf of flatPdfs) {
+                const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
+                const sidecars = flat.filter(f => f !== pdf
+                    && /(_document\.md|\.md|_result\.json|_ocr\.html?)$/i.test(f.name)
+                    && f.name.toLowerCase().startsWith(stem));
+                cands.push(_buildUploadCandidate(pdf.name.replace(/\.pdf$/i, ''), [pdf, ...sidecars]));
+            }
+            // запасной случай: на верхнем уровне есть файлы, но PDF не нашёлся —
+            // отдать всё одним кандидатом (precheck честно покажет «нет PDF»).
+            if (!cands.length && flat.length) {
+                const top = ((all[0].webkitRelativePath || all[0].name || '').split('/')[0]) || 'project';
+                cands.push(_buildUploadCandidate(top, flat));
             }
             uploadCandidates.value = cands;
-            recheckAllCandidates();
+            if (cands.length) recheckAllCandidates();
         }
 
         // precheck одной строки. discipline берётся per-row (c.discipline) либо,
