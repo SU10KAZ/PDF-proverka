@@ -341,6 +341,83 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
     return results
 
 
+def _resolve_pdf_suffixed_dir(project_id: str, projects_dir: Path) -> Optional[Path]:
+    """Обратный `.pdf`-fallback для `resolve_project_dir`.
+
+    Кейс: `project_id` пришёл БЕЗ `.pdf` (например, из projects_v2 read-cutover,
+    где `document_code` = basename без расширения), а реальная legacy-папка на
+    диске исторически названа `<project_id>.pdf` (папку назвали по имени
+    PDF-файла вместе с расширением). Пробуем ровно один эквивалентный путь
+    `<project_id>.pdf` через те же lookup-примитивы (direct / контейнер `(main)`
+    / подпапка-дисциплина), что и основной резолв.
+
+    Это зеркало уже существующего прямого `.pdf`-fallback'а (id `<база>.pdf` →
+    реальный `<база>`). Гарантии:
+
+      * НЕ рекурсивный (не зовёт `resolve_project_dir`) → нет mutual-recursion с
+        прямым `.pdf`-fallback'ом;
+      * кандидат принимается ТОЛЬКО если папка реально существует И лежит ВНУТРИ
+        `projects_dir` (anti-traversal: суффикс добавляется в КОНЕЦ имени —
+        уйти вверх по дереву им нельзя, плюс явная проверка вложенности);
+      * прямой путь имеет приоритет (сюда попадаем только когда он не найден);
+      * при НЕСКОЛЬКИХ разных существующих кандидатах НЕ угадываем → `None`
+        (вызывающий вернёт прежнюю ошибку / несуществующий путь).
+
+    Возвращает `Path` единственного кандидата или `None`.
+    """
+    if project_id.endswith(".pdf") or not projects_dir.exists():
+        return None
+    try:
+        pdir_resolved = projects_dir.resolve()
+    except Exception:
+        return None
+
+    pid = project_id + ".pdf"
+    seen: set = set()
+    matches: list = []
+
+    def _consider(candidate: Path) -> None:
+        try:
+            if not candidate.exists():
+                return
+            rp = candidate.resolve()
+        except Exception:
+            return
+        # anti-traversal: кандидат обязан лежать внутри projects_dir
+        if rp != pdir_resolved and pdir_resolved not in rp.parents:
+            return
+        if rp in seen:
+            return
+        seen.add(rp)
+        matches.append(candidate)
+
+    base = Path(pid).name
+    parent_rel = Path(pid).parent
+    # 1) прямой путь
+    _consider(projects_dir / pid)
+    # 2) контейнер версий <parent>/<база>(main)/<база>
+    _consider(
+        projects_dir / parent_rel
+        / f"{base}{version_service.CONTAINER_SUFFIX}" / base
+    )
+    # 3) подпапки-дисциплины и контейнеры версий внутри них
+    for subdir in projects_dir.iterdir():
+        if not subdir.is_dir() or subdir.name.startswith("_"):
+            continue
+        _consider(subdir / pid)
+        if not subdir.name.endswith(version_service.CONTAINER_SUFFIX):
+            for child in subdir.iterdir():
+                if (
+                    child.is_dir()
+                    and child.name.endswith(version_service.CONTAINER_SUFFIX)
+                ):
+                    _consider(child / pid)
+
+    if len(matches) == 1:
+        return matches[0]
+    return None
+
+
 def resolve_project_dir(
     project_id: str,
     *,
@@ -450,6 +527,16 @@ def resolve_project_dir(
             )
             if alt.exists():
                 return alt
+
+    # Зеркало предыдущего fallback'а: project_id БЕЗ `.pdf`, а реальная
+    # legacy-папка названа `<project_id>.pdf`. Так приходит id из projects_v2
+    # read-cutover (document_code без расширения), когда на диске папка сохранила
+    # `.pdf` в имени. Узкий, не-рекурсивный, anti-traversal, без угадывания при
+    # неоднозначности (см. `_resolve_pdf_suffixed_dir`). Прямой путь имеет
+    # приоритет — мы здесь только потому, что он не найден.
+    alt_pdf = _resolve_pdf_suffixed_dir(project_id, projects_dir)
+    if alt_pdf is not None:
+        return alt_pdf
 
     if must_exist:
         raise ProjectNotResolvedError(
