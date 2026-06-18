@@ -2963,15 +2963,16 @@
                     </div>
                 </div>
 
-                <!-- mock-notice -->
-                <div class="sched-notice">
-                    Демонстрационные данные. Факт пока не привязан к реальным загрузкам отчётов — подключение
-                    к <code>knowledge_base/decisions_log.json</code> описано в отчёте по задаче.
+                <!-- состояние данных: загрузка / ошибка / mock / live -->
+                <div class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
+                    <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
+                    {{ schedNoticeText }}
+                    <span v-if="schedNoticeKind === 'error'" class="sched-retry" @click="schedLoad">Повторить</span>
                 </div>
 
                 <!-- main: grid + plan -->
                 <div class="sched-layout">
-                    <div class="sched-gridwrap" :class="'sched-gridwrap--'+schedMode">
+                    <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]">
                         <table class="sched-grid">
                             <thead>
                                 <tr>

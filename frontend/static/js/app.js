@@ -2611,6 +2611,7 @@ const app = createApp({
             } else if (hash === '/schedule') {
                 currentView.value = 'schedule';
                 connectGlobalWS();
+                schedLoad();
             } else if (hash === '/critic-v2-ui') {
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
@@ -8265,12 +8266,12 @@ const app = createApp({
         // ─────────────────────────────────────────────────────────────────
         // График производства работ (production work schedule)
         //
-        // ⚠️ MOCK-данные. График показывает, какие проекты инженер
-        // загрузил/проверил в каждый день. Реальные события сейчас НЕ
-        // подключены — см. отчёт. Источник для подключения:
-        // knowledge_base/decisions_log.json (поля expert_reviewer,
-        // expert_date, source_project, section) через user_service —
-        // тот же лог, что питает «Активность пользователя».
+        // Реальные события грузятся из backend GET /api/schedule?from=&to=
+        // (агрегация knowledge_base/decisions_log.json). Если API недоступен
+        // или вернул пустой результат — DEV-fallback на mock-данные ниже
+        // (schedEvents → _schedMockEvents, schedEngineers → _SCHED_MOCK_ENGINEERS).
+        // План (schedPlans) пока локальный/mock — backend-стор work_plans.json
+        // делается отдельным этапом.
         // ─────────────────────────────────────────────────────────────────
         const schedMode = ref('week');                 // 'week' | 'month'
         const schedAnchor = ref(_schedStartOfDay(new Date()));  // опорный день периода
@@ -8279,14 +8280,20 @@ const app = createApp({
         const schedHiddenEngineers = ref([]);          // id скрытых инженеров (фильтр)
         const schedPlanEdit = ref(false);              // режим редактирования плана (для админа)
 
-        // Инженеры (строки графика). В реале — из /api/users (role=expert).
-        const schedEngineers = ref([
+        // Состояние загрузки из API.
+        const schedApiEvents = ref(null);              // массив событий из /api/schedule или null (не загружено)
+        const schedApiEngineers = ref(null);           // массив инженеров из API или null
+        const schedLoading = ref(false);
+        const schedError = ref(false);                 // запрос упал → показываем mock
+
+        // DEV-fallback: инженеры графика, если API недоступен/пуст.
+        const _SCHED_MOCK_ENGINEERS = [
             { id: 'uzun',     name: 'Узун А. И.' },
             { id: 'grivash',  name: 'Гриваш А. А.' },
             { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
             { id: 'olar',     name: 'Оларь М. И.' },
             { id: 'repnikov', name: 'Репников И. А.' },
-        ]);
+        ];
 
         // План на период (число проектов): отдельно неделя/месяц.
         // Редактируется администратором (mock — локально в памяти).
@@ -8297,6 +8304,9 @@ const app = createApp({
             olar:     { week: 3, month: 12 },
             repnikov: { week: 6, month: 24 },
         });
+        // План по умолчанию для инженеров без явной записи (реальные engId из API
+        // не совпадают с mock-ключами выше) — чтобы статистика была осмысленной.
+        const _SCHED_DEFAULT_PLAN = { week: 5, month: 20 };
 
         // ── date helpers (всё локально, без зависимостей) ──
         function _schedStartOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
@@ -8319,10 +8329,10 @@ const app = createApp({
         const _SCHED_MON_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
             'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 
-        // MOCK события «инженер загрузил/проверил проект в этот день».
-        // Генерируются относительно ТЕКУЩЕЙ недели/месяца, чтобы демо всегда
-        // попадало в видимый период независимо от даты открытия.
-        const schedEvents = computed(() => {
+        // DEV-fallback MOCK события «инженер загрузил/проверил проект в этот день».
+        // Используются только если API недоступен или вернул пусто. Генерируются
+        // относительно ТЕКУЩЕЙ недели/месяца, чтобы демо всегда попадало в период.
+        const _schedMockEvents = computed(() => {
             const today = _schedStartOfDay(new Date());
             const monday = _schedMonday(today);
             const monthFirst = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -8366,6 +8376,65 @@ const app = createApp({
             add('kuldyaev', dom(28), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
             return ev;
         });
+
+        // Эффективный источник: API, если есть непустой результат, иначе mock.
+        const schedUsingMock = computed(() =>
+            !Array.isArray(schedApiEvents.value) || schedApiEvents.value.length === 0);
+        const schedEvents = computed(() =>
+            schedUsingMock.value ? _schedMockEvents.value : schedApiEvents.value);
+        const schedEngineers = computed(() => {
+            if (!schedUsingMock.value && Array.isArray(schedApiEngineers.value) && schedApiEngineers.value.length)
+                return schedApiEngineers.value;
+            return _SCHED_MOCK_ENGINEERS;
+        });
+
+        // Баннер состояния над графиком.
+        const schedNoticeKind = computed(() => {
+            if (schedLoading.value) return 'loading';
+            if (schedError.value) return 'error';
+            if (schedUsingMock.value) return 'mock';
+            return 'live';
+        });
+        const schedNoticeText = computed(() => ({
+            loading: 'Загрузка графика…',
+            error:   'Не удалось загрузить данные графика — показаны тестовые данные.',
+            mock:    'Реальных событий за период нет — показаны демонстрационные данные.',
+            live:    'Данные из knowledge_base/decisions_log.json.',
+        }[schedNoticeKind.value]));
+
+        function _schedPeriodRange() {
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                return { from: _schedKey(mon), to: _schedKey(_schedAddDays(mon, 6)) };
+            }
+            const a = schedAnchor.value;
+            const first = new Date(a.getFullYear(), a.getMonth(), 1);
+            const last = new Date(a.getFullYear(), a.getMonth() + 1, 0);
+            return { from: _schedKey(first), to: _schedKey(last) };
+        }
+
+        async function schedLoad() {
+            const { from, to } = _schedPeriodRange();
+            schedLoading.value = true;
+            schedError.value = false;
+            try {
+                const resp = await fetch(`/api/schedule?from=${from}&to=${to}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                schedApiEvents.value = Array.isArray(data.events) ? data.events : [];
+                schedApiEngineers.value = Array.isArray(data.engineers) ? data.engineers : [];
+            } catch (e) {
+                console.error('Schedule load error:', e);
+                schedError.value = true;       // → DEV fallback на mock-данные
+                schedApiEvents.value = null;
+                schedApiEngineers.value = null;
+            } finally {
+                schedLoading.value = false;
+            }
+        }
+
+        // Перезагрузка при смене режима/периода (Неделя/Месяц, ‹ › Сегодня).
+        watch([schedMode, schedAnchor], () => { schedLoad(); });
 
         const schedVisibleEngineers = computed(() =>
             schedEngineers.value.filter(e => !schedHiddenEngineers.value.includes(e.id)));
@@ -8451,8 +8520,10 @@ const app = createApp({
 
         function schedTogglePlanEdit() { schedPlanEdit.value = !schedPlanEdit.value; }
         function schedPlanFor(engId) {
+            // Реальные engId из API не совпадают с mock-ключами schedPlans —
+            // для них берём дефолтный план, чтобы статистика была осмысленной.
             const p = schedPlans.value[engId];
-            return p ? (p[schedMode.value] || 0) : 0;
+            return p ? (p[schedMode.value] || 0) : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
         }
         function schedSetPlan(engId, val) {
             const n = Math.max(0, parseInt(val, 10) || 0);
@@ -14049,7 +14120,7 @@ const app = createApp({
             expandedUserId, userActivity, userActivityLoading,
             loadUsers, switchUser, addUser, deleteUser, toggleUserExpand,
             loadUserActivity, currentUserName,
-            // График производства работ (mock-данные)
+            // График производства работ (API /api/schedule + dev mock fallback)
             schedMode, schedAnchor, schedPopover, schedFiltersOpen,
             schedHiddenEngineers, schedPlanEdit, schedEngineers, schedPlans,
             schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
@@ -14058,6 +14129,7 @@ const app = createApp({
             schedToggleEngineer, schedIsEngineerHidden,
             schedTogglePlanEdit, schedPlanFor, schedSetPlan,
             schedFactFor, schedPctClass, schedStats, schedTotals,
+            schedLoading, schedError, schedUsingMock, schedNoticeKind, schedNoticeText, schedLoad,
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,

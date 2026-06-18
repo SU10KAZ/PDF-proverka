@@ -55,6 +55,7 @@ from backend.app.api.routers import (
     stage_comparison,
     auth,
     projects_v2_shadow,
+    schedule,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -103,6 +104,7 @@ app.include_router(discussions.router)
 app.include_router(knowledge_base.router)
 app.include_router(objects.router)
 app.include_router(users.router)
+app.include_router(schedule.router)
 app.include_router(model_control.router)
 app.include_router(lms.router)
 app.include_router(critic_v2_ui.router)
