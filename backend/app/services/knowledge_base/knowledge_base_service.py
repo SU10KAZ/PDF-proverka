@@ -105,6 +105,15 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     enriched = _enrich_decisions(project_id, decisions, reviewer)
     _append_to_decisions_log(enriched)
 
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
+    # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся
+    # общим shared-файлом (его v2-плечо здесь намеренно НЕ форкается).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:
+        pass
+
     return {
         "saved": len(decisions),
         "accepted": sum(1 for d in decisions if d.decision == "accepted"),
