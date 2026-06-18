@@ -909,6 +909,19 @@ def save_project_info(
             path = version_dir / "project_info.json"
     except version_service.VersionNotFoundError:
         pass
+    # Шаг 6A: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+    # (в проде НЕ включена). v2 первичен, legacy — fail-soft архив. В режимах
+    # legacy/dual_write_shadow выполняется прежний путь ниже (без изменений).
+    from backend.app.services.storage import storage_write_facade as _swf
+    if _swf.v2_is_primary():
+        from backend.app.services.storage.v2_primary_wiring import (
+            save_project_info_v2_primary as _save_v2_primary,
+        )
+        return _save_v2_primary(
+            project_id, data, version_id=target_vid,
+            legacy_root=root_dir, legacy_path=path,
+        )
+
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -919,7 +932,6 @@ def save_project_info(
     # legacy-записи project_info.json (no-op в legacy, fail-soft). try/except —
     # чтобы путь `return True` оставался байт-идентичным прежнему поведению.
     try:
-        from backend.app.services.storage import storage_write_facade as _swf
         _swf.shadow_mirror_project_path_safe(root_dir)
     except Exception:
         pass
