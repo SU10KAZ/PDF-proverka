@@ -153,3 +153,12 @@ kb_orphans_*.md
 knowledge_base/work_plans.json
 knowledge_base/work_plans.json.tmp
 knowledge_base/work_plans.json.broken-*
+
+# === Local migration/repair backups (runtime, не для git) ===
+# Бэкапы миграции/ремонта и одноразовые артефакты. `*.tmp` уже покрыт выше.
+/_v2_shadow_backup_*/
+*.bak*
+*.backup*
+*.broken-*
+*.tmp.*
+project_rename.reverse.json
