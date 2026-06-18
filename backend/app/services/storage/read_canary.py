@@ -31,10 +31,13 @@ read_canary.py — opt-in read-only canary для `projects_v2` на ОТДЕЛ�
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
@@ -175,6 +178,108 @@ def _resolve_doc_or_404(request, project_id):
 
 def _req_version(request):
     return request.query_params.get("version_id") if request is not None else None
+
+
+# ---------------------------------------------------------------------------
+# Защитный fallback на legacy при НЕПОЛНОМ v2-снимке (write lagged behind audit)
+#
+# Контекст: при `dual_write_shadow` v2-снимок мог обрываться на block_analysis
+# (поздние artifacts — 03_findings/optimization/нормы — попадали только в legacy).
+# Тогда v2-read отдавал «аудит не проводился» / неполный статус, хотя legacy уже
+# содержит полный аудит. Это страховка на время миграции: если v2-findings нет, а
+# legacy-аудит завершён — читаем legacy и логируем warning (НЕ скрываем write-bug:
+# warning виден, флаг `v2_snapshot_incomplete` в ответе). Если v2 полон — читаем v2
+# как раньше. Если и legacy пуст — поведение прежнее.
+# ---------------------------------------------------------------------------
+
+# имена findings-файлов в legacy `_output` (приоритет как в findings_service)
+_LEGACY_FINDINGS_NAMES = ("03a_norms_verified.json", "03_findings.json",
+                          "03_findings_pre_merge.json")
+
+
+def _legacy_output_dir_for_doc(doc_dir: Path, vid: str) -> Optional[Path]:
+    """legacy `_output` папка для версии документа (для fallback-проверок).
+
+    Резолвит legacy_path объекта из object.json и контейнерную/plain раскладку
+    (как `_v2_pipeline_summary`-fallback). None — если не найдено. Read-only.
+    """
+    try:
+        import json as _json
+        code = doc_dir.name
+        discipline = doc_dir.parent.parent.name
+        obj_folder_dir = doc_dir.parent.parent.parent.parent  # .../objects/<obj_folder>
+        obj_json = obj_folder_dir / "object.json"
+        if not obj_json.is_file():
+            return None
+        legacy_root = Path(_json.loads(obj_json.read_text(encoding="utf-8")).get("legacy_path", ""))
+        if not legacy_root.is_dir():
+            return None
+        m = re.match(r"v0*(\d+)$", str(vid))
+        ver_n = int(m.group(1)) if m else 1
+        container = legacy_root / discipline / f"{code}(main)"
+        candidates = [
+            container / (f"{code} V{ver_n}" if ver_n > 1 else code) / "_output",
+            container / code / "_output",
+            legacy_root / discipline / code / "_output",
+        ]
+        for cand in candidates:
+            if cand.is_dir():
+                return cand
+    except Exception:
+        pass
+    return None
+
+
+def _legacy_findings_present(out_dir: Optional[Path]) -> bool:
+    """True, если legacy `_output` содержит findings-файл (аудит завершён)."""
+    return bool(out_dir) and any((out_dir / n).is_file() for n in _LEGACY_FINDINGS_NAMES)
+
+
+def _v2_snapshot_incomplete(a, doc_dir: Path, ver: str) -> Optional[Path]:
+    """legacy `_output`, если legacy-аудит ПОЛНЕЕ v2-снимка; иначе None.
+
+    Сигнал неполноты — отсутствие findings-артефакта в v2 `03_analysis/latest`
+    при наличии findings в legacy `_output`. Это ровно тот случай, когда mirror
+    отстал от аудита (снимок замер на block_analysis). Если v2-findings есть —
+    снимок считается достаточно полным (None, читаем v2).
+    """
+    try:
+        if a.findings_path(doc_dir, ver) is not None:
+            return None
+    except Exception:
+        return None
+    out_dir = _legacy_output_dir_for_doc(doc_dir, ver)
+    return out_dir if _legacy_findings_present(out_dir) else None
+
+
+def _legacy_findings_fallback(project_id: str, request) -> Optional[dict]:
+    """Legacy findings (полная форма model_dump) с маркерами fallback; None при сбое."""
+    try:
+        import backend.app.services.findings.findings_service as _fs
+        res = _fs.get_findings(project_id, version_id=_req_version(request))
+        if res is None:
+            return None
+        out = res.model_dump()
+        out["storage_backend"] = "legacy_fallback"
+        out["v2_snapshot_incomplete"] = True
+        return out
+    except Exception:
+        return None
+
+
+def _legacy_project_status_fallback(project_id: str, request) -> Optional[dict]:
+    """Legacy ProjectStatus (model_dump) с маркерами fallback; None при сбое."""
+    try:
+        from backend.app.services.common import project_service as _ps
+        status = _ps.get_project_status(project_id, version_id=_req_version(request))
+        if not status:
+            return None
+        out = status.model_dump()
+        out["storage_backend"] = "legacy_fallback"
+        out["v2_snapshot_incomplete"] = True
+        return out
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -746,6 +851,17 @@ def v2_findings(request, project_id: str) -> dict:
     """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    # защитный fallback: v2-снимок неполный (mirror отстал), а legacy-аудит готов
+    legacy_out = _v2_snapshot_incomplete(a, doc_dir, ver)
+    if legacy_out is not None:
+        fallback = _legacy_findings_fallback(project_id, request)
+        if fallback is not None:
+            logger.warning(
+                "v2_snapshot_incomplete_fallback_legacy: findings project_id=%s "
+                "document=%s version=%s legacy_output=%s",
+                project_id, doc["document_code"], ver, legacy_out,
+            )
+            return fallback
     return {
         "storage_backend": BACKEND_V2,
         "canary": True,
@@ -777,6 +893,19 @@ def v2_project_details(request, project_id: str) -> dict:
     """
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    # защитный fallback: v2-снимок неполный (pipeline_log замер на block_analysis,
+    # findings не зеркалированы), а legacy-аудит готов → отдаём legacy-статус,
+    # чтобы UI не показывал ложный неполный конвейер.
+    legacy_out = _v2_snapshot_incomplete(a, doc_dir, ver)
+    if legacy_out is not None:
+        fallback = _legacy_project_status_fallback(project_id, request)
+        if fallback is not None:
+            logger.warning(
+                "v2_snapshot_incomplete_fallback_legacy: project_status project_id=%s "
+                "document=%s version=%s legacy_output=%s",
+                project_id, doc["document_code"], ver, legacy_out,
+            )
+            return fallback
     status = _v2_project_status(a, doc, ver)
     status["storage_backend"] = BACKEND_V2
     status["canary"] = True
@@ -820,6 +949,25 @@ def v2_finding_by_id(request, project_id: str, finding_id: str) -> dict:
         fid = f.get("id") or f.get("finding_id") or f.get("number")
         if str(fid) == str(finding_id):
             return {**f, "storage_backend": BACKEND_V2, "canary": True}
+    # защитный fallback: v2-снимок неполный, legacy-аудит готов → ищем в legacy
+    legacy_out = _v2_snapshot_incomplete(a, doc_dir, ver)
+    if legacy_out is not None:
+        try:
+            import backend.app.services.findings.findings_service as _fs
+            res = _fs.get_finding_by_id(project_id, finding_id,
+                                        version_id=_req_version(request))
+            if res is not None:
+                logger.warning(
+                    "v2_snapshot_incomplete_fallback_legacy: finding_by_id "
+                    "project_id=%s finding=%s legacy_output=%s",
+                    project_id, finding_id, legacy_out,
+                )
+                out = res.model_dump() if hasattr(res, "model_dump") else dict(res)
+                out["storage_backend"] = "legacy_fallback"
+                out["v2_snapshot_incomplete"] = True
+                return out
+        except Exception:
+            pass
     raise HTTPException(
         status_code=404,
         detail=(f"projects_v2 canary: finding '{finding_id}' not found in document "
@@ -978,6 +1126,24 @@ def v2_block_map(request, project_id: str) -> dict:
     from backend.app.services.findings import findings_service as fs
     a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
     ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    # защитный fallback: v2-снимок неполный, legacy-аудит готов → legacy block-map
+    legacy_out = _v2_snapshot_incomplete(a, doc_dir, ver)
+    if legacy_out is not None:
+        try:
+            res = fs.get_finding_block_map(project_id, version_id=_req_version(request))
+            if res is not None:
+                logger.warning(
+                    "v2_snapshot_incomplete_fallback_legacy: block_map project_id=%s "
+                    "document=%s version=%s legacy_output=%s",
+                    project_id, doc["document_code"], ver, legacy_out,
+                )
+                out = dict(res) if isinstance(res, dict) else res
+                if isinstance(out, dict):
+                    out["storage_backend"] = "legacy_fallback"
+                    out["v2_snapshot_incomplete"] = True
+                return out
+        except Exception:
+            pass
     findings = a.findings_list(doc_dir, ver)
     _bp, block_info, all_block_ids = fs.blocks_data_from_sources(
         a.read_blocks_analysis(doc_dir, ver), a.read_blocks_index(doc_dir, ver))

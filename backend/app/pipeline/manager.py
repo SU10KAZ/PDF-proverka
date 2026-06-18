@@ -1673,16 +1673,29 @@ class PipelineManager:
 
         job.status = JobStatus.COMPLETED
 
-        # Step 9/10 dual-write canary: после успешного аудита зеркалим проект
-        # (включая analysis artifacts из _output) в projects_v2.
-        # no-op в режиме legacy, fail-soft — не влияет на статус аудита.
+        # Step 9/10 dual-write: ранний снимок после block_analysis (covers
+        # standalone block_analysis-only прогон). ПОЛНЫЙ снимок после всего
+        # конвейера делает _run_batch_queue по завершении (late artifacts).
+        self._shadow_mirror_completed_audit(job.project_id, job)
+
+    def _shadow_mirror_completed_audit(self, project_id: str, job=None) -> None:
+        """Зеркалировать legacy-проект в projects_v2 после успешного этапа/аудита.
+
+        no-op в legacy-режиме (default), fail-soft — НИКОГДА не влияет на статус
+        аудита. Вызывается из двух точек: (1) после block_analysis (ранний снимок
+        для standalone-прогона) и (2) из _run_batch_queue после ЗАВЕРШЕНИЯ всего
+        конвейера, где legacy _output уже содержит все late-stage artifacts
+        (03_findings/optimization/нормы) и финальный pipeline_log. Зеркалирование
+        идемпотентно (migrate_project обновляет latest-снимок), поэтому повторный
+        вызов после полного аудита перезаписывает неполный ранний снимок.
+        """
         try:
             from backend.app.services.storage import storage_write_facade as _swf
-            _swf.shadow_mirror_project_id_safe(
-                job.project_id, run_id=getattr(job, "job_id", None),
-            )
-        except Exception:
-            pass
+            run_id = getattr(job, "job_id", None) if job is not None else None
+            _swf.shadow_mirror_project_id_safe(project_id, run_id=run_id)
+        except Exception as e:
+            # fail-soft: legacy уже записан и авторитетен; v2 — best-effort тень
+            print(f"[{project_id}] shadow_mirror_completed_audit failed: {e}")
 
     def _record_findings_only_usage(self, job: AuditJob, summary: dict) -> None:
         """Учесть стоимость stage 02 в режиме findings_only_gemma_pair в usage tracker.
@@ -5274,6 +5287,14 @@ class PipelineManager:
                     if job.status == JobStatus.COMPLETED:
                         item.status = "completed"
                         queue.completed += 1
+                        # projects_v2 dual-write: зеркалим ПОЛНЫЙ проект (включая
+                        # late-stage artifacts — 03_findings/optimization/нормы и
+                        # финальный pipeline_log) после ЗАВЕРШЕНИЯ всего конвейера.
+                        # Это единая точка завершения любого action (full/resume/
+                        # retry/optimization), поэтому раньше v2-снимок обрывался
+                        # на block_analysis (мирор внутри block-стадии), а поздние
+                        # этапы в v2 не попадали. no-op в legacy-режиме, fail-soft.
+                        self._shadow_mirror_completed_audit(pid, job)
                         await ws_manager.broadcast_global(
                             WSMessage.log("__BATCH__", f"  ✓ {pid}: завершён", "info")
                         )
