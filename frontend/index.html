@@ -735,7 +735,8 @@
 
         <!-- ═══ Add Project Modal ═══ -->
         <div v-if="showAddProject" class="modal-overlay" @click="closeAddProject">
-            <div class="modal-content modal-add-project" @click.stop>
+            <div class="modal-content modal-add-project"
+                 :class="{'modal-add-project--wide': addProjectStep === 'upload'}" @click.stop>
                 <button class="modal-close" @click="closeAddProject">&times;</button>
 
                 <!-- Шаг 1: Выбор действия -->

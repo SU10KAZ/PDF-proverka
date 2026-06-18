@@ -1648,6 +1648,8 @@ th.cv2-sort-active {
 .modal-subtitle { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
 
 .modal-add-project { max-width: 650px; }
+/* Загрузка папки с компьютера — широкий режим, чтобы имена проектов помещались без переноса */
+.modal-add-project--wide { max-width: min(1180px, 96vw); }
 .add-choose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .add-choose-card { padding: 20px; border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer; text-align: center; transition: all 0.13s; }
 .add-choose-card:hover { border-color: var(--teal-border); background: var(--teal-light); }
@@ -4000,6 +4002,8 @@ tr.row-rejected td.sc-cell-goto {
 .upload-multi-table th, .upload-multi-table td { padding: 5px 8px; border-bottom: 1px solid var(--border2); text-align: left; vertical-align: top; }
 .upload-multi-table th { position: sticky; top: 0; background: var(--bg2, #f8f9fa); z-index: 1; font-size: 11px; text-transform: uppercase; color: var(--text3); }
 .upload-multi-table .form-input--sm { padding: 2px 6px; font-size: 12px; width: 100%; min-width: 140px; }
+/* Колонки «Папка» и «PDF» — имена проектов в одну строку (без переноса) */
+.upload-multi-table td:nth-child(2), .upload-multi-table td:nth-child(3) { white-space: nowrap; }
 .cand--duplicate, .cand--error { background: #fef2f2; }
 .cand--warning { background: #fffbeb; }
 .cand--done { background: #f0fdf4; opacity: 0.7; }
