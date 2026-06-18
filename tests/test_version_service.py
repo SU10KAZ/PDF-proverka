@@ -22,8 +22,10 @@ if str(_ROOT) not in sys.path:
 from backend.app.services.common import version_service  # noqa: E402
 from backend.app.services.common.version_service import (  # noqa: E402
     VERSIONS_MANIFEST_FILENAME,
+    VersionFileError,
     VersionNotFoundError,
     create_next_version,
+    delete_version,
     ensure_project_versions_manifest,
     get_latest_version_id,
     get_version_dir,
@@ -496,3 +498,122 @@ def test_list_projects_returns_one_card_per_logical_project(api_client):
     assert card["version_id"] == "v2"
     assert card["has_versions"] is True
     assert card["findings_count"] == 0  # V1 не подтягивается
+
+
+# ─── delete_version (unit) ───────────────────────────────────────────────────
+
+
+def _build_container_v1_v2_v3(legacy_project_dir):
+    """Контейнерная `(main)`-раскладка с тремя версиями. Возвращает (container, primary)."""
+    create_next_version(legacy_project_dir, "M31A", source="manual")  # v2 + промоут V1
+    container = legacy_project_dir.parent / "M31A(main)"
+    primary = container / "M31A"
+    create_next_version(primary, "M31A", source="manual")  # v3
+    return container, primary
+
+
+def test_delete_version_removes_selected_keeps_others(legacy_project_dir):
+    """#1/#3/#6: в контейнере удаляется ВЫБРАННАЯ версия, остальные целы."""
+    container, primary = _build_container_v1_v2_v3(legacy_project_dir)
+    assert (container / "M31A V2").is_dir()
+    assert (container / "M31A V3").is_dir()
+
+    result = delete_version(primary, "M31A", "v2")
+
+    assert result["deleted_version_id"] == "v2"
+    # удалена только V2
+    assert not (container / "M31A V2").exists()
+    # V1 (primary) и V3 на месте
+    assert primary.is_dir()
+    assert (primary / "project_info.json").exists()
+    assert (container / "M31A V3").is_dir()
+    # манифест без v2, с v1 и v3
+    manifest = read_project_versions(primary, "M31A")
+    ids = {v["version_id"] for v in manifest["versions"]}
+    assert ids == {"v1", "v3"}
+
+
+def test_delete_version_switches_latest_to_previous(legacy_project_dir):
+    """#4: удаление активной (latest) версии переключает latest на оставшуюся."""
+    container, primary = _build_container_v1_v2_v3(legacy_project_dir)
+    assert get_latest_version_id(primary, "M31A") == "v3"
+
+    result = delete_version(primary, "M31A", "v3")
+
+    assert result["new_latest_version_id"] == "v2"
+    assert get_latest_version_id(primary, "M31A") == "v2"
+    assert not (container / "M31A V3").exists()
+    # оставшиеся версии целы
+    assert primary.is_dir()
+    assert (container / "M31A V2").is_dir()
+
+
+def test_delete_version_cannot_delete_only_version(legacy_project_dir):
+    """#2: единственную версию проекта удалить нельзя."""
+    with pytest.raises(VersionFileError):
+        delete_version(legacy_project_dir, "M31A", "v1")
+    # проект не тронут
+    assert (legacy_project_dir / "project_info.json").exists()
+
+
+def test_delete_version_unknown_version_raises(legacy_project_dir):
+    """#5 (unit): несуществующий version_id → VersionNotFoundError, ничего не удалено."""
+    container, primary = _build_container_v1_v2_v3(legacy_project_dir)
+    with pytest.raises(VersionNotFoundError):
+        delete_version(primary, "M31A", "v99")
+    # все версии целы
+    assert primary.is_dir()
+    assert (container / "M31A V2").is_dir()
+    assert (container / "M31A V3").is_dir()
+
+
+# ─── DELETE /api/projects/{project_id}/versions/{version_id} ─────────────────
+
+
+def test_api_delete_version(api_client):
+    """#8/#1/#4 (API): создаём V2 через API, затем удаляем — latest → V1, папка V2 удалена."""
+    client, projects_dir = api_client
+    r = client.post(
+        "/api/projects/M31A/versions",
+        json={"comment": "V2", "source": "manual"},
+    )
+    assert r.status_code == 200, r.text
+
+    d = client.delete("/api/projects/M31A/versions/v2")
+    assert d.status_code == 200, d.text
+    body = d.json()
+    assert body["status"] == "ok"
+    assert body["deleted_version_id"] == "v2"
+    assert body["new_latest_version_id"] == "v1"
+
+    # ФС: папка V2 удалена, V1 (primary) в контейнере цел
+    container = projects_dir / "M31A(main)"
+    assert not (container / "M31A V2").exists()
+    assert (container / "M31A").is_dir()
+
+    # versions-эндпоинт отражает одну оставшуюся версию
+    v = client.get("/api/projects/M31A/versions").json()
+    assert v["latest_version_id"] == "v1"
+    assert v["version_count"] == 1
+
+
+def test_api_delete_version_404_unknown_project(api_client):
+    """#5 (API): несуществующий project_id → 404."""
+    client, _ = api_client
+    r = client.delete("/api/projects/does-not-exist/versions/v2")
+    assert r.status_code == 404
+
+
+def test_api_delete_version_404_unknown_version(api_client):
+    """#5 (API): несуществующий version_id у реального проекта → 404."""
+    client, _ = api_client
+    client.post("/api/projects/M31A/versions", json={"comment": "V2", "source": "manual"})
+    r = client.delete("/api/projects/M31A/versions/v99")
+    assert r.status_code == 404
+
+
+def test_api_delete_version_400_only_version(api_client):
+    """#2 (API): попытка удалить единственную версию → 400."""
+    client, _ = api_client
+    r = client.delete("/api/projects/M31A/versions/v1")
+    assert r.status_code == 400
