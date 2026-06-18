@@ -414,8 +414,6 @@
                         @click="navigate('/project/' + currentProject.project_id + '/blocks')">
                     Блоки<span v-if="currentProject.block_count" class="project-tab__count project-tab__count--teal">{{ currentProject.block_count }}</span>
                 </button>
-                <button class="project-tab" :class="{'project-tab--active': currentView === 'prompts'}"
-                        @click="navigate('/project/' + currentProject.project_id + '/prompts')">Промпты</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'log'}"
                         @click="navigate('/project/' + currentProject.project_id + '/log')">Лог</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'findings'}"
@@ -1993,16 +1991,6 @@
                     <div v-if="currentProject.pipeline.crop_blocks === 'error'" class="block-crop-warning block-crop-warning--compact">
                         <span class="block-crop-warning__icon">&#9888;</span>
                         <span>Не все блоки скачались. Обновите OCR-результат и перезапустите кроп.</span>
-                    </div>
-
-                    <!-- Resume -->
-                    <div v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
-                         class="resume-box">
-                        <button class="btn btn-sm btn-primary" @click="resumePipeline(currentProject.project_id)">Продолжить</button>
-                        <button class="btn btn-sm btn-outline" @click="resumeToQueue(currentProject.project_id)">В очередь</button>
-                        <span class="resume-label">{{ resumeInfo.stage_label }}
-                            <span v-if="resumeInfo.detail">({{ resumeInfo.detail }})</span>
-                        </span>
                     </div>
 
                     <!-- ═══ Состояние новой версии (V2+, пустая) ═══ -->
@@ -4258,71 +4246,6 @@
             <!-- No MD file -->
             <div v-if="!documentLoading && documentPages.length === 0" class="empty-state">
                 MD-файл не найден для этого проекта.
-            </div>
-        </div>
-
-        <!-- ═══ Prompts Editor ═══ -->
-        <div v-if="currentView === 'prompts'" class="container container--flex">
-            <div class="prompts-page" @click="showDisciplineDropdown = false">
-                <!-- Toolbar: dropdown дисциплины + заголовок -->
-                <div class="prompts-toolbar">
-                    <div class="prompts-discipline-select" @click.stop>
-                        <div class="discipline-dropdown" @click="showDisciplineDropdown = !showDisciplineDropdown">
-                            <span class="discipline-dot" :style="{background: currentDiscipline.color || '#666'}"></span>
-                            <span class="discipline-label">{{ currentDiscipline.short_name || 'Система' }}</span>
-                            <span class="discipline-arrow">▼</span>
-                        </div>
-                        <div v-if="showDisciplineDropdown" class="discipline-dropdown-menu">
-                            <div v-for="d in disciplines" :key="d.code"
-                                 class="discipline-dropdown-item"
-                                 :class="{active: d.code === promptsDiscipline}"
-                                 @click="switchDiscipline(d.code)">
-                                <span class="discipline-dot" :style="{background: d.color}"></span>
-                                <span>{{ d.short_name }}</span>
-                                <span class="discipline-dropdown-name">{{ d.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="promptsLoading" class="empty-state">Загрузка промптов...</div>
-
-                <div v-else style="display:flex;flex-direction:column;flex:1;min-height:0">
-                    <!-- Chrome-style tabs -->
-                    <div class="prompt-tabs">
-                        <div v-for="(p, idx) in templates" :key="p.stage"
-                             class="prompt-tab"
-                             :class="{active: activePromptTab === idx}"
-                             @click="activePromptTab = idx">
-                            <span class="prompt-tab__label">{{ p.label }}</span>
-                            <span class="prompt-tab__chars">{{ p.char_count.toLocaleString() }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Active tab content -->
-                    <div v-if="templates[activePromptTab]" class="prompt-panel">
-                        <div class="prompt-panel__toolbar">
-                            <span class="prompt-panel__info">
-                                {{ (templates[activePromptTab]._editContent || '').length.toLocaleString() }} символов
-                            </span>
-                            <div class="prompt-panel__actions">
-                                <button v-if="templates[activePromptTab]._dirty"
-                                        class="btn btn-sm btn-accent"
-                                        @click="saveTemplate(templates[activePromptTab].stage, templates[activePromptTab]._editContent)">
-                                    Сохранить шаблон
-                                </button>
-                            </div>
-                        </div>
-                        <div class="prompt-editor-wrap">
-                            <div class="prompt-highlight-overlay" v-html="highlightPlaceholders(templates[activePromptTab]._editContent || '')"></div>
-                            <textarea class="prompt-textarea"
-                                      v-model="templates[activePromptTab]._editContent"
-                                      @input="templates[activePromptTab]._dirty = (templates[activePromptTab]._editContent !== templates[activePromptTab].content)"
-                                      @scroll="syncScroll($event)"
-                                      spellcheck="false"></textarea>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 

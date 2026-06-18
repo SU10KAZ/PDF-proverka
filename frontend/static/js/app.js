@@ -2691,20 +2691,6 @@ const app = createApp({
                 connectGlobalWS();
                 loadProject(id);
                 loadDocument(id);
-            } else if (hash.match(/^\/project\/(.+)\/prompts$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/prompts$/)[1]);
-                currentView.value = 'prompts';
-                currentProjectId.value = id;
-                promptsProjectId.value = id;
-                activePromptTab.value = 0;
-                connectGlobalWS();
-                loadProject(id);
-                loadPromptDisciplines().then(() => {
-                    const proj = projects.value.find(p => p.name === id || p.project_id === id);
-                    const section = proj?.section || 'EOM';
-                    promptsDiscipline.value = section;
-                    loadTemplates(section);
-                });
             } else if (hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)) {
                 // Project-scoped Critic v2 — opens straight on the disagreements filter.
                 // Same view, same endpoint; only the default filter and the
@@ -4144,7 +4130,7 @@ const app = createApp({
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
-            'project', 'blocks', 'prompts', 'log',
+            'project', 'blocks', 'log',
             'findings', 'optimization', 'discussions',
             'document', 'critic-v2-project',
         ]);
