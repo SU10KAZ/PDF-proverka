@@ -4218,33 +4218,6 @@ const app = createApp({
             }
         }
 
-        // ─── Excel по одному проекту ───
-        const projectExcelLoading = ref(false);
-
-        async function exportProjectExcel(projectId) {
-            if (!projectId) return;
-            projectExcelLoading.value = true;
-            try {
-                const resp = await fetch('/api/export/excel/section', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        section: '',
-                        project_ids: [projectId],
-                    }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || resp.statusText);
-                }
-                const data = await resp.json();
-                window.open('/api/export/download/' + encodeURIComponent(data.file), '_blank');
-            } catch (e) {
-                alert('Ошибка генерации Excel: ' + e.message);
-            } finally {
-                projectExcelLoading.value = false;
-            }
-        }
 
         // ─── Excel по разделу ───
         const sectionExcelLoading = ref(null);
@@ -16785,7 +16758,6 @@ const app = createApp({
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             sectionExcelLoading, exportSectionExcel,
-            projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
             // Queue management
