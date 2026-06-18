@@ -1900,6 +1900,10 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> 
     Returns:
         dict с описанием удалённого
     """
+    # Шаг 6C: в V2_PRIMARY деструктив запрещён до safety-контракта (no-op в
+    # legacy/dual_write_shadow → прод не затрагивается).
+    from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
+    guard_destructive_v2_primary("clean_project_data")
     root_dir = resolve_project_dir(project_id)
     if not root_dir.exists():
         raise ValueError(f"Проект '{project_id}' не найден")

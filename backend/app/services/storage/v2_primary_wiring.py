@@ -195,6 +195,43 @@ def resolve_v2_job_paths(
     return doc_dir, version_dir, output_dir
 
 
+def guard_destructive_v2_primary(op: str) -> None:
+    """Шаг 6C: запретить деструктивную операцию в режиме V2_PRIMARY.
+
+    В v2-primary (clean/rename/delete) деструктив ЗАПРЕЩЁН до появления
+    backup+confirmation контракта (Шаг 9/10) → поднимает DestructiveWriteBlocked.
+    В legacy/dual_write_shadow — no-op (прежнее поведение полностью сохраняется,
+    в проде WRITE_MODE=dual_write_shadow → guard не срабатывает).
+    """
+    from backend.app.services.storage import storage_write_facade as _swf
+    if _swf.v2_is_primary():
+        _swf.get_write_facade().block_destructive(op)
+
+
+def v2_source_pdf(project_id: str, version_id: str, *, v2_root: Optional[Path] = None,
+                  object_id: Optional[str] = None) -> Optional[Path]:
+    """Найти исходный PDF версии в projects_v2 `01_input/` (для export/read).
+
+    Работает без legacy. Возвращает путь к первому .pdf в 01_input версии или
+    None, если документ/версия/PDF не найдены.
+    """
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
+    resolved = facade.v2_root()
+    if resolved is None:
+        return None
+    target = resolve_v2_target_by_id(project_id, version_id, v2_root=resolved, object_id=object_id)
+    if target is None:
+        return None
+    adapter = ProjectsV2Adapter(resolved)
+    doc_dir = target.doc_dir(resolved)
+    for name in adapter.input_files(doc_dir, target.vid_disk()):
+        if name.lower().endswith(".pdf"):
+            return target.version_dir(resolved) / "01_input" / name
+    return None
+
+
 def save_project_info_v2_primary(
     project_id: str,
     data: dict,

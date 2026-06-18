@@ -448,6 +448,10 @@ def rename_project(
     Возвращает dict с new project_id / old_name / new_name / old_path /
     new_path / storage_layer / store-counts / warnings.
     """
+    # Шаг 6C: в V2_PRIMARY переименование запрещено до safety-контракта (no-op в
+    # legacy/dual_write_shadow → прод не затрагивается).
+    from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
+    guard_destructive_v2_primary("rename_project")
     new_base = sanitize_new_name(new_name)
 
     if projects_dir is None:
