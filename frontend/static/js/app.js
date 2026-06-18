@@ -2608,6 +2608,11 @@ const app = createApp({
                 connectGlobalWS();
                 loadUsers();
                 loadUserActivity(uid);
+            } else if (hash === '/schedule') {
+                currentView.value = 'schedule';
+                connectGlobalWS();
+                loadUsers();   // для admin-гейта кнопки «Изменить план»
+                schedLoad();
             } else if (hash === '/critic-v2-ui') {
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
@@ -5639,6 +5644,22 @@ const app = createApp({
             window.location.hash = window.VersionAPI
                 ? window.VersionAPI.buildHashRoute(path, versionId)
                 : path + '?version_id=' + encodeURIComponent(versionId);
+        }
+
+        async function deleteVersion(versionId) {
+            const pid = currentProject.value?.project_id;
+            if (!pid) return;
+            const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
+            if (!confirm(`Удалить версию ${verLabel} проекта "${currentProject.value?.name}"?\n\nБудут удалены:\n- Вся папка версии (PDF, MD, результаты аудита)\n- Запись о версии из манифеста\n\nДействие необратимо.`)) return;
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(versionId)}`, { method: 'DELETE' });
+                const data = await resp.json();
+                if (!resp.ok) { alert(data.detail || 'Ошибка удаления версии'); return; }
+                await refreshProjects();
+                // Переключиться на новую latest версию
+                const newLatest = data.new_latest_version_id;
+                if (newLatest) selectVersion(newLatest);
+            } catch (e) { alert(e.message); }
         }
 
         // ─── Переименование папки проекта ───
@@ -8750,6 +8771,372 @@ const app = createApp({
                 userActivityLoading.value = false;
             }
         }
+
+        // ─────────────────────────────────────────────────────────────────
+        // График производства работ (production work schedule)
+        //
+        // Реальные события грузятся из backend GET /api/schedule?from=&to=
+        // (агрегация knowledge_base/decisions_log.json). Если API недоступен
+        // или вернул пустой результат — DEV-fallback на mock-данные ниже
+        // (schedEvents → _schedMockEvents, schedEngineers → _SCHED_MOCK_ENGINEERS).
+        // План (schedPlans) пока локальный/mock — backend-стор work_plans.json
+        // делается отдельным этапом.
+        // ─────────────────────────────────────────────────────────────────
+        const schedMode = ref('week');                 // 'week' | 'month'
+        const schedAnchor = ref(_schedStartOfDay(new Date()));  // опорный день периода
+        const schedPopover = ref(null);                // {engId, key} — раскрытый список проектов в ячейке
+        const schedFiltersOpen = ref(false);
+        const schedHiddenEngineers = ref([]);          // id скрытых инженеров (фильтр)
+        const schedPlanEdit = ref(false);              // режим редактирования плана (для админа)
+
+        // Состояние загрузки из API.
+        const schedApiEvents = ref(null);              // массив событий из /api/schedule или null (не загружено)
+        const schedApiEngineers = ref(null);           // массив инженеров из API или null
+        const schedLoading = ref(false);
+        const schedError = ref(false);                 // запрос упал → показываем mock
+
+        // DEV-fallback: инженеры графика, если API недоступен/пуст.
+        const _SCHED_MOCK_ENGINEERS = [
+            { id: 'uzun',     name: 'Узун А. И.' },
+            { id: 'grivash',  name: 'Гриваш А. А.' },
+            { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
+            { id: 'olar',     name: 'Оларь М. И.' },
+            { id: 'repnikov', name: 'Репников И. А.' },
+        ];
+
+        // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=
+        // и редактируется админом через PUT /api/schedule/plan.
+        const schedPlanMap = ref({});      // engineer_id -> plan (сохранённый, текущий период)
+        const schedPlanDraft = ref({});    // engineer_id -> plan (буфер редактирования)
+        const schedPlanSaving = ref(false);
+        const schedPlanMsg = ref(null);    // {kind:'ok'|'err', text}
+        // План по умолчанию, если записи в work_plans.json нет — чтобы статистика
+        // была осмысленной (backend дефолты сам не придумывает).
+        const _SCHED_DEFAULT_PLAN = { week: 5, month: 20 };
+
+        // ── date helpers (всё локально, без зависимостей) ──
+        function _schedStartOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+        function _schedKey(d) {
+            const x = new Date(d);
+            const m = String(x.getMonth() + 1).padStart(2, '0');
+            const day = String(x.getDate()).padStart(2, '0');
+            return `${x.getFullYear()}-${m}-${day}`;
+        }
+        function _schedMonday(d) {
+            const x = _schedStartOfDay(d);
+            const wd = (x.getDay() + 6) % 7;   // 0 = понедельник
+            x.setDate(x.getDate() - wd);
+            return x;
+        }
+        function _schedAddDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+        const _SCHED_DOW = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        const _SCHED_MON_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        const _SCHED_MON_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+        // DEV-fallback MOCK события «инженер загрузил/проверил проект в этот день».
+        // Используются только если API недоступен или вернул пусто. Генерируются
+        // относительно ТЕКУЩЕЙ недели/месяца, чтобы демо всегда попадало в период.
+        const _schedMockEvents = computed(() => {
+            const today = _schedStartOfDay(new Date());
+            const monday = _schedMonday(today);
+            const monthFirst = new Date(today.getFullYear(), today.getMonth(), 1);
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const ev = [];
+            const add = (engId, dayDate, short, full, section) =>
+                ev.push({ engId, key: _schedKey(dayDate), short, full, section });
+            const dom = (n) => { const x = new Date(monthFirst); x.setDate(Math.min(n, daysInMonth)); return x; };
+
+            // ── Текущая неделя (offset 0=Пн … 6=Вс), со стэк-ячейками для «+N» ──
+            // Узун А. И.
+            add('uzun', _schedAddDays(monday, 0), '214. Alia', '214. Москфильмовская «Alia» (ASTERUS)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), '214. Alia', '214. Москфильмовская «Alia» (ASTERUS)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR'); // Ср → «214. Alia +2»
+            // Гриваш А. А.
+            add('grivash', _schedAddDays(monday, 1), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('grivash', _schedAddDays(monday, 1), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM'); // Вт → «Asterus +1»
+            add('grivash', _schedAddDays(monday, 3), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM');
+            // Кульдяев Ф. С.
+            add('kuldyaev', _schedAddDays(monday, 0), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            add('kuldyaev', _schedAddDays(monday, 3), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
+            add('kuldyaev', _schedAddDays(monday, 4), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            // Оларь М. И.
+            add('olar', _schedAddDays(monday, 1), 'ПОС', 'ПОС — проект организации строительства', 'POS');
+            add('olar', _schedAddDays(monday, 2), 'ПЗУ', 'ПЗУ — планировочная организация ЗУ', 'GP');
+            // Репников И. А.
+            add('repnikov', _schedAddDays(monday, 0), 'АР1', 'АР1 — архитектурные решения, корп. 1', 'AR');
+            add('repnikov', _schedAddDays(monday, 0), 'АР2', 'АР2 — архитектурные решения, корп. 2', 'AR'); // Пн → «АР1 +1»
+            add('repnikov', _schedAddDays(monday, 2), 'КЖ', 'КЖ — конструкции железобетонные', 'KJ');
+            add('repnikov', _schedAddDays(monday, 4), 'АР1', 'АР1 — архитектурные решения, корп. 1', 'AR');
+
+            // ── Дополнительные события по месяцу (для режима «Месяц») ──
+            add('uzun', dom(3), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR');
+            add('grivash', dom(6), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('kuldyaev', dom(9), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
+            add('repnikov', dom(11), 'КЖ', 'КЖ — конструкции железобетонные', 'KJ');
+            add('olar', dom(24), 'ПОС', 'ПОС — проект организации строительства', 'POS');
+            add('uzun', dom(26), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
+            add('repnikov', dom(27), 'АР2', 'АР2 — архитектурные решения, корп. 2', 'AR');
+            add('kuldyaev', dom(28), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            return ev;
+        });
+
+        // Эффективный источник: API, если есть непустой результат, иначе mock.
+        const schedUsingMock = computed(() =>
+            !Array.isArray(schedApiEvents.value) || schedApiEvents.value.length === 0);
+        const schedEvents = computed(() =>
+            schedUsingMock.value ? _schedMockEvents.value : schedApiEvents.value);
+        const schedEngineers = computed(() => {
+            if (!schedUsingMock.value && Array.isArray(schedApiEngineers.value) && schedApiEngineers.value.length)
+                return schedApiEngineers.value;
+            return _SCHED_MOCK_ENGINEERS;
+        });
+
+        // Баннер состояния над графиком.
+        const schedNoticeKind = computed(() => {
+            if (schedLoading.value) return 'loading';
+            if (schedError.value) return 'error';
+            if (schedUsingMock.value) return 'mock';
+            return 'live';
+        });
+        const schedNoticeText = computed(() => ({
+            loading: 'Загрузка графика…',
+            error:   'Не удалось загрузить данные графика — показаны тестовые данные.',
+            mock:    'Реальных событий за период нет — показаны демонстрационные данные.',
+            live:    'Данные из knowledge_base/decisions_log.json.',
+        }[schedNoticeKind.value]));
+
+        function _schedPeriodRange() {
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                return { from: _schedKey(mon), to: _schedKey(_schedAddDays(mon, 6)) };
+            }
+            const a = schedAnchor.value;
+            const first = new Date(a.getFullYear(), a.getMonth(), 1);
+            const last = new Date(a.getFullYear(), a.getMonth() + 1, 0);
+            return { from: _schedKey(first), to: _schedKey(last) };
+        }
+
+        async function schedLoad() {
+            const { from, to } = _schedPeriodRange();
+            schedLoading.value = true;
+            schedError.value = false;
+            try {
+                const resp = await fetch(`/api/schedule?from=${from}&to=${to}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                schedApiEvents.value = Array.isArray(data.events) ? data.events : [];
+                schedApiEngineers.value = Array.isArray(data.engineers) ? data.engineers : [];
+            } catch (e) {
+                console.error('Schedule load error:', e);
+                schedError.value = true;       // → DEV fallback на mock-данные
+                schedApiEvents.value = null;
+                schedApiEngineers.value = null;
+            } finally {
+                schedLoading.value = false;
+            }
+            // План грузим после событий (UI работает и без планов).
+            schedLoadPlans();
+        }
+
+        // Перезагрузка при смене режима/периода (Неделя/Месяц, ‹ › Сегодня).
+        // Если идёт правка плана — выходим из неё: черновик относится к СТАРОМУ
+        // периоду, его нельзя сохранять в новый (иначе затрём чужой период).
+        watch([schedMode, schedAnchor], () => {
+            if (schedPlanEdit.value) schedCancelPlanEdit();
+            schedLoad();
+        });
+
+        const schedVisibleEngineers = computed(() =>
+            schedEngineers.value.filter(e => !schedHiddenEngineers.value.includes(e.id)));
+
+        function _schedDayMeta(d, todayKey) {
+            const dow = (d.getDay() + 6) % 7;
+            return {
+                key: _schedKey(d),
+                dom: d.getDate(),
+                dowLabel: _SCHED_DOW[dow],
+                isToday: _schedKey(d) === todayKey,
+                isWeekend: dow >= 5,
+            };
+        }
+
+        // Колонки графика: 7 дней (неделя) либо все дни месяца.
+        const schedDays = computed(() => {
+            const todayKey = _schedKey(new Date());
+            const out = [];
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                for (let i = 0; i < 7; i++) out.push(_schedDayMeta(_schedAddDays(mon, i), todayKey));
+            } else {
+                const a = schedAnchor.value;
+                const first = new Date(a.getFullYear(), a.getMonth(), 1);
+                const days = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate();
+                for (let i = 0; i < days; i++) out.push(_schedDayMeta(_schedAddDays(first, i), todayKey));
+            }
+            return out;
+        });
+        const schedDayKeys = computed(() => new Set(schedDays.value.map(d => d.key)));
+
+        // Индекс событий по ячейке engId|key.
+        const schedEventIndex = computed(() => {
+            const idx = {};
+            for (const e of schedEvents.value) (idx[e.engId + '|' + e.key] ||= []).push(e);
+            return idx;
+        });
+        function schedCell(engId, key) { return schedEventIndex.value[engId + '|' + key] || []; }
+
+        const schedPeriodLabel = computed(() => {
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                const sun = _schedAddDays(mon, 6);
+                return `${mon.getDate()} ${_SCHED_MON_GEN[mon.getMonth()]} — ` +
+                    `${sun.getDate()} ${_SCHED_MON_GEN[sun.getMonth()]} ${sun.getFullYear()}`;
+            }
+            const a = schedAnchor.value;
+            return `${_SCHED_MON_NOM[a.getMonth()]} ${a.getFullYear()}`;
+        });
+
+        function schedSetMode(m) { if (schedMode.value !== m) { schedMode.value = m; schedPopover.value = null; } }
+        function schedPrev() {
+            schedAnchor.value = schedMode.value === 'week'
+                ? _schedAddDays(_schedMonday(schedAnchor.value), -7)
+                : new Date(schedAnchor.value.getFullYear(), schedAnchor.value.getMonth() - 1, 1);
+            schedPopover.value = null;
+        }
+        function schedNext() {
+            schedAnchor.value = schedMode.value === 'week'
+                ? _schedAddDays(_schedMonday(schedAnchor.value), 7)
+                : new Date(schedAnchor.value.getFullYear(), schedAnchor.value.getMonth() + 1, 1);
+            schedPopover.value = null;
+        }
+        function schedToday() { schedAnchor.value = _schedStartOfDay(new Date()); schedPopover.value = null; }
+
+        function schedToggleCell(engId, key, hasEvents) {
+            if (!hasEvents) { schedPopover.value = null; return; }
+            const p = schedPopover.value;
+            schedPopover.value = (p && p.engId === engId && p.key === key) ? null : { engId, key };
+        }
+        function schedIsPopover(engId, key) {
+            const p = schedPopover.value;
+            return !!p && p.engId === engId && p.key === key;
+        }
+        function schedClosePopover() { schedPopover.value = null; }
+
+        function schedToggleEngineer(id) {
+            const arr = schedHiddenEngineers.value;
+            schedHiddenEngineers.value = arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id];
+        }
+        function schedIsEngineerHidden(id) { return schedHiddenEngineers.value.includes(id); }
+
+        // Право редактировать план: при выключенной auth (dev) — разрешено;
+        // при включённой — только сотрудник с ролью admin. Backend защищает PUT
+        // независимо от этого флага (это лишь видимость кнопки).
+        const schedIsAdmin = computed(() => {
+            if (!usersAuthEnabled.value) return true;
+            const u = usersList.value.find(x => x.id === usersCurrentId.value);
+            return !!u && u.role === 'admin';
+        });
+
+        function schedPlanFor(engId) {
+            const v = schedPlanMap.value[engId];
+            return (typeof v === 'number') ? v : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
+        }
+        function schedDraftFor(engId) {
+            const v = schedPlanDraft.value[engId];
+            return (typeof v === 'number') ? v : schedPlanFor(engId);
+        }
+        function schedSetPlanDraft(engId, val) {
+            const n = Math.max(0, Math.min(999, parseInt(val, 10) || 0));
+            schedPlanDraft.value = { ...schedPlanDraft.value, [engId]: n };
+        }
+        function schedTogglePlanEdit() {
+            if (schedPlanEdit.value) { schedPlanEdit.value = false; return; }
+            // Сеем черновик для ВСЕХ инженеров (не только видимых), чтобы PUT не
+            // затёр план скрытых фильтром: PUT перезаписывает период целиком.
+            const draft = {};
+            for (const e of schedEngineers.value) draft[e.id] = schedPlanFor(e.id);
+            schedPlanDraft.value = draft;
+            schedPlanMsg.value = null;
+            schedPlanEdit.value = true;
+        }
+        function schedCancelPlanEdit() { schedPlanEdit.value = false; schedPlanMsg.value = null; }
+
+        async function schedLoadPlans() {
+            const { from, to } = _schedPeriodRange();
+            try {
+                const resp = await fetch(`/api/schedule/plan?from=${from}&to=${to}&period_type=${schedMode.value}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                const map = {};
+                for (const p of (data.plans || [])) {
+                    if (p && p.engineer_id != null) map[p.engineer_id] = Number(p.plan) || 0;
+                }
+                schedPlanMap.value = map;
+            } catch (e) {
+                console.error('Schedule plans load error:', e);
+                schedPlanMap.value = {};   // нет планов → дефолты в schedPlanFor
+            }
+        }
+
+        async function schedSavePlans() {
+            const { from, to } = _schedPeriodRange();
+            schedPlanSaving.value = true;
+            schedPlanMsg.value = null;
+            try {
+                // Шлём план ВСЕХ инженеров (PUT перезаписывает период целиком).
+                const plans = schedEngineers.value.map(e => ({
+                    engineer_id: e.id, engineer_name: e.name, plan: schedDraftFor(e.id),
+                }));
+                const resp = await fetch('/api/schedule/plan', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        period_type: schedMode.value,
+                        period_start: from, period_end: to,
+                        object_id: null, plans,
+                    }),
+                });
+                if (!resp.ok) {
+                    let detail = 'HTTP ' + resp.status;
+                    try { const j = await resp.json(); detail = j.detail || detail; } catch (_) {}
+                    throw new Error(detail);
+                }
+                schedPlanEdit.value = false;
+                await schedLoadPlans();
+                schedPlanMsg.value = { kind: 'ok', text: 'План сохранён' };
+            } catch (e) {
+                console.error('Schedule plan save error:', e);
+                schedPlanMsg.value = { kind: 'err', text: 'Не удалось сохранить план: ' + (e.message || e) };
+            } finally {
+                schedPlanSaving.value = false;
+            }
+        }
+
+        function schedFactFor(engId) {
+            const keys = schedDayKeys.value;
+            return schedEvents.value.filter(e => e.engId === engId && keys.has(e.key)).length;
+        }
+        function schedPctClass(pct) {
+            if (pct >= 100) return 'sched-ok';
+            if (pct >= 70) return 'sched-warn';
+            return 'sched-low';
+        }
+        const schedStats = computed(() => schedVisibleEngineers.value.map(e => {
+            const fact = schedFactFor(e.id);
+            const plan = schedPlanFor(e.id);
+            const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
+            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact) };
+        }));
+        const schedTotals = computed(() => {
+            const s = schedStats.value;
+            const fact = s.reduce((a, x) => a + x.fact, 0);
+            const plan = s.reduce((a, x) => a + x.plan, 0);
+            const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
+            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length };
+        });
 
         // Канонический project_id для API экспертной разметки: реальные папки
         // проектов/контейнеров — без `.pdf`. В id из version-имени V2 может
@@ -16317,6 +16704,19 @@ const app = createApp({
             expandedUserId, userActivity, userActivityLoading,
             loadUsers, switchUser, addUser, deleteUser, toggleUserExpand,
             loadUserActivity, currentUserName,
+            // График производства работ (API /api/schedule + dev mock fallback)
+            schedMode, schedAnchor, schedPopover, schedFiltersOpen,
+            schedHiddenEngineers, schedPlanEdit, schedEngineers,
+            schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
+            schedCell, schedSetMode, schedPrev, schedNext, schedToday,
+            schedToggleCell, schedIsPopover, schedClosePopover,
+            schedToggleEngineer, schedIsEngineerHidden,
+            schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass,
+            schedStats, schedTotals,
+            schedLoading, schedError, schedUsingMock, schedNoticeKind, schedNoticeText, schedLoad,
+            // План работ (backend work_plans.json, admin-gated)
+            schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
+            schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
@@ -16567,7 +16967,7 @@ const app = createApp({
             showCreateVersionModal, newVersionComment, versionsPanelOpen,
             renameEditing, renameValue, renameError, renameBusy, renameInput,
             startRename, cancelRename, submitRename,
-            loadProjectVersions, loadVersionFiles, selectVersion,
+            loadProjectVersions, loadVersionFiles, selectVersion, deleteVersion,
             createNewVersion, uploadFilesToVersion,
             handleUploadInput, handleUploadInputReplace,
             activeVersionEntry, canStartAuditNow, versionBadgeFor,

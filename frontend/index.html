@@ -43,6 +43,13 @@
                     Пользователи
                     <span v-if="usersList.length" class="nav-badge">{{ usersList.length }}</span>
                 </div>
+                <div class="nav-item" :class="{active: currentView === 'schedule'}" @click="navigate('/schedule')" title="График производства работ по инженерам">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/>
+                        <path d="M1.5 6h13M5 1.5v3M11 1.5v3"/>
+                    </svg>
+                    График работ
+                </div>
                 <div class="nav-item-parent" :class="{open: sidebarSectionsOpen}" @click="sidebarSectionsOpen = !sidebarSectionsOpen">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1" y="3" width="6" height="10" rx="1.5"/>
@@ -456,6 +463,10 @@
                     <button class="project-version-switch__pencil"
                             @click="startRename()"
                             title="Переименовать папку проекта">✎</button>
+                    <button v-if="projectVersions.length > 1"
+                            class="project-version-switch__trash"
+                            @click="deleteVersion(activeVersionId || currentProject.latest_version_id || 'v1')"
+                            title="Удалить эту версию">🗑</button>
                 </template>
                 <span v-else class="project-version-switch__rename">
                     <input class="project-version-switch__rename-input"
@@ -3245,6 +3256,158 @@
                         </div>
                     </div>
                 </template>
+            </div>
+        </div>
+
+        <!-- ═══ График производства работ (mock-данные) ═══ -->
+        <div v-if="currentView === 'schedule'" class="container sched-page"
+             @click="schedClosePopover(); schedFiltersOpen = false">
+            <div class="kb-page">
+                <!-- Toolbar -->
+                <div class="kb-header sched-toolbar">
+                    <h2 class="kb-title">&#128197; График производства работ</h2>
+                    <div class="kb-header-actions sched-actions">
+                        <div class="sched-modeswitch">
+                            <button class="btn btn-sm" :class="schedMode==='week' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('week')">Неделя</button>
+                            <button class="btn btn-sm" :class="schedMode==='month' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('month')">Месяц</button>
+                        </div>
+                        <div class="sched-navgroup">
+                            <button class="btn btn-sm btn-outline sched-arrow" @click="schedPrev" title="Предыдущий период">&#8249;</button>
+                            <span class="sched-period">{{ schedPeriodLabel }}</span>
+                            <button class="btn btn-sm btn-outline sched-arrow" @click="schedNext" title="Следующий период">&#8250;</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline" @click="schedToday">Сегодня</button>
+                        <div class="sched-filterwrap">
+                            <button class="btn btn-sm" :class="schedHiddenEngineers.length ? 'btn-accent' : 'btn-outline'"
+                                    @click.stop="schedFiltersOpen = !schedFiltersOpen">
+                                Фильтры
+                                <span v-if="schedHiddenEngineers.length" class="sched-filterbadge">{{ schedEngineers.length - schedHiddenEngineers.length }}/{{ schedEngineers.length }}</span>
+                            </button>
+                            <div v-if="schedFiltersOpen" class="sched-filterpanel" @click.stop>
+                                <div class="sched-filterpanel__title">Показать инженеров</div>
+                                <label v-for="e in schedEngineers" :key="'f-'+e.id" class="sched-filteritem">
+                                    <input type="checkbox" :checked="!schedIsEngineerHidden(e.id)" @change="schedToggleEngineer(e.id)">
+                                    <span>{{ e.name }}</span>
+                                </label>
+                            </div>
+                        </div>
+                        <template v-if="schedIsAdmin">
+                            <button v-if="!schedPlanEdit" class="btn btn-sm btn-outline" @click="schedTogglePlanEdit">✎ Изменить план</button>
+                            <template v-else>
+                                <button class="btn btn-sm btn-primary" :disabled="schedPlanSaving" @click="schedSavePlans">{{ schedPlanSaving ? 'Сохранение…' : '✓ Сохранить' }}</button>
+                                <button class="btn btn-sm btn-outline" :disabled="schedPlanSaving" @click="schedCancelPlanEdit">Отмена</button>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- состояние данных: загрузка / ошибка / mock / live -->
+                <div class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
+                    <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
+                    {{ schedNoticeText }}
+                    <span v-if="schedNoticeKind === 'error'" class="sched-retry" @click="schedLoad">Повторить</span>
+                </div>
+
+                <!-- результат сохранения плана -->
+                <div v-if="schedPlanMsg" class="sched-planmsg" :class="'sched-planmsg--'+schedPlanMsg.kind">
+                    {{ schedPlanMsg.text }}
+                </div>
+
+                <!-- main: grid + plan -->
+                <div class="sched-layout">
+                    <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]">
+                        <table class="sched-grid">
+                            <thead>
+                                <tr>
+                                    <th class="sched-eng-col">Инженер</th>
+                                    <th v-for="d in schedDays" :key="'h-'+d.key" class="sched-day-col"
+                                        :class="{'sched-day--today': d.isToday, 'sched-day--weekend': d.isWeekend}">
+                                        <div class="sched-day-dow">{{ d.dowLabel }}</div>
+                                        <div class="sched-day-dom">{{ d.dom }}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="e in schedVisibleEngineers" :key="'r-'+e.id">
+                                    <td class="sched-eng-col sched-eng-name">{{ e.name }}</td>
+                                    <td v-for="d in schedDays" :key="e.id+'|'+d.key" class="sched-cell"
+                                        :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
+                                        @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length)">
+                                        <template v-if="schedCell(e.id,d.key).length">
+                                            <div class="sched-plashka" :title="schedCell(e.id,d.key)[0].full">
+                                                <span class="sched-plashka__txt">{{ schedCell(e.id,d.key)[0].short }}</span>
+                                                <span v-if="schedCell(e.id,d.key).length > 1" class="sched-badge">+{{ schedCell(e.id,d.key).length - 1 }}</span>
+                                            </div>
+                                            <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" @click.stop>
+                                                <div class="sched-popover__head">{{ e.name }} · {{ d.dowLabel }} {{ d.dom }}</div>
+                                                <div v-for="(it,i) in schedCell(e.id,d.key)" :key="'pp-'+i" class="sched-popover__item" :title="it.full">
+                                                    <span class="sched-dot" :style="{background: getDisciplineColor(it.section)}"></span>
+                                                    <span class="sched-popover__short">{{ it.short }}</span>
+                                                    <span class="sched-popover__full">{{ it.full }}</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </td>
+                                </tr>
+                                <tr v-if="!schedVisibleEngineers.length">
+                                    <td :colspan="schedDays.length + 1" class="sched-empty">Все инженеры скрыты фильтром.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PLAN PANEL -->
+                    <div class="sched-plan">
+                        <div class="sched-plan__head">
+                            План на {{ schedMode === 'week' ? 'неделю' : 'месяц' }}
+                            <span v-if="schedPlanEdit" class="sched-plan__edithint">правка</span>
+                        </div>
+                        <div class="sched-plan__legend">
+                            <span>инженер</span><span>факт / план</span>
+                        </div>
+                        <div v-for="s in schedStats" :key="'plan-'+s.id" class="sched-plan__row">
+                            <span class="sched-plan__name" :title="s.name">{{ s.name }}</span>
+                            <span class="sched-plan__nums">
+                                <b :class="schedPctClass(s.pct)">{{ s.fact }}</b>
+                                <span class="sched-plan__sep">/</span>
+                                <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
+                                       :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
+                                <span v-else class="sched-plan__plan">{{ s.plan }}</span>
+                            </span>
+                        </div>
+                        <div class="sched-plan__total">
+                            <span>Итого</span>
+                            <span><b>{{ schedTotals.fact }}</b> / {{ schedTotals.plan }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATS -->
+                <div class="sched-stats">
+                    <div class="sched-stats__head">Статистика за период — {{ schedMode==='week' ? 'неделя' : 'месяц' }}</div>
+                    <div class="sched-stats__grid">
+                        <div v-for="s in schedStats" :key="'stat-'+s.id" class="sched-statcard">
+                            <div class="sched-statcard__name" :title="s.name">{{ s.name }}</div>
+                            <div class="sched-statcard__big" :class="schedPctClass(s.pct)">{{ s.pct }}%</div>
+                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
+                            <div class="sched-statcard__nums">
+                                <span title="выполнено"><b>{{ s.fact }}</b> вып.</span>
+                                <span title="план">{{ s.plan }} план</span>
+                                <span title="осталось" :class="{'sched-low': s.remaining > 0}">{{ s.remaining }} ост.</span>
+                            </div>
+                        </div>
+                        <div class="sched-statcard sched-statcard--total">
+                            <div class="sched-statcard__name">Все инженеры ({{ schedTotals.engineers }})</div>
+                            <div class="sched-statcard__big" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</div>
+                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
+                            <div class="sched-statcard__nums">
+                                <span><b>{{ schedTotals.fact }}</b> вып.</span>
+                                <span>{{ schedTotals.plan }} план</span>
+                                <span :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }} ост.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

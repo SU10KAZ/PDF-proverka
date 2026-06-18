@@ -1562,3 +1562,69 @@ def merge_project_as_version(
         "warnings": [],
         "versions_summary": get_versions_summary(fresh_target_dir, target_project_id),
     }
+
+
+def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Правила:
+    - Нельзя удалить единственную оставшуюся версию.
+    - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
+    - После удаления latest_version_id перемещается на предыдущую версию.
+
+    Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
+    """
+    import shutil
+
+    manifest, base = _read_versions_and_base(project_dir, project_id)
+    versions = manifest.get("versions", [])
+
+    if len(versions) <= 1:
+        raise VersionFileError("Нельзя удалить единственную версию проекта.")
+
+    entry = _find_version(manifest, version_id)
+    if entry is None:
+        raise VersionNotFoundError(f"Версия '{version_id}' не найдена в проекте '{project_id}'")
+
+    folder = entry.get("folder") or "."
+    container = container_dir_for(project_dir)
+
+    # V1 в неконтейнерном проекте — папка == корень проекта, нельзя удалять так
+    if folder in (".", "") and container is None:
+        raise VersionFileError(
+            "Нельзя удалить V1 неконтейнерного проекта (папка проекта совпадает с папкой версии)."
+        )
+
+    # Физически удаляем папку версии
+    if folder in (".", ""):
+        version_path = base  # container-модель, V1 внутри контейнера
+    else:
+        version_path = base / folder
+
+    if version_path.exists():
+        shutil.rmtree(version_path)
+
+    # Обновляем манифест
+    remaining = [v for v in versions if v.get("version_id") != version_id]
+    # Новый latest = максимальный version_no среди оставшихся
+    remaining_sorted = sorted(remaining, key=lambda v: v.get("version_no", 0))
+    new_latest = remaining_sorted[-1]["version_id"]
+
+    if container is not None:
+        raw = _read_group_manifest_raw(container) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        _write_group_manifest(container, raw)
+    else:
+        raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        _write_manifest(project_dir, raw)
+
+    _invalidate_project_cache()
+
+    return {
+        "deleted_version_id": version_id,
+        "new_latest_version_id": new_latest,
+        "versions_summary": get_versions_summary(project_dir, project_id),
+    }
