@@ -307,3 +307,175 @@ def test_endpoint_bad_date_param_400(client_with_log):
     client, _ = client_with_log
     r = client.get("/api/schedule?from=18-06-2026&to=2026-06-21")
     assert r.status_code == 400
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# План работ (work_plans.json): service + REST + admin-gate
+# ──────────────────────────────────────────────────────────────────────────────
+
+WEEK = dict(period_type="week", period_start="2026-06-15", period_end="2026-06-21")
+WEEK2 = dict(period_type="week", period_start="2026-06-22", period_end="2026-06-28")
+MONTH = dict(period_type="month", period_start="2026-06-01", period_end="2026-06-30")
+
+
+@pytest.fixture
+def plans_file(tmp_path, monkeypatch):
+    f = tmp_path / "work_plans.json"
+    monkeypatch.setattr(schedule_service, "WORK_PLANS_FILE", f)
+    return f
+
+
+def test_get_plans_missing_file_returns_empty(plans_file):
+    out = schedule_service.get_plans(**WEEK)
+    assert out["plans"] == []
+    assert out["warning"] is None
+    assert out["period"] == {"from": "2026-06-15", "to": "2026-06-21", "period_type": "week"}
+
+
+def test_save_plans_creates_file(plans_file):
+    schedule_service.save_plans(
+        **WEEK, object_id=None,
+        plans=[{"engineer_id": "kuldyaev-f-s", "engineer_name": "Кульдяев Ф. С.", "plan": 5}],
+        updated_by="Узун А. И.")
+    assert plans_file.exists()
+    doc = json.loads(plans_file.read_text(encoding="utf-8"))
+    assert doc["version"] == 1 and doc["updated_at"]
+    assert any(p["engineer_id"] == "kuldyaev-f-s" and p["plan"] == 5 for p in doc["plans"])
+
+
+def test_save_plans_updates_period_and_get_roundtrip(plans_file):
+    schedule_service.save_plans(
+        **WEEK, object_id=None,
+        plans=[{"engineer_id": "rep", "engineer_name": "Репников", "plan": 4}], updated_by="a")
+    out = schedule_service.get_plans(**WEEK)
+    assert len(out["plans"]) == 1
+    assert out["plans"][0]["engineer_id"] == "rep" and out["plans"][0]["plan"] == 4
+    # повторный save того же периода — пересборка периода (новое значение)
+    schedule_service.save_plans(
+        **WEEK, object_id=None,
+        plans=[{"engineer_id": "rep", "engineer_name": "Репников", "plan": 7}], updated_by="a")
+    out2 = schedule_service.get_plans(**WEEK)
+    assert len(out2["plans"]) == 1 and out2["plans"][0]["plan"] == 7
+
+
+def test_save_does_not_clobber_other_period(plans_file):
+    schedule_service.save_plans(**WEEK, object_id=None,
+        plans=[{"engineer_id": "a", "plan": 5}], updated_by="x")
+    schedule_service.save_plans(**WEEK2, object_id=None,
+        plans=[{"engineer_id": "b", "plan": 6}], updated_by="x")
+    w1 = schedule_service.get_plans(**WEEK)
+    w2 = schedule_service.get_plans(**WEEK2)
+    assert {p["engineer_id"] for p in w1["plans"]} == {"a"}
+    assert {p["engineer_id"] for p in w2["plans"]} == {"b"}
+
+
+def test_object_id_is_part_of_key(plans_file):
+    schedule_service.save_plans(**WEEK, object_id=None,
+        plans=[{"engineer_id": "a", "plan": 5}], updated_by="x")
+    schedule_service.save_plans(**WEEK, object_id="214",
+        plans=[{"engineer_id": "a", "plan": 9}], updated_by="x")
+    glob = schedule_service.get_plans(**WEEK, object_id=None)
+    obj = schedule_service.get_plans(**WEEK, object_id="214")
+    assert glob["plans"][0]["plan"] == 5 and glob["plans"][0]["object_id"] is None
+    assert obj["plans"][0]["plan"] == 9 and obj["plans"][0]["object_id"] == "214"
+
+
+def test_week_and_month_do_not_conflict(plans_file):
+    schedule_service.save_plans(**WEEK, object_id=None,
+        plans=[{"engineer_id": "a", "plan": 5}], updated_by="x")
+    schedule_service.save_plans(**MONTH, object_id=None,
+        plans=[{"engineer_id": "a", "plan": 20}], updated_by="x")
+    assert schedule_service.get_plans(**WEEK)["plans"][0]["plan"] == 5
+    assert schedule_service.get_plans(**MONTH)["plans"][0]["plan"] == 20
+
+
+def test_broken_json_backed_up_not_destroyed(plans_file):
+    plans_file.write_text("{ this is broken", encoding="utf-8")
+    out = schedule_service.get_plans(**WEEK)
+    assert out["plans"] == [] and out["warning"]  # GET → пусто + warning, не падает
+    res = schedule_service.save_plans(**WEEK, object_id=None,
+        plans=[{"engineer_id": "a", "plan": 5}], updated_by="x")
+    assert res["warning"] and "бэкап" in res["warning"].lower()
+    # повреждённые байты сохранены в backup
+    backups = list(plans_file.parent.glob("work_plans.json.broken-*"))
+    assert backups and "broken" in backups[0].read_text(encoding="utf-8")
+    # новый файл валиден и содержит период
+    assert schedule_service.get_plans(**WEEK)["plans"][0]["plan"] == 5
+
+
+# ─── REST + admin-gate ───
+
+@pytest.fixture
+def plan_client(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    import backend.app.main as main
+    import backend.app.services.common.user_service as user_service
+    monkeypatch.setattr(schedule_service, "WORK_PLANS_FILE", tmp_path / "work_plans.json")
+    monkeypatch.setattr(user_service, "USERS_FILE", tmp_path / "users.json")
+    return TestClient(main.app)
+
+
+def test_endpoint_get_empty_when_no_file(plan_client):
+    r = plan_client.get("/api/schedule/plan?from=2026-06-15&to=2026-06-21&period_type=week")
+    assert r.status_code == 200
+    assert r.json()["plans"] == []
+
+
+def test_endpoint_put_then_get(plan_client):
+    body = {**WEEK, "object_id": None,
+            "plans": [{"engineer_id": "kuldyaev-f-s", "engineer_name": "Кульдяев Ф. С.", "plan": 5}]}
+    rp = plan_client.put("/api/schedule/plan", json=body)
+    assert rp.status_code == 200, rp.text  # dev-mode (auth off в conftest) → admin allowed
+    rg = plan_client.get("/api/schedule/plan?from=2026-06-15&to=2026-06-21&period_type=week")
+    assert rg.status_code == 200
+    plans = rg.json()["plans"]
+    assert len(plans) == 1 and plans[0]["plan"] == 5
+
+
+def test_endpoint_plan_negative_rejected_422(plan_client):
+    body = {**WEEK, "object_id": None, "plans": [{"engineer_id": "a", "plan": -1}]}
+    assert plan_client.put("/api/schedule/plan", json=body).status_code == 422
+
+
+def test_endpoint_plan_too_large_rejected_422(plan_client):
+    body = {**WEEK, "object_id": None, "plans": [{"engineer_id": "a", "plan": 100000}]}
+    assert plan_client.put("/api/schedule/plan", json=body).status_code == 422
+
+
+def test_endpoint_plan_non_integer_rejected_422(plan_client):
+    body = {**WEEK, "object_id": None, "plans": [{"engineer_id": "a", "plan": "five"}]}
+    assert plan_client.put("/api/schedule/plan", json=body).status_code == 422
+
+
+def test_admin_gate_blocks_non_admin_when_auth_enabled(monkeypatch):
+    """_require_admin: auth включена + не-admin → 403; admin → имя."""
+    import types
+    import backend.app.api.routers.schedule as sched_router
+    from backend.app.core import portal_auth
+    import backend.app.services.common.user_service as user_service
+    from fastapi import HTTPException
+
+    monkeypatch.setattr(portal_auth, "get_settings",
+                        lambda: types.SimpleNamespace(enabled=True, users={}))
+    monkeypatch.setattr(portal_auth, "request_username", lambda req, st: "ivan")
+
+    # не-admin → 403
+    monkeypatch.setattr(user_service, "get_user_by_login", lambda u: {"role": "expert", "name": "Иван"})
+    with pytest.raises(HTTPException) as ei:
+        sched_router._require_admin(object())
+    assert ei.value.status_code == 403
+
+    # admin → возвращает имя
+    monkeypatch.setattr(user_service, "get_user_by_login", lambda u: {"role": "admin", "name": "Админ"})
+    assert sched_router._require_admin(object()) == "Админ"
+
+
+def test_admin_gate_allows_in_dev_when_auth_disabled(monkeypatch):
+    import types
+    import backend.app.api.routers.schedule as sched_router
+    from backend.app.core import portal_auth
+    import backend.app.services.common.user_service as user_service
+    monkeypatch.setattr(portal_auth, "get_settings",
+                        lambda: types.SimpleNamespace(enabled=False, users={}))
+    monkeypatch.setattr(user_service, "get_current_user", lambda: {"name": "DevUser"})
+    assert sched_router._require_admin(object()) == "DevUser"  # dev → разрешено

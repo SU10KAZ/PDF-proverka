@@ -148,3 +148,8 @@ graphify-out/
 kb_orphans_*.md
 *.bak_*
 *.json.bak_*
+
+# === Runtime-стор плана работ (раздел «График работ») — не коммитить ===
+knowledge_base/work_plans.json
+knowledge_base/work_plans.json.tmp
+knowledge_base/work_plans.json.broken-*

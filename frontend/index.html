@@ -2957,9 +2957,13 @@
                                 </label>
                             </div>
                         </div>
-                        <button class="btn btn-sm" :class="schedPlanEdit ? 'btn-primary' : 'btn-outline'" @click="schedTogglePlanEdit">
-                            {{ schedPlanEdit ? '✓ Готово' : '✎ Изменить план' }}
-                        </button>
+                        <template v-if="schedIsAdmin">
+                            <button v-if="!schedPlanEdit" class="btn btn-sm btn-outline" @click="schedTogglePlanEdit">✎ Изменить план</button>
+                            <template v-else>
+                                <button class="btn btn-sm btn-primary" :disabled="schedPlanSaving" @click="schedSavePlans">{{ schedPlanSaving ? 'Сохранение…' : '✓ Сохранить' }}</button>
+                                <button class="btn btn-sm btn-outline" :disabled="schedPlanSaving" @click="schedCancelPlanEdit">Отмена</button>
+                            </template>
+                        </template>
                     </div>
                 </div>
 
@@ -2968,6 +2972,11 @@
                     <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
                     {{ schedNoticeText }}
                     <span v-if="schedNoticeKind === 'error'" class="sched-retry" @click="schedLoad">Повторить</span>
+                </div>
+
+                <!-- результат сохранения плана -->
+                <div v-if="schedPlanMsg" class="sched-planmsg" :class="'sched-planmsg--'+schedPlanMsg.kind">
+                    {{ schedPlanMsg.text }}
                 </div>
 
                 <!-- main: grid + plan -->
@@ -3027,8 +3036,8 @@
                             <span class="sched-plan__nums">
                                 <b :class="schedPctClass(s.pct)">{{ s.fact }}</b>
                                 <span class="sched-plan__sep">/</span>
-                                <input v-if="schedPlanEdit" type="number" min="0" class="sched-plan__input"
-                                       :value="s.plan" @click.stop @input="schedSetPlan(s.id, $event.target.value)">
+                                <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
+                                       :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
                                 <span v-else class="sched-plan__plan">{{ s.plan }}</span>
                             </span>
                         </div>

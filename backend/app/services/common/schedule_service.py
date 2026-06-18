@@ -31,11 +31,13 @@ import re
 from datetime import datetime
 from typing import Optional
 
-from backend.app.core.config import DECISIONS_LOG_FILE
+from backend.app.core.config import DECISIONS_LOG_FILE, KNOWLEDGE_BASE_DIR
 
-# Файл лога вынесен в модульную переменную, чтобы тесты могли его подменить
+# Файлы вынесены в модульные переменные, чтобы тесты могли их подменить
 # (monkeypatch.setattr(schedule_service, "DECISIONS_LOG_FILE", tmp)).
 DECISIONS_LOG_FILE = DECISIONS_LOG_FILE
+# План работ по инженерам на период (week/month) — редактируется админом.
+WORK_PLANS_FILE = KNOWLEDGE_BASE_DIR / "work_plans.json"
 
 # Транслитерация кириллицы для стабильного engId из ФИО.
 _TRANSLIT = {
@@ -241,3 +243,185 @@ def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) ->
     )
     payload["warning"] = warning
     return payload
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# План работ (work_plans.json) — отдельный редактируемый стор
+#
+# Ключ плана: (period_type, period_start, period_end, object_id, engineer_id).
+# PUT обновляет планы ТОЛЬКО для своего периода, не затирая чужие. Запись
+# атомарная (tmp + replace). Битый JSON: GET → пусто + warning; PUT → бэкап
+# повреждённого файла, новый период всё равно сохраняется.
+# ─────────────────────────────────────────────────────────────────────────────
+
+PLAN_MIN = 0
+PLAN_MAX = 999
+
+
+def _empty_plans_doc() -> dict:
+    return {"version": 1, "updated_at": None, "plans": []}
+
+
+def _norm_obj(object_id) -> Optional[str]:
+    """Нормализация object_id: пустая строка/None → None (единый ключ)."""
+    if not isinstance(object_id, str):
+        return None
+    v = object_id.strip()
+    return v or None
+
+
+def _plan_period_match(p: dict, *, period_type, period_start, period_end, object_id) -> bool:
+    return (
+        p.get("period_type") == period_type
+        and p.get("period_start") == period_start
+        and p.get("period_end") == period_end
+        and _norm_obj(p.get("object_id")) == _norm_obj(object_id)
+    )
+
+
+def _plan_public(p: dict) -> dict:
+    """Публичная проекция записи плана для ответа API."""
+    return {
+        "engineer_id": p.get("engineer_id"),
+        "engineer_name": p.get("engineer_name", ""),
+        "plan": p.get("plan"),
+        "period_type": p.get("period_type"),
+        "period_start": p.get("period_start"),
+        "period_end": p.get("period_end"),
+        "object_id": _norm_obj(p.get("object_id")),
+    }
+
+
+def load_work_plans() -> tuple[dict, Optional[str]]:
+    """(doc, warning). Нет файла → пустой doc, None. Битый JSON → пустой doc + warning.
+
+    Никогда не бросает — приложение не должно падать из-за повреждённого файла.
+    """
+    if not WORK_PLANS_FILE.exists():
+        return _empty_plans_doc(), None
+    try:
+        raw = WORK_PLANS_FILE.read_text(encoding="utf-8")
+    except OSError as e:
+        return _empty_plans_doc(), f"Не удалось прочитать work_plans.json: {e}"
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return _empty_plans_doc(), "work_plans.json повреждён (невалидный JSON) — показан пустой план"
+    if not isinstance(data, dict):
+        return _empty_plans_doc(), "work_plans.json имеет неожиданный формат — показан пустой план"
+    plans = data.get("plans")
+    data["plans"] = [p for p in plans if isinstance(p, dict)] if isinstance(plans, list) else []
+    data.setdefault("version", 1)
+    data.setdefault("updated_at", None)
+    return data, None
+
+
+def _atomic_write_json(path, data) -> None:
+    """Атомарная запись JSON: tmp в той же папке → replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        tmp.replace(path)
+    finally:
+        if tmp.exists():
+            tmp.unlink(missing_ok=True)
+
+
+def get_plans(*, period_type: str, period_start: str, period_end: str,
+              object_id: Optional[str] = None) -> dict:
+    """Планы для конкретного периода (week/month + даты + object_id)."""
+    doc, warning = load_work_plans()
+    out = [
+        _plan_public(p)
+        for p in doc.get("plans", [])
+        if _plan_period_match(
+            p, period_type=period_type, period_start=period_start,
+            period_end=period_end, object_id=object_id,
+        )
+    ]
+    return {
+        "plans": out,
+        "period": {"from": period_start, "to": period_end, "period_type": period_type},
+        "warning": warning,
+    }
+
+
+def save_plans(*, period_type: str, period_start: str, period_end: str,
+               object_id: Optional[str], plans: list[dict],
+               updated_by: Optional[str] = None) -> dict:
+    """Сохранить планы для одного периода, не затирая другие периоды.
+
+    `plans`: список {engineer_id, engineer_name, plan}. Битый существующий файл
+    бэкапится (байты сохраняются), затем пишется заново. Возвращает сохранённый
+    подсписок + warning.
+    """
+    warning: Optional[str] = None
+    data: Optional[dict] = None
+    if WORK_PLANS_FILE.exists():
+        try:
+            parsed = json.loads(WORK_PLANS_FILE.read_text(encoding="utf-8"))
+            if not isinstance(parsed, dict):
+                raise ValueError("unexpected shape")
+            data = parsed
+        except (json.JSONDecodeError, ValueError, OSError):
+            ts = datetime.now().strftime("%Y%m%d%H%M%S")
+            backup = WORK_PLANS_FILE.with_name(f"work_plans.json.broken-{ts}")
+            try:
+                WORK_PLANS_FILE.replace(backup)  # сохраняем повреждённые байты
+                warning = f"Предыдущий work_plans.json был повреждён, сохранён бэкап: {backup.name}"
+            except OSError:
+                warning = "Предыдущий work_plans.json был повреждён (бэкап не удался)"
+            data = _empty_plans_doc()
+    if data is None:
+        data = _empty_plans_doc()
+
+    existing = data.get("plans")
+    if not isinstance(existing, list):
+        existing = []
+    # Оставляем все записи ДРУГИХ периодов; текущий период полностью пересобираем.
+    kept = [
+        p for p in existing
+        if isinstance(p, dict) and not _plan_period_match(
+            p, period_type=period_type, period_start=period_start,
+            period_end=period_end, object_id=object_id,
+        )
+    ]
+
+    now = datetime.now().isoformat(timespec="seconds")
+    obj = _norm_obj(object_id)
+    # Дедуп входа по engineer_id (последний выигрывает).
+    by_eng: dict[str, dict] = {}
+    for item in plans:
+        eid = str(item.get("engineer_id") or "").strip()
+        if not eid:
+            continue
+        by_eng[eid] = item
+
+    saved = []
+    for eid, item in by_eng.items():
+        rec = {
+            "period_type": period_type,
+            "period_start": period_start,
+            "period_end": period_end,
+            "object_id": obj,
+            "engineer_id": eid,
+            "engineer_name": str(item.get("engineer_name") or ""),
+            "plan": int(item.get("plan") or 0),
+            "updated_by": updated_by or "",
+            "updated_at": now,
+        }
+        kept.append(rec)
+        saved.append(_plan_public(rec))
+
+    data["version"] = 1
+    data["updated_at"] = now
+    data["plans"] = kept
+    _atomic_write_json(WORK_PLANS_FILE, data)
+
+    return {
+        "plans": saved,
+        "period": {"from": period_start, "to": period_end, "period_type": period_type},
+        "warning": warning,
+    }

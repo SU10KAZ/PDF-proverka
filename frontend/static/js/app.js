@@ -2611,6 +2611,7 @@ const app = createApp({
             } else if (hash === '/schedule') {
                 currentView.value = 'schedule';
                 connectGlobalWS();
+                loadUsers();   // для admin-гейта кнопки «Изменить план»
                 schedLoad();
             } else if (hash === '/critic-v2-ui') {
                 // Experimental offline view. Does NOT touch production pipeline.
@@ -8295,17 +8296,14 @@ const app = createApp({
             { id: 'repnikov', name: 'Репников И. А.' },
         ];
 
-        // План на период (число проектов): отдельно неделя/месяц.
-        // Редактируется администратором (mock — локально в памяти).
-        const schedPlans = ref({
-            uzun:     { week: 5, month: 20 },
-            grivash:  { week: 4, month: 16 },
-            kuldyaev: { week: 4, month: 16 },
-            olar:     { week: 3, month: 12 },
-            repnikov: { week: 6, month: 24 },
-        });
-        // План по умолчанию для инженеров без явной записи (реальные engId из API
-        // не совпадают с mock-ключами выше) — чтобы статистика была осмысленной.
+        // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=
+        // и редактируется админом через PUT /api/schedule/plan.
+        const schedPlanMap = ref({});      // engineer_id -> plan (сохранённый, текущий период)
+        const schedPlanDraft = ref({});    // engineer_id -> plan (буфер редактирования)
+        const schedPlanSaving = ref(false);
+        const schedPlanMsg = ref(null);    // {kind:'ok'|'err', text}
+        // План по умолчанию, если записи в work_plans.json нет — чтобы статистика
+        // была осмысленной (backend дефолты сам не придумывает).
         const _SCHED_DEFAULT_PLAN = { week: 5, month: 20 };
 
         // ── date helpers (всё локально, без зависимостей) ──
@@ -8431,6 +8429,8 @@ const app = createApp({
             } finally {
                 schedLoading.value = false;
             }
+            // План грузим после событий (UI работает и без планов).
+            schedLoadPlans();
         }
 
         // Перезагрузка при смене режима/периода (Неделя/Месяц, ‹ › Сегодня).
@@ -8518,17 +8518,88 @@ const app = createApp({
         }
         function schedIsEngineerHidden(id) { return schedHiddenEngineers.value.includes(id); }
 
-        function schedTogglePlanEdit() { schedPlanEdit.value = !schedPlanEdit.value; }
+        // Право редактировать план: при выключенной auth (dev) — разрешено;
+        // при включённой — только сотрудник с ролью admin. Backend защищает PUT
+        // независимо от этого флага (это лишь видимость кнопки).
+        const schedIsAdmin = computed(() => {
+            if (!usersAuthEnabled.value) return true;
+            const u = usersList.value.find(x => x.id === usersCurrentId.value);
+            return !!u && u.role === 'admin';
+        });
+
         function schedPlanFor(engId) {
-            // Реальные engId из API не совпадают с mock-ключами schedPlans —
-            // для них берём дефолтный план, чтобы статистика была осмысленной.
-            const p = schedPlans.value[engId];
-            return p ? (p[schedMode.value] || 0) : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
+            const v = schedPlanMap.value[engId];
+            return (typeof v === 'number') ? v : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
         }
-        function schedSetPlan(engId, val) {
-            const n = Math.max(0, parseInt(val, 10) || 0);
-            const cur = schedPlans.value[engId] || { week: 0, month: 0 };
-            schedPlans.value = { ...schedPlans.value, [engId]: { ...cur, [schedMode.value]: n } };
+        function schedDraftFor(engId) {
+            const v = schedPlanDraft.value[engId];
+            return (typeof v === 'number') ? v : schedPlanFor(engId);
+        }
+        function schedSetPlanDraft(engId, val) {
+            const n = Math.max(0, Math.min(999, parseInt(val, 10) || 0));
+            schedPlanDraft.value = { ...schedPlanDraft.value, [engId]: n };
+        }
+        function schedTogglePlanEdit() {
+            if (schedPlanEdit.value) { schedPlanEdit.value = false; return; }
+            // Сеем черновик для ВСЕХ инженеров (не только видимых), чтобы PUT не
+            // затёр план скрытых фильтром: PUT перезаписывает период целиком.
+            const draft = {};
+            for (const e of schedEngineers.value) draft[e.id] = schedPlanFor(e.id);
+            schedPlanDraft.value = draft;
+            schedPlanMsg.value = null;
+            schedPlanEdit.value = true;
+        }
+        function schedCancelPlanEdit() { schedPlanEdit.value = false; schedPlanMsg.value = null; }
+
+        async function schedLoadPlans() {
+            const { from, to } = _schedPeriodRange();
+            try {
+                const resp = await fetch(`/api/schedule/plan?from=${from}&to=${to}&period_type=${schedMode.value}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                const map = {};
+                for (const p of (data.plans || [])) {
+                    if (p && p.engineer_id != null) map[p.engineer_id] = Number(p.plan) || 0;
+                }
+                schedPlanMap.value = map;
+            } catch (e) {
+                console.error('Schedule plans load error:', e);
+                schedPlanMap.value = {};   // нет планов → дефолты в schedPlanFor
+            }
+        }
+
+        async function schedSavePlans() {
+            const { from, to } = _schedPeriodRange();
+            schedPlanSaving.value = true;
+            schedPlanMsg.value = null;
+            try {
+                // Шлём план ВСЕХ инженеров (PUT перезаписывает период целиком).
+                const plans = schedEngineers.value.map(e => ({
+                    engineer_id: e.id, engineer_name: e.name, plan: schedDraftFor(e.id),
+                }));
+                const resp = await fetch('/api/schedule/plan', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        period_type: schedMode.value,
+                        period_start: from, period_end: to,
+                        object_id: null, plans,
+                    }),
+                });
+                if (!resp.ok) {
+                    let detail = 'HTTP ' + resp.status;
+                    try { const j = await resp.json(); detail = j.detail || detail; } catch (_) {}
+                    throw new Error(detail);
+                }
+                schedPlanEdit.value = false;
+                await schedLoadPlans();
+                schedPlanMsg.value = { kind: 'ok', text: 'План сохранён' };
+            } catch (e) {
+                console.error('Schedule plan save error:', e);
+                schedPlanMsg.value = { kind: 'err', text: 'Не удалось сохранить план: ' + (e.message || e) };
+            } finally {
+                schedPlanSaving.value = false;
+            }
         }
 
         function schedFactFor(engId) {
@@ -14122,14 +14193,17 @@ const app = createApp({
             loadUserActivity, currentUserName,
             // График производства работ (API /api/schedule + dev mock fallback)
             schedMode, schedAnchor, schedPopover, schedFiltersOpen,
-            schedHiddenEngineers, schedPlanEdit, schedEngineers, schedPlans,
+            schedHiddenEngineers, schedPlanEdit, schedEngineers,
             schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
             schedCell, schedSetMode, schedPrev, schedNext, schedToday,
             schedToggleCell, schedIsPopover, schedClosePopover,
             schedToggleEngineer, schedIsEngineerHidden,
-            schedTogglePlanEdit, schedPlanFor, schedSetPlan,
-            schedFactFor, schedPctClass, schedStats, schedTotals,
+            schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass,
+            schedStats, schedTotals,
             schedLoading, schedError, schedUsingMock, schedNoticeKind, schedNoticeText, schedLoad,
+            // План работ (backend work_plans.json, admin-gated)
+            schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
+            schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
