@@ -133,6 +133,151 @@ def _atomic_write_json(path: Path, data: Any) -> None:
     os.replace(tmp, path)
 
 
+# ─── projects_v2 shadow sync ────────────────────────────────────────────────
+# Production читает список/resolve через projects_v2 (read-cutover). Документ в
+# v2 идентифицируется полем `document_code` в `document.json`, а папка документа
+# ключуется по этому же коду (`documents/<document_code>`). rename папки legacy
+# обязан синхронно обновить v2-shadow, иначе UI продолжает показывать старое имя.
+def _v2_root(v2_root: Optional[Path] = None) -> Path:
+    if v2_root is not None:
+        return Path(v2_root)
+    try:
+        from backend.app.services.storage.projects_v2_adapter import _default_v2_root
+        return _default_v2_root()
+    except Exception:
+        return Path(config.DATA_DIR) / "projects_v2"
+
+
+def _norm_doc_name(s: Optional[str]) -> str:
+    """Каноничное имя документа: без `.pdf` и без суффикса контейнера `(main)`."""
+    if not s:
+        return ""
+    s = str(s).strip()
+    if s.lower().endswith(".pdf"):
+        s = s[:-4]
+    if s.endswith(CONTAINER_SUFFIX):
+        s = s[:-len(CONTAINER_SUFFIX)]
+    return s
+
+
+def _v2_old_identity_candidates(dj: dict, doc_dir: Path) -> set[str]:
+    """Все значения, которыми v2-документ мог представлять СТАРОЕ имя."""
+    cands = [dj.get("document_code"), dj.get("legacy_project_name"), doc_dir.name]
+    lpp = dj.get("legacy_project_path")
+    if lpp:
+        cands.append(Path(lpp).name)
+    for v in dj.get("versions", []) or []:
+        if isinstance(v, dict):
+            cands.append(v.get("legacy_folder_name"))
+    return {_norm_doc_name(c) for c in cands if c}
+
+
+def sync_v2_shadow_rename(
+    old_base: str,
+    new_base: str,
+    *,
+    object_id: Optional[str] = None,
+    v2_root: Optional[Path] = None,
+    backup: bool = True,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Синхронизировать projects_v2-shadow под новое имя legacy-папки.
+
+    Находит документ(ы) v2 по СТАРОЙ идентичности (в рамках object_id), обновляет
+    `document_code` / `legacy_project_name` / `legacy_project_path` /
+    `versions[].legacy_folder_name` и при необходимости переименовывает папку
+    документа в новый код. Fail-soft: нет v2-root / нет документа → warning,
+    исключение не бросается. Возвращает dict с `updated` / `renamed_dirs` /
+    `fields` / `warnings`.
+    """
+    result: dict[str, Any] = {
+        "updated": [], "renamed_dirs": [], "fields": [], "warnings": [],
+        "dry_run": dry_run,
+    }
+    # defense-in-depth: new_base уже валидируется в rename_project, но repair-скрипт
+    # может звать sync напрямую.
+    new_norm = _norm_doc_name(sanitize_new_name(new_base))
+    old_norm = _norm_doc_name(old_base)
+    if not old_norm or not new_norm:
+        result["warnings"].append("пустое old/new имя — пропуск v2-sync")
+        return result
+
+    root = _v2_root(v2_root).resolve()
+    objects_root = root / "objects"
+    if not objects_root.is_dir():
+        result["warnings"].append(f"projects_v2 root отсутствует: {objects_root}")
+        return result
+
+    fields: set[str] = set()
+    for doc_json in objects_root.glob("*/disciplines/*/documents/*/document.json"):
+        dj = _load_json(doc_json)
+        if not isinstance(dj, dict):
+            continue
+        if object_id and dj.get("object_id") and dj.get("object_id") != object_id:
+            continue
+        doc_dir = doc_json.parent
+        if old_norm not in _v2_old_identity_candidates(dj, doc_dir):
+            continue
+
+        # ── обновить поля document.json ──
+        changed: list[str] = []
+        if dj.get("document_code") != new_norm:
+            dj["document_code"] = new_norm
+            changed.append("document_code")
+        if "legacy_project_name" in dj and _norm_doc_name(dj.get("legacy_project_name")) == old_norm:
+            dj["legacy_project_name"] = new_norm
+            changed.append("legacy_project_name")
+        lpp = dj.get("legacy_project_path")
+        if lpp:
+            new_lpp = str(Path(lpp).with_name(new_norm))
+            if new_lpp != lpp:
+                dj["legacy_project_path"] = new_lpp
+                changed.append("legacy_project_path")
+        for v in dj.get("versions", []) or []:
+            if isinstance(v, dict) and _norm_doc_name(v.get("legacy_folder_name")) == old_norm:
+                v["legacy_folder_name"] = new_norm
+                changed.append("versions[].legacy_folder_name")
+
+        if changed and not dry_run:
+            if backup:
+                bak = doc_json.with_name(doc_json.name + ".rename_bak")
+                try:
+                    bak.write_text(doc_json.read_text(encoding="utf-8"), encoding="utf-8")
+                except Exception as ex:
+                    result["warnings"].append(f"backup {doc_json}: {ex}")
+            _atomic_write_json(doc_json, dj)
+
+        if changed:
+            result["updated"].append(str(doc_json))
+            fields |= set(changed)
+
+        # ── при необходимости переименовать папку документа в новый код ──
+        # (`get_document` ключует папку по document_code → folder обязан совпасть).
+        if doc_dir.name != new_norm:
+            target = doc_dir.parent / new_norm
+            if not _within(target, objects_root):
+                result["warnings"].append(f"v2 folder target вне root: {target}")
+            elif target.exists():
+                result["warnings"].append(
+                    f"v2 folder уже существует, переименование пропущено: {target.name}"
+                )
+            elif not dry_run:
+                try:
+                    shutil.move(str(doc_dir), str(target))
+                    result["renamed_dirs"].append([str(doc_dir), str(target)])
+                except Exception as ex:
+                    result["warnings"].append(f"v2 folder rename {doc_dir.name}: {ex}")
+            else:
+                result["renamed_dirs"].append([str(doc_dir), str(target)])
+
+    result["fields"] = sorted(fields)
+    if not result["updated"] and not result["renamed_dirs"]:
+        result["warnings"].append(
+            f"projects_v2: документ для '{old_base}' (object_id={object_id}) не найден"
+        )
+    return result
+
+
 def _load_json(path: Path) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -295,6 +440,8 @@ def rename_project(
     missing_norms_vault_file: Optional[Path] = None,
     reverse_log_file: Optional[Path] = None,
     check_running: bool = True,
+    sync_v2: bool = True,
+    v2_root: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Переименовать папку проекта и синхронизировать ссылки.
 
@@ -456,6 +603,20 @@ def rename_project(
     reverse["id_map"] = id_map
     reverse["object_id"] = object_id
 
+    # ── projects_v2 shadow (production читает list/resolve из v2) ──
+    v2_sync: dict[str, Any] = {}
+    if sync_v2:
+        try:
+            v2_sync = sync_v2_shadow_rename(
+                old_base, new_base, object_id=object_id, v2_root=v2_root,
+            )
+            for w in v2_sync.get("warnings", []):
+                warnings.append(f"projects_v2: {w}")
+        except Exception as ex:
+            warnings.append(f"projects_v2 sync: {ex}")
+            v2_sync = {"error": str(ex)}
+    reverse["v2_shadow"] = v2_sync
+
     # reverse-log
     rl = Path(reverse_log_file) if reverse_log_file else (config.APP_DATA_DIR / "project_rename.reverse.json")
     try:
@@ -468,6 +629,7 @@ def rename_project(
     print(
         f"[rename_project] {storage_layer}: {proj_dir} -> {final_path} | "
         f"id_map={id_map} | stores={stores} | object_id={object_id} | "
+        f"v2_updated={v2_sync.get('updated')} v2_renamed={v2_sync.get('renamed_dirs')} | "
         f"warnings={warnings}"
     )
 
@@ -480,5 +642,6 @@ def rename_project(
         "new_path": str(final_path),
         "storage_layer": storage_layer,
         "stores": stores,
+        "v2_shadow": v2_sync,
         "warnings": warnings,
     }
