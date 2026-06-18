@@ -27,7 +27,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import threading
+import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -257,9 +260,30 @@ def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) ->
 PLAN_MIN = 0
 PLAN_MAX = 999
 
+# Сериализует read-modify-write work_plans.json: save_plans вызывается из роутера
+# через asyncio.to_thread, поэтому два PUT идут в разных потоках threadpool.
+# Без этого — гонка за общий файл (lost-update + краш на общем tmp).
+_WRITE_LOCK = threading.Lock()
+
 
 def _empty_plans_doc() -> dict:
     return {"version": 1, "updated_at": None, "plans": []}
+
+
+def _coerce_plan(v) -> int:
+    """Привести plan к int в диапазоне [PLAN_MIN, PLAN_MAX]. Не бросает.
+
+    HTTP-путь валидирует через pydantic, но save_plans — публичная функция,
+    поэтому защищаемся и на уровне сервиса.
+    """
+    try:
+        n = int(v)
+    except (TypeError, ValueError):
+        try:
+            n = int(float(v))
+        except (TypeError, ValueError):
+            return PLAN_MIN
+    return max(PLAN_MIN, min(PLAN_MAX, n))
 
 
 def _norm_obj(object_id) -> Optional[str]:
@@ -310,6 +334,10 @@ def load_work_plans() -> tuple[dict, Optional[str]]:
     if not isinstance(data, dict):
         return _empty_plans_doc(), "work_plans.json имеет неожиданный формат — показан пустой план"
     plans = data.get("plans")
+    if "plans" in data and not isinstance(plans, list):
+        # структурно-валидный JSON, но plans не список — не молчим, чтобы не
+        # выглядело как «планов нет».
+        return _empty_plans_doc(), "work_plans.json: поле plans не является списком — показан пустой план"
     data["plans"] = [p for p in plans if isinstance(p, dict)] if isinstance(plans, list) else []
     data.setdefault("version", 1)
     data.setdefault("updated_at", None)
@@ -317,16 +345,21 @@ def load_work_plans() -> tuple[dict, Optional[str]]:
 
 
 def _atomic_write_json(path, data) -> None:
-    """Атомарная запись JSON: tmp в той же папке → replace."""
+    """Атомарная запись JSON: уникальный tmp в той же папке → replace.
+
+    Имя tmp уникально на вызов (pid+uuid), чтобы параллельные писатели не
+    делили один временный файл. tmp чистится только при сбое (на успехе он
+    поглощён replace).
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
     try:
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         tmp.replace(path)
-    finally:
-        if tmp.exists():
-            tmp.unlink(missing_ok=True)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
 
 
 def get_plans(*, period_type: str, period_start: str, period_end: str,
@@ -353,72 +386,90 @@ def save_plans(*, period_type: str, period_start: str, period_end: str,
                updated_by: Optional[str] = None) -> dict:
     """Сохранить планы для одного периода, не затирая другие периоды.
 
-    `plans`: список {engineer_id, engineer_name, plan}. Битый существующий файл
-    бэкапится (байты сохраняются), затем пишется заново. Возвращает сохранённый
-    подсписок + warning.
+    `plans`: список {engineer_id, engineer_name, plan}. Семантика — merge внутри
+    периода: обновляются только присланные engineer_id, остальные записи этого
+    периода сохраняются (план инженера не теряется, если его нет в запросе).
+    Другие периоды не затрагиваются. Битый/структурно-неверный файл бэкапится
+    (байты сохраняются), затем пишется заново. Read-modify-write сериализован
+    глобальным локом (защита от lost-update при параллельных PUT).
     """
-    warning: Optional[str] = None
-    data: Optional[dict] = None
-    if WORK_PLANS_FILE.exists():
-        try:
-            parsed = json.loads(WORK_PLANS_FILE.read_text(encoding="utf-8"))
-            if not isinstance(parsed, dict):
-                raise ValueError("unexpected shape")
-            data = parsed
-        except (json.JSONDecodeError, ValueError, OSError):
-            ts = datetime.now().strftime("%Y%m%d%H%M%S")
-            backup = WORK_PLANS_FILE.with_name(f"work_plans.json.broken-{ts}")
-            try:
-                WORK_PLANS_FILE.replace(backup)  # сохраняем повреждённые байты
-                warning = f"Предыдущий work_plans.json был повреждён, сохранён бэкап: {backup.name}"
-            except OSError:
-                warning = "Предыдущий work_plans.json был повреждён (бэкап не удался)"
-            data = _empty_plans_doc()
-    if data is None:
-        data = _empty_plans_doc()
-
-    existing = data.get("plans")
-    if not isinstance(existing, list):
-        existing = []
-    # Оставляем все записи ДРУГИХ периодов; текущий период полностью пересобираем.
-    kept = [
-        p for p in existing
-        if isinstance(p, dict) and not _plan_period_match(
-            p, period_type=period_type, period_start=period_start,
-            period_end=period_end, object_id=object_id,
-        )
-    ]
-
-    now = datetime.now().isoformat(timespec="seconds")
-    obj = _norm_obj(object_id)
-    # Дедуп входа по engineer_id (последний выигрывает).
+    # Дедуп входа по engineer_id (последний выигрывает) + устойчивое приведение plan.
     by_eng: dict[str, dict] = {}
     for item in plans:
         eid = str(item.get("engineer_id") or "").strip()
         if not eid:
             continue
-        by_eng[eid] = item
-
-    saved = []
-    for eid, item in by_eng.items():
-        rec = {
-            "period_type": period_type,
-            "period_start": period_start,
-            "period_end": period_end,
-            "object_id": obj,
-            "engineer_id": eid,
+        by_eng[eid] = {
             "engineer_name": str(item.get("engineer_name") or ""),
-            "plan": int(item.get("plan") or 0),
-            "updated_by": updated_by or "",
-            "updated_at": now,
+            "plan": _coerce_plan(item.get("plan")),
         }
-        kept.append(rec)
-        saved.append(_plan_public(rec))
 
-    data["version"] = 1
-    data["updated_at"] = now
-    data["plans"] = kept
-    _atomic_write_json(WORK_PLANS_FILE, data)
+    with _WRITE_LOCK:
+        warning: Optional[str] = None
+        data: Optional[dict] = None
+        if WORK_PLANS_FILE.exists():
+            try:
+                parsed = json.loads(WORK_PLANS_FILE.read_text(encoding="utf-8"))
+                # plans не список — тоже считаем повреждением, иначе планы молча
+                # потерялись бы.
+                if not isinstance(parsed, dict) or not isinstance(parsed.get("plans", []), list):
+                    raise ValueError("unexpected shape")
+                data = parsed
+            except (json.JSONDecodeError, ValueError, OSError):
+                ts = datetime.now().strftime("%Y%m%d%H%M%S")
+                backup = WORK_PLANS_FILE.with_name(f"work_plans.json.broken-{ts}")
+                try:
+                    WORK_PLANS_FILE.replace(backup)  # сохраняем повреждённые байты
+                    warning = f"Предыдущий work_plans.json был повреждён, сохранён бэкап: {backup.name}"
+                except OSError:
+                    warning = "Предыдущий work_plans.json был повреждён (бэкап не удался)"
+                data = _empty_plans_doc()
+        if data is None:
+            data = _empty_plans_doc()
+
+        existing = data.get("plans")
+        if not isinstance(existing, list):
+            existing = []
+
+        # Делим существующие записи на: другие периоды (kept) и этот период.
+        kept, this_period = [], []
+        for p in existing:
+            if not isinstance(p, dict):
+                continue
+            if _plan_period_match(p, period_type=period_type, period_start=period_start,
+                                  period_end=period_end, object_id=object_id):
+                this_period.append(p)
+            else:
+                kept.append(p)
+
+        # Записи этого периода для инженеров, которых НЕТ в запросе — сохраняем.
+        preserved = [
+            p for p in this_period
+            if str(p.get("engineer_id") or "").strip() not in by_eng
+        ]
+
+        now = datetime.now().isoformat(timespec="seconds")
+        obj = _norm_obj(object_id)
+        new_records, saved = [], []
+        for eid, item in by_eng.items():
+            rec = {
+                "period_type": period_type,
+                "period_start": period_start,
+                "period_end": period_end,
+                "object_id": obj,
+                "engineer_id": eid,
+                "engineer_name": item["engineer_name"],
+                "plan": item["plan"],
+                "updated_by": updated_by or "",
+                "updated_at": now,
+            }
+            new_records.append(rec)
+            saved.append(_plan_public(rec))
+
+        data["version"] = 1
+        data["updated_at"] = now
+        data["plans"] = kept + preserved + new_records
+        _atomic_write_json(WORK_PLANS_FILE, data)
 
     return {
         "plans": saved,

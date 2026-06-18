@@ -20,12 +20,15 @@ from backend.app.core import portal_auth
 router = APIRouter(prefix="/api/schedule", tags=["schedule"])
 
 
-def _default_period() -> tuple[str, str]:
-    """Текущая неделя (понедельник–воскресенье) как дефолт периода."""
+def _default_period(period_type: str = "week") -> tuple[str, str]:
+    """Дефолт периода: текущая неделя (Пн–Вс) или текущий месяц (1-е…конец)."""
     today = date.today()
+    if period_type == "month":
+        first = today.replace(day=1)
+        nxt = date(today.year + 1, 1, 1) if today.month == 12 else date(today.year, today.month + 1, 1)
+        return first.isoformat(), (nxt - timedelta(days=1)).isoformat()
     monday = today - timedelta(days=today.weekday())
-    sunday = monday + timedelta(days=6)
-    return monday.isoformat(), sunday.isoformat()
+    return monday.isoformat(), (monday + timedelta(days=6)).isoformat()
 
 
 def _is_iso_day(s: str) -> bool:
@@ -118,7 +121,7 @@ async def get_plan(
     """План работ по инженерам для периода. Нет файла → пустой список."""
     if period_type not in ("week", "month"):
         raise HTTPException(400, "period_type должен быть week или month")
-    d_from, d_to = _default_period()
+    d_from, d_to = _default_period(period_type)   # дефолт зависит от week/month
     from_day = (from_ or "").strip() or d_from
     to_day = (to or "").strip() or d_to
     if not _is_iso_day(from_day) or not _is_iso_day(to_day):

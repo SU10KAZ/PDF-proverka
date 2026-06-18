@@ -8434,7 +8434,12 @@ const app = createApp({
         }
 
         // Перезагрузка при смене режима/периода (Неделя/Месяц, ‹ › Сегодня).
-        watch([schedMode, schedAnchor], () => { schedLoad(); });
+        // Если идёт правка плана — выходим из неё: черновик относится к СТАРОМУ
+        // периоду, его нельзя сохранять в новый (иначе затрём чужой период).
+        watch([schedMode, schedAnchor], () => {
+            if (schedPlanEdit.value) schedCancelPlanEdit();
+            schedLoad();
+        });
 
         const schedVisibleEngineers = computed(() =>
             schedEngineers.value.filter(e => !schedHiddenEngineers.value.includes(e.id)));
