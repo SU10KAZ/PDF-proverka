@@ -759,6 +759,36 @@ async def create_version_from_project(
     return result
 
 
+class RenameProjectRequest(BaseModel):
+    """Запрос на переименование загруженной папки проекта."""
+    name: str
+    object_id: Optional[str] = None
+
+
+@router.patch("/{project_id:path}/rename")
+async def rename_project_endpoint(project_id: str, req: RenameProjectRequest):
+    """Переименовать папку проекта (и project_id) безопасно.
+
+    Меняет имя папки на диске, обновляет project_info.json / version_group.json
+    и синхронно переписывает ссылки в decisions_log / usage_data /
+    project_groups / missing_norms_vault. Внутренние data-файлы (PDF/MD/
+    артефакты) не переименовываются. Аудит не запускается.
+    """
+    from backend.app.services.common import project_rename_service as prs
+    try:
+        return prs.rename_project(project_id, req.name, object_id=req.object_id)
+    except prs.InvalidProjectNameError as e:
+        raise HTTPException(400, str(e))
+    except prs.ProjectNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except prs.RenameConflictError as e:
+        raise HTTPException(409, str(e))
+    except prs.ProjectBusyError as e:
+        raise HTTPException(409, str(e))
+    except prs.RenameError as e:
+        raise HTTPException(500, str(e))
+
+
 @router.get("/{project_id:path}")
 async def get_project(project_id: str, request: Request, version_id: Optional[str] = None):
     """Детали одного проекта.

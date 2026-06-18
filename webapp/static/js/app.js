@@ -34,6 +34,12 @@ const app = createApp({
         const showCreateVersionModal = ref(false);
         const newVersionComment = ref('');
         const versionsPanelOpen = ref(false);  // боковая панель/блок в info-вкладке
+        // ─── Переименование папки проекта (карандаш рядом с версией) ───
+        const renameEditing = ref(false);
+        const renameValue = ref('');
+        const renameError = ref('');
+        const renameBusy = ref(false);
+        const renameInput = ref(null);
 
         // ─── Контроль ранее согласованных замечаний (migrated findings) ───
         // Отчёт пишется backend'ом в _versions/v{N}/_output/migrated_findings_report.json.
@@ -3582,6 +3588,22 @@ const app = createApp({
             return resp.json();
         }
 
+        async function apiPatch(path, body, patchOpts) {
+            patchOpts = patchOpts || {};
+            const opts = { method: 'PATCH' };
+            if (body !== undefined) {
+                opts.headers = { 'Content-Type': 'application/json' };
+                opts.body = JSON.stringify(body);
+            }
+            const url = _apiUrl(path, patchOpts.withVersion);
+            const resp = await fetch(url, opts);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || `API error: ${resp.status}`);
+            }
+            return resp.json();
+        }
+
         function _afterAuditStart(projectId) {
             // Подключаем project WS для live-обновлений (прогресс, heartbeat, статус)
             connectProjectWS(projectId);
@@ -5055,6 +5077,74 @@ const app = createApp({
             window.location.hash = window.VersionAPI
                 ? window.VersionAPI.buildHashRoute(path, versionId)
                 : path + '?version_id=' + encodeURIComponent(versionId);
+        }
+
+        // ─── Переименование папки проекта ───
+        function startRename() {
+            if (!currentProject.value) return;
+            renameValue.value = currentProject.value.name || currentProjectId.value || '';
+            renameError.value = '';
+            renameEditing.value = true;
+            nextTick(() => {
+                try {
+                    const el = renameInput.value;
+                    if (el) { el.focus(); el.select(); }
+                } catch (e) { /* noop */ }
+            });
+        }
+
+        function cancelRename() {
+            renameEditing.value = false;
+            renameError.value = '';
+            renameValue.value = '';
+        }
+
+        async function submitRename() {
+            if (renameBusy.value) return;
+            const newName = (renameValue.value || '').trim();
+            if (!newName) { renameError.value = 'Имя не может быть пустым'; return; }
+            if (newName === (currentProject.value && currentProject.value.name)) {
+                cancelRename();
+                return;
+            }
+            if (newName.includes('/') || newName.includes('\\')) {
+                renameError.value = "Имя не может содержать '/' или '\\'";
+                return;
+            }
+            renameBusy.value = true;
+            renameError.value = '';
+            try {
+                const data = await apiPatch(
+                    `/projects/${encodeURIComponent(currentProjectId.value)}/rename`,
+                    { name: newName },
+                    { withVersion: false },
+                );
+                renameBusy.value = false;
+                renameEditing.value = false;
+                // project_id сменился (basename папки) → controlled-навигация на
+                // новый проект с перезагрузкой данных (старые пути больше не валидны).
+                const newId = data && data.project_id;
+                if (newId && newId !== currentProjectId.value) {
+                    _cacheInvalidate('project');
+                    _cacheInvalidate('findings');
+                    _cacheInvalidate('optimization');
+                    _cacheInvalidate('blocks');
+                    currentProject.value = null;
+                    findingsData.value = null;
+                    activeVersionId.value = null;
+                    navigate('/project/' + newId);
+                } else {
+                    // basename не изменился — обновим имя на месте.
+                    if (currentProject.value) currentProject.value.name = data.new_name;
+                    await loadProject(currentProjectId.value, true);
+                }
+                if (data && Array.isArray(data.warnings) && data.warnings.length) {
+                    console.warn('[rename] warnings:', data.warnings);
+                }
+            } catch (e) {
+                renameBusy.value = false;
+                renameError.value = e.message || 'Ошибка переименования';
+            }
         }
 
         async function createNewVersion() {
@@ -13102,6 +13192,8 @@ const app = createApp({
             activeVersionId, projectVersions, projectVersionsLoading,
             versionFiles, versionUploading, versionUploadError,
             showCreateVersionModal, newVersionComment, versionsPanelOpen,
+            renameEditing, renameValue, renameError, renameBusy, renameInput,
+            startRename, cancelRename, submitRename,
             loadProjectVersions, loadVersionFiles, selectVersion,
             createNewVersion, uploadFilesToVersion,
             handleUploadInput, handleUploadInputReplace,

@@ -2764,6 +2764,48 @@ tr.row-rejected:hover { opacity: 0.7; }
 .project-version-switch__btn {
     font-size: 11px;
 }
+.project-version-switch__name {
+    font-size: 12px;
+    color: inherit;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 4px;
+    border-left: 1px solid var(--border, #2a2a2a);
+}
+.project-version-switch__pencil {
+    background: transparent;
+    border: none;
+    color: var(--text2, #888);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+.project-version-switch__pencil:hover {
+    color: var(--text, #eee);
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
+.project-version-switch__rename {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.project-version-switch__rename-input {
+    font-size: 12px;
+    padding: 2px 6px;
+    min-width: 220px;
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 4px;
+    background: var(--bg, #fff);
+    color: inherit;
+}
+.project-version-switch__rename-error {
+    font-size: 11px;
+    color: var(--danger, #d9534f);
+}
 
 /* Раздел "Версии проекта" в info-вкладке */
 .versions-panel {

@@ -578,11 +578,27 @@
                         {{ v.label }}{{ v.is_latest ? ' · текущая' : '' }}{{ !v.has_source_files ? ' (пусто)' : '' }}
                     </option>
                 </select>
-                <button class="btn btn-sm btn-outline project-version-switch__btn"
-                        @click="versionsPanelOpen = !versionsPanelOpen"
-                        :title="'Версии проекта'">
-                    {{ projectVersions.length || 1 }} версии
-                </button>
+                <template v-if="!renameEditing">
+                    <span class="project-version-switch__name"
+                          :title="currentProject.name">{{ currentProject.name }}</span>
+                    <button class="project-version-switch__pencil"
+                            @click="startRename()"
+                            title="Переименовать папку проекта">✎</button>
+                </template>
+                <span v-else class="project-version-switch__rename">
+                    <input class="project-version-switch__rename-input"
+                           v-model="renameValue"
+                           :disabled="renameBusy"
+                           @keyup.enter="submitRename()"
+                           @keyup.esc="cancelRename()"
+                           ref="renameInput"
+                           placeholder="Имя папки проекта">
+                    <button class="btn btn-sm btn-primary"
+                            :disabled="renameBusy" @click="submitRename()">Сохранить</button>
+                    <button class="btn btn-sm btn-outline"
+                            :disabled="renameBusy" @click="cancelRename()">Отмена</button>
+                    <span v-if="renameError" class="project-version-switch__rename-error">{{ renameError }}</span>
+                </span>
             </div>
         </div>
 
