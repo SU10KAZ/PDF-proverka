@@ -3913,6 +3913,22 @@ const app = createApp({
             } catch (e) { alert(e.message); }
         }
 
+        async function deleteVersion(versionId) {
+            const pid = currentProject.value?.project_id;
+            if (!pid) return;
+            const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
+            if (!confirm(`Удалить версию ${verLabel} проекта "${currentProject.value?.name}"?\n\nБудут удалены:\n- Вся папка версии (PDF, MD, результаты аудита)\n- Запись о версии из манифеста\n\nДействие необратимо.`)) return;
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(versionId)}`, { method: 'DELETE' });
+                const data = await resp.json();
+                if (!resp.ok) { alert(data.detail || 'Ошибка удаления версии'); return; }
+                await refreshProjects();
+                // Переключиться на новую latest версию
+                const newLatest = data.new_latest_version_id;
+                if (newLatest) selectVersion(newLatest);
+            } catch (e) { alert(e.message); }
+        }
+
         function retryStage(projectId, stage) {
             const labels = {
                 'crop_blocks': 'Кроп блоков', 'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
@@ -13862,7 +13878,7 @@ const app = createApp({
             startFromStage, canStartFrom, pipelineToStage,
             retryStage, retryDialog, retryStageToQueue,
             canRetryStage,
-            skipStage, cleanProject,
+            skipStage, cleanProject, deleteVersion,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,

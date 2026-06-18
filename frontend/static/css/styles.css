@@ -2858,6 +2858,20 @@ tr.row-rejected td.sc-cell-goto {
     color: var(--text, #eee);
     background: var(--bg2, rgba(255,255,255,0.06));
 }
+.project-version-switch__trash {
+    background: transparent;
+    border: none;
+    color: var(--text2, #888);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+.project-version-switch__trash:hover {
+    color: #e05555;
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
 .project-version-switch__rename {
     display: inline-flex;
     align-items: center;
