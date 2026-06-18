@@ -100,7 +100,35 @@ def projects_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(ps, "_get_projects_dir", lambda: p)
     monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE", [])
     monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+    # Изолируем projects_v2 в tmp, чтобы rename-тесты не сканировали/не трогали
+    # реальный prod projects_v2 (_default_v2_root читает этот env).
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "projects_v2"))
     return p
+
+
+def _mk_v2_doc(v2_root: Path, *, object_folder: str, object_id: str,
+               discipline: str, doc_code: str, legacy_projects_root: Path,
+               versions=True) -> Path:
+    """Синтетический v2-документ projects_v2/.../documents/<doc_code>/document.json."""
+    doc_dir = v2_root / "objects" / object_folder / "disciplines" / discipline / "documents" / doc_code
+    doc_dir.mkdir(parents=True)
+    (v2_root / "objects" / object_folder / "object.json").write_text(
+        json.dumps({"object_id": object_id, "display_name": object_folder}), encoding="utf-8")
+    dj = {
+        "schema_version": 1,
+        "document_code": doc_code,
+        "object_id": object_id,
+        "discipline": discipline,
+        "kind": "plain",
+        "legacy_project_name": doc_code,
+        "legacy_project_path": str(legacy_projects_root / discipline / doc_code),
+        "current_version": "v001",
+    }
+    if versions:
+        dj["versions"] = [{"version_id": "v001", "version_no": 1, "label": "V1",
+                           "legacy_folder_name": doc_code}]
+    (doc_dir / "document.json").write_text(json.dumps(dj, ensure_ascii=False), encoding="utf-8")
+    return doc_dir
 
 
 def _rename(project_id, new_name, stores, **kw):
@@ -285,3 +313,102 @@ def test_endpoint_success_contract(client):
     assert body["new_name"] == "DST"
     assert not (projects_dir / "SRC").exists()
     assert (projects_dir / "DST").exists()
+
+
+# ═══ projects_v2 shadow sync ════════════════════════════════════════════════
+def _v2_root_for(projects_dir):
+    return projects_dir.parent / "projects_v2"
+
+
+def test_v2_rename_updates_document_json(projects_dir, stores):
+    """Test 1: rename обновляет document_code/legacy_* в v2 document.json."""
+    _mk_flat_project(projects_dir, "DOC1 V1", section="EOM")
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="EOM",
+               doc_code="DOC1 V1", legacy_projects_root=projects_dir)
+    res = _rename("DOC1 V1", "DOC1", stores)
+    assert res["v2_shadow"]["updated"], res["v2_shadow"]
+    # папка документа переименована в новый код → document.json лежит там
+    djp = v2 / "objects/OBJ_F/disciplines/EOM/documents/DOC1/document.json"
+    assert djp.exists()
+    dj = json.loads(djp.read_text())
+    assert dj["document_code"] == "DOC1"
+    assert dj["legacy_project_name"] == "DOC1"
+    assert dj["legacy_project_path"].endswith("/EOM/DOC1")
+
+
+def test_v2_rename_updates_version_refs(projects_dir, stores):
+    """Test 2: versions[].legacy_folder_name обновляется."""
+    _mk_flat_project(projects_dir, "DOC2 V1", section="AR")
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="DOC2 V1", legacy_projects_root=projects_dir)
+    _rename("DOC2 V1", "DOC2", stores)
+    dj = json.loads((v2 / "objects/OBJ_F/disciplines/AR/documents/DOC2/document.json").read_text())
+    assert dj["versions"][0]["legacy_folder_name"] == "DOC2"
+
+
+def test_v2_missing_is_failsoft(projects_dir, stores):
+    """Test 3: v2-shadow отсутствует → rename успешен с warning, без падения."""
+    _mk_flat_project(projects_dir, "NOV2 V1")
+    # v2 root не создаём
+    res = _rename("NOV2 V1", "NOV2", stores)
+    assert res["status"] == "renamed"
+    assert (projects_dir / "NOV2").exists()
+    assert any("projects_v2" in w for w in res["warnings"])
+
+
+def test_v2_sibling_documents_untouched(projects_dir, stores):
+    """Test 4: соседний v2-документ не тронут."""
+    _mk_flat_project(projects_dir, "T1 V1", section="EOM")
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="EOM",
+               doc_code="T1 V1", legacy_projects_root=projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="EOM",
+               doc_code="SIB V1", legacy_projects_root=projects_dir)
+    _rename("T1 V1", "T1", stores)
+    sib = v2 / "objects/OBJ_F/disciplines/EOM/documents/SIB V1/document.json"
+    assert sib.exists()
+    assert json.loads(sib.read_text())["document_code"] == "SIB V1"
+
+
+def test_v2_sync_rejects_bad_name(projects_dir):
+    """Test 5: невалидное имя отвергается ДО любых fs-операций (path guard)."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="EOM",
+               doc_code="X V1", legacy_projects_root=projects_dir)
+    with pytest.raises(prs.InvalidProjectNameError):
+        prs.sync_v2_shadow_rename("X V1", "../escape", object_id="OBJ", v2_root=v2)
+    # ничего не создано за пределами objects/
+    assert not (v2.parent / "escape").exists()
+    assert (v2 / "objects/OBJ_F/disciplines/EOM/documents/X V1/document.json").exists()
+
+
+def test_v2_one_time_repair(projects_dir):
+    """Test 6: repair обновляет устаревший v2-shadow + делает backup."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="R1 V1", legacy_projects_root=projects_dir)
+    # dry-run: ничего не пишет
+    dr = prs.sync_v2_shadow_rename("R1 V1", "R1", object_id="OBJ", v2_root=v2, dry_run=True)
+    assert dr["updated"] and dr["dry_run"] is True
+    assert (v2 / "objects/OBJ_F/disciplines/AR/documents/R1 V1/document.json").exists()  # не тронут
+    # apply
+    res = prs.sync_v2_shadow_rename("R1 V1", "R1", object_id="OBJ", v2_root=v2)
+    new_dj = v2 / "objects/OBJ_F/disciplines/AR/documents/R1/document.json"
+    assert new_dj.exists()
+    assert json.loads(new_dj.read_text())["document_code"] == "R1"
+    assert (new_dj.with_name("document.json.rename_bak")).exists()  # backup создан
+
+
+def test_v2_resolve_prefers_new_after_rename(projects_dir, stores):
+    """Test 7: после rename adapter.find_document видит новое имя, не старое."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    _mk_flat_project(projects_dir, "RES V1", section="EOM")
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="EOM",
+               doc_code="RES V1", legacy_projects_root=projects_dir)
+    _rename("RES V1", "RES", stores)
+    adapter = ProjectsV2Adapter(v2_root=v2)
+    assert adapter.find_document("RES", object_id="OBJ") is not None
+    assert adapter.find_document("RES V1", object_id="OBJ") is None
