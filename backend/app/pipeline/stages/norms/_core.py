@@ -23,7 +23,13 @@ NORMS_DIR = Path(__file__).parent
 BASE_DIR = NORMS_DIR.parent
 NORMS_DB_PATH = NORMS_DIR / "norms_db.json"
 NORMS_PARAGRAPHS_PATH = NORMS_DIR / "norms_paragraphs.json"
-PROJECTS_DIR = BASE_DIR / "projects"
+# Централизованный источник пути к проектам (см. backend.app.core.config).
+# Прежний BASE_DIR/"projects" указывал на несуществующий stages/projects.
+try:
+    from backend.app.core.config import PROJECTS_DIR
+except Exception:
+    # standalone-fallback: корень репозитория
+    PROJECTS_DIR = Path(__file__).resolve().parents[5] / "projects"
 
 
 def _iter_project_dirs_pathlib(root: Path) -> list[Path]:

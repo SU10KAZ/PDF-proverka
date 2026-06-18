@@ -322,7 +322,16 @@ def opt_type_cfg(t):
 # ═══════════════════════════════════════════════════════════════════════
 
 BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
-PROJECTS_DIR = os.path.join(BASE_DIR, "projects")
+# Централизованный источник пути к проектам (см. backend.app.core.config).
+# Прежний BASE_DIR/"projects" указывал на несуществующий stages/report/projects.
+try:
+    from backend.app.core.config import PROJECTS_DIR as _CONFIG_PROJECTS_DIR
+    PROJECTS_DIR = str(_CONFIG_PROJECTS_DIR)
+except Exception:
+    # standalone-fallback: корень репозитория (../../../../.. от report/)
+    PROJECTS_DIR = os.path.abspath(
+        os.path.join(BASE_DIR, "..", "..", "..", "..", "..", "projects")
+    )
 REPORTS_DIR  = os.path.join(BASE_DIR, "отчет")
 
 
