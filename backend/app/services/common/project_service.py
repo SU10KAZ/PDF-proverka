@@ -912,9 +912,19 @@ def save_project_info(
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
     except Exception:
         return False
+
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после успешной
+    # legacy-записи project_info.json (no-op в legacy, fail-soft). try/except —
+    # чтобы путь `return True` оставался байт-идентичным прежнему поведению.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(root_dir)
+    except Exception:
+        pass
+
+    return True
 
 
 def set_project_section(project_id: str, section: str) -> dict:
