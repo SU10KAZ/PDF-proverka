@@ -1250,6 +1250,32 @@ class PipelineManager:
         version_dir (legacy V1 поведение). Стартовые endpoint'ы валидируют версию
         раньше и возвращают 404, поэтому сюда обычно доходит валидный version_id.
         """
+        # Шаг 6B: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+        # (в проде WRITE_MODE=dual_write_shadow → ветка НЕ исполняется). Источник
+        # читается из v2 01_input/02_work, output → 03_analysis/runs/<run_id>
+        # (эквивалент legacy _output). Адаптация source-reading стадий под v2 —
+        # отдельный шаг (см. отчёт 6B blockers). legacy/dual_shadow путь — ниже,
+        # без изменений.
+        from backend.app.services.storage import storage_write_facade as _swf
+        if _swf.v2_is_primary():
+            from backend.app.services.storage.v2_primary_wiring import resolve_v2_job_paths
+            try:
+                _legacy_root = resolve_project_dir(job.project_id)
+            except Exception:
+                _legacy_root = None  # legacy может отсутствовать в v2-primary мире
+            _paths = resolve_v2_job_paths(
+                job.project_id, job.version_id,
+                run_id=getattr(job, "job_id", None),
+                object_id=getattr(job, "object_id", None),
+                legacy_project_dir=_legacy_root,
+            )
+            if _paths is None:
+                raise RuntimeError(
+                    f"v2-primary: не удалось разрешить v2-пути для "
+                    f"{job.project_id}/{job.version_id}"
+                )
+            return _paths
+
         from backend.app.services.common import version_service
         root_dir = resolve_project_dir(job.project_id)
         try:

@@ -106,6 +106,95 @@ def resolve_v2_target(
     )
 
 
+def resolve_v2_target_by_id(
+    project_id: str,
+    version_id: str,
+    *,
+    v2_root: Path,
+    object_id: Optional[str] = None,
+    legacy_project_dir: Optional[Path] = None,
+) -> Optional[V2Target]:
+    """v2-native резолв V2Target по project_id — БЕЗ зависимости от legacy.
+
+    project_id = путь относительно projects/, его basename = document_code
+    (инвариант project_versions.md). Документ ищется в projects_v2 через adapter
+    (опц. в рамках `object_id` — как на read-стороне), поэтому работает даже
+    когда legacy `projects/` недоступен. Фолбэк на legacy-структурный
+    `resolve_v2_target` — только если документа в v2 ещё нет И передан
+    существующий legacy-путь (новый, ещё не мигрированный проект).
+
+    Если документ найден, но запрошенная версия ОТСУТСТВУЕТ в нём (legacy/v2
+    drift) — возвращает None (surfaced failure), а НЕ фабрикует `versions/vNNN`.
+    """
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import normalize_vid_for_disk
+
+    doc_code = os.path.basename(str(project_id or "").strip().rstrip("/"))
+    candidates = [doc_code] if doc_code else []
+    if doc_code.lower().endswith(".pdf"):
+        candidates.append(doc_code[:-4].strip())  # gotcha `.pdf`-суффикс
+    want_vid = normalize_vid_for_disk(version_id or "v001")
+    if candidates:
+        adapter = ProjectsV2Adapter(Path(v2_root))
+        for code in candidates:
+            if not code:
+                continue
+            doc = adapter.find_document(code, object_id=object_id)
+            if doc is None:
+                continue
+            # версия обязана существовать в v2-документе (без фабрикации пути)
+            doc_vids = {normalize_vid_for_disk(v) for v in (doc.get("version_ids") or []) if v}
+            if doc_vids and want_vid not in doc_vids:
+                return None  # legacy/v2 drift — явный отказ
+            return V2Target(
+                object_folder=doc["object_folder"],
+                discipline=doc["discipline"],
+                document_code=doc["document_code"],
+                version_id=version_id or "v001",
+            )
+    # фолбэк: legacy-структурный резолв (нужен существующий legacy-путь)
+    if legacy_project_dir is not None and Path(legacy_project_dir).exists():
+        return resolve_v2_target(legacy_project_dir, version_id, v2_root=v2_root)
+    return None
+
+
+def resolve_v2_job_paths(
+    project_id: str,
+    version_id: str,
+    *,
+    run_id: Optional[str],
+    v2_root: Optional[Path] = None,
+    object_id: Optional[str] = None,
+    legacy_project_dir: Optional[Path] = None,
+) -> Optional[tuple]:
+    """v2-primary аналог `manager._resolve_job_paths`.
+
+    Возвращает `(doc_dir, version_dir, output_dir)` в раскладке projects_v2:
+      * doc_dir     = `.../documents/<code>`;
+      * version_dir = `.../versions/<vid>` (источник: 01_input/ + 02_work/);
+      * output_dir  = `version_dir/03_analysis/runs/<run_id>` — это эквивалент
+        legacy `_output` (миграция кладёт verbatim-_output именно сюда).
+    None — если v2-target/run_id не резолвятся (surfaced failure, без legacy).
+    """
+    facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
+    resolved = facade.v2_root()
+    if resolved is None:
+        return None
+    target = resolve_v2_target_by_id(
+        project_id, version_id, v2_root=resolved,
+        object_id=object_id, legacy_project_dir=legacy_project_dir,
+    )
+    if target is None:
+        return None
+    safe_run = os.path.basename((run_id or "").strip())
+    if not safe_run or safe_run in (".", ".."):
+        return None
+    doc_dir = target.doc_dir(resolved)
+    version_dir = target.version_dir(resolved)
+    output_dir = version_dir / "03_analysis" / "runs" / safe_run
+    return doc_dir, version_dir, output_dir
+
+
 def save_project_info_v2_primary(
     project_id: str,
     data: dict,
