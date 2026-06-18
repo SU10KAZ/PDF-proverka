@@ -4602,7 +4602,7 @@ const app = createApp({
         const uploadLoading = ref(false);
         const uploadResult = ref(null);       // ответ сервера при успехе (single)
         // precheck (single) + multi-folder
-        const uploadMode = ref('single');     // 'single' | 'multi'
+        const uploadMode = ref('multi');     // только multi (одна папка убрана)
         const uploadPrecheck = ref(null);     // verdict {status, blocks, warnings, ...}
         const uploadPrecheckLoading = ref(false);
         const uploadOverrideWarning = ref(false);
@@ -4698,7 +4698,7 @@ const app = createApp({
         function goToUploadFolder() {
             addProjectStep.value = 'upload';
             resetUploadFolder();
-            uploadMode.value = 'single';
+            uploadMode.value = 'multi';
             uploadObjectId.value = currentObjectId.value || '';
             if (!objectsList.value.length) loadObjects();
             if (!supportedDisciplines.value.length) loadDisciplines();
@@ -5092,12 +5092,6 @@ const app = createApp({
             newSectionColor.value = '#3498db';
         }
 
-        async function goToAddProject() {
-            addProjectStep.value = 'project';
-            projectSource.value = 'local';
-            externalPath.value = '';
-            await scanFolders();
-        }
 
         async function addSection() {
             const code = newSectionCode.value.trim().toUpperCase();
@@ -16769,7 +16763,7 @@ const app = createApp({
             queueAvailableProjects,
             // Add project
             showAddProject, addProjectStep, unregisteredFolders, addProjectLoading,
-            openAddModal, goToAddSection, goToAddProject, addSection,
+            openAddModal, goToAddSection, addSection,
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
