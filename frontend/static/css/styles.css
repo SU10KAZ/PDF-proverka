@@ -3870,9 +3870,9 @@ tr.row-rejected td.sc-cell-goto {
 .sched-subtitle { margin: 0; font-size: 13px; color: var(--text-muted); }
 .sched-actions { flex-wrap: wrap; gap: 8px; align-items: center; }
 .sched-modeswitch { display: inline-flex; gap: 4px; }
-.sched-navgroup { display: inline-flex; align-items: center; gap: 4px; }
-.sched-arrow { font-size: 16px; line-height: 1; padding: 4px 10px; }
-.sched-period { font-weight: 600; font-size: 13px; color: var(--text); min-width: 188px; text-align: center; }
+.sched-navgroup { display: inline-flex; align-items: center; gap: 2px; }
+.sched-arrow { font-size: 16px; line-height: 1; padding: 4px 8px; }
+.sched-period { font-weight: 600; font-size: 13px; color: var(--text); min-width: 120px; text-align: center; }
 
 .sched-filterwrap { position: relative; }
 .sched-filterbadge { font-size: 10px; font-weight: 700; background: var(--teal); color: #fff; border-radius: 8px; padding: 1px 6px; margin-left: 4px; }
