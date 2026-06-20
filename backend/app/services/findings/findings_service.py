@@ -1152,6 +1152,8 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
             all_sheets = []
             all_pages = []
             all_block_ids = []
+            all_source_block_ids = []
+            all_etr = []
             all_evidence = []
             for it in items:
                 sh = it.get("sheet")
@@ -1166,6 +1168,12 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 for bid in (it.get("related_block_ids") or []):
                     if bid not in all_block_ids:
                         all_block_ids.append(bid)
+                for sbid in (it.get("source_block_ids") or []):
+                    if sbid not in all_source_block_ids:
+                        all_source_block_ids.append(sbid)
+                for etr in (it.get("evidence_text_refs") or []):
+                    if etr not in all_etr:
+                        all_etr.append(etr)
                 for ev in (it.get("evidence") or []):
                     all_evidence.append(ev)
 
@@ -1182,6 +1190,17 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 "related_block_ids": all_block_ids,
                 "evidence": all_evidence,
             }
+            # source-of-truth поля поглощённых замечаний (reserc.md #6/#27)
+            if all_source_block_ids:
+                merged["source_block_ids"] = all_source_block_ids
+            if all_etr:
+                merged["evidence_text_refs"] = all_etr
+            for _qf in ("norm_quote", "highlight_regions"):
+                if not merged.get(_qf):
+                    for it in items:
+                        if it.get(_qf):
+                            merged[_qf] = it[_qf]
+                            break
             result.append(merged)
 
     return result

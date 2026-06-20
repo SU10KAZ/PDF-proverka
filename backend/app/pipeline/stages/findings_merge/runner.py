@@ -375,6 +375,8 @@ def merge_similar_findings(project_id: str) -> dict | None:
             all_sheets = []
             all_pages = []
             all_block_ids = []
+            all_source_block_ids = []
+            all_etr = []
             all_evidence = []
             details_lines = []
 
@@ -394,6 +396,12 @@ def merge_similar_findings(project_id: str) -> dict | None:
                 for bid in (it.get("related_block_ids") or []):
                     if bid not in all_block_ids:
                         all_block_ids.append(bid)
+                for sbid in (it.get("source_block_ids") or []):
+                    if sbid not in all_source_block_ids:
+                        all_source_block_ids.append(sbid)
+                for etr in (it.get("evidence_text_refs") or []):
+                    if etr not in all_etr:
+                        all_etr.append(etr)
                 for ev in (it.get("evidence") or []):
                     all_evidence.append(ev)
 
@@ -405,6 +413,18 @@ def merge_similar_findings(project_id: str) -> dict | None:
             leader["page"] = sorted(set(all_pages)) if all_pages else leader.get("page")
             leader["related_block_ids"] = all_block_ids
             leader["evidence"] = all_evidence
+            # Сохранить source-of-truth поля поглощённых замечаний (reserc.md #6/#27):
+            # иначе critic ложно ставит no_evidence/phantom и теряются норм-цитаты.
+            if all_source_block_ids:
+                leader["source_block_ids"] = all_source_block_ids
+            if all_etr:
+                leader["evidence_text_refs"] = all_etr
+            for _qf in ("norm_quote", "highlight_regions"):
+                if not leader.get(_qf):
+                    for it in group_items:
+                        if it.get(_qf):
+                            leader[_qf] = it[_qf]
+                            break
             leader["sub_findings"] = [
                 {
                     "original_id": it.get("id", ""),
