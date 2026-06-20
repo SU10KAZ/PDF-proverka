@@ -84,6 +84,14 @@ def test_no_evidence_economic_flagged_not_downgraded():
     assert result.flagged_human == 1
 
 
+def test_cross_check_severity_is_canonical_config_form():
+    # #32: понижаемая severity должна совпадать с production-каноном из
+    # SEVERITY_CONFIG (форма С ПРОБЕЛОМ), иначе цвет/порядок/фильтры её не видят.
+    from backend.app.core.config import SEVERITY_CONFIG
+    assert dcorr.CROSS_CHECK_SEVERITY == "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+    assert dcorr.CROSS_CHECK_SEVERITY in SEVERITY_CONFIG
+
+
 def test_no_evidence_noncritical_downgraded():
     # Непротектированные severity (эксплуатационное/рекомендательное) — понижаем
     # в ПРОВЕРИТЬ_ПО_СМЕЖНЫМ как раньше.

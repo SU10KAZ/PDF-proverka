@@ -44,7 +44,11 @@ from backend.app.pipeline.stages.findings_review.deterministic_critic import (
 
 logger = logging.getLogger(__name__)
 
-CROSS_CHECK_SEVERITY = "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ"
+# #32: production-канон severity — С ПРОБЕЛОМ (как в config.SEVERITY_CONFIG,
+# scorer, migrated_findings_service, external_register). Раньше corrector писал
+# форму с подчёркиванием → понижённые замечания не матчились с SEVERITY_CONFIG
+# (цвет/порядок/фильтры). dedup толерантен к обеим формам, но канон — пробел.
+CROSS_CHECK_SEVERITY = "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
 _DOWNGRADE_VERDICTS = {"no_evidence", "contradicts_text"}
 # reserc.md #31: критичные/экономические замечания НЕ понижаем молча при
 # no_evidence/contradicts_text — потеря такого замечания недопустима. Их
