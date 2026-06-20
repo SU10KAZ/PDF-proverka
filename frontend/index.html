@@ -2771,8 +2771,8 @@
                                     </td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
-                                            <span class="sched-stats-table__pctnum" :class="schedPctClass(s.pct)">{{ s.pct }}%</span>
-                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
+                                            <span class="sched-stats-table__pctnum" :style="{ color: schedPctColor(s.pct) }">{{ s.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :style="{width: Math.min(100, s.pct)+'%', background: schedPctColor(s.pct)}"></div></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -2789,8 +2789,8 @@
                                     </td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
-                                            <span class="sched-stats-table__pctnum" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</span>
-                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
+                                            <span class="sched-stats-table__pctnum" :style="{ color: schedPctColor(schedTotals.pct) }">{{ schedTotals.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :style="{width: Math.min(100, schedTotals.pct)+'%', background: schedPctColor(schedTotals.pct)}"></div></div>
                                         </div>
                                     </td>
                                 </tr>
