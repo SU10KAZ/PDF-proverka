@@ -2964,11 +2964,10 @@
                                 <tr>
                                     <th class="sched-stats-table__nm">Инженер</th>
                                     <th>Факт</th>
+                                    <th>Осталось</th>
                                     <th>План</th>
                                     <th class="sched-stats-table__remarks">Замечания</th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
-                                    <th>Осталось</th>
-                                    <th class="sched-stats-table__status">Статус</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -2978,6 +2977,7 @@
                                         <span class="sched-stats-table__nmtxt" :title="s.name">{{ s.name }}</span>
                                     </td>
                                     <td><b>{{ s.fact }}</b></td>
+                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
                                     <td class="sched-stats-table__plan">
                                         <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
                                                :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
@@ -2995,14 +2995,11 @@
                                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
                                         </div>
                                     </td>
-                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
-                                    <td class="sched-stats-table__status">
-                                        <span class="sched-statusbadge" :class="'sched-statusbadge--'+schedStatusFor(s).cls">{{ schedStatusFor(s).label }}</span>
-                                    </td>
                                 </tr>
                                 <tr class="sched-stats-table__total">
                                     <td class="sched-stats-table__nm">Всего по инженерам ({{ schedTotals.engineers }})</td>
                                     <td><b>{{ schedTotals.fact }}</b></td>
+                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
                                     <td>{{ schedTotals.plan }}</td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
@@ -3015,10 +3012,6 @@
                                             <span class="sched-stats-table__pctnum" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</span>
                                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
                                         </div>
-                                    </td>
-                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
-                                    <td class="sched-stats-table__status">
-                                        <span class="sched-statusbadge" :class="'sched-statusbadge--'+schedStatusFor(schedTotals).cls">{{ schedStatusFor(schedTotals).label }}</span>
                                     </td>
                                 </tr>
                             </tbody>
