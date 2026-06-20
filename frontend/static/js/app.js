@@ -8549,6 +8549,37 @@ const app = createApp({
             return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length };
         });
 
+        // ── Display-хелперы графика (только отображение, без backend-логики) ──
+        // Инициалы инженера для аватара: «Гривапш А. А.» → «ГА».
+        function schedInitials(name) {
+            const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '?';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        // Статус выполнения для строки статистики (бейдж).
+        function schedStatusFor(s) {
+            if (!s || s.plan <= 0) return { label: 'Нет плана', cls: 'muted' };
+            if (s.pct > 100) return { label: 'Перевыполнение', cls: 'over' };
+            if (s.pct >= 100) return { label: 'В плане', cls: 'ok' };
+            return { label: 'Отстаёт', cls: 'low' };
+        }
+        // Детерминированный мягкий цвет аватара по имени/id.
+        const _SCHED_AVATAR_PALETTE = [
+            { background: '#ede9fe', color: '#6d28d9' },
+            { background: '#dbeafe', color: '#1d4ed8' },
+            { background: '#dcfce7', color: '#15803d' },
+            { background: '#fef3c7', color: '#b45309' },
+            { background: '#fce7f3', color: '#be185d' },
+            { background: '#ccfbf1', color: '#0f766e' },
+        ];
+        function schedAvatarStyle(seed) {
+            const s = String(seed || '');
+            let h = 0;
+            for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+            return _SCHED_AVATAR_PALETTE[h % _SCHED_AVATAR_PALETTE.length];
+        }
+
         // Канонический project_id для API экспертной разметки: реальные папки
         // проектов/контейнеров — без `.pdf`. В id из version-имени V2 может
         // протечь `.pdf` (отображается в `name`), и тогда backend резолвит путь
@@ -14121,7 +14152,7 @@ const app = createApp({
             schedToggleCell, schedIsPopover, schedClosePopover,
             schedToggleEngineer, schedIsEngineerHidden,
             schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass,
-            schedStats, schedTotals,
+            schedStats, schedTotals, schedInitials, schedStatusFor, schedAvatarStyle,
             schedLoading, schedError, schedUsingMock, schedNoticeKind, schedNoticeText, schedLoad,
             // План работ (backend work_plans.json, admin-gated)
             schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,

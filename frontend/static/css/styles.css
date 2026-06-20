@@ -3876,8 +3876,11 @@ tr.row-rejected td.sc-cell-goto {
    ГРАФИК ПРОИЗВОДСТВА РАБОТ (production work schedule)
    Лёгкая сетка: строки — инженеры, колонки — дни. Mock-данные.
    ══════════════════════════════════════════════════════════════ */
-.sched-toolbar { flex-wrap: wrap; gap: 10px; }
-.sched-actions { flex-wrap: wrap; gap: 8px; }
+.sched-toolbar { flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.sched-titlewrap { display: flex; flex-direction: column; gap: 2px; }
+.sched-title { font-size: 22px; line-height: 1.2; }
+.sched-subtitle { margin: 0; font-size: 13px; color: var(--text-muted); }
+.sched-actions { flex-wrap: wrap; gap: 8px; align-items: center; }
 .sched-modeswitch { display: inline-flex; gap: 4px; }
 .sched-navgroup { display: inline-flex; align-items: center; gap: 4px; }
 .sched-arrow { font-size: 16px; line-height: 1; padding: 4px 10px; }
@@ -3920,17 +3923,20 @@ tr.row-rejected td.sc-cell-goto {
 .sched-grid thead th { background: var(--card2-bg); padding: 6px 4px; text-align: center; position: sticky; top: 0; z-index: 2; }
 .sched-day-dow { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 .sched-day-dom { font-size: 13px; color: var(--text); font-weight: 700; }
-.sched-day--weekend { background: var(--bg); }
-.sched-day--today  { box-shadow: inset 0 -3px 0 var(--teal); }
+.sched-day--weekend { background: rgba(244,114,182,0.08); }
+.sched-day--today  { box-shadow: inset 0 3px 0 var(--teal); }
 .sched-day--today .sched-day-dom { color: var(--teal); }
 
 /* engineer column — sticky left */
-.sched-eng-col { position: sticky; left: 0; z-index: 3; background: var(--card-bg); width: 158px; min-width: 158px; max-width: 158px; }
-.sched-grid thead th.sched-eng-col { z-index: 4; background: var(--card2-bg); text-align: left; padding-left: 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
-.sched-eng-name { padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border2); }
+.sched-eng-col { position: sticky; left: 0; z-index: 3; background: var(--card-bg); width: 200px; min-width: 200px; max-width: 200px; }
+.sched-grid thead th.sched-eng-col { z-index: 4; background: var(--card2-bg); text-align: left; padding-left: 14px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+.sched-eng-name { display: flex; align-items: center; gap: 9px; padding: 8px 14px; border-right: 1px solid var(--border2); }
+.sched-eng-name__txt { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sched-avatar { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+.sched-avatar--sm { width: 26px; height: 26px; font-size: 10px; }
 
 .sched-cell { position: relative; vertical-align: top; padding: 5px; height: 44px; }
-.sched-cell--weekend { background: rgba(0,0,0,0.015); }
+.sched-cell--weekend { background: rgba(244,114,182,0.05); }
 .sched-cell--today   { background: var(--teal-light); }
 .sched-cell--has { cursor: pointer; }
 .sched-cell--has:hover { background: var(--card2-bg); }
@@ -4003,3 +4009,55 @@ tr.row-rejected td.sc-cell-goto {
 .sched-statcard__barfill.sched-ok   { background: var(--green); }
 .sched-statcard__barfill.sched-warn { background: var(--amber); }
 .sched-statcard__barfill.sched-low  { background: var(--red); }
+
+/* ── KPI-карточки графика ── */
+.sched-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 4px 0 18px; }
+.sched-kpi { display: flex; align-items: center; gap: 14px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+.sched-kpi__icon { flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; }
+.sched-kpi__icon svg { width: 22px; height: 22px; }
+.sched-kpi__icon--eng  { background: #ede9fe; color: #6d28d9; }
+.sched-kpi__icon--rep  { background: #dbeafe; color: #1d4ed8; }
+.sched-kpi__icon--over { background: var(--red-light); color: var(--red); }
+.sched-kpi__body { min-width: 0; }
+.sched-kpi__label { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sched-kpi__value { font-size: 26px; font-weight: 800; line-height: 1.1; color: var(--text); }
+.sched-kpi__value.sched-ok { color: var(--green); }
+.sched-kpi__value.sched-warn { color: var(--amber); }
+.sched-kpi__value.sched-low { color: var(--red); }
+.sched-kpi__sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.sched-kpi__ring { flex-shrink: 0; width: 48px; height: 48px; }
+.sched-kpi__ring svg { width: 48px; height: 48px; }
+.sched-ring__bg { fill: none; stroke: var(--border2); stroke-width: 5; }
+.sched-ring__fg { fill: none; stroke: var(--teal); stroke-width: 5; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray .35s; }
+.sched-kpi__ring.sched-ok  .sched-ring__fg { stroke: var(--green); }
+.sched-kpi__ring.sched-warn .sched-ring__fg { stroke: var(--amber); }
+.sched-kpi__ring.sched-low  .sched-ring__fg { stroke: var(--red); }
+
+/* ── бейдж +N в ячейке дня ── */
+.sched-more { align-self: flex-start; border: none; cursor: pointer; background: var(--teal); color: #fff; border-radius: 7px; font-size: 11px; font-weight: 700; line-height: 1; padding: 3px 7px; font-family: inherit; }
+.sched-more:hover { filter: brightness(1.06); }
+.sched-gridwrap--month .sched-more { font-size: 9px; padding: 2px 5px; border-radius: 5px; }
+
+/* ── легенда под таблицей ── */
+.sched-legend { display: flex; flex-wrap: wrap; gap: 18px 22px; align-items: center; justify-content: center; padding: 14px 8px 2px; }
+.sched-legend__item { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+.sched-legend__swatch { width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; }
+.sched-legend__swatch--plashka { background: var(--teal-light); border: 1px solid var(--teal-border); }
+.sched-legend__swatch--late { background: rgba(244,114,182,0.18); border: 1px solid rgba(244,114,182,0.5); }
+.sched-legend__swatch--today { width: 18px; height: 3px; border-radius: 2px; background: var(--teal); }
+.sched-legend__badge { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 16px; padding: 0 4px; border-radius: 6px; background: var(--teal); color: #fff; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+
+/* ── таблица статистики: имя c аватаром + статус-бейдж ── */
+.sched-stats-table__nm { display: flex; align-items: center; gap: 9px; }
+.sched-stats-table thead th.sched-stats-table__nm { display: table-cell; }
+.sched-stats-table__nmtxt { overflow: hidden; text-overflow: ellipsis; }
+.sched-stats-table__status { width: 160px; }
+.sched-statusbadge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 11px; white-space: nowrap; }
+.sched-statusbadge--ok   { background: var(--teal-light); color: var(--teal); }
+.sched-statusbadge--over { background: var(--green-light); color: var(--green); }
+.sched-statusbadge--low  { background: #fef3c7; color: var(--amber); }
+.sched-statusbadge--muted { background: var(--bg); color: var(--text-muted); }
+
+/* ── адаптив KPI ── */
+@media (max-width: 980px) { .sched-kpis { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .sched-kpis { grid-template-columns: 1fr; } }
