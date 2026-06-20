@@ -583,6 +583,12 @@ async def run_block_analysis_findings_only(
     loop = asyncio.get_running_loop()
 
     def _on_progress(event: dict) -> None:
+        # Связать cancel_event с реальной отменой пайплайна: оркестратор не
+        # выставляет cancel_event напрямую (раньше он был мёртвым → Stage 02 не
+        # отменялся). Проверяем ctx.is_cancelled на каждом событии прогресса и
+        # ставим event → _one прервётся перед следующим блоком (reserc.md #24).
+        if getattr(ctx, "is_cancelled", None) and ctx.is_cancelled():
+            cancel_event.set()
         t = event.get("type")
         if t == "started":
             asyncio.run_coroutine_threadsafe(
@@ -616,8 +622,6 @@ async def run_block_analysis_findings_only(
                 )
             if ctx.progress_sync:
                 ctx.progress_sync(completed, total)
-            # cancel_event is set by the caller (orchestrator sets job.status=CANCELLED);
-            # here we check it via a sentinel that the orchestrator wires in.
         elif t == "block_skip":
             completed = event.get("completed")
             total = event.get("total")
