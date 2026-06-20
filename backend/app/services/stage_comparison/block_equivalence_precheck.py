@@ -604,8 +604,17 @@ def canonicalize_text(text: Optional[str]) -> str:
 def compare_text_blocks(old_block: EqBlock, new_block: EqBlock) -> dict:
     """Сравнить текст двух блоков. fuzzy-skip НЕ включаем — similarity только
     логируется. ``text_equal`` = строгое совпадение canonical (оба непустые)."""
-    co = canonicalize_text(old_block.text)
-    cn = canonicalize_text(new_block.text)
+    # Общий нормализатор text_block_equivalence (снимает HTML/debug-префикс,
+    # ё→е, lower): иначе HTML-обёрнутый ocr_text давал ПРОТИВОПОЛОЖНЫЕ вердикты
+    # между этим слоем и text_block_equivalence (reserc.md #60/#13).
+    # Импорт локальный: text_block_equivalence импортирует EqBlock отсюда →
+    # модульный импорт создал бы циклическую зависимость.
+    from backend.app.services.stage_comparison.text_block_equivalence import (
+        normalize_block_text,
+    )
+
+    co = normalize_block_text(old_block.text)
+    cn = normalize_block_text(new_block.text)
     has_old = len(co) >= 1
     has_new = len(cn) >= 1
     text_equal = bool(has_old and has_new and co == cn)
