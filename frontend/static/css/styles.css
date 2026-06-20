@@ -2062,9 +2062,11 @@ tr.row-rejected td.sc-cell-goto {
 .kb-filters { display: flex; gap: 8px; margin-bottom: 12px; }
 
 /* ── Статусы базы знаний: 2 стороны (СУ-10 / Заказчик-проектировщик) × 2 карточки ── */
-.kb-ownership { display: flex; gap: 16px; margin: 4px 0 16px; align-items: stretch; }
-/* вся группа — одна серая зона: заголовок сверху + вкладки внутри */
-.kb-own-group { flex: 1 1 50%; min-width: 0; display: flex; flex-direction: column; background: var(--card2-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+/* full-bleed: гасим padding контейнера (20px 24px) → блок прижат к верху и краям, без серых полей */
+.kb-ownership { display: flex; gap: 0; margin: -20px -24px 16px; align-items: stretch; background: var(--card2-bg); border-bottom: 1px solid var(--border); }
+/* группы сомкнуты, фон/рамка — на общем контейнере; между группами — тонкий разделитель */
+.kb-own-group { flex: 1 1 50%; min-width: 0; display: flex; flex-direction: column; }
+.kb-own-group + .kb-own-group { border-left: 1px solid var(--border); }
 .kb-own-group__head { text-align: center; font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--text); padding: 8px 12px; }
 /* нижние блоки — вкладки внутри серой зоны (как «Инфо»): текст + бирюзовое подчёркивание активной + pill-счётчик */
 .kb-own-group__cards { display: flex; gap: 0; border-top: 1px solid var(--border); }
