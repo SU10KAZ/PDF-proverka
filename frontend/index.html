@@ -2248,28 +2248,49 @@
             <div class="kb-page">
                 <div class="kb-header kb-header--inline" style="justify-content:flex-start; gap:18px; flex-wrap:nowrap;">
                     <h2 class="kb-title" style="white-space:nowrap;">База знаний</h2>
-                    <div class="project-tabs kb-tabs" style="margin-bottom:0; border-bottom:none;">
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'rejected' }" @click="switchKBTab('rejected')">
-                            Отклонённые<span class="project-tab__count project-tab__count--red">{{ kbStats.rejected }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'accepted' }" @click="switchKBTab('accepted')">
-                            Принятые<span class="project-tab__count project-tab__count--teal">{{ kbStats.accepted }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'customer_confirmed' }" @click="switchKBTab('customer_confirmed')">
-                            Согласованные заказчиком<span class="project-tab__count project-tab__count--amber">{{ kbStats.customer_confirmed }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'fixed_by_customer' }" @click="switchKBTab('fixed_by_customer')">
-                            Исправлено заказчиком<span class="project-tab__count project-tab__count--teal">{{ kbStats.fixed_by_customer }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'missing_norms' }" @click="switchKBTab('missing_norms')">
-                            Нормы для добавления<span class="project-tab__count project-tab__count--purple">{{ missingNormsStats.pending }}</span>
-                        </button>
-                    </div>
                     <div class="kb-header-actions" style="margin-left:auto;">
                         <label class="btn btn-sm btn-upload" :class="{ disabled: kbUploadLoading }">
                             <input type="file" accept=".xlsx" @change="uploadDecisionsExcel" style="display:none">
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить Excel' }}
                         </label>
+                    </div>
+                </div>
+
+                <!-- Статусы: 2 стороны (СУ-10 / Заказчик-проектировщик), под каждой по 2 карточки-фильтра -->
+                <div class="kb-ownership" v-if="kbTab !== 'missing_norms'">
+                    <div class="kb-own-group">
+                        <div class="kb-own-group__head">СУ-10</div>
+                        <div class="kb-own-group__cards">
+                            <button type="button" class="kb-stat-card kb-stat-card--rejected"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'rejected' }"
+                                    @click="switchKBTab('rejected')">
+                                <span class="kb-stat-card__label">Отклонённые замечания</span>
+                                <span class="kb-stat-card__count">{{ kbStats.rejected }}</span>
+                            </button>
+                            <button type="button" class="kb-stat-card kb-stat-card--accepted"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'accepted' }"
+                                    @click="switchKBTab('accepted')">
+                                <span class="kb-stat-card__label">Согласованные замечания</span>
+                                <span class="kb-stat-card__count">{{ kbStats.accepted }}</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="kb-own-group">
+                        <div class="kb-own-group__head">Заказчик / проектировщик</div>
+                        <div class="kb-own-group__cards">
+                            <button type="button" class="kb-stat-card kb-stat-card--confirmed"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'customer_confirmed' }"
+                                    @click="switchKBTab('customer_confirmed')">
+                                <span class="kb-stat-card__label">Приняли в работу</span>
+                                <span class="kb-stat-card__count">{{ kbStats.customer_confirmed }}</span>
+                            </button>
+                            <button type="button" class="kb-stat-card kb-stat-card--fixed"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'fixed_by_customer' }"
+                                    @click="switchKBTab('fixed_by_customer')">
+                                <span class="kb-stat-card__label">Исправили замечание</span>
+                                <span class="kb-stat-card__count">{{ kbStats.fixed_by_customer }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
