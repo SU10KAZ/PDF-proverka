@@ -4253,11 +4253,18 @@ async def enrich_side(
                     cache_write=lambda k, v: write_cache(session_id, pair_id, k, v),
                 )
                 if (item.get("method_used") == "tiled_retry"
-                        and _pre_status in ("error", "partial", "no_image")
                         and item.get("status") == "done"):
-                    summary.described += 1
-                    if _pre_status == "error":
-                        summary.errors = max(0, summary.errors - 1)
+                    # partial уже инкрементил described+salvaged выше → повторный
+                    # described здесь был двойным счётом. Для error/no_image
+                    # described ранее НЕ считался — учитываем его тут (reserc.md #44).
+                    if _pre_status in ("error", "no_image"):
+                        summary.described += 1
+                        if _pre_status == "error":
+                            summary.errors = max(0, summary.errors - 1)
+                    elif _pre_status == "partial":
+                        # retry поднял partial→чистый done: снимаем salvaged-счётчик,
+                        # described не трогаем (уже учтён выше).
+                        summary.salvaged = max(0, summary.salvaged - 1)
             except Exception:  # noqa: BLE001 — retry must never break enrichment
                 logger.debug("problem_block_retry hook failed (ignored)", exc_info=True)
 
