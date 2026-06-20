@@ -2762,7 +2762,10 @@
             <div class="kb-page">
                 <!-- Toolbar -->
                 <div class="kb-header sched-toolbar">
-                    <h2 class="kb-title">&#128197; График производства работ</h2>
+                    <div class="sched-titlewrap">
+                        <h2 class="kb-title sched-title">График производства работ</h2>
+                        <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
+                    </div>
                     <div class="kb-header-actions sched-actions">
                         <div class="sched-modeswitch">
                             <button class="btn btn-sm" :class="schedMode==='week' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('week')">Неделя</button>
@@ -2798,6 +2801,60 @@
                     </div>
                 </div>
 
+                <!-- KPI-карточки -->
+                <div class="sched-kpis">
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--eng">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18 14.2c2 .8 3 2.4 3 4.8"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Инженеров в работе</div>
+                            <div class="sched-kpi__value">{{ schedTotals.engineers }}</div>
+                            <div class="sched-kpi__sub">Активны на {{ schedMode==='week' ? 'неделе' : 'месяце' }}</div>
+                        </div>
+                    </div>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--rep">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Отчётов за {{ schedMode==='week' ? 'неделю' : 'месяц' }}</div>
+                            <div class="sched-kpi__value">{{ schedTotals.fact }}</div>
+                            <div class="sched-kpi__sub">Фактически</div>
+                        </div>
+                    </div>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__ring" :class="schedPctClass(schedTotals.pct)">
+                            <svg viewBox="0 0 40 40">
+                                <circle class="sched-ring__bg" cx="20" cy="20" r="16"/>
+                                <circle class="sched-ring__fg" cx="20" cy="20" r="16"
+                                        :stroke-dasharray="(Math.min(100, schedTotals.pct)/100*100.53).toFixed(2)+' 100.53'"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Выполнение плана</div>
+                            <div class="sched-kpi__value" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</div>
+                            <div class="sched-kpi__sub">{{ schedTotals.fact }} из {{ schedTotals.plan }} отчётов</div>
+                        </div>
+                    </div>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--over">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Просрочки</div>
+                            <div class="sched-kpi__value">0</div>
+                            <div class="sched-kpi__sub">Нет просроченных задач</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- состояние данных: загрузка / ошибка / mock (для 'live' плашка скрыта — это лишний шум) -->
                 <div v-if="schedNoticeKind !== 'live'" class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
                     <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
@@ -2826,16 +2883,24 @@
                             </thead>
                             <tbody>
                                 <tr v-for="e in schedVisibleEngineers" :key="'r-'+e.id">
-                                    <td class="sched-eng-col sched-eng-name">{{ e.name }}</td>
+                                    <td class="sched-eng-col sched-eng-name">
+                                        <span class="sched-avatar" :style="schedAvatarStyle(e.id || e.name)">{{ schedInitials(e.name) }}</span>
+                                        <span class="sched-eng-name__txt">{{ e.name }}</span>
+                                    </td>
                                     <td v-for="d in schedDays" :key="e.id+'|'+d.key" class="sched-cell"
                                         :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
                                         @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length)">
                                         <template v-if="schedCell(e.id,d.key).length">
                                             <div class="sched-daystack">
-                                                <div v-for="(it,i) in schedCell(e.id,d.key)" :key="e.id+'|'+d.key+'|'+i"
+                                                <div v-for="(it,i) in schedCell(e.id,d.key).slice(0,2)" :key="e.id+'|'+d.key+'|'+i"
                                                      class="sched-plashka" :title="it.full">
                                                     <span class="sched-plashka__txt">{{ it.short }}</span>
                                                 </div>
+                                                <button v-if="schedCell(e.id,d.key).length > 2" class="sched-more"
+                                                        @click.stop="schedToggleCell(e.id, d.key, true)"
+                                                        :title="'Ещё ' + (schedCell(e.id,d.key).length - 2) + ' — показать все'">
+                                                    +{{ schedCell(e.id,d.key).length - 2 }}
+                                                </button>
                                             </div>
                                             <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" @click.stop>
                                                 <div class="sched-popover__head">{{ e.name }} · {{ d.dowLabel }} {{ d.dom }}</div>
@@ -2856,6 +2921,14 @@
                     </div>
                 </div>
 
+                <!-- Легенда -->
+                <div class="sched-legend">
+                    <span class="sched-legend__item"><span class="sched-legend__swatch sched-legend__swatch--plashka"></span>Проверен</span>
+                    <span class="sched-legend__item"><span class="sched-legend__badge">+N</span>Несколько отчётов</span>
+                    <span class="sched-legend__item"><span class="sched-legend__swatch sched-legend__swatch--late"></span>План не выполнен</span>
+                    <span class="sched-legend__item"><span class="sched-legend__swatch sched-legend__swatch--today"></span>Сегодня</span>
+                </div>
+
                 <!-- ПЛАН + СТАТИСТИКА за период (под основной таблицей) -->
                 <div class="sched-stats">
                     <div class="sched-stats__head">
@@ -2869,37 +2942,47 @@
                                     <th class="sched-stats-table__nm">Инженер</th>
                                     <th>Факт</th>
                                     <th>План</th>
-                                    <th>Остаток</th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
+                                    <th>Осталось</th>
+                                    <th class="sched-stats-table__status">Статус</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="s in schedStats" :key="'strow-'+s.id">
-                                    <td class="sched-stats-table__nm" :title="s.name">{{ s.name }}</td>
+                                    <td class="sched-stats-table__nm">
+                                        <span class="sched-avatar sched-avatar--sm" :style="schedAvatarStyle(s.id || s.name)">{{ schedInitials(s.name) }}</span>
+                                        <span class="sched-stats-table__nmtxt" :title="s.name">{{ s.name }}</span>
+                                    </td>
                                     <td><b>{{ s.fact }}</b></td>
                                     <td class="sched-stats-table__plan">
                                         <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
                                                :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
                                         <template v-else>{{ s.plan }}</template>
                                     </td>
-                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
                                             <span class="sched-stats-table__pctnum" :class="schedPctClass(s.pct)">{{ s.pct }}%</span>
                                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
                                         </div>
                                     </td>
+                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
+                                    <td class="sched-stats-table__status">
+                                        <span class="sched-statusbadge" :class="'sched-statusbadge--'+schedStatusFor(s).cls">{{ schedStatusFor(s).label }}</span>
+                                    </td>
                                 </tr>
                                 <tr class="sched-stats-table__total">
-                                    <td class="sched-stats-table__nm">Все инженеры ({{ schedTotals.engineers }})</td>
+                                    <td class="sched-stats-table__nm">Всего по инженерам ({{ schedTotals.engineers }})</td>
                                     <td><b>{{ schedTotals.fact }}</b></td>
                                     <td>{{ schedTotals.plan }}</td>
-                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
                                             <span class="sched-stats-table__pctnum" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</span>
                                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
                                         </div>
+                                    </td>
+                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
+                                    <td class="sched-stats-table__status">
+                                        <span class="sched-statusbadge" :class="'sched-statusbadge--'+schedStatusFor(schedTotals).cls">{{ schedStatusFor(schedTotals).label }}</span>
                                     </td>
                                 </tr>
                             </tbody>
