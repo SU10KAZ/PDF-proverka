@@ -4064,22 +4064,24 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table tbody tr:last-child td { border-bottom: none; }
 .sched-stats-table__nm { font-weight: 600; }
 .sched-stats-table th.sched-stats-table__nm, .sched-stats-table td.sched-stats-table__nm { text-align: left; }
-/* Инженер — широкий слева; данные одинаковой ширины, смещены вправо */
-.sched-stats-table th:nth-child(1) { width: 40%; }
+/* Инженер — широкий слева; Факт/Осталось/План/Замечания узкие, Выполнение шире; данные по центру */
+.sched-stats-table th:nth-child(1) { width: 52%; }
 .sched-stats-table th:nth-child(2),
 .sched-stats-table th:nth-child(3),
 .sched-stats-table th:nth-child(4),
-.sched-stats-table th:nth-child(5),
-.sched-stats-table th:nth-child(6) { width: 12%; }
+.sched-stats-table th:nth-child(5) { width: 6%; }
+.sched-stats-table th:nth-child(6) { width: 24%; }
+.sched-stats-table th:nth-child(n+2),
+.sched-stats-table td:nth-child(n+2) { text-align: center; }
 .sched-stats-table__remarks { white-space: nowrap; }
 .sched-stats-table__nmtxt { min-width: 0; }
 .sched-stats-table__plan .sched-plan__input { width: 56px; }
 /* строка итога — заметно выделена */
 .sched-stats-table__total td { background: var(--card2-bg); font-weight: 800; font-size: 14px; border-top: 2px solid var(--teal); }
 .sched-stats-table__total .sched-stats-table__nm { color: var(--teal); }
-.sched-stats-table__pctwrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.sched-stats-table__pctwrap { display: flex; align-items: center; gap: 10px; justify-content: center; }
 .sched-stats-table__pctnum { font-size: 15px; font-weight: 700; min-width: 44px; text-align: right; }
-.sched-stats-table__pct .sched-statcard__bar { flex: 1 1 auto; min-width: 70px; margin: 0; }
+.sched-stats-table__pct .sched-statcard__bar { flex: 0 0 110px; min-width: 0; margin: 0; }
 
 /* прогресс-бар выполнения (используется в таблице статистики) */
 .sched-statcard__bar { height: 6px; border-radius: 4px; background: var(--bg); margin: 8px 0; overflow: hidden; }
