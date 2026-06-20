@@ -8996,18 +8996,32 @@ const app = createApp({
             if (pct >= 70) return 'sched-warn';
             return 'sched-low';
         }
+        // Замечания: согласованные/несогласованные за период. Backend пока НЕ
+        // отдаёт эти счётчики в /api/schedule (решение схлопывается при
+        // агрегации decisions_log) → null → в UI показывается «—». Если поля
+        // появятся в engineers[] (agreed/disagreed или remarks_agreed/
+        // remarks_disagreed) — подхватятся автоматически, без правок фронта.
+        function _schedRemarkCount(e, ...keys) {
+            for (const k of keys) if (typeof e[k] === 'number') return e[k];
+            return null;
+        }
         const schedStats = computed(() => schedVisibleEngineers.value.map(e => {
             const fact = schedFactFor(e.id);
             const plan = schedPlanFor(e.id);
             const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
-            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact) };
+            const agreed = _schedRemarkCount(e, 'agreed', 'remarks_agreed');
+            const disagreed = _schedRemarkCount(e, 'disagreed', 'remarks_disagreed');
+            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed };
         }));
         const schedTotals = computed(() => {
             const s = schedStats.value;
             const fact = s.reduce((a, x) => a + x.fact, 0);
             const plan = s.reduce((a, x) => a + x.plan, 0);
             const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
-            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length };
+            const hasRemarks = s.some(x => x.agreed != null || x.disagreed != null);
+            const agreed = hasRemarks ? s.reduce((a, x) => a + (x.agreed || 0), 0) : null;
+            const disagreed = hasRemarks ? s.reduce((a, x) => a + (x.disagreed || 0), 0) : null;
+            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed };
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──

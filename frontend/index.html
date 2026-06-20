@@ -2942,6 +2942,7 @@
                                     <th class="sched-stats-table__nm">Инженер</th>
                                     <th>Факт</th>
                                     <th>План</th>
+                                    <th class="sched-stats-table__remarks">Замечания</th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
                                     <th>Осталось</th>
                                     <th class="sched-stats-table__status">Статус</th>
@@ -2959,6 +2960,12 @@
                                                :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
                                         <template v-else>{{ s.plan }}</template>
                                     </td>
+                                    <td class="sched-stats-table__remarks">
+                                        <template v-if="s.agreed != null || s.disagreed != null">
+                                            <span class="sched-remark-ok" title="согласованные">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные">{{ s.disagreed || 0 }}</span>
+                                        </template>
+                                        <span v-else class="sched-remark-na" title="Нет данных по решениям замечаний за период">—</span>
+                                    </td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
                                             <span class="sched-stats-table__pctnum" :class="schedPctClass(s.pct)">{{ s.pct }}%</span>
@@ -2974,6 +2981,12 @@
                                     <td class="sched-stats-table__nm">Всего по инженерам ({{ schedTotals.engineers }})</td>
                                     <td><b>{{ schedTotals.fact }}</b></td>
                                     <td>{{ schedTotals.plan }}</td>
+                                    <td class="sched-stats-table__remarks">
+                                        <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
+                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span>
+                                        </template>
+                                        <span v-else class="sched-remark-na">—</span>
+                                    </td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
                                             <span class="sched-stats-table__pctnum" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</span>

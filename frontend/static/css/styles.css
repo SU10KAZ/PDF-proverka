@@ -4129,6 +4129,13 @@ tr.row-rejected td.sc-cell-goto {
 .sched-statusbadge--low  { background: #fef3c7; color: var(--amber); }
 .sched-statusbadge--muted { background: var(--bg); color: var(--text-muted); }
 
+/* ── колонка «Замечания»: согласованные/несогласованные ── */
+.sched-stats-table__remarks { white-space: nowrap; }
+.sched-remark-ok  { color: var(--green); font-weight: 700; }
+.sched-remark-no  { color: var(--red); font-weight: 700; }
+.sched-remark-sep { color: var(--text3); margin: 0 3px; }
+.sched-remark-na  { color: var(--text-muted); }
+
 /* ── адаптив KPI ── */
 @media (max-width: 980px) { .sched-kpis { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .sched-kpis { grid-template-columns: 1fr; } }
