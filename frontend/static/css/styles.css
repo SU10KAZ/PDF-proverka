@@ -4064,13 +4064,13 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table tbody tr:last-child td { border-bottom: none; }
 .sched-stats-table__nm { font-weight: 600; }
 .sched-stats-table th.sched-stats-table__nm, .sched-stats-table td.sched-stats-table__nm { text-align: left; }
-/* 6 колонок (равномерно): Инженер · Факт · Осталось · План · Замечания · Выполнение */
-.sched-stats-table th:nth-child(1) { width: 26%; }
-.sched-stats-table th:nth-child(2) { width: 11%; }
-.sched-stats-table th:nth-child(3) { width: 12%; }
-.sched-stats-table th:nth-child(4) { width: 11%; }
-.sched-stats-table th:nth-child(5) { width: 14%; }
-.sched-stats-table th:nth-child(6) { width: 26%; }
+/* Инженер — широкий слева; данные одинаковой ширины, смещены вправо */
+.sched-stats-table th:nth-child(1) { width: 40%; }
+.sched-stats-table th:nth-child(2),
+.sched-stats-table th:nth-child(3),
+.sched-stats-table th:nth-child(4),
+.sched-stats-table th:nth-child(5),
+.sched-stats-table th:nth-child(6) { width: 12%; }
 .sched-stats-table__remarks { white-space: nowrap; }
 .sched-stats-table__nmtxt { min-width: 0; }
 .sched-stats-table__plan .sched-plan__input { width: 56px; }
