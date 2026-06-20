@@ -565,7 +565,7 @@
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" draggable="true"
-                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id, 'project-card--reviewed': p.expert_review_status === 'complete'}"
+                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
                          @click="navigate('/project/' + p.project_id)">
