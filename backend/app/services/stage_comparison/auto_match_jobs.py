@@ -157,6 +157,8 @@ def create_job(
             "positional_alignment": 0,
             "needs_review_pairs": 0,
             "skipped_existing_alignment": 0, "failed_pairs": 0,
+            # #65: агрегаты LLM-доматчинга листов по штампу.
+            "llm_pairs_added": 0, "llm_failures": 0, "llm_status_distribution": {},
             # Backward-compat алиасы (старый UI/артефакты читали эти ключи).
             "applied_pairs": 0, "review_pairs": 0,
         },
@@ -339,6 +341,17 @@ async def run_job(session_id: str, job_id: str) -> dict:
                     # backward-compat алиасы
                     s["applied_pairs"] = s["applied_matched_pairs"]
                     s["review_pairs"] = s["review_matched_pairs"]
+                    # #65: свод LLM-диагностики доматчинга.
+                    llm = summary.get("llm") or {}
+                    item["llm"] = llm
+                    if llm:
+                        s["llm_pairs_added"] += int(llm.get("pairs_added") or 0)
+                        st = str(llm.get("status") or "unknown")
+                        s["llm_status_distribution"][st] = (
+                            s["llm_status_distribution"].get(st, 0) + 1
+                        )
+                        if llm.get("error") or st in ("setup_exception", "provider_not_available"):
+                            s["llm_failures"] += 1
                     if item["status"] == "skipped_existing_alignment":
                         s["skipped_existing_alignment"] += 1
                     elif item["status"] == "needs_review":
