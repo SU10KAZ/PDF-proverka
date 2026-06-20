@@ -2602,6 +2602,22 @@ async def describe_image_local(
     any_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
     used_model = base_result.model_used or primary_model
 
+    # Аккумулируем usage / response_char_count по ВСЕМ чанкам (base +
+    # continuation): continuation-вызовы реально тратят токены, а раньше в
+    # итог шёл только usage первого chunk'а → недоучёт стоимости (reserc.md #46).
+    def _sum_usage(acc: Any, add: Any) -> dict[str, Any]:
+        out = dict(acc) if isinstance(acc, dict) else {}
+        if isinstance(add, dict):
+            for _k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                _v = add.get(_k)
+                if isinstance(_v, (int, float)):
+                    out[_k] = (out.get(_k) or 0) + _v
+        return out
+
+    accum_usage = _sum_usage({}, base_result.usage)
+    accum_char = base_result.response_char_count
+    worst_finish = base_result.finish_reason
+
     # Если ответ был salvaged, поля `continues`/`next_chunk_hint`/`coverage_notes`
     # почти всегда отсутствуют в parsed (они должны были идти в самом конце JSON,
     # но генерация оборвалась раньше). Принудительно ставим continues=true и
@@ -2659,6 +2675,14 @@ async def describe_image_local(
             pinned_model=used_model,
             stream=stream,
         )
+
+        # Учитываем токены/символы КАЖДОГО continuation-вызова (даже неудачного —
+        # запрос всё равно потрачен), finish_reason эскалируем до worst-case.
+        accum_usage = _sum_usage(accum_usage, cont_result.usage)
+        if isinstance(cont_result.response_char_count, int):
+            accum_char = (accum_char or 0) + cont_result.response_char_count
+        if cont_result.finish_reason == "length":
+            worst_finish = "length"
 
         if cont_result.status not in ("done", "partial") or not isinstance(cont_result.parsed, dict):
             warn = f"continuation_{cont_idx}_failed:{cont_result.error or cont_result.status}"
@@ -2725,13 +2749,13 @@ async def describe_image_local(
         raw_response_excerpt=base_result.raw_response_excerpt,
         duration_sec=base_result.duration_sec,
         error=final_error,
-        # Diagnostic поля propagируются от первого chunk'а: они нужны для
-        # тюнинга prompt/max_tokens и для отчётности после batch run'а.
-        # Continuation-chunk'и имеют свои собственные finish_reason/usage,
-        # но их аггрегация не пересиливает «как primary справился».
-        finish_reason=base_result.finish_reason,
-        usage=base_result.usage,
-        response_char_count=base_result.response_char_count,
+        # Diagnostic поля АГРЕГИРОВАНЫ по base + continuation чанкам:
+        # usage/response_char_count суммируются (continuation-вызовы тоже тратят
+        # токены — иначе недоучёт стоимости), finish_reason — worst-case
+        # ('length', если оборвался любой chunk). reserc.md #46.
+        finish_reason=worst_finish,
+        usage=accum_usage or None,
+        response_char_count=accum_char,
         parse_error_detail=base_result.parse_error_detail,
         full_raw_response=base_result.full_raw_response,
     )
