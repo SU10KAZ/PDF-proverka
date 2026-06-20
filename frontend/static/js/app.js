@@ -57,9 +57,7 @@ const app = createApp({
         // На фронте — только чтение/запуск, без редактирования содержимого.
         const migratedFindingsReport = ref(null);
         const migratedFindingsReportLoading = ref(false);
-        const migratedFindingsCheckRunning = ref(false);
         const migratedFindingsError = ref('');
-        const migratedFindingsPanelOpen = ref(false);
 
         // VersionAPI помещён в глобал через version_api.js (UMD). На случай
         // деплоя без CDN-фоллбека держим локальную stub-имплементацию.
@@ -5779,75 +5777,6 @@ const app = createApp({
             }
         }
 
-        async function runMigratedFindingsCheck() {
-            const pid = currentProjectId.value;
-            const vid = activeVersionId.value;
-            if (!pid || !vid) return null;
-            const guard = VAPI ? VAPI.canRunMigratedCheck(vid) : { ok: vid !== 'v1', reason: '' };
-            if (!guard.ok) {
-                migratedFindingsError.value = guard.reason || 'Контроль недоступен.';
-                return null;
-            }
-            migratedFindingsCheckRunning.value = true;
-            migratedFindingsError.value = '';
-            try {
-                const url = VAPI
-                    ? VAPI.migratedFindingsCheckUrl(pid, vid)
-                    : `/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(vid)}/migrated-findings/check`;
-                const resp = await fetch(url, { method: 'POST' });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    migratedFindingsError.value = VAPI
-                        ? VAPI.describeMigratedCheckError(resp.status, err.detail || '')
-                        : (err.detail || `Ошибка ${resp.status}`);
-                    return null;
-                }
-                const data = await resp.json();
-                // Backend возвращает {status, source_version_id, reason, report}.
-                // В UI нам нужен сам report (с items + counts).
-                const report = (data && data.report) ? data.report : data;
-                migratedFindingsReport.value = report || null;
-                migratedFindingsPanelOpen.value = true;
-
-                // still_relevant мог быть добавлен в 03_findings.json — обновляем
-                // список findings и статус проекта, чтобы пользователь увидел
-                // migrated-замечания и пересчитанные счётчики.
-                _cacheInvalidate('findings');
-                _cacheInvalidate('project');
-                if (currentView.value === 'findings') {
-                    loadFindings(pid);
-                }
-                loadProject(pid, true);
-
-                const total = report && report.total_previous_accepted_findings != null
-                    ? report.total_previous_accepted_findings
-                    : 0;
-                try {
-                    alert(`Контроль завершён. Проверено ${total} ранее согласованных замечаний.`);
-                } catch (_) {}
-                return data;
-            } catch (e) {
-                migratedFindingsError.value = e.message || String(e);
-                return null;
-            } finally {
-                migratedFindingsCheckRunning.value = false;
-            }
-        }
-
-        // Компьютед-summary для UI (через VersionAPI helper).
-        const migratedFindingsSummary = computed(() => {
-            if (!VAPI) {
-                return {
-                    hasReport: !!migratedFindingsReport.value,
-                    sourceVersionId: '',
-                    total: 0, stillRelevant: 0, duplicate: 0,
-                    resolved: 0, notVerifiable: 0, sourceMissing: 0,
-                    checkedAt: '', itemsCount: 0,
-                };
-            }
-            return VAPI.summarizeMigratedReport(migratedFindingsReport.value);
-        });
-
         function migratedStatusLabel(status) {
             return VAPI ? VAPI.formatMigratedStatusLabel(status) : (status || '—');
         }
@@ -5857,15 +5786,6 @@ const app = createApp({
         function findingMigratedBadge(f) {
             return VAPI ? VAPI.findingMigratedBadge(f) : null;
         }
-
-        // Доступен ли контроль для текущей активной версии.
-        const canRunMigratedCheckNow = computed(() => {
-            const vid = activeVersionId.value
-                || (currentProject.value && currentProject.value.latest_version_id)
-                || null;
-            if (!VAPI) return { ok: vid && vid !== 'v1', reason: vid === 'v1' ? 'Только V2+' : '' };
-            return VAPI.canRunMigratedCheck(vid);
-        });
 
         // ─── Computed-helpers для UI ───
         const activeVersionEntry = computed(() => {
@@ -16887,10 +16807,8 @@ const app = createApp({
             activeVersionEntry, canStartAuditNow, versionBadgeFor,
             // ─── Migrated findings (контроль ранее согласованных замечаний) ───
             migratedFindingsReport, migratedFindingsReportLoading,
-            migratedFindingsCheckRunning, migratedFindingsError,
-            migratedFindingsPanelOpen, migratedFindingsSummary,
-            canRunMigratedCheckNow,
-            loadMigratedFindingsReport, runMigratedFindingsCheck,
+            migratedFindingsError,
+            loadMigratedFindingsReport,
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             findingExtRegBadge,
             // ─── Stage Comparison ───
