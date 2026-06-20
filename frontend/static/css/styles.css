@@ -3978,17 +3978,23 @@ tr.row-rejected td.sc-cell-goto {
 /* stats */
 .sched-stats { margin-top: 18px; }
 .sched-stats__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.sched-stats__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
-.sched-statcard__plan { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
-.sched-statcard__nums .sched-plan__input { width: 40px; padding: 1px 4px; font-size: 12px; }
-.sched-statcard { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 14px; }
-.sched-statcard--total { background: var(--card2-bg); border-color: var(--border2); }
-.sched-statcard__name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
-.sched-statcard__big { font-size: 26px; font-weight: 700; line-height: 1; }
+/* таблица «План и статистика по инженерам» */
+.sched-stats__tablewrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--card-bg); }
+.sched-stats-table { width: 100%; border-collapse: collapse; }
+.sched-stats-table th, .sched-stats-table td { padding: 9px 12px; text-align: right; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.sched-stats-table thead th { background: var(--card2-bg); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+.sched-stats-table tbody tr:last-child td { border-bottom: none; }
+.sched-stats-table__nm { text-align: left; font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.sched-stats-table__plan .sched-plan__input { width: 56px; }
+.sched-stats-table__total td { background: var(--card2-bg); font-weight: 700; }
+.sched-stats-table__pct { width: 230px; }
+.sched-stats-table__pctwrap { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.sched-stats-table__pctnum { font-size: 15px; font-weight: 700; min-width: 44px; text-align: right; }
+.sched-stats-table__pct .sched-statcard__bar { flex: 1 1 auto; min-width: 70px; margin: 0; }
+
+/* прогресс-бар выполнения (используется в таблице статистики) */
 .sched-statcard__bar { height: 6px; border-radius: 4px; background: var(--bg); margin: 8px 0; overflow: hidden; }
 .sched-statcard__barfill { height: 100%; border-radius: 4px; transition: width .25s; }
-.sched-statcard__nums { display: flex; justify-content: space-between; gap: 6px; font-size: 11px; color: var(--text-muted); }
-.sched-statcard__nums b { color: var(--text); font-size: 13px; }
 
 /* статусные цвета (только в статистике, не в сетке) */
 .sched-ok   { color: var(--green); }
