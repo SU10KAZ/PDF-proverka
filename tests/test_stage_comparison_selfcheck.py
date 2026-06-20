@@ -127,6 +127,30 @@ def test_apply_selfcheck_drop_mode_removes_phantom():
     assert ids == {"chg_quote", "chg_number"}
 
 
+def test_apply_selfcheck_verify_error_is_not_verified(monkeypatch):
+    """reserc.md #55/#93: сбой верификации != успешная верификация. Дельта идёт
+    в human-review (evidence_verified=False), не в verified, и НЕ дропается даже
+    в strict-режиме (ошибка верификатора — не «негрунтованность»)."""
+    from backend.app.services.stage_comparison import evidence_first_fallback as ef
+
+    def _boom(*a, **k):
+        raise RuntimeError("verifier crashed")
+
+    monkeypatch.setattr(ef, "verify_change_evidence", _boom)
+    one = [{"id": "chg_err", "type": "changed", "title": "X",
+            "old_value": "a", "new_value": "b",
+            "evidence_left": {"quote": "a"}, "evidence_right": {"quote": "b"}}]
+    changes, diag = ec._apply_selfcheck(list(one), LEFT_MD, RIGHT_MD, _cfg(drop=True))
+    assert diag["errors"] == 1
+    assert diag["verified"] == 0
+    assert diag["dropped"] == 0          # ошибочную дельту не теряем даже в strict
+    assert len(changes) == 1
+    ch = changes[0]
+    assert ch["evidence_verified"] is False
+    assert ch["evidence_verified_by"] == "verify_error"
+    assert ch["requires_human_review"] is True
+
+
 def test_apply_selfcheck_empty_changes_safe():
     changes, diag = ec._apply_selfcheck([], LEFT_MD, RIGHT_MD, _cfg())
     assert changes == []

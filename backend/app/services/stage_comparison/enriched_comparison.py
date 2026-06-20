@@ -853,13 +853,27 @@ def _apply_selfcheck(
     total = len(changes)
     verified = 0
     rescued = 0
+    errored = 0
     ungrounded: list[int] = []
     for i, ch in enumerate(changes):
         try:
             _ef.verify_change_evidence(ch, left_norm, right_norm, fb_cfg)
         except Exception:  # noqa: BLE001 — fail-soft: верификация не валит сравнение
-            ch["evidence_verified"] = True
-            verified += 1
+            # Сбой верификации — это НЕ успешная верификация (reserc.md #55/#93).
+            # Раньше except инвертировал семантику (evidence_verified=True,
+            # verified+=1) → деградация grounding маскировалась под успех.
+            # Теперь помечаем human-review и evidence_verified=False, verified не
+            # инкрементим. Никогда не дропаем по ошибке верификатора (это не
+            # «негрунтованность»), даже в strict-режиме.
+            ch["evidence_verified"] = False
+            ch["evidence_verified_by"] = "verify_error"
+            ch["requires_human_review"] = True
+            ch.setdefault(
+                "selfcheck_note",
+                "self-check: верификация evidence завершилась ошибкой — "
+                "проверьте вручную.",
+            )
+            errored += 1
             continue
         if ch.get("evidence_verified"):
             ch.setdefault("evidence_verified_by", "quote")
@@ -902,6 +916,7 @@ def _apply_selfcheck(
         "ungrounded": len(ungrounded),
         "dropped": dropped,
         "marked_review": marked,
+        "errors": errored,
         "fuzzy_threshold": fb_cfg.fuzzy_threshold,
         "min_quote_len": fb_cfg.min_quote_len,
     }
