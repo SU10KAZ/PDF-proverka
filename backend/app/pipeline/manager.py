@@ -6121,12 +6121,38 @@ class PipelineManager:
                 self._cleanup(pid)
 
     async def _run_optimization_review(self, job: AuditJob):
-        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py."""
+        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py.
+
+        Результат пробрасывается в job.status (reserc.md #40): раньше он
+        игнорировался, поэтому проверки opt_job.status==FAILED (call-site 3659)
+        были мёртвыми. Консервативно: статус выставляем ТОЛЬКО на cancelled/error
+        (не форсим COMPLETED — чтобы не затереть статус в параллельных потоках).
+        Возвращаем результат для возможного использования вызывающим.
+        """
         from backend.app.pipeline.stages.optimization.runner import (
             run_optimization_review as _opt_review_runner,
+            OptimizationReviewResult,
         )
-        ctx = self._make_stage_context(job)
-        await _opt_review_runner(ctx)
+        pid = job.project_id
+        try:
+            ctx = self._make_stage_context(job)
+            result: OptimizationReviewResult = await _opt_review_runner(ctx)
+            if result.cancelled:
+                job.status = JobStatus.CANCELLED
+            elif result.error:
+                job.status = JobStatus.FAILED
+                job.error_message = result.error
+            return result
+        except asyncio.CancelledError:
+            job.status = JobStatus.CANCELLED
+            self._update_pipeline_log(pid, "optimization_review", "error", error="Отменено")
+            raise
+        except Exception as e:
+            job.status = JobStatus.FAILED
+            job.error_message = str(e)
+            await self._log(job, f"Optimization review исключение: {e}", "error")
+            self._update_pipeline_log(pid, "optimization_review", "error", error=str(e))
+            return None
 
 
 # Глобальный экземпляр
