@@ -2197,11 +2197,25 @@ class PipelineManager:
             raise RuntimeError(f"Неизвестный этап: {stage}")
         return normalized
 
-    def _validate_start_from_stage_now(self, project_id: str, stage: str) -> str:
-        """Fail fast when a manual start/retry would bypass mandatory stages."""
+    def _validate_start_from_stage_now(
+        self, project_id: str, stage: str, *, version_id: Optional[str] = None,
+    ) -> str:
+        """Fail fast when a manual start/retry would bypass mandatory stages.
+
+        Version-aware (reserc.md #4): валидируем против _output АКТИВНОЙ версии,
+        а не корня проекта — иначе V2-retry проверялся против stale V1-состояния
+        (ложные прохождения/блокировки gemma-гейта). version_id=None → latest.
+        """
         normalized = self._normalize_ocr_stage(stage)
         self._assert_stage_model_config_ready()
-        project_dir = resolve_project_dir(project_id)
+        from backend.app.services.common import version_service
+        project_dir_root = resolve_project_dir(project_id)
+        try:
+            project_dir = version_service.get_version_dir(
+                project_dir_root, project_id, version_id,
+            )
+        except version_service.VersionNotFoundError:
+            project_dir = project_dir_root
         output_dir = project_dir / "_output"
         project_info = load_project_info(project_dir)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
@@ -2349,7 +2363,7 @@ class PipelineManager:
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
         когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
         """
-        stage = self._validate_start_from_stage_now(project_id, stage)
+        stage = self._validate_start_from_stage_now(project_id, stage, version_id=version_id)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
             version_id=version_id,
