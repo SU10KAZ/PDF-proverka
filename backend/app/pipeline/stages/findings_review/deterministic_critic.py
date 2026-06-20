@@ -83,6 +83,10 @@ class DeterministicCriticResult:
     llm_candidates: int = 0
     llm_used: bool = False
     llm_failed: bool = False
+    # #91: сколько кандидатов остались БЕЗ семантической проверки из-за сбоя LLM
+    # (батч упал/не распарсился → по fail-soft остаются pass). Делает деградацию
+    # видимой, а не молчаливой.
+    semantic_unverified: int = 0
     error: Optional[str] = None
 
     @property
@@ -116,6 +120,7 @@ class DeterministicCriticResult:
                 "semantic_issues": self.semantic_issues,
                 "llm_candidates": self.llm_candidates,
                 "llm_failed": self.llm_failed,
+                "semantic_unverified": self.semantic_unverified,
             },
             "reviews": self.reviews,
         }
@@ -493,8 +498,11 @@ def parse_semantic_response(text: str) -> dict:
 
 async def _run_semantic_pass(candidates, idx, llm_call, batch_size, on_log):
     """Прогнать кандидатов через bounded LLM батчами. Возвращает
-    ({finding_id: {verdict, reason}}, llm_failed)."""
-    merged, failed = {}, False
+    ({finding_id: {verdict, reason}}, llm_failed, unverified_count).
+
+    unverified_count — число кандидатов в провалившихся батчах (raised/unparsed),
+    которые по fail-soft остаются pass без семантической проверки (#91)."""
+    merged, failed, unverified = {}, False, 0
     for start in range(0, len(candidates), batch_size):
         batch = candidates[start:start + batch_size]
         prompt = build_semantic_prompt(batch, idx)
@@ -503,17 +511,19 @@ async def _run_semantic_pass(candidates, idx, llm_call, batch_size, on_log):
         except Exception as exc:  # noqa: BLE001 — fail-soft по дизайну
             logger.warning("Semantic critic LLM call failed: %s", exc)
             failed = True
+            unverified += len(batch)
             if on_log:
                 await on_log(f"Semantic critic: LLM-вызов упал ({exc}); батч → pass")
             continue
         parsed = parse_semantic_response(text or "")
         if not parsed:
             failed = True
+            unverified += len(batch)
             if on_log:
                 await on_log("Semantic critic: ответ LLM не распарсился; батч → pass")
             continue
         merged.update(parsed)
-    return merged, failed
+    return merged, failed, unverified
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -577,10 +587,11 @@ async def run_deterministic_critic(
                 f"Critic: {len(reviews)} структурных проблем, "
                 f"{len(candidates)} замечаний → семантическая проверка LLM..."
             )
-        semantic, failed = await _run_semantic_pass(
+        semantic, failed, unverified = await _run_semantic_pass(
             candidates, idx, llm_call, batch_size, on_log,
         )
         result.llm_failed = failed
+        result.semantic_unverified = unverified  # #91: видимая деградация
 
     for finding in candidates:
         fid = finding.get("id") or finding.get("finding_id")

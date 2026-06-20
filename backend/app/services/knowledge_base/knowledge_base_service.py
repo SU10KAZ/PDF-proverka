@@ -113,8 +113,11 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     try:
         from backend.app.services.storage import storage_write_facade as _swf
         _swf.shadow_mirror_project_id_safe(project_id)
-    except Exception:
-        pass
+    except Exception:  # noqa: BLE001 — fail-soft, но #91: не молчим (наблюдаемость)
+        import logging
+        logging.getLogger(__name__).debug(
+            "shadow_mirror_project_id_safe failed for %s", project_id, exc_info=True
+        )
 
     return {
         "saved": len(decisions),
