@@ -3924,11 +3924,13 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table th:nth-child(2), .sched-stats-table td:nth-child(2) { color: var(--green); }
 .sched-stats-table th:nth-child(3), .sched-stats-table td:nth-child(3) { color: var(--red); }
 .sched-stats-table th:nth-child(4), .sched-stats-table td:nth-child(4) { color: #2563eb; }
+/* жирные цифры Факт/Осталось/План */
+.sched-stats-table td:nth-child(2), .sched-stats-table td:nth-child(3), .sched-stats-table td:nth-child(4) { font-weight: 700; }
 .sched-stats-table__remarks { white-space: nowrap; }
 .sched-stats-table__nmtxt { min-width: 0; }
 .sched-stats-table__plan .sched-plan__input { width: 56px; }
 /* строка итога — заметно выделена */
-.sched-stats-table__total td { background: var(--card2-bg); font-weight: 800; font-size: 14px; border-top: 2px solid var(--teal); }
+.sched-stats-table__total td { background: var(--card2-bg); font-weight: 800; font-size: 18px; border-top: 2px solid var(--teal); }
 .sched-stats-table__total .sched-stats-table__nm { color: var(--teal); }
 .sched-stats-table__pctwrap { display: flex; align-items: center; gap: 10px; justify-content: center; }
 .sched-stats-table__pctnum { font-size: 15px; font-weight: 700; min-width: 44px; text-align: right; }
