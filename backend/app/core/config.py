@@ -596,6 +596,10 @@ GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False
 # на 4096 в проде стабильно падают блоки 800×500 с "Context size has been exceeded".
 GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "8192"))
 GEMMA_HIGH_DETAIL_CONTEXT_LENGTH = int(os.environ.get("GEMMA_HIGH_DETAIL_CONTEXT_LENGTH", "16000"))
+# #16: параллелизм base 100 DPI прохода Gemma. Default 1 (= прежний хардкод,
+# gemma3.6-35b не тянет параллель), но конфигурируемо для будущих моделей/железа.
+# High-detail 300 DPI всегда остаётся 1.
+GEMMA_BASE_PARALLELISM = max(1, int(os.environ.get("GEMMA_BASE_PARALLELISM", "1") or "1"))
 LMSTUDIO_UNLOAD_AFTER_QUEUE = _env_bool("LMSTUDIO_UNLOAD_AFTER_QUEUE", True)
 LMSTUDIO_UNLOAD_GRACE_SECONDS = int(os.environ.get("LMSTUDIO_UNLOAD_GRACE_SECONDS", "60"))
 LMSTUDIO_UNLOAD_MODEL_ALLOWLIST = _env_csv(
