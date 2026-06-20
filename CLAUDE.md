@@ -94,10 +94,15 @@ uvicorn backend.app.main:app --host 0.0.0.0 --port 8081 --reload
 # Frontend (Vite dev-сервер с proxy → :8081)
 cd frontend && npm run dev   # http://localhost:5173
 
-# Тесты
-python -m pytest tests/                      # все
-python -m pytest tests/test_norms.py -v
-python -m pytest tests/ -k "grounding"
+# Тесты (два корня: tests + backend/tests)
+python -m pytest tests backend/tests         # все (≈4200 тестов)
+python -m pytest tests/test_missing_norms_kb.py -v
+python -m pytest tests backend/tests -k "grounding"
+
+# Регресс-гейт: падает только на НОВЫХ падениях против baseline
+# (известный долг по тестам — в scripts/ci_known_failures.txt)
+python scripts/ci_regression_gate.py            # проверка (для CI и после правок)
+python scripts/ci_regression_gate.py --record   # пересоздать baseline в новом окружении
 ```
 
 ## JSON Pipeline

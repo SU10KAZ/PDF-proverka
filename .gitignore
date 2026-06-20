@@ -26,6 +26,7 @@ backend/app/data/stage_comparison_saved_config.json
 *.log
 *.tmp
 *.cache
+.ci_last_report.xml
 
 # === Local settings ===
 .claude/settings.local.json
