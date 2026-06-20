@@ -117,7 +117,7 @@ def _mk_output(tmp_path) -> Path:
 
 def test_parsed_reset_wait_then_success(monkeypatch, tmp_path):
     out = _mk_output(tmp_path)
-    (out / "01_text_analysis.json").write_text("{}")
+    (out / "01_text_analysis.json").write_text('{"text_findings": []}')
     # attempt0: rate limit; wait True; retry → success
     _patch_runner(monkeypatch, [(1, "RL hit your limit"), (0, "ok")],
                   parsed_reset=42)
@@ -129,7 +129,7 @@ def test_parsed_reset_wait_then_success(monkeypatch, tmp_path):
 
 def test_unparsed_reset_fallback_then_success(monkeypatch, tmp_path):
     out = _mk_output(tmp_path)
-    (out / "01_text_analysis.json").write_text("{}")
+    (out / "01_text_analysis.json").write_text('{"text_findings": []}')
     sleeps = []
     # attempt0: RL; wait False (reset не распознан); fallback sleep; retry → success
     _patch_runner(monkeypatch, [(1, "RL overloaded"), (0, "ok")],
@@ -177,7 +177,7 @@ def test_cancel_during_wait(monkeypatch, tmp_path):
 
 def test_success_first_try_no_retry(monkeypatch, tmp_path):
     out = _mk_output(tmp_path)
-    (out / "01_text_analysis.json").write_text("{}")
+    (out / "01_text_analysis.json").write_text('{"text_findings": []}')
     _patch_runner(monkeypatch, [(0, "ok")])
     ctx = FakeCtx(out, wait_returns=[])
     res = asyncio.run(runner.run_text_analysis(ctx))
