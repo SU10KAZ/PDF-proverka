@@ -827,7 +827,7 @@ def get_project_status(
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
-        pdf_files=[pf for pf in pdf_files if (proj_dir / pf).exists()],
+        pdf_files=[pf for pf in pdf_files if (version_dir / pf).exists()],
         has_extracted_text=has_text,
         text_size_kb=text_size_kb,
         has_md_file=has_md,
