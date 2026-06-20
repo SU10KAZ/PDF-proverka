@@ -162,3 +162,20 @@ knowledge_base/work_plans.json.broken-*
 *.broken-*
 *.tmp.*
 project_rename.reverse.json
+
+# === Live project data (untracked 2026-06-20) ===
+/projects/
+
+# === Backend runtime state (точечно, НЕ *.json — иначе заденет seed-конфиги) ===
+/backend/app/data/objects.json
+/backend/app/data/project_groups.json
+/backend/app/data/missing_norms_vault.json
+/backend/app/data/prepare_queue.json
+/backend/app/data/hidden_projects.json
+/backend/app/data/usage_offsets.json
+/backend/app/data/users.json
+/backend/app/data/external_registers/
+
+# === Knowledge base runtime ===
+/knowledge_base/decisions_log.json
+/knowledge_base/patterns.json
