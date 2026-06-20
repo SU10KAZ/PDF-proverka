@@ -2246,16 +2246,6 @@
         <!-- ═══ Knowledge Base (База знаний) ═══ -->
         <div v-if="currentView === 'knowledge-base'" class="container">
             <div class="kb-page">
-                <div class="kb-header kb-header--inline" style="justify-content:flex-start; gap:18px; flex-wrap:nowrap;">
-                    <h2 class="kb-title" style="white-space:nowrap;">База знаний</h2>
-                    <div class="kb-header-actions" style="margin-left:auto;">
-                        <label class="btn btn-sm btn-upload" :class="{ disabled: kbUploadLoading }">
-                            <input type="file" accept=".xlsx" @change="uploadDecisionsExcel" style="display:none">
-                            {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить Excel' }}
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Статусы: 2 стороны (СУ-10 / Заказчик-проектировщик), под каждой по 2 карточки-фильтра -->
                 <div class="kb-ownership" v-if="kbTab !== 'missing_norms'">
                     <div class="kb-own-group">
