@@ -126,6 +126,11 @@ def _empty_summary() -> dict:
         },
         "by_severity": {"high": 0, "medium": 0, "low": 0, "unknown": 0},
         "requires_human_review": 0,
+        # #59: наблюдаемость локации change'ей. Раньше not_found резолв был тихим —
+        # нельзя было увидеть, какая доля изменений «повисла» без листа/страницы.
+        "by_location_method": {},
+        "changes_without_page": 0,
+        "location_warnings": [],
         # Phase 6 metrics: считаем visual-evidence changes отдельно. mixed
         # включается в visual_evidence_changes, потому что в mixed-change
         # как минимум один visual origin есть; image_enrichment_evidence_changes
@@ -136,6 +141,24 @@ def _empty_summary() -> dict:
         "scheme_analysis_evidence_changes": 0,
         "image_diff_index_evidence_changes": 0,
     }
+
+
+def _compute_location_warnings(summary: dict) -> list[str]:
+    """#59: предупреждения о высокой доле changes без локации/страницы.
+
+    Чистая функция (тестируемая). Порог — половина изменений.
+    """
+    out: list[str] = []
+    total = summary.get("total_changes") or 0
+    if not total:
+        return out
+    nf = (summary.get("by_location_method") or {}).get("not_found", 0)
+    if nf / total >= 0.5:
+        out.append(f"высокая доля changes без локации: not_found {nf}/{total}")
+    cwp = summary.get("changes_without_page") or 0
+    if cwp / total >= 0.5:
+        out.append(f"высокая доля changes без страницы: {cwp}/{total}")
+    return out
 
 
 def _change_has_visual_evidence(ch: dict) -> bool:
@@ -263,6 +286,12 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 summary["requires_human_review"] += 1
             summary["total_changes"] += 1
 
+            # #59: распределение методов локации (resolved/not_found/...).
+            loc_method = str(loc.get("method") or "unknown")
+            summary["by_location_method"][loc_method] = (
+                summary["by_location_method"].get(loc_method, 0) + 1
+            )
+
             # Visual evidence metrics — суммируем по source + evidence[].
             # Считаем visual_evidence_changes только один раз на change.
             if _change_has_visual_evidence(ch):
@@ -287,6 +316,8 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
             left_page = loc.get("left_page")
             right_page = loc.get("right_page")
             page_for_sort = left_page if left_page is not None else right_page
+            if left_page is None and right_page is None:
+                summary["changes_without_page"] += 1  # #59
             finding_id = str(ch.get("id") or "").strip() or f"uf_{uuid.uuid4().hex[:10]}"
             items.append({
                 "id": finding_id,
@@ -343,6 +374,9 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
         (it.get("alignment_slot") if it.get("alignment_slot") is not None else 9999),
         _severity_sort_key(it),
     ))
+
+    # #59: warning, если большая доля changes не легла на лист/страницу.
+    summary["location_warnings"] = _compute_location_warnings(summary)
 
     return {
         "session_id": session_id,
