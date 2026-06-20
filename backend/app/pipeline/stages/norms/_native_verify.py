@@ -10,15 +10,48 @@ Fallback: при любой ошибке pipeline_service возвращаетс
 from __future__ import annotations
 
 import json
+import logging
+import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-# Путь к Norms-main инструментам и его venv (нужен для sentence_transformers)
-NORMS_TOOLS_PATH = Path("/home/coder/projects/Norms/tools")
+logger = logging.getLogger(__name__)
+
+# #34: тулчейн норм (norms_api + venv + индекс пунктов paragraphs.jsonl) — теперь
+# in-repo norms/tools, тот же корень, что и authoritative status_index. Раньше был
+# хардкод на внешний /home/coder/projects/Norms/tools → статусы (external_provider)
+# и цитаты пунктов (этот модуль) могли расходиться. Переопределяется env
+# NORMS_TOOLS_PATH.
+def _default_norms_tools_path() -> Path:
+    return Path(__file__).resolve().parents[5] / "norms" / "tools"
+
+
+NORMS_TOOLS_PATH = Path(os.environ.get("NORMS_TOOLS_PATH", str(_default_norms_tools_path())))
 NORMS_VENV_SITE = NORMS_TOOLS_PATH / "venv/lib/python3.12/site-packages"
+
+
+def _warn_if_index_paths_diverge() -> None:
+    """#34: предупредить, если индекс пунктов (этот модуль) и индекс статусов
+    (external_provider) указывают на РАЗНЫЕ базы. Статусы и цитаты должны идти из
+    одного источника, иначе вердикт «норма заменена» и текст её пункта могут не
+    соответствовать друг другу. Диагностика fail-soft — не роняет stage."""
+    try:
+        from backend.app.pipeline.stages.norms.external_provider import (
+            NORMS_STATUS_INDEX_PATH,
+        )
+        para_index = (NORMS_TOOLS_PATH / "status_index.json").resolve()
+        status_index = Path(NORMS_STATUS_INDEX_PATH).resolve()
+        if para_index != status_index:
+            logger.warning(
+                "Норм-индексы расходятся (#34): цитаты/пункты из %s, статусы из %s; "
+                "должны указывать на один источник.",
+                para_index, status_index,
+            )
+    except Exception:  # pragma: no cover - диагностика не должна ронять stage
+        pass
 
 # Jaccard threshold: при совпадении >= этого значения считаем пункт верным.
 # Консервативное значение — неправильные пункты дают 0-10%, правильные >35%.
@@ -29,7 +62,8 @@ SEMANTIC_SCORE_MIN = 0.70
 
 
 def _import_norms_api():
-    """Импортировать norms_api из Norms-main (lazy, с path-инъекцией)."""
+    """Импортировать norms_api из норм-тулчейна (lazy, с path-инъекцией)."""
+    _warn_if_index_paths_diverge()
     venv = str(NORMS_VENV_SITE)
     tools = str(NORMS_TOOLS_PATH)
     if venv not in sys.path:

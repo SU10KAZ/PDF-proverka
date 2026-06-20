@@ -22,14 +22,15 @@ import re
 from pathlib import Path
 from typing import Any
 
-# ─── Путь к внешней базе ──────────────────────────────────────────────────
-# Переопределяется через env (удобно в тестах). В проде — абсолютный путь
-# к соседнему проекту, как просил заказчик.
+# ─── Путь к индексу статусов ──────────────────────────────────────────────
+# #34: authoritative — in-repo norms/tools/status_index.json (565 норм, новее и
+# полнее внешнего Norms-main, особенно по «заменённым» редакциям). Прежний дефолт
+# указывал на backend/.../norms/tools/ — НЕсуществующий путь → load_status_index
+# молча возвращал пустой индекс (все нормы not_in_index). Переопределяется env.
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+_DEFAULT_STATUS_INDEX = _REPO_ROOT / "norms" / "tools" / "status_index.json"
 NORMS_STATUS_INDEX_PATH = Path(
-    os.environ.get(
-        "NORMS_STATUS_INDEX_PATH",
-        str(Path(__file__).parent / "tools" / "status_index.json"),
-    )
+    os.environ.get("NORMS_STATUS_INDEX_PATH", str(_DEFAULT_STATUS_INDEX))
 )
 
 
