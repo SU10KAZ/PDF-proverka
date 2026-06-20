@@ -71,6 +71,26 @@ def crop_policy_label(policy: dict) -> str:
     return f"{policy.get('dpi')} DPI, {compact}, {small}"
 
 
+def _partial_crop_result(
+    ctx: PipelineStageContext, output_dir_name: str, label: str
+) -> StageResult | None:
+    """reserc.md #9: exit_code==2 = часть crop_url отдала HTTP 404.
+
+    Partial-success везде (как на Stage 02 crop): если хоть какие-то блоки
+    скачались (index.json существует) — продолжаем с доступными, пропуски
+    попадут в coverage. Если не скачалось НИЧЕГО — возвращаем None и caller
+    делает hard-fail.
+    """
+    index_path = ctx.output_dir / output_dir_name / "index.json"
+    if not index_path.exists():
+        return None
+    ctx.update_pipeline_log(
+        "crop_blocks", "done",
+        message=f"OK частично ({label}; часть блоков пропущена, см. coverage)",
+    )
+    return StageResult.ok(policy_label=label, partial=True)
+
+
 # ─── Stage runners ────────────────────────────────────────────────────────────
 
 async def run_crop_blocks(
@@ -113,12 +133,22 @@ async def run_crop_blocks(
     )
 
     if exit_code == 2:
-        error = "Не все блоки скачались. Проверьте актуальность crop_url в result.json"
-        ctx.update_pipeline_log("crop_blocks", "error", error=error)
-        return StageResult.fail(
-            "Кроп блоков: не все image-блоки скачались (HTTP 404). "
-            "Обновите OCR-результат и повторите."
+        # reserc.md #9: частичная неудача скачивания — продолжаем с доступными
+        # блоками (partial-success), пропуски попадут в coverage. Hard-fail
+        # только если не скачалось НИЧЕГО.
+        await ctx.log(
+            "Кроп блоков: часть image-блоков не скачалась (HTTP 404); "
+            "продолжаю с доступными, пропуски попадут в coverage",
+            "warn",
         )
+        partial = _partial_crop_result(
+            ctx, output_dir_name, crop_policy_label(effective_policy)
+        )
+        if partial is not None:
+            return partial
+        error = "Не скачался ни один image-блок (HTTP 404). Обновите OCR-результат и повторите."
+        ctx.update_pipeline_log("crop_blocks", "error", error=error)
+        return StageResult.fail(f"Кроп блоков: {error}")
 
     if exit_code != 0:
         error = stderr or f"Exit code: {exit_code}"
@@ -166,6 +196,20 @@ async def run_policy_recrop(
         ),
         on_output=ctx.log,
     )
+
+    if exit_code == 2:
+        # reserc.md #9: partial-success и при перекропе по policy.
+        await ctx.log(
+            "Перекроп: часть image-блоков не скачалась (HTTP 404); "
+            "продолжаю с доступными, пропуски попадут в coverage",
+            "warn",
+        )
+        partial = _partial_crop_result(ctx, output_dir_name, label)
+        if partial is not None:
+            return partial
+        error = "Не скачался ни один image-блок (HTTP 404). Обновите OCR-результат и повторите."
+        ctx.update_pipeline_log("crop_blocks", "error", error=error)
+        return StageResult.fail(f"Gemma crop policy recrop failed: {error}")
 
     if exit_code != 0:
         error = stderr or f"Exit code: {exit_code}"
