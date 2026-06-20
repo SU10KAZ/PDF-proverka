@@ -574,22 +574,63 @@ def import_decisions_from_excel(file_path: str, default_project_id: Optional[str
         def _looks_like_version(s: str) -> bool:
             return bool(s and _re.fullmatch(r"v\d+", s.strip(), flags=_re.IGNORECASE))
 
-        project_id = None
+        def _pid_resolves(pid: str) -> bool:
+            """project_id указывает на реальную папку проекта/контейнер."""
+            if not pid:
+                return False
+            try:
+                from backend.app.services.common.project_service import (
+                    resolve_project_dir,
+                )
+                resolve_project_dir(pid, must_exist=True)
+                return True
+            except Exception:
+                return False
+
+        def _strip_version_label(pid: str) -> str:
+            """Снять хвостовую метку версии ("<id> V1"/"<id>_v2"/…).
+
+            Версия в импорте передаётся отдельно (`version_id`), поэтому в самом
+            project_id метки "V1" быть не должно. Старые/внешние экспорты иногда
+            запекали в скрытую ячейку композит вида "KM/1232-ЧМ-КМ-1 V1" —
+            он не резолвится (реальная папка называется "KM/1232-ЧМ-КМ-1").
+            """
+            return _re.sub(r"[ _-]?[vV]\d+$", "", pid).strip() if pid else pid
+
+        # Кандидаты в порядке приоритета. Берём ПЕРВЫЙ, который реально
+        # резолвится в папку проекта — это и чинит 500 «Project directory not
+        # resolved» на стейл-ячейках, и сохраняет per-sheet идентичность для
+        # многопроектных отчётов (валидная скрытая ячейка по-прежнему выигрывает).
+        candidates: list[str] = []
         if "project_id" in headers:
             row2 = list(next(ws.iter_rows(min_row=2, max_row=2), []))
             if row2 and headers["project_id"] < len(row2):
                 pid_val = str(row2[headers["project_id"]].value or "").strip()
                 if pid_val and not _looks_like_version(pid_val):
-                    project_id = pid_val
+                    candidates.append(pid_val)
+        # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
+        bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
+        if not _looks_like_version(bare_title):
+            resolved = _resolve_project_id_from_sheet(ws.title)
+            if resolved and not _looks_like_version(resolved):
+                candidates.append(resolved)
+        if default_project_id:
+            candidates.append(default_project_id)
+
+        project_id = None
+        # Pass 1: первый кандидат, который резолвится как есть.
+        for cand in candidates:
+            if _pid_resolves(cand):
+                project_id = cand
+                break
+        # Pass 2: ни один не резолвится → пробуем снять хвостовую метку версии
+        # (стейл-экспорты "<id> V1"). Принимаем только если stripped резолвится.
         if not project_id:
-            # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
-            bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
-            if not _looks_like_version(bare_title):
-                resolved = _resolve_project_id_from_sheet(ws.title)
-                if resolved and not _looks_like_version(resolved):
-                    project_id = resolved
-        if not project_id and default_project_id:
-            project_id = default_project_id
+            for cand in candidates:
+                stripped = _strip_version_label(cand)
+                if stripped and stripped != cand and _pid_resolves(stripped):
+                    project_id = stripped
+                    break
 
         decisions = []
         for row in ws.iter_rows(min_row=3, values_only=False):
