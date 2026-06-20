@@ -2095,7 +2095,7 @@ tr.row-rejected td.sc-cell-goto {
 
 .kb-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
 .kb-table th {
-    padding: 8px 6px; text-align: left; font-weight: 600; color: var(--text3);
+    padding: 8px 6px; text-align: center; font-weight: 800; color: var(--text3);
     border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
     font-size: 11px; text-transform: uppercase; letter-spacing: .3px;
 }
