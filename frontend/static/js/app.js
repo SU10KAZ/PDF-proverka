@@ -2574,8 +2574,7 @@ const app = createApp({
             if (hash === '/knowledge-base') {
                 currentView.value = 'knowledge-base';
                 connectGlobalWS();
-                // По умолчанию — «Все проекты» (kbObjectFilter=''); выбор объекта
-                // в селекторе сужает БЗ до него.
+                // БЗ фильтруется по глобально выбранному объекту (верхний селектор «Объект»).
                 loadKnowledgeBase();
                 loadKBStats();
             } else if (hash === '/queue') {
@@ -4050,6 +4049,11 @@ const app = createApp({
                 await Promise.all([refreshProjects(), loadProjectGroups()]);
                 if (currentView.value === 'stage-comparison') {
                     scLoadObjects();
+                }
+                // База знаний фильтруется по выбранному объекту — перезагружаем при смене.
+                if (currentView.value === 'knowledge-base') {
+                    loadKBStats();
+                    if (kbTab.value !== 'missing_norms') loadKnowledgeBase();
                 }
             } catch (e) {
                 console.error('Failed to switch object:', e);
@@ -8664,8 +8668,8 @@ const app = createApp({
             try {
                 const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
                 if (kbSearch.value) params.set('search', kbSearch.value);
-                if (kbSectionFilter.value) params.set('section', kbSectionFilter.value);
-                if (kbObjectFilter.value) params.set('object_id', kbObjectFilter.value);
+                // Замечания фильтруются по глобально выбранному объекту (верхний селектор «Объект»).
+                if (currentObjectId.value) params.set('object_id', currentObjectId.value);
                 const resp = await fetch(`/api/knowledge-base/entries?${params}`);
                 const data = await resp.json();
                 kbEntries.value = data.entries || [];
@@ -8678,7 +8682,7 @@ const app = createApp({
 
         async function loadKBStats() {
             try {
-                const q = kbObjectFilter.value ? `?object_id=${encodeURIComponent(kbObjectFilter.value)}` : '';
+                const q = currentObjectId.value ? `?object_id=${encodeURIComponent(currentObjectId.value)}` : '';
                 const resp = await fetch(`/api/knowledge-base/stats${q}`);
                 kbStats.value = await resp.json();
             } catch (e) { console.warn('KB stats error:', e); }

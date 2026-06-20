@@ -2284,18 +2284,6 @@
                     </div>
                 </div>
 
-                <!-- Filters (скрыть для missing_norms) -->
-                <div class="kb-filters" v-if="kbTab !== 'missing_norms'">
-                    <select v-model="kbObjectFilter" class="filter-select" @change="onKbObjectChange()" style="max-width:300px">
-                        <option value="">Все проекты</option>
-                        <option v-for="o in objectsList" :key="'kbo-'+o.id" :value="o.id">{{ o.name }}</option>
-                    </select>
-                    <select v-model="kbSectionFilter" class="filter-select" @change="loadKnowledgeBase()" style="max-width:180px">
-                        <option value="">Все дисциплины</option>
-                        <option v-for="[code] in projectsBySection" :key="'kb-'+code" :value="code">{{ code }}</option>
-                    </select>
-                </div>
-
                 <!-- ═══ Нормы для добавления ═══ -->
                 <div v-if="kbTab === 'missing_norms'">
                     <div class="kb-filters" style="align-items:center; gap:12px">
