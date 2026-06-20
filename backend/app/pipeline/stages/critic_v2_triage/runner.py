@@ -135,7 +135,14 @@ def _extract_blocks_index(blocks_doc: Any) -> Optional[set[str]]:
         return None
     blocks_list = None
     if isinstance(blocks_doc, dict):
-        blocks_list = blocks_doc.get("blocks") or blocks_doc.get("items")
+        # Реальная схема 02_blocks_analysis.json — ключ "block_analyses"
+        # (как в deterministic_critic.build_index). "blocks"/"items" оставлены
+        # для обратной совместимости со старыми/иными форматами.
+        blocks_list = (
+            blocks_doc.get("block_analyses")
+            or blocks_doc.get("blocks")
+            or blocks_doc.get("items")
+        )
     elif isinstance(blocks_doc, list):
         blocks_list = blocks_doc
     if not isinstance(blocks_list, list):
