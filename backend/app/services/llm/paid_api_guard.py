@@ -146,7 +146,12 @@ def _today_spent_usd() -> float:
 # Решение: под локом резервируем оценку стоимости; проверка лимита учитывает
 # spent + сумму активных резерваций. TTL-самозалечивание гарантирует, что
 # пропущенный release (error-путь) не «съест» бюджет навсегда.
-_RESERVATION_TTL_SEC_DEFAULT = 900.0
+# TTL — лишь БЭКСТОП на случай пропущенного release (на нормальных и error-путях
+# release вызывается явно). Значение заведомо больше самого долгого одиночного
+# вызова с ретраями (timeout × max_retries + backoff), чтобы НЕ вычистить
+# резервацию ещё выполняющегося долгого запроса и не занизить бюджет
+# (pre-deploy review). Переопределяется env PAID_API_RESERVATION_TTL_SEC.
+_RESERVATION_TTL_SEC_DEFAULT = 3600.0
 _reservation_lock = threading.Lock()
 _reservations: dict[int, tuple[float, float]] = {}  # id -> (amount_usd, monotonic_ts)
 _reservation_ids = itertools.count(1)

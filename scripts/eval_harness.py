@@ -112,7 +112,9 @@ def compute_eval_metrics(entries: list[dict], *, min_sample: int = 20) -> dict:
         ),
         "min_sample": min_sample,
         "top_projects": ranked[:10],
-        "bottom_projects": ranked[-10:][::-1] if len(ranked) > 10 else [],
+        # bottom НЕ должен пересекаться с top: берём из хвоста ПОСЛЕ топ-10
+        # (при 11-19 проектах ranked[-10:] налезал на top — pre-deploy review).
+        "bottom_projects": ranked[max(10, len(ranked) - 10):][::-1] if len(ranked) > 10 else [],
         "recall_note": (
             "recall (пропущенные дефекты) НЕ вычисляется из decisions_log: датасет "
             "содержит только произведённые аудитом замечания с вердиктом эксперта; "

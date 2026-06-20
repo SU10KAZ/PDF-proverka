@@ -84,6 +84,22 @@ def test_top_bottom_projects_respect_min_sample():
     assert "P_small" not in names  # выборка < min_sample
 
 
+def test_top_bottom_no_overlap_mid_range():
+    """11-19 ранжированных проектов: top_projects и bottom_projects НЕ
+    пересекаются (раньше ranked[-10:] налезал на ranked[:10] — review #96)."""
+    entries = []
+    for i in range(15):  # 15 проектов, у каждого выборка ≥ min_sample
+        for _ in range(i + 1):
+            entries.append(_e("accepted", source_project=f"P{i:02d}"))
+        for _ in range(15 - i):
+            entries.append(_e("rejected", source_project=f"P{i:02d}"))
+    m = eh.compute_eval_metrics(entries, min_sample=5)
+    top = {p["source_project"] for p in m["top_projects"]}
+    bottom = {p["source_project"] for p in m["bottom_projects"]}
+    assert len(top) == 10
+    assert not (top & bottom), f"пересечение top/bottom: {top & bottom}"
+
+
 def test_recall_note_is_explicit():
     m = eh.compute_eval_metrics([_e("accepted")])
     assert "recall" in m["recall_note"].lower()

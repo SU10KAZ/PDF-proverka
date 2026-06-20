@@ -6,12 +6,86 @@ invoke возвращал claude_rc=... без распознавания rate-l
 """
 from __future__ import annotations
 
+import threading
+import time as _time
+from pathlib import Path
+
 import backend.app.services.stage_comparison.text_llm_provider as tlp
 
 
 class _Proc:
     def __init__(self, rc, out, err):
         self.returncode, self.stdout, self.stderr = rc, out, err
+
+
+def _sys_file_from_args(args):
+    """Извлечь путь --append-system-prompt-file из argv claude."""
+    for i, a in enumerate(args):
+        if a == "--append-system-prompt-file":
+            return args[i + 1]
+    return None
+
+
+# ── reserc.md #54 review (HIGH): уникальный temp-файл на вызов ───────────────
+
+def test_invoke_uses_unique_tempfile_not_fixed_name(monkeypatch, tmp_path):
+    """temp-файл системного промпта — уникальный (mkstemp), а не фиксированное
+    имя _text_llm_system_prompt.tmp.md (иначе гонка при chunk_concurrency>1)."""
+    prov = tlp.ClaudeCodeProvider()
+    monkeypatch.setattr(prov, "_find_cli", lambda: "claude")
+    seen = {}
+
+    def _fake_run(args, **k):
+        p = _sys_file_from_args(args)
+        seen["path"] = p
+        seen["exists_at_call"] = bool(p and Path(p).exists())
+        return _Proc(0, '{"result":"ok"}', "")
+
+    monkeypatch.setattr(tlp.subprocess, "run", _fake_run)
+    res = prov.invoke(system_prompt="s", user_prompt="u", model="haiku",
+                      timeout_sec=10, work_dir=tmp_path)
+    assert res.status == "done"
+    assert seen["exists_at_call"] is True
+    assert Path(seen["path"]).name != "_text_llm_system_prompt.tmp.md"
+    assert Path(seen["path"]).name.startswith("_text_llm_sys_")
+    # после вызова temp-файл убран
+    assert not Path(seen["path"]).exists()
+
+
+def test_concurrent_invokes_no_tempfile_race(monkeypatch, tmp_path):
+    """Два одновременных invoke с ОДНИМ work_dir используют РАЗНЫЕ temp-файлы,
+    и файл каждого существует во время его subprocess (нет преждевременного
+    unlink соседом) — это и есть фикс HIGH-находки review #54."""
+    prov = tlp.ClaudeCodeProvider()
+    monkeypatch.setattr(prov, "_find_cli", lambda: "claude")
+    paths = []
+    existed = []
+    lock = threading.Lock()
+
+    def _fake_run(args, **k):
+        p = _sys_file_from_args(args)
+        # окно перекрытия: пока «работаем», файл должен существовать
+        _time.sleep(0.05)
+        with lock:
+            paths.append(p)
+            existed.append(bool(p and Path(p).exists()))
+        return _Proc(0, '{"result":"ok"}', "")
+
+    monkeypatch.setattr(tlp.subprocess, "run", _fake_run)
+
+    def _call():
+        prov.invoke(system_prompt="s", user_prompt="u", model="haiku",
+                    timeout_sec=10, work_dir=tmp_path)
+
+    threads = [threading.Thread(target=_call) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(paths) == 4
+    assert len(set(paths)) == 4, f"temp-файлы должны быть уникальны: {paths}"
+    assert all(existed), "каждый temp-файл обязан существовать во время своего вызова"
 
 
 def test_is_rate_limited_delegates():

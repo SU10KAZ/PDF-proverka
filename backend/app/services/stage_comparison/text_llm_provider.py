@@ -22,6 +22,7 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -218,7 +219,18 @@ class ClaudeCodeProvider(BaseTextLLMProvider):
         try:
             if work_dir:
                 work_dir.mkdir(parents=True, exist_ok=True)
-                sys_file = work_dir / "_text_llm_system_prompt.tmp.md"
+                # УНИКАЛЬНОЕ имя на каждый вызов. При chunk_concurrency>1
+                # (evidence_first_fallback) несколько потоков делят ОДИН work_dir;
+                # фиксированное имя приводило к гонке — finally.unlink() одного
+                # потока удалял файл, нужный subprocess'у другого → ENOENT на
+                # --append-system-prompt-file → rc!=0 → тихая потеря changes
+                # чанка (pre-deploy review #54). tempfile.mkstemp атомарно даёт
+                # неконфликтующее имя.
+                _fd, _sys_path = tempfile.mkstemp(
+                    prefix="_text_llm_sys_", suffix=".tmp.md", dir=str(work_dir),
+                )
+                os.close(_fd)
+                sys_file = Path(_sys_path)
                 sys_file.write_text(system_prompt, encoding="utf-8")
 
             args = [

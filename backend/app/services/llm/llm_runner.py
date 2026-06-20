@@ -1053,33 +1053,39 @@ async def run_llm(
         release_reservation(reservation)
         return result
 
-    client = _get_client()
+    # _get_client()/extra_body вне retry-цикла → их исключение раньше уходило
+    # МИМО _done() и подвешивало резервацию до TTL (pre-deploy review). Оборачиваем,
+    # чтобы release был гарантирован на ВСЕХ путях.
+    try:
+        client = _get_client()
 
-    # Build extra_body for OpenRouter-specific knobs (plugins, provider)
-    built_extra_body: dict = {}
-    plugins: list[dict] = []
-    if response_healing:
-        plugins.append({"id": "response-healing"})
-    if plugins:
-        built_extra_body["plugins"] = plugins
+        # Build extra_body for OpenRouter-specific knobs (plugins, provider)
+        built_extra_body: dict = {}
+        plugins: list[dict] = []
+        if response_healing:
+            plugins.append({"id": "response-healing"})
+        if plugins:
+            built_extra_body["plugins"] = plugins
 
-    provider_block: dict = {}
-    if require_parameters:
-        provider_block["require_parameters"] = True
-    if provider_data_collection in ("allow", "deny"):
-        provider_block["data_collection"] = provider_data_collection
-    if provider_block:
-        built_extra_body["provider"] = provider_block
+        provider_block: dict = {}
+        if require_parameters:
+            provider_block["require_parameters"] = True
+        if provider_data_collection in ("allow", "deny"):
+            provider_block["data_collection"] = provider_data_collection
+        if provider_block:
+            built_extra_body["provider"] = provider_block
 
-    # User-supplied extra_body merges on top (deep merge for plugins/provider)
-    if extra_body:
-        for k, v in extra_body.items():
-            if k == "plugins" and isinstance(v, list):
-                built_extra_body.setdefault("plugins", []).extend(v)
-            elif k == "provider" and isinstance(v, dict):
-                built_extra_body.setdefault("provider", {}).update(v)
-            else:
-                built_extra_body[k] = v
+        # User-supplied extra_body merges on top (deep merge for plugins/provider)
+        if extra_body:
+            for k, v in extra_body.items():
+                if k == "plugins" and isinstance(v, list):
+                    built_extra_body.setdefault("plugins", []).extend(v)
+                elif k == "provider" and isinstance(v, dict):
+                    built_extra_body.setdefault("provider", {}).update(v)
+                else:
+                    built_extra_body[k] = v
+    except Exception as e:  # noqa: BLE001
+        return _done(LLMResult(text="", is_error=True, error_message=str(e), model=model))
 
     for attempt in range(1, max_retries + 1):
         start = time.monotonic()
@@ -1281,15 +1287,14 @@ async def run_llm_stream(
         yield {"type": "error", "message": f"paid_api_blocked: {e.reason}"}
         return
 
-    client = _get_client()
-
     full_text = ""
     input_tokens = 0
     output_tokens = 0
 
-    # try/finally гарантирует release резервации на всех путях (включая error
-    # и преждевременный обрыв генератора потребителем).
+    # try/finally гарантирует release резервации на всех путях (включая error,
+    # сбой _get_client() и преждевременный обрыв генератора потребителем).
     try:
+        client = _get_client()
         try:
             stream = await client.chat.completions.create(
                 model=model,
