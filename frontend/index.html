@@ -2361,9 +2361,6 @@
                                 <th style="width:30%">Суть</th>
                                 <th style="width:25%">Причина решения</th>
                                 <th style="width:90px">Дата</th>
-                                <th v-if="kbTab === 'accepted'" style="width:60px; text-align:center">Заказчик</th>
-                                <th v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="width:60px; text-align:center">Снять</th>
-                                <th style="width:45px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2403,21 +2400,6 @@
                                     </template>
                                 </td>
                                 <td style="font-size:11px; opacity:0.6">{{ (entry.expert_date || '').slice(0, 10) }}</td>
-                                <td v-if="kbTab === 'accepted'" style="text-align:center">
-                                    <button class="btn-decision btn-accept btn-sm" @click="confirmCustomer([entry.id])" title="Заказчик согласовал">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
-                                    </button>
-                                </td>
-                                <td v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="text-align:center">
-                                    <button class="btn-decision btn-reject btn-sm" @click="unconfirmCustomer([entry.id])" title="Снять согласование">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
-                                    </button>
-                                </td>
-                                <td style="text-align:center">
-                                    <button class="btn-kb-revoke" @click="revokeKBDecision(entry)" title="Отменить решение — вернуть в раздел">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                                    </button>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
