@@ -166,9 +166,9 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     except Exception:
         object_id = ""
 
-    # Следующий ID
+    # Следующий ID (монотонный max+1, НЕ len+1 — см. _next_decision_num)
     existing_log = _load_decisions_log()
-    next_num = len(existing_log) + 1
+    next_num = _next_decision_num(existing_log)
 
     entries = []
     for dec in decisions:
@@ -220,6 +220,23 @@ def _load_decisions_log() -> list[dict]:
 
 def _save_decisions_log(entries: list[dict]):
     _save_json(DECISIONS_LOG_FILE, {"entries": entries})
+
+
+def _next_decision_num(existing_log: list[dict]) -> int:
+    """Следующий монотонный номер для DEC-NNNN: max(существующих) + 1.
+
+    Раньше было len(log)+1 → после revoke номер переиспользовался, и один id
+    указывал на десятки решений (audit: 1208 дублей id, 3122 записи). max+1
+    гарантирует глобальную уникальность НОВЫХ id даже при пробелах от revoke
+    (reserc.md #79/#100). Существующие коллизии лечит мигратор #82 (шаг 28).
+    """
+    import re
+    mx = 0
+    for e in existing_log:
+        m = re.match(r"DEC-(\d+)$", str(e.get("id") or ""))
+        if m:
+            mx = max(mx, int(m.group(1)))
+    return mx + 1
 
 
 def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
@@ -356,13 +373,46 @@ def _find_project_dir(project_id: str) -> Optional[Path]:
 
 
 def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
-    """Отменить решение — удалить из глобального лога и из expert_review проекта."""
+    """Отменить решение — удалить из глобального лога и из expert_review проекта.
+
+    Адресуем по УНИКАЛЬНОМУ составному ключу (source_project, item_id): id
+    (DEC-NNNN) переиспользуется и один id = десятки записей в разных проектах,
+    поэтому revoke по id сносил чужие решения (reserc.md #80/#86; audit: 0
+    коллизий составного ключа). Если составного ключа нет — удаляем по id только
+    при его уникальности, иначе отказ.
+    """
+    import logging
     # 1. Удалить из decisions_log.json
     entries = _load_decisions_log()
     before = len(entries)
-    entries = [e for e in entries if e.get("id") != entry_id]
-    _save_decisions_log(entries)
-    removed = before - len(entries)
+
+    if project_id and item_id:
+        def _match(e: dict) -> bool:
+            return e.get("source_project") == project_id and e.get("item_id") == item_id
+    else:
+        id_hits = [e for e in entries if e.get("id") == entry_id]
+        if len(id_hits) != 1:
+            logging.getLogger(__name__).warning(
+                "revoke_decision: id=%r неуникален (%d записей) и нет составного "
+                "ключа — отказ, чтобы не удалить чужие решения",
+                entry_id, len(id_hits),
+            )
+            return 0
+
+        def _match(e: dict) -> bool:
+            return e.get("id") == entry_id
+
+    kept = [e for e in entries if not _match(e)]
+    removed = before - len(kept)
+    if removed > 1:
+        # Составной ключ обязан быть уникальным; >1 = повреждение данных →
+        # не сохраняем разрушительное удаление.
+        logging.getLogger(__name__).warning(
+            "revoke_decision: совпало %d записей по (%s,%s)/id=%s — ожидалась ≤1; "
+            "пропуск без удаления", removed, project_id, item_id, entry_id,
+        )
+        return 0
+    _save_decisions_log(kept)
 
     # 2. Удалить из expert_review.json проекта (активная версия)
     if project_id and item_id:
