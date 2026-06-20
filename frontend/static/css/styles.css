@@ -4008,7 +4008,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table__pct .sched-statcard__bar { flex: 0 1 220px; min-width: 0; margin: 0; }
 
 /* прогресс-бар выполнения (используется в таблице статистики) */
-.sched-statcard__bar { height: 6px; border-radius: 4px; background: var(--bg); margin: 8px 0; overflow: hidden; }
+.sched-statcard__bar { height: 6px; border-radius: 4px; background: var(--border3); margin: 8px 0; overflow: hidden; }
 .sched-statcard__barfill { height: 100%; border-radius: 4px; transition: width .25s; }
 
 /* статусные цвета (только в статистике, не в сетке) */
