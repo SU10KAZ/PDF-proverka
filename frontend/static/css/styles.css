@@ -4001,7 +4001,8 @@ tr.row-rejected td.sc-cell-goto {
 /* engineer column — sticky left */
 .sched-eng-col { position: sticky; left: 0; z-index: 3; background: var(--card-bg); width: 200px; min-width: 200px; max-width: 200px; }
 .sched-grid thead th.sched-eng-col { z-index: 4; background: var(--card2-bg); text-align: left; padding-left: 14px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
-.sched-eng-name { display: flex; align-items: center; gap: 9px; padding: 8px 14px; border-right: 1px solid var(--border2); }
+.sched-eng-name { padding: 8px 14px; border-right: 1px solid var(--border2); vertical-align: middle; }
+.sched-eng-name__inner { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .sched-eng-name__txt { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sched-avatar { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
 .sched-avatar--sm { width: 26px; height: 26px; font-size: 10px; }
@@ -4081,7 +4082,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table__total .sched-stats-table__nm { color: var(--teal); }
 .sched-stats-table__pctwrap { display: flex; align-items: center; gap: 10px; justify-content: center; }
 .sched-stats-table__pctnum { font-size: 15px; font-weight: 700; min-width: 44px; text-align: right; }
-.sched-stats-table__pct .sched-statcard__bar { flex: 0 0 110px; min-width: 0; margin: 0; }
+.sched-stats-table__pct .sched-statcard__bar { flex: 0 1 220px; min-width: 0; margin: 0; }
 
 /* прогресс-бар выполнения (используется в таблице статистики) */
 .sched-statcard__bar { height: 6px; border-radius: 4px; background: var(--bg); margin: 8px 0; overflow: hidden; }

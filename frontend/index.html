@@ -2884,8 +2884,10 @@
                             <tbody>
                                 <tr v-for="e in schedVisibleEngineers" :key="'r-'+e.id">
                                     <td class="sched-eng-col sched-eng-name">
-                                        <span class="sched-avatar" :style="schedAvatarStyle(e.id || e.name)">{{ schedInitials(e.name) }}</span>
-                                        <span class="sched-eng-name__txt">{{ e.name }}</span>
+                                        <div class="sched-eng-name__inner">
+                                            <span class="sched-avatar" :style="schedAvatarStyle(e.id || e.name)">{{ schedInitials(e.name) }}</span>
+                                            <span class="sched-eng-name__txt">{{ e.name }}</span>
+                                        </div>
                                     </td>
                                     <td v-for="d in schedDays" :key="e.id+'|'+d.key" class="sched-cell"
                                         :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
