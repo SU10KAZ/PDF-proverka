@@ -58,9 +58,11 @@ def _load_json(path: Path) -> dict | list | None:
 
 
 def _save_json(path: Path, data):
+    # Атомарная потокобезопасная запись: decisions_log/patterns — shared-стораж
+    # на 140 проектов; plain open('w') рвался при крахе/гонке (reserc.md #7/#81/#87).
     _ensure_kb_dir()
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    from backend.app.services.common.atomic_json import atomic_write_json
+    atomic_write_json(path, data)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
