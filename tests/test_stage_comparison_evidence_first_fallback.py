@@ -305,6 +305,90 @@ def test_orchestrator_never_raises_on_provider_error():
     assert res["diagnostics"]["llm_changes_raw"] == 0
 
 
+# ── 14. #54: параллельные per-chunk Opus-вызовы ─────────────────────────────
+
+import threading
+import time as _time
+
+
+class _ConcurrencyTrackingProvider(_FakeProvider):
+    """Считает максимум одновременных invoke (доказывает реальную параллель)."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.active = 0
+        self.max_active = 0
+
+    def invoke(self, **kwargs):
+        with self._lock:
+            self.active += 1
+            self.max_active = max(self.max_active, self.active)
+        try:
+            _time.sleep(0.02)  # окно для перекрытия
+            return super().invoke(**kwargs)
+        finally:
+            with self._lock:
+                self.active -= 1
+
+
+def _multichunk_cfg(concurrency):
+    # маленький бюджет чанка → split даёт несколько чанков
+    return ef.FallbackConfig(enabled=True, chunk_max_chars=300, max_chunks=16,
+                             chunk_concurrency=concurrency)
+
+
+def test_parallel_chunks_actually_overlap_and_record_concurrency():
+    prov = _ConcurrencyTrackingProvider()
+    res = _run(prov, cfg=_multichunk_cfg(3))
+    n = res["input_stats"]["chunks"]
+    assert n >= 2, "тесту нужно >1 чанка — уменьшите chunk_max_chars"
+    assert res["diagnostics"]["chunk_concurrency"] == 3
+    # реальное перекрытие было
+    assert prov.max_active >= 2
+
+
+def test_parallel_matches_sequential_result():
+    """Детерминизм: параллельный прогон даёт тот же набор changes, что и
+    последовательный (порядок чанков не влияет на diff/merge)."""
+    seq = _run(_FakeProvider(), cfg=_multichunk_cfg(1))
+    par = _run(_FakeProvider(), cfg=_multichunk_cfg(3))
+    assert seq["status"] == par["status"] == "done"
+
+    def _sig(r):
+        return sorted((c.get("type"), c.get("title"), c.get("provenance"))
+                      for c in r["changes"])
+    assert _sig(seq) == _sig(par)
+    # порядок chunk_results детерминирован (по индексу чанка)
+    assert ([c["chunk_id"] for c in seq["diagnostics"]["chunk_results"]]
+            == [c["chunk_id"] for c in par["diagnostics"]["chunk_results"]])
+
+
+def test_parallel_progress_monotonic():
+    events: list[dict] = []
+    ef.run_evidence_first_fallback(
+        left_md=LEFT_MD, right_md=RIGHT_MD, provider=_FakeProvider(),
+        system_prompt=ec.SYSTEM_PROMPT, model="opus", timeout_sec=10,
+        parse_extract_fn=ec._extract_model_payload,
+        parse_json_fn=ec._parse_model_json,
+        normalize_change_fn=ec._normalize_change,
+        config=_multichunk_cfg(3),
+        base_input_stats={"total_chars": len(LEFT_MD) + len(RIGHT_MD)},
+        progress_cb=events.append,
+    )
+    done_seq = [e["done_chunks"] for e in events]
+    # монотонно неубывает, начинается с 0, заканчивается n
+    assert done_seq == sorted(done_seq)
+    assert done_seq[0] == 0
+    assert events[-1]["phase"] == "done"
+
+
+def test_concurrency_env_parsing(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_EVIDENCE_FIRST_CHUNK_CONCURRENCY", "3")
+    assert ef.load_fallback_config().chunk_concurrency == 3
+    monkeypatch.delenv("STAGE_COMPARISON_EVIDENCE_FIRST_CHUNK_CONCURRENCY", raising=False)
+    assert ef.load_fallback_config().chunk_concurrency == 1  # default backward-safe
+
+
 # ── 11. flag default off ────────────────────────────────────────────────────
 
 def test_fallback_disabled_by_default(monkeypatch):
