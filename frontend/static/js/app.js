@@ -8129,7 +8129,7 @@ const app = createApp({
         // План (schedPlans) пока локальный/mock — backend-стор work_plans.json
         // делается отдельным этапом.
         // ─────────────────────────────────────────────────────────────────
-        const schedMode = ref('week');                 // 'week' | 'month'
+        const schedMode = ref('month');                // 'week' | 'month' — по умолчанию месяц
         const schedAnchor = ref(_schedStartOfDay(new Date()));  // опорный день периода
         const schedPopover = ref(null);                // {engId, key} — раскрытый список проектов в ячейке
         const schedFiltersOpen = ref(false);
