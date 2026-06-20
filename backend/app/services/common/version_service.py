@@ -33,11 +33,14 @@ from __future__ import annotations
 
 import contextvars
 import json
+import logging
 import re
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 
 VERSIONS_MANIFEST_FILENAME = "project_versions.json"  # legacy _versions-модель
@@ -267,6 +270,8 @@ def _write_manifest(project_dir: Path, manifest: dict[str, Any]) -> bool:
             json.dump(manifest, f, ensure_ascii=False, indent=2)
         return True
     except OSError:
+        # #77: не глотаем — логируем, чтобы сбой записи манифеста был виден.
+        logger.exception("Не удалось записать манифест версий: %s", path)
         return False
 
 
@@ -279,6 +284,11 @@ def _write_group_manifest(container: Path, manifest: dict[str, Any]) -> bool:
             json.dump(payload, f, ensure_ascii=False, indent=2)
         return True
     except OSError:
+        # #77: см. выше — сбой записи манифеста контейнера должен быть виден.
+        logger.exception(
+            "Не удалось записать version_group.json: %s",
+            container / GROUP_MANIFEST_FILENAME,
+        )
         return False
 
 
@@ -520,12 +530,14 @@ def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[
         raw = _read_group_manifest_raw(container) or {}
         raw["versions"] = remaining
         raw["latest_version_id"] = new_latest
-        _write_group_manifest(container, raw)
+        if not _write_group_manifest(container, raw):
+            raise VersionFileError("Не удалось сохранить version_group.json после удаления версии")
     else:
         raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
         raw["versions"] = remaining
         raw["latest_version_id"] = new_latest
-        _write_manifest(project_dir, raw)
+        if not _write_manifest(project_dir, raw):
+            raise VersionFileError("Не удалось сохранить project_versions.json после удаления версии")
 
     _invalidate_project_cache()
 
@@ -590,7 +602,8 @@ def promote_to_container(
         "latest_version_id": "v1",
         "versions": [_v1_entry(base_name)],
     }
-    _write_group_manifest(container, manifest)
+    if not _write_group_manifest(container, manifest):
+        raise VersionFileError("Не удалось записать version_group.json при создании контейнера")
     _invalidate_project_cache()
     return container, primary_dir, manifest
 
@@ -691,7 +704,8 @@ def create_next_version(
     versions.append(new_entry)
     manifest["versions"] = versions
     manifest["latest_version_id"] = next_id
-    _write_group_manifest(container, manifest)
+    if not _write_group_manifest(container, manifest):
+        raise VersionFileError("Не удалось записать version_group.json для новой версии")
     _invalidate_project_cache()
 
     return new_entry
