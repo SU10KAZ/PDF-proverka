@@ -3902,14 +3902,14 @@ tr.row-rejected td.sc-cell-goto {
 
 /* layout: grid + plan panel */
 .sched-layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
-.sched-gridwrap { flex: 1; min-width: 0; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card-bg); }
+.sched-gridwrap { flex: 1; min-width: 0; overflow-x: auto; border: 1px solid var(--border2); border-radius: var(--radius-lg); background: var(--card-bg); }
 
 .sched-grid { border-collapse: collapse; width: 100%; table-layout: fixed; }
-.sched-grid th, .sched-grid td { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.sched-grid th, .sched-grid td { border-right: 1px solid var(--border2); border-bottom: 1px solid var(--border2); }
 .sched-grid thead th { background: var(--card2-bg); padding: 6px 4px; text-align: center; position: sticky; top: 0; z-index: 2; }
 .sched-day-dow { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 .sched-day-dom { font-size: 13px; color: var(--text); font-weight: 700; }
-.sched-day--weekend { background: rgba(244,114,182,0.08); }
+.sched-day--weekend { background: rgba(244,114,182,0.16); }
 .sched-day--today  { box-shadow: inset 0 3px 0 var(--teal); }
 .sched-day--today .sched-day-dom { color: var(--teal); }
 
@@ -3923,7 +3923,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-avatar--sm { width: 26px; height: 26px; font-size: 10px; }
 
 .sched-cell { position: relative; vertical-align: top; padding: 5px; height: 44px; }
-.sched-cell--weekend { background: rgba(244,114,182,0.05); }
+.sched-cell--weekend { background: rgba(244,114,182,0.11); }
 .sched-cell--today   { background: var(--teal-light); }
 .sched-cell--has { cursor: pointer; }
 .sched-cell--has:hover { background: var(--card2-bg); }
@@ -3972,9 +3972,9 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats { margin-top: 18px; }
 .sched-stats__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 /* таблица «План и статистика по инженерам» */
-.sched-stats__tablewrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--card-bg); }
+.sched-stats__tablewrap { border: 1px solid var(--border2); border-radius: var(--radius-lg); overflow: hidden; background: var(--card-bg); }
 .sched-stats-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.sched-stats-table th, .sched-stats-table td { padding: 9px 12px; text-align: right; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); white-space: nowrap; }
+.sched-stats-table th, .sched-stats-table td { padding: 9px 12px; text-align: right; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border2); border-right: 1px solid var(--border2); white-space: nowrap; }
 .sched-stats-table th:last-child, .sched-stats-table td:last-child { border-right: none; }
 .sched-stats-table thead th { background: var(--card2-bg); font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
 .sched-stats-table tbody tr:last-child td { border-bottom: none; }
