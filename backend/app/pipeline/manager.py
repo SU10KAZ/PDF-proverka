@@ -219,6 +219,14 @@ BATCH_PRECROP_WINDOW = max(
     int(os.environ.get("BATCH_PRECROP_WINDOW", str(BATCH_PREGEMMA_WINDOW + 2))),
 )
 
+# Порог числа реальных ошибок, после которого Stage 02 прекращает запускать
+# новые блоки. На production single-block пути остаток скипнутых блоков теперь
+# помечается failed (reserc.md #1) — раньше был тихий return и блоки исчезали
+# из coverage. Конфигурируемо через env (раньше было захардкожено «5»).
+STAGE02_ERROR_ABORT_THRESHOLD = max(
+    1, int(os.environ.get("STAGE02_ERROR_ABORT_THRESHOLD", "5") or "5")
+)
+
 
 class PipelineManager:
     """Управляет запущенными аудитами. Singleton."""
@@ -2597,7 +2605,15 @@ class PipelineManager:
                         async with semaphore:
                             if job.status == JobStatus.CANCELLED:
                                 return
-                            if error_count >= 5:
+                            if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
+                                # Не теряем блок из coverage: помечаем как failed
+                                # (reserc.md #1), а не делаем тихий return.
+                                failed_runtime_batches.append(
+                                    _runtime_batch_failure_entry(
+                                        batch, "остановка после порога ошибок",
+                                        reason="aborted_after_error_threshold",
+                                    )
+                                )
                                 return
 
                             can_go = await self._check_before_launch(job)
@@ -3100,7 +3116,7 @@ class PipelineManager:
                     if job.status == JobStatus.CANCELLED:
                         return
                     # Остановка при слишком большом числе реальных ошибок
-                    if error_count >= 5:
+                    if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                         return
 
                     # ── Превентивная проверка rate limit перед запуском ──
@@ -3186,7 +3202,7 @@ class PipelineManager:
                             await self._log(job, f"Пакет {batch_id}/{total}: ОШИБКА (код {exit_code})", "error")
                             if error_snippet:
                                 await self._log(job, f"  Детали: {error_snippet}", "error")
-                            if error_count >= 5:
+                            if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                                 await self._log(job, f"{error_count} ошибок — пакетный анализ остановлен", "error")
                             break  # не retry для реальных ошибок
 
@@ -4473,7 +4489,7 @@ class PipelineManager:
                         async with semaphore:
                             if job.status == JobStatus.CANCELLED:
                                 return
-                            if error_count >= 5:
+                            if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                                 return
 
                             can_go = await self._check_before_launch(job)
