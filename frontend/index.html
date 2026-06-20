@@ -1547,7 +1547,8 @@
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
                             Версия и файлы сохранены. Полноценный аудит V2 будет доступен после переключения production на version-aware backend.
                         </div>
-                        <!-- Audit actions (inline with pipeline) -->
+                        <!-- Audit actions + навигация: колонка справа внутри белой карточки пайплайна -->
+                        <div class="audit-actions-col">
                         <div class="audit-buttons-inline">
                             <button class="btn btn-primary"
                                     v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
@@ -1571,26 +1572,27 @@
                             </button>
                         </div>
 
-                    </div>
+                        <!-- Навигация по проектам раздела (внутри карточки, под аудит-кнопками) -->
+                        <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
+                            <button class="btn btn-outline btn-sm"
+                                    :disabled="!prevProject"
+                                    @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
+                                    :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
+                                &#8592; Предыдущий
+                            </button>
+                            <span class="project-nav-pos">
+                                {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
+                                / {{ currentSectionProjectsList.length }}
+                            </span>
+                            <button class="btn btn-outline btn-sm"
+                                    :disabled="!nextProject"
+                                    @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
+                                    :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
+                                Следующий &#8594;
+                            </button>
+                        </div>
+                        </div>
 
-                    <!-- Навигация по проектам раздела (под карточкой, выровнена вправо) -->
-                    <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
-                        <button class="btn btn-outline btn-sm"
-                                :disabled="!prevProject"
-                                @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
-                                :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
-                            &#8592; Предыдущий
-                        </button>
-                        <span class="project-nav-pos">
-                            {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
-                            / {{ currentSectionProjectsList.length }}
-                        </span>
-                        <button class="btn btn-outline btn-sm"
-                                :disabled="!nextProject"
-                                @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
-                                :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
-                            Следующий &#8594;
-                        </button>
                     </div>
 
                     <!-- Usage (сразу под пайплайном) -->
