@@ -59,14 +59,41 @@ def test_no_finding_is_ever_deleted():
     assert result.findings_total == 3
 
 
-def test_no_evidence_downgraded():
+def test_no_evidence_critical_flagged_not_downgraded():
+    # reserc.md #31: критичное замечание без доказательств НЕ понижаем молча —
+    # помечаем на ручную проверку, severity сохраняем.
     findings = {"findings": [{"id": "F-001", "severity": "КРИТИЧЕСКОЕ", "page": 4}]}
+    review = _review(("F-001", "no_evidence", "нет"))
+    data, result = dcorr.correct_findings(findings, review, {}, {})
+    f = dc.iter_findings(data)[0]
+    assert f["severity"] == "КРИТИЧЕСКОЕ"          # severity сохранён
+    assert f["requires_human_review"] is True       # помечено на ручную проверку
+    assert result.flagged_human == 1
+    assert result.downgraded == 0
+    assert f["corrected_by"] == "deterministic"
+    assert "no_evidence" in f["corrector_note"]
+
+
+def test_no_evidence_economic_flagged_not_downgraded():
+    findings = {"findings": [{"id": "F-001", "severity": "ЭКОНОМИЧЕСКОЕ", "page": 4}]}
+    review = _review(("F-001", "no_evidence", "нет"))
+    data, result = dcorr.correct_findings(findings, review, {}, {})
+    f = dc.iter_findings(data)[0]
+    assert f["severity"] == "ЭКОНОМИЧЕСКОЕ"
+    assert f["requires_human_review"] is True
+    assert result.flagged_human == 1
+
+
+def test_no_evidence_noncritical_downgraded():
+    # Непротектированные severity (эксплуатационное/рекомендательное) — понижаем
+    # в ПРОВЕРИТЬ_ПО_СМЕЖНЫМ как раньше.
+    findings = {"findings": [{"id": "F-001", "severity": "ЭКСПЛУАТАЦИОННОЕ", "page": 4}]}
     review = _review(("F-001", "no_evidence", "нет"))
     data, result = dcorr.correct_findings(findings, review, {}, {})
     f = dc.iter_findings(data)[0]
     assert f["severity"] == dcorr.CROSS_CHECK_SEVERITY
     assert result.downgraded == 1
-    assert f["corrected_by"] == "deterministic"
+    assert result.flagged_human == 0
     assert "no_evidence" in f["corrector_note"]
 
 
@@ -89,9 +116,27 @@ def test_phantom_block_cleaned():
     assert result.phantom_cleaned == 1
 
 
-def test_phantom_block_all_removed_downgrades():
+def test_phantom_block_all_removed_critical_flagged():
+    # Фантом-блоки убраны, evidence не осталось → no_evidence. Критичное —
+    # помечаем на ручную проверку, не понижаем (#31).
     findings = {"findings": [{
         "id": "F-001", "severity": "КРИТИЧЕСКОЕ", "page": 4,
+        "evidence": [{"type": "image", "block_id": "GHOST-XXXX-YYY", "page": 4}],
+        "related_block_ids": ["GHOST-XXXX-YYY"],
+    }]}
+    review = _review(("F-001", "phantom_block", "фантом"))
+    blocks = _blocks(("REAL-AAAA-BBB", 4, None, "x"))
+    data, result = dcorr.correct_findings(findings, review, blocks, {})
+    f = dc.iter_findings(data)[0]
+    assert f["severity"] == "КРИТИЧЕСКОЕ"               # severity сохранён
+    assert f["requires_human_review"] is True
+    assert result.flagged_human == 1
+    assert result.phantom_cleaned == 1
+
+
+def test_phantom_block_all_removed_noncritical_downgrades():
+    findings = {"findings": [{
+        "id": "F-001", "severity": "РЕКОМЕНДАТЕЛЬНОЕ", "page": 4,
         "evidence": [{"type": "image", "block_id": "GHOST-XXXX-YYY", "page": 4}],
         "related_block_ids": ["GHOST-XXXX-YYY"],
     }]}
@@ -164,8 +209,12 @@ def test_critic_then_corrector_roundtrip(tmp_path):
     final = json.loads((tmp_path / "03_findings.json").read_text())
     by_id = {f["id"]: f for f in final["findings"]}
     assert by_id["F-001"]["severity"] == "КРИТИЧЕСКОЕ"           # pass — без изменений
-    assert by_id["F-002"]["severity"] == dcorr.CROSS_CHECK_SEVERITY  # no_evidence → понижено
-    assert by_id["F-003"]["severity"] == dcorr.CROSS_CHECK_SEVERITY  # phantom без остатка → понижено
+    # #31: критичное no_evidence и экономический phantom-без-остатка —
+    # помечены на ручную проверку, severity сохранён (не понижены молча).
+    assert by_id["F-002"]["severity"] == "КРИТИЧЕСКОЕ"
+    assert by_id["F-002"]["requires_human_review"] is True
+    assert by_id["F-003"]["severity"] == "ЭКОНОМИЧЕСКОЕ"
+    assert by_id["F-003"]["requires_human_review"] is True
     assert len(final["findings"]) == 3  # ничего не потеряно
 
 

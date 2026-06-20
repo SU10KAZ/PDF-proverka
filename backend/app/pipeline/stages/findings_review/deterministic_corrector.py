@@ -20,8 +20,8 @@ Corrector раньше был агентным `claude -p`, который чи�
 |---|---|
 | `phantom_block` | удалить несуществующие block_id из evidence/related/source |
 | `page_mismatch` | выставить page/sheet по страницам реальных evidence-блоков |
-| `no_evidence` | понизить severity → `ПРОВЕРИТЬ_ПО_СМЕЖНЫМ` + пометка |
-| `contradicts_text` | понизить severity → `ПРОВЕРИТЬ_ПО_СМЕЖНЫМ` + пометка |
+| `no_evidence` | критич./эконом. → `requires_human_review` (severity сохраняется); прочие → понизить в `ПРОВЕРИТЬ_ПО_СМЕЖНЫМ` |
+| `contradicts_text` | то же правило (#31): критич./эконом. на ручную проверку, прочие — понизить |
 | `weak_evidence` | оставить + пометка `corrector_note` (мягкий LLM-сигнал) |
 
 Каждому исправленному замечанию проставляется `corrector_note` и
@@ -46,6 +46,10 @@ logger = logging.getLogger(__name__)
 
 CROSS_CHECK_SEVERITY = "ПРОВЕРИТЬ_ПО_СМЕЖНЫМ"
 _DOWNGRADE_VERDICTS = {"no_evidence", "contradicts_text"}
+# reserc.md #31: критичные/экономические замечания НЕ понижаем молча при
+# no_evidence/contradicts_text — потеря такого замечания недопустима. Их
+# помечаем requires_human_review и оставляем severity как есть.
+_PROTECTED_SEVERITIES = {"КРИТИЧЕСКОЕ", "ЭКОНОМИЧЕСКОЕ"}
 
 
 @dataclass
@@ -55,6 +59,7 @@ class DeterministicCorrectorResult:
     phantom_cleaned: int = 0
     page_fixed: int = 0
     downgraded: int = 0
+    flagged_human: int = 0
     notes_added: int = 0
     error: Optional[str] = None
 
@@ -152,8 +157,23 @@ def _fix_page_sheet(finding: dict, idx: _Index) -> bool:
     return True
 
 
-def _downgrade(finding: dict) -> None:
+def _severity_norm(finding: dict) -> str:
+    return str(finding.get("severity") or "").strip().upper()
+
+
+def _downgrade_or_flag(finding: dict) -> str:
+    """no_evidence/contradicts_text (reserc.md #31).
+
+    Критичные/экономические замечания НЕ понижаем молча — помечаем
+    requires_human_review и сохраняем severity (инженер должен сам решить).
+    Остальные — понижаем в ПРОВЕРИТЬ_ПО_СМЕЖНЫМ как раньше.
+    Возвращает 'flagged' | 'downgraded'.
+    """
+    if _severity_norm(finding) in _PROTECTED_SEVERITIES:
+        finding["requires_human_review"] = True
+        return "flagged"
     finding["severity"] = CROSS_CHECK_SEVERITY
+    return "downgraded"
 
 
 def correct_findings(findings_data, review_data, blocks_analysis, doc_graph):
@@ -182,18 +202,23 @@ def correct_findings(findings_data, review_data, blocks_analysis, doc_graph):
                 result.phantom_cleaned += 1
                 changed = True
             # если evidence не осталось — это уже no_evidence → понижаем
+            # (критичные/экономические — помечаем на ручную проверку, #31)
             img, txt, _ = _referenced_block_ids(finding)
             if not img and not txt:
-                _downgrade(finding)
-                result.downgraded += 1
+                if _downgrade_or_flag(finding) == "downgraded":
+                    result.downgraded += 1
+                else:
+                    result.flagged_human += 1
                 changed = True
         elif verdict == "page_mismatch":
             if _fix_page_sheet(finding, idx):
                 result.page_fixed += 1
                 changed = True
         elif verdict in _DOWNGRADE_VERDICTS:
-            _downgrade(finding)
-            result.downgraded += 1
+            if _downgrade_or_flag(finding) == "downgraded":
+                result.downgraded += 1
+            else:
+                result.flagged_human += 1
             changed = True
         elif verdict == "weak_evidence":
             changed = True  # только пометка ниже
@@ -242,7 +267,7 @@ async def run_deterministic_corrector(
         await on_log(
             f"Corrector готов: исправлено {result.corrected}/{result.findings_total} "
             f"(phantom: {result.phantom_cleaned}, page: {result.page_fixed}, "
-            f"понижено: {result.downgraded})"
+            f"понижено: {result.downgraded}, на ручную проверку: {result.flagged_human})"
         )
     return result
 
