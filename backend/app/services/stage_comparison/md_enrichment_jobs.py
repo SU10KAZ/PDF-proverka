@@ -18,7 +18,7 @@ import threading
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from . import md_image_enrichment as md_mod
 from . import paths as paths_mod
@@ -398,8 +398,30 @@ async def _maybe_run_block_equivalence_precheck(session_id: str, job_id: str, jo
     job["block_equivalence"] = payload
 
 
-async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
-    """Прогнать job: для каждой (pair_id, side) пары вызвать enrich_side."""
+def _parent_cancelled(parent_cancel_check: Callable[[], bool] | None) -> bool:
+    """#68: True если родительский pipeline-job запросил отмену. fail-soft —
+    любая ошибка callback'а трактуется как «не отменён» (не валим дочерний job)."""
+    if parent_cancel_check is None:
+        return False
+    try:
+        return bool(parent_cancel_check())
+    except Exception:  # noqa: BLE001
+        return False
+
+
+async def run_md_enrichment_job(
+    session_id: str,
+    job_id: str,
+    *,
+    parent_cancel_check: Callable[[], bool] | None = None,
+) -> dict:
+    """Прогнать job: для каждой (pair_id, side) пары вызвать enrich_side.
+
+    #68: parent_cancel_check — опциональный callback родительского pipeline-job.
+    Если он сигналит отмену, дочерний job останавливается между сторонами
+    (а не только по собственному status=cancelled), помечается cancelled и
+    возвращается. Это закрывает дыру, где отмена pipeline'а не доходила до
+    уже запущенной Qwen-пары."""
     job = _read_job(session_id, job_id)
     if job is None:
         raise KeyError("job_not_found")
@@ -447,6 +469,15 @@ async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
         latest = _read_job(session_id, job_id)
         if latest and latest.get("status") == "cancelled":
             return latest
+        # #68: отмена родительского pipeline-job → останавливаем дочерний между
+        # сторонами, помечаем cancelled (чтобы внешние читатели/опус-lane видели).
+        if _parent_cancelled(parent_cancel_check):
+            cur = _read_job(session_id, job_id) or job
+            cur["status"] = "cancelled"
+            cur["updated_at"] = _utc_now()
+            cur.setdefault("warnings", []).append("cancelled_by_parent_pipeline")
+            _write_job(session_id, cur)
+            return cur
         if item.get("status") != "queued":
             continue
         item["status"] = "running"

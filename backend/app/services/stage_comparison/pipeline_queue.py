@@ -24,6 +24,7 @@ Design notes
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import os
 import re
@@ -173,15 +174,39 @@ def _backup_pair_artifacts(session_id: str, pair_id: str) -> Optional[str]:
         return None
 
 
+def _accepts_kwarg(fn: Callable, name: str) -> bool:
+    """True если fn принимает именованный аргумент name (или **kwargs).
+    #68: чтобы прокидывать parent_cancel_check только реальному раннеру, а не
+    узким тест-фейкам."""
+    try:
+        sig = inspect.signature(fn)
+    except (TypeError, ValueError):
+        return False
+    for p in sig.parameters.values():
+        if p.name == name and p.kind in (
+            inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        ):
+            return True
+        if p.kind == inspect.Parameter.VAR_KEYWORD:
+            return True
+    return False
+
+
 async def _qwen_process_pair(
     session_id: str, pair_id: str, *, force_qwen: bool, prebuild_large_sheets: bool,
+    parent_cancel_check: Optional[Callable[[], bool]] = None,
 ) -> dict:
     """Real Qwen lane body for ONE pair: (optional) large-sheet prebuild +
-    md-enrichment. Returns {"status": "done|failed", "error": str|None}.
+    md-enrichment. Returns {"status": "done|failed", "error": str|None,
+    "child_job_id": str|None}.
+
+    #68: parent_cancel_check прокидывается в дочерний md-enrichment job, чтобы
+    отмена pipeline'а останавливала уже запущенную Qwen-пару.
 
     NOTE: only called in live runs. Tests replace this with a fake.
     """
     from . import md_enrichment_jobs as mdj
+    child_job_id: Optional[str] = None
     try:
         if prebuild_large_sheets:
             await _prebuild_large_sheets_for_pair(session_id, pair_id, force=force_qwen)
@@ -189,8 +214,11 @@ async def _qwen_process_pair(
             session_id, scope="pair", pair_id=pair_id, side="both",
             force=bool(force_qwen), confirm=True,
         )
+        child_job_id = job.get("id")
         if job.get("status") == "queued":
-            await mdj.run_md_enrichment_job(session_id, job["id"])
+            await mdj.run_md_enrichment_job(
+                session_id, job["id"], parent_cancel_check=parent_cancel_check,
+            )
         # Pre-Qwen block equivalence gate (Stage 1: observe). Отчёт уже построен
         # внутри run_md_enrichment_job (если фича включена) — здесь только
         # читаем компактную диагностику для pipeline status. Fail-soft.
@@ -202,9 +230,11 @@ async def _qwen_process_pair(
                 block_eq = be_mod.build_pair_diagnostics(rep)
         except Exception:  # noqa: BLE001 — diagnostics must never fail the lane
             block_eq = None
-        return {"status": "done", "error": None, "block_equivalence": block_eq}
+        return {"status": "done", "error": None, "block_equivalence": block_eq,
+                "child_job_id": child_job_id}
     except Exception as exc:  # noqa: BLE001
-        return {"status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+        return {"status": "failed", "error": f"{type(exc).__name__}: {exc}",
+                "child_job_id": child_job_id}
 
 
 def _dense_scheme_pages(session_id: str, pair_id: str) -> set[tuple[str, int]]:
@@ -712,9 +742,22 @@ async def _qwen_lane(state: _RunState, *,
             continue
 
         it["backup_dir"] = _backup_pair_artifacts(state.session_id, pid)
-        res = await qwen_fn(state.session_id, pid, force_qwen=force_qwen, prebuild_large_sheets=prebuild)
+        # #68: прокидываем cancel родителя в дочерний md-job — но только если
+        # qwen_fn это поддерживает (тест-фейки имеют узкую сигнатуру).
+        qwen_kwargs = {"force_qwen": force_qwen, "prebuild_large_sheets": prebuild}
+        if _accepts_kwarg(qwen_fn, "parent_cancel_check"):
+            qwen_kwargs["parent_cancel_check"] = state.cancelled
+        res = await qwen_fn(state.session_id, pid, **qwen_kwargs)
         if isinstance(res, dict) and res.get("block_equivalence") is not None:
             it["block_equivalence"] = res["block_equivalence"]
+        if isinstance(res, dict) and res.get("child_job_id"):
+            # сохраняем id дочернего md-job, чтобы его можно было отменить извне
+            it["child_md_job_id"] = res["child_job_id"]
+        # #68: отмена пришла во время Qwen-прогона — не помечаем пару done,
+        # выходим из цикла (оркестратор финализирует job как cancelled).
+        if state.cancelled():
+            await state.persist()
+            break
         if (res or {}).get("status") != "done":
             _fail_qwen(job, it, (res or {}).get("error") or "qwen_failed")
             await state.persist()
