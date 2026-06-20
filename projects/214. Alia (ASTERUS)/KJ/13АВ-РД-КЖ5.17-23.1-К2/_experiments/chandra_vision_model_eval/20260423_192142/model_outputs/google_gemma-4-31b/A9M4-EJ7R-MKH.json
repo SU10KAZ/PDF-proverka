@@ -1,8 +1,0 @@
-{
-  "ok": false,
-  "model": "google/gemma-4-31b",
-  "block_id": "A9M4-EJ7R-MKH",
-  "elapsed_s": 138.107,
-  "error_type": "APITimeoutError",
-  "error": "Request timed out."
-}

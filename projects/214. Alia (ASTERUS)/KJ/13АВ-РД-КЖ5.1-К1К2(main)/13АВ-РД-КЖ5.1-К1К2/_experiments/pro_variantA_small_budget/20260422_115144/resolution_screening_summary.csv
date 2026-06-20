@@ -1,2 +1,0 @@
-resolution,completeness_ok,candidate,likely_improved_count,likely_equivalent_count,likely_degraded_count,summary_specificity_improved_count,total_findings_delta,total_kv_delta,actual_cost_usd,elapsed_s,note
-r1000,True,False,3,1,2,1,2,-78,0.301946,120.92368837003596,no clear technical benefit
