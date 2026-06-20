@@ -2066,33 +2066,22 @@ tr.row-rejected td.sc-cell-goto {
 .kb-own-group { flex: 1 1 50%; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .kb-own-group__head { text-align: center; font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--text); background: var(--card2-bg); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; }
 .kb-own-group__cards { display: flex; gap: 12px; }
-.kb-stat-card { flex: 1 1 50%; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 80px; padding: 0 18px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--card-bg); cursor: pointer; font-family: inherit; text-align: left; transition: box-shadow .15s, transform .05s; }
-.kb-stat-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.kb-stat-card { flex: 1 1 50%; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 58px; padding: 0 18px; border-radius: 9px; border: 1.5px solid var(--teal-border); background: var(--teal-light); cursor: pointer; font-family: inherit; text-align: left; transition: box-shadow .15s, transform .05s, border-color .15s; }
+.kb-stat-card:hover { border-color: var(--teal); box-shadow: 0 4px 14px var(--teal-mid); }
 .kb-stat-card:active { transform: translateY(1px); }
-.kb-stat-card__label { font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-stat-card__label { font-size: 17px; font-weight: 700; color: var(--teal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kb-stat-card__count { flex-shrink: 0; font-size: 15px; font-weight: 800; line-height: 1; padding: 4px 12px; border-radius: 999px; color: #fff; }
 
-.kb-stat-card--rejected  { border-color: #ef4444; background: #fef2f2; }
-.kb-stat-card--rejected  .kb-stat-card__label { color: #b91c1c; }
+/* фон и рамка карточек — фирменные (бирюзовые); разноцветными остаются только счётчики (единый pill-дизайн) */
 .kb-stat-card--rejected  .kb-stat-card__count { background: #ef4444; }
-.kb-stat-card--accepted  { border-color: #14b8a6; background: #f0fdfa; }
-.kb-stat-card--accepted  .kb-stat-card__label { color: #0f766e; }
 .kb-stat-card--accepted  .kb-stat-card__count { background: #14b8a6; }
-.kb-stat-card--confirmed { border-color: #3b82f6; background: #eff6ff; }
-.kb-stat-card--confirmed .kb-stat-card__label { color: #1d4ed8; }
 .kb-stat-card--confirmed .kb-stat-card__count { background: #3b82f6; }
-.kb-stat-card--fixed     { border-color: #f59e0b; background: #fff7ed; }
-.kb-stat-card--fixed     .kb-stat-card__label { color: #b45309; }
 .kb-stat-card--fixed     .kb-stat-card__count { background: #f59e0b; }
 
-.kb-stat-card--active { border-width: 2px; }
-.kb-stat-card--rejected.kb-stat-card--active  { box-shadow: 0 4px 16px rgba(239,68,68,0.30); }
-.kb-stat-card--accepted.kb-stat-card--active  { box-shadow: 0 4px 16px rgba(20,184,166,0.30); }
-.kb-stat-card--confirmed.kb-stat-card--active { box-shadow: 0 4px 16px rgba(59,130,246,0.30); }
-.kb-stat-card--fixed.kb-stat-card--active     { box-shadow: 0 4px 16px rgba(245,158,11,0.30); }
+.kb-stat-card--active { border-width: 2px; border-color: var(--teal); box-shadow: 0 4px 16px var(--teal-mid); }
 
 @media (max-width: 1100px) { .kb-ownership { flex-direction: column; } }
-@media (max-width: 640px) { .kb-own-group__cards { flex-direction: column; } .kb-stat-card { height: 64px; } }
+@media (max-width: 640px) { .kb-own-group__cards { flex-direction: column; } .kb-stat-card { height: 50px; } }
 
 .kb-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .kb-table th {
