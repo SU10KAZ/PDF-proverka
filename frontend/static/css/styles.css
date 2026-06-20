@@ -2093,13 +2093,13 @@ tr.row-rejected td.sc-cell-goto {
 @media (max-width: 1100px) { .kb-ownership { flex-direction: column; } }
 @media (max-width: 640px) { .kb-own-group__cards { flex-direction: column; } .kb-stat-card + .kb-stat-card { border-left: none; border-top: 1px solid var(--border2); } }
 
-.kb-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.kb-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
 .kb-table th {
     padding: 8px 6px; text-align: left; font-weight: 600; color: var(--text3);
     border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
     font-size: 11px; text-transform: uppercase; letter-spacing: .3px;
 }
-.kb-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: top; }
+.kb-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; text-align: left; overflow-wrap: anywhere; }
 .kb-table th:last-child, .kb-table td:last-child { border-right: none; }
 .kb-row { transition: background .1s; }
 .kb-row:hover { background: var(--bg2); }
