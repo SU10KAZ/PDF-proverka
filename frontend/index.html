@@ -1755,33 +1755,6 @@
                         </div>
                     </div>
 
-                    <!-- Severity + Optimization summary -->
-                    <div v-if="currentProject.findings_count > 0 || currentProject.optimization_count > 0" class="info-tab-summary">
-                        <div v-if="currentProject.findings_count > 0" class="info-tab-summary__row">
-                            <span class="info-tab-summary__label">Замечания</span>
-                            <div class="severity-badges">
-                                <span v-for="(count, sev) in currentProject.findings_by_severity" :key="sev"
-                                      class="sev-badge" :class="'sev-' + sevClass(sev)">
-                                    {{ count }}
-                                </span>
-                                <span class="findings-total">= {{ currentProject.findings_count }}</span>
-                            </div>
-                        </div>
-                        <div v-if="currentProject.optimization_count > 0" class="info-tab-summary__row">
-                            <span class="info-tab-summary__label">Оптимизация</span>
-                            <div class="severity-badges opt-badges">
-                                <span v-for="(count, type) in currentProject.optimization_by_type" :key="type"
-                                      class="sev-badge" :class="'sev-opt-' + type" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type) }"
-                                      :title="optTypeLabel(type)">
-                                    {{ count }}
-                                </span>
-                                <span class="findings-total" style="color: var(--emerald)">= {{ currentProject.optimization_count }}
-                                    <template v-if="currentProject.optimization_savings_pct > 0">(−{{ currentProject.optimization_savings_pct }}%)</template>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Pipeline Summary (детальный статус этапов) -->
                     <div v-if="currentProject.pipeline_summary && currentProject.pipeline_summary.length > 0" class="pipeline-summary">
                         <div class="pipeline-summary__title">Статус конвейера</div>
