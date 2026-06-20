@@ -335,23 +335,19 @@ except Exception:
 REPORTS_DIR  = os.path.join(BASE_DIR, "отчет")
 
 
-def _iter_project_dirs(root):
-    """Рекурсивно найти все папки проектов (включая подпапки-группы)."""
-    results = []
-    for name in sorted(os.listdir(root)):
-        entry = os.path.join(root, name)
-        if not os.path.isdir(entry) or name.startswith("_"):
-            continue
-        info = os.path.join(entry, "project_info.json")
-        has_pdf = any(f.endswith(".pdf") for f in os.listdir(entry))
-        if os.path.exists(info) or has_pdf:
-            results.append((name, entry))
-        else:
-            for sub in sorted(os.listdir(entry)):
-                sub_path = os.path.join(entry, sub)
-                if os.path.isdir(sub_path) and not sub.startswith("_"):
-                    results.append((sub, sub_path))
-    return results
+def _iter_project_dirs(root=None):
+    """Version-aware обход проектов (reserc.md #41).
+
+    Делегирует каноническому project_service.iter_project_dirs, который корректно
+    обрабатывает контейнеры версий `<база>(main)/` — отдаёт ОДНУ primary-версию
+    (а не дубли всех версий, как делала прежняя ручная рекурсия) и берёт
+    стабильный basename как project_id, читая `_output` нужной версии.
+
+    Аргумент `root` сохранён для совместимости сигнатуры, но игнорируется:
+    канонический обход берёт PROJECTS_DIR из конфига.
+    """
+    from backend.app.services.common.project_service import iter_project_dirs
+    return [(pid, str(path)) for pid, path in iter_project_dirs()]
 
 
 def find_projects(specific_paths=None) -> list:
