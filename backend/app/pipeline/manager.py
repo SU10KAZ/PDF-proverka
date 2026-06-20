@@ -2805,10 +2805,29 @@ class PipelineManager:
             # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms (+ optimization) ═══
             # output_dir уже version-aware (см. начало _run_resumed_pipeline).
             if start_idx < 5:
-                # Полный post-findings: critic + norms + optimization (параллельно)
+                # Полный post-findings: critic + norms + optimization (параллельно).
+                # AUDIT_RESUME_SKIP_OPTIMIZATION=true (default false) обрезает каскад
+                # resume до верификации норм: тяжёлый Opus-этап оптимизации и его
+                # review НЕ запускаются. Нужно для re-run проектов, где переделывается
+                # только block_analysis→findings→нормы (Stage 02 был заблокирован
+                # дневным лимитом платного API), а оптимизация по ним не пересобирается.
+                # Флаг действует ТОЛЬКО на resume-путь; полный аудит (_run_ocr_pipeline)
+                # не затрагивается.
                 findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
-                    await self._run_post_findings_parallel(job, project_info)
+                    _skip_opt = os.environ.get(
+                        "AUDIT_RESUME_SKIP_OPTIMIZATION", "",
+                    ).strip().lower() in {"1", "true", "yes", "on"}
+                    if _skip_opt:
+                        await self._log(
+                            job,
+                            "Оптимизация пропущена (AUDIT_RESUME_SKIP_OPTIMIZATION=true): "
+                            "resume только до верификации норм.",
+                            "info",
+                        )
+                    await self._run_post_findings_parallel(
+                        job, project_info, include_optimization=not _skip_opt,
+                    )
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                         return
