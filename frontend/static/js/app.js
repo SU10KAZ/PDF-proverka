@@ -8471,15 +8471,9 @@ const app = createApp({
             if (pct >= 70) return 'sched-warn';
             return 'sched-low';
         }
-        // Цвет выполнения: красный (низкое) → синий (высокое), ступенями по 10%.
+        // Цвет выполнения — фирменный бирюзовый.
         function schedPctColor(pct) {
-            const p = Math.max(0, Math.min(100, Number(pct) || 0));
-            const step = Math.min(9, Math.floor(p / 10)); // 0..9 — шаг 10%
-            const t = step / 9;
-            const r = Math.round(239 + t * (37 - 239));
-            const g = Math.round(68 + t * (99 - 68));
-            const b = Math.round(68 + t * (235 - 68));
-            return `rgb(${r}, ${g}, ${b})`;
+            return 'var(--teal)';
         }
         // Замечания: согласованные/несогласованные за период. Backend пока НЕ
         // отдаёт эти счётчики в /api/schedule (решение схлопывается при
