@@ -2798,8 +2798,8 @@
                     </div>
                 </div>
 
-                <!-- состояние данных: загрузка / ошибка / mock / live -->
-                <div class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
+                <!-- состояние данных: загрузка / ошибка / mock (для 'live' плашка скрыта — это лишний шум) -->
+                <div v-if="schedNoticeKind !== 'live'" class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
                     <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
                     {{ schedNoticeText }}
                     <span v-if="schedNoticeKind === 'error'" class="sched-retry" @click="schedLoad">Повторить</span>
@@ -2862,31 +2862,48 @@
                         План и статистика по инженерам — {{ schedMode==='week' ? 'неделя' : 'месяц' }}
                         <span v-if="schedPlanEdit" class="sched-plan__edithint">правка плана</span>
                     </div>
-                    <div class="sched-stats__grid">
-                        <div v-for="s in schedStats" :key="'stat-'+s.id" class="sched-statcard">
-                            <div class="sched-statcard__name" :title="s.name">{{ s.name }}</div>
-                            <div class="sched-statcard__big" :class="schedPctClass(s.pct)">{{ s.pct }}%</div>
-                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
-                            <div class="sched-statcard__nums">
-                                <span title="выполнено (факт)"><b>{{ s.fact }}</b> факт</span>
-                                <span title="план на период" class="sched-statcard__plan">
-                                    <template v-if="schedPlanEdit"><input type="number" min="0" max="999" class="sched-plan__input"
-                                           :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)"> план</template>
-                                    <template v-else>{{ s.plan }} план</template>
-                                </span>
-                                <span title="осталось" :class="{'sched-low': s.remaining > 0}">{{ s.remaining }} ост.</span>
-                            </div>
-                        </div>
-                        <div class="sched-statcard sched-statcard--total">
-                            <div class="sched-statcard__name">Все инженеры ({{ schedTotals.engineers }})</div>
-                            <div class="sched-statcard__big" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</div>
-                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
-                            <div class="sched-statcard__nums">
-                                <span><b>{{ schedTotals.fact }}</b> факт</span>
-                                <span>{{ schedTotals.plan }} план</span>
-                                <span :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }} ост.</span>
-                            </div>
-                        </div>
+                    <div class="sched-stats__tablewrap">
+                        <table class="sched-stats-table">
+                            <thead>
+                                <tr>
+                                    <th class="sched-stats-table__nm">Инженер</th>
+                                    <th>Факт</th>
+                                    <th>План</th>
+                                    <th>Остаток</th>
+                                    <th class="sched-stats-table__pct">Выполнение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in schedStats" :key="'strow-'+s.id">
+                                    <td class="sched-stats-table__nm" :title="s.name">{{ s.name }}</td>
+                                    <td><b>{{ s.fact }}</b></td>
+                                    <td class="sched-stats-table__plan">
+                                        <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
+                                               :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
+                                        <template v-else>{{ s.plan }}</template>
+                                    </td>
+                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
+                                    <td class="sched-stats-table__pct">
+                                        <div class="sched-stats-table__pctwrap">
+                                            <span class="sched-stats-table__pctnum" :class="schedPctClass(s.pct)">{{ s.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="sched-stats-table__total">
+                                    <td class="sched-stats-table__nm">Все инженеры ({{ schedTotals.engineers }})</td>
+                                    <td><b>{{ schedTotals.fact }}</b></td>
+                                    <td>{{ schedTotals.plan }}</td>
+                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
+                                    <td class="sched-stats-table__pct">
+                                        <div class="sched-stats-table__pctwrap">
+                                            <span class="sched-stats-table__pctnum" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
