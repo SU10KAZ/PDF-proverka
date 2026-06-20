@@ -317,7 +317,7 @@ async def run_text_analysis(
             task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT,
             on_output, stage="text_analysis", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "01_text_analysis", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "01_text_analysis", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
@@ -817,7 +817,7 @@ async def run_findings_critic(
             task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CRITIC_TIMEOUT,
             on_output, stage="findings_critic", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, f"03b_findings_critic{chunk_suffix}", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, f"03b_findings_critic{chunk_suffix}", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     # OpenRouter path
@@ -938,7 +938,7 @@ async def run_findings_corrector(
             task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CORRECTOR_TIMEOUT,
             on_output, stage="findings_corrector", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "03c_findings_corrector", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "03c_findings_corrector", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     # OpenRouter path
@@ -980,7 +980,7 @@ async def run_optimization_critic(
             task_text, OPTIMIZATION_REVIEW_TOOLS, CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT,
             on_output, stage="optimization_critic", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "05b_optimization_critic", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "05b_optimization_critic", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     # OpenRouter path
@@ -1035,7 +1035,7 @@ async def run_optimization_corrector(
             task_text, OPTIMIZATION_REVIEW_TOOLS, CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT,
             on_output, stage="optimization_corrector", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "05c_optimization_corrector", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "05c_optimization_corrector", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     # OpenRouter path
