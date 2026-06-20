@@ -36,13 +36,6 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-label">Управление</div>
-                <div class="nav-item" :class="{active: currentView === 'users' || currentView === 'user-activity'}" @click="navigate('/users')">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="8" cy="5" r="2.5"/><path d="M3 14c0-3 2-5 5-5s5 2 5 5"/>
-                    </svg>
-                    Пользователи
-                    <span v-if="usersList.length" class="nav-badge">{{ usersList.length }}</span>
-                </div>
                 <div class="nav-item" :class="{active: currentView === 'schedule'}" @click="navigate('/schedule')" title="График производства работ по инженерам">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/>
@@ -2786,145 +2779,6 @@
             </div>
         </div>
 
-        <!-- ═══ Пользователи (список сотрудников) ═══ -->
-        <div v-if="currentView === 'users'" class="container">
-            <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">&#128101; Пользователи</h2>
-                    <div class="kb-header-actions">
-                        <button class="btn btn-sm btn-outline" @click="loadUsers" :disabled="usersLoading">
-                            {{ usersLoading ? '...' : 'Обновить' }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Кто вошёл (при включённой портальной авторизации) -->
-                <div v-if="usersAuthEnabled && usersLoggedInMatched" class="users-login-banner">
-                    Вы вошли как <strong>{{ currentUserName() }}</strong> — решения по замечаниям и оптимизациям подписываются от этого имени.
-                </div>
-                <div v-else-if="usersAuthEnabled && usersLoggedInUsername && !usersLoggedInMatched" class="users-login-banner users-login-banner--warn">
-                    Логин <strong>{{ usersLoggedInUsername }}</strong> не сопоставлен ни с одним сотрудником.
-                    Укажите этот логин в поле <code>login</code> нужного сотрудника, чтобы его решения подписывались корректно.
-                </div>
-
-                <!-- Список -->
-                <div class="users-list">
-                    <div v-for="(u, idx) in usersList" :key="u.id" class="user-row"
-                         :class="{ 'user-row--current': u.id === usersCurrentId }">
-                        <div class="user-row__main">
-                            <span class="user-row__num">{{ idx + 1 }}.</span>
-                            <button class="user-row__chevron" @click="toggleUserExpand(u.id)"
-                                    :class="{ open: expandedUserId === u.id }" title="Подробнее">
-                                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
-                                    <path d="M4 6l4 4 4-4"/>
-                                </svg>
-                            </button>
-                            <a class="user-row__name" @click.prevent="navigate('/users/' + encodeURIComponent(u.id))" href="#">
-                                {{ u.name }}
-                            </a>
-                            <span v-if="u.role === 'admin'" class="user-row__role">админ</span>
-                            <span v-if="u.id === usersCurrentId" class="user-row__active-tag">{{ usersAuthEnabled ? 'вы вошли' : 'активный' }}</span>
-                        </div>
-                        <div v-if="expandedUserId === u.id" class="user-row__expand">
-                            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-                                Роль: <strong>{{ u.role === 'admin' ? 'Администратор' : 'Эксперт' }}</strong>
-                            </div>
-                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                                <button class="btn btn-sm btn-outline"
-                                        @click="navigate('/users/' + encodeURIComponent(u.id))">
-                                    Что сделал на платформе →
-                                </button>
-                                <button v-if="!usersAuthEnabled && u.id !== usersCurrentId" class="btn btn-sm btn-outline"
-                                        @click="switchUser(u.id)">
-                                    Сделать активным
-                                </button>
-                                <button class="btn btn-sm btn-danger-outline" @click="deleteUser(u.id)">
-                                    Удалить
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="!usersLoading && !usersList.length" style="color:var(--text-muted); padding:20px; text-align:center;">
-                        Пользователей пока нет — добавьте первого.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ Активность пользователя ═══ -->
-        <div v-if="currentView === 'user-activity'" class="container">
-            <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">
-                        <a @click.prevent="navigate('/users')" href="#" style="color:var(--text-muted); text-decoration:none;">Пользователи</a>
-                        <span style="color:var(--text-muted);"> / </span>
-                        {{ userActivity && userActivity.user ? userActivity.user.name : '...' }}
-                    </h2>
-                    <div class="kb-header-actions">
-                        <button class="btn btn-sm btn-outline" @click="navigate('/users')">← Назад</button>
-                    </div>
-                </div>
-
-                <div v-if="userActivityLoading" style="color:var(--text-muted); padding:20px;">Загрузка...</div>
-
-                <template v-else-if="userActivity">
-                    <!-- Сводка -->
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.projects }}</div><div class="ua-stat__lbl">проектов</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.decisions }}</div><div class="ua-stat__lbl">решений</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.findings }}</div><div class="ua-stat__lbl">замечаний</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.optimizations }}</div><div class="ua-stat__lbl">оптимизаций</div></div>
-                        <div class="ua-stat ua-stat--ok"><div class="ua-stat__num">{{ userActivity.totals.accepted }}</div><div class="ua-stat__lbl">принято</div></div>
-                        <div class="ua-stat ua-stat--no"><div class="ua-stat__num">{{ userActivity.totals.rejected }}</div><div class="ua-stat__lbl">отклонено</div></div>
-                    </div>
-
-                    <div v-if="!userActivity.projects.length" style="color:var(--text-muted); padding:24px; text-align:center; border:1px dashed var(--border); border-radius:8px;">
-                        Пользователь ещё не сохранил ни одного решения по замечаниям или оптимизациям.
-                    </div>
-
-                    <!-- Проекты -->
-                    <div v-for="p in userActivity.projects" :key="p.source_project" class="ua-project">
-                        <div class="ua-project__head" @click="toggleUserExpand(p.source_project)">
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-                                 class="ua-project__chevron" :class="{ open: expandedUserId === p.source_project }">
-                                <path d="M4 6l4 4 4-4"/>
-                            </svg>
-                            <span class="ua-project__name">{{ p.source_project }}</span>
-                            <span v-if="p.section" class="ua-project__section">{{ p.section }}</span>
-                            <span style="flex:1"></span>
-                            <span class="ua-project__counts">
-                                <span title="замечаний">{{ p.findings_count }} зам.</span>
-                                <span title="оптимизаций">{{ p.optimizations_count }} опт.</span>
-                                <span class="ua-badge ua-badge--ok" title="принято">✓ {{ p.accepted_count }}</span>
-                                <span class="ua-badge ua-badge--no" title="отклонено">✗ {{ p.rejected_count }}</span>
-                            </span>
-                        </div>
-                        <div v-if="expandedUserId === p.source_project" class="ua-project__items">
-                            <table class="ua-table">
-                                <thead>
-                                    <tr><th>ID</th><th>Тип</th><th>Решение</th><th>Описание</th><th>Лист</th><th>Дата</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="it in p.items" :key="it.id || it.item_id">
-                                        <td style="white-space:nowrap;">{{ it.item_id }}</td>
-                                        <td>{{ it.item_type === 'optimization' ? 'опт.' : 'зам.' }}</td>
-                                        <td>
-                                            <span v-if="it.decision === 'accepted'" class="ua-badge ua-badge--ok">принято</span>
-                                            <span v-else-if="it.decision === 'rejected'" class="ua-badge ua-badge--no">отклонено</span>
-                                            <span v-else style="color:var(--text-muted);">—</span>
-                                        </td>
-                                        <td style="max-width:380px;">{{ it.summary }}<span v-if="it.reason" style="color:var(--text-muted);"> — {{ it.reason }}</span></td>
-                                        <td style="white-space:nowrap;">{{ it.sheet || '—' }}</td>
-                                        <td style="white-space:nowrap; color:var(--text-muted);">{{ (it.date || '').slice(0,10) }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </div>
-
         <!-- ═══ График производства работ (mock-данные) ═══ -->
         <div v-if="currentView === 'schedule'" class="container sched-page"
              @click="schedClosePopover(); schedFiltersOpen = false">
@@ -2979,7 +2833,7 @@
                     {{ schedPlanMsg.text }}
                 </div>
 
-                <!-- main: grid + plan -->
+                <!-- main: основная таблица (план и статистика — отдельным блоком ниже) -->
                 <div class="sched-layout">
                     <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]">
                         <table class="sched-grid">
@@ -3000,9 +2854,11 @@
                                         :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
                                         @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length)">
                                         <template v-if="schedCell(e.id,d.key).length">
-                                            <div class="sched-plashka" :title="schedCell(e.id,d.key)[0].full">
-                                                <span class="sched-plashka__txt">{{ schedCell(e.id,d.key)[0].short }}</span>
-                                                <span v-if="schedCell(e.id,d.key).length > 1" class="sched-badge">+{{ schedCell(e.id,d.key).length - 1 }}</span>
+                                            <div class="sched-daystack">
+                                                <div v-for="(it,i) in schedCell(e.id,d.key)" :key="e.id+'|'+d.key+'|'+i"
+                                                     class="sched-plashka" :title="it.full">
+                                                    <span class="sched-plashka__txt">{{ it.short }}</span>
+                                                </div>
                                             </div>
                                             <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" @click.stop>
                                                 <div class="sched-popover__head">{{ e.name }} · {{ d.dowLabel }} {{ d.dom }}</div>
@@ -3021,44 +2877,26 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- PLAN PANEL -->
-                    <div class="sched-plan">
-                        <div class="sched-plan__head">
-                            План на {{ schedMode === 'week' ? 'неделю' : 'месяц' }}
-                            <span v-if="schedPlanEdit" class="sched-plan__edithint">правка</span>
-                        </div>
-                        <div class="sched-plan__legend">
-                            <span>инженер</span><span>факт / план</span>
-                        </div>
-                        <div v-for="s in schedStats" :key="'plan-'+s.id" class="sched-plan__row">
-                            <span class="sched-plan__name" :title="s.name">{{ s.name }}</span>
-                            <span class="sched-plan__nums">
-                                <b :class="schedPctClass(s.pct)">{{ s.fact }}</b>
-                                <span class="sched-plan__sep">/</span>
-                                <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
-                                       :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
-                                <span v-else class="sched-plan__plan">{{ s.plan }}</span>
-                            </span>
-                        </div>
-                        <div class="sched-plan__total">
-                            <span>Итого</span>
-                            <span><b>{{ schedTotals.fact }}</b> / {{ schedTotals.plan }}</span>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- STATS -->
+                <!-- ПЛАН + СТАТИСТИКА за период (под основной таблицей) -->
                 <div class="sched-stats">
-                    <div class="sched-stats__head">Статистика за период — {{ schedMode==='week' ? 'неделя' : 'месяц' }}</div>
+                    <div class="sched-stats__head">
+                        План и статистика по инженерам — {{ schedMode==='week' ? 'неделя' : 'месяц' }}
+                        <span v-if="schedPlanEdit" class="sched-plan__edithint">правка плана</span>
+                    </div>
                     <div class="sched-stats__grid">
                         <div v-for="s in schedStats" :key="'stat-'+s.id" class="sched-statcard">
                             <div class="sched-statcard__name" :title="s.name">{{ s.name }}</div>
                             <div class="sched-statcard__big" :class="schedPctClass(s.pct)">{{ s.pct }}%</div>
                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(s.pct)" :style="{width: Math.min(100, s.pct)+'%'}"></div></div>
                             <div class="sched-statcard__nums">
-                                <span title="выполнено"><b>{{ s.fact }}</b> вып.</span>
-                                <span title="план">{{ s.plan }} план</span>
+                                <span title="выполнено (факт)"><b>{{ s.fact }}</b> факт</span>
+                                <span title="план на период" class="sched-statcard__plan">
+                                    <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
+                                           :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)"> план
+                                    <template v-else>{{ s.plan }} план</template>
+                                </span>
                                 <span title="осталось" :class="{'sched-low': s.remaining > 0}">{{ s.remaining }} ост.</span>
                             </div>
                         </div>
@@ -3067,7 +2905,7 @@
                             <div class="sched-statcard__big" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</div>
                             <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :class="schedPctClass(schedTotals.pct)" :style="{width: Math.min(100, schedTotals.pct)+'%'}"></div></div>
                             <div class="sched-statcard__nums">
-                                <span><b>{{ schedTotals.fact }}</b> вып.</span>
+                                <span><b>{{ schedTotals.fact }}</b> факт</span>
                                 <span>{{ schedTotals.plan }} план</span>
                                 <span :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }} ост.</span>
                             </div>

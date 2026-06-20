@@ -23,11 +23,6 @@ const app = createApp({
         const usersAuthEnabled = ref(false);       // включена ли портальная авторизация
         const usersLoggedInUsername = ref(null);   // логин активной сессии
         const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
-        const newUserSurname = ref('');
-        const newUserInitials = ref('');
-        const expandedUserId = ref(null);   // раскрытая карточка в списке
-        const userActivity = ref(null);     // {user, projects, totals}
-        const userActivityLoading = ref(false);
         const currentProjectId = ref(null);
         const currentProject = ref(null);
         const projects = ref([]);
@@ -2598,16 +2593,6 @@ const app = createApp({
             } else if (hash === '/model-control') {
                 currentView.value = 'model-control';
                 connectGlobalWS();
-            } else if (hash === '/users') {
-                currentView.value = 'users';
-                connectGlobalWS();
-                loadUsers();
-            } else if (hash.match(/^\/users\/(.+)$/)) {
-                const uid = decodeURIComponent(hash.match(/^\/users\/(.+)$/)[1]);
-                currentView.value = 'user-activity';
-                connectGlobalWS();
-                loadUsers();
-                loadUserActivity(uid);
             } else if (hash === '/schedule') {
                 currentView.value = 'schedule';
                 connectGlobalWS();
@@ -8196,72 +8181,6 @@ const app = createApp({
         function currentUserName() {
             const u = usersList.value.find(x => x.id === usersCurrentId.value);
             return u ? u.name : '';
-        }
-
-        async function switchUser(userId) {
-            try {
-                await fetch('/api/users/switch', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: userId }),
-                });
-                usersCurrentId.value = userId;
-            } catch (e) {
-                console.error('Switch user error:', e);
-            }
-        }
-
-        async function addUser() {
-            const surname = (newUserSurname.value || '').trim();
-            if (!surname) { alert('Введите фамилию'); return; }
-            try {
-                const resp = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        surname,
-                        initials: (newUserInitials.value || '').trim(),
-                    }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || resp.statusText);
-                }
-                newUserSurname.value = '';
-                newUserInitials.value = '';
-                await loadUsers();
-            } catch (e) {
-                alert('Ошибка добавления: ' + (e.message || e));
-            }
-        }
-
-        async function deleteUser(userId) {
-            const u = usersList.value.find(x => x.id === userId);
-            if (!confirm(`Удалить пользователя «${u ? u.name : userId}»? Его решения в истории сохранятся.`)) return;
-            try {
-                await fetch(`/api/users/${encodeURIComponent(userId)}`, { method: 'DELETE' });
-                await loadUsers();
-            } catch (e) {
-                alert('Ошибка удаления: ' + (e.message || e));
-            }
-        }
-
-        function toggleUserExpand(userId) {
-            expandedUserId.value = expandedUserId.value === userId ? null : userId;
-        }
-
-        async function loadUserActivity(userId) {
-            userActivityLoading.value = true;
-            userActivity.value = null;
-            try {
-                const resp = await fetch(`/api/users/${encodeURIComponent(userId)}/activity`);
-                if (!resp.ok) throw new Error(resp.statusText);
-                userActivity.value = await resp.json();
-            } catch (e) {
-                console.error('Load user activity error:', e);
-            } finally {
-                userActivityLoading.value = false;
-            }
         }
 
         // ─────────────────────────────────────────────────────────────────
@@ -14190,12 +14109,10 @@ const app = createApp({
         return {
             // Theme
             theme, toggleTheme,
-            // Пользователи (сотрудники)
-            usersList, usersCurrentId, usersLoading, newUserSurname, newUserInitials,
+            // Пользователи (сотрудники) — подпись решений + админ-гейт графика
+            usersList, usersCurrentId,
             usersAuthEnabled, usersLoggedInUsername, usersLoggedInMatched,
-            expandedUserId, userActivity, userActivityLoading,
-            loadUsers, switchUser, addUser, deleteUser, toggleUserExpand,
-            loadUserActivity, currentUserName,
+            loadUsers, currentUserName,
             // График производства работ (API /api/schedule + dev mock fallback)
             schedMode, schedAnchor, schedPopover, schedFiltersOpen,
             schedHiddenEngineers, schedPlanEdit, schedEngineers,

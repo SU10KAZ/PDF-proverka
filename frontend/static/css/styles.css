@@ -3846,98 +3846,6 @@ tr.row-rejected td.sc-cell-goto {
     background: #f3f4f6;
 }
 
-/* ─── Пользователи (раздел «Пользователи» + активность) ─────────────── */
-.users-list { display: flex; flex-direction: column; gap: 6px; }
-.user-row {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--card);
-    transition: border-color .15s, box-shadow .15s;
-}
-.user-row--current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
-.user-row__main { display: flex; align-items: center; gap: 10px; padding: 11px 14px; }
-.user-row__num { color: var(--text-muted); font-size: 13px; min-width: 20px; }
-.user-row__chevron {
-    background: none; border: none; cursor: pointer; color: var(--text-muted);
-    padding: 2px; display: flex; border-radius: 4px; transition: transform .15s;
-}
-.user-row__chevron svg { width: 14px; height: 14px; }
-.user-row__chevron.open { transform: rotate(0deg); color: var(--text); }
-.user-row__chevron:not(.open) { transform: rotate(-90deg); }
-.user-row__name {
-    font-weight: 600; color: var(--text); font-size: 14px;
-    cursor: pointer; text-decoration: none;
-}
-.user-row__name:hover { color: var(--accent); text-decoration: underline; }
-.user-row__role {
-    font-size: 10px; text-transform: uppercase; letter-spacing: .03em;
-    color: var(--accent); border: 1px solid var(--accent); border-radius: 4px;
-    padding: 1px 6px;
-}
-.user-row__active-tag {
-    font-size: 11px; color: var(--green); margin-left: auto;
-}
-.user-row__expand {
-    padding: 0 14px 13px 44px; border-top: 1px solid var(--border);
-    margin-top: 2px; padding-top: 11px;
-}
-.btn-danger-outline {
-    background: transparent; border: 1px solid var(--red); color: var(--red);
-}
-.btn-danger-outline:hover { background: rgba(212,24,58,0.08); }
-
-/* активность */
-.ua-stat {
-    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 16px; min-width: 84px; text-align: center;
-}
-.ua-stat__num { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
-.ua-stat__lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.ua-stat--ok .ua-stat__num { color: var(--green); }
-.ua-stat--no .ua-stat__num { color: var(--red); }
-
-.ua-project {
-    border: 1px solid var(--border); border-radius: 8px; background: var(--card);
-    margin-bottom: 8px; overflow: hidden;
-}
-.ua-project__head {
-    display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer;
-}
-.ua-project__head:hover { background: var(--bg2); }
-.ua-project__chevron { width: 14px; height: 14px; color: var(--text-muted); transition: transform .15s; }
-.ua-project__chevron:not(.open) { transform: rotate(-90deg); }
-.ua-project__name { font-weight: 600; color: var(--text); font-size: 14px; }
-.ua-project__section {
-    font-size: 11px; color: var(--text-muted); border: 1px solid var(--border);
-    border-radius: 4px; padding: 1px 6px;
-}
-.ua-project__counts { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
-.ua-project__items { border-top: 1px solid var(--border); padding: 6px 14px 12px; overflow-x: auto; }
-
-.ua-badge { font-size: 11px; border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
-.ua-badge--ok { color: var(--green); background: rgba(34,211,138,0.12); }
-.ua-badge--no { color: var(--red); background: rgba(255,77,109,0.12); }
-
-.ua-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.ua-table th {
-    text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11px;
-    padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap;
-}
-.ua-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
-.ua-table tbody tr:last-child td { border-bottom: none; }
-
-.users-login-banner {
-    font-size: 13px; color: var(--text); margin: 0 0 16px;
-    padding: 10px 14px; border-radius: 8px;
-    background: rgba(34,211,138,0.10); border: 1px solid var(--green);
-}
-.users-login-banner--warn {
-    background: rgba(245,158,11,0.10); border-color: #f59e0b; color: var(--text);
-}
-.users-login-banner code {
-    font-size: 12px; background: var(--bg2); padding: 1px 5px; border-radius: 4px;
-}
-
 /* ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ─── */
 /* Карточный вид V2 переиспользует классы классической таблицы расхождений
    (sc-row / sc-cell-* / sc-sev-chip / sc-goto-btn / row-accepted|rejected),
@@ -4007,7 +3915,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
 .sched-gridwrap { flex: 1; min-width: 0; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card-bg); }
 
-.sched-grid { border-collapse: collapse; width: 100%; }
+.sched-grid { border-collapse: collapse; width: 100%; table-layout: fixed; }
 .sched-grid th, .sched-grid td { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .sched-grid thead th { background: var(--card2-bg); padding: 6px 4px; text-align: center; position: sticky; top: 0; z-index: 2; }
 .sched-day-dow { font-size: 11px; color: var(--text-muted); font-weight: 600; }
@@ -4017,19 +3925,23 @@ tr.row-rejected td.sc-cell-goto {
 .sched-day--today .sched-day-dom { color: var(--teal); }
 
 /* engineer column — sticky left */
-.sched-eng-col { position: sticky; left: 0; z-index: 3; background: var(--card-bg); min-width: 158px; max-width: 158px; }
+.sched-eng-col { position: sticky; left: 0; z-index: 3; background: var(--card-bg); width: 158px; min-width: 158px; max-width: 158px; }
 .sched-grid thead th.sched-eng-col { z-index: 4; background: var(--card2-bg); text-align: left; padding-left: 12px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
 .sched-eng-name { padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border2); }
 
-.sched-cell { position: relative; vertical-align: top; padding: 5px; height: 44px; min-width: 116px; }
+.sched-cell { position: relative; vertical-align: top; padding: 5px; height: 44px; }
 .sched-cell--weekend { background: rgba(0,0,0,0.015); }
 .sched-cell--today   { background: var(--teal-light); }
 .sched-cell--has { cursor: pointer; }
 .sched-cell--has:hover { background: var(--card2-bg); }
 
+/* стопка проектов за день — несколько проектов друг под другом */
+.sched-daystack { display: flex; flex-direction: column; gap: 3px; }
+
 /* plashka — компактная плашка проекта */
 .sched-plashka {
-  display: flex; align-items: center; gap: 4px; max-width: 100%;
+  display: flex; align-items: center; gap: 4px; width: 100%; max-width: 100%;
+  min-width: 0; box-sizing: border-box;
   background: var(--teal-light); border: 1px solid var(--teal-border); color: var(--teal);
   border-radius: 7px; padding: 3px 7px; font-size: 12px; font-weight: 600;
 }
@@ -4052,32 +3964,23 @@ tr.row-rejected td.sc-cell-goto {
 .sched-popover__full { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .sched-empty { padding: 24px; text-align: center; color: var(--text-muted); }
 
-/* month mode — компактнее */
-.sched-gridwrap--month .sched-cell { min-width: 44px; padding: 3px; height: 40px; }
-.sched-gridwrap--month .sched-day-col { min-width: 44px; }
+/* month mode — компактнее (table-layout:fixed делит ширину поровну, влезает весь месяц) */
+.sched-gridwrap--month .sched-cell { padding: 3px; height: 40px; }
 .sched-gridwrap--month .sched-plashka { padding: 2px 4px; font-size: 11px; gap: 2px; border-radius: 5px; }
 .sched-gridwrap--month .sched-badge { padding: 1px 3px; font-size: 9px; }
 .sched-gridwrap--month .sched-day-dow { font-size: 9px; }
 .sched-gridwrap--month .sched-day-dom { font-size: 11px; }
 
-/* plan panel */
-.sched-plan { width: 232px; flex-shrink: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 14px; }
-.sched-plan__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+/* план: правка плана теперь живёт в карточках статистики (под таблицей) */
 .sched-plan__edithint { font-size: 10px; font-weight: 700; color: var(--teal); background: var(--teal-light); border-radius: 6px; padding: 1px 6px; text-transform: uppercase; }
-.sched-plan__legend { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .03em; padding-bottom: 6px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-.sched-plan__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
-.sched-plan__name { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sched-plan__nums { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; font-size: 13px; }
-.sched-plan__nums b { font-size: 14px; }
-.sched-plan__sep { color: var(--text3); }
-.sched-plan__plan { color: var(--text-muted); font-weight: 600; }
 .sched-plan__input { width: 46px; padding: 2px 6px; border: 1px solid var(--border2); border-radius: 6px; font-family: inherit; font-size: 13px; text-align: center; background: var(--card2-bg); color: var(--text); }
-.sched-plan__total { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 4px; font-size: 13px; color: var(--text); font-weight: 600; }
 
 /* stats */
 .sched-stats { margin-top: 18px; }
-.sched-stats__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.sched-stats__head { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sched-stats__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.sched-statcard__plan { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.sched-statcard__nums .sched-plan__input { width: 40px; padding: 1px 4px; font-size: 12px; }
 .sched-statcard { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 14px; }
 .sched-statcard--total { background: var(--card2-bg); border-color: var(--border2); }
 .sched-statcard__name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
