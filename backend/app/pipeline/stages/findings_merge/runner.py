@@ -272,6 +272,17 @@ def apply_phase0_dedup(project_id: str) -> dict | None:
             meta["by_severity"] = by_sev
         fd["meta"] = meta
 
+        # Бэкап исходного 03_findings перед write-back (как pre_merge в
+        # merge_similar_findings) — дедуп не должен быть безвозвратным; идемпотентно
+        # сохраняем только первый pre-dedup снимок (reserc.md #29).
+        import shutil
+        backup_path = output_dir / "03_findings_pre_dedup.json"
+        if not backup_path.exists():
+            try:
+                shutil.copy2(findings_path, backup_path)
+            except OSError:
+                pass
+
         findings_path.write_text(
             json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8",
         )
