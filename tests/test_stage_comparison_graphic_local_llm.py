@@ -1504,6 +1504,51 @@ def test_describe_image_local_forces_continuation_when_salvaged_dict_has_no_cont
     assert parsed.get("_salvaged") is True
 
 
+# ─── #45: continuation-only salvage не понижает чистый done-base ──────────
+
+
+def test_continuation_only_salvage_keeps_done_base(_local_env, tmp_path, monkeypatch):
+    """База — полный валидный 'done' (continues=true), а continuation-добор
+    обрезался и был salvaged. Итог должен остаться 'done' (+ continuation_partial),
+    а не понизиться до 'partial' (reserc.md #45)."""
+    from backend.app.services.stage_comparison import graphic_llm_local as g
+    monkeypatch.setenv("STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS", "2")
+    png = _write_png(tmp_path / "img.png")
+    calls = {"n": 0}
+
+    chunk1_text = (
+        '{"status": "done", "image_kind": "scheme", "summary": "Опис", '
+        '"materials": ["сталь"], "continues": true, "next_chunk_hint": "ещё"}'
+    )
+    # continuation: truncated → salvage (partial), добавляет новый материал.
+    chunk2_text = '{"status": "done", "materials": ["медь", "не дочит'
+
+    class _SeqClient(_MockAsyncClient):
+        async def post(self, url, headers=None, json=None):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return _MockHTTPResponse(200, {
+                    "choices": [{"message": {"content": chunk1_text}, "finish_reason": "stop"}],
+                    "usage": {"prompt_tokens": 1000, "completion_tokens": 200, "total_tokens": 1200},
+                })
+            return _MockHTTPResponse(200, {
+                "choices": [{"message": {"content": chunk2_text}, "finish_reason": "length"}],
+                "usage": {"prompt_tokens": 500, "completion_tokens": 4000, "total_tokens": 4500},
+            })
+
+    with patch.object(g.httpx, "AsyncClient", _SeqClient):
+        cfg = g.load_local_graphic_llm_config()
+        cfg.fallback_model = ""
+        res = asyncio.run(g.describe_image_local(png, "PROMPT", cfg=cfg))
+
+    assert calls["n"] >= 2
+    # База была чистой done → итог остаётся done, несмотря на salvaged continuation.
+    assert res.status == "done", f"expected done, got {res.status}"
+    parsed = res.parsed or {}
+    assert "сталь" in (parsed.get("materials") or [])
+    assert "continuation_partial" in (parsed.get("continuation_warnings") or [])
+
+
 # ─── No-fallback path: invalid_json без mtp → salvage сразу ──────────────
 
 

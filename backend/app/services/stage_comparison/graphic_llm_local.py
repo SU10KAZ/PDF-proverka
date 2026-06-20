@@ -2599,7 +2599,11 @@ async def describe_image_local(
     chunks_count = 1
     continued = False
     continuation_warnings: list[str] = []
-    any_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
+    # #45: различаем salvage БАЗОВОГО chunk'а и salvage continuation-добора.
+    # Только base-salvage понижает итог до partial; salvage continuation на чистом
+    # done-base оставляет 'done' (база полна, добор лишь не дотянул лишние данные).
+    base_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
+    continuation_salvaged = False
     used_model = base_result.model_used or primary_model
 
     # Аккумулируем usage / response_char_count по ВСЕМ чанкам (base +
@@ -2695,7 +2699,7 @@ async def describe_image_local(
             warn = f"continuation_{cont_idx}_salvaged"
             logger.warning("describe_image_local: %s", warn)
             continuation_warnings.append(warn)
-            any_salvaged = True
+            continuation_salvaged = True
 
         # Защита от «no-op» continuation: merge должен реально что-то добавить
         # к base. Если ни одного нового узла/связи/строки не появилось —
@@ -2720,6 +2724,12 @@ async def describe_image_local(
     if stop_reason == "cap_reached" and bool(final_parsed.get("continues")):
         continuation_warnings.append(f"continuation_cap_reached:{cap}")
 
+    # #45: continuation-only salvage не понижает чистый done-base — помечаем,
+    # но не эскалируем статус.
+    any_salvaged = base_salvaged or continuation_salvaged
+    if continuation_salvaged and not base_salvaged:
+        continuation_warnings.append("continuation_partial")
+
     # Финальная мета.
     final_parsed["chunks_count"] = chunks_count
     final_parsed["continued"] = continued
@@ -2730,14 +2740,15 @@ async def describe_image_local(
 
     logger.info(
         "describe_image_local: done block in %d chunk(s), continued=%s, model=%s, "
-        "stop=%s, warnings=%d, salvaged=%s",
+        "stop=%s, warnings=%d, base_salvaged=%s, continuation_salvaged=%s",
         chunks_count, continued, used_model, stop_reason,
-        len(continuation_warnings), any_salvaged,
+        len(continuation_warnings), base_salvaged, continuation_salvaged,
     )
 
-    # Если хоть что-то salvaged → статус "partial" с уважением к данным.
-    final_status = "partial" if any_salvaged else "done"
-    final_error = "salvaged_partial_json" if any_salvaged else None
+    # #45: статус определяется ТОЛЬКО salvage базового chunk'а. Salvaged
+    # continuation на чистом done-base → итог остаётся 'done' (+ continuation_partial).
+    final_status = "partial" if base_salvaged else "done"
+    final_error = "salvaged_partial_json" if base_salvaged else None
 
     return DescribeResult(
         status=final_status,
