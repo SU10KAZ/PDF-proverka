@@ -3920,6 +3920,10 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table th:nth-child(6) { width: 24%; }
 .sched-stats-table th:nth-child(n+2),
 .sched-stats-table td:nth-child(n+2) { text-align: center; }
+/* цвет текста столбцов: Факт — зелёный, Осталось — красный, План — синий */
+.sched-stats-table th:nth-child(2), .sched-stats-table td:nth-child(2) { color: var(--green); }
+.sched-stats-table th:nth-child(3), .sched-stats-table td:nth-child(3) { color: var(--red); }
+.sched-stats-table th:nth-child(4), .sched-stats-table td:nth-child(4) { color: #2563eb; }
 .sched-stats-table__remarks { white-space: nowrap; }
 .sched-stats-table__nmtxt { min-width: 0; }
 .sched-stats-table__plan .sched-plan__input { width: 56px; }
