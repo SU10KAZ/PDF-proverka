@@ -2870,8 +2870,8 @@
                             <div class="sched-statcard__nums">
                                 <span title="выполнено (факт)"><b>{{ s.fact }}</b> факт</span>
                                 <span title="план на период" class="sched-statcard__plan">
-                                    <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
-                                           :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)"> план
+                                    <template v-if="schedPlanEdit"><input type="number" min="0" max="999" class="sched-plan__input"
+                                           :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)"> план</template>
                                     <template v-else>{{ s.plan }} план</template>
                                 </span>
                                 <span title="осталось" :class="{'sched-low': s.remaining > 0}">{{ s.remaining }} ост.</span>
