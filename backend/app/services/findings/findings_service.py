@@ -9,6 +9,7 @@ from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
 from backend.app.models.findings import FindingsResponse, FindingsSummary
+from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
@@ -857,7 +858,10 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
     if graph_data:
         for p in graph_data.get("pages", []):
             page_num = p.get("page")
-            sheet_no = p.get("sheet_no")
+            # v2-граф хранит sheet_no в sheet_no_raw/normalized (sheet_no=0),
+            # поэтому читаем через общий helper — иначе page→sheet мёртв для всех
+            # v2-проектов и в отчётах пустые «Лист N» (reserc.md #5).
+            sheet_no = get_page_sheet_no(p)
             if page_num is not None and sheet_no:
                 page_to_sheet[page_num] = str(sheet_no)
 
@@ -1004,7 +1008,7 @@ def _load_sheet_to_page_map(project_id: str, version_id: Optional[str] = None) -
         return {}
     result: dict[str, int] = {}
     for p in graph_data.get("pages", []):
-        sheet_no = p.get("sheet_no")
+        sheet_no = get_page_sheet_no(p)  # v1/v2-совместимо (reserc.md #5)
         page_num = p.get("page")
         if sheet_no and page_num is not None:
             result[str(sheet_no)] = page_num
