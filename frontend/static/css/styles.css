@@ -832,8 +832,8 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 /* ══════════════════════════════════════════════════════════════
    PROJECT DETAIL
    ══════════════════════════════════════════════════════════════ */
-.pipeline-detail { display: flex; align-items: center; gap: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 16px; overflow-x: auto; min-height: 136px; }
-.pipeline-stage { display: flex; flex-direction: column; align-items: center; min-width: 80px; min-height: 96px; padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--card2-bg); transition: all 0.13s; flex-shrink: 0; gap: 3px; }
+.pipeline-detail { display: flex; align-items: center; gap: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 16px; margin-bottom: 10px; overflow-x: auto; min-height: 0; }
+.pipeline-stage { display: flex; flex-direction: column; align-items: center; min-width: 80px; min-height: 78px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--card2-bg); transition: all 0.13s; flex-shrink: 0; gap: 3px; }
 .pipeline-stage--clickable { cursor: pointer; }
 .pipeline-stage--clickable:hover { border-color: var(--teal-border); background: var(--teal-light); }
 .pipeline-stage--sm { min-width: 60px; padding: 8px 10px; }
@@ -867,8 +867,8 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .resume-box { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--teal-light); border: 1px solid var(--teal-border); border-radius: 8px; margin-bottom: 14px; }
 .resume-label { font-size: 12px; color: var(--teal); font-weight: 500; }
 
-.info-tab-summary { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 14px; }
-.info-tab-summary__row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.info-tab-summary { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 9px 16px; margin-bottom: 10px; }
+.info-tab-summary__row { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
 .info-tab-summary__label { font-size: 11px; font-weight: 600; color: var(--text3); min-width: 90px; text-transform: uppercase; letter-spacing: 0.05em; }
 
 .pipeline-summary { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 14px; }
@@ -896,7 +896,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .retry-dialog__stage { font-size: 12px; color: var(--text2); margin-bottom: 14px; }
 .retry-dialog__buttons { display: flex; gap: 8px; }
 
-.info-tab-usage { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); }
+.info-tab-usage { display: flex; align-items: center; gap: 8px; padding: 6px 14px; margin-bottom: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); }
 .usage-icon { font-size: 14px; }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2813,22 +2813,27 @@ tr.row-rejected td.sc-cell-goto {
 .project-version-switch {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 2px 6px;
-    border: 1px solid var(--border, #2a2a2a);
-    border-radius: 6px;
-    background: var(--topbar-bg, #ffffff);
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid var(--teal-border);
+    border-radius: 9px;
+    background: var(--teal-light);
+    box-shadow: 0 1px 4px rgba(0,143,126,0.12);
 }
 .project-version-switch__label {
-    font-size: 11px;
-    color: var(--text2, #888);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     margin: 0;
 }
 .project-version-switch__select {
     background: transparent;
-    color: inherit;
+    color: var(--teal);
     border: none;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 700;
     padding: 2px 4px;
     cursor: pointer;
 }
@@ -2836,7 +2841,8 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 11px;
 }
 .project-version-switch__name {
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 600;
     color: inherit;
     max-width: 280px;
     overflow: hidden;
