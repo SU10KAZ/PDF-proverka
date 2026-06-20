@@ -504,8 +504,12 @@ async def run_norm_verification(
             "Слияние paragraph_checks (статусы norm_checks остаются authoritative)...",
         )
         merge_stats = merge_llm_norm_results(norm_checks_path, norm_checks_llm_path)
+        # #37: явно логируем долю подтверждённых цитат.
+        _pv_true = merge_stats.get("paragraph_verified_true", 0)
+        _pv_total = merge_stats.get("paragraph_verified_total", merge_stats["paragraph_checks"])
         await ctx.log(
             f"Слияние: {merge_stats['paragraph_checks']} цитат получено, "
+            f"подтверждено {_pv_true}/{_pv_total}, "
             f"{merge_stats.get('ignored_llm_status_attempts', 0)} попыток "
             f"изменить статус отброшено. Paragraph cache: "
             f"+{merge_stats.get('paragraph_cache_added', 0)} новых, "

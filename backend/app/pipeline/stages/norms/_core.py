@@ -407,6 +407,8 @@ _TRUSTED_VERIFIED_VIA_PREFIXES = (
     "norms_mcp",            # из нового norm_verify промпта (verified_via="norms_mcp_paragraph")
     "norms_main_mcp",       # будущие вариации
     "norms_authoritative",  # теоретически — если писали checks
+    "native_python",        # #36: Python-native verify читает authoritative индекс
+                            # напрямую (после #34) → доверенный путь, trusted_skipped работает
 )
 _TRUSTED_SOURCE_VALUES = {"norms_main_mcp", "norms_main"}
 
@@ -708,6 +710,22 @@ def merge_llm_norm_results(
         by_status[s] = by_status.get(s, 0) + 1
     meta["results"] = by_status
 
+    # #37: поверхностить метрики верификации цитат пунктов в norm_checks.meta
+    # (сколько подтверждено / опровергнуто / каким провайдером). Раньше meta нёс
+    # только статусы документов — доля подтверждённых цитат была не видна.
+    pv_total = len(paragraph_checks)
+    pv_true = sum(1 for p in paragraph_checks if p.get("paragraph_verified"))
+    by_source: dict[str, int] = {}
+    for p in paragraph_checks:
+        src = (p.get("verified_via") or "unknown").strip().lower()
+        by_source[src] = by_source.get(src, 0) + 1
+    meta["paragraph_verification"] = {
+        "verified_true": pv_true,
+        "verified_false": pv_total - pv_true,
+        "total": pv_total,
+        "by_source": by_source,
+    }
+
     final = {
         "meta": meta,
         "checks": final_checks,
@@ -727,6 +745,8 @@ def merge_llm_norm_results(
         "checks_updated_from_llm": 0,
         "ignored_llm_status_attempts": ignored_status_attempts,
         "paragraph_checks": len(paragraph_checks),
+        "paragraph_verified_true": pv_true,   # #37: для лога runner «подтверждено X/Y»
+        "paragraph_verified_total": pv_total,
         "paragraph_cache_added": merge_stats.get("added", 0),
         "paragraph_cache_updated": merge_stats.get("updated", 0),
     }
