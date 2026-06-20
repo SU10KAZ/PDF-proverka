@@ -262,6 +262,29 @@ def _write_artifact(session_id: str, job: dict) -> None:
 
 # ─── run ────────────────────────────────────────────────────────────────────
 
+def _preflight_llm(use_llm: bool) -> tuple[bool, dict]:
+    """#66: один preflight LLM-провайдера на весь auto-match job.
+
+    Раньше доступность ClaudeCodeProvider проверялась внутри suggest на КАЖДУЮ
+    пару. Если провайдер недоступен (или LLM выключен флагом) — выключаем use_llm
+    на весь прогон, не дёргая check десятки раз. Возвращает (effective_use_llm, diag).
+    fail-soft: любая ошибка → use_llm=False с пометкой.
+    """
+    if not use_llm:
+        return False, {"status": "not_requested"}
+    try:
+        from . import stamp_llm_match as _slm
+        from .text_llm_provider import ClaudeCodeProvider
+        if not _slm.stamp_llm_enabled():
+            return False, {"status": "disabled_by_flag"}
+        ok, reason = ClaudeCodeProvider().check_availability()
+        if not ok:
+            return False, {"status": "provider_unavailable", "reason": reason}
+        return True, {"status": "ok"}
+    except Exception as exc:  # noqa: BLE001 — fail-soft, не валим job
+        return False, {"status": "preflight_exception", "error": str(exc)}
+
+
 async def run_job(session_id: str, job_id: str) -> dict:
     job = _read_job(session_id, job_id)
     if job is None:
@@ -276,6 +299,10 @@ async def run_job(session_id: str, job_id: str) -> dict:
     _write_job(session_id, job)
 
     use_llm = bool(job.get("use_llm"))
+    # #66: один preflight провайдера на весь прогон (не per-pair).
+    use_llm, job["llm_preflight"] = _preflight_llm(use_llm)
+    job["use_llm_effective"] = use_llm
+    _write_job(session_id, job)
     overwrite = bool(job.get("overwrite_existing"))
     auto_apply = bool(job.get("auto_apply", True))
 
