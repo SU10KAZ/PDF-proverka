@@ -18,9 +18,12 @@ auto-resume после рестарта backend (orphan jobs, missing_manual_run
 """
 from __future__ import annotations
 
+import itertools
 import logging
 import os
 import re
+import threading
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -136,6 +139,65 @@ def _today_spent_usd() -> float:
     return 0.0
 
 
+# ─── In-process reservation ledger (#73) ──────────────────────────────
+# Несколько одновременных платных вызовов читали spent ДО того, как любой из
+# них успевал записать cost через record_paid → каждый видел один и тот же
+# spent, все проходили проверку лимита и вместе перебирали дневной потолок.
+# Решение: под локом резервируем оценку стоимости; проверка лимита учитывает
+# spent + сумму активных резерваций. TTL-самозалечивание гарантирует, что
+# пропущенный release (error-путь) не «съест» бюджет навсегда.
+_RESERVATION_TTL_SEC_DEFAULT = 900.0
+_reservation_lock = threading.Lock()
+_reservations: dict[int, tuple[float, float]] = {}  # id -> (amount_usd, monotonic_ts)
+_reservation_ids = itertools.count(1)
+
+
+def _reservation_ttl_runtime() -> float:
+    return _env_float_runtime("PAID_API_RESERVATION_TTL_SEC", default=_RESERVATION_TTL_SEC_DEFAULT)
+
+
+def _purge_expired_locked(now: float) -> None:
+    """Удалить протухшие резервации (вызывать под _reservation_lock)."""
+    ttl = _reservation_ttl_runtime()
+    expired = [rid for rid, (_, ts) in _reservations.items() if now - ts >= ttl]
+    for rid in expired:
+        _reservations.pop(rid, None)
+
+
+def _reserved_total_locked(now: float) -> float:
+    """Сумма активных (не протухших) резерваций (под _reservation_lock)."""
+    _purge_expired_locked(now)
+    return sum(amount for amount, _ in _reservations.values())
+
+
+@dataclass
+class PaidApiReservation:
+    """Handle активной резервации бюджета. Вызывающий обязан release()."""
+
+    reservation_id: int
+    amount_usd: float
+    released: bool = False
+
+    def release(self) -> None:
+        if self.released:
+            return
+        with _reservation_lock:
+            _reservations.pop(self.reservation_id, None)
+        self.released = True
+
+
+def release_reservation(res: "PaidApiReservation | None") -> None:
+    """None-safe, идемпотентное освобождение резервации."""
+    if res is not None:
+        res.release()
+
+
+def active_reservation_count() -> int:
+    """Число активных резерваций (для тестов/диагностики)."""
+    with _reservation_lock:
+        return len(_reservations)
+
+
 # ─── Главная функция ──────────────────────────────────────────────────
 
 
@@ -172,11 +234,9 @@ def _has_canonical_scope(ctx: PaidApiContext) -> bool:
     return False
 
 
-def assert_paid_api_allowed(ctx: PaidApiContext) -> None:
-    """Поднимает PaidApiBlockedError если платный вызов запрещён.
-
-    Должна вызываться СТРОГО ДО network request.
-    """
+def _assert_basic(ctx: PaidApiContext) -> None:
+    """Проверки 1-3 (kill-switch + sanity-поля + project_id). Общие для
+    assert_paid_api_allowed и reserve_paid_api."""
     # 1. Глобальный kill-switch (runtime-читаемый)
     if not _paid_api_enabled_runtime():
         _block(ctx, "paid_api_disabled")
@@ -197,13 +257,52 @@ def assert_paid_api_allowed(ctx: PaidApiContext) -> None:
     if _is_short_discipline_code(pid) and not _has_canonical_scope(ctx):
         _block(ctx, "short_discipline_code_project_id")
 
-    # 4. Daily limit (runtime-читаемый)
+
+def _enforce_daily_limit(ctx: PaidApiContext, *, reserve: bool) -> "PaidApiReservation | None":
+    """Проверка дневного лимита (4) с учётом активных резерваций.
+
+    reserve=True → при успехе зарегистрировать резервацию оценки и вернуть
+    handle (вызывающий обязан release()). Блокирует (raise) при превышении.
+    """
     limit = _daily_limit_runtime()
-    if limit > 0.0:
+    if limit <= 0.0:
+        return None  # лимит выключен — резервирование не нужно
+    est = max(0.0, float(ctx.estimated_cost_usd or 0.0))
+    res: "PaidApiReservation | None" = None
+    blocked = False
+    # Лок держим коротко: snapshot spent+reserved+est и (при reserve) регистрация.
+    with _reservation_lock:
+        now = time.monotonic()
+        reserved = _reserved_total_locked(now)
         spent = _today_spent_usd()
-        projected = spent + max(0.0, float(ctx.estimated_cost_usd or 0.0))
-        if spent >= limit or projected > limit:
-            _block(ctx, "daily_limit_exceeded")
+        if spent + reserved >= limit or (spent + reserved + est) > limit:
+            blocked = True
+        elif reserve:
+            rid = next(_reservation_ids)
+            _reservations[rid] = (est, now)
+            res = PaidApiReservation(rid, est)
+    if blocked:
+        _block(ctx, "daily_limit_exceeded")  # I/O вне лока
+    return res
+
+
+def assert_paid_api_allowed(ctx: PaidApiContext) -> None:
+    """Поднимает PaidApiBlockedError если платный вызов запрещён.
+
+    Должна вызываться СТРОГО ДО network request. Проверка лимита учитывает
+    активные резервации (#73), но сама НЕ резервирует — для пре-флайт проверок.
+    """
+    _assert_basic(ctx)
+    _enforce_daily_limit(ctx, reserve=False)
+
+
+def reserve_paid_api(ctx: PaidApiContext) -> "PaidApiReservation | None":
+    """Как assert_paid_api_allowed, но дополнительно РЕЗЕРВИРУЕТ оценку
+    стоимости под локом — конкурентные вызовы видят сумму резерваций и не
+    перебирают дневной лимит. Возвращает handle (или None если лимит выключен);
+    вызывающий обязан вызвать release_reservation(handle) после record_paid."""
+    _assert_basic(ctx)
+    return _enforce_daily_limit(ctx, reserve=True)
 
 
 def is_paid_api_enabled() -> bool:
