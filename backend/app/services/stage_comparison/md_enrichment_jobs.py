@@ -782,6 +782,17 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
     failed_image_blocks = 0
     cache_hits = 0
 
+    # Кеш per-side метрик: descriptions JSON читается в ДВУХ циклах (per-pair и
+    # session-level), оба по одному by_pair → без кеша это 4N чтений с диска на
+    # каждый polling-тик. С кешем — 2N (reserc.md #69).
+    _metrics_cache: dict[tuple[str, str], dict] = {}
+
+    def _side_metrics(pid: str, side: str) -> dict:
+        key = (pid, side)
+        if key not in _metrics_cache:
+            _metrics_cache[key] = _read_side_descriptions_metrics(session_id, pid, side)
+        return _metrics_cache[key]
+
     for pid, sides in by_pair.items():
         total_pairs += 1
         side_statuses: dict[str, dict] = {}
@@ -929,8 +940,8 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
         # Подтянуть block-уровневые метрики из текущих descriptions JSON.
         # Если файлы ещё не созданы (item только-только пошёл в running) —
         # вернутся нули. Это безопасно.
-        left_metrics = _read_side_descriptions_metrics(session_id, pid, "left")
-        right_metrics = _read_side_descriptions_metrics(session_id, pid, "right")
+        left_metrics = _side_metrics(pid, "left")
+        right_metrics = _side_metrics(pid, "right")
         # Сюда попадают ТОЛЬКО реально проблемные пары. done_with_salvage —
         # это успешное завершение с salvage-восстановлением, без оператора
         # туда не лезть.
@@ -987,7 +998,7 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
 
     for pid, sides in by_pair.items():
         for side in ("left", "right"):
-            sm = _read_side_descriptions_metrics(session_id, pid, side)
+            sm = _side_metrics(pid, side)
             if not sm.get("block_metrics_available"):
                 continue
             sess_blocks_done += sm.get("blocks_done", 0)

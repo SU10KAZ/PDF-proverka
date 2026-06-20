@@ -1802,7 +1802,12 @@ async def get_active_md_enrichment_job_endpoint(session_id: str):
 
 @router.get("/sessions/{session_id}/md-enrichment-jobs/{job_id}")
 async def get_md_enrichment_job_endpoint(session_id: str, job_id: str):
-    job = md_enrichment_jobs_mod.get_job_with_progress(session_id, job_id)
+    # Горячий polling-эндпоинт: get_job_with_progress делает синхронный disk-I/O
+    # (aggregate по парам) → в event loop это блокировка и риск watchdog-kill.
+    # Выносим в threadpool (reserc.md #69).
+    job = await run_in_threadpool(
+        md_enrichment_jobs_mod.get_job_with_progress, session_id, job_id
+    )
     if job is None:
         raise HTTPException(404, "Job не найден")
     return job
