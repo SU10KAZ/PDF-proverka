@@ -589,6 +589,30 @@ def list_jobs(session_id: str) -> list[dict]:
     return out
 
 
+def find_active_pipeline_job(session_id: str) -> Optional[dict]:
+    """#67: вернуть активный (running/queued с ЖИВОЙ Task) pipeline-job сессии.
+
+    Single-flight guard: локальный LM Studio один, второй параллельный Qwen→Opus
+    job той же сессии топтался бы на инстансе (ctx делится на слоты → сбои).
+    Stale-job (running/queued без живой asyncio.Task — после рестарта uvicorn) НЕ
+    считается активным: его перехватывает _maybe_mark_interrupted. Возвращает
+    None, если активного прогона нет.
+    """
+    bucket = _active_tasks.get(session_id) or {}
+    for p in sorted(_jobs_dir(session_id).glob("*.json")):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                job = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if job.get("status") not in ("running", "queued"):
+            continue
+        task = bucket.get(job.get("job_id"))
+        if task is not None and not task.done():
+            return job
+    return None
+
+
 def _maybe_mark_interrupted(session_id: str, job: dict) -> dict:
     """If a job claims running/queued but no live asyncio.Task exists (uvicorn
     restart/crash), mark it failed_interrupted so the UI can resume."""

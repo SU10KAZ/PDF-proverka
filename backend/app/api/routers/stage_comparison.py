@@ -1674,6 +1674,18 @@ async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
                            "Восстановите туннель/модель и повторите "
                            "(или skip_health_check=true на свой риск).",
             }
+    # #67: single-flight guard — не запускать второй Qwen→Opus pipeline той же
+    # сессии, пока активен предыдущий (один LM Studio инстанс).
+    active = await asyncio.to_thread(
+        pipeline_queue_mod.find_active_pipeline_job, session_id
+    )
+    if active is not None:
+        return {
+            "status": "already_running",
+            "active_job_id": active.get("job_id"),
+            "message": "Qwen→Opus pipeline уже выполняется для этой сессии — "
+                       "дождитесь завершения или отмените текущий job.",
+        }
     try:
         job = await asyncio.to_thread(
             pipeline_queue_mod.create_job,
