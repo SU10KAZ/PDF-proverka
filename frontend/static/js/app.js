@@ -3267,6 +3267,18 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
+        // Выделить все НЕпроанализированные (findings_count == 0) проекты раздела,
+        // добавляя их к текущему выделению.
+        function selectUnanalyzedInSection(sectionCode) {
+            const pids = projects.value
+                .filter(p => (p.section || 'OTHER') === sectionCode && !(p.findings_count > 0))
+                .map(p => p.project_id);
+            const s = new Set(selectedProjects.value);
+            for (const id of pids) s.add(id);
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
         const selectedCount = computed(() => selectedProjects.value.size);
 
         function openBatchModal() {
@@ -14175,7 +14187,7 @@ const app = createApp({
             startAuditDirect,
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
-            isSectionSelected, toggleSectionSelection,
+            isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
             sectionExcelLoading, exportSectionExcel,
             projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,

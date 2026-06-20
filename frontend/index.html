@@ -510,6 +510,12 @@
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>
+                    <button v-if="selectedCount > 0" class="btn btn-sm btn-outline"
+                            style="margin-left:10px; vertical-align:middle;"
+                            @click.stop="selectUnanalyzedInSection(sidebarFilterSection)"
+                            title="Выделить все непроанализированные проекты раздела (без аудита)">
+                        Выделить необработанные
+                    </button>
                 </h2>
                 <div class="dashboard-actions">
                     <button class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
