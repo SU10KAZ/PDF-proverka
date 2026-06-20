@@ -853,7 +853,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .stage-model { font-size: 8px; color: var(--text3); font-weight: 500; margin-top: 1px; }
 .pipeline-arrow { flex-shrink: 0; color: var(--text3); padding: 0 6px; font-size: 14px; }
 .pipeline-arrow--sm { padding: 0 3px; font-size: 12px; }
-.audit-actions-col { margin-left: auto; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; align-self: center; }
+.audit-actions-col { margin-left: auto; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; align-self: flex-end; }
 .audit-buttons-inline { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 /* Live banner */
