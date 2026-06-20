@@ -739,6 +739,27 @@ async def run_block_batch_gemini_direct(
     batch_id = batch_data.get("batch_id", 0)
     input_block_ids = [b["block_id"] for b in batch_data.get("blocks", [])]
 
+    # Paid API guard: gemini_direct — платный путь и ОБЯЗАН уважать kill-switch
+    # PAID_API_ENABLED и дневной лимит (reserc.md #3/#88/#105). Раньше обходил.
+    from backend.app.services.llm.paid_api_guard import (
+        PaidApiBlockedError,
+        PaidApiContext,
+        assert_paid_api_allowed,
+    )
+    try:
+        assert_paid_api_allowed(PaidApiContext(
+            source="gemini_direct.run_block_batch",
+            model=model_id,
+            project_id=project_id,
+            stage="block_analysis",
+        ))
+    except PaidApiBlockedError as exc:
+        msg = f"paid_api_blocked: {exc.reason}"
+        return 1, msg, GeminiBlockBatchResult(
+            batch_id=batch_id, model_id=model_id, is_error=True,
+            error_type="provider", error_message=msg,
+        )
+
     messages = prompt_builder.build_block_batch_messages(
         batch_data, project_info, project_id, total_batches
     )
@@ -757,6 +778,24 @@ async def run_block_batch_gemini_direct(
         from backend.app.services.llm.claude_runner import _resolve_output_dir, _write_json
         output_path = _resolve_output_dir(project_id) / f"block_batch_{batch_id:03d}.json"
         _write_json(output_path, result.parsed_data)
+
+    # Учёт платного вызова (reserc.md #3): единый paid_cost_tracker.record_paid —
+    # paid_cost.json + paid_cost_events.jsonl растут вместе. record_paid сам
+    # пропускает cost<=0 (cache/ошибка), поэтому вызов безопасен.
+    if not result.is_error:
+        try:
+            from backend.app.services.common.usage_service import paid_cost_tracker
+            paid_cost_tracker.record_paid(
+                round(float(result.cost_usd or 0.0), 8),
+                model=result.model_id or model_id,
+                project_id=project_id,
+                stage="block_analysis",
+                source="gemini_direct",
+                input_tokens=result.prompt_tokens or 0,
+                output_tokens=result.output_tokens or 0,
+            )
+        except Exception:
+            logger.exception("gemini_direct: record_paid failed")
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.raw_text, result
