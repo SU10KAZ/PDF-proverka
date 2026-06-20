@@ -1088,36 +1088,55 @@ class PipelineManager:
         2. Resume мог подхватить с прерванного этапа
         """
         from backend.app.services.common.project_service import iter_project_dirs
+        from backend.app.services.common.version_service import is_version_container
 
         # Собрать project_id активных задач, чтобы не трогать их
         active_pids = set(self.active_jobs.keys())
+
+        def _recover_one_log(log_path: Path, label: str) -> bool:
+            if not log_path.exists():
+                return False
+            try:
+                data = json.loads(log_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
+                return False
+            stages = data.get("stages", {})
+            changed = False
+            for stage_key, stage_info in stages.items():
+                if stage_info.get("status") == "running":
+                    # Этот этап остался "running" после рестарта — прерван
+                    stage_info["status"] = "interrupted"
+                    stage_info["error"] = "Сервер перезапущен во время выполнения"
+                    stage_info["interrupted_at"] = datetime.now().isoformat()
+                    changed = True
+                    print(f"[Recovery] {label}: этап '{stage_key}' running → interrupted")
+            if changed:
+                data["last_updated"] = datetime.now().isoformat()
+                log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return changed
 
         recovered = 0
         for _pid, project_dir in iter_project_dirs():
             # Не трогать проекты с активным аудитом
             if _pid in active_pids:
                 continue
-            log_path = project_dir / "_output" / "pipeline_log.json"
-            if not log_path.exists():
-                continue
+            # Сканируем primary + ВСЕ версии контейнера `<база>(main)/` — раньше
+            # бралась только primary _output, и V2-аудит оставался вечным
+            # 'running' после рестарта (reserc.md #10). Filesystem-обход надёжнее
+            # манифеста версий.
+            scan_dirs = [project_dir]
+            parent = project_dir.parent
             try:
-                data = json.loads(log_path.read_text(encoding="utf-8"))
-                stages = data.get("stages", {})
-                changed = False
-                for stage_key, stage_info in stages.items():
-                    if stage_info.get("status") == "running":
-                        # Этот этап остался "running" после рестарта — прерван
-                        stage_info["status"] = "interrupted"
-                        stage_info["error"] = "Сервер перезапущен во время выполнения"
-                        stage_info["interrupted_at"] = datetime.now().isoformat()
-                        changed = True
-                        print(f"[Recovery] {project_dir.name}: этап '{stage_key}' running → interrupted")
-                if changed:
-                    data["last_updated"] = datetime.now().isoformat()
-                    log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                if is_version_container(parent):
+                    for sib in sorted(parent.iterdir()):
+                        if sib.is_dir() and sib != project_dir and not sib.name.startswith("_"):
+                            scan_dirs.append(sib)
+            except OSError:
+                pass
+            for vdir in scan_dirs:
+                if _recover_one_log(vdir / "_output" / "pipeline_log.json", vdir.name):
                     recovered += 1
-            except (json.JSONDecodeError, OSError) as e:
-                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
 
         if recovered:
             print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
