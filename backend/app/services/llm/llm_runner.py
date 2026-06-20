@@ -801,7 +801,10 @@ async def _run_local_chat_completions(
 
 # Цены моделей OpenRouter ($/1M токенов) — обновлять при изменении
 # Fallback only: если в response.usage пришла usage.cost — используется она.
-_MODEL_PRICES = {
+# Встроенные цены (USD за 1M токенов) — fallback, если data/model_prices.json
+# недоступен. #75: основной источник — конфиг-файл, чтобы цены правились без
+# редактирования кода.
+_MODEL_PRICES_BUILTIN = {
     "google/gemini-2.5-pro":          {"input": 1.25,  "output": 10.0},
     "google/gemini-2.5-flash":        {"input": 0.30,  "output": 2.50},
     "google/gemini-3.1-pro-preview":  {"input": 2.0,   "output": 12.0},
@@ -812,10 +815,40 @@ _MODEL_PRICES = {
 }
 
 
+def _load_model_prices() -> dict:
+    """#75: загрузить цены из data/model_prices.json (fallback — встроенные)."""
+    path = Path(__file__).resolve().parents[2] / "data" / "model_prices.json"
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        prices = {
+            k: v for k, v in data.items()
+            if isinstance(v, dict) and "input" in v and "output" in v
+        }
+        if prices:
+            return prices
+    except (OSError, json.JSONDecodeError):
+        pass
+    return dict(_MODEL_PRICES_BUILTIN)
+
+
+_MODEL_PRICES = _load_model_prices()
+_WARNED_UNKNOWN_PRICE_MODELS: set[str] = set()
+
+
 def _estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """Оценить стоимость запроса на основе токенов и цен модели."""
     prices = _MODEL_PRICES.get(model)
     if not prices:
+        # #75: неизвестная цена → под-учёт (cost=0.0). Делаем это наблюдаемым:
+        # warning один раз на модель, чтобы не спамить лог.
+        if model and model not in _WARNED_UNKNOWN_PRICE_MODELS:
+            _WARNED_UNKNOWN_PRICE_MODELS.add(model)
+            logger.warning(
+                "[cost] неизвестная цена для модели '%s' → стоимость считается 0.0 "
+                "(под-учёт). Добавьте её в backend/app/data/model_prices.json.",
+                model,
+            )
         return 0.0
     cost = (input_tokens * prices["input"] + output_tokens * prices["output"]) / 1_000_000
     return round(cost, 6)
@@ -1003,10 +1036,14 @@ async def run_llm(
             )
         except APITimeoutError as e:
             if attempt < max_retries:
+                # #75: backoff перед повтором (как у RateLimitError) — без паузы
+                # ретраи били в тот же таймаут-шторм.
+                wait = min(60, 2 ** attempt * 5)
                 logger.warning(
-                    "[%s] Timeout (attempt %d/%d): %s",
-                    stage, attempt, max_retries, e,
+                    "[%s] Timeout (attempt %d/%d), waiting %ds: %s",
+                    stage, attempt, max_retries, wait, e,
                 )
+                await asyncio.sleep(wait)
                 continue
             return LLMResult(
                 text="", is_error=True,
