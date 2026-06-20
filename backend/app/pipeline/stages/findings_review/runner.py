@@ -47,6 +47,16 @@ class FindingsReviewResult:
 
 # ─── Internal helpers ────────────────────────────────────────────────────────
 
+def _should_chunk_corrector(total_issues: int, deterministic: bool, chunk_size: int) -> bool:
+    """#33: детерминированный corrector — Python-only, применяет вердикты за один
+    проход по всему файлу. Чанковать его незачем (это N лишних полных перезаписей
+    findings + усечение 03_findings_review.json до последнего чанка). Чанкуем
+    только агентный путь (FINDINGS_CRITIC_DETERMINISTIC=false)."""
+    if deterministic:
+        return False
+    return total_issues > chunk_size
+
+
 def _extract_error_detail(exit_code: int, output: str, max_len: int = 120) -> str:
     if not output:
         return f"Exit code {exit_code}"
@@ -415,7 +425,8 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
     if not issue_ids:
         issue_ids = [f"F-{i:03d}" for i in range(1, total_issues + 1)]
 
-    need_chunks = total_issues > CORRECTOR_CHUNK_SIZE
+    deterministic = claude_runner._findings_critic_deterministic_enabled()
+    need_chunks = _should_chunk_corrector(total_issues, deterministic, CORRECTOR_CHUNK_SIZE)
     if need_chunks:
         corrector_chunks = [
             issue_ids[i:i + CORRECTOR_CHUNK_SIZE]
