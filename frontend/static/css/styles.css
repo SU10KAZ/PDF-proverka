@@ -2099,7 +2099,8 @@ tr.row-rejected td.sc-cell-goto {
     border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
     font-size: 11px; text-transform: uppercase; letter-spacing: .3px;
 }
-.kb-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; text-align: left; overflow-wrap: anywhere; }
+.kb-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; text-align: center; overflow-wrap: anywhere; }
+.kb-table td:first-child { text-align: left; }
 .kb-table th:last-child, .kb-table td:last-child { border-right: none; }
 .kb-row { transition: background .1s; }
 .kb-row:hover { background: var(--bg2); }
