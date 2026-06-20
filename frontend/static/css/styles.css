@@ -536,8 +536,8 @@ body {
 }
 .breadcrumb__left { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text2); padding: 8px 0; margin-right: 16px; }
 .project-version-bar { display: flex; align-items: center; padding: 4px 24px; background: var(--bg); flex-shrink: 0; margin-bottom: 0; }
-.project-version-bar + .container { padding-top: 10px; }
-.project-version-bar + .container--flex { padding-top: 10px; }
+.project-version-bar + .container { padding-top: 6px; }
+.project-version-bar + .container--flex { padding-top: 6px; }
 .breadcrumb__left a { color: var(--teal); text-decoration: none; font-weight: 500; }
 .breadcrumb__left a:hover { text-decoration: underline; }
 
@@ -804,7 +804,7 @@ body {
 
 /* Severity Badges */
 .severity-badges { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.severity-badges--large { margin-bottom: 14px; }
+.severity-badges--large { margin-bottom: 8px; }
 .severity-badges--large .sev-badge { padding: 4px 10px; font-size: 12px; cursor: pointer; }
 .sev-badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; white-space: nowrap; letter-spacing: 0.02em; }
 .sev-badge--sm { font-size: 8px; padding: 1px 5px; }
@@ -899,7 +899,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 /* ══════════════════════════════════════════════════════════════
    FINDINGS TABLE
    ══════════════════════════════════════════════════════════════ */
-.filters { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+.filters { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
 .filter-select { padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; font-family: inherit; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); cursor: pointer; outline: none; }
 .filter-input { flex: 1; padding: 7px 12px; border-radius: 8px; font-size: 12px; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); font-family: inherit; outline: none; }
 .filter-input:focus { border-color: var(--teal-border); }
