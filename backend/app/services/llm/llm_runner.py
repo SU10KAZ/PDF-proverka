@@ -499,6 +499,27 @@ def _context_mismatch_disabled_message(
     )
 
 
+def _is_local_structured_truncation(
+    *,
+    finish_reason: str,
+    json_data: Any,
+    expects_json: bool,
+    out_tokens: int,
+    max_tokens: int,
+) -> bool:
+    """#74: structured-этап локальной модели вернул усечённый ответ без валидного JSON.
+
+    Только для structured-этапов (expects_json) — plain-text ответы не трогаем.
+    Признак усечения: явный finish_reason='length' ИЛИ упор в max_tokens (chandra
+    `/api/v1/chat` может не отдавать finish_reason='length').
+    """
+    if json_data is not None or not expects_json:
+        return False
+    if finish_reason == "length":
+        return True
+    return bool(max_tokens and out_tokens and out_tokens >= max_tokens)
+
+
 async def _run_local_chandra_chat(
     *,
     model: str,
@@ -626,18 +647,40 @@ async def _run_local_chandra_chat(
         if not content and reasoning_content:
             content = reasoning_content
 
+    # #74: детекция усечения для /api/v1/chat. Раньше finish_reason здесь всегда
+    # был 'stop' при наличии content → усечённый JSON на structured-этапах
+    # проходил как успех. Извлекаем реальный finish_reason; на structured-этапах
+    # (есть response_format) при отсутствии валидного JSON и признаке усечения
+    # (finish_reason='length' ИЛИ упор в max_tokens) помечаем is_error.
+    finish_reason = ""
+    if isinstance(data, dict):
+        finish_reason = str(data.get("finish_reason") or stats.get("finish_reason") or "")
+    out_tokens = _usage_value(stats, "total_output_tokens")
+    truncated_no_json = _is_local_structured_truncation(
+        finish_reason=finish_reason,
+        json_data=json_data,
+        expects_json=response_format is not None,
+        out_tokens=out_tokens,
+        max_tokens=max_tokens,
+    )
+
     return LLMResult(
         text=content,
         json_data=json_data,
         input_tokens=_usage_value(stats, "input_tokens"),
-        output_tokens=_usage_value(stats, "total_output_tokens"),
+        output_tokens=out_tokens,
         cost_usd=0.0,
         duration_ms=elapsed_ms,
         model=model,
         reasoning_tokens=_usage_value(stats, "reasoning_output_tokens"),
         cost_source="local",
         response_id=(data.get("model_instance_id", "") if isinstance(data, dict) else "") or "",
-        finish_reason="stop" if content else "",
+        finish_reason=finish_reason or ("stop" if content else ""),
+        is_error=bool(truncated_no_json),
+        error_message=(
+            "Local model output truncated before valid JSON was completed (/api/v1/chat)"
+            if truncated_no_json else ""
+        ),
     )
 
 
