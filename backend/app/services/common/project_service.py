@@ -2117,7 +2117,97 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     return info
 
 
-def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> dict:
+def _clean_project_data_v2_primary(
+    project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False,
+) -> dict:
+    """projects_v2-primary clean with mandatory backup + confirmation."""
+    if not _confirmed:
+        raise ValueError("Для очистки projects_v2 требуется явное подтверждение _confirmed=True")
+
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_version_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    facade = StorageWriteFacade()
+    v2_root = facade.v2_root()
+    if v2_root is None:
+        raise ValueError("projects_v2 root не настроен")
+
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise ValueError(f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, version_id)
+    if not target_vid:
+        raise ValueError(f"Версия '{version_id}' проекта '{project_id}' не найдена в projects_v2")
+
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    version_dir = target.version_dir(v2_root)
+    if not version_dir.is_dir():
+        raise ValueError(f"Версия '{target_vid}' проекта '{project_id}' не найдена в projects_v2")
+
+    backup_id = backup_version_before_destructive(target, v2_root, "clean_project_data")
+    record_destructive_confirmation(
+        target, v2_root, op="clean_project_data", backup_id=backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary(
+        "clean_project_data", confirmed=True, backup_id=backup_id,
+    )
+
+    result = {
+        "deleted_files": 0,
+        "deleted_dirs": 0,
+        "freed_mb": 0.0,
+        "version_id": target.vid_disk(),
+        "backup_id": backup_id,
+    }
+    total_size = 0
+
+    analysis_dir = version_dir / "03_analysis"
+    if analysis_dir.exists():
+        for f in analysis_dir.rglob("*"):
+            if f.is_file():
+                total_size += f.stat().st_size
+                result["deleted_files"] += 1
+            elif f.is_dir():
+                result["deleted_dirs"] += 1
+        shutil.rmtree(analysis_dir)
+    (analysis_dir / "latest").mkdir(parents=True, exist_ok=True)
+
+    vj_path = version_dir / "version.json"
+    if vj_path.exists():
+        try:
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+        except Exception:
+            vj = None
+        if isinstance(vj, dict):
+            info = vj.get("project_info")
+            if isinstance(info, dict):
+                for field in [
+                    "tile_config_source", "text_source",
+                    "md_page_classification", "text_extraction_quality",
+                    "tile_quality",
+                ]:
+                    info.pop(field, None)
+                info["tile_config"] = {}
+                vj["project_info"] = info
+                vj_path.write_text(json.dumps(vj, ensure_ascii=False, indent=2), encoding="utf-8")
+                result["project_info_reset"] = True
+
+    result["freed_mb"] = round(total_size / 1024 / 1024, 1)
+    return result
+
+
+def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False) -> dict:
     """Очистить все результаты аудита, сохранив только исходные документы.
 
     Сохраняет (исходные файлы пользователя):
@@ -2139,8 +2229,13 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> 
     Returns:
         dict с описанием удалённого
     """
-    # Шаг 6C: в V2_PRIMARY деструктив запрещён до safety-контракта (no-op в
-    # legacy/dual_write_shadow → прод не затрагивается).
+    from backend.app.services.storage.storage_write_facade import v2_is_primary
+    if v2_is_primary():
+        return _clean_project_data_v2_primary(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
+
+    # Legacy/dual_write_shadow branch: прежняя очистка `_output/` без v2-деструктива.
     from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
     guard_destructive_v2_primary("clean_project_data")
     root_dir = resolve_project_dir(project_id)

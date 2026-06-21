@@ -3,7 +3,7 @@ REST API для проектов.
 """
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 import backend.app.services.common.project_service as project_service
@@ -749,8 +749,34 @@ async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
     return {"status": "ok", "project_id": project_id, "pipeline_version": req.pipeline_version}
 
 
+
+
+class RestoreCleanRequest(BaseModel):
+    backup_id: str
+    version_id: Optional[str] = None
+
+
+def _require_restore_clean_auth(request: Request) -> Optional[str]:
+    """Explicit portal-auth gate for destructive restore endpoint.
+
+    PortalAuthMiddleware already protects API when auth is enabled; this local
+    dependency makes the restore contract visible and unit-testable.
+    """
+    from backend.app.core import portal_auth
+
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return None
+    username = portal_auth.request_username(request, settings)
+    if not username:
+        raise HTTPException(401, "Not authenticated")
+    return username
+
+
 @router.delete("/{project_id:path}/clean")
-async def clean_project(project_id: str, version_id: Optional[str] = None):
+async def clean_project(
+    project_id: str, version_id: Optional[str] = None, _confirmed: bool = False,
+):
     """Очистить результаты аудита ТОЛЬКО активной версии.
 
     Удаляет `_output/` версии (`version_id`; при None — активной/latest) и
@@ -763,10 +789,52 @@ async def clean_project(project_id: str, version_id: Optional[str] = None):
         raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
 
     try:
-        result = project_service.clean_project_data(project_id, version_id=version_id)
+        result = project_service.clean_project_data(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
         return {"status": "ok", "project_id": project_id, **result}
     except ValueError as e:
+        msg = str(e)
+        status = 400 if "подтверждение" in msg or "_confirmed" in msg else 404
+        raise HTTPException(status, msg)
+
+
+@router.post("/{project_id:path}/restore-clean", dependencies=[Depends(_require_restore_clean_auth)])
+async def restore_clean_project(project_id: str, req: RestoreCleanRequest):
+    """Восстановить v2-primary версию из backup, созданного clean-project."""
+    from backend.app.pipeline.manager import pipeline_manager
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target, v2_is_primary
+    from backend.app.services.storage.v2_primary_wiring import restore_from_backup_id
+
+    if not v2_is_primary():
+        raise HTTPException(409, "restore-clean доступен только в projects_v2_primary")
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
+
+    v2_root = StorageWriteFacade().v2_root()
+    if v2_root is None:
+        raise HTTPException(404, "projects_v2 root не настроен")
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise HTTPException(404, f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, req.version_id)
+    if not target_vid:
+        raise HTTPException(404, f"Версия '{req.version_id}' проекта '{project_id}' не найдена в projects_v2")
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    try:
+        result = restore_from_backup_id(target, v2_root, req.backup_id)
+    except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "ok", "project_id": project_id, **result}
 
 
 class SetSectionRequest(BaseModel):

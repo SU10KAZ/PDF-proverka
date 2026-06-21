@@ -3890,20 +3890,54 @@ const app = createApp({
                 ? (verEntry.label || verEntry.version_id)
                 : (activeVersionId.value || '');
             const verLine = verLabel ? ` (версия ${verLabel})` : '';
-            if (!confirm(`Очистить результаты проекта "${name}"${verLine}?\n\nБудут удалены данные ТОЛЬКО этой версии:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nДругие версии, PDF и MD файлы сохраняются.`)) {
+            if (!confirm(`Очистить результаты проекта "${name}"${verLine}?\n\nБудут удалены данные ТОЛЬКО этой версии:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nДругие версии, PDF и MD файлы сохраняются. Для projects_v2 backend сначала создаст backup.`)) {
                 return;
             }
             try {
                 // _apiUrl автоматически подмешивает ?version_id из activeVersionId,
                 // чтобы бэкенд чистил именно активную версию.
-                const resp = await fetch(_apiUrl(`/projects/${encodeURIComponent(projectId)}/clean`), { method: 'DELETE' });
+                const cleanUrl = new URL(_apiUrl(`/projects/${encodeURIComponent(projectId)}/clean`), window.location.origin);
+                cleanUrl.searchParams.set('_confirmed', 'true');
+                const resp = await fetch(cleanUrl.pathname + cleanUrl.search, { method: 'DELETE' });
                 const data = await resp.json();
                 if (!resp.ok) {
                     alert(data.detail || 'Ошибка очистки');
                     return;
                 }
-                alert(`Очищено: ${data.deleted_files} файлов, ${data.freed_mb} MB освобождено`);
+                const backupLine = data.backup_id ? `\nBackup: ${data.backup_id}` : '';
+                alert(`Очищено: ${data.deleted_files} файлов, ${data.freed_mb} MB освобождено${backupLine}`);
+                if (data.backup_id && confirm(`Backup создан:\n${data.backup_id}\n\nВосстановить очищенные данные из backup сейчас?`)) {
+                    await restoreCleanBackup(projectId, data.backup_id);
+                    return;
+                }
                 // Обновляем данные проекта
+                await refreshProjects();
+                if (currentProject.value && currentProject.value.project_id === projectId) {
+                    const updated = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
+                    if (updated) currentProject.value = updated;
+                }
+            } catch (e) { alert(e.message); }
+        }
+
+        async function restoreCleanBackup(projectId, backupId) {
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/restore-clean`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        backup_id: backupId,
+                        version_id: activeVersionId.value || null,
+                    }),
+                });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    alert(data.detail || 'Ошибка восстановления backup');
+                    return;
+                }
+                const preRestore = data.pre_restore_backup_id
+                    ? `\nТекущее состояние перед restore сохранено: ${data.pre_restore_backup_id}`
+                    : '';
+                alert(`Восстановлено из backup: ${data.backup_id}${preRestore}`);
                 await refreshProjects();
                 if (currentProject.value && currentProject.value.project_id === projectId) {
                     const updated = await apiGet(`/projects/${encodeURIComponent(projectId)}`);

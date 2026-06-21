@@ -1,7 +1,7 @@
-"""Шаг 6C/10 — v2-only read / export / destructive-guard совместимость.
+"""v2-only read / export / destructive-contract совместимость.
 
 Всё в tmp_path; legacy `projects/` отсутствует. Проверяем, что read/export
-работают из projects_v2 без legacy, а деструктив в V2_PRIMARY заблокирован.
+работают из projects_v2 без legacy, а destructive-op требует backup+confirmation.
 """
 from __future__ import annotations
 
@@ -109,10 +109,15 @@ def test_guard_noop_in_legacy_and_dual_shadow(monkeypatch):
         wiring.guard_destructive_v2_primary("delete_project")
 
 
-def test_clean_blocked_without_v2_primary_safety_contract(monkeypatch):
+def test_clean_guard_requires_backup_confirmation_in_v2_primary(monkeypatch):
     monkeypatch.setenv(_WMODE, "projects_v2_primary")
     with pytest.raises(DestructiveWriteBlocked):
         wiring.guard_destructive_v2_primary("clean_project_data")
+    # После создания backup и записи confirmation log caller передаёт контекст —
+    # guard больше не блокирует конкретный clean.
+    wiring.guard_destructive_v2_primary(
+        "clean_project_data", confirmed=True, backup_id="backup-1",
+    )
 
 
 def test_rename_blocked_or_guarded_in_v2_primary(monkeypatch):
@@ -127,10 +132,10 @@ def test_delete_blocked_in_v2_primary(monkeypatch):
         wiring.guard_destructive_v2_primary("delete_project")
 
 
-def test_clean_project_data_blocked_in_v2_primary_real(monkeypatch, tmp_path):
-    """Реальная clean_project_data в v2-primary поднимает DestructiveWriteBlocked
-    ДО любых файловых операций (guard в самом верху)."""
+def test_clean_project_data_requires_confirmation_in_v2_primary_real(monkeypatch, tmp_path):
+    """Реальная clean_project_data в v2-primary требует явное подтверждение
+    ДО резолва target и любых файловых операций."""
     monkeypatch.setenv(_WMODE, "projects_v2_primary")
     from backend.app.services.common import project_service
-    with pytest.raises(DestructiveWriteBlocked):
+    with pytest.raises(ValueError, match="_confirmed"):
         project_service.clean_project_data("any/project")
