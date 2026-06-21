@@ -150,56 +150,27 @@ class TextBlockEquivalenceConfig:
 # Нормализация текста
 # ═══════════════════════════════════════════════════════════════════════════
 
-_HTML_TAG_RE = re.compile(r"<[^>]+>")
-# debug-префикс «BLOCK: <id>» / «BLOCK <id>» в начале строк (OCR иногда вставляет)
-_BLOCK_PREFIX_RE = re.compile(r"(?im)^\s*block\s*[:#]?\s*[0-9a-z_\-]+\s*")
-_WS_RUN = re.compile(r"\s+")
-# «значимые» числовые токены: 5x10, 5х185, 0,5s, 160а, 1000, даты 12.05.2026
-_NUM_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)*(?:\s*[xх×]\s*\d+(?:[.,]\d+)*)*")
-
-
-def strip_html(text: str) -> str:
-    """Снять HTML-теги и декодировать сущности. ``<div data-bbox=...>...</div>``
-    → внутренний текст. Координаты bbox в атрибутах — форматный шум, не контент."""
-    if not text:
-        return ""
-    no_tags = _HTML_TAG_RE.sub(" ", str(text))
-    return html.unescape(no_tags)
+# reserc.md #98: нормализация делегирована единому модулю text_norm — раньше эти
+# функции дублировались тут и в нескольких других местах с расходящейся
+# семантикой. strip_html / normalize_block_text сохранены как публичные имена
+# (на них завязаны block_equivalence_precheck и тесты).
+from .text_norm import (  # noqa: E402
+    normalize_block_content as _tn_normalize_block_content,
+    salient_numbers as _tn_salient_numbers,
+    strip_html as strip_html,  # noqa: F401 — re-export
+)
 
 
 def normalize_block_text(text: Optional[str]) -> str:
-    """Нормализация текста блока для сравнения эквивалентности.
-
-    Снимает ТОЛЬКО форматный/разметочный шум, сохраняя контент (числа, марки,
-    даты — значимы):
-      1. HTML-теги и сущности;
-      2. debug-префиксы ``BLOCK: <id>``;
-      3. NFKC, ё→е;
-      4. схлопывание пробелов/переводов строк, lower, strip.
-    """
-    if not text:
-        return ""
-    t = strip_html(str(text))
-    t = _BLOCK_PREFIX_RE.sub(" ", t)
-    t = unicodedata.normalize("NFKC", t)
-    t = t.replace("ё", "е").replace("Ё", "Е")  # ё/Ё → е/Е
-    t = t.replace("\r\n", "\n").replace("\r", "\n")
-    t = _WS_RUN.sub(" ", t)
-    return t.strip().lower()
+    """Нормализация текста блока для сравнения эквивалентности (strip_html +
+    снятие префикса ``BLOCK: <id>`` + NFKC/ё→е/collapse/lower). Делегирует
+    единому :func:`text_norm.normalize_block_content` (reserc.md #98)."""
+    return _tn_normalize_block_content(text)
 
 
 def _salient_numbers(text: str) -> list[str]:
-    """Список нормализованных значимых числовых токенов (для метрики
-    ``numbers_changed``). Канонизация: ``,``→``.``, ``х``/``×``→``x``."""
-    if not text:
-        return []
-    out: list[str] = []
-    for m in _NUM_TOKEN_RE.findall(text):
-        tok = m.replace(",", ".").replace("х", "x").replace("×", "x")
-        tok = _WS_RUN.sub("", tok)
-        if len(tok) >= 1:
-            out.append(tok)
-    return out
+    """Значимые числовые токены (min_len=1, как было). См. text_norm #98."""
+    return _tn_salient_numbers(text, min_len=1)
 
 
 def _tokens(text: str) -> set[str]:
