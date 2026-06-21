@@ -330,6 +330,7 @@ def build_document_graph_v2(
     project_dir: str | Path,
     output_dir: str | Path | None = None,
     include_locality: bool = True,
+    result_json_paths: list[str | Path] | None = None,
 ) -> dict | None:
     """Построить Document Knowledge Graph v2 из канонических JSON.
 
@@ -351,8 +352,12 @@ def build_document_graph_v2(
         output_dir = project_dir / "_output"
     output_dir = Path(output_dir)
 
-    # Ищем canonical JSON
-    result_jsons = _find_result_json(project_dir)
+    # Ищем canonical JSON. Legacy callers keep directory glob behavior; v2-primary
+    # can pass an exact normalized 02_work/result.json path via source resolver.
+    if result_json_paths is None:
+        result_jsons = _find_result_json(project_dir)
+    else:
+        result_jsons = [Path(p) for p in result_json_paths if Path(p).is_file()]
 
     if not result_jsons:
         print(f"  [GRAPH v2] *_result.json не найден в {project_dir}")

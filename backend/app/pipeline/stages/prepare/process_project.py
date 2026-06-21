@@ -93,6 +93,23 @@ def detect_md_file(project_dir, pdf_name):
     Returns:
         (filename, size_kb) или (None, 0)
     """
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            sources = resolve_v2_source_files(_pathlib.Path(project_dir), os.path.splitext(pdf_name)[0])
+            if sources.md_path is not None:
+                try:
+                    md_name = str(sources.md_path.relative_to(_pathlib.Path(project_dir)))
+                except ValueError:
+                    md_name = sources.md_path.name
+                size_kb = round(os.path.getsize(sources.md_path) / 1024, 1)
+                return md_name, size_kb
+    except Exception:
+        # v2 lookup is best-effort for this detector; legacy detection remains below.
+        pass
+
     exclude_prefixes = ("audit_", "readme", "claude")
     exclude_names = {"CLAUDE.md", "README.md"}
 

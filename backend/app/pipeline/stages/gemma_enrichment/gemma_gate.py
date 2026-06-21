@@ -54,6 +54,23 @@ def find_project_markdown(
 ) -> Path | None:
     """Resolve the Chandra OCR markdown file used by the audit pipeline."""
     project_info = project_info or {}
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            document_code = (
+                project_info.get("document_code")
+                or project_info.get("project_id")
+                or project_dir.name
+            )
+            sources = resolve_v2_source_files(project_dir, document_code)
+            if sources.md_path is not None:
+                return sources.md_path
+    except Exception:
+        # v2 source-reading is fail-soft here; legacy glob below remains the fallback.
+        pass
+
     configured = project_info.get("md_file")
     if isinstance(configured, str) and configured.strip():
         md_path = Path(configured)

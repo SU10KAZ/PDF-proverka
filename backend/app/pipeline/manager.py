@@ -1322,6 +1322,27 @@ class PipelineManager:
         битому project_info (md_file=None / pdf_file на чужой проект), даёт
         cross-version подсказку, не угадывает при неоднозначности.
         """
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            from backend.app.services.common.md_resolver import MdResolution, STATUS_OK
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            sources = resolve_v2_source_files(Path(version_dir), pid)
+            if sources.md_path is None:
+                raise RuntimeError(
+                    f"v2_md_not_found: MD-файл не найден для проекта {pid} "
+                    f"в {Path(version_dir) / '01_input'} или {Path(version_dir) / '02_work'}. "
+                    "Анализ без MD не поддерживается."
+                )
+            return MdResolution(
+                status=STATUS_OK,
+                md_name=sources.md_path.name,
+                md_path=sources.md_path,
+                searched_dir=Path(version_dir),
+                candidates=[str(sources.md_path.relative_to(Path(version_dir)))],
+                diagnostics={"selected_by": "projects_v2_source_resolver"},
+            )
+
         from backend.app.services.common.md_resolver import resolve_project_md
         from backend.app.services.common import version_service as _vs
         info = {}
@@ -1492,11 +1513,28 @@ class PipelineManager:
         pid = job.project_id
         try:
             from backend.app.pipeline.stages.prepare.graph_builder import build_document_graph_v2, generate_locality_debug
+            from backend.app.services.storage.storage_write_facade import v2_is_primary
 
-            # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware: V1 = root, V2+ = _versions/v{N}/, projects_v2 = versions/<vid>/.
             _root, project_dir, output_dir = self._resolve_job_paths(job)
+            graph_source_dir = project_dir
+            result_json_paths = None
+            if v2_is_primary():
+                try:
+                    from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
 
-            graph = build_document_graph_v2(project_dir, output_dir)
+                    sources = resolve_v2_source_files(project_dir, pid)
+                    if sources.result_json_path is not None:
+                        graph_source_dir = sources.result_json_path.parent
+                        result_json_paths = [sources.result_json_path]
+                except Exception as exc:
+                    await self._log(job, f"v2 source resolver для document_graph не сработал: {exc}", "warn")
+
+            graph = build_document_graph_v2(
+                graph_source_dir,
+                output_dir,
+                result_json_paths=result_json_paths,
+            )
             if graph:
                 debug_path = generate_locality_debug(graph, output_dir)
                 await self._log(
