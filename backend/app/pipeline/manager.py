@@ -1537,6 +1537,10 @@ class PipelineManager:
             )
             if graph:
                 debug_path = generate_locality_debug(graph, output_dir)
+                self._promote_v2_analysis_artifacts(
+                    job,
+                    ("document_graph.json", "step1_locality_debug.json"),
+                )
                 await self._log(
                     job,
                     f"document_graph v{graph['version']}: "
@@ -1560,6 +1564,90 @@ class PipelineManager:
             await self._log(
                 job, f"document_graph v2 ошибка: {e}", "warn"
             )
+
+
+    def _v2_promotion_context(self, job: AuditJob):
+        """Resolve v2 promotion target for the current job, or None outside v2-primary."""
+        from backend.app.services.storage.storage_write_facade import (
+            StorageWriteFacade,
+            v2_is_primary,
+        )
+
+        if not v2_is_primary():
+            return None
+        try:
+            _doc_dir, _version_dir, output_dir = self._resolve_job_paths(job)
+            facade = StorageWriteFacade()
+            v2_root = facade.v2_root()
+            if v2_root is None:
+                return None
+            try:
+                legacy_root = resolve_project_dir(job.project_id)
+            except Exception:
+                legacy_root = None
+            from backend.app.services.storage.v2_primary_wiring import resolve_v2_target_by_id
+
+            target = resolve_v2_target_by_id(
+                job.project_id,
+                getattr(job, "version_id", None) or "v001",
+                v2_root=v2_root,
+                object_id=getattr(job, "object_id", None),
+                legacy_project_dir=legacy_root,
+            )
+            if target is None:
+                return None
+            return facade, target, output_dir
+        except Exception as exc:
+            print(f"[{job.project_id}] v2 promotion context failed: {exc}")
+            return None
+
+    def _promote_v2_analysis_artifacts(self, job: AuditJob, artifact_names) -> dict:
+        """Copy selected artifacts from the job run dir into projects_v2 latest.
+
+        No-op outside projects_v2_primary. Fail-soft by design: the stage output
+        in runs/<job_id> remains authoritative even if latest promotion fails.
+        """
+        ctx = self._v2_promotion_context(job)
+        if ctx is None:
+            return {}
+        facade, target, output_dir = ctx
+        run_id = getattr(job, "job_id", None)
+        results = {}
+        for name in artifact_names:
+            source = Path(output_dir) / str(name)
+            if not source.is_file():
+                continue
+            try:
+                results[str(name)] = facade.save_analysis_artifact(
+                    target,
+                    str(name),
+                    source.read_bytes(),
+                    run_id=run_id,
+                )
+            except Exception as exc:
+                print(f"[{job.project_id}] v2 promote {name} failed: {exc}")
+        return results
+
+    def _promote_completed_audit_v2(self, job: AuditJob) -> dict:
+        """Bulk-promote late audit artifacts from runs/<job_id> to latest."""
+        ctx = self._v2_promotion_context(job)
+        if ctx is None:
+            return {}
+        facade, target, output_dir = ctx
+        try:
+            from backend.app.services.storage.v2_primary_prototype import (
+                write_completed_audit_artifacts_v2,
+            )
+
+            return write_completed_audit_artifacts_v2(
+                facade,
+                target,
+                output_dir,
+                run_id=getattr(job, "job_id", None),
+            )
+        except Exception as exc:
+            print(f"[{job.project_id}] v2 completed audit promotion failed: {exc}")
+            return {}
 
     async def _run_gemma_enrichment_stage(self, job: AuditJob, *, force: bool = False) -> None:
         """Тонкий оркестратор: делегирует в gemma_enrichment/runner.py.
@@ -1763,6 +1851,16 @@ class PipelineManager:
             return
 
         job.status = JobStatus.COMPLETED
+        self._promote_v2_analysis_artifacts(
+            job,
+            (
+                "02_blocks_analysis.json",
+                "block_analysis_summary.json",
+                RUNTIME_BATCHES_FILE,
+                "block_batches.json",
+                "pipeline_log.json",
+            ),
+        )
 
         # Step 9/10 dual-write: ранний снимок после block_analysis (covers
         # standalone block_analysis-only прогон). ПОЛНЫЙ снимок после всего
@@ -1782,6 +1880,10 @@ class PipelineManager:
         """
         try:
             from backend.app.services.storage import storage_write_facade as _swf
+            if _swf.v2_is_primary():
+                if job is not None:
+                    self._promote_completed_audit_v2(job)
+                return
             run_id = getattr(job, "job_id", None) if job is not None else None
             _swf.shadow_mirror_project_id_safe(project_id, run_id=run_id)
         except Exception as e:
@@ -2550,6 +2652,10 @@ class PipelineManager:
                 if not _ta_result.success:
                     raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
+                self._promote_v2_analysis_artifacts(
+                    job, ("01_text_analysis.json", "pipeline_log.json")
+                )
+
                 if job.status == JobStatus.CANCELLED:
                     return
 
@@ -2593,6 +2699,10 @@ class PipelineManager:
                     return
                 if not _fm_result.success:
                     raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
+
+                self._promote_v2_analysis_artifacts(
+                    job, ("03_findings.json", "pipeline_log.json")
+                )
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
                 await self._stream_findings_events(job, "merge")
@@ -2704,6 +2814,7 @@ class PipelineManager:
             duration = round(net_sec / 60, 1)
             wall_duration = round(wall_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}:resume] ═══ Конвейер завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Конвейер завершён за {duration} мин{pause_note}.", "info")
@@ -3194,6 +3305,17 @@ class PipelineManager:
         if not result.cancelled and result.critic_ok:
             await self._run_critic_v2_post_review(job)
 
+        if job.status not in (JobStatus.CANCELLED, JobStatus.FAILED):
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "03_findings.json",
+                    "03_findings_review.json",
+                    "03_findings_pre_review.json",
+                    "pipeline_log.json",
+                ),
+            )
+
     async def _run_critic_v2_post_review(self, job: AuditJob) -> None:
         """Post-processing critic v2 triage над уже готовыми 03_findings.json.
 
@@ -3342,10 +3464,21 @@ class PipelineManager:
             print(f"[{pid}] _task_optimization STARTED")
             try:
                 # Optimization сам по себе НЕ зависит от corrector
+                from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+                if v2_is_primary():
+                    opt_job_id = job.job_id
+                    opt_object_id = getattr(job, "object_id", None)
+                    opt_version_id = getattr(job, "version_id", None)
+                else:
+                    opt_job_id = job.job_id + "_opt"
+                    opt_object_id = self._resolve_object_id(None)
+                    opt_version_id = None
                 opt_job = AuditJob(
-                    job_id=job.job_id + "_opt",
-                    object_id=self._resolve_object_id(None),
+                    job_id=opt_job_id,
+                    object_id=opt_object_id,
                     project_id=pid,
+                    version_id=opt_version_id,
                     stage=AuditStage.OPTIMIZATION,
                     status=JobStatus.RUNNING,
                     started_at=datetime.now().isoformat(),
@@ -3419,6 +3552,23 @@ class PipelineManager:
                 "warn",
             )
 
+        self._promote_v2_analysis_artifacts(
+            job,
+            (
+                "03_findings.json",
+                "03_findings_review.json",
+                "03_findings_pre_review.json",
+                "03a_norms_verified.json",
+                "norm_checks.json",
+                "norm_checks_llm.json",
+                "optimization.json",
+                "optimization_review.json",
+                "optimization_pre_review.json",
+                "pipeline_log.json",
+            ),
+        )
+        self._promote_completed_audit_v2(job)
+
     async def _run_norm_verification(
         self,
         job: AuditJob,
@@ -3452,6 +3602,16 @@ class PipelineManager:
                 return
 
             job.status = JobStatus.COMPLETED
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "03_findings.json",
+                    "03a_norms_verified.json",
+                    "norm_checks.json",
+                    "norm_checks_llm.json",
+                    "pipeline_log.json",
+                ),
+            )
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -3600,6 +3760,9 @@ class PipelineManager:
                                        message=f"{len(priority_pages)} приоритетных из {len(page_triage)}")
             print(f"[{pid}:smart] Триаж: {len(priority_pages)} приоритетных страниц из {len(page_triage)}")
             await self._log(job, f"Триаж завершён: {len(priority_pages)} приоритетных страниц ({priority_pages})")
+            self._promote_v2_analysis_artifacts(
+                job, ("01_text_analysis.json", "pipeline_log.json")
+            )
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -3707,6 +3870,9 @@ class PipelineManager:
                     # Не fatal — продолжаем
                 else:
                     self._update_pipeline_log(pid, "main_audit", "done", message="OK")
+                    self._promote_v2_analysis_artifacts(
+                        job, ("03_findings.json", "pipeline_log.json")
+                    )
 
                 # Проверяем gap_analysis — нужны ли ещё страницы?
                 additional_pages = []
@@ -3784,6 +3950,7 @@ class PipelineManager:
             net_sec = max(0, wall_sec - job.pause_total_sec)
             duration = round(net_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}:smart] ═══ Smart Parallel завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Smart Parallel конвейер завершён за {duration} мин{pause_note}.", "info")
@@ -4102,6 +4269,9 @@ class PipelineManager:
                     await self.pause("finish_current")
                 raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
+            self._promote_v2_analysis_artifacts(
+                job, ("01_text_analysis.json", "pipeline_log.json")
+            )
             print(f"[{pid}] ЭТАП 2 OK")
 
             if job.status == JobStatus.CANCELLED:
@@ -4125,6 +4295,15 @@ class PipelineManager:
 
             # ═══ ЭТАП 5b: Block Retry — перекачка нечитаемых блоков ═══
             await self._run_block_retry(job, pid, project_info, output_dir)
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "02_blocks_analysis.json",
+                    "block_analysis_summary.json",
+                    RUNTIME_BATCHES_FILE,
+                    "pipeline_log.json",
+                ),
+            )
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -4140,6 +4319,10 @@ class PipelineManager:
                 return
             if not _fm_result.success:
                 raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
+
+            self._promote_v2_analysis_artifacts(
+                job, ("03_findings.json", "pipeline_log.json")
+            )
 
             # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
             await self._stream_findings_events(job, "merge")
@@ -4184,6 +4367,7 @@ class PipelineManager:
             net_sec = max(0, wall_sec - job.pause_total_sec)
             duration = round(net_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}] ═══ Аудит завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Аудит завершён за {duration} мин{pause_note}.", "info")
@@ -5575,6 +5759,9 @@ class PipelineManager:
                 job.status = JobStatus.CANCELLED
             elif result.success:
                 job.status = JobStatus.COMPLETED
+                self._promote_v2_analysis_artifacts(
+                    job, ("optimization.json", "pipeline_log.json")
+                )
             else:
                 job.status = JobStatus.FAILED
                 job.error_message = result.error or "optimization failed"
@@ -5614,6 +5801,16 @@ class PipelineManager:
             elif result.error:
                 job.status = JobStatus.FAILED
                 job.error_message = result.error
+            else:
+                self._promote_v2_analysis_artifacts(
+                    job,
+                    (
+                        "optimization.json",
+                        "optimization_review.json",
+                        "optimization_pre_review.json",
+                        "pipeline_log.json",
+                    ),
+                )
             return result
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
