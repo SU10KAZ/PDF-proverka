@@ -188,3 +188,23 @@ def test_by_severity_refreshed(tmp_project, monkeypatch):
     data = json.loads(fp.read_text(encoding="utf-8"))
     assert "WRONG" not in data["meta"]["by_severity"]
     assert "КРИТИЧЕСКОЕ" in data["meta"]["by_severity"]
+
+
+def test_dedup_renumbers_fids_contiguously(tmp_project, monkeypatch):
+    """reserc.md #28: после apply_phase0_dedup F-ID идут сплошняком F-001..F-NNN
+    (раньше merge перенумеровывал ДО drop'а → в id оставались дыры)."""
+    monkeypatch.setattr("backend.app.core.config.STAGE01_DEDUP_ENABLED", True)
+    # три семантически разных finding с НЕсплошными id (как после merge+drop)
+    fp = _make_findings_file(tmp_project, [
+        _f(1, id="F-001", problem_class="outdated_norm_reference", category="normative",
+           affected_system="ВРУ", problem="Устаревшая ссылка на СП 31-110-2003", evidence_quote="ev_a"),
+        _f(5, id="F-005", problem_class="arithmetic_error", category="calculations",
+           affected_system="ГРЩ", problem="Арифметическая ошибка: 56 кВт ≠ 47 кВт", evidence_quote="ev_b"),
+        _f(9, id="F-009", problem_class="missing_diagram", category="completeness",
+           affected_system="Освещение", problem="Однолинейная схема освещения не приведена", evidence_quote="ev_c"),
+    ])
+    fm_runner.apply_phase0_dedup("dummy-project")
+    data = json.loads(fp.read_text(encoding="utf-8"))
+    ids = [it["id"] for it in data["findings"]]
+    assert ids == [f"F-{i:03d}" for i in range(1, len(ids) + 1)], ids
+    assert data["meta"]["total_findings"] == len(ids)

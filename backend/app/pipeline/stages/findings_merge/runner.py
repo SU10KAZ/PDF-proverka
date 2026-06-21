@@ -249,6 +249,15 @@ def apply_phase0_dedup(project_id: str) -> dict | None:
                 f"phase0_dedup count invariant violated: in={before} out={len(kept)}"
             )
 
+        # reserc.md #28: merge_similar_findings перенумеровывает F-ID, а dedup
+        # дропает записи ПОСЛЕ него → в id появлялись дыры (F-001, F-003, …).
+        # Перенумеровываем оставшиеся сквозь F-001..F-NNN: это ФИНАЛЬНЫЙ шаг
+        # findings_merge, downstream (critic/norms/opt) ещё не читал эти id и
+        # ссылок на старые id внутри прогона нет → безопасно. Идемпотентно
+        # (на уже-сплошной нумерации даёт тот же результат).
+        for _new_idx, _it in enumerate(kept, start=1):
+            _it["id"] = f"F-{_new_idx:03d}"
+
         # ── Write back ────────────────────────────────────────────────────
         fd["findings"] = kept
         meta = fd.get("meta") or {}
