@@ -290,21 +290,24 @@ class ProjectsV2Adapter:
 
     def latest_analysis_files(self, doc_dir: Path, version_id: str) -> dict:
         latest = self.latest_dir(doc_dir, version_id)
-        present = sorted(p.name for p in latest.glob("*")) if latest.is_dir() else []
-        if not present:
-            run_dir = self._fallback_run_dir(doc_dir, version_id)
-            if run_dir is not None:
-                present = sorted(p.name for p in run_dir.iterdir() if p.is_file())
+        present = (
+            {p.name for p in latest.iterdir() if p.is_file()}
+            if latest.is_dir()
+            else set()
+        )
+        run_dir = self._fallback_run_dir(doc_dir, version_id)
+        if run_dir is not None:
+            present.update(p.name for p in run_dir.iterdir() if p.is_file())
         return {
-            "present": present,
-            "has_01_text_analysis": "01_text_analysis.json" in present,
-            "has_02_blocks_analysis": "02_blocks_analysis.json" in present,
-            "has_03_findings": "03_findings.json" in present,
+            "present": sorted(present),
+            "has_01_text_analysis": self._latest_file(
+                doc_dir, version_id, "01_text_analysis.json"
+            ) is not None,
+            "has_02_blocks_analysis": self._latest_file(
+                doc_dir, version_id, "02_blocks_analysis.json"
+            ) is not None,
+            "has_03_findings": self.findings_path(doc_dir, version_id) is not None,
         }
-
-    def _latest_has_files(self, doc_dir: Path, version_id: str) -> bool:
-        latest = self.latest_dir(doc_dir, version_id)
-        return latest.is_dir() and any(p.is_file() for p in latest.iterdir())
 
     def _runs_dir(self, doc_dir: Path, version_id: str) -> Path:
         return self.version_dir(doc_dir, version_id) / "03_analysis" / "runs"
@@ -334,8 +337,6 @@ class ProjectsV2Adapter:
         p = self.latest_dir(doc_dir, version_id) / name
         if p.is_file():
             return p
-        if self._latest_has_files(doc_dir, version_id):
-            return None
         return self._runs_file(doc_dir, version_id, name)
 
     def read_text_analysis(self, doc_dir: Path, version_id: str) -> Optional[dict]:
@@ -354,14 +355,12 @@ class ProjectsV2Adapter:
         return self._latest_file(doc_dir, version_id, name)
 
     def findings_path(self, doc_dir: Path, version_id: str) -> Optional[Path]:
-        """Лучший файл замечаний в latest (приоритет как в findings_service)."""
+        """Лучший файл замечаний в latest/runs (приоритет как в findings_service)."""
         latest = self.latest_dir(doc_dir, version_id)
         for name in _FINDINGS_PRIORITY:
             p = latest / name
             if p.is_file():
                 return p
-        if self._latest_has_files(doc_dir, version_id):
-            return None
         for name in _FINDINGS_PRIORITY:
             p = self._runs_file(doc_dir, version_id, name)
             if p is not None:

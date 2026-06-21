@@ -155,7 +155,7 @@ def test_v2_adapter_fallback_read_from_runs_when_latest_empty(tmp_path):
     assert adapter.read_pipeline_log(doc, "v001") == {"stages": {"done": True}}
 
 
-def test_v2_adapter_does_not_mix_partial_latest_with_runs(tmp_path):
+def test_v2_adapter_falls_back_per_file_when_latest_partial(tmp_path):
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
     v2 = tmp_path / "projects_v2"
@@ -163,10 +163,21 @@ def test_v2_adapter_does_not_mix_partial_latest_with_runs(tmp_path):
     latest = doc / "versions" / "v001" / "03_analysis" / "latest"
     run_dir = doc / "versions" / "v001" / "03_analysis" / "runs" / "job_b2_run"
     _write_json(latest / "01_text_analysis.json", {"source": "latest"})
+    _write_json(run_dir / "01_text_analysis.json", {"source": "run"})
+    _write_json(run_dir / "02_blocks_analysis.json", {"blocks": [1]})
     _write_json(run_dir / "03_findings.json", {"findings": [{"severity": "high"}]})
 
     adapter = ProjectsV2Adapter(v2)
+    analysis = adapter.latest_analysis_files(doc, "v001")
 
     assert adapter.read_text_analysis(doc, "v001") == {"source": "latest"}
-    assert adapter.read_findings(doc, "v001") is None
-    assert adapter.latest_analysis_files(doc, "v001")["present"] == ["01_text_analysis.json"]
+    assert adapter.read_blocks_analysis(doc, "v001") == {"blocks": [1]}
+    assert adapter.read_findings(doc, "v001") == {"findings": [{"severity": "high"}]}
+    assert analysis["present"] == [
+        "01_text_analysis.json",
+        "02_blocks_analysis.json",
+        "03_findings.json",
+    ]
+    assert analysis["has_01_text_analysis"] is True
+    assert analysis["has_02_blocks_analysis"] is True
+    assert analysis["has_03_findings"] is True
