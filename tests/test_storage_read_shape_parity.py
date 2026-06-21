@@ -59,8 +59,14 @@ def _make_v2_project(v2: Path, code: str = "DOC-B6") -> Path:
     _write_json(latest / "03_findings.json", {
         "audit_date": "2026-06-21",
         "findings": [
-            {"id": "F-001", "severity": "КРИТИЧЕСКОЕ", "category": "ЭОМ", "sheet": "Лист 1", "problem": "A"},
-            {"id": "F-002", "severity": "РЕКОМЕНДАТЕЛЬНОЕ", "category": "КЖ", "sheet": "Лист 2", "problem": "B"},
+            {"id": "F-001", "severity": "КРИТИЧЕСКОЕ", "category": "ЭОМ", "sheet": "", "page": 1, "problem": "A"},
+            {"id": "F-002", "severity": "РЕКОМЕНДАТЕЛЬНОЕ", "category": "КЖ", "sheet": "", "page": 2, "problem": "B"},
+        ],
+    })
+    _write_json(latest / "document_graph.json", {
+        "pages": [
+            {"page": 1, "sheet_no_raw": "KJ-101"},
+            {"page": 2, "sheet_no_raw": "KJ-102"},
         ],
     })
     _write_json(latest / "optimization.json", {
@@ -121,7 +127,12 @@ def test_adapter_findings_contract_and_by_id(monkeypatch, tmp_path):
     assert payload["filtered_total"] == 1
     assert payload["by_severity"] == {"КРИТИЧЕСКОЕ": 1, "РЕКОМЕНДАТЕЛЬНОЕ": 1}
     assert payload["findings"][0]["id"] == "F-001"
-    assert findings_service.get_finding_by_id("DOC-B6", "F-002")["problem"] == "B"
+    assert payload["findings"][0]["sheet"] == "Лист KJ-101"
+    assert payload["findings"][0]["sheet_no"] == "KJ-101"
+    finding = findings_service.get_finding_by_id("DOC-B6", "F-002")
+    assert finding["problem"] == "B"
+    assert finding["sheet"] == "Лист KJ-102"
+    assert finding["sheet_no"] == "KJ-102"
 
 
 def test_adapter_project_status_contract(monkeypatch, tmp_path):

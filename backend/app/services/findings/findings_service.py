@@ -145,6 +145,15 @@ def _get_analysis_artifact_v2(project_id: str, name: str, version_id: Optional[s
         return None, vid
     return adapter.read_analysis_artifact(Path(doc["doc_dir"]), vid, name), vid
 
+
+def _items_from_findings_data(data) -> list:
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        return data.get("findings", data.get("items", [])) or []
+    return []
+
+
 def get_findings(
     project_id: str,
     severity: Optional[str] = None,
@@ -162,6 +171,17 @@ def get_findings(
         try:
             data = _get_findings_v2(project_id, version_id)
             if data is not None:
+                items = _items_from_findings_data(data)
+                graph_data, resolved_vid = _get_analysis_artifact_v2(
+                    project_id, "document_graph.json", version_id,
+                )
+                _enrich_sheet_page(
+                    items,
+                    project_id,
+                    version_id=resolved_vid or version_id,
+                    graph_data=graph_data,
+                    emit_sheet_no=True,
+                )
                 return _build_findings_response_from_data(
                     project_id,
                     data,
@@ -249,7 +269,17 @@ def get_finding_by_id(
         try:
             data = _get_findings_v2(project_id, version_id)
             if data is not None:
-                items = data if isinstance(data, list) else data.get("findings", data.get("items", []))
+                items = _items_from_findings_data(data)
+                graph_data, resolved_vid = _get_analysis_artifact_v2(
+                    project_id, "document_graph.json", version_id,
+                )
+                _enrich_sheet_page(
+                    items,
+                    project_id,
+                    version_id=resolved_vid or version_id,
+                    graph_data=graph_data,
+                    emit_sheet_no=True,
+                )
                 for item in items or []:
                     if isinstance(item, dict) and item.get("id", "") == finding_id:
                         return item
@@ -1027,14 +1057,22 @@ def _build_text_evidence(
     return result
 
 
-def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Optional[str] = None):
+def _enrich_sheet_page(
+    findings: list[dict],
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+    graph_data: Optional[dict] = None,
+    emit_sheet_no: bool = False,
+):
     """Обогатить findings: разделить sheet/page, подставить sheet_no из document_graph."""
     import re
 
     # Загрузить маппинг page → sheet_no из document_graph (нужной версии)
-    graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
     page_to_sheet: dict[int, str] = {}
-    graph_data = _load_json(graph_path)
+    if graph_data is None:
+        graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
+        graph_data = _load_json(graph_path)
     if graph_data:
         for p in graph_data.get("pages", []):
             page_num = p.get("page")
@@ -1069,6 +1107,8 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
                         sheets.append(page_to_sheet[pg])
                 if sheets:
                     unique = list(dict.fromkeys(sheets))
+                    if emit_sheet_no:
+                        f["sheet_no"] = unique[0] if len(unique) == 1 else unique
                     f["sheet"] = "Лист " + ", ".join(unique) if len(unique) <= 3 else f"Листы {unique[0]}–{unique[-1]}"
             continue
 
@@ -1097,6 +1137,8 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
                 sheets = [page_to_sheet[pg] for pg in pages_parsed if pg in page_to_sheet]
                 if sheets:
                     unique = list(dict.fromkeys(sheets))
+                    if emit_sheet_no:
+                        f["sheet_no"] = unique[0] if len(unique) == 1 else unique
                     f["sheet"] = "Лист " + ", ".join(unique)
                 else:
                     # Оставить лист из оригинала, убрав "(стр. PDF ...)"
