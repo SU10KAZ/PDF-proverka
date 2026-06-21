@@ -38,6 +38,8 @@ MODE_DUAL_READ_SHADOW = "dual_read_shadow"
 _VALID_MODES = {MODE_LEGACY, MODE_V2, MODE_DUAL_READ_SHADOW}
 
 _MODE_ENV = "AUDIT_STORAGE_BACKEND"
+_READ_DEFAULT_ENV = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
+_TRUE_VALUES = {"1", "true", "yes", "on"}
 
 
 def get_storage_mode() -> str:
@@ -113,12 +115,11 @@ class StorageReadFacade:
                 "dual_read": result}
 
 
-def production_uses_v2() -> bool:
-    """Хелпер для диагностики: использует ли production v2-чтение СЕЙЧАС.
+def read_default_enabled() -> bool:
+    """Explicit read-cutover kill-switch; default is conservative false."""
+    return (os.environ.get(_READ_DEFAULT_ENV) or "").strip().lower() in _TRUE_VALUES
 
-    Всегда False на этом этапе: ни один production read-path не подключён к
-    фасаду/adapter; даже при `AUDIT_STORAGE_BACKEND=projects_v2` существующие
-    endpoints продолжают читать legacy. Этот флаг станет значимым только после
-    отдельного этапа подключения (см. docs/projects_v2_migration_plan.md).
-    """
-    return False
+
+def production_uses_v2() -> bool:
+    """True only when both storage backend and read-cutover flag are explicit."""
+    return get_storage_mode() == MODE_V2 and read_default_enabled()

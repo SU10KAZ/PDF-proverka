@@ -19,6 +19,16 @@ def _validate_version_id(project_id: str, version_id: Optional[str]) -> None:
     """Если version_id задан, проверить, что он существует в манифесте."""
     if not version_id:
         return
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        if production_uses_v2():
+            from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+            adapter = ProjectsV2Adapter()
+            doc = adapter.find_document_by_project_id(project_id)
+            if doc is not None and adapter.resolve_version_id(doc, version_id):
+                return
+    except Exception:
+        pass
     from backend.app.services.common import project_service, version_service
     proj_dir = project_service.resolve_project_dir(project_id)
     if not proj_dir.exists():

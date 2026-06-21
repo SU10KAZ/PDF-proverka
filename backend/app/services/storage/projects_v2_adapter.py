@@ -187,6 +187,24 @@ class ProjectsV2Adapter:
             return d
         return None
 
+    def find_document_by_project_id(self, project_id: str,
+                                    object_id: Optional[str] = None) -> Optional[dict]:
+        """Resolve legacy-like project_id to a v2 document without touching legacy."""
+        raw = str(project_id or "").strip().strip("/")
+        candidates: list[str] = []
+        for value in (raw, os.path.basename(raw)):
+            if value and value not in candidates:
+                candidates.append(value)
+            if value.lower().endswith(".pdf"):
+                stem = value[:-4].strip()
+                if stem and stem not in candidates:
+                    candidates.append(stem)
+        for code in candidates:
+            doc = self.find_document(code, object_id=object_id)
+            if doc is not None:
+                return doc
+        return None
+
     # -- versions ---------------------------------------------------------
     def read_document_json(self, doc_dir: Path) -> Optional[dict]:
         return _read_json(Path(doc_dir) / "document.json")
@@ -216,6 +234,20 @@ class ProjectsV2Adapter:
 
     def version_dir(self, doc_dir: Path, version_id: str) -> Path:
         return Path(doc_dir) / "versions" / version_id
+
+    def resolve_version_id(self, doc: dict, version_id: Optional[str] = None) -> Optional[str]:
+        doc_dir = Path(doc["doc_dir"])
+        wanted = (version_id or "").strip()
+        if not wanted:
+            return self.current_version_id(doc_dir)
+        candidates = [wanted]
+        if wanted.startswith("v") and wanted[1:].isdigit():
+            candidates.append(f"v{int(wanted[1:]):03d}")
+        ids = {v for v in (doc.get("version_ids") or []) if v}
+        for candidate in candidates:
+            if not ids or candidate in ids:
+                return candidate
+        return None
 
     def read_version_json(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         return _read_json(self.version_dir(doc_dir, version_id) / "version.json")
@@ -313,6 +345,13 @@ class ProjectsV2Adapter:
     def read_blocks_analysis(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         p = self._latest_file(doc_dir, version_id, "02_blocks_analysis.json")
         return _read_json(p) if p else None
+
+    def read_analysis_artifact(self, doc_dir: Path, version_id: str, name: str) -> Optional[dict]:
+        p = self._latest_file(doc_dir, version_id, name)
+        return _read_json(p) if p else None
+
+    def analysis_artifact_path(self, doc_dir: Path, version_id: str, name: str) -> Optional[Path]:
+        return self._latest_file(doc_dir, version_id, name)
 
     def findings_path(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Лучший файл замечаний в latest (приоритет как в findings_service)."""
