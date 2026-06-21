@@ -617,3 +617,20 @@ def test_api_delete_version_400_only_version(api_client):
     client, _ = api_client
     r = client.delete("/api/projects/M31A/versions/v1")
     assert r.status_code == 400
+
+
+def test_delete_version_invokes_v2_cleanup(legacy_project_dir, monkeypatch):
+    """reserc.md #92: delete_version вызывает remove_project_from_v2_safe для
+    удаляемой папки версии (иначе в projects_v2 копится orphan-карточка)."""
+    import backend.app.services.storage.storage_write_facade as swf
+    calls = []
+    monkeypatch.setattr(swf, "remove_project_from_v2_safe",
+                        lambda p, **kw: calls.append(str(p)) or None)
+    container, primary = _build_container_v1_v2_v3(legacy_project_dir)
+    v2_path = container / "M31A V2"
+    assert v2_path.is_dir()
+
+    delete_version(primary, "M31A", "v2")
+
+    assert any(str(v2_path) == c for c in calls), (
+        f"remove_project_from_v2_safe не вызван для {v2_path}; calls={calls}")

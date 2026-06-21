@@ -480,74 +480,6 @@ def _invalidate_project_cache() -> None:
         pass
 
 
-def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
-    """Удалить версию проекта: папку с диска + запись из манифеста.
-
-    Правила:
-    - Нельзя удалить единственную оставшуюся версию.
-    - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
-    - После удаления latest_version_id перемещается на предыдущую версию.
-
-    Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
-    """
-    import shutil
-
-    manifest, base = _read_versions_and_base(project_dir, project_id)
-    versions = manifest.get("versions", [])
-
-    if len(versions) <= 1:
-        raise VersionFileError("Нельзя удалить единственную версию проекта.")
-
-    entry = _find_version(manifest, version_id)
-    if entry is None:
-        raise VersionNotFoundError(f"Версия '{version_id}' не найдена в проекте '{project_id}'")
-
-    folder = entry.get("folder") or "."
-    container = container_dir_for(project_dir)
-
-    # V1 в некontейнерном проекте — папка == корень проекта, нельзя удалять так
-    if folder in (".", "") and container is None:
-        raise VersionFileError(
-            "Нельзя удалить V1 некontейнерного проекта (папка проекта совпадает с папкой версии)."
-        )
-
-    # Физически удаляем папку версии
-    if folder in (".", ""):
-        version_path = base  # container-модель, V1 внутри контейнера
-    else:
-        version_path = base / folder
-
-    if version_path.exists():
-        shutil.rmtree(version_path)
-
-    # Обновляем манифест
-    remaining = [v for v in versions if v.get("version_id") != version_id]
-    # Новый latest = максимальный version_no среди оставшихся
-    remaining_sorted = sorted(remaining, key=lambda v: v.get("version_no", 0))
-    new_latest = remaining_sorted[-1]["version_id"]
-
-    if container is not None:
-        raw = _read_group_manifest_raw(container) or {}
-        raw["versions"] = remaining
-        raw["latest_version_id"] = new_latest
-        if not _write_group_manifest(container, raw):
-            raise VersionFileError("Не удалось сохранить version_group.json после удаления версии")
-    else:
-        raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
-        raw["versions"] = remaining
-        raw["latest_version_id"] = new_latest
-        if not _write_manifest(project_dir, raw):
-            raise VersionFileError("Не удалось сохранить project_versions.json после удаления версии")
-
-    _invalidate_project_cache()
-
-    return {
-        "deleted_version_id": version_id,
-        "new_latest_version_id": new_latest,
-        "versions_summary": get_versions_summary(project_dir, project_id),
-    }
-
-
 def _v1_entry(folder_name: str, *, status: str = "active",
               source: str = "promoted") -> dict[str, Any]:
     return {
@@ -1683,6 +1615,15 @@ def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[
 
     if version_path.exists():
         shutil.rmtree(version_path)
+
+    # reserc.md #92: убрать v2-документ удалённой версии, иначе в projects_v2
+    # (read-default = v2) остаётся orphan-карточка. no-op в legacy, fail-soft;
+    # map-сопоставление по строке пути переживает rmtree (как в merge-плече).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.remove_project_from_v2_safe(version_path)
+    except Exception:
+        pass
 
     # Обновляем манифест
     remaining = [v for v in versions if v.get("version_id") != version_id]

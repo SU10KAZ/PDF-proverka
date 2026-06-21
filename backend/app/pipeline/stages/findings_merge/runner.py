@@ -336,6 +336,7 @@ def merge_similar_findings(project_id: str) -> dict | None:
     """Объединить похожие замечания в 03_findings.json."""
     from backend.app.services.findings.findings_service import (
         _normalize_problem_pattern,
+        aggregate_merged_fields,
     )
     from collections import OrderedDict
     import re as _re
@@ -381,59 +382,19 @@ def merge_similar_findings(project_id: str) -> dict | None:
             leader["id"] = f"F-{new_id:03d}"
             new_id += 1
 
-            all_sheets = []
-            all_pages = []
-            all_block_ids = []
-            all_source_block_ids = []
-            all_etr = []
-            all_evidence = []
-            details_lines = []
-
-            for i, it in enumerate(group_items, 1):
-                sh = it.get("sheet", "")
-                pg = it.get("page")
-                problem = it.get("problem") or it.get("description") or it.get("finding") or ""
-                details_lines.append(f"{i}) {problem}")
-
-                if sh and sh not in all_sheets:
-                    all_sheets.append(sh)
-                if pg:
-                    pgs = pg if isinstance(pg, list) else [pg]
-                    for p in pgs:
-                        if p not in all_pages:
-                            all_pages.append(p)
-                for bid in (it.get("related_block_ids") or []):
-                    if bid not in all_block_ids:
-                        all_block_ids.append(bid)
-                for sbid in (it.get("source_block_ids") or []):
-                    if sbid not in all_source_block_ids:
-                        all_source_block_ids.append(sbid)
-                for etr in (it.get("evidence_text_refs") or []):
-                    if etr not in all_etr:
-                        all_etr.append(etr)
-                for ev in (it.get("evidence") or []):
-                    all_evidence.append(ev)
-
+            details_lines = [
+                f"{i}) " + (it.get("problem") or it.get("description")
+                           or it.get("finding") or "")
+                for i, it in enumerate(group_items, 1)
+            ]
             leader_problem = leader.get("problem") or leader.get("description") or ""
-            summary = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
-            leader["problem"] = summary
+            # Единая агрегация source-of-truth полей (reserc.md #92/#6/#27): sheet/
+            # page/related_block_ids/source_block_ids/evidence_text_refs/evidence +
+            # norm_quote/highlight_regions. Иначе critic ложно ставит no_evidence/
+            # phantom и теряются норм-цитаты.
+            leader.update(aggregate_merged_fields(group_items, leader))
+            leader["problem"] = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
             leader["description"] = "\n".join(details_lines)
-            leader["sheet"] = ", ".join(all_sheets) if all_sheets else leader.get("sheet", "")
-            leader["page"] = sorted(set(all_pages)) if all_pages else leader.get("page")
-            leader["related_block_ids"] = all_block_ids
-            leader["evidence"] = all_evidence
-            # Сохранить source-of-truth поля поглощённых замечаний (reserc.md #6/#27):
-            # иначе critic ложно ставит no_evidence/phantom и теряются норм-цитаты.
-            if all_source_block_ids:
-                leader["source_block_ids"] = all_source_block_ids
-            if all_etr:
-                leader["evidence_text_refs"] = all_etr
-            for _qf in ("norm_quote", "highlight_regions"):
-                if not leader.get(_qf):
-                    for it in group_items:
-                        if it.get(_qf):
-                            leader[_qf] = it[_qf]
-                            break
             leader["sub_findings"] = [
                 {
                     "original_id": it.get("id", ""),

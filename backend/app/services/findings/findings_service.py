@@ -1139,6 +1139,63 @@ def _normalize_problem_pattern(text: str) -> str:
     return s
 
 
+def aggregate_merged_fields(group_items: list[dict], leader: dict) -> dict:
+    """reserc.md #92: ЕДИНАЯ агрегация source-of-truth полей при слиянии похожих
+    замечаний. Используется и :func:`group_similar_findings` (здесь), и
+    ``findings_merge.runner.merge_similar_findings`` — раньше эти два цикла
+    дублировались и рисковали разойтись (одно место агрегирует поле, другое нет).
+
+    Собирает по всей группе: sheet/page/related_block_ids/source_block_ids/
+    evidence_text_refs/evidence + переносит norm_quote/highlight_regions от первого
+    замечания, у которого они есть (если у лидера их нет). Возвращает dict полей,
+    готовый к ``leader.update(...)`` или ``{**leader, **fields}``."""
+    all_sheets: list = []
+    all_pages: list = []
+    all_block_ids: list = []
+    all_source_block_ids: list = []
+    all_etr: list = []
+    all_evidence: list = []
+    for it in group_items:
+        sh = it.get("sheet")
+        if sh and sh not in all_sheets:
+            all_sheets.append(sh)
+        pg = it.get("page")
+        if pg:
+            pgs = pg if isinstance(pg, list) else [pg]
+            for p in pgs:
+                if p not in all_pages:
+                    all_pages.append(p)
+        for bid in (it.get("related_block_ids") or []):
+            if bid not in all_block_ids:
+                all_block_ids.append(bid)
+        for sbid in (it.get("source_block_ids") or []):
+            if sbid not in all_source_block_ids:
+                all_source_block_ids.append(sbid)
+        for etr in (it.get("evidence_text_refs") or []):
+            if etr not in all_etr:
+                all_etr.append(etr)
+        for ev in (it.get("evidence") or []):
+            all_evidence.append(ev)
+
+    fields: dict = {
+        "sheet": ", ".join(all_sheets) if all_sheets else leader.get("sheet", ""),
+        "page": sorted(set(all_pages)) if all_pages else leader.get("page"),
+        "related_block_ids": all_block_ids,
+        "evidence": all_evidence,
+    }
+    if all_source_block_ids:
+        fields["source_block_ids"] = all_source_block_ids
+    if all_etr:
+        fields["evidence_text_refs"] = all_etr
+    for _qf in ("norm_quote", "highlight_regions"):
+        if not leader.get(_qf):
+            for it in group_items:
+                if it.get(_qf):
+                    fields[_qf] = it[_qf]
+                    break
+    return fields
+
+
 def group_similar_findings(findings: list[dict]) -> list[dict]:
     """Группирует похожие замечания по нормализованному паттерну problem + severity + category.
 
@@ -1166,40 +1223,9 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
         if len(items) == 1:
             result.append(items[0])
         else:
-            # Собрать объединённую группу
-            # Лидер — первый по порядку
+            # Лидер — первый по порядку. Агрегация source-of-truth полей —
+            # единым helper'ом aggregate_merged_fields (reserc.md #92/#6/#27).
             leader = items[0]
-
-            # Собрать все sheet/page
-            all_sheets = []
-            all_pages = []
-            all_block_ids = []
-            all_source_block_ids = []
-            all_etr = []
-            all_evidence = []
-            for it in items:
-                sh = it.get("sheet")
-                if sh and sh not in all_sheets:
-                    all_sheets.append(sh)
-                pg = it.get("page")
-                if pg:
-                    if isinstance(pg, list):
-                        all_pages.extend(pg)
-                    elif pg not in all_pages:
-                        all_pages.append(pg)
-                for bid in (it.get("related_block_ids") or []):
-                    if bid not in all_block_ids:
-                        all_block_ids.append(bid)
-                for sbid in (it.get("source_block_ids") or []):
-                    if sbid not in all_source_block_ids:
-                        all_source_block_ids.append(sbid)
-                for etr in (it.get("evidence_text_refs") or []):
-                    if etr not in all_etr:
-                        all_etr.append(etr)
-                for ev in (it.get("evidence") or []):
-                    all_evidence.append(ev)
-
-            # Объединённое замечание
             merged = {
                 **leader,
                 "_group": {
@@ -1207,22 +1233,8 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                     "merged_ids": [it.get("id", "") for it in items],
                     "items": items,
                 },
-                "sheet": ", ".join(all_sheets) if all_sheets else leader.get("sheet", ""),
-                "page": sorted(set(all_pages)) if all_pages else leader.get("page"),
-                "related_block_ids": all_block_ids,
-                "evidence": all_evidence,
+                **aggregate_merged_fields(items, leader),
             }
-            # source-of-truth поля поглощённых замечаний (reserc.md #6/#27)
-            if all_source_block_ids:
-                merged["source_block_ids"] = all_source_block_ids
-            if all_etr:
-                merged["evidence_text_refs"] = all_etr
-            for _qf in ("norm_quote", "highlight_regions"):
-                if not merged.get(_qf):
-                    for it in items:
-                        if it.get(_qf):
-                            merged[_qf] = it[_qf]
-                            break
             result.append(merged)
 
     return result
