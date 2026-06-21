@@ -195,6 +195,63 @@ def resolve_v2_job_paths(
     return doc_dir, version_dir, output_dir
 
 
+def _current_v2_version_id(project_id: str, *, v2_root: Path, object_id: Optional[str] = None) -> Optional[str]:
+    """Resolve current projects_v2 version id without legacy fallback."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    doc_code = os.path.basename(str(project_id or "").strip().rstrip("/"))
+    candidates = [doc_code] if doc_code else []
+    if doc_code.lower().endswith(".pdf"):
+        candidates.append(doc_code[:-4].strip())
+    adapter = ProjectsV2Adapter(Path(v2_root))
+    for code in candidates:
+        if not code:
+            continue
+        doc = adapter.find_document(code, object_id=object_id)
+        if doc is None:
+            continue
+        current = doc.get("current_version")
+        if current:
+            return current
+        versions = [v for v in (doc.get("version_ids") or []) if v]
+        if versions:
+            return versions[-1]
+    return None
+
+
+def resolve_v2_prepare_paths(
+    project_id: str,
+    version_id: Optional[str],
+    *,
+    v2_root: Optional[Path] = None,
+    object_id: Optional[str] = None,
+    legacy_project_dir: Optional[Path] = None,
+) -> Optional[tuple[Path, Path]]:
+    """v2-primary prepare paths: ``(version_dir, latest_analysis_dir)``.
+
+    Prepare is version-level work, not run-level work, so it writes Gemma/crop
+    artifacts to ``03_analysis/latest`` and does not require a run_id.
+    """
+    facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
+    resolved = facade.v2_root()
+    if resolved is None:
+        return None
+    effective_vid = version_id or _current_v2_version_id(project_id, v2_root=resolved, object_id=object_id)
+    if not effective_vid:
+        return None
+    target = resolve_v2_target_by_id(
+        project_id,
+        effective_vid,
+        v2_root=resolved,
+        object_id=object_id,
+        legacy_project_dir=legacy_project_dir,
+    )
+    if target is None:
+        return None
+    version_dir = target.version_dir(resolved)
+    return version_dir, version_dir / "03_analysis" / "latest"
+
+
 def guard_destructive_v2_primary(op: str) -> None:
     """Шаг 6C: запретить деструктивную операцию в режиме V2_PRIMARY.
 
