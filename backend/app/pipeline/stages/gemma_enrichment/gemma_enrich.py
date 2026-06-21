@@ -119,6 +119,11 @@ SHORT_RESULT_THRESHOLD = 60
 _IMAGE_SCALE_TIERS = [1.0, 0.6, 0.35, 0.2]
 _NGROK_HTML_RETRIES = 2
 _NGROK_HTML_BACKOFF_S = 1.5
+# #15: сетевой/timeout сбой вызова Gemma (_gemma_call_attempt → status == -1)
+# ретраим ТОТ ЖЕ scale-tier с экспоненциальным backoff, не сжигая тиры и не
+# роняя блок на одном транзиентном обрыве. 0.5/1/2 c.
+_NETWORK_RETRIES = 3
+_NETWORK_RETRY_BACKOFF_S = 0.5
 _WEAK_RESULT_MARKERS = (
     "unreadable",
     "нечитаемо",
@@ -980,6 +985,7 @@ async def _enrich_block_single_pass(
     )
 
     ngrok_retries_left = _NGROK_HTML_RETRIES
+    network_retries_left = _NETWORK_RETRIES
     scale_idx = 0
     last_status = 0
     last_data: dict | None = None
@@ -997,6 +1003,17 @@ async def _enrich_block_single_pass(
         )
         total_elapsed_ms += elapsed
         last_status, last_data, last_raw = status, data, raw
+
+        # #15: транзиентный сетевой/timeout сбой (status == -1 из
+        # _gemma_call_attempt) — ретраим ТОТ ЖЕ scale с backoff, не уходя в
+        # следующий тир и не завершая блок ошибкой на одном обрыве сети.
+        if status < 0:
+            if network_retries_left > 0:
+                attempt = _NETWORK_RETRIES - network_retries_left
+                network_retries_left -= 1
+                await asyncio.sleep(_NETWORK_RETRY_BACKOFF_S * (2 ** attempt))
+                continue
+            break
 
         if _is_ngrok_html(data, raw):
             if ngrok_retries_left > 0:

@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -515,6 +516,34 @@ def _render_pdf_bytes_to_png(
     return w, h
 
 
+# #11: транзиентные сетевые сбои скачивания crop_url ретраим с экспоненциальным
+# backoff ДО перехода в PDF-fallback. 404 (и прочие неретраибл 4xx, кроме
+# 408/429) — фатальны: ретрай не поможет, сразу отдаём наверх для fallback.
+_CROP_DOWNLOAD_RETRIES = 3
+_CROP_DOWNLOAD_BACKOFF_S = 0.5
+
+
+def _download_with_retry(req: "urllib.request.Request", timeout: int) -> bytes:
+    """Скачать байты с 2-3 попытками и экспоненциальным backoff на транзиентных
+    ошибках (5xx / сеть / timeout). 404 и прочие фатальные 4xx — сразу raise."""
+    last_exc: Exception | None = None
+    for attempt in range(_CROP_DOWNLOAD_RETRIES):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as exc:
+            # 4xx, кроме 408 Request Timeout / 429 Too Many Requests, фатальны —
+            # ретрай бессмыслен, отдаём наверх (вызывающий уйдёт в PDF-fallback).
+            if 400 <= exc.code < 500 and exc.code not in (408, 429):
+                raise
+            last_exc = exc
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            last_exc = exc
+        if attempt < _CROP_DOWNLOAD_RETRIES - 1:
+            time.sleep(_CROP_DOWNLOAD_BACKOFF_S * (2 ** attempt))
+    raise last_exc if last_exc is not None else RuntimeError("download failed")
+
+
 def download_and_convert(
     crop_url: str,
     out_png: Path,
@@ -533,8 +562,7 @@ def download_and_convert(
     """
     _require_pymupdf()
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        pdf_bytes = resp.read()
+    pdf_bytes = _download_with_retry(req, timeout)
 
     w, h = _render_pdf_bytes_to_png(
         pdf_bytes, out_png,
