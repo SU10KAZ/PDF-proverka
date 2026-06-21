@@ -738,6 +738,21 @@ def resolve_version_output_dir(
     return ctx["output_dir"]
 
 
+def resolve_active_output_dir(project_id: str) -> Path:
+    """reserc.md #97: ЕДИНЫЙ резолвер папки `_output` активной версии с fallback.
+
+    Сводит идентичные обёртки `_version_output_dir` (prepare/findings_merge) в одну
+    точку. Сначала :func:`resolve_version_output_dir` (учитывает bind_version()
+    ContextVar и v2-primary run-dir); если версия не определена/не найдена
+    (V1/legacy) — root `project_dir/_output`. Поведение совпадает с прежними
+    локальными обёртками — это дедуп, а не смена контракта."""
+    try:
+        return resolve_version_output_dir(project_id)
+    except (VersionNotFoundError, FileNotFoundError):
+        from backend.app.services.common.project_service import resolve_project_dir
+        return resolve_project_dir(project_id) / "_output"
+
+
 # ─── Загрузка исходных файлов в версию ─────────────────────────────────────
 
 

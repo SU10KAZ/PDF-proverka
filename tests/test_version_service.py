@@ -634,3 +634,21 @@ def test_delete_version_invokes_v2_cleanup(legacy_project_dir, monkeypatch):
 
     assert any(str(v2_path) == c for c in calls), (
         f"remove_project_from_v2_safe не вызван для {v2_path}; calls={calls}")
+
+
+def test_resolve_active_output_dir_single_resolver(legacy_project_dir, monkeypatch):
+    """reserc.md #97: единый resolve_active_output_dir — версия через
+    resolve_version_output_dir, иначе fallback root/_output."""
+    import backend.app.services.common.version_service as vs
+    # happy path: делегирует resolve_version_output_dir
+    monkeypatch.setattr(vs, "resolve_version_output_dir",
+                        lambda pid: Path("/tmp/x") / "ver" / "_output")
+    assert vs.resolve_active_output_dir("P") == Path("/tmp/x/ver/_output")
+
+    # fallback: версия не найдена → root/_output
+    def _raise(pid):
+        raise vs.VersionNotFoundError("no version")
+    monkeypatch.setattr(vs, "resolve_version_output_dir", _raise)
+    import backend.app.services.common.project_service as ps
+    monkeypatch.setattr(ps, "resolve_project_dir", lambda pid: Path("/tmp/root"))
+    assert vs.resolve_active_output_dir("P") == Path("/tmp/root/_output")

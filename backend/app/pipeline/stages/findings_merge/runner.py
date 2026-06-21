@@ -50,12 +50,10 @@ def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
 # ─── Pure helper functions (re-exported from previous pass) ──────────────────
 
 def _version_output_dir(project_id: str):
-    """Папка _output активной версии (через bind_version), fallback на корень."""
+    """Папка _output активной версии. Делегирует единому резолверу
+    version_service.resolve_active_output_dir (reserc.md #97)."""
     from backend.app.services.common import version_service
-    try:
-        return version_service.resolve_version_output_dir(project_id)
-    except (version_service.VersionNotFoundError, FileNotFoundError):
-        return resolve_project_dir(project_id) / "_output"
+    return version_service.resolve_active_output_dir(project_id)
 
 
 def backfill_text_evidence_in_findings(project_id: str):
