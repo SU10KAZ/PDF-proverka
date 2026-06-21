@@ -434,3 +434,111 @@ def test_start_optimization_endpoint_unknown_version(client):
     c, _ = client
     r = c.post("/api/optimization/M31A/run", params={"version_id": "v999"})
     assert r.status_code == 404
+
+
+# ─── 14. Версионность batch-очереди (start_batch + pre-Gemma prefetch) ──────
+
+
+def test_start_batch_pins_latest_version_id(v2_created):
+    """start_batch проставляет version_id=latest на каждый item очереди.
+
+    Регрессия: раньше items создавались с version_id=None. Для проекта, чья
+    latest=V2, prefetch резолвил проект к PRIMARY (V1) папке → валидная Gemma
+    V1 помечала V2-item как prefetched/skipped → main worker пропускал Gemma
+    для V2 (V2 оставался без enrichment, очередь «проскакивала» V2).
+    """
+    import asyncio as _aio
+    from backend.app.pipeline.manager import PipelineManager
+
+    pm = PipelineManager()
+
+    async def _noop(*a, **k):  # worker не запускает реальный pipeline
+        return None
+    pm._run_batch_queue = _noop
+
+    async def _run():
+        return await pm.start_batch(["M31A"], "full")
+
+    queue = _aio.run(_run())
+    item = next(it for it in queue.items if it.project_id == "M31A")
+    assert item.version_id == "v2"
+
+
+def test_start_batch_does_not_touch_real_queue_file(v2_created):
+    """Регрессия изоляции: прогон start_batch НЕ пишет в реальный
+    backend/app/data/batch_queue.json (conftest autouse перенаправляет
+    BATCH_QUEUE_FILE в tmp). Иначе тесты загрязняют прод-очередь — инцидент с
+    фантомной M31A-очередью в production.
+
+    Дискриминирующий: без autouse-guard `manager.BATCH_QUEUE_FILE` == реальному
+    пути конфига → первый assert упадёт; а если бы guard сняли, но путь совпал —
+    start_batch перезаписал бы реальный файл → упал бы второй assert.
+    """
+    import asyncio as _aio
+    from pathlib import Path
+    from backend.app.core import config
+    import backend.app.pipeline.manager as mgr
+
+    real = Path(config.BATCH_QUEUE_FILE)  # канонический реальный путь (не патчится)
+    # guard активен: module-global перенаправлен в tmp, не в реальную data-папку
+    assert Path(mgr.BATCH_QUEUE_FILE) != real, "conftest autouse-guard не активен"
+    before = real.read_bytes() if real.exists() else None
+
+    pm = mgr.PipelineManager()
+
+    async def _noop(*a, **k):
+        return None
+    pm._run_batch_queue = _noop
+
+    _aio.run(pm.start_batch(["M31A"], "full"))
+
+    after = real.read_bytes() if real.exists() else None
+    assert after == before, "start_batch не должен трогать реальный batch_queue.json"
+    # запись действительно ушла в изолированный tmp-файл
+    assert Path(mgr.BATCH_QUEUE_FILE).exists(), "очередь должна сохраниться в tmp"
+
+
+def test_select_pregemma_candidate_is_version_aware(v2_created, monkeypatch):
+    """Для V2-item кандидат-селектор инспектирует ПАПКУ ВЕРСИИ (V2), а НЕ V1.
+
+    До фикса селектор резолвил проект через resolve_project_dir → PRIMARY (V1),
+    поэтому валидная Gemma V1 «крала» V2-item (помечала prefetched/skipped), и
+    main worker пропускал Gemma для V2. После фикса резолвится папка версии
+    item'а. Тест дискриминирующий: на старом коде inspected == V1 dir.
+    """
+    from pathlib import Path as _P
+    from backend.app.models.audit import BatchQueueStatus, BatchQueueItem
+    from backend.app.pipeline.manager import PipelineManager
+    from backend.app.pipeline.stages.gemma_enrichment import (
+        gemma_enrichment_contract as _gec,
+    )
+
+    _, projects_dir, v2_output = v2_created
+    v2_dir = v2_output.parent  # .../M31A(main)/M31A V2
+
+    inspected: dict = {}
+
+    def _fake_index(pd):
+        inspected["dir"] = _P(pd)
+        return _P(pd) / "blocks_gemma_100" / "index.json"  # заведомо отсутствует
+
+    monkeypatch.setattr(_gec, "gemma_blocks_index_path", _fake_index)
+
+    pm = PipelineManager()
+    queue = BatchQueueStatus(
+        queue_id="q1", action="full", status="running", total=2,
+        current_index=0,
+        items=[
+            BatchQueueItem(project_id="__RUN__", version_id="v1",
+                           action="full", status="running", job_id="r0"),
+            BatchQueueItem(project_id="M31A", version_id="v2",
+                           action="full", status="pending", job_id="p1"),
+        ],
+    )
+
+    pm._select_pregemma_candidate(queue)
+
+    # Селектор должен был смотреть папку ВЕРСИИ item'а (V2), не V1 primary.
+    assert inspected["dir"] == v2_dir
+    # И V2-item не помечен prefetched (его index не существует → continue).
+    assert queue.items[1].gemma_prefetched is False

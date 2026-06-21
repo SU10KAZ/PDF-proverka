@@ -12,12 +12,14 @@
   --topbar-bg:   #ffffff;
   --border:      rgba(0,0,0,0.07);
   --border2:     rgba(0,0,0,0.13);
+  --grid-line:   rgba(0,0,0,0.28);
   --teal:        #008f7e;
   --teal-light:  #d0f0ec;
   --teal-mid:    rgba(0,143,126,0.2);
   --teal-border: rgba(0,143,126,0.35);
   --text:        #0e1622;
   --text2:       #4a5a70;
+  --text-muted:  #4a5a70;
   --text3:       #8fa0b4;
   --red:         #d4183a;
   --red-light:   #ffe0e5;
@@ -44,12 +46,14 @@
   --topbar-bg:   #111720;
   --border:      rgba(255,255,255,0.07);
   --border2:     rgba(255,255,255,0.13);
+  --grid-line:   rgba(255,255,255,0.30);
   --teal:        #00c2b8;
   --teal-light:  rgba(0,194,184,0.12);
   --teal-mid:    rgba(0,194,184,0.18);
   --teal-border: rgba(0,194,184,0.28);
   --text:        #e2e8f0;
   --text2:       #8896a6;
+  --text-muted:  #8896a6;
   --text3:       #4d6070;
   --red:         #ff4d6d;
   --red-light:   rgba(255,77,109,0.13);
@@ -554,6 +558,7 @@ body {
 .project-tab__count--teal { background: var(--teal-light); color: var(--teal); border-color: var(--teal-border); }
 .project-tab__count--amber { background: var(--amber-light); color: var(--amber); border-color: rgba(196,115,0,0.25); }
 .project-tab__count--purple { background: var(--purple-light); color: var(--purple); border-color: rgba(109,63,212,0.25); }
+.project-tab__count--red { background: var(--red-light); color: var(--red); border-color: rgba(212,24,58,0.25); }
 .project-tab__count--exp {
   background: #b45309; color: #fff; font-size: 9px; font-weight: 700;
   border-color: #92400e;
@@ -1853,6 +1858,12 @@ th.cv2-sort-active {
 .queue-item__remove { border: none; background: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 0 4px; transition: color 0.13s; }
 .queue-item__remove:hover { color: var(--red); }
 .queue-item__remove-placeholder { width: 22px; }
+
+/* Pre-Gemma OCR prefetch badge — индикатор фонового Gemma enrichment */
+.prefetch-badge { display: inline-block; font-size: 13px; line-height: 1; padding: 2px 5px; border-radius: 10px; margin-right: 4px; cursor: help; user-select: none; }
+.prefetch-badge.prefetch-done { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+.prefetch-badge.prefetch-running { background: rgba(59, 130, 246, 0.15); color: #2563eb; animation: spin 1.2s linear infinite; }
+.prefetch-badge.prefetch-failed { background: rgba(245, 158, 11, 0.15); color: #b45309; }
 .queue-add-panel { margin-top: 16px; }
 .queue-add-panel__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .queue-add-panel__header h3 { font-size: 14px; font-weight: 700; }
@@ -1918,23 +1929,51 @@ th.cv2-sort-active {
     background: var(--bg3); cursor: pointer; display: inline-flex;
     align-items: center; justify-content: center; transition: all .15s;
 }
-.btn-decision svg { opacity: .5; transition: opacity .15s; }
+.btn-decision svg { opacity: .9; transition: opacity .15s; }
 .btn-decision:hover svg { opacity: 1; }
+/* Глифы галочки/крестика — крупные, жирные, контрастные */
+.btn-decision .decision-glyph {
+    font-size: 16px; font-weight: 900; line-height: 1;
+    display: inline-block; transition: transform .1s;
+}
+.btn-decision.btn-sm .decision-glyph { font-size: 14px; }
+/* Галочка всегда зелёная, крестик всегда красный (видны до выбора) */
+.btn-accept svg, .btn-accept .decision-glyph { stroke: #22c55e; color: #22c55e; }
+.btn-reject svg, .btn-reject .decision-glyph { stroke: #ef4444; color: #ef4444; }
 .btn-accept:hover, .btn-accept.active { background: rgba(34,197,94,.15); border-color: #22c55e; }
-.btn-accept.active svg { opacity: 1; stroke: #22c55e; }
+.btn-accept.active { border-color: #22c55e; }
+.btn-accept.active svg { opacity: 1; stroke: #16a34a; }
+.btn-accept.active .decision-glyph { color: #15803d; }
 .btn-reject:hover, .btn-reject.active { background: rgba(239,68,68,.15); border-color: #ef4444; }
-.btn-reject.active svg { opacity: 1; stroke: #ef4444; }
+.btn-reject.active svg { opacity: 1; stroke: #dc2626; }
+.btn-reject.active .decision-glyph { color: #b91c1c; }
 .btn-decision.btn-sm { width: 26px; height: 26px; }
 
 .rejection-reason-input {
-    width: 100%; min-height: 40px; max-height: 80px;
+    width: 100%; min-height: 48px; max-height: 80px;
     padding: 4px 8px; font-size: 11px; line-height: 1.4;
-    background: var(--bg1); color: var(--text); border: 1px solid var(--border2);
+    background: var(--card-bg); color: var(--text); border: 1px solid var(--border2);
     border-radius: 4px; resize: vertical; font-family: inherit;
+    transition: box-shadow .12s ease, border-color .12s ease;
 }
 .rejection-reason-input:focus { border-color: var(--teal-border); outline: none; }
+/* На hover/focus поле разворачивается во всплывающий блок поверх соседних
+   ячеек, чтобы целиком показать введённый текст, если он не поместился. */
+.rejection-reason-input:hover,
+.rejection-reason-input:focus {
+    position: absolute;
+    z-index: 60;
+    /* Растём влево (колонка причины у правого края таблицы — рост вправо
+       обрезала бы overflow-x:auto обёртки), вниз и поверх соседних ячеек. */
+    right: 4px; left: auto; top: 6px;
+    width: 440px; max-width: 70vw;
+    min-height: 150px; max-height: 48vh; height: auto;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+    border-color: var(--teal-border);
+}
 .decision-cell { vertical-align: middle; }
-.reason-cell { vertical-align: top; padding: 6px 4px !important; }
+/* position:relative — якорь для всплывающего .rejection-reason-input */
+.reason-cell { vertical-align: top; padding: 6px 4px !important; position: relative; }
 
 /* Row states: accepted (green left border, subtle bg) */
 tr.row-accepted { border-left: 3px solid #22c55e; }
@@ -1944,25 +1983,51 @@ tr.row-accepted td { background: rgba(34,197,94,.04) !important; }
 tr.sc-row-mixed { border-left: 3px solid #f59e0b; }
 tr.sc-row-mixed td { background: rgba(245,158,11,.06) !important; }
 
-/* Row states: rejected (strikethrough, dimmed, pushed down) */
-tr.row-rejected { border-left: 3px solid #ef4444; opacity: 0.45; }
-tr.row-rejected .desc-cell,
-tr.row-rejected .rec-cell,
-tr.row-rejected .norm-cell,
-tr.row-rejected .opt-proposed,
-tr.row-rejected .opt-risks,
-tr.row-rejected .opt-norm {
+/* Row states: rejected — зачёркиваем весь текст строки, без прозрачности.
+   Линия ставится ТОЛЬКО на td: она пробрасывается на обычный текст (div/span/
+   strong), но НЕ на atomic inline-боксы (display:inline-block/inline-flex) —
+   поэтому кнопки решения и глифы ✓/✗ остаются нетронутыми без отдельных
+   text-decoration:none (их линию ancestor-а всё равно нельзя было бы убрать). */
+tr.row-rejected { border-left: 3px solid #ef4444; }
+tr.row-rejected td {
     text-decoration: line-through;
-    text-decoration-color: rgba(239,68,68,.5);
+    text-decoration-color: #000;
 }
-tr.row-rejected .finding-id-link { text-decoration: line-through; }
-tr.row-rejected:hover { opacity: 0.7; }
+/* Ячейки с управлением (кнопки решения, причина, «к месту») НЕ зачёркиваем.
+   Линию надо снимать на самом td-источнике: text-decoration:none на вложенной
+   кнопке не убирает линию, пробрасываемую от td через flex-цепочку. */
+tr.row-rejected td.decision-cell,
+tr.row-rejected td.reason-cell,
+tr.row-rejected td.sc-cell-goto {
+    text-decoration: none;
+}
+/* В тёмной теме чёрная линия не видна — делаем её белой */
+[data-theme="dark"] tr.row-rejected td {
+    text-decoration-color: #fff;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    KNOWLEDGE BASE — Page, Tabs, Table, Patterns
    ═══════════════════════════════════════════════════════════════ */
 .kb-page { padding: 0; }
 .kb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+/* Шапка БЗ в одну строку — 1:1 со стилем проектного таб-бара (.breadcrumb) */
+.kb-header--inline {
+  /* full-bleed: гасим gutter .container (padding 20px 24px 40px),
+     чтобы ряд приклеился к хедеру (сверху) и краям (слева/справа) как .breadcrumb */
+  margin: -20px -24px 16px;
+  padding: 0 24px;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
+  min-height: 40px;
+}
+/* Заголовок слева — как breadcrumb-ссылка: мелкий, лёгкий, не чёрный-жирный */
+.kb-header--inline .kb-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
 .kb-title { font-size: 18px; font-weight: 700; color: var(--text); margin: 0; }
 .kb-header-actions { display: flex; gap: 8px; align-items: center; }
 .btn-upload {
@@ -2020,6 +2085,8 @@ tr.row-rejected:hover { opacity: 0.7; }
 .kb-table .mn-col-projects { font-size: 11px; color: #94a3b8; }
 .kb-table .kb-section-badge { white-space: nowrap; }
 .kb-item-id { font-weight: 600; font-size: 12px; color: var(--text); }
+.kb-item-id--link { cursor: pointer; color: var(--teal); }
+.kb-item-id--link:hover { text-decoration: underline; }
 .kb-type-badge {
     display: inline-block; padding: 2px 8px; border-radius: 4px;
     font-size: 10px; font-weight: 600;
@@ -3166,7 +3233,7 @@ tr.row-rejected:hover { opacity: 0.7; }
 /* ─── Stage Comparison ───────────────────────────────────────────────── */
 .sc-steps-bar {
   display: flex; justify-content: center; align-items: center;
-  min-height: 40px; margin: -20px -24px 16px;
+  min-height: 32px; margin: -20px -24px 10px;
   padding: 0 24px; background: var(--topbar-bg);
   border-bottom: 1px solid var(--border);
 }
@@ -3179,6 +3246,9 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-status-matched   { background: #dcfce7; color: #15803d; }
 .sc-status-maybe     { background: #fef3c7; color: #92400e; }
 .sc-status-unmatched { background: #f3f4f6; color: #6b7280; }
+/* Кликабельный бейдж (например «⚠ файл большой ▸ fallback») */
+.sc-status--clickable { text-decoration: underline dotted; transition: filter .12s ease, box-shadow .12s ease; }
+.sc-status--clickable:hover { filter: brightness(.96); box-shadow: 0 0 0 1px rgba(146,64,14,.35); }
 
 .sc-diff-added    { color: #15803d; font-weight: 600; }
 .sc-diff-removed  { color: #b91c1c; font-weight: 600; }
@@ -3222,6 +3292,100 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-block-overlay.linked-active {
     box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.35);
     z-index: 6;
+}
+/* Подсветка блока, к которому перешли из поповера «упавшие блоки» */
+.sc-block-overlay.sc-block-focus-flash {
+    z-index: 8;
+    border: 2.5px solid #dc2626 !important;
+    animation: scBlockFocusFlash 0.7s ease-in-out 3;
+}
+@keyframes scBlockFocusFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); background: rgba(220, 38, 38, 0.28); }
+    100% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); background: rgba(220, 38, 38, 0.08); }
+}
+
+/* ─── Поповер «упавшие блоки» (таблица пар) ─────────────────────────────── */
+.sc-failed-count {
+    color: #b91c1c;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    font-weight: 600;
+}
+.sc-failed-count:hover { color: #7f1d1d; }
+.sc-failed-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+}
+.sc-failed-popover {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    z-index: 41;
+    width: 340px;
+    max-height: 320px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+    text-align: left;
+    font-variant-numeric: normal;
+}
+.sc-failed-popover__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    position: sticky;
+    top: 0;
+    background: #fff;
+}
+.sc-failed-popover__close { cursor: pointer; color: #9ca3af; padding: 0 4px; }
+.sc-failed-popover__close:hover { color: #374151; }
+.sc-failed-popover__msg { padding: 12px 10px; font-size: 12px; color: #6b7280; }
+.sc-failed-popover__msg--err { color: #b91c1c; }
+.sc-failed-block-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    border-bottom: 1px solid #f9fafb;
+}
+.sc-failed-block-row:hover { background: #fef2f2; }
+.sc-failed-block-row__side {
+    flex: 0 0 auto;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.sc-failed-block-row__side.is-left  { background: #dbeafe; color: #1e40af; }
+.sc-failed-block-row__side.is-right { background: #e0e7ff; color: #4338ca; }
+.sc-failed-block-row__page { flex: 0 0 auto; color: #6b7280; white-space: nowrap; }
+.sc-failed-block-row__id {
+    flex: 1 1 auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sc-failed-block-row__reason {
+    flex: 0 1 auto;
+    color: #b91c1c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 110px;
 }
 /* Цветная плашка-номер связи: рисуется внутри overlay, поверх рамки */
 .sc-block-link-badge {
@@ -3271,6 +3435,46 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-viewer__pane { scroll-behavior: auto; }
 .sc-viewer__pane--panning,
 .sc-viewer__pane--panning * { cursor: grabbing !important; user-select: none; }
+/* MD enrichment viewer: подсветка строк по типу блока */
+.sc-md-content {
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  color: #1f2937;
+}
+.sc-md-line { white-space: pre-wrap; word-break: break-word; }
+.sc-md-line.sc-md-page  { background: #fef08a; font-weight: 600; }   /* ## СТРАНИЦА — жёлтый */
+.sc-md-line.sc-md-text  { background: #bbf7d0; font-weight: 600; }   /* ### BLOCK [TEXT] — зелёный */
+.sc-md-line.sc-md-image { background: #fecaca; font-weight: 600; }   /* ### Графический блок / [IMAGE] — красный */
+/* HTML-рендер enriched MD (через marked) */
+.sc-md-rendered {
+  padding: 14px 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #1f2937;
+  word-break: break-word;
+}
+.sc-md-rendered h1, .sc-md-rendered h2, .sc-md-rendered h3,
+.sc-md-rendered h4 { margin: 14px 0 6px; line-height: 1.3; }
+.sc-md-rendered h2 { font-size: 16px; }
+.sc-md-rendered h3 { font-size: 14px; }
+.sc-md-rendered p { margin: 6px 0; }
+.sc-md-rendered ul, .sc-md-rendered ol { margin: 6px 0; padding-left: 22px; }
+.sc-md-rendered li { margin: 2px 0; }
+.sc-md-rendered table { border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+.sc-md-rendered th, .sc-md-rendered td { border: 1px solid #d1d5db; padding: 4px 8px; text-align: left; }
+.sc-md-rendered th { background: #f1f5f9; }
+.sc-md-rendered code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+.sc-md-rendered pre { background: #f8fafc; padding: 10px; border-radius: 4px; overflow: auto; }
+.sc-md-rendered pre code { background: none; padding: 0; }
+.sc-md-rendered img { max-width: 100%; height: auto; }
+.sc-md-rendered hr { border: none; border-top: 1px solid #e5e7eb; margin: 12px 0; }
+.sc-md-rendered blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid #cbd5e1; color: #475569; }
+/* Цветовая подсветка заголовков по типу блока (как в текстовом режиме) */
+.sc-md-rendered h2.sc-md-h-page  { background: #fef08a; padding: 4px 10px; border-radius: 4px; }
+.sc-md-rendered h3.sc-md-h-text  { background: #bbf7d0; padding: 4px 10px; border-radius: 4px; }
+.sc-md-rendered h3.sc-md-h-image { background: #fecaca; padding: 4px 10px; border-radius: 4px; }
 .sc-canvas-wrap img { max-width: none; -webkit-user-drag: none; user-select: none; }
 .sc-slot { display: flex; flex-direction: column; }
 .sc-slot > :first-child { flex-shrink: 0; }
@@ -3319,6 +3523,10 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-pair-row { transition: background-color 0.12s, transform 0.12s; }
 .sc-pair-row.sc-pair-dragging  { opacity: .45; }
 .sc-pair-row.sc-pair-drag-over { background-color: #eef2ff; box-shadow: inset 0 2px 0 #4f46e5; }
+/* Компактные строки таблицы пар — та же плотность, что у строк-карточек на
+   вкладке «Отчёт» (там вертикальный padding 5px). Inline padding:8px на ячейках
+   перебивается через !important. */
+.sc-pair-row > td { padding-top: 4px !important; padding-bottom: 4px !important; }
 /* Live-pulse точка для индикатора «идёт обработка» */
 @keyframes sc-pulse-kf {
     0%   { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,.45); }
@@ -3463,6 +3671,9 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-unified-table { font-size: 12px; }
 .sc-unified-table td { padding: 8px 10px; vertical-align: top; }
 .sc-unified-table th { padding: 6px 10px; }
+/* Более контрастная сетка таблицы расхождений */
+.sc-unified-table th,
+.sc-unified-table td { border: 1px solid var(--grid-line); }
 
 /* Sortable column headers */
 .sc-unified-table th.sc-th-sortable { cursor: pointer; user-select: none; }
@@ -3479,7 +3690,7 @@ tr.row-rejected:hover { opacity: 0.7; }
 /* №-cell: номер + severity-чип под ним */
 .sc-cell-no { text-align: center; }
 .sc-cell-no__num { font-weight: 700; opacity: 0.7; margin-bottom: 4px; font-size: 11px; }
-.sc-sev-chip { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; }
+.sc-sev-chip { display: inline-block; max-width: 100%; box-sizing: border-box; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; white-space: nowrap; line-height: 1.25; text-align: center; }
 .sc-sev-chip--high    { background: var(--red-light);   color: var(--red);    border: 1px solid rgba(212,24,58,0.2); }
 .sc-sev-chip--medium  { background: var(--amber-light); color: var(--amber);  border: 1px solid rgba(196,115,0,0.2); }
 .sc-sev-chip--low     { background: var(--blue-light);  color: var(--blue);   border: 1px solid rgba(20,96,212,0.2); }
@@ -3507,6 +3718,11 @@ tr.row-rejected:hover { opacity: 0.7; }
 .sc-chip--manual  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .sc-chip--source  { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
 .sc-chip--nolinks { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+/* Источник изменения, перенесённый в колонку «№» — компактный, может переноситься */
+.sc-chip--source-in-no { margin-top: 4px; max-width: 100%; white-space: normal; font-size: 9px; padding: 1px 6px; text-align: center; }
+/* Отчёт: разделитель перед расхождениями, согласованными только в одном виде (V1/V2) */
+.sc-report-unique-divider td { background: #f8fafc; color: #64748b; font-size: 11px; font-weight: 600; padding: 6px 12px; border-top: 2px solid #e2e8f0; }
+.sc-row--unique { background: #fcfcfd; }
 .sc-change-title { font-weight: 600; font-size: 13px; line-height: 1.35; color: var(--text); }
 .sc-change-summary { opacity: 0.85; margin-top: 4px; line-height: 1.45; }
 .sc-change-details { margin-top: 6px; font-size: 11px; opacity: 0.85; }
@@ -3613,26 +3829,120 @@ tr.row-rejected:hover { opacity: 0.7; }
     background: #f3f4f6;
 }
 
+/* ─── Пользователи (раздел «Пользователи» + активность) ─────────────── */
+.users-list { display: flex; flex-direction: column; gap: 6px; }
+.user-row {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    transition: border-color .15s, box-shadow .15s;
+}
+.user-row--current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.user-row__main { display: flex; align-items: center; gap: 10px; padding: 11px 14px; }
+.user-row__num { color: var(--text-muted); font-size: 13px; min-width: 20px; }
+.user-row__chevron {
+    background: none; border: none; cursor: pointer; color: var(--text-muted);
+    padding: 2px; display: flex; border-radius: 4px; transition: transform .15s;
+}
+.user-row__chevron svg { width: 14px; height: 14px; }
+.user-row__chevron.open { transform: rotate(0deg); color: var(--text); }
+.user-row__chevron:not(.open) { transform: rotate(-90deg); }
+.user-row__name {
+    font-weight: 600; color: var(--text); font-size: 14px;
+    cursor: pointer; text-decoration: none;
+}
+.user-row__name:hover { color: var(--accent); text-decoration: underline; }
+.user-row__role {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .03em;
+    color: var(--accent); border: 1px solid var(--accent); border-radius: 4px;
+    padding: 1px 6px;
+}
+.user-row__active-tag {
+    font-size: 11px; color: var(--green); margin-left: auto;
+}
+.user-row__expand {
+    padding: 0 14px 13px 44px; border-top: 1px solid var(--border);
+    margin-top: 2px; padding-top: 11px;
+}
+.btn-danger-outline {
+    background: transparent; border: 1px solid var(--red); color: var(--red);
+}
+.btn-danger-outline:hover { background: rgba(212,24,58,0.08); }
+
+/* активность */
+.ua-stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 16px; min-width: 84px; text-align: center;
+}
+.ua-stat__num { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
+.ua-stat__lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.ua-stat--ok .ua-stat__num { color: var(--green); }
+.ua-stat--no .ua-stat__num { color: var(--red); }
+
+.ua-project {
+    border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+    margin-bottom: 8px; overflow: hidden;
+}
+.ua-project__head {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer;
+}
+.ua-project__head:hover { background: var(--bg2); }
+.ua-project__chevron { width: 14px; height: 14px; color: var(--text-muted); transition: transform .15s; }
+.ua-project__chevron:not(.open) { transform: rotate(-90deg); }
+.ua-project__name { font-weight: 600; color: var(--text); font-size: 14px; }
+.ua-project__section {
+    font-size: 11px; color: var(--text-muted); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px;
+}
+.ua-project__counts { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
+.ua-project__items { border-top: 1px solid var(--border); padding: 6px 14px 12px; overflow-x: auto; }
+
+.ua-badge { font-size: 11px; border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
+.ua-badge--ok { color: var(--green); background: rgba(34,211,138,0.12); }
+.ua-badge--no { color: var(--red); background: rgba(255,77,109,0.12); }
+
+.ua-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.ua-table th {
+    text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11px;
+    padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.ua-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+.ua-table tbody tr:last-child td { border-bottom: none; }
+
+.users-login-banner {
+    font-size: 13px; color: var(--text); margin: 0 0 16px;
+    padding: 10px 14px; border-radius: 8px;
+    background: rgba(34,211,138,0.10); border: 1px solid var(--green);
+}
+.users-login-banner--warn {
+    background: rgba(245,158,11,0.10); border-color: #f59e0b; color: var(--text);
+}
+.users-login-banner code {
+    font-size: 12px; background: var(--bg2); padding: 1px 5px; border-radius: 4px;
+}
+
 /* ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ─── */
+/* Карточный вид V2 переиспользует классы классической таблицы расхождений
+   (sc-row / sc-cell-* / sc-sev-chip / sc-goto-btn / row-accepted|rejected),
+   поэтому здесь только V2-специфичное: чип качества + блок ревью в строке. */
 .sc-v2 .sc-input {
     padding: 3px 6px; border: 1px solid var(--border, #d1d5db); border-radius: 5px;
     background: var(--bg, #fff); color: var(--text, #0f172a);
 }
-.sc-sev-badge {
-    display: inline-block; padding: 1px 7px; border-radius: 999px;
-    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
-}
-.sc-sev-high    { background: #fee2e2; color: #991b1b; }
-.sc-sev-medium  { background: #fef3c7; color: #92400e; }
-.sc-sev-low     { background: #dbeafe; color: #1e40af; }
-.sc-sev-unknown { background: #f1f5f9; color: #475569; }
 .sc-v2-quality {
     display: inline-block; padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 600;
 }
 .sc-v2-quality-good               { background: #dcfce7; color: #166534; }
 .sc-v2-quality-needs_human_review { background: #fef9c3; color: #854d0e; }
 .sc-v2-quality-questionable       { background: #fee2e2; color: #b91c1c; }
-.sc-v2-row-confirmed > td { background: rgba(34, 197, 94, 0.07); }
-.sc-v2-row-rejected  > td { background: rgba(239, 68, 68, 0.07); }
-.sc-v2-table th { font-size: 11px; white-space: nowrap; }
-.sc-v2-table td { vertical-align: top; }
+/* Ревью инженера прямо в ячейке «Изменение» — статус + комментарий */
+.sc-v2-review-inline {
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border, #e2e8f0);
+}
+.sc-v2-status  { font-size: 11px; padding: 2px 6px; max-width: 180px; }
+.sc-v2-comment { font-size: 11px; padding: 2px 6px; flex: 1; min-width: 120px; }
+.sc-v2-status--confirmed           { border-color: #22c55e; color: #15803d; font-weight: 600; }
+.sc-v2-status--rejected            { border-color: #ef4444; color: #b91c1c; font-weight: 600; }
+.sc-v2-status--needs_clarification { border-color: #f59e0b; color: #92400e; }
+.sc-v2-status--cost_impact         { border-color: #6366f1; color: #4338ca; }

@@ -630,6 +630,27 @@ async def upload_version_files_endpoint(
     return {"status": "ok", **result}
 
 
+@router.delete("/{project_id:path}/versions/{version_id}")
+async def delete_project_version(project_id: str, version_id: str):
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Нельзя удалить единственную версию. После удаления latest переключается
+    на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
+    станут orphan-записями (очищаются через KB-утилиты).
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    try:
+        result = version_service.delete_version(proj_dir, project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "ok", **result}
+
+
 class VersionFromCandidateRequest(BaseModel):
     """Создать новую версию у существующего проекта из найденных файлов.
 

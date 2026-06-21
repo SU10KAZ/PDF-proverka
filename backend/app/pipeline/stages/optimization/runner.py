@@ -316,8 +316,12 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
             try:
                 new_data = json.loads(opt_path.read_text(encoding="utf-8"))
                 old_data = json.loads(pre_review.read_text(encoding="utf-8"))
-                new_count = len(new_data.get("scenarios", new_data.get("optimizations", [])))
-                old_count = len(old_data.get("scenarios", old_data.get("optimizations", [])))
+                # Канонический ключ optimization.json — "items" (см.
+                # optimization_task.md и findings_service); scenarios/optimizations
+                # оставлены для обратной совместимости. Раньше rescue читал только
+                # их → new_count всегда 0 → валидный результат откатывался (reserc.md #39).
+                new_count = len(new_data.get("items", new_data.get("scenarios", new_data.get("optimizations", []))))
+                old_count = len(old_data.get("items", old_data.get("scenarios", old_data.get("optimizations", []))))
                 if new_count > 0 and new_data != old_data:
                     await ctx.log(
                         f"Optimization Corrector: CLI код {exit_code}, но optimization.json обновлён "

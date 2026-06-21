@@ -9,6 +9,7 @@ from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
 from backend.app.models.findings import FindingsResponse, FindingsSummary
+from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
@@ -266,6 +267,10 @@ def get_finding_block_map(
     # но _load_blocks_data остаётся источником all_block_ids / block_info.
     _blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
 
+    # Строгая привязка вынесена в compute_finding_block_map (prod refactor для
+    # projects_v2 read canary). Функция содержит ту же логику reserc.md:
+    # evidence[type=image] → related_block_ids/source_block_ids → block_id в
+    # описании; page/sheet-fallback намеренно убран (см. docstring выше).
     items = findings_data.get("findings", findings_data.get("items", []))
     result = compute_finding_block_map(items, all_block_ids)
 
@@ -875,7 +880,10 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
     if graph_data:
         for p in graph_data.get("pages", []):
             page_num = p.get("page")
-            sheet_no = p.get("sheet_no")
+            # v2-граф хранит sheet_no в sheet_no_raw/normalized (sheet_no=0),
+            # поэтому читаем через общий helper — иначе page→sheet мёртв для всех
+            # v2-проектов и в отчётах пустые «Лист N» (reserc.md #5).
+            sheet_no = get_page_sheet_no(p)
             if page_num is not None and sheet_no:
                 page_to_sheet[page_num] = str(sheet_no)
 
@@ -1022,7 +1030,7 @@ def _load_sheet_to_page_map(project_id: str, version_id: Optional[str] = None) -
         return {}
     result: dict[str, int] = {}
     for p in graph_data.get("pages", []):
-        sheet_no = p.get("sheet_no")
+        sheet_no = get_page_sheet_no(p)  # v1/v2-совместимо (reserc.md #5)
         page_num = p.get("page")
         if sheet_no and page_num is not None:
             result[str(sheet_no)] = page_num
@@ -1166,6 +1174,8 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
             all_sheets = []
             all_pages = []
             all_block_ids = []
+            all_source_block_ids = []
+            all_etr = []
             all_evidence = []
             for it in items:
                 sh = it.get("sheet")
@@ -1180,6 +1190,12 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 for bid in (it.get("related_block_ids") or []):
                     if bid not in all_block_ids:
                         all_block_ids.append(bid)
+                for sbid in (it.get("source_block_ids") or []):
+                    if sbid not in all_source_block_ids:
+                        all_source_block_ids.append(sbid)
+                for etr in (it.get("evidence_text_refs") or []):
+                    if etr not in all_etr:
+                        all_etr.append(etr)
                 for ev in (it.get("evidence") or []):
                     all_evidence.append(ev)
 
@@ -1196,6 +1212,17 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 "related_block_ids": all_block_ids,
                 "evidence": all_evidence,
             }
+            # source-of-truth поля поглощённых замечаний (reserc.md #6/#27)
+            if all_source_block_ids:
+                merged["source_block_ids"] = all_source_block_ids
+            if all_etr:
+                merged["evidence_text_refs"] = all_etr
+            for _qf in ("norm_quote", "highlight_regions"):
+                if not merged.get(_qf):
+                    for it in items:
+                        if it.get(_qf):
+                            merged[_qf] = it[_qf]
+                            break
             result.append(merged)
 
     return result

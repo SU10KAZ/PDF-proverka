@@ -239,9 +239,11 @@ def find_object_dirs_for(project_id: str) -> list[Path]:
     return hits
 
 
-# TTL-кеш для iter_project_dirs (30 сек)
+# TTL-кеш для iter_project_dirs (30 сек). #78: ключуется по resolved projects_dir —
+# при смене PROJECTS_DIR (тесты, smoke-sandbox, override) кеш не отдаёт чужой список.
 _PROJECT_DIRS_CACHE: list[tuple[str, Path]] = []
 _PROJECT_DIRS_CACHE_TIME: float = 0.0
+_PROJECT_DIRS_CACHE_KEY: str = ""
 _PROJECT_DIRS_TTL: float = 30.0
 
 
@@ -253,9 +255,10 @@ def invalidate_project_cache() -> None:
     удаления source-папки). Без этого `/api/projects` будет ~30 сек показывать
     устаревший список.
     """
-    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME, _PROJECT_DIRS_CACHE_KEY
     _PROJECT_DIRS_CACHE = []
     _PROJECT_DIRS_CACHE_TIME = 0.0
+    _PROJECT_DIRS_CACHE_KEY = ""
 
 
 def _container_primary(container: Path) -> Optional[tuple[str, Path]]:
@@ -293,14 +296,18 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     Кеш обновляется раз в 30 секунд (или force=True).
     """
-    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME, _PROJECT_DIRS_CACHE_KEY
 
     now = time.time()
-    if not force and _PROJECT_DIRS_CACHE and (now - _PROJECT_DIRS_CACHE_TIME) < _PROJECT_DIRS_TTL:
+    projects_dir = _get_projects_dir()
+    cache_key = str(projects_dir)
+    # #78: кеш валиден только если построен под ТОТ ЖЕ projects_dir.
+    if (not force and _PROJECT_DIRS_CACHE
+            and _PROJECT_DIRS_CACHE_KEY == cache_key
+            and (now - _PROJECT_DIRS_CACHE_TIME) < _PROJECT_DIRS_TTL):
         return _PROJECT_DIRS_CACHE
 
     results: list[tuple[str, Path]] = []
-    projects_dir = _get_projects_dir()
     if not projects_dir.exists():
         return results
     for entry in sorted(projects_dir.iterdir()):
@@ -340,6 +347,7 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     _PROJECT_DIRS_CACHE = results
     _PROJECT_DIRS_CACHE_TIME = now
+    _PROJECT_DIRS_CACHE_KEY = cache_key
     return results
 
 
@@ -890,7 +898,7 @@ def get_project_status(
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
-        pdf_files=[pf for pf in pdf_files if (proj_dir / pf).exists()],
+        pdf_files=[pf for pf in pdf_files if (version_dir / pf).exists()],
         has_extracted_text=has_text,
         text_size_kb=text_size_kb,
         has_md_file=has_md,
@@ -972,6 +980,19 @@ def save_project_info(
             path = version_dir / "project_info.json"
     except version_service.VersionNotFoundError:
         pass
+    # Шаг 6A: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+    # (в проде НЕ включена). v2 первичен, legacy — fail-soft архив. В режимах
+    # legacy/dual_write_shadow выполняется прежний путь ниже (без изменений).
+    from backend.app.services.storage import storage_write_facade as _swf
+    if _swf.v2_is_primary():
+        from backend.app.services.storage.v2_primary_wiring import (
+            save_project_info_v2_primary as _save_v2_primary,
+        )
+        return _save_v2_primary(
+            project_id, data, version_id=target_vid,
+            legacy_root=root_dir, legacy_path=path,
+        )
+
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -982,7 +1003,6 @@ def save_project_info(
     # legacy-записи project_info.json (no-op в legacy, fail-soft). try/except —
     # чтобы путь `return True` оставался байт-идентичным прежнему поведению.
     try:
-        from backend.app.services.storage import storage_write_facade as _swf
         _swf.shadow_mirror_project_path_safe(root_dir)
     except Exception:
         pass
@@ -1014,6 +1034,9 @@ def set_project_section(project_id: str, section: str) -> dict:
         info["section"] = section
     if not save_project_info(project_id, info):
         raise ValueError(f"Не удалось сохранить project_info.json для '{project_id}'")
+    # #78: создание project_info.json для голой папки может поменять классификацию
+    # проекта в iter_project_dirs — сбрасываем кеш.
+    invalidate_project_cache()
     return info
 
 
@@ -2504,6 +2527,9 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     except Exception:
         pass
 
+    # #78: новый project_info.json мог перевести голую папку в статус проекта —
+    # сбрасываем кеш списка проектов.
+    invalidate_project_cache()
     return info
 
 
@@ -2685,6 +2711,10 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> 
     Returns:
         dict с описанием удалённого
     """
+    # Шаг 6C: в V2_PRIMARY деструктив запрещён до safety-контракта (no-op в
+    # legacy/dual_write_shadow → прод не затрагивается).
+    from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
+    guard_destructive_v2_primary("clean_project_data")
     root_dir = resolve_project_dir(project_id)
     if not root_dir.exists():
         raise ValueError(f"Проект '{project_id}' не найден")

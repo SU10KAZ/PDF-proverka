@@ -1,0 +1,38 @@
+# Стартовый CI (reserc.md #104). СТАТУС: observe-first — пока НЕ блокирует merge.
+#
+# Почему observe, а не enforce сразу:
+#   - в репозитории ещё НЕТ корневого requirements.txt (зависимости ставятся
+#     вручную / из webapp/requirements.txt) — список deps ниже best-effort;
+#   - baseline известных падений (scripts/ci_known_failures.txt) снят в локальном
+#     окружении и от него зависит — в CI часть тестов падает иначе.
+#
+# Чтобы сделать гейт блокирующим:
+#   1) добавить корневой requirements.txt и поставить его в шаге install;
+#   2) один раз запустить в CI `python scripts/ci_regression_gate.py --record`
+#      и закоммитить полученный baseline;
+#   3) убрать `continue-on-error: true` у шага «Регресс-гейт».
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  regression-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies (best-effort до появления requirements.txt)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f webapp/requirements.txt ]; then pip install -r webapp/requirements.txt || true; fi
+          pip install pytest fastapi httpx starlette pydantic "uvicorn[standard]" jinja2 python-multipart pillow passlib
+
+      - name: Регресс-гейт (падает только на НОВЫХ падениях против baseline)
+        continue-on-error: true
+        run: python scripts/ci_regression_gate.py

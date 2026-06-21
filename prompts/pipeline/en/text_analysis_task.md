@@ -116,3 +116,19 @@ WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
 4. Write JSON via Write tool — DO NOT output to chat
 5. After writing, output a brief summary of what was found
 6. Respond with valid JSON matching the schema above
+
+## Criteria for the «ПРОВЕРИТЬ ПО СМЕЖНЫМ» severity (IMPORTANT)
+
+The «ПРОВЕРИТЬ ПО СМЕЖНЫМ» (check-with-adjacent-disciplines) category is NOT «another section is mentioned». Standard cross-discipline interfaces (design assignments to adjacent disciplines, stating loads for the electrical section, stating flow rates for the water section) are **normal design practice**, not an error.
+
+### Assign «ПРОВЕРИТЬ ПО СМЕЖНЫМ» ONLY when:
+
+1. **Numeric contradiction within this section**, resolvable only via an adjacent section — e.g. a lift height of 5400 mm does not match an elevation difference of ~2650 mm (needs AR/KR data)
+2. **Normative conflict** — room category, fire-resistance rating or hazard-zone class in this section may not match an adjacent section (fire-safety, AR)
+3. **Physical incompatibility** — equipment does not fit, openings do not align, routes intersect (visible from dimensions in this section)
+4. **A mandatory element missing in THIS section** — e.g. the section must show a connection node to a structure, but it is absent
+
+### Do NOT assign «ПРОВЕРИТЬ ПО СМЕЖНЫМ» when:
+
+1. **Standard design assignment to adjacent disciplines** — «provide cold/hot water supply», «provide 380V power», «pass loads to the structural section» — this is normal coordination, not an error
+2. **A mere mention of another discipline** — the fact that the process section mentions electricity does not mean it must be «checked against the electrical section»

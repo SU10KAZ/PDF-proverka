@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import logging
 import os
 import re
 import tempfile
@@ -549,6 +550,7 @@ async def call_gpt_for_block(
     choice = (data.get("choices") or [{}])[0]
     msg = choice.get("message") or {}
     raw = msg.get("content") or ""
+    finish_reason = choice.get("finish_reason")
     usage = data.get("usage") or {}
     completion_details = usage.get("completion_tokens_details") or {}
 
@@ -559,9 +561,19 @@ async def call_gpt_for_block(
         parsed = None
         parse_err = str(e)
 
+    # Усечённый ответ (finish_reason=length) нельзя считать успехом, даже если
+    # обрезанный JSON случайно распарсился — часть findings потеряна. Помечаем
+    # truncated и НЕ ставим ok, чтобы блок попал в failed/coverage, а не молча
+    # принялся за валидный (reserc.md #25/#14).
+    truncated = finish_reason == "length"
+    if truncated and parse_err is None and parsed is not None:
+        parse_err = "truncated_output (finish_reason=length)"
+
     response_dict = {
-        "ok": parsed is not None,
+        "ok": parsed is not None and not truncated,
         "parse_error": parse_err,
+        "finish_reason": finish_reason,
+        "truncated": truncated,
         "elapsed_ms": elapsed_ms,
         "input_tokens": usage.get("prompt_tokens"),
         "output_tokens": usage.get("completion_tokens"),

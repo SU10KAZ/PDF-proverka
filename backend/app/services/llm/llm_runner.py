@@ -83,6 +83,8 @@ from backend.app.services.llm.paid_api_guard import (
     PaidApiBlockedError,
     PaidApiContext,
     assert_paid_api_allowed,
+    release_reservation,
+    reserve_paid_api,
 )
 from backend.app.services.llm import paid_api_events
 
@@ -499,6 +501,27 @@ def _context_mismatch_disabled_message(
     )
 
 
+def _is_local_structured_truncation(
+    *,
+    finish_reason: str,
+    json_data: Any,
+    expects_json: bool,
+    out_tokens: int,
+    max_tokens: int,
+) -> bool:
+    """#74: structured-этап локальной модели вернул усечённый ответ без валидного JSON.
+
+    Только для structured-этапов (expects_json) — plain-text ответы не трогаем.
+    Признак усечения: явный finish_reason='length' ИЛИ упор в max_tokens (chandra
+    `/api/v1/chat` может не отдавать finish_reason='length').
+    """
+    if json_data is not None or not expects_json:
+        return False
+    if finish_reason == "length":
+        return True
+    return bool(max_tokens and out_tokens and out_tokens >= max_tokens)
+
+
 async def _run_local_chandra_chat(
     *,
     model: str,
@@ -626,18 +649,40 @@ async def _run_local_chandra_chat(
         if not content and reasoning_content:
             content = reasoning_content
 
+    # #74: детекция усечения для /api/v1/chat. Раньше finish_reason здесь всегда
+    # был 'stop' при наличии content → усечённый JSON на structured-этапах
+    # проходил как успех. Извлекаем реальный finish_reason; на structured-этапах
+    # (есть response_format) при отсутствии валидного JSON и признаке усечения
+    # (finish_reason='length' ИЛИ упор в max_tokens) помечаем is_error.
+    finish_reason = ""
+    if isinstance(data, dict):
+        finish_reason = str(data.get("finish_reason") or stats.get("finish_reason") or "")
+    out_tokens = _usage_value(stats, "total_output_tokens")
+    truncated_no_json = _is_local_structured_truncation(
+        finish_reason=finish_reason,
+        json_data=json_data,
+        expects_json=response_format is not None,
+        out_tokens=out_tokens,
+        max_tokens=max_tokens,
+    )
+
     return LLMResult(
         text=content,
         json_data=json_data,
         input_tokens=_usage_value(stats, "input_tokens"),
-        output_tokens=_usage_value(stats, "total_output_tokens"),
+        output_tokens=out_tokens,
         cost_usd=0.0,
         duration_ms=elapsed_ms,
         model=model,
         reasoning_tokens=_usage_value(stats, "reasoning_output_tokens"),
         cost_source="local",
         response_id=(data.get("model_instance_id", "") if isinstance(data, dict) else "") or "",
-        finish_reason="stop" if content else "",
+        finish_reason=finish_reason or ("stop" if content else ""),
+        is_error=bool(truncated_no_json),
+        error_message=(
+            "Local model output truncated before valid JSON was completed (/api/v1/chat)"
+            if truncated_no_json else ""
+        ),
     )
 
 
@@ -801,7 +846,10 @@ async def _run_local_chat_completions(
 
 # Цены моделей OpenRouter ($/1M токенов) — обновлять при изменении
 # Fallback only: если в response.usage пришла usage.cost — используется она.
-_MODEL_PRICES = {
+# Встроенные цены (USD за 1M токенов) — fallback, если data/model_prices.json
+# недоступен. #75: основной источник — конфиг-файл, чтобы цены правились без
+# редактирования кода.
+_MODEL_PRICES_BUILTIN = {
     "google/gemini-2.5-pro":          {"input": 1.25,  "output": 10.0},
     "google/gemini-2.5-flash":        {"input": 0.30,  "output": 2.50},
     "google/gemini-3.1-pro-preview":  {"input": 2.0,   "output": 12.0},
@@ -812,13 +860,69 @@ _MODEL_PRICES = {
 }
 
 
+def _load_model_prices() -> dict:
+    """#75: загрузить цены из data/model_prices.json (fallback — встроенные)."""
+    path = Path(__file__).resolve().parents[2] / "data" / "model_prices.json"
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        prices = {
+            k: v for k, v in data.items()
+            if isinstance(v, dict) and "input" in v and "output" in v
+        }
+        if prices:
+            return prices
+    except (OSError, json.JSONDecodeError):
+        pass
+    return dict(_MODEL_PRICES_BUILTIN)
+
+
+_MODEL_PRICES = _load_model_prices()
+_WARNED_UNKNOWN_PRICE_MODELS: set[str] = set()
+
+
 def _estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """Оценить стоимость запроса на основе токенов и цен модели."""
     prices = _MODEL_PRICES.get(model)
     if not prices:
+        # #75: неизвестная цена → под-учёт (cost=0.0). Делаем это наблюдаемым:
+        # warning один раз на модель, чтобы не спамить лог.
+        if model and model not in _WARNED_UNKNOWN_PRICE_MODELS:
+            _WARNED_UNKNOWN_PRICE_MODELS.add(model)
+            logger.warning(
+                "[cost] неизвестная цена для модели '%s' → стоимость считается 0.0 "
+                "(под-учёт). Добавьте её в backend/app/data/model_prices.json.",
+                model,
+            )
         return 0.0
     cost = (input_tokens * prices["input"] + output_tokens * prices["output"]) / 1_000_000
     return round(cost, 6)
+
+
+def _estimate_input_tokens(messages: list[dict]) -> int:
+    """Грубая оценка входных токенов до запроса (~4 символа на токен).
+
+    Учитывает как строковый, так и multimodal content (берём только текстовые
+    части — картинки в daily-limit оценке игнорируем, их токены непредсказуемы)."""
+    total_chars = 0
+    for m in messages or []:
+        c = m.get("content")
+        if isinstance(c, str):
+            total_chars += len(c)
+        elif isinstance(c, list):
+            for part in c:
+                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                    total_chars += len(part["text"])
+    return total_chars // 4
+
+
+def _estimate_request_cost(model: str, messages: list[dict], max_tokens: int) -> float:
+    """#73: консервативная оценка стоимости запроса для резервирования бюджета.
+
+    Output считаем по max_tokens (верхняя граница), input — по длине сообщений.
+    Завышение безопасно: резервируем «не больше потолка», реальный cost из
+    record_paid обычно меньше."""
+    return _estimate_cost(model, _estimate_input_tokens(messages), int(max_tokens or 0))
 
 
 async def run_llm(
@@ -929,9 +1033,12 @@ async def run_llm(
         version_id=version_id,
         stage=stage_key,
         job_id=job_id,
+        estimated_cost_usd=_estimate_request_cost(model, messages, max_tokens),
     )
+    # #73: резервируем оценку под локом — конкурентные вызовы не перебирают лимит.
+    reservation = None
     try:
-        assert_paid_api_allowed(paid_ctx)
+        reservation = reserve_paid_api(paid_ctx)
     except PaidApiBlockedError as e:
         return LLMResult(
             text="",
@@ -940,33 +1047,45 @@ async def run_llm(
             model=model,
         )
 
-    client = _get_client()
+    # #73: освобождаем резервацию на ЛЮБОМ выходе из функции после reserve.
+    # TTL в guard самозалечивает пропущенный release, но явный — точнее.
+    def _done(result: LLMResult) -> LLMResult:
+        release_reservation(reservation)
+        return result
 
-    # Build extra_body for OpenRouter-specific knobs (plugins, provider)
-    built_extra_body: dict = {}
-    plugins: list[dict] = []
-    if response_healing:
-        plugins.append({"id": "response-healing"})
-    if plugins:
-        built_extra_body["plugins"] = plugins
+    # _get_client()/extra_body вне retry-цикла → их исключение раньше уходило
+    # МИМО _done() и подвешивало резервацию до TTL (pre-deploy review). Оборачиваем,
+    # чтобы release был гарантирован на ВСЕХ путях.
+    try:
+        client = _get_client()
 
-    provider_block: dict = {}
-    if require_parameters:
-        provider_block["require_parameters"] = True
-    if provider_data_collection in ("allow", "deny"):
-        provider_block["data_collection"] = provider_data_collection
-    if provider_block:
-        built_extra_body["provider"] = provider_block
+        # Build extra_body for OpenRouter-specific knobs (plugins, provider)
+        built_extra_body: dict = {}
+        plugins: list[dict] = []
+        if response_healing:
+            plugins.append({"id": "response-healing"})
+        if plugins:
+            built_extra_body["plugins"] = plugins
 
-    # User-supplied extra_body merges on top (deep merge for plugins/provider)
-    if extra_body:
-        for k, v in extra_body.items():
-            if k == "plugins" and isinstance(v, list):
-                built_extra_body.setdefault("plugins", []).extend(v)
-            elif k == "provider" and isinstance(v, dict):
-                built_extra_body.setdefault("provider", {}).update(v)
-            else:
-                built_extra_body[k] = v
+        provider_block: dict = {}
+        if require_parameters:
+            provider_block["require_parameters"] = True
+        if provider_data_collection in ("allow", "deny"):
+            provider_block["data_collection"] = provider_data_collection
+        if provider_block:
+            built_extra_body["provider"] = provider_block
+
+        # User-supplied extra_body merges on top (deep merge for plugins/provider)
+        if extra_body:
+            for k, v in extra_body.items():
+                if k == "plugins" and isinstance(v, list):
+                    built_extra_body.setdefault("plugins", []).extend(v)
+                elif k == "provider" and isinstance(v, dict):
+                    built_extra_body.setdefault("provider", {}).update(v)
+                else:
+                    built_extra_body[k] = v
+    except Exception as e:  # noqa: BLE001
+        return _done(LLMResult(text="", is_error=True, error_message=str(e), model=model))
 
     for attempt in range(1, max_retries + 1):
         start = time.monotonic()
@@ -996,35 +1115,39 @@ async def run_llm(
                 )
                 await asyncio.sleep(wait)
                 continue
-            return LLMResult(
+            return _done(LLMResult(
                 text="", is_error=True,
                 error_message=f"Rate limit after {max_retries} retries: {e}",
                 model=model,
-            )
+            ))
         except APITimeoutError as e:
             if attempt < max_retries:
+                # #75: backoff перед повтором (как у RateLimitError) — без паузы
+                # ретраи били в тот же таймаут-шторм.
+                wait = min(60, 2 ** attempt * 5)
                 logger.warning(
-                    "[%s] Timeout (attempt %d/%d): %s",
-                    stage, attempt, max_retries, e,
+                    "[%s] Timeout (attempt %d/%d), waiting %ds: %s",
+                    stage, attempt, max_retries, wait, e,
                 )
+                await asyncio.sleep(wait)
                 continue
-            return LLMResult(
+            return _done(LLMResult(
                 text="", is_error=True,
                 error_message=f"Timeout after {max_retries} retries: {e}",
                 model=model,
-            )
+            ))
         except APIError as e:
-            return LLMResult(
+            return _done(LLMResult(
                 text="", is_error=True,
                 error_message=f"API error: {e}",
                 model=model,
-            )
+            ))
         except Exception as e:
-            return LLMResult(
+            return _done(LLMResult(
                 text="", is_error=True,
                 error_message=str(e),
                 model=model,
-            )
+            ))
 
         elapsed_ms = int((time.monotonic() - start) * 1000)
         content = response.choices[0].message.content or ""
@@ -1089,7 +1212,7 @@ async def run_llm(
         except Exception:
             finish_reason = ""
 
-        return LLMResult(
+        return _done(LLMResult(
             text=content,
             json_data=json_data,
             input_tokens=input_tokens,
@@ -1103,14 +1226,14 @@ async def run_llm(
             cost_source=cost_source,
             response_id=getattr(response, "id", "") or "",
             finish_reason=finish_reason,
-        )
+        ))
 
     # Safety net (shouldn't reach here)
-    return LLMResult(
+    return _done(LLMResult(
         text="", is_error=True,
         error_message="Max retries exhausted",
         model=model,
-    )
+    ))
 
 
 from typing import AsyncGenerator
@@ -1141,6 +1264,12 @@ async def run_llm_stream(
         return
 
     # ─── Paid API guard: проверка ДО network request ────────────────────
+    max_tokens = (
+        GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
+        else GPT_MAX_OUTPUT_TOKENS
+    )
+    temp = temperature if temperature is not None else DEFAULT_TEMPERATURE
+
     paid_ctx = PaidApiContext(
         source=source or "llm_runner.stream",
         model=model,
@@ -1148,78 +1277,80 @@ async def run_llm_stream(
         version_id=version_id,
         stage=stage or "discussion",
         job_id=job_id,
+        estimated_cost_usd=_estimate_request_cost(model, messages, max_tokens),
     )
+    # #73: резервируем оценку, чтобы стрим-вызовы тоже учитывались в лимите.
+    reservation = None
     try:
-        assert_paid_api_allowed(paid_ctx)
+        reservation = reserve_paid_api(paid_ctx)
     except PaidApiBlockedError as e:
         yield {"type": "error", "message": f"paid_api_blocked: {e.reason}"}
         return
-
-    max_tokens = (
-        GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
-        else GPT_MAX_OUTPUT_TOKENS
-    )
-    temp = temperature if temperature is not None else DEFAULT_TEMPERATURE
-    client = _get_client()
 
     full_text = ""
     input_tokens = 0
     output_tokens = 0
 
+    # try/finally гарантирует release резервации на всех путях (включая error,
+    # сбой _get_client() и преждевременный обрыв генератора потребителем).
     try:
-        stream = await client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=temp,
-            stream=True,
-            stream_options={"include_usage": True},
-            timeout=timeout,
-            extra_headers={
-                "HTTP-Referer": OPENROUTER_SITE_URL,
-                "X-Title": OPENROUTER_SITE_NAME,
-            },
-        )
-
-        async for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta.content:
-                delta = chunk.choices[0].delta.content
-                full_text += delta
-                yield {"type": "delta", "text": delta}
-            # Некоторые провайдеры отдают usage в последнем chunk
-            if hasattr(chunk, 'usage') and chunk.usage:
-                input_tokens = chunk.usage.prompt_tokens or 0
-                output_tokens = chunk.usage.completion_tokens or 0
-
-    except Exception as e:
-        yield {"type": "error", "message": str(e)}
-        return
-
-    cost = _estimate_cost(model, input_tokens, output_tokens)
-    if cost > 0:
-        # Единый helper: paid_cost.json + paid_cost_events.jsonl одной записью.
+        client = _get_client()
         try:
-            from backend.app.services.common.usage_service import paid_cost_tracker as _paid
-            _paid.record_paid(
-                cost,
+            stream = await client.chat.completions.create(
                 model=model,
-                project_id=project_id,
-                stage=stage,
-                source=source or "llm_runner.stream",
-                job_id=job_id,
-                version_id=version_id,
-                input_tokens=input_tokens,
-                output_tokens=output_tokens,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temp,
+                stream=True,
+                stream_options={"include_usage": True},
+                timeout=timeout,
+                extra_headers={
+                    "HTTP-Referer": OPENROUTER_SITE_URL,
+                    "X-Title": OPENROUTER_SITE_NAME,
+                },
             )
-        except Exception:
-            logger.exception("paid_cost_tracker.record_paid failed (stream)")
-    yield {
-        "type": "done",
-        "text": full_text,
-        "input_tokens": input_tokens,
-        "output_tokens": output_tokens,
-        "cost_usd": cost,
-    }
+
+            async for chunk in stream:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    delta = chunk.choices[0].delta.content
+                    full_text += delta
+                    yield {"type": "delta", "text": delta}
+                # Некоторые провайдеры отдают usage в последнем chunk
+                if hasattr(chunk, 'usage') and chunk.usage:
+                    input_tokens = chunk.usage.prompt_tokens or 0
+                    output_tokens = chunk.usage.completion_tokens or 0
+
+        except Exception as e:
+            yield {"type": "error", "message": str(e)}
+            return
+
+        cost = _estimate_cost(model, input_tokens, output_tokens)
+        if cost > 0:
+            # Единый helper: paid_cost.json + paid_cost_events.jsonl одной записью.
+            try:
+                from backend.app.services.common.usage_service import paid_cost_tracker as _paid
+                _paid.record_paid(
+                    cost,
+                    model=model,
+                    project_id=project_id,
+                    stage=stage,
+                    source=source or "llm_runner.stream",
+                    job_id=job_id,
+                    version_id=version_id,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                )
+            except Exception:
+                logger.exception("paid_cost_tracker.record_paid failed (stream)")
+        yield {
+            "type": "done",
+            "text": full_text,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "cost_usd": cost,
+        }
+    finally:
+        release_reservation(reservation)
 
 
 def make_image_content(

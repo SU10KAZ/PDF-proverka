@@ -199,10 +199,13 @@ async def run_gemma_enrichment_stage(
             await asyncio.wrap_future(future)
 
         async def _runner() -> dict:
+            from backend.app.core.config import GEMMA_BASE_PARALLELISM
             return await enrich_project(
                 project_dir,
                 force=force or state_before.get("status") in {"partial", "failed"},
-                parallelism=1,  # gemma3.6-35b не тянет параллель
+                # #16: конфигурируемо (GEMMA_BASE_PARALLELISM, default 1);
+                # high-detail 300 DPI остаётся 1 внутри enrich_project.
+                parallelism=GEMMA_BASE_PARALLELISM,
                 progress_cb=_thread_progress_cb,
                 pause_event=thread_pause_event,
                 cancel_event=thread_cancel_event,

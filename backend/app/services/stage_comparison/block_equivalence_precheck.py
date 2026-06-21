@@ -604,8 +604,17 @@ def canonicalize_text(text: Optional[str]) -> str:
 def compare_text_blocks(old_block: EqBlock, new_block: EqBlock) -> dict:
     """Сравнить текст двух блоков. fuzzy-skip НЕ включаем — similarity только
     логируется. ``text_equal`` = строгое совпадение canonical (оба непустые)."""
-    co = canonicalize_text(old_block.text)
-    cn = canonicalize_text(new_block.text)
+    # Общий нормализатор text_block_equivalence (снимает HTML/debug-префикс,
+    # ё→е, lower): иначе HTML-обёрнутый ocr_text давал ПРОТИВОПОЛОЖНЫЕ вердикты
+    # между этим слоем и text_block_equivalence (reserc.md #60/#13).
+    # Импорт локальный: text_block_equivalence импортирует EqBlock отсюда →
+    # модульный импорт создал бы циклическую зависимость.
+    from backend.app.services.stage_comparison.text_block_equivalence import (
+        normalize_block_text,
+    )
+
+    co = normalize_block_text(old_block.text)
+    cn = normalize_block_text(new_block.text)
     has_old = len(co) >= 1
     has_new = len(cn) >= 1
     text_equal = bool(has_old and has_new and co == cn)
@@ -973,6 +982,10 @@ def _empty_summary() -> dict:
         "render_failed": 0,
         "alignment_failed": 0,
         "potential_qwen_saved": 0,
+        # #63: разбивка причин сбоев визуала для наблюдаемости.
+        "render_failed_reasons": {},
+        "visual_unavailable": 0,
+        "alignment_method_distribution": {},
     }
 
 
@@ -1054,7 +1067,7 @@ def build_block_equivalence_report(
         if visual_cmp is not None:
             rec["visual"] = visual_cmp
         pairs_out.append(rec)
-        _tally(summary, decision)
+        _tally(summary, decision, visual_cmp)  # #63: пробросить visual для разбивки сбоев
 
     # ── added / deleted ─────────────────────────────────────────────────────
     added_out: list[dict] = []
@@ -1155,6 +1168,8 @@ def _run_visual_for_pair(
     if old_img is None or new_img is None:
         return {"status": DECISION_RENDER_FAILED,
                 "old_render": old_meta.get("status"), "new_render": new_meta.get("status"),
+                # #63: суб-причина (no_source/pdf_not_found/empty_clip/page_oob) для summary.
+                "render_error": old_meta.get("error") or new_meta.get("error") or "unknown",
                 "total_diff_ratio": None, "colored_overlay_diff_ratio": None,
                 "diff_bbox": None, "alignment_score": None}
     debug_path = None
@@ -1167,7 +1182,20 @@ def _run_visual_for_pair(
     return res
 
 
-def _tally(summary: dict, decision: dict) -> None:
+def _tally(summary: dict, decision: dict, visual_cmp: Optional[dict] = None) -> None:
+    # #63: разбивка причин визуальных сбоев (по сырому visual_cmp, даже если OCR
+    # потом перевёл decision в changed_text).
+    if visual_cmp:
+        vstatus = visual_cmp.get("status")
+        if vstatus == DECISION_RENDER_FAILED:
+            err = str(visual_cmp.get("render_error") or "unknown")
+            rf = summary.setdefault("render_failed_reasons", {})
+            rf[err] = rf.get(err, 0) + 1
+        elif vstatus == "visual_unavailable":
+            summary["visual_unavailable"] = summary.get("visual_unavailable", 0) + 1
+        if visual_cmp.get("alignment_score") is not None:
+            amd = summary.setdefault("alignment_method_distribution", {})
+            amd["euclidean"] = amd.get("euclidean", 0) + 1
     d = decision["decision"]
     mapping = {
         DECISION_IDENTICAL_TEXT: "identical_text",
@@ -1248,6 +1276,10 @@ def build_pair_diagnostics(report: dict) -> dict:
         "uncertain": s.get("uncertain", 0)
         + s.get("render_failed", 0) + s.get("alignment_failed", 0),
         "potential_qwen_saved": s.get("potential_qwen_saved", 0),
+        # #63: разбивка причин визуальных сбоев.
+        "render_failed_reasons": s.get("render_failed_reasons", {}),
+        "visual_unavailable": s.get("visual_unavailable", 0),
+        "alignment_method_distribution": s.get("alignment_method_distribution", {}),
         "report_path_rel": "block_equivalence/block_equivalence_report.json",
     }
 

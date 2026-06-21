@@ -3,6 +3,7 @@
 Загрузка профилей, автодетекция, инъекция в шаблоны задач Claude.
 """
 import json
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,8 @@ from typing import Optional
 
 from backend.app.core.config import BASE_DIR, DISCIPLINES_DIR
 REGISTRY_FILE = DISCIPLINES_DIR / "_registry.json"
+
+logger = logging.getLogger(__name__)
 
 # Кэш загруженных профилей (дисциплины не меняются в рантайме)
 _profile_cache: dict[str, "DisciplineProfile"] = {}
@@ -75,8 +78,18 @@ def load_discipline(code: str) -> DisciplineProfile:
     if not disc_dir.exists():
         # Fallback на EOM если профиль не найден
         if code != "EOM":
+            logger.warning(
+                "Профиль дисциплины %r не найден (%s) — fallback на EOM. "
+                "Раздел будет аудирован профилем EOM, а не своим профилем.",
+                code, disc_dir,
+            )
             return load_discipline("EOM")
         # Если даже EOM нет — возвращаем пустой профиль
+        logger.warning(
+            "Профиль EOM не найден (%s) — возвращён ПУСТОЙ профиль для %r "
+            "(аудит без ролевого профиля дисциплины).",
+            disc_dir, code,
+        )
         return DisciplineProfile(
             code=code,
             name=disc_info.get("name", code),

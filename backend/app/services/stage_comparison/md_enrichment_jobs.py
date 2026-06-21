@@ -18,7 +18,7 @@ import threading
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from . import md_image_enrichment as md_mod
 from . import paths as paths_mod
@@ -398,8 +398,30 @@ async def _maybe_run_block_equivalence_precheck(session_id: str, job_id: str, jo
     job["block_equivalence"] = payload
 
 
-async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
-    """Прогнать job: для каждой (pair_id, side) пары вызвать enrich_side."""
+def _parent_cancelled(parent_cancel_check: Callable[[], bool] | None) -> bool:
+    """#68: True если родительский pipeline-job запросил отмену. fail-soft —
+    любая ошибка callback'а трактуется как «не отменён» (не валим дочерний job)."""
+    if parent_cancel_check is None:
+        return False
+    try:
+        return bool(parent_cancel_check())
+    except Exception:  # noqa: BLE001
+        return False
+
+
+async def run_md_enrichment_job(
+    session_id: str,
+    job_id: str,
+    *,
+    parent_cancel_check: Callable[[], bool] | None = None,
+) -> dict:
+    """Прогнать job: для каждой (pair_id, side) пары вызвать enrich_side.
+
+    #68: parent_cancel_check — опциональный callback родительского pipeline-job.
+    Если он сигналит отмену, дочерний job останавливается между сторонами
+    (а не только по собственному status=cancelled), помечается cancelled и
+    возвращается. Это закрывает дыру, где отмена pipeline'а не доходила до
+    уже запущенной Qwen-пары."""
     job = _read_job(session_id, job_id)
     if job is None:
         raise KeyError("job_not_found")
@@ -447,6 +469,15 @@ async def run_md_enrichment_job(session_id: str, job_id: str) -> dict:
         latest = _read_job(session_id, job_id)
         if latest and latest.get("status") == "cancelled":
             return latest
+        # #68: отмена родительского pipeline-job → останавливаем дочерний между
+        # сторонами, помечаем cancelled (чтобы внешние читатели/опус-lane видели).
+        if _parent_cancelled(parent_cancel_check):
+            cur = _read_job(session_id, job_id) or job
+            cur["status"] = "cancelled"
+            cur["updated_at"] = _utc_now()
+            cur.setdefault("warnings", []).append("cancelled_by_parent_pipeline")
+            _write_job(session_id, cur)
+            return cur
         if item.get("status") != "queued":
             continue
         item["status"] = "running"
@@ -782,6 +813,17 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
     failed_image_blocks = 0
     cache_hits = 0
 
+    # Кеш per-side метрик: descriptions JSON читается в ДВУХ циклах (per-pair и
+    # session-level), оба по одному by_pair → без кеша это 4N чтений с диска на
+    # каждый polling-тик. С кешем — 2N (reserc.md #69).
+    _metrics_cache: dict[tuple[str, str], dict] = {}
+
+    def _side_metrics(pid: str, side: str) -> dict:
+        key = (pid, side)
+        if key not in _metrics_cache:
+            _metrics_cache[key] = _read_side_descriptions_metrics(session_id, pid, side)
+        return _metrics_cache[key]
+
     for pid, sides in by_pair.items():
         total_pairs += 1
         side_statuses: dict[str, dict] = {}
@@ -929,8 +971,8 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
         # Подтянуть block-уровневые метрики из текущих descriptions JSON.
         # Если файлы ещё не созданы (item только-только пошёл в running) —
         # вернутся нули. Это безопасно.
-        left_metrics = _read_side_descriptions_metrics(session_id, pid, "left")
-        right_metrics = _read_side_descriptions_metrics(session_id, pid, "right")
+        left_metrics = _side_metrics(pid, "left")
+        right_metrics = _side_metrics(pid, "right")
         # Сюда попадают ТОЛЬКО реально проблемные пары. done_with_salvage —
         # это успешное завершение с salvage-восстановлением, без оператора
         # туда не лезть.
@@ -987,7 +1029,7 @@ def aggregate_job_progress(session_id: str, job: dict) -> dict:
 
     for pid, sides in by_pair.items():
         for side in ("left", "right"):
-            sm = _read_side_descriptions_metrics(session_id, pid, side)
+            sm = _side_metrics(pid, side)
             if not sm.get("block_metrics_available"):
                 continue
             sess_blocks_done += sm.get("blocks_done", 0)

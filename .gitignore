@@ -26,6 +26,7 @@ backend/app/data/stage_comparison_saved_config.json
 *.log
 *.tmp
 *.cache
+.ci_last_report.xml
 
 # === Local settings ===
 .claude/settings.local.json
@@ -158,7 +159,44 @@ knowledge_base/decisions_log.json
 # Static config seed — keep tracked despite rules above
 !backend/app/data/consumer_synonyms.json
 
+# === Папка дисциплин для сравнения (локальная, не для git) ===
+дисциплины для сравнения/
+
+# === Локальные бэкапы, диагностика и одноразовые артефакты (не для git) ===
+_clean_test_backup_*/
+diagnostics_ab/
+graphify-out/
+kb_orphans_*.md
+*.bak_*
+*.json.bak_*
+
 # === Runtime-стор плана работ (раздел «График работ») — не коммитить ===
 knowledge_base/work_plans.json
 knowledge_base/work_plans.json.tmp
 knowledge_base/work_plans.json.broken-*
+
+# === Local migration/repair backups (runtime, не для git) ===
+# Бэкапы миграции/ремонта и одноразовые артефакты. `*.tmp` уже покрыт выше.
+/_v2_shadow_backup_*/
+*.bak*
+*.backup*
+*.broken-*
+*.tmp.*
+project_rename.reverse.json
+
+# === Live project data (untracked 2026-06-20) ===
+/projects/
+
+# === Backend runtime state (точечно, НЕ *.json — иначе заденет seed-конфиги) ===
+/backend/app/data/objects.json
+/backend/app/data/project_groups.json
+/backend/app/data/missing_norms_vault.json
+/backend/app/data/prepare_queue.json
+/backend/app/data/hidden_projects.json
+/backend/app/data/usage_offsets.json
+/backend/app/data/users.json
+/backend/app/data/external_registers/
+
+# === Knowledge base runtime ===
+/knowledge_base/decisions_log.json
+/knowledge_base/patterns.json

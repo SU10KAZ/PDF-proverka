@@ -151,6 +151,11 @@ class V2ReviewBulkPatch(BaseModel):
     patch: V2ReviewPatch = Field(default_factory=V2ReviewPatch)
 
 
+class V2ReviewTransferRequest(BaseModel):
+    """Запрос переноса решений из «Расхождений» в V2 (на всю сессию)."""
+    use_claude: bool = True
+
+
 class InsertBlankSideRequest(BaseModel):
     slot: int = Field(..., ge=1)
     side: str = Field(..., pattern="^(left|right)$")
@@ -1712,6 +1717,18 @@ async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
                            "Восстановите туннель/модель и повторите "
                            "(или skip_health_check=true на свой риск).",
             }
+    # #67: single-flight guard — не запускать второй Qwen→Opus pipeline той же
+    # сессии, пока активен предыдущий (один LM Studio инстанс).
+    active = await asyncio.to_thread(
+        pipeline_queue_mod.find_active_pipeline_job, session_id
+    )
+    if active is not None:
+        return {
+            "status": "already_running",
+            "active_job_id": active.get("job_id"),
+            "message": "Qwen→Opus pipeline уже выполняется для этой сессии — "
+                       "дождитесь завершения или отмените текущий job.",
+        }
     try:
         job = await asyncio.to_thread(
             pipeline_queue_mod.create_job,
@@ -1899,7 +1916,12 @@ async def get_active_md_enrichment_job_endpoint(session_id: str):
 
 @router.get("/sessions/{session_id}/md-enrichment-jobs/{job_id}")
 async def get_md_enrichment_job_endpoint(session_id: str, job_id: str):
-    job = md_enrichment_jobs_mod.get_job_with_progress(session_id, job_id)
+    # Горячий polling-эндпоинт: get_job_with_progress делает синхронный disk-I/O
+    # (aggregate по парам) → в event loop это блокировка и риск watchdog-kill.
+    # Выносим в threadpool (reserc.md #69).
+    job = await run_in_threadpool(
+        md_enrichment_jobs_mod.get_job_with_progress, session_id, job_id
+    )
     if job is None:
         raise HTTPException(404, "Job не найден")
     return job
@@ -2895,11 +2917,6 @@ async def prune_expert_review_orphans_endpoint(session_id: str, dry_run: bool = 
     `dry_run=true` — посчитать без записи (рекомендуется сначала dry-run).
     """
     return expert_review_mod.prune_orphans(session_id, dry_run=dry_run)
-
-
-class V2ReviewTransferRequest(BaseModel):
-    """Запрос переноса решений из «Расхождений» в V2 (на всю сессию)."""
-    use_claude: bool = True
 
 
 @router.post("/sessions/{session_id}/v2-review/transfer")

@@ -58,9 +58,11 @@ def _load_json(path: Path) -> dict | list | None:
 
 
 def _save_json(path: Path, data):
+    # Атомарная потокобезопасная запись: decisions_log/patterns — shared-стораж
+    # на 140 проектов; plain open('w') рвался при крахе/гонке (reserc.md #7/#81/#87).
     _ensure_kb_dir()
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    from backend.app.services.common.atomic_json import atomic_write_json
+    atomic_write_json(path, data)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -111,8 +113,11 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     try:
         from backend.app.services.storage import storage_write_facade as _swf
         _swf.shadow_mirror_project_id_safe(project_id)
-    except Exception:
-        pass
+    except Exception:  # noqa: BLE001 — fail-soft, но #91: не молчим (наблюдаемость)
+        import logging
+        logging.getLogger(__name__).debug(
+            "shadow_mirror_project_id_safe failed for %s", project_id, exc_info=True
+        )
 
     return {
         "saved": len(decisions),
@@ -164,9 +169,9 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     except Exception:
         object_id = ""
 
-    # Следующий ID
+    # Следующий ID (монотонный max+1, НЕ len+1 — см. _next_decision_num)
     existing_log = _load_decisions_log()
-    next_num = len(existing_log) + 1
+    next_num = _next_decision_num(existing_log)
 
     entries = []
     for dec in decisions:
@@ -218,6 +223,23 @@ def _load_decisions_log() -> list[dict]:
 
 def _save_decisions_log(entries: list[dict]):
     _save_json(DECISIONS_LOG_FILE, {"entries": entries})
+
+
+def _next_decision_num(existing_log: list[dict]) -> int:
+    """Следующий монотонный номер для DEC-NNNN: max(существующих) + 1.
+
+    Раньше было len(log)+1 → после revoke номер переиспользовался, и один id
+    указывал на десятки решений (audit: 1208 дублей id, 3122 записи). max+1
+    гарантирует глобальную уникальность НОВЫХ id даже при пробелах от revoke
+    (reserc.md #79/#100). Существующие коллизии лечит мигратор #82 (шаг 28).
+    """
+    import re
+    mx = 0
+    for e in existing_log:
+        m = re.match(r"DEC-(\d+)$", str(e.get("id") or ""))
+        if m:
+            mx = max(mx, int(m.group(1)))
+    return mx + 1
 
 
 def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
@@ -354,13 +376,46 @@ def _find_project_dir(project_id: str) -> Optional[Path]:
 
 
 def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
-    """Отменить решение — удалить из глобального лога и из expert_review проекта."""
+    """Отменить решение — удалить из глобального лога и из expert_review проекта.
+
+    Адресуем по УНИКАЛЬНОМУ составному ключу (source_project, item_id): id
+    (DEC-NNNN) переиспользуется и один id = десятки записей в разных проектах,
+    поэтому revoke по id сносил чужие решения (reserc.md #80/#86; audit: 0
+    коллизий составного ключа). Если составного ключа нет — удаляем по id только
+    при его уникальности, иначе отказ.
+    """
+    import logging
     # 1. Удалить из decisions_log.json
     entries = _load_decisions_log()
     before = len(entries)
-    entries = [e for e in entries if e.get("id") != entry_id]
-    _save_decisions_log(entries)
-    removed = before - len(entries)
+
+    if project_id and item_id:
+        def _match(e: dict) -> bool:
+            return e.get("source_project") == project_id and e.get("item_id") == item_id
+    else:
+        id_hits = [e for e in entries if e.get("id") == entry_id]
+        if len(id_hits) != 1:
+            logging.getLogger(__name__).warning(
+                "revoke_decision: id=%r неуникален (%d записей) и нет составного "
+                "ключа — отказ, чтобы не удалить чужие решения",
+                entry_id, len(id_hits),
+            )
+            return 0
+
+        def _match(e: dict) -> bool:
+            return e.get("id") == entry_id
+
+    kept = [e for e in entries if not _match(e)]
+    removed = before - len(kept)
+    if removed > 1:
+        # Составной ключ обязан быть уникальным; >1 = повреждение данных →
+        # не сохраняем разрушительное удаление.
+        logging.getLogger(__name__).warning(
+            "revoke_decision: совпало %d записей по (%s,%s)/id=%s — ожидалась ≤1; "
+            "пропуск без удаления", removed, project_id, item_id, entry_id,
+        )
+        return 0
+    _save_decisions_log(kept)
 
     # 2. Удалить из expert_review.json проекта (активная версия)
     if project_id and item_id:
@@ -574,22 +629,63 @@ def import_decisions_from_excel(file_path: str, default_project_id: Optional[str
         def _looks_like_version(s: str) -> bool:
             return bool(s and _re.fullmatch(r"v\d+", s.strip(), flags=_re.IGNORECASE))
 
-        project_id = None
+        def _pid_resolves(pid: str) -> bool:
+            """project_id указывает на реальную папку проекта/контейнер."""
+            if not pid:
+                return False
+            try:
+                from backend.app.services.common.project_service import (
+                    resolve_project_dir,
+                )
+                resolve_project_dir(pid, must_exist=True)
+                return True
+            except Exception:
+                return False
+
+        def _strip_version_label(pid: str) -> str:
+            """Снять хвостовую метку версии ("<id> V1"/"<id>_v2"/…).
+
+            Версия в импорте передаётся отдельно (`version_id`), поэтому в самом
+            project_id метки "V1" быть не должно. Старые/внешние экспорты иногда
+            запекали в скрытую ячейку композит вида "KM/1232-ЧМ-КМ-1 V1" —
+            он не резолвится (реальная папка называется "KM/1232-ЧМ-КМ-1").
+            """
+            return _re.sub(r"[ _-]?[vV]\d+$", "", pid).strip() if pid else pid
+
+        # Кандидаты в порядке приоритета. Берём ПЕРВЫЙ, который реально
+        # резолвится в папку проекта — это и чинит 500 «Project directory not
+        # resolved» на стейл-ячейках, и сохраняет per-sheet идентичность для
+        # многопроектных отчётов (валидная скрытая ячейка по-прежнему выигрывает).
+        candidates: list[str] = []
         if "project_id" in headers:
             row2 = list(next(ws.iter_rows(min_row=2, max_row=2), []))
             if row2 and headers["project_id"] < len(row2):
                 pid_val = str(row2[headers["project_id"]].value or "").strip()
                 if pid_val and not _looks_like_version(pid_val):
-                    project_id = pid_val
+                    candidates.append(pid_val)
+        # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
+        bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
+        if not _looks_like_version(bare_title):
+            resolved = _resolve_project_id_from_sheet(ws.title)
+            if resolved and not _looks_like_version(resolved):
+                candidates.append(resolved)
+        if default_project_id:
+            candidates.append(default_project_id)
+
+        project_id = None
+        # Pass 1: первый кандидат, который резолвится как есть.
+        for cand in candidates:
+            if _pid_resolves(cand):
+                project_id = cand
+                break
+        # Pass 2: ни один не резолвится → пробуем снять хвостовую метку версии
+        # (стейл-экспорты "<id> V1"). Принимаем только если stripped резолвится.
         if not project_id:
-            # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
-            bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
-            if not _looks_like_version(bare_title):
-                resolved = _resolve_project_id_from_sheet(ws.title)
-                if resolved and not _looks_like_version(resolved):
-                    project_id = resolved
-        if not project_id and default_project_id:
-            project_id = default_project_id
+            for cand in candidates:
+                stripped = _strip_version_label(cand)
+                if stripped and stripped != cand and _pid_resolves(stripped):
+                    project_id = stripped
+                    break
 
         decisions = []
         for row in ws.iter_rows(min_row=3, values_only=False):

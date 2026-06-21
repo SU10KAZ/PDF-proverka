@@ -219,6 +219,14 @@ BATCH_PRECROP_WINDOW = max(
     int(os.environ.get("BATCH_PRECROP_WINDOW", str(BATCH_PREGEMMA_WINDOW + 2))),
 )
 
+# Порог числа реальных ошибок, после которого Stage 02 прекращает запускать
+# новые блоки. На production single-block пути остаток скипнутых блоков теперь
+# помечается failed (reserc.md #1) — раньше был тихий return и блоки исчезали
+# из coverage. Конфигурируемо через env (раньше было захардкожено «5»).
+STAGE02_ERROR_ABORT_THRESHOLD = max(
+    1, int(os.environ.get("STAGE02_ERROR_ABORT_THRESHOLD", "5") or "5")
+)
+
 
 class PipelineManager:
     """Управляет запущенными аудитами. Singleton."""
@@ -1080,36 +1088,55 @@ class PipelineManager:
         2. Resume мог подхватить с прерванного этапа
         """
         from backend.app.services.common.project_service import iter_project_dirs
+        from backend.app.services.common.version_service import is_version_container
 
         # Собрать project_id активных задач, чтобы не трогать их
         active_pids = set(self.active_jobs.keys())
+
+        def _recover_one_log(log_path: Path, label: str) -> bool:
+            if not log_path.exists():
+                return False
+            try:
+                data = json.loads(log_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
+                return False
+            stages = data.get("stages", {})
+            changed = False
+            for stage_key, stage_info in stages.items():
+                if stage_info.get("status") == "running":
+                    # Этот этап остался "running" после рестарта — прерван
+                    stage_info["status"] = "interrupted"
+                    stage_info["error"] = "Сервер перезапущен во время выполнения"
+                    stage_info["interrupted_at"] = datetime.now().isoformat()
+                    changed = True
+                    print(f"[Recovery] {label}: этап '{stage_key}' running → interrupted")
+            if changed:
+                data["last_updated"] = datetime.now().isoformat()
+                log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return changed
 
         recovered = 0
         for _pid, project_dir in iter_project_dirs():
             # Не трогать проекты с активным аудитом
             if _pid in active_pids:
                 continue
-            log_path = project_dir / "_output" / "pipeline_log.json"
-            if not log_path.exists():
-                continue
+            # Сканируем primary + ВСЕ версии контейнера `<база>(main)/` — раньше
+            # бралась только primary _output, и V2-аудит оставался вечным
+            # 'running' после рестарта (reserc.md #10). Filesystem-обход надёжнее
+            # манифеста версий.
+            scan_dirs = [project_dir]
+            parent = project_dir.parent
             try:
-                data = json.loads(log_path.read_text(encoding="utf-8"))
-                stages = data.get("stages", {})
-                changed = False
-                for stage_key, stage_info in stages.items():
-                    if stage_info.get("status") == "running":
-                        # Этот этап остался "running" после рестарта — прерван
-                        stage_info["status"] = "interrupted"
-                        stage_info["error"] = "Сервер перезапущен во время выполнения"
-                        stage_info["interrupted_at"] = datetime.now().isoformat()
-                        changed = True
-                        print(f"[Recovery] {project_dir.name}: этап '{stage_key}' running → interrupted")
-                if changed:
-                    data["last_updated"] = datetime.now().isoformat()
-                    log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                if is_version_container(parent):
+                    for sib in sorted(parent.iterdir()):
+                        if sib.is_dir() and sib != project_dir and not sib.name.startswith("_"):
+                            scan_dirs.append(sib)
+            except OSError:
+                pass
+            for vdir in scan_dirs:
+                if _recover_one_log(vdir / "_output" / "pipeline_log.json", vdir.name):
                     recovered += 1
-            except (json.JSONDecodeError, OSError) as e:
-                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
 
         if recovered:
             print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
@@ -1250,6 +1277,32 @@ class PipelineManager:
         version_dir (legacy V1 поведение). Стартовые endpoint'ы валидируют версию
         раньше и возвращают 404, поэтому сюда обычно доходит валидный version_id.
         """
+        # Шаг 6B: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+        # (в проде WRITE_MODE=dual_write_shadow → ветка НЕ исполняется). Источник
+        # читается из v2 01_input/02_work, output → 03_analysis/runs/<run_id>
+        # (эквивалент legacy _output). Адаптация source-reading стадий под v2 —
+        # отдельный шаг (см. отчёт 6B blockers). legacy/dual_shadow путь — ниже,
+        # без изменений.
+        from backend.app.services.storage import storage_write_facade as _swf
+        if _swf.v2_is_primary():
+            from backend.app.services.storage.v2_primary_wiring import resolve_v2_job_paths
+            try:
+                _legacy_root = resolve_project_dir(job.project_id)
+            except Exception:
+                _legacy_root = None  # legacy может отсутствовать в v2-primary мире
+            _paths = resolve_v2_job_paths(
+                job.project_id, job.version_id,
+                run_id=getattr(job, "job_id", None),
+                object_id=getattr(job, "object_id", None),
+                legacy_project_dir=_legacy_root,
+            )
+            if _paths is None:
+                raise RuntimeError(
+                    f"v2-primary: не удалось разрешить v2-пути для "
+                    f"{job.project_id}/{job.version_id}"
+                )
+            return _paths
+
         from backend.app.services.common import version_service
         root_dir = resolve_project_dir(job.project_id)
         try:
@@ -2144,11 +2197,25 @@ class PipelineManager:
             raise RuntimeError(f"Неизвестный этап: {stage}")
         return normalized
 
-    def _validate_start_from_stage_now(self, project_id: str, stage: str) -> str:
-        """Fail fast when a manual start/retry would bypass mandatory stages."""
+    def _validate_start_from_stage_now(
+        self, project_id: str, stage: str, *, version_id: Optional[str] = None,
+    ) -> str:
+        """Fail fast when a manual start/retry would bypass mandatory stages.
+
+        Version-aware (reserc.md #4): валидируем против _output АКТИВНОЙ версии,
+        а не корня проекта — иначе V2-retry проверялся против stale V1-состояния
+        (ложные прохождения/блокировки gemma-гейта). version_id=None → latest.
+        """
         normalized = self._normalize_ocr_stage(stage)
         self._assert_stage_model_config_ready()
-        project_dir = resolve_project_dir(project_id)
+        from backend.app.services.common import version_service
+        project_dir_root = resolve_project_dir(project_id)
+        try:
+            project_dir = version_service.get_version_dir(
+                project_dir_root, project_id, version_id,
+            )
+        except version_service.VersionNotFoundError:
+            project_dir = project_dir_root
         output_dir = project_dir / "_output"
         project_info = load_project_info(project_dir)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
@@ -2296,7 +2363,7 @@ class PipelineManager:
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
         когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
         """
-        stage = self._validate_start_from_stage_now(project_id, stage)
+        stage = self._validate_start_from_stage_now(project_id, stage, version_id=version_id)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
             version_id=version_id,
@@ -2462,284 +2529,6 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
                 # Block retry пропускаем: findings-only не помечает unreadable_text=true.
-            elif start_idx <= 3:
-                batch_start_from = resume_info.get("start_from", 1) if start_idx == 3 else 1
-                batches_file = output_dir / "block_batches.json"
-
-                # Генерация пакетов (если нет или свежий старт)
-                need_generate = not batches_file.exists() or start_idx < 3
-                if need_generate:
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
-
-                    gen_args = [self._project_path_for_job(job)]
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Генерация пакетов блоков ═══")
-                    await self._log(job, "═══ ЭТАП 4: Генерация пакетов блоков ═══")
-
-                    exit_code, _, stderr = await self._run_script_for_job(
-                        job,
-                        str(BLOCKS_SCRIPT),
-                        ["batches"] + gen_args,
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    if exit_code != 0:
-                        raise RuntimeError(f"Генерация пакетов: {stderr}")
-
-                if not batches_file.exists():
-                    raise RuntimeError("block_batches.json не создан")
-
-                with open(batches_file, "r", encoding="utf-8") as f:
-                    batches_data = json.load(f)
-
-                runtime_plan = _load_or_create_single_block_runtime_plan(
-                    output_dir,
-                    batches_data.get("batches", []),
-                    force_rebuild=need_generate,
-                )
-                batches = runtime_plan.get("batches", [])
-                single_block_mode = runtime_plan.get("mode") == "single_block"
-                total_batches = len(batches)
-
-                if total_batches == 0:
-                    await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
-                else:
-                    # Параллельный анализ блоков
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.BLOCK_ANALYSIS
-                    job.status = JobStatus.RUNNING
-                    job.progress_total = total_batches
-                    self._update_pipeline_log(pid, "block_analysis", "running")
-
-                    parallel = get_block_batch_parallelism("block_batch")
-                    mode_label = (
-                        f"{total_batches} single-block запросов"
-                        if single_block_mode else f"{total_batches} пакетов"
-                    )
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Анализ блоков ({mode_label} x{parallel}) ═══")
-                    await self._log(
-                        job,
-                        f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
-                    )
-                    if single_block_mode:
-                        await self._log(
-                            job,
-                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
-                            f"({total_batches} single-block задач)",
-                        )
-
-                    semaphore = asyncio.Semaphore(parallel)
-                    completed_count = 0
-                    error_count = 0
-                    failed_runtime_batches: list[dict] = []
-
-                    # Время начала этапа — для фильтрации файлов от старых запусков
-                    batch_stage_start = datetime.now().timestamp()
-                    # Smart retry: при повторе конкретного этапа сохраняем успешные пакеты
-                    _smart_retry = resume_info.get("is_stage_retry", False) and start_idx == 3
-                    if _smart_retry:
-                        _existing = sum(
-                            1 for b in batches
-                            if (output_dir / f"block_batch_{b['batch_id']:03d}.json").exists()
-                            and (output_dir / f"block_batch_{b['batch_id']:03d}.json").stat().st_size > 100
-                        )
-                        _to_redo = total_batches - _existing
-                        await self._log(
-                            job,
-                            f"Smart retry: {_existing} пакетов готовы, {_to_redo} будут перезапущены"
-                        )
-
-                    async def _process_batch(batch):
-                        nonlocal completed_count, error_count
-                        batch_id = batch["batch_id"]
-
-                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
-                        if result_file.exists() and result_file.stat().st_size > 100:
-                            # Smart retry: при повторе этапа сохраняем валидные файлы от прошлого запуска
-                            _is_from_current_run = result_file.stat().st_mtime >= batch_stage_start
-                            if _smart_retry or _is_from_current_run:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-                                if _smart_retry and not _is_from_current_run:
-                                    size_kb = round(result_file.stat().st_size / 1024, 1)
-                                    await self._log(job, f"Пакет {batch_id}/{total_batches}: ✓ пропуск ({size_kb} KB из прошлого запуска)")
-                                return
-                            else:
-                                # Файл от старого запуска — удаляем и обрабатываем заново
-                                result_file.unlink()
-
-                        async with semaphore:
-                            if job.status == JobStatus.CANCELLED:
-                                return
-                            if error_count >= 5:
-                                return
-
-                            can_go = await self._check_before_launch(job)
-                            if not can_go:
-                                return
-
-                            block_count = batch.get("block_count", len(batch.get("blocks", [])))
-                            single_block_id = ""
-                            if batch.get("single_block_mode") and batch.get("blocks"):
-                                single_block_id = batch["blocks"][0].get("block_id", "")
-                                await self._log(job, f"Блок {batch_id}/{total_batches}: {single_block_id}...")
-                            else:
-                                await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
-
-                            retries = 0
-                            pause_before_batch = job.pause_total_sec
-                            while retries <= RATE_LIMIT_MAX_RETRIES:
-                                batch_start_time = datetime.now()
-                                job.batch_started_at = batch_start_time.isoformat()
-
-                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                                    batch, project_info, pid, total_batches,
-                                    on_output=lambda msg: self._log(job, msg),
-                                )
-                                self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
-
-                                batch_wall = (datetime.now() - batch_start_time).total_seconds()
-                                batch_pause = job.pause_total_sec - pause_before_batch
-                                batch_duration = max(0, batch_wall - batch_pause)
-                                job.batch_durations.append(batch_duration)
-
-                                if exit_code == 0:
-                                    if result_file.exists():
-                                        size_kb = round(result_file.stat().st_size / 1024, 1)
-                                        success_message = (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — OK ({size_kb} KB)"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
-                                        )
-                                        await self._log(job, success_message)
-                                    break
-
-                                if claude_runner.is_cancelled(exit_code):
-                                    break
-
-                                stdout_text = output_text or ""
-                                stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
-
-                                # Таймаут + можно разбить → split & retry
-                                if claude_runner.is_timeout(exit_code) and block_count > 3:
-                                    await self._log(
-                                        job,
-                                        f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
-                                        "warn",
-                                    )
-                                    split_ok = await self._retry_batch_split(
-                                        job, batch, project_info, pid,
-                                        total_batches, batch_id, output_dir,
-                                    )
-                                    if split_ok:
-                                        exit_code = 0  # считаем успехом
-                                    break
-
-                                # "Prompt is too long" — нерепетируемая, retry бесполезен
-                                if claude_runner.is_prompt_too_long(exit_code, stdout_text, stderr_text):
-                                    await self._log(job, f"Prompt is too long", "error")
-                                    await self._log(job, f"Пакет {batch_id}: слишком много блоков ({block_count}), пропускаем", "warn")
-                                    break
-
-                                if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
-                                    retries += 1
-                                    if retries <= RATE_LIMIT_MAX_RETRIES:
-                                        # Jitter 5-30 сек чтобы параллельные пакеты не retry одновременно
-                                        jitter = random.uniform(5, 30)
-                                        await asyncio.sleep(jitter)
-                                        can_continue = await self._wait_for_rate_limit(
-                                            job, f"пакет {batch_id}", cli_output=stdout_text
-                                        )
-                                        if not can_continue:
-                                            error_count += 1
-                                            break
-                                        continue
-                                else:
-                                    break
-
-                            if exit_code != 0 and not claude_runner.is_cancelled(exit_code):
-                                error_count += 1
-                                err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
-                                failed_runtime_batches.append(
-                                    _runtime_batch_failure_entry(
-                                        batch, err_detail, reason="single_block_analysis_failed",
-                                    )
-                                )
-                                error_prefix = (
-                                    f"Блок {batch_id}/{total_batches}: {single_block_id}"
-                                    if single_block_id else
-                                    f"Пакет {batch_id}"
-                                )
-                                await self._log(job, f"{error_prefix}: ошибка (код {exit_code}) — {err_detail}", "error")
-                            else:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-
-                    # Запуск батчей (готовые пропустятся внутри _process_batch)
-                    tasks = []
-                    for batch in batches:
-                        tasks.append(asyncio.create_task(_process_batch(batch)))
-
-                    if tasks:
-                        gathered = await asyncio.gather(*tasks, return_exceptions=True)
-                        for batch, result in zip(batches, gathered):
-                            if isinstance(result, Exception):
-                                error_count += 1
-                                err_detail = f"{type(result).__name__}: {result}"
-                                failed_runtime_batches.append(
-                                    _runtime_batch_failure_entry(
-                                        batch, err_detail, reason="single_block_task_exception",
-                                    )
-                                )
-                                await self._log(
-                                    job,
-                                    f"Single-block task exception "
-                                    f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
-                                    f"{err_detail}",
-                                    "error",
-                                )
-
-                    _write_block_analysis_runtime_summary(
-                        output_dir,
-                        runtime_plan,
-                        failed_batches=failed_runtime_batches,
-                        completed_batches=completed_count,
-                    )
-
-                    if error_count > 0:
-                        if error_count >= total_batches:
-                            self._update_pipeline_log(pid, "block_analysis", "error",
-                                                       error=f"{error_count} single-block задач с ошибками",
-                                                       detail={"failed_blocks": failed_runtime_batches})
-                            raise RuntimeError(f"Все пакеты завершились с ошибками")
-                        self._update_pipeline_log(pid, "block_analysis", "partial",
-                                                   message=f"{error_count} single-block задач с ошибками",
-                                                   detail={"failed_blocks": failed_runtime_batches})
-                    else:
-                        self._update_pipeline_log(pid, "block_analysis", "done",
-                                                   message=f"OK ({total_batches} пакетов)")
-
-                # Слияние результатов block_batch_*.json → 02_blocks_analysis.json
-                print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
-                await self._log(job, "Слияние результатов блоков...")
-                exit_code, _, stderr = await self._run_script_for_job(
-                    job,
-                    str(BLOCKS_SCRIPT),
-                    ["merge", self._project_path_for_job(job)],
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code != 0:
-                    await self._log(job, f"Ошибка слияния: {stderr}", "warn")
-
-                if job.status == JobStatus.CANCELLED:
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков ═══
-                await self._run_block_retry(job, pid, project_info, output_dir)
 
             # ═══ ЭТАП 5: Свод замечаний ═══
             if start_idx <= 4:
@@ -3074,7 +2863,7 @@ class PipelineManager:
                     if job.status == JobStatus.CANCELLED:
                         return
                     # Остановка при слишком большом числе реальных ошибок
-                    if error_count >= 5:
+                    if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                         return
 
                     # ── Превентивная проверка rate limit перед запуском ──
@@ -3160,7 +2949,7 @@ class PipelineManager:
                             await self._log(job, f"Пакет {batch_id}/{total}: ОШИБКА (код {exit_code})", "error")
                             if error_snippet:
                                 await self._log(job, f"  Детали: {error_snippet}", "error")
-                            if error_count >= 5:
+                            if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                                 await self._log(job, f"{error_count} ошибок — пакетный анализ остановлен", "error")
                             break  # не retry для реальных ошибок
 
@@ -3341,73 +3130,6 @@ class PipelineManager:
             project_id, action="norm_verify", version_id=version_id,
         )
 
-    async def _retry_batch_split(
-        self,
-        job: AuditJob,
-        batch: dict,
-        project_info: dict,
-        pid: str,
-        total_batches: int,
-        original_batch_id: int,
-        output_dir: Path,
-    ) -> bool:
-        """Разбить упавший пакет пополам и запустить обе части.
-
-        Результаты записываются как block_batch_NNNa.json и block_batch_NNNb.json.
-        Слияние (blocks.py merge) подхватит все block_batch_*.json.
-
-        Returns: True если обе половины успешны.
-        """
-        blocks = batch.get("blocks", [])
-        mid = len(blocks) // 2
-        halves = [blocks[:mid], blocks[mid:]]
-        suffixes = ["a", "b"]
-        success = True
-
-        # Удалить частичный результат от таймаута
-        orig_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
-        if orig_file.exists():
-            orig_file.unlink()
-
-        for half_blocks, suffix in zip(halves, suffixes):
-            if not half_blocks:
-                continue
-
-            sub_batch = {
-                "batch_id": original_batch_id,
-                "blocks": half_blocks,
-                "block_count": len(half_blocks),
-                "pages_included": sorted(set(b.get("page", 0) for b in half_blocks)),
-            }
-
-            sub_label = f"{original_batch_id}{suffix}"
-            await self._log(
-                job,
-                f"Пакет {sub_label}/{total_batches}: {len(half_blocks)} блоков (retry)...",
-            )
-
-            exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                sub_batch, project_info, pid, total_batches,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, f"block_batch_{original_batch_id:03d}{suffix}")
-
-            # Claude CLI пишет результат как block_batch_<batch_id>.json
-            # Переименовываем: block_batch_003.json → block_batch_003a.json
-            written_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
-            split_file = output_dir / f"block_batch_{original_batch_id:03d}{suffix}.json"
-
-            if exit_code == 0 and written_file.exists():
-                written_file.rename(split_file)
-                size_kb = round(split_file.stat().st_size / 1024, 1)
-                await self._log(job, f"Пакет {sub_label}: OK ({size_kb} KB)")
-            elif exit_code == 0:
-                await self._log(job, f"Пакет {sub_label}: OK (файл не создан)", "warn")
-            else:
-                await self._log(job, f"Пакет {sub_label}: ошибка (код {exit_code})", "error")
-                success = False
-
-        return success
 
     async def _run_findings_review(self, job: AuditJob, project_info: dict):
         """Тонкий оркестратор: делегирует в findings_review/runner.py.
@@ -4355,252 +4077,6 @@ class PipelineManager:
                     return
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
-            else:
-                # ═══ ЭТАП 3: Генерация пакетов блоков ═══
-                self._reset_job_progress(job)
-                job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
-
-                # Все блоки — полное покрытие
-                gen_args = [self._project_path_for_job(job)]
-                await self._log(job, "Анализ ВСЕХ image-блоков")
-
-                print(f"[{pid}] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
-                await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
-
-                exit_code, _, stderr = await self._run_script_for_job(
-                    job,
-                    str(BLOCKS_SCRIPT),
-                    ["batches"] + gen_args,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code != 0:
-                    raise RuntimeError(f"Генерация пакетов: {stderr}")
-
-                # Загружаем пакеты
-                batches_file = output_dir / "block_batches.json"
-                if not batches_file.exists():
-                    raise RuntimeError("block_batches.json не создан")
-
-                with open(batches_file, "r", encoding="utf-8") as f:
-                    batches_data = json.load(f)
-
-                runtime_plan = _load_or_create_single_block_runtime_plan(
-                    output_dir,
-                    batches_data.get("batches", []),
-                    force_rebuild=True,
-                )
-                batches = runtime_plan.get("batches", [])
-                single_block_mode = runtime_plan.get("mode") == "single_block"
-                total_batches = len(batches)
-
-                if total_batches == 0:
-                    await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
-                else:
-                    # ═══ ЭТАП 4: Параллельный анализ блоков ═══
-                    self._clean_stage_files(pid, ["block_batch_*.json"])
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.BLOCK_ANALYSIS
-                    job.status = JobStatus.RUNNING
-                    job.progress_total = total_batches
-                    self._update_pipeline_log(pid, "block_analysis", "running")
-
-                    parallel = get_block_batch_parallelism("block_batch")
-                    mode_label = (
-                        f"{total_batches} single-block запросов"
-                        if single_block_mode else f"{total_batches} пакетов"
-                    )
-                    print(f"[{pid}] ═══ ЭТАП 4: Анализ блоков ({mode_label} x{parallel}) ═══")
-                    await self._log(
-                        job,
-                        f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
-                    )
-                    if single_block_mode:
-                        await self._log(
-                            job,
-                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
-                            f"({total_batches} single-block задач)",
-                        )
-
-                    semaphore = asyncio.Semaphore(parallel)
-                    completed_count = 0
-                    error_count = 0
-                    failed_runtime_batches: list[dict] = []
-                    # Время начала этапа — для фильтрации файлов от старых запусков
-                    block_stage_start = datetime.now().timestamp()
-
-                    async def _process_block_batch(batch):
-                        nonlocal completed_count, error_count
-                        batch_id = batch["batch_id"]
-
-                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
-                        if result_file.exists() and result_file.stat().st_size > 100:
-                            # Проверяем что файл от ТЕКУЩЕГО запуска, а не от старого
-                            if result_file.stat().st_mtime >= block_stage_start:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-                                return
-                            else:
-                                # Файл от старого запуска — удаляем и обрабатываем заново
-                                result_file.unlink()
-
-                        async with semaphore:
-                            if job.status == JobStatus.CANCELLED:
-                                return
-                            if error_count >= 5:
-                                return
-
-                            can_go = await self._check_before_launch(job)
-                            if not can_go:
-                                return
-
-                            block_count = batch.get("block_count", len(batch.get("blocks", [])))
-                            single_block_id = ""
-                            if batch.get("single_block_mode") and batch.get("blocks"):
-                                single_block_id = batch["blocks"][0].get("block_id", "")
-                                await self._log(job, f"Блок {batch_id}/{total_batches}: {single_block_id}...")
-                            else:
-                                await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
-
-                            retries = 0
-                            pause_before_batch = job.pause_total_sec
-                            while retries <= RATE_LIMIT_MAX_RETRIES:
-                                batch_start_time = datetime.now()
-                                job.batch_started_at = batch_start_time.isoformat()
-
-                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                                    batch, project_info, pid, total_batches,
-                                    on_output=lambda msg: self._log(job, msg),
-                                )
-                                self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
-
-                                batch_wall = (datetime.now() - batch_start_time).total_seconds()
-                                batch_pause = job.pause_total_sec - pause_before_batch
-                                batch_duration = max(0, batch_wall - batch_pause)
-                                job.batch_durations.append(batch_duration)
-
-                                if exit_code == 0:
-                                    if result_file.exists():
-                                        size_kb = round(result_file.stat().st_size / 1024, 1)
-                                        success_message = (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — OK ({size_kb} KB)"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
-                                        )
-                                        await self._log(job, success_message)
-                                    break
-
-                                if claude_runner.is_cancelled(exit_code):
-                                    break
-
-                                stdout_text = output_text or ""
-                                stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
-
-                                # Таймаут + можно разбить → split & retry
-                                if claude_runner.is_timeout(exit_code) and block_count > 3:
-                                    await self._log(
-                                        job,
-                                        f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
-                                        "warn",
-                                    )
-                                    split_ok = await self._retry_batch_split(
-                                        job, batch, project_info, pid,
-                                        total_batches, batch_id, output_dir,
-                                    )
-                                    if split_ok:
-                                        exit_code = 0
-                                    break
-
-                                if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
-                                    retries += 1
-                                    if retries > RATE_LIMIT_MAX_RETRIES:
-                                        error_count += 1
-                                        break
-                                    can_continue = await self._wait_for_rate_limit(
-                                        job,
-                                        f"rate limit при пакете {batch_id}",
-                                        cli_output=f"{stdout_text}\n{stderr_text}",
-                                    )
-                                    if not can_continue:
-                                        error_count += 1
-                                        break
-                                    continue
-                                else:
-                                    error_count += 1
-                                    err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
-                                    failed_runtime_batches.append(
-                                        _runtime_batch_failure_entry(
-                                            batch, err_detail, reason="single_block_analysis_failed",
-                                        )
-                                    )
-                                    await self._log(
-                                        job,
-                                        (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — ОШИБКА (код {exit_code}) — {err_detail}"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: ОШИБКА (код {exit_code}) — {err_detail}"
-                                        ),
-                                        "error",
-                                    )
-                                    break
-
-                            completed_count += 1
-                            job.progress_current = completed_count
-                            await self._progress(job, completed_count, total_batches)
-
-                    tasks = [_process_block_batch(batch) for batch in batches]
-                    gathered = await asyncio.gather(*tasks, return_exceptions=True)
-                    for batch, result in zip(batches, gathered):
-                        if isinstance(result, Exception):
-                            error_count += 1
-                            err_detail = f"{type(result).__name__}: {result}"
-                            failed_runtime_batches.append(
-                                _runtime_batch_failure_entry(
-                                    batch, err_detail, reason="single_block_task_exception",
-                                )
-                            )
-                            await self._log(
-                                job,
-                                f"Single-block task exception "
-                                f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
-                                f"{err_detail}",
-                                "error",
-                            )
-
-                    _write_block_analysis_runtime_summary(
-                        output_dir,
-                        runtime_plan,
-                        failed_batches=failed_runtime_batches,
-                        completed_batches=completed_count,
-                    )
-
-                    if error_count >= total_batches:
-                        job.status = JobStatus.FAILED
-                        job.error_message = f"Все {total_batches} пакетов с ошибкой"
-                        self._update_pipeline_log(pid, "block_analysis", "error",
-                                                   error=f"Все {total_batches} пакетов с ошибкой")
-                        return
-
-                    # Слияние block_batch_*.json → 02_blocks_analysis.json
-                    await self._log(job, "Слияние результатов анализа блоков...")
-                    exit_code, _, stderr = await self._run_script_for_job(
-                        job,
-                        str(BLOCKS_SCRIPT),
-                        ["merge", self._project_path_for_job(job)],
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    if exit_code == 0:
-                        await self._log(job, "02_blocks_analysis.json создан", "info")
-                    else:
-                        await self._log(job, f"Ошибка слияния: {stderr}", "error")
-
-                    if error_count > 0:
-                        self._update_pipeline_log(pid, "block_analysis", "partial",
-                                                   message=f"{error_count} из {total_batches} single-block задач с ошибками",
-                                                   detail={"failed_blocks": failed_runtime_batches})
-                    else:
-                        self._update_pipeline_log(pid, "block_analysis", "done",
-                                                   message=f"Все {total_batches} пакетов OK")
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -6079,12 +5555,38 @@ class PipelineManager:
                 self._cleanup(pid)
 
     async def _run_optimization_review(self, job: AuditJob):
-        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py."""
+        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py.
+
+        Результат пробрасывается в job.status (reserc.md #40): раньше он
+        игнорировался, поэтому проверки opt_job.status==FAILED (call-site 3659)
+        были мёртвыми. Консервативно: статус выставляем ТОЛЬКО на cancelled/error
+        (не форсим COMPLETED — чтобы не затереть статус в параллельных потоках).
+        Возвращаем результат для возможного использования вызывающим.
+        """
         from backend.app.pipeline.stages.optimization.runner import (
             run_optimization_review as _opt_review_runner,
+            OptimizationReviewResult,
         )
-        ctx = self._make_stage_context(job)
-        await _opt_review_runner(ctx)
+        pid = job.project_id
+        try:
+            ctx = self._make_stage_context(job)
+            result: OptimizationReviewResult = await _opt_review_runner(ctx)
+            if result.cancelled:
+                job.status = JobStatus.CANCELLED
+            elif result.error:
+                job.status = JobStatus.FAILED
+                job.error_message = result.error
+            return result
+        except asyncio.CancelledError:
+            job.status = JobStatus.CANCELLED
+            self._update_pipeline_log(pid, "optimization_review", "error", error="Отменено")
+            raise
+        except Exception as e:
+            job.status = JobStatus.FAILED
+            job.error_message = str(e)
+            await self._log(job, f"Optimization review исключение: {e}", "error")
+            self._update_pipeline_log(pid, "optimization_review", "error", error=str(e))
+            return None
 
 
 # Глобальный экземпляр

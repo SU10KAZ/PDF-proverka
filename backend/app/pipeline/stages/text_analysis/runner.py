@@ -14,6 +14,7 @@ Stage runner для этапа text_analysis (анализ текста MD че�
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -194,6 +195,30 @@ async def run_text_analysis(
     output_path = output_dir / "01_text_analysis.json"
     if not output_path.exists():
         error = "01_text_analysis.json не создан"
+        ctx.update_pipeline_log(log_stage, "error", error=error)
+        return StageResult.fail(error)
+
+    # Существование файла ещё не значит валидность: усечённый/битый ответ LLM
+    # (finish_reason=length, неэкранированные кавычки) даёт ложный success на
+    # одном лишь .exists(). Проверяем парсимость (с попыткой ремонта кавычек)
+    # и обязательную структуру (список text_findings).
+    from backend.app.pipeline.stages.block_analysis.runner import (
+        validate_and_repair_json,
+    )
+
+    is_valid, repair_msg = validate_and_repair_json(output_path)
+    if not is_valid:
+        error = f"01_text_analysis.json невалиден (не починить): {repair_msg}"
+        ctx.update_pipeline_log(log_stage, "error", error=error)
+        return StageResult.fail(error)
+    try:
+        data = json.loads(output_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        error = f"01_text_analysis.json не парсится: {exc}"
+        ctx.update_pipeline_log(log_stage, "error", error=error)
+        return StageResult.fail(error)
+    if not isinstance(data, dict) or not isinstance(data.get("text_findings"), list):
+        error = "01_text_analysis.json без обязательного списка text_findings (вероятно усечён)"
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 

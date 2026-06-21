@@ -547,15 +547,10 @@ async def run_unified_job(session_id: str, job_id: str) -> dict:
                     "unified_job: per-pair rebuild_unified_findings failed sid=%s pid=%s",
                     session_id, pid,
                 )
-            try:
-                ug_mod.build_unified_grouped(
-                    session_id, force=True, persist=True,
-                )
-            except Exception:  # noqa: BLE001
-                logger.exception(
-                    "unified_job: per-pair build_unified_grouped failed sid=%s pid=%s",
-                    session_id, pid,
-                )
+            # build_unified_grouped НЕ зовём per-pair: это тяжёлая O(N) пересборка
+            # (→ O(N^2) на сессию из десятков пар, блокирует event loop), а фронт
+            # её per-pair не читает. Grouped строится один раз в финале job ниже и
+            # лениво в GET /unified-grouped (get_unified_grouped). reserc.md #85/#11.
 
     latest = _read_job(session_id, job_id)
     if latest and latest.get("status") == "cancelled":

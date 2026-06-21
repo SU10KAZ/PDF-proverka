@@ -2599,8 +2599,28 @@ async def describe_image_local(
     chunks_count = 1
     continued = False
     continuation_warnings: list[str] = []
-    any_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
+    # #45: различаем salvage БАЗОВОГО chunk'а и salvage continuation-добора.
+    # Только base-salvage понижает итог до partial; salvage continuation на чистом
+    # done-base оставляет 'done' (база полна, добор лишь не дотянул лишние данные).
+    base_salvaged = bool(base_result.status == "partial" or final_parsed.get("_salvaged"))
+    continuation_salvaged = False
     used_model = base_result.model_used or primary_model
+
+    # Аккумулируем usage / response_char_count по ВСЕМ чанкам (base +
+    # continuation): continuation-вызовы реально тратят токены, а раньше в
+    # итог шёл только usage первого chunk'а → недоучёт стоимости (reserc.md #46).
+    def _sum_usage(acc: Any, add: Any) -> dict[str, Any]:
+        out = dict(acc) if isinstance(acc, dict) else {}
+        if isinstance(add, dict):
+            for _k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                _v = add.get(_k)
+                if isinstance(_v, (int, float)):
+                    out[_k] = (out.get(_k) or 0) + _v
+        return out
+
+    accum_usage = _sum_usage({}, base_result.usage)
+    accum_char = base_result.response_char_count
+    worst_finish = base_result.finish_reason
 
     # Если ответ был salvaged, поля `continues`/`next_chunk_hint`/`coverage_notes`
     # почти всегда отсутствуют в parsed (они должны были идти в самом конце JSON,
@@ -2660,6 +2680,14 @@ async def describe_image_local(
             stream=stream,
         )
 
+        # Учитываем токены/символы КАЖДОГО continuation-вызова (даже неудачного —
+        # запрос всё равно потрачен), finish_reason эскалируем до worst-case.
+        accum_usage = _sum_usage(accum_usage, cont_result.usage)
+        if isinstance(cont_result.response_char_count, int):
+            accum_char = (accum_char or 0) + cont_result.response_char_count
+        if cont_result.finish_reason == "length":
+            worst_finish = "length"
+
         if cont_result.status not in ("done", "partial") or not isinstance(cont_result.parsed, dict):
             warn = f"continuation_{cont_idx}_failed:{cont_result.error or cont_result.status}"
             logger.warning("describe_image_local: %s", warn)
@@ -2671,7 +2699,7 @@ async def describe_image_local(
             warn = f"continuation_{cont_idx}_salvaged"
             logger.warning("describe_image_local: %s", warn)
             continuation_warnings.append(warn)
-            any_salvaged = True
+            continuation_salvaged = True
 
         # Защита от «no-op» continuation: merge должен реально что-то добавить
         # к base. Если ни одного нового узла/связи/строки не появилось —
@@ -2696,6 +2724,12 @@ async def describe_image_local(
     if stop_reason == "cap_reached" and bool(final_parsed.get("continues")):
         continuation_warnings.append(f"continuation_cap_reached:{cap}")
 
+    # #45: continuation-only salvage не понижает чистый done-base — помечаем,
+    # но не эскалируем статус.
+    any_salvaged = base_salvaged or continuation_salvaged
+    if continuation_salvaged and not base_salvaged:
+        continuation_warnings.append("continuation_partial")
+
     # Финальная мета.
     final_parsed["chunks_count"] = chunks_count
     final_parsed["continued"] = continued
@@ -2706,14 +2740,15 @@ async def describe_image_local(
 
     logger.info(
         "describe_image_local: done block in %d chunk(s), continued=%s, model=%s, "
-        "stop=%s, warnings=%d, salvaged=%s",
+        "stop=%s, warnings=%d, base_salvaged=%s, continuation_salvaged=%s",
         chunks_count, continued, used_model, stop_reason,
-        len(continuation_warnings), any_salvaged,
+        len(continuation_warnings), base_salvaged, continuation_salvaged,
     )
 
-    # Если хоть что-то salvaged → статус "partial" с уважением к данным.
-    final_status = "partial" if any_salvaged else "done"
-    final_error = "salvaged_partial_json" if any_salvaged else None
+    # #45: статус определяется ТОЛЬКО salvage базового chunk'а. Salvaged
+    # continuation на чистом done-base → итог остаётся 'done' (+ continuation_partial).
+    final_status = "partial" if base_salvaged else "done"
+    final_error = "salvaged_partial_json" if base_salvaged else None
 
     return DescribeResult(
         status=final_status,
@@ -2725,13 +2760,13 @@ async def describe_image_local(
         raw_response_excerpt=base_result.raw_response_excerpt,
         duration_sec=base_result.duration_sec,
         error=final_error,
-        # Diagnostic поля propagируются от первого chunk'а: они нужны для
-        # тюнинга prompt/max_tokens и для отчётности после batch run'а.
-        # Continuation-chunk'и имеют свои собственные finish_reason/usage,
-        # но их аггрегация не пересиливает «как primary справился».
-        finish_reason=base_result.finish_reason,
-        usage=base_result.usage,
-        response_char_count=base_result.response_char_count,
+        # Diagnostic поля АГРЕГИРОВАНЫ по base + continuation чанкам:
+        # usage/response_char_count суммируются (continuation-вызовы тоже тратят
+        # токены — иначе недоучёт стоимости), finish_reason — worst-case
+        # ('length', если оборвался любой chunk). reserc.md #46.
+        finish_reason=worst_finish,
+        usage=accum_usage or None,
+        response_char_count=accum_char,
         parse_error_detail=base_result.parse_error_detail,
         full_raw_response=base_result.full_raw_response,
     )

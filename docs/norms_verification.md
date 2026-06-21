@@ -32,25 +32,31 @@
 ПУЭ-7 **не зарегистрирован Минюстом** → применяется добровольно.
 При ссылке на ПУЭ давай параллельную ссылку на соответствующий СП.
 
-## 4-уровневая верификация цитат
+## Верификация цитат в пайплайне (фактический поток)
+
+> Обновлено по факту кода после унификации индекса норм (reserc.md #34/#35/#36/#37).
+> WebSearch/WebFetch в **пайплайне** запрещены концептуально — источник истины
+> offline. (Это не отменяет ручную сверку ассистентом через WebSearch в разделе
+> «Проверка актуальности» выше.)
 
 ```
-Уровень 0: Детерминированная проверка (Python)
-  ↓ generate_deterministic_checks() → статус из norms_db.json
-  ↓ TTL-контроль: свежий кеш = железобетонный статус, stale = на WebSearch
-  ↓ LLM НЕ решает active/replaced/cancelled — только Python
+Статусы документов (active/replaced/cancelled) — authoritative, offline, Python:
+  external_provider.resolve_norm_status() читает status_index.json
+  (in-repo norms/tools/status_index.json, 565 норм — authoritative; #34).
+  Нет в индексе → found=False → missing_norms_queue.json (НЕ «угадываем»).
+  LLM статус НЕ решает.
 
-Уровень 1: norm_quote + norm_confidence (на этапах 01/02/03)
-  ↓ Каждое замечание содержит цитату нормы и уверенность 0.0–1.0
+Цитаты пунктов (paragraph_verified) — native Python, offline:
+  _native_verify.py вызывает norms_api (get_paragraph / semantic_search) из того
+  же norms/tools (#34). Совпадение цитаты с текстом пункта = word-Jaccard
+  (SIMILARITY_THRESHOLD=0.30) + ЧИСЛОВАЯ сверка номиналов/сечений
+  (_salient_numbers / numeric_recall, #35): если слова совпали, но числа цитаты
+  в пункте отсутствуют — НЕ подтверждаем. Пишет norm_checks_llm.json.
+  Fallback на Claude-чанки — только если native verify упал.
 
-Уровень 2: paragraph_checks (при confidence < 0.8)
-  ↓ LLM проверяет конкретный пункт через WebSearch
-  ↓ paragraph_verified true/false + actual_quote
-  ↓ LLM пишет в norm_checks_llm.json → Python сливает в norm_checks.json
-
-Уровень 3: norms_paragraphs.json (накопительный кеш)
-  ↓ Подтверждённые цитаты сохраняются для будущих аудитов
-  ↓ norms.py update автоматически пополняет из paragraph_checks
+Накопительный кеш цитат:
+  norms_paragraphs.json — подтверждённые цитаты пунктов; native-записи доверенные
+  (verified_via="native_python" ∈ trusted, #36). norms.py update пополняет его.
 ```
 
 ## Поток детерминированной верификации
@@ -58,23 +64,27 @@
 ```
 [Python] extract_norms_from_findings() → список норм
     ↓
-[Python] generate_deterministic_checks() → norm_checks.json (предварительный)
-    ↓  Свежий кеш → verified_via="deterministic"
-    ↓  Stale/unknown → помечает для LLM WebSearch
+[Python] generate_deterministic_checks() → norm_checks.json (статусы из status_index)
     ↓
-[Условно] LLM WebSearch → norm_checks_llm.json (только unknown/stale)
+[Python] verify_paragraphs_native() → norm_checks_llm.json (цитаты пунктов, offline)
+    ↓  fallback: Claude-чанки только при сбое native
     ↓
 [Python] merge_llm_norm_results() → финальный norm_checks.json
+    ↓  meta.paragraph_verification: verified_true/false/total + by_source (#37)
 ```
 
-Если все нормы в базе и кеш свежий — LLM не вызывается.
+Весь штатный путь — offline (без сети). Сеть не задействуется.
 
 ## Ключевые файлы
 
-- `norms_db.json` — статус документов (действует/заменён/отменён), 176+ записей
-- `norms_paragraphs.json` — проверенные цитаты конкретных пунктов
-- `_output/norm_checks.json` — финальный результат (Python + LLM)
-- `_output/norm_checks_llm.json` — промежуточный результат от LLM
+- `norms/tools/status_index.json` — **authoritative** статусы документов (565), in-repo;
+  путь через env `NORMS_STATUS_INDEX_PATH`; тулчейн (norms_api, paragraphs.jsonl,
+  venv) — через `NORMS_TOOLS_PATH` (default in-repo `norms/tools`, #34)
+- `norms/norms_paragraphs.json` — проверенные цитаты конкретных пунктов
+- `_output/norm_checks.json` — финальный результат (статусы + цитаты)
+- `_output/norm_checks_llm.json` — промежуточный результат native verify
+- `norms_db.json` — **legacy/CLI-only, НЕ authoritative** (исторический кеш статусов;
+  status_index из norms/tools заменил его как источник истины)
 
 ## Поля замечания
 
