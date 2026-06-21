@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import json
 import urllib.error
 import urllib.request
 
@@ -104,3 +105,39 @@ def test_persistent_network_error_raises_after_retries(monkeypatch, _no_sleep):
         blocks._download_with_retry(req, timeout=5)
     assert calls["n"] == blocks._CROP_DOWNLOAD_RETRIES
     assert len(_no_sleep) == blocks._CROP_DOWNLOAD_RETRIES - 1
+
+
+# ─── #10: failed_block_ids + failed_details в index.json ──────────────────────
+
+
+def test_classify_crop_failure_reasons():
+    assert blocks._classify_crop_failure("нет crop_url") == "no_crop_url"
+    assert blocks._classify_crop_failure(ValueError("boom")) == "http_error"
+
+
+def test_crop_index_records_failed_block_ids(monkeypatch, tmp_path):
+    """#10: блок без crop_url и без PDF-fallback не теряется молча — он попадает
+    в index.json как failed_block_ids/failed_details с причиной no_crop_url."""
+    # один блок без crop_url; page_pdf_map пуст → fallback недоступен
+    block = {
+        "block_id": "b-lost", "crop_url": "", "page_num": 3,
+        "coords_px": [0, 0, 10, 10], "ocr_label": "", "ocr_text": "",
+    }
+    monkeypatch.setattr(
+        blocks, "_iter_image_blocks_from_ocr",
+        lambda project_dir: ([block], {}, {}, [tmp_path / "fake_result.json"]),
+    )
+    out_dir = tmp_path / "blocks_test"
+    res = blocks.crop_blocks_to_dir(
+        str(tmp_path), out_dir,
+        {"target_dpi": 100, "min_long_side_px": 800, "name": "test"},
+        force=True,
+    )
+    assert res["failed_block_ids"] == ["b-lost"]
+    index = json.loads((out_dir / "index.json").read_text(encoding="utf-8"))
+    assert index["failed_block_ids"] == ["b-lost"]
+    assert index["failed_details"][0]["reason"] == "no_crop_url"
+    assert index["failed_details"][0]["block_id"] == "b-lost"
+    assert index["total_blocks"] == 0
+    assert index["total_expected"] == 1
+    assert index["errors"] == 1

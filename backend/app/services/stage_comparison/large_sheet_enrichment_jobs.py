@@ -301,16 +301,22 @@ async def run_job(session_id: str, job_id: str) -> dict:
                     cache_enabled=True, on_tile_progress=_on_tile,
                     is_cancelled=_is_cancelled,
                 )
-                item["status"] = "done"
+                # #49: пустую/полностью-провалившуюся страницу (large_sheet_failed)
+                # НЕ выдаём за done — помечаем failed + requires_human_review.
+                if result.get("status") == "large_sheet_failed":
+                    item["status"] = "failed"
+                    item["requires_human_review"] = True
+                    item["error"] = "large_sheet_failed (см. diagnostics)"
+                    job["progress"]["failed"] += 1
+                else:
+                    item["status"] = "done"
+                    job["progress"]["done"] += 1
                 item["page_enriched_json_path"] = result.get("page_enriched_json_path")
                 item["page_enriched_md_path"] = result.get("page_enriched_md_path")
                 item["diagnostics_path"] = result.get("diagnostics_path")
                 item["circuits_detected"] = result.get("circuits_detected")
                 item["tiles_total"] = result.get("tiles_total", item.get("tiles_total", 0))
                 item["tiles_failed"] = result.get("tiles_failed", item.get("tiles_failed", 0))
-                job["progress"]["done"] += 1
-                if result.get("tiles_failed"):
-                    job["progress"]["failed"] += 0  # page всё равно done (fail-soft по tile)
             except asyncio.CancelledError:
                 item["status"] = "cancelled"
                 raise
@@ -329,8 +335,10 @@ async def run_job(session_id: str, job_id: str) -> dict:
         if latest and latest.get("status") == "cancelled":
             job["status"] = "cancelled"
         else:
-            any_error = any(it.get("status") == "error" for it in job["items"])
-            job["status"] = "failed" if (any_error and job["progress"]["done"] == 0) else "done"
+            # #49: "failed" (large_sheet_failed) учитывается наравне с "error" —
+            # если НИ ОДНА страница не дала done, job = failed, а не done.
+            any_problem = any(it.get("status") in ("error", "failed") for it in job["items"])
+            job["status"] = "failed" if (any_problem and job["progress"]["done"] == 0) else "done"
     except asyncio.CancelledError:
         job["status"] = "cancelled"
         for it in job["items"]:
