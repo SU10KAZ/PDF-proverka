@@ -74,6 +74,7 @@ from backend.app.pipeline.stages.crop_blocks.runner import (
     run_crop_blocks as _run_crop_blocks,
     run_policy_recrop as _run_policy_recrop,
 )
+
 from backend.app.pipeline.stages.block_analysis.runner import (
     RUNTIME_BATCHES_FILE,
     expand_block_batches_for_single_block_mode as _expand_block_batches_for_local_model,
@@ -95,6 +96,7 @@ from backend.app.pipeline.stages.findings_review.runner import (
 from backend.app.pipeline.stages.critic_v2_triage import (
     run_critic_v2_triage as _run_critic_v2_triage_stage,
 )
+
 from backend.app.pipeline.stages.block_analysis.runner import (
     run_block_analysis_findings_only as _run_block_analysis_findings_only_stage,
 )
@@ -105,6 +107,23 @@ from backend.app.pipeline.stages.gemma_enrichment.runner import (
     run_gemma_enrichment_stage as _run_gemma_enrichment_stage_fn,
 )
 # ──────────────────────────────────────────────────────────────────────────
+
+
+def _has_ocr_result_json(project_dir: Path) -> bool:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import (
+            load_version_project_info,
+            resolve_version_source_files,
+        )
+
+        info = load_version_project_info(project_dir)
+        document_code = info.get("document_code") or info.get("project_id") or Path(project_dir).name
+        sources = resolve_version_source_files(project_dir, document_code, project_info=info)
+        if sources.layout == "projects_v2":
+            return bool(sources.result_json_paths)
+    except Exception:
+        pass
+    return bool(list(Path(project_dir).glob("*_result.json")))
 
 
 def _project_path(pid: str, version_id: Optional[str] = None) -> str:
@@ -4519,7 +4538,7 @@ class PipelineManager:
                 print(f"[PRE-CROP] {pid} ({version_id}): блоки уже есть, пропуск")
                 return True
             # Пропустить если нет result.json (не OCR-проект)
-            if not list(proj_dir.glob("*_result.json")):
+            if not _has_ocr_result_json(proj_dir):
                 return False
 
             print(f"[PRE-CROP] {pid} ({version_id}): начинаю фоновый кроп блоков...")
@@ -4588,7 +4607,7 @@ class PipelineManager:
                 item_dir = _vs.get_version_dir(root_dir, item.project_id, item.version_id)
             except Exception:
                 item_dir = root_dir
-            if list(item_dir.glob("*_result.json")):
+            if _has_ocr_result_json(item_dir):
                 return item
         return None
 
@@ -5292,7 +5311,7 @@ class PipelineManager:
 
         # Полный аудит / batch-actions. Для V2+ ищем _result.json в V2 dir.
         _root, proj_dir, _od = self._resolve_job_paths(job)
-        is_ocr = bool(list(proj_dir.glob("*_result.json")))
+        is_ocr = _has_ocr_result_json(proj_dir)
 
         if action == "full":
             # single-start "запустить аудит" — full audit + optimization для OCR, smart иначе

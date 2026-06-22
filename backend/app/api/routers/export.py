@@ -20,6 +20,10 @@ from backend.app.core.config import BASE_DIR
 import backend.app.services.export.excel_service as excel_service
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import (
+    load_version_project_info,
+    resolve_version_source_files,
+)
 
 router = APIRouter(prefix="/api/export", tags=["export"])
 
@@ -86,21 +90,8 @@ async def download_file(filename: str):
 
 
 def _project_info_from_v2_version(version_dir: Path) -> dict:
-    pi = version_dir / "project_info.json"
-    if pi.exists():
-        try:
-            return json.loads(pi.read_text(encoding="utf-8"))
-        except Exception:
-            return {}
-    vj = version_dir / "version.json"
-    if vj.exists():
-        try:
-            data = json.loads(vj.read_text(encoding="utf-8"))
-            info = data.get("project_info") or {}
-            return info if isinstance(info, dict) else {}
-        except Exception:
-            return {}
-    return {}
+    info = load_version_project_info(version_dir)
+    return info if isinstance(info, dict) else {}
 
 
 async def _download_audit_package_v2(project_id: str, version_id: Optional[str] = None):
@@ -175,10 +166,15 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
             from backend.app.core.config import GENERATE_EXCEL_SCRIPT
             with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
                 tmp_xlsx = tmp.name
-            env = {**os.environ, "AUDIT_NO_OPEN": "1"}
+            env = {
+                **os.environ,
+                "AUDIT_NO_OPEN": "1",
+                "AUDIT_VERSION_DIR": str(version_dir),
+                "AUDIT_OUTPUT_DIR": str(output_dir),
+            }
             result = subprocess.run(
                 [sys.executable, str(GENERATE_EXCEL_SCRIPT),
-                 str(version_dir), "--out", tmp_xlsx, "--no-summary"],
+                 str(output_dir), "--out", tmp_xlsx, "--no-summary"],
                 capture_output=True, timeout=60, env=env,
             )
             if result.returncode == 0 and os.path.exists(tmp_xlsx) and os.path.getsize(tmp_xlsx) > 0:
@@ -232,11 +228,15 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         # --- project_info.json (версия, fallback на корень логического проекта) ---
-        pi = version_dir / "project_info.json"
-        if not pi.exists():
-            pi = project_dir / "project_info.json"
-        if pi.exists():
-            zf.write(str(pi), "project_info.json")
+        project_info = load_version_project_info(version_dir)
+        if project_info:
+            zf.writestr("project_info.json", json.dumps(project_info, ensure_ascii=False, indent=2))
+        else:
+            pi = version_dir / "project_info.json"
+            if not pi.exists():
+                pi = project_dir / "project_info.json"
+            if pi.exists():
+                zf.write(str(pi), "project_info.json")
 
         # --- PDF этой версии (источник истины) ---
         pdf_path = _resolve_version_pdf(version_dir, pi)
@@ -244,7 +244,11 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
             zf.write(str(pdf_path), pdf_path.name)
 
         # --- MD-файл (основной текст документа) ---
-        md_files = list(version_dir.glob("*_document.md"))
+        try:
+            sources = resolve_version_source_files(version_dir, project_id, project_info=project_info)
+            md_files = list(sources.md_paths)
+        except Exception:
+            md_files = list(version_dir.glob("*_document.md"))
         for md in md_files:
             zf.write(str(md), md.name)
 
@@ -283,7 +287,12 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
             from backend.app.core.config import GENERATE_EXCEL_SCRIPT
             with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
                 tmp_xlsx = tmp.name
-            env = {**os.environ, "AUDIT_NO_OPEN": "1"}
+            env = {
+                **os.environ,
+                "AUDIT_NO_OPEN": "1",
+                "AUDIT_VERSION_DIR": str(version_dir),
+                "AUDIT_OUTPUT_DIR": str(output_dir),
+            }
             result = subprocess.run(
                 [sys.executable, str(GENERATE_EXCEL_SCRIPT),
                  str(version_dir), "--out", tmp_xlsx, "--no-summary"],

@@ -14,6 +14,7 @@ from backend.app.models.expert_review import (
 )
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
 
 
 def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
@@ -155,10 +156,9 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
 
     # Загрузить project_info для section (из активной версии, fallback на корень)
     version_dir = _version_dir(project_id)
-    info_path = version_dir / "project_info.json"
-    if not info_path.exists():
-        info_path = resolve_project_dir(project_id) / "project_info.json"
-    info = _load_json(info_path) or {}
+    info = load_version_project_info(version_dir) or {}
+    if not info:
+        info = _load_json(resolve_project_dir(project_id) / "project_info.json") or {}
     section = info.get("section", "")
 
     # Объект (здание/комплекс): из bound-контекста, иначе текущий выбранный.

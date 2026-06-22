@@ -19,6 +19,7 @@ Stage runner для этапа findings_merge (свод замечаний → 0
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -50,8 +51,11 @@ def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
 # ─── Pure helper functions (re-exported from previous pass) ──────────────────
 
 def _version_output_dir(project_id: str):
-    """Папка _output активной версии. Делегирует единому резолверу
-    version_service.resolve_active_output_dir (reserc.md #97)."""
+    """Папка _output активной версии. AUDIT_OUTPUT_DIR override → иначе единый
+    резолвер version_service.resolve_active_output_dir (reserc.md #97, v2-aware)."""
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
     from backend.app.services.common import version_service
     return version_service.resolve_active_output_dir(project_id)
 

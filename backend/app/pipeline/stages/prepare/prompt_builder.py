@@ -317,7 +317,8 @@ def _get_plan_images(project_id: str) -> list[Path]:
     Поддерживает английские и русские названия типов.
     """
     project_dir = _version_project_dir(project_id)
-    blocks_dir = project_dir / "_output" / "blocks"
+    output_dir = _version_output_dir(project_id)
+    blocks_dir = output_dir / "blocks"
     if not blocks_dir.exists():
         return []
 
@@ -390,7 +391,7 @@ def _get_plan_images(project_id: str) -> list[Path]:
                         _add(_resolve_block_path(bid))
 
     # Источник 2: 02_blocks_analysis.json (sheet_type из LLM-анализа)
-    analysis_path = project_dir / "_output" / "02_blocks_analysis.json"
+    analysis_path = output_dir / "02_blocks_analysis.json"
     if analysis_path.exists():
         try:
             analysis = json.loads(analysis_path.read_text(encoding="utf-8"))

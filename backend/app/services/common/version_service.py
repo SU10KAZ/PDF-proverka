@@ -395,22 +395,7 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
         vid = v["version_id"]
         folder = v.get("folder") or "."
         version_dir = base if folder in (".", "") else base / folder
-        pdf_count = md_count = source_count = 0
-        if version_dir.exists():
-            for p in version_dir.iterdir():
-                if not p.is_file():
-                    continue
-                if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-                    continue
-                if p.name.startswith("."):
-                    continue
-                t = _classify_file(p.name)
-                if t in ("pdf", "md", "txt", "json", "html"):
-                    source_count += 1
-                if t == "pdf":
-                    pdf_count += 1
-                elif t == "md":
-                    md_count += 1
+        pdf_count, md_count, source_count = _source_counts(version_dir)
         can_run = pdf_count > 0
         enriched.append({
             "version_id": vid,
@@ -816,6 +801,109 @@ def _classify_file(name: str) -> str:
     }.get(s, "other")
 
 
+def _is_v2_source_layout(version_dir: Path) -> bool:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import is_projects_v2_version_dir
+        return is_projects_v2_version_dir(version_dir)
+    except Exception:
+        return False
+
+
+def _v2_source_paths(version_dir: Path):
+    from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+    return resolve_version_source_files(version_dir)
+
+
+def _source_counts(version_dir: Path) -> tuple[int, int, int]:
+    if _is_v2_source_layout(version_dir):
+        sources = _v2_source_paths(version_dir)
+        source_paths = {
+            *sources.pdf_paths,
+            *sources.md_paths,
+            *sources.result_json_paths,
+            *sources.ocr_html_paths,
+        }
+        return len(sources.pdf_paths), len(sources.md_paths), len(source_paths)
+
+    pdf_count = md_count = source_count = 0
+    if version_dir.exists():
+        for p in version_dir.iterdir():
+            if not p.is_file():
+                continue
+            if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
+                continue
+            if p.name.startswith("."):
+                continue
+            t = _classify_file(p.name)
+            if t in ("pdf", "md", "txt", "json", "html"):
+                source_count += 1
+            if t == "pdf":
+                pdf_count += 1
+            elif t == "md":
+                md_count += 1
+    return pdf_count, md_count, source_count
+
+
+def _source_file_records(version_dir: Path) -> list[dict[str, Any]]:
+    if _is_v2_source_layout(version_dir):
+        sources = _v2_source_paths(version_dir)
+        paths = []
+        seen = set()
+        for path in (
+            *sources.pdf_paths,
+            *sources.md_paths,
+            *sources.result_json_paths,
+            *sources.ocr_html_paths,
+        ):
+            if path in seen or not path.is_file():
+                continue
+            seen.add(path)
+            paths.append(path)
+        records = []
+        for path in sorted(paths):
+            stat = path.stat()
+            try:
+                name = str(path.relative_to(version_dir))
+            except ValueError:
+                name = path.name
+            records.append({
+                "name": name,
+                "type": _classify_file(path.name),
+                "size": stat.st_size,
+                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
+            })
+        return records
+
+    files: list[dict[str, Any]] = []
+    if version_dir.exists():
+        for p in sorted(version_dir.iterdir()):
+            if not p.is_file():
+                continue
+            if p.name == "project_info.json":
+                continue
+            if p.name == VERSIONS_MANIFEST_FILENAME:
+                continue
+            if p.name.startswith("."):
+                continue
+            stat = p.stat()
+            files.append({
+                "name": p.name,
+                "type": _classify_file(p.name),
+                "size": stat.st_size,
+                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
+            })
+    return files
+
+
+def _load_layout_project_info(version_dir: Path) -> dict[str, Any]:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+        info = load_version_project_info(version_dir)
+        return info if isinstance(info, dict) else {}
+    except Exception:
+        return {}
+
+
 def _update_version_project_info(
     version_dir: Path,
     project_id: str,
@@ -838,13 +926,18 @@ def _update_version_project_info(
     if not isinstance(info, dict):
         info = {}
 
-    # Все файлы в папке версии (с учётом ранее загруженных)
-    all_files = [
-        p.name for p in version_dir.iterdir()
-        if p.is_file()
-        and p.name != "project_info.json"
-        and not p.name.startswith(".")
-    ]
+    # Все файлы в папке версии (с учётом ранее загруженных). Для projects_v2
+    # исходники лежат в 01_input/02_work, поэтому берём layout-aware records.
+    if _is_v2_source_layout(version_dir):
+        source_records = _source_file_records(version_dir)
+        all_files = [r["name"] for r in source_records]
+    else:
+        all_files = [
+            p.name for p in version_dir.iterdir()
+            if p.is_file()
+            and p.name != "project_info.json"
+            and not p.name.startswith(".")
+        ]
 
     pdf_files = sorted({n for n in all_files if _classify_file(n) == "pdf"})
     md_files = sorted({n for n in all_files if _classify_file(n) == "md"})
@@ -899,32 +992,8 @@ def list_version_files(
     )
     version_dir: Path = ctx["version_dir"]
 
-    files: list[dict[str, Any]] = []
-    if version_dir.exists():
-        for p in sorted(version_dir.iterdir()):
-            if not p.is_file():
-                continue
-            if p.name == "project_info.json":
-                continue
-            if p.name == VERSIONS_MANIFEST_FILENAME:
-                continue
-            if p.name.startswith("."):
-                continue
-            stat = p.stat()
-            files.append({
-                "name": p.name,
-                "type": _classify_file(p.name),
-                "size": stat.st_size,
-                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
-            })
-
-    info_path = version_dir / "project_info.json"
-    project_info: dict[str, Any] = {}
-    if info_path.exists():
-        try:
-            project_info = json.loads(info_path.read_text(encoding="utf-8")) or {}
-        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-            project_info = {}
+    files = _source_file_records(version_dir)
+    project_info = _load_layout_project_info(version_dir)
 
     return {
         "project_id": project_id,
@@ -1050,14 +1119,8 @@ def has_source_files(project_id: str, version_id: Optional[str] = None) -> bool:
     version_dir: Path = ctx["version_dir"]
     if not version_dir.exists():
         return False
-    for p in version_dir.iterdir():
-        if not p.is_file():
-            continue
-        if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-            continue
-        if _classify_file(p.name) in ("pdf", "md"):
-            return True
-    return False
+    pdf_count, md_count, _source_count = _source_counts(version_dir)
+    return pdf_count > 0 or md_count > 0
 
 
 def version_audit_readiness(project_id: str, version_id: Optional[str] = None) -> dict[str, Any]:
@@ -1080,24 +1143,7 @@ def version_audit_readiness(project_id: str, version_id: Optional[str] = None) -
             "reason": "Версия не найдена",
         }
     version_dir: Path = ctx["version_dir"]
-    pdf_count = 0
-    md_count = 0
-    source_count = 0
-    if version_dir.exists():
-        for p in version_dir.iterdir():
-            if not p.is_file():
-                continue
-            if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-                continue
-            if p.name.startswith("."):
-                continue
-            t = _classify_file(p.name)
-            if t in ("pdf", "md", "txt", "json", "html"):
-                source_count += 1
-            if t == "pdf":
-                pdf_count += 1
-            elif t == "md":
-                md_count += 1
+    pdf_count, md_count, source_count = _source_counts(version_dir)
 
     can_run = pdf_count > 0
     reason = "" if can_run else "Нет PDF-файлов в версии"
