@@ -11,6 +11,7 @@
 """
 import json
 import logging
+import os
 import re
 from pathlib import Path
 
@@ -45,6 +46,10 @@ def _version_output_dir(project_id: str) -> Path:
     Используем для всех reads/writes runtime artefacts, чтобы V2 audit не
     читал V1 cached artifacts (01_text_analysis.json, 02_blocks_analysis.json и др.).
     """
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     from backend.app.services.common import version_service
     try:
         return version_service.resolve_version_output_dir(project_id)
@@ -54,6 +59,9 @@ def _version_output_dir(project_id: str) -> Path:
 
 def _version_project_dir(project_id: str) -> Path:
     """version_dir активной версии (parent of _output)."""
+    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    if env_version_dir:
+        return Path(env_version_dir)
     return _version_output_dir(project_id).parent
 
 logger = logging.getLogger(__name__)

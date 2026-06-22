@@ -1313,6 +1313,60 @@ class PipelineManager:
             version_dir = root_dir
         return root_dir, version_dir, version_dir / "_output"
 
+    def _load_project_info_for_paths(self, pid: str, root_dir: Path, version_dir: Path) -> dict:
+        """Version-aware project_info for audit stages.
+
+        Legacy reads the active version project_info with root fallback. In
+        projects_v2-primary, source metadata lives in 01_input/project_info.json
+        and mutable audit metadata is stored in version.json.project_info.
+        """
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+        root_dir = Path(root_dir)
+        version_dir = Path(version_dir)
+        if v2_is_primary():
+            info: dict = {}
+            input_info = version_dir / "01_input" / "project_info.json"
+            if input_info.is_file():
+                try:
+                    data = json.loads(input_info.read_text(encoding="utf-8"))
+                    if isinstance(data, dict):
+                        info.update(data)
+                except Exception:
+                    pass
+            version_json = version_dir / "version.json"
+            if version_json.is_file():
+                try:
+                    data = json.loads(version_json.read_text(encoding="utf-8"))
+                    version_info = data.get("project_info") if isinstance(data, dict) else None
+                    if isinstance(version_info, dict):
+                        info.update(version_info)
+                except Exception:
+                    pass
+            info.setdefault("project_id", pid)
+            info.setdefault("pdf_file", "document.pdf")
+            return info
+
+        info_path = version_dir / "project_info.json"
+        if not info_path.exists():
+            info_path = root_dir / "project_info.json"
+        try:
+            return json.loads(info_path.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
+    def _project_info_path_for_paths(self, root_dir: Path, version_dir: Path) -> Path:
+        """Best-effort path for callers that still need a project_info filename."""
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+        version_dir = Path(version_dir)
+        if v2_is_primary():
+            input_info = version_dir / "01_input" / "project_info.json"
+            return input_info if input_info.exists() else version_dir / "version.json"
+        root_dir = Path(root_dir)
+        version_info = version_dir / "project_info.json"
+        return version_info if version_info.exists() else root_dir / "project_info.json"
+
     def _require_project_md(self, pid: str, root_dir: Path, version_dir: Path, info_path: Path):
         """Version-aware MD-gate. Бросает RuntimeError с понятной диагностикой
         (md_not_found / ambiguous_md_candidates), если MD не разрешается в папке
@@ -1395,15 +1449,7 @@ class PipelineManager:
         async def _run_subprocess(*args, **kwargs):
             return await self._run_script(pid, *args, **kwargs)
 
-        # project_info: предпочтительно из папки версии (создаётся
-        # create_next_version'ом для V2+), fallback — корневой info.
-        info_path_version = version_dir / "project_info.json"
-        info_path_root = project_dir / "project_info.json"
-        info_path = info_path_version if info_path_version.exists() else info_path_root
-        try:
-            project_info = json.loads(info_path.read_text(encoding="utf-8"))
-        except Exception:
-            project_info = {}
+        project_info = self._load_project_info_for_paths(pid, _root, version_dir)
 
         async def _stream_findings_events(stage: str) -> None:
             await self._stream_findings_events(job, stage)
@@ -2554,9 +2600,7 @@ class PipelineManager:
 
             # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             if start_idx >= 4:
                 await self._assert_gemma_ready_for_stage(job, project_info, normalized)
@@ -2899,9 +2943,7 @@ class PipelineManager:
                 # Проверяем актуальность по двум критериям:
                 # 1) tile_config_source должен совпадать
                 # 2) количество тайлов в батчах = реальному количеству на диске
-                info_path = project_dir / "project_info.json"
-                with open(info_path, "r", encoding="utf-8") as f:
-                    info = json.load(f)
+                info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
                 current_source = info.get("tile_config_source", "")
                 with open(batches_file, "r", encoding="utf-8") as f:
                     bdata = json.load(f)
@@ -2977,9 +3019,7 @@ class PipelineManager:
                     await self._log(job, f"Очистка: удалено {deleted_batch_count} старых результатов батчей")
 
             # Загружаем project_info (project_dir уже version-aware)
-            info_path = project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             # Шаг 2: Параллельная обработка пакетов
             job.stage = AuditStage.TILE_AUDIT
@@ -3189,11 +3229,9 @@ class PipelineManager:
         pid = job.project_id
         try:
             self._update_pipeline_log(pid, "main_audit", "running")
-            # Version-aware project_info: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware project_info: V1 = root, projects_v2 = 01_input/version.json.
             _root_dir, _project_dir, _output_dir = self._resolve_job_paths(job)
-            info_path = _project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, _project_dir)
 
             await self._log(job, "Запуск основного аудита Claude...")
             await self._start_heartbeat(job)
@@ -3690,7 +3728,7 @@ class PipelineManager:
             # См. _resolve_job_paths() — единый helper, чтобы MD-check и source-файлы
             # больше не утекали из V1 root при V2-аудите.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
+            info_path = self._project_info_path_for_paths(_root_dir, project_dir)
 
             # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
             self._require_project_md(pid, _root_dir, project_dir, info_path)
@@ -3729,8 +3767,7 @@ class PipelineManager:
             print(f"[{pid}:smart] ═══ ЭТАП 2: Триаж страниц ═══")
             await self._log(job, "═══ ЭТАП 2: Триаж страниц (Claude определяет приоритеты) ═══")
 
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             _triage_result = await _run_text_analysis_stage(
                 self._make_stage_context(job),
@@ -4160,12 +4197,10 @@ class PipelineManager:
         start_time = datetime.now()
         pid = job.project_id
         try:
-            # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware пути: V1 = root, projects_v2 = versions/<vid>/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
-
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            info_path = self._project_info_path_for_paths(_root_dir, project_dir)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
             self._require_project_md(pid, _root_dir, project_dir, info_path)

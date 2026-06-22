@@ -122,3 +122,134 @@ async def test_document_graph_builder_receives_exact_v2_result_json(monkeypatch,
     assert captured["result_json_paths"] == [expected_result]
     assert captured["project_dir"] == expected_result.parent
     assert captured["output_dir"].name == "job-b1"
+
+
+def test_manager_loads_v2_project_info_from_input_and_version_json(monkeypatch, tmp_path):
+    v2_root = tmp_path / "projects_v2"
+    doc_dir = _make_v2_doc(v2_root, "DOC-B1")
+    version_dir = doc_dir / "versions" / "v001"
+    _write(
+        version_dir / "01_input" / "project_info.json",
+        json.dumps({
+            "project_id": "DOC-B1",
+            "document_code": "DOC-B1",
+            "section": "GP",
+            "pdf_file": "DOC-B1.pdf",
+        }),
+    )
+    _write(
+        version_dir / "version.json",
+        json.dumps({
+            "version_id": "v001",
+            "project_info": {
+                "md_file": "02_work/document.md",
+                "text_source": "md",
+            },
+        }),
+    )
+    monkeypatch.setenv(_WMODE, "projects_v2_primary")
+    monkeypatch.setenv(_V2DIR, str(v2_root))
+
+    from backend.app.pipeline.manager import PipelineManager
+
+    manager = _manager_without_init()
+    info = PipelineManager._load_project_info_for_paths(manager, "DOC-B1", doc_dir, version_dir)
+
+    assert info["project_id"] == "DOC-B1"
+    assert info["document_code"] == "DOC-B1"
+    assert info["section"] == "GP"
+    assert info["pdf_file"] == "DOC-B1.pdf"
+    assert info["md_file"] == "02_work/document.md"
+    assert info["text_source"] == "md"
+
+
+@pytest.mark.asyncio
+async def test_text_analysis_runner_uses_v2_version_dir_and_output(monkeypatch, tmp_path):
+    v2_root = tmp_path / "projects_v2"
+    doc_dir = _make_v2_doc(v2_root, "DOC-B1")
+    version_dir = doc_dir / "versions" / "v001"
+    output_dir = version_dir / "03_analysis" / "runs" / "job-b1"
+    _write(
+        version_dir / "01_input" / "project_info.json",
+        json.dumps({
+            "project_id": "DOC-B1",
+            "document_code": "DOC-B1",
+            "section": "GP",
+            "pdf_file": "DOC-B1.pdf",
+        }),
+    )
+    _write(
+        version_dir / "version.json",
+        json.dumps({
+            "version_id": "v001",
+            "project_info": {
+                "md_file": "02_work/document.md",
+                "text_source": "md",
+            },
+        }),
+    )
+    monkeypatch.setenv(_WMODE, "projects_v2_primary")
+    monkeypatch.setenv(_V2DIR, str(v2_root))
+
+    from backend.app.pipeline.context import PipelineStageContext
+    from backend.app.pipeline.manager import PipelineManager
+    import backend.app.pipeline.stages.text_analysis.runner as text_runner
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+    manager = _manager_without_init()
+    project_info = PipelineManager._load_project_info_for_paths(manager, "DOC-B1", doc_dir, version_dir)
+    captured = {}
+
+    async def fake_run_triage(project_info_arg, project_id, on_output=None):
+        captured["output_dir_env"] = Path(__import__("os").environ["AUDIT_OUTPUT_DIR"])
+        captured["version_dir_env"] = Path(__import__("os").environ["AUDIT_VERSION_DIR"])
+        md_path = prompt_builder._get_md_file_path(project_info_arg, project_id)
+        captured["md_path"] = Path(md_path)
+        messages = prompt_builder.build_text_analysis_messages(project_info_arg, project_id)
+        captured["prompt"] = json.dumps(messages, ensure_ascii=False)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "01_text_analysis.json").write_text(
+            json.dumps({"text_findings": [], "page_triage": []}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        return 0, "ok", types.SimpleNamespace(input_tokens=0, output_tokens=0, duration_ms=0)
+
+    monkeypatch.setattr(text_runner.claude_runner, "run_triage", fake_run_triage)
+
+    async def noop(*args, **kwargs):
+        return None
+
+    async def true_gate(*args, **kwargs):
+        return True
+
+    ctx = PipelineStageContext(
+        project_dir=version_dir,
+        project_id="DOC-B1",
+        output_dir=output_dir,
+        log=noop,
+        check_before_launch=true_gate,
+        check_pause=true_gate,
+        wait_for_rate_limit=true_gate,
+        record_cli_usage=lambda *args, **kwargs: None,
+        update_pipeline_log=lambda *args, **kwargs: None,
+        run_subprocess=noop,
+        project_info=project_info,
+        version_id="v001",
+        job_id="job-b1",
+    )
+
+    result = await text_runner.run_text_analysis(
+        ctx,
+        use_triage=True,
+        with_rate_limit_retry=False,
+        stage_label="text_analysis",
+    )
+
+    assert result.success
+    assert captured["output_dir_env"] == output_dir
+    assert captured["version_dir_env"] == version_dir
+    assert captured["md_path"] == version_dir / "02_work" / "document.md"
+    assert "v2 md" in captured["prompt"]
+    assert (output_dir / "01_text_analysis.json").exists()
+    assert __import__("os").environ.get("AUDIT_OUTPUT_DIR") is None
+    assert __import__("os").environ.get("AUDIT_VERSION_DIR") is None

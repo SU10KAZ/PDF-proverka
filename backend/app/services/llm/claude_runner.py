@@ -26,6 +26,8 @@ import json
 import logging
 import os
 import shutil
+from contextlib import contextmanager
+from pathlib import Path
 from typing import Optional, Callable, Awaitable, Union
 
 from backend.app.core.config import (
@@ -284,18 +286,54 @@ def _write_json(path, data):
     )
 
 
-def _resolve_output_dir(project_id: str):
+def _resolve_output_dir(project_id: str, output_dir: str | Path | None = None):
     """Получить _output/ директорию активной версии проекта.
 
     Использует `bind_version()` ContextVar (выставляется на старте каждого
     pipeline job в `_run_batch_queue`) или latest_version_id.
     """
+    if output_dir:
+        return Path(output_dir)
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     from backend.app.services.common import version_service
     from backend.app.services.common.project_service import resolve_project_dir
     try:
         return version_service.resolve_version_output_dir(project_id)
     except (version_service.VersionNotFoundError, FileNotFoundError):
         return resolve_project_dir(project_id) / "_output"
+
+
+@contextmanager
+def _scoped_audit_paths(
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    project_id: str | None = None,
+    version_id: str | None = None,
+):
+    scoped_env = {}
+    if output_dir is not None:
+        scoped_env["AUDIT_OUTPUT_DIR"] = str(output_dir)
+    if version_dir is not None:
+        scoped_env["AUDIT_VERSION_DIR"] = str(version_dir)
+    if project_id is not None:
+        scoped_env["AUDIT_PROJECT_ID"] = str(project_id)
+    if version_id is not None:
+        scoped_env["AUDIT_VERSION_ID"] = str(version_id)
+
+    previous = {key: os.environ.get(key) for key in scoped_env}
+    os.environ.update(scoped_env)
+    try:
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -308,26 +346,43 @@ async def run_text_analysis(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 01_text_analysis.json (динамический выбор провайдера)."""
     if is_claude_stage("text_analysis"):
         model = get_stage_model("text_analysis")
-        task_text = prepare_text_analysis_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_text_analysis_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT,
             on_output, stage="text_analysis", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "01_text_analysis", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            _save_audit_trail(project_id, "01_text_analysis", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
     result = await llm_runner.run_llm(stage="text_analysis", messages=messages, timeout=1800)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "01_text_analysis.json"
+        output_path = resolved_output_dir / "01_text_analysis.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(
             json.dumps(result.json_data, ensure_ascii=False, indent=2), encoding="utf-8",
@@ -336,11 +391,15 @@ async def run_text_analysis(
     if on_output:
         await _send_status_llm(on_output, result)
 
-    _save_audit_trail(
-        project_id, "01_text_analysis", result.model,
-        result.input_tokens, result.output_tokens,
-        result.duration_ms, _build_llm_audit_payload(result),
-    )
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        _save_audit_trail(
+            project_id, "01_text_analysis", result.model,
+            result.input_tokens, result.output_tokens,
+            result.duration_ms, _build_llm_audit_payload(result),
+        )
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
@@ -1088,9 +1147,16 @@ async def run_triage(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Legacy: запускает text_analysis вместо триажа."""
-    return await run_text_analysis(project_info, project_id, on_output)
+    return await run_text_analysis(
+        project_info, project_id, on_output,
+        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+    )
 
 
 async def run_smart_merge(
