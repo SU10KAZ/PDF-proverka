@@ -1778,7 +1778,15 @@ class PipelineManager:
                         return
 
                 ctx = self._make_stage_context(job)
-                result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+                from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                    bind_output_root,
+                    unbind_output_root,
+                )
+                _token = bind_output_root(ctx.output_dir)
+                try:
+                    result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+                finally:
+                    unbind_output_root(_token)
 
                 if result.cancelled:
                     job.status = JobStatus.CANCELLED
@@ -2414,15 +2422,14 @@ class PipelineManager:
         normalized = self._normalize_ocr_stage(stage)
         self._assert_stage_model_config_ready()
         from backend.app.services.common import version_service
-        project_dir_root = resolve_project_dir(project_id)
         try:
-            project_dir = version_service.get_version_dir(
-                project_dir_root, project_id, version_id,
-            )
-        except version_service.VersionNotFoundError:
-            project_dir = project_dir_root
-        output_dir = project_dir / "_output"
-        project_info = load_project_info(project_dir)
+            ctx = version_service.resolve_project_version_context(project_id, version_id)
+            project_dir = ctx["version_dir"]
+            output_dir = ctx["output_dir"]
+        except (version_service.VersionNotFoundError, FileNotFoundError):
+            project_dir = resolve_project_dir(project_id)
+            output_dir = project_dir / "_output"
+        project_info = self._load_project_info_for_paths(project_id, project_dir, project_dir)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
         if normalized == "gemma_enrichment":
@@ -3399,7 +3406,12 @@ class PipelineManager:
         llm_enabled = bool(getattr(cfg, "CRITIC_V2_LLM_ENABLED", False))
         fails_pipeline = bool(getattr(cfg, "CRITIC_V2_FAILS_PIPELINE", False))
 
-        project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
+        from backend.app.services.storage.storage_write_facade import v2_is_primary as _v2_primary_for_critic
+        if _v2_primary_for_critic():
+            _root_dir, _version_dir, _output_dir = self._resolve_job_paths(job)
+            project_dir = _output_dir
+        else:
+            project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
 
         await self._log(job, f"Critic v2 triage: запуск (profile={profile}, "
                               f"subdir={output_subdir}, llm=False)")
@@ -4215,9 +4227,12 @@ class PipelineManager:
         """
         start_time = datetime.now()
         pid = job.project_id
+        output_root_token = None
         try:
             # Version-aware пути: V1 = root, projects_v2 = versions/<vid>/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import bind_output_root
+            output_root_token = bind_output_root(output_dir)
             info_path = self._project_info_path_for_paths(_root_dir, project_dir)
             project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
@@ -4440,6 +4455,12 @@ class PipelineManager:
             job.error_message = str(e)
             await self._log(job, f"Исключение: {e}", "error")
         finally:
+            if output_root_token is not None:
+                try:
+                    from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import unbind_output_root
+                    unbind_output_root(output_root_token)
+                except Exception:
+                    pass
             job.completed_at = datetime.now().isoformat()
             self._cleanup(pid)
 

@@ -1,6 +1,7 @@
 """Contract shared by Gemma enrichment producers and pipeline guards."""
 from __future__ import annotations
 
+import contextvars
 import hashlib
 import json
 import os
@@ -57,6 +58,20 @@ BASE_STATUSES = {"ok", "partial_ok", "failed", "missing"}
 HIGH_DETAIL_STATUSES = {"not_needed", "ok", "partial_ok", "failed", "missing", "skipped_large_block"}
 COVERAGE_STATUSES = {"ok", "partial", "missing_gemma_enrichment", "high_detail_skipped_large_block"}
 WARNING_LARGE_BLOCK = "high_detail_large_block"
+
+_bound_output_root: contextvars.ContextVar[Path | None] = contextvars.ContextVar(
+    "pdf_proverka.gemma_output_root", default=None,
+)
+
+
+def bind_output_root(output_dir: Path | str | None):
+    """Bind per-job Gemma/crop output root for in-process pipeline helpers."""
+    return _bound_output_root.set(Path(output_dir) if output_dir is not None else None)
+
+
+def unbind_output_root(token) -> None:
+    _bound_output_root.reset(token)
+
 
 ENRICHMENT_MARKER_RE = re.compile(
     r"^<!--\s*ENRICHMENT:\s*(?P<model>\S+)\s*@\s*(?P<ts>\S+)\s+"
@@ -117,8 +132,14 @@ def gemma_output_root(project_dir: Path | str) -> Path:
     """Root for Gemma prepare artifacts.
 
     Legacy/default stays ``_output``. In projects_v2_primary, a v2 version dir
-    writes prepare artifacts to ``03_analysis/latest``.
+    writes prepare artifacts to ``03_analysis/latest`` unless a job binds its
+    run directory through ``bind_output_root``. The ContextVar avoids leaking
+    one job's output dir into another concurrent in-process stage.
     """
+    bound_output_dir = _bound_output_root.get()
+    if bound_output_dir is not None:
+        return Path(bound_output_dir)
+
     env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
     if env_output_dir:
         return Path(env_output_dir)
