@@ -11,6 +11,8 @@ Extracted from inline excel-blocks in PipelineManager orchestrators.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from backend.app.core.config import GENERATE_EXCEL_SCRIPT
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
@@ -42,11 +44,28 @@ async def run_excel_report(ctx: PipelineStageContext) -> StageResult:
     await ctx.log("═══ Генерация Excel ═══")
 
     project_path = str(ctx.project_dir)
+    args = [project_path]
+    env_overrides = {
+        "AUDIT_NO_OPEN": "1",
+        "AUDIT_VERSION_DIR": str(ctx.project_dir),
+        "AUDIT_OUTPUT_DIR": str(ctx.output_dir),
+    }
+
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import is_projects_v2_version_dir
+        if is_projects_v2_version_dir(ctx.project_dir):
+            export_dir = Path(ctx.project_dir) / "05_export"
+            export_dir.mkdir(parents=True, exist_ok=True)
+            safe_project = str(ctx.project_id or "project").replace("/", "_")
+            suffix = str(ctx.job_id or "latest").replace("/", "_")
+            args.extend(["--out", str(export_dir / f"audit_report_{safe_project}_{suffix}.xlsx")])
+    except Exception:
+        pass
 
     exit_code, xls_out, xls_err = await ctx.run_subprocess(
         str(GENERATE_EXCEL_SCRIPT),
-        args=[project_path],
-        env_overrides={"AUDIT_NO_OPEN": "1"},
+        args=args,
+        env_overrides=env_overrides,
         on_output=ctx.log,
     )
 

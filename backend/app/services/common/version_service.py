@@ -341,6 +341,9 @@ def ensure_project_versions_manifest(project_dir: Path, project_id: str) -> dict
 
 def get_latest_version_id(project_dir: Path, project_id: str) -> str:
     """Идентификатор последней версии (по умолчанию `v1` для legacy)."""
+    v2_ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if v2_ctx is not None:
+        return v2_ctx["latest_version_id"]
     manifest = read_project_versions(project_dir, project_id)
     return manifest.get("latest_version_id") or "v1"
 
@@ -350,6 +353,195 @@ def _find_version(manifest: dict[str, Any], version_id: str) -> Optional[dict[st
         if entry.get("version_id") == version_id:
             return entry
     return None
+
+
+def _projects_v2_context_enabled() -> bool:
+    """Whether version/id/dir resolution should prefer projects_v2.
+
+    This is flag-based rather than layout-based because callers usually pass a
+    legacy project_dir. With flags OFF we must keep legacy version semantics
+    byte-for-byte, even if a mirrored projects_v2 document exists.
+    """
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            return True
+    except Exception:
+        pass
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        if production_uses_v2():
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def _version_no_from_id(version_id: str, fallback: int = 1) -> int:
+    m = re.match(r"^v0*(\d+)$", str(version_id or ""))
+    return int(m.group(1)) if m else fallback
+
+
+def _normalize_projects_v2_version_entry(
+    raw_entry: dict[str, Any] | None,
+    version_json: dict[str, Any] | None,
+    version_id: str,
+) -> dict[str, Any]:
+    """Normalized version entry for projects_v2 document.json/version.json."""
+    payload: dict[str, Any] = {}
+    if isinstance(raw_entry, dict):
+        payload.update(raw_entry)
+    if isinstance(version_json, dict):
+        for key, value in version_json.items():
+            if key == "project_info":
+                continue
+            payload.setdefault(key, value)
+
+    version_no = payload.get("version_no")
+    try:
+        version_no = int(version_no)
+    except (TypeError, ValueError):
+        version_no = _version_no_from_id(version_id)
+
+    return {
+        **payload,
+        "version_id": version_id,
+        "physical_version_id": version_id,
+        "logical_version_id": f"v{version_no}",
+        "version_no": version_no,
+        "label": payload.get("label") or f"V{version_no}",
+        "folder": f"versions/{version_id}",
+        "status": payload.get("status") or payload.get("analysis_status") or "active",
+        "source": payload.get("source") or "projects_v2",
+        "created_at": payload.get("created_at") or payload.get("migrated_at") or _now_iso(),
+    }
+
+
+def _resolve_projects_v2_version_context(
+    project_id: str,
+    version_id: Optional[str] = None,
+    *,
+    allow_missing: bool = False,
+) -> Optional[dict[str, Any]]:
+    """Resolve version context against projects_v2 when cutover flags are ON.
+
+    Accepts both logical legacy ids (``v1``) and physical projects_v2 ids
+    (``v001``). Returned ``version_id`` is the physical disk id so every caller
+    points at the same ``versions/vNNN`` directory.
+    """
+    if not _projects_v2_context_enabled():
+        return None
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    except Exception:
+        return None
+
+    try:
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return None
+        doc = adapter.find_document_by_project_id(project_id)
+    except Exception:
+        return None
+    if doc is None:
+        return None
+
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        if version_id and not allow_missing:
+            raise VersionNotFoundError(
+                f"Версия '{version_id}' не найдена в projects_v2 документе '{project_id}'"
+            )
+        return None
+
+    doc_dir = Path(doc["doc_dir"])
+    version_dir = adapter.version_dir(doc_dir, vid)
+    if not version_dir.is_dir():
+        if not allow_missing:
+            raise VersionNotFoundError(
+                f"Папка версии projects_v2 '{vid}' не найдена для проекта '{project_id}'"
+            )
+        return None
+
+    document_json = adapter.read_document_json(doc_dir) or {}
+    latest_id = adapter.current_version_id(doc_dir, document_json) or vid
+    raw_entry = next(
+        (v for v in adapter.list_versions(doc_dir) if v.get("version_id") == vid),
+        None,
+    )
+    version_json = adapter.read_version_json(doc_dir, vid) or {}
+    entry = _normalize_projects_v2_version_entry(raw_entry, version_json, vid)
+
+    return {
+        "project_id": project_id,
+        "document_code": doc.get("document_code") or project_id,
+        "object_folder": doc.get("object_folder"),
+        "discipline": doc.get("discipline"),
+        "doc_dir": doc_dir,
+        "project_dir": doc_dir,
+        "version_id": vid,
+        "version_dir": version_dir,
+        "output_dir": version_dir / "03_analysis" / "latest",
+        "version_entry": entry,
+        "is_latest": vid == latest_id,
+        "latest_version_id": latest_id,
+        "storage_layout": "projects_v2",
+    }
+
+
+def _get_projects_v2_versions_summary(project_id: str) -> Optional[dict[str, Any]]:
+    if not _projects_v2_context_enabled():
+        return None
+    ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if ctx is None:
+        return None
+
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        doc_dir = ctx["doc_dir"]
+        raw_versions = adapter.list_versions(doc_dir)
+    except Exception:
+        return None
+
+    latest_id = ctx["latest_version_id"]
+    versions: list[dict[str, Any]] = []
+    for raw in raw_versions:
+        vid = raw.get("version_id")
+        if not vid:
+            continue
+        version_dir = adapter.version_dir(doc_dir, vid)
+        vj = adapter.read_version_json(doc_dir, vid) or {}
+        entry = _normalize_projects_v2_version_entry(raw, vj, vid)
+        pdf_count, md_count, source_count = _source_counts(version_dir)
+        versions.append({
+            "version_id": entry["version_id"],
+            "physical_version_id": entry["physical_version_id"],
+            "logical_version_id": entry["logical_version_id"],
+            "version_no": entry["version_no"],
+            "label": entry["label"],
+            "folder": entry["folder"],
+            "status": entry.get("status", "active"),
+            "source": entry.get("source", "projects_v2"),
+            "created_at": entry.get("created_at"),
+            "comment": entry.get("comment"),
+            "is_latest": vid == latest_id,
+            "has_source_files": (pdf_count > 0 or md_count > 0),
+            "pdf_count": pdf_count,
+            "md_count": md_count,
+            "source_files_count": source_count,
+            "can_run_audit": pdf_count > 0,
+        })
+
+    return {
+        "project_id": project_id,
+        "logical_project_id": project_id,
+        "latest_version_id": latest_id,
+        "version_count": len(versions),
+        "has_versions": len(versions) > 1,
+        "versions": versions,
+        "storage_layout": "projects_v2",
+    }
 
 
 def get_version_dir(
@@ -365,6 +557,10 @@ def get_version_dir(
 
     Бросает `VersionNotFoundError`, если указанный version_id отсутствует.
     """
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return v2_ctx["version_dir"]
+
     manifest, base = _read_versions_and_base(project_dir, project_id)
     vid = version_id or manifest.get("latest_version_id") or "v1"
     entry = _find_version(manifest, vid)
@@ -386,6 +582,10 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
     и `can_run_audit`). Подсчёт идёт по содержимому version_dir на ФС,
     манифест используется только для путей.
     """
+    v2_summary = _get_projects_v2_versions_summary(project_id)
+    if v2_summary is not None:
+        return v2_summary
+
     manifest, base = _read_versions_and_base(project_dir, project_id)
     latest_id = manifest.get("latest_version_id") or "v1"
     versions = manifest.get("versions", [])
@@ -446,6 +646,10 @@ def get_version_entry(
     version_id: Optional[str] = None,
 ) -> dict[str, Any]:
     """Нормализованная запись конкретной версии (или latest при None)."""
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return dict(v2_ctx["version_entry"])
+
     manifest = read_project_versions(project_dir, project_id)
     vid = version_id or manifest.get("latest_version_id") or "v1"
     entry = _find_version(manifest, vid)
@@ -706,13 +910,20 @@ def resolve_effective_version_id(
 ) -> str:
     """Финальный version_id для запроса.
 
-    Приоритет: явный аргумент > bind_version() > latest.
+    Приоритет: явный аргумент > bind_version() > latest. Under projects_v2
+    cutover, logical ids such as ``v1`` are normalized to physical ids such
+    as ``v001`` so subsequent path resolution stays on the v2 version dir.
     """
-    if version_id:
-        return version_id
-    bound = get_bound_version_id()
-    if bound:
-        return bound
+    requested = version_id or get_bound_version_id()
+    if requested:
+        v2_ctx = _resolve_projects_v2_version_context(project_id, requested)
+        if v2_ctx is not None:
+            return v2_ctx["version_id"]
+        return requested
+
+    v2_ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if v2_ctx is not None:
+        return v2_ctx["version_id"]
     return get_latest_version_id(project_dir, project_id)
 
 
@@ -739,6 +950,10 @@ def resolve_project_version_context(
     Бросает `VersionNotFoundError`, если запрошенная версия отсутствует.
     Бросает `FileNotFoundError`, если папки проекта нет на ФС.
     """
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return dict(v2_ctx)
+
     if resolve_project_dir_fn is None:
         from backend.app.services.common.project_service import resolve_project_dir
         resolve_project_dir_fn = resolve_project_dir
