@@ -202,7 +202,6 @@ def evaluate_gemma_enrichment(
     project_dir = Path(project_dir)
     project_info = project_info if project_info is not None else load_project_info(project_dir)
     output_dir = gemma_output_root(project_dir)
-    partial_allowed = partial_gemma_allowed(project_info)
 
     md_path = find_project_markdown(project_dir, project_info)
     state: dict[str, Any] = {
