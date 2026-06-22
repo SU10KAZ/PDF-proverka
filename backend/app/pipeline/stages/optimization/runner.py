@@ -127,6 +127,9 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
     exit_code, output, cli_result = await claude_runner.run_optimization(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=ctx.output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization")
 
@@ -168,6 +171,9 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
         exit_code, output, cli_result = await claude_runner.run_optimization(
             project_info, pid,
             on_output=ctx.log,
+            output_dir=ctx.output_dir,
+            version_dir=ctx.project_dir,
+            version_id=ctx.version_id,
         )
         ctx.record_cli_usage(cli_result, "optimization_retry")
         if exit_code == 0:
@@ -212,6 +218,9 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
     exit_code, output, cli_result = await claude_runner.run_optimization_critic(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization_critic")
 
@@ -302,6 +311,9 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
     exit_code, output, cli_result = await claude_runner.run_optimization_corrector(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization_corrector")
 

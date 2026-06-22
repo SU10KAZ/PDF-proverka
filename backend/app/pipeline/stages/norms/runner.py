@@ -381,6 +381,9 @@ async def run_norm_verification(
                             on_output=ctx.log,
                             project_info=project_info,
                             llm_out_filename=fname,
+                            output_dir=output_dir,
+                            version_dir=ctx.project_dir,
+                            version_id=ctx.version_id,
                         )
                         ctx.record_cli_usage(
                             cli_result,
@@ -430,6 +433,9 @@ async def run_norm_verification(
                     llm_work_text, pid,
                     on_output=ctx.log,
                     project_info=project_info,
+                    output_dir=output_dir,
+                    version_dir=ctx.project_dir,
+                    version_id=ctx.version_id,
                 )
                 stage_label = "norm_verify" if attempt == 1 else f"norm_verify_retry_{attempt}"
                 ctx.record_cli_usage(cli_result, stage_label)
@@ -477,6 +483,9 @@ async def run_norm_verification(
                     llm_work_text, pid,
                     on_output=ctx.log,
                     project_info=project_info,
+                    output_dir=output_dir,
+                    version_dir=ctx.project_dir,
+                    version_id=ctx.version_id,
                 )
                 ctx.record_cli_usage(cli_result, "norm_verify_missing_file_retry")
                 if is_cancelled(exit_code):
@@ -587,6 +596,9 @@ async def run_norm_verification(
             findings_to_fix_text, pid,
             on_output=ctx.log,
             project_info=project_info,
+            output_dir=output_dir,
+            version_dir=ctx.project_dir,
+            version_id=ctx.version_id,
         )
         ctx.record_cli_usage(cli_result, "norm_fix")
 
@@ -643,6 +655,8 @@ async def run_norm_verification(
             )
             exit_code, _, cli_result = await claude_runner.run_norm_requote(
                 pid, on_output=ctx.log, project_info=project_info,
+                output_dir=output_dir, version_dir=ctx.project_dir,
+                version_id=ctx.version_id,
             )
             ctx.record_cli_usage(cli_result, "norm_requote")
             if exit_code != 0:

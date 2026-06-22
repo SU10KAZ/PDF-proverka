@@ -1466,7 +1466,7 @@ class PipelineManager:
             self._update_pipeline_log(pid, stage_key, status, **kwargs)
 
         async def _run_subprocess(*args, **kwargs):
-            return await self._run_script(pid, *args, **kwargs)
+            return await self._run_script_for_job(job, *args, **kwargs)
 
         project_info = self._load_project_info_for_paths(pid, _root, version_dir)
 
@@ -3274,6 +3274,9 @@ class PipelineManager:
             exit_code, output, cli_result = await claude_runner.run_main_audit(
                 project_info, pid,
                 on_output=lambda msg: self._log(job, msg),
+                output_dir=_output_dir,
+                version_dir=_project_dir,
+                version_id=job.version_id,
             )
             self._record_cli_usage(job, cli_result, "main_audit")
 
@@ -3294,6 +3297,9 @@ class PipelineManager:
                     exit_code, output, cli_result = await claude_runner.run_main_audit(
                         project_info, pid,
                         on_output=lambda msg: self._log(job, msg),
+                        output_dir=_output_dir,
+                        version_dir=_project_dir,
+                        version_id=job.version_id,
                     )
                     self._record_cli_usage(job, cli_result, "main_audit_retry")
                     if exit_code == 0:
@@ -3916,6 +3922,9 @@ class PipelineManager:
                 exit_code, output, cli_result = await claude_runner.run_smart_merge(
                     project_info, pid,
                     on_output=lambda msg: self._log(job, msg),
+                    output_dir=output_dir,
+                    version_dir=project_dir,
+                    version_id=job.version_id,
                 )
                 self._record_cli_usage(job, cli_result, "smart_merge")
                 if claude_runner.is_cancelled(exit_code):
@@ -3929,6 +3938,9 @@ class PipelineManager:
                         exit_code, output, cli_result = await claude_runner.run_smart_merge(
                             project_info, pid,
                             on_output=lambda msg: self._log(job, msg),
+                            output_dir=output_dir,
+                            version_dir=project_dir,
+                            version_id=job.version_id,
                         )
                         self._record_cli_usage(job, cli_result, "smart_merge_retry")
                 if exit_code != 0:
@@ -5531,6 +5543,8 @@ class PipelineManager:
         self,
         project_id: str,
         stage: str,
+        *,
+        version_id: Optional[str] = None,
     ) -> BatchQueueStatus:
         """Добавить retry конкретного этапа в очередь."""
         # Маппинг ключей pipeline_summary → внутренних ключей этапов
@@ -5552,10 +5566,13 @@ class PipelineManager:
             "main_audit": "findings_merge",
         }
         internal_stage = stage_map.get(stage, stage)
-        internal_stage = self._validate_start_from_stage_now(project_id, internal_stage)
+        internal_stage = self._validate_start_from_stage_now(
+            project_id, internal_stage, version_id=version_id,
+        )
 
         await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=internal_stage,
+            version_id=version_id,
         )
         stage_label = {
             "prepare": "Кроп блоков", "gemma_enrichment": GEMMA_STAGE_LABEL,
@@ -5569,9 +5586,11 @@ class PipelineManager:
         )
         return self._batch_queue
 
-    async def add_resume_to_batch(self, project_id: str) -> BatchQueueStatus:
+    async def add_resume_to_batch(
+        self, project_id: str, *, version_id: Optional[str] = None,
+    ) -> BatchQueueStatus:
         """Добавить resume проекта в очередь."""
-        await self._enqueue_single(project_id, action="resume")
+        await self._enqueue_single(project_id, action="resume", version_id=version_id)
         await ws_manager.broadcast_global(
             WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → Продолжить", "info")
         )

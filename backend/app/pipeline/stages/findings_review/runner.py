@@ -224,6 +224,9 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
                     project_info, pid,
                     on_output=lambda msg: ctx.log(msg),
                     chunk_suffix=suffix,
+                    output_dir=output_dir,
+                    version_dir=ctx.project_dir,
+                    version_id=ctx.version_id,
                 )
                 ctx.record_cli_usage(cli_result, f"findings_critic_chunk{cidx}")
 
@@ -341,6 +344,9 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
         exit_code, output, cli_result = await claude_runner.run_findings_critic(
             project_info, pid,
             on_output=lambda msg: ctx.log(msg),
+            output_dir=output_dir,
+            version_dir=ctx.project_dir,
+            version_id=ctx.version_id,
         )
         ctx.record_cli_usage(cli_result, "findings_critic")
 
@@ -471,6 +477,9 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
         exit_code, output, cli_result = await claude_runner.run_findings_corrector(
             project_info, pid,
             on_output=lambda msg: ctx.log(msg),
+            output_dir=output_dir,
+            version_dir=ctx.project_dir,
+            version_id=ctx.version_id,
         )
         ctx.record_cli_usage(
             cli_result,
