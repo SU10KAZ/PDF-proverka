@@ -53,6 +53,7 @@ import os
 import re
 import shutil
 import tempfile
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
@@ -122,6 +123,11 @@ def normalize_vid_for_disk(version_id: str) -> str:
     if m:
         return f"v{int(m.group(1)):03d}"
     return s.lower()
+
+
+def _version_no_for_disk_id(version_id: str) -> int:
+    m = _VID_RE.match((version_id or "").strip())
+    return int(m.group(1)) if m else 1
 
 
 @dataclass(frozen=True)
@@ -317,21 +323,91 @@ class StorageWriteFacade:
 
     # -- v2-writers (вызываются только при разрешённой записи) ------------
     def _ensure_document_scaffold(self, v2_root: Path, target: V2Target) -> list[Path]:
-        """Создать минимальный каркас документа/версии в v2 (idempotent)."""
+        """Создать минимальный каркас документа/версии в v2 (idempotent).
+
+        Новый v2-документ должен быть виден read-адаптеру сразу после первой
+        записи. Поэтому, кроме каталогов, поддерживаем `document.json` с
+        `versions`/`version_ids` и `current_version.txt`. Старые минимальные
+        scaffold-файлы дозаполняются без потери посторонних полей.
+        """
         written: list[Path] = []
         doc_dir = target.doc_dir(v2_root)
+        vid = target.vid_disk()
+        version_no = _version_no_for_disk_id(vid)
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+        version_dir = target.version_dir(v2_root)
+        for subdir in (
+            version_dir / "01_input",
+            version_dir / "02_work",
+            version_dir / "03_analysis" / "latest",
+            version_dir / "04_review",
+            version_dir / "05_export",
+        ):
+            subdir.mkdir(parents=True, exist_ok=True)
+
         doc_json = doc_dir / "document.json"
-        if not doc_json.exists():
-            _atomic_write_json(doc_json, {
-                "schema_version": 1,
-                "document_code": target.document_code,
-                "object_folder": target.object_folder,
-                "discipline": target.discipline,
-            })
+        if doc_json.exists():
+            try:
+                payload = json.loads(doc_json.read_text(encoding="utf-8"))
+                if not isinstance(payload, dict):
+                    payload = {}
+            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+                payload = {}
+        else:
+            payload = {}
+
+        changed = not doc_json.exists()
+        defaults = {
+            "schema_version": 1,
+            "document_code": target.document_code,
+            "object_folder": target.object_folder,
+            "discipline": target.discipline,
+        }
+        for key, value in defaults.items():
+            if not payload.get(key):
+                payload[key] = value
+                changed = True
+
+        version_entry = {
+            "version_id": vid,
+            "version_no": version_no,
+            "label": f"V{version_no}",
+            "status": "source_only",
+            "source": "upload",
+            "created_at": now,
+        }
+        versions = payload.get("versions")
+        if not isinstance(versions, list):
+            versions = []
+            changed = True
+        if not any(isinstance(v, dict) and v.get("version_id") == vid for v in versions):
+            versions.append(version_entry)
+            versions.sort(key=lambda v: _version_no_for_disk_id(str(v.get("version_id", "v001"))) if isinstance(v, dict) else 0)
+            changed = True
+        payload["versions"] = versions
+
+        version_ids = payload.get("version_ids")
+        if not isinstance(version_ids, list):
+            version_ids = []
+            changed = True
+        if vid not in version_ids:
+            version_ids.append(vid)
+            version_ids.sort(key=_version_no_for_disk_id)
+            changed = True
+        payload["version_ids"] = version_ids
+
+        if not payload.get("current_version"):
+            payload["current_version"] = vid
+            changed = True
+
+        if changed:
+            _atomic_write_json(doc_json, payload)
             written.append(doc_json)
+
         cur = doc_dir / "current_version.txt"
         if not cur.exists():
-            _atomic_write_bytes(cur, target.vid_disk().encode("utf-8"))
+            _atomic_write_bytes(cur, vid.encode("utf-8"))
             written.append(cur)
         return written
 

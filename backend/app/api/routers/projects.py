@@ -461,9 +461,7 @@ async def list_project_versions(project_id: str, request: Request):
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
         return read_canary.v2_project_versions(request, project_id)
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
     return version_service.get_versions_summary(proj_dir, project_id)
 
 
@@ -489,6 +487,26 @@ class CreateVersionRequest(BaseModel):
     status: str = "new"
 
 
+def _resolve_project_dir_for_version_api(project_id: str) -> Path:
+    """Resolve a project for version endpoints, including v2-only documents.
+
+    Legacy endpoints used to reject before `version_service` could resolve
+    projects_v2 documents. Under v2-primary a document may legitimately exist
+    only in projects_v2, so this helper lets the version service be the source
+    of truth while preserving legacy 404 behavior when flags are OFF.
+    """
+    from backend.app.services.common import version_service
+
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if proj_dir.exists():
+        return proj_dir
+    try:
+        ctx = version_service.resolve_project_version_context(project_id, None)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    return Path(ctx.get("project_dir") or proj_dir)
+
+
 @router.post("/{project_id:path}/versions")
 async def create_project_version(project_id: str, req: CreateVersionRequest):
     """Создать следующую версию проекта (V2, V3, ...).
@@ -499,9 +517,7 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
     - НЕ копирует и НЕ переносит существующий `_output` старой версии.
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
 
     try:
         new_entry = version_service.create_next_version(
@@ -515,8 +531,8 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
 
-    # Промоут в контейнер мог переместить папку V1 → перерезолвим её.
-    proj_dir = project_service.resolve_project_dir(project_id)
+    # Промоут/создание v2-версии могло поменять active context → перерезолвим.
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
     summary = version_service.get_versions_summary(proj_dir, project_id)
     return {
         "status": "ok",
@@ -544,9 +560,7 @@ async def list_version_files_endpoint(project_id: str, version_id: str, request:
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
         return read_canary.v2_version_files(request, project_id, version_id)
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    _resolve_project_dir_for_version_api(project_id)
     try:
         return version_service.list_version_files(project_id, version_id)
     except version_service.VersionNotFoundError as e:
@@ -596,9 +610,7 @@ async def upload_version_files_endpoint(
     - после загрузки `project_info.json` версии обновляется (pdf_files, md_files, updated_at).
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    _resolve_project_dir_for_version_api(project_id)
 
     if not files:
         raise HTTPException(400, "Не передан ни один файл")

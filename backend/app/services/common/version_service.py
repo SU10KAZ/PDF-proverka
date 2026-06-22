@@ -292,6 +292,12 @@ def _write_group_manifest(container: Path, manifest: dict[str, Any]) -> bool:
         return False
 
 
+def _write_json_file(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
+
 def _read_versions_and_base(
     project_dir: Path, project_id: str,
 ) -> tuple[dict[str, Any], Path]:
@@ -729,6 +735,133 @@ def promote_to_container(
     return container, primary_dir, manifest
 
 
+def _create_next_projects_v2_version(
+    project_id: str,
+    *,
+    label: Optional[str] = None,
+    source: str = "manual",
+    status: str = "new",
+    comment: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    """Create the next physical `vNNN` version in projects_v2.
+
+    This path is active only when v2 read/write context is explicitly enabled.
+    It never falls back to legacy; if the document is not in projects_v2 the
+    caller should continue through the legacy implementation.
+    """
+    if not _projects_v2_context_enabled():
+        return None
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+    except Exception:
+        return None
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        return None
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None
+
+    doc_dir = Path(doc["doc_dir"])
+    document_json = adapter.read_document_json(doc_dir) or {}
+    existing_versions = [v for v in (document_json.get("versions") or []) if isinstance(v, dict)]
+    existing_ids = {str(v.get("version_id")) for v in existing_versions if v.get("version_id")}
+    versions_root = doc_dir / "versions"
+    if versions_root.is_dir():
+        existing_ids.update(p.name for p in versions_root.iterdir() if p.is_dir() and p.name.startswith("v"))
+    if not existing_ids:
+        current = adapter.current_version_id(doc_dir, document_json)
+        if current:
+            existing_ids.add(current)
+
+    next_no = max((_version_no_from_id(vid, 0) for vid in existing_ids), default=0) + 1
+    vid = f"v{next_no:03d}"
+    while (doc_dir / "versions" / vid).exists() or vid in existing_ids:
+        next_no += 1
+        vid = f"v{next_no:03d}"
+
+    version_dir = doc_dir / "versions" / vid
+    for subdir in (
+        version_dir / "01_input",
+        version_dir / "02_work",
+        version_dir / "03_analysis" / "latest",
+        version_dir / "04_review",
+        version_dir / "05_export",
+    ):
+        subdir.mkdir(parents=True, exist_ok=True)
+
+    current_vid = adapter.current_version_id(doc_dir, document_json)
+    base_info: dict[str, Any] = {}
+    if current_vid:
+        base_info = load_version_project_info(doc_dir / "versions" / current_vid)
+        if not isinstance(base_info, dict):
+            base_info = {}
+
+    entry: dict[str, Any] = {
+        "version_id": vid,
+        "version_no": next_no,
+        "label": (label or f"V{next_no}").strip() or f"V{next_no}",
+        "status": status,
+        "source": source,
+        "created_at": _now_iso(),
+    }
+    if comment:
+        entry["comment"] = comment
+
+    seed_info = {
+        "project_id": base_info.get("project_id", project_id),
+        "document_code": base_info.get("document_code", doc.get("document_code") or project_id),
+        "name": base_info.get("name", project_id),
+        "section": base_info.get("section", doc.get("discipline") or "EOM"),
+        "description": base_info.get("description", ""),
+        "pdf_file": "",
+        "pdf_files": [],
+        "md_files": [],
+        "version_id": vid,
+        "version_label": entry["label"],
+        "version_source": source,
+    }
+    if comment:
+        seed_info["version_comment"] = comment
+
+    version_json = {
+        "schema_version": 1,
+        "version_id": vid,
+        "version_no": next_no,
+        "label": entry["label"],
+        "analysis_status": status,
+        "source": source,
+        "created_at": entry["created_at"],
+        "project_info": dict(seed_info),
+    }
+    if comment:
+        version_json["comment"] = comment
+    _write_json_file(version_dir / "version.json", version_json)
+    _write_json_file(version_dir / "01_input" / "project_info.json", seed_info)
+
+    versions = [v for v in existing_versions if v.get("version_id") != vid]
+    versions.append(entry)
+    versions.sort(key=lambda v: int(v.get("version_no") or _version_no_from_id(v.get("version_id"), 0)))
+    version_ids = [str(v.get("version_id")) for v in versions if v.get("version_id")]
+
+    document_json.update({
+        "schema_version": document_json.get("schema_version") or 1,
+        "document_code": document_json.get("document_code") or doc.get("document_code") or project_id,
+        "object_folder": document_json.get("object_folder") or doc.get("object_folder"),
+        "discipline": document_json.get("discipline") or doc.get("discipline"),
+        "versions": versions,
+        "version_ids": version_ids,
+        "current_version": vid,
+    })
+    _write_json_file(doc_dir / "document.json", document_json)
+    (doc_dir / "current_version.txt").write_text(vid, encoding="utf-8")
+    _invalidate_project_cache()
+
+    return _normalize_projects_v2_version_entry(entry, version_json, vid)
+
+
 def create_next_version(
     project_dir: Path,
     project_id: str,
@@ -762,6 +895,12 @@ def create_next_version(
 
     Возвращает запись добавленной версии.
     """
+    v2_entry = _create_next_projects_v2_version(
+        project_id, label=label, source=source, status=status, comment=comment,
+    )
+    if v2_entry is not None:
+        return v2_entry
+
     if not project_dir.exists() or not project_dir.is_dir():
         raise FileNotFoundError(f"Папка проекта не найдена: {project_dir}")
 
@@ -1119,6 +1258,78 @@ def _load_layout_project_info(version_dir: Path) -> dict[str, Any]:
         return {}
 
 
+def _v2_input_names(version_dir: Path) -> list[str]:
+    inp = version_dir / "01_input"
+    if not inp.is_dir():
+        return []
+    result: list[str] = []
+    for p in inp.rglob("*"):
+        if not p.is_file():
+            continue
+        rel = str(p.relative_to(inp))
+        if rel == "project_info.json" or Path(rel).name.startswith("."):
+            continue
+        result.append(rel)
+    return sorted(result)
+
+
+def _sync_v2_version_project_info(version_dir: Path, info: dict[str, Any]) -> None:
+    vj_path = version_dir / "version.json"
+    try:
+        if vj_path.exists():
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+            if not isinstance(vj, dict):
+                vj = {}
+        else:
+            vj = {}
+        vj.setdefault("schema_version", 1)
+        vj.setdefault("version_id", version_dir.name)
+        vj["project_info"] = dict(info)
+        _write_json_file(vj_path, vj)
+    except OSError as e:
+        raise VersionFileError(f"Не удалось сохранить version.json: {e}")
+
+
+def _v2_input_path(version_dir: Path, value: str | None) -> Optional[Path]:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    rel = Path(value)
+    if rel.is_absolute():
+        return rel if rel.is_file() else None
+    path = version_dir / "01_input" / rel
+    return path if path.is_file() else None
+
+
+def _copy_if_exists(source: Optional[Path], target: Path) -> None:
+    if source is None or not source.is_file():
+        return
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(source.read_bytes())
+
+
+def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
+    """Keep canonical 02_work files in sync with uploaded 01_input originals."""
+    work = version_dir / "02_work"
+    work.mkdir(parents=True, exist_ok=True)
+    _copy_if_exists(_v2_input_path(version_dir, info.get("pdf_file")), work / "document.pdf")
+    _copy_if_exists(_v2_input_path(version_dir, info.get("md_file")), work / "document.md")
+
+    inp = version_dir / "01_input"
+    result_candidates = sorted(
+        p for p in inp.rglob("*.json")
+        if p.is_file() and (p.name == "result.json" or p.name.endswith("_result.json"))
+    ) if inp.is_dir() else []
+    if result_candidates:
+        _copy_if_exists(result_candidates[0], work / "result.json")
+
+    ocr_candidates = sorted(
+        p for p in inp.rglob("*.html")
+        if p.is_file() and (p.name == "ocr.html" or p.name.endswith("_ocr.html"))
+    ) if inp.is_dir() else []
+    if ocr_candidates:
+        _copy_if_exists(ocr_candidates[0], work / "ocr.html")
+
+
 def _update_version_project_info(
     version_dir: Path,
     project_id: str,
@@ -1130,22 +1341,26 @@ def _update_version_project_info(
 
     Сохраняет неизвестные поля. Возвращает обновлённый info.
     """
-    info_path = version_dir / "project_info.json"
+    is_v2_layout = _is_v2_source_layout(version_dir)
+    info_path = (
+        version_dir / "01_input" / "project_info.json"
+        if is_v2_layout else version_dir / "project_info.json"
+    )
     if info_path.exists():
         try:
             info = json.loads(info_path.read_text(encoding="utf-8")) or {}
         except (OSError, json.JSONDecodeError, UnicodeDecodeError):
             info = {}
     else:
-        info = {}
+        info = _load_layout_project_info(version_dir) if is_v2_layout else {}
     if not isinstance(info, dict):
         info = {}
 
-    # Все файлы в папке версии (с учётом ранее загруженных). Для projects_v2
-    # исходники лежат в 01_input/02_work, поэтому берём layout-aware records.
-    if _is_v2_source_layout(version_dir):
-        source_records = _source_file_records(version_dir)
-        all_files = [r["name"] for r in source_records]
+    # Все пользовательские исходники версии. Для projects_v2 считаем именно
+    # immutable originals из 01_input; 02_work содержит derived canonical copies
+    # (`document.pdf`, `document.md`, ...) и не должен дублировать upload list.
+    if is_v2_layout:
+        all_files = _v2_input_names(version_dir)
     else:
         all_files = [
             p.name for p in version_dir.iterdir()
@@ -1185,6 +1400,8 @@ def _update_version_project_info(
             json.dumps(info, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        if is_v2_layout:
+            _sync_v2_version_project_info(version_dir, info)
     except OSError as e:
         raise VersionFileError(f"Не удалось сохранить project_info.json: {e}")
 
@@ -1267,7 +1484,11 @@ def save_files_to_version(
         project_id, version_id, resolve_project_dir_fn=resolve_project_dir_fn,
     )
     version_dir: Path = ctx["version_dir"]
+    is_projects_v2 = ctx.get("storage_layout") == "projects_v2"
     version_dir.mkdir(parents=True, exist_ok=True)
+    if is_projects_v2:
+        (version_dir / "01_input").mkdir(parents=True, exist_ok=True)
+        (version_dir / "02_work").mkdir(parents=True, exist_ok=True)
 
     # Сначала валидируем все имена и проверяем конфликты — атомарно: либо все
     # сохраняем, либо ничего.
@@ -1283,7 +1504,7 @@ def save_files_to_version(
                 f"Дубликат в одной загрузке: {safe!r}"
             )
         seen_in_batch.add(safe)
-        target = version_dir / safe
+        target = (version_dir / "01_input" / safe) if is_projects_v2 else (version_dir / safe)
         if target.exists() and not replace_existing:
             raise VersionFileConflictError(
                 f"Файл '{safe}' уже существует. Используйте replace_existing=true."
@@ -1304,6 +1525,8 @@ def save_files_to_version(
     info = _update_version_project_info(
         version_dir, project_id, saved_names, comment=comment,
     )
+    if is_projects_v2:
+        _sync_v2_work_copies(version_dir, info)
 
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # входного комплекта версии (no-op в legacy, fail-soft).
