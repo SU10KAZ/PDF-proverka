@@ -32,8 +32,14 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     gemma_blocks_dir,
     gemma_blocks_index_path,
     gemma_high_detail_crop_policy,
+    gemma_output_root,
     stage02_crop_policy,
     validate_gemma_summary,
+)
+from backend.app.services.storage.projects_v2_source_resolver import (
+    VersionSourceFiles,
+    load_version_project_info,
+    resolve_version_source_files,
 )
 
 try:
@@ -45,6 +51,56 @@ except ImportError:
 def _require_pymupdf():
     if fitz is None:
         raise RuntimeError("PyMuPDF не установлен: pip install PyMuPDF")
+
+
+def _load_project_info(project_dir: str | Path) -> dict:
+    info = load_version_project_info(project_dir)
+    return info if isinstance(info, dict) else {}
+
+
+def _source_files(project_dir: str | Path, info: dict | None = None) -> VersionSourceFiles:
+    info = info if isinstance(info, dict) else _load_project_info(project_dir)
+    document_code = info.get("document_code") or info.get("project_id") or Path(project_dir).name
+    return resolve_version_source_files(project_dir, document_code, project_info=info)
+
+
+def _output_subdir(project_dir: str | Path, name: str) -> Path:
+    output_dir_arg = Path(name)
+    return output_dir_arg if output_dir_arg.is_absolute() else gemma_output_root(project_dir) / name
+
+
+def _select_source_pdf(
+    project_path: Path,
+    result_json_path: Path,
+    pdf_files: list[str],
+    sources: VersionSourceFiles,
+) -> Path | None:
+    result_stem = result_json_path.stem.replace("_result", "")
+
+    def _configured(value: str) -> Path | None:
+        candidate = Path(value)
+        if not candidate.is_absolute():
+            candidate = project_path / candidate
+        if candidate.exists():
+            return candidate
+        value_name = Path(value).name
+        value_stem = Path(value).stem
+        for pdf in sources.pdf_paths:
+            if pdf.name == value_name or pdf.stem == value_stem:
+                return pdf
+        return None
+
+    for pf in pdf_files:
+        if Path(pf).stem == result_stem or result_stem == "result":
+            candidate = _configured(pf)
+            if candidate is not None:
+                return candidate
+    for pdf in sources.pdf_paths:
+        if pdf.stem == result_stem:
+            return pdf
+    if sources.pdf_path is not None:
+        return sources.pdf_path
+    return sources.pdf_paths[0] if sources.pdf_paths else None
 
 
 # ─── Block ID normalization ────────────────────────────────────────────────
@@ -172,13 +228,8 @@ def _iter_image_blocks_from_ocr(project_dir: str):
         return [], {}, {}, []
 
     project_path = Path(project_dir)
-    info: dict = {}
-    info_path = project_path / "project_info.json"
-    if info_path.exists():
-        try:
-            info = json.loads(info_path.read_text(encoding="utf-8"))
-        except Exception:
-            info = {}
+    info = _load_project_info(project_path)
+    sources = _source_files(project_path, info)
     pdf_files = info.get("pdf_files", [])
     if not pdf_files:
         pf = info.get("pdf_file", "")
@@ -197,18 +248,7 @@ def _iter_image_blocks_from_ocr(project_dir: str):
         if not pages:
             continue
 
-        rj_stem = rj_path.stem.replace("_result", "")
-        pdf_path: Path | None = None
-        for pf in pdf_files:
-            if Path(pf).stem == rj_stem:
-                candidate = project_path / pf
-                if candidate.exists():
-                    pdf_path = candidate
-                    break
-        if not pdf_path:
-            pdfs = list(project_path.glob("*.pdf"))
-            if pdfs:
-                pdf_path = pdfs[0]
+        pdf_path = _select_source_pdf(project_path, rj_path, pdf_files, sources)
 
         for pg in pages:
             pn = pg.get("page_number", 0)
@@ -408,46 +448,46 @@ def detect_result_json(project_dir: str) -> Path | None:
 
 
 def detect_all_result_jsons(project_dir: str) -> list[Path]:
-    """Найти все *_result.json, соответствующие PDF-файлам проекта.
+    """Найти все *_result.json/result.json, соответствующие PDF-файлам проекта.
 
     Если в project_info.json есть pdf_files — возвращает result.json
     для каждого PDF (в порядке pdf_files). Иначе все найденные.
     """
     project_path = Path(project_dir)
-    candidates = list(project_path.glob("*_result.json"))
+    info = _load_project_info(project_path)
+    sources = _source_files(project_path, info)
+    if sources.layout == "projects_v2":
+        candidates = [sources.result_json_path] if sources.result_json_path is not None else list(sources.result_json_paths)
+    else:
+        candidates = list(project_path.glob("*_result.json"))
     if not candidates:
         return []
 
-    info_path = project_path / "project_info.json"
-    if info_path.exists():
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                info = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            info = {}
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pdf_file = info.get("pdf_file", "")
+        pdf_files = [pdf_file] if pdf_file else []
 
-        pdf_files = info.get("pdf_files", [])
-        if not pdf_files:
-            pdf_file = info.get("pdf_file", "")
-            pdf_files = [pdf_file] if pdf_file else []
+    if pdf_files:
+        # Сопоставляем pdf_stem -> result.json
+        stem_to_candidate = {}
+        for c in candidates:
+            stem = c.stem.replace("_result", "")
+            stem_to_candidate[stem] = c
 
-        if pdf_files:
-            # Сопоставляем pdf_stem -> result.json
-            stem_to_candidate = {}
-            for c in candidates:
-                stem = c.stem.replace("_result", "")
-                stem_to_candidate[stem] = c
-
-            ordered = []
-            for pf in pdf_files:
-                pdf_stem = Path(pf).stem
-                if pdf_stem in stem_to_candidate:
-                    ordered.append(stem_to_candidate[pdf_stem])
-            # Добавить непарные (на всякий случай)
-            for c in candidates:
-                if c not in ordered:
-                    ordered.append(c)
-            return ordered
+        ordered = []
+        normalized = [c for c in candidates if c.stem == "result"]
+        if len(normalized) == 1:
+            ordered.append(normalized[0])
+        for pf in pdf_files:
+            pdf_stem = Path(pf).stem
+            if pdf_stem in stem_to_candidate and stem_to_candidate[pdf_stem] not in ordered:
+                ordered.append(stem_to_candidate[pdf_stem])
+        # Добавить непарные (на всякий случай)
+        for c in candidates:
+            if c not in ordered:
+                ordered.append(c)
+        return ordered
 
     return sorted(candidates)
 
@@ -699,14 +739,8 @@ def crop_blocks(
     project_path = Path(project_dir)
 
     # Загрузить project_info для списка PDF (fallback)
-    info = {}
-    info_path = project_path / "project_info.json"
-    if info_path.exists():
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                info = json.load(f)
-        except Exception:
-            pass
+    info = _load_project_info(project_path)
+    sources = _source_files(project_path, info)
 
     pdf_files = info.get("pdf_files", [])
     if not pdf_files:
@@ -733,18 +767,7 @@ def crop_blocks(
             continue
 
         # Определяем PDF для этого result.json
-        rj_stem = rj_path.stem.replace("_result", "")
-        pdf_path: Path | None = None
-        for pf in pdf_files:
-            if Path(pf).stem == rj_stem:
-                candidate = project_path / pf
-                if candidate.exists():
-                    pdf_path = candidate
-                    break
-        if not pdf_path:
-            pdfs = list(project_path.glob("*.pdf"))
-            if pdfs:
-                pdf_path = pdfs[0]
+        pdf_path = _select_source_pdf(project_path, rj_path, pdf_files, sources)
 
         for pg in pages:
             pn = pg.get("page_number", 0)
@@ -808,7 +831,7 @@ def crop_blocks(
         print(f"  ({no_url_count} блоков пропущено — нет crop_url)")
 
     output_dir_arg = Path(output_dir_name)
-    output_dir = output_dir_arg if output_dir_arg.is_absolute() else Path(project_dir) / "_output" / output_dir_name
+    output_dir = _output_subdir(project_dir, output_dir_name)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     cropped = 0
@@ -1269,20 +1292,14 @@ def _consolidate_small_blocks(
     Returns: обновлённый pages_map.
     """
     # Найти PDF
-    info_path = project_dir / "project_info.json"
-    if not info_path.exists():
-        return pages_map
-
-    info = json.loads(info_path.read_text(encoding="utf-8"))
-    pdf_file = info.get("pdf_file", "")
-    if not pdf_file:
-        pdf_files = info.get("pdf_files", [])
-        pdf_file = pdf_files[0] if pdf_files else ""
-    if not pdf_file:
-        return pages_map
-
-    pdf_path = project_dir / pdf_file
-    if not pdf_path.exists():
+    info = _load_project_info(project_dir)
+    sources = _source_files(project_dir, info)
+    pdf_files = info.get("pdf_files", [])
+    if not pdf_files:
+        pdf_file = info.get("pdf_file", "")
+        pdf_files = [pdf_file] if pdf_file else []
+    pdf_path = _select_source_pdf(project_dir, Path("result.json"), pdf_files, sources)
+    if not pdf_path:
         return pages_map
 
     if fitz is None:
@@ -1611,7 +1628,7 @@ def generate_block_batches(
     Если max_size_kb/max_blocks/min_blocks/solo_kb не переданы — берутся per-model лимиты
     для текущей модели этапа block_batch (из backend/app/data/stage_models.json).
     """
-    output_dir = Path(project_dir) / "_output"
+    output_dir = gemma_output_root(project_dir)
     index_path = output_dir / "blocks" / "index.json"
 
     if not index_path.exists():
@@ -1858,7 +1875,7 @@ def _backfill_locality_from_graph(output_dir: Path, block_analyses: list[dict]):
 
 def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
     """Слить все block_batch_NNN.json в один 02_blocks_analysis.json."""
-    output_dir = Path(project_dir) / "_output"
+    output_dir = gemma_output_root(project_dir)
 
     batch_files = sorted(output_dir.glob("block_batch_*.json"))
     if not batch_files:
@@ -2005,7 +2022,7 @@ def promote_to_full(project_dir: str, block_ids: list[str]) -> dict:
 
     Возвращает {"promoted": N, "missing": N, "block_ids_promoted": [...]}.
     """
-    output_dir = Path(project_dir) / "_output" / "blocks"
+    output_dir = gemma_output_root(project_dir) / "blocks"
     index_path = output_dir / "index.json"
 
     if not index_path.exists():
@@ -2069,7 +2086,7 @@ MAX_RECROP_ITERATIONS = 3  # Макс итераций (1500→3000→6000→с�
 
 def find_unreadable_blocks(project_dir: str) -> list[dict]:
     """Найти блоки с unreadable_text=true в batch-файлах или 02_blocks_analysis.json."""
-    output_dir = Path(project_dir) / "_output"
+    output_dir = gemma_output_root(project_dir)
     unreadable = []
 
     # Сначала проверить 02_blocks_analysis.json (результат merge)
@@ -2118,7 +2135,7 @@ def recrop_blocks(
     Ограничен MAX_RECROP_SCALE (8×).
     """
     project_path = Path(project_dir)
-    output_dir = project_path / "_output" / "blocks"
+    output_dir = gemma_output_root(project_path) / "blocks"
     index_path = output_dir / "index.json"
 
     if not index_path.exists():
@@ -2136,14 +2153,8 @@ def recrop_blocks(
     all_page_dimensions: dict[int, tuple[int, int]] = {}
     page_pdf_map: dict[int, Path] = {}
 
-    info = {}
-    info_path = project_path / "project_info.json"
-    if info_path.exists():
-        try:
-            with open(info_path, "r", encoding="utf-8") as f:
-                info = json.load(f)
-        except Exception:
-            pass
+    info = _load_project_info(project_path)
+    sources = _source_files(project_path, info)
     pdf_files = info.get("pdf_files", [])
     if not pdf_files:
         pf = info.get("pdf_file", "")
@@ -2153,18 +2164,7 @@ def recrop_blocks(
         with open(rj_path, "r", encoding="utf-8") as f:
             ocr_data = json.load(f)
 
-        rj_stem = rj_path.stem.replace("_result", "")
-        pdf_path: Path | None = None
-        for pf in pdf_files:
-            if Path(pf).stem == rj_stem:
-                candidate = project_path / pf
-                if candidate.exists():
-                    pdf_path = candidate
-                    break
-        if not pdf_path:
-            pdfs = list(project_path.glob("*.pdf"))
-            if pdfs:
-                pdf_path = pdfs[0]
+        pdf_path = _select_source_pdf(project_path, rj_path, pdf_files, sources)
 
         for pg in ocr_data.get("pages", []):
             pn = pg.get("page_number", 0)
@@ -2322,7 +2322,7 @@ def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = No
     from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import ENRICHMENT_MARKER_RE
 
     project_dir_p = Path(project_dir).resolve()
-    out_dir = project_dir_p / "_output"
+    out_dir = gemma_output_root(project_dir_p)
 
     # ── Step 1: crop ──
     print(f"\n[1/2] CROP — скачивание блоков по crop_url ...")
@@ -2347,10 +2347,11 @@ def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = No
           f"{crop_result.get('skipped',0)} skipped, {crop_result.get('errors',0)} errors")
 
     # ── Step 2: enrichment ──
-    md_files = sorted(project_dir_p.glob("*_document.md"))
-    if not md_files:
+    project_info = _load_project_info(project_dir_p)
+    sources = _source_files(project_dir_p, project_info)
+    md_path = sources.md_path
+    if md_path is None:
         return {"error": "MD-файл не найден"}
-    md_path = md_files[0]
 
     existing_marker = ENRICHMENT_MARKER_RE.search(md_path.read_text(encoding="utf-8", errors="ignore")[:4096])
     summary_validation = validate_gemma_summary(project_dir_p, md_path=md_path)
@@ -2374,14 +2375,9 @@ def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = No
         print(f"\n[2/2] ENRICH — Gemma multimodal на image-блоках ...")
 
     # Параметры через project_info.json overrides → CLI args → defaults
-    info_path = project_dir_p / "project_info.json"
-    enrichment_cfg: dict = {}
-    if info_path.exists():
-        try:
-            info = json.loads(info_path.read_text(encoding="utf-8"))
-            enrichment_cfg = info.get("enrichment") or {}
-        except Exception:
-            pass
+    enrichment_cfg = project_info.get("enrichment") or {}
+    if not isinstance(enrichment_cfg, dict):
+        enrichment_cfg = {}
 
     final_model = model or enrichment_cfg.get("model") or DEFAULT_MODEL
     final_parallelism = parallelism or enrichment_cfg.get("parallelism") or DEFAULT_PARALLELISM

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -118,6 +119,10 @@ def gemma_output_root(project_dir: Path | str) -> Path:
     Legacy/default stays ``_output``. In projects_v2_primary, a v2 version dir
     writes prepare artifacts to ``03_analysis/latest``.
     """
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     project_dir = Path(project_dir)
     try:
         from backend.app.services.storage.storage_write_facade import v2_is_primary

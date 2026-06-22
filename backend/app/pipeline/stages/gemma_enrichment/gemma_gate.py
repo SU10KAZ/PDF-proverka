@@ -8,7 +8,7 @@ from typing import Any
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BASE_BLOCKS_DIRNAME,
     GEMMA_HIGH_DETAIL_BLOCKS_DIRNAME,
-    gemma_blocks_index_path,
+    gemma_output_root,
     validate_gemma_summary,
 )
 
@@ -38,14 +38,20 @@ _MIGRATION_REQUIRED_GEMMA_STATUSES = {
 }
 
 def load_project_info(project_dir: Path) -> dict[str, Any]:
-    info_path = project_dir / "project_info.json"
-    if not info_path.exists():
-        return {}
     try:
-        data = json.loads(info_path.read_text(encoding="utf-8"))
+        from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+
+        data = load_version_project_info(project_dir)
         return data if isinstance(data, dict) else {}
-    except (json.JSONDecodeError, OSError):
-        return {}
+    except Exception:
+        info_path = project_dir / "project_info.json"
+        if not info_path.exists():
+            return {}
+        try:
+            data = json.loads(info_path.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+        except (json.JSONDecodeError, OSError):
+            return {}
 
 
 def find_project_markdown(
@@ -55,20 +61,18 @@ def find_project_markdown(
     """Resolve the Chandra OCR markdown file used by the audit pipeline."""
     project_info = project_info or {}
     try:
-        from backend.app.services.storage.storage_write_facade import v2_is_primary
-        if v2_is_primary():
-            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+        from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
-            document_code = (
-                project_info.get("document_code")
-                or project_info.get("project_id")
-                or project_dir.name
-            )
-            sources = resolve_v2_source_files(project_dir, document_code)
-            if sources.md_path is not None:
-                return sources.md_path
+        document_code = (
+            project_info.get("document_code")
+            or project_info.get("project_id")
+            or project_dir.name
+        )
+        sources = resolve_version_source_files(project_dir, document_code, project_info=project_info)
+        if sources.md_path is not None:
+            return sources.md_path
     except Exception:
-        # v2 source-reading is fail-soft here; legacy glob below remains the fallback.
+        # Source resolution is fail-soft here; legacy glob below remains the fallback.
         pass
 
     configured = project_info.get("md_file")
@@ -116,7 +120,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _image_blocks_total(output_dir: Path) -> tuple[int | None, bool]:
-    index_path = gemma_blocks_index_path(output_dir.parent)
+    index_path = output_dir / GEMMA_BASE_BLOCKS_DIRNAME / "index.json"
     if not index_path.exists():
         return None, False
     index = _load_json(index_path)
@@ -138,7 +142,7 @@ def detect_gemma_migration_state(
 ) -> dict[str, Any]:
     """Detect legacy-completed projects that require Gemma schema v2 migration."""
     project_dir = Path(project_dir)
-    output_dir = project_dir / "_output"
+    output_dir = gemma_output_root(project_dir)
     if gemma_state is None:
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
@@ -209,7 +213,7 @@ def evaluate_gemma_enrichment(
     """Return normalized readiness state for the mandatory Gemma stage."""
     project_dir = Path(project_dir)
     project_info = project_info if project_info is not None else load_project_info(project_dir)
-    output_dir = project_dir / "_output"
+    output_dir = gemma_output_root(project_dir)
     partial_allowed = partial_gemma_allowed(project_info)
 
     md_path = find_project_markdown(project_dir, project_info)

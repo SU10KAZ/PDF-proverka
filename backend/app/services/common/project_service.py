@@ -22,6 +22,11 @@ from backend.app.models.project import (
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import GEMMA_STAGE_LABEL, evaluate_gemma_enrichment
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import detect_gemma_migration_state
 from backend.app.services.common import version_service
+from backend.app.services.storage.projects_v2_source_resolver import (
+    is_projects_v2_version_dir,
+    load_version_project_info,
+    resolve_version_source_files,
+)
 
 
 # ─── Per-job object binding ────────────────────────────────────────────────
@@ -894,53 +899,65 @@ def get_project_status(
 
     # project_info: предпочитаем info из самой версии (V2+ создаёт свой
     # project_info.json через create_next_version), иначе fallback на корень.
-    version_info_path = version_dir / "project_info.json"
-    root_info_path = proj_dir / "project_info.json"
-    info_path = version_info_path if version_info_path.exists() else root_info_path
-    if not info_path.exists():
-        return None
-
-    info = _load_json(info_path)
+    if is_projects_v2_version_dir(version_dir):
+        info = load_version_project_info(version_dir)
+    else:
+        version_info_path = version_dir / "project_info.json"
+        root_info_path = proj_dir / "project_info.json"
+        info_path = version_info_path if version_info_path.exists() else root_info_path
+        if not info_path.exists():
+            return None
+        info = _load_json(info_path)
     if not info:
         return None
 
-    output_dir = version_dir / "_output"
-    pdf_file = info.get("pdf_file") or ""
-    pdf_files = info.get("pdf_files") or ([pdf_file] if pdf_file else [])
-    # Пустая строка `pdf_file=""` (новая V2 без загрузок) → не пытаемся
-    # сверяться с `version_dir / ""`, потому что Path("dir") / "" == Path("dir"),
-    # и `dir.exists()` ошибочно даёт True.
-    has_pdf = bool(pdf_file) and (version_dir / pdf_file).exists()
-    pdf_size_mb = 0.0
-    for pf in pdf_files:
-        if not pf:
-            continue
-        pp = version_dir / pf
-        if pp.exists() and pp.is_file():
-            has_pdf = True
-            pdf_size_mb += pp.stat().st_size / 1024 / 1024
-    pdf_size_mb = round(pdf_size_mb, 1)
+    output_dir = version_dir / ("03_analysis/latest" if is_projects_v2_version_dir(version_dir) else "_output")
+    if is_projects_v2_version_dir(version_dir):
+        sources = resolve_version_source_files(version_dir, project_id, project_info=info)
+        pdf_files = [str(p.relative_to(version_dir)) for p in sources.pdf_paths]
+        has_pdf = bool(sources.pdf_paths)
+        pdf_size_mb = round(sum(p.stat().st_size for p in sources.pdf_paths if p.is_file()) / 1024 / 1024, 1)
+        md_path = sources.md_path
+        has_md = md_path is not None and md_path.exists() and md_path.stat().st_size > 0
+        md_file_name = str(md_path.relative_to(version_dir)) if has_md and md_path is not None else ""
+        md_size_kb = round(md_path.stat().st_size / 1024, 1) if has_md and md_path is not None else 0.0
+        has_ocr = bool(sources.result_json_paths)
+    else:
+        pdf_file = info.get("pdf_file") or ""
+        pdf_files = info.get("pdf_files") or ([pdf_file] if pdf_file else [])
+        # Пустая строка `pdf_file=""` (новая V2 без загрузок) → не пытаемся
+        # сверяться с `version_dir / ""`, потому что Path("dir") / "" == Path("dir"),
+        # и `dir.exists()` ошибочно даёт True.
+        has_pdf = bool(pdf_file) and (version_dir / pdf_file).exists()
+        pdf_size_mb = 0.0
+        for pf in pdf_files:
+            if not pf:
+                continue
+            pp = version_dir / pf
+            if pp.exists() and pp.is_file():
+                has_pdf = True
+                pdf_size_mb += pp.stat().st_size / 1024 / 1024
+        pdf_size_mb = round(pdf_size_mb, 1)
+
+        # MD-файл (структурированный текст из внешнего OCR)
+        md_file_name = info.get("md_file")
+        has_md = False
+        md_size_kb = 0.0
+        if md_file_name:
+            md_path = version_dir / md_file_name
+            if md_path.exists() and md_path.stat().st_size > 0:
+                has_md = True
+                md_size_kb = round(md_path.stat().st_size / 1024, 1)
+        has_ocr = bool(list(version_dir.glob("*_result.json")))
 
     text_path = output_dir / "extracted_text.txt"
     has_text = text_path.exists() and text_path.stat().st_size > 0
     text_size_kb = round(text_path.stat().st_size / 1024, 1) if has_text else 0.0
 
-    # MD-файл (структурированный текст из внешнего OCR)
-    md_file_name = info.get("md_file")
-    has_md = False
-    md_size_kb = 0.0
-    if md_file_name:
-        md_path = version_dir / md_file_name
-        if md_path.exists() and md_path.stat().st_size > 0:
-            has_md = True
-            md_size_kb = round(md_path.stat().st_size / 1024, 1)
     # Основной текстовый источник аудита: только Markdown PDF representation.
     # extracted_text.txt может отображаться как артефакт, но не используется
     # как fallback для Stage 01.
     text_source = "md" if has_md else "none"
-
-    # OCR result.json (от OCR-сервера) — в папке версии
-    has_ocr = bool(list(version_dir.glob("*_result.json")))
 
     # OCR-блоки (кропнутые image-блоки) — в папке версии
     block_count = 0
@@ -1112,6 +1129,10 @@ def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Op
     except version_service.VersionNotFoundError:
         return None
 
+    if is_projects_v2_version_dir(version_dir):
+        info = load_version_project_info(version_dir)
+        if info:
+            return info
     version_info = version_dir / "project_info.json"
     if version_info.exists():
         info = _load_json(version_info)
@@ -2386,10 +2407,20 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
     if not info:
         return None
     md_file_name = info.get("md_file")
-    if not md_file_name:
-        return None
-
-    md_path = version_dir / md_file_name
+    try:
+        sources = resolve_version_source_files(version_dir, project_id, project_info=info)
+        md_path = sources.md_path
+        if md_path is not None:
+            try:
+                md_file_name = str(md_path.relative_to(version_dir))
+            except ValueError:
+                md_file_name = md_path.name
+    except Exception:
+        md_path = None
+    if md_path is None:
+        if not md_file_name:
+            return None
+        md_path = version_dir / md_file_name
     if not md_path.exists():
         return None
 

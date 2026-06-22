@@ -30,6 +30,7 @@ from backend.app.pipeline.stages.crop_blocks.runner import (
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BLOCKS_DIRNAME,
     gemma_blocks_index_path,
+    gemma_output_root,
     gemma_enrichment_crop_policy,
 )
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
@@ -225,7 +226,7 @@ async def run_gemma_enrichment_stage(
     status = summary.get("status", "unknown")
 
     if status == "no_blocks":
-        summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+        summary_path = gemma_output_root(project_dir) / "gemma_enrichment_summary.json"
         summary_path.write_text(
             json.dumps(summary, ensure_ascii=False, indent=2),
             encoding="utf-8",

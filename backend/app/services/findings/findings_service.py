@@ -12,6 +12,7 @@ from backend.app.models.findings import FindingsResponse, FindingsSummary
 from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
 def _get_version_output_dir(project_id: str, version_id: Optional[str] = None) -> Path:
@@ -905,8 +906,12 @@ def _build_ocr_html_index(project_dir: Path) -> dict[str, str]:
     OCR HTML содержит готовые таблицы и текст с правильным форматированием.
     Каждый блок начинается с <p>BLOCK: XXXX-XXXX-XXX</p> внутри div.block-content.
     """
-    # Ищем *_ocr.html в папке проекта
-    ocr_files = list(project_dir.glob("*_ocr.html"))
+    # Ищем OCR HTML с учётом legacy root и projects_v2 02_work/01_input.
+    try:
+        sources = resolve_version_source_files(project_dir)
+        ocr_files = list(sources.ocr_html_paths)
+    except Exception:
+        ocr_files = list(project_dir.glob("*_ocr.html"))
     if not ocr_files:
         return {}
 
@@ -962,7 +967,7 @@ def _build_text_evidence(
 ) -> dict[str, list[dict]]:
     """Маппинг finding_id → [{text_block_id, role, text, page}] из document_graph."""
     project_dir = _get_version_project_dir(project_id, version_id)
-    output_dir = project_dir / "_output"
+    output_dir = _get_version_output_dir(project_id, version_id)
     graph_path = output_dir / "document_graph.json"
     if not graph_path.exists():
         return {}

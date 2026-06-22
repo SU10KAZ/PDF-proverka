@@ -19,6 +19,7 @@ Stage runner для этапа findings_merge (свод замечаний → 0
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -51,6 +52,9 @@ def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
 
 def _version_output_dir(project_id: str):
     """Папка _output активной версии (через bind_version), fallback на корень."""
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
     from backend.app.services.common import version_service
     try:
         return version_service.resolve_version_output_dir(project_id)

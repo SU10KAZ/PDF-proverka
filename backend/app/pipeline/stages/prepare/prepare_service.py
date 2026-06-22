@@ -26,6 +26,7 @@ from backend.app.services.common import version_service
 from backend.app.services.common.audit_logger import persist_log, update_pipeline_log
 from backend.app.services.storage.storage_write_facade import v2_is_primary
 from backend.app.services.storage.v2_primary_wiring import resolve_v2_prepare_paths
+from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
 from backend.app.services.llm.lmstudio_lifecycle_service import (
     note_activity as _lmstudio_note_activity,
     register_idle_probe as _register_lmstudio_idle_probe,
@@ -350,12 +351,10 @@ class _CropStdoutForwarder:
 # ─── Core ─────────────────────────────────────────────────────────────────
 
 def _resolve_overrides(project_dir: Path) -> dict:
-    info_path = project_dir / "project_info.json"
-    if not info_path.exists():
-        return {}
     try:
-        info = json.loads(info_path.read_text(encoding="utf-8"))
-        return info.get("enrichment") or {}
+        info = load_version_project_info(project_dir)
+        enrichment = info.get("enrichment") or {} if isinstance(info, dict) else {}
+        return enrichment if isinstance(enrichment, dict) else {}
     except Exception:
         return {}
 

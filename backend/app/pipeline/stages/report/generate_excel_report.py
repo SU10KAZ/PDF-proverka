@@ -350,26 +350,59 @@ def _iter_project_dirs(root=None):
     return [(pid, str(path)) for pid, path in iter_project_dirs()]
 
 
+def _specific_context(raw_path: str) -> tuple[str, str, str]:
+    d = os.path.abspath(raw_path)
+    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+
+    output_dir = None
+    version_dir = d
+    if env_output_dir and os.path.abspath(env_output_dir) == d:
+        output_dir = d
+        version_dir = os.path.abspath(env_version_dir) if env_version_dir else os.path.dirname(d)
+    elif os.path.isfile(os.path.join(d, "03_findings.json")) or os.path.isfile(os.path.join(d, "optimization.json")):
+        output_dir = d
+        version_dir = os.path.abspath(env_version_dir) if env_version_dir else os.path.dirname(d)
+    else:
+        output_dir = os.path.join(d, "_output")
+        if env_output_dir and os.path.isdir(env_output_dir):
+            output_dir = os.path.abspath(env_output_dir)
+
+    return os.path.basename(version_dir), version_dir, output_dir
+
+
+def _project_info_path(version_dir: str) -> str:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import resolve_project_info_path
+
+        resolved = resolve_project_info_path(version_dir)
+        if resolved is not None:
+            return str(resolved)
+    except Exception:
+        pass
+    return os.path.join(version_dir, "project_info.json")
+
+
 def find_projects(specific_paths=None) -> list:
     results = []
     if specific_paths:
-        dirs = [(os.path.basename(os.path.abspath(p)), os.path.abspath(p)) for p in specific_paths]
+        dirs = [_specific_context(p) for p in specific_paths]
     else:
         if not os.path.isdir(PROJECTS_DIR):
             print(f"[ERR] Папка projects/ не найдена: {PROJECTS_DIR}")
             return results
-        dirs = _iter_project_dirs(PROJECTS_DIR)
-    for pid, d in dirs:
-        fp  = os.path.join(d, "_output", "03_findings.json")
-        op  = os.path.join(d, "_output", "optimization.json")
-        ip  = os.path.join(d, "project_info.json")
-        # Если передан путь к версионной папке (`_versions/v2`), basename даёт
-        # "v2" — это не project_id. Читаем настоящий из project_info.json.
+        dirs = [(pid, path, os.path.join(path, "_output")) for pid, path in _iter_project_dirs(PROJECTS_DIR)]
+    for pid, d, output_dir in dirs:
+        fp  = os.path.join(output_dir, "03_findings.json")
+        op  = os.path.join(output_dir, "optimization.json")
+        ip  = _project_info_path(d)
+        # Если передан путь к версионной папке (`_versions/v2`) или v2 output-dir,
+        # basename даёт техническое имя. Читаем настоящий project_id из project_info.
         if os.path.isfile(ip):
             try:
                 with open(ip, "r", encoding="utf-8-sig") as _f:
                     _pi = json.load(_f)
-                _real_pid = (_pi.get("project_id") or "").strip()
+                _real_pid = (_pi.get("project_id") or _pi.get("document_code") or "").strip()
                 if _real_pid:
                     pid = _real_pid
             except Exception:

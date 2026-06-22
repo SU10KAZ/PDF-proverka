@@ -77,6 +77,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     utc_now_iso,
     validate_gemma_summary,
 )
+from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
     find_project_markdown,
     load_project_info,
@@ -2758,14 +2759,10 @@ async def _cli() -> int:
         return 2
 
     # project_info.json overrides
-    info_path = project_dir / "project_info.json"
-    enrichment_cfg: dict = {}
-    if info_path.exists():
-        try:
-            info = json.loads(info_path.read_text(encoding="utf-8"))
-            enrichment_cfg = info.get("enrichment") or {}
-        except Exception:
-            pass
+    info = load_version_project_info(project_dir)
+    enrichment_cfg = info.get("enrichment") or {} if isinstance(info, dict) else {}
+    if not isinstance(enrichment_cfg, dict):
+        enrichment_cfg = {}
 
     model = enrichment_cfg.get("model") or args.model
     parallelism = enrichment_cfg.get("parallelism") or args.parallelism
