@@ -14,7 +14,9 @@ Stage runner для этапа text_analysis (анализ текста MD че�
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -118,10 +120,47 @@ async def run_text_analysis(
     rl_attempt = 0  # сколько rate-limit ожиданий уже выполнено
 
     while True:
-        exit_code, output, cli_result = await _runner(
-            project_info, pid,
-            on_output=ctx.log,
-        )
+        version_dir = getattr(ctx, "project_dir", output_dir.parent)
+        version_id = getattr(ctx, "version_id", None)
+        runner_kwargs = {}
+        try:
+            runner_params = inspect.signature(_runner).parameters
+        except (TypeError, ValueError):
+            runner_params = {}
+        if "output_dir" in runner_params:
+            runner_kwargs["output_dir"] = output_dir
+        if "version_dir" in runner_params:
+            runner_kwargs["version_dir"] = version_dir
+        if version_id and "version_id" in runner_params:
+            runner_kwargs["version_id"] = version_id
+
+        if runner_kwargs:
+            exit_code, output, cli_result = await _runner(
+                project_info, pid,
+                on_output=ctx.log,
+                **runner_kwargs,
+            )
+        else:
+            scoped_env = {
+                "AUDIT_OUTPUT_DIR": str(output_dir),
+                "AUDIT_VERSION_DIR": str(version_dir),
+                "AUDIT_PROJECT_ID": str(pid),
+            }
+            if version_id:
+                scoped_env["AUDIT_VERSION_ID"] = str(version_id)
+            previous_env = {key: os.environ.get(key) for key in scoped_env}
+            os.environ.update(scoped_env)
+            try:
+                exit_code, output, cli_result = await _runner(
+                    project_info, pid,
+                    on_output=ctx.log,
+                )
+            finally:
+                for key, value in previous_env.items():
+                    if value is None:
+                        os.environ.pop(key, None)
+                    else:
+                        os.environ[key] = value
         ctx.record_cli_usage(
             cli_result,
             _usage_label if rl_attempt == 0 else f"{_usage_label}_retry{rl_attempt}",

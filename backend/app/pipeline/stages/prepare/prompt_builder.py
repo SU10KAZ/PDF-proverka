@@ -11,6 +11,7 @@
 """
 import json
 import logging
+import os
 import re
 from pathlib import Path
 
@@ -47,12 +48,19 @@ def _version_output_dir(project_id: str) -> Path:
     Делегирует единому резолверу version_service.resolve_active_output_dir
     (reserc.md #97).
     """
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     from backend.app.services.common import version_service
     return version_service.resolve_active_output_dir(project_id)
 
 
 def _version_project_dir(project_id: str) -> Path:
     """version_dir активной версии (parent of _output)."""
+    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    if env_version_dir:
+        return Path(env_version_dir)
     return _version_output_dir(project_id).parent
 
 logger = logging.getLogger(__name__)
