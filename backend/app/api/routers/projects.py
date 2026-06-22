@@ -3,7 +3,7 @@ REST API для проектов.
 """
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 import backend.app.services.common.project_service as project_service
@@ -630,27 +630,6 @@ async def upload_version_files_endpoint(
     return {"status": "ok", **result}
 
 
-@router.delete("/{project_id:path}/versions/{version_id}")
-async def delete_project_version(project_id: str, version_id: str):
-    """Удалить версию проекта: папку с диска + запись из манифеста.
-
-    Нельзя удалить единственную версию. После удаления latest переключается
-    на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
-    станут orphan-записями (очищаются через KB-утилиты).
-    """
-    from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
-    try:
-        result = version_service.delete_version(proj_dir, project_id, version_id)
-    except version_service.VersionNotFoundError as e:
-        raise HTTPException(404, str(e))
-    except version_service.VersionFileError as e:
-        raise HTTPException(400, str(e))
-    return {"status": "ok", **result}
-
-
 class VersionFromCandidateRequest(BaseModel):
     """Создать новую версию у существующего проекта из найденных файлов.
 
@@ -899,8 +878,34 @@ async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
     return {"status": "ok", "project_id": project_id, "pipeline_version": req.pipeline_version}
 
 
+
+
+class RestoreCleanRequest(BaseModel):
+    backup_id: str
+    version_id: Optional[str] = None
+
+
+def _require_restore_clean_auth(request: Request) -> Optional[str]:
+    """Explicit portal-auth gate for destructive restore endpoint.
+
+    PortalAuthMiddleware already protects API when auth is enabled; this local
+    dependency makes the restore contract visible and unit-testable.
+    """
+    from backend.app.core import portal_auth
+
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return None
+    username = portal_auth.request_username(request, settings)
+    if not username:
+        raise HTTPException(401, "Not authenticated")
+    return username
+
+
 @router.delete("/{project_id:path}/clean")
-async def clean_project(project_id: str, version_id: Optional[str] = None):
+async def clean_project(
+    project_id: str, version_id: Optional[str] = None, _confirmed: bool = False,
+):
     """Очистить результаты аудита ТОЛЬКО активной версии.
 
     Удаляет `_output/` версии (`version_id`; при None — активной/latest) и
@@ -913,10 +918,35 @@ async def clean_project(project_id: str, version_id: Optional[str] = None):
         raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
 
     try:
-        result = project_service.clean_project_data(project_id, version_id=version_id)
+        result = project_service.clean_project_data(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
         return {"status": "ok", "project_id": project_id, **result}
     except ValueError as e:
+        msg = str(e)
+        status = 400 if "подтверждение" in msg or "_confirmed" in msg else 404
+        raise HTTPException(status, msg)
+
+
+@router.post("/{project_id:path}/restore-clean", dependencies=[Depends(_require_restore_clean_auth)])
+async def restore_clean_project(project_id: str, req: RestoreCleanRequest):
+    """Восстановить v2-primary версию из backup, созданного clean-project."""
+    from backend.app.pipeline.manager import pipeline_manager
+
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
+
+    try:
+        result = project_service.restore_clean_backup(
+            project_id, backup_id=req.backup_id, version_id=req.version_id,
+        )
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "ok", "project_id": project_id, **result}
 
 
 class SetSectionRequest(BaseModel):

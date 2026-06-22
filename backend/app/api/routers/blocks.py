@@ -552,6 +552,9 @@ async def get_blocks(
         "total_blocks": index_data.get("total_blocks", 0),
         "total_expected": index_data.get("total_expected", 0),
         "errors": index_data.get("errors", 0),
+        # #10: упавшие при кропе блоки видны в покрытии, а не теряются молча
+        "failed_block_ids": index_data.get("failed_block_ids", []),
+        "failed_details": index_data.get("failed_details", []),
         "pages": pages,
     }
 

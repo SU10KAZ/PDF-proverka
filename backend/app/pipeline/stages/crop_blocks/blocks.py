@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -307,6 +308,7 @@ def crop_blocks_to_dir(
     skipped = 0
     errors = 0
     index_blocks: list[dict] = []
+    failed_records: list[dict] = []
 
     for bi in all_image_blocks:
         bid = bi["block_id"]
@@ -331,6 +333,7 @@ def crop_blocks_to_dir(
             download_error = "нет crop_url"
 
         if download_error is not None:
+            base_reason = _classify_crop_failure(download_error)
             pn = bi["page_num"]
             dims = all_page_dimensions.get(pn)
             fallback_pdf = page_pdf_map.get(pn)
@@ -343,11 +346,17 @@ def crop_blocks_to_dir(
                         dpi=dpi, min_long_side=min_long,
                     )
                     source = "pdf_fallback"
-                except Exception:
+                except Exception as e2:
                     errors += 1
+                    failed_records.append(_crop_failed_record(
+                        bid, pn, "pdf_fallback_failed",
+                        f"{base_reason}: {download_error}; pdf: {e2}"))
                     continue
             else:
                 errors += 1
+                failed_records.append(_crop_failed_record(
+                    bid, pn, base_reason,
+                    f"{download_error}" + ("" if fallback_pdf else "; нет PDF для fallback")))
                 continue
 
         size_kb = out_file.stat().st_size / 1024
@@ -369,6 +378,8 @@ def crop_blocks_to_dir(
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
+        "failed_block_ids": [r["block_id"] for r in failed_records],
+        "failed_details": failed_records,
         "compact": False,
         "render_profile": render_profile,
         "source_result_json": [rj.name for rj in result_json_paths],
@@ -383,6 +394,7 @@ def crop_blocks_to_dir(
         "cropped": cropped,
         "skipped": skipped,
         "errors": errors,
+        "failed_block_ids": [r["block_id"] for r in failed_records],
         "blocks": index_blocks,
         "render_profile": render_profile,
         "cache_hit": False,
@@ -515,6 +527,49 @@ def _render_pdf_bytes_to_png(
     return w, h
 
 
+# #11: транзиентные сетевые сбои скачивания crop_url ретраим с экспоненциальным
+# backoff ДО перехода в PDF-fallback. 404 (и прочие неретраибл 4xx, кроме
+# 408/429) — фатальны: ретрай не поможет, сразу отдаём наверх для fallback.
+_CROP_DOWNLOAD_RETRIES = 3
+_CROP_DOWNLOAD_BACKOFF_S = 0.5
+
+
+def _download_with_retry(req: "urllib.request.Request", timeout: int) -> bytes:
+    """Скачать байты с 2-3 попытками и экспоненциальным backoff на транзиентных
+    ошибках (5xx / сеть / timeout). 404 и прочие фатальные 4xx — сразу raise."""
+    last_exc: Exception | None = None
+    for attempt in range(_CROP_DOWNLOAD_RETRIES):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as exc:
+            # 4xx, кроме 408 Request Timeout / 429 Too Many Requests, фатальны —
+            # ретрай бессмыслен, отдаём наверх (вызывающий уйдёт в PDF-fallback).
+            if 400 <= exc.code < 500 and exc.code not in (408, 429):
+                raise
+            last_exc = exc
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            last_exc = exc
+        if attempt < _CROP_DOWNLOAD_RETRIES - 1:
+            time.sleep(_CROP_DOWNLOAD_BACKOFF_S * (2 ** attempt))
+    raise last_exc if last_exc is not None else RuntimeError("download failed")
+
+
+def _classify_crop_failure(download_error: object) -> str:
+    """#10: базовая причина потери блока при кропе — no_crop_url / http_error."""
+    return "no_crop_url" if download_error == "нет crop_url" else "http_error"
+
+
+def _crop_failed_record(block_id: str, page: object, reason: str, detail: str) -> dict:
+    """#10: запись о потерянном при кропе блоке (block_id + причина + деталь).
+
+    Раньше упавший блок только инкрементировал общий счётчик errors, а его
+    block_id и причина терялись. Эти записи пишутся в index.json
+    (failed_block_ids/failed_details), чтобы покрытие было честным.
+    """
+    return {"block_id": block_id, "page": page, "reason": reason, "detail": str(detail)[:300]}
+
+
 def download_and_convert(
     crop_url: str,
     out_png: Path,
@@ -533,8 +588,7 @@ def download_and_convert(
     """
     _require_pymupdf()
     req = urllib.request.Request(crop_url, headers={"User-Agent": "crop_blocks/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        pdf_bytes = resp.read()
+    pdf_bytes = _download_with_retry(req, timeout)
 
     w, h = _render_pdf_bytes_to_png(
         pdf_bytes, out_png,
@@ -761,6 +815,7 @@ def crop_blocks(
     skipped = 0
     errors = 0
     index_blocks = []
+    failed_records: list[dict] = []
 
     index_profile = ""
     index_min_long_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
@@ -836,6 +891,7 @@ def crop_blocks(
 
         if download_error is not None:
             e = download_error
+            base_reason = _classify_crop_failure(download_error)
             # Fallback: вырезаем из PDF по координатам
             pn = block_info["page_num"]
             dims = all_page_dimensions.get(pn)
@@ -856,11 +912,17 @@ def crop_blocks(
                 except Exception as e2:
                     print(f"  [ERROR] {bid}: облако ({e}), PDF ({e2})")
                     errors += 1
+                    failed_records.append(_crop_failed_record(
+                        bid, pn, "pdf_fallback_failed",
+                        f"{base_reason}: {e}; pdf: {e2}"))
                     continue
             else:
                 print(f"  [ERROR] {bid}: {e}" +
                       ("" if fallback_pdf else " (PDF не найден для fallback)"))
                 errors += 1
+                failed_records.append(_crop_failed_record(
+                    bid, pn, base_reason,
+                    f"{e}" + ("" if fallback_pdf else "; нет PDF для fallback")))
                 continue
 
         size_kb = out_file.stat().st_size / 1024
@@ -902,6 +964,8 @@ def crop_blocks(
         "total_blocks": len(index_blocks),
         "total_expected": len(all_image_blocks),
         "errors": errors,
+        "failed_block_ids": [r["block_id"] for r in failed_records],
+        "failed_details": failed_records,
         "profile": index_profile,
         "compact": compact,
         "dpi": dpi,
@@ -920,6 +984,7 @@ def crop_blocks(
         "cropped": cropped,
         "skipped": skipped,
         "errors": errors,
+        "failed_block_ids": [r["block_id"] for r in failed_records],
         "blocks": index_blocks,
     }
 

@@ -103,8 +103,33 @@ def stage02_crop_policy() -> dict[str, Any]:
     return dict(STAGE02_CROP_POLICY)
 
 
+def _looks_like_projects_v2_version_dir(project_dir: Path) -> bool:
+    return (
+        (project_dir / "01_input").is_dir()
+        or (project_dir / "02_work").is_dir()
+        or (project_dir / "version.json").is_file()
+        or project_dir.parent.name == "versions"
+    )
+
+
+def gemma_output_root(project_dir: Path | str) -> Path:
+    """Root for Gemma prepare artifacts.
+
+    Legacy/default stays ``_output``. In projects_v2_primary, a v2 version dir
+    writes prepare artifacts to ``03_analysis/latest``.
+    """
+    project_dir = Path(project_dir)
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary() and _looks_like_projects_v2_version_dir(project_dir):
+            return project_dir / "03_analysis" / "latest"
+    except Exception:
+        pass
+    return project_dir / "_output"
+
+
 def _output_dir(project_dir: Path | str, dirname: str) -> Path:
-    return Path(project_dir) / "_output" / dirname
+    return gemma_output_root(project_dir) / dirname
 
 
 def gemma_base_blocks_dir(project_dir: Path | str) -> Path:
@@ -464,7 +489,7 @@ def validate_gemma_summary(
 ) -> dict[str, Any]:
     del require_marker
     project_dir = Path(project_dir)
-    out_dir = project_dir / "_output"
+    out_dir = gemma_output_root(project_dir)
     summary_path = out_dir / "gemma_enrichment_summary.json"
     if summary is None:
         summary = load_json(summary_path)

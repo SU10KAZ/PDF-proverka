@@ -2026,10 +2026,6 @@ def _finalize_page(
         "render": {k: render_info[k] for k in
                    ("width_px", "height_px", "page_width", "page_height", "scale_x", "scale_y")},
     }
-    page_enriched_path = paths_mod.large_sheet_artifact_path(
-        session_id, pair_id, side, page_number, "page_enriched.json")
-    _write_json(page_enriched_path, page_enriched)
-
     diagnostics = build_diagnostics(
         tiles, words, page_enriched,
         tiles_processed=tiles_processed, tiles_failed=tiles_failed,
@@ -2038,6 +2034,37 @@ def _finalize_page(
     diagnostics["model_requested"] = mode == "model"
     diagnostics["model_ran"] = model_ran
     diagnostics["detection"] = detection
+
+    # #49: жёсткий гейт на пустую/полностью-провалившуюся large-sheet страницу.
+    # model-прогон, где НИ ОДИН tile не дал результата ИЛИ извлечено НИЧЕГО
+    # (0 цепей + 0 оборудования + 0 связей), нельзя выдавать за успех: иначе
+    # downstream примет пустышку за готовую страницу. Помечаем
+    # status=large_sheet_failed + requires_human_review, артефакты пишем (для
+    # разбора), но честно сигналим провал.
+    extracted_total = (
+        int(diagnostics.get("circuits_detected", 0))
+        + int(diagnostics.get("equipment_detected", 0))
+        + int(diagnostics.get("connections_detected", 0))
+    )
+    nothing_succeeded = tiles_processed == 0           # нет тайлов ИЛИ все упали
+    empty_result = tiles_processed > 0 and extracted_total == 0
+    large_sheet_failed = model_ran and (nothing_succeeded or empty_result)
+    status = mode
+    if large_sheet_failed:
+        reason = "no_tiles_or_all_failed" if nothing_succeeded else "empty_extraction"
+        status = "large_sheet_failed"
+        warnings.append(f"large_sheet_failed:{reason}")
+        page_enriched["status"] = "large_sheet_failed"
+        page_enriched["requires_human_review"] = True
+        diagnostics["large_sheet_failed"] = True
+        diagnostics["large_sheet_failed_reason"] = reason
+        diagnostics["requires_human_review"] = True
+        diagnostics["warnings"] = warnings
+
+    page_enriched_path = paths_mod.large_sheet_artifact_path(
+        session_id, pair_id, side, page_number, "page_enriched.json")
+    _write_json(page_enriched_path, page_enriched)
+
     diag_path = paths_mod.large_sheet_artifact_path(
         session_id, pair_id, side, page_number, "diagnostics.json")
     _write_json(diag_path, diagnostics)
@@ -2048,7 +2075,9 @@ def _finalize_page(
     md_path.write_text(md, encoding="utf-8")
 
     return {
-        "status": mode,
+        "status": status,
+        "large_sheet_failed": large_sheet_failed,
+        "requires_human_review": large_sheet_failed,
         "session_id": session_id, "pair_id": pair_id, "side": side, "page": page_number,
         "detection": detection,
         "tiles_total": len(tiles),

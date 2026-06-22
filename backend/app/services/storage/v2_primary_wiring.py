@@ -17,6 +17,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Optional
 
@@ -24,10 +27,16 @@ from backend.app.services.storage import v2_primary_prototype as _proto
 from backend.app.services.storage.storage_write_facade import (
     StorageWriteFacade,
     V2Target,
+    v2_is_primary,
 )
 
 
 _V2LIB_CACHE = None
+
+
+def v2_primary_enabled() -> bool:
+    """Service-layer gate for v2-primary branches used by API routers."""
+    return v2_is_primary()
 
 
 def _load_v2lib():
@@ -195,16 +204,184 @@ def resolve_v2_job_paths(
     return doc_dir, version_dir, output_dir
 
 
-def guard_destructive_v2_primary(op: str) -> None:
-    """Шаг 6C: запретить деструктивную операцию в режиме V2_PRIMARY.
+def _current_v2_version_id(project_id: str, *, v2_root: Path, object_id: Optional[str] = None) -> Optional[str]:
+    """Resolve current projects_v2 version id without legacy fallback."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
 
-    В v2-primary (clean/rename/delete) деструктив ЗАПРЕЩЁН до появления
-    backup+confirmation контракта (Шаг 9/10) → поднимает DestructiveWriteBlocked.
-    В legacy/dual_write_shadow — no-op (прежнее поведение полностью сохраняется,
-    в проде WRITE_MODE=dual_write_shadow → guard не срабатывает).
+    doc_code = os.path.basename(str(project_id or "").strip().rstrip("/"))
+    candidates = [doc_code] if doc_code else []
+    if doc_code.lower().endswith(".pdf"):
+        candidates.append(doc_code[:-4].strip())
+    adapter = ProjectsV2Adapter(Path(v2_root))
+    for code in candidates:
+        if not code:
+            continue
+        doc = adapter.find_document(code, object_id=object_id)
+        if doc is None:
+            continue
+        current = doc.get("current_version")
+        if current:
+            return current
+        versions = [v for v in (doc.get("version_ids") or []) if v]
+        if versions:
+            return versions[-1]
+    return None
+
+
+def resolve_v2_prepare_paths(
+    project_id: str,
+    version_id: Optional[str],
+    *,
+    v2_root: Optional[Path] = None,
+    object_id: Optional[str] = None,
+    legacy_project_dir: Optional[Path] = None,
+) -> Optional[tuple[Path, Path]]:
+    """v2-primary prepare paths: ``(version_dir, latest_analysis_dir)``.
+
+    Prepare is version-level work, not run-level work, so it writes Gemma/crop
+    artifacts to ``03_analysis/latest`` and does not require a run_id.
+    """
+    facade = StorageWriteFacade(v2_root=v2_root) if v2_root is not None else StorageWriteFacade()
+    resolved = facade.v2_root()
+    if resolved is None:
+        return None
+    effective_vid = version_id or _current_v2_version_id(project_id, v2_root=resolved, object_id=object_id)
+    if not effective_vid:
+        return None
+    target = resolve_v2_target_by_id(
+        project_id,
+        effective_vid,
+        v2_root=resolved,
+        object_id=object_id,
+        legacy_project_dir=legacy_project_dir,
+    )
+    if target is None:
+        return None
+    version_dir = target.version_dir(resolved)
+    return version_dir, version_dir / "03_analysis" / "latest"
+
+
+_BACKUP_COMPONENT_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def _safe_backup_component(value: str, fallback: str = "item") -> str:
+    safe = _BACKUP_COMPONENT_RE.sub("_", str(value or "").strip()).strip("._-")
+    return safe[:80] or fallback
+
+
+def _destructive_backups_dir(v2_root: Path) -> Path:
+    return Path(v2_root) / "_system" / "destructive_backups"
+
+
+def _confirmation_log_path(v2_root: Path) -> Path:
+    return Path(v2_root) / "_system" / "destructive_confirmations.jsonl"
+
+
+def _resolve_backup_dir(v2_root: Path, backup_id: str) -> Path:
+    raw = str(backup_id or "").strip()
+    clean = os.path.basename(raw)
+    if not clean or clean != raw or clean in (".", ".."):
+        raise ValueError("Некорректный backup_id")
+    backups = _destructive_backups_dir(Path(v2_root)).resolve()
+    path = (backups / clean).resolve()
+    if not path.is_relative_to(backups):
+        raise ValueError("Некорректный backup_id")
+    if not path.is_dir():
+        raise FileNotFoundError(f"Backup '{backup_id}' не найден")
+    return path
+
+
+def backup_version_before_destructive(target: V2Target, v2_root: Path, op: str) -> str:
+    """Скопировать всю версию перед destructive-op и вернуть stable backup_id.
+
+    Backup лежит вне документа: ``projects_v2/_system/destructive_backups``.
+    Никакого auto-cleanup: восстановление и retention остаются явными действиями.
+    """
+    root = Path(v2_root)
+    version_dir = target.version_dir(root)
+    if not version_dir.is_dir():
+        raise FileNotFoundError(f"projects_v2 version dir not found: {version_dir}")
+
+    backups = _destructive_backups_dir(root)
+    backups.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    base_id = "{ts}_{code}_{vid}__{op}".format(
+        ts=ts,
+        code=_safe_backup_component(target.document_code, "document"),
+        vid=_safe_backup_component(target.vid_disk(), "version"),
+        op=_safe_backup_component(op, "op"),
+    )
+    backup_dir = backups / base_id
+    suffix = 1
+    while backup_dir.exists():
+        backup_dir = backups / f"{base_id}_{suffix}"
+        suffix += 1
+    shutil.copytree(version_dir, backup_dir, symlinks=True)
+    return backup_dir.name
+
+
+def record_destructive_confirmation(
+    target: V2Target,
+    v2_root: Path,
+    *,
+    op: str,
+    backup_id: str,
+    project_id: Optional[str] = None,
+) -> Path:
+    """Append-only JSONL log: кто/что было подтверждено перед destructive-op."""
+    log_path = _confirmation_log_path(Path(v2_root))
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    row = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "op": op,
+        "project_id": project_id,
+        "object_folder": target.object_folder,
+        "discipline": target.discipline,
+        "document_code": target.document_code,
+        "version_id": target.vid_disk(),
+        "backup_id": backup_id,
+    }
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    return log_path
+
+
+def restore_from_backup_id(target: V2Target, v2_root: Path, backup_id: str) -> dict:
+    """Восстановить ``version_dir`` из destructive backup byte-for-byte.
+
+    Текущая версия перед заменой тоже уходит в backup, если существует. Это
+    сохраняет возможность отката даже для restore-операции.
+    """
+    root = Path(v2_root)
+    source = _resolve_backup_dir(root, backup_id)
+    version_dir = target.version_dir(root)
+    pre_restore_backup_id = None
+    if version_dir.exists():
+        pre_restore_backup_id = backup_version_before_destructive(
+            target, root, "restore_clean_preimage",
+        )
+        shutil.rmtree(version_dir)
+    version_dir.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(source, version_dir, symlinks=True)
+    return {
+        "backup_id": backup_id,
+        "pre_restore_backup_id": pre_restore_backup_id,
+        "version_id": target.vid_disk(),
+        "restored_path": str(version_dir),
+    }
+
+
+def guard_destructive_v2_primary(
+    op: str, *, confirmed: bool = False, backup_id: Optional[str] = None,
+) -> None:
+    """Gate destructive ops in V2_PRIMARY unless backup+confirmation exists.
+
+    Legacy/dual_write_shadow remain no-op. In v2-primary callers must create a
+    backup and append the confirmation log first, then call this guard with both
+    ``confirmed=True`` and ``backup_id``.
     """
     from backend.app.services.storage import storage_write_facade as _swf
-    if _swf.v2_is_primary():
+    if _swf.v2_is_primary() and not (confirmed and backup_id):
         _swf.get_write_facade().block_destructive(op)
 
 

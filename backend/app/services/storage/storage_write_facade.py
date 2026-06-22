@@ -232,16 +232,18 @@ class StorageWriteFacade:
         except Exception:
             return None
 
-    # -- деструктив (запрещено на этом этапе) -----------------------------
+    # -- деструктив (только через явный backup+confirmation contract) -------
     def block_destructive(self, op: str) -> None:
-        """Любая деструктивная операция в projects_v2 на этом этапе запрещена.
+        """Блокировать destructive-op без контекста backup+confirmation.
 
-        clean_project_data / delete_pair(hard) / rmtree версии и пр. не должны
-        иметь v2-плеча, пока не появятся backup + явное подтверждение (Step 9/10).
+        Низкоуровневый фасад не знает target/backup_id, поэтому direct-вызовы
+        clean/rename/delete остаются запрещены. Разрешающий путь живёт выше, в
+        v2_primary_wiring/project_service: сначала copytree backup версии, затем
+        append-only confirmation log, затем конкретная операция.
         """
         raise DestructiveWriteBlocked(
-            f"destructive v2 op '{op}' blocked at prepare stage "
-            f"(no backup/confirmation contract yet)"
+            f"destructive v2 op '{op}' blocked "
+            f"(missing backup/confirmation context)"
         )
 
     # -- ядро: диспетчер режимов -----------------------------------------

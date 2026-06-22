@@ -53,14 +53,14 @@ async def prepare_data_cancel():
 
 
 @router.post("/prepare-data/{project_id:path}/retry-failed")
-async def prepare_data_retry_failed(project_id: str):
+async def prepare_data_retry_failed(project_id: str, version_id: Optional[str] = None):
     """Перепрогнать только упавшие блоки прошлого enrichment'а данного проекта.
 
     Использует тот же Gemma-лок что и обычный prepare. Не делает full re-enrich,
     обрабатывает только block_id'ы из summary.failed.
     """
     from backend.app.pipeline.stages.prepare.prepare_service import start_retry_failed
-    return await start_retry_failed(project_id)
+    return await start_retry_failed(project_id, version_id=version_id)
 
 
 async def _safe_task(coro, name: str = "task"):
@@ -939,13 +939,14 @@ async def prepare_data_endpoint(
     parallelism: int | None = None,
     model: str | None = None,
     timeout: int | None = None,
+    version_id: Optional[str] = None,
 ):
     """Запустить «Подготовить данные» = crop PNG + Gemma enrichment.
 
     Прогресс публикуется в WebSocket (ws/audit/{project_id}) с stage="prepare_data".
     Возвращает immediately с status=started — клиент следит по WS.
     """
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     from backend.app.pipeline.stages.prepare.prepare_service import start_prepare_data
     result = await start_prepare_data(
         project_id,
@@ -953,6 +954,7 @@ async def prepare_data_endpoint(
         parallelism=parallelism,
         model=model,
         timeout=timeout,
+        version_id=version_id,
     )
     if result.get("status") == "already_running":
         raise HTTPException(409, "prepare_data уже запущен для этого проекта")

@@ -187,6 +187,24 @@ class ProjectsV2Adapter:
             return d
         return None
 
+    def find_document_by_project_id(self, project_id: str,
+                                    object_id: Optional[str] = None) -> Optional[dict]:
+        """Resolve legacy-like project_id to a v2 document without touching legacy."""
+        raw = str(project_id or "").strip().strip("/")
+        candidates: list[str] = []
+        for value in (raw, os.path.basename(raw)):
+            if value and value not in candidates:
+                candidates.append(value)
+            if value.lower().endswith(".pdf"):
+                stem = value[:-4].strip()
+                if stem and stem not in candidates:
+                    candidates.append(stem)
+        for code in candidates:
+            doc = self.find_document(code, object_id=object_id)
+            if doc is not None:
+                return doc
+        return None
+
     # -- versions ---------------------------------------------------------
     def read_document_json(self, doc_dir: Path) -> Optional[dict]:
         return _read_json(Path(doc_dir) / "document.json")
@@ -216,6 +234,20 @@ class ProjectsV2Adapter:
 
     def version_dir(self, doc_dir: Path, version_id: str) -> Path:
         return Path(doc_dir) / "versions" / version_id
+
+    def resolve_version_id(self, doc: dict, version_id: Optional[str] = None) -> Optional[str]:
+        doc_dir = Path(doc["doc_dir"])
+        wanted = (version_id or "").strip()
+        if not wanted:
+            return self.current_version_id(doc_dir)
+        candidates = [wanted]
+        if wanted.startswith("v") and wanted[1:].isdigit():
+            candidates.append(f"v{int(wanted[1:]):03d}")
+        ids = {v for v in (doc.get("version_ids") or []) if v}
+        for candidate in candidates:
+            if not ids or candidate in ids:
+                return candidate
+        return None
 
     def read_version_json(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         return _read_json(self.version_dir(doc_dir, version_id) / "version.json")
@@ -258,17 +290,54 @@ class ProjectsV2Adapter:
 
     def latest_analysis_files(self, doc_dir: Path, version_id: str) -> dict:
         latest = self.latest_dir(doc_dir, version_id)
-        present = sorted(p.name for p in latest.glob("*")) if latest.is_dir() else []
+        present = (
+            {p.name for p in latest.iterdir() if p.is_file()}
+            if latest.is_dir()
+            else set()
+        )
+        run_dir = self._fallback_run_dir(doc_dir, version_id)
+        if run_dir is not None:
+            present.update(p.name for p in run_dir.iterdir() if p.is_file())
         return {
-            "present": present,
-            "has_01_text_analysis": "01_text_analysis.json" in present,
-            "has_02_blocks_analysis": "02_blocks_analysis.json" in present,
-            "has_03_findings": "03_findings.json" in present,
+            "present": sorted(present),
+            "has_01_text_analysis": self._latest_file(
+                doc_dir, version_id, "01_text_analysis.json"
+            ) is not None,
+            "has_02_blocks_analysis": self._latest_file(
+                doc_dir, version_id, "02_blocks_analysis.json"
+            ) is not None,
+            "has_03_findings": self.findings_path(doc_dir, version_id) is not None,
         }
+
+    def _runs_dir(self, doc_dir: Path, version_id: str) -> Path:
+        return self.version_dir(doc_dir, version_id) / "03_analysis" / "runs"
+
+    def _fallback_run_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        runs = self._runs_dir(doc_dir, version_id)
+        if not runs.is_dir():
+            return None
+        candidates = [p for p in runs.iterdir() if p.is_dir()]
+        if not candidates:
+            return None
+        return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
+
+    def _runs_file(self, doc_dir: Path, version_id: str, name: str) -> Optional[Path]:
+        safe = os.path.basename((name or "").strip())
+        if not safe or safe != name:
+            return None
+        runs = self._runs_dir(doc_dir, version_id)
+        if not runs.is_dir():
+            return None
+        hits = [p for p in runs.glob(f"*/{safe}") if p.is_file()]
+        if not hits:
+            return None
+        return max(hits, key=lambda p: (p.stat().st_mtime_ns, p.parent.name))
 
     def _latest_file(self, doc_dir: Path, version_id: str, name: str) -> Optional[Path]:
         p = self.latest_dir(doc_dir, version_id) / name
-        return p if p.is_file() else None
+        if p.is_file():
+            return p
+        return self._runs_file(doc_dir, version_id, name)
 
     def read_text_analysis(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         p = self._latest_file(doc_dir, version_id, "01_text_analysis.json")
@@ -477,12 +546,23 @@ class ProjectsV2Adapter:
                     continue
         return None, None
 
+    def read_analysis_artifact(self, doc_dir: Path, version_id: str, name: str) -> Optional[dict]:
+        p = self._latest_file(doc_dir, version_id, name)
+        return _read_json(p) if p else None
+
+    def analysis_artifact_path(self, doc_dir: Path, version_id: str, name: str) -> Optional[Path]:
+        return self._latest_file(doc_dir, version_id, name)
+
     def findings_path(self, doc_dir: Path, version_id: str) -> Optional[Path]:
-        """Лучший файл замечаний в latest (приоритет как в findings_service)."""
+        """Лучший файл замечаний в latest/runs (приоритет как в findings_service)."""
         latest = self.latest_dir(doc_dir, version_id)
         for name in _FINDINGS_PRIORITY:
             p = latest / name
             if p.is_file():
+                return p
+        for name in _FINDINGS_PRIORITY:
+            p = self._runs_file(doc_dir, version_id, name)
+            if p is not None:
                 return p
         return None
 
@@ -514,11 +594,9 @@ class ProjectsV2Adapter:
             p = vdir / rel
             if p.is_file():
                 return p
-        runs = vdir / "03_analysis" / "runs"
-        if runs.is_dir():
-            hits = sorted(runs.rglob("pipeline_log.json"))
-            if hits:
-                return hits[0]
+        run_log = self._runs_file(doc_dir, version_id, "pipeline_log.json")
+        if run_log is not None:
+            return run_log
         return None
 
     def has_pipeline_log(self, doc_dir: Path, version_id: str) -> bool:

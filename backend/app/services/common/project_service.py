@@ -671,9 +671,226 @@ def delete_project(project_id: str) -> dict:
     }
 
 
+def _v2_read_enabled() -> bool:
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        return production_uses_v2()
+    except Exception:
+        return False
+
+
+def _version_no_from_id(version_id: str, fallback: int = 1) -> int:
+    m = re.match(r"v0*(\d+)$", str(version_id or ""))
+    return int(m.group(1)) if m else fallback
+
+
+def _v2_versions_summary(adapter, doc: dict, doc_dir: Path, latest_id: str) -> dict:
+    versions = []
+    for idx, entry in enumerate(adapter.list_versions(doc_dir), start=1):
+        vid = entry.get("version_id") or f"v{idx:03d}"
+        inputs = adapter.input_files(doc_dir, vid)
+        pdf_count = sum(1 for name in inputs if str(name).lower().endswith(".pdf"))
+        md_count = sum(1 for name in inputs if str(name).lower().endswith(".md"))
+        versions.append({
+            "version_id": vid,
+            "version_no": entry.get("version_no") or _version_no_from_id(vid, idx),
+            "label": entry.get("label") or f"V{entry.get('version_no') or _version_no_from_id(vid, idx)}",
+            "folder": f"versions/{vid}",
+            "status": entry.get("status", "active"),
+            "source": entry.get("source", "projects_v2"),
+            "created_at": entry.get("created_at"),
+            "comment": entry.get("comment"),
+            "is_latest": vid == latest_id,
+            "has_source_files": bool(pdf_count or md_count),
+            "pdf_count": pdf_count,
+            "md_count": md_count,
+            "source_files_count": len(inputs),
+            "can_run_audit": pdf_count > 0,
+        })
+    return {
+        "project_id": doc["document_code"],
+        "logical_project_id": doc["document_code"],
+        "latest_version_id": latest_id,
+        "version_count": len(versions),
+        "has_versions": len(versions) > 1,
+        "versions": versions,
+    }
+
+
+def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStatus:
+    status = PipelineStatus()
+    log = adapter.read_pipeline_log(doc_dir, version_id) or {}
+    stages = log.get("stages", {}) if isinstance(log, dict) else {}
+    mapping = {
+        "crop_blocks": "crop_blocks",
+        "gemma_enrichment": "gemma_enrichment",
+        "text_analysis": "text_analysis",
+        "block_analysis": "blocks_analysis",
+        "block_retry": "block_retry",
+        "findings_merge": "findings",
+        "findings_critic": "findings_critic",
+        "findings_corrector": "findings_corrector",
+        "norm_verify": "norms_verified",
+        "optimization": "optimization",
+        "optimization_critic": "optimization_critic",
+        "optimization_corrector": "optimization_corrector",
+        "excel": "excel",
+        "prepare": "crop_blocks",
+        "main_audit": "findings",
+    }
+    valid = {"done", "error", "partial", "running", "skipped", "interrupted"}
+    for log_key, field in mapping.items():
+        raw = (stages.get(log_key) or {}).get("status")
+        if raw in valid:
+            setattr(status, field, "error" if raw == "interrupted" else raw)
+    files = adapter.latest_analysis_files(doc_dir, version_id)
+    if files.get("has_01_text_analysis") and status.text_analysis == "pending":
+        status.text_analysis = "done"
+    if files.get("has_02_blocks_analysis") and status.blocks_analysis == "pending":
+        status.blocks_analysis = "done"
+    if files.get("has_03_findings") and status.findings == "pending":
+        status.findings = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "03a_norms_verified.json") and status.norms_verified == "pending":
+        status.norms_verified = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "optimization.json") and status.optimization == "pending":
+        status.optimization = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "optimization_review.json") and status.optimization_critic == "pending":
+        status.optimization_critic = "done"
+    return status
+
+
+def _v2_project_status_from_doc(adapter, doc: dict, *, version_id: Optional[str] = None) -> Optional[ProjectStatus]:
+    doc_dir = Path(doc["doc_dir"])
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        return None
+    vdir = adapter.version_dir(doc_dir, vid)
+    vj = adapter.read_version_json(doc_dir, vid) or {}
+    dj = adapter.read_document_json(doc_dir) or {}
+    latest_id = adapter.current_version_id(doc_dir, dj) or vid
+    versions_summary = _v2_versions_summary(adapter, doc, doc_dir, latest_id)
+    version_entry = next((v for v in versions_summary["versions"] if v["version_id"] == vid), None)
+    if version_entry is None:
+        return None
+
+    project_info = vj.get("project_info") or dj.get("project_info") or {}
+    object_info = next((o for o in adapter.list_objects() if o["folder_name"] == doc["object_folder"]), {})
+    input_files = adapter.input_files(doc_dir, vid)
+    pdf_files = [name for name in input_files if str(name).lower().endswith(".pdf")]
+    pdf_size = 0.0
+    for name in pdf_files:
+        fp = vdir / "01_input" / name
+        if fp.is_file():
+            pdf_size += fp.stat().st_size / 1024 / 1024
+    md_candidates = [name for name in input_files if str(name).lower().endswith(".md")]
+    work_md = vdir / "02_work" / "document.md"
+    has_md = bool(md_candidates) or (work_md.is_file() and work_md.stat().st_size > 0)
+    md_name = "02_work/document.md" if work_md.is_file() else (md_candidates[0] if md_candidates else None)
+    md_size_kb = 0.0
+    if work_md.is_file():
+        md_size_kb = round(work_md.stat().st_size / 1024, 1)
+    elif md_candidates:
+        mp = vdir / "01_input" / md_candidates[0]
+        if mp.is_file():
+            md_size_kb = round(mp.stat().st_size / 1024, 1)
+
+    findings_data = adapter.read_findings(doc_dir, vid) or {}
+    findings_items = findings_data if isinstance(findings_data, list) else findings_data.get("findings", findings_data.get("items", [])) or []
+    findings_by_severity: dict[str, int] = {}
+    for item in findings_items:
+        if isinstance(item, dict):
+            sev = item.get("severity", "НЕИЗВЕСТНО")
+            findings_by_severity[sev] = findings_by_severity.get(sev, 0) + 1
+
+    opt_data = adapter.read_analysis_artifact(doc_dir, vid, "optimization.json") or {}
+    opt_items = opt_data.get("items", []) if isinstance(opt_data, dict) else []
+    opt_meta = opt_data.get("meta", {}) if isinstance(opt_data, dict) else {}
+    opt_by_type = opt_meta.get("by_type") or {}
+    if not opt_by_type:
+        for item in opt_items:
+            if isinstance(item, dict):
+                typ = item.get("type", "unknown")
+                opt_by_type[typ] = opt_by_type.get(typ, 0) + 1
+
+    latest_dir = adapter.latest_dir(doc_dir, vid)
+    pipeline_version = project_info.get("pipeline_version", vj.get("pipeline_version", "legacy")) or "legacy"
+    return ProjectStatus(
+        project_id=doc["document_code"],
+        name=project_info.get("name") or dj.get("display_name") or doc["document_code"],
+        description=project_info.get("description", ""),
+        section=project_info.get("section") or doc.get("discipline") or "EOM",
+        object=project_info.get("object") or object_info.get("display_name"),
+        has_pdf=bool(pdf_files),
+        pdf_size_mb=round(pdf_size, 1),
+        pdf_files=pdf_files,
+        has_extracted_text=False,
+        text_size_kb=0.0,
+        has_md_file=has_md,
+        md_file_name=md_name,
+        md_file_size_kb=md_size_kb,
+        text_source="md" if has_md else "none",
+        pipeline=_v2_pipeline_status(adapter, doc_dir, vid),
+        findings_count=len(findings_items),
+        findings_by_severity=findings_by_severity,
+        optimization_count=len(opt_items) or int(opt_meta.get("total_items", 0) or 0),
+        optimization_by_type=opt_by_type,
+        optimization_savings_pct=opt_meta.get("estimated_savings_pct", 0),
+        last_audit_date=(findings_data or {}).get("audit_date", (findings_data or {}).get("generated_at")) if isinstance(findings_data, dict) else None,
+        total_batches=0,
+        completed_batches=0,
+        has_ocr=any(str(name).lower().endswith(("result.json", "ocr.html")) for name in input_files),
+        block_count=0,
+        block_errors=0,
+        block_expected=0,
+        pipeline_summary=_build_pipeline_summary(latest_dir, pipeline_version),
+        pipeline_issues=_build_pipeline_issues(latest_dir, pipeline_version),
+        pipeline_version=pipeline_version,
+        version_id=version_entry["version_id"],
+        version_no=version_entry["version_no"],
+        version_label=version_entry["label"],
+        latest_version_id=latest_id,
+        version_count=versions_summary["version_count"],
+        has_versions=versions_summary["has_versions"],
+        is_latest_version=(version_entry["version_id"] == latest_id),
+        versions_summary=versions_summary["versions"],
+    )
+
+
+def _get_project_status_v2(project_id: str, *, version_id: Optional[str] = None) -> Optional[ProjectStatus]:
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None
+    return _v2_project_status_from_doc(adapter, doc, version_id=version_id)
+
+
+def _list_projects_v2(hidden: set[str]) -> list[ProjectStatus]:
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    projects: list[ProjectStatus] = []
+    for doc in adapter.list_documents():
+        if doc["document_code"] in hidden:
+            continue
+        status = _v2_project_status_from_doc(adapter, doc)
+        if status:
+            projects.append(status)
+    return projects
+
 def list_projects() -> list[ProjectStatus]:
     """Получить список всех проектов с их статусом."""
     hidden = _load_hidden_projects()
+    if _v2_read_enabled():
+        try:
+            return _list_projects_v2(hidden)
+        except Exception as exc:
+            print(f"[projects_v2 read] list_projects fallback to legacy: {exc}")
     projects = []
     for project_id, entry in iter_project_dirs():
         if project_id in hidden:
@@ -711,6 +928,13 @@ def get_project_status(
     Для V2+ показатели читаются из `_versions/<version_id>/`; данные V1 НЕ
     смешиваются.
     """
+    if _v2_read_enabled():
+        try:
+            status = _get_project_status_v2(project_id, version_id=version_id)
+            if status is not None:
+                return status
+        except Exception as exc:
+            print(f"[projects_v2 read] get_project_status fallback to legacy: {exc}")
     proj_dir = resolve_project_dir(project_id)
     if not proj_dir.exists():
         return None
@@ -2689,7 +2913,125 @@ def _clean_projects_v2_artifacts(project_id: str, legacy_version_id: Optional[st
         return out
 
 
-def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> dict:
+def _clean_project_data_v2_primary(
+    project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False,
+) -> dict:
+    """projects_v2-primary clean with mandatory backup + confirmation."""
+    if not _confirmed:
+        raise ValueError("Для очистки projects_v2 требуется явное подтверждение _confirmed=True")
+
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_version_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    facade = StorageWriteFacade()
+    v2_root = facade.v2_root()
+    if v2_root is None:
+        raise ValueError("projects_v2 root не настроен")
+
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise ValueError(f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, version_id)
+    if not target_vid:
+        raise ValueError(f"Версия '{version_id}' проекта '{project_id}' не найдена в projects_v2")
+
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    version_dir = target.version_dir(v2_root)
+    if not version_dir.is_dir():
+        raise ValueError(f"Версия '{target_vid}' проекта '{project_id}' не найдена в projects_v2")
+
+    backup_id = backup_version_before_destructive(target, v2_root, "clean_project_data")
+    record_destructive_confirmation(
+        target, v2_root, op="clean_project_data", backup_id=backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary(
+        "clean_project_data", confirmed=True, backup_id=backup_id,
+    )
+
+    result = {
+        "deleted_files": 0,
+        "deleted_dirs": 0,
+        "freed_mb": 0.0,
+        "version_id": target.vid_disk(),
+        "backup_id": backup_id,
+    }
+    total_size = 0
+
+    analysis_dir = version_dir / "03_analysis"
+    if analysis_dir.exists():
+        for f in analysis_dir.rglob("*"):
+            if f.is_file():
+                total_size += f.stat().st_size
+                result["deleted_files"] += 1
+            elif f.is_dir():
+                result["deleted_dirs"] += 1
+        shutil.rmtree(analysis_dir)
+    (analysis_dir / "latest").mkdir(parents=True, exist_ok=True)
+
+    vj_path = version_dir / "version.json"
+    if vj_path.exists():
+        try:
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+        except Exception:
+            vj = None
+        if isinstance(vj, dict):
+            info = vj.get("project_info")
+            if isinstance(info, dict):
+                for field in [
+                    "tile_config_source", "text_source",
+                    "md_page_classification", "text_extraction_quality",
+                    "tile_quality",
+                ]:
+                    info.pop(field, None)
+                info["tile_config"] = {}
+                vj["project_info"] = info
+                vj_path.write_text(json.dumps(vj, ensure_ascii=False, indent=2), encoding="utf-8")
+                result["project_info_reset"] = True
+
+    result["freed_mb"] = round(total_size / 1024 / 1024, 1)
+    return result
+
+
+def restore_clean_backup(project_id: str, *, backup_id: str, version_id: Optional[str] = None) -> dict:
+    """Восстановить v2-primary версию из destructive backup."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import restore_from_backup_id, v2_primary_enabled
+
+    if not v2_primary_enabled():
+        raise RuntimeError("restore-clean доступен только в projects_v2_primary")
+
+    v2_root = StorageWriteFacade().v2_root()
+    if v2_root is None:
+        raise FileNotFoundError("projects_v2 root не настроен")
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise FileNotFoundError(f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, version_id)
+    if not target_vid:
+        raise FileNotFoundError(f"Версия '{version_id}' проекта '{project_id}' не найдена в projects_v2")
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    return restore_from_backup_id(target, v2_root, backup_id)
+
+
+def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False) -> dict:
     """Очистить все результаты аудита, сохранив только исходные документы.
 
     Сохраняет (исходные файлы пользователя):
@@ -2711,8 +3053,13 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None) -> 
     Returns:
         dict с описанием удалённого
     """
-    # Шаг 6C: в V2_PRIMARY деструктив запрещён до safety-контракта (no-op в
-    # legacy/dual_write_shadow → прод не затрагивается).
+    from backend.app.services.storage.storage_write_facade import v2_is_primary
+    if v2_is_primary():
+        return _clean_project_data_v2_primary(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
+
+    # Legacy/dual_write_shadow branch: прежняя очистка `_output/` без v2-деструктива.
     from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
     guard_destructive_v2_primary("clean_project_data")
     root_dir = resolve_project_dir(project_id)

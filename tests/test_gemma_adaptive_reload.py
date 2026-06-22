@@ -359,6 +359,77 @@ def test_single_pass_does_not_mark_context_overflow_on_other_errors(monkeypatch,
     assert result.context_overflow is False
 
 
+# ─── #15: ретрай транзиентного сетевого/timeout сбоя (_gemma_call_attempt → -1) ─
+
+
+def _network_retry_setup(monkeypatch, tmp_path, block_id):
+    blocks_dir = tmp_path / "blocks_gemma_100"
+    blocks_dir.mkdir()
+    from PIL import Image as _PIL
+    png_path = blocks_dir / "block_test.png"
+    _PIL.new("RGB", (800, 500), color="white").save(png_path, format="PNG")
+    block = {"block_id": block_id, "page": 7, "file": "block_test.png", "ocr_label": ""}
+    graph = {"pages": [{"page": 7, "text_blocks": [], "sheet_no_normalized": "AR-1"}]}
+    sleeps: list[float] = []
+
+    async def _no_sleep(sec):
+        sleeps.append(sec)
+    monkeypatch.setattr(ge.asyncio, "sleep", _no_sleep)
+    return blocks_dir, block, graph, sleeps
+
+
+def _run_single_pass(block, graph, blocks_dir):
+    import httpx
+    async def _run():
+        async with httpx.AsyncClient() as client:
+            return await ge._enrich_block_single_pass(
+                client, "http://fake", block, graph, blocks_dir,
+                model="google/gemma-4-26b-a4b", timeout=30,
+                max_output_tokens=ge.DEFAULT_MAX_OUTPUT_TOKENS,
+            )
+    return asyncio.run(_run())
+
+
+def test_single_pass_retries_network_error_then_succeeds(monkeypatch, tmp_path):
+    """#15: сетевой сбой (status == -1) ретраится на ТОМ ЖЕ scale с backoff;
+    после восстановления соединения блок успешно распознаётся."""
+    blocks_dir, block, graph, sleeps = _network_retry_setup(monkeypatch, tmp_path, "b-net-ok")
+    calls = {"n": 0}
+
+    async def fake_call(*args, **kwargs):
+        calls["n"] += 1
+        if calls["n"] <= 2:
+            return -1, None, "HTTP exception: ReadTimeout", 10
+        ok = {"choices": [{"message": {"content": '{"description":"тест","visible_text":["A"]}'},
+                           "finish_reason": "stop"}]}
+        return 200, ok, "", 10
+    monkeypatch.setattr(ge, "_gemma_call_attempt", fake_call)
+
+    result = _run_single_pass(block, graph, blocks_dir)
+    assert result.ok is True
+    assert calls["n"] == 3            # 2 сетевых сбоя отретраены + успех
+    assert len(sleeps) == 2           # backoff перед каждым ретраем
+
+
+def test_single_pass_network_error_exhausts_retries(monkeypatch, tmp_path):
+    """#15: при постоянном сетевом сбое делаем ровно _NETWORK_RETRIES ретраев на
+    том же scale (не сжигая scale-tier'ы) и затем честно отдаём ok=False."""
+    blocks_dir, block, graph, sleeps = _network_retry_setup(monkeypatch, tmp_path, "b-net-fail")
+    calls = {"n": 0}
+
+    async def fake_call(*args, **kwargs):
+        calls["n"] += 1
+        return -1, None, "HTTP exception: ConnectError", 10
+    monkeypatch.setattr(ge, "_gemma_call_attempt", fake_call)
+
+    result = _run_single_pass(block, graph, blocks_dir)
+    assert result.ok is False
+    # 1 исходная попытка + _NETWORK_RETRIES ретраев на том же scale_idx
+    assert calls["n"] == ge._NETWORK_RETRIES + 1
+    assert len(sleeps) == ge._NETWORK_RETRIES
+    assert result.context_overflow is False
+
+
 # ─── _resolve_*_context_length: env → config → fallback ──────────────────────
 
 
