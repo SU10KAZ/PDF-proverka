@@ -428,13 +428,16 @@ async def add_retry_to_batch(request: dict):
     """Добавить retry конкретного этапа в очередь (создаёт новую если нет)."""
     project_id = request.get("project_id")
     stage = request.get("stage")
+    version_id = request.get("version_id")
     if not project_id or not stage:
         raise HTTPException(400, "project_id и stage обязательны")
 
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     try:
-        queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+        queue = await pipeline_manager.add_retry_to_batch(
+            project_id, stage, version_id=version_id,
+        )
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -444,13 +447,16 @@ async def add_retry_to_batch(request: dict):
 async def add_resume_to_batch(request: dict):
     """Добавить resume (продолжение) проекта в очередь (создаёт новую если нет)."""
     project_id = request.get("project_id")
+    version_id = request.get("version_id")
     if not project_id:
         raise HTTPException(400, "project_id обязателен")
 
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     try:
-        queue = await pipeline_manager.add_resume_to_batch(project_id)
+        queue = await pipeline_manager.add_resume_to_batch(
+            project_id, version_id=version_id,
+        )
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -1047,9 +1053,13 @@ async def get_audit_status(project_id: str):
 
 
 @router.post("/{project_id:path}/retry/{stage}")
-async def retry_stage(project_id: str, stage: str):
+async def retry_stage(
+    project_id: str,
+    stage: str,
+    version_id: Optional[str] = Query(None),
+):
     """Повторить конкретный этап конвейера."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     stage_to_pipeline_stage = {
         "crop_blocks": "prepare",
@@ -1068,17 +1078,17 @@ async def retry_stage(project_id: str, stage: str):
     if stage in stage_to_pipeline_stage:
         async def _starter():
             return await pipeline_manager.start_from_stage(
-                project_id, stage_to_pipeline_stage[stage],
+                project_id, stage_to_pipeline_stage[stage], version_id=version_id,
             )
     elif stage == "norm_verify" or stage == "norm_requote":
         async def _starter():
-            return await pipeline_manager.start_norm_verify(project_id)
+            return await pipeline_manager.start_norm_verify(project_id, version_id=version_id)
     elif stage == "optimization":
         async def _starter():
-            return await pipeline_manager.start_optimization(project_id)
+            return await pipeline_manager.start_optimization(project_id, version_id=version_id)
     elif stage == "optimization_critic" or stage == "optimization_corrector":
         async def _starter():
-            return await pipeline_manager.start_optimization_review(project_id)
+            return await pipeline_manager.start_optimization_review(project_id, version_id=version_id)
     else:
         raise HTTPException(400, f"Этап '{stage}' не поддерживает повтор")
 
