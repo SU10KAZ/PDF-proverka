@@ -66,10 +66,18 @@ def test_mode_dual_read_shadow(monkeypatch):
     assert f.is_dual_read_shadow() and f.uses_projects_v2()
 
 
-def test_production_uses_v2_always_false(monkeypatch):
-    for v in ("legacy", "projects_v2", "dual_read_shadow"):
-        monkeypatch.setenv("AUDIT_STORAGE_BACKEND", v)
+def test_production_uses_v2_requires_backend_and_read_flag(monkeypatch):
+    for backend in ("legacy", "dual_read_shadow", "garbage"):
+        monkeypatch.setenv("AUDIT_STORAGE_BACKEND", backend)
+        monkeypatch.setenv("AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED", "true")
         assert F.production_uses_v2() is False
+
+    monkeypatch.setenv("AUDIT_STORAGE_BACKEND", "projects_v2")
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED", "false")
+    assert F.production_uses_v2() is False
+
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED", "true")
+    assert F.production_uses_v2() is True
 
 
 # ---------------------------------------------------------------------------

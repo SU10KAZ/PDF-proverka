@@ -14,6 +14,17 @@ import pytest
 
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
 
+# Storage cutover flags are production-controlled and may be v2-primary in the
+# developer shell. Tests must start from a deterministic legacy baseline and
+# opt into projects_v2 explicitly via monkeypatch inside the test.
+_DEFAULT_STORAGE_ENV = {
+    "AUDIT_STORAGE_BACKEND": "legacy",
+    "AUDIT_PROJECTS_V2_WRITE_MODE": "dual_write_shadow",
+    "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED": "false",
+}
+for _name, _value in _DEFAULT_STORAGE_ENV.items():
+    os.environ[_name] = _value
+
 # Rollout-флаги stage_comparison (могут быть включены в prod `.env` для
 # контролируемого прогона) нейтрализуем по умолчанию — тесты должны проверять
 # поведение при ДЕФОЛТНЫХ значениях, а не подхватывать `.env`. Тест, которому
@@ -53,3 +64,10 @@ def _isolate_batch_queue_file(tmp_path, monkeypatch):
     monkeypatch.setattr(
         _mgr, "BATCH_QUEUE_FILE", tmp_path / "batch_queue.json", raising=False
     )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_storage_cutover_env(monkeypatch):
+    """Every test starts from legacy storage unless it opts into v2 explicitly."""
+    for name, value in _DEFAULT_STORAGE_ENV.items():
+        monkeypatch.setenv(name, value)
