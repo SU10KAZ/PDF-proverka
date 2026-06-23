@@ -8641,10 +8641,22 @@ const app = createApp({
         // DEV-fallback: инженеры графика, если API недоступен/пуст.
         const _SCHED_MOCK_ENGINEERS = [
             { id: 'uzun',     name: 'Узун А. И.' },
-            { id: 'grivash',  name: 'Гриваш А. А.' },
+            { id: 'grivash',  name: 'Гривапш А. А.' },
             { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
             { id: 'olar',     name: 'Оларь М. И.' },
             { id: 'repnikov', name: 'Репников И. А.' },
+        ];
+
+        // Закреплённый состав бригады — эти инженеры показываются в графике
+        // ВСЕГДА (даже если за период у них нет ни одного решения в
+        // decisions_log). id = eng_slug ФИО из users.json — он совпадает с id,
+        // которые присылает /api/schedule, поэтому дедуп по id «склеивает»
+        // строку, если у инженера всё-таки есть события за период.
+        const _SCHED_REQUIRED_ENGINEERS = [
+            { id: 'kuldyaev-f-s', name: 'Кульдяев Ф. С.', role: 'expert' },
+            { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
+            { id: 'grivapsh-a-a', name: 'Гривапш А. А.', role: 'expert' },
+            { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
         ];
 
         // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=
@@ -8726,15 +8738,28 @@ const app = createApp({
             return ev;
         });
 
-        // Эффективный источник: API, если есть непустой результат, иначе mock.
-        const schedUsingMock = computed(() =>
-            !Array.isArray(schedApiEvents.value) || schedApiEvents.value.length === 0);
+        // Эффективный источник: показываем РЕАЛЬНЫЕ данные, как только backend
+        // успешно ответил (массив событий получен — пусть даже пустой). На mock
+        // (демо) откатываемся ТОЛЬКО если запрос упал / ещё не загружен. Это
+        // отличает «за период нет решений» (живой пустой график) от «API
+        // недоступен» — раньше пустой ответ ошибочно прятал реальных инженеров.
+        const schedApiOk = computed(() => Array.isArray(schedApiEvents.value));
+        const schedUsingMock = computed(() => !schedApiOk.value);
         const schedEvents = computed(() =>
             schedUsingMock.value ? _schedMockEvents.value : schedApiEvents.value);
         const schedEngineers = computed(() => {
-            if (!schedUsingMock.value && Array.isArray(schedApiEngineers.value) && schedApiEngineers.value.length)
-                return schedApiEngineers.value;
-            return _SCHED_MOCK_ENGINEERS;
+            if (schedUsingMock.value) return _SCHED_MOCK_ENGINEERS;
+            // Живые данные: API-инженеры (те, у кого были решения за период) плюс
+            // ЗАКРЕПЛЁННЫЙ состав — он показывается ВСЕГДА, даже без решений.
+            // Дедуп по id (id = eng_slug ФИО, совпадает с id из API): реальная
+            // запись перекрывает заглушку. Сортировка по имени.
+            const byId = new Map();
+            for (const e of _SCHED_REQUIRED_ENGINEERS) byId.set(e.id, { ...e });
+            for (const e of (schedApiEngineers.value || [])) {
+                if (e && e.id) byId.set(e.id, e);
+            }
+            return Array.from(byId.values()).sort((a, b) =>
+                (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase(), 'ru'));
         });
 
         // Баннер состояния над графиком.
