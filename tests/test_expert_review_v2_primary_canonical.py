@@ -193,6 +193,79 @@ def test_legacy_expert_review_still_writes_output_and_merges_by_type_and_id(monk
     assert not (legacy_project / "04_review").exists()
 
 
+
+def test_knowledge_base_entries_hydrate_missing_display_fields_from_v2_sources(monkeypatch, tmp_path):
+    kb = _patch_kb_side_effects(monkeypatch, tmp_path)
+    v2_root = tmp_path / "projects_v2"
+    _doc_dir, vdir = _make_v2_doc(v2_root, "DOC-HYDRATE")
+    _enable_v2_primary(monkeypatch, v2_root)
+
+    _write_json(vdir / "03_analysis" / "latest" / "03_findings.json", {
+        "findings": [{
+            "id": "F-1",
+            "severity": "КРИТИЧЕСКОЕ",
+            "category": "fire_safety",
+            "problem": "Пожарный отсек не выделен в общих данных",
+            "norm": "СП 2.13130.2020",
+            "sheet": "Лист 1",
+            "page": 3,
+        }],
+    })
+    _write_json(vdir / "03_analysis" / "latest" / "optimization.json", {
+        "items": [{
+            "id": "OPT-1",
+            "section": "Фасад",
+            "current": "Импортная подсистема",
+            "proposed": "Локальный аналог без изменения класса",
+            "type": "cheaper_analog",
+            "norm": "СП 118.13330.2022",
+        }],
+    })
+    _write_json(kb.DECISIONS_LOG_FILE, {"entries": [
+        {
+            "id": "DEC-F",
+            "source_project": "DOC-HYDRATE",
+            "section": "AR",
+            "item_id": "F-1",
+            "item_type": "finding",
+            "severity": "",
+            "summary": "",
+            "expert_decision": "rejected",
+            "expert_date": "2026-06-23T09:00:00",
+        },
+        {
+            "id": "DEC-O",
+            "source_project": "DOC-HYDRATE",
+            "section": "AR",
+            "item_id": "OPT-1",
+            "item_type": "optimization",
+            "summary": "",
+            "expert_decision": "accepted",
+            "expert_date": "2026-06-23T09:00:01",
+        },
+    ]})
+
+    result = kb.get_knowledge_base(limit=10)
+    by_id = {entry["id"]: entry for entry in result["entries"]}
+
+    assert by_id["DEC-F"]["severity"] == "КРИТИЧЕСКОЕ"
+    assert by_id["DEC-F"]["summary"] == "Пожарный отсек не выделен в общих данных"
+    assert by_id["DEC-F"]["norm_refs"] == ["СП 2.13130.2020"]
+    assert by_id["DEC-F"]["sheet"] == "Лист 1"
+    assert by_id["DEC-F"]["page"] == 3
+    assert "Импортная подсистема" in by_id["DEC-O"]["summary"]
+    assert "Локальный аналог" in by_id["DEC-O"]["summary"]
+    assert by_id["DEC-O"]["category"] == "cheaper_analog"
+
+    search_result = kb.get_knowledge_base(search="пожарный", limit=10)
+    assert search_result["total"] == 1
+    assert search_result["entries"][0]["id"] == "DEC-F"
+
+    stored = json.loads(kb.DECISIONS_LOG_FILE.read_text(encoding="utf-8"))["entries"]
+    assert stored[0]["severity"] == ""
+    assert stored[0]["summary"] == ""
+    assert stored[1]["summary"] == ""
+
 def test_scan_expert_review_split_reports_output_decisions_missing_from_04(tmp_path):
     import importlib.util
 
