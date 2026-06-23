@@ -13,6 +13,7 @@ from backend.app.models.expert_review import (
     ExpertDecision, KnowledgeBaseEntry, PatternSuggestion,
 )
 from backend.app.services.common import version_service
+from backend.app.services.common.atomic_json import load_modify_save
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import (
     is_projects_v2_version_dir,
@@ -166,23 +167,33 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     # если project_id не резолвится в реальный проект/контейнер, поднимется
     # ProjectNotResolvedError (роутер вернёт 404).
     review_path = _review_path(project_id, must_exist=True)
-    review_path.parent.mkdir(parents=True, exist_ok=True)
+    review_paths = _review_paths(project_id, must_exist=True)
+    fallback_paths = [p for p in review_paths if Path(p) != review_path]
 
     # 1. Сохранить per-project файл (merge с существующими решениями)
-    existing_payloads = [
-        payload
-        for payload in (_load_json(path) for path in _review_paths(project_id, must_exist=True))
-        if isinstance(payload, dict)
-    ]
-    merged = _merge_review_decisions(existing_payloads, decisions, removed_ids)
+    # под единым read-modify-write локом canonical review_path.
+    def _mutate_review(current):
+        existing_payloads = []
+        if isinstance(current, dict):
+            existing_payloads.append(current)
+        existing_payloads.extend(
+            payload
+            for payload in (_load_json(path) for path in fallback_paths)
+            if isinstance(payload, dict)
+        )
+        merged = _merge_review_decisions(existing_payloads, decisions, removed_ids)
+        return {
+            "project_id": project_id,
+            "reviewer": reviewer,
+            "reviewed_at": _now_iso(),
+            "decisions": merged,
+        }
 
-    review_data = {
-        "project_id": project_id,
-        "reviewer": reviewer,
-        "reviewed_at": _now_iso(),
-        "decisions": merged,
-    }
-    _save_json(review_path, review_data)
+    load_modify_save(
+        review_path,
+        _mutate_review,
+        default={"project_id": project_id, "decisions": []},
+    )
 
     # 2. Обогатить и добавить в глобальный лог
     enriched = _enrich_decisions(project_id, decisions, reviewer)
@@ -313,6 +324,28 @@ def _save_decisions_log(entries: list[dict]):
     _save_json(DECISIONS_LOG_FILE, {"entries": entries})
 
 
+def _decisions_entries(data) -> list[dict]:
+    if isinstance(data, dict):
+        raw = data.get("entries", [])
+    elif isinstance(data, list):
+        raw = data
+    else:
+        raw = []
+    return [e for e in raw if isinstance(e, dict)]
+
+
+def _decisions_payload(entries: list[dict]) -> dict:
+    return {"entries": entries}
+
+
+def _load_modify_decisions_log(mutate_fn):
+    return load_modify_save(
+        DECISIONS_LOG_FILE,
+        lambda data: _decisions_payload(mutate_fn(_decisions_entries(data))),
+        default={"entries": []},
+    )
+
+
 def _next_decision_num(existing_log: list[dict]) -> int:
     """Следующий монотонный номер для DEC-NNNN: max(существующих) + 1.
 
@@ -332,16 +365,32 @@ def _next_decision_num(existing_log: list[dict]) -> int:
 
 def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
     """Добавить записи в глобальный лог (дедупликация по project+item_id)."""
-    existing = _load_decisions_log()
-    existing_keys = {(e.get("source_project"), e.get("item_id")) for e in existing}
+    incoming = [entry.model_dump() for entry in new_entries]
 
-    # Обновить существующие или добавить новые
-    updated_map = {(e.get("source_project"), e.get("item_id")): e for e in existing}
-    for entry in new_entries:
-        key = (entry.source_project, entry.item_id)
-        updated_map[key] = entry.model_dump()
+    def _mutate(existing: list[dict]) -> list[dict]:
+        updated_map = {(e.get("source_project"), e.get("item_id")): e for e in existing}
+        used_ids = {str(e.get("id")) for e in existing if e.get("id")}
+        next_num = _next_decision_num(existing)
+        for item in incoming:
+            key = (item.get("source_project"), item.get("item_id"))
+            previous = updated_map.get(key)
+            if previous:
+                if previous.get("id"):
+                    item["id"] = previous.get("id")
+                for field in ("customer_confirmed", "customer_date", "customer_note"):
+                    if field in previous:
+                        item[field] = previous.get(field)
+            elif item.get("id") in used_ids:
+                while f"DEC-{next_num:04d}" in used_ids:
+                    next_num += 1
+                item["id"] = f"DEC-{next_num:04d}"
+                next_num += 1
+            if item.get("id"):
+                used_ids.add(str(item.get("id")))
+            updated_map[key] = item
+        return list(updated_map.values())
 
-    _save_decisions_log(list(updated_map.values()))
+    _load_modify_decisions_log(_mutate)
 
 
 def get_knowledge_base(
@@ -418,31 +467,41 @@ def get_kb_stats(object_id: Optional[str] = None) -> dict:
 
 def mark_customer_confirmed(entry_ids: list[str], note: str = "") -> int:
     """Отметить записи как согласованные заказчиком."""
-    entries = _load_decisions_log()
+    target_ids = set(entry_ids)
     count = 0
     now = _now_iso()
-    for e in entries:
-        if e.get("id") in entry_ids and e.get("expert_decision") == "accepted":
-            e["customer_confirmed"] = True
-            e["customer_date"] = now
-            if note:
-                e["customer_note"] = note
-            count += 1
-    _save_decisions_log(entries)
+
+    def _mutate(entries: list[dict]) -> list[dict]:
+        nonlocal count
+        for e in entries:
+            if e.get("id") in target_ids and e.get("expert_decision") == "accepted":
+                e["customer_confirmed"] = True
+                e["customer_date"] = now
+                if note:
+                    e["customer_note"] = note
+                count += 1
+        return entries
+
+    _load_modify_decisions_log(_mutate)
     return count
 
 
 def unmark_customer_confirmed(entry_ids: list[str]) -> int:
     """Снять отметку согласования заказчиком."""
-    entries = _load_decisions_log()
+    target_ids = set(entry_ids)
     count = 0
-    for e in entries:
-        if e.get("id") in entry_ids and e.get("customer_confirmed"):
-            e["customer_confirmed"] = False
-            e["customer_date"] = None
-            e["customer_note"] = None
-            count += 1
-    _save_decisions_log(entries)
+
+    def _mutate(entries: list[dict]) -> list[dict]:
+        nonlocal count
+        for e in entries:
+            if e.get("id") in target_ids and e.get("customer_confirmed"):
+                e["customer_confirmed"] = False
+                e["customer_date"] = None
+                e["customer_note"] = None
+                count += 1
+        return entries
+
+    _load_modify_decisions_log(_mutate)
     return count
 
 
@@ -464,60 +523,59 @@ def _find_project_dir(project_id: str) -> Optional[Path]:
 
 
 def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
-    """Отменить решение — удалить из глобального лога и из expert_review проекта.
-
-    Адресуем по УНИКАЛЬНОМУ составному ключу (source_project, item_id): id
-    (DEC-NNNN) переиспользуется и один id = десятки записей в разных проектах,
-    поэтому revoke по id сносил чужие решения (reserc.md #80/#86; audit: 0
-    коллизий составного ключа). Если составного ключа нет — удаляем по id только
-    при его уникальности, иначе отказ.
-    """
+    # Удалить решение из глобального лога и из expert_review проекта.
     import logging
-    # 1. Удалить из decisions_log.json
-    entries = _load_decisions_log()
-    before = len(entries)
+    removed = 0
 
-    if project_id and item_id:
-        def _match(e: dict) -> bool:
-            return e.get("source_project") == project_id and e.get("item_id") == item_id
-    else:
-        id_hits = [e for e in entries if e.get("id") == entry_id]
-        if len(id_hits) != 1:
+    def _mutate_log(entries: list[dict]) -> list[dict]:
+        nonlocal removed
+        if project_id and item_id:
+            def _match(e: dict) -> bool:
+                return e.get("source_project") == project_id and e.get("item_id") == item_id
+        else:
+            id_hits = [e for e in entries if e.get("id") == entry_id]
+            if len(id_hits) != 1:
+                logging.getLogger(__name__).warning(
+                    "revoke_decision: id=%r неуникален (%d записей) и нет составного "
+                    "ключа — отказ, чтобы не удалить чужие решения",
+                    entry_id, len(id_hits),
+                )
+                return entries
+
+            def _match(e: dict) -> bool:
+                return e.get("id") == entry_id
+
+        kept = [e for e in entries if not _match(e)]
+        matched = len(entries) - len(kept)
+        if matched > 1:
             logging.getLogger(__name__).warning(
-                "revoke_decision: id=%r неуникален (%d записей) и нет составного "
-                "ключа — отказ, чтобы не удалить чужие решения",
-                entry_id, len(id_hits),
+                "revoke_decision: совпало %d записей по (%s,%s)/id=%s — ожидалась ≤1; "
+                "пропуск без удаления", matched, project_id, item_id, entry_id,
             )
-            return 0
+            return entries
+        removed = matched
+        return kept
 
-        def _match(e: dict) -> bool:
-            return e.get("id") == entry_id
+    _load_modify_decisions_log(_mutate_log)
 
-    kept = [e for e in entries if not _match(e)]
-    removed = before - len(kept)
-    if removed > 1:
-        # Составной ключ обязан быть уникальным; >1 = повреждение данных →
-        # не сохраняем разрушительное удаление.
-        logging.getLogger(__name__).warning(
-            "revoke_decision: совпало %d записей по (%s,%s)/id=%s — ожидалась ≤1; "
-            "пропуск без удаления", removed, project_id, item_id, entry_id,
-        )
-        return 0
-    _save_decisions_log(kept)
-
-    # 2. Удалить из expert_review.json проекта (активная версия)
-    if project_id and item_id:
+    # Удалить из expert_review.json проекта (активная версия).
+    if removed and project_id and item_id:
         project_dir = _find_project_dir(project_id)
         if project_dir:
             review_path = _review_path(project_id)
             if review_path.exists():
-                review_data = _load_json(review_path)
-                if review_data and "decisions" in review_data:
-                    review_data["decisions"] = [
-                        d for d in review_data["decisions"]
-                        if d.get("item_id") != item_id
-                    ]
-                    _save_json(review_path, review_data)
+                def _mutate_review(review_data):
+                    if not isinstance(review_data, dict):
+                        return review_data
+                    decisions = review_data.get("decisions")
+                    if isinstance(decisions, list):
+                        review_data["decisions"] = [
+                            d for d in decisions
+                            if not (isinstance(d, dict) and d.get("item_id") == item_id)
+                        ]
+                    return review_data
+
+                load_modify_save(review_path, _mutate_review, default={"decisions": []})
 
     return removed
 
