@@ -227,31 +227,104 @@ def load_expert_review(project_id: str) -> Optional[dict]:
     return None
 
 
-def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
-    """Обогатить решения контекстом из findings/optimization JSON."""
+def _load_source_item_maps(project_id: str) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Source findings/optimizations for KB enrichment, latest-first."""
     analysis_dirs = _analysis_dirs(project_id)
 
-    # Загрузить findings
-    findings_map = {}
+    findings_map: dict[str, dict] = {}
     for output_dir in analysis_dirs:
         for fname in ["03a_norms_verified.json", "03_findings.json"]:
-            fpath = output_dir / fname
-            fdata = _load_json(fpath)
+            fdata = _load_json(output_dir / fname)
             if fdata:
                 for item in fdata.get("findings", fdata.get("items", [])):
-                    findings_map[item.get("id", "")] = item
+                    if isinstance(item, dict) and item.get("id"):
+                        findings_map[str(item.get("id"))] = item
                 break
         if findings_map:
             break
 
-    # Загрузить optimization
-    opt_map = {}
+    opt_map: dict[str, dict] = {}
     for output_dir in analysis_dirs:
         opt_data = _load_json(output_dir / "optimization.json")
         if opt_data:
             for item in opt_data.get("items", []):
-                opt_map[item.get("id", "")] = item
+                if isinstance(item, dict) and item.get("id"):
+                    opt_map[str(item.get("id"))] = item
             break
+
+    return findings_map, opt_map
+
+
+def _source_summary(source: dict, item_type: str) -> str:
+    for key in ("problem", "description", "summary", "title"):
+        value = source.get(key)
+        if value:
+            return str(value).strip()
+    if item_type != "optimization":
+        return ""
+
+    section = str(source.get("section") or "").strip()
+    current = str(source.get("current") or "").strip()
+    proposed = str(source.get("proposed") or "").strip()
+    opt_type = str(source.get("type") or "").strip()
+    if current and proposed:
+        prefix = f"{section}: " if section else ""
+        return f"{prefix}{current} → {proposed}"
+    if proposed:
+        return proposed
+    if current:
+        return current
+    return " / ".join(part for part in (section, opt_type) if part)
+
+
+def _norm_refs_from_source(source: dict) -> list[str]:
+    norm = source.get("norm", source.get("norm_ref", ""))
+    if not norm:
+        return []
+    return [norm] if isinstance(norm, str) else norm
+
+
+def _source_for_entry(entry: dict, source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]]) -> dict:
+    project_id = str(entry.get("source_project") or "").strip()
+    item_id = str(entry.get("item_id") or "").strip()
+    if not project_id or not item_id:
+        return {}
+    if project_id not in source_cache:
+        try:
+            source_cache[project_id] = _load_source_item_maps(project_id)
+        except Exception:
+            source_cache[project_id] = ({}, {})
+    findings_map, opt_map = source_cache[project_id]
+    if entry.get("item_type") == "optimization":
+        return opt_map.get(item_id) or {}
+    return findings_map.get(item_id) or opt_map.get(item_id) or {}
+
+
+def _hydrate_kb_entry_from_source(entry: dict, source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]]) -> dict:
+    """Fill display fields from source artifacts without writing decisions_log."""
+    source = _source_for_entry(entry, source_cache)
+    if not source:
+        return entry
+
+    item_type = str(entry.get("item_type") or "")
+    if not entry.get("severity") and source.get("severity"):
+        entry["severity"] = source.get("severity")
+    if not entry.get("category"):
+        entry["category"] = source.get("category") or source.get("type") or ""
+    if not entry.get("summary"):
+        entry["summary"] = _source_summary(source, item_type)
+    if not entry.get("norm_refs"):
+        entry["norm_refs"] = _norm_refs_from_source(source)
+    if not entry.get("sheet") and source.get("sheet"):
+        entry["sheet"] = str(source.get("sheet") or "")
+    if entry.get("page") in (None, "") and source.get("page") not in (None, ""):
+        entry["page"] = source.get("page")
+    return entry
+
+
+def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
+    """Обогатить решения контекстом из findings/optimization JSON."""
+    findings_map, opt_map = _load_source_item_maps(project_id)
 
     # Загрузить project_info для section (из активной версии, fallback на корень)
     version_dir = _version_dir(project_id)
@@ -276,11 +349,7 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     for dec in decisions:
         source = findings_map.get(dec.item_id) or opt_map.get(dec.item_id) or {}
 
-        # Извлечь norm_refs
-        norm_refs = []
-        norm = source.get("norm", source.get("norm_ref", ""))
-        if norm:
-            norm_refs = [norm] if isinstance(norm, str) else norm
+        norm_refs = _norm_refs_from_source(source)
 
         entry = KnowledgeBaseEntry(
             id=f"DEC-{next_num:04d}",
@@ -290,8 +359,8 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
             item_id=dec.item_id,
             item_type=dec.item_type,
             severity=source.get("severity", ""),
-            category=source.get("category", ""),
-            summary=source.get("problem", source.get("description", source.get("summary", ""))),
+            category=source.get("category", source.get("type", "")),
+            summary=_source_summary(source, dec.item_type),
             norm_refs=norm_refs,
             sheet=str(source.get("sheet", "")),
             page=source.get("page"),
@@ -418,7 +487,10 @@ def get_knowledge_base(
         entries = [e for e in entries if e.get("section", "").upper() == section.upper()]
     if item_type:
         entries = [e for e in entries if e.get("item_type") == item_type]
+    source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]] = {}
     if search:
+        for e in entries:
+            _hydrate_kb_entry_from_source(e, source_cache)
         s = search.lower()
         entries = [e for e in entries if s in json.dumps(e, ensure_ascii=False).lower()]
 
@@ -429,6 +501,8 @@ def get_knowledge_base(
 
     # Пагинация
     paginated = entries[offset:offset + limit]
+    for e in paginated:
+        _hydrate_kb_entry_from_source(e, source_cache)
 
     return {
         "total": total,
