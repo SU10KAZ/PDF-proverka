@@ -71,6 +71,8 @@ def _patch_kb_internals(monkeypatch, tmp_path):
     import backend.app.services.knowledge_base.knowledge_base_service as kb
 
     monkeypatch.setattr(kb, "_output_dir", lambda pid, must_exist=False: tmp_path)
+    monkeypatch.setattr(kb, "_review_paths", lambda pid, must_exist=False: [tmp_path / "expert_review.json"])
+    monkeypatch.setattr(kb, "_analysis_dirs", lambda pid, must_exist=False: [tmp_path])
     monkeypatch.setattr(kb, "_enrich_decisions", lambda pid, decisions, reviewer: [])
     monkeypatch.setattr(kb, "_append_to_decisions_log", lambda enriched: None)
     return kb

@@ -14,7 +14,10 @@ from backend.app.models.expert_review import (
 )
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
-from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+from backend.app.services.storage.projects_v2_source_resolver import (
+    is_projects_v2_version_dir,
+    load_version_project_info,
+)
 
 
 def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
@@ -23,6 +26,17 @@ def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
     must_exist=True: для writer-ов — `resolve_project_dir` бросит
     `ProjectNotResolvedError`, если project_id не резолвится в реальную папку
     (вместо возврата несуществующего пути на корне объекта → orphan)."""
+    if _v2_primary_enabled():
+        try:
+            ctx = version_service.resolve_project_version_context(
+                project_id,
+                version_service.get_bound_version_id(),
+            )
+            if ctx.get("storage_layout") == "projects_v2":
+                return Path(ctx["version_dir"])
+        except Exception:
+            if must_exist:
+                raise
     project_dir = resolve_project_dir(project_id, must_exist=must_exist)
     vid = version_service.get_bound_version_id()
     try:
@@ -33,6 +47,77 @@ def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
 
 def _output_dir(project_id: str, *, must_exist: bool = False) -> Path:
     return _version_dir(project_id, must_exist=must_exist) / "_output"
+
+
+def _v2_primary_enabled() -> bool:
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        return bool(v2_is_primary())
+    except Exception:
+        return False
+
+
+def _analysis_dirs(project_id: str, *, must_exist: bool = False) -> list[Path]:
+    """Analysis artifacts for enrichment: v2 latest first, legacy _output as before."""
+    version_dir = _version_dir(project_id, must_exist=must_exist)
+    if is_projects_v2_version_dir(version_dir):
+        return [
+            version_dir / "03_analysis" / "latest",
+            version_dir / "_output",
+        ]
+    return [version_dir / "_output"]
+
+
+def _review_paths(project_id: str, *, must_exist: bool = False) -> list[Path]:
+    """Review storage priority: v2 canonical 04_review, then read-compatible fallbacks."""
+    version_dir = _version_dir(project_id, must_exist=must_exist)
+    if is_projects_v2_version_dir(version_dir):
+        return [
+            version_dir / "04_review" / "expert_review.json",
+            version_dir / "03_analysis" / "latest" / "expert_review.json",
+            version_dir / "_output" / "expert_review.json",
+        ]
+    return [version_dir / "_output" / "expert_review.json"]
+
+
+def _review_path(project_id: str, *, must_exist: bool = False) -> Path:
+    return _review_paths(project_id, must_exist=must_exist)[0]
+
+
+def _decision_key(decision: dict) -> tuple[str, str]:
+    return (
+        str(decision.get("item_type") or ""),
+        str(decision.get("item_id") or ""),
+    )
+
+
+def _merge_review_decisions(
+    existing_payloads: list[dict],
+    decisions: list[ExpertDecision],
+    removed_ids: list[str] | None,
+) -> list[dict]:
+    """Merge idempotently by (item_type, item_id); canonical payloads win."""
+    existing_by_key: dict[tuple[str, str], dict] = {}
+    for payload in reversed(existing_payloads):
+        for item in payload.get("decisions") or []:
+            if not isinstance(item, dict):
+                continue
+            key = _decision_key(item)
+            if not key[1]:
+                continue
+            existing_by_key[key] = item
+
+    new_items = [d.model_dump() for d in decisions]
+    new_keys = {_decision_key(item) for item in new_items}
+    removed = set(removed_ids or [])
+
+    merged = [
+        item
+        for key, item in existing_by_key.items()
+        if key not in new_keys and key[1] not in removed
+    ]
+    merged.extend(new_items)
+    return merged
 
 
 def _ensure_kb_dir():
@@ -73,28 +158,23 @@ def _save_json(path: Path, data):
 def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None) -> dict:
     """Сохранить решения эксперта по проекту.
 
-    1. Записывает expert_review.json в _output/ проекта
+    1. Записывает expert_review.json в canonical review storage проекта
     2. Обогащает решения контекстом из findings/optimization
     3. Добавляет записи в глобальный decisions_log.json
     """
     # must_exist=True: не создаём orphan `_output` на несуществующем пути —
     # если project_id не резолвится в реальный проект/контейнер, поднимется
     # ProjectNotResolvedError (роутер вернёт 404).
-    output_dir = _output_dir(project_id, must_exist=True)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    review_path = _review_path(project_id, must_exist=True)
+    review_path.parent.mkdir(parents=True, exist_ok=True)
 
     # 1. Сохранить per-project файл (merge с существующими решениями)
-    review_path = output_dir / "expert_review.json"
-    existing = _load_json(review_path)
-    existing_decisions = []
-    if existing and "decisions" in existing:
-        existing_decisions = existing["decisions"]
-
-    # Новые решения перезаписывают старые по item_id; removed_ids удаляются
-    new_ids = {d.item_id for d in decisions}
-    excluded_ids = new_ids | set(removed_ids or [])
-    merged = [d for d in existing_decisions if d.get("item_id") not in excluded_ids]
-    merged.extend([d.model_dump() for d in decisions])
+    existing_payloads = [
+        payload
+        for payload in (_load_json(path) for path in _review_paths(project_id, must_exist=True))
+        if isinstance(payload, dict)
+    ]
+    merged = _merge_review_decisions(existing_payloads, decisions, removed_ids)
 
     review_data = {
         "project_id": project_id,
@@ -129,30 +209,38 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
 
 def load_expert_review(project_id: str) -> Optional[dict]:
     """Загрузить сохранённые решения эксперта для проекта."""
-    path = _output_dir(project_id) / "expert_review.json"
-    return _load_json(path)
+    for path in _review_paths(project_id):
+        data = _load_json(path)
+        if data is not None:
+            return data
+    return None
 
 
 def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
     """Обогатить решения контекстом из findings/optimization JSON."""
-    output_dir = _output_dir(project_id)
+    analysis_dirs = _analysis_dirs(project_id)
 
     # Загрузить findings
     findings_map = {}
-    for fname in ["03a_norms_verified.json", "03_findings.json"]:
-        fpath = output_dir / fname
-        fdata = _load_json(fpath)
-        if fdata:
-            for item in fdata.get("findings", fdata.get("items", [])):
-                findings_map[item.get("id", "")] = item
+    for output_dir in analysis_dirs:
+        for fname in ["03a_norms_verified.json", "03_findings.json"]:
+            fpath = output_dir / fname
+            fdata = _load_json(fpath)
+            if fdata:
+                for item in fdata.get("findings", fdata.get("items", [])):
+                    findings_map[item.get("id", "")] = item
+                break
+        if findings_map:
             break
 
     # Загрузить optimization
     opt_map = {}
-    opt_data = _load_json(output_dir / "optimization.json")
-    if opt_data:
-        for item in opt_data.get("items", []):
-            opt_map[item.get("id", "")] = item
+    for output_dir in analysis_dirs:
+        opt_data = _load_json(output_dir / "optimization.json")
+        if opt_data:
+            for item in opt_data.get("items", []):
+                opt_map[item.get("id", "")] = item
+            break
 
     # Загрузить project_info для section (из активной версии, fallback на корень)
     version_dir = _version_dir(project_id)
@@ -421,7 +509,7 @@ def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
     if project_id and item_id:
         project_dir = _find_project_dir(project_id)
         if project_dir:
-            review_path = _output_dir(project_id) / "expert_review.json"
+            review_path = _review_path(project_id)
             if review_path.exists():
                 review_data = _load_json(review_path)
                 if review_data and "decisions" in review_data:
