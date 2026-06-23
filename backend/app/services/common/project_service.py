@@ -1255,62 +1255,99 @@ def save_project_info(
     return True
 
 
-def _move_v2_document_discipline(project_id: str, section: str) -> None:
-    """Под v2-primary физически перенести документ в папку целевой дисциплины.
+def _write_v2_doc_section(doc_dir: Path, section: str) -> None:
+    """Записать поле ``section`` в project_info всех версий v2-документа (in-place).
 
-    В projects_v2 дисциплина проекта определяется ПАПКОЙ
+    Не создаёт ничего нового — только обновляет уже существующие
+    ``versions/*/version.json`` (ключ ``project_info``) и
+    ``versions/*/01_input/project_info.json``.
+    """
+    for vj in doc_dir.glob("versions/*/version.json"):
+        try:
+            d = json.loads(vj.read_text(encoding="utf-8"))
+            pi = d.get("project_info")
+            if isinstance(pi, dict):
+                pi["section"] = section
+                vj.write_text(
+                    json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8"
+                )
+        except Exception:
+            pass
+    for pij in doc_dir.glob("versions/*/01_input/project_info.json"):
+        try:
+            d = json.loads(pij.read_text(encoding="utf-8"))
+            d["section"] = section
+            pij.write_text(
+                json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8"
+            )
+        except Exception:
+            pass
+
+
+def _move_v2_document_discipline(project_id: str, section: str) -> bool:
+    """Под v2-primary перенести документ в папку целевой дисциплины + записать section.
+
+    В projects_v2 дисциплина определяется ПАПКОЙ
     ``objects/<obj>/disciplines/<code>/documents/<doc>`` (read_canary группирует
-    список именно по ней), а НЕ полем ``section`` в project_info. Поэтому смена
-    раздела под v2-primary обязана физически переносить документ, иначе изменение
-    раздела в UI «не срабатывает».
+    список именно по ней), а НЕ полем ``section``. Поэтому смена раздела обязана
+    физически переносить документ.
 
-    No-op, если документ уже в нужной дисциплине или не найден в v2. Конфликт
+    Возвращает ``True``, если v2-документ найден и обработан (перенесён в нужную
+    дисциплину или уже там; ``section`` записан в его project_info), ``False`` —
+    если документ в v2 не найден (caller использует legacy-запись). Конфликт
     (в целевой дисциплине уже есть одноимённый документ) → ``ValueError``.
     """
     target = (section or "").strip()
     if not target:
-        return
+        return False
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
     adapter = ProjectsV2Adapter()
     if not adapter.is_available():
-        return
+        return False
     doc = adapter.find_document_by_project_id(project_id)
     if not doc:
-        return
+        return False
     doc_dir = Path(doc["doc_dir"])
     # objects/<obj>/disciplines/<dc>/documents/<doc_name>
     current_disc = doc_dir.parent.parent.name
-    if current_disc == target:
-        return
-    object_dir = doc_dir.parents[3]
-    target_docs = object_dir / "disciplines" / target / "documents"
-    target_dir = target_docs / doc_dir.name
-    if target_dir.exists():
-        raise ValueError(
-            f"В разделе '{target}' уже есть проект '{doc_dir.name}'"
-        )
-    target_docs.mkdir(parents=True, exist_ok=True)
-    shutil.move(str(doc_dir), str(target_dir))
-    # document.json.discipline — для консистентности (группировка идёт по папке,
-    # но поле тоже хранит дисциплину и читается отдельными местами).
-    dj_path = target_dir / "document.json"
-    try:
-        dj = json.loads(dj_path.read_text(encoding="utf-8"))
-        dj["discipline"] = target
-        dj_path.write_text(
-            json.dumps(dj, ensure_ascii=False, indent=1), encoding="utf-8"
-        )
-    except Exception:
-        pass
+    if current_disc != target:
+        object_dir = doc_dir.parents[3]
+        target_docs = object_dir / "disciplines" / target / "documents"
+        target_dir = target_docs / doc_dir.name
+        if target_dir.exists():
+            raise ValueError(
+                f"В разделе '{target}' уже есть проект '{doc_dir.name}'"
+            )
+        target_docs.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(doc_dir), str(target_dir))
+        doc_dir = target_dir
+        # document.json.discipline — для консистентности (группировка по папке,
+        # но поле тоже хранит дисциплину).
+        dj_path = doc_dir / "document.json"
+        try:
+            dj = json.loads(dj_path.read_text(encoding="utf-8"))
+            dj["discipline"] = target
+            dj_path.write_text(
+                json.dumps(dj, ensure_ascii=False, indent=1), encoding="utf-8"
+            )
+        except Exception:
+            pass
+    _write_v2_doc_section(doc_dir, target)
+    return True
 
 
 def set_project_section(project_id: str, section: str) -> dict:
     """Сменить дисциплину проекта.
 
     Legacy: пишет поле ``section`` в project_info.json (дисциплина определяется
-    этим полем). Под v2-primary дополнительно ФИЗИЧЕСКИ переносит документ в
-    папку ``disciplines/<section>/`` — иначе read_canary продолжает группировать
-    проект по старой папке и смена раздела в UI не видна.
+    этим полем). Под v2-primary ФИЗИЧЕСКИ переносит документ в папку
+    ``disciplines/<section>/`` (read_canary группирует по папке) и пишет section
+    прямо в project_info перенесённого документа.
+
+    ВАЖНО: под v2-primary при успешном переносе НЕ вызываем legacy
+    ``save_project_info`` — его v2-target резолвится из legacy-папки (которая
+    осталась в старой дисциплине) и заскаффолдил бы ПУСТОЙ документ-дубль в
+    старом разделе (баг 2026-06-23, проект ОВ1.1-ПА).
 
     Для незарегистрированных проектов (папка с PDF, без project_info.json)
     создаёт минимальный project_info.json с указанным разделом.
@@ -1331,18 +1368,18 @@ def set_project_section(project_id: str, section: str) -> dict:
         }
     else:
         info["section"] = section
-    # Под v2-primary дисциплина = физическая папка disciplines/<code>/, поэтому
-    # переносим документ ДО записи section: конфликт/ошибка переноса → section не
-    # пишется, без рассинхрона «поле сменилось, папка осталась».
     try:
         from backend.app.services.storage import storage_write_facade as _swf
         _v2_primary = _swf.v2_is_primary()
     except Exception:
         _v2_primary = False
     if _v2_primary:
-        _move_v2_document_discipline(project_id, section)
-        # документ мог переехать в другую папку — сбрасываем кеш, чтобы
-        # save_project_info разрезолвил новый путь.
+        # Перенос сам обновляет document.json + project_info.section. Конфликт/
+        # ошибка → ValueError (section не записан, без рассинхрона).
+        if _move_v2_document_discipline(project_id, section):
+            invalidate_project_cache()
+            return info
+        # v2-документ не найден (legacy-only) → обычная legacy-запись ниже.
         invalidate_project_cache()
     if not save_project_info(project_id, info):
         raise ValueError(f"Не удалось сохранить project_info.json для '{project_id}'")
