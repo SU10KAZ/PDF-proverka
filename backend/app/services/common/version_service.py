@@ -1245,24 +1245,22 @@ def _source_counts(version_dir: Path) -> tuple[int, int, int]:
 
 def _source_file_records(version_dir: Path) -> list[dict[str, Any]]:
     if _is_v2_source_layout(version_dir):
-        sources = _v2_source_paths(version_dir)
+        # Public version-file listing follows the deploy read_canary contract:
+        # show the original uploaded files from 01_input, while audit internals
+        # continue using 02_work canonical files through the source resolver.
+        input_dir = version_dir / "01_input"
         paths = []
-        seen = set()
-        for path in (
-            *sources.pdf_paths,
-            *sources.md_paths,
-            *sources.result_json_paths,
-            *sources.ocr_html_paths,
-        ):
-            if path in seen or not path.is_file():
-                continue
-            seen.add(path)
-            paths.append(path)
+        if input_dir.is_dir():
+            paths = [
+                path
+                for path in input_dir.rglob("*")
+                if path.is_file() and not path.name.startswith(".")
+            ]
         records = []
         for path in sorted(paths):
             stat = path.stat()
             try:
-                name = str(path.relative_to(version_dir))
+                name = str(path.relative_to(input_dir))
             except ValueError:
                 name = path.name
             records.append({

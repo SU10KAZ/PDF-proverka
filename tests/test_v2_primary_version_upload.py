@@ -173,7 +173,9 @@ def test_v2_only_version_endpoints_create_and_upload(monkeypatch, tmp_path):
     files = client.get("/api/projects/DOC-ENDPOINT/versions/v002/files")
     assert files.status_code == 200, files.text
     names = {row["name"] for row in files.json()["files"]}
-    assert "02_work/document.pdf" in names
+    assert "Endpoint.pdf" in names
+    assert "project_info.json" in names
+    assert "02_work/document.pdf" not in names
     assert files.json()["project_info"]["pdf_file"] == "Endpoint.pdf"
 
 

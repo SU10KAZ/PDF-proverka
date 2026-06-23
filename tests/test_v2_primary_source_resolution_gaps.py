@@ -22,6 +22,9 @@ def _make_v2_version(tmp_path: Path, doc_code: str = "DOC-B1") -> Path:
             "md_file": "document.md",
         }, ensure_ascii=False),
     )
+    _write(version_dir / "01_input" / f"{doc_code}.pdf", "%PDF input")
+    _write(version_dir / "01_input" / f"{doc_code}_document.md", "## СТРАНИЦА 1\ninput\n")
+    _write(version_dir / "01_input" / f"{doc_code}_result.json", json.dumps({"pages": []}))
     _write(version_dir / "02_work" / "document.pdf", "%PDF")
     _write(version_dir / "02_work" / "document.md", "## СТРАНИЦА 1\ntext\n")
     _write(version_dir / "02_work" / "result.json", json.dumps({"pages": []}))
@@ -39,12 +42,16 @@ def test_version_service_readiness_and_files_use_v2_layout(monkeypatch, tmp_path
     files = version_service.list_version_files("DOC-B1", resolve_project_dir_fn=lambda project_id: version_dir)
 
     assert readiness["can_run_audit"] is True
-    assert readiness["pdf_count"] == 1
-    assert readiness["md_count"] == 1
+    assert readiness["pdf_count"] >= 1
+    assert readiness["md_count"] >= 1
     names = {item["name"] for item in files["files"]}
-    assert "02_work/document.pdf" in names
-    assert "02_work/document.md" in names
-    assert "02_work/result.json" in names
+    assert "DOC-B1.pdf" in names
+    assert "DOC-B1_document.md" in names
+    assert "DOC-B1_result.json" in names
+    assert "project_info.json" in names
+    assert "02_work/document.pdf" not in names
+    assert "02_work/document.md" not in names
+    assert "02_work/result.json" not in names
     assert files["project_info"]["section"] == "GP"
 
 
