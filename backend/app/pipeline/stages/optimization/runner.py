@@ -127,6 +127,9 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
     exit_code, output, cli_result = await claude_runner.run_optimization(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=ctx.output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization")
 
@@ -168,6 +171,9 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
         exit_code, output, cli_result = await claude_runner.run_optimization(
             project_info, pid,
             on_output=ctx.log,
+            output_dir=ctx.output_dir,
+            version_dir=ctx.project_dir,
+            version_id=ctx.version_id,
         )
         ctx.record_cli_usage(cli_result, "optimization_retry")
         if exit_code == 0:
@@ -212,6 +218,9 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
     exit_code, output, cli_result = await claude_runner.run_optimization_critic(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization_critic")
 
@@ -302,6 +311,9 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
     exit_code, output, cli_result = await claude_runner.run_optimization_corrector(
         project_info, pid,
         on_output=ctx.log,
+        output_dir=output_dir,
+        version_dir=ctx.project_dir,
+        version_id=ctx.version_id,
     )
     ctx.record_cli_usage(cli_result, "optimization_corrector")
 
@@ -316,8 +328,12 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
             try:
                 new_data = json.loads(opt_path.read_text(encoding="utf-8"))
                 old_data = json.loads(pre_review.read_text(encoding="utf-8"))
-                new_count = len(new_data.get("scenarios", new_data.get("optimizations", [])))
-                old_count = len(old_data.get("scenarios", old_data.get("optimizations", [])))
+                # Канонический ключ optimization.json — "items" (см.
+                # optimization_task.md и findings_service); scenarios/optimizations
+                # оставлены для обратной совместимости. Раньше rescue читал только
+                # их → new_count всегда 0 → валидный результат откатывался (reserc.md #39).
+                new_count = len(new_data.get("items", new_data.get("scenarios", new_data.get("optimizations", []))))
+                old_count = len(old_data.get("items", old_data.get("scenarios", old_data.get("optimizations", []))))
                 if new_count > 0 and new_data != old_data:
                     await ctx.log(
                         f"Optimization Corrector: CLI код {exit_code}, но optimization.json обновлён "

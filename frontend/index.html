@@ -36,12 +36,12 @@
 
             <div class="sidebar-group">
                 <div class="sidebar-label">Управление</div>
-                <div class="nav-item" :class="{active: currentView === 'users' || currentView === 'user-activity'}" @click="navigate('/users')">
+                <div class="nav-item" :class="{active: currentView === 'schedule'}" @click="navigate('/schedule')" title="График производства работ по инженерам">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="8" cy="5" r="2.5"/><path d="M3 14c0-3 2-5 5-5s5 2 5 5"/>
+                        <rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/>
+                        <path d="M1.5 6h13M5 1.5v3M11 1.5v3"/>
                     </svg>
-                    Пользователи
-                    <span v-if="usersList.length" class="nav-badge">{{ usersList.length }}</span>
+                    График работ
                 </div>
                 <div class="nav-item-parent" :class="{open: sidebarSectionsOpen}" @click="sidebarSectionsOpen = !sidebarSectionsOpen">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -407,8 +407,6 @@
                         @click="navigate('/project/' + currentProject.project_id + '/blocks')">
                     Блоки<span v-if="currentProject.block_count" class="project-tab__count project-tab__count--teal">{{ currentProject.block_count }}</span>
                 </button>
-                <button class="project-tab" :class="{'project-tab--active': currentView === 'prompts'}"
-                        @click="navigate('/project/' + currentProject.project_id + '/prompts')">Промпты</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'log'}"
                         @click="navigate('/project/' + currentProject.project_id + '/log')">Лог</button>
                 <button class="project-tab" :class="{'project-tab--active': currentView === 'findings'}"
@@ -450,11 +448,31 @@
                         {{ v.label }}{{ v.is_latest ? ' · текущая' : '' }}{{ !v.has_source_files ? ' (пусто)' : '' }}
                     </option>
                 </select>
-                <button class="btn btn-sm btn-outline project-version-switch__btn"
-                        @click="versionsPanelOpen = !versionsPanelOpen"
-                        :title="'Версии проекта'">
-                    {{ projectVersions.length || 1 }} версии
-                </button>
+                <template v-if="!renameEditing">
+                    <span class="project-version-switch__name"
+                          :title="currentProject.name">{{ currentProject.name }}</span>
+                    <button class="project-version-switch__pencil"
+                            @click="startRename()"
+                            title="Переименовать папку проекта">✎</button>
+                    <button v-if="projectVersions.length > 1"
+                            class="project-version-switch__trash"
+                            @click="deleteVersion(activeVersionId || currentProject.latest_version_id || 'v1')"
+                            title="Удалить эту версию">🗑</button>
+                </template>
+                <span v-else class="project-version-switch__rename">
+                    <input class="project-version-switch__rename-input"
+                           v-model="renameValue"
+                           :disabled="renameBusy"
+                           @keyup.enter="submitRename()"
+                           @keyup.esc="cancelRename()"
+                           ref="renameInput"
+                           placeholder="Имя папки проекта">
+                    <button class="btn btn-sm btn-primary"
+                            :disabled="renameBusy" @click="submitRename()">Сохранить</button>
+                    <button class="btn btn-sm btn-outline"
+                            :disabled="renameBusy" @click="cancelRename()">Отмена</button>
+                    <span v-if="renameError" class="project-version-switch__rename-error">{{ renameError }}</span>
+                </span>
             </div>
         </div>
 
@@ -492,6 +510,12 @@
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>
+                    <button v-if="selectedCount > 0" class="btn btn-sm btn-outline"
+                            style="margin-left:10px; vertical-align:middle;"
+                            @click.stop="selectUnanalyzedInSection(sidebarFilterSection)"
+                            title="Выделить все непроанализированные проекты раздела (без аудита)">
+                        Выделить необработанные
+                    </button>
                 </h2>
                 <div class="dashboard-actions">
                     <button class="btn btn-outline" @click="showCreateGroup = true" title="Создать группу">+ Группа</button>
@@ -547,7 +571,7 @@
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" draggable="true"
-                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id, 'project-card--reviewed': p.expert_review_status === 'complete'}"
+                         :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
                          @dragstart.stop="onProjectDragStart($event, p.project_id)"
                          @dragend="dragProjectId = null"
                          @click="navigate('/project/' + p.project_id)">
@@ -634,9 +658,6 @@
                 </button>
                 <button class="btn btn-accent" @click="openBatchModal">
                     Запустить все ({{ selectedCount }})
-                </button>
-                <button class="btn btn-outline" @click="selectedProjects = new Set(); selectAllChecked = false">
-                    Сбросить
                 </button>
             </div>
         </div>
@@ -1527,15 +1548,21 @@
                         <!-- Banner: legacy runner блокирует аудит V2 -->
                         <div v-if="canStartAuditNow.code === 'runner_no_v2'" class="runner-warning">
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
-                            Версия и файлы сохранены. Можно запустить контроль ранее согласованных замечаний из предыдущей версии,
-                            а полноценный аудит V2 будет доступен после переключения production на version-aware backend.
+                            Версия и файлы сохранены. Полноценный аудит V2 будет доступен после переключения production на version-aware backend.
                         </div>
-                        <!-- Audit actions (inline with pipeline) -->
+                        <!-- Audit actions + навигация: колонка справа внутри белой карточки пайплайна -->
+                        <div class="audit-actions-col">
                         <div class="audit-buttons-inline">
+                            <button class="btn btn-primary"
+                                    v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
+                                    @click="resumePipeline(currentProject.project_id)"
+                                    :title="resumeInfo.stage_label + (resumeInfo.detail ? ' (' + resumeInfo.detail + ')' : '')">
+                                Продолжить
+                            </button>
                             <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
                                     :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
                                     :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
-                                &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
+                                &#9654; Запустить аудит
                             </button>
                             <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
                                     v-if="isProjectRunning(currentProject.project_id)">
@@ -1546,39 +1573,29 @@
                                     title="Удалить все результаты аудита">
                                 Очистить
                             </button>
-                            <button class="btn btn-excel" @click="exportProjectExcel(currentProject.project_id)"
-                                    :disabled="projectExcelLoading"
-                                    title="Скачать Excel-отчёт по этому проекту">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.15)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M8 13l2.5 3M13 13l-2.5 3M8 16l2.5-3M13 16l-2.5-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                    <line x1="8" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
-                                </svg>
-                                {{ projectExcelLoading ? 'Генерация...' : 'Отчёт' }}
-                            </button>
                         </div>
 
-                    </div>
+                        <!-- Навигация по проектам раздела (внутри карточки, под аудит-кнопками) -->
+                        <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
+                            <button class="btn btn-outline btn-sm"
+                                    :disabled="!prevProject"
+                                    @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
+                                    :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
+                                &#8592; Предыдущий
+                            </button>
+                            <span class="project-nav-pos">
+                                {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
+                                / {{ currentSectionProjectsList.length }}
+                            </span>
+                            <button class="btn btn-outline btn-sm"
+                                    :disabled="!nextProject"
+                                    @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
+                                    :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
+                                Следующий &#8594;
+                            </button>
+                        </div>
+                        </div>
 
-                    <!-- Навигация по проектам раздела (под карточкой, выровнена вправо) -->
-                    <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
-                        <button class="btn btn-outline btn-sm"
-                                :disabled="!prevProject"
-                                @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
-                                :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
-                            &#8592; Предыдущий
-                        </button>
-                        <span class="project-nav-pos">
-                            {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
-                            / {{ currentSectionProjectsList.length }}
-                        </span>
-                        <button class="btn btn-outline btn-sm"
-                                :disabled="!nextProject"
-                                @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
-                                :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
-                            Следующий &#8594;
-                        </button>
                     </div>
 
                     <!-- Usage (сразу под пайплайном) -->
@@ -1650,15 +1667,6 @@
                         <span>Не все блоки скачались. Обновите OCR-результат и перезапустите кроп.</span>
                     </div>
 
-                    <!-- Resume -->
-                    <div v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
-                         class="resume-box">
-                        <button class="btn btn-sm btn-primary" @click="resumePipeline(currentProject.project_id)">Продолжить</button>
-                        <button class="btn btn-sm btn-outline" @click="resumeToQueue(currentProject.project_id)">В очередь</button>
-                        <span class="resume-label">{{ resumeInfo.stage_label }}
-                            <span v-if="resumeInfo.detail">({{ resumeInfo.detail }})</span>
-                        </span>
-                    </div>
 
                     <!-- ═══ Состояние новой версии (V2+, пустая) ═══ -->
                     <div v-if="activeVersionEntry && !activeVersionEntry.has_source_files && activeVersionEntry.version_id !== 'v1'"
@@ -1753,155 +1761,6 @@
                         </table>
                     </div>
 
-                    <!-- ═══ Контроль ранее согласованных замечаний (migrated findings) ═══ -->
-                    <!-- Доступно только для V2 и выше: у V1 нет более ранней версии. -->
-                    <div v-if="activeVersionId && activeVersionId !== 'v1'" class="migrated-panel">
-                        <div class="migrated-panel__header">
-                            <h4>
-                                Контроль замечаний из предыдущей версии
-                                <button class="btn btn-sm btn-outline migrated-panel__toggle"
-                                        @click="migratedFindingsPanelOpen = !migratedFindingsPanelOpen">
-                                    {{ migratedFindingsPanelOpen ? 'Свернуть' : 'Раскрыть' }}
-                                </button>
-                            </h4>
-                            <div v-if="!migratedFindingsSummary.hasReport" class="migrated-panel__hint">
-                                Контроль ранее согласованных замечаний ещё не выполнялся.
-                            </div>
-                            <div v-else class="migrated-panel__summary">
-                                <span class="migrated-stat"><b>{{ migratedFindingsSummary.total }}</b> всего</span>
-                                <span class="migrated-stat migrated-stat--warn"><b>{{ migratedFindingsSummary.stillRelevant }}</b> актуальны</span>
-                                <span class="migrated-stat migrated-stat--info"><b>{{ migratedFindingsSummary.duplicate }}</b> уже в V2</span>
-                                <span class="migrated-stat migrated-stat--success"><b>{{ migratedFindingsSummary.resolved }}</b> устранены</span>
-                                <span v-if="migratedFindingsSummary.notVerifiable > 0"
-                                      class="migrated-stat migrated-stat--warn">
-                                    <b>{{ migratedFindingsSummary.notVerifiable }}</b> требуют проверки
-                                </span>
-                                <span v-if="migratedFindingsSummary.sourceMissing > 0"
-                                      class="migrated-stat migrated-stat--muted">
-                                    <b>{{ migratedFindingsSummary.sourceMissing }}</b> источник отсутствует
-                                </span>
-                                <span class="migrated-stat migrated-stat--muted"
-                                      :title="migratedFindingsSummary.checkedAt">
-                                    Источник: {{ migratedFindingsSummary.sourceVersionId || '—' }} ·
-                                    {{ (migratedFindingsSummary.checkedAt || '').slice(0, 10) }}
-                                </span>
-                            </div>
-                            <div class="migrated-panel__actions">
-                                <button class="btn btn-primary btn-sm"
-                                        :disabled="migratedFindingsCheckRunning || !canRunMigratedCheckNow.ok"
-                                        :title="canRunMigratedCheckNow.reason || ''"
-                                        @click="runMigratedFindingsCheck">
-                                    <template v-if="migratedFindingsCheckRunning">Выполняется...</template>
-                                    <template v-else-if="!migratedFindingsSummary.hasReport">Запустить контроль</template>
-                                    <template v-else>Перезапустить контроль</template>
-                                </button>
-                                <button v-if="migratedFindingsSummary.hasReport"
-                                        class="btn btn-outline btn-sm"
-                                        @click="loadMigratedFindingsReport(currentProject.project_id, activeVersionId)">
-                                    Обновить отчёт
-                                </button>
-                            </div>
-                            <div v-if="migratedFindingsError" class="migrated-panel__error">
-                                {{ migratedFindingsError }}
-                            </div>
-                        </div>
-
-                        <!-- Детальная таблица — раскрывается отдельно -->
-                        <div v-if="migratedFindingsPanelOpen && migratedFindingsSummary.hasReport"
-                             class="migrated-panel__body">
-                            <div v-if="!migratedFindingsReport.items || migratedFindingsReport.items.length === 0"
-                                 class="migrated-empty">
-                                <template v-if="migratedFindingsSummary.total === 0">
-                                    В предыдущих версиях нет экспертно согласованных замечаний для контроля.
-                                </template>
-                                <template v-else>
-                                    Отчёт пустой.
-                                </template>
-                            </div>
-                            <table v-else class="migrated-table">
-                                <thead>
-                                    <tr>
-                                        <th>Исходное замечание</th>
-                                        <th>Статус</th>
-                                        <th>Связанное замечание V2</th>
-                                        <th>Причина</th>
-                                        <th>Действие</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, idx) in migratedFindingsReport.items"
-                                        :key="(item.origin_version_id||'V') + '-' + (item.origin_finding_id||idx)"
-                                        :class="['migrated-row',
-                                                 'migrated-row--' + migratedStatusTone(item.migration_status)]">
-                                        <td>
-                                            <div class="migrated-origin">
-                                                <strong>{{ item.origin_finding_id || '—' }}</strong>
-                                                <span class="migrated-origin__src">{{ item.origin_version_id || '' }}</span>
-                                            </div>
-                                            <div v-if="item.origin_title" class="migrated-origin__title">
-                                                {{ item.origin_title }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="status-chip"
-                                                  :class="'status-chip--' + migratedStatusTone(item.migration_status)">
-                                                {{ migratedStatusLabel(item.migration_status) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <template v-if="item.linked_finding_id">
-                                                <a href="#"
-                                                   @click.prevent="navigate('/project/' + currentProjectId + '/findings')"
-                                                   :title="item.linked_finding_id">
-                                                    {{ item.linked_finding_id }}
-                                                </a>
-                                            </template>
-                                            <template v-else-if="item.new_finding_id">
-                                                <a href="#"
-                                                   @click.prevent="navigate('/project/' + currentProjectId + '/findings')"
-                                                   :title="item.new_finding_id">
-                                                    {{ item.new_finding_id }}
-                                                </a>
-                                            </template>
-                                            <span v-else style="color: var(--text-muted)">—</span>
-                                        </td>
-                                        <td>
-                                            <span :title="item.note || item.reason || ''">
-                                                {{ (item.note || item.reason || '').slice(0, 80) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button v-if="item.migration_status === 'duplicate_of_new_finding' && (item.linked_finding_id || item.new_finding_id)"
-                                                    class="btn btn-sm btn-outline"
-                                                    @click="navigate('/project/' + currentProjectId + '/findings')">
-                                                Открыть замечание
-                                            </button>
-                                            <button v-else-if="item.migration_status === 'still_relevant' && item.new_finding_id"
-                                                    class="btn btn-sm btn-outline"
-                                                    @click="navigate('/project/' + currentProjectId + '/findings')">
-                                                Открыть migrated
-                                            </button>
-                                            <span v-else-if="item.migration_status === 'not_verifiable'"
-                                                  class="migrated-warn-hint">
-                                                Проверить вручную
-                                            </span>
-                                            <span v-else style="color: var(--text-muted)">—</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Warning: V2 без current findings — отчёт может быть создан, но 03_findings не обновится -->
-                        <div v-if="migratedFindingsSummary.hasReport
-                                   && (currentProject && currentProject.findings_count === 0)
-                                   && migratedFindingsSummary.stillRelevant > 0"
-                             class="migrated-panel__warn">
-                            В текущей версии ещё нет результатов аудита. Сначала выполните полный аудит V2,
-                            затем перезапустите контроль, чтобы still_relevant попали в список замечаний.
-                        </div>
-                    </div>
-
                     <!-- ═══ Modal: создать новую версию ═══ -->
                     <div v-if="showCreateVersionModal" class="modal-backdrop" @click.self="showCreateVersionModal = false">
                         <div class="modal-card">
@@ -1918,33 +1777,6 @@
                             <div class="modal-actions" style="margin-top: 12px">
                                 <button class="btn btn-primary" @click="createNewVersion">Создать</button>
                                 <button class="btn btn-outline" @click="showCreateVersionModal = false; newVersionComment=''">Отмена</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Severity + Optimization summary -->
-                    <div v-if="currentProject.findings_count > 0 || currentProject.optimization_count > 0" class="info-tab-summary">
-                        <div v-if="currentProject.findings_count > 0" class="info-tab-summary__row">
-                            <span class="info-tab-summary__label">Замечания</span>
-                            <div class="severity-badges">
-                                <span v-for="(count, sev) in currentProject.findings_by_severity" :key="sev"
-                                      class="sev-badge" :class="'sev-' + sevClass(sev)">
-                                    {{ count }}
-                                </span>
-                                <span class="findings-total">= {{ currentProject.findings_count }}</span>
-                            </div>
-                        </div>
-                        <div v-if="currentProject.optimization_count > 0" class="info-tab-summary__row">
-                            <span class="info-tab-summary__label">Оптимизация</span>
-                            <div class="severity-badges opt-badges">
-                                <span v-for="(count, type) in currentProject.optimization_by_type" :key="type"
-                                      class="sev-badge" :class="'sev-opt-' + type" :style="{ background: optTypeColor(type) + '22', color: optTypeColor(type) }"
-                                      :title="optTypeLabel(type)">
-                                    {{ count }}
-                                </span>
-                                <span class="findings-total" style="color: var(--emerald)">= {{ currentProject.optimization_count }}
-                                    <template v-if="currentProject.optimization_savings_pct > 0">(−{{ currentProject.optimization_savings_pct }}%)</template>
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -2420,43 +2252,42 @@
         <!-- ═══ Knowledge Base (База знаний) ═══ -->
         <div v-if="currentView === 'knowledge-base'" class="container">
             <div class="kb-page">
-                <div class="kb-header kb-header--inline" style="justify-content:flex-start; gap:18px; flex-wrap:nowrap;">
-                    <h2 class="kb-title" style="white-space:nowrap;">База знаний</h2>
-                    <div class="project-tabs kb-tabs" style="margin-bottom:0; border-bottom:none;">
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'rejected' }" @click="switchKBTab('rejected')">
-                            Отклонённые<span class="project-tab__count project-tab__count--red">{{ kbStats.rejected }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'accepted' }" @click="switchKBTab('accepted')">
-                            Принятые<span class="project-tab__count project-tab__count--teal">{{ kbStats.accepted }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'customer_confirmed' }" @click="switchKBTab('customer_confirmed')">
-                            Согласованные заказчиком<span class="project-tab__count project-tab__count--amber">{{ kbStats.customer_confirmed }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'fixed_by_customer' }" @click="switchKBTab('fixed_by_customer')">
-                            Исправлено заказчиком<span class="project-tab__count project-tab__count--teal">{{ kbStats.fixed_by_customer }}</span>
-                        </button>
-                        <button class="project-tab" :class="{ 'project-tab--active': kbTab === 'missing_norms' }" @click="switchKBTab('missing_norms')">
-                            Нормы для добавления<span class="project-tab__count project-tab__count--purple">{{ missingNormsStats.pending }}</span>
-                        </button>
+                <!-- Статусы: 2 стороны (СУ-10 / Заказчик-проектировщик), под каждой по 2 карточки-фильтра -->
+                <div class="kb-ownership" v-if="kbTab !== 'missing_norms'">
+                    <div class="kb-own-group">
+                        <div class="kb-own-group__head">СУ-10</div>
+                        <div class="kb-own-group__cards">
+                            <button type="button" class="kb-stat-card kb-stat-card--rejected"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'rejected' }"
+                                    @click="switchKBTab('rejected')">
+                                <span class="kb-stat-card__label">Отклонённые замечания</span>
+                                <span class="kb-stat-card__count">{{ kbStats.rejected }}</span>
+                            </button>
+                            <button type="button" class="kb-stat-card kb-stat-card--accepted"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'accepted' }"
+                                    @click="switchKBTab('accepted')">
+                                <span class="kb-stat-card__label">Согласованные замечания</span>
+                                <span class="kb-stat-card__count">{{ kbStats.accepted }}</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="kb-header-actions" style="margin-left:auto;">
-                        <label class="btn btn-sm btn-upload" :class="{ disabled: kbUploadLoading }">
-                            <input type="file" accept=".xlsx" @change="uploadDecisionsExcel" style="display:none">
-                            {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить Excel' }}
-                        </label>
+                    <div class="kb-own-group">
+                        <div class="kb-own-group__head">Заказчик / проектировщик</div>
+                        <div class="kb-own-group__cards">
+                            <button type="button" class="kb-stat-card kb-stat-card--confirmed"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'customer_confirmed' }"
+                                    @click="switchKBTab('customer_confirmed')">
+                                <span class="kb-stat-card__label">Приняли в работу</span>
+                                <span class="kb-stat-card__count">{{ kbStats.customer_confirmed }}</span>
+                            </button>
+                            <button type="button" class="kb-stat-card kb-stat-card--fixed"
+                                    :class="{ 'kb-stat-card--active': kbTab === 'fixed_by_customer' }"
+                                    @click="switchKBTab('fixed_by_customer')">
+                                <span class="kb-stat-card__label">Исправили замечание</span>
+                                <span class="kb-stat-card__count">{{ kbStats.fixed_by_customer }}</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Filters (скрыть для missing_norms) -->
-                <div class="kb-filters" v-if="kbTab !== 'missing_norms'">
-                    <select v-model="kbObjectFilter" class="filter-select" @change="onKbObjectChange()" style="max-width:300px">
-                        <option value="">Все проекты</option>
-                        <option v-for="o in objectsList" :key="'kbo-'+o.id" :value="o.id">{{ o.name }}</option>
-                    </select>
-                    <select v-model="kbSectionFilter" class="filter-select" @change="loadKnowledgeBase()" style="max-width:180px">
-                        <option value="">Все дисциплины</option>
-                        <option v-for="[code] in projectsBySection" :key="'kb-'+code" :value="code">{{ code }}</option>
-                    </select>
                 </div>
 
                 <!-- ═══ Нормы для добавления ═══ -->
@@ -2542,14 +2373,11 @@
                                 <th style="width:90px">ID</th>
                                 <th style="width:70px">Тип</th>
                                 <th style="width:100px">Проект</th>
-                                <th style="width:70px">Дисц.</th>
-                                <th style="width:80px">Критичн.</th>
+                                <th style="width:50px">Дисц.</th>
+                                <th style="width:100px">Критичн.</th>
                                 <th style="width:30%">Суть</th>
                                 <th style="width:25%">Причина решения</th>
                                 <th style="width:90px">Дата</th>
-                                <th v-if="kbTab === 'accepted'" style="width:60px; text-align:center">Заказчик</th>
-                                <th v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="width:60px; text-align:center">Снять</th>
-                                <th style="width:45px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2589,21 +2417,6 @@
                                     </template>
                                 </td>
                                 <td style="font-size:11px; opacity:0.6">{{ (entry.expert_date || '').slice(0, 10) }}</td>
-                                <td v-if="kbTab === 'accepted'" style="text-align:center">
-                                    <button class="btn-decision btn-accept btn-sm" @click="confirmCustomer([entry.id])" title="Заказчик согласовал">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
-                                    </button>
-                                </td>
-                                <td v-if="kbTab === 'customer_confirmed' || kbTab === 'fixed_by_customer'" style="text-align:center">
-                                    <button class="btn-decision btn-reject btn-sm" @click="unconfirmCustomer([entry.id])" title="Снять согласование">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
-                                    </button>
-                                </td>
-                                <td style="text-align:center">
-                                    <button class="btn-kb-revoke" @click="revokeKBDecision(entry)" title="Отменить решение — вернуть в раздел">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                                    </button>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -2775,142 +2588,239 @@
             </div>
         </div>
 
-        <!-- ═══ Пользователи (список сотрудников) ═══ -->
-        <div v-if="currentView === 'users'" class="container">
+        <!-- ═══ График производства работ (mock-данные) ═══ -->
+        <div v-if="currentView === 'schedule'" class="container sched-page"
+             @click="schedClosePopover(); schedFiltersOpen = false">
             <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">&#128101; Пользователи</h2>
-                    <div class="kb-header-actions">
-                        <button class="btn btn-sm btn-outline" @click="loadUsers" :disabled="usersLoading">
-                            {{ usersLoading ? '...' : 'Обновить' }}
-                        </button>
+                <!-- Toolbar -->
+                <div class="kb-header sched-toolbar">
+                    <div class="sched-titlewrap">
+                        <h2 class="kb-title sched-title">График производства работ</h2>
+                        <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
                     </div>
-                </div>
-
-                <!-- Кто вошёл (при включённой портальной авторизации) -->
-                <div v-if="usersAuthEnabled && usersLoggedInMatched" class="users-login-banner">
-                    Вы вошли как <strong>{{ currentUserName() }}</strong> — решения по замечаниям и оптимизациям подписываются от этого имени.
-                </div>
-                <div v-else-if="usersAuthEnabled && usersLoggedInUsername && !usersLoggedInMatched" class="users-login-banner users-login-banner--warn">
-                    Логин <strong>{{ usersLoggedInUsername }}</strong> не сопоставлен ни с одним сотрудником.
-                    Укажите этот логин в поле <code>login</code> нужного сотрудника, чтобы его решения подписывались корректно.
-                </div>
-
-                <!-- Список -->
-                <div class="users-list">
-                    <div v-for="(u, idx) in usersList" :key="u.id" class="user-row"
-                         :class="{ 'user-row--current': u.id === usersCurrentId }">
-                        <div class="user-row__main">
-                            <span class="user-row__num">{{ idx + 1 }}.</span>
-                            <button class="user-row__chevron" @click="toggleUserExpand(u.id)"
-                                    :class="{ open: expandedUserId === u.id }" title="Подробнее">
-                                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
-                                    <path d="M4 6l4 4 4-4"/>
-                                </svg>
+                    <div class="kb-header-actions sched-actions">
+                        <div class="sched-modeswitch">
+                            <button class="btn btn-sm" :class="schedMode==='week' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('week')">Неделя</button>
+                            <button class="btn btn-sm" :class="schedMode==='month' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('month')">Месяц</button>
+                        </div>
+                        <div class="sched-navgroup">
+                            <button class="btn btn-sm btn-outline sched-arrow" @click="schedPrev" title="Предыдущий период">&#8249;</button>
+                            <span class="sched-period">{{ schedPeriodLabel }}</span>
+                            <button class="btn btn-sm btn-outline sched-arrow" @click="schedNext" title="Следующий период">&#8250;</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline" @click="schedToday">Сегодня</button>
+                        <div class="sched-filterwrap">
+                            <button class="btn btn-sm" :class="schedHiddenEngineers.length ? 'btn-accent' : 'btn-outline'"
+                                    @click.stop="schedFiltersOpen = !schedFiltersOpen">
+                                Фильтры
+                                <span v-if="schedHiddenEngineers.length" class="sched-filterbadge">{{ schedEngineers.length - schedHiddenEngineers.length }}/{{ schedEngineers.length }}</span>
                             </button>
-                            <a class="user-row__name" @click.prevent="navigate('/users/' + encodeURIComponent(u.id))" href="#">
-                                {{ u.name }}
-                            </a>
-                            <span v-if="u.role === 'admin'" class="user-row__role">админ</span>
-                            <span v-if="u.id === usersCurrentId" class="user-row__active-tag">{{ usersAuthEnabled ? 'вы вошли' : 'активный' }}</span>
-                        </div>
-                        <div v-if="expandedUserId === u.id" class="user-row__expand">
-                            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-                                Роль: <strong>{{ u.role === 'admin' ? 'Администратор' : 'Эксперт' }}</strong>
-                            </div>
-                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                                <button class="btn btn-sm btn-outline"
-                                        @click="navigate('/users/' + encodeURIComponent(u.id))">
-                                    Что сделал на платформе →
-                                </button>
-                                <button v-if="!usersAuthEnabled && u.id !== usersCurrentId" class="btn btn-sm btn-outline"
-                                        @click="switchUser(u.id)">
-                                    Сделать активным
-                                </button>
-                                <button class="btn btn-sm btn-danger-outline" @click="deleteUser(u.id)">
-                                    Удалить
-                                </button>
+                            <div v-if="schedFiltersOpen" class="sched-filterpanel" @click.stop>
+                                <div class="sched-filterpanel__title">Показать инженеров</div>
+                                <label v-for="e in schedEngineers" :key="'f-'+e.id" class="sched-filteritem">
+                                    <input type="checkbox" :checked="!schedIsEngineerHidden(e.id)" @change="schedToggleEngineer(e.id)">
+                                    <span>{{ e.name }}</span>
+                                </label>
                             </div>
                         </div>
-                    </div>
-                    <div v-if="!usersLoading && !usersList.length" style="color:var(--text-muted); padding:20px; text-align:center;">
-                        Пользователей пока нет — добавьте первого.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ Активность пользователя ═══ -->
-        <div v-if="currentView === 'user-activity'" class="container">
-            <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">
-                        <a @click.prevent="navigate('/users')" href="#" style="color:var(--text-muted); text-decoration:none;">Пользователи</a>
-                        <span style="color:var(--text-muted);"> / </span>
-                        {{ userActivity && userActivity.user ? userActivity.user.name : '...' }}
-                    </h2>
-                    <div class="kb-header-actions">
-                        <button class="btn btn-sm btn-outline" @click="navigate('/users')">← Назад</button>
+                        <template v-if="schedIsAdmin">
+                            <button v-if="!schedPlanEdit" class="btn btn-sm btn-outline" @click="schedTogglePlanEdit">✎ Изменить план</button>
+                            <template v-else>
+                                <button class="btn btn-sm btn-primary" :disabled="schedPlanSaving" @click="schedSavePlans">{{ schedPlanSaving ? 'Сохранение…' : '✓ Сохранить' }}</button>
+                                <button class="btn btn-sm btn-outline" :disabled="schedPlanSaving" @click="schedCancelPlanEdit">Отмена</button>
+                            </template>
+                        </template>
                     </div>
                 </div>
 
-                <div v-if="userActivityLoading" style="color:var(--text-muted); padding:20px;">Загрузка...</div>
-
-                <template v-else-if="userActivity">
-                    <!-- Сводка -->
-                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.projects }}</div><div class="ua-stat__lbl">проектов</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.decisions }}</div><div class="ua-stat__lbl">решений</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.findings }}</div><div class="ua-stat__lbl">замечаний</div></div>
-                        <div class="ua-stat"><div class="ua-stat__num">{{ userActivity.totals.optimizations }}</div><div class="ua-stat__lbl">оптимизаций</div></div>
-                        <div class="ua-stat ua-stat--ok"><div class="ua-stat__num">{{ userActivity.totals.accepted }}</div><div class="ua-stat__lbl">принято</div></div>
-                        <div class="ua-stat ua-stat--no"><div class="ua-stat__num">{{ userActivity.totals.rejected }}</div><div class="ua-stat__lbl">отклонено</div></div>
-                    </div>
-
-                    <div v-if="!userActivity.projects.length" style="color:var(--text-muted); padding:24px; text-align:center; border:1px dashed var(--border); border-radius:8px;">
-                        Пользователь ещё не сохранил ни одного решения по замечаниям или оптимизациям.
-                    </div>
-
-                    <!-- Проекты -->
-                    <div v-for="p in userActivity.projects" :key="p.source_project" class="ua-project">
-                        <div class="ua-project__head" @click="toggleUserExpand(p.source_project)">
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-                                 class="ua-project__chevron" :class="{ open: expandedUserId === p.source_project }">
-                                <path d="M4 6l4 4 4-4"/>
+                <!-- KPI-карточки -->
+                <div class="sched-kpis">
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--eng">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18 14.2c2 .8 3 2.4 3 4.8"/>
                             </svg>
-                            <span class="ua-project__name">{{ p.source_project }}</span>
-                            <span v-if="p.section" class="ua-project__section">{{ p.section }}</span>
-                            <span style="flex:1"></span>
-                            <span class="ua-project__counts">
-                                <span title="замечаний">{{ p.findings_count }} зам.</span>
-                                <span title="оптимизаций">{{ p.optimizations_count }} опт.</span>
-                                <span class="ua-badge ua-badge--ok" title="принято">✓ {{ p.accepted_count }}</span>
-                                <span class="ua-badge ua-badge--no" title="отклонено">✗ {{ p.rejected_count }}</span>
-                            </span>
                         </div>
-                        <div v-if="expandedUserId === p.source_project" class="ua-project__items">
-                            <table class="ua-table">
-                                <thead>
-                                    <tr><th>ID</th><th>Тип</th><th>Решение</th><th>Описание</th><th>Лист</th><th>Дата</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="it in p.items" :key="it.id || it.item_id">
-                                        <td style="white-space:nowrap;">{{ it.item_id }}</td>
-                                        <td>{{ it.item_type === 'optimization' ? 'опт.' : 'зам.' }}</td>
-                                        <td>
-                                            <span v-if="it.decision === 'accepted'" class="ua-badge ua-badge--ok">принято</span>
-                                            <span v-else-if="it.decision === 'rejected'" class="ua-badge ua-badge--no">отклонено</span>
-                                            <span v-else style="color:var(--text-muted);">—</span>
-                                        </td>
-                                        <td style="max-width:380px;">{{ it.summary }}<span v-if="it.reason" style="color:var(--text-muted);"> — {{ it.reason }}</span></td>
-                                        <td style="white-space:nowrap;">{{ it.sheet || '—' }}</td>
-                                        <td style="white-space:nowrap; color:var(--text-muted);">{{ (it.date || '').slice(0,10) }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Инженеров в работе</div>
+                            <div class="sched-kpi__value">{{ schedTotals.engineers }}</div>
+                            <div class="sched-kpi__sub">Активны на {{ schedMode==='week' ? 'неделе' : 'месяце' }}</div>
                         </div>
                     </div>
-                </template>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--rep">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Отчётов за {{ schedMode==='week' ? 'неделю' : 'месяц' }}</div>
+                            <div class="sched-kpi__value">{{ schedTotals.fact }}</div>
+                            <div class="sched-kpi__sub">Фактически</div>
+                        </div>
+                    </div>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__ring" :class="schedPctClass(schedTotals.pct)">
+                            <svg viewBox="0 0 40 40">
+                                <circle class="sched-ring__bg" cx="20" cy="20" r="16"/>
+                                <circle class="sched-ring__fg" cx="20" cy="20" r="16"
+                                        :stroke-dasharray="(Math.min(100, schedTotals.pct)/100*100.53).toFixed(2)+' 100.53'"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Выполнение плана</div>
+                            <div class="sched-kpi__value" :class="schedPctClass(schedTotals.pct)">{{ schedTotals.pct }}%</div>
+                            <div class="sched-kpi__sub">{{ schedTotals.fact }} из {{ schedTotals.plan }} отчётов</div>
+                        </div>
+                    </div>
+                    <div class="sched-kpi">
+                        <div class="sched-kpi__icon sched-kpi__icon--over">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>
+                            </svg>
+                        </div>
+                        <div class="sched-kpi__body">
+                            <div class="sched-kpi__label">Просрочки</div>
+                            <div class="sched-kpi__value">0</div>
+                            <div class="sched-kpi__sub">Нет просроченных задач</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- состояние данных: загрузка / ошибка / mock (для 'live' плашка скрыта — это лишний шум) -->
+                <div v-if="schedNoticeKind !== 'live'" class="sched-notice" :class="'sched-notice--'+schedNoticeKind">
+                    <span v-if="schedNoticeKind === 'loading'" class="sched-spinner"></span>
+                    {{ schedNoticeText }}
+                    <span v-if="schedNoticeKind === 'error'" class="sched-retry" @click="schedLoad">Повторить</span>
+                </div>
+
+                <!-- результат сохранения плана -->
+                <div v-if="schedPlanMsg" class="sched-planmsg" :class="'sched-planmsg--'+schedPlanMsg.kind">
+                    {{ schedPlanMsg.text }}
+                </div>
+
+                <!-- main: основная таблица (план и статистика — отдельным блоком ниже) -->
+                <div class="sched-layout">
+                    <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]">
+                        <table class="sched-grid">
+                            <thead>
+                                <tr>
+                                    <th class="sched-eng-col">Инженер</th>
+                                    <th v-for="d in schedDays" :key="'h-'+d.key" class="sched-day-col"
+                                        :class="{'sched-day--today': d.isToday, 'sched-day--weekend': d.isWeekend}">
+                                        <div class="sched-day-dow">{{ d.dowLabel }}</div>
+                                        <div class="sched-day-dom">{{ d.dom }}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="e in schedVisibleEngineers" :key="'r-'+e.id">
+                                    <td class="sched-eng-col sched-eng-name">
+                                        <div class="sched-eng-name__inner">
+                                            <span class="sched-avatar" :style="schedAvatarStyle(e.id || e.name)">{{ schedInitials(e.name) }}</span>
+                                            <span class="sched-eng-name__txt">{{ e.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td v-for="d in schedDays" :key="e.id+'|'+d.key" class="sched-cell"
+                                        :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
+                                        @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length)">
+                                        <template v-if="schedCell(e.id,d.key).length">
+                                            <div class="sched-daystack">
+                                                <div v-for="(it,i) in schedCell(e.id,d.key).slice(0,2)" :key="e.id+'|'+d.key+'|'+i"
+                                                     class="sched-plashka" :title="it.full">
+                                                    <span class="sched-plashka__txt">{{ it.short }}</span>
+                                                </div>
+                                                <button v-if="schedCell(e.id,d.key).length > 2" class="sched-more"
+                                                        @click.stop="schedToggleCell(e.id, d.key, true)"
+                                                        :title="'Ещё ' + (schedCell(e.id,d.key).length - 2) + ' — показать все'">
+                                                    +{{ schedCell(e.id,d.key).length - 2 }}
+                                                </button>
+                                            </div>
+                                            <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" @click.stop>
+                                                <div class="sched-popover__head">{{ e.name }} · {{ d.dowLabel }} {{ d.dom }}</div>
+                                                <div v-for="(it,i) in schedCell(e.id,d.key)" :key="'pp-'+i" class="sched-popover__item" :title="it.full">
+                                                    <span class="sched-dot" :style="{background: getDisciplineColor(it.section)}"></span>
+                                                    <span class="sched-popover__short">{{ it.short }}</span>
+                                                    <span class="sched-popover__full">{{ it.full }}</span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </td>
+                                </tr>
+                                <tr v-if="!schedVisibleEngineers.length">
+                                    <td :colspan="schedDays.length + 1" class="sched-empty">Все инженеры скрыты фильтром.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ПЛАН + СТАТИСТИКА за период (под основной таблицей) -->
+                <div class="sched-stats">
+                    <div class="sched-stats__head">
+                        План и статистика по инженерам — {{ schedMode==='week' ? 'неделя' : 'месяц' }}
+                        <span v-if="schedPlanEdit" class="sched-plan__edithint">правка плана</span>
+                    </div>
+                    <div class="sched-stats__tablewrap">
+                        <table class="sched-stats-table">
+                            <thead>
+                                <tr>
+                                    <th class="sched-stats-table__nm">Инженер</th>
+                                    <th>Факт</th>
+                                    <th>Осталось</th>
+                                    <th>План</th>
+                                    <th class="sched-stats-table__remarks">Замечания</th>
+                                    <th class="sched-stats-table__pct">Выполнение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in schedStats" :key="'strow-'+s.id">
+                                    <td class="sched-stats-table__nm">
+                                        <span class="sched-avatar sched-avatar--sm" :style="schedAvatarStyle(s.id || s.name)">{{ schedInitials(s.name) }}</span>
+                                        <span class="sched-stats-table__nmtxt" :title="s.name">{{ s.name }}</span>
+                                    </td>
+                                    <td><b>{{ s.fact }}</b></td>
+                                    <td :class="{'sched-low': s.remaining > 0}">{{ s.remaining }}</td>
+                                    <td class="sched-stats-table__plan">
+                                        <input v-if="schedPlanEdit" type="number" min="0" max="999" class="sched-plan__input"
+                                               :value="schedDraftFor(s.id)" @click.stop @input="schedSetPlanDraft(s.id, $event.target.value)">
+                                        <template v-else>{{ s.plan }}</template>
+                                    </td>
+                                    <td class="sched-stats-table__remarks">
+                                        <template v-if="s.agreed != null || s.disagreed != null">
+                                            <span class="sched-remark-ok" title="согласованные">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные">{{ s.disagreed || 0 }}</span>
+                                        </template>
+                                        <span v-else class="sched-remark-na" title="Нет данных по решениям замечаний за период">—</span>
+                                    </td>
+                                    <td class="sched-stats-table__pct">
+                                        <div class="sched-stats-table__pctwrap">
+                                            <span class="sched-stats-table__pctnum" :style="{ color: schedPctColor(s.pct) }">{{ s.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :style="{width: Math.min(100, s.pct)+'%', background: schedPctColor(s.pct)}"></div></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="sched-stats-table__total">
+                                    <td class="sched-stats-table__nm">Всего по инженерам ({{ schedTotals.engineers }})</td>
+                                    <td><b>{{ schedTotals.fact }}</b></td>
+                                    <td :class="{'sched-low': schedTotals.remaining > 0}">{{ schedTotals.remaining }}</td>
+                                    <td>{{ schedTotals.plan }}</td>
+                                    <td class="sched-stats-table__remarks">
+                                        <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
+                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span>
+                                        </template>
+                                        <span v-else class="sched-remark-na">—</span>
+                                    </td>
+                                    <td class="sched-stats-table__pct">
+                                        <div class="sched-stats-table__pctwrap">
+                                            <span class="sched-stats-table__pctnum" :style="{ color: schedPctColor(schedTotals.pct) }">{{ schedTotals.pct }}%</span>
+                                            <div class="sched-statcard__bar"><div class="sched-statcard__barfill" :style="{width: Math.min(100, schedTotals.pct)+'%', background: schedPctColor(schedTotals.pct)}"></div></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -3765,70 +3675,6 @@
         </div>
 
         <!-- ═══ Prompts Editor ═══ -->
-        <div v-if="currentView === 'prompts'" class="container container--flex">
-            <div class="prompts-page" @click="showDisciplineDropdown = false">
-                <!-- Toolbar: dropdown дисциплины + заголовок -->
-                <div class="prompts-toolbar">
-                    <div class="prompts-discipline-select" @click.stop>
-                        <div class="discipline-dropdown" @click="showDisciplineDropdown = !showDisciplineDropdown">
-                            <span class="discipline-dot" :style="{background: currentDiscipline.color || '#666'}"></span>
-                            <span class="discipline-label">{{ currentDiscipline.short_name || 'Система' }}</span>
-                            <span class="discipline-arrow">▼</span>
-                        </div>
-                        <div v-if="showDisciplineDropdown" class="discipline-dropdown-menu">
-                            <div v-for="d in disciplines" :key="d.code"
-                                 class="discipline-dropdown-item"
-                                 :class="{active: d.code === promptsDiscipline}"
-                                 @click="switchDiscipline(d.code)">
-                                <span class="discipline-dot" :style="{background: d.color}"></span>
-                                <span>{{ d.short_name }}</span>
-                                <span class="discipline-dropdown-name">{{ d.name }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="promptsLoading" class="empty-state">Загрузка промптов...</div>
-
-                <div v-else style="display:flex;flex-direction:column;flex:1;min-height:0">
-                    <!-- Chrome-style tabs -->
-                    <div class="prompt-tabs">
-                        <div v-for="(p, idx) in templates" :key="p.stage"
-                             class="prompt-tab"
-                             :class="{active: activePromptTab === idx}"
-                             @click="activePromptTab = idx">
-                            <span class="prompt-tab__label">{{ p.label }}</span>
-                            <span class="prompt-tab__chars">{{ p.char_count.toLocaleString() }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Active tab content -->
-                    <div v-if="templates[activePromptTab]" class="prompt-panel">
-                        <div class="prompt-panel__toolbar">
-                            <span class="prompt-panel__info">
-                                {{ (templates[activePromptTab]._editContent || '').length.toLocaleString() }} символов
-                            </span>
-                            <div class="prompt-panel__actions">
-                                <button v-if="templates[activePromptTab]._dirty"
-                                        class="btn btn-sm btn-accent"
-                                        @click="saveTemplate(templates[activePromptTab].stage, templates[activePromptTab]._editContent)">
-                                    Сохранить шаблон
-                                </button>
-                            </div>
-                        </div>
-                        <div class="prompt-editor-wrap">
-                            <div class="prompt-highlight-overlay" v-html="highlightPlaceholders(templates[activePromptTab]._editContent || '')"></div>
-                            <textarea class="prompt-textarea"
-                                      v-model="templates[activePromptTab]._editContent"
-                                      @input="templates[activePromptTab]._dirty = (templates[activePromptTab]._editContent !== templates[activePromptTab].content)"
-                                      @scroll="syncScroll($event)"
-                                      spellcheck="false"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- ═══ Live Log ═══ -->
         <div v-if="currentView === 'log'" class="container container--flex">
             <div class="log-page">
@@ -5313,6 +5159,20 @@
                                     По умолчанию — обработка без очистки: Qwen (локально) + Opus (Claude Code). Перед запуском — backup артефактов пар.
                                 </div>
                             </div>
+                            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
+                                <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
+                                <span>
+                                    <strong>Очистить найденные и отмеченные изменения перед запуском</strong>
+                                    <span v-if="scQOClearBeforeRun" style="display:block; margin-top:6px; color:#9a3412; line-height:1.6">
+                                        Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
+                                        Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются.
+                                        Перед очисткой будет создан backup.
+                                    </span>
+                                    <span v-else style="display:block; margin-top:4px; color:#6b7280; line-height:1.5">
+                                        По умолчанию — обработка без очистки (продолжить). Включите, чтобы сбросить старые расхождения и отметки проверки и сравнить заново.
+                                    </span>
+                                </span>
+                            </label>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
                                 <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='opus_only' ? 'Запустить только Opus' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : (scQOMode==='clear_and_run' ? 'Очистить и запустить' : 'Запустить обработку'))) }}</button>
@@ -5523,23 +5383,8 @@
                 </div>
                 <!-- Компактный toolbar (zoom + sync + действия в одной строке) -->
                 <div class="sc-card" style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px; margin-bottom:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px">
-                    <div style="display:flex; gap:4px; align-items:center"
-                         title="Ctrl + колесо мыши над листом — масштаб от курсора; зажатие ЛКМ — рука (как в Adobe Acrobat)">
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить">−</button>
-                        <span style="min-width:60px; text-align:center; font-weight:600">Масштаб: {{ Math.round(scZoom*100) }}%</span>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить">+</button>
-                        <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс">100%</button>
-                        <span style="margin-left:6px; font-size:11px; opacity:.55; white-space:nowrap" title="Ctrl + колесо — зум от курсора, ЛКМ — рука">⌨ Ctrl+колесо · 🖐 ЛКМ</span>
-                    </div>
-                    <label style="display:flex; gap:4px; align-items:center; cursor:pointer">
-                        <input type="checkbox" v-model="scSyncScroll" /> Синхронизировать прокрутку
-                    </label>
-                    <div style="opacity:.7; font-size:12px">
-                        Slots: {{ scAlignmentItems.length }} ·
-                        Связей: {{ scPairData && scPairData.links ? scPairData.links.length : 0 }}
-                        <span v-if="scSelectedLeft || scSelectedRight" style="color:#2563eb">
-                            · Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
-                        </span>
+                    <div v-if="scSelectedLeft || scSelectedRight" style="opacity:.7; font-size:12px; color:#2563eb">
+                        Выбрано: {{ scSelectedLeft ? 'L' : '' }}{{ scSelectedLeft && scSelectedRight ? '+' : '' }}{{ scSelectedRight ? 'R' : '' }}
                     </div>
                     <div style="flex:1"></div>
                     <button class="btn"
@@ -5557,7 +5402,12 @@
                     </button>
                     <button class="btn btn-secondary" @click="scSuggestByStamp()" :disabled="scStampLoading"
                             title="Сопоставить листы старой и новой стадии по имени листа из штампа и предложить поставить их напротив друг друга (находит листы, уехавшие далеко между стадиями)">
-                        {{ scStampLoading ? (scStampUseLlm ? 'Сопоставление + ИИ…' : 'Сопоставление…') : '🏷 Сопоставить листы' }}
+                        {{ scStampLoading ? 'Сопоставление…' : '🏷 Сопоставить листы' }}
+                    </button>
+                    <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
+                            :disabled="scAutoMatchApplyLoading || scStampLoading"
+                            title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
+                        {{ scAutoMatchApplyLoading ? 'Сопоставление…' : '🪄 Сопоставить и применить' }}
                     </button>
                     <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#374151; cursor:pointer"
                            title="После точного/нечёткого матчинга доматчить остаток через нейросеть Haiku: ловит листы с одинаковым смыслом, но разными названиями («Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»)">
@@ -5797,14 +5647,6 @@
                     <div v-for="side in ['left','right']" :key="'pane-tb-'+side" class="sc-pane-toolbar"
                          :title="side==='left' ? 'Действия для левой стадии (slot ' + scCurrentSlotForSide('left') + ')' : 'Действия для правой стадии (slot ' + scCurrentSlotForSide('right') + ')'"
                          style="display:flex; gap:6px; align-items:center; padding:4px 8px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:13px">
-                        <span style="font-size:11px; opacity:.65; margin-right:4px">
-                            {{ side==='left' ? 'Левая стадия' : 'Правая стадия' }}
-                            · slot <strong>{{ scCurrentSlotForSide(side) || '—' }}</strong>
-                        </span>
-                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
-                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
-                                @click="scInsertBlankSide(side)"
-                                title="Добавить пустой лист">⊕</button>
                         <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
                                 :disabled="!scCanMovePageSide(side, 'up') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'up')"
@@ -5813,7 +5655,18 @@
                                 :disabled="!scCanMovePageSide(side, 'down') || scAlignmentActionRunning"
                                 @click="scMovePageSide(side, 'down')"
                                 title="Переместить страницу ниже">↓</button>
-                        <span v-if="scAlignmentActionError" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
+                        <button class="btn btn-sm btn-secondary sc-pane-icon-btn"
+                                :disabled="!scCanInsertBlankSide(side) || scAlignmentActionRunning"
+                                @click="scInsertBlankSide(side)"
+                                title="Добавить пустой лист">⊕</button>
+                        <template v-if="side==='left'">
+                            <span style="width:1px; background:#e5e7eb; align-self:stretch; margin:0 2px"></span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(0.85)" title="Уменьшить (Ctrl+колесо)">−</button>
+                            <span style="min-width:44px; text-align:center; font-weight:600; font-size:12px">{{ Math.round(scZoom*100) }}%</span>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить (Ctrl+колесо)">+</button>
+                            <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс масштаба">100%</button>
+                        </template>
+                        <span v-if="scAlignmentActionError && side==='left'" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
                     </div>
                 </div>
 

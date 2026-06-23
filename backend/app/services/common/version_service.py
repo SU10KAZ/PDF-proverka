@@ -33,11 +33,14 @@ from __future__ import annotations
 
 import contextvars
 import json
+import logging
 import re
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 
 VERSIONS_MANIFEST_FILENAME = "project_versions.json"  # legacy _versions-модель
@@ -267,6 +270,8 @@ def _write_manifest(project_dir: Path, manifest: dict[str, Any]) -> bool:
             json.dump(manifest, f, ensure_ascii=False, indent=2)
         return True
     except OSError:
+        # #77: не глотаем — логируем, чтобы сбой записи манифеста был виден.
+        logger.exception("Не удалось записать манифест версий: %s", path)
         return False
 
 
@@ -279,7 +284,18 @@ def _write_group_manifest(container: Path, manifest: dict[str, Any]) -> bool:
             json.dump(payload, f, ensure_ascii=False, indent=2)
         return True
     except OSError:
+        # #77: см. выше — сбой записи манифеста контейнера должен быть виден.
+        logger.exception(
+            "Не удалось записать version_group.json: %s",
+            container / GROUP_MANIFEST_FILENAME,
+        )
         return False
+
+
+def _write_json_file(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
 
 
 def _read_versions_and_base(
@@ -331,6 +347,9 @@ def ensure_project_versions_manifest(project_dir: Path, project_id: str) -> dict
 
 def get_latest_version_id(project_dir: Path, project_id: str) -> str:
     """Идентификатор последней версии (по умолчанию `v1` для legacy)."""
+    v2_ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if v2_ctx is not None:
+        return v2_ctx["latest_version_id"]
     manifest = read_project_versions(project_dir, project_id)
     return manifest.get("latest_version_id") or "v1"
 
@@ -340,6 +359,195 @@ def _find_version(manifest: dict[str, Any], version_id: str) -> Optional[dict[st
         if entry.get("version_id") == version_id:
             return entry
     return None
+
+
+def _projects_v2_context_enabled() -> bool:
+    """Whether version/id/dir resolution should prefer projects_v2.
+
+    This is flag-based rather than layout-based because callers usually pass a
+    legacy project_dir. With flags OFF we must keep legacy version semantics
+    byte-for-byte, even if a mirrored projects_v2 document exists.
+    """
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            return True
+    except Exception:
+        pass
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        if production_uses_v2():
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def _version_no_from_id(version_id: str, fallback: int = 1) -> int:
+    m = re.match(r"^v0*(\d+)$", str(version_id or ""))
+    return int(m.group(1)) if m else fallback
+
+
+def _normalize_projects_v2_version_entry(
+    raw_entry: dict[str, Any] | None,
+    version_json: dict[str, Any] | None,
+    version_id: str,
+) -> dict[str, Any]:
+    """Normalized version entry for projects_v2 document.json/version.json."""
+    payload: dict[str, Any] = {}
+    if isinstance(raw_entry, dict):
+        payload.update(raw_entry)
+    if isinstance(version_json, dict):
+        for key, value in version_json.items():
+            if key == "project_info":
+                continue
+            payload.setdefault(key, value)
+
+    version_no = payload.get("version_no")
+    try:
+        version_no = int(version_no)
+    except (TypeError, ValueError):
+        version_no = _version_no_from_id(version_id)
+
+    return {
+        **payload,
+        "version_id": version_id,
+        "physical_version_id": version_id,
+        "logical_version_id": f"v{version_no}",
+        "version_no": version_no,
+        "label": payload.get("label") or f"V{version_no}",
+        "folder": f"versions/{version_id}",
+        "status": payload.get("status") or payload.get("analysis_status") or "active",
+        "source": payload.get("source") or "projects_v2",
+        "created_at": payload.get("created_at") or payload.get("migrated_at") or _now_iso(),
+    }
+
+
+def _resolve_projects_v2_version_context(
+    project_id: str,
+    version_id: Optional[str] = None,
+    *,
+    allow_missing: bool = False,
+) -> Optional[dict[str, Any]]:
+    """Resolve version context against projects_v2 when cutover flags are ON.
+
+    Accepts both logical legacy ids (``v1``) and physical projects_v2 ids
+    (``v001``). Returned ``version_id`` is the physical disk id so every caller
+    points at the same ``versions/vNNN`` directory.
+    """
+    if not _projects_v2_context_enabled():
+        return None
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    except Exception:
+        return None
+
+    try:
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return None
+        doc = adapter.find_document_by_project_id(project_id)
+    except Exception:
+        return None
+    if doc is None:
+        return None
+
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        if version_id and not allow_missing:
+            raise VersionNotFoundError(
+                f"Версия '{version_id}' не найдена в projects_v2 документе '{project_id}'"
+            )
+        return None
+
+    doc_dir = Path(doc["doc_dir"])
+    version_dir = adapter.version_dir(doc_dir, vid)
+    if not version_dir.is_dir():
+        if not allow_missing:
+            raise VersionNotFoundError(
+                f"Папка версии projects_v2 '{vid}' не найдена для проекта '{project_id}'"
+            )
+        return None
+
+    document_json = adapter.read_document_json(doc_dir) or {}
+    latest_id = adapter.current_version_id(doc_dir, document_json) or vid
+    raw_entry = next(
+        (v for v in adapter.list_versions(doc_dir) if v.get("version_id") == vid),
+        None,
+    )
+    version_json = adapter.read_version_json(doc_dir, vid) or {}
+    entry = _normalize_projects_v2_version_entry(raw_entry, version_json, vid)
+
+    return {
+        "project_id": project_id,
+        "document_code": doc.get("document_code") or project_id,
+        "object_folder": doc.get("object_folder"),
+        "discipline": doc.get("discipline"),
+        "doc_dir": doc_dir,
+        "project_dir": doc_dir,
+        "version_id": vid,
+        "version_dir": version_dir,
+        "output_dir": version_dir / "03_analysis" / "latest",
+        "version_entry": entry,
+        "is_latest": vid == latest_id,
+        "latest_version_id": latest_id,
+        "storage_layout": "projects_v2",
+    }
+
+
+def _get_projects_v2_versions_summary(project_id: str) -> Optional[dict[str, Any]]:
+    if not _projects_v2_context_enabled():
+        return None
+    ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if ctx is None:
+        return None
+
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        doc_dir = ctx["doc_dir"]
+        raw_versions = adapter.list_versions(doc_dir)
+    except Exception:
+        return None
+
+    latest_id = ctx["latest_version_id"]
+    versions: list[dict[str, Any]] = []
+    for raw in raw_versions:
+        vid = raw.get("version_id")
+        if not vid:
+            continue
+        version_dir = adapter.version_dir(doc_dir, vid)
+        vj = adapter.read_version_json(doc_dir, vid) or {}
+        entry = _normalize_projects_v2_version_entry(raw, vj, vid)
+        pdf_count, md_count, source_count = _source_counts(version_dir)
+        versions.append({
+            "version_id": entry["version_id"],
+            "physical_version_id": entry["physical_version_id"],
+            "logical_version_id": entry["logical_version_id"],
+            "version_no": entry["version_no"],
+            "label": entry["label"],
+            "folder": entry["folder"],
+            "status": entry.get("status", "active"),
+            "source": entry.get("source", "projects_v2"),
+            "created_at": entry.get("created_at"),
+            "comment": entry.get("comment"),
+            "is_latest": vid == latest_id,
+            "has_source_files": (pdf_count > 0 or md_count > 0),
+            "pdf_count": pdf_count,
+            "md_count": md_count,
+            "source_files_count": source_count,
+            "can_run_audit": pdf_count > 0,
+        })
+
+    return {
+        "project_id": project_id,
+        "logical_project_id": project_id,
+        "latest_version_id": latest_id,
+        "version_count": len(versions),
+        "has_versions": len(versions) > 1,
+        "versions": versions,
+        "storage_layout": "projects_v2",
+    }
 
 
 def get_version_dir(
@@ -355,6 +563,10 @@ def get_version_dir(
 
     Бросает `VersionNotFoundError`, если указанный version_id отсутствует.
     """
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return v2_ctx["version_dir"]
+
     manifest, base = _read_versions_and_base(project_dir, project_id)
     vid = version_id or manifest.get("latest_version_id") or "v1"
     entry = _find_version(manifest, vid)
@@ -376,6 +588,10 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
     и `can_run_audit`). Подсчёт идёт по содержимому version_dir на ФС,
     манифест используется только для путей.
     """
+    v2_summary = _get_projects_v2_versions_summary(project_id)
+    if v2_summary is not None:
+        return v2_summary
+
     manifest, base = _read_versions_and_base(project_dir, project_id)
     latest_id = manifest.get("latest_version_id") or "v1"
     versions = manifest.get("versions", [])
@@ -385,22 +601,7 @@ def get_versions_summary(project_dir: Path, project_id: str) -> dict[str, Any]:
         vid = v["version_id"]
         folder = v.get("folder") or "."
         version_dir = base if folder in (".", "") else base / folder
-        pdf_count = md_count = source_count = 0
-        if version_dir.exists():
-            for p in version_dir.iterdir():
-                if not p.is_file():
-                    continue
-                if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-                    continue
-                if p.name.startswith("."):
-                    continue
-                t = _classify_file(p.name)
-                if t in ("pdf", "md", "txt", "json", "html"):
-                    source_count += 1
-                if t == "pdf":
-                    pdf_count += 1
-                elif t == "md":
-                    md_count += 1
+        pdf_count, md_count, source_count = _source_counts(version_dir)
         can_run = pdf_count > 0
         enriched.append({
             "version_id": vid,
@@ -451,6 +652,10 @@ def get_version_entry(
     version_id: Optional[str] = None,
 ) -> dict[str, Any]:
     """Нормализованная запись конкретной версии (или latest при None)."""
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return dict(v2_ctx["version_entry"])
+
     manifest = read_project_versions(project_dir, project_id)
     vid = version_id or manifest.get("latest_version_id") or "v1"
     entry = _find_version(manifest, vid)
@@ -468,6 +673,74 @@ def _invalidate_project_cache() -> None:
         invalidate_project_cache()
     except Exception:
         pass
+
+
+def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Правила:
+    - Нельзя удалить единственную оставшуюся версию.
+    - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
+    - После удаления latest_version_id перемещается на предыдущую версию.
+
+    Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
+    """
+    import shutil
+
+    manifest, base = _read_versions_and_base(project_dir, project_id)
+    versions = manifest.get("versions", [])
+
+    if len(versions) <= 1:
+        raise VersionFileError("Нельзя удалить единственную версию проекта.")
+
+    entry = _find_version(manifest, version_id)
+    if entry is None:
+        raise VersionNotFoundError(f"Версия '{version_id}' не найдена в проекте '{project_id}'")
+
+    folder = entry.get("folder") or "."
+    container = container_dir_for(project_dir)
+
+    # V1 в некontейнерном проекте — папка == корень проекта, нельзя удалять так
+    if folder in (".", "") and container is None:
+        raise VersionFileError(
+            "Нельзя удалить V1 некontейнерного проекта (папка проекта совпадает с папкой версии)."
+        )
+
+    # Физически удаляем папку версии
+    if folder in (".", ""):
+        version_path = base  # container-модель, V1 внутри контейнера
+    else:
+        version_path = base / folder
+
+    if version_path.exists():
+        shutil.rmtree(version_path)
+
+    # Обновляем манифест
+    remaining = [v for v in versions if v.get("version_id") != version_id]
+    # Новый latest = максимальный version_no среди оставшихся
+    remaining_sorted = sorted(remaining, key=lambda v: v.get("version_no", 0))
+    new_latest = remaining_sorted[-1]["version_id"]
+
+    if container is not None:
+        raw = _read_group_manifest_raw(container) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        if not _write_group_manifest(container, raw):
+            raise VersionFileError("Не удалось сохранить version_group.json после удаления версии")
+    else:
+        raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        if not _write_manifest(project_dir, raw):
+            raise VersionFileError("Не удалось сохранить project_versions.json после удаления версии")
+
+    _invalidate_project_cache()
+
+    return {
+        "deleted_version_id": version_id,
+        "new_latest_version_id": new_latest,
+        "versions_summary": get_versions_summary(project_dir, project_id),
+    }
 
 
 def _v1_entry(folder_name: str, *, status: str = "active",
@@ -524,9 +797,137 @@ def promote_to_container(
         "latest_version_id": "v1",
         "versions": [_v1_entry(base_name)],
     }
-    _write_group_manifest(container, manifest)
+    if not _write_group_manifest(container, manifest):
+        raise VersionFileError("Не удалось записать version_group.json при создании контейнера")
     _invalidate_project_cache()
     return container, primary_dir, manifest
+
+
+def _create_next_projects_v2_version(
+    project_id: str,
+    *,
+    label: Optional[str] = None,
+    source: str = "manual",
+    status: str = "new",
+    comment: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    """Create the next physical `vNNN` version in projects_v2.
+
+    This path is active only when v2 read/write context is explicitly enabled.
+    It never falls back to legacy; if the document is not in projects_v2 the
+    caller should continue through the legacy implementation.
+    """
+    if not _projects_v2_context_enabled():
+        return None
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+    except Exception:
+        return None
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        return None
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None
+
+    doc_dir = Path(doc["doc_dir"])
+    document_json = adapter.read_document_json(doc_dir) or {}
+    existing_versions = [v for v in (document_json.get("versions") or []) if isinstance(v, dict)]
+    existing_ids = {str(v.get("version_id")) for v in existing_versions if v.get("version_id")}
+    versions_root = doc_dir / "versions"
+    if versions_root.is_dir():
+        existing_ids.update(p.name for p in versions_root.iterdir() if p.is_dir() and p.name.startswith("v"))
+    if not existing_ids:
+        current = adapter.current_version_id(doc_dir, document_json)
+        if current:
+            existing_ids.add(current)
+
+    next_no = max((_version_no_from_id(vid, 0) for vid in existing_ids), default=0) + 1
+    vid = f"v{next_no:03d}"
+    while (doc_dir / "versions" / vid).exists() or vid in existing_ids:
+        next_no += 1
+        vid = f"v{next_no:03d}"
+
+    version_dir = doc_dir / "versions" / vid
+    for subdir in (
+        version_dir / "01_input",
+        version_dir / "02_work",
+        version_dir / "03_analysis" / "latest",
+        version_dir / "04_review",
+        version_dir / "05_export",
+    ):
+        subdir.mkdir(parents=True, exist_ok=True)
+
+    current_vid = adapter.current_version_id(doc_dir, document_json)
+    base_info: dict[str, Any] = {}
+    if current_vid:
+        base_info = load_version_project_info(doc_dir / "versions" / current_vid)
+        if not isinstance(base_info, dict):
+            base_info = {}
+
+    entry: dict[str, Any] = {
+        "version_id": vid,
+        "version_no": next_no,
+        "label": (label or f"V{next_no}").strip() or f"V{next_no}",
+        "status": status,
+        "source": source,
+        "created_at": _now_iso(),
+    }
+    if comment:
+        entry["comment"] = comment
+
+    seed_info = {
+        "project_id": base_info.get("project_id", project_id),
+        "document_code": base_info.get("document_code", doc.get("document_code") or project_id),
+        "name": base_info.get("name", project_id),
+        "section": base_info.get("section", doc.get("discipline") or "EOM"),
+        "description": base_info.get("description", ""),
+        "pdf_file": "",
+        "pdf_files": [],
+        "md_files": [],
+        "version_id": vid,
+        "version_label": entry["label"],
+        "version_source": source,
+    }
+    if comment:
+        seed_info["version_comment"] = comment
+
+    version_json = {
+        "schema_version": 1,
+        "version_id": vid,
+        "version_no": next_no,
+        "label": entry["label"],
+        "analysis_status": status,
+        "source": source,
+        "created_at": entry["created_at"],
+        "project_info": dict(seed_info),
+    }
+    if comment:
+        version_json["comment"] = comment
+    _write_json_file(version_dir / "version.json", version_json)
+    _write_json_file(version_dir / "01_input" / "project_info.json", seed_info)
+
+    versions = [v for v in existing_versions if v.get("version_id") != vid]
+    versions.append(entry)
+    versions.sort(key=lambda v: int(v.get("version_no") or _version_no_from_id(v.get("version_id"), 0)))
+    version_ids = [str(v.get("version_id")) for v in versions if v.get("version_id")]
+
+    document_json.update({
+        "schema_version": document_json.get("schema_version") or 1,
+        "document_code": document_json.get("document_code") or doc.get("document_code") or project_id,
+        "object_folder": document_json.get("object_folder") or doc.get("object_folder"),
+        "discipline": document_json.get("discipline") or doc.get("discipline"),
+        "versions": versions,
+        "version_ids": version_ids,
+        "current_version": vid,
+    })
+    _write_json_file(doc_dir / "document.json", document_json)
+    (doc_dir / "current_version.txt").write_text(vid, encoding="utf-8")
+    _invalidate_project_cache()
+
+    return _normalize_projects_v2_version_entry(entry, version_json, vid)
 
 
 def create_next_version(
@@ -562,6 +963,12 @@ def create_next_version(
 
     Возвращает запись добавленной версии.
     """
+    v2_entry = _create_next_projects_v2_version(
+        project_id, label=label, source=source, status=status, comment=comment,
+    )
+    if v2_entry is not None:
+        return v2_entry
+
     if not project_dir.exists() or not project_dir.is_dir():
         raise FileNotFoundError(f"Папка проекта не найдена: {project_dir}")
 
@@ -625,7 +1032,8 @@ def create_next_version(
     versions.append(new_entry)
     manifest["versions"] = versions
     manifest["latest_version_id"] = next_id
-    _write_group_manifest(container, manifest)
+    if not _write_group_manifest(container, manifest):
+        raise VersionFileError("Не удалось записать version_group.json для новой версии")
     _invalidate_project_cache()
 
     return new_entry
@@ -641,13 +1049,20 @@ def resolve_effective_version_id(
 ) -> str:
     """Финальный version_id для запроса.
 
-    Приоритет: явный аргумент > bind_version() > latest.
+    Приоритет: явный аргумент > bind_version() > latest. Under projects_v2
+    cutover, logical ids such as ``v1`` are normalized to physical ids such
+    as ``v001`` so subsequent path resolution stays on the v2 version dir.
     """
-    if version_id:
-        return version_id
-    bound = get_bound_version_id()
-    if bound:
-        return bound
+    requested = version_id or get_bound_version_id()
+    if requested:
+        v2_ctx = _resolve_projects_v2_version_context(project_id, requested)
+        if v2_ctx is not None:
+            return v2_ctx["version_id"]
+        return requested
+
+    v2_ctx = _resolve_projects_v2_version_context(project_id, None, allow_missing=True)
+    if v2_ctx is not None:
+        return v2_ctx["version_id"]
     return get_latest_version_id(project_dir, project_id)
 
 
@@ -674,6 +1089,10 @@ def resolve_project_version_context(
     Бросает `VersionNotFoundError`, если запрошенная версия отсутствует.
     Бросает `FileNotFoundError`, если папки проекта нет на ФС.
     """
+    v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if v2_ctx is not None:
+        return dict(v2_ctx)
+
     if resolve_project_dir_fn is None:
         from backend.app.services.common.project_service import resolve_project_dir
         resolve_project_dir_fn = resolve_project_dir
@@ -781,6 +1200,179 @@ def _classify_file(name: str) -> str:
     }.get(s, "other")
 
 
+def _is_v2_source_layout(version_dir: Path) -> bool:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import is_projects_v2_version_dir
+        return is_projects_v2_version_dir(version_dir)
+    except Exception:
+        return False
+
+
+def _v2_source_paths(version_dir: Path):
+    from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+    return resolve_version_source_files(version_dir)
+
+
+def _source_counts(version_dir: Path) -> tuple[int, int, int]:
+    if _is_v2_source_layout(version_dir):
+        sources = _v2_source_paths(version_dir)
+        source_paths = {
+            *sources.pdf_paths,
+            *sources.md_paths,
+            *sources.result_json_paths,
+            *sources.ocr_html_paths,
+        }
+        return len(sources.pdf_paths), len(sources.md_paths), len(source_paths)
+
+    pdf_count = md_count = source_count = 0
+    if version_dir.exists():
+        for p in version_dir.iterdir():
+            if not p.is_file():
+                continue
+            if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
+                continue
+            if p.name.startswith("."):
+                continue
+            t = _classify_file(p.name)
+            if t in ("pdf", "md", "txt", "json", "html"):
+                source_count += 1
+            if t == "pdf":
+                pdf_count += 1
+            elif t == "md":
+                md_count += 1
+    return pdf_count, md_count, source_count
+
+
+def _source_file_records(version_dir: Path) -> list[dict[str, Any]]:
+    if _is_v2_source_layout(version_dir):
+        # Public version-file listing follows the deploy read_canary contract:
+        # show the original uploaded files from 01_input, while audit internals
+        # continue using 02_work canonical files through the source resolver.
+        input_dir = version_dir / "01_input"
+        paths = []
+        if input_dir.is_dir():
+            paths = [
+                path
+                for path in input_dir.rglob("*")
+                if path.is_file() and not path.name.startswith(".")
+            ]
+        records = []
+        for path in sorted(paths):
+            stat = path.stat()
+            try:
+                name = str(path.relative_to(input_dir))
+            except ValueError:
+                name = path.name
+            records.append({
+                "name": name,
+                "type": _classify_file(path.name),
+                "size": stat.st_size,
+                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
+            })
+        return records
+
+    files: list[dict[str, Any]] = []
+    if version_dir.exists():
+        for p in sorted(version_dir.iterdir()):
+            if not p.is_file():
+                continue
+            if p.name == "project_info.json":
+                continue
+            if p.name == VERSIONS_MANIFEST_FILENAME:
+                continue
+            if p.name.startswith("."):
+                continue
+            stat = p.stat()
+            files.append({
+                "name": p.name,
+                "type": _classify_file(p.name),
+                "size": stat.st_size,
+                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
+            })
+    return files
+
+
+def _load_layout_project_info(version_dir: Path) -> dict[str, Any]:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+        info = load_version_project_info(version_dir)
+        return info if isinstance(info, dict) else {}
+    except Exception:
+        return {}
+
+
+def _v2_input_names(version_dir: Path) -> list[str]:
+    inp = version_dir / "01_input"
+    if not inp.is_dir():
+        return []
+    result: list[str] = []
+    for p in inp.rglob("*"):
+        if not p.is_file():
+            continue
+        rel = str(p.relative_to(inp))
+        if rel == "project_info.json" or Path(rel).name.startswith("."):
+            continue
+        result.append(rel)
+    return sorted(result)
+
+
+def _sync_v2_version_project_info(version_dir: Path, info: dict[str, Any]) -> None:
+    vj_path = version_dir / "version.json"
+    try:
+        if vj_path.exists():
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+            if not isinstance(vj, dict):
+                vj = {}
+        else:
+            vj = {}
+        vj.setdefault("schema_version", 1)
+        vj.setdefault("version_id", version_dir.name)
+        vj["project_info"] = dict(info)
+        _write_json_file(vj_path, vj)
+    except OSError as e:
+        raise VersionFileError(f"Не удалось сохранить version.json: {e}")
+
+
+def _v2_input_path(version_dir: Path, value: str | None) -> Optional[Path]:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    rel = Path(value)
+    if rel.is_absolute():
+        return rel if rel.is_file() else None
+    path = version_dir / "01_input" / rel
+    return path if path.is_file() else None
+
+
+def _copy_if_exists(source: Optional[Path], target: Path) -> None:
+    if source is None or not source.is_file():
+        return
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(source.read_bytes())
+
+
+def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
+    """Keep canonical 02_work files in sync with uploaded 01_input originals."""
+    work = version_dir / "02_work"
+    work.mkdir(parents=True, exist_ok=True)
+    _copy_if_exists(_v2_input_path(version_dir, info.get("pdf_file")), work / "document.pdf")
+    _copy_if_exists(_v2_input_path(version_dir, info.get("md_file")), work / "document.md")
+
+    inp = version_dir / "01_input"
+    result_candidates = sorted(
+        p for p in inp.rglob("*.json")
+        if p.is_file() and (p.name == "result.json" or p.name.endswith("_result.json"))
+    ) if inp.is_dir() else []
+    if result_candidates:
+        _copy_if_exists(result_candidates[0], work / "result.json")
+
+    ocr_candidates = sorted(
+        p for p in inp.rglob("*.html")
+        if p.is_file() and (p.name == "ocr.html" or p.name.endswith("_ocr.html"))
+    ) if inp.is_dir() else []
+    if ocr_candidates:
+        _copy_if_exists(ocr_candidates[0], work / "ocr.html")
+
+
 def _update_version_project_info(
     version_dir: Path,
     project_id: str,
@@ -792,24 +1384,33 @@ def _update_version_project_info(
 
     Сохраняет неизвестные поля. Возвращает обновлённый info.
     """
-    info_path = version_dir / "project_info.json"
+    is_v2_layout = _is_v2_source_layout(version_dir)
+    info_path = (
+        version_dir / "01_input" / "project_info.json"
+        if is_v2_layout else version_dir / "project_info.json"
+    )
     if info_path.exists():
         try:
             info = json.loads(info_path.read_text(encoding="utf-8")) or {}
         except (OSError, json.JSONDecodeError, UnicodeDecodeError):
             info = {}
     else:
-        info = {}
+        info = _load_layout_project_info(version_dir) if is_v2_layout else {}
     if not isinstance(info, dict):
         info = {}
 
-    # Все файлы в папке версии (с учётом ранее загруженных)
-    all_files = [
-        p.name for p in version_dir.iterdir()
-        if p.is_file()
-        and p.name != "project_info.json"
-        and not p.name.startswith(".")
-    ]
+    # Все пользовательские исходники версии. Для projects_v2 считаем именно
+    # immutable originals из 01_input; 02_work содержит derived canonical copies
+    # (`document.pdf`, `document.md`, ...) и не должен дублировать upload list.
+    if is_v2_layout:
+        all_files = _v2_input_names(version_dir)
+    else:
+        all_files = [
+            p.name for p in version_dir.iterdir()
+            if p.is_file()
+            and p.name != "project_info.json"
+            and not p.name.startswith(".")
+        ]
 
     pdf_files = sorted({n for n in all_files if _classify_file(n) == "pdf"})
     md_files = sorted({n for n in all_files if _classify_file(n) == "md"})
@@ -842,6 +1443,8 @@ def _update_version_project_info(
             json.dumps(info, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        if is_v2_layout:
+            _sync_v2_version_project_info(version_dir, info)
     except OSError as e:
         raise VersionFileError(f"Не удалось сохранить project_info.json: {e}")
 
@@ -864,32 +1467,8 @@ def list_version_files(
     )
     version_dir: Path = ctx["version_dir"]
 
-    files: list[dict[str, Any]] = []
-    if version_dir.exists():
-        for p in sorted(version_dir.iterdir()):
-            if not p.is_file():
-                continue
-            if p.name == "project_info.json":
-                continue
-            if p.name == VERSIONS_MANIFEST_FILENAME:
-                continue
-            if p.name.startswith("."):
-                continue
-            stat = p.stat()
-            files.append({
-                "name": p.name,
-                "type": _classify_file(p.name),
-                "size": stat.st_size,
-                "updated_at": datetime.fromtimestamp(stat.st_mtime).replace(microsecond=0).isoformat(),
-            })
-
-    info_path = version_dir / "project_info.json"
-    project_info: dict[str, Any] = {}
-    if info_path.exists():
-        try:
-            project_info = json.loads(info_path.read_text(encoding="utf-8")) or {}
-        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-            project_info = {}
+    files = _source_file_records(version_dir)
+    project_info = _load_layout_project_info(version_dir)
 
     return {
         "project_id": project_id,
@@ -948,7 +1527,11 @@ def save_files_to_version(
         project_id, version_id, resolve_project_dir_fn=resolve_project_dir_fn,
     )
     version_dir: Path = ctx["version_dir"]
+    is_projects_v2 = ctx.get("storage_layout") == "projects_v2"
     version_dir.mkdir(parents=True, exist_ok=True)
+    if is_projects_v2:
+        (version_dir / "01_input").mkdir(parents=True, exist_ok=True)
+        (version_dir / "02_work").mkdir(parents=True, exist_ok=True)
 
     # Сначала валидируем все имена и проверяем конфликты — атомарно: либо все
     # сохраняем, либо ничего.
@@ -964,7 +1547,7 @@ def save_files_to_version(
                 f"Дубликат в одной загрузке: {safe!r}"
             )
         seen_in_batch.add(safe)
-        target = version_dir / safe
+        target = (version_dir / "01_input" / safe) if is_projects_v2 else (version_dir / safe)
         if target.exists() and not replace_existing:
             raise VersionFileConflictError(
                 f"Файл '{safe}' уже существует. Используйте replace_existing=true."
@@ -985,6 +1568,8 @@ def save_files_to_version(
     info = _update_version_project_info(
         version_dir, project_id, saved_names, comment=comment,
     )
+    if is_projects_v2:
+        _sync_v2_work_copies(version_dir, info)
 
     return {
         "project_id": project_id,
@@ -1007,14 +1592,8 @@ def has_source_files(project_id: str, version_id: Optional[str] = None) -> bool:
     version_dir: Path = ctx["version_dir"]
     if not version_dir.exists():
         return False
-    for p in version_dir.iterdir():
-        if not p.is_file():
-            continue
-        if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-            continue
-        if _classify_file(p.name) in ("pdf", "md"):
-            return True
-    return False
+    pdf_count, md_count, _source_count = _source_counts(version_dir)
+    return pdf_count > 0 or md_count > 0
 
 
 def version_audit_readiness(project_id: str, version_id: Optional[str] = None) -> dict[str, Any]:
@@ -1037,24 +1616,7 @@ def version_audit_readiness(project_id: str, version_id: Optional[str] = None) -
             "reason": "Версия не найдена",
         }
     version_dir: Path = ctx["version_dir"]
-    pdf_count = 0
-    md_count = 0
-    source_count = 0
-    if version_dir.exists():
-        for p in version_dir.iterdir():
-            if not p.is_file():
-                continue
-            if p.name in {"project_info.json", VERSIONS_MANIFEST_FILENAME}:
-                continue
-            if p.name.startswith("."):
-                continue
-            t = _classify_file(p.name)
-            if t in ("pdf", "md", "txt", "json", "html"):
-                source_count += 1
-            if t == "pdf":
-                pdf_count += 1
-            elif t == "md":
-                md_count += 1
+    pdf_count, md_count, source_count = _source_counts(version_dir)
 
     can_run = pdf_count > 0
     reason = "" if can_run else "Нет PDF-файлов в версии"

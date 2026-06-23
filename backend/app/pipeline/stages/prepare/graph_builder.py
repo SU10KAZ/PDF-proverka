@@ -20,6 +20,8 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+
 
 # ─── Нормализация OCR-текста ───────────────────────────────────────────────
 
@@ -310,8 +312,14 @@ def build_local_text_links(
 # ─── Поиск canonical JSON файлов ──────────────────────────────────────────
 
 def _find_result_json(project_dir: str | Path) -> list[Path]:
-    """Найти *_result.json файлы в папке проекта."""
+    """Найти result.json файлы в legacy root или projects_v2 02_work/01_input."""
     project_dir = Path(project_dir)
+    try:
+        sources = resolve_version_source_files(project_dir)
+        if sources.layout == "projects_v2":
+            return list(sources.result_json_paths)
+    except Exception:
+        pass
     candidates = sorted(project_dir.glob("*_result.json"))
     # Исключаем файлы в _output/
     return [c for c in candidates if "_output" not in str(c)]
@@ -330,6 +338,7 @@ def build_document_graph_v2(
     project_dir: str | Path,
     output_dir: str | Path | None = None,
     include_locality: bool = True,
+    result_json_paths: list[str | Path] | None = None,
 ) -> dict | None:
     """Построить Document Knowledge Graph v2 из канонических JSON.
 
@@ -348,11 +357,15 @@ def build_document_graph_v2(
     """
     project_dir = Path(project_dir)
     if output_dir is None:
-        output_dir = project_dir / "_output"
+        output_dir = Path(os.environ.get("AUDIT_OUTPUT_DIR") or project_dir / "_output")
     output_dir = Path(output_dir)
 
-    # Ищем canonical JSON
-    result_jsons = _find_result_json(project_dir)
+    # Ищем canonical JSON. Legacy callers keep directory glob behavior; v2-primary
+    # can pass an exact normalized 02_work/result.json path via source resolver.
+    if result_json_paths is None:
+        result_jsons = _find_result_json(project_dir)
+    else:
+        result_jsons = [Path(p) for p in result_json_paths if Path(p).is_file()]
 
     if not result_jsons:
         print(f"  [GRAPH v2] *_result.json не найден в {project_dir}")

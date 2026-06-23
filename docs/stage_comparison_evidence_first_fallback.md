@@ -163,6 +163,11 @@ STAGE_COMPARISON_EVIDENCE_FIRST_HEADER_MAX_CHARS=12000
 STAGE_COMPARISON_EVIDENCE_FIRST_MIN_QUOTE_LEN=8
 STAGE_COMPARISON_EVIDENCE_FIRST_FUZZY_THRESHOLD=0.6
 STAGE_COMPARISON_EVIDENCE_FIRST_DROP_UNGROUNDED=true
+# #54: число одновременных per-chunk Opus-вызовов. 1 = последовательно
+# (default, поведение идентично прежнему); 2-3 ускоряют большие пары.
+# Детерминированный diff/merge не зависят от порядка чанков; rate-limit retry
+# ClaudeCodeProvider (#84) гасит всплеск 429 при concurrency>1.
+STAGE_COMPARISON_EVIDENCE_FIRST_CHUNK_CONCURRENCY=1
 ```
 
 ### Controlled-rollout переключатели (kill-switches)

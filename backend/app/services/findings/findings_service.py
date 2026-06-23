@@ -9,8 +9,10 @@ from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
 from backend.app.models.findings import FindingsResponse, FindingsSummary
+from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
 def _get_version_output_dir(project_id: str, version_id: Optional[str] = None) -> Path:
@@ -43,6 +45,116 @@ def _practicality_score(finding: dict) -> int:
     return 50
 
 
+
+def _v2_read_enabled() -> bool:
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        return production_uses_v2()
+    except Exception:
+        return False
+
+
+def _v2_doc_version(project_id: str, version_id: Optional[str] = None):
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None, None, None
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        return adapter, doc, None
+    return adapter, doc, vid
+
+
+def _build_findings_response_from_data(
+    project_id: str,
+    data,
+    *,
+    severity: Optional[str] = None,
+    category: Optional[str] = None,
+    sheet: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+    group: bool = False,
+) -> FindingsResponse:
+    items = data if isinstance(data, list) else data.get("findings", data.get("items", []))
+    items = [dict(item) for item in (items or []) if isinstance(item, dict)]
+    audit_date = None if isinstance(data, list) else data.get("audit_date", data.get("generated_at"))
+
+    filtered = items
+    if severity:
+        sev_upper = severity.upper()
+        filtered = [f for f in filtered if sev_upper in f.get("severity", "").upper()]
+    if category:
+        cat_lower = category.lower()
+        filtered = [f for f in filtered if cat_lower in f.get("category", "").lower()]
+    if sheet:
+        filtered = [f for f in filtered if sheet in str(f.get("sheet", ""))]
+    if search:
+        s_lower = search.lower()
+        filtered = [
+            f for f in filtered
+            if s_lower in json.dumps(f, ensure_ascii=False).lower()
+        ]
+
+    by_severity = {}
+    for item in items:
+        sev = item.get("severity", "НЕИЗВЕСТНО")
+        by_severity[sev] = by_severity.get(sev, 0) + 1
+
+    sev_order = {s: cfg["order"] for s, cfg in SEVERITY_CONFIG.items()}
+    filtered.sort(
+        key=lambda f: (
+            sev_order.get(f.get("severity", ""), 99),
+            -_practicality_score(f),
+        )
+    )
+    if group:
+        filtered = group_similar_findings(filtered)
+
+    filtered_total = len(filtered)
+    if offset is not None:
+        filtered = filtered[offset:]
+    if limit is not None:
+        filtered = filtered[:limit]
+
+    return FindingsResponse(
+        project_id=project_id,
+        total=len(items),
+        filtered_total=filtered_total,
+        by_severity=by_severity,
+        findings=filtered,
+        audit_date=audit_date,
+    )
+
+
+def _get_findings_v2(project_id: str, version_id: Optional[str] = None):
+    adapter, doc, vid = _v2_doc_version(project_id, version_id)
+    if adapter is None or doc is None or not vid:
+        return None
+    data = adapter.read_findings(Path(doc["doc_dir"]), vid)
+    return data
+
+
+def _get_analysis_artifact_v2(project_id: str, name: str, version_id: Optional[str] = None):
+    adapter, doc, vid = _v2_doc_version(project_id, version_id)
+    if adapter is None or doc is None or not vid:
+        return None, vid
+    return adapter.read_analysis_artifact(Path(doc["doc_dir"]), vid, name), vid
+
+
+def _items_from_findings_data(data) -> list:
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        return data.get("findings", data.get("items", [])) or []
+    return []
+
+
 def get_findings(
     project_id: str,
     severity: Optional[str] = None,
@@ -56,6 +168,35 @@ def get_findings(
     version_id: Optional[str] = None,
 ) -> Optional[FindingsResponse]:
     """Получить замечания проекта с фильтрацией и пагинацией."""
+    if _v2_read_enabled():
+        try:
+            data = _get_findings_v2(project_id, version_id)
+            if data is not None:
+                items = _items_from_findings_data(data)
+                graph_data, resolved_vid = _get_analysis_artifact_v2(
+                    project_id, "document_graph.json", version_id,
+                )
+                _enrich_sheet_page(
+                    items,
+                    project_id,
+                    version_id=resolved_vid or version_id,
+                    graph_data=graph_data,
+                    emit_sheet_no=True,
+                )
+                return _build_findings_response_from_data(
+                    project_id,
+                    data,
+                    severity=severity,
+                    category=category,
+                    sheet=sheet,
+                    search=search,
+                    limit=limit,
+                    offset=offset,
+                    group=group,
+                )
+        except Exception as exc:
+            print(f"[projects_v2 read] get_findings fallback to legacy: {exc}")
+
     path = _get_findings_path(project_id, version_id)
     data = _load_json(path)
     if data is None:
@@ -125,6 +266,28 @@ def get_finding_by_id(
     version_id: Optional[str] = None,
 ) -> Optional[dict]:
     """Получить одно замечание по ID."""
+    if _v2_read_enabled():
+        try:
+            data = _get_findings_v2(project_id, version_id)
+            if data is not None:
+                items = _items_from_findings_data(data)
+                graph_data, resolved_vid = _get_analysis_artifact_v2(
+                    project_id, "document_graph.json", version_id,
+                )
+                _enrich_sheet_page(
+                    items,
+                    project_id,
+                    version_id=resolved_vid or version_id,
+                    graph_data=graph_data,
+                    emit_sheet_no=True,
+                )
+                for item in items or []:
+                    if isinstance(item, dict) and item.get("id", "") == finding_id:
+                        return item
+                return None
+        except Exception as exc:
+            print(f"[projects_v2 read] get_finding_by_id fallback to legacy: {exc}")
+
     path = _get_findings_path(project_id, version_id)
     data = _load_json(path)
     if data is None:
@@ -153,6 +316,37 @@ def _resolve_summary_output_dir(project_dir: Path, project_id: str) -> Path:
 
 def get_all_summaries() -> list[FindingsSummary]:
     """Сводка замечаний по всем проектам."""
+    if _v2_read_enabled():
+        try:
+            from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+            adapter = ProjectsV2Adapter()
+            if not adapter.is_available():
+                raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+            summaries = []
+            for doc in adapter.list_documents():
+                vid = adapter.resolve_version_id(doc)
+                if not vid:
+                    continue
+                data = adapter.read_findings(Path(doc["doc_dir"]), vid)
+                if data is None:
+                    continue
+                items = data if isinstance(data, list) else data.get("findings", data.get("items", []))
+                by_severity = {}
+                for item in items or []:
+                    if isinstance(item, dict):
+                        sev = item.get("severity", "НЕИЗВЕСТНО")
+                        by_severity[sev] = by_severity.get(sev, 0) + 1
+                summaries.append(FindingsSummary(
+                    project_id=doc["document_code"],
+                    total=len(items or []),
+                    by_severity=by_severity,
+                    audit_date=None if isinstance(data, list) else data.get("audit_date", data.get("generated_at")),
+                ))
+            return summaries
+        except Exception as exc:
+            print(f"[projects_v2 read] get_all_summaries fallback to legacy: {exc}")
+
     from backend.app.services.common.project_service import iter_project_dirs
     summaries = []
     for project_id, entry in iter_project_dirs():
@@ -182,8 +376,59 @@ def get_all_summaries() -> list[FindingsSummary]:
     return summaries
 
 
+
+def _optimization_summary_from_data(project_id: str, data: dict, review_data: Optional[dict] = None) -> dict:
+    meta = data.get("meta", {})
+    items = data.get("items", [])
+    by_type = {}
+    for item in items:
+        t = item.get("type", "unknown")
+        by_type[t] = by_type.get(t, 0) + 1
+    savings_values = [it.get("savings_pct", 0) for it in items if it.get("savings_pct", 0) > 0]
+    avg_savings = round(sum(savings_values) / len(savings_values), 1) if savings_values else 0
+    review_stats = None
+    if review_data:
+        verdicts = review_data.get("meta", {}).get("verdicts", {})
+        review_stats = {
+            "total_reviewed": review_data.get("meta", {}).get("total_reviewed", 0),
+            "pass": verdicts.get("pass", 0),
+            "issues": sum(v for k, v in verdicts.items() if k != "pass"),
+        }
+    return {
+        "project_id": project_id,
+        "total_items": len(items),
+        "by_type": by_type,
+        "estimated_savings_pct": meta.get("estimated_savings_pct", 0),
+        "avg_savings_pct": avg_savings,
+        "top3_summary": meta.get("top3_summary", ""),
+        "analysis_date": meta.get("analysis_date", ""),
+        "review_applied": meta.get("review_applied", False),
+        "review_stats": review_stats,
+    }
+
 def get_all_optimization_summaries() -> list[dict]:
     """Сводка оптимизаций по всем проектам."""
+    if _v2_read_enabled():
+        try:
+            from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+            adapter = ProjectsV2Adapter()
+            if not adapter.is_available():
+                raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+            summaries = []
+            for doc in adapter.list_documents():
+                vid = adapter.resolve_version_id(doc)
+                if not vid:
+                    continue
+                data = adapter.read_analysis_artifact(Path(doc["doc_dir"]), vid, "optimization.json")
+                if data is None:
+                    continue
+                review_data = adapter.read_analysis_artifact(Path(doc["doc_dir"]), vid, "optimization_review.json")
+                summaries.append(_optimization_summary_from_data(doc["document_code"], data, review_data))
+            return summaries
+        except Exception as exc:
+            print(f"[projects_v2 read] get_all_optimization_summaries fallback to legacy: {exc}")
+
     from backend.app.services.common.project_service import iter_project_dirs
     summaries = []
     for project_id, entry in iter_project_dirs():
@@ -193,42 +438,9 @@ def get_all_optimization_summaries() -> list[dict]:
         if data is None:
             continue
 
-        meta = data.get("meta", {})
-        items = data.get("items", [])
-
-        # Агрегация по типам
-        by_type = {}
-        for item in items:
-            t = item.get("type", "unknown")
-            by_type[t] = by_type.get(t, 0) + 1
-
-        # Статистика savings
-        savings_values = [it.get("savings_pct", 0) for it in items if it.get("savings_pct", 0) > 0]
-        avg_savings = round(sum(savings_values) / len(savings_values), 1) if savings_values else 0
-
-        # Review stats
         review_path = output_dir / "optimization_review.json"
         review_data = _load_json(review_path)
-        review_stats = None
-        if review_data:
-            verdicts = review_data.get("meta", {}).get("verdicts", {})
-            review_stats = {
-                "total_reviewed": review_data.get("meta", {}).get("total_reviewed", 0),
-                "pass": verdicts.get("pass", 0),
-                "issues": sum(v for k, v in verdicts.items() if k != "pass"),
-            }
-
-        summaries.append({
-            "project_id": project_id,
-            "total_items": len(items),
-            "by_type": by_type,
-            "estimated_savings_pct": meta.get("estimated_savings_pct", 0),
-            "avg_savings_pct": avg_savings,
-            "top3_summary": meta.get("top3_summary", ""),
-            "analysis_date": meta.get("analysis_date", ""),
-            "review_applied": meta.get("review_applied", False),
-            "review_stats": review_stats,
-        })
+        summaries.append(_optimization_summary_from_data(project_id, data, review_data))
 
     return summaries
 
@@ -694,8 +906,12 @@ def _build_ocr_html_index(project_dir: Path) -> dict[str, str]:
     OCR HTML содержит готовые таблицы и текст с правильным форматированием.
     Каждый блок начинается с <p>BLOCK: XXXX-XXXX-XXX</p> внутри div.block-content.
     """
-    # Ищем *_ocr.html в папке проекта
-    ocr_files = list(project_dir.glob("*_ocr.html"))
+    # Ищем OCR HTML с учётом legacy root и projects_v2 02_work/01_input.
+    try:
+        sources = resolve_version_source_files(project_dir)
+        ocr_files = list(sources.ocr_html_paths)
+    except Exception:
+        ocr_files = list(project_dir.glob("*_ocr.html"))
     if not ocr_files:
         return {}
 
@@ -751,7 +967,7 @@ def _build_text_evidence(
 ) -> dict[str, list[dict]]:
     """Маппинг finding_id → [{text_block_id, role, text, page}] из document_graph."""
     project_dir = _get_version_project_dir(project_id, version_id)
-    output_dir = project_dir / "_output"
+    output_dir = _get_version_output_dir(project_id, version_id)
     graph_path = output_dir / "document_graph.json"
     if not graph_path.exists():
         return {}
@@ -846,18 +1062,29 @@ def _build_text_evidence(
     return result
 
 
-def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Optional[str] = None):
+def _enrich_sheet_page(
+    findings: list[dict],
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+    graph_data: Optional[dict] = None,
+    emit_sheet_no: bool = False,
+):
     """Обогатить findings: разделить sheet/page, подставить sheet_no из document_graph."""
     import re
 
     # Загрузить маппинг page → sheet_no из document_graph (нужной версии)
-    graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
     page_to_sheet: dict[int, str] = {}
-    graph_data = _load_json(graph_path)
+    if graph_data is None:
+        graph_path = _get_version_output_dir(project_id, version_id) / "document_graph.json"
+        graph_data = _load_json(graph_path)
     if graph_data:
         for p in graph_data.get("pages", []):
             page_num = p.get("page")
-            sheet_no = p.get("sheet_no")
+            # v2-граф хранит sheet_no в sheet_no_raw/normalized (sheet_no=0),
+            # поэтому читаем через общий helper — иначе page→sheet мёртв для всех
+            # v2-проектов и в отчётах пустые «Лист N» (reserc.md #5).
+            sheet_no = get_page_sheet_no(p)
             if page_num is not None and sheet_no:
                 page_to_sheet[page_num] = str(sheet_no)
 
@@ -885,6 +1112,8 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
                         sheets.append(page_to_sheet[pg])
                 if sheets:
                     unique = list(dict.fromkeys(sheets))
+                    if emit_sheet_no:
+                        f["sheet_no"] = unique[0] if len(unique) == 1 else unique
                     f["sheet"] = "Лист " + ", ".join(unique) if len(unique) <= 3 else f"Листы {unique[0]}–{unique[-1]}"
             continue
 
@@ -913,6 +1142,8 @@ def _enrich_sheet_page(findings: list[dict], project_id: str, *, version_id: Opt
                 sheets = [page_to_sheet[pg] for pg in pages_parsed if pg in page_to_sheet]
                 if sheets:
                     unique = list(dict.fromkeys(sheets))
+                    if emit_sheet_no:
+                        f["sheet_no"] = unique[0] if len(unique) == 1 else unique
                     f["sheet"] = "Лист " + ", ".join(unique)
                 else:
                     # Оставить лист из оригинала, убрав "(стр. PDF ...)"
@@ -1004,7 +1235,7 @@ def _load_sheet_to_page_map(project_id: str, version_id: Optional[str] = None) -
         return {}
     result: dict[str, int] = {}
     for p in graph_data.get("pages", []):
-        sheet_no = p.get("sheet_no")
+        sheet_no = get_page_sheet_no(p)  # v1/v2-совместимо (reserc.md #5)
         page_num = p.get("page")
         if sheet_no and page_num is not None:
             result[str(sheet_no)] = page_num
@@ -1148,6 +1379,8 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
             all_sheets = []
             all_pages = []
             all_block_ids = []
+            all_source_block_ids = []
+            all_etr = []
             all_evidence = []
             for it in items:
                 sh = it.get("sheet")
@@ -1162,6 +1395,12 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 for bid in (it.get("related_block_ids") or []):
                     if bid not in all_block_ids:
                         all_block_ids.append(bid)
+                for sbid in (it.get("source_block_ids") or []):
+                    if sbid not in all_source_block_ids:
+                        all_source_block_ids.append(sbid)
+                for etr in (it.get("evidence_text_refs") or []):
+                    if etr not in all_etr:
+                        all_etr.append(etr)
                 for ev in (it.get("evidence") or []):
                     all_evidence.append(ev)
 
@@ -1178,6 +1417,17 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                 "related_block_ids": all_block_ids,
                 "evidence": all_evidence,
             }
+            # source-of-truth поля поглощённых замечаний (reserc.md #6/#27)
+            if all_source_block_ids:
+                merged["source_block_ids"] = all_source_block_ids
+            if all_etr:
+                merged["evidence_text_refs"] = all_etr
+            for _qf in ("norm_quote", "highlight_regions"):
+                if not merged.get(_qf):
+                    for it in items:
+                        if it.get(_qf):
+                            merged[_qf] = it[_qf]
+                            break
             result.append(merged)
 
     return result

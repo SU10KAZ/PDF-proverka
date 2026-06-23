@@ -22,12 +22,31 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+
+def _is_rate_limited(rc: int, stdout: str, stderr: str) -> bool:
+    """#84: единый детектор rate-limit (переиспользуем cli_utils аудита)."""
+    try:
+        from backend.app.services.common.cli_utils import is_rate_limited
+        return bool(is_rate_limited(rc, stdout, stderr))
+    except Exception:  # noqa: BLE001 — детектор не должен валить вызов
+        return False
+
+
+def _rate_limit_max_retries() -> int:
+    """#84: единый лимит ретраев (из config аудита, fallback 3)."""
+    try:
+        from backend.app.core.config import RATE_LIMIT_MAX_RETRIES
+        return max(0, int(RATE_LIMIT_MAX_RETRIES))
+    except Exception:  # noqa: BLE001
+        return 3
 
 
 @dataclass
@@ -200,7 +219,18 @@ class ClaudeCodeProvider(BaseTextLLMProvider):
         try:
             if work_dir:
                 work_dir.mkdir(parents=True, exist_ok=True)
-                sys_file = work_dir / "_text_llm_system_prompt.tmp.md"
+                # УНИКАЛЬНОЕ имя на каждый вызов. При chunk_concurrency>1
+                # (evidence_first_fallback) несколько потоков делят ОДИН work_dir;
+                # фиксированное имя приводило к гонке — finally.unlink() одного
+                # потока удалял файл, нужный subprocess'у другого → ENOENT на
+                # --append-system-prompt-file → rc!=0 → тихая потеря changes
+                # чанка (pre-deploy review #54). tempfile.mkstemp атомарно даёт
+                # неконфликтующее имя.
+                _fd, _sys_path = tempfile.mkstemp(
+                    prefix="_text_llm_sys_", suffix=".tmp.md", dir=str(work_dir),
+                )
+                os.close(_fd)
+                sys_file = Path(_sys_path)
                 sys_file.write_text(system_prompt, encoding="utf-8")
 
             args = [
@@ -217,44 +247,61 @@ class ClaudeCodeProvider(BaseTextLLMProvider):
                 # fallback: inline system prompt
                 args.extend(["--append-system-prompt", system_prompt[:4000]])
 
-            t0 = time.monotonic()
-            try:
-                proc = subprocess.run(
-                    args,
-                    input=user_prompt,
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout_sec,
-                    cwd=str(work_dir) if work_dir else None,
-                    check=False,
-                )
-            except subprocess.TimeoutExpired:
-                return ProviderResult(
-                    status="timeout",
-                    error=f"timed_out_after_{timeout_sec}s",
-                    duration_sec=time.monotonic() - t0,
-                    provider=self.name,
-                    model=model,
-                )
-            duration = time.monotonic() - t0
+            # #84: единый rate-limit-aware retry. Распознаём 'usage limit reached'/
+            # 'overloaded'/429 тем же cli_utils.is_rate_limited, что и аудит, и
+            # применяем bounded backoff (как with_rate_limit_retry в аудите) —
+            # чтобы политика была одна на оба пайплайна на одной подписке.
+            max_retries = _rate_limit_max_retries()
+            attempt = 0
+            while True:
+                t0 = time.monotonic()
+                try:
+                    proc = subprocess.run(
+                        args,
+                        input=user_prompt,
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout_sec,
+                        cwd=str(work_dir) if work_dir else None,
+                        check=False,
+                    )
+                except subprocess.TimeoutExpired:
+                    return ProviderResult(
+                        status="timeout",
+                        error=f"timed_out_after_{timeout_sec}s",
+                        duration_sec=time.monotonic() - t0,
+                        provider=self.name,
+                        model=model,
+                    )
+                duration = time.monotonic() - t0
 
-            if proc.returncode != 0:
-                stderr_tail = (proc.stderr or "")[-2000:]
+                if proc.returncode != 0:
+                    stderr_tail = (proc.stderr or "")[-2000:]
+                    if (attempt < max_retries
+                            and _is_rate_limited(proc.returncode, proc.stdout or "", proc.stderr or "")):
+                        wait = min(60, 2 ** attempt * 5)
+                        logger.warning(
+                            "text_llm rate-limited (attempt %d/%d), waiting %ds",
+                            attempt + 1, max_retries, wait,
+                        )
+                        time.sleep(wait)
+                        attempt += 1
+                        continue
+                    return ProviderResult(
+                        status="error",
+                        error=f"claude_rc={proc.returncode}: {stderr_tail}",
+                        duration_sec=duration,
+                        provider=self.name,
+                        model=model,
+                    )
+                stdout = proc.stdout or ""
                 return ProviderResult(
-                    status="error",
-                    error=f"claude_rc={proc.returncode}: {stderr_tail}",
+                    status="done",
+                    raw_response=stdout,
                     duration_sec=duration,
                     provider=self.name,
                     model=model,
                 )
-            stdout = proc.stdout or ""
-            return ProviderResult(
-                status="done",
-                raw_response=stdout,
-                duration_sec=duration,
-                provider=self.name,
-                model=model,
-            )
         finally:
             if sys_file is not None:
                 try:

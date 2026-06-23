@@ -23,11 +23,6 @@ const app = createApp({
         const usersAuthEnabled = ref(false);       // включена ли портальная авторизация
         const usersLoggedInUsername = ref(null);   // логин активной сессии
         const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
-        const newUserSurname = ref('');
-        const newUserInitials = ref('');
-        const expandedUserId = ref(null);   // раскрытая карточка в списке
-        const userActivity = ref(null);     // {user, projects, totals}
-        const userActivityLoading = ref(false);
         const currentProjectId = ref(null);
         const currentProject = ref(null);
         const projects = ref([]);
@@ -50,15 +45,19 @@ const app = createApp({
         const showCreateVersionModal = ref(false);
         const newVersionComment = ref('');
         const versionsPanelOpen = ref(false);  // боковая панель/блок в info-вкладке
+        // ─── Переименование папки проекта (карандаш рядом с версией) ───
+        const renameEditing = ref(false);
+        const renameValue = ref('');
+        const renameError = ref('');
+        const renameBusy = ref(false);
+        const renameInput = ref(null);
 
         // ─── Контроль ранее согласованных замечаний (migrated findings) ───
         // Отчёт пишется backend'ом в _versions/v{N}/_output/migrated_findings_report.json.
         // На фронте — только чтение/запуск, без редактирования содержимого.
         const migratedFindingsReport = ref(null);
         const migratedFindingsReportLoading = ref(false);
-        const migratedFindingsCheckRunning = ref(false);
         const migratedFindingsError = ref('');
-        const migratedFindingsPanelOpen = ref(false);
 
         // VersionAPI помещён в глобал через version_api.js (UMD). На случай
         // деплоя без CDN-фоллбека держим локальную stub-имплементацию.
@@ -2575,8 +2574,7 @@ const app = createApp({
             if (hash === '/knowledge-base') {
                 currentView.value = 'knowledge-base';
                 connectGlobalWS();
-                // По умолчанию — «Все проекты» (kbObjectFilter=''); выбор объекта
-                // в селекторе сужает БЗ до него.
+                // БЗ фильтруется по глобально выбранному объекту (верхний селектор «Объект»).
                 loadKnowledgeBase();
                 loadKBStats();
             } else if (hash === '/queue') {
@@ -2592,16 +2590,11 @@ const app = createApp({
             } else if (hash === '/model-control') {
                 currentView.value = 'model-control';
                 connectGlobalWS();
-            } else if (hash === '/users') {
-                currentView.value = 'users';
+            } else if (hash === '/schedule') {
+                currentView.value = 'schedule';
                 connectGlobalWS();
-                loadUsers();
-            } else if (hash.match(/^\/users\/(.+)$/)) {
-                const uid = decodeURIComponent(hash.match(/^\/users\/(.+)$/)[1]);
-                currentView.value = 'user-activity';
-                connectGlobalWS();
-                loadUsers();
-                loadUserActivity(uid);
+                loadUsers();   // для admin-гейта кнопки «Изменить план»
+                schedLoad();
             } else if (hash === '/critic-v2-ui') {
                 // Experimental offline view. Does NOT touch production pipeline.
                 currentView.value = 'critic-v2-ui';
@@ -3274,6 +3267,18 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
+        // Выделить все НЕпроанализированные (findings_count == 0) проекты раздела,
+        // добавляя их к текущему выделению.
+        function selectUnanalyzedInSection(sectionCode) {
+            const pids = projects.value
+                .filter(p => (p.section || 'OTHER') === sectionCode && !(p.findings_count > 0))
+                .map(p => p.project_id);
+            const s = new Set(selectedProjects.value);
+            for (const id of pids) s.add(id);
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
         const selectedCount = computed(() => selectedProjects.value.size);
 
         function openBatchModal() {
@@ -3605,6 +3610,22 @@ const app = createApp({
             return resp.json();
         }
 
+        async function apiPatch(path, body, patchOpts) {
+            patchOpts = patchOpts || {};
+            const opts = { method: 'PATCH' };
+            if (body !== undefined) {
+                opts.headers = { 'Content-Type': 'application/json' };
+                opts.body = JSON.stringify(body);
+            }
+            const url = _apiUrl(path, patchOpts.withVersion);
+            const resp = await fetch(url, opts);
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.detail || `API error: ${resp.status}`);
+            }
+            return resp.json();
+        }
+
         function _afterAuditStart(projectId) {
             // Подключаем project WS для live-обновлений (прогресс, heartbeat, статус)
             connectProjectWS(projectId);
@@ -3862,23 +3883,82 @@ const app = createApp({
 
         async function cleanProject(projectId) {
             const name = currentProject.value?.name || projectId;
-            if (!confirm(`Очистить все результаты проекта "${name}"?\n\nБудут удалены:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nPDF и MD файлы сохраняются.`)) {
+            // Очистка затрагивает только активную версию (её _output/),
+            // остальные версии проекта не трогаются.
+            const verEntry = activeVersionEntry.value;
+            const verLabel = verEntry
+                ? (verEntry.label || verEntry.version_id)
+                : (activeVersionId.value || '');
+            const verLine = verLabel ? ` (версия ${verLabel})` : '';
+            if (!confirm(`Очистить результаты проекта "${name}"${verLine}?\n\nБудут удалены данные ТОЛЬКО этой версии:\n- Все блоки и нарезки\n- Все JSON-этапы (00-03)\n- Батчи и логи\n- Отчёты\n\nДругие версии, PDF и MD файлы сохраняются. Для projects_v2 backend сначала создаст backup.`)) {
                 return;
             }
             try {
-                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/clean`, { method: 'DELETE' });
+                // _apiUrl автоматически подмешивает ?version_id из activeVersionId,
+                // чтобы бэкенд чистил именно активную версию.
+                const cleanUrl = new URL(_apiUrl(`/projects/${encodeURIComponent(projectId)}/clean`), window.location.origin);
+                cleanUrl.searchParams.set('_confirmed', 'true');
+                const resp = await fetch(cleanUrl.pathname + cleanUrl.search, { method: 'DELETE' });
                 const data = await resp.json();
                 if (!resp.ok) {
                     alert(data.detail || 'Ошибка очистки');
                     return;
                 }
-                alert(`Очищено: ${data.deleted_files} файлов, ${data.freed_mb} MB освобождено`);
+                const backupLine = data.backup_id ? `\nBackup: ${data.backup_id}` : '';
+                alert(`Очищено: ${data.deleted_files} файлов, ${data.freed_mb} MB освобождено${backupLine}`);
+                if (data.backup_id && confirm(`Backup создан:\n${data.backup_id}\n\nВосстановить очищенные данные из backup сейчас?`)) {
+                    await restoreCleanBackup(projectId, data.backup_id);
+                    return;
+                }
                 // Обновляем данные проекта
                 await refreshProjects();
                 if (currentProject.value && currentProject.value.project_id === projectId) {
                     const updated = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
                     if (updated) currentProject.value = updated;
                 }
+            } catch (e) { alert(e.message); }
+        }
+
+        async function restoreCleanBackup(projectId, backupId) {
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/restore-clean`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        backup_id: backupId,
+                        version_id: activeVersionId.value || null,
+                    }),
+                });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    alert(data.detail || 'Ошибка восстановления backup');
+                    return;
+                }
+                const preRestore = data.pre_restore_backup_id
+                    ? `\nТекущее состояние перед restore сохранено: ${data.pre_restore_backup_id}`
+                    : '';
+                alert(`Восстановлено из backup: ${data.backup_id}${preRestore}`);
+                await refreshProjects();
+                if (currentProject.value && currentProject.value.project_id === projectId) {
+                    const updated = await apiGet(`/projects/${encodeURIComponent(projectId)}`);
+                    if (updated) currentProject.value = updated;
+                }
+            } catch (e) { alert(e.message); }
+        }
+
+        async function deleteVersion(versionId) {
+            const pid = currentProject.value?.project_id;
+            if (!pid) return;
+            const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
+            if (!confirm(`Удалить версию ${verLabel} проекта "${currentProject.value?.name}"?\n\nБудут удалены:\n- Вся папка версии (PDF, MD, результаты аудита)\n- Запись о версии из манифеста\n\nДействие необратимо.`)) return;
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(versionId)}`, { method: 'DELETE' });
+                const data = await resp.json();
+                if (!resp.ok) { alert(data.detail || 'Ошибка удаления версии'); return; }
+                await refreshProjects();
+                // Переключиться на новую latest версию
+                const newLatest = data.new_latest_version_id;
+                if (newLatest) selectVersion(newLatest);
             } catch (e) { alert(e.message); }
         }
 
@@ -4015,6 +4095,11 @@ const app = createApp({
                 await Promise.all([refreshProjects(), loadProjectGroups()]);
                 if (currentView.value === 'stage-comparison') {
                     scLoadObjects();
+                }
+                // База знаний фильтруется по выбранному объекту — перезагружаем при смене.
+                if (currentView.value === 'knowledge-base') {
+                    loadKBStats();
+                    if (kbTab.value !== 'missing_norms') loadKnowledgeBase();
                 }
             } catch (e) {
                 console.error('Failed to switch object:', e);
@@ -5086,6 +5171,74 @@ const app = createApp({
                 : path + '?version_id=' + encodeURIComponent(versionId);
         }
 
+        // ─── Переименование папки проекта ───
+        function startRename() {
+            if (!currentProject.value) return;
+            renameValue.value = currentProject.value.name || currentProjectId.value || '';
+            renameError.value = '';
+            renameEditing.value = true;
+            nextTick(() => {
+                try {
+                    const el = renameInput.value;
+                    if (el) { el.focus(); el.select(); }
+                } catch (e) { /* noop */ }
+            });
+        }
+
+        function cancelRename() {
+            renameEditing.value = false;
+            renameError.value = '';
+            renameValue.value = '';
+        }
+
+        async function submitRename() {
+            if (renameBusy.value) return;
+            const newName = (renameValue.value || '').trim();
+            if (!newName) { renameError.value = 'Имя не может быть пустым'; return; }
+            if (newName === (currentProject.value && currentProject.value.name)) {
+                cancelRename();
+                return;
+            }
+            if (newName.includes('/') || newName.includes('\\')) {
+                renameError.value = "Имя не может содержать '/' или '\\'";
+                return;
+            }
+            renameBusy.value = true;
+            renameError.value = '';
+            try {
+                const data = await apiPatch(
+                    `/projects/${encodeURIComponent(currentProjectId.value)}/rename`,
+                    { name: newName },
+                    { withVersion: false },
+                );
+                renameBusy.value = false;
+                renameEditing.value = false;
+                // project_id сменился (basename папки) → controlled-навигация на
+                // новый проект с перезагрузкой данных (старые пути больше не валидны).
+                const newId = data && data.project_id;
+                if (newId && newId !== currentProjectId.value) {
+                    _cacheInvalidate('project');
+                    _cacheInvalidate('findings');
+                    _cacheInvalidate('optimization');
+                    _cacheInvalidate('blocks');
+                    currentProject.value = null;
+                    findingsData.value = null;
+                    activeVersionId.value = null;
+                    navigate('/project/' + newId);
+                } else {
+                    // basename не изменился — обновим имя на месте.
+                    if (currentProject.value) currentProject.value.name = data.new_name;
+                    await loadProject(currentProjectId.value, true);
+                }
+                if (data && Array.isArray(data.warnings) && data.warnings.length) {
+                    console.warn('[rename] warnings:', data.warnings);
+                }
+            } catch (e) {
+                renameBusy.value = false;
+                renameError.value = e.message || 'Ошибка переименования';
+            }
+        }
+
         async function createNewVersion() {
             if (!currentProjectId.value) return;
             const comment = (newVersionComment.value || '').trim();
@@ -5197,75 +5350,6 @@ const app = createApp({
             }
         }
 
-        async function runMigratedFindingsCheck() {
-            const pid = currentProjectId.value;
-            const vid = activeVersionId.value;
-            if (!pid || !vid) return null;
-            const guard = VAPI ? VAPI.canRunMigratedCheck(vid) : { ok: vid !== 'v1', reason: '' };
-            if (!guard.ok) {
-                migratedFindingsError.value = guard.reason || 'Контроль недоступен.';
-                return null;
-            }
-            migratedFindingsCheckRunning.value = true;
-            migratedFindingsError.value = '';
-            try {
-                const url = VAPI
-                    ? VAPI.migratedFindingsCheckUrl(pid, vid)
-                    : `/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(vid)}/migrated-findings/check`;
-                const resp = await fetch(url, { method: 'POST' });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    migratedFindingsError.value = VAPI
-                        ? VAPI.describeMigratedCheckError(resp.status, err.detail || '')
-                        : (err.detail || `Ошибка ${resp.status}`);
-                    return null;
-                }
-                const data = await resp.json();
-                // Backend возвращает {status, source_version_id, reason, report}.
-                // В UI нам нужен сам report (с items + counts).
-                const report = (data && data.report) ? data.report : data;
-                migratedFindingsReport.value = report || null;
-                migratedFindingsPanelOpen.value = true;
-
-                // still_relevant мог быть добавлен в 03_findings.json — обновляем
-                // список findings и статус проекта, чтобы пользователь увидел
-                // migrated-замечания и пересчитанные счётчики.
-                _cacheInvalidate('findings');
-                _cacheInvalidate('project');
-                if (currentView.value === 'findings') {
-                    loadFindings(pid);
-                }
-                loadProject(pid, true);
-
-                const total = report && report.total_previous_accepted_findings != null
-                    ? report.total_previous_accepted_findings
-                    : 0;
-                try {
-                    alert(`Контроль завершён. Проверено ${total} ранее согласованных замечаний.`);
-                } catch (_) {}
-                return data;
-            } catch (e) {
-                migratedFindingsError.value = e.message || String(e);
-                return null;
-            } finally {
-                migratedFindingsCheckRunning.value = false;
-            }
-        }
-
-        // Компьютед-summary для UI (через VersionAPI helper).
-        const migratedFindingsSummary = computed(() => {
-            if (!VAPI) {
-                return {
-                    hasReport: !!migratedFindingsReport.value,
-                    sourceVersionId: '',
-                    total: 0, stillRelevant: 0, duplicate: 0,
-                    resolved: 0, notVerifiable: 0, sourceMissing: 0,
-                    checkedAt: '', itemsCount: 0,
-                };
-            }
-            return VAPI.summarizeMigratedReport(migratedFindingsReport.value);
-        });
-
         function migratedStatusLabel(status) {
             return VAPI ? VAPI.formatMigratedStatusLabel(status) : (status || '—');
         }
@@ -5275,15 +5359,6 @@ const app = createApp({
         function findingMigratedBadge(f) {
             return VAPI ? VAPI.findingMigratedBadge(f) : null;
         }
-
-        // Доступен ли контроль для текущей активной версии.
-        const canRunMigratedCheckNow = computed(() => {
-            const vid = activeVersionId.value
-                || (currentProject.value && currentProject.value.latest_version_id)
-                || null;
-            if (!VAPI) return { ok: vid && vid !== 'v1', reason: vid === 'v1' ? 'Только V2+' : '' };
-            return VAPI.canRunMigratedCheck(vid);
-        });
 
         // ─── Computed-helpers для UI ───
         const activeVersionEntry = computed(() => {
@@ -8062,70 +8137,428 @@ const app = createApp({
             return u ? u.name : '';
         }
 
-        async function switchUser(userId) {
+        // ─────────────────────────────────────────────────────────────────
+        // График производства работ (production work schedule)
+        //
+        // Реальные события грузятся из backend GET /api/schedule?from=&to=
+        // (агрегация knowledge_base/decisions_log.json). Если API недоступен
+        // или вернул пустой результат — DEV-fallback на mock-данные ниже
+        // (schedEvents → _schedMockEvents, schedEngineers → _SCHED_MOCK_ENGINEERS).
+        // План (schedPlans) пока локальный/mock — backend-стор work_plans.json
+        // делается отдельным этапом.
+        // ─────────────────────────────────────────────────────────────────
+        const schedMode = ref('month');                // 'week' | 'month' — по умолчанию месяц
+        const schedAnchor = ref(_schedStartOfDay(new Date()));  // опорный день периода
+        const schedPopover = ref(null);                // {engId, key} — раскрытый список проектов в ячейке
+        const schedFiltersOpen = ref(false);
+        const schedHiddenEngineers = ref([]);          // id скрытых инженеров (фильтр)
+        const schedPlanEdit = ref(false);              // режим редактирования плана (для админа)
+
+        // Состояние загрузки из API.
+        const schedApiEvents = ref(null);              // массив событий из /api/schedule или null (не загружено)
+        const schedApiEngineers = ref(null);           // массив инженеров из API или null
+        const schedLoading = ref(false);
+        const schedError = ref(false);                 // запрос упал → показываем mock
+
+        // DEV-fallback: инженеры графика, если API недоступен/пуст.
+        const _SCHED_MOCK_ENGINEERS = [
+            { id: 'uzun',     name: 'Узун А. И.' },
+            { id: 'grivash',  name: 'Гриваш А. А.' },
+            { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
+            { id: 'olar',     name: 'Оларь М. И.' },
+            { id: 'repnikov', name: 'Репников И. А.' },
+        ];
+
+        // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=
+        // и редактируется админом через PUT /api/schedule/plan.
+        const schedPlanMap = ref({});      // engineer_id -> plan (сохранённый, текущий период)
+        const schedPlanDraft = ref({});    // engineer_id -> plan (буфер редактирования)
+        const schedPlanSaving = ref(false);
+        const schedPlanMsg = ref(null);    // {kind:'ok'|'err', text}
+        // План по умолчанию, если записи в work_plans.json нет — чтобы статистика
+        // была осмысленной (backend дефолты сам не придумывает).
+        const _SCHED_DEFAULT_PLAN = { week: 5, month: 20 };
+
+        // ── date helpers (всё локально, без зависимостей) ──
+        function _schedStartOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+        function _schedKey(d) {
+            const x = new Date(d);
+            const m = String(x.getMonth() + 1).padStart(2, '0');
+            const day = String(x.getDate()).padStart(2, '0');
+            return `${x.getFullYear()}-${m}-${day}`;
+        }
+        function _schedMonday(d) {
+            const x = _schedStartOfDay(d);
+            const wd = (x.getDay() + 6) % 7;   // 0 = понедельник
+            x.setDate(x.getDate() - wd);
+            return x;
+        }
+        function _schedAddDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+        const _SCHED_DOW = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        const _SCHED_MON_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        const _SCHED_MON_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+        // DEV-fallback MOCK события «инженер загрузил/проверил проект в этот день».
+        // Используются только если API недоступен или вернул пусто. Генерируются
+        // относительно ТЕКУЩЕЙ недели/месяца, чтобы демо всегда попадало в период.
+        const _schedMockEvents = computed(() => {
+            const today = _schedStartOfDay(new Date());
+            const monday = _schedMonday(today);
+            const monthFirst = new Date(today.getFullYear(), today.getMonth(), 1);
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const ev = [];
+            const add = (engId, dayDate, short, full, section) =>
+                ev.push({ engId, key: _schedKey(dayDate), short, full, section });
+            const dom = (n) => { const x = new Date(monthFirst); x.setDate(Math.min(n, daysInMonth)); return x; };
+
+            // ── Текущая неделя (offset 0=Пн … 6=Вс), со стэк-ячейками для «+N» ──
+            // Узун А. И.
+            add('uzun', _schedAddDays(monday, 0), '214. Alia', '214. Москфильмовская «Alia» (ASTERUS)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), '214. Alia', '214. Москфильмовская «Alia» (ASTERUS)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
+            add('uzun', _schedAddDays(monday, 2), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR'); // Ср → «214. Alia +2»
+            // Гриваш А. А.
+            add('grivash', _schedAddDays(monday, 1), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('grivash', _schedAddDays(monday, 1), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM'); // Вт → «Asterus +1»
+            add('grivash', _schedAddDays(monday, 3), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM');
+            // Кульдяев Ф. С.
+            add('kuldyaev', _schedAddDays(monday, 0), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            add('kuldyaev', _schedAddDays(monday, 3), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
+            add('kuldyaev', _schedAddDays(monday, 4), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            // Оларь М. И.
+            add('olar', _schedAddDays(monday, 1), 'ПОС', 'ПОС — проект организации строительства', 'POS');
+            add('olar', _schedAddDays(monday, 2), 'ПЗУ', 'ПЗУ — планировочная организация ЗУ', 'GP');
+            // Репников И. А.
+            add('repnikov', _schedAddDays(monday, 0), 'АР1', 'АР1 — архитектурные решения, корп. 1', 'AR');
+            add('repnikov', _schedAddDays(monday, 0), 'АР2', 'АР2 — архитектурные решения, корп. 2', 'AR'); // Пн → «АР1 +1»
+            add('repnikov', _schedAddDays(monday, 2), 'КЖ', 'КЖ — конструкции железобетонные', 'KJ');
+            add('repnikov', _schedAddDays(monday, 4), 'АР1', 'АР1 — архитектурные решения, корп. 1', 'AR');
+
+            // ── Дополнительные события по месяцу (для режима «Месяц») ──
+            add('uzun', dom(3), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR');
+            add('grivash', dom(6), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('kuldyaev', dom(9), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
+            add('repnikov', dom(11), 'КЖ', 'КЖ — конструкции железобетонные', 'KJ');
+            add('olar', dom(24), 'ПОС', 'ПОС — проект организации строительства', 'POS');
+            add('uzun', dom(26), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
+            add('repnikov', dom(27), 'АР2', 'АР2 — архитектурные решения, корп. 2', 'AR');
+            add('kuldyaev', dom(28), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
+            return ev;
+        });
+
+        // Эффективный источник: API, если есть непустой результат, иначе mock.
+        const schedUsingMock = computed(() =>
+            !Array.isArray(schedApiEvents.value) || schedApiEvents.value.length === 0);
+        const schedEvents = computed(() =>
+            schedUsingMock.value ? _schedMockEvents.value : schedApiEvents.value);
+        const schedEngineers = computed(() => {
+            if (!schedUsingMock.value && Array.isArray(schedApiEngineers.value) && schedApiEngineers.value.length)
+                return schedApiEngineers.value;
+            return _SCHED_MOCK_ENGINEERS;
+        });
+
+        // Баннер состояния над графиком.
+        const schedNoticeKind = computed(() => {
+            if (schedLoading.value) return 'loading';
+            if (schedError.value) return 'error';
+            if (schedUsingMock.value) return 'mock';
+            return 'live';
+        });
+        const schedNoticeText = computed(() => ({
+            loading: 'Загрузка графика…',
+            error:   'Не удалось загрузить данные графика — показаны тестовые данные.',
+            mock:    'Реальных событий за период нет — показаны демонстрационные данные.',
+            live:    'Данные из knowledge_base/decisions_log.json.',
+        }[schedNoticeKind.value]));
+
+        function _schedPeriodRange() {
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                return { from: _schedKey(mon), to: _schedKey(_schedAddDays(mon, 6)) };
+            }
+            const a = schedAnchor.value;
+            const first = new Date(a.getFullYear(), a.getMonth(), 1);
+            const last = new Date(a.getFullYear(), a.getMonth() + 1, 0);
+            return { from: _schedKey(first), to: _schedKey(last) };
+        }
+
+        async function schedLoad() {
+            const { from, to } = _schedPeriodRange();
+            schedLoading.value = true;
+            schedError.value = false;
             try {
-                await fetch('/api/users/switch', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: userId }),
-                });
-                usersCurrentId.value = userId;
+                const resp = await fetch(`/api/schedule?from=${from}&to=${to}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                schedApiEvents.value = Array.isArray(data.events) ? data.events : [];
+                schedApiEngineers.value = Array.isArray(data.engineers) ? data.engineers : [];
             } catch (e) {
-                console.error('Switch user error:', e);
+                console.error('Schedule load error:', e);
+                schedError.value = true;       // → DEV fallback на mock-данные
+                schedApiEvents.value = null;
+                schedApiEngineers.value = null;
+            } finally {
+                schedLoading.value = false;
+            }
+            // План грузим после событий (UI работает и без планов).
+            schedLoadPlans();
+        }
+
+        // Перезагрузка при смене режима/периода (Неделя/Месяц, ‹ › Сегодня).
+        // Если идёт правка плана — выходим из неё: черновик относится к СТАРОМУ
+        // периоду, его нельзя сохранять в новый (иначе затрём чужой период).
+        watch([schedMode, schedAnchor], () => {
+            if (schedPlanEdit.value) schedCancelPlanEdit();
+            schedLoad();
+        });
+
+        const schedVisibleEngineers = computed(() =>
+            schedEngineers.value.filter(e => !schedHiddenEngineers.value.includes(e.id)));
+
+        function _schedDayMeta(d, todayKey) {
+            const dow = (d.getDay() + 6) % 7;
+            return {
+                key: _schedKey(d),
+                dom: d.getDate(),
+                dowLabel: _SCHED_DOW[dow],
+                isToday: _schedKey(d) === todayKey,
+                isWeekend: dow >= 5,
+            };
+        }
+
+        // Колонки графика: 7 дней (неделя) либо все дни месяца.
+        const schedDays = computed(() => {
+            const todayKey = _schedKey(new Date());
+            const out = [];
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                for (let i = 0; i < 7; i++) out.push(_schedDayMeta(_schedAddDays(mon, i), todayKey));
+            } else {
+                const a = schedAnchor.value;
+                const first = new Date(a.getFullYear(), a.getMonth(), 1);
+                const days = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate();
+                for (let i = 0; i < days; i++) out.push(_schedDayMeta(_schedAddDays(first, i), todayKey));
+            }
+            return out;
+        });
+        const schedDayKeys = computed(() => new Set(schedDays.value.map(d => d.key)));
+
+        // Индекс событий по ячейке engId|key.
+        const schedEventIndex = computed(() => {
+            const idx = {};
+            for (const e of schedEvents.value) (idx[e.engId + '|' + e.key] ||= []).push(e);
+            return idx;
+        });
+        function schedCell(engId, key) { return schedEventIndex.value[engId + '|' + key] || []; }
+
+        const schedPeriodLabel = computed(() => {
+            if (schedMode.value === 'week') {
+                const mon = _schedMonday(schedAnchor.value);
+                const sun = _schedAddDays(mon, 6);
+                return `${mon.getDate()} ${_SCHED_MON_GEN[mon.getMonth()]} — ` +
+                    `${sun.getDate()} ${_SCHED_MON_GEN[sun.getMonth()]} ${sun.getFullYear()}`;
+            }
+            const a = schedAnchor.value;
+            return `${_SCHED_MON_NOM[a.getMonth()]} ${a.getFullYear()}`;
+        });
+
+        function schedSetMode(m) { if (schedMode.value !== m) { schedMode.value = m; schedPopover.value = null; } }
+        function schedPrev() {
+            schedAnchor.value = schedMode.value === 'week'
+                ? _schedAddDays(_schedMonday(schedAnchor.value), -7)
+                : new Date(schedAnchor.value.getFullYear(), schedAnchor.value.getMonth() - 1, 1);
+            schedPopover.value = null;
+        }
+        function schedNext() {
+            schedAnchor.value = schedMode.value === 'week'
+                ? _schedAddDays(_schedMonday(schedAnchor.value), 7)
+                : new Date(schedAnchor.value.getFullYear(), schedAnchor.value.getMonth() + 1, 1);
+            schedPopover.value = null;
+        }
+        function schedToday() { schedAnchor.value = _schedStartOfDay(new Date()); schedPopover.value = null; }
+
+        function schedToggleCell(engId, key, hasEvents) {
+            if (!hasEvents) { schedPopover.value = null; return; }
+            const p = schedPopover.value;
+            schedPopover.value = (p && p.engId === engId && p.key === key) ? null : { engId, key };
+        }
+        function schedIsPopover(engId, key) {
+            const p = schedPopover.value;
+            return !!p && p.engId === engId && p.key === key;
+        }
+        function schedClosePopover() { schedPopover.value = null; }
+
+        function schedToggleEngineer(id) {
+            const arr = schedHiddenEngineers.value;
+            schedHiddenEngineers.value = arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id];
+        }
+        function schedIsEngineerHidden(id) { return schedHiddenEngineers.value.includes(id); }
+
+        // Право редактировать план: при выключенной auth (dev) — разрешено;
+        // при включённой — только сотрудник с ролью admin. Backend защищает PUT
+        // независимо от этого флага (это лишь видимость кнопки).
+        const schedIsAdmin = computed(() => {
+            if (!usersAuthEnabled.value) return true;
+            const u = usersList.value.find(x => x.id === usersCurrentId.value);
+            return !!u && u.role === 'admin';
+        });
+
+        function schedPlanFor(engId) {
+            const v = schedPlanMap.value[engId];
+            return (typeof v === 'number') ? v : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
+        }
+        function schedDraftFor(engId) {
+            const v = schedPlanDraft.value[engId];
+            return (typeof v === 'number') ? v : schedPlanFor(engId);
+        }
+        function schedSetPlanDraft(engId, val) {
+            const n = Math.max(0, Math.min(999, parseInt(val, 10) || 0));
+            schedPlanDraft.value = { ...schedPlanDraft.value, [engId]: n };
+        }
+        function schedTogglePlanEdit() {
+            if (schedPlanEdit.value) { schedPlanEdit.value = false; return; }
+            // Сеем черновик для ВСЕХ инженеров (не только видимых), чтобы PUT не
+            // затёр план скрытых фильтром: PUT перезаписывает период целиком.
+            const draft = {};
+            for (const e of schedEngineers.value) draft[e.id] = schedPlanFor(e.id);
+            schedPlanDraft.value = draft;
+            schedPlanMsg.value = null;
+            schedPlanEdit.value = true;
+        }
+        function schedCancelPlanEdit() { schedPlanEdit.value = false; schedPlanMsg.value = null; }
+
+        async function schedLoadPlans() {
+            const { from, to } = _schedPeriodRange();
+            try {
+                const resp = await fetch(`/api/schedule/plan?from=${from}&to=${to}&period_type=${schedMode.value}`);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                const map = {};
+                for (const p of (data.plans || [])) {
+                    if (p && p.engineer_id != null) map[p.engineer_id] = Number(p.plan) || 0;
+                }
+                schedPlanMap.value = map;
+            } catch (e) {
+                console.error('Schedule plans load error:', e);
+                schedPlanMap.value = {};   // нет планов → дефолты в schedPlanFor
             }
         }
 
-        async function addUser() {
-            const surname = (newUserSurname.value || '').trim();
-            if (!surname) { alert('Введите фамилию'); return; }
+        async function schedSavePlans() {
+            const { from, to } = _schedPeriodRange();
+            schedPlanSaving.value = true;
+            schedPlanMsg.value = null;
             try {
-                const resp = await fetch('/api/users', {
-                    method: 'POST',
+                // Шлём план ВСЕХ инженеров (PUT перезаписывает период целиком).
+                const plans = schedEngineers.value.map(e => ({
+                    engineer_id: e.id, engineer_name: e.name, plan: schedDraftFor(e.id),
+                }));
+                const resp = await fetch('/api/schedule/plan', {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        surname,
-                        initials: (newUserInitials.value || '').trim(),
+                        period_type: schedMode.value,
+                        period_start: from, period_end: to,
+                        object_id: null, plans,
                     }),
                 });
                 if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || resp.statusText);
+                    let detail = 'HTTP ' + resp.status;
+                    try { const j = await resp.json(); detail = j.detail || detail; } catch (_) {}
+                    throw new Error(detail);
                 }
-                newUserSurname.value = '';
-                newUserInitials.value = '';
-                await loadUsers();
+                schedPlanEdit.value = false;
+                await schedLoadPlans();
+                schedPlanMsg.value = { kind: 'ok', text: 'План сохранён' };
             } catch (e) {
-                alert('Ошибка добавления: ' + (e.message || e));
-            }
-        }
-
-        async function deleteUser(userId) {
-            const u = usersList.value.find(x => x.id === userId);
-            if (!confirm(`Удалить пользователя «${u ? u.name : userId}»? Его решения в истории сохранятся.`)) return;
-            try {
-                await fetch(`/api/users/${encodeURIComponent(userId)}`, { method: 'DELETE' });
-                await loadUsers();
-            } catch (e) {
-                alert('Ошибка удаления: ' + (e.message || e));
-            }
-        }
-
-        function toggleUserExpand(userId) {
-            expandedUserId.value = expandedUserId.value === userId ? null : userId;
-        }
-
-        async function loadUserActivity(userId) {
-            userActivityLoading.value = true;
-            userActivity.value = null;
-            try {
-                const resp = await fetch(`/api/users/${encodeURIComponent(userId)}/activity`);
-                if (!resp.ok) throw new Error(resp.statusText);
-                userActivity.value = await resp.json();
-            } catch (e) {
-                console.error('Load user activity error:', e);
+                console.error('Schedule plan save error:', e);
+                schedPlanMsg.value = { kind: 'err', text: 'Не удалось сохранить план: ' + (e.message || e) };
             } finally {
-                userActivityLoading.value = false;
+                schedPlanSaving.value = false;
             }
+        }
+
+        function schedFactFor(engId) {
+            const keys = schedDayKeys.value;
+            return schedEvents.value.filter(e => e.engId === engId && keys.has(e.key)).length;
+        }
+        function schedPctClass(pct) {
+            if (pct >= 100) return 'sched-ok';
+            if (pct >= 70) return 'sched-warn';
+            return 'sched-low';
+        }
+        // Цвет выполнения — фирменный бирюзовый.
+        function schedPctColor(pct) {
+            return 'var(--teal)';
+        }
+        // Замечания: согласованные/несогласованные за период. Backend пока НЕ
+        // отдаёт эти счётчики в /api/schedule (решение схлопывается при
+        // агрегации decisions_log) → null → в UI показывается «—». Если поля
+        // появятся в engineers[] (agreed/disagreed или remarks_agreed/
+        // remarks_disagreed) — подхватятся автоматически, без правок фронта.
+        function _schedRemarkCount(e, ...keys) {
+            for (const k of keys) if (typeof e[k] === 'number') return e[k];
+            return null;
+        }
+        const schedStats = computed(() => schedVisibleEngineers.value.map(e => {
+            const fact = schedFactFor(e.id);
+            const plan = schedPlanFor(e.id);
+            const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
+            const agreed = _schedRemarkCount(e, 'agreed', 'remarks_agreed');
+            const disagreed = _schedRemarkCount(e, 'disagreed', 'remarks_disagreed');
+            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed };
+        }));
+        const schedTotals = computed(() => {
+            const s = schedStats.value;
+            const fact = s.reduce((a, x) => a + x.fact, 0);
+            const plan = s.reduce((a, x) => a + x.plan, 0);
+            const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
+            const hasRemarks = s.some(x => x.agreed != null || x.disagreed != null);
+            const agreed = hasRemarks ? s.reduce((a, x) => a + (x.agreed || 0), 0) : null;
+            const disagreed = hasRemarks ? s.reduce((a, x) => a + (x.disagreed || 0), 0) : null;
+            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed };
+        });
+
+        // ── Display-хелперы графика (только отображение, без backend-логики) ──
+        // Инициалы инженера для аватара: «Гривапш А. А.» → «ГА».
+        function schedInitials(name) {
+            const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '?';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        // Статус выполнения для строки статистики (бейдж).
+        function schedStatusFor(s) {
+            if (!s || s.plan <= 0) return { label: 'Нет плана', cls: 'muted' };
+            if (s.pct > 100) return { label: 'Перевыполнение', cls: 'over' };
+            if (s.pct >= 100) return { label: 'В плане', cls: 'ok' };
+            return { label: 'Отстаёт', cls: 'low' };
+        }
+        // Детерминированный мягкий цвет аватара по имени/id.
+        const _SCHED_AVATAR_PALETTE = [
+            { background: '#ede9fe', color: '#6d28d9' },
+            { background: '#dbeafe', color: '#1d4ed8' },
+            { background: '#dcfce7', color: '#15803d' },
+            { background: '#fef3c7', color: '#b45309' },
+            { background: '#fce7f3', color: '#be185d' },
+            { background: '#ccfbf1', color: '#0f766e' },
+        ];
+        function schedAvatarStyle(seed) {
+            const s = String(seed || '');
+            let h = 0;
+            for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+            return _SCHED_AVATAR_PALETTE[h % _SCHED_AVATAR_PALETTE.length];
+        }
+
+        // Канонический project_id для API экспертной разметки: реальные папки
+        // проектов/контейнеров — без `.pdf`. В id из version-имени V2 может
+        // протечь `.pdf` (отображается в `name`), и тогда backend резолвит путь
+        // на корень объекта → orphan `_output`. Срезаем хвостовой `.pdf` (вторая
+        // линия защиты; основная — на backend resolve_project_dir/save).
+        function expertReviewProjectId() {
+            return String(currentProjectId.value || '').replace(/\.pdf$/i, '');
         }
 
         async function loadExpertDecisions() {
@@ -8134,7 +8567,7 @@ const app = createApp({
             try {
                 const vid = activeVersionId.value;
                 const vq = vid ? `?version_id=${encodeURIComponent(vid)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vq}`);
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vq}`);
                 const data = await resp.json();
                 if (data.has_review && data.data && data.data.decisions) {
                     for (const d of data.data.decisions) {
@@ -8207,7 +8640,7 @@ const app = createApp({
                 }
                 const vidPost = activeVersionId.value;
                 const vqPost = vidPost ? `?version_id=${encodeURIComponent(vidPost)}` : '';
-                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqPost}`, {
+                const resp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqPost}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ decisions, removed_ids: removedIds, reviewer: currentUserName() }),
@@ -8269,8 +8702,8 @@ const app = createApp({
             try {
                 const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
                 if (kbSearch.value) params.set('search', kbSearch.value);
-                if (kbSectionFilter.value) params.set('section', kbSectionFilter.value);
-                if (kbObjectFilter.value) params.set('object_id', kbObjectFilter.value);
+                // Замечания фильтруются по глобально выбранному объекту (верхний селектор «Объект»).
+                if (currentObjectId.value) params.set('object_id', currentObjectId.value);
                 const resp = await fetch(`/api/knowledge-base/entries?${params}`);
                 const data = await resp.json();
                 kbEntries.value = data.entries || [];
@@ -8283,7 +8716,7 @@ const app = createApp({
 
         async function loadKBStats() {
             try {
-                const q = kbObjectFilter.value ? `?object_id=${encodeURIComponent(kbObjectFilter.value)}` : '';
+                const q = currentObjectId.value ? `?object_id=${encodeURIComponent(currentObjectId.value)}` : '';
                 const resp = await fetch(`/api/knowledge-base/stats${q}`);
                 kbStats.value = await resp.json();
             } catch (e) { console.warn('KB stats error:', e); }
@@ -8465,7 +8898,7 @@ const app = createApp({
                     try {
                         const vidUp = activeVersionId.value;
                         const vqUp = vidUp ? `?version_id=${encodeURIComponent(vidUp)}` : '';
-                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(currentProjectId.value)}${vqUp}`);
+                        const revResp = await fetch(`/api/knowledge-base/expert-review/${encodeURIComponent(expertReviewProjectId())}${vqUp}`);
                         const revData = await revResp.json();
                         if (revData.has_review && revData.data && revData.data.decisions) {
                             const map = {};
@@ -13913,12 +14346,23 @@ const app = createApp({
         return {
             // Theme
             theme, toggleTheme,
-            // Пользователи (сотрудники)
-            usersList, usersCurrentId, usersLoading, newUserSurname, newUserInitials,
+            // Пользователи (сотрудники) — подпись решений + админ-гейт графика
+            usersList, usersCurrentId,
             usersAuthEnabled, usersLoggedInUsername, usersLoggedInMatched,
-            expandedUserId, userActivity, userActivityLoading,
-            loadUsers, switchUser, addUser, deleteUser, toggleUserExpand,
-            loadUserActivity, currentUserName,
+            loadUsers, currentUserName,
+            // График производства работ (API /api/schedule + dev mock fallback)
+            schedMode, schedAnchor, schedPopover, schedFiltersOpen,
+            schedHiddenEngineers, schedPlanEdit, schedEngineers,
+            schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
+            schedCell, schedSetMode, schedPrev, schedNext, schedToday,
+            schedToggleCell, schedIsPopover, schedClosePopover,
+            schedToggleEngineer, schedIsEngineerHidden,
+            schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass, schedPctColor,
+            schedStats, schedTotals, schedInitials, schedStatusFor, schedAvatarStyle,
+            schedLoading, schedError, schedUsingMock, schedNoticeKind, schedNoticeText, schedLoad,
+            // План работ (backend work_plans.json, admin-gated)
+            schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
+            schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
@@ -13972,7 +14416,7 @@ const app = createApp({
             startFromStage, canStartFrom, pipelineToStage,
             retryStage, retryDialog, retryStageToQueue,
             canRetryStage,
-            skipStage, cleanProject,
+            skipStage, cleanProject, deleteVersion,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
@@ -13999,7 +14443,7 @@ const app = createApp({
             startAuditDirect,
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
-            isSectionSelected, toggleSectionSelection,
+            isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
             sectionExcelLoading, exportSectionExcel,
             projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
@@ -14153,16 +14597,16 @@ const app = createApp({
             activeVersionId, projectVersions, projectVersionsLoading,
             versionFiles, versionUploading, versionUploadError,
             showCreateVersionModal, newVersionComment, versionsPanelOpen,
+            renameEditing, renameValue, renameError, renameBusy, renameInput,
+            startRename, cancelRename, submitRename,
             loadProjectVersions, loadVersionFiles, selectVersion,
             createNewVersion, uploadFilesToVersion,
             handleUploadInput, handleUploadInputReplace,
             activeVersionEntry, canStartAuditNow, versionBadgeFor,
             // ─── Migrated findings (контроль ранее согласованных замечаний) ───
             migratedFindingsReport, migratedFindingsReportLoading,
-            migratedFindingsCheckRunning, migratedFindingsError,
-            migratedFindingsPanelOpen, migratedFindingsSummary,
-            canRunMigratedCheckNow,
-            loadMigratedFindingsReport, runMigratedFindingsCheck,
+            migratedFindingsError,
+            loadMigratedFindingsReport,
             migratedStatusLabel, migratedStatusTone, findingMigratedBadge,
             findingExtRegBadge,
             // ─── Stage Comparison ───

@@ -117,3 +117,52 @@ def test_bound_version_overrides_latest(projects_dir):
     # После сброса binding снова возвращается latest=v2
     active_after = resolve_active_project_dir("M31A")
     assert active_after == root / "_versions" / "v2"
+
+
+def test_v2_primary_bound_version_returns_v2_version_dir(monkeypatch, tmp_path):
+    """v2-primary: active dir идёт в projects_v2, bind_version('v1') -> v001."""
+    from backend.app.services.common.project_service import resolve_active_project_dir
+    from backend.app.services.common import project_service, version_service
+
+    legacy_root = tmp_path / "legacy_projects"
+    legacy_root.mkdir()
+    monkeypatch.setattr(project_service, "_get_projects_dir", lambda: legacy_root)
+    monkeypatch.setattr(project_service, "_PROJECT_DIRS_CACHE", [])
+    monkeypatch.setattr(project_service, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+    monkeypatch.setattr(project_service, "_document_cache", {})
+
+    v2_root = tmp_path / "projects_v2"
+    doc = v2_root / "objects" / "OBJ" / "disciplines" / "GP" / "documents" / "DOC-ACT"
+    for vid in ("v001", "v002"):
+        (doc / "versions" / vid / "01_input").mkdir(parents=True, exist_ok=True)
+        (doc / "versions" / vid / "02_work").mkdir(parents=True, exist_ok=True)
+    (doc / "document.json").write_text(json.dumps({
+        "schema_version": 1,
+        "document_code": "DOC-ACT",
+        "object_folder": "OBJ",
+        "discipline": "GP",
+        "current_version": "v002",
+        "version_ids": ["v001", "v002"],
+        "versions": [
+            {"version_id": "v001", "version_no": 1, "label": "V1"},
+            {"version_id": "v002", "version_no": 2, "label": "V2"},
+        ],
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    (doc / "current_version.txt").write_text("v002", encoding="utf-8")
+
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "projects_v2_primary")
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2_root))
+
+    assert resolve_active_project_dir("DOC-ACT") == doc / "versions" / "v002"
+
+    token = version_service.bind_version("v1")
+    try:
+        assert resolve_active_project_dir("DOC-ACT") == doc / "versions" / "v001"
+    finally:
+        version_service.unbind_version(token)
+
+    token = version_service.bind_version("v002")
+    try:
+        assert resolve_active_project_dir("DOC-ACT") == doc / "versions" / "v002"
+    finally:
+        version_service.unbind_version(token)

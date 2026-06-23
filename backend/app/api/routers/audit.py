@@ -9,7 +9,7 @@ import traceback
 from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Body, HTTPException, Query
-from backend.app.pipeline.manager import pipeline_manager
+from backend.app.pipeline.manager import pipeline_manager, BatchResumeBlockedError
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.core.config import (
@@ -53,14 +53,14 @@ async def prepare_data_cancel():
 
 
 @router.post("/prepare-data/{project_id:path}/retry-failed")
-async def prepare_data_retry_failed(project_id: str):
+async def prepare_data_retry_failed(project_id: str, version_id: Optional[str] = None):
     """Перепрогнать только упавшие блоки прошлого enrichment'а данного проекта.
 
     Использует тот же Gemma-лок что и обычный prepare. Не делает full re-enrich,
     обрабатывает только block_id'ы из summary.failed.
     """
     from backend.app.pipeline.stages.prepare.prepare_service import start_retry_failed
-    return await start_retry_failed(project_id)
+    return await start_retry_failed(project_id, version_id=version_id)
 
 
 async def _safe_task(coro, name: str = "task"):
@@ -346,10 +346,19 @@ async def get_batch_status():
     active=True  — очередь работает прямо сейчас.
     active=False — очередь есть, но не запущена (история/прервана/завершена).
     queue=None   — очереди нет вовсе.
+
+    diagnostics — разделяет состояние очереди / текущего проекта / worker'а,
+    чтобы UI не показывал ложный «полный сбой», пока текущий проект ещё идёт:
+      current_project_running, batch_worker_lost, resume_available, display_status.
     """
     queue = pipeline_manager.get_batch_queue()
     active = bool(queue and queue.status == "running")
-    return {"active": active, "queue": queue.model_dump() if queue else None}
+    diagnostics = pipeline_manager.get_batch_diagnostics()
+    return {
+        "active": active,
+        "queue": queue.model_dump() if queue else None,
+        "diagnostics": diagnostics,
+    }
 
 
 @router.delete("/batch/history")
@@ -367,10 +376,20 @@ async def clear_batch_history():
 
 @router.post("/batch/resume")
 async def resume_batch():
-    """Продолжить прерванную batch-очередь."""
+    """Продолжить прерванную batch-очередь.
+
+    Если текущий проект ещё выполняется — возвращаем 409 с
+    reason=current_project_running (resume будет доступен после его завершения).
+    Идемпотентно: если worker уже жив, вернётся текущая очередь без дублей.
+    """
     try:
         queue = await pipeline_manager.resume_interrupted_batch()
         return {"status": "resumed", "queue": queue.model_dump()}
+    except BatchResumeBlockedError as e:
+        raise HTTPException(
+            409,
+            detail={"reason": "current_project_running", "message": str(e)},
+        )
     except RuntimeError as e:
         raise HTTPException(409, str(e))
 
@@ -409,13 +428,16 @@ async def add_retry_to_batch(request: dict):
     """Добавить retry конкретного этапа в очередь (создаёт новую если нет)."""
     project_id = request.get("project_id")
     stage = request.get("stage")
+    version_id = request.get("version_id")
     if not project_id or not stage:
         raise HTTPException(400, "project_id и stage обязательны")
 
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     try:
-        queue = await pipeline_manager.add_retry_to_batch(project_id, stage)
+        queue = await pipeline_manager.add_retry_to_batch(
+            project_id, stage, version_id=version_id,
+        )
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -425,13 +447,16 @@ async def add_retry_to_batch(request: dict):
 async def add_resume_to_batch(request: dict):
     """Добавить resume (продолжение) проекта в очередь (создаёт новую если нет)."""
     project_id = request.get("project_id")
+    version_id = request.get("version_id")
     if not project_id:
         raise HTTPException(400, "project_id обязателен")
 
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     try:
-        queue = await pipeline_manager.add_resume_to_batch(project_id)
+        queue = await pipeline_manager.add_resume_to_batch(
+            project_id, version_id=version_id,
+        )
         return {"status": "added", "queue": queue.model_dump()}
     except RuntimeError as e:
         raise HTTPException(409, str(e))
@@ -920,13 +945,14 @@ async def prepare_data_endpoint(
     parallelism: int | None = None,
     model: str | None = None,
     timeout: int | None = None,
+    version_id: Optional[str] = None,
 ):
     """Запустить «Подготовить данные» = crop PNG + Gemma enrichment.
 
     Прогресс публикуется в WebSocket (ws/audit/{project_id}) с stage="prepare_data".
     Возвращает immediately с status=started — клиент следит по WS.
     """
-    _check_project(project_id)
+    _check_project(project_id, version_id)
     from backend.app.pipeline.stages.prepare.prepare_service import start_prepare_data
     result = await start_prepare_data(
         project_id,
@@ -934,6 +960,7 @@ async def prepare_data_endpoint(
         parallelism=parallelism,
         model=model,
         timeout=timeout,
+        version_id=version_id,
     )
     if result.get("status") == "already_running":
         raise HTTPException(409, "prepare_data уже запущен для этого проекта")
@@ -1026,9 +1053,13 @@ async def get_audit_status(project_id: str):
 
 
 @router.post("/{project_id:path}/retry/{stage}")
-async def retry_stage(project_id: str, stage: str):
+async def retry_stage(
+    project_id: str,
+    stage: str,
+    version_id: Optional[str] = Query(None),
+):
     """Повторить конкретный этап конвейера."""
-    _check_project(project_id)
+    _check_project(project_id, version_id)
 
     stage_to_pipeline_stage = {
         "crop_blocks": "prepare",
@@ -1047,17 +1078,17 @@ async def retry_stage(project_id: str, stage: str):
     if stage in stage_to_pipeline_stage:
         async def _starter():
             return await pipeline_manager.start_from_stage(
-                project_id, stage_to_pipeline_stage[stage],
+                project_id, stage_to_pipeline_stage[stage], version_id=version_id,
             )
     elif stage == "norm_verify" or stage == "norm_requote":
         async def _starter():
-            return await pipeline_manager.start_norm_verify(project_id)
+            return await pipeline_manager.start_norm_verify(project_id, version_id=version_id)
     elif stage == "optimization":
         async def _starter():
-            return await pipeline_manager.start_optimization(project_id)
+            return await pipeline_manager.start_optimization(project_id, version_id=version_id)
     elif stage == "optimization_critic" or stage == "optimization_corrector":
         async def _starter():
-            return await pipeline_manager.start_optimization_review(project_id)
+            return await pipeline_manager.start_optimization_review(project_id, version_id=version_id)
     else:
         raise HTTPException(400, f"Этап '{stage}' не поддерживает повтор")
 

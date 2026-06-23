@@ -4,6 +4,7 @@
 """
 import contextvars
 import json
+import logging
 import os
 import re
 import shutil
@@ -22,6 +23,13 @@ from backend.app.models.project import (
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import GEMMA_STAGE_LABEL, evaluate_gemma_enrichment
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import detect_gemma_migration_state
 from backend.app.services.common import version_service
+from backend.app.services.storage.projects_v2_source_resolver import (
+    is_projects_v2_version_dir,
+    load_version_project_info,
+    resolve_version_source_files,
+)
+
+logger = logging.getLogger(__name__)
 
 
 # ─── Per-job object binding ────────────────────────────────────────────────
@@ -38,6 +46,15 @@ _bound_object_id: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar
 
 class AmbiguousProjectError(RuntimeError):
     """project_id существует в нескольких объектах, и scope не задан."""
+
+
+class ProjectNotResolvedError(RuntimeError):
+    """project_id не резолвится в существующую папку проекта/контейнера.
+
+    Бросается только при `resolve_project_dir(..., must_exist=True)` — для
+    writer-ов (expert_review, audit output), чтобы они НЕ создавали `_output`
+    по несуществующему `direct = projects_dir / project_id` на корне объекта
+    (источник orphan-папок)."""
 
 
 class ProjectByPdfError(RuntimeError):
@@ -228,9 +245,11 @@ def find_object_dirs_for(project_id: str) -> list[Path]:
     return hits
 
 
-# TTL-кеш для iter_project_dirs (30 сек)
+# TTL-кеш для iter_project_dirs (30 сек). #78: ключуется по resolved projects_dir —
+# при смене PROJECTS_DIR (тесты, smoke-sandbox, override) кеш не отдаёт чужой список.
 _PROJECT_DIRS_CACHE: list[tuple[str, Path]] = []
 _PROJECT_DIRS_CACHE_TIME: float = 0.0
+_PROJECT_DIRS_CACHE_KEY: str = ""
 _PROJECT_DIRS_TTL: float = 30.0
 
 
@@ -242,9 +261,10 @@ def invalidate_project_cache() -> None:
     удаления source-папки). Без этого `/api/projects` будет ~30 сек показывать
     устаревший список.
     """
-    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME, _PROJECT_DIRS_CACHE_KEY
     _PROJECT_DIRS_CACHE = []
     _PROJECT_DIRS_CACHE_TIME = 0.0
+    _PROJECT_DIRS_CACHE_KEY = ""
 
 
 def _container_primary(container: Path) -> Optional[tuple[str, Path]]:
@@ -282,14 +302,18 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     Кеш обновляется раз в 30 секунд (или force=True).
     """
-    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME
+    global _PROJECT_DIRS_CACHE, _PROJECT_DIRS_CACHE_TIME, _PROJECT_DIRS_CACHE_KEY
 
     now = time.time()
-    if not force and _PROJECT_DIRS_CACHE and (now - _PROJECT_DIRS_CACHE_TIME) < _PROJECT_DIRS_TTL:
+    projects_dir = _get_projects_dir()
+    cache_key = str(projects_dir)
+    # #78: кеш валиден только если построен под ТОТ ЖЕ projects_dir.
+    if (not force and _PROJECT_DIRS_CACHE
+            and _PROJECT_DIRS_CACHE_KEY == cache_key
+            and (now - _PROJECT_DIRS_CACHE_TIME) < _PROJECT_DIRS_TTL):
         return _PROJECT_DIRS_CACHE
 
     results: list[tuple[str, Path]] = []
-    projects_dir = _get_projects_dir()
     if not projects_dir.exists():
         return results
     for entry in sorted(projects_dir.iterdir()):
@@ -329,7 +353,85 @@ def iter_project_dirs(force: bool = False) -> list[tuple[str, Path]]:
 
     _PROJECT_DIRS_CACHE = results
     _PROJECT_DIRS_CACHE_TIME = now
+    _PROJECT_DIRS_CACHE_KEY = cache_key
     return results
+
+
+def _resolve_pdf_suffixed_dir(project_id: str, projects_dir: Path) -> Optional[Path]:
+    """Обратный `.pdf`-fallback для `resolve_project_dir`.
+
+    Кейс: `project_id` пришёл БЕЗ `.pdf` (например, из projects_v2 read-cutover,
+    где `document_code` = basename без расширения), а реальная legacy-папка на
+    диске исторически названа `<project_id>.pdf` (папку назвали по имени
+    PDF-файла вместе с расширением). Пробуем ровно один эквивалентный путь
+    `<project_id>.pdf` через те же lookup-примитивы (direct / контейнер `(main)`
+    / подпапка-дисциплина), что и основной резолв.
+
+    Это зеркало уже существующего прямого `.pdf`-fallback'а (id `<база>.pdf` →
+    реальный `<база>`). Гарантии:
+
+      * НЕ рекурсивный (не зовёт `resolve_project_dir`) → нет mutual-recursion с
+        прямым `.pdf`-fallback'ом;
+      * кандидат принимается ТОЛЬКО если папка реально существует И лежит ВНУТРИ
+        `projects_dir` (anti-traversal: суффикс добавляется в КОНЕЦ имени —
+        уйти вверх по дереву им нельзя, плюс явная проверка вложенности);
+      * прямой путь имеет приоритет (сюда попадаем только когда он не найден);
+      * при НЕСКОЛЬКИХ разных существующих кандидатах НЕ угадываем → `None`
+        (вызывающий вернёт прежнюю ошибку / несуществующий путь).
+
+    Возвращает `Path` единственного кандидата или `None`.
+    """
+    if project_id.endswith(".pdf") or not projects_dir.exists():
+        return None
+    try:
+        pdir_resolved = projects_dir.resolve()
+    except Exception:
+        return None
+
+    pid = project_id + ".pdf"
+    seen: set = set()
+    matches: list = []
+
+    def _consider(candidate: Path) -> None:
+        try:
+            if not candidate.exists():
+                return
+            rp = candidate.resolve()
+        except Exception:
+            return
+        # anti-traversal: кандидат обязан лежать внутри projects_dir
+        if rp != pdir_resolved and pdir_resolved not in rp.parents:
+            return
+        if rp in seen:
+            return
+        seen.add(rp)
+        matches.append(candidate)
+
+    base = Path(pid).name
+    parent_rel = Path(pid).parent
+    # 1) прямой путь
+    _consider(projects_dir / pid)
+    # 2) контейнер версий <parent>/<база>(main)/<база>
+    _consider(
+        projects_dir / parent_rel
+        / f"{base}{version_service.CONTAINER_SUFFIX}" / base
+    )
+    # 3) подпапки-дисциплины и контейнеры версий внутри них
+    for subdir in projects_dir.iterdir():
+        if not subdir.is_dir() or subdir.name.startswith("_"):
+            continue
+        _consider(subdir / pid)
+        if not subdir.name.endswith(version_service.CONTAINER_SUFFIX):
+            for child in subdir.iterdir():
+                if (
+                    child.is_dir()
+                    and child.name.endswith(version_service.CONTAINER_SUFFIX)
+                ):
+                    _consider(child / pid)
+
+    if len(matches) == 1:
+        return matches[0]
+    return None
 
 
 def resolve_project_dir(
@@ -337,6 +439,7 @@ def resolve_project_dir(
     *,
     object_id: Optional[str] = None,
     strict: bool = False,
+    must_exist: bool = False,
 ) -> Path:
     """Найти папку проекта по ID.
 
@@ -348,6 +451,12 @@ def resolve_project_dir(
     strict=True: если project_id существует в НЕСКОЛЬКИХ объектах и scope
     (object_id / binding) не задан — поднимаем `AmbiguousProjectError`. По
     умолчанию strict=False, чтобы не ломать существующие read-эндпоинты.
+
+    must_exist=True: для writer-ов. Если ни один реальный путь не найден —
+    поднимаем `ProjectNotResolvedError` вместо возврата несуществующего
+    `direct = projects_dir / project_id` (иначе writer молча создаёт orphan
+    `_output` на корне объекта). Перед ошибкой пробуется fallback со снятием
+    суффикса `.pdf` (id вида `<база>.pdf` → реальный `<база>`).
     """
     explicit_scope = False
     if object_id is not None:
@@ -419,7 +528,37 @@ def resolve_project_dir(
                     inner = child / project_id
                     if inner.exists():
                         return inner
-    return direct  # fallback
+
+    # Fallback: id вида `<база>.pdf` (приходит из version-имени V2 `… .pdf`).
+    # Реальные папки проектов/контейнеров — без `.pdf`. Пробуем снять суффикс
+    # и резолвить штатно; принимаем результат ТОЛЬКО если он существует и
+    # отличается от исходного id (без рекурсии в бесконечность — у stripped
+    # уже нет `.pdf`). Не трогаем легитимные `.pdf`-id: для них `direct`
+    # существует и мы бы вернули его раньше (см. `direct.exists()`).
+    if project_id.endswith(".pdf"):
+        stripped = project_id[:-4]
+        if stripped and stripped != project_id:
+            alt = resolve_project_dir(
+                stripped, object_id=object_id, strict=strict,
+            )
+            if alt.exists():
+                return alt
+
+    # Зеркало предыдущего fallback'а: project_id БЕЗ `.pdf`, а реальная
+    # legacy-папка названа `<project_id>.pdf`. Так приходит id из projects_v2
+    # read-cutover (document_code без расширения), когда на диске папка сохранила
+    # `.pdf` в имени. Узкий, не-рекурсивный, anti-traversal, без угадывания при
+    # неоднозначности (см. `_resolve_pdf_suffixed_dir`). Прямой путь имеет
+    # приоритет — мы здесь только потому, что он не найден.
+    alt_pdf = _resolve_pdf_suffixed_dir(project_id, projects_dir)
+    if alt_pdf is not None:
+        return alt_pdf
+
+    if must_exist:
+        raise ProjectNotResolvedError(
+            f"Project directory not resolved for project_id={project_id!r}"
+        )
+    return direct  # fallback (legacy: допускает несуществующий путь для read/create-new)
 
 
 def resolve_active_project_dir(
@@ -477,9 +616,227 @@ def unhide_project(project_id: str) -> None:
     _save_hidden_projects(hidden)
 
 
+
+def _v2_read_enabled() -> bool:
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        return production_uses_v2()
+    except Exception:
+        return False
+
+
+def _version_no_from_id(version_id: str, fallback: int = 1) -> int:
+    m = re.match(r"v0*(\d+)$", str(version_id or ""))
+    return int(m.group(1)) if m else fallback
+
+
+def _v2_versions_summary(adapter, doc: dict, doc_dir: Path, latest_id: str) -> dict:
+    versions = []
+    for idx, entry in enumerate(adapter.list_versions(doc_dir), start=1):
+        vid = entry.get("version_id") or f"v{idx:03d}"
+        inputs = adapter.input_files(doc_dir, vid)
+        pdf_count = sum(1 for name in inputs if str(name).lower().endswith(".pdf"))
+        md_count = sum(1 for name in inputs if str(name).lower().endswith(".md"))
+        versions.append({
+            "version_id": vid,
+            "version_no": entry.get("version_no") or _version_no_from_id(vid, idx),
+            "label": entry.get("label") or f"V{entry.get('version_no') or _version_no_from_id(vid, idx)}",
+            "folder": f"versions/{vid}",
+            "status": entry.get("status", "active"),
+            "source": entry.get("source", "projects_v2"),
+            "created_at": entry.get("created_at"),
+            "comment": entry.get("comment"),
+            "is_latest": vid == latest_id,
+            "has_source_files": bool(pdf_count or md_count),
+            "pdf_count": pdf_count,
+            "md_count": md_count,
+            "source_files_count": len(inputs),
+            "can_run_audit": pdf_count > 0,
+        })
+    return {
+        "project_id": doc["document_code"],
+        "logical_project_id": doc["document_code"],
+        "latest_version_id": latest_id,
+        "version_count": len(versions),
+        "has_versions": len(versions) > 1,
+        "versions": versions,
+    }
+
+
+def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStatus:
+    status = PipelineStatus()
+    log = adapter.read_pipeline_log(doc_dir, version_id) or {}
+    stages = log.get("stages", {}) if isinstance(log, dict) else {}
+    mapping = {
+        "crop_blocks": "crop_blocks",
+        "gemma_enrichment": "gemma_enrichment",
+        "text_analysis": "text_analysis",
+        "block_analysis": "blocks_analysis",
+        "block_retry": "block_retry",
+        "findings_merge": "findings",
+        "findings_critic": "findings_critic",
+        "findings_corrector": "findings_corrector",
+        "norm_verify": "norms_verified",
+        "optimization": "optimization",
+        "optimization_critic": "optimization_critic",
+        "optimization_corrector": "optimization_corrector",
+        "excel": "excel",
+        "prepare": "crop_blocks",
+        "main_audit": "findings",
+    }
+    valid = {"done", "error", "partial", "running", "skipped", "interrupted"}
+    for log_key, field in mapping.items():
+        raw = (stages.get(log_key) or {}).get("status")
+        if raw in valid:
+            setattr(status, field, "error" if raw == "interrupted" else raw)
+    files = adapter.latest_analysis_files(doc_dir, version_id)
+    if files.get("has_01_text_analysis") and status.text_analysis == "pending":
+        status.text_analysis = "done"
+    if files.get("has_02_blocks_analysis") and status.blocks_analysis == "pending":
+        status.blocks_analysis = "done"
+    if files.get("has_03_findings") and status.findings == "pending":
+        status.findings = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "03a_norms_verified.json") and status.norms_verified == "pending":
+        status.norms_verified = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "optimization.json") and status.optimization == "pending":
+        status.optimization = "done"
+    if adapter.analysis_artifact_path(doc_dir, version_id, "optimization_review.json") and status.optimization_critic == "pending":
+        status.optimization_critic = "done"
+    return status
+
+
+def _v2_project_status_from_doc(adapter, doc: dict, *, version_id: Optional[str] = None) -> Optional[ProjectStatus]:
+    doc_dir = Path(doc["doc_dir"])
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        return None
+    vdir = adapter.version_dir(doc_dir, vid)
+    vj = adapter.read_version_json(doc_dir, vid) or {}
+    dj = adapter.read_document_json(doc_dir) or {}
+    latest_id = adapter.current_version_id(doc_dir, dj) or vid
+    versions_summary = _v2_versions_summary(adapter, doc, doc_dir, latest_id)
+    version_entry = next((v for v in versions_summary["versions"] if v["version_id"] == vid), None)
+    if version_entry is None:
+        return None
+
+    project_info = vj.get("project_info") or dj.get("project_info") or {}
+    object_info = next((o for o in adapter.list_objects() if o["folder_name"] == doc["object_folder"]), {})
+    input_files = adapter.input_files(doc_dir, vid)
+    pdf_files = [name for name in input_files if str(name).lower().endswith(".pdf")]
+    pdf_size = 0.0
+    for name in pdf_files:
+        fp = vdir / "01_input" / name
+        if fp.is_file():
+            pdf_size += fp.stat().st_size / 1024 / 1024
+    md_candidates = [name for name in input_files if str(name).lower().endswith(".md")]
+    work_md = vdir / "02_work" / "document.md"
+    has_md = bool(md_candidates) or (work_md.is_file() and work_md.stat().st_size > 0)
+    md_name = "02_work/document.md" if work_md.is_file() else (md_candidates[0] if md_candidates else None)
+    md_size_kb = 0.0
+    if work_md.is_file():
+        md_size_kb = round(work_md.stat().st_size / 1024, 1)
+    elif md_candidates:
+        mp = vdir / "01_input" / md_candidates[0]
+        if mp.is_file():
+            md_size_kb = round(mp.stat().st_size / 1024, 1)
+
+    findings_data = adapter.read_findings(doc_dir, vid) or {}
+    findings_items = findings_data if isinstance(findings_data, list) else findings_data.get("findings", findings_data.get("items", [])) or []
+    findings_by_severity: dict[str, int] = {}
+    for item in findings_items:
+        if isinstance(item, dict):
+            sev = item.get("severity", "НЕИЗВЕСТНО")
+            findings_by_severity[sev] = findings_by_severity.get(sev, 0) + 1
+
+    opt_data = adapter.read_analysis_artifact(doc_dir, vid, "optimization.json") or {}
+    opt_items = opt_data.get("items", []) if isinstance(opt_data, dict) else []
+    opt_meta = opt_data.get("meta", {}) if isinstance(opt_data, dict) else {}
+    opt_by_type = opt_meta.get("by_type") or {}
+    if not opt_by_type:
+        for item in opt_items:
+            if isinstance(item, dict):
+                typ = item.get("type", "unknown")
+                opt_by_type[typ] = opt_by_type.get(typ, 0) + 1
+
+    latest_dir = adapter.latest_dir(doc_dir, vid)
+    pipeline_version = project_info.get("pipeline_version", vj.get("pipeline_version", "legacy")) or "legacy"
+    return ProjectStatus(
+        project_id=doc["document_code"],
+        name=project_info.get("name") or dj.get("display_name") or doc["document_code"],
+        description=project_info.get("description", ""),
+        section=project_info.get("section") or doc.get("discipline") or "EOM",
+        object=project_info.get("object") or object_info.get("display_name"),
+        has_pdf=bool(pdf_files),
+        pdf_size_mb=round(pdf_size, 1),
+        pdf_files=pdf_files,
+        has_extracted_text=False,
+        text_size_kb=0.0,
+        has_md_file=has_md,
+        md_file_name=md_name,
+        md_file_size_kb=md_size_kb,
+        text_source="md" if has_md else "none",
+        pipeline=_v2_pipeline_status(adapter, doc_dir, vid),
+        findings_count=len(findings_items),
+        findings_by_severity=findings_by_severity,
+        optimization_count=len(opt_items) or int(opt_meta.get("total_items", 0) or 0),
+        optimization_by_type=opt_by_type,
+        optimization_savings_pct=opt_meta.get("estimated_savings_pct", 0),
+        last_audit_date=(findings_data or {}).get("audit_date", (findings_data or {}).get("generated_at")) if isinstance(findings_data, dict) else None,
+        total_batches=0,
+        completed_batches=0,
+        has_ocr=any(str(name).lower().endswith(("result.json", "ocr.html")) for name in input_files),
+        block_count=0,
+        block_errors=0,
+        block_expected=0,
+        pipeline_summary=_build_pipeline_summary(latest_dir, pipeline_version),
+        pipeline_issues=_build_pipeline_issues(latest_dir, pipeline_version),
+        pipeline_version=pipeline_version,
+        version_id=version_entry["version_id"],
+        version_no=version_entry["version_no"],
+        version_label=version_entry["label"],
+        latest_version_id=latest_id,
+        version_count=versions_summary["version_count"],
+        has_versions=versions_summary["has_versions"],
+        is_latest_version=(version_entry["version_id"] == latest_id),
+        versions_summary=versions_summary["versions"],
+    )
+
+
+def _get_project_status_v2(project_id: str, *, version_id: Optional[str] = None) -> Optional[ProjectStatus]:
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None
+    return _v2_project_status_from_doc(adapter, doc, version_id=version_id)
+
+
+def _list_projects_v2(hidden: set[str]) -> list[ProjectStatus]:
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    projects: list[ProjectStatus] = []
+    for doc in adapter.list_documents():
+        if doc["document_code"] in hidden:
+            continue
+        status = _v2_project_status_from_doc(adapter, doc)
+        if status:
+            projects.append(status)
+    return projects
+
 def list_projects() -> list[ProjectStatus]:
     """Получить список всех проектов с их статусом."""
     hidden = _load_hidden_projects()
+    if _v2_read_enabled():
+        try:
+            return _list_projects_v2(hidden)
+        except Exception as exc:
+            print(f"[projects_v2 read] list_projects fallback to legacy: {exc}")
     projects = []
     for project_id, entry in iter_project_dirs():
         if project_id in hidden:
@@ -517,6 +874,13 @@ def get_project_status(
     Для V2+ показатели читаются из `_versions/<version_id>/`; данные V1 НЕ
     смешиваются.
     """
+    if _v2_read_enabled():
+        try:
+            status = _get_project_status_v2(project_id, version_id=version_id)
+            if status is not None:
+                return status
+        except Exception as exc:
+            print(f"[projects_v2 read] get_project_status fallback to legacy: {exc}")
     proj_dir = resolve_project_dir(project_id)
     if not proj_dir.exists():
         return None
@@ -538,53 +902,65 @@ def get_project_status(
 
     # project_info: предпочитаем info из самой версии (V2+ создаёт свой
     # project_info.json через create_next_version), иначе fallback на корень.
-    version_info_path = version_dir / "project_info.json"
-    root_info_path = proj_dir / "project_info.json"
-    info_path = version_info_path if version_info_path.exists() else root_info_path
-    if not info_path.exists():
-        return None
-
-    info = _load_json(info_path)
+    if is_projects_v2_version_dir(version_dir):
+        info = load_version_project_info(version_dir)
+    else:
+        version_info_path = version_dir / "project_info.json"
+        root_info_path = proj_dir / "project_info.json"
+        info_path = version_info_path if version_info_path.exists() else root_info_path
+        if not info_path.exists():
+            return None
+        info = _load_json(info_path)
     if not info:
         return None
 
-    output_dir = version_dir / "_output"
-    pdf_file = info.get("pdf_file") or ""
-    pdf_files = info.get("pdf_files") or ([pdf_file] if pdf_file else [])
-    # Пустая строка `pdf_file=""` (новая V2 без загрузок) → не пытаемся
-    # сверяться с `version_dir / ""`, потому что Path("dir") / "" == Path("dir"),
-    # и `dir.exists()` ошибочно даёт True.
-    has_pdf = bool(pdf_file) and (version_dir / pdf_file).exists()
-    pdf_size_mb = 0.0
-    for pf in pdf_files:
-        if not pf:
-            continue
-        pp = version_dir / pf
-        if pp.exists() and pp.is_file():
-            has_pdf = True
-            pdf_size_mb += pp.stat().st_size / 1024 / 1024
-    pdf_size_mb = round(pdf_size_mb, 1)
+    output_dir = version_dir / ("03_analysis/latest" if is_projects_v2_version_dir(version_dir) else "_output")
+    if is_projects_v2_version_dir(version_dir):
+        sources = resolve_version_source_files(version_dir, project_id, project_info=info)
+        pdf_files = [str(p.relative_to(version_dir)) for p in sources.pdf_paths]
+        has_pdf = bool(sources.pdf_paths)
+        pdf_size_mb = round(sum(p.stat().st_size for p in sources.pdf_paths if p.is_file()) / 1024 / 1024, 1)
+        md_path = sources.md_path
+        has_md = md_path is not None and md_path.exists() and md_path.stat().st_size > 0
+        md_file_name = str(md_path.relative_to(version_dir)) if has_md and md_path is not None else ""
+        md_size_kb = round(md_path.stat().st_size / 1024, 1) if has_md and md_path is not None else 0.0
+        has_ocr = bool(sources.result_json_paths)
+    else:
+        pdf_file = info.get("pdf_file") or ""
+        pdf_files = info.get("pdf_files") or ([pdf_file] if pdf_file else [])
+        # Пустая строка `pdf_file=""` (новая V2 без загрузок) → не пытаемся
+        # сверяться с `version_dir / ""`, потому что Path("dir") / "" == Path("dir"),
+        # и `dir.exists()` ошибочно даёт True.
+        has_pdf = bool(pdf_file) and (version_dir / pdf_file).exists()
+        pdf_size_mb = 0.0
+        for pf in pdf_files:
+            if not pf:
+                continue
+            pp = version_dir / pf
+            if pp.exists() and pp.is_file():
+                has_pdf = True
+                pdf_size_mb += pp.stat().st_size / 1024 / 1024
+        pdf_size_mb = round(pdf_size_mb, 1)
+
+        # MD-файл (структурированный текст из внешнего OCR)
+        md_file_name = info.get("md_file")
+        has_md = False
+        md_size_kb = 0.0
+        if md_file_name:
+            md_path = version_dir / md_file_name
+            if md_path.exists() and md_path.stat().st_size > 0:
+                has_md = True
+                md_size_kb = round(md_path.stat().st_size / 1024, 1)
+        has_ocr = bool(list(version_dir.glob("*_result.json")))
 
     text_path = output_dir / "extracted_text.txt"
     has_text = text_path.exists() and text_path.stat().st_size > 0
     text_size_kb = round(text_path.stat().st_size / 1024, 1) if has_text else 0.0
 
-    # MD-файл (структурированный текст из внешнего OCR)
-    md_file_name = info.get("md_file")
-    has_md = False
-    md_size_kb = 0.0
-    if md_file_name:
-        md_path = version_dir / md_file_name
-        if md_path.exists() and md_path.stat().st_size > 0:
-            has_md = True
-            md_size_kb = round(md_path.stat().st_size / 1024, 1)
     # Основной текстовый источник аудита: только Markdown PDF representation.
     # extracted_text.txt может отображаться как артефакт, но не используется
     # как fallback для Stage 01.
     text_source = "md" if has_md else "none"
-
-    # OCR result.json (от OCR-сервера) — в папке версии
-    has_ocr = bool(list(version_dir.glob("*_result.json")))
 
     # OCR-блоки (кропнутые image-блоки) — в папке версии
     block_count = 0
@@ -704,7 +1080,7 @@ def get_project_status(
         object=info.get("object"),
         has_pdf=has_pdf,
         pdf_size_mb=pdf_size_mb,
-        pdf_files=[pf for pf in pdf_files if (proj_dir / pf).exists()],
+        pdf_files=[pf for pf in pdf_files if (version_dir / pf).exists()],
         has_extracted_text=has_text,
         text_size_kb=text_size_kb,
         has_md_file=has_md,
@@ -756,6 +1132,10 @@ def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Op
     except version_service.VersionNotFoundError:
         return None
 
+    if is_projects_v2_version_dir(version_dir):
+        info = load_version_project_info(version_dir)
+        if info:
+            return info
     version_info = version_dir / "project_info.json"
     if version_info.exists():
         info = _load_json(version_info)
@@ -765,19 +1145,293 @@ def get_project_info(project_id: str, *, version_id: Optional[str] = None) -> Op
     return _load_json(proj_dir / "project_info.json")
 
 
-def save_project_info(project_id: str, data: dict) -> bool:
-    """Сохранить project_info.json."""
-    path = resolve_project_dir(project_id) / "project_info.json"
+def save_project_info(
+    project_id: str, data: dict, *, version_id: Optional[str] = None,
+) -> bool:
+    """Сохранить project_info.json.
+
+    При `version_id` (или активном bind_version) пишет в папку версии;
+    fallback — корневой info проекта (legacy V1).
+    """
+    root_dir = resolve_project_dir(project_id)
+    path = root_dir / "project_info.json"
+    target_vid = version_service.resolve_effective_version_id(
+        root_dir, project_id, version_id,
+    )
+    try:
+        version_dir = version_service.get_version_dir(root_dir, project_id, target_vid)
+        # Пишем в версию только если её папка реально существует (для legacy
+        # V1 version_dir == root_dir, поведение не меняется).
+        if version_dir.exists():
+            path = version_dir / "project_info.json"
+    except version_service.VersionNotFoundError:
+        pass
+    # Шаг 6A: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+    # (в проде НЕ включена). v2 первичен, legacy — fail-soft архив. В режимах
+    # legacy/dual_write_shadow выполняется прежний путь ниже (без изменений).
+    from backend.app.services.storage import storage_write_facade as _swf
+    if _swf.v2_is_primary():
+        from backend.app.services.storage.v2_primary_wiring import (
+            save_project_info_v2_primary as _save_v2_primary,
+        )
+        return _save_v2_primary(
+            project_id, data, version_id=target_vid,
+            legacy_root=root_dir, legacy_path=path,
+        )
+
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
     except Exception:
         return False
 
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после успешной
+    # legacy-записи project_info.json (no-op в legacy, fail-soft). try/except —
+    # чтобы путь `return True` оставался байт-идентичным прежнему поведению.
+    try:
+        _swf.shadow_mirror_project_path_safe(root_dir)
+    except Exception:
+        pass
+
+    return True
+
+
+def _write_v2_doc_section(doc_dir: Path, section: str) -> None:
+    """Записать поле ``section`` в project_info всех версий v2-документа (in-place).
+
+    Не создаёт ничего нового — только обновляет уже существующие
+    ``versions/*/version.json`` (ключ ``project_info``) и
+    ``versions/*/01_input/project_info.json``.
+    """
+    for vj in doc_dir.glob("versions/*/version.json"):
+        try:
+            d = json.loads(vj.read_text(encoding="utf-8"))
+            pi = d.get("project_info")
+            if isinstance(pi, dict):
+                pi["section"] = section
+                vj.write_text(
+                    json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8"
+                )
+        except Exception:
+            pass
+    for pij in doc_dir.glob("versions/*/01_input/project_info.json"):
+        try:
+            d = json.loads(pij.read_text(encoding="utf-8"))
+            d["section"] = section
+            pij.write_text(
+                json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8"
+            )
+        except Exception:
+            pass
+
+
+
+
+def _load_v2_document_json(doc_dir: Path) -> dict:
+    try:
+        data = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _dump_v2_json(path: Path, data: dict) -> None:
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def _legacy_unit_from_project_path(project_path: Path) -> tuple[Path, Path]:
+    path = Path(project_path)
+    if path.is_file():
+        path = path.parent
+    if path.parent.name.endswith(version_service.CONTAINER_SUFFIX):
+        return path.parent, path
+    return path, path
+
+
+def _replace_path_prefix(value, old_base: Path, new_base: Path):
+    if not isinstance(value, str) or not value:
+        return value
+    try:
+        rel = Path(value).relative_to(old_base)
+    except ValueError:
+        return value
+    return str(new_base / rel)
+
+
+def _resolve_v2_legacy_project_path(project_id: str, doc_dir: Path) -> Path | None:
+    dj = _load_v2_document_json(doc_dir)
+    raw = str(dj.get("legacy_project_path") or "").strip()
+    if raw:
+        path = Path(raw)
+        if path.exists():
+            return path
+    try:
+        return resolve_project_dir(project_id, must_exist=True)
+    except ProjectNotResolvedError:
+        return None
+    except Exception as exc:
+        logger.warning(
+            "[projects_v2] legacy path resolve failed for %s: %s",
+            project_id,
+            exc,
+        )
+        return None
+
+
+def _plan_legacy_discipline_move(project_id: str, doc_dir: Path, target: str) -> dict | None:
+    legacy_project_path = _resolve_v2_legacy_project_path(project_id, doc_dir)
+    if legacy_project_path is None or not legacy_project_path.exists():
+        return None
+    source_unit, old_project_path = _legacy_unit_from_project_path(legacy_project_path)
+    if not source_unit.exists():
+        return None
+    source_disc_dir = source_unit.parent
+    target_disc_dir = source_disc_dir.parent / target
+    target_unit = target_disc_dir / source_unit.name
+    try:
+        rel = old_project_path.relative_to(source_unit)
+    except ValueError:
+        rel = Path()
+    new_project_path = target_unit / rel
+    return {
+        "source_unit": source_unit,
+        "source_disc": source_disc_dir.name,
+        "target_disc_dir": target_disc_dir,
+        "target_unit": target_unit,
+        "old_project_path": old_project_path,
+        "new_project_path": new_project_path,
+        "needs_move": source_disc_dir.name != target,
+    }
+
+
+def _ensure_legacy_move_has_no_conflict(plan: dict | None, target: str) -> None:
+    if not plan or not plan.get("needs_move"):
+        return
+    target_unit = Path(plan["target_unit"])
+    if target_unit.exists():
+        raise ValueError(
+            f"В legacy-разделе '{target}' уже есть проект '{target_unit.name}'"
+        )
+
+
+def _update_document_json_legacy_paths(doc_dir: Path, plan: dict) -> None:
+    dj_path = doc_dir / "document.json"
+    dj = _load_v2_document_json(doc_dir)
+    if not dj:
+        return
+    old_unit = Path(plan["source_unit"])
+    new_unit = Path(plan["target_unit"])
+    dj["legacy_project_path"] = str(plan["new_project_path"])
+    for key in ("legacy_folder_path", "legacy_path"):
+        if key in dj:
+            dj[key] = _replace_path_prefix(dj[key], old_unit, new_unit)
+    versions = dj.get("versions")
+    if isinstance(versions, list):
+        for version in versions:
+            if not isinstance(version, dict):
+                continue
+            for key in ("legacy_project_path", "legacy_folder_path", "legacy_path"):
+                if key in version:
+                    version[key] = _replace_path_prefix(version[key], old_unit, new_unit)
+    _dump_v2_json(dj_path, dj)
+
+    for vj_path in doc_dir.glob("versions/*/version.json"):
+        try:
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(vj, dict):
+            continue
+        changed = False
+        for key in ("legacy_project_path", "legacy_folder_path", "legacy_path"):
+            if key in vj:
+                updated = _replace_path_prefix(vj[key], old_unit, new_unit)
+                if updated != vj[key]:
+                    vj[key] = updated
+                    changed = True
+        if changed:
+            _dump_v2_json(vj_path, vj)
+
+
+def _write_v2_doc_discipline(doc_dir: Path, target: str) -> None:
+    dj_path = doc_dir / "document.json"
+    try:
+        dj = _load_v2_document_json(doc_dir)
+        if dj:
+            dj["discipline"] = target
+            _dump_v2_json(dj_path, dj)
+    except Exception:
+        pass
+
+
+def _apply_legacy_discipline_move(project_id: str, doc_dir: Path, plan: dict | None) -> None:
+    if not plan:
+        return
+    if not plan.get("needs_move"):
+        _update_document_json_legacy_paths(doc_dir, plan)
+        return
+    try:
+        target_disc_dir = Path(plan["target_disc_dir"])
+        target_unit = Path(plan["target_unit"])
+        target_disc_dir.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(plan["source_unit"]), str(target_unit))
+        _update_document_json_legacy_paths(doc_dir, plan)
+        invalidate_project_cache()
+    except Exception as exc:
+        logger.warning(
+            "[projects_v2] legacy folder move failed for %s: %s",
+            project_id,
+            exc,
+        )
+
+def _move_v2_document_discipline(project_id: str, section: str) -> bool:
+    # v2 discipline is the folder name. Move the v2 document first, then move
+    # the matching legacy unit so future re-migration cannot recreate old-disc duplicates.
+    target = (section or "").strip()
+    if not target:
+        return False
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        return False
+    doc = adapter.find_document_by_project_id(project_id)
+    if not doc:
+        return False
+    doc_dir = Path(doc["doc_dir"])
+    legacy_plan = _plan_legacy_discipline_move(project_id, doc_dir, target)
+    _ensure_legacy_move_has_no_conflict(legacy_plan, target)
+
+    current_disc = doc_dir.parent.parent.name
+    if current_disc != target:
+        object_dir = doc_dir.parents[3]
+        target_docs = object_dir / "disciplines" / target / "documents"
+        target_dir = target_docs / doc_dir.name
+        if target_dir.exists():
+            raise ValueError(
+                f"В разделе '{target}' уже есть проект '{doc_dir.name}'"
+            )
+        target_docs.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(doc_dir), str(target_dir))
+        doc_dir = target_dir
+
+    _write_v2_doc_discipline(doc_dir, target)
+    _write_v2_doc_section(doc_dir, target)
+    _apply_legacy_discipline_move(project_id, doc_dir, legacy_plan)
+    return True
+
 
 def set_project_section(project_id: str, section: str) -> dict:
-    """Сменить дисциплину проекта (только метаданные, без перемещения файлов).
+    """Сменить дисциплину проекта.
+
+    Legacy: пишет поле ``section`` в project_info.json (дисциплина определяется
+    этим полем). Под v2-primary ФИЗИЧЕСКИ переносит документ в папку
+    ``disciplines/<section>/`` (read_canary группирует по папке) и пишет section
+    прямо в project_info перенесённого документа.
+
+    ВАЖНО: под v2-primary при успешном переносе НЕ вызываем legacy
+    ``save_project_info`` — его v2-target резолвится из legacy-папки (которая
+    осталась в старой дисциплине) и заскаффолдил бы ПУСТОЙ документ-дубль в
+    старом разделе (баг 2026-06-23, проект ОВ1.1-ПА).
 
     Для незарегистрированных проектов (папка с PDF, без project_info.json)
     создаёт минимальный project_info.json с указанным разделом.
@@ -798,8 +1452,24 @@ def set_project_section(project_id: str, section: str) -> dict:
         }
     else:
         info["section"] = section
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _v2_primary = _swf.v2_is_primary()
+    except Exception:
+        _v2_primary = False
+    if _v2_primary:
+        # Перенос сам обновляет document.json + project_info.section. Конфликт/
+        # ошибка → ValueError (section не записан, без рассинхрона).
+        if _move_v2_document_discipline(project_id, section):
+            invalidate_project_cache()
+            return info
+        # v2-документ не найден (legacy-only) → обычная legacy-запись ниже.
+        invalidate_project_cache()
     if not save_project_info(project_id, info):
         raise ValueError(f"Не удалось сохранить project_info.json для '{project_id}'")
+    # #78: создание project_info.json для голой папки может поменять классификацию
+    # проекта в iter_project_dirs — сбрасываем кеш.
+    invalidate_project_cache()
     return info
 
 
@@ -1712,10 +2382,103 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
 
+    # #78: новый project_info.json мог перевести голую папку в статус проекта —
+    # сбрасываем кеш списка проектов.
+    invalidate_project_cache()
     return info
 
 
-def clean_project_data(project_id: str) -> dict:
+def _clean_project_data_v2_primary(
+    project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False,
+) -> dict:
+    """projects_v2-primary clean with mandatory backup + confirmation."""
+    if not _confirmed:
+        raise ValueError("Для очистки projects_v2 требуется явное подтверждение _confirmed=True")
+
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_version_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    facade = StorageWriteFacade()
+    v2_root = facade.v2_root()
+    if v2_root is None:
+        raise ValueError("projects_v2 root не настроен")
+
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise ValueError(f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, version_id)
+    if not target_vid:
+        raise ValueError(f"Версия '{version_id}' проекта '{project_id}' не найдена в projects_v2")
+
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    version_dir = target.version_dir(v2_root)
+    if not version_dir.is_dir():
+        raise ValueError(f"Версия '{target_vid}' проекта '{project_id}' не найдена в projects_v2")
+
+    backup_id = backup_version_before_destructive(target, v2_root, "clean_project_data")
+    record_destructive_confirmation(
+        target, v2_root, op="clean_project_data", backup_id=backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary(
+        "clean_project_data", confirmed=True, backup_id=backup_id,
+    )
+
+    result = {
+        "deleted_files": 0,
+        "deleted_dirs": 0,
+        "freed_mb": 0.0,
+        "version_id": target.vid_disk(),
+        "backup_id": backup_id,
+    }
+    total_size = 0
+
+    analysis_dir = version_dir / "03_analysis"
+    if analysis_dir.exists():
+        for f in analysis_dir.rglob("*"):
+            if f.is_file():
+                total_size += f.stat().st_size
+                result["deleted_files"] += 1
+            elif f.is_dir():
+                result["deleted_dirs"] += 1
+        shutil.rmtree(analysis_dir)
+    (analysis_dir / "latest").mkdir(parents=True, exist_ok=True)
+
+    vj_path = version_dir / "version.json"
+    if vj_path.exists():
+        try:
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+        except Exception:
+            vj = None
+        if isinstance(vj, dict):
+            info = vj.get("project_info")
+            if isinstance(info, dict):
+                for field in [
+                    "tile_config_source", "text_source",
+                    "md_page_classification", "text_extraction_quality",
+                    "tile_quality",
+                ]:
+                    info.pop(field, None)
+                info["tile_config"] = {}
+                vj["project_info"] = info
+                vj_path.write_text(json.dumps(vj, ensure_ascii=False, indent=2), encoding="utf-8")
+                result["project_info_reset"] = True
+
+    result["freed_mb"] = round(total_size / 1024 / 1024, 1)
+    return result
+
+
+def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False) -> dict:
     """Очистить все результаты аудита, сохранив только исходные документы.
 
     Сохраняет (исходные файлы пользователя):
@@ -1730,12 +2493,39 @@ def clean_project_data(project_id: str) -> dict:
     - Папку _output/ целиком
     - client.log, extracted_text.txt и другие генерируемые файлы
 
+    Очищаются данные ТОЛЬКО указанной версии (`version_id`; при None —
+    активной/latest). Папка `_output/` лежит внутри папки версии, поэтому
+    другие версии проекта не затрагиваются.
+
     Returns:
         dict с описанием удалённого
     """
-    proj_dir = resolve_project_dir(project_id)
-    if not proj_dir.exists():
+    from backend.app.services.storage.storage_write_facade import v2_is_primary
+    if v2_is_primary():
+        return _clean_project_data_v2_primary(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
+
+    # Legacy/dual_write_shadow branch: прежняя очистка `_output/` без v2-деструктива.
+    from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
+    guard_destructive_v2_primary("clean_project_data")
+    root_dir = resolve_project_dir(project_id)
+    if not root_dir.exists():
         raise ValueError(f"Проект '{project_id}' не найден")
+
+    # Папка конкретной версии (V1 → корень проекта; старшие → братская папка
+    # версии в контейнере). Так очистка не задевает соседние версии.
+    target_vid = version_service.resolve_effective_version_id(
+        root_dir, project_id, version_id,
+    )
+    try:
+        proj_dir = version_service.get_version_dir(root_dir, project_id, target_vid)
+    except version_service.VersionNotFoundError:
+        proj_dir = root_dir
+    if not proj_dir.exists():
+        raise ValueError(
+            f"Версия '{target_vid}' проекта '{project_id}' не найдена"
+        )
 
     result = {"deleted_files": 0, "deleted_dirs": 0, "freed_mb": 0.0}
     total_size = 0
@@ -1777,8 +2567,8 @@ def clean_project_data(project_id: str) -> dict:
 
     result["freed_mb"] = round(total_size / 1024 / 1024, 1)
 
-    # 3. Сбрасываем авто-поля в project_info.json
-    info = get_project_info(project_id)
+    # 3. Сбрасываем авто-поля в project_info.json (той же версии)
+    info = get_project_info(project_id, version_id=target_vid)
     if info:
         auto_fields = [
             "tile_config_source", "text_source",
@@ -1788,8 +2578,9 @@ def clean_project_data(project_id: str) -> dict:
         for field in auto_fields:
             info.pop(field, None)
         info["tile_config"] = {}
-        save_project_info(project_id, info)
+        save_project_info(project_id, info, version_id=target_vid)
         result["project_info_reset"] = True
+    result["version_id"] = target_vid
 
     # 4. Пересоздаём пустую _output/
     output_dir.mkdir(exist_ok=True)
@@ -1866,10 +2657,20 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
     if not info:
         return None
     md_file_name = info.get("md_file")
-    if not md_file_name:
-        return None
-
-    md_path = version_dir / md_file_name
+    try:
+        sources = resolve_version_source_files(version_dir, project_id, project_info=info)
+        md_path = sources.md_path
+        if md_path is not None:
+            try:
+                md_file_name = str(md_path.relative_to(version_dir))
+            except ValueError:
+                md_file_name = md_path.name
+    except Exception:
+        md_path = None
+    if md_path is None:
+        if not md_file_name:
+            return None
+        md_path = version_dir / md_file_name
     if not md_path.exists():
         return None
 

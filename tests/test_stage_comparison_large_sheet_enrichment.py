@@ -807,6 +807,72 @@ def test_live_runner_fail_soft_on_bad_tile(tmp_path, monkeypatch):
     assert diag["tiles_failed"] >= 1
 
 
+def test_live_runner_all_tiles_failed_is_large_sheet_failed(tmp_path, monkeypatch):
+    """#49: model-прогон, где ВСЕ tiles упали → status=large_sheet_failed +
+    requires_human_review, а не молчаливый «успех»."""
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+
+    async def all_bad(image_path, prompt, *, model=None):
+        return {"status": "invalid_json", "parsed": None,
+                "full_raw_response": "garbage", "error": "json_parse_failed"}
+
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=all_bad, model="m"))
+    assert res["status"] == "large_sheet_failed"
+    assert res["large_sheet_failed"] is True
+    assert res["requires_human_review"] is True
+    assert res["tiles_processed"] == 0
+    assert any(str(w).startswith("large_sheet_failed") for w in res["warnings"])
+    diag = json.loads(Path(res["diagnostics_path"]).read_text(encoding="utf-8"))
+    assert diag["large_sheet_failed"] is True
+    assert diag["large_sheet_failed_reason"] == "no_tiles_or_all_failed"
+    pe = json.loads(Path(res["page_enriched_json_path"]).read_text(encoding="utf-8"))
+    assert pe["status"] == "large_sheet_failed"
+    assert pe["requires_human_review"] is True
+
+
+def test_live_runner_empty_extraction_is_large_sheet_failed(tmp_path, monkeypatch):
+    """#49: tiles отработали, но извлекли НИЧЕГО (0 цепей/оборуд/связей) →
+    large_sheet_failed (empty_extraction), не выдаём пустышку за готовое."""
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+
+    async def empty_ok(image_path, prompt, *, model=None):
+        return {"status": "done",
+                "parsed": {"circuits": [], "equipment": [], "visible_text": [], "notes": []},
+                "full_raw_response": "{}", "duration_sec": 0.01}
+
+    res = asyncio.run(ls.run_large_sheet_enrichment_live(
+        "s1", "p1", "left", 1, describe_fn=empty_ok, model="m"))
+    assert res["status"] == "large_sheet_failed"
+    assert res["requires_human_review"] is True
+    assert res["tiles_processed"] >= 1
+    assert res["circuits_detected"] == 0
+    diag = json.loads(Path(res["diagnostics_path"]).read_text(encoding="utf-8"))
+    assert diag["large_sheet_failed_reason"] == "empty_extraction"
+
+
+def test_job_marks_large_sheet_failed_page_not_done(tmp_path, monkeypatch):
+    """#49: job НЕ помечает пустую/провалившуюся страницу как done."""
+    pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
+    _bind_fake_pair(monkeypatch, pdf)
+
+    async def all_bad(image_path, prompt, *, model=None):
+        return {"status": "invalid_json", "parsed": None,
+                "full_raw_response": "garbage", "error": "json_parse_failed"}
+
+    monkeypatch.setattr(ls_jobs, "_build_describe_fn", lambda cfg, model: all_bad)
+    job = ls_jobs.create_job("s1", scope="page", pair_id="p1", side="left",
+                             page=1, confirm=True)
+    done = asyncio.run(ls_jobs.run_job("s1", job["id"]))
+    item = done["items"][0]
+    assert item["status"] == "failed"
+    assert item.get("requires_human_review") is True
+    assert done["progress"]["done"] == 0
+    assert done["status"] == "failed"
+
+
 def test_live_runner_on_tile_progress_per_tile(tmp_path, monkeypatch):
     pdf = _make_large_sheet_pdf(tmp_path / "big.pdf")
     _bind_fake_pair(monkeypatch, pdf)

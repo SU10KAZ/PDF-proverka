@@ -1,5 +1,5 @@
 """Pydantic-модели для аудита."""
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from enum import Enum
 from datetime import datetime
@@ -143,6 +143,10 @@ class BatchQueueStatus(BaseModel):
 
 class PrepareQueueItem(BaseModel):
     """Элемент очереди подготовки данных (crop + Gemma enrichment)."""
+    # version_id/object_id для v2-primary хранятся как extra-поля: legacy item без
+    # версии сериализуется в прежнюю форму, а v2/resume сохраняет явную привязку.
+    model_config = ConfigDict(extra="allow")
+
     project_id: str
     status: str = "pending"  # pending / running / completed / failed / skipped
     blocks_total: Optional[int] = None

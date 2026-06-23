@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import logging
 import os
 import re
 import tempfile
@@ -45,6 +46,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     crop_index_matches_policy,
     load_json,
     gemma_blocks_index_path,
+    gemma_output_root,
     stage02_blocks_dir,
     stage02_blocks_index_path,
     stage02_crop_policy,
@@ -52,6 +54,10 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 
 from backend.app.core.config import PROMPTS_DIR as _PROMPTS_DIR
+from backend.app.services.storage.projects_v2_source_resolver import (
+    load_version_project_info,
+    resolve_version_source_files,
+)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "openai/gpt-5.4"
@@ -255,7 +261,7 @@ def parse_enrichment_from_md(md_text: str, block_id: str) -> Optional[dict]:
 
 
 def load_gemma_summary(project_dir: Path) -> dict[str, Any]:
-    return load_json(project_dir / "_output" / "gemma_enrichment_summary.json")
+    return load_json(gemma_output_root(project_dir) / "gemma_enrichment_summary.json")
 
 
 def gemma_summary_block_map(summary: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -297,6 +303,14 @@ def gemma_summary_coverage_metrics(summary: dict[str, Any]) -> dict[str, Any]:
 
 
 def _resolve_md_path(project_dir: Path, project_info: dict) -> Optional[Path]:
+    try:
+        document_code = project_info.get("document_code") or project_info.get("project_id") or project_dir.name
+        sources = resolve_version_source_files(project_dir, document_code, project_info=project_info)
+        if sources.md_path is not None:
+            return sources.md_path
+    except Exception:
+        pass
+
     md_name = project_info.get("md_file")
     if md_name:
         cand = project_dir / md_name
@@ -549,6 +563,7 @@ async def call_gpt_for_block(
     choice = (data.get("choices") or [{}])[0]
     msg = choice.get("message") or {}
     raw = msg.get("content") or ""
+    finish_reason = choice.get("finish_reason")
     usage = data.get("usage") or {}
     completion_details = usage.get("completion_tokens_details") or {}
 
@@ -559,9 +574,19 @@ async def call_gpt_for_block(
         parsed = None
         parse_err = str(e)
 
+    # Усечённый ответ (finish_reason=length) нельзя считать успехом, даже если
+    # обрезанный JSON случайно распарсился — часть findings потеряна. Помечаем
+    # truncated и НЕ ставим ok, чтобы блок попал в failed/coverage, а не молча
+    # принялся за валидный (reserc.md #25/#14).
+    truncated = finish_reason == "length"
+    if truncated and parse_err is None and parsed is not None:
+        parse_err = "truncated_output (finish_reason=length)"
+
     response_dict = {
-        "ok": parsed is not None,
+        "ok": parsed is not None and not truncated,
         "parse_error": parse_err,
+        "finish_reason": finish_reason,
+        "truncated": truncated,
         "elapsed_ms": elapsed_ms,
         "input_tokens": usage.get("prompt_tokens"),
         "output_tokens": usage.get("completion_tokens"),
@@ -850,13 +875,12 @@ async def run_findings_only_for_project(
 
     cancel_event — webapp может set() для прерывания между блоками.
     """
-    output_dir = project_dir / "_output"
+    output_dir = gemma_output_root(project_dir)
     blocks_dir = stage02_blocks_dir(project_dir)
     index_path = stage02_blocks_index_path(project_dir)
     gemma_index_path = gemma_blocks_index_path(project_dir)
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
     graph_path = output_dir / "document_graph.json"
-    info_path = project_dir / "project_info.json"
     target_path = output_dir / "02_blocks_analysis.json"
 
     if not index_path.exists():
@@ -868,7 +892,7 @@ async def run_findings_only_for_project(
     if not gemma_summary_path.exists():
         raise FindingsOnlyError("no _output/gemma_enrichment_summary.json — сначала выполните gemma_enrichment")
 
-    project_info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
+    project_info = load_version_project_info(project_dir)
     section = (project_info.get("section") or "_generic").strip() or "_generic"
     index = json.loads(index_path.read_text(encoding="utf-8"))
     graph = json.loads(graph_path.read_text(encoding="utf-8"))
@@ -1365,7 +1389,7 @@ def check_prerequisites(project_dir: Path) -> dict:
 
     Возвращает dict {"ok": bool, "reasons": [...], "blocks_total": N, "with_enrichment": M}.
     """
-    output_dir = project_dir / "_output"
+    output_dir = gemma_output_root(project_dir)
     index_path = stage02_blocks_index_path(project_dir)
     gemma_index_path = gemma_blocks_index_path(project_dir)
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
@@ -1392,8 +1416,7 @@ def check_prerequisites(project_dir: Path) -> dict:
             "uncovered_blocks": [],
         }
 
-    info_path = project_dir / "project_info.json"
-    project_info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
+    project_info = load_version_project_info(project_dir)
     md_path = _resolve_md_path(project_dir, project_info)
     if md_path is None:
         return {

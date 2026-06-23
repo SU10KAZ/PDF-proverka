@@ -15,8 +15,37 @@ from backend.app.services.common.project_service import resolve_project_dir
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
 
 
+
+def _normalize_version_query(version_id: Optional[str]) -> Optional[str]:
+    return version_id if isinstance(version_id, str) and version_id else None
+
+def _production_uses_v2() -> bool:
+    try:
+        from backend.app.services.storage.storage_read_facade import production_uses_v2
+        return production_uses_v2()
+    except Exception:
+        return False
+
+
+def _read_v2_optimization(project_id: str, version_id: Optional[str] = None):
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    version_id = _normalize_version_query(version_id)
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        raise FileNotFoundError(f"projects_v2 root not available: {adapter.objects_root}")
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        return None, version_id
+    vid = adapter.resolve_version_id(doc, version_id)
+    if not vid:
+        return None, version_id
+    data = adapter.read_analysis_artifact(Path(doc["doc_dir"]), vid, "optimization.json")
+    return data, vid
+
 def _resolve_version_output(project_id: str, version_id: Optional[str]) -> Path:
     """Резолв `_output` нужной версии + 404 на невалидный version_id."""
+    version_id = _normalize_version_query(version_id)
     try:
         return version_service.resolve_version_output_dir(project_id, version_id)
     except version_service.VersionNotFoundError as e:
@@ -68,6 +97,7 @@ async def get_optimization_status(
     version_id: Optional[str] = Query(None),
 ):
     """Статус оптимизации проекта."""
+    version_id = _normalize_version_query(version_id)
     status = project_service.get_project_status(project_id, version_id=version_id)
     if not status:
         raise HTTPException(404, f"Проект '{project_id}' не найден")
@@ -78,6 +108,19 @@ async def get_optimization_status(
         and job.stage.value == "optimization"
         and job.status.value == "running"
     )
+
+    if _production_uses_v2():
+        try:
+            data, resolved_vid = _read_v2_optimization(project_id, version_id)
+            return {
+                "project_id": project_id,
+                "version_id": resolved_vid or status.version_id,
+                "pipeline_status": status.pipeline.optimization,
+                "is_running": is_running,
+                "has_results": bool(data),
+            }
+        except Exception as exc:
+            print(f"[projects_v2 read] optimization status fallback to legacy: {exc}")
 
     output_dir = _resolve_version_output(project_id, version_id)
     opt_path = output_dir / "optimization.json"
@@ -98,6 +141,16 @@ async def get_optimization(
     version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
 ):
     """Получить результаты оптимизации (optimization.json) для указанной версии."""
+    version_id = _normalize_version_query(version_id)
+    if _production_uses_v2():
+        try:
+            data, resolved_vid = _read_v2_optimization(project_id, version_id)
+            if data is None:
+                return {"project_id": project_id, "version_id": resolved_vid, "has_data": False, "data": None}
+            return {"project_id": project_id, "version_id": resolved_vid, "has_data": True, "data": data}
+        except Exception as exc:
+            print(f"[projects_v2 read] optimization payload fallback to legacy: {exc}")
+
     output_dir = _resolve_version_output(project_id, version_id)
     opt_path = output_dir / "optimization.json"
     if not opt_path.exists():

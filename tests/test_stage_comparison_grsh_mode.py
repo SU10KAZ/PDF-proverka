@@ -16,6 +16,16 @@ from backend.app.services.stage_comparison import md_image_enrichment as m
 from backend.app.services.stage_comparison import problem_block_retry as pbr
 
 
+@pytest.fixture(autouse=True)
+def _default_domain_fields_off(monkeypatch):
+    """Hermetic default: GRSH baseline tests assert the v7 (no domain_fields)
+    prompt unless a test explicitly opts in. Without this, an operator `.env`
+    with STAGE_COMPARISON_DOMAIN_FIELDS_ENABLED=true (loaded at import) would flip
+    the GRSH prompt to v8 and fail the baseline assertions. The explicit
+    `test_grsh_domain_fields_on_*` test re-sets it to true and overrides this."""
+    monkeypatch.delenv("STAGE_COMPARISON_DOMAIN_FIELDS_ENABLED", raising=False)
+
+
 # ─── Inline fixtures (CI-safe, не зависят от runtime experiments/) ─────────
 
 # Реалистичный Chandra-OCR текст плотной однолинейной схемы ГРЩ.

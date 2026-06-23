@@ -323,6 +323,42 @@ def visual_block_equivalence_debug_dir(session_id: str, pair_id: str) -> Path:
     return p
 
 
+# ─── Text block equivalence precheck (Stage POS-1, links-based, mark-only) ──
+
+
+def text_block_equivalence_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `text_block_equivalence/` для пары — артефакты links-based
+    сравнения СВЯЗАННЫХ текстовых блоков (mark-only). Независим от
+    `visual_block_equivalence/` и `text_enrichment/`. Ничего в Qwen/MD/Opus не
+    меняет."""
+    p = pair_dir(session_id, pair_id) / "text_block_equivalence"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def text_block_equivalence_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../text_block_equivalence/text_block_equivalence.json`."""
+    return text_block_equivalence_dir(session_id, pair_id) / "text_block_equivalence.json"
+
+
+# ─── Block exclusion preview (Gate-1, aggregates visual+text, mark-only) ────
+
+
+def block_exclusion_preview_dir(session_id: str, pair_id: str) -> Path:
+    """Корень `block_exclusion_preview/` для пары — единый mark-only preview,
+    агрегирующий `visual_block_equivalence` + `text_block_equivalence` в ответ
+    «какие блоки были бы исключены, если бы включили enforce». Ничего реально не
+    исключает, Qwen/MD/Opus/enriched.md/links/page_alignment не трогает."""
+    p = pair_dir(session_id, pair_id) / "block_exclusion_preview"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def block_exclusion_preview_report_path(session_id: str, pair_id: str) -> Path:
+    """`.../block_exclusion_preview/block_exclusion_preview.json`."""
+    return block_exclusion_preview_dir(session_id, pair_id) / "block_exclusion_preview.json"
+
+
 # ─── Enriched comparison (Opus over enriched MD) ─────────────────────────
 
 

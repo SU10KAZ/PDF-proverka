@@ -373,18 +373,55 @@ def test_v2_does_not_invoke_llm_providers(session_with_two_pairs, monkeypatch):
 _ROOT = Path(__file__).resolve().parent.parent
 
 
-def test_ui_has_v2_button():
-    """index.html должен содержать переключатель V2 во вкладке «Расхождения»."""
+def test_derive_quality_label_disputed_is_questionable():
+    """r5: disputed=True → questionable (когда не requires_human_review)."""
+    from backend.app.services.stage_comparison import v2_review as v2r
+    assert v2r.derive_quality_label(
+        {"disputed": True, "requires_human_review": False, "confidence": 0.9}
+    ) == "questionable"
+    # requires_human_review имеет приоритет
+    assert v2r.derive_quality_label(
+        {"disputed": True, "requires_human_review": True}
+    ) == "needs_human_review"
+    # без disputed и прочих сигналов — good
+    assert v2r.derive_quality_label(
+        {"disputed": False, "requires_human_review": False, "confidence": 0.9}
+    ) == "good"
+
+
+def test_ui_no_separate_v2_toggle():
+    """Раздельного переключателя [Расхождения][V2] в UI быть не должно —
+    V2 теперь единый основной режим. Старые always-visible кнопки убраны."""
     html = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
-    assert "scSetV2View" in html
+    # Двух отдельных кнопок-переключателей больше нет.
+    assert "scSetV2View('v2')" not in html
+    assert "scSetV2View('current')" not in html
+    # Состояние режима осталось (используется только dev-переключателем).
     assert "scV2View" in html
 
 
+def test_ui_v2_is_default_mode():
+    """V2 — режим по умолчанию во вкладке «Расхождения»."""
+    app_js = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    norm = " ".join(app_js.split())
+    assert "const scV2View = ref('v2')" in norm
+
+
 def test_ui_old_discrepancies_tab_intact():
-    """Старый unified-режим вкладки «Расхождения» не должен быть удалён."""
+    """Старый unified-режим вкладки «Расхождения» оставлен для отладки (не удалён)."""
     html = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
     assert "scUnifiedItemsSorted" in html        # старая таблица расхождений
     assert "scDiffSubtab==='unified'" in html
+
+
+def test_old_unified_diff_flat_endpoints_present():
+    """Старые unified-diff-flat endpoints не удалены (read-only/debug), а V2
+    endpoint существует и используется как основной источник."""
+    from backend.app.api.routers import stage_comparison as router_mod
+    paths = {getattr(r, "path", "") for r in router_mod.router.routes}
+    assert any("/unified-diff-flat" in p for p in paths)
+    assert any(p.endswith("/v2/changes") for p in paths)
+    assert any(p.endswith("/v2/export.xlsx") for p in paths)
 
 
 def test_ui_app_js_exposes_v2_methods():
@@ -393,9 +430,9 @@ def test_ui_app_js_exposes_v2_methods():
     assert "scV2View" in app_js
 
 
-# ── V2 router/export glue: include_excluded + V2 XLSX export ─────────────
-# (Stage 7) backend-only tests lifted from the WIP snapshot — UI/expert-
-# fallback tests intentionally excluded.
+# ═══════════════════════════════════════════════════════════════════════════
+#  Impact classification: исключение admin / documentation / cosmetic из V2
+# ═══════════════════════════════════════════════════════════════════════════
 
 
 @pytest.fixture
@@ -596,6 +633,33 @@ def test_v2_export_include_excluded_sheet(session_mixed_impact):
     }
 
 
+# 12. V2-ведомость содержит тогл «Показать формальные» (admin/оформление):
+#     по умолчанию показываются только инженерно значимые изменения, по кнопке
+#     подмешиваются формальные. (Старое имя scV2ShowExcluded не используется.)
+def test_ui_has_show_formal_toggle():
+    html = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    assert "scV2ShowFormal" in html
+    assert "scV2ShowExcluded" not in html
+    app_js = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    assert "scV2ShowFormal" in app_js
+    assert "scV2ToggleShowFormal" in app_js
+    assert "scV2ShowExcluded" not in app_js
+
+
+# 12b. Колонка «№» показывает только источник сравнения (текст/изображение)
+#      и денежный эффект (удорожание/удешевление/нейтрально).
+def test_ui_no_column_shows_source_and_cost_direction():
+    html = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
+    assert "scCostDirectionLabel(it.cost_direction)" in html
+    assert "scUnifiedSourceLabel(it.source_layer)" in html
+    # старые бейджи убраны из ячейки «№» V2-ведомости (номер/severity/impact)
+    assert "№{{ idx + 1 }}" not in html
+    assert "scV2ImpactBadgeStyle(it.impact_class)" not in html
+    app_js = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    assert "scCostDirectionLabel" in app_js
+    assert "scCostDirectionStyle" in app_js
+
+
 # 13. No Qwen/Opus при фильтрации.
 def test_v2_impact_filter_no_llm(session_mixed_impact, monkeypatch):
     s = session_mixed_impact
@@ -611,3 +675,92 @@ def test_v2_impact_filter_no_llm(session_mixed_impact, monkeypatch):
     assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").status_code == 200
     assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").status_code == 200
     assert client.get(f"{_v2_base(s['sid'], s['pid'])}/export.xlsx?include_excluded=true").status_code == 200
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Canonical review storage + legacy expert_review.json fallback (ТЗ Задача 2)
+#  Приоритет: v2_review_status.json → expert_review.json → not_reviewed.
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+def _write_expert_review(session_id: str, key: str, decision: str, reason: str = ""):
+    """Записать legacy-решение эксперта `<pair_id>::<raw_id>` в expert_review.json."""
+    paths_mod = _paths()
+    p = paths_mod.expert_review_path(session_id)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    existing = {}
+    if p.exists():
+        existing = json.loads(p.read_text(encoding="utf-8"))
+    decisions = existing.get("decisions") or {}
+    decisions[key] = {"decision": decision, "rejection_reason": reason,
+                      "reviewer": "tester", "timestamp": "2026-06-04T00:00:00Z"}
+    existing.update({"version": 2, "decisions": decisions, "updated_at": "2026-06-04T00:00:00Z"})
+    p.write_text(json.dumps(existing, ensure_ascii=False), encoding="utf-8")
+
+
+def test_v2_falls_back_to_expert_review_by_v2_id(session_with_two_pairs):
+    """Решение эксперта по v2_id (V2-native) → review_status в V2-строке."""
+    s = session_with_two_pairs
+    client = _client()
+    items = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()["items"]
+    target = items[0]
+    _write_expert_review(s["sid"], f"{s['p1']}::{target['id']}", "accepted", "ок инженер")
+    again = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()
+    row = next(it for it in again["items"] if it["id"] == target["id"])
+    assert row["review_status"] == "confirmed"
+    assert row["review_source"] == "expert_review"
+    assert row["review_comment"] == "ок инженер"
+    assert again["summary"]["confirmed"] == 1
+
+
+def test_v2_falls_back_to_expert_review_by_classic_raw_id(session_with_two_pairs):
+    """Старое решение из «Расхождений» по классическому chg_-id видно в V2."""
+    s = session_with_two_pairs
+    client = _client()
+    items = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()["items"]
+    target = next(it for it in items if it["raw_id"] == "chg_p1_a")
+    # Эксперт размечал в классических «Расхождениях» — ключ по raw_id (chg_…).
+    _write_expert_review(s["sid"], f"{s['p1']}::chg_p1_a", "rejected", "не подтверждается")
+    again = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()
+    row = next(it for it in again["items"] if it["id"] == target["id"])
+    assert row["review_status"] == "rejected"
+    assert row["review_source"] == "expert_review"
+
+
+def test_v2_status_takes_priority_over_expert_review(session_with_two_pairs):
+    """Канонический v2_review_status.json НЕ перезаписывается expert fallback."""
+    s = session_with_two_pairs
+    client = _client()
+    items = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()["items"]
+    target = items[0]
+    # expert говорит rejected, но инженер в V2 поставил confirmed → V2 побеждает.
+    _write_expert_review(s["sid"], f"{s['p1']}::{target['id']}", "rejected", "old")
+    client.patch(f"{_v2_base(s['sid'], s['p1'])}/changes/{target['id']}",
+                 json={"review_status": "confirmed", "review_comment": "новое"})
+    again = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()
+    row = next(it for it in again["items"] if it["id"] == target["id"])
+    assert row["review_status"] == "confirmed"
+    assert row["review_source"] == "v2_review_status"
+    assert row["review_comment"] == "новое"
+
+
+def test_v2_no_expert_review_stays_not_reviewed(session_with_two_pairs):
+    """Без expert_review.json и без v2-статуса строка остаётся not_reviewed."""
+    s = session_with_two_pairs
+    client = _client()
+    data = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()
+    assert all(it["review_status"] == "not_reviewed" for it in data["items"])
+    assert all(it["review_source"] == "none" for it in data["items"])
+
+
+def test_v2_expert_fallback_does_not_mutate_expert_review(session_with_two_pairs):
+    """Чтение V2 не мутирует expert_review.json (read-only fallback)."""
+    s = session_with_two_pairs
+    client = _client()
+    items = client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").json()["items"]
+    _write_expert_review(s["sid"], f"{s['p1']}::{items[0]['id']}", "accepted")
+    p = _paths().expert_review_path(s["sid"])
+    before = p.read_bytes()
+    client.get(f"{_v2_base(s['sid'], s['p1'])}/changes")
+    client.get(f"{_v2_base(s['sid'], s['p1'])}/changes?include_excluded=true")
+    assert p.read_bytes() == before

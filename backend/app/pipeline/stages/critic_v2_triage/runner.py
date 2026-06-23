@@ -135,7 +135,14 @@ def _extract_blocks_index(blocks_doc: Any) -> Optional[set[str]]:
         return None
     blocks_list = None
     if isinstance(blocks_doc, dict):
-        blocks_list = blocks_doc.get("blocks") or blocks_doc.get("items")
+        # Реальная схема 02_blocks_analysis.json — ключ "block_analyses"
+        # (как в deterministic_critic.build_index). "blocks"/"items" оставлены
+        # для обратной совместимости со старыми/иными форматами.
+        blocks_list = (
+            blocks_doc.get("block_analyses")
+            or blocks_doc.get("blocks")
+            or blocks_doc.get("items")
+        )
     elif isinstance(blocks_doc, list):
         blocks_list = blocks_doc
     if not isinstance(blocks_list, list):
@@ -219,8 +226,9 @@ def run_critic_v2_triage(
     """Прогнать Critic v2 triage над завершённым audit'ом проекта.
 
     Args:
-        project_dir: путь к проекту (содержит _output/ с готовыми findings).
-        output_subdir: подпапка внутри _output/ для артефактов (default "critic_v2").
+        project_dir: путь к проекту (содержит _output/ с готовыми findings)
+                     или непосредственно к output/run-dir с 03_findings.json.
+        output_subdir: подпапка внутри output_dir для артефактов (default "critic_v2").
         profile: triage profile (conservative|assisted|aggressive|assisted_round1|
                  assisted_round2_candidate). None → conservative.
         llm_enabled: вызывать ли LLM gate. Default False; для безопасности в этом
@@ -238,7 +246,10 @@ def run_critic_v2_triage(
         * Не падает при отсутствии 02_blocks_analysis.json/document_graph.json
     """
     project_dir = Path(project_dir)
-    output_dir = project_dir / "_output"
+    # Legacy callers pass the project root; v2-primary pipeline passes the
+    # concrete run/latest output dir so artifacts do not drift into
+    # versions/<vid>/_output.
+    output_dir = project_dir if (project_dir / "03_findings.json").is_file() else project_dir / "_output"
     findings_path = output_dir / "03_findings.json"
 
     if not findings_path.exists():

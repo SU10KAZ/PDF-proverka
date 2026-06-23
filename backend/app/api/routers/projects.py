@@ -3,7 +3,7 @@ REST API для проектов.
 """
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel
 from typing import Optional
 import backend.app.services.common.project_service as project_service
@@ -347,9 +347,7 @@ async def list_project_versions(project_id: str):
     единственную версию V1, указывающую на корневую папку проекта.
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
     return version_service.get_versions_summary(proj_dir, project_id)
 
 
@@ -375,6 +373,26 @@ class CreateVersionRequest(BaseModel):
     status: str = "new"
 
 
+def _resolve_project_dir_for_version_api(project_id: str) -> Path:
+    """Resolve a project for version endpoints, including v2-only documents.
+
+    Legacy endpoints used to reject before `version_service` could resolve
+    projects_v2 documents. Under v2-primary a document may legitimately exist
+    only in projects_v2, so this helper lets the version service be the source
+    of truth while preserving legacy 404 behavior when flags are OFF.
+    """
+    from backend.app.services.common import version_service
+
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if proj_dir.exists():
+        return proj_dir
+    try:
+        ctx = version_service.resolve_project_version_context(project_id, None)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    return Path(ctx.get("project_dir") or proj_dir)
+
+
 @router.post("/{project_id:path}/versions")
 async def create_project_version(project_id: str, req: CreateVersionRequest):
     """Создать следующую версию проекта (V2, V3, ...).
@@ -385,9 +403,7 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
     - НЕ копирует и НЕ переносит существующий `_output` старой версии.
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
 
     try:
         new_entry = version_service.create_next_version(
@@ -401,8 +417,8 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
 
-    # Промоут в контейнер мог переместить папку V1 → перерезолвим её.
-    proj_dir = project_service.resolve_project_dir(project_id)
+    # Промоут/создание v2-версии могло поменять active context → перерезолвим.
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
     summary = version_service.get_versions_summary(proj_dir, project_id)
     return {
         "status": "ok",
@@ -424,9 +440,7 @@ async def list_version_files_endpoint(project_id: str, version_id: str):
     текущий `project_info.json` версии.
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    _resolve_project_dir_for_version_api(project_id)
     try:
         return version_service.list_version_files(project_id, version_id)
     except version_service.VersionNotFoundError as e:
@@ -452,9 +466,7 @@ async def upload_version_files_endpoint(
     - после загрузки `project_info.json` версии обновляется (pdf_files, md_files, updated_at).
     """
     from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    _resolve_project_dir_for_version_api(project_id)
 
     if not files:
         raise HTTPException(400, "Не передан ни один файл")
@@ -483,6 +495,27 @@ async def upload_version_files_endpoint(
     except version_service.VersionFileError as e:
         raise HTTPException(400, str(e))
 
+    return {"status": "ok", **result}
+
+
+@router.delete("/{project_id:path}/versions/{version_id}")
+async def delete_project_version(project_id: str, version_id: str):
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Нельзя удалить единственную версию. После удаления latest переключается
+    на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
+    станут orphan-записями (очищаются через KB-утилиты).
+    """
+    from backend.app.services.common import version_service
+    proj_dir = project_service.resolve_project_dir(project_id)
+    if not proj_dir.exists():
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    try:
+        result = version_service.delete_version(proj_dir, project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
     return {"status": "ok", **result}
 
 
@@ -639,6 +672,36 @@ async def create_version_from_project(
     return result
 
 
+class RenameProjectRequest(BaseModel):
+    """Запрос на переименование загруженной папки проекта."""
+    name: str
+    object_id: Optional[str] = None
+
+
+@router.patch("/{project_id:path}/rename")
+async def rename_project_endpoint(project_id: str, req: RenameProjectRequest):
+    """Переименовать папку проекта (и project_id) безопасно.
+
+    Меняет имя папки на диске, обновляет project_info.json / version_group.json
+    и синхронно переписывает ссылки в decisions_log / usage_data /
+    project_groups / missing_norms_vault. Внутренние data-файлы (PDF/MD/
+    артефакты) не переименовываются. Аудит не запускается.
+    """
+    from backend.app.services.common import project_rename_service as prs
+    try:
+        return prs.rename_project(project_id, req.name, object_id=req.object_id)
+    except prs.InvalidProjectNameError as e:
+        raise HTTPException(400, str(e))
+    except prs.ProjectNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except prs.RenameConflictError as e:
+        raise HTTPException(409, str(e))
+    except prs.ProjectBusyError as e:
+        raise HTTPException(409, str(e))
+    except prs.RenameError as e:
+        raise HTTPException(500, str(e))
+
+
 @router.get("/{project_id:path}")
 async def get_project(project_id: str, version_id: Optional[str] = None):
     """Детали одного проекта.
@@ -698,11 +761,39 @@ async def set_pipeline_version(project_id: str, req: PipelineVersionRequest):
     return {"status": "ok", "project_id": project_id, "pipeline_version": req.pipeline_version}
 
 
-@router.delete("/{project_id:path}/clean")
-async def clean_project(project_id: str):
-    """Очистить все результаты аудита (сохраняет PDF, MD, project_info.json).
 
-    Удаляет всю папку _output/ и сбрасывает авто-поля в project_info.json.
+
+class RestoreCleanRequest(BaseModel):
+    backup_id: str
+    version_id: Optional[str] = None
+
+
+def _require_restore_clean_auth(request: Request) -> Optional[str]:
+    """Explicit portal-auth gate for destructive restore endpoint.
+
+    PortalAuthMiddleware already protects API when auth is enabled; this local
+    dependency makes the restore contract visible and unit-testable.
+    """
+    from backend.app.core import portal_auth
+
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return None
+    username = portal_auth.request_username(request, settings)
+    if not username:
+        raise HTTPException(401, "Not authenticated")
+    return username
+
+
+@router.delete("/{project_id:path}/clean")
+async def clean_project(
+    project_id: str, version_id: Optional[str] = None, _confirmed: bool = False,
+):
+    """Очистить результаты аудита ТОЛЬКО активной версии.
+
+    Удаляет `_output/` версии (`version_id`; при None — активной/latest) и
+    сбрасывает авто-поля в её project_info.json. Другие версии проекта
+    остаются нетронутыми. PDF, MD, project_info.json сохраняются.
     """
     # Проверка что аудит не запущен
     from backend.app.pipeline.manager import pipeline_manager
@@ -710,10 +801,52 @@ async def clean_project(project_id: str):
         raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
 
     try:
-        result = project_service.clean_project_data(project_id)
+        result = project_service.clean_project_data(
+            project_id, version_id=version_id, _confirmed=_confirmed,
+        )
         return {"status": "ok", "project_id": project_id, **result}
     except ValueError as e:
+        msg = str(e)
+        status = 400 if "подтверждение" in msg or "_confirmed" in msg else 404
+        raise HTTPException(status, msg)
+
+
+@router.post("/{project_id:path}/restore-clean", dependencies=[Depends(_require_restore_clean_auth)])
+async def restore_clean_project(project_id: str, req: RestoreCleanRequest):
+    """Восстановить v2-primary версию из backup, созданного clean-project."""
+    from backend.app.pipeline.manager import pipeline_manager
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target, v2_is_primary
+    from backend.app.services.storage.v2_primary_wiring import restore_from_backup_id
+
+    if not v2_is_primary():
+        raise HTTPException(409, "restore-clean доступен только в projects_v2_primary")
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
+
+    v2_root = StorageWriteFacade().v2_root()
+    if v2_root is None:
+        raise HTTPException(404, "projects_v2 root не настроен")
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise HTTPException(404, f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, req.version_id)
+    if not target_vid:
+        raise HTTPException(404, f"Версия '{req.version_id}' проекта '{project_id}' не найдена в projects_v2")
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    try:
+        result = restore_from_backup_id(target, v2_root, req.backup_id)
+    except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "ok", "project_id": project_id, **result}
 
 
 class SetSectionRequest(BaseModel):

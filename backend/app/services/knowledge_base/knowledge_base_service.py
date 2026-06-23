@@ -13,12 +13,32 @@ from backend.app.models.expert_review import (
     ExpertDecision, KnowledgeBaseEntry, PatternSuggestion,
 )
 from backend.app.services.common import version_service
+from backend.app.services.common.atomic_json import load_modify_save
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import (
+    is_projects_v2_version_dir,
+    load_version_project_info,
+)
 
 
-def _version_dir(project_id: str) -> Path:
-    """Активная версия проекта (из ContextVar bound_version_id, fallback на latest)."""
-    project_dir = resolve_project_dir(project_id)
+def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
+    """Активная версия проекта (из ContextVar bound_version_id, fallback на latest).
+
+    must_exist=True: для writer-ов — `resolve_project_dir` бросит
+    `ProjectNotResolvedError`, если project_id не резолвится в реальную папку
+    (вместо возврата несуществующего пути на корне объекта → orphan)."""
+    if _v2_primary_enabled():
+        try:
+            ctx = version_service.resolve_project_version_context(
+                project_id,
+                version_service.get_bound_version_id(),
+            )
+            if ctx.get("storage_layout") == "projects_v2":
+                return Path(ctx["version_dir"])
+        except Exception:
+            if must_exist:
+                raise
+    project_dir = resolve_project_dir(project_id, must_exist=must_exist)
     vid = version_service.get_bound_version_id()
     try:
         return version_service.get_version_dir(project_dir, project_id, vid)
@@ -26,8 +46,79 @@ def _version_dir(project_id: str) -> Path:
         return project_dir
 
 
-def _output_dir(project_id: str) -> Path:
-    return _version_dir(project_id) / "_output"
+def _output_dir(project_id: str, *, must_exist: bool = False) -> Path:
+    return _version_dir(project_id, must_exist=must_exist) / "_output"
+
+
+def _v2_primary_enabled() -> bool:
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        return bool(v2_is_primary())
+    except Exception:
+        return False
+
+
+def _analysis_dirs(project_id: str, *, must_exist: bool = False) -> list[Path]:
+    """Analysis artifacts for enrichment: v2 latest first, legacy _output as before."""
+    version_dir = _version_dir(project_id, must_exist=must_exist)
+    if is_projects_v2_version_dir(version_dir):
+        return [
+            version_dir / "03_analysis" / "latest",
+            version_dir / "_output",
+        ]
+    return [version_dir / "_output"]
+
+
+def _review_paths(project_id: str, *, must_exist: bool = False) -> list[Path]:
+    """Review storage priority: v2 canonical 04_review, then read-compatible fallbacks."""
+    version_dir = _version_dir(project_id, must_exist=must_exist)
+    if is_projects_v2_version_dir(version_dir):
+        return [
+            version_dir / "04_review" / "expert_review.json",
+            version_dir / "03_analysis" / "latest" / "expert_review.json",
+            version_dir / "_output" / "expert_review.json",
+        ]
+    return [version_dir / "_output" / "expert_review.json"]
+
+
+def _review_path(project_id: str, *, must_exist: bool = False) -> Path:
+    return _review_paths(project_id, must_exist=must_exist)[0]
+
+
+def _decision_key(decision: dict) -> tuple[str, str]:
+    return (
+        str(decision.get("item_type") or ""),
+        str(decision.get("item_id") or ""),
+    )
+
+
+def _merge_review_decisions(
+    existing_payloads: list[dict],
+    decisions: list[ExpertDecision],
+    removed_ids: list[str] | None,
+) -> list[dict]:
+    """Merge idempotently by (item_type, item_id); canonical payloads win."""
+    existing_by_key: dict[tuple[str, str], dict] = {}
+    for payload in reversed(existing_payloads):
+        for item in payload.get("decisions") or []:
+            if not isinstance(item, dict):
+                continue
+            key = _decision_key(item)
+            if not key[1]:
+                continue
+            existing_by_key[key] = item
+
+    new_items = [d.model_dump() for d in decisions]
+    new_keys = {_decision_key(item) for item in new_items}
+    removed = set(removed_ids or [])
+
+    merged = [
+        item
+        for key, item in existing_by_key.items()
+        if key not in new_keys and key[1] not in removed
+    ]
+    merged.extend(new_items)
+    return merged
 
 
 def _ensure_kb_dir():
@@ -54,9 +145,11 @@ def _load_json(path: Path) -> dict | list | None:
 
 
 def _save_json(path: Path, data):
+    # Атомарная потокобезопасная запись: decisions_log/patterns — shared-стораж
+    # на 140 проектов; plain open('w') рвался при крахе/гонке (reserc.md #7/#81/#87).
     _ensure_kb_dir()
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    from backend.app.services.common.atomic_json import atomic_write_json
+    atomic_write_json(path, data)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -66,37 +159,57 @@ def _save_json(path: Path, data):
 def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None) -> dict:
     """Сохранить решения эксперта по проекту.
 
-    1. Записывает expert_review.json в _output/ проекта
+    1. Записывает expert_review.json в canonical review storage проекта
     2. Обогащает решения контекстом из findings/optimization
     3. Добавляет записи в глобальный decisions_log.json
     """
-    output_dir = _output_dir(project_id)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # must_exist=True: не создаём orphan `_output` на несуществующем пути —
+    # если project_id не резолвится в реальный проект/контейнер, поднимется
+    # ProjectNotResolvedError (роутер вернёт 404).
+    review_path = _review_path(project_id, must_exist=True)
+    review_paths = _review_paths(project_id, must_exist=True)
+    fallback_paths = [p for p in review_paths if Path(p) != review_path]
 
     # 1. Сохранить per-project файл (merge с существующими решениями)
-    review_path = output_dir / "expert_review.json"
-    existing = _load_json(review_path)
-    existing_decisions = []
-    if existing and "decisions" in existing:
-        existing_decisions = existing["decisions"]
+    # под единым read-modify-write локом canonical review_path.
+    def _mutate_review(current):
+        existing_payloads = []
+        if isinstance(current, dict):
+            existing_payloads.append(current)
+        existing_payloads.extend(
+            payload
+            for payload in (_load_json(path) for path in fallback_paths)
+            if isinstance(payload, dict)
+        )
+        merged = _merge_review_decisions(existing_payloads, decisions, removed_ids)
+        return {
+            "project_id": project_id,
+            "reviewer": reviewer,
+            "reviewed_at": _now_iso(),
+            "decisions": merged,
+        }
 
-    # Новые решения перезаписывают старые по item_id; removed_ids удаляются
-    new_ids = {d.item_id for d in decisions}
-    excluded_ids = new_ids | set(removed_ids or [])
-    merged = [d for d in existing_decisions if d.get("item_id") not in excluded_ids]
-    merged.extend([d.model_dump() for d in decisions])
-
-    review_data = {
-        "project_id": project_id,
-        "reviewer": reviewer,
-        "reviewed_at": _now_iso(),
-        "decisions": merged,
-    }
-    _save_json(review_path, review_data)
+    load_modify_save(
+        review_path,
+        _mutate_review,
+        default={"project_id": project_id, "decisions": []},
+    )
 
     # 2. Обогатить и добавить в глобальный лог
     enriched = _enrich_decisions(project_id, decisions, reviewer)
     _append_to_decisions_log(enriched)
+
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
+    # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся
+    # общим shared-файлом (его v2-плечо здесь намеренно НЕ форкается).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:  # noqa: BLE001 — fail-soft, но #91: не молчим (наблюдаемость)
+        import logging
+        logging.getLogger(__name__).debug(
+            "shadow_mirror_project_id_safe failed for %s", project_id, exc_info=True
+        )
 
     return {
         "saved": len(decisions),
@@ -107,37 +220,117 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
 
 def load_expert_review(project_id: str) -> Optional[dict]:
     """Загрузить сохранённые решения эксперта для проекта."""
-    path = _output_dir(project_id) / "expert_review.json"
-    return _load_json(path)
+    for path in _review_paths(project_id):
+        data = _load_json(path)
+        if data is not None:
+            return data
+    return None
+
+
+def _load_source_item_maps(project_id: str) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Source findings/optimizations for KB enrichment, latest-first."""
+    analysis_dirs = _analysis_dirs(project_id)
+
+    findings_map: dict[str, dict] = {}
+    for output_dir in analysis_dirs:
+        for fname in ["03a_norms_verified.json", "03_findings.json"]:
+            fdata = _load_json(output_dir / fname)
+            if fdata:
+                for item in fdata.get("findings", fdata.get("items", [])):
+                    if isinstance(item, dict) and item.get("id"):
+                        findings_map[str(item.get("id"))] = item
+                break
+        if findings_map:
+            break
+
+    opt_map: dict[str, dict] = {}
+    for output_dir in analysis_dirs:
+        opt_data = _load_json(output_dir / "optimization.json")
+        if opt_data:
+            for item in opt_data.get("items", []):
+                if isinstance(item, dict) and item.get("id"):
+                    opt_map[str(item.get("id"))] = item
+            break
+
+    return findings_map, opt_map
+
+
+def _source_summary(source: dict, item_type: str) -> str:
+    for key in ("problem", "description", "summary", "title"):
+        value = source.get(key)
+        if value:
+            return str(value).strip()
+    if item_type != "optimization":
+        return ""
+
+    section = str(source.get("section") or "").strip()
+    current = str(source.get("current") or "").strip()
+    proposed = str(source.get("proposed") or "").strip()
+    opt_type = str(source.get("type") or "").strip()
+    if current and proposed:
+        prefix = f"{section}: " if section else ""
+        return f"{prefix}{current} → {proposed}"
+    if proposed:
+        return proposed
+    if current:
+        return current
+    return " / ".join(part for part in (section, opt_type) if part)
+
+
+def _norm_refs_from_source(source: dict) -> list[str]:
+    norm = source.get("norm", source.get("norm_ref", ""))
+    if not norm:
+        return []
+    return [norm] if isinstance(norm, str) else norm
+
+
+def _source_for_entry(entry: dict, source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]]) -> dict:
+    project_id = str(entry.get("source_project") or "").strip()
+    item_id = str(entry.get("item_id") or "").strip()
+    if not project_id or not item_id:
+        return {}
+    if project_id not in source_cache:
+        try:
+            source_cache[project_id] = _load_source_item_maps(project_id)
+        except Exception:
+            source_cache[project_id] = ({}, {})
+    findings_map, opt_map = source_cache[project_id]
+    if entry.get("item_type") == "optimization":
+        return opt_map.get(item_id) or {}
+    return findings_map.get(item_id) or opt_map.get(item_id) or {}
+
+
+def _hydrate_kb_entry_from_source(entry: dict, source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]]) -> dict:
+    """Fill display fields from source artifacts without writing decisions_log."""
+    source = _source_for_entry(entry, source_cache)
+    if not source:
+        return entry
+
+    item_type = str(entry.get("item_type") or "")
+    if not entry.get("severity") and source.get("severity"):
+        entry["severity"] = source.get("severity")
+    if not entry.get("category"):
+        entry["category"] = source.get("category") or source.get("type") or ""
+    if not entry.get("summary"):
+        entry["summary"] = _source_summary(source, item_type)
+    if not entry.get("norm_refs"):
+        entry["norm_refs"] = _norm_refs_from_source(source)
+    if not entry.get("sheet") and source.get("sheet"):
+        entry["sheet"] = str(source.get("sheet") or "")
+    if entry.get("page") in (None, "") and source.get("page") not in (None, ""):
+        entry["page"] = source.get("page")
+    return entry
 
 
 def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
     """Обогатить решения контекстом из findings/optimization JSON."""
-    output_dir = _output_dir(project_id)
-
-    # Загрузить findings
-    findings_map = {}
-    for fname in ["03a_norms_verified.json", "03_findings.json"]:
-        fpath = output_dir / fname
-        fdata = _load_json(fpath)
-        if fdata:
-            for item in fdata.get("findings", fdata.get("items", [])):
-                findings_map[item.get("id", "")] = item
-            break
-
-    # Загрузить optimization
-    opt_map = {}
-    opt_data = _load_json(output_dir / "optimization.json")
-    if opt_data:
-        for item in opt_data.get("items", []):
-            opt_map[item.get("id", "")] = item
+    findings_map, opt_map = _load_source_item_maps(project_id)
 
     # Загрузить project_info для section (из активной версии, fallback на корень)
     version_dir = _version_dir(project_id)
-    info_path = version_dir / "project_info.json"
-    if not info_path.exists():
-        info_path = resolve_project_dir(project_id) / "project_info.json"
-    info = _load_json(info_path) or {}
+    info = load_version_project_info(version_dir) or {}
+    if not info:
+        info = _load_json(resolve_project_dir(project_id) / "project_info.json") or {}
     section = info.get("section", "")
 
     # Объект (здание/комплекс): из bound-контекста, иначе текущий выбранный.
@@ -148,19 +341,15 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     except Exception:
         object_id = ""
 
-    # Следующий ID
+    # Следующий ID (монотонный max+1, НЕ len+1 — см. _next_decision_num)
     existing_log = _load_decisions_log()
-    next_num = len(existing_log) + 1
+    next_num = _next_decision_num(existing_log)
 
     entries = []
     for dec in decisions:
         source = findings_map.get(dec.item_id) or opt_map.get(dec.item_id) or {}
 
-        # Извлечь norm_refs
-        norm_refs = []
-        norm = source.get("norm", source.get("norm_ref", ""))
-        if norm:
-            norm_refs = [norm] if isinstance(norm, str) else norm
+        norm_refs = _norm_refs_from_source(source)
 
         entry = KnowledgeBaseEntry(
             id=f"DEC-{next_num:04d}",
@@ -170,8 +359,8 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
             item_id=dec.item_id,
             item_type=dec.item_type,
             severity=source.get("severity", ""),
-            category=source.get("category", ""),
-            summary=source.get("problem", source.get("description", source.get("summary", ""))),
+            category=source.get("category", source.get("type", "")),
+            summary=_source_summary(source, dec.item_type),
             norm_refs=norm_refs,
             sheet=str(source.get("sheet", "")),
             page=source.get("page"),
@@ -204,18 +393,73 @@ def _save_decisions_log(entries: list[dict]):
     _save_json(DECISIONS_LOG_FILE, {"entries": entries})
 
 
+def _decisions_entries(data) -> list[dict]:
+    if isinstance(data, dict):
+        raw = data.get("entries", [])
+    elif isinstance(data, list):
+        raw = data
+    else:
+        raw = []
+    return [e for e in raw if isinstance(e, dict)]
+
+
+def _decisions_payload(entries: list[dict]) -> dict:
+    return {"entries": entries}
+
+
+def _load_modify_decisions_log(mutate_fn):
+    return load_modify_save(
+        DECISIONS_LOG_FILE,
+        lambda data: _decisions_payload(mutate_fn(_decisions_entries(data))),
+        default={"entries": []},
+    )
+
+
+def _next_decision_num(existing_log: list[dict]) -> int:
+    """Следующий монотонный номер для DEC-NNNN: max(существующих) + 1.
+
+    Раньше было len(log)+1 → после revoke номер переиспользовался, и один id
+    указывал на десятки решений (audit: 1208 дублей id, 3122 записи). max+1
+    гарантирует глобальную уникальность НОВЫХ id даже при пробелах от revoke
+    (reserc.md #79/#100). Существующие коллизии лечит мигратор #82 (шаг 28).
+    """
+    import re
+    mx = 0
+    for e in existing_log:
+        m = re.match(r"DEC-(\d+)$", str(e.get("id") or ""))
+        if m:
+            mx = max(mx, int(m.group(1)))
+    return mx + 1
+
+
 def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
     """Добавить записи в глобальный лог (дедупликация по project+item_id)."""
-    existing = _load_decisions_log()
-    existing_keys = {(e.get("source_project"), e.get("item_id")) for e in existing}
+    incoming = [entry.model_dump() for entry in new_entries]
 
-    # Обновить существующие или добавить новые
-    updated_map = {(e.get("source_project"), e.get("item_id")): e for e in existing}
-    for entry in new_entries:
-        key = (entry.source_project, entry.item_id)
-        updated_map[key] = entry.model_dump()
+    def _mutate(existing: list[dict]) -> list[dict]:
+        updated_map = {(e.get("source_project"), e.get("item_id")): e for e in existing}
+        used_ids = {str(e.get("id")) for e in existing if e.get("id")}
+        next_num = _next_decision_num(existing)
+        for item in incoming:
+            key = (item.get("source_project"), item.get("item_id"))
+            previous = updated_map.get(key)
+            if previous:
+                if previous.get("id"):
+                    item["id"] = previous.get("id")
+                for field in ("customer_confirmed", "customer_date", "customer_note"):
+                    if field in previous:
+                        item[field] = previous.get(field)
+            elif item.get("id") in used_ids:
+                while f"DEC-{next_num:04d}" in used_ids:
+                    next_num += 1
+                item["id"] = f"DEC-{next_num:04d}"
+                next_num += 1
+            if item.get("id"):
+                used_ids.add(str(item.get("id")))
+            updated_map[key] = item
+        return list(updated_map.values())
 
-    _save_decisions_log(list(updated_map.values()))
+    _load_modify_decisions_log(_mutate)
 
 
 def get_knowledge_base(
@@ -243,7 +487,10 @@ def get_knowledge_base(
         entries = [e for e in entries if e.get("section", "").upper() == section.upper()]
     if item_type:
         entries = [e for e in entries if e.get("item_type") == item_type]
+    source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]] = {}
     if search:
+        for e in entries:
+            _hydrate_kb_entry_from_source(e, source_cache)
         s = search.lower()
         entries = [e for e in entries if s in json.dumps(e, ensure_ascii=False).lower()]
 
@@ -254,6 +501,8 @@ def get_knowledge_base(
 
     # Пагинация
     paginated = entries[offset:offset + limit]
+    for e in paginated:
+        _hydrate_kb_entry_from_source(e, source_cache)
 
     return {
         "total": total,
@@ -292,31 +541,41 @@ def get_kb_stats(object_id: Optional[str] = None) -> dict:
 
 def mark_customer_confirmed(entry_ids: list[str], note: str = "") -> int:
     """Отметить записи как согласованные заказчиком."""
-    entries = _load_decisions_log()
+    target_ids = set(entry_ids)
     count = 0
     now = _now_iso()
-    for e in entries:
-        if e.get("id") in entry_ids and e.get("expert_decision") == "accepted":
-            e["customer_confirmed"] = True
-            e["customer_date"] = now
-            if note:
-                e["customer_note"] = note
-            count += 1
-    _save_decisions_log(entries)
+
+    def _mutate(entries: list[dict]) -> list[dict]:
+        nonlocal count
+        for e in entries:
+            if e.get("id") in target_ids and e.get("expert_decision") == "accepted":
+                e["customer_confirmed"] = True
+                e["customer_date"] = now
+                if note:
+                    e["customer_note"] = note
+                count += 1
+        return entries
+
+    _load_modify_decisions_log(_mutate)
     return count
 
 
 def unmark_customer_confirmed(entry_ids: list[str]) -> int:
     """Снять отметку согласования заказчиком."""
-    entries = _load_decisions_log()
+    target_ids = set(entry_ids)
     count = 0
-    for e in entries:
-        if e.get("id") in entry_ids and e.get("customer_confirmed"):
-            e["customer_confirmed"] = False
-            e["customer_date"] = None
-            e["customer_note"] = None
-            count += 1
-    _save_decisions_log(entries)
+
+    def _mutate(entries: list[dict]) -> list[dict]:
+        nonlocal count
+        for e in entries:
+            if e.get("id") in target_ids and e.get("customer_confirmed"):
+                e["customer_confirmed"] = False
+                e["customer_date"] = None
+                e["customer_note"] = None
+                count += 1
+        return entries
+
+    _load_modify_decisions_log(_mutate)
     return count
 
 
@@ -338,27 +597,59 @@ def _find_project_dir(project_id: str) -> Optional[Path]:
 
 
 def revoke_decision(entry_id: str, project_id: str, item_id: str) -> int:
-    """Отменить решение — удалить из глобального лога и из expert_review проекта."""
-    # 1. Удалить из decisions_log.json
-    entries = _load_decisions_log()
-    before = len(entries)
-    entries = [e for e in entries if e.get("id") != entry_id]
-    _save_decisions_log(entries)
-    removed = before - len(entries)
+    # Удалить решение из глобального лога и из expert_review проекта.
+    import logging
+    removed = 0
 
-    # 2. Удалить из expert_review.json проекта (активная версия)
-    if project_id and item_id:
+    def _mutate_log(entries: list[dict]) -> list[dict]:
+        nonlocal removed
+        if project_id and item_id:
+            def _match(e: dict) -> bool:
+                return e.get("source_project") == project_id and e.get("item_id") == item_id
+        else:
+            id_hits = [e for e in entries if e.get("id") == entry_id]
+            if len(id_hits) != 1:
+                logging.getLogger(__name__).warning(
+                    "revoke_decision: id=%r неуникален (%d записей) и нет составного "
+                    "ключа — отказ, чтобы не удалить чужие решения",
+                    entry_id, len(id_hits),
+                )
+                return entries
+
+            def _match(e: dict) -> bool:
+                return e.get("id") == entry_id
+
+        kept = [e for e in entries if not _match(e)]
+        matched = len(entries) - len(kept)
+        if matched > 1:
+            logging.getLogger(__name__).warning(
+                "revoke_decision: совпало %d записей по (%s,%s)/id=%s — ожидалась ≤1; "
+                "пропуск без удаления", matched, project_id, item_id, entry_id,
+            )
+            return entries
+        removed = matched
+        return kept
+
+    _load_modify_decisions_log(_mutate_log)
+
+    # Удалить из expert_review.json проекта (активная версия).
+    if removed and project_id and item_id:
         project_dir = _find_project_dir(project_id)
         if project_dir:
-            review_path = _output_dir(project_id) / "expert_review.json"
+            review_path = _review_path(project_id)
             if review_path.exists():
-                review_data = _load_json(review_path)
-                if review_data and "decisions" in review_data:
-                    review_data["decisions"] = [
-                        d for d in review_data["decisions"]
-                        if d.get("item_id") != item_id
-                    ]
-                    _save_json(review_path, review_data)
+                def _mutate_review(review_data):
+                    if not isinstance(review_data, dict):
+                        return review_data
+                    decisions = review_data.get("decisions")
+                    if isinstance(decisions, list):
+                        review_data["decisions"] = [
+                            d for d in decisions
+                            if not (isinstance(d, dict) and d.get("item_id") == item_id)
+                        ]
+                    return review_data
+
+                load_modify_save(review_path, _mutate_review, default={"decisions": []})
 
     return removed
 
@@ -558,22 +849,63 @@ def import_decisions_from_excel(file_path: str, default_project_id: Optional[str
         def _looks_like_version(s: str) -> bool:
             return bool(s and _re.fullmatch(r"v\d+", s.strip(), flags=_re.IGNORECASE))
 
-        project_id = None
+        def _pid_resolves(pid: str) -> bool:
+            """project_id указывает на реальную папку проекта/контейнер."""
+            if not pid:
+                return False
+            try:
+                from backend.app.services.common.project_service import (
+                    resolve_project_dir,
+                )
+                resolve_project_dir(pid, must_exist=True)
+                return True
+            except Exception:
+                return False
+
+        def _strip_version_label(pid: str) -> str:
+            """Снять хвостовую метку версии ("<id> V1"/"<id>_v2"/…).
+
+            Версия в импорте передаётся отдельно (`version_id`), поэтому в самом
+            project_id метки "V1" быть не должно. Старые/внешние экспорты иногда
+            запекали в скрытую ячейку композит вида "KM/1232-ЧМ-КМ-1 V1" —
+            он не резолвится (реальная папка называется "KM/1232-ЧМ-КМ-1").
+            """
+            return _re.sub(r"[ _-]?[vV]\d+$", "", pid).strip() if pid else pid
+
+        # Кандидаты в порядке приоритета. Берём ПЕРВЫЙ, который реально
+        # резолвится в папку проекта — это и чинит 500 «Project directory not
+        # resolved» на стейл-ячейках, и сохраняет per-sheet идентичность для
+        # многопроектных отчётов (валидная скрытая ячейка по-прежнему выигрывает).
+        candidates: list[str] = []
         if "project_id" in headers:
             row2 = list(next(ws.iter_rows(min_row=2, max_row=2), []))
             if row2 and headers["project_id"] < len(row2):
                 pid_val = str(row2[headers["project_id"]].value or "").strip()
                 if pid_val and not _looks_like_version(pid_val):
-                    project_id = pid_val
+                    candidates.append(pid_val)
+        # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
+        bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
+        if not _looks_like_version(bare_title):
+            resolved = _resolve_project_id_from_sheet(ws.title)
+            if resolved and not _looks_like_version(resolved):
+                candidates.append(resolved)
+        if default_project_id:
+            candidates.append(default_project_id)
+
+        project_id = None
+        # Pass 1: первый кандидат, который резолвится как есть.
+        for cand in candidates:
+            if _pid_resolves(cand):
+                project_id = cand
+                break
+        # Pass 2: ни один не резолвится → пробуем снять хвостовую метку версии
+        # (стейл-экспорты "<id> V1"). Принимаем только если stripped резолвится.
         if not project_id:
-            # Снимаем префикс "ОПТ " вручную, чтобы проверить «голое» имя
-            bare_title = ws.title[4:] if ws.title.startswith("ОПТ ") else ws.title
-            if not _looks_like_version(bare_title):
-                resolved = _resolve_project_id_from_sheet(ws.title)
-                if resolved and not _looks_like_version(resolved):
-                    project_id = resolved
-        if not project_id and default_project_id:
-            project_id = default_project_id
+            for cand in candidates:
+                stripped = _strip_version_label(cand)
+                if stripped and stripped != cand and _pid_resolves(stripped):
+                    project_id = stripped
+                    break
 
         decisions = []
         for row in ws.iter_rows(min_row=3, values_only=False):

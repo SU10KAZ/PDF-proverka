@@ -93,6 +93,23 @@ def detect_md_file(project_dir, pdf_name):
     Returns:
         (filename, size_kb) или (None, 0)
     """
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            sources = resolve_v2_source_files(_pathlib.Path(project_dir), os.path.splitext(pdf_name)[0])
+            if sources.md_path is not None:
+                try:
+                    md_name = str(sources.md_path.relative_to(_pathlib.Path(project_dir)))
+                except ValueError:
+                    md_name = sources.md_path.name
+                size_kb = round(os.path.getsize(sources.md_path) / 1024, 1)
+                return md_name, size_kb
+    except Exception:
+        # v2 lookup is best-effort for this detector; legacy detection remains below.
+        pass
+
     exclude_prefixes = ("audit_", "readme", "claude")
     exclude_names = {"CLAUDE.md", "README.md"}
 
@@ -176,23 +193,96 @@ def detect_all_md_files(project_dir, info):
     return []
 
 
-def load_project_info(project_dir):
-    info_path = os.path.join(project_dir, "project_info.json")
-    if os.path.exists(info_path):
-        with open(info_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+def _v2_primary_enabled():
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        return v2_is_primary()
+    except Exception:
+        return False
+
+
+def _read_json(path):
+    try:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+    return {}
+
+
+def _default_project_info(project_dir):
     return {
-        "project_id": os.path.basename(project_dir),
+        "project_id": os.environ.get("AUDIT_PROJECT_ID") or os.path.basename(project_dir),
         "pdf_file": "document.pdf",
     }
 
 
+def _load_v2_project_info(project_dir):
+    version_dir = _pathlib.Path(project_dir)
+    info = {}
+
+    input_info = _read_json(version_dir / "01_input" / "project_info.json")
+    if input_info:
+        info.update(input_info)
+
+    version_json = _read_json(version_dir / "version.json")
+    version_info = version_json.get("project_info")
+    if isinstance(version_info, dict):
+        info.update(version_info)
+
+    if not info:
+        info = _default_project_info(project_dir)
+    info.setdefault("project_id", os.environ.get("AUDIT_PROJECT_ID") or version_dir.parent.parent.name)
+    info.setdefault("pdf_file", "document.pdf")
+    return info
+
+
+def load_project_info(project_dir):
+    if _v2_primary_enabled():
+        return _load_v2_project_info(project_dir)
+
+    info_path = os.path.join(project_dir, "project_info.json")
+    if os.path.exists(info_path):
+        with open(info_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return _default_project_info(project_dir)
+
+
 def save_project_info(project_dir, info):
     """Сохраняет обновлённый project_info.json обратно в папку проекта."""
+    if _v2_primary_enabled():
+        version_dir = _pathlib.Path(project_dir)
+        version_path = version_dir / "version.json"
+        version_data = _read_json(version_path)
+        version_data.setdefault("version_id", os.environ.get("AUDIT_VERSION_ID") or version_dir.name)
+        version_data["project_info"] = dict(info)
+        version_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(version_path, "w", encoding="utf-8") as f:
+            json.dump(version_data, f, ensure_ascii=False, indent=2)
+        print(f"  [SAVED] version.json project_info updated")
+        return
+
     info_path = os.path.join(project_dir, "project_info.json")
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
     print(f"  [SAVED] project_info.json updated")
+
+
+def _resolve_v2_sources(project_dir, info):
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+        document_code = (
+            info.get("document_code")
+            or info.get("project_id")
+            or os.environ.get("AUDIT_PROJECT_ID")
+            or os.path.basename(project_dir)
+        )
+        return resolve_v2_source_files(_pathlib.Path(project_dir), document_code)
+    except Exception:
+        return None
 
 
 def process(project_dir, force=False):
@@ -202,15 +292,26 @@ def process(project_dir, force=False):
     pdf_path = os.path.join(project_dir, pdf_name)
 
     # Проверяем наличие хотя бы одного PDF
-    pdf_files = info.get("pdf_files", [pdf_name])
-    has_any_pdf = any(
-        os.path.exists(os.path.join(project_dir, pf)) for pf in pdf_files
-    )
+    v2_sources = _resolve_v2_sources(project_dir, info) if _v2_primary_enabled() else None
+    if v2_sources is not None:
+        has_any_pdf = v2_sources.pdf_path is not None
+        if v2_sources.pdf_path is not None:
+            pdf_path = str(v2_sources.pdf_path)
+            try:
+                pdf_name = str(v2_sources.pdf_path.relative_to(_pathlib.Path(project_dir)))
+            except ValueError:
+                pdf_name = v2_sources.pdf_path.name
+        pdf_files = [pdf_name] if has_any_pdf else info.get("pdf_files", [pdf_name])
+    else:
+        pdf_files = info.get("pdf_files", [pdf_name])
+        has_any_pdf = any(
+            os.path.exists(os.path.join(project_dir, pf)) for pf in pdf_files
+        )
     if not has_any_pdf:
         print(f"  [ERROR] PDF not found: {pdf_path}")
         return False
 
-    out_dir = os.path.join(project_dir, "_output")
+    out_dir = os.environ.get("AUDIT_OUTPUT_DIR") or os.path.join(project_dir, "_output")
     os.makedirs(out_dir, exist_ok=True)
 
     print(f"\n{'='*60}")
@@ -271,7 +372,10 @@ def process(project_dir, force=False):
         enr_meta = None
 
     # ── Step 1: Build Document Knowledge Graph (v2, из *_result.json) ──
-    graph_v2 = build_document_graph_v2(project_dir, out_dir)
+    graph_kwargs = {}
+    if v2_sources is not None and v2_sources.result_json_path is not None:
+        graph_kwargs["result_json_paths"] = [v2_sources.result_json_path]
+    graph_v2 = build_document_graph_v2(project_dir, out_dir, **graph_kwargs)
     if graph_v2:
         debug_path = generate_locality_debug(graph_v2, out_dir)
         if debug_path:

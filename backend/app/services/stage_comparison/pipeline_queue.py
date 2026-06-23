@@ -24,6 +24,7 @@ Design notes
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import os
 import re
@@ -173,15 +174,39 @@ def _backup_pair_artifacts(session_id: str, pair_id: str) -> Optional[str]:
         return None
 
 
+def _accepts_kwarg(fn: Callable, name: str) -> bool:
+    """True если fn принимает именованный аргумент name (или **kwargs).
+    #68: чтобы прокидывать parent_cancel_check только реальному раннеру, а не
+    узким тест-фейкам."""
+    try:
+        sig = inspect.signature(fn)
+    except (TypeError, ValueError):
+        return False
+    for p in sig.parameters.values():
+        if p.name == name and p.kind in (
+            inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        ):
+            return True
+        if p.kind == inspect.Parameter.VAR_KEYWORD:
+            return True
+    return False
+
+
 async def _qwen_process_pair(
     session_id: str, pair_id: str, *, force_qwen: bool, prebuild_large_sheets: bool,
+    parent_cancel_check: Optional[Callable[[], bool]] = None,
 ) -> dict:
     """Real Qwen lane body for ONE pair: (optional) large-sheet prebuild +
-    md-enrichment. Returns {"status": "done|failed", "error": str|None}.
+    md-enrichment. Returns {"status": "done|failed", "error": str|None,
+    "child_job_id": str|None}.
+
+    #68: parent_cancel_check прокидывается в дочерний md-enrichment job, чтобы
+    отмена pipeline'а останавливала уже запущенную Qwen-пару.
 
     NOTE: only called in live runs. Tests replace this with a fake.
     """
     from . import md_enrichment_jobs as mdj
+    child_job_id: Optional[str] = None
     try:
         if prebuild_large_sheets:
             await _prebuild_large_sheets_for_pair(session_id, pair_id, force=force_qwen)
@@ -189,8 +214,11 @@ async def _qwen_process_pair(
             session_id, scope="pair", pair_id=pair_id, side="both",
             force=bool(force_qwen), confirm=True,
         )
+        child_job_id = job.get("id")
         if job.get("status") == "queued":
-            await mdj.run_md_enrichment_job(session_id, job["id"])
+            await mdj.run_md_enrichment_job(
+                session_id, job["id"], parent_cancel_check=parent_cancel_check,
+            )
         # Pre-Qwen block equivalence gate (Stage 1: observe). Отчёт уже построен
         # внутри run_md_enrichment_job (если фича включена) — здесь только
         # читаем компактную диагностику для pipeline status. Fail-soft.
@@ -202,36 +230,55 @@ async def _qwen_process_pair(
                 block_eq = be_mod.build_pair_diagnostics(rep)
         except Exception:  # noqa: BLE001 — diagnostics must never fail the lane
             block_eq = None
-        return {"status": "done", "error": None, "block_equivalence": block_eq}
+        return {"status": "done", "error": None, "block_equivalence": block_eq,
+                "child_job_id": child_job_id}
     except Exception as exc:  # noqa: BLE001
-        return {"status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+        return {"status": "failed", "error": f"{type(exc).__name__}: {exc}",
+                "child_job_id": child_job_id}
+
+
+def _dense_scheme_pages(session_id: str, pair_id: str) -> set[tuple[str, int]]:
+    """Pages that carry a ``dense_scheme`` block (these are the ones that route
+    to large-sheet in enrichment). EXCLUDES GRSH (``dense_grsh_singleline`` →
+    single-shot) and tables/plans, read from the pair's current classification."""
+    te = paths_mod.pair_dir(session_id, pair_id) / "text_enrichment"
+    out: set[tuple[str, int]] = set()
+    for side in ("left", "right"):
+        p = te / f"{side}_image_descriptions.json"
+        if not p.exists():
+            continue
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                items = json.load(f).get("items", []) or []
+        except (OSError, json.JSONDecodeError):
+            continue
+        for it in items:
+            if it.get("block_type") == "dense_scheme" and it.get("page"):
+                try:
+                    out.add((side, int(it["page"])))
+                except (TypeError, ValueError):
+                    pass
+    return out
 
 
 async def _prebuild_large_sheets_for_pair(session_id: str, pair_id: str, *, force: bool) -> None:
-    """Best-effort large-sheet prebuild for a pair's detector-large pages that
-    lack a page_enriched.json. GRSH pages are kept single-shot (we do not build
-    artifacts for them). Fail-soft. Only used in live runs."""
+    """Large-sheet prebuild for a pair: build artifacts ONLY for dense_scheme
+    block pages that lack one. GRSH pages stay single-shot (never built here),
+    tables/plans are never hijacked, and existing artifacts are REUSED (no
+    re-tile). Fail-soft. Only used in live runs."""
     from . import large_sheet_enrichment as ls
     from . import large_sheet_enrichment_jobs as lsj
     if not ls.large_sheet_enabled():
         return
     items: list[dict] = []
-    for side in ("left", "right"):
-        try:
-            scan = ls.scan_pair_side_for_large_sheets(session_id, pair_id, side)
-        except Exception:  # noqa: BLE001
-            continue
-        for cand in scan.get("large_sheets", []):
-            page = cand.get("page")
-            if not page:
-                continue
-            summ = ls.read_large_sheet_summary(session_id, pair_id, side, page)
-            if summ.get("status") not in (None, "not_run") and not force:
-                continue  # artifact already exists
-            items.append({"pair_id": pair_id, "side": side, "page": int(page)})
+    for side, page in sorted(_dense_scheme_pages(session_id, pair_id)):
+        summ = ls.read_large_sheet_summary(session_id, pair_id, side, page)
+        if summ.get("status") not in (None, "not_run"):
+            continue  # reuse existing artifact — never re-tile
+        items.append({"pair_id": pair_id, "side": side, "page": page})
     if not items:
         return
-    job = lsj.create_job(session_id, scope="selected", items=items, force=bool(force), confirm=True)
+    job = lsj.create_job(session_id, scope="selected", items=items, force=False, confirm=True)
     if job.get("status") == "queued":
         await lsj.run_job(session_id, job["id"])
 
@@ -456,16 +503,20 @@ def preflight(session_id: str, *, scope: str, pair_ids: Optional[list[str]],
                     dense_grsh += sum(1 for i in items if i.get("block_type") == "dense_grsh_singleline")
                 except (OSError, json.JSONDecodeError):
                     pass
-            if ls_enabled and ls is not None:
-                try:
-                    scan = ls.scan_pair_side_for_large_sheets(session_id, pid, side)
-                    for c in scan.get("large_sheets", []):
-                        large_sheet_pages += 1
-                        summ = ls.read_large_sheet_summary(session_id, pid, side, c.get("page"))
-                        if summ.get("status") not in (None, "not_run"):
-                            existing_artifacts += 1
-                except Exception:  # noqa: BLE001
-                    pass
+        # large-sheet prebuild estimate — match what _prebuild_large_sheets_for_pair
+        # ACTUALLY builds (dense_scheme pages only), instead of opening every PDF and
+        # running the detector on every page. That scan blocked the request ~40s on
+        # 21 pairs (→ /api/info timeout → watchdog killed the process) and over-counted
+        # physically-large pages the prebuild never touches.
+        if ls_enabled and ls is not None:
+            try:
+                for ds_side, ds_page in _dense_scheme_pages(session_id, pid):
+                    large_sheet_pages += 1
+                    summ = ls.read_large_sheet_summary(session_id, pid, ds_side, ds_page)
+                    if summ.get("status") not in (None, "not_run"):
+                        existing_artifacts += 1
+            except Exception:  # noqa: BLE001
+                pass
         # too_large detection from existing comparison_result
         crp = paths_mod.pair_dir(session_id, pid) / "enriched_comparison" / "comparison_result.json"
         try:
@@ -476,16 +527,19 @@ def preflight(session_id: str, *, scope: str, pair_ids: Optional[list[str]],
             pass
 
     ls_to_build = max(0, large_sheet_pages - existing_artifacts)
-    est_qwen_calls = image_blocks + ls_to_build * 8  # ~8 tiles per large sheet
-    est_qwen_sec = ls_to_build * 8 * 8 + image_blocks * 5  # ~8s/tile, ~5s/block (cache-heavy)
+    # rough estimate: fresh image-block enrichment + GRSH feeder tiling (~8 tiles)
+    # + large-sheet prebuild (~8 tiles). Blended ~12s/block covers the mix of fast
+    # (photo/table/stamp) and slow (scheme) blocks on a fresh force run.
+    est_qwen_calls = image_blocks + dense_grsh * 8 + ls_to_build * 8
+    est_qwen_sec = image_blocks * 12 + dense_grsh * 8 * 30 + ls_to_build * 8 * 8
     est_opus_sec = len(ids) * 120  # ~2 min/pair Opus (rough)
 
     if too_large:
         risks.append(f"{len(too_large)} too_large пар — Opus пойдёт через fallback (если включён).")
     if missing:
         risks.append(f"{len(missing)} отсутствующих MD/пар — будут пропущены/упадут.")
-    if ls_to_build > 50:
-        risks.append(f"{ls_to_build} large-sheet страниц на сборку — длительно (~{est_qwen_sec//3600}ч).")
+    if est_qwen_sec > 2 * 3600:
+        risks.append(f"Длительный прогон (~{est_qwen_sec // 3600}ч Qwen) — LM Studio/ngrok должны держаться всё время.")
 
     return {
         "scope": scope, "pair_ids": ids, "total_pairs": len(ids),
@@ -565,6 +619,28 @@ def list_jobs(session_id: str) -> list[dict]:
     return out
 
 
+def find_active_pipeline_job(session_id: str) -> Optional[dict]:
+    """#67: вернуть активный (running/queued с ЖИВОЙ Task) pipeline-job сессии.
+
+    Single-flight guard: локальный LM Studio один, второй параллельный Qwen→Opus
+    job той же сессии топтался бы на инстансе (ctx делится на слоты → сбои).
+    Stale-job (running/queued без живой asyncio.Task — после рестарта uvicorn) НЕ
+    считается активным: его перехватывает _maybe_mark_interrupted. Возвращает
+    None, если активного прогона нет.
+    """
+    bucket = _active_tasks.get(session_id) or {}
+    for p in sorted(_jobs_dir(session_id).glob("*.json")):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                job = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if job.get("status") not in ("running", "queued"):
+            continue
+        task = bucket.get(job.get("job_id"))
+        if task is not None and not task.done():
+            return job
+    return None
 def _iso_dur_sec(start: Optional[str], end: Optional[str]) -> Optional[float]:
     """Длительность в секундах между двумя ISO-таймстампами; None если нет данных."""
     if not start or not end:
@@ -902,9 +978,22 @@ async def _qwen_lane(state: _RunState, *,
             continue
 
         it["backup_dir"] = _backup_pair_artifacts(state.session_id, pid)
-        res = await qwen_fn(state.session_id, pid, force_qwen=force_qwen, prebuild_large_sheets=prebuild)
+        # #68: прокидываем cancel родителя в дочерний md-job — но только если
+        # qwen_fn это поддерживает (тест-фейки имеют узкую сигнатуру).
+        qwen_kwargs = {"force_qwen": force_qwen, "prebuild_large_sheets": prebuild}
+        if _accepts_kwarg(qwen_fn, "parent_cancel_check"):
+            qwen_kwargs["parent_cancel_check"] = state.cancelled
+        res = await qwen_fn(state.session_id, pid, **qwen_kwargs)
         if isinstance(res, dict) and res.get("block_equivalence") is not None:
             it["block_equivalence"] = res["block_equivalence"]
+        if isinstance(res, dict) and res.get("child_job_id"):
+            # сохраняем id дочернего md-job, чтобы его можно было отменить извне
+            it["child_md_job_id"] = res["child_job_id"]
+        # #68: отмена пришла во время Qwen-прогона — не помечаем пару done,
+        # выходим из цикла (оркестратор финализирует job как cancelled).
+        if state.cancelled():
+            await state.persist()
+            break
         if (res or {}).get("status") != "done":
             _fail_qwen(job, it, (res or {}).get("error") or "qwen_failed")
             await state.persist()

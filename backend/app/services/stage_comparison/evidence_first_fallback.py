@@ -85,6 +85,10 @@ class FallbackConfig:
     # себе. False = строже (такое изменение не проходит верификацию в одиночку).
     low_conf_image_can_confirm: bool = True
     low_conf_threshold: float = 0.5
+    # #54: число одновременных per-chunk Opus-вызовов. 1 = последовательно
+    # (backward-safe, поведение идентично прежнему); 2-3 ускоряют большие пары.
+    # Детерминированный diff и merge не зависят от порядка чанков.
+    chunk_concurrency: int = 1
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -129,6 +133,8 @@ def load_fallback_config() -> FallbackConfig:
             "STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_IMAGE_CAN_CONFIRM", True),
         low_conf_threshold=_env_float(
             "STAGE_COMPARISON_EVIDENCE_S2_LOW_CONF_THRESHOLD", 0.5),
+        chunk_concurrency=_env_int(
+            "STAGE_COMPARISON_EVIDENCE_FIRST_CHUNK_CONCURRENCY", 1),
     )
 
 
@@ -917,23 +923,73 @@ def run_evidence_first_fallback(
             except Exception:  # noqa: BLE001
                 logger.exception("evidence_first_fallback: progress_cb failed")
 
-        for i, ch in enumerate(chunks):
-            _emit_progress(i)  # i завершено, чанк i+1 стартует
+        # Результаты собираем ПО ИНДЕКСУ (детерминированный порядок независимо
+        # от того, последовательно или параллельно завершились чанки).
+        chunk_results_by_idx: list[Optional[dict]] = [None] * n_chunks
+        changes_by_idx: list[list] = [[] for _ in range(n_chunks)]
+        for ch in chunks:
             if ch.total_chars > cfg.chunk_max_chars * 1.5:
                 oversize += 1
-            cr = compare_chunk(
+
+        def _run_one(ch: "Chunk") -> dict:
+            """Чистый вызов одного чанка — без мутации общего состояния
+            (безопасно для исполнения в worker-потоке)."""
+            return compare_chunk(
                 ch, shared_header, provider=provider, system_prompt=system_prompt,
                 model=model, timeout_sec=timeout_sec, work_dir=work_dir,
                 parse_fn=parse_fn, normalize_fn=normalize_change_fn,
             )
+
+        def _record(i: int, ch: "Chunk", cr: dict) -> None:
+            """Записать результат чанка (вызывается только из главного потока)."""
             durations[i] = cr.get("duration_sec")
             statuses[i] = str(cr.get("status") or "error")
-            chunk_results.append({k: v for k, v in cr.items() if k != "changes"} | {"changes_count": len(cr.get("changes") or [])})
+            chunk_results_by_idx[i] = (
+                {k: v for k, v in cr.items() if k != "changes"}
+                | {"changes_count": len(cr.get("changes") or [])}
+            )
             if cr.get("status") == "done":
-                llm_changes.extend(cr.get("changes") or [])
+                changes_by_idx[i] = cr.get("changes") or []
             else:
-                warnings_list.append(f"Чанк {ch.chunk_id}: status={cr.get('status')} ({cr.get('error') or '—'})")
-        _emit_progress(n_chunks)  # все чанки завершены
+                warnings_list.append(
+                    f"Чанк {ch.chunk_id}: status={cr.get('status')} ({cr.get('error') or '—'})"
+                )
+
+        concurrency = max(1, int(getattr(cfg, "chunk_concurrency", 1) or 1))
+        if concurrency <= 1 or n_chunks <= 1:
+            # Последовательно — поведение идентично прежнему (default).
+            for i, ch in enumerate(chunks):
+                _emit_progress(i)  # i завершено, чанк i+1 стартует
+                _record(i, ch, _run_one(ch))
+            _emit_progress(n_chunks)
+        else:
+            # #54: ограниченный пул потоков (provider.invoke = блокирующий
+            # claude -p subprocess, поток освобождает GIL на ожидании).
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            _emit_progress(0)
+            completed = 0
+            with ThreadPoolExecutor(max_workers=min(concurrency, n_chunks)) as ex:
+                futs = {ex.submit(_run_one, ch): (i, ch) for i, ch in enumerate(chunks)}
+                for fut in as_completed(futs):
+                    i, ch = futs[fut]
+                    try:
+                        cr = fut.result()
+                    except Exception as exc:  # noqa: BLE001
+                        cr = {
+                            "chunk_id": ch.chunk_id, "title": ch.title,
+                            "left_pages": ch.left_pages, "right_pages": ch.right_pages,
+                            "total_chars": ch.total_chars, "status": "error",
+                            "changes": [], "error": f"thread_exception:{type(exc).__name__}:{exc}",
+                            "duration_sec": 0.0,
+                        }
+                    _record(i, ch, cr)
+                    completed += 1
+                    _emit_progress(completed)
+
+        chunk_results = [c for c in chunk_results_by_idx if c is not None]
+        for lst in changes_by_idx:
+            llm_changes.extend(lst)
+        diagnostics["chunk_concurrency"] = concurrency
         diagnostics["chunk_results"] = chunk_results
         diagnostics["predicted_total_sec"] = predicted_total
         if oversize:

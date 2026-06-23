@@ -198,6 +198,25 @@ def estimate_gemini_direct_cost(
     return round(cost, 8)
 
 
+# #73: для резервирования бюджета (reserve_paid_api) оцениваем prompt-токены
+# батча по числу блоков (каждый ≈ один кроп-изображение + текст), БЕЗ построения
+# messages — чтобы guard отрабатывал раньше дорогой сборки промпта. Завышение
+# безопасно: реальный cost из record_paid обычно меньше.
+_RESERVATION_IMAGE_TOKENS = 1600
+_RESERVATION_TEXT_TOKENS_PER_BLOCK = 400
+_RESERVATION_BASE_PROMPT_TOKENS = 600
+_RESERVATION_OUTPUT_TOKENS = 8192
+
+
+def _estimate_batch_prompt_tokens(batch_data: dict) -> int:
+    """Грубая оценка prompt-токенов батча для резервирования дневного лимита."""
+    n_blocks = len(batch_data.get("blocks", []) or [])
+    return (
+        _RESERVATION_BASE_PROMPT_TOKENS
+        + n_blocks * (_RESERVATION_IMAGE_TOKENS + _RESERVATION_TEXT_TOKENS_PER_BLOCK)
+    )
+
+
 def is_gemini_direct_model(model_id: str) -> bool:
     """Return True if this model ID should use the direct Gemini provider."""
     native = resolve_direct_model_id(model_id)
@@ -739,24 +758,80 @@ async def run_block_batch_gemini_direct(
     batch_id = batch_data.get("batch_id", 0)
     input_block_ids = [b["block_id"] for b in batch_data.get("blocks", [])]
 
-    messages = prompt_builder.build_block_batch_messages(
-        batch_data, project_info, project_id, total_batches
+    # Paid API guard: gemini_direct — платный путь и ОБЯЗАН уважать kill-switch
+    # PAID_API_ENABLED и дневной лимит (reserc.md #3/#88/#105). #73: резервируем
+    # оценку стоимости под локом (reserve_paid_api), а НЕ просто assert_ —
+    # block_analysis гоняет батчи конкурентно (Semaphore+gather), и без резервации
+    # параллельные gemini_direct-вызовы гонкой проскакивали дневной лимит. Паттерн
+    # reserve→try/finally release зеркалит llm_runner. Reserve идёт ДО сборки
+    # messages: при блокировке промпт зря не строим.
+    from backend.app.services.llm.paid_api_guard import (
+        PaidApiBlockedError,
+        PaidApiContext,
+        release_reservation,
+        reserve_paid_api,
     )
-
-    result = await run_gemini_direct_block_batch(
-        messages,
-        input_block_ids,
-        batch_id=batch_id,
-        model_id=model_id,
+    est_cost = estimate_gemini_direct_cost(
+        model_id,
+        _estimate_batch_prompt_tokens(batch_data),
+        _RESERVATION_OUTPUT_TOKENS,
         tier=tier,
-        api_key=api_key,
-        cache_manager=cache_manager,
     )
+    try:
+        reservation = reserve_paid_api(PaidApiContext(
+            source="gemini_direct.run_block_batch",
+            model=model_id,
+            project_id=project_id,
+            stage="block_analysis",
+            estimated_cost_usd=est_cost,
+        ))
+    except PaidApiBlockedError as exc:
+        msg = f"paid_api_blocked: {exc.reason}"
+        return 1, msg, GeminiBlockBatchResult(
+            batch_id=batch_id, model_id=model_id, is_error=True,
+            error_type="provider", error_message=msg,
+        )
 
-    if not result.is_error and result.parsed_data:
-        from backend.app.services.llm.claude_runner import _resolve_output_dir, _write_json
-        output_path = _resolve_output_dir(project_id) / f"block_batch_{batch_id:03d}.json"
-        _write_json(output_path, result.parsed_data)
+    # #73: освобождаем резервацию на ЛЮБОМ выходе после reserve (TTL в guard
+    # самозалечивает пропущенный release, но явный finally — точнее).
+    try:
+        messages = prompt_builder.build_block_batch_messages(
+            batch_data, project_info, project_id, total_batches
+        )
+        result = await run_gemini_direct_block_batch(
+            messages,
+            input_block_ids,
+            batch_id=batch_id,
+            model_id=model_id,
+            tier=tier,
+            api_key=api_key,
+            cache_manager=cache_manager,
+        )
 
-    exit_code = 0 if not result.is_error else 1
-    return exit_code, result.raw_text, result
+        if not result.is_error and result.parsed_data:
+            from backend.app.services.llm.claude_runner import _resolve_output_dir, _write_json
+            output_path = _resolve_output_dir(project_id) / f"block_batch_{batch_id:03d}.json"
+            _write_json(output_path, result.parsed_data)
+
+        # Учёт платного вызова (reserc.md #3): единый paid_cost_tracker.record_paid —
+        # paid_cost.json + paid_cost_events.jsonl растут вместе. record_paid сам
+        # пропускает cost<=0 (cache/ошибка), поэтому вызов безопасен.
+        if not result.is_error:
+            try:
+                from backend.app.services.common.usage_service import paid_cost_tracker
+                paid_cost_tracker.record_paid(
+                    round(float(result.cost_usd or 0.0), 8),
+                    model=result.model_id or model_id,
+                    project_id=project_id,
+                    stage="block_analysis",
+                    source="gemini_direct",
+                    input_tokens=result.prompt_tokens or 0,
+                    output_tokens=result.output_tokens or 0,
+                )
+            except Exception:
+                logger.exception("gemini_direct: record_paid failed")
+
+        exit_code = 0 if not result.is_error else 1
+        return exit_code, result.raw_text, result
+    finally:
+        release_reservation(reservation)

@@ -26,6 +26,7 @@ backend/app/data/stage_comparison_saved_config.json
 *.log
 *.tmp
 *.cache
+.ci_last_report.xml
 
 # === Local settings ===
 .claude/settings.local.json
@@ -64,6 +65,11 @@ Desktop.ini
 *.bak
 *_temp.py
 check_*.py
+# committed tools (exceptions to the scratch check_*.py rule above)
+!scripts/projects_v2/check_backend_parity.py
+!scripts/projects_v2/check_shadow_api.py
+!scripts/projects_v2/check_ui_contract_parity.py
+!scripts/projects_v2/check_cutover_readiness.py
 find_sections*.py
 .codex_test_tmp/
 tmp_write_probe/
@@ -130,22 +136,52 @@ comparison_sources/**/*
 # heavy local experiment workspace (renders, ~1.2G) — not for git
 experiments/qwen_problem_block_recognition/
 
-# === Live project / runtime data (Tier A) ===
-# Проектные OCR-артефакты, версии и метаданные — live-data, не для git.
-# Файлы остаются на диске; git их просто не отслеживает.
-projects/
+# === projects_v2 runtime/generated data (миграция, не для git) ===
+/projects_v2/
 
-# Live runtime state in backend/app/data (пофайлово — НЕ вся папка!)
-backend/app/data/objects.json
-backend/app/data/project_groups.json
-backend/app/data/missing_norms_vault.json
+# === Папка дисциплин для сравнения (локальная, не для git) ===
+дисциплины для сравнения/
 
-# Live expert/knowledge data
-knowledge_base/decisions_log.json
+# === Локальные бэкапы, диагностика и одноразовые артефакты (не для git) ===
+_clean_test_backup_*/
+diagnostics_ab/
+graphify-out/
+kb_orphans_*.md
+*.bak_*
+*.json.bak_*
 
-# Local generated reports / scratch
+# === Runtime-стор плана работ (раздел «График работ») — не коммитить ===
+knowledge_base/work_plans.json
+knowledge_base/work_plans.json.tmp
+knowledge_base/work_plans.json.broken-*
+
+# === Local migration/repair backups (runtime, не для git) ===
+# Бэкапы миграции/ремонта и одноразовые артефакты. `*.tmp` уже покрыт выше.
+/_v2_shadow_backup_*/
+*.bak*
+*.backup*
+*.broken-*
+*.tmp.*
+project_rename.reverse.json
+
+# === Live project data (untracked 2026-06-20) ===
+/projects/
+
+# === Backend runtime state (точечно, НЕ *.json — иначе заденет seed-конфиги) ===
+/backend/app/data/objects.json
+/backend/app/data/project_groups.json
+/backend/app/data/missing_norms_vault.json
+/backend/app/data/prepare_queue.json
+/backend/app/data/hidden_projects.json
+/backend/app/data/usage_offsets.json
+/backend/app/data/users.json
+/backend/app/data/external_registers/
+
+# === Knowledge base runtime ===
+/knowledge_base/decisions_log.json
+/knowledge_base/patterns.json
+
+# === Из origin/main: локальный scratch + seed-конфиг под защиту ===
 /nnn.md
 /сравнение.xlsx
-
-# Static config seed — keep tracked despite rules above
 !backend/app/data/consumer_synonyms.json

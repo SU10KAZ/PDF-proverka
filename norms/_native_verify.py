@@ -10,26 +10,90 @@ Fallback: при любой ошибке pipeline_service возвращаетс
 from __future__ import annotations
 
 import json
+import logging
+import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-# Путь к Norms-main инструментам и его venv (нужен для sentence_transformers)
-NORMS_TOOLS_PATH = Path("/home/coder/projects/Norms/tools")
+logger = logging.getLogger(__name__)
+
+# #34: тулчейн норм (norms_api + venv + индекс пунктов paragraphs.jsonl) — теперь
+# in-repo norms/tools, тот же корень, что и authoritative status_index. Раньше был
+# хардкод на внешний /home/coder/projects/Norms/tools → статусы (external_provider)
+# и цитаты пунктов (этот модуль) могли расходиться. Переопределяется env
+# NORMS_TOOLS_PATH.
+def _default_norms_tools_path() -> Path:
+    return Path(__file__).resolve().parent / "tools"
+
+
+NORMS_TOOLS_PATH = Path(os.environ.get("NORMS_TOOLS_PATH", str(_default_norms_tools_path())))
 NORMS_VENV_SITE = NORMS_TOOLS_PATH / "venv/lib/python3.12/site-packages"
+
+
+def _warn_if_index_paths_diverge() -> None:
+    """#34: предупредить, если индекс пунктов (этот модуль) и индекс статусов
+    (external_provider) указывают на РАЗНЫЕ базы. Статусы и цитаты должны идти из
+    одного источника, иначе вердикт «норма заменена» и текст её пункта могут не
+    соответствовать друг другу. Диагностика fail-soft — не роняет stage."""
+    try:
+        from norms.external_provider import NORMS_STATUS_INDEX_PATH
+        para_index = (NORMS_TOOLS_PATH / "status_index.json").resolve()
+        status_index = Path(NORMS_STATUS_INDEX_PATH).resolve()
+        if para_index != status_index:
+            logger.warning(
+                "Норм-индексы расходятся (#34): цитаты/пункты из %s, статусы из %s; "
+                "должны указывать на один источник.",
+                para_index, status_index,
+            )
+    except Exception:  # pragma: no cover - диагностика не должна ронять stage
+        pass
 
 # Jaccard threshold: при совпадении >= этого значения считаем пункт верным.
 # Консервативное значение — неправильные пункты дают 0-10%, правильные >35%.
 SIMILARITY_THRESHOLD = 0.30
+
+# #35: числовая чувствительность. Jaccard по словам почти не реагирует на ОДНО
+# изменённое число среди десятков слов («ток 16А» vs «ток 25А» → высокий
+# Jaccard). Если слова совпали, но БОЛЬШИНСТВО заявленных в цитате числовых
+# значений (токи/сечения/ширины) в пункте отсутствуют — не подтверждаем молча.
+# Порог: подтверждаем только при numeric_recall >= этого значения (если в цитате
+# вообще есть числа). Это строго повышает precision — новых подтверждений не даёт.
+NUMERIC_MIN_RECALL = 0.5
+
+# Значимые числовые токены: сечения (5x10, 4х185), число+единица (160А, 0,5с,
+# 4 мм), либо самостоятельное число из >=2 цифр (100, 1000).
+_VALUE_RE = re.compile(
+    r"\d+(?:[.,]\d+)?\s*x\s*\d+(?:[.,]\d+)?"
+    r"|\d+(?:[.,]\d+)?\s*(?:а|a|квт|кв|вт|в|мм2|мм|м|с|s|%)\b"
+    r"|\b\d{2,}(?:[.,]\d+)?\b",
+    re.IGNORECASE,
+)
+
+
+def _salient_numbers(text: str) -> set[str]:
+    """Нормализованные значимые числовые токены текста (#35)."""
+    if not text:
+        return set()
+    t = text.lower().replace("×", "x").replace("х", "x")
+    return {re.sub(r"\s+", "", m).replace(",", ".") for m in _VALUE_RE.findall(t)}
+
+
+def _numeric_recall(nums_claimed: set[str], nums_actual: set[str]):
+    """Доля чисел цитаты, найденных в тексте пункта. None — если чисел нет."""
+    if not nums_claimed:
+        return None
+    return len(nums_claimed & nums_actual) / len(nums_claimed)
 
 # Минимальный score для semantic_search чтобы предложить кандидата
 SEMANTIC_SCORE_MIN = 0.70
 
 
 def _import_norms_api():
-    """Импортировать norms_api из Norms-main (lazy, с path-инъекцией)."""
+    """Импортировать norms_api из норм-тулчейна (lazy, с path-инъекцией)."""
+    _warn_if_index_paths_diverge()
     venv = str(NORMS_VENV_SITE)
     tools = str(NORMS_TOOLS_PATH)
     if venv not in sys.path:
@@ -150,10 +214,33 @@ def verify_paragraphs_native(
         if found and has_text and actual_text:
             entry["actual_quote"] = actual_text[:400]
             similarity = _jaccard(claimed_quote, actual_text)
+            entry["similarity"] = round(similarity, 3)
+            # #35: числовая сверка цитаты с пунктом.
+            nums_claimed = _salient_numbers(claimed_quote)
+            nums_actual = _salient_numbers(actual_text)
+            numeric_recall = _numeric_recall(nums_claimed, nums_actual)
+            entry["numeric_recall"] = (
+                round(numeric_recall, 3) if numeric_recall is not None else None
+            )
 
-            if similarity >= SIMILARITY_THRESHOLD:
+            words_ok = similarity >= SIMILARITY_THRESHOLD
+            numbers_ok = numeric_recall is None or numeric_recall >= NUMERIC_MIN_RECALL
+
+            if words_ok and numbers_ok:
                 entry["paragraph_verified"] = True
                 entry["mismatch_details"] = ""
+            elif words_ok and not numbers_ok:
+                # Слова совпали, но большинство чисел цитаты в пункте отсутствуют.
+                entry["paragraph_verified"] = False
+                missing = sorted(nums_claimed - nums_actual)
+                entry["mismatch_details"] = (
+                    f"п. {paragraph_num}: текст похож (similarity={similarity:.2f}), но "
+                    f"числа цитаты не найдены в пункте "
+                    f"(отсутствуют: {', '.join(missing)}; numeric_recall={numeric_recall:.2f})."
+                )
+                _add_semantic_candidate(
+                    entry, claimed_quote, matched_code, paragraph_num, norms_api
+                )
             else:
                 entry["paragraph_verified"] = False
                 short_actual = actual_text[:200]

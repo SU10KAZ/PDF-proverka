@@ -11,6 +11,7 @@ from backend.app.models.expert_review import (
     ExpertReviewSubmission, CustomerConfirmRequest, PatternActionRequest,
 )
 from backend.app.services.common import version_service
+from backend.app.services.common.project_service import ProjectNotResolvedError
 import backend.app.services.knowledge_base.knowledge_base_service as kb_svc
 import backend.app.services.knowledge_base.missing_norms_service as mn_svc
 
@@ -40,6 +41,9 @@ async def submit_expert_review(
     try:
         result = kb_svc.save_expert_review(project_id, body.decisions, body.reviewer, removed_ids=body.removed_ids)
         return {"status": "ok", **result}
+    except ProjectNotResolvedError as e:
+        # project_id не резолвится в реальную папку → НЕ создаём orphan _output.
+        raise HTTPException(404, f"Project directory not resolved: {e}")
     except Exception as e:
         raise HTTPException(500, f"Ошибка сохранения: {e}")
 

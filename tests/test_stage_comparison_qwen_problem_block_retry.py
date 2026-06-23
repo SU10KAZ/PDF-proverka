@@ -126,6 +126,37 @@ def test_disabled_flag_never_retries():
     assert not ok and r == "disabled"
 
 
+def test_proactive_tiling_for_dense_scheme_when_flag_on():
+    """Чистый dense_scheme-блок (прошёл все problem-проверки) тайлится
+    проактивно, если STAGE_COMPARISON_QWEN_TILE_PROACTIVE_FOR_DENSE on."""
+    good_block = {"status": "done", "usable_for_diff": True,
+                  "confidence_adjusted": 0.9, "description": _good_desc(),
+                  "block_type": "dense_scheme"}
+    ok, r = P.should_retry_problem_block(
+        good_block, None, {}, _cfg(proactive_for_dense=True))
+    assert ok and r == "large_graphic_proactive"
+    # scheme — тоже dense-семейство
+    ok2, r2 = P.should_retry_problem_block(
+        {**good_block, "block_type": "scheme"}, None, {},
+        _cfg(proactive_for_dense=True))
+    assert ok2 and r2 == "large_graphic_proactive"
+
+
+def test_proactive_tiling_off_by_default_and_skips_non_dense():
+    good_dense = {"status": "done", "usable_for_diff": True,
+                  "confidence_adjusted": 0.9, "description": _good_desc(),
+                  "block_type": "dense_scheme"}
+    # флаг выключен → ok
+    ok, r = P.should_retry_problem_block(good_dense, None, {}, _cfg())
+    assert not ok and r == "ok"
+    # флаг включён, но это не схема (план/таблица/общее) → не тайлим проактивно
+    for bt in ("plan", "table_legend", "photo_or_general", "stamp"):
+        ok2, r2 = P.should_retry_problem_block(
+            {**good_dense, "block_type": bt}, None, {},
+            _cfg(proactive_for_dense=True))
+        assert not ok2 and r2 == "ok", bt
+
+
 # ── 8-10: tiling ─────────────────────────────────────────────────────────────
 
 def test_tile_splitter_creates_overlapping_tiles():

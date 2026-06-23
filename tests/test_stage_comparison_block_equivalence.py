@@ -226,6 +226,28 @@ def test_compare_text_equal_and_changed():
     assert 0.0 < ch["similarity"] < 1.0
 
 
+def test_compare_text_strips_html_aligns_with_text_block_equivalence():
+    """reserc.md #60/#13: HTML-обёрнутый ocr_text не должен давать ложный
+    'changed'; слой block_equivalence согласован с text_block_equivalence."""
+    from backend.app.services.stage_comparison.text_block_equivalence import (
+        normalize_block_text,
+    )
+
+    plain = "Кабель ВВГнг 5x10"
+    wrapped = '<div data-bbox="1,2,3,4">Кабель ВВГнг 5x10</div>'
+    eq = be.compare_text_blocks(
+        be.EqBlock("o", 1, "text", text=plain),
+        be.EqBlock("n", 1, "text", text=wrapped))
+    assert eq["text_equal"] is True
+    # оба слоя нормализуют один текст одинаково (дедуп нормализаторов)
+    assert normalize_block_text(plain) == normalize_block_text(wrapped)
+    # реальное изменение числа всё ещё ловится сквозь HTML-обёртку
+    ch = be.compare_text_blocks(
+        be.EqBlock("o", 1, "text", text=wrapped),
+        be.EqBlock("n", 1, "text", text='<div>Кабель ВВГнг 5x16</div>'))
+    assert ch["text_equal"] is False
+
+
 def test_decide_text_pair_identical_is_skip_candidate():
     ob = be.EqBlock("o", 1, "text", text="A B C")
     nb = be.EqBlock("n", 1, "text", text="A B C")

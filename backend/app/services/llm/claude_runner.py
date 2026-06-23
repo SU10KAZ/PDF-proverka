@@ -26,6 +26,8 @@ import json
 import logging
 import os
 import shutil
+from contextlib import contextmanager
+from pathlib import Path
 from typing import Optional, Callable, Awaitable, Union
 
 from backend.app.core.config import (
@@ -89,6 +91,8 @@ def _save_audit_trail(
     output_tokens: int,
     duration_ms: int,
     result_data,
+    *,
+    output_dir: str | Path | None = None,
 ):
     """Сохранить копию результата LLM-вызова в _output/audit_trail/.
 
@@ -98,7 +102,7 @@ def _save_audit_trail(
     from datetime import datetime
 
     try:
-        trail_dir = _resolve_output_dir(project_id) / "audit_trail"
+        trail_dir = _resolve_output_dir(project_id, output_dir=output_dir) / "audit_trail"
         trail_dir.mkdir(parents=True, exist_ok=True)
 
         now = datetime.now()
@@ -284,18 +288,54 @@ def _write_json(path, data):
     )
 
 
-def _resolve_output_dir(project_id: str):
+def _resolve_output_dir(project_id: str, output_dir: str | Path | None = None):
     """Получить _output/ директорию активной версии проекта.
 
     Использует `bind_version()` ContextVar (выставляется на старте каждого
     pipeline job в `_run_batch_queue`) или latest_version_id.
     """
+    if output_dir:
+        return Path(output_dir)
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     from backend.app.services.common import version_service
     from backend.app.services.common.project_service import resolve_project_dir
     try:
         return version_service.resolve_version_output_dir(project_id)
     except (version_service.VersionNotFoundError, FileNotFoundError):
         return resolve_project_dir(project_id) / "_output"
+
+
+@contextmanager
+def _scoped_audit_paths(
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    project_id: str | None = None,
+    version_id: str | None = None,
+):
+    scoped_env = {}
+    if output_dir is not None:
+        scoped_env["AUDIT_OUTPUT_DIR"] = str(output_dir)
+    if version_dir is not None:
+        scoped_env["AUDIT_VERSION_DIR"] = str(version_dir)
+    if project_id is not None:
+        scoped_env["AUDIT_PROJECT_ID"] = str(project_id)
+    if version_id is not None:
+        scoped_env["AUDIT_VERSION_ID"] = str(version_id)
+
+    previous = {key: os.environ.get(key) for key in scoped_env}
+    os.environ.update(scoped_env)
+    try:
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -308,26 +348,43 @@ async def run_text_analysis(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 01_text_analysis.json (динамический выбор провайдера)."""
     if is_claude_stage("text_analysis"):
         model = get_stage_model("text_analysis")
-        task_text = prepare_text_analysis_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_text_analysis_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_TEXT_ANALYSIS_TIMEOUT,
             on_output, stage="text_analysis", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "01_text_analysis", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            _save_audit_trail(project_id, "01_text_analysis", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
     result = await llm_runner.run_llm(stage="text_analysis", messages=messages, timeout=1800)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "01_text_analysis.json"
+        output_path = resolved_output_dir / "01_text_analysis.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(
             json.dumps(result.json_data, ensure_ascii=False, indent=2), encoding="utf-8",
@@ -336,11 +393,15 @@ async def run_text_analysis(
     if on_output:
         await _send_status_llm(on_output, result)
 
-    _save_audit_trail(
-        project_id, "01_text_analysis", result.model,
-        result.input_tokens, result.output_tokens,
-        result.duration_ms, _build_llm_audit_payload(result),
-    )
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        _save_audit_trail(
+            project_id, "01_text_analysis", result.model,
+            result.input_tokens, result.output_tokens,
+            result.duration_ms, _build_llm_audit_payload(result),
+        )
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
@@ -352,12 +413,20 @@ async def run_findings_merge(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить свод замечаний из текста + блоков -> 03_findings.json (динамический выбор провайдера)."""
     model = get_stage_model("findings_merge")
 
     if is_claude_stage("findings_merge"):
-        task_text = prepare_findings_merge_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_findings_merge_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, FINDINGS_MERGE_TOOLS, CLAUDE_FINDINGS_MERGE_TIMEOUT,
             on_output, stage="findings_merge", project_id=project_id,
@@ -367,6 +436,7 @@ async def run_findings_merge(
         _save_audit_trail(
             project_id, "03_findings_merge", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
         )
 
         return exit_code, combined, cli_result
@@ -375,11 +445,15 @@ async def run_findings_merge(
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_findings_merge_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_findings_merge_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="findings_merge", messages=messages, timeout=1800)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "03_findings.json"
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / "03_findings.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -388,6 +462,7 @@ async def run_findings_merge(
         project_id, "03_findings_merge", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -402,15 +477,23 @@ async def run_norm_verify(
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
     project_info: Optional[dict] = None,
     llm_out_filename: str = "norm_checks_llm.json",
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить верификацию нормативных ссылок -> norm_checks_llm.json (динамический выбор провайдера)."""
     model = get_stage_model("norm_verify")
 
     if is_claude_stage("norm_verify"):
-        task_text = prepare_norm_verify_task(
-            norms_list_text, project_id,
-            project_info=project_info, llm_out_filename=llm_out_filename,
-        )
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_norm_verify_task(
+                norms_list_text, project_id,
+                project_info=project_info, llm_out_filename=llm_out_filename,
+            )
         exit_code, combined, cli_result = await _run_cli(
             task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_VERIFY_TIMEOUT,
             on_output, stage="norm_verify", project_id=project_id,
@@ -420,6 +503,7 @@ async def run_norm_verify(
         _save_audit_trail(
             project_id, "04_norm_verify", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
         )
 
         return exit_code, combined, cli_result
@@ -428,11 +512,15 @@ async def run_norm_verify(
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_norm_verify_messages(norms_list_text, project_id, project_info)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_norm_verify_messages(norms_list_text, project_id, project_info)
     result = await llm_runner.run_llm(stage="norm_verify", messages=messages, timeout=600)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / llm_out_filename
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / llm_out_filename
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -441,6 +529,7 @@ async def run_norm_verify(
         project_id, "04_norm_verify", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -454,15 +543,23 @@ async def run_norm_fix(
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
     project_info: Optional[dict] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить пересмотр замечаний с учётом актуальных норм (динамический выбор провайдера)."""
     model = get_stage_model("norm_fix")
 
     if is_claude_stage("norm_fix"):
-        task_text = prepare_norm_fix_task(
-            findings_to_fix_text, project_id,
-            project_info=project_info,
-        )
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_norm_fix_task(
+                findings_to_fix_text, project_id,
+                project_info=project_info,
+            )
         exit_code, combined, cli_result = await _run_cli(
             task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT,
             on_output, stage="norm_fix", project_id=project_id,
@@ -472,6 +569,7 @@ async def run_norm_fix(
         _save_audit_trail(
             project_id, "04b_norm_fix", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
         )
 
         return exit_code, combined, cli_result
@@ -480,12 +578,16 @@ async def run_norm_fix(
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_norm_fix_messages(findings_to_fix_text, project_id, project_info)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_norm_fix_messages(findings_to_fix_text, project_id, project_info)
     result = await llm_runner.run_llm(stage="norm_fix", messages=messages, timeout=600)
 
     if result.json_data and not result.is_error:
         # Пишем в 03_findings.json (pipeline сам создаст 03a как снэпшот)
-        output_path = _resolve_output_dir(project_id) / "03_findings.json"
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / "03_findings.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -494,6 +596,7 @@ async def run_norm_fix(
         project_id, "04b_norm_fix", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -506,10 +609,18 @@ async def run_norm_requote(
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
     project_info: Optional[dict] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, "AnyResult"]:
     """Уточнить цитаты норм для замечаний с [ручная сверка] через MCP semantic search."""
     model = get_stage_model("norm_requote")
-    task_text = prepare_norm_requote_task(project_id, project_info=project_info)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        task_text = prepare_norm_requote_task(project_id, project_info=project_info)
     exit_code, combined, cli_result = await _run_cli(
         task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_REQUOTE_TIMEOUT,
         on_output, stage="norm_requote", project_id=project_id,
@@ -518,6 +629,7 @@ async def run_norm_requote(
     _save_audit_trail(
         project_id, "04c_norm_requote", model,
         0, 0, cli_result.duration_ms, cli_result.result_text,
+        output_dir=output_dir,
     )
     return exit_code, combined, cli_result
 
@@ -528,12 +640,20 @@ async def run_optimization(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
     model = get_stage_model("optimization")
 
     if is_claude_stage("optimization"):
-        task_text = prepare_optimization_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_optimization_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
             on_output, stage="optimization", project_id=project_id,
@@ -543,6 +663,7 @@ async def run_optimization(
         _save_audit_trail(
             project_id, "05_optimization", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
         )
 
         return exit_code, combined, cli_result
@@ -551,11 +672,15 @@ async def run_optimization(
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_optimization_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_optimization_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="optimization", messages=messages, timeout=3600)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "optimization.json"
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / "optimization.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -564,6 +689,7 @@ async def run_optimization(
         project_id, "05_optimization", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -582,6 +708,10 @@ async def run_block_batch(
     project_id: str,
     total_batches: int,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ одного пакета image-блоков -> block_batch_NNN.json (динамический выбор провайдера)."""
     from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT, BLOCK_ANALYSIS_TOOLS
@@ -592,7 +722,11 @@ async def run_block_batch(
 
     if is_claude_stage("block_batch"):
         from backend.app.core.config import CLAUDE_BLOCK_BATCH_CLEAN_CWD
-        task_text = prepare_block_batch_task(batch_data, project_info, project_id, total_batches)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_block_batch_task(batch_data, project_info, project_id, total_batches)
         exit_code, combined, cli_result = await _run_cli(
             task_text, BLOCK_ANALYSIS_TOOLS, CLAUDE_BLOCK_ANALYSIS_TIMEOUT,
             on_output, stage=stage_key, project_id=project_id, model=model,
@@ -602,6 +736,7 @@ async def run_block_batch(
         _save_audit_trail(
             project_id, f"02_block_batch_{batch_id:03d}", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
         )
 
         return exit_code, combined, cli_result
@@ -644,10 +779,14 @@ async def run_block_batch(
 
     result = None
     for attempt_idx, (dpi, scale) in enumerate(dpi_tiers):
-        messages = prompt_builder.build_block_batch_messages(
-            batch_data, project_info, project_id, total_batches,
-            image_scale=scale,
-        )
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_block_batch_messages(
+                batch_data, project_info, project_id, total_batches,
+                image_scale=scale,
+            )
         result = await llm_runner.run_llm(
             stage=stage_key,
             messages=messages,
@@ -666,7 +805,7 @@ async def run_block_batch(
         break
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / f"block_batch_{batch_id:03d}.json"
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / f"block_batch_{batch_id:03d}.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -675,6 +814,7 @@ async def run_block_batch(
         project_id, f"02_block_batch_{batch_id:03d}", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, result.json_data,
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -781,6 +921,7 @@ async def _run_deterministic_findings_critic(
     _save_audit_trail(
         project_id, f"03b_findings_critic{chunk_suffix}", model,
         0, 0, duration_ms, result.to_review_dict(project_id),
+        output_dir=output_dir,
     )
     return 0, summary, CLIResult(
         result_text=summary, duration_ms=duration_ms, num_turns=0,
@@ -792,6 +933,10 @@ async def run_findings_critic(
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
     chunk_suffix: str = "",
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить критическую проверку замечаний (динамический выбор провайдера).
 
@@ -801,7 +946,7 @@ async def run_findings_critic(
     """
     from backend.app.core.config import CLAUDE_FINDINGS_CRITIC_TIMEOUT, FINDINGS_REVIEW_TOOLS
 
-    output_dir = _resolve_output_dir(project_id)
+    output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
 
     # Детерминированный critic (default ON). Заменяет агентный Read-цикл по
     # многомегабайтным JSON, который падал по таймауту/лимиту ходов.
@@ -812,12 +957,16 @@ async def run_findings_critic(
 
     if is_claude_stage("findings_critic"):
         model = get_stage_model("findings_critic")
-        task_text = prepare_findings_critic_task(project_info, project_id, chunk_suffix=chunk_suffix)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_findings_critic_task(project_info, project_id, chunk_suffix=chunk_suffix)
         exit_code, combined, cli_result = await _run_cli(
             task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CRITIC_TIMEOUT,
             on_output, stage="findings_critic", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, f"03b_findings_critic{chunk_suffix}", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, f"03b_findings_critic{chunk_suffix}", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text, output_dir=output_dir)
         return exit_code, combined, cli_result
 
     # OpenRouter path
@@ -825,7 +974,11 @@ async def run_findings_critic(
     import backend.app.services.llm.llm_runner as llm_runner
 
     if chunk_suffix:
-        messages = prompt_builder.build_findings_critic_messages(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_findings_critic_messages(project_info, project_id)
         chunk_input_path = output_dir / f"03_findings_review_input{chunk_suffix}.json"
         if chunk_input_path.exists():
             chunk_data = chunk_input_path.read_text(encoding="utf-8")
@@ -839,7 +992,11 @@ async def run_findings_critic(
                         flags=re.DOTALL,
                     )
     else:
-        messages = prompt_builder.build_findings_critic_messages(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_findings_critic_messages(project_info, project_id)
 
     result = await llm_runner.run_llm(stage="findings_critic", messages=messages, timeout=1200)
 
@@ -855,6 +1012,7 @@ async def run_findings_critic(
         project_id, stage_name, result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -895,6 +1053,7 @@ async def _run_deterministic_findings_corrector(
     )
     _save_audit_trail(
         project_id, "03c_findings_corrector", model, 0, 0, duration_ms, summary,
+        output_dir=output_dir,
     )
     return 0, summary, CLIResult(
         result_text=summary, duration_ms=duration_ms, num_turns=0,
@@ -907,6 +1066,10 @@ async def run_findings_corrector(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить корректировку замечаний по вердиктам критика (динамический выбор провайдера).
 
@@ -915,7 +1078,7 @@ async def run_findings_corrector(
     """
     from backend.app.core.config import CLAUDE_FINDINGS_CORRECTOR_TIMEOUT, FINDINGS_REVIEW_TOOLS
 
-    output_dir = _resolve_output_dir(project_id)
+    output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
 
     # БЭКАП перед перезаписью
     findings_path = output_dir / "03_findings.json"
@@ -933,19 +1096,27 @@ async def run_findings_corrector(
 
     if is_claude_stage("findings_corrector"):
         model = get_stage_model("findings_corrector")
-        task_text = prepare_findings_corrector_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_findings_corrector_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, FINDINGS_REVIEW_TOOLS, CLAUDE_FINDINGS_CORRECTOR_TIMEOUT,
             on_output, stage="findings_corrector", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "03c_findings_corrector", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "03c_findings_corrector", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text, output_dir=output_dir)
         return exit_code, combined, cli_result
 
     # OpenRouter path
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_findings_corrector_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_findings_corrector_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="findings_corrector", messages=messages, timeout=1200)
 
     if result.json_data and not result.is_error:
@@ -957,6 +1128,7 @@ async def run_findings_corrector(
         project_id, "03c_findings_corrector", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -969,29 +1141,41 @@ async def run_optimization_critic(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить критическую проверку оптимизации (динамический выбор провайдера)."""
     from backend.app.core.config import CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT, OPTIMIZATION_REVIEW_TOOLS
 
     if is_claude_stage("optimization_critic"):
         model = get_stage_model("optimization_critic")
-        task_text = prepare_optimization_critic_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_optimization_critic_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, OPTIMIZATION_REVIEW_TOOLS, CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT,
             on_output, stage="optimization_critic", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "05b_optimization_critic", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "05b_optimization_critic", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text, output_dir=output_dir)
         return exit_code, combined, cli_result
 
     # OpenRouter path
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_optimization_critic_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_optimization_critic_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="optimization_critic", messages=messages, timeout=1200)
 
     if result.json_data and not result.is_error:
-        output_path = _resolve_output_dir(project_id) / "optimization_review.json"
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / "optimization_review.json"
         _write_json(output_path, result.json_data)
 
     await _send_status_llm(on_output, result)
@@ -1000,6 +1184,7 @@ async def run_optimization_critic(
         project_id, "05b_optimization_critic", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -1012,6 +1197,10 @@ async def run_optimization_corrector(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить корректировку оптимизации по вердиктам критика (динамический выбор провайдера).
 
@@ -1020,7 +1209,7 @@ async def run_optimization_corrector(
     """
     from backend.app.core.config import CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT, OPTIMIZATION_REVIEW_TOOLS
 
-    output_dir = _resolve_output_dir(project_id)
+    output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
 
     # БЭКАП перед перезаписью
     opt_path = output_dir / "optimization.json"
@@ -1030,19 +1219,27 @@ async def run_optimization_corrector(
 
     if is_claude_stage("optimization_corrector"):
         model = get_stage_model("optimization_corrector")
-        task_text = prepare_optimization_corrector_task(project_info, project_id)
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_optimization_corrector_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
             task_text, OPTIMIZATION_REVIEW_TOOLS, CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT,
             on_output, stage="optimization_corrector", project_id=project_id, model=model,
         )
-        _save_audit_trail(project_id, "05c_optimization_corrector", model, 0, 0, cli_result.duration_ms, cli_result.result_text)
+        _save_audit_trail(project_id, "05c_optimization_corrector", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text, output_dir=output_dir)
         return exit_code, combined, cli_result
 
     # OpenRouter path
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    messages = prompt_builder.build_optimization_corrector_messages(project_info, project_id)
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_optimization_corrector_messages(project_info, project_id)
     result = await llm_runner.run_llm(stage="optimization_corrector", messages=messages, timeout=1200)
 
     if result.json_data and not result.is_error:
@@ -1054,6 +1251,7 @@ async def run_optimization_corrector(
         project_id, "05c_optimization_corrector", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
     )
 
     exit_code = 0 if not result.is_error else 1
@@ -1070,33 +1268,61 @@ async def run_tile_batch(
     project_id: str,
     total_batches: int,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, LLMResult]:
     """Legacy: перенаправляет на run_block_batch."""
-    return await run_block_batch(batch_data, project_info, project_id, total_batches, on_output)
+    return await run_block_batch(
+        batch_data, project_info, project_id, total_batches, on_output,
+        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+    )
 
 
 async def run_main_audit(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Legacy: запускает text_analysis вместо старого монолитного аудита."""
-    return await run_text_analysis(project_info, project_id, on_output)
+    return await run_text_analysis(
+        project_info, project_id, on_output,
+        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+    )
 
 
 async def run_triage(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Legacy: запускает text_analysis вместо триажа."""
-    return await run_text_analysis(project_info, project_id, on_output)
+    return await run_text_analysis(
+        project_info, project_id, on_output,
+        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+    )
 
 
 async def run_smart_merge(
     project_info: dict,
     project_id: str,
     on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Legacy: запускает findings_merge вместо smart_merge."""
-    return await run_findings_merge(project_info, project_id, on_output)
+    return await run_findings_merge(
+        project_info, project_id, on_output,
+        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+    )

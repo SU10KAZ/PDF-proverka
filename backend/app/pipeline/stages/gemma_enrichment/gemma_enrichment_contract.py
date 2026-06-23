@@ -1,8 +1,10 @@
 """Contract shared by Gemma enrichment producers and pipeline guards."""
 from __future__ import annotations
 
+import contextvars
 import hashlib
 import json
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -57,6 +59,20 @@ HIGH_DETAIL_STATUSES = {"not_needed", "ok", "partial_ok", "failed", "missing", "
 COVERAGE_STATUSES = {"ok", "partial", "missing_gemma_enrichment", "high_detail_skipped_large_block"}
 WARNING_LARGE_BLOCK = "high_detail_large_block"
 
+_bound_output_root: contextvars.ContextVar[Path | None] = contextvars.ContextVar(
+    "pdf_proverka.gemma_output_root", default=None,
+)
+
+
+def bind_output_root(output_dir: Path | str | None):
+    """Bind per-job Gemma/crop output root for in-process pipeline helpers."""
+    return _bound_output_root.set(Path(output_dir) if output_dir is not None else None)
+
+
+def unbind_output_root(token) -> None:
+    _bound_output_root.reset(token)
+
+
 ENRICHMENT_MARKER_RE = re.compile(
     r"^<!--\s*ENRICHMENT:\s*(?P<model>\S+)\s*@\s*(?P<ts>\S+)\s+"
     r"blocks=(?P<ok>\d+)/(?P<total>\d+).*?-->\s*\n",
@@ -103,8 +119,43 @@ def stage02_crop_policy() -> dict[str, Any]:
     return dict(STAGE02_CROP_POLICY)
 
 
+def _looks_like_projects_v2_version_dir(project_dir: Path) -> bool:
+    return (
+        (project_dir / "01_input").is_dir()
+        or (project_dir / "02_work").is_dir()
+        or (project_dir / "version.json").is_file()
+        or project_dir.parent.name == "versions"
+    )
+
+
+def gemma_output_root(project_dir: Path | str) -> Path:
+    """Root for Gemma prepare artifacts.
+
+    Legacy/default stays ``_output``. In projects_v2_primary, a v2 version dir
+    writes prepare artifacts to ``03_analysis/latest`` unless a job binds its
+    run directory through ``bind_output_root``. The ContextVar avoids leaking
+    one job's output dir into another concurrent in-process stage.
+    """
+    bound_output_dir = _bound_output_root.get()
+    if bound_output_dir is not None:
+        return Path(bound_output_dir)
+
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
+    project_dir = Path(project_dir)
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary() and _looks_like_projects_v2_version_dir(project_dir):
+            return project_dir / "03_analysis" / "latest"
+    except Exception:
+        pass
+    return project_dir / "_output"
+
+
 def _output_dir(project_dir: Path | str, dirname: str) -> Path:
-    return Path(project_dir) / "_output" / dirname
+    return gemma_output_root(project_dir) / dirname
 
 
 def gemma_base_blocks_dir(project_dir: Path | str) -> Path:
@@ -464,7 +515,7 @@ def validate_gemma_summary(
 ) -> dict[str, Any]:
     del require_marker
     project_dir = Path(project_dir)
-    out_dir = project_dir / "_output"
+    out_dir = gemma_output_root(project_dir)
     summary_path = out_dir / "gemma_enrichment_summary.json"
     if summary is None:
         summary = load_json(summary_path)

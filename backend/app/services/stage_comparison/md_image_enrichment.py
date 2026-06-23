@@ -1528,6 +1528,20 @@ def write_cache(session_id: str, pair_id: str, key: str, payload: dict) -> None:
     tmp.replace(p)
 
 
+def _cache_unusable_for_retry(cached: Optional[dict], retry_enabled: bool) -> bool:
+    """#48: True, если кешированный блок непригоден (usable_for_diff=False) И
+    включён problem-block retry → кеш нужно байпаснуть и перегенерировать.
+
+    Старые кеш-записи без поля usable_for_diff (=None) НЕ байпасятся (не бастим
+    кеш массово). При retry_enabled=False всегда False (поведение не меняется).
+    """
+    return bool(
+        retry_enabled
+        and isinstance(cached, dict)
+        and cached.get("usable_for_diff") is False
+    )
+
+
 # ─── Сборка enriched MD ───────────────────────────────────────────────────
 
 
@@ -3973,6 +3987,14 @@ async def enrich_side(
         item["cache_key"] = cache_key
 
         cached = read_cache(session_id, pair_id, cache_key) if not force else None
+        # #48: не отдавать из кеша заведомо непригодный блок, если включён
+        # problem-block retry — свежий прогон (tiled retry) может его восстановить.
+        # Старые кеш-записи без поля usable_for_diff (=None) считаем годными
+        # (не бастим кеш массово). Гейт по _retry_cfg.enabled → при OFF поведение
+        # не меняется.
+        if cached and not force and _cache_unusable_for_retry(cached, _retry_cfg.enabled):
+            cached = None
+            item["warnings"].append("cache_bypassed_unusable_for_diff")
         if cached and not force:
             item["from_cache"] = True
             item["status"] = cached.get("status") or "done"
@@ -4017,6 +4039,9 @@ async def enrich_side(
                     write_cache(session_id, pair_id, cache_key, {
                         "status": "done", "description": item["description"],
                         "model_used": cfg.model, "raw_response_excerpt": "",
+                        # #48: храним usable_for_diff, чтобы cache-read мог
+                        # перегенерить непригодные блоки при включённом retry.
+                        "usable_for_diff": bool(item.get("usable_for_diff", True)),
                     })
                 except Exception:  # noqa: BLE001
                     logger.debug("grsh feeder cache write failed", exc_info=True)
@@ -4144,6 +4169,9 @@ async def enrich_side(
                 "created_at": _now_iso(),
                 "cache_key": cache_key,
                 "prompt_version": prompt_version_for_block,
+                # #48: сохраняем оценку пригодности — cache-read перегенерит
+                # непригодные блоки при включённом problem-block retry.
+                "usable_for_diff": bool(item.get("usable_for_diff", True)),
             }
             try:
                 write_cache(session_id, pair_id, cache_key, cache_payload)
@@ -4259,11 +4287,18 @@ async def enrich_side(
                     cache_write=lambda k, v: write_cache(session_id, pair_id, k, v),
                 )
                 if (item.get("method_used") == "tiled_retry"
-                        and _pre_status in ("error", "partial", "no_image")
                         and item.get("status") == "done"):
-                    summary.described += 1
-                    if _pre_status == "error":
-                        summary.errors = max(0, summary.errors - 1)
+                    # partial уже инкрементил described+salvaged выше → повторный
+                    # described здесь был двойным счётом. Для error/no_image
+                    # described ранее НЕ считался — учитываем его тут (reserc.md #44).
+                    if _pre_status in ("error", "no_image"):
+                        summary.described += 1
+                        if _pre_status == "error":
+                            summary.errors = max(0, summary.errors - 1)
+                    elif _pre_status == "partial":
+                        # retry поднял partial→чистый done: снимаем salvaged-счётчик,
+                        # described не трогаем (уже учтён выше).
+                        summary.salvaged = max(0, summary.salvaged - 1)
             except Exception:  # noqa: BLE001 — retry must never break enrichment
                 logger.debug("problem_block_retry hook failed (ignored)", exc_info=True)
 

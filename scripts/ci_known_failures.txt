@@ -1,0 +1,85 @@
+# Baseline известных падающих тестов (регресс-гейт, reserc.md #104).
+# Предсуществующие падения/ошибки на момент уборки 'нет CI'.
+# В основном устаревшие тесты / frontend-drift / ожидания старых флагов —
+# это НЕ регрессии прода. CI зелёный, если НЕТ новых падений сверх этого списка.
+# Пересоздать в свежем окружении: python scripts/ci_regression_gate.py --record
+# Кол-во: 78
+
+backend.tests.test_critic_v2_triage_stage::test_default_config_flags_keep_critic_v2_disabled
+backend.tests.test_critic_v2_ui_project_local_priority::test_ar_project_id_with_pdf_suffix_resolves_to_folder_without_pdf
+backend.tests.test_critic_v2_ui_project_local_priority::test_project_local_artifact_summary_recomputed
+backend.tests.test_critic_v2_ui_project_local_priority::test_project_local_artifact_takes_priority
+backend.tests.test_critic_v2_ui_project_local_priority::test_project_local_works_even_without_global
+backend.tests.test_findings_review_critic_v2_llm_gate.TestMergeLLMDecisions::test_llm_reject_downgrades_accept
+backend.tests.test_gemma_prefetch::test_pregemma_window_eq_1
+tests.test_norms_status_index_fallback::test_db_only_known_norm_is_known_unverified
+tests.test_norms_status_index_fallback::test_db_only_norm_not_authoritative_even_with_vault_present
+tests.test_norms_status_index_fallback::test_db_only_unknown_norm_is_missing
+tests.test_norms_status_index_fallback::test_empty_mode_diagnostics_reports_mode_A
+tests.test_norms_status_index_fallback::test_empty_mode_returns_safe_fallback
+tests.test_norms_status_index_fallback::test_empty_mode_supported_family_returns_missing
+tests.test_norms_status_index_fallback::test_empty_mode_unsupported_family_returns_unsupported
+tests.test_norms_status_index_fallback::test_fallback_status_index_does_not_promote_norms_db_to_authoritative
+tests.test_norms_status_index_fallback::test_family_detection[\u0412\u0421\u041d 59-88-\u0412\u0421\u041d]
+tests.test_norms_status_index_fallback::test_family_detection[\u0413\u041e\u0421\u0422 12.1.004-91-\u0413\u041e\u0421\u0422]
+tests.test_norms_status_index_fallback::test_family_detection[\u0413\u041e\u0421\u0422 \u0420 50571.5.54-2013-\u0413\u041e\u0421\u0422 \u0420]
+tests.test_norms_status_index_fallback::test_family_detection[\u041c\u0414\u0421 12-29.2006-\u041c\u0414\u0421]
+tests.test_norms_status_index_fallback::test_family_detection[\u041f\u0423\u042d-7-\u041f\u0423\u042d]
+tests.test_norms_status_index_fallback::test_family_detection[\u041f\u043e\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u041f\u0440\u0430\u0432\u0438\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u0430 \u0420\u0424 \u043e\u0442 28.05.2007 N 87-\u041f\u041f \u0420\u0424]
+tests.test_norms_status_index_fallback::test_family_detection[\u0420\u0414 34.21.122-87-\u0420\u0414]
+tests.test_norms_status_index_fallback::test_family_detection[\u0421\u041d\u0438\u041f 2.04.01-85-\u0421\u041d\u0438\u041f]
+tests.test_norms_status_index_fallback::test_family_detection[\u0421\u041f 1.13130.2020-\u0421\u041f]
+tests.test_norms_status_index_fallback::test_family_detection[\u0424\u0435\u0434\u0435\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u0437\u0430\u043a\u043e\u043d 123-\u0424\u0417-\u0424\u0417]
+tests.test_norms_status_index_fallback::test_generate_deterministic_checks_splits_known_unverified_from_missing
+tests.test_norms_status_index_fallback::test_missing_vault_only_norm_is_known_unverified
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[ \u0421\u041f 256.1325800.2016 ]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[**\u0421\u041f 256.1325800.2016**]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[\u0421\u041f  256.1325800.2016]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[\u0421\u041f 256.1325800.2016 (\u0440\u0435\u0434. 29.01.2024)]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[\u0421\u041f 256.1325800.2016 \u0441 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f\u043c\u0438]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[\u0421\u041f 256.1325800.2016]
+tests.test_norms_status_index_fallback::test_normalization_variants_resolve_to_same_norm[\u0441\u043f 256.1325800.2016]
+tests.test_norms_status_index_fallback::test_override_only_in_status_index_is_authoritative
+tests.test_norms_status_index_fallback::test_overrides_only_active
+tests.test_norms_status_index_fallback::test_overrides_only_cancelled
+tests.test_norms_status_index_fallback::test_overrides_only_replaced
+tests.test_norms_status_index_fallback::test_overrides_only_unknown
+tests.test_norms_status_index_fallback::test_vault_norm_is_authoritative
+tests.test_stage_comparison_large_sheet_enrichment::test_embed_summary_compact_does_not_exceed_limit
+tests.test_stage_comparison_md_enrichment::test_block_type_config_has_higher_sizing_for_scheme
+tests.test_stage_comparison_md_enrichment::test_block_type_config_worst_case_is_bounded
+tests.test_stage_comparison_md_enrichment::test_get_prompt_for_block_type_returns_v5_for_scheme
+tests.test_stage_comparison_md_enrichment::test_ui_findings_use_card_grid_not_table_columns
+tests.test_stage_comparison_md_enrichment::test_ui_problem_pairs_filter_excludes_done_with_salvage
+tests.test_stage_comparison_md_enrichment::test_ui_retry_errors_filters_only_real_errors
+tests.test_stage_comparison_unified_analysis::test_ui_default_subtab_is_unified
+tests.test_static_parity::test_static_file_parity[app.js-app.js]
+tests.test_static_parity::test_static_file_parity[index.html-index.html]
+tests.test_static_parity::test_static_file_parity[styles.css-styles.css]
+tests.test_ui_unified_grouped::test_grouped_endpoint_always_includes_formal_in_query
+tests.test_ui_unified_grouped::test_grouped_filters_present
+tests.test_ui_unified_grouped::test_grouped_summary_fields_present
+tests.test_ui_unified_grouped::test_html_diffs_tab_no_main_session_button
+tests.test_ui_unified_grouped::test_html_handles_value_variants
+tests.test_ui_unified_grouped::test_html_has_evidence_drawer
+tests.test_ui_unified_grouped::test_html_has_include_formal_toggle
+tests.test_ui_unified_grouped::test_html_has_view_mode_toggle
+tests.test_ui_unified_grouped::test_html_opus_panel_warns_about_too_large_and_not_ready
+tests.test_ui_unified_grouped::test_html_opus_progress_panel_fields
+tests.test_ui_unified_grouped::test_html_shows_hidden_formal_count
+tests.test_ui_unified_grouped::test_html_upload_tab_compare_button_disabled_when_qwen_running
+tests.test_ui_unified_grouped::test_html_upload_tab_has_compare_button
+tests.test_ui_unified_grouped::test_js_calls_regroup_endpoint
+tests.test_ui_unified_grouped::test_js_calls_unified_grouped_endpoint
+tests.test_ui_unified_grouped::test_js_evidence_navigation
+tests.test_ui_unified_grouped::test_js_exports_grouped_symbols
+tests.test_ui_unified_grouped::test_js_goto_prefers_current_pair_evidence
+tests.test_ui_unified_grouped::test_js_grouped_loader_sends_pair_id_when_active_pair
+tests.test_ui_unified_grouped::test_js_has_expand_helpers
+tests.test_ui_unified_grouped::test_js_has_opus_state_and_methods
+tests.test_ui_unified_grouped::test_js_has_show_formal_state
+tests.test_ui_unified_grouped::test_js_has_value_variants_helper
+tests.test_ui_unified_grouped::test_js_has_view_mode_setter
+tests.test_ui_unified_grouped::test_js_has_view_mode_state
+tests.test_ui_unified_grouped::test_js_opus_start_calls_unified_analysis_jobs_not_md_enrichment
+tests.test_ui_unified_grouped::test_js_opus_start_does_not_call_qwen

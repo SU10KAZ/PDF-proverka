@@ -207,11 +207,15 @@ def attach_stage02_coverage_to_findings(project_id: str) -> dict:
     зовут из активного pipeline job-а для V2, она будет писать в
     `_versions/v2/_output`, а не в корень.
     """
-    from backend.app.services.common import version_service
-    try:
-        output_dir = version_service.resolve_version_output_dir(project_id)
-    except (version_service.VersionNotFoundError, FileNotFoundError):
-        output_dir = resolve_project_dir(project_id) / "_output"
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        output_dir = Path(env_output_dir)
+    else:
+        from backend.app.services.common import version_service
+        try:
+            output_dir = version_service.resolve_version_output_dir(project_id)
+        except (version_service.VersionNotFoundError, FileNotFoundError):
+            output_dir = resolve_project_dir(project_id) / "_output"
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
@@ -583,6 +587,12 @@ async def run_block_analysis_findings_only(
     loop = asyncio.get_running_loop()
 
     def _on_progress(event: dict) -> None:
+        # Связать cancel_event с реальной отменой пайплайна: оркестратор не
+        # выставляет cancel_event напрямую (раньше он был мёртвым → Stage 02 не
+        # отменялся). Проверяем ctx.is_cancelled на каждом событии прогресса и
+        # ставим event → _one прервётся перед следующим блоком (reserc.md #24).
+        if getattr(ctx, "is_cancelled", None) and ctx.is_cancelled():
+            cancel_event.set()
         t = event.get("type")
         if t == "started":
             asyncio.run_coroutine_threadsafe(
@@ -616,8 +626,6 @@ async def run_block_analysis_findings_only(
                 )
             if ctx.progress_sync:
                 ctx.progress_sync(completed, total)
-            # cancel_event is set by the caller (orchestrator sets job.status=CANCELLED);
-            # here we check it via a sentinel that the orchestrator wires in.
         elif t == "block_skip":
             completed = event.get("completed")
             total = event.get("total")

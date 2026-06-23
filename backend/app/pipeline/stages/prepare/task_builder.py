@@ -10,6 +10,7 @@ Dual-language templates:
 import hashlib
 import json
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Optional
@@ -30,6 +31,7 @@ from backend.app.core.config import (
 from backend.app.services.common.cli_utils import load_template
 import backend.app.services.common.discipline_service as discipline_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
 def _version_output_dir(project_id: str) -> Path:
@@ -40,6 +42,10 @@ def _version_output_dir(project_id: str) -> Path:
     runtime artefacts (01_text_analysis, 02_blocks_analysis, document_graph, blocks/...)
     автоматически уезжают в `_versions/v2/_output`.
     """
+    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    if env_output_dir:
+        return Path(env_output_dir)
+
     from backend.app.services.common import version_service
     try:
         return version_service.resolve_version_output_dir(project_id)
@@ -49,6 +55,9 @@ def _version_output_dir(project_id: str) -> Path:
 
 def _version_project_dir(project_id: str) -> Path:
     """version_dir активной версии (parent of _output)."""
+    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    if env_version_dir:
+        return Path(env_version_dir)
     return _version_output_dir(project_id).parent
 
 
@@ -336,16 +345,23 @@ def _inject_discipline(template: str, project_info: dict) -> str:
 
 def _get_md_file_path(project_info: dict, project_id: str) -> str:
     """Получить путь к MD-файлу проекта (version-aware)."""
+    version_dir = _version_project_dir(project_id)
+    try:
+        sources = resolve_version_source_files(version_dir, project_id, project_info=project_info or {})
+        if sources.md_path is not None:
+            return str(sources.md_path)
+    except Exception:
+        pass
     md_file = project_info.get("md_file")
     if md_file:
-        return str(_version_project_dir(project_id) / md_file)
+        return str(version_dir / md_file)
     return "(нет)"
 
 
 def _get_project_paths(project_id: str) -> tuple[str, str]:
     """Получить пути к проекту и выходной папке (version-aware: V2 → _versions/v{N}/)."""
     vdir = _version_project_dir(project_id)
-    return (str(vdir), str(vdir / "_output"))
+    return (str(vdir), str(_version_output_dir(project_id)))
 
 
 # ─── Legacy stubs (для обратной совместимости с claude_runner.py) ───

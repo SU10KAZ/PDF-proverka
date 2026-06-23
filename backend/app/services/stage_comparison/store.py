@@ -2000,6 +2000,15 @@ def apply_safe_stamp_alignment_for_pair(
     summary["confidence"] = sugg.get("confidence", 0.0)
     summary["matched_count"] = sugg.get("matched_count", 0)
     summary["multipart_match_count"] = sugg.get("multipart_match_count", 0)
+    # #65: прокинуть LLM-диагностику доматчинга для агрегации в job summary.
+    summary["llm"] = sugg.get("llm") or {}
+    summary["warnings"] = list(sugg.get("warnings") or [])
+    # #64: surface MD/PDF page-count mismatch (раньше молча игнорировался). Это
+    # наблюдаемость, не блокировка: расхождение MD/PDF встречается штатно
+    # (MD-разметка бывает неполной), поэтому статус НЕ меняем — оператор видит флаг.
+    summary["md_page_count_mismatch"] = any(
+        "md_page_count_mismatch" in str(w) for w in summary["warnings"]
+    )
 
     built = auto_mod.build_auto_apply_items(sugg.get("suggested_items") or [])
     summary["applied"] = built["applied"]
@@ -2024,6 +2033,15 @@ def apply_safe_stamp_alignment_for_pair(
     if not save_res.get("ok"):
         summary["status"] = "error"
         summary["errors"].append("save_failed")
+        return summary
+    # #64: не обнулять пары молча — surface validation_errors/saved_with_warnings
+    # в summary (наблюдаемость). Статус НЕ меняем: saved_with_warnings — частое
+    # штатное состояние (blank-строки multipart/односторонних), и принятый
+    # контракт считает такой apply успешным.
+    val_errors = save_res.get("validation_errors") or []
+    if val_errors:
+        summary["warnings"].extend(str(e) for e in val_errors)
+    summary["saved_with_warnings"] = bool(save_res.get("saved_with_warnings"))
     return summary
 
 

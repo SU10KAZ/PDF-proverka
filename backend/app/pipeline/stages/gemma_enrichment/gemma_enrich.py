@@ -72,9 +72,15 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     gemma_high_detail_blocks_dir,
     gemma_high_detail_blocks_index_path,
     gemma_high_detail_crop_policy,
+    gemma_output_root,
     strip_gemma_enrichment,
     utc_now_iso,
     validate_gemma_summary,
+)
+from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
+from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
+    find_project_markdown,
+    load_project_info,
 )
 
 from backend.app.core.config import ROOT_DIR as _ROOT_DIR
@@ -119,6 +125,11 @@ SHORT_RESULT_THRESHOLD = 60
 _IMAGE_SCALE_TIERS = [1.0, 0.6, 0.35, 0.2]
 _NGROK_HTML_RETRIES = 2
 _NGROK_HTML_BACKOFF_S = 1.5
+# #15: сетевой/timeout сбой вызова Gemma (_gemma_call_attempt → status == -1)
+# ретраим ТОТ ЖЕ scale-tier с экспоненциальным backoff, не сжигая тиры и не
+# роняя блок на одном транзиентном обрыве. 0.5/1/2 c.
+_NETWORK_RETRIES = 3
+_NETWORK_RETRY_BACKOFF_S = 0.5
 _WEAK_RESULT_MARKERS = (
     "unreadable",
     "нечитаемо",
@@ -980,6 +991,7 @@ async def _enrich_block_single_pass(
     )
 
     ngrok_retries_left = _NGROK_HTML_RETRIES
+    network_retries_left = _NETWORK_RETRIES
     scale_idx = 0
     last_status = 0
     last_data: dict | None = None
@@ -997,6 +1009,17 @@ async def _enrich_block_single_pass(
         )
         total_elapsed_ms += elapsed
         last_status, last_data, last_raw = status, data, raw
+
+        # #15: транзиентный сетевой/timeout сбой (status == -1 из
+        # _gemma_call_attempt) — ретраим ТОТ ЖЕ scale с backoff, не уходя в
+        # следующий тир и не завершая блок ошибкой на одном обрыве сети.
+        if status < 0:
+            if network_retries_left > 0:
+                attempt = _NETWORK_RETRIES - network_retries_left
+                network_retries_left -= 1
+                await asyncio.sleep(_NETWORK_RETRY_BACKOFF_S * (2 ** attempt))
+                continue
+            break
 
         if _is_ngrok_html(data, raw):
             if ngrok_retries_left > 0:
@@ -1524,7 +1547,8 @@ def _ensure_crop_index(
     from backend.app.pipeline.stages.crop_blocks.blocks import crop_blocks
 
     project_dir = Path(project_dir)
-    output_dir = project_dir / "_output" / output_dir_name
+    output_dir_arg = Path(output_dir_name)
+    output_dir = output_dir_arg if output_dir_arg.is_absolute() else gemma_output_root(project_dir) / output_dir_name
     index_path = output_dir / "index.json"
     existing = load_json(index_path)
 
@@ -1619,6 +1643,13 @@ def _format_enrichment_md(record: dict, model: str, ts: str) -> str:
     _add("Заметки", record.get("notes"))
 
     return "\n".join(lines)
+
+
+def _relative_to_project(path: Path, project_dir: Path) -> str:
+    try:
+        return str(Path(path).relative_to(project_dir))
+    except ValueError:
+        return str(path)
 
 
 def inject_enrichment_meta_into_graph(graph_path: Path, meta: dict) -> bool:
@@ -1919,7 +1950,7 @@ async def enrich_project(
 ) -> dict:
     """Gemma enrichment проекта: base 100 DPI + targeted high-detail 300 DPI."""
     project_dir = Path(project_dir).resolve()
-    out_dir = project_dir / "_output"
+    out_dir = gemma_output_root(project_dir)
     base_policy = gemma_base_crop_policy()
     high_detail_policy = gemma_high_detail_crop_policy()
     base_blocks_dir = gemma_base_blocks_dir(project_dir)
@@ -1927,10 +1958,9 @@ async def enrich_project(
     high_detail_blocks_dir = gemma_high_detail_blocks_dir(project_dir)
     graph_path = out_dir / "document_graph.json"
 
-    md_files = sorted(project_dir.glob("*_document.md"))
-    if not md_files:
+    md_path = find_project_markdown(project_dir, load_project_info(project_dir))
+    if md_path is None:
         raise FileNotFoundError(f"MD-файл не найден в {project_dir}")
-    md_path = md_files[0]
 
     existing_summary = validate_gemma_summary(project_dir, md_path=md_path, min_coverage=0.0)
     if existing_summary.get("valid") and not force:
@@ -2049,9 +2079,9 @@ async def enrich_project(
         "model": model,
         "parallelism": parallelism,
         "base_profile": GEMMA_BASE_PROFILE,
-        "base_blocks_dir": f"_output/{GEMMA_BASE_BLOCKS_DIRNAME}",
+        "base_blocks_dir": _relative_to_project(base_blocks_dir, project_dir),
         "high_detail_profile": GEMMA_HIGH_DETAIL_PROFILE,
-        "high_detail_blocks_dir": f"_output/{GEMMA_HIGH_DETAIL_BLOCKS_DIRNAME}",
+        "high_detail_blocks_dir": _relative_to_project(high_detail_blocks_dir, project_dir),
         "timestamp": ts,
     })
 
@@ -2373,14 +2403,13 @@ async def retry_failed_blocks(
         `force_high_detail_rerun=True`, all existing high-detail candidates.
     """
     project_dir = Path(project_dir).resolve()
-    out_dir = project_dir / "_output"
+    out_dir = gemma_output_root(project_dir)
     summary_path = out_dir / "gemma_enrichment_summary.json"
     graph_path = out_dir / "document_graph.json"
 
-    md_files = sorted(project_dir.glob("*_document.md"))
-    if not md_files:
+    md_path = find_project_markdown(project_dir, load_project_info(project_dir))
+    if md_path is None:
         return {"status": "error", "error": "MD-файл не найден"}
-    md_path = md_files[0]
 
     if not summary_path.exists():
         return {"status": "error", "error": "gemma_enrichment_summary.json не найден — нечего ретраить"}
@@ -2730,14 +2759,10 @@ async def _cli() -> int:
         return 2
 
     # project_info.json overrides
-    info_path = project_dir / "project_info.json"
-    enrichment_cfg: dict = {}
-    if info_path.exists():
-        try:
-            info = json.loads(info_path.read_text(encoding="utf-8"))
-            enrichment_cfg = info.get("enrichment") or {}
-        except Exception:
-            pass
+    info = load_version_project_info(project_dir)
+    enrichment_cfg = info.get("enrichment") or {} if isinstance(info, dict) else {}
+    if not isinstance(enrichment_cfg, dict):
+        enrichment_cfg = {}
 
     model = enrichment_cfg.get("model") or args.model
     parallelism = enrichment_cfg.get("parallelism") or args.parallelism

@@ -22,7 +22,11 @@ from backend.app.models.audit import PrepareQueueItem, PrepareQueueStatus
 from backend.app.models.websocket import WSMessage
 from backend.app.core.config import BLOCKS_SCRIPT, GEMMA_ENRICH_SCRIPT, PREPARE_QUEUE_FILE
 from backend.app.services.common.project_service import resolve_project_dir, resolve_active_project_dir
+from backend.app.services.common import version_service
 from backend.app.services.common.audit_logger import persist_log, update_pipeline_log
+from backend.app.services.storage.storage_write_facade import v2_is_primary
+from backend.app.services.storage.v2_primary_wiring import resolve_v2_prepare_paths
+from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
 from backend.app.services.llm.lmstudio_lifecycle_service import (
     note_activity as _lmstudio_note_activity,
     register_idle_probe as _register_lmstudio_idle_probe,
@@ -114,11 +118,55 @@ def _prepare_queue_idle() -> bool:
 _register_lmstudio_idle_probe("prepare_queue", _prepare_queue_idle)
 
 
-def _find_item(project_id: str) -> Optional[PrepareQueueItem]:
+def _find_item(project_id: str, version_id: Optional[str] = None) -> Optional[PrepareQueueItem]:
     for it in prepare_state.queue_status.items:
-        if it.project_id == project_id:
-            return it
+        if it.project_id != project_id:
+            continue
+        if version_id is not None and (getattr(it, "version_id", None) or "v1") != (version_id or "v1"):
+            continue
+        return it
     return None
+
+
+def _resolve_prepare_paths(
+    project_id: str,
+    version_id: Optional[str] = None,
+    object_id: Optional[str] = None,
+) -> tuple[Path, Path]:
+    """Return (version_dir, output_dir) for prepare-data."""
+    if v2_is_primary():
+        try:
+            legacy_dir = resolve_project_dir(project_id)
+        except Exception:
+            legacy_dir = None
+        paths = resolve_v2_prepare_paths(
+            project_id,
+            version_id,
+            object_id=object_id,
+            legacy_project_dir=legacy_dir,
+        )
+        if paths is None:
+            raise RuntimeError(f"v2-primary: не удалось разрешить prepare-пути для {project_id}/{version_id}")
+        return paths
+
+    if version_id:
+        root_dir = resolve_project_dir(project_id)
+        project_dir = version_service.get_version_dir(root_dir, project_id, version_id)
+    else:
+        project_dir = resolve_active_project_dir(project_id)
+    return project_dir, project_dir / "_output"
+
+
+def _resolve_prepare_effective_version_id(
+    project_id: str,
+    version_id: Optional[str] = None,
+    object_id: Optional[str] = None,
+) -> Optional[str]:
+    if v2_is_primary():
+        version_dir, _ = _resolve_prepare_paths(project_id, version_id, object_id)
+        return version_dir.name
+    root_dir = resolve_project_dir(project_id)
+    return version_service.resolve_effective_version_id(root_dir, project_id, version_id)
 
 
 def _check_not_in_active_batch(project_id: str) -> None:
@@ -303,18 +351,23 @@ class _CropStdoutForwarder:
 # ─── Core ─────────────────────────────────────────────────────────────────
 
 def _resolve_overrides(project_dir: Path) -> dict:
-    info_path = project_dir / "project_info.json"
-    if not info_path.exists():
-        return {}
     try:
-        info = json.loads(info_path.read_text(encoding="utf-8"))
-        return info.get("enrichment") or {}
+        info = load_version_project_info(project_dir)
+        enrichment = info.get("enrichment") or {} if isinstance(info, dict) else {}
+        return enrichment if isinstance(enrichment, dict) else {}
     except Exception:
         return {}
 
 
-def _build_crop_args(project_dir: Path, *, force: bool, policy: dict) -> list[str]:
-    args = ["crop", str(project_dir), "--output-dir", GEMMA_BLOCKS_DIRNAME]
+def _build_crop_args(
+    project_dir: Path,
+    *,
+    force: bool,
+    policy: dict,
+    output_dir: Optional[Path] = None,
+) -> list[str]:
+    output_arg = str(output_dir) if output_dir is not None else GEMMA_BLOCKS_DIRNAME
+    args = ["crop", str(project_dir), "--output-dir", output_arg]
     if policy.get("compact"):
         args.append("--compact")
     elif policy.get("dpi"):
@@ -349,7 +402,9 @@ async def _crop_for_project(project_id: str) -> None:
     item = _find_item(project_id)
     if item is None:
         return
-    project_dir = resolve_active_project_dir(project_id)
+    version_id = getattr(item, "version_id", None)
+    object_id = getattr(item, "object_id", None)
+    project_dir, out_dir = _resolve_prepare_paths(project_id, version_id, object_id)
     sem = prepare_state.get_crop_semaphore()
     async with sem:
         # Cancel — пользователь остановил очередь до старта crop'а: пропускаем.
@@ -377,7 +432,7 @@ async def _crop_for_project(project_id: str) -> None:
 
             exit_code, stdout, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
-                _build_crop_args(project_dir, force=force_crop, policy=policy),
+                _build_crop_args(project_dir, force=force_crop, policy=policy, output_dir=blocks_dir if v2_is_primary() else None),
                 on_output=_on_crop_output,
                 project_id=project_id,
             )
@@ -533,10 +588,16 @@ async def _run_gemma_enrichment_subprocess(
             timeout=timeout,
         ),
         on_output=_on_gemma_output,
+        env_overrides={
+            "AUDIT_PROJECT_ID": project_id,
+            "AUDIT_VERSION_ID": getattr(item, "version_id", None) or "",
+            "AUDIT_OBJECT_ID": getattr(item, "object_id", None) or "",
+        },
         project_id=f"prepare_gemma:{project_id}",
     )
 
-    summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+    _project_dir, output_dir = _resolve_prepare_paths(project_id, getattr(item, "version_id", None), getattr(item, "object_id", None))
+    summary_path = output_dir / "gemma_enrichment_summary.json"
     summary: dict = {}
     if summary_path.exists():
         try:
@@ -569,10 +630,9 @@ async def _run_prepare(
     model: Optional[str],
     timeout: Optional[int],
 ) -> dict:
-    project_dir = resolve_active_project_dir(project_id)
-    out_dir = project_dir / "_output"
     item = _find_item(project_id)
     assert item is not None
+    project_dir, out_dir = _resolve_prepare_paths(project_id, getattr(item, "version_id", None), getattr(item, "object_id", None))
     item.status = "running"
     item.started_at = time.time()
     await _broadcast_queue()
@@ -851,7 +911,7 @@ async def _run_prepare(
         )
     elif s_status == "no_blocks":
         item.status = "completed"
-        summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+        summary_path = out_dir / "gemma_enrichment_summary.json"
         summary_path.write_text(
             json.dumps(summary, ensure_ascii=False, indent=2),
             encoding="utf-8",
@@ -902,7 +962,7 @@ async def _run_prepare(
 
 # ─── Public API ───────────────────────────────────────────────────────────
 
-async def start_retry_failed(project_id: str) -> dict:
+async def start_retry_failed(project_id: str, *, version_id: Optional[str] = None) -> dict:
     """Перепрогнать ТОЛЬКО упавшие блоки прошлого enrichment'а (без force/full re-run).
 
     Использует тот же Gemma-лок, чтобы не конфликтовать с обычным prepare.
@@ -915,8 +975,8 @@ async def start_retry_failed(project_id: str) -> dict:
     if existing_task is not None and not existing_task.done():
         return {"status": "already_running"}
 
-    project_dir = resolve_active_project_dir(project_id)
-    summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+    project_dir, out_dir = _resolve_prepare_paths(project_id, version_id)
+    summary_path = out_dir / "gemma_enrichment_summary.json"
     if not summary_path.exists():
         return {"status": "error", "error": "summary не найден — сначала надо сделать обычный prepare-data"}
 
@@ -1004,6 +1064,8 @@ async def start_prepare_data(
     parallelism: Optional[int] = None,
     model: Optional[str] = None,
     timeout: Optional[int] = None,
+    version_id: Optional[str] = None,
+    object_id: Optional[str] = None,
 ) -> dict:
     """Поставить project_id в очередь prepare-data. Не блокирует HTTP."""
     # Защита: не лезем в Gemma если проект в активном batch.
@@ -1028,8 +1090,15 @@ async def start_prepare_data(
     _lmstudio_note_activity(f"prepare queue activity for {project_id}")
     # Если paused — оставим как есть, юзер сам resume'нёт
 
-    # Если уже есть item для этого проекта в queue_status — обнуляем
-    existing_item = _find_item(project_id)
+    effective_version_id = None
+    if v2_is_primary() or version_id:
+        try:
+            effective_version_id = _resolve_prepare_effective_version_id(project_id, version_id, object_id)
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+    # Если уже есть item для этого проекта/версии в queue_status — обнуляем
+    existing_item = _find_item(project_id, effective_version_id)
     if existing_item:
         prepare_state.queue_status.items.remove(existing_item)
     # Старый crop-таск/результат — снести, чтобы новый enrichment начал с нуля
@@ -1037,7 +1106,16 @@ async def start_prepare_data(
     if old_crop is not None and not old_crop.done():
         old_crop.cancel()
     prepare_state.crop_results.pop(project_id, None)
-    item = PrepareQueueItem(project_id=project_id, status="pending", force=force)
+    item_kwargs = {
+        "project_id": project_id,
+        "status": "pending",
+        "force": force,
+    }
+    if effective_version_id is not None:
+        item_kwargs["version_id"] = effective_version_id
+    if object_id is not None:
+        item_kwargs["object_id"] = object_id
+    item = PrepareQueueItem(**item_kwargs)
     prepare_state.queue_status.items.append(item)
     await _broadcast_queue()
 
@@ -1127,14 +1205,19 @@ async def resume_queue() -> dict:
     """Снять паузу — runner возобновит обработку."""
     if prepare_state.queue_status.status == "interrupted":
         interrupted = [
-            (item.project_id, item.force)
+            (item.project_id, item.force, getattr(item, "version_id", None), getattr(item, "object_id", None))
             for item in prepare_state.queue_status.items
             if item.status == "interrupted"
         ]
         if not interrupted:
             return {"resumed": False, "reason": "interrupted items not found"}
-        for project_id, force in interrupted:
-            await start_prepare_data(project_id, force=force)
+        for project_id, force, version_id, object_id in interrupted:
+            await start_prepare_data(
+                project_id,
+                force=force,
+                version_id=version_id,
+                object_id=object_id,
+            )
         return {"resumed": True, "count": len(interrupted)}
 
     ev = prepare_state.get_pause_event()

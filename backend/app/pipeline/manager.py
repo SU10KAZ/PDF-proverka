@@ -31,7 +31,12 @@ from backend.app.models.audit import AuditJob, AuditStage, JobStatus, BatchQueue
 from backend.app.models.websocket import WSMessage
 from backend.app.core.config import get_claude_model, get_model_for_stage
 from backend.app.models.usage import UsageRecord
-from backend.app.services.common.process_runner import run_script, kill_all_processes
+from backend.app.services.common.process_runner import (
+    run_script,
+    kill_all_processes,
+    has_live_processes,
+    active_process_pids,
+)
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.services.common.usage_service import usage_tracker, global_scanner, paid_cost_tracker
 from backend.app.services.llm.lmstudio_lifecycle_service import (
@@ -59,6 +64,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     stage02_blocks_dir,
     stage02_blocks_index_path,
     stage02_crop_policy,
+    gemma_output_root,
 )
 
 # ── Stage runner imports (extracted pure helpers) ──────────────────────────
@@ -68,7 +74,9 @@ from backend.app.pipeline.stages.crop_blocks.runner import (
     crop_policy_label as _crop_policy_label,
     run_crop_blocks as _run_crop_blocks,
     run_policy_recrop as _run_policy_recrop,
+    sync_v2_read_canary_blocks_alias as _sync_v2_read_canary_blocks_alias,
 )
+
 from backend.app.pipeline.stages.block_analysis.runner import (
     RUNTIME_BATCHES_FILE,
     expand_block_batches_for_single_block_mode as _expand_block_batches_for_local_model,
@@ -90,6 +98,7 @@ from backend.app.pipeline.stages.findings_review.runner import (
 from backend.app.pipeline.stages.critic_v2_triage import (
     run_critic_v2_triage as _run_critic_v2_triage_stage,
 )
+
 from backend.app.pipeline.stages.block_analysis.runner import (
     run_block_analysis_findings_only as _run_block_analysis_findings_only_stage,
 )
@@ -100,6 +109,23 @@ from backend.app.pipeline.stages.gemma_enrichment.runner import (
     run_gemma_enrichment_stage as _run_gemma_enrichment_stage_fn,
 )
 # ──────────────────────────────────────────────────────────────────────────
+
+
+def _has_ocr_result_json(project_dir: Path) -> bool:
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import (
+            load_version_project_info,
+            resolve_version_source_files,
+        )
+
+        info = load_version_project_info(project_dir)
+        document_code = info.get("document_code") or info.get("project_id") or Path(project_dir).name
+        sources = resolve_version_source_files(project_dir, document_code, project_info=info)
+        if sources.layout == "projects_v2":
+            return bool(sources.result_json_paths)
+    except Exception:
+        pass
+    return bool(list(Path(project_dir).glob("*_result.json")))
 
 
 def _project_path(pid: str, version_id: Optional[str] = None) -> str:
@@ -190,6 +216,39 @@ def _current_object_id_or_none() -> Optional[str]:
         return None
 
 
+class BatchResumeBlockedError(RuntimeError):
+    """Resume очереди временно недоступен — текущий проект ещё выполняется.
+
+    Отличается от обычного RuntimeError, чтобы API мог вернуть структурированный
+    409 с reason=current_project_running вместо общего сообщения.
+    """
+
+
+# Сколько проектов вперёд (после текущего running) сканирует pre-Gemma prefetch,
+# пропуская временно неподготовляемые (нет crops / V2 skip), чтобы не «залипать»
+# на первом не готовом проекте. Порядок основной очереди НЕ меняется.
+BATCH_PREGEMMA_WINDOW = max(1, int(os.environ.get("BATCH_PREGEMMA_WINDOW", "4")))
+
+# Сколько проектов вперёд (после текущего running) готовит pre-crop. Раньше
+# pre-crop кропил ВСЮ очередь без ограничения и racing'ом с основным pipeline
+# жёг CPU/IO (тот же класс контеншена, что Gemma-лок). Окно делает опережение
+# предсказуемым: pre-crop держит готовыми ровно N следующих pending и скользит
+# вместе с current_index. Обязательно >= pre-Gemma окна — иначе pre-Gemma выбрал
+# бы проект без готовых crops. Default = pregemma + 2 (crops всегда впереди Gemma).
+BATCH_PRECROP_WINDOW = max(
+    BATCH_PREGEMMA_WINDOW,
+    int(os.environ.get("BATCH_PRECROP_WINDOW", str(BATCH_PREGEMMA_WINDOW + 2))),
+)
+
+# Порог числа реальных ошибок, после которого Stage 02 прекращает запускать
+# новые блоки. На production single-block пути остаток скипнутых блоков теперь
+# помечается failed (reserc.md #1) — раньше был тихий return и блоки исчезали
+# из coverage. Конфигурируемо через env (раньше было захардкожено «5»).
+STAGE02_ERROR_ABORT_THRESHOLD = max(
+    1, int(os.environ.get("STAGE02_ERROR_ABORT_THRESHOLD", "5") or "5")
+)
+
+
 class PipelineManager:
     """Управляет запущенными аудитами. Singleton."""
 
@@ -214,6 +273,14 @@ class PipelineManager:
         # текущим воркером. Pre-Gemma loop проверяет _is_current_running_past_gemma()
         # перед попыткой захвата общего Gemma-лока.
         self._current_gemma_stage_done: dict[str, bool] = {}
+
+        # Gemma-lock priority: основной (main) audit поднимает счётчик перед тем
+        # как ждать/держать общий Gemma-лок. Pre-Gemma prefetch при счётчике > 0
+        # уступает — не встаёт в очередь за локом и освобождает только что
+        # захваченный лок, не начав дорогой run. Делает prefetch opportunistic:
+        # он никогда не задерживает основной running audit. Один event loop →
+        # обычный int без блокировок.
+        self._main_gemma_lock_intent: int = 0
 
     ZOMBIE_TIMEOUT_SEC = 600  # 10 минут без heartbeat = зомби
 
@@ -365,6 +432,24 @@ class PipelineManager:
         """
         self._current_gemma_stage_done[pid] = True
 
+    def _begin_main_gemma_lock_intent(self) -> None:
+        """Main audit заявляет намерение захватить общий Gemma-лок.
+
+        Поднимается ДО ожидания лока и держится пока main его не отпустит.
+        Pre-Gemma prefetch видит это и уступает приоритет.
+        """
+        self._main_gemma_lock_intent += 1
+
+    def _end_main_gemma_lock_intent(self) -> None:
+        """Main audit отпустил Gemma-лок — снимаем приоритет."""
+        if self._main_gemma_lock_intent > 0:
+            self._main_gemma_lock_intent -= 1
+
+    def _main_wants_gemma_lock(self) -> bool:
+        """True если основной audit ждёт/держит общий Gemma-лок.
+        Pre-Gemma prefetch при True уступает (opportunistic)."""
+        return self._main_gemma_lock_intent > 0
+
     def _is_current_running_past_gemma(self) -> bool:
         """True если все running batch items уже прошли свой Gemma этап.
         Pre-Gemma loop вызывает это перед попыткой захвата Gemma-лока.
@@ -389,6 +474,99 @@ class PipelineManager:
             it.project_id == pid and it.status in ("pending", "running")
             for it in q.items
         )
+
+    # ─── Живость worker'а очереди и текущего аудита ─────────────────────
+    # Ключевой инвариант инцидента: batch-worker __BATCH__ ВЫПОЛНЯЕТ текущий
+    # project audit внутри своей же корутины (см. _run_batch_queue:
+    # self._tasks[pid] = asyncio.current_task()). Поэтому «worker потерян, но
+    # проект ещё жив» на практике = у живой корутины ошибочно сняли регистрацию
+    # в self._tasks (это делал cleanup_zombies). Эти helper'ы дают надёжный
+    # признак живости, не завязанный на in-memory job/heartbeat-трекинг.
+
+    def _batch_worker_alive(self) -> bool:
+        """True если asyncio-таск worker'а очереди __BATCH__ реально жив."""
+        task = self._tasks.get("__BATCH__")
+        return task is not None and not task.done()
+
+    def _current_batch_item_pid(self) -> Optional[str]:
+        """project_id текущего (current_index) элемента очереди, либо None."""
+        q = self._batch_queue
+        if q is None:
+            return None
+        idx = q.current_index
+        if 0 <= idx < len(q.items):
+            return q.items[idx].project_id
+        return None
+
+    def _has_live_project_audit(self) -> bool:
+        """True если реально выполняется аудит проекта этой очереди.
+
+        Любого сигнала достаточно (от самого надёжного к запасному):
+          1. worker-таск __BATCH__ жив (он же исполняет текущий project audit);
+          2. в active_jobs есть не-__BATCH__ job со статусом RUNNING;
+          3. у текущего элемента очереди есть живые дочерние процессы
+             (ground-truth, переживает in-memory GC джоба/heartbeat'а).
+        """
+        if self._batch_worker_alive():
+            return True
+        for pid, job in self.active_jobs.items():
+            if pid == "__BATCH__":
+                continue
+            if job.status == JobStatus.RUNNING:
+                return True
+        cur = self._current_batch_item_pid()
+        if cur is not None and has_live_processes(cur):
+            return True
+        return False
+
+    def _protected_pids(self) -> set[str]:
+        """pid, которые cleanup_zombies НЕ имеет права снимать как зомби.
+
+        Защищаем worker очереди и текущий выполняющийся проект, пока аудит жив,
+        а также любой проект с живыми дочерними процессами. Иначе живой аудит
+        ошибочно признаётся зомби → очередь демотируется в interrupted.
+        """
+        protected: set[str] = set(active_process_pids())
+        if self._batch_worker_alive():
+            protected.add("__BATCH__")
+            cur = self._current_batch_item_pid()
+            if cur is not None:
+                protected.add(cur)
+        return protected
+
+    def get_batch_diagnostics(self) -> dict:
+        """Диагностика для UI/API: разделяет состояние очереди, текущего проекта
+        и worker'а, чтобы не показывать ложный «полный сбой».
+        """
+        q = self._batch_queue
+        worker_alive = self._batch_worker_alive()
+        live_audit = self._has_live_project_audit()
+        cur = self._current_batch_item_pid()
+        status = q.status if q is not None else None
+        # worker потерян, но очередь формально running
+        batch_worker_lost = bool(q is not None and status == "running" and not worker_alive)
+        # resume безопасен только когда нет живого аудита и очередь прервана
+        # (или running с потерянным worker'ом и без живого проекта)
+        resume_available = bool(
+            q is not None
+            and not live_audit
+            and (status == "interrupted" or batch_worker_lost)
+        )
+        if live_audit and batch_worker_lost:
+            display_status = "degraded_but_current_running"
+        elif live_audit and status == "running":
+            display_status = "running"
+        else:
+            display_status = status
+        return {
+            "queue_status": status,
+            "display_status": display_status,
+            "worker_alive": worker_alive,
+            "current_project_running": live_audit,
+            "current_project_id": cur if live_audit else None,
+            "batch_worker_lost": batch_worker_lost,
+            "resume_available": resume_available,
+        }
 
     def load_persisted_queue(self) -> None:
         """Загрузить очередь после перезапуска сервера.
@@ -426,6 +604,9 @@ class PipelineManager:
         for item in queue.items:
             if item.status == "running":
                 item.status = "interrupted"
+                # Понятная причина для UI/диагностики (раньше reason отсутствовал).
+                if not item.error:
+                    item.error = "Прервано рестартом сервера"
                 changed = True
 
         if queue.status == "running":
@@ -456,13 +637,34 @@ class PipelineManager:
             print(f"[PipelineManager] Ошибка удаления batch_queue.json: {e}")
 
     async def resume_interrupted_batch(self) -> BatchQueueStatus:
-        """Restart a persisted interrupted queue from unfinished items."""
+        """Restart a persisted interrupted queue from unfinished items.
+
+        Безопасность resume:
+          - идемпотентность: если worker очереди уже жив — НЕ создаём второй
+            worker, просто возвращаем текущую очередь (повторный клик безвреден);
+          - НЕ запускаем resume, пока жив текущий аудит проекта — иначе
+            дубль-worker мог бы перезапустить уже идущий проект, убить его
+            claude-процессы и перезаписать 01/02/03. Возвращаем понятный 409.
+          - НЕ делаем kill/pkill активных процессов и НЕ удаляем артефакты.
+        """
         async with self._enqueue_lock:
             queue = self._batch_queue
             if not queue:
                 raise RuntimeError("Нет прерванной очереди")
-            if queue.status == "running":
+            # Идемпотентность: worker уже жив → очередь и так работает.
+            if self._batch_worker_alive():
                 return queue
+            # Текущий проект ещё реально выполняется (worker-регистрацию могли
+            # ошибочно снять, но корутина/процессы живы) — resume небезопасен.
+            if self._has_live_project_audit():
+                raise BatchResumeBlockedError(
+                    "Текущий проект ещё выполняется — продолжение очереди будет "
+                    "доступно после его завершения"
+                )
+            if queue.status == "running":
+                # status running, но worker мёртв и живого аудита нет —
+                # нормализуем, чтобы можно было пересоздать worker.
+                queue.status = "interrupted"
             if queue.status != "interrupted":
                 raise RuntimeError("Очередь не находится в состоянии interrupted")
 
@@ -850,10 +1052,29 @@ class PipelineManager:
         return None
 
     def cleanup_zombies(self):
-        """Очистить зомби-задачи (нет heartbeat более ZOMBIE_TIMEOUT_SEC)."""
+        """Очистить зомби-задачи (нет heartbeat более ZOMBIE_TIMEOUT_SEC).
+
+        Защита: НИКОГДА не снимаем worker очереди __BATCH__ и текущий живой
+        проект, пока аудит реально выполняется. Раньше __BATCH__ (у него нет
+        собственного heartbeat-цикла) после ZOMBIE_TIMEOUT_SEC ложно
+        признавался зомби, снимался из self._tasks — и _reconcile_stale_queue
+        затем демотировал всю очередь в interrupted, хотя проект ещё шёл.
+        """
         now = datetime.now()
+        # pid, которые нельзя трогать пока жив batch-worker / есть живые процессы.
+        protected = self._protected_pids()
         zombies = []
         for pid, job in list(self.active_jobs.items()):
+            if pid in protected:
+                continue  # живой worker / текущий проект — не зомби
+            # __BATCH__ судим по живости таска, а не по heartbeat (его нет).
+            if pid == "__BATCH__":
+                if not self._batch_worker_alive():
+                    zombies.append(pid)
+                continue
+            # Любой проект с живыми дочерними процессами — реально работает.
+            if has_live_processes(pid):
+                continue
             if job.status != JobStatus.RUNNING:
                 zombies.append(pid)
                 continue
@@ -888,36 +1109,55 @@ class PipelineManager:
         2. Resume мог подхватить с прерванного этапа
         """
         from backend.app.services.common.project_service import iter_project_dirs
+        from backend.app.services.common.version_service import is_version_container
 
         # Собрать project_id активных задач, чтобы не трогать их
         active_pids = set(self.active_jobs.keys())
+
+        def _recover_one_log(log_path: Path, label: str) -> bool:
+            if not log_path.exists():
+                return False
+            try:
+                data = json.loads(log_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
+                return False
+            stages = data.get("stages", {})
+            changed = False
+            for stage_key, stage_info in stages.items():
+                if stage_info.get("status") == "running":
+                    # Этот этап остался "running" после рестарта — прерван
+                    stage_info["status"] = "interrupted"
+                    stage_info["error"] = "Сервер перезапущен во время выполнения"
+                    stage_info["interrupted_at"] = datetime.now().isoformat()
+                    changed = True
+                    print(f"[Recovery] {label}: этап '{stage_key}' running → interrupted")
+            if changed:
+                data["last_updated"] = datetime.now().isoformat()
+                log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return changed
 
         recovered = 0
         for _pid, project_dir in iter_project_dirs():
             # Не трогать проекты с активным аудитом
             if _pid in active_pids:
                 continue
-            log_path = project_dir / "_output" / "pipeline_log.json"
-            if not log_path.exists():
-                continue
+            # Сканируем primary + ВСЕ версии контейнера `<база>(main)/` — раньше
+            # бралась только primary _output, и V2-аудит оставался вечным
+            # 'running' после рестарта (reserc.md #10). Filesystem-обход надёжнее
+            # манифеста версий.
+            scan_dirs = [project_dir]
+            parent = project_dir.parent
             try:
-                data = json.loads(log_path.read_text(encoding="utf-8"))
-                stages = data.get("stages", {})
-                changed = False
-                for stage_key, stage_info in stages.items():
-                    if stage_info.get("status") == "running":
-                        # Этот этап остался "running" после рестарта — прерван
-                        stage_info["status"] = "interrupted"
-                        stage_info["error"] = "Сервер перезапущен во время выполнения"
-                        stage_info["interrupted_at"] = datetime.now().isoformat()
-                        changed = True
-                        print(f"[Recovery] {project_dir.name}: этап '{stage_key}' running → interrupted")
-                if changed:
-                    data["last_updated"] = datetime.now().isoformat()
-                    log_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                if is_version_container(parent):
+                    for sib in sorted(parent.iterdir()):
+                        if sib.is_dir() and sib != project_dir and not sib.name.startswith("_"):
+                            scan_dirs.append(sib)
+            except OSError:
+                pass
+            for vdir in scan_dirs:
+                if _recover_one_log(vdir / "_output" / "pipeline_log.json", vdir.name):
                     recovered += 1
-            except (json.JSONDecodeError, OSError) as e:
-                print(f"[Recovery] Ошибка чтения {log_path}: {e}")
 
         if recovered:
             print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
@@ -965,6 +1205,24 @@ class PipelineManager:
         self._stop_heartbeat(project_id)
         self.active_jobs.pop(project_id, None)
         self._tasks.pop(project_id, None)
+        _schedule_lmstudio_post_queue_cleanup("pipeline queue drained")
+
+    def _cleanup_batch_worker(self, meta_job: "AuditJob") -> None:
+        """Identity-aware финализация worker'а очереди (__BATCH__).
+
+        Снимаем регистрацию __BATCH__ ТОЛЬКО если она всё ещё принадлежит этому
+        worker'у. Гонка close+enqueue: пока старый worker доходит до finally,
+        enqueue под _enqueue_lock мог уже поднять НОВЫЙ worker (новый task/meta_job
+        под тем же ключом __BATCH__). Безусловный `_cleanup("__BATCH__")` снёс бы
+        регистрацию нового worker'а → он осиротел бы (жив, но _batch_worker_alive
+        врёт False → дубль-worker на следующем enqueue). Сверяем по identity.
+        """
+        current = asyncio.current_task()
+        if self._tasks.get("__BATCH__") is current:
+            self._tasks.pop("__BATCH__", None)
+        if self.active_jobs.get("__BATCH__") is meta_job:
+            self.active_jobs.pop("__BATCH__", None)
+        self._stop_heartbeat("__BATCH__")
         _schedule_lmstudio_post_queue_cleanup("pipeline queue drained")
 
     async def _run_script(self, project_id: str, *args, **kwargs):
@@ -1040,6 +1298,32 @@ class PipelineManager:
         version_dir (legacy V1 поведение). Стартовые endpoint'ы валидируют версию
         раньше и возвращают 404, поэтому сюда обычно доходит валидный version_id.
         """
+        # Шаг 6B: v2-primary ветка активна ТОЛЬКО при WRITE_MODE=projects_v2_primary
+        # (в проде WRITE_MODE=dual_write_shadow → ветка НЕ исполняется). Источник
+        # читается из v2 01_input/02_work, output → 03_analysis/runs/<run_id>
+        # (эквивалент legacy _output). Адаптация source-reading стадий под v2 —
+        # отдельный шаг (см. отчёт 6B blockers). legacy/dual_shadow путь — ниже,
+        # без изменений.
+        from backend.app.services.storage import storage_write_facade as _swf
+        if _swf.v2_is_primary():
+            from backend.app.services.storage.v2_primary_wiring import resolve_v2_job_paths
+            try:
+                _legacy_root = resolve_project_dir(job.project_id)
+            except Exception:
+                _legacy_root = None  # legacy может отсутствовать в v2-primary мире
+            _paths = resolve_v2_job_paths(
+                job.project_id, job.version_id,
+                run_id=getattr(job, "job_id", None),
+                object_id=getattr(job, "object_id", None),
+                legacy_project_dir=_legacy_root,
+            )
+            if _paths is None:
+                raise RuntimeError(
+                    f"v2-primary: не удалось разрешить v2-пути для "
+                    f"{job.project_id}/{job.version_id}"
+                )
+            return _paths
+
         from backend.app.services.common import version_service
         root_dir = resolve_project_dir(job.project_id)
         try:
@@ -1049,6 +1333,112 @@ class PipelineManager:
         except version_service.VersionNotFoundError:
             version_dir = root_dir
         return root_dir, version_dir, version_dir / "_output"
+
+    def _load_project_info_for_paths(self, pid: str, root_dir: Path, version_dir: Path) -> dict:
+        """Version-aware project_info for audit stages.
+
+        Legacy reads the active version project_info with root fallback. In
+        projects_v2-primary, source metadata lives in 01_input/project_info.json
+        and mutable audit metadata is stored in version.json.project_info.
+        """
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+        root_dir = Path(root_dir)
+        version_dir = Path(version_dir)
+        if v2_is_primary():
+            info: dict = {}
+            input_info = version_dir / "01_input" / "project_info.json"
+            if input_info.is_file():
+                try:
+                    data = json.loads(input_info.read_text(encoding="utf-8"))
+                    if isinstance(data, dict):
+                        info.update(data)
+                except Exception:
+                    pass
+            version_json = version_dir / "version.json"
+            if version_json.is_file():
+                try:
+                    data = json.loads(version_json.read_text(encoding="utf-8"))
+                    version_info = data.get("project_info") if isinstance(data, dict) else None
+                    if isinstance(version_info, dict):
+                        info.update(version_info)
+                except Exception:
+                    pass
+            info.setdefault("project_id", pid)
+            info.setdefault("pdf_file", "document.pdf")
+            return info
+
+        info_path = version_dir / "project_info.json"
+        if not info_path.exists():
+            info_path = root_dir / "project_info.json"
+        try:
+            return json.loads(info_path.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
+    def _project_info_path_for_paths(self, root_dir: Path, version_dir: Path) -> Path:
+        """Best-effort path for callers that still need a project_info filename."""
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+        version_dir = Path(version_dir)
+        if v2_is_primary():
+            input_info = version_dir / "01_input" / "project_info.json"
+            return input_info if input_info.exists() else version_dir / "version.json"
+        root_dir = Path(root_dir)
+        version_info = version_dir / "project_info.json"
+        return version_info if version_info.exists() else root_dir / "project_info.json"
+
+    def _require_project_md(self, pid: str, root_dir: Path, version_dir: Path, info_path: Path):
+        """Version-aware MD-gate. Бросает RuntimeError с понятной диагностикой
+        (md_not_found / ambiguous_md_candidates), если MD не разрешается в папке
+        активной версии. Возвращает MdResolution при успехе.
+
+        Заменяет прежний наивный glob: учитывает latest_version_id, не доверяет
+        битому project_info (md_file=None / pdf_file на чужой проект), даёт
+        cross-version подсказку, не угадывает при неоднозначности.
+        """
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        if v2_is_primary():
+            from backend.app.services.common.md_resolver import MdResolution, STATUS_OK
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            sources = resolve_v2_source_files(Path(version_dir), pid)
+            if sources.md_path is None:
+                raise RuntimeError(
+                    f"v2_md_not_found: MD-файл не найден для проекта {pid} "
+                    f"в {Path(version_dir) / '01_input'} или {Path(version_dir) / '02_work'}. "
+                    "Анализ без MD не поддерживается."
+                )
+            return MdResolution(
+                status=STATUS_OK,
+                md_name=sources.md_path.name,
+                md_path=sources.md_path,
+                searched_dir=Path(version_dir),
+                candidates=[str(sources.md_path.relative_to(Path(version_dir)))],
+                diagnostics={"selected_by": "projects_v2_source_resolver"},
+            )
+
+        from backend.app.services.common.md_resolver import resolve_project_md
+        from backend.app.services.common import version_service as _vs
+        info = {}
+        try:
+            p = Path(info_path)
+            if p.exists():
+                info = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            info = {}
+        latest_vid = None
+        try:
+            latest_vid = _vs.get_latest_version_id(Path(root_dir), pid)
+        except Exception:
+            latest_vid = None
+        res = resolve_project_md(
+            Path(version_dir), pid,
+            project_info=info, root_dir=Path(root_dir), latest_version_id=latest_vid,
+        )
+        if not res.ok:
+            raise RuntimeError(res.error_message(pid))
+        return res
 
     def _make_stage_context(self, job: "AuditJob") -> "PipelineStageContext":
         """Построить PipelineStageContext из текущего job для передачи в stage runner-ы."""
@@ -1078,17 +1468,9 @@ class PipelineManager:
             self._update_pipeline_log(pid, stage_key, status, **kwargs)
 
         async def _run_subprocess(*args, **kwargs):
-            return await self._run_script(pid, *args, **kwargs)
+            return await self._run_script_for_job(job, *args, **kwargs)
 
-        # project_info: предпочтительно из папки версии (создаётся
-        # create_next_version'ом для V2+), fallback — корневой info.
-        info_path_version = version_dir / "project_info.json"
-        info_path_root = project_dir / "project_info.json"
-        info_path = info_path_version if info_path_version.exists() else info_path_root
-        try:
-            project_info = json.loads(info_path.read_text(encoding="utf-8"))
-        except Exception:
-            project_info = {}
+        project_info = self._load_project_info_for_paths(pid, _root, version_dir)
 
         async def _stream_findings_events(stage: str) -> None:
             await self._stream_findings_events(job, stage)
@@ -1198,13 +1580,34 @@ class PipelineManager:
         pid = job.project_id
         try:
             from backend.app.pipeline.stages.prepare.graph_builder import build_document_graph_v2, generate_locality_debug
+            from backend.app.services.storage.storage_write_facade import v2_is_primary
 
-            # Version-aware: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware: V1 = root, V2+ = _versions/v{N}/, projects_v2 = versions/<vid>/.
             _root, project_dir, output_dir = self._resolve_job_paths(job)
+            graph_source_dir = project_dir
+            result_json_paths = None
+            if v2_is_primary():
+                try:
+                    from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
 
-            graph = build_document_graph_v2(project_dir, output_dir)
+                    sources = resolve_v2_source_files(project_dir, pid)
+                    if sources.result_json_path is not None:
+                        graph_source_dir = sources.result_json_path.parent
+                        result_json_paths = [sources.result_json_path]
+                except Exception as exc:
+                    await self._log(job, f"v2 source resolver для document_graph не сработал: {exc}", "warn")
+
+            graph = build_document_graph_v2(
+                graph_source_dir,
+                output_dir,
+                result_json_paths=result_json_paths,
+            )
             if graph:
                 debug_path = generate_locality_debug(graph, output_dir)
+                self._promote_v2_analysis_artifacts(
+                    job,
+                    ("document_graph.json", "step1_locality_debug.json"),
+                )
                 await self._log(
                     job,
                     f"document_graph v{graph['version']}: "
@@ -1228,6 +1631,90 @@ class PipelineManager:
             await self._log(
                 job, f"document_graph v2 ошибка: {e}", "warn"
             )
+
+
+    def _v2_promotion_context(self, job: AuditJob):
+        """Resolve v2 promotion target for the current job, or None outside v2-primary."""
+        from backend.app.services.storage.storage_write_facade import (
+            StorageWriteFacade,
+            v2_is_primary,
+        )
+
+        if not v2_is_primary():
+            return None
+        try:
+            _doc_dir, _version_dir, output_dir = self._resolve_job_paths(job)
+            facade = StorageWriteFacade()
+            v2_root = facade.v2_root()
+            if v2_root is None:
+                return None
+            try:
+                legacy_root = resolve_project_dir(job.project_id)
+            except Exception:
+                legacy_root = None
+            from backend.app.services.storage.v2_primary_wiring import resolve_v2_target_by_id
+
+            target = resolve_v2_target_by_id(
+                job.project_id,
+                getattr(job, "version_id", None) or "v001",
+                v2_root=v2_root,
+                object_id=getattr(job, "object_id", None),
+                legacy_project_dir=legacy_root,
+            )
+            if target is None:
+                return None
+            return facade, target, output_dir
+        except Exception as exc:
+            print(f"[{job.project_id}] v2 promotion context failed: {exc}")
+            return None
+
+    def _promote_v2_analysis_artifacts(self, job: AuditJob, artifact_names) -> dict:
+        """Copy selected artifacts from the job run dir into projects_v2 latest.
+
+        No-op outside projects_v2_primary. Fail-soft by design: the stage output
+        in runs/<job_id> remains authoritative even if latest promotion fails.
+        """
+        ctx = self._v2_promotion_context(job)
+        if ctx is None:
+            return {}
+        facade, target, output_dir = ctx
+        run_id = getattr(job, "job_id", None)
+        results = {}
+        for name in artifact_names:
+            source = Path(output_dir) / str(name)
+            if not source.is_file():
+                continue
+            try:
+                results[str(name)] = facade.save_analysis_artifact(
+                    target,
+                    str(name),
+                    source.read_bytes(),
+                    run_id=run_id,
+                )
+            except Exception as exc:
+                print(f"[{job.project_id}] v2 promote {name} failed: {exc}")
+        return results
+
+    def _promote_completed_audit_v2(self, job: AuditJob) -> dict:
+        """Bulk-promote late audit artifacts from runs/<job_id> to latest."""
+        ctx = self._v2_promotion_context(job)
+        if ctx is None:
+            return {}
+        facade, target, output_dir = ctx
+        try:
+            from backend.app.services.storage.v2_primary_prototype import (
+                write_completed_audit_artifacts_v2,
+            )
+
+            return write_completed_audit_artifacts_v2(
+                facade,
+                target,
+                output_dir,
+                run_id=getattr(job, "job_id", None),
+            )
+        except Exception as exc:
+            print(f"[{job.project_id}] v2 completed audit promotion failed: {exc}")
+            return {}
 
     async def _run_gemma_enrichment_stage(self, job: AuditJob, *, force: bool = False) -> None:
         """Тонкий оркестратор: делегирует в gemma_enrichment/runner.py.
@@ -1253,7 +1740,9 @@ class PipelineManager:
         pid = job.project_id
         job.stage = AuditStage.GEMMA_ENRICHMENT
 
-        proj_dir = resolve_project_dir(pid)
+        # Version-aware: double-check'и должны смотреть в папку ВЕРСИИ, не в V1-root.
+        # _resolve_job_paths использует job.version_id → возвращает правильную папку.
+        _, proj_dir, _ = self._resolve_job_paths(job)
         item = self._find_batch_item(pid)
 
         # === Double-check #1: до ожидания lock ===
@@ -1270,38 +1759,53 @@ class PipelineManager:
                     "warn",
                 )
 
-        async with prepare_state.get_lock():
-            # === Double-check #2: после захвата lock ===
-            # Пере-получить item — pre-Gemma мог изменить состояние пока main ждал.
-            item = self._find_batch_item(pid)
-            if not force and item is not None and item.gemma_prefetched:
-                ok, reason = gemma_outputs_are_valid(proj_dir)
-                if ok:
-                    await self._log(
-                        job,
-                        f"⚡ Gemma OCR пропущен — outputs готовы после ожидания lock ({reason})",
-                        "info",
-                    )
-                    self._mark_gemma_stage_done(pid)
+        # Gemma-lock priority: заявляем намерение ДО ожидания лока, чтобы
+        # opportunistic prefetch уступил и не задержал основной audit. Снимаем
+        # в finally — при любом исходе (skip/return/raise) приоритет очищается.
+        self._begin_main_gemma_lock_intent()
+        try:
+            async with prepare_state.get_lock():
+                # === Double-check #2: после захвата lock ===
+                # Пере-получить item — pre-Gemma мог изменить состояние пока main ждал.
+                item = self._find_batch_item(pid)
+                if not force and item is not None and item.gemma_prefetched:
+                    ok, reason = gemma_outputs_are_valid(proj_dir)
+                    if ok:
+                        await self._log(
+                            job,
+                            f"⚡ Gemma OCR пропущен — outputs готовы после ожидания lock ({reason})",
+                            "info",
+                        )
+                        self._mark_gemma_stage_done(pid)
+                        return
+
+                ctx = self._make_stage_context(job)
+                from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                    bind_output_root,
+                    unbind_output_root,
+                )
+                _token = bind_output_root(ctx.output_dir)
+                try:
+                    result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+                finally:
+                    unbind_output_root(_token)
+
+                if result.cancelled:
+                    job.status = JobStatus.CANCELLED
                     return
 
-            ctx = self._make_stage_context(job)
-            result = await _run_gemma_enrichment_stage_fn(ctx, force=force)
+                if not result.success:
+                    job.status = JobStatus.FAILED
+                    job.error_message = result.error
+                    raise RuntimeError(result.error or "Gemma enrichment: ошибка")
 
-            if result.cancelled:
-                job.status = JobStatus.CANCELLED
-                return
-
-            if not result.success:
-                job.status = JobStatus.FAILED
-                job.error_message = result.error
-                raise RuntimeError(result.error or "Gemma enrichment: ошибка")
-
-            # Успех или partial: маркер прохождения Gemma этапа на текущем проекте.
-            # Pre-Gemma loop увидит _is_current_running_past_gemma()=True и сможет
-            # начать работу над следующим pending проектом пока main pipeline
-            # переходит на Stage 01+.
-            self._mark_gemma_stage_done(pid)
+                # Успех или partial: маркер прохождения Gemma этапа на текущем проекте.
+                # Pre-Gemma loop увидит _is_current_running_past_gemma()=True и сможет
+                # начать работу над следующим pending проектом пока main pipeline
+                # переходит на Stage 01+.
+                self._mark_gemma_stage_done(pid)
+        finally:
+            self._end_main_gemma_lock_intent()
 
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
@@ -1422,6 +1926,44 @@ class PipelineManager:
             return
 
         job.status = JobStatus.COMPLETED
+        self._promote_v2_analysis_artifacts(
+            job,
+            (
+                "02_blocks_analysis.json",
+                "block_analysis_summary.json",
+                RUNTIME_BATCHES_FILE,
+                "block_batches.json",
+                "pipeline_log.json",
+            ),
+        )
+
+        # Step 9/10 dual-write: ранний снимок после block_analysis (covers
+        # standalone block_analysis-only прогон). ПОЛНЫЙ снимок после всего
+        # конвейера делает _run_batch_queue по завершении (late artifacts).
+        self._shadow_mirror_completed_audit(job.project_id, job)
+
+    def _shadow_mirror_completed_audit(self, project_id: str, job=None) -> None:
+        """Зеркалировать legacy-проект в projects_v2 после успешного этапа/аудита.
+
+        no-op в legacy-режиме (default), fail-soft — НИКОГДА не влияет на статус
+        аудита. Вызывается из двух точек: (1) после block_analysis (ранний снимок
+        для standalone-прогона) и (2) из _run_batch_queue после ЗАВЕРШЕНИЯ всего
+        конвейера, где legacy _output уже содержит все late-stage artifacts
+        (03_findings/optimization/нормы) и финальный pipeline_log. Зеркалирование
+        идемпотентно (migrate_project обновляет latest-снимок), поэтому повторный
+        вызов после полного аудита перезаписывает неполный ранний снимок.
+        """
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            if _swf.v2_is_primary():
+                if job is not None:
+                    self._promote_completed_audit_v2(job)
+                return
+            run_id = getattr(job, "job_id", None) if job is not None else None
+            _swf.shadow_mirror_project_id_safe(project_id, run_id=run_id)
+        except Exception as e:
+            # fail-soft: legacy уже записан и авторитетен; v2 — best-effort тень
+            print(f"[{project_id}] shadow_mirror_completed_audit failed: {e}")
 
     def _record_findings_only_usage(self, job: AuditJob, summary: dict) -> None:
         """Учесть стоимость stage 02 в режиме findings_only_gemma_pair в usage tracker.
@@ -1763,52 +2305,71 @@ class PipelineManager:
             task.cancel()
 
     async def _heartbeat_loop(self, job: AuditJob):
-        """Отправлять heartbeat каждые 15 секунд."""
+        """Отправлять heartbeat каждые 15 секунд.
+
+        Устойчивость: исключение В ОДНОЙ итерации (сбой broadcast / парсинга
+        времени / расчёта ETA) логируется и НЕ убивает цикл — следующий тик
+        продолжается. Раньше `except Exception` оборачивал весь `while` →
+        единичный сбой молча гасил heartbeat, джоба «замолкала», и
+        cleanup_zombies через ZOMBIE_TIMEOUT_SEC ложно признавал живой аудит
+        зомби (инцидент 10.06.2026). last_heartbeat обновляется ПЕРВЫМ — даже
+        если тело тика частично упадёт, маркер живости свежий.
+        """
         try:
             while True:
                 await asyncio.sleep(15)
                 if job.status != JobStatus.RUNNING:
                     break
-
-                now = datetime.now()
-                job.last_heartbeat = now.isoformat()
-
-                # Вычислить elapsed (чистое время без пауз на rate limit)
-                ref_time = job.batch_started_at or job.started_at
-                if ref_time:
-                    started = datetime.fromisoformat(ref_time)
-                    elapsed_sec = (now - started).total_seconds() - job.pause_total_sec
-                    elapsed_sec = max(0, elapsed_sec)
-                else:
-                    elapsed_sec = 0
-
-                # Вычислить ETA
-                eta_sec = self._calculate_eta(job)
-
-                # Получить текущие счётчики usage
                 try:
-                    counters = usage_tracker.get_counters()
-                    tokens_data = counters.model_dump()
-                except Exception:
-                    tokens_data = None
+                    now = datetime.now()
+                    # Обновляем маркер живости ПЕРВЫМ — чтобы даже при сбое
+                    # broadcast/ETA джоба не выглядела «замолчавшей» для зомби-чистки.
+                    job.last_heartbeat = now.isoformat()
 
-                await ws_manager.broadcast_to_project(
-                    job.project_id,
-                    WSMessage.heartbeat(
-                        project=job.project_id,
-                        stage=job.stage.value,
-                        elapsed_sec=elapsed_sec,
-                        process_alive=True,
-                        batch_current=job.progress_current,
-                        batch_total=job.progress_total,
-                        eta_sec=eta_sec,
-                        tokens=tokens_data,
-                    ),
-                )
+                    # Вычислить elapsed (чистое время без пауз на rate limit)
+                    ref_time = job.batch_started_at or job.started_at
+                    if ref_time:
+                        started = datetime.fromisoformat(ref_time)
+                        elapsed_sec = (now - started).total_seconds() - job.pause_total_sec
+                        elapsed_sec = max(0, elapsed_sec)
+                    else:
+                        elapsed_sec = 0
+
+                    # Вычислить ETA
+                    eta_sec = self._calculate_eta(job)
+
+                    # Получить текущие счётчики usage
+                    try:
+                        counters = usage_tracker.get_counters()
+                        tokens_data = counters.model_dump()
+                    except Exception:
+                        tokens_data = None
+
+                    await ws_manager.broadcast_to_project(
+                        job.project_id,
+                        WSMessage.heartbeat(
+                            project=job.project_id,
+                            stage=job.stage.value,
+                            elapsed_sec=elapsed_sec,
+                            process_alive=True,
+                            batch_current=job.progress_current,
+                            batch_total=job.progress_total,
+                            eta_sec=eta_sec,
+                            tokens=tokens_data,
+                        ),
+                    )
+                except asyncio.CancelledError:
+                    raise  # отмена task'а — выходим штатно (внешний handler)
+                except Exception as e:
+                    # Один сбойный тик не должен гасить heartbeat. Логируем и
+                    # продолжаем — иначе джоба «замолкнет» и попадёт в зомби-чистку.
+                    print(f"[heartbeat] {job.project_id}: сбой итерации (продолжаю): {e}")
+                    continue
         except asyncio.CancelledError:
             pass
-        except Exception:
-            pass  # Heartbeat не должен ронять основной процесс
+        except Exception as e:
+            # Совсем неожиданный сбой вне тела тика — логируем (раньше глоталось молча).
+            print(f"[heartbeat] {job.project_id}: цикл остановлен из-за ошибки: {e}")
 
     def _calculate_eta(self, job: AuditJob) -> Optional[float]:
         """Рассчитать ETA на основе среднего времени пакетов."""
@@ -1851,13 +2412,26 @@ class PipelineManager:
             raise RuntimeError(f"Неизвестный этап: {stage}")
         return normalized
 
-    def _validate_start_from_stage_now(self, project_id: str, stage: str) -> str:
-        """Fail fast when a manual start/retry would bypass mandatory stages."""
+    def _validate_start_from_stage_now(
+        self, project_id: str, stage: str, *, version_id: Optional[str] = None,
+    ) -> str:
+        """Fail fast when a manual start/retry would bypass mandatory stages.
+
+        Version-aware (reserc.md #4): валидируем против _output АКТИВНОЙ версии,
+        а не корня проекта — иначе V2-retry проверялся против stale V1-состояния
+        (ложные прохождения/блокировки gemma-гейта). version_id=None → latest.
+        """
         normalized = self._normalize_ocr_stage(stage)
         self._assert_stage_model_config_ready()
-        project_dir = resolve_project_dir(project_id)
-        output_dir = project_dir / "_output"
-        project_info = load_project_info(project_dir)
+        from backend.app.services.common import version_service
+        try:
+            ctx = version_service.resolve_project_version_context(project_id, version_id)
+            project_dir = ctx["version_dir"]
+            output_dir = ctx["output_dir"]
+        except (version_service.VersionNotFoundError, FileNotFoundError):
+            project_dir = resolve_project_dir(project_id)
+            output_dir = project_dir / "_output"
+        project_info = self._load_project_info_for_paths(project_id, project_dir, project_dir)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
         if normalized == "gemma_enrichment":
@@ -2003,7 +2577,7 @@ class PipelineManager:
         Кладёт single-task в общую очередь — фактический запуск произойдёт,
         когда worker дойдёт до элемента (см. `_enqueue_single`/`_dispatch_action`).
         """
-        stage = self._validate_start_from_stage_now(project_id, stage)
+        stage = self._validate_start_from_stage_now(project_id, stage, version_id=version_id)
         return await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=stage,
             version_id=version_id,
@@ -2054,9 +2628,7 @@ class PipelineManager:
 
             # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             if start_idx >= 4:
                 await self._assert_gemma_ready_for_stage(job, project_info, normalized)
@@ -2152,6 +2724,10 @@ class PipelineManager:
                 if not _ta_result.success:
                     raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
+                self._promote_v2_analysis_artifacts(
+                    job, ("01_text_analysis.json", "pipeline_log.json")
+                )
+
                 if job.status == JobStatus.CANCELLED:
                     return
 
@@ -2169,284 +2745,6 @@ class PipelineManager:
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
                 # Block retry пропускаем: findings-only не помечает unreadable_text=true.
-            elif start_idx <= 3:
-                batch_start_from = resume_info.get("start_from", 1) if start_idx == 3 else 1
-                batches_file = output_dir / "block_batches.json"
-
-                # Генерация пакетов (если нет или свежий старт)
-                need_generate = not batches_file.exists() or start_idx < 3
-                if need_generate:
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
-
-                    gen_args = [self._project_path_for_job(job)]
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Генерация пакетов блоков ═══")
-                    await self._log(job, "═══ ЭТАП 4: Генерация пакетов блоков ═══")
-
-                    exit_code, _, stderr = await self._run_script_for_job(
-                        job,
-                        str(BLOCKS_SCRIPT),
-                        ["batches"] + gen_args,
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    if exit_code != 0:
-                        raise RuntimeError(f"Генерация пакетов: {stderr}")
-
-                if not batches_file.exists():
-                    raise RuntimeError("block_batches.json не создан")
-
-                with open(batches_file, "r", encoding="utf-8") as f:
-                    batches_data = json.load(f)
-
-                runtime_plan = _load_or_create_single_block_runtime_plan(
-                    output_dir,
-                    batches_data.get("batches", []),
-                    force_rebuild=need_generate,
-                )
-                batches = runtime_plan.get("batches", [])
-                single_block_mode = runtime_plan.get("mode") == "single_block"
-                total_batches = len(batches)
-
-                if total_batches == 0:
-                    await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
-                else:
-                    # Параллельный анализ блоков
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.BLOCK_ANALYSIS
-                    job.status = JobStatus.RUNNING
-                    job.progress_total = total_batches
-                    self._update_pipeline_log(pid, "block_analysis", "running")
-
-                    parallel = get_block_batch_parallelism("block_batch")
-                    mode_label = (
-                        f"{total_batches} single-block запросов"
-                        if single_block_mode else f"{total_batches} пакетов"
-                    )
-                    print(f"[{pid}:resume] ═══ ЭТАП 4: Анализ блоков ({mode_label} x{parallel}) ═══")
-                    await self._log(
-                        job,
-                        f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
-                    )
-                    if single_block_mode:
-                        await self._log(
-                            job,
-                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
-                            f"({total_batches} single-block задач)",
-                        )
-
-                    semaphore = asyncio.Semaphore(parallel)
-                    completed_count = 0
-                    error_count = 0
-                    failed_runtime_batches: list[dict] = []
-
-                    # Время начала этапа — для фильтрации файлов от старых запусков
-                    batch_stage_start = datetime.now().timestamp()
-                    # Smart retry: при повторе конкретного этапа сохраняем успешные пакеты
-                    _smart_retry = resume_info.get("is_stage_retry", False) and start_idx == 3
-                    if _smart_retry:
-                        _existing = sum(
-                            1 for b in batches
-                            if (output_dir / f"block_batch_{b['batch_id']:03d}.json").exists()
-                            and (output_dir / f"block_batch_{b['batch_id']:03d}.json").stat().st_size > 100
-                        )
-                        _to_redo = total_batches - _existing
-                        await self._log(
-                            job,
-                            f"Smart retry: {_existing} пакетов готовы, {_to_redo} будут перезапущены"
-                        )
-
-                    async def _process_batch(batch):
-                        nonlocal completed_count, error_count
-                        batch_id = batch["batch_id"]
-
-                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
-                        if result_file.exists() and result_file.stat().st_size > 100:
-                            # Smart retry: при повторе этапа сохраняем валидные файлы от прошлого запуска
-                            _is_from_current_run = result_file.stat().st_mtime >= batch_stage_start
-                            if _smart_retry or _is_from_current_run:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-                                if _smart_retry and not _is_from_current_run:
-                                    size_kb = round(result_file.stat().st_size / 1024, 1)
-                                    await self._log(job, f"Пакет {batch_id}/{total_batches}: ✓ пропуск ({size_kb} KB из прошлого запуска)")
-                                return
-                            else:
-                                # Файл от старого запуска — удаляем и обрабатываем заново
-                                result_file.unlink()
-
-                        async with semaphore:
-                            if job.status == JobStatus.CANCELLED:
-                                return
-                            if error_count >= 5:
-                                return
-
-                            can_go = await self._check_before_launch(job)
-                            if not can_go:
-                                return
-
-                            block_count = batch.get("block_count", len(batch.get("blocks", [])))
-                            single_block_id = ""
-                            if batch.get("single_block_mode") and batch.get("blocks"):
-                                single_block_id = batch["blocks"][0].get("block_id", "")
-                                await self._log(job, f"Блок {batch_id}/{total_batches}: {single_block_id}...")
-                            else:
-                                await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
-
-                            retries = 0
-                            pause_before_batch = job.pause_total_sec
-                            while retries <= RATE_LIMIT_MAX_RETRIES:
-                                batch_start_time = datetime.now()
-                                job.batch_started_at = batch_start_time.isoformat()
-
-                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                                    batch, project_info, pid, total_batches,
-                                    on_output=lambda msg: self._log(job, msg),
-                                )
-                                self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
-
-                                batch_wall = (datetime.now() - batch_start_time).total_seconds()
-                                batch_pause = job.pause_total_sec - pause_before_batch
-                                batch_duration = max(0, batch_wall - batch_pause)
-                                job.batch_durations.append(batch_duration)
-
-                                if exit_code == 0:
-                                    if result_file.exists():
-                                        size_kb = round(result_file.stat().st_size / 1024, 1)
-                                        success_message = (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — OK ({size_kb} KB)"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
-                                        )
-                                        await self._log(job, success_message)
-                                    break
-
-                                if claude_runner.is_cancelled(exit_code):
-                                    break
-
-                                stdout_text = output_text or ""
-                                stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
-
-                                # Таймаут + можно разбить → split & retry
-                                if claude_runner.is_timeout(exit_code) and block_count > 3:
-                                    await self._log(
-                                        job,
-                                        f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
-                                        "warn",
-                                    )
-                                    split_ok = await self._retry_batch_split(
-                                        job, batch, project_info, pid,
-                                        total_batches, batch_id, output_dir,
-                                    )
-                                    if split_ok:
-                                        exit_code = 0  # считаем успехом
-                                    break
-
-                                # "Prompt is too long" — нерепетируемая, retry бесполезен
-                                if claude_runner.is_prompt_too_long(exit_code, stdout_text, stderr_text):
-                                    await self._log(job, f"Prompt is too long", "error")
-                                    await self._log(job, f"Пакет {batch_id}: слишком много блоков ({block_count}), пропускаем", "warn")
-                                    break
-
-                                if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
-                                    retries += 1
-                                    if retries <= RATE_LIMIT_MAX_RETRIES:
-                                        # Jitter 5-30 сек чтобы параллельные пакеты не retry одновременно
-                                        jitter = random.uniform(5, 30)
-                                        await asyncio.sleep(jitter)
-                                        can_continue = await self._wait_for_rate_limit(
-                                            job, f"пакет {batch_id}", cli_output=stdout_text
-                                        )
-                                        if not can_continue:
-                                            error_count += 1
-                                            break
-                                        continue
-                                else:
-                                    break
-
-                            if exit_code != 0 and not claude_runner.is_cancelled(exit_code):
-                                error_count += 1
-                                err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
-                                failed_runtime_batches.append(
-                                    _runtime_batch_failure_entry(
-                                        batch, err_detail, reason="single_block_analysis_failed",
-                                    )
-                                )
-                                error_prefix = (
-                                    f"Блок {batch_id}/{total_batches}: {single_block_id}"
-                                    if single_block_id else
-                                    f"Пакет {batch_id}"
-                                )
-                                await self._log(job, f"{error_prefix}: ошибка (код {exit_code}) — {err_detail}", "error")
-                            else:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-
-                    # Запуск батчей (готовые пропустятся внутри _process_batch)
-                    tasks = []
-                    for batch in batches:
-                        tasks.append(asyncio.create_task(_process_batch(batch)))
-
-                    if tasks:
-                        gathered = await asyncio.gather(*tasks, return_exceptions=True)
-                        for batch, result in zip(batches, gathered):
-                            if isinstance(result, Exception):
-                                error_count += 1
-                                err_detail = f"{type(result).__name__}: {result}"
-                                failed_runtime_batches.append(
-                                    _runtime_batch_failure_entry(
-                                        batch, err_detail, reason="single_block_task_exception",
-                                    )
-                                )
-                                await self._log(
-                                    job,
-                                    f"Single-block task exception "
-                                    f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
-                                    f"{err_detail}",
-                                    "error",
-                                )
-
-                    _write_block_analysis_runtime_summary(
-                        output_dir,
-                        runtime_plan,
-                        failed_batches=failed_runtime_batches,
-                        completed_batches=completed_count,
-                    )
-
-                    if error_count > 0:
-                        if error_count >= total_batches:
-                            self._update_pipeline_log(pid, "block_analysis", "error",
-                                                       error=f"{error_count} single-block задач с ошибками",
-                                                       detail={"failed_blocks": failed_runtime_batches})
-                            raise RuntimeError(f"Все пакеты завершились с ошибками")
-                        self._update_pipeline_log(pid, "block_analysis", "partial",
-                                                   message=f"{error_count} single-block задач с ошибками",
-                                                   detail={"failed_blocks": failed_runtime_batches})
-                    else:
-                        self._update_pipeline_log(pid, "block_analysis", "done",
-                                                   message=f"OK ({total_batches} пакетов)")
-
-                # Слияние результатов block_batch_*.json → 02_blocks_analysis.json
-                print(f"[{pid}:resume] Слияние block_batch_*.json → 02_blocks_analysis.json")
-                await self._log(job, "Слияние результатов блоков...")
-                exit_code, _, stderr = await self._run_script_for_job(
-                    job,
-                    str(BLOCKS_SCRIPT),
-                    ["merge", self._project_path_for_job(job)],
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code != 0:
-                    await self._log(job, f"Ошибка слияния: {stderr}", "warn")
-
-                if job.status == JobStatus.CANCELLED:
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-                # ═══ ЭТАП 4b: Block Retry — перекачка нечитаемых блоков ═══
-                await self._run_block_retry(job, pid, project_info, output_dir)
 
             # ═══ ЭТАП 5: Свод замечаний ═══
             if start_idx <= 4:
@@ -2474,6 +2772,10 @@ class PipelineManager:
                 if not _fm_result.success:
                     raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
 
+                self._promote_v2_analysis_artifacts(
+                    job, ("03_findings.json", "pipeline_log.json")
+                )
+
                 # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
                 await self._stream_findings_events(job, "merge")
 
@@ -2486,10 +2788,29 @@ class PipelineManager:
             # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms (+ optimization) ═══
             # output_dir уже version-aware (см. начало _run_resumed_pipeline).
             if start_idx < 5:
-                # Полный post-findings: critic + norms + optimization (параллельно)
+                # Полный post-findings: critic + norms + optimization (параллельно).
+                # AUDIT_RESUME_SKIP_OPTIMIZATION=true (default false) обрезает каскад
+                # resume до верификации норм: тяжёлый Opus-этап оптимизации и его
+                # review НЕ запускаются. Нужно для re-run проектов, где переделывается
+                # только block_analysis→findings→нормы (Stage 02 был заблокирован
+                # дневным лимитом платного API), а оптимизация по ним не пересобирается.
+                # Флаг действует ТОЛЬКО на resume-путь; полный аудит (_run_ocr_pipeline)
+                # не затрагивается.
                 findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
-                    await self._run_post_findings_parallel(job, project_info)
+                    _skip_opt = os.environ.get(
+                        "AUDIT_RESUME_SKIP_OPTIMIZATION", "",
+                    ).strip().lower() in {"1", "true", "yes", "on"}
+                    if _skip_opt:
+                        await self._log(
+                            job,
+                            "Оптимизация пропущена (AUDIT_RESUME_SKIP_OPTIMIZATION=true): "
+                            "resume только до верификации норм.",
+                            "info",
+                        )
+                    await self._run_post_findings_parallel(
+                        job, project_info, include_optimization=not _skip_opt,
+                    )
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                         return
@@ -2565,6 +2886,7 @@ class PipelineManager:
             duration = round(net_sec / 60, 1)
             wall_duration = round(wall_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}:resume] ═══ Конвейер завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Конвейер завершён за {duration} мин{pause_note}.", "info")
@@ -2649,9 +2971,7 @@ class PipelineManager:
                 # Проверяем актуальность по двум критериям:
                 # 1) tile_config_source должен совпадать
                 # 2) количество тайлов в батчах = реальному количеству на диске
-                info_path = project_dir / "project_info.json"
-                with open(info_path, "r", encoding="utf-8") as f:
-                    info = json.load(f)
+                info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
                 current_source = info.get("tile_config_source", "")
                 with open(batches_file, "r", encoding="utf-8") as f:
                     bdata = json.load(f)
@@ -2727,9 +3047,7 @@ class PipelineManager:
                     await self._log(job, f"Очистка: удалено {deleted_batch_count} старых результатов батчей")
 
             # Загружаем project_info (project_dir уже version-aware)
-            info_path = project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             # Шаг 2: Параллельная обработка пакетов
             job.stage = AuditStage.TILE_AUDIT
@@ -2762,7 +3080,7 @@ class PipelineManager:
                     if job.status == JobStatus.CANCELLED:
                         return
                     # Остановка при слишком большом числе реальных ошибок
-                    if error_count >= 5:
+                    if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                         return
 
                     # ── Превентивная проверка rate limit перед запуском ──
@@ -2848,7 +3166,7 @@ class PipelineManager:
                             await self._log(job, f"Пакет {batch_id}/{total}: ОШИБКА (код {exit_code})", "error")
                             if error_snippet:
                                 await self._log(job, f"  Детали: {error_snippet}", "error")
-                            if error_count >= 5:
+                            if error_count >= STAGE02_ERROR_ABORT_THRESHOLD:
                                 await self._log(job, f"{error_count} ошибок — пакетный анализ остановлен", "error")
                             break  # не retry для реальных ошибок
 
@@ -2939,11 +3257,9 @@ class PipelineManager:
         pid = job.project_id
         try:
             self._update_pipeline_log(pid, "main_audit", "running")
-            # Version-aware project_info: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware project_info: V1 = root, projects_v2 = 01_input/version.json.
             _root_dir, _project_dir, _output_dir = self._resolve_job_paths(job)
-            info_path = _project_dir / "project_info.json"
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, _project_dir)
 
             await self._log(job, "Запуск основного аудита Claude...")
             await self._start_heartbeat(job)
@@ -2960,6 +3276,9 @@ class PipelineManager:
             exit_code, output, cli_result = await claude_runner.run_main_audit(
                 project_info, pid,
                 on_output=lambda msg: self._log(job, msg),
+                output_dir=_output_dir,
+                version_dir=_project_dir,
+                version_id=job.version_id,
             )
             self._record_cli_usage(job, cli_result, "main_audit")
 
@@ -2980,6 +3299,9 @@ class PipelineManager:
                     exit_code, output, cli_result = await claude_runner.run_main_audit(
                         project_info, pid,
                         on_output=lambda msg: self._log(job, msg),
+                        output_dir=_output_dir,
+                        version_dir=_project_dir,
+                        version_id=job.version_id,
                     )
                     self._record_cli_usage(job, cli_result, "main_audit_retry")
                     if exit_code == 0:
@@ -3029,73 +3351,6 @@ class PipelineManager:
             project_id, action="norm_verify", version_id=version_id,
         )
 
-    async def _retry_batch_split(
-        self,
-        job: AuditJob,
-        batch: dict,
-        project_info: dict,
-        pid: str,
-        total_batches: int,
-        original_batch_id: int,
-        output_dir: Path,
-    ) -> bool:
-        """Разбить упавший пакет пополам и запустить обе части.
-
-        Результаты записываются как block_batch_NNNa.json и block_batch_NNNb.json.
-        Слияние (blocks.py merge) подхватит все block_batch_*.json.
-
-        Returns: True если обе половины успешны.
-        """
-        blocks = batch.get("blocks", [])
-        mid = len(blocks) // 2
-        halves = [blocks[:mid], blocks[mid:]]
-        suffixes = ["a", "b"]
-        success = True
-
-        # Удалить частичный результат от таймаута
-        orig_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
-        if orig_file.exists():
-            orig_file.unlink()
-
-        for half_blocks, suffix in zip(halves, suffixes):
-            if not half_blocks:
-                continue
-
-            sub_batch = {
-                "batch_id": original_batch_id,
-                "blocks": half_blocks,
-                "block_count": len(half_blocks),
-                "pages_included": sorted(set(b.get("page", 0) for b in half_blocks)),
-            }
-
-            sub_label = f"{original_batch_id}{suffix}"
-            await self._log(
-                job,
-                f"Пакет {sub_label}/{total_batches}: {len(half_blocks)} блоков (retry)...",
-            )
-
-            exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                sub_batch, project_info, pid, total_batches,
-                on_output=lambda msg: self._log(job, msg),
-            )
-            self._record_cli_usage(job, cli_result, f"block_batch_{original_batch_id:03d}{suffix}")
-
-            # Claude CLI пишет результат как block_batch_<batch_id>.json
-            # Переименовываем: block_batch_003.json → block_batch_003a.json
-            written_file = output_dir / f"block_batch_{original_batch_id:03d}.json"
-            split_file = output_dir / f"block_batch_{original_batch_id:03d}{suffix}.json"
-
-            if exit_code == 0 and written_file.exists():
-                written_file.rename(split_file)
-                size_kb = round(split_file.stat().st_size / 1024, 1)
-                await self._log(job, f"Пакет {sub_label}: OK ({size_kb} KB)")
-            elif exit_code == 0:
-                await self._log(job, f"Пакет {sub_label}: OK (файл не создан)", "warn")
-            else:
-                await self._log(job, f"Пакет {sub_label}: ошибка (код {exit_code})", "error")
-                success = False
-
-        return success
 
     async def _run_findings_review(self, job: AuditJob, project_info: dict):
         """Тонкий оркестратор: делегирует в findings_review/runner.py.
@@ -3121,6 +3376,17 @@ class PipelineManager:
         # CRITIC_V2_FAILS_PIPELINE).
         if not result.cancelled and result.critic_ok:
             await self._run_critic_v2_post_review(job)
+
+        if job.status not in (JobStatus.CANCELLED, JobStatus.FAILED):
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "03_findings.json",
+                    "03_findings_review.json",
+                    "03_findings_pre_review.json",
+                    "pipeline_log.json",
+                ),
+            )
 
     async def _run_critic_v2_post_review(self, job: AuditJob) -> None:
         """Post-processing critic v2 triage над уже готовыми 03_findings.json.
@@ -3148,7 +3414,12 @@ class PipelineManager:
         llm_enabled = bool(getattr(cfg, "CRITIC_V2_LLM_ENABLED", False))
         fails_pipeline = bool(getattr(cfg, "CRITIC_V2_FAILS_PIPELINE", False))
 
-        project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
+        from backend.app.services.storage.storage_write_facade import v2_is_primary as _v2_primary_for_critic
+        if _v2_primary_for_critic():
+            _root_dir, _version_dir, _output_dir = self._resolve_job_paths(job)
+            project_dir = _output_dir
+        else:
+            project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
 
         await self._log(job, f"Critic v2 triage: запуск (profile={profile}, "
                               f"subdir={output_subdir}, llm=False)")
@@ -3270,10 +3541,21 @@ class PipelineManager:
             print(f"[{pid}] _task_optimization STARTED")
             try:
                 # Optimization сам по себе НЕ зависит от corrector
+                from backend.app.services.storage.storage_write_facade import v2_is_primary
+
+                if v2_is_primary():
+                    opt_job_id = job.job_id
+                    opt_object_id = getattr(job, "object_id", None)
+                    opt_version_id = getattr(job, "version_id", None)
+                else:
+                    opt_job_id = job.job_id + "_opt"
+                    opt_object_id = self._resolve_object_id(None)
+                    opt_version_id = None
                 opt_job = AuditJob(
-                    job_id=job.job_id + "_opt",
-                    object_id=self._resolve_object_id(None),
+                    job_id=opt_job_id,
+                    object_id=opt_object_id,
                     project_id=pid,
+                    version_id=opt_version_id,
                     stage=AuditStage.OPTIMIZATION,
                     status=JobStatus.RUNNING,
                     started_at=datetime.now().isoformat(),
@@ -3347,6 +3629,23 @@ class PipelineManager:
                 "warn",
             )
 
+        self._promote_v2_analysis_artifacts(
+            job,
+            (
+                "03_findings.json",
+                "03_findings_review.json",
+                "03_findings_pre_review.json",
+                "03a_norms_verified.json",
+                "norm_checks.json",
+                "norm_checks_llm.json",
+                "optimization.json",
+                "optimization_review.json",
+                "optimization_pre_review.json",
+                "pipeline_log.json",
+            ),
+        )
+        self._promote_completed_audit_v2(job)
+
     async def _run_norm_verification(
         self,
         job: AuditJob,
@@ -3380,6 +3679,16 @@ class PipelineManager:
                 return
 
             job.status = JobStatus.COMPLETED
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "03_findings.json",
+                    "03a_norms_verified.json",
+                    "norm_checks.json",
+                    "norm_checks_llm.json",
+                    "pipeline_log.json",
+                ),
+            )
 
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -3458,19 +3767,10 @@ class PipelineManager:
             # См. _resolve_job_paths() — единый helper, чтобы MD-check и source-файлы
             # больше не утекали из V1 root при V2-аудите.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
+            info_path = self._project_info_path_for_paths(_root_dir, project_dir)
 
-            # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            md_candidates = [
-                f for f in project_dir.iterdir()
-                if f.suffix == ".md" and f.name.endswith("_document.md")
-            ]
-            if not md_candidates:
-                raise RuntimeError(
-                    f"MD-файл не найден для проекта {pid}. "
-                    f"Анализ без MD-файла не поддерживается. "
-                    f"Создайте MD через Chandra OCR и положите в папку проекта."
-                )
+            # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
+            self._require_project_md(pid, _root_dir, project_dir, info_path)
 
             # ═══ ЭТАП 1: Подготовка текста ═══
             job.stage = AuditStage.PREPARE
@@ -3506,8 +3806,7 @@ class PipelineManager:
             print(f"[{pid}:smart] ═══ ЭТАП 2: Триаж страниц ═══")
             await self._log(job, "═══ ЭТАП 2: Триаж страниц (Claude определяет приоритеты) ═══")
 
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
             _triage_result = await _run_text_analysis_stage(
                 self._make_stage_context(job),
@@ -3537,6 +3836,9 @@ class PipelineManager:
                                        message=f"{len(priority_pages)} приоритетных из {len(page_triage)}")
             print(f"[{pid}:smart] Триаж: {len(priority_pages)} приоритетных страниц из {len(page_triage)}")
             await self._log(job, f"Триаж завершён: {len(priority_pages)} приоритетных страниц ({priority_pages})")
+            self._promote_v2_analysis_artifacts(
+                job, ("01_text_analysis.json", "pipeline_log.json")
+            )
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -3622,6 +3924,9 @@ class PipelineManager:
                 exit_code, output, cli_result = await claude_runner.run_smart_merge(
                     project_info, pid,
                     on_output=lambda msg: self._log(job, msg),
+                    output_dir=output_dir,
+                    version_dir=project_dir,
+                    version_id=job.version_id,
                 )
                 self._record_cli_usage(job, cli_result, "smart_merge")
                 if claude_runner.is_cancelled(exit_code):
@@ -3635,6 +3940,9 @@ class PipelineManager:
                         exit_code, output, cli_result = await claude_runner.run_smart_merge(
                             project_info, pid,
                             on_output=lambda msg: self._log(job, msg),
+                            output_dir=output_dir,
+                            version_dir=project_dir,
+                            version_id=job.version_id,
                         )
                         self._record_cli_usage(job, cli_result, "smart_merge_retry")
                 if exit_code != 0:
@@ -3644,6 +3952,9 @@ class PipelineManager:
                     # Не fatal — продолжаем
                 else:
                     self._update_pipeline_log(pid, "main_audit", "done", message="OK")
+                    self._promote_v2_analysis_artifacts(
+                        job, ("03_findings.json", "pipeline_log.json")
+                    )
 
                 # Проверяем gap_analysis — нужны ли ещё страницы?
                 additional_pages = []
@@ -3721,6 +4032,7 @@ class PipelineManager:
             net_sec = max(0, wall_sec - job.pause_total_sec)
             duration = round(net_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}:smart] ═══ Smart Parallel завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Smart Parallel конвейер завершён за {duration} мин{pause_note}.", "info")
@@ -3929,21 +4241,17 @@ class PipelineManager:
         """
         start_time = datetime.now()
         pid = job.project_id
+        output_root_token = None
         try:
-            # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
+            # Version-aware пути: V1 = root, projects_v2 = versions/<vid>/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = project_dir / "project_info.json"
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import bind_output_root
+            output_root_token = bind_output_root(output_dir)
+            info_path = self._project_info_path_for_paths(_root_dir, project_dir)
+            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
-            with open(info_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
-
-            # ═══ Проверка MD-файла (обязательный источник текста) ═══
-            if find_project_markdown(project_dir, project_info) is None:
-                raise RuntimeError(
-                    f"MD-файл не найден для проекта {pid}. "
-                    f"{GEMMA_STAGE_LABEL} и анализ без MD-файла не поддерживаются. "
-                    f"Создайте MD через Chandra OCR и положите в папку проекта."
-                )
+            # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
+            self._require_project_md(pid, _root_dir, project_dir, info_path)
 
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             job.stage = AuditStage.CROP_BLOCKS
@@ -3956,6 +4264,9 @@ class PipelineManager:
             )
             if blocks_index.exists() and not needs_recrop:
                 # Блоки уже скачаны (pre-crop из очереди) и совместимы с текущим режимом
+                _sync_v2_read_canary_blocks_alias(
+                    project_dir, output_dir, GEMMA_BLOCKS_DIRNAME,
+                )
                 self._update_pipeline_log(pid, "crop_blocks", "done", message="Pre-cropped")
                 print(f"[{pid}] ═══ ЭТАП 1: Кроп — уже готов (pre-crop) ═══")
                 await self._log(job, "═══ ЭТАП 1: Кроп image-блоков — уже готов (pre-crop) ═══")
@@ -3986,6 +4297,9 @@ class PipelineManager:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
+                _sync_v2_read_canary_blocks_alias(
+                    project_dir, output_dir, GEMMA_BLOCKS_DIRNAME,
+                )
                 self._update_pipeline_log(
                     pid, "crop_blocks", "done",
                     message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
@@ -4028,8 +4342,25 @@ class PipelineManager:
                 job.status = JobStatus.CANCELLED
                 return
             if not _ta_result.success:
+                # rate_limit_exhausted + pause_on_rate_limit: не давать очереди
+                # бесконтрольно стартовать следующий проект — ставим паузу.
+                if (
+                    _ta_result.data
+                    and _ta_result.data.get("pause_on_rate_limit")
+                    and not self._paused
+                ):
+                    await self._log(
+                        job,
+                        "⏸ Очередь на паузе: rate_limit_exhausted "
+                        "(TEXT_ANALYSIS_PAUSE_ON_RATE_LIMIT=true)",
+                        "warn",
+                    )
+                    await self.pause("finish_current")
                 raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
+            self._promote_v2_analysis_artifacts(
+                job, ("01_text_analysis.json", "pipeline_log.json")
+            )
             print(f"[{pid}] ЭТАП 2 OK")
 
             if job.status == JobStatus.CANCELLED:
@@ -4043,252 +4374,6 @@ class PipelineManager:
                     return
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
-            else:
-                # ═══ ЭТАП 3: Генерация пакетов блоков ═══
-                self._reset_job_progress(job)
-                job.stage = AuditStage.CROP_BLOCKS  # reuse для генерации батчей
-
-                # Все блоки — полное покрытие
-                gen_args = [self._project_path_for_job(job)]
-                await self._log(job, "Анализ ВСЕХ image-блоков")
-
-                print(f"[{pid}] ═══ ЭТАП 3: Генерация пакетов блоков ═══")
-                await self._log(job, "═══ ЭТАП 3: Генерация пакетов блоков ═══")
-
-                exit_code, _, stderr = await self._run_script_for_job(
-                    job,
-                    str(BLOCKS_SCRIPT),
-                    ["batches"] + gen_args,
-                    on_output=lambda msg: self._log(job, msg),
-                )
-                if exit_code != 0:
-                    raise RuntimeError(f"Генерация пакетов: {stderr}")
-
-                # Загружаем пакеты
-                batches_file = output_dir / "block_batches.json"
-                if not batches_file.exists():
-                    raise RuntimeError("block_batches.json не создан")
-
-                with open(batches_file, "r", encoding="utf-8") as f:
-                    batches_data = json.load(f)
-
-                runtime_plan = _load_or_create_single_block_runtime_plan(
-                    output_dir,
-                    batches_data.get("batches", []),
-                    force_rebuild=True,
-                )
-                batches = runtime_plan.get("batches", [])
-                single_block_mode = runtime_plan.get("mode") == "single_block"
-                total_batches = len(batches)
-
-                if total_batches == 0:
-                    await self._log(job, "Нет пакетов для анализа — переход к своду", "warn")
-                else:
-                    # ═══ ЭТАП 4: Параллельный анализ блоков ═══
-                    self._clean_stage_files(pid, ["block_batch_*.json"])
-                    self._reset_job_progress(job)
-                    job.stage = AuditStage.BLOCK_ANALYSIS
-                    job.status = JobStatus.RUNNING
-                    job.progress_total = total_batches
-                    self._update_pipeline_log(pid, "block_analysis", "running")
-
-                    parallel = get_block_batch_parallelism("block_batch")
-                    mode_label = (
-                        f"{total_batches} single-block запросов"
-                        if single_block_mode else f"{total_batches} пакетов"
-                    )
-                    print(f"[{pid}] ═══ ЭТАП 4: Анализ блоков ({mode_label} x{parallel}) ═══")
-                    await self._log(
-                        job,
-                        f"═══ ЭТАП 4: Анализ блоков ({mode_label}, x{parallel} параллельно) ═══"
-                    )
-                    if single_block_mode:
-                        await self._log(
-                            job,
-                            f"Stage 02 runtime plan: {RUNTIME_BATCHES_FILE} "
-                            f"({total_batches} single-block задач)",
-                        )
-
-                    semaphore = asyncio.Semaphore(parallel)
-                    completed_count = 0
-                    error_count = 0
-                    failed_runtime_batches: list[dict] = []
-                    # Время начала этапа — для фильтрации файлов от старых запусков
-                    block_stage_start = datetime.now().timestamp()
-
-                    async def _process_block_batch(batch):
-                        nonlocal completed_count, error_count
-                        batch_id = batch["batch_id"]
-
-                        result_file = output_dir / f"block_batch_{batch_id:03d}.json"
-                        if result_file.exists() and result_file.stat().st_size > 100:
-                            # Проверяем что файл от ТЕКУЩЕГО запуска, а не от старого
-                            if result_file.stat().st_mtime >= block_stage_start:
-                                completed_count += 1
-                                job.progress_current = completed_count
-                                await self._progress(job, completed_count, total_batches)
-                                return
-                            else:
-                                # Файл от старого запуска — удаляем и обрабатываем заново
-                                result_file.unlink()
-
-                        async with semaphore:
-                            if job.status == JobStatus.CANCELLED:
-                                return
-                            if error_count >= 5:
-                                return
-
-                            can_go = await self._check_before_launch(job)
-                            if not can_go:
-                                return
-
-                            block_count = batch.get("block_count", len(batch.get("blocks", [])))
-                            single_block_id = ""
-                            if batch.get("single_block_mode") and batch.get("blocks"):
-                                single_block_id = batch["blocks"][0].get("block_id", "")
-                                await self._log(job, f"Блок {batch_id}/{total_batches}: {single_block_id}...")
-                            else:
-                                await self._log(job, f"Пакет {batch_id}/{total_batches}: {block_count} блоков...")
-
-                            retries = 0
-                            pause_before_batch = job.pause_total_sec
-                            while retries <= RATE_LIMIT_MAX_RETRIES:
-                                batch_start_time = datetime.now()
-                                job.batch_started_at = batch_start_time.isoformat()
-
-                                exit_code, output_text, cli_result = await claude_runner.run_block_batch(
-                                    batch, project_info, pid, total_batches,
-                                    on_output=lambda msg: self._log(job, msg),
-                                )
-                                self._record_cli_usage(job, cli_result, f"block_batch_{batch_id:03d}")
-
-                                batch_wall = (datetime.now() - batch_start_time).total_seconds()
-                                batch_pause = job.pause_total_sec - pause_before_batch
-                                batch_duration = max(0, batch_wall - batch_pause)
-                                job.batch_durations.append(batch_duration)
-
-                                if exit_code == 0:
-                                    if result_file.exists():
-                                        size_kb = round(result_file.stat().st_size / 1024, 1)
-                                        success_message = (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — OK ({size_kb} KB)"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: OK ({size_kb} KB)"
-                                        )
-                                        await self._log(job, success_message)
-                                    break
-
-                                if claude_runner.is_cancelled(exit_code):
-                                    break
-
-                                stdout_text = output_text or ""
-                                stderr_text = cli_result.result_text if cli_result and cli_result.is_error else ""
-
-                                # Таймаут + можно разбить → split & retry
-                                if claude_runner.is_timeout(exit_code) and block_count > 3:
-                                    await self._log(
-                                        job,
-                                        f"Пакет {batch_id}: таймаут ({block_count} блоков) — разбиваю пополам",
-                                        "warn",
-                                    )
-                                    split_ok = await self._retry_batch_split(
-                                        job, batch, project_info, pid,
-                                        total_batches, batch_id, output_dir,
-                                    )
-                                    if split_ok:
-                                        exit_code = 0
-                                    break
-
-                                if claude_runner.is_rate_limited(exit_code, stdout_text, stderr_text):
-                                    retries += 1
-                                    if retries > RATE_LIMIT_MAX_RETRIES:
-                                        error_count += 1
-                                        break
-                                    can_continue = await self._wait_for_rate_limit(
-                                        job,
-                                        f"rate limit при пакете {batch_id}",
-                                        cli_output=f"{stdout_text}\n{stderr_text}",
-                                    )
-                                    if not can_continue:
-                                        error_count += 1
-                                        break
-                                    continue
-                                else:
-                                    error_count += 1
-                                    err_detail = _extract_error_detail(exit_code, output_text or "", max_len=160)
-                                    failed_runtime_batches.append(
-                                        _runtime_batch_failure_entry(
-                                            batch, err_detail, reason="single_block_analysis_failed",
-                                        )
-                                    )
-                                    await self._log(
-                                        job,
-                                        (
-                                            f"Блок {batch_id}/{total_batches}: {single_block_id} — ОШИБКА (код {exit_code}) — {err_detail}"
-                                            if single_block_id else
-                                            f"Пакет {batch_id}/{total_batches}: ОШИБКА (код {exit_code}) — {err_detail}"
-                                        ),
-                                        "error",
-                                    )
-                                    break
-
-                            completed_count += 1
-                            job.progress_current = completed_count
-                            await self._progress(job, completed_count, total_batches)
-
-                    tasks = [_process_block_batch(batch) for batch in batches]
-                    gathered = await asyncio.gather(*tasks, return_exceptions=True)
-                    for batch, result in zip(batches, gathered):
-                        if isinstance(result, Exception):
-                            error_count += 1
-                            err_detail = f"{type(result).__name__}: {result}"
-                            failed_runtime_batches.append(
-                                _runtime_batch_failure_entry(
-                                    batch, err_detail, reason="single_block_task_exception",
-                                )
-                            )
-                            await self._log(
-                                job,
-                                f"Single-block task exception "
-                                f"{_runtime_batch_failure_entry(batch, err_detail, reason='single_block_task_exception').get('block_id')}: "
-                                f"{err_detail}",
-                                "error",
-                            )
-
-                    _write_block_analysis_runtime_summary(
-                        output_dir,
-                        runtime_plan,
-                        failed_batches=failed_runtime_batches,
-                        completed_batches=completed_count,
-                    )
-
-                    if error_count >= total_batches:
-                        job.status = JobStatus.FAILED
-                        job.error_message = f"Все {total_batches} пакетов с ошибкой"
-                        self._update_pipeline_log(pid, "block_analysis", "error",
-                                                   error=f"Все {total_batches} пакетов с ошибкой")
-                        return
-
-                    # Слияние block_batch_*.json → 02_blocks_analysis.json
-                    await self._log(job, "Слияние результатов анализа блоков...")
-                    exit_code, _, stderr = await self._run_script_for_job(
-                        job,
-                        str(BLOCKS_SCRIPT),
-                        ["merge", self._project_path_for_job(job)],
-                        on_output=lambda msg: self._log(job, msg),
-                    )
-                    if exit_code == 0:
-                        await self._log(job, "02_blocks_analysis.json создан", "info")
-                    else:
-                        await self._log(job, f"Ошибка слияния: {stderr}", "error")
-
-                    if error_count > 0:
-                        self._update_pipeline_log(pid, "block_analysis", "partial",
-                                                   message=f"{error_count} из {total_batches} single-block задач с ошибками",
-                                                   detail={"failed_blocks": failed_runtime_batches})
-                    else:
-                        self._update_pipeline_log(pid, "block_analysis", "done",
-                                                   message=f"Все {total_batches} пакетов OK")
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -4299,6 +4384,15 @@ class PipelineManager:
 
             # ═══ ЭТАП 5b: Block Retry — перекачка нечитаемых блоков ═══
             await self._run_block_retry(job, pid, project_info, output_dir)
+            self._promote_v2_analysis_artifacts(
+                job,
+                (
+                    "02_blocks_analysis.json",
+                    "block_analysis_summary.json",
+                    RUNTIME_BATCHES_FILE,
+                    "pipeline_log.json",
+                ),
+            )
 
             if job.status == JobStatus.CANCELLED:
                 return
@@ -4314,6 +4408,10 @@ class PipelineManager:
                 return
             if not _fm_result.success:
                 raise RuntimeError(_fm_result.error or "Свод замечаний: ошибка")
+
+            self._promote_v2_analysis_artifacts(
+                job, ("03_findings.json", "pipeline_log.json")
+            )
 
             # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
             await self._stream_findings_events(job, "merge")
@@ -4358,6 +4456,7 @@ class PipelineManager:
             net_sec = max(0, wall_sec - job.pause_total_sec)
             duration = round(net_sec / 60, 1)
             job.status = JobStatus.COMPLETED
+            self._promote_completed_audit_v2(job)
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}] ═══ Аудит завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Аудит завершён за {duration} мин{pause_note}.", "info")
@@ -4376,6 +4475,12 @@ class PipelineManager:
             job.error_message = str(e)
             await self._log(job, f"Исключение: {e}", "error")
         finally:
+            if output_root_token is not None:
+                try:
+                    from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import unbind_output_root
+                    unbind_output_root(output_root_token)
+                except Exception:
+                    pass
             job.completed_at = datetime.now().isoformat()
             self._cleanup(pid)
 
@@ -4414,15 +4519,30 @@ class PipelineManager:
                 pid for pid in project_ids
                 if pid not in existing_pending and pid not in self.active_jobs
             ]
-            new_items = [
-                BatchQueueItem(
-                    project_id=pid,
-                    action=action,
-                    status="pending",
-                    job_id=str(uuid4()),
+            # Версионность очереди: фиксируем effective_version_id на каждый
+            # item ОДИН раз при enqueue (как это делает _enqueue_single для
+            # single-start). Иначе version_id=None заставляет prefetch/resolve
+            # резолвить проект к PRIMARY (V1) папке, и для проекта, чья latest =
+            # V2, V1-состояние «протекает» в V2-прогон (Gemma помечается как
+            # prefetched по V1 → main worker пропускает её для V2).
+            from backend.app.services.common import version_service as _vs
+            new_items = []
+            for pid in filtered:
+                try:
+                    eff_vid = _vs.resolve_effective_version_id(
+                        resolve_project_dir(pid), pid, None,
+                    )
+                except Exception:
+                    eff_vid = None
+                new_items.append(
+                    BatchQueueItem(
+                        project_id=pid,
+                        version_id=eff_vid,
+                        action=action,
+                        status="pending",
+                        job_id=str(uuid4()),
+                    )
                 )
-                for pid in filtered
-            ]
 
             queue = self._ensure_batch_worker(action_for_label=action)
             queue.items.extend(new_items)
@@ -4437,104 +4557,128 @@ class PipelineManager:
 
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
 
-    async def _precrop_project(self, pid: str) -> bool:
+    async def _precrop_project(self, pid: str, version_id: Optional[str] = None) -> bool:
         """Кроп блоков для одного проекта (фоновая задача). Возвращает True при успехе.
 
-        Safety guard: pre-crop loop V1-only. Если у проекта `latest_version_id`
-        не V1 — skip с warn. Это защищает V1 _output/blocks_gemma_100 от
-        перезаписи crop'ами под V2 source. Полная версионность batch queue
-        отложена в отдельный pass (TODO: make pre-crop queue version-aware
-        before enabling V2 batch pre-crop).
+        Version-aware: использует папку активной версии (V1 = root, V2+ = _versions/v{N}/).
         """
         try:
-            proj_dir = resolve_project_dir(pid)
-            # Safety guard: skip V2+ projects from V1-only pre-crop path.
+            root_dir = resolve_project_dir(pid)
+            # Резолвим версионную папку — для V1 это root, для V2+ это _versions/v{N}/.
+            from backend.app.services.common import version_service as _vs
             try:
-                from backend.app.services.common import version_service
-                latest_vid = version_service.get_latest_version_id(proj_dir, pid) or "v1"
-                if latest_vid != "v1":
-                    msg = (
-                        f"[PRE-CROP] {pid}: skip — latest_version_id={latest_vid} "
-                        f"(pre-crop queue ещё не version-aware; V2+ pre-crop отключён)"
-                    )
-                    print(msg)
-                    try:
-                        await ws_manager.broadcast_global(
-                            WSMessage.log("__BATCH__", msg, "warn")
-                        )
-                    except Exception:
-                        pass
-                    return False
+                proj_dir = _vs.get_version_dir(root_dir, pid, version_id)
             except Exception:
-                # Manifest не найден — это V1-only project, продолжаем.
-                pass
+                proj_dir = root_dir
 
             # Пропустить если блоки уже есть
-            blocks_dir = gemma_blocks_dir(proj_dir)
             index_file = gemma_blocks_index_path(proj_dir)
             if index_file.exists() and _existing_crop_matches_policy(
                 index_file, gemma_enrichment_crop_policy()
             ):
-                print(f"[PRE-CROP] {pid}: блоки уже есть, пропуск")
+                _sync_v2_read_canary_blocks_alias(
+                    proj_dir, gemma_output_root(proj_dir), GEMMA_BLOCKS_DIRNAME,
+                )
+                print(f"[PRE-CROP] {pid} ({version_id}): блоки уже есть, пропуск")
                 return True
             # Пропустить если нет result.json (не OCR-проект)
-            if not list(proj_dir.glob("*_result.json")):
+            if not _has_ocr_result_json(proj_dir):
                 return False
 
-            print(f"[PRE-CROP] {pid}: начинаю фоновый кроп блоков...")
+            print(f"[PRE-CROP] {pid} ({version_id}): начинаю фоновый кроп блоков...")
             await ws_manager.broadcast_global(
-                WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid}", "info")
+                WSMessage.log("__BATCH__", f"  ⚡ Pre-crop: {pid} ({version_id})", "info")
             )
-            # NOTE: pre-crop работает только над V1 root — batch queue ещё
-            # не version-aware. V2 проекты сюда не попадают (queue не различает
-            # версии), поэтому здесь явно используем V1 _project_path(pid).
-            # Если в будущем queue научится таскать V2 — заменить на
-            # version-aware path (см. _project_path_for_job).
+            # Путь для blocks.py выводим из ТОГО ЖЕ proj_dir, что и проверки выше —
+            # единый источник истины. Иначе version_id=None (latest) рассинхронил бы
+            # check-dir (get_version_dir→latest) и crop-path (_project_path→V1 root).
+            try:
+                crop_rel_path = str(proj_dir.relative_to(BASE_DIR))
+            except ValueError:
+                crop_rel_path = str(proj_dir)
             exit_code, _, stderr = await run_script(
                 str(BLOCKS_SCRIPT),
                 _build_crop_args(
-                    _project_path(pid),
+                    crop_rel_path,
                     policy=gemma_enrichment_crop_policy(),
                     output_dir_name=GEMMA_BLOCKS_DIRNAME,
                 ),
                 project_id=f"__PRECROP_{pid}__",
             )
             if exit_code == 0:
-                print(f"[PRE-CROP] {pid}: OK")
+                _sync_v2_read_canary_blocks_alias(
+                    proj_dir, gemma_output_root(proj_dir), GEMMA_BLOCKS_DIRNAME,
+                )
+                print(f"[PRE-CROP] {pid} ({version_id}): OK")
                 return True
             else:
-                print(f"[PRE-CROP] {pid}: ошибка (код {exit_code})")
+                print(f"[PRE-CROP] {pid} ({version_id}): ошибка (код {exit_code})")
                 return False
         except Exception as e:
-            print(f"[PRE-CROP] {pid}: исключение: {e}")
+            print(f"[PRE-CROP] {pid} ({version_id}): исключение: {e}")
             return False
 
-    async def _run_precrop_loop(self, queue: BatchQueueStatus):
-        """Фоновый цикл: кропит блоки для pending-проектов из очереди."""
-        precropped = set()
-        while queue.status == "running":
-            # Найти следующий pending OCR-проект для pre-crop
-            target = None
-            for item in queue.items:
-                if item.status != "pending":
-                    continue
-                if item.project_id in precropped:
-                    continue
-                action = item.action or queue.action
-                if action == "optimization":
-                    continue  # оптимизация не нуждается в кропе
-                proj_dir = resolve_project_dir(item.project_id)
-                if list(proj_dir.glob("*_result.json")):
-                    target = item.project_id
-                    break
+    def _select_precrop_candidate(
+        self,
+        queue: BatchQueueStatus,
+        precropped: set[tuple[str, Optional[str]]],
+    ) -> Optional[BatchQueueItem]:
+        """Следующий pending OCR-проект для pre-crop В ОКНЕ lookahead (или None).
 
-            if not target:
-                # Нет проектов для pre-crop, подождём и проверим снова
+        Симметрично `_select_pregemma_candidate`: bounded lookahead до
+        BATCH_PRECROP_WINDOW проектов вперёд от current_index, в порядке очереди
+        (ближайший pending первым → предсказуемое опережение B → C → D). Skip-ahead
+        тихо пропускает проекты без result.json (OCR ещё не готов), не «залипая».
+        Чистая (без async/IO над состоянием очереди) — детерминированно тестируема.
+        """
+        from backend.app.services.common import version_service as _vs
+
+        running_idx = queue.current_index
+        for idx, item in enumerate(queue.items):
+            if item.status != "pending":
+                continue
+            # Bounded lookahead: не уезжаем дальше окна впереди running.
+            # distance может быть 0, когда очередь ещё не стартовала и
+            # current_index указывает на сам pending item — это валидно (кропим).
+            if idx - running_idx > BATCH_PRECROP_WINDOW:
+                break  # дальше items только ещё дальше — выходим из скана
+            dedup_key = (item.project_id, item.version_id)
+            if dedup_key in precropped:
+                continue
+            action = item.action or queue.action
+            if action == "optimization":
+                continue  # оптимизация не нуждается в кропе
+            # Ищем result.json в папке ВЕРСИИ, а не в V1-root.
+            root_dir = resolve_project_dir(item.project_id)
+            try:
+                item_dir = _vs.get_version_dir(root_dir, item.project_id, item.version_id)
+            except Exception:
+                item_dir = root_dir
+            if _has_ocr_result_json(item_dir):
+                return item
+        return None
+
+    async def _run_precrop_loop(self, queue: BatchQueueStatus):
+        """Фоновый цикл: кропит блоки для pending-проектов из очереди.
+
+        Lookahead bounded: готовит только проекты в пределах BATCH_PRECROP_WINDOW
+        вперёд от current_index. Опережение предсказуемо (ровно N следующих
+        pending) и не racing'ует всю очередь, конкурируя с основным pipeline.
+        Окно скользит вместе с current_index — далёкие проекты кропятся just-in-time.
+        """
+        # Ключ дедупа: (project_id, version_id) — V1 и V2 одного проекта независимы.
+        precropped: set[tuple[str, Optional[str]]] = set()
+        while queue.status == "running":
+            target_item = self._select_precrop_candidate(queue, precropped)
+
+            if not target_item:
+                # Нет проектов для pre-crop в окне, подождём и проверим снова
+                # (окно сдвинется когда main advance'нёт current_index).
                 await asyncio.sleep(5)
                 continue
 
-            precropped.add(target)
-            await self._precrop_project(target)
+            precropped.add((target_item.project_id, target_item.version_id))
+            await self._precrop_project(target_item.project_id, target_item.version_id)
             # Небольшая пауза между кропами
             await asyncio.sleep(1)
 
@@ -4543,13 +4687,22 @@ class PipelineManager:
     def _select_pregemma_candidate(
         self, queue: BatchQueueStatus
     ) -> Optional[tuple[Optional[BatchQueueItem], bool]]:
-        """Window=1: возвращает (target, mutated) для следующего pending проекта.
+        """Window skip-ahead: первый ГОТОВЫЙ к prefetch pending-проект в окне.
 
-        target=None означает что валидного кандидата нет (но возможно были
-        мутации — например item был помечен skipped если outputs уже готовы).
-        mutated=True означает caller должен _persist_queue() и broadcast.
+        Раньше было строго window=1: смотрели ровно queue.current_index + 1. Если
+        этот проект временно неподготовляем (нет PNG crops — например V2, который
+        pre-crop пропускает), prefetch «залипал» навсегда и не готовил ни один из
+        следующих готовых проектов.
 
-        НЕ переходит к N+2, даже если N+1 уже валиден — соблюдается window=1.
+        Теперь сканируем до BATCH_PREGEMMA_WINDOW (env `BATCH_PREGEMMA_WINDOW`,
+        default 4) pending-проектов после текущего и возвращаем ПЕРВЫЙ, у которого
+        crops готовы, а enrichment ещё не валиден. Временно неподготовляемые
+        тихо пропускаются (skip reason логируется), порядок основной очереди НЕ
+        меняется.
+
+        target=None — готового кандидата в окне нет (возможны мутации: item
+        помечен skipped, если его outputs уже валидны). mutated=True означает,
+        что caller обязан _persist_queue() + broadcast.
         """
         # Локальные импорты — явные зависимости метода, не полагаемся на module-level
         from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
@@ -4558,32 +4711,47 @@ class PipelineManager:
         )
 
         running_idx = queue.current_index
-        if running_idx + 1 >= len(queue.items):
-            return (None, False)
-        item = queue.items[running_idx + 1]
-        if item.status != "pending":
-            return (None, False)
-        action = item.action or queue.action
-        if action == "optimization":
-            return (None, False)
-        # Failed — больше не ретраим (MVP). Done/running/skipped — пропуск.
-        if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
-            return (None, False)
+        mutated = False
+        window = BATCH_PREGEMMA_WINDOW
+        end = min(len(queue.items), running_idx + 1 + window)
+        for idx in range(running_idx + 1, end):
+            item = queue.items[idx]
+            if item.status != "pending":
+                continue
+            action = item.action or queue.action
+            if action == "optimization":
+                continue
+            # Failed — больше не ретраим (MVP). Done/running/skipped — пропуск.
+            if item.gemma_prefetch_status in ("running", "done", "skipped", "failed"):
+                continue
 
-        proj_dir = resolve_project_dir(item.project_id)
-        index_file = _gemma_blocks_index_path(proj_dir)
-        if not index_file.exists():
-            # PNG crop ещё не готов — _run_precrop_loop его сделает позже.
-            return (None, False)
+            # Version-aware: резолвим ПАПКУ ВЕРСИИ item'а, а не PRIMARY (V1).
+            # Иначе для V2-проекта проверялся бы V1 _output: его валидная Gemma
+            # помечала бы V2-item как prefetched/skipped, и main worker пропускал
+            # бы Gemma для V2 (V2 оставался без enrichment, лог пуст).
+            base_dir = resolve_project_dir(item.project_id)
+            try:
+                from backend.app.services.common import version_service as _vs
+                proj_dir = _vs.get_version_dir(base_dir, item.project_id, item.version_id)
+            except Exception:
+                proj_dir = base_dir
+            index_file = _gemma_blocks_index_path(proj_dir)
+            if not index_file.exists():
+                # PNG crop ещё не готов (V2 skip / pre-crop отстаёт) — НЕ залипаем,
+                # смотрим следующий в окне.
+                continue
 
-        ok, reason = gemma_outputs_are_valid(proj_dir)
-        if ok:
-            item.gemma_prefetched = True
-            item.gemma_prefetch_status = "skipped"
-            item.gemma_prefetch_finished_at = datetime.now().isoformat()
-            return (None, True)  # mutated — caller обязан persist
+            ok, _reason = gemma_outputs_are_valid(proj_dir)
+            if ok:
+                item.gemma_prefetched = True
+                item.gemma_prefetch_status = "skipped"
+                item.gemma_prefetch_finished_at = datetime.now().isoformat()
+                mutated = True
+                continue  # уже готов — ищем дальше реальный кандидат
 
-        return (item, False)
+            return (item, mutated)
+
+        return (None, mutated)
 
     async def _run_gemma_prefetch_loop(
         self, queue: BatchQueueStatus, pause_event: asyncio.Event
@@ -4600,7 +4768,9 @@ class PipelineManager:
           Gemma этап (gate _is_current_running_past_gemma).
         - Использует короткий timeout-acquire (1 сек), чтобы не блокировать
           main pipeline когда тот хочет lock.
-        - Window=1: только следующий pending после текущего running.
+        - Window skip-ahead: первый ГОТОВЫЙ pending в окне
+          BATCH_PREGEMMA_WINDOW после текущего running (не залипает на
+          неподготовленном V2/no-crops проекте). Порядок очереди не меняется.
         - Failed prefetch не ретраит — main pipeline выполнит Gemma штатно.
         - Pause-aware: ставится на паузу вместе с батчем через pause_event.
         - Cancel-aware: при отмене task'а во время активного run сбрасывает
@@ -4615,7 +4785,11 @@ class PipelineManager:
         PREGEMMA_LOCK_ACQUIRE_TIMEOUT_S = 1.0
 
         await ws_manager.broadcast_global(
-            WSMessage.log("__BATCH__", "▶ Pre-Gemma loop запущен (window=1)", "info")
+            WSMessage.log(
+                "__BATCH__",
+                f"▶ Pre-Gemma loop запущен (window={BATCH_PREGEMMA_WINDOW})",
+                "info",
+            )
         )
 
         try:
@@ -4650,8 +4824,22 @@ class PipelineManager:
                     await asyncio.sleep(5)
                     continue
 
-                proj_dir = resolve_project_dir(target.project_id)
+                # Version-aware: для V2+ используем папку версии, а не V1-root.
+                _target_root_dir = resolve_project_dir(target.project_id)
+                try:
+                    from backend.app.services.common import version_service as _vs
+                    proj_dir = _vs.get_version_dir(
+                        _target_root_dir, target.project_id, target.version_id
+                    )
+                except Exception:
+                    proj_dir = _target_root_dir
                 lock = prepare_state.get_lock()
+
+                # Gemma-lock priority: если основной audit хочет/держит лок —
+                # уступаем и НЕ встаём в очередь за ним (prefetch opportunistic).
+                if self._main_wants_gemma_lock():
+                    await asyncio.sleep(2)
+                    continue
 
                 # Короткий timeout: не висим в очереди перед main pipeline.
                 # Явный флаг acquired гарантирует что release вызывается только
@@ -4670,6 +4858,11 @@ class PipelineManager:
                     # === Полная переверификация после захвата lock ===
                     if queue.status != "running":
                         break
+                    # Gemma-lock priority: main мог заявить намерение в окне между
+                    # проверкой выше и захватом лока. Дорогой run ещё не начат —
+                    # сразу освобождаем (через finally) и уступаем main'у.
+                    if self._main_wants_gemma_lock():
+                        continue
                     if not self._is_current_running_past_gemma():
                         # Главный мог снова уйти в Gemma за это время.
                         continue
@@ -4722,9 +4915,11 @@ class PipelineManager:
                     try:
                         # Создаём «фантомный» job для трассировки. Не регистрируем
                         # в active_jobs (это операторский pre-fetch, не реальный аудит).
+                        # version_id обязателен — иначе _make_stage_context резолвит V1 root.
                         phantom_job = AuditJob(
                             job_id=f"__PREGEMMA_{target.project_id}__",
                             project_id=target.project_id,
+                            version_id=target.version_id,
                             stage=AuditStage.GEMMA_ENRICHMENT,
                             status=JobStatus.RUNNING,
                         )
@@ -4820,7 +5015,7 @@ class PipelineManager:
 
             # Запустить фоновые таски для будущих проектов:
             # - pre-crop: PDF→PNG для следующих pending;
-            # - pre-Gemma: gemma_enrichment для следующего pending (window=1)
+            # - pre-Gemma: gemma_enrichment для первого готового pending в окне
             #   под общим Gemma-локом, не пересекаясь с main pipeline.
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
@@ -4910,6 +5105,14 @@ class PipelineManager:
                     if job.status == JobStatus.COMPLETED:
                         item.status = "completed"
                         queue.completed += 1
+                        # projects_v2 dual-write: зеркалим ПОЛНЫЙ проект (включая
+                        # late-stage artifacts — 03_findings/optimization/нормы и
+                        # финальный pipeline_log) после ЗАВЕРШЕНИЯ всего конвейера.
+                        # Это единая точка завершения любого action (full/resume/
+                        # retry/optimization), поэтому раньше v2-снимок обрывался
+                        # на block_analysis (мирор внутри block-стадии), а поздние
+                        # этапы в v2 не попадали. no-op в legacy-режиме, fail-soft.
+                        self._shadow_mirror_completed_audit(pid, job)
                         await ws_manager.broadcast_global(
                             WSMessage.log("__BATCH__", f"  ✓ {pid}: завершён", "info")
                         )
@@ -4996,7 +5199,9 @@ class PipelineManager:
             # Очистить per-project маркеры — long-running PipelineManager не
             # должен копить старые project_id между запусками batch.
             self._current_gemma_stage_done.clear()
-            self._cleanup("__BATCH__")
+            # Identity-aware: не сносим регистрацию нового worker'а, если enqueue
+            # успел поднять его пока мы доходили до finally (гонка close+enqueue).
+            self._cleanup_batch_worker(meta_job)
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(
@@ -5153,7 +5358,7 @@ class PipelineManager:
 
         # Полный аудит / batch-actions. Для V2+ ищем _result.json в V2 dir.
         _root, proj_dir, _od = self._resolve_job_paths(job)
-        is_ocr = bool(list(proj_dir.glob("*_result.json")))
+        is_ocr = _has_ocr_result_json(proj_dir)
 
         if action == "full":
             # single-start "запустить аудит" — full audit + optimization для OCR, smart иначе
@@ -5189,7 +5394,11 @@ class PipelineManager:
         поднимает worker.
         """
         queue = self._batch_queue
-        if queue is not None and queue.status == "running" and "__BATCH__" in self.active_jobs:
+        # Идемпотентность по ЖИВОСТИ таска, а не по наличию ключа в active_jobs:
+        # cleanup_zombies мог снять __BATCH__ из active_jobs у живой корутины —
+        # тогда наличие ключа лгало бы об отсутствии worker'а и мы создали бы
+        # дубль. Доверяем _batch_worker_alive().
+        if queue is not None and queue.status == "running" and self._batch_worker_alive():
             return queue
 
         queue = BatchQueueStatus(
@@ -5348,6 +5557,8 @@ class PipelineManager:
         self,
         project_id: str,
         stage: str,
+        *,
+        version_id: Optional[str] = None,
     ) -> BatchQueueStatus:
         """Добавить retry конкретного этапа в очередь."""
         # Маппинг ключей pipeline_summary → внутренних ключей этапов
@@ -5369,10 +5580,13 @@ class PipelineManager:
             "main_audit": "findings_merge",
         }
         internal_stage = stage_map.get(stage, stage)
-        internal_stage = self._validate_start_from_stage_now(project_id, internal_stage)
+        internal_stage = self._validate_start_from_stage_now(
+            project_id, internal_stage, version_id=version_id,
+        )
 
         await self._enqueue_single(
             project_id, action="retry_stage", retry_stage=internal_stage,
+            version_id=version_id,
         )
         stage_label = {
             "prepare": "Кроп блоков", "gemma_enrichment": GEMMA_STAGE_LABEL,
@@ -5386,9 +5600,11 @@ class PipelineManager:
         )
         return self._batch_queue
 
-    async def add_resume_to_batch(self, project_id: str) -> BatchQueueStatus:
+    async def add_resume_to_batch(
+        self, project_id: str, *, version_id: Optional[str] = None,
+    ) -> BatchQueueStatus:
         """Добавить resume проекта в очередь."""
-        await self._enqueue_single(project_id, action="resume")
+        await self._enqueue_single(project_id, action="resume", version_id=version_id)
         await ws_manager.broadcast_global(
             WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → Продолжить", "info")
         )
@@ -5407,20 +5623,36 @@ class PipelineManager:
         q = self._batch_queue
         if q is None:
             return False
-        worker = self._tasks.get("__BATCH__")
-        if worker is not None and not worker.done():
+        if self._batch_worker_alive():
             return False  # воркер жив — доверяем его учёту
+        # Worker-таск не зарегистрирован/завершён, НО текущий проект мог ещё
+        # реально выполняться (его корутина = тот же __BATCH__ таск, у которого
+        # cleanup_zombies мог снять регистрацию; либо живы дочерние процессы).
+        # В этом случае НЕ демотируем очередь в interrupted — иначе фоновые
+        # циклы (gated на status == "running") умрут, а UI покажет ложный
+        # «полный сбой». Демотируем только когда проект реально завершился.
+        if self._has_live_project_audit():
+            return False
         changed = False
+        demoted_pids = []
         for it in q.items:
             if it.status == "running":
                 it.status = "interrupted"
                 if not it.error:
                     it.error = "Прервано (воркер очереди не активен)"
+                demoted_pids.append(it.project_id)
                 changed = True
         if q.status == "running":
             q.status = "interrupted"
             changed = True
         if changed:
+            # Диагностика: почему очередь вдруг стала interrupted (worker мёртв,
+            # живого аудита нет). Без лога «зависшая running» расследуется вслепую.
+            print(
+                f"[BATCH] _reconcile_stale_queue: worker не активен, очередь → "
+                f"interrupted; демотировано running-итемов: {len(demoted_pids)}"
+                + (f" ({', '.join(demoted_pids)})" if demoted_pids else "")
+            )
             try:
                 self._persist_queue()
             except Exception:
@@ -5635,6 +5867,9 @@ class PipelineManager:
                 job.status = JobStatus.CANCELLED
             elif result.success:
                 job.status = JobStatus.COMPLETED
+                self._promote_v2_analysis_artifacts(
+                    job, ("optimization.json", "pipeline_log.json")
+                )
             else:
                 job.status = JobStatus.FAILED
                 job.error_message = result.error or "optimization failed"
@@ -5653,12 +5888,48 @@ class PipelineManager:
                 self._cleanup(pid)
 
     async def _run_optimization_review(self, job: AuditJob):
-        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py."""
+        """Critic + Corrector оптимизации — оркестратор делегирует в optimization/runner.py.
+
+        Результат пробрасывается в job.status (reserc.md #40): раньше он
+        игнорировался, поэтому проверки opt_job.status==FAILED (call-site 3659)
+        были мёртвыми. Консервативно: статус выставляем ТОЛЬКО на cancelled/error
+        (не форсим COMPLETED — чтобы не затереть статус в параллельных потоках).
+        Возвращаем результат для возможного использования вызывающим.
+        """
         from backend.app.pipeline.stages.optimization.runner import (
             run_optimization_review as _opt_review_runner,
+            OptimizationReviewResult,
         )
-        ctx = self._make_stage_context(job)
-        await _opt_review_runner(ctx)
+        pid = job.project_id
+        try:
+            ctx = self._make_stage_context(job)
+            result: OptimizationReviewResult = await _opt_review_runner(ctx)
+            if result.cancelled:
+                job.status = JobStatus.CANCELLED
+            elif result.error:
+                job.status = JobStatus.FAILED
+                job.error_message = result.error
+            else:
+                self._promote_v2_analysis_artifacts(
+                    job,
+                    (
+                        "optimization.json",
+                        "optimization_review.json",
+                        "optimization_pre_review.json",
+                        "pipeline_log.json",
+                    ),
+                )
+            return result
+        except asyncio.CancelledError:
+            job.status = JobStatus.CANCELLED
+            self._update_pipeline_log(pid, "optimization_review", "error", error="Отменено")
+            raise
+        except Exception as e:
+            job.status = JobStatus.FAILED
+            job.error_message = str(e)
+            await self._log(job, f"Optimization review исключение: {e}", "error")
+            self._update_pipeline_log(pid, "optimization_review", "error", error=str(e))
+            return None
 
 
 # Глобальный экземпляр

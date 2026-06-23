@@ -22,14 +22,13 @@ import re
 from pathlib import Path
 from typing import Any
 
-# ─── Путь к внешней базе ──────────────────────────────────────────────────
-# Переопределяется через env (удобно в тестах). В проде — абсолютный путь
-# к соседнему проекту, как просил заказчик.
+# ─── Путь к индексу статусов ──────────────────────────────────────────────
+# #34: authoritative — in-repo norms/tools/status_index.json (565 норм), тот же
+# корень, что и тулчейн цитат пунктов (_native_verify.NORMS_TOOLS_PATH).
+# Переопределяется env NORMS_STATUS_INDEX_PATH.
+_DEFAULT_STATUS_INDEX = Path(__file__).resolve().parent / "tools" / "status_index.json"
 NORMS_STATUS_INDEX_PATH = Path(
-    os.environ.get(
-        "NORMS_STATUS_INDEX_PATH",
-        str(Path(__file__).parent / "tools" / "status_index.json"),
-    )
+    os.environ.get("NORMS_STATUS_INDEX_PATH", str(_DEFAULT_STATUS_INDEX))
 )
 
 

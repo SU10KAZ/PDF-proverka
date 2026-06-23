@@ -30,6 +30,7 @@ from backend.app.pipeline.stages.crop_blocks.runner import (
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BLOCKS_DIRNAME,
     gemma_blocks_index_path,
+    gemma_output_root,
     gemma_enrichment_crop_policy,
 )
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
@@ -199,10 +200,13 @@ async def run_gemma_enrichment_stage(
             await asyncio.wrap_future(future)
 
         async def _runner() -> dict:
+            from backend.app.core.config import GEMMA_BASE_PARALLELISM
             return await enrich_project(
                 project_dir,
                 force=force or state_before.get("status") in {"partial", "failed"},
-                parallelism=1,  # gemma3.6-35b не тянет параллель
+                # #16: конфигурируемо (GEMMA_BASE_PARALLELISM, default 1);
+                # high-detail 300 DPI остаётся 1 внутри enrich_project.
+                parallelism=GEMMA_BASE_PARALLELISM,
                 progress_cb=_thread_progress_cb,
                 pause_event=thread_pause_event,
                 cancel_event=thread_cancel_event,
@@ -222,7 +226,7 @@ async def run_gemma_enrichment_stage(
     status = summary.get("status", "unknown")
 
     if status == "no_blocks":
-        summary_path = project_dir / "_output" / "gemma_enrichment_summary.json"
+        summary_path = gemma_output_root(project_dir) / "gemma_enrichment_summary.json"
         summary_path.write_text(
             json.dumps(summary, ensure_ascii=False, indent=2),
             encoding="utf-8",

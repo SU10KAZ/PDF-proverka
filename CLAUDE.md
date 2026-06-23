@@ -94,10 +94,15 @@ uvicorn backend.app.main:app --host 0.0.0.0 --port 8081 --reload
 # Frontend (Vite dev-сервер с proxy → :8081)
 cd frontend && npm run dev   # http://localhost:5173
 
-# Тесты
-python -m pytest tests/                      # все
-python -m pytest tests/test_norms.py -v
-python -m pytest tests/ -k "grounding"
+# Тесты (два корня: tests + backend/tests)
+python -m pytest tests backend/tests         # все (≈4200 тестов)
+python -m pytest tests/test_missing_norms_kb.py -v
+python -m pytest tests backend/tests -k "grounding"
+
+# Регресс-гейт: падает только на НОВЫХ падениях против baseline
+# (известный долг по тестам — в scripts/ci_known_failures.txt)
+python scripts/ci_regression_gate.py            # проверка (для CI и после правок)
+python scripts/ci_regression_gate.py --record   # пересоздать baseline в новом окружении
 ```
 
 ## JSON Pipeline
@@ -286,4 +291,8 @@ resume/skip больше не считаются валидными. Нужно 
 - @docs/portal_auth.md — простая защита портала логином/паролем (session-cookie, PORTAL_AUTH_*, helper-скрипт)
 - @docs/stage_comparison_qwen_problem_block_retry.md — авто-retry проблемных графических блоков Qwen через tiled high-res (feature flag STAGE_COMPARISON_QWEN_PROBLEM_BLOCK_RETRY_ENABLED, default OFF): detect bad block → high-res render → tiles+overlap → per-tile Qwen → merge; baseline сохраняется, fail-soft; PDF URL/Base64 не поддерживаются провайдером
 - @docs/project_versions.md — версионность проектов: контейнерная раскладка `<база>(main)/` с братскими папками версий, `version_group.json`, promote-on-first-version, стабильный basename `project_id`, мигратор `_versions/v{N}`→`(main)/`
+- @docs/stage_comparison_main_path_selfcheck.md — r6 self-check на ОСНОВНОМ пути сравнения (не только too_large): каждый change от Opus сверяется с исходным MD через `verify_change_evidence` + числовой re-cite (`_salient_numbers`, практичная замена r3 для CAD-чертежей без векторного текст-слоя); негрунтованные → `requires_human_review` (мягкий режим) либо drop; флаги STAGE_COMPARISON_SELFCHECK_ENABLED / _DROP_UNGROUNDED, оба default OFF; fail-soft
+- @docs/stage_comparison_diff_contract_alignment.md — r5/r4/r1 против «не распознал = убрал»: r5 контракт Opus (тип `present_one_side`, цитировать ОБА значения, `disputed`→questionable; always-on prompt); r4 выравнивание отходящих линий по ИМЕНИ потребителя + словарь `consumer_synonyms.json` (тег `<CONSUMER_SYNONYMS>`, env override; always-on); r1 фиксированная доменная схема Qwen `domain_fields` с «не указано» для отсутствующих (флаг STAGE_COMPARISON_DOMAIN_FIELDS_ENABLED default OFF, версия v6 → re-enrichment)
+- @docs/stage_comparison_block_pdf_source.md — Graphic Structured Extraction: универсальный слой профилей (`graphic_profiles.py`) для image-блоков, GRSH = первый профиль `electrical_singleline/grsh` (не костыль); классификатор block_type→profile, 8 профилей-схем (electrical/hvac/water/low_voltage/structural/architectural/table/stamp), `field_state` (present/not_extracted/visual_unverified/ocr_only/…, NON_REMOVAL_STATES); универсальный helper `block_pdf_source.py` (crop_url block-PDF + `pdfplumber_text` text-layer как OCR-словарь, resolve/extract/render/validate); контур A `STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED` (block-PDF render+vocab вместо page-crop); контур B `grsh_feeder_extraction.py` — tiled пофидерное извлечение ГРЩ/ВРУ (concurrency=1!), merge+recall+anti-hallucination; флаг `STAGE_COMPARISON_GRAPHIC_STRUCTURED_EXTRACTION_ENABLED` (GRSH-флаг = backward-compat alias), все default OFF; live-валидация p9692b6b5: recall OLD 0.947 / NEW 1.0, 0 искусственных рядов, 19 changes vs baseline 10; page-crop = fallback
+- @docs/stage_comparison_stamp_sheet_matching.md — сопоставление листов по штампу (page-alignment): `stamp_matching.py` глобально матчит листы старой/новой стадии по `**Наименование листа:**` из MD (находит листы, уехавшие далеко — схема ВРУ стр.51↔32), фолбэк на текст-слой result.json; forward-fill продолжений, IDF-взвешенный косинус токенов + margin-гейт (неоднозначные имена не предлагаются, precision>recall); `store.suggest_alignment_by_stamp` + `POST .../page-alignment/suggest-by-stamp` (ничего не применяет); UI-кнопка «🏷 Сопоставить по штампам» в «Связь блоков» → панель предложений → «Применить» ставит листы напротив (обычный PUT page-alignment); always-on, офлайн (без Qwen/сети), env-тюнинг `STAGE_COMPARISON_STAMP_MATCH_*`
 - @docs/stage_comparison_block_equivalence_precheck.md — pre-Qwen block equivalence gate (Stage 1: **observe only**, default OFF): `block_equivalence_precheck.py` сравнивает блоки result.json OLD↔NEW (pairing по `coords_norm`/IoU + page_alignment, split/merge→uncertain, added/deleted), строгое canonical-равенство текста + визуал через `cv2.findTransformECC` (MOTION_EUCLIDEAN, total/colored-diff, diff_bbox); decision→qwen_action (`qwen_skip_candidate` только при уверенной идентичности, иначе `qwen_required`); НИЧЕГО не пропускает (skip — Stage 2); cv2 опционален (без него visual→qwen_required, не ложный skip); артефакт `block_equivalence/block_equivalence_report.json` + debug PNG; хук в `run_md_enrichment_job` (observe, `asyncio.to_thread`, fail-soft) + surface в pipeline_queue per-pair; флаг `STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED`
