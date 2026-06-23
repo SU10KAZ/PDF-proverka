@@ -19,6 +19,8 @@ Stage runner для этапа crop_blocks (скачивание и обрезк
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
+from uuid import uuid4
 
 from backend.app.core.config import BLOCKS_SCRIPT
 from backend.app.pipeline.context import PipelineStageContext
@@ -71,6 +73,63 @@ def crop_policy_label(policy: dict) -> str:
     return f"{policy.get('dpi')} DPI, {compact}, {small}"
 
 
+def sync_v2_read_canary_blocks_alias(
+    project_dir: Path | str,
+    output_dir: Path | str,
+    source_dir_name: str = GEMMA_BLOCKS_DIRNAME,
+) -> bool:
+    """Mirror v2 Gemma crop output to the read_canary-compatible ``blocks/`` dir.
+
+    Deploy read_canary treats ``03_analysis/{latest,runs}/blocks/index.json`` as
+    the stable read contract. The audit write path keeps the richer producer
+    directory name (``blocks_gemma_100``), so under projects_v2 we materialize a
+    same-run ``blocks/`` alias after crop. Legacy output dirs are left alone.
+    """
+    project_dir = Path(project_dir)
+    output_dir = Path(output_dir)
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import (
+            is_projects_v2_version_dir,
+        )
+
+        if not is_projects_v2_version_dir(project_dir):
+            return False
+    except Exception:
+        return False
+
+    source_dir = output_dir / source_dir_name
+    if not (source_dir / "index.json").is_file():
+        return False
+
+    dest_dir = output_dir / "blocks"
+    tmp_dir = output_dir / f".blocks_alias_tmp_{uuid4().hex}"
+    try:
+        if tmp_dir.exists():
+            shutil.rmtree(tmp_dir)
+        shutil.copytree(source_dir, tmp_dir)
+        if dest_dir.exists() or dest_dir.is_symlink():
+            if dest_dir.is_dir() and not dest_dir.is_symlink():
+                shutil.rmtree(dest_dir)
+            else:
+                dest_dir.unlink()
+        tmp_dir.replace(dest_dir)
+        return True
+    finally:
+        if tmp_dir.exists():
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def _sync_ctx_v2_read_canary_blocks_alias(
+    ctx: PipelineStageContext,
+    output_dir_name: str,
+) -> bool:
+    project_dir = getattr(ctx, "project_dir", None)
+    output_dir = getattr(ctx, "output_dir", None)
+    if project_dir is None or output_dir is None:
+        return False
+    return sync_v2_read_canary_blocks_alias(project_dir, output_dir, output_dir_name)
+
+
 def _partial_crop_result(
     ctx: PipelineStageContext, output_dir_name: str, label: str
 ) -> StageResult | None:
@@ -84,6 +143,7 @@ def _partial_crop_result(
     index_path = ctx.output_dir / output_dir_name / "index.json"
     if not index_path.exists():
         return None
+    _sync_ctx_v2_read_canary_blocks_alias(ctx, output_dir_name)
     ctx.update_pipeline_log(
         "crop_blocks", "done",
         message=f"OK частично ({label}; часть блоков пропущена, см. coverage)",
@@ -156,6 +216,7 @@ async def run_crop_blocks(
         return StageResult.fail(f"Кроп блоков: {error}")
 
     label = crop_policy_label(effective_policy)
+    _sync_ctx_v2_read_canary_blocks_alias(ctx, output_dir_name)
     ctx.update_pipeline_log(
         "crop_blocks", "done",
         message=f"OK (Gemma policy: {label})",
@@ -216,6 +277,7 @@ async def run_policy_recrop(
         ctx.update_pipeline_log("crop_blocks", "error", error=error)
         return StageResult.fail(f"Gemma crop policy recrop failed: {error}")
 
+    _sync_ctx_v2_read_canary_blocks_alias(ctx, output_dir_name)
     ctx.update_pipeline_log(
         "crop_blocks", "done",
         message=f"OK (Gemma policy: {label})",

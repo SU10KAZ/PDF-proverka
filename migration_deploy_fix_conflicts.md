@@ -76,3 +76,16 @@ Read-only сравнение в main-репо, без deploy/integ worktree, б�
 ## Безопасность
 
 Это только read-only registry. Deploy worktree не трогался, backend/:8082 не трогались, `.env` не менялся, push не выполнялся.
+
+## Дополнение 2026-06-23 — READ↔WRITE coherence для read_canary
+
+После отдельной проверки `migration_codex_next.md` read_canary остаётся живым deploy-контрактом; на fix его не правили. Для интеграции поверх deploy нужно добавить write-side совместимость:
+
+| область | deploy/read contract | fix-side действие | рекомендация интеграции |
+|---|---|---|---|
+| `v2_version_files` | публичный listing читает только `versions/<vid>/01_input/**` | `version_service._source_file_records()` под v2 теперь отдаёт `01_input` originals; stale tests больше не ждут `02_work/document.pdf` | Preserve deploy `read_canary.v2_version_files`; принять fix-side listing/test alignment. |
+| `v2_blocks`, `v2_block_image`, block-map | read_canary ищет `03_analysis/{latest,runs}/blocks/index.json` | после v2 Gemma crop создаётся alias `blocks/` рядом с `blocks_gemma_100/`; legacy `_output` helper не трогает | Preserve deploy `read_canary.blocks_dir()` path contract; принять write-side alias helper/calls. |
+| latest/runs artifacts | latest priority + per-file runs fallback | contract tests подтверждают findings, blocks analysis, document graph, optimization latest/runs visibility | При конфликте сохранять deploy read fallback и fix write of artifacts to latest+runs. |
+| destructive clean | после clean read не должен показывать старые findings/blocks | v2 clean test подтверждает backup+confirmation и read-empty state | Rename остаётся blocked; clean integration безопасна только с confirmation/backup flow. |
+
+Документ с полной матрицей: `docs/projects_v2_read_write_coherence.md`. Минимальный test set для этой части: `python3 -m pytest tests/test_v2_read_write_coherence.py tests/test_v2_primary_version_upload.py tests/test_v2_primary_source_resolution_gaps.py tests/test_clean_project_data_v2_primary.py -q`.

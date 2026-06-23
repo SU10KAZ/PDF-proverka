@@ -64,6 +64,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     stage02_blocks_dir,
     stage02_blocks_index_path,
     stage02_crop_policy,
+    gemma_output_root,
 )
 
 # ── Stage runner imports (extracted pure helpers) ──────────────────────────
@@ -73,6 +74,7 @@ from backend.app.pipeline.stages.crop_blocks.runner import (
     crop_policy_label as _crop_policy_label,
     run_crop_blocks as _run_crop_blocks,
     run_policy_recrop as _run_policy_recrop,
+    sync_v2_read_canary_blocks_alias as _sync_v2_read_canary_blocks_alias,
 )
 
 from backend.app.pipeline.stages.block_analysis.runner import (
@@ -4262,6 +4264,9 @@ class PipelineManager:
             )
             if blocks_index.exists() and not needs_recrop:
                 # Блоки уже скачаны (pre-crop из очереди) и совместимы с текущим режимом
+                _sync_v2_read_canary_blocks_alias(
+                    project_dir, output_dir, GEMMA_BLOCKS_DIRNAME,
+                )
                 self._update_pipeline_log(pid, "crop_blocks", "done", message="Pre-cropped")
                 print(f"[{pid}] ═══ ЭТАП 1: Кроп — уже готов (pre-crop) ═══")
                 await self._log(job, "═══ ЭТАП 1: Кроп image-блоков — уже готов (pre-crop) ═══")
@@ -4292,6 +4297,9 @@ class PipelineManager:
                     self._update_pipeline_log(pid, "crop_blocks", "error",
                                                error=stderr or f"Exit code: {exit_code}")
                     raise RuntimeError(f"Кроп блоков: {stderr}")
+                _sync_v2_read_canary_blocks_alias(
+                    project_dir, output_dir, GEMMA_BLOCKS_DIRNAME,
+                )
                 self._update_pipeline_log(
                     pid, "crop_blocks", "done",
                     message=f"OK (Gemma policy: {_crop_policy_label(gemma_crop_policy)})",
@@ -4568,6 +4576,9 @@ class PipelineManager:
             if index_file.exists() and _existing_crop_matches_policy(
                 index_file, gemma_enrichment_crop_policy()
             ):
+                _sync_v2_read_canary_blocks_alias(
+                    proj_dir, gemma_output_root(proj_dir), GEMMA_BLOCKS_DIRNAME,
+                )
                 print(f"[PRE-CROP] {pid} ({version_id}): блоки уже есть, пропуск")
                 return True
             # Пропустить если нет result.json (не OCR-проект)
@@ -4595,6 +4606,9 @@ class PipelineManager:
                 project_id=f"__PRECROP_{pid}__",
             )
             if exit_code == 0:
+                _sync_v2_read_canary_blocks_alias(
+                    proj_dir, gemma_output_root(proj_dir), GEMMA_BLOCKS_DIRNAME,
+                )
                 print(f"[PRE-CROP] {pid} ({version_id}): OK")
                 return True
             else:
