@@ -278,3 +278,126 @@ def test_feeder_section_for_pair():
 def test_feeder_section_empty_when_no_circuits():
     assert fm.feeder_section_for_pair({}, _pe([_circ("X", "ВРУ1")])) == ""
     assert fm.feeder_section_for_pair(_pe([_circ("X", "ВРУ1")]), {}) == ""
+
+
+# ─── candidate changes ───────────────────────────────────────────────────────
+
+def _candidates(old_circuits, new_circuits):
+    r = _match(old_circuits, new_circuits)
+    return fm.build_feeder_candidate_changes(r)
+
+
+def test_candidate_changes_flag_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("STAGE_COMPARISON_LARGE_SHEET_FEEDER_CANDIDATE_CHANGES_ENABLED", raising=False)
+    assert fm.feeder_candidate_changes_enabled() is False
+
+
+def test_candidate_changes_flag_enabled(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_LARGE_SHEET_FEEDER_CANDIDATE_CHANGES_ENABLED", "true")
+    assert fm.feeder_candidate_changes_enabled() is True
+
+
+def test_candidate_section_off_by_default_in_feeder_md():
+    # feeder_md_for_pair без include_candidates → нет секции кандидатов
+    old = _pe([_circ("ВРУ4", "ВРУ4", power=233.6, current=387.2, cable="2x(5x120)")])
+    new = _pe([_circ("ГРЩ1-РП2-4", "ВРУ4 - Ввод 2 Корпус 4", power=190.6, current=296.7,
+                     cable="3хППГнг(А)-HF 5х120мм²")])
+    md = fm.feeder_md_for_pair(old, new, include_candidates=False)
+    assert "Сопоставление фидеров по потребителю/нагрузке" in md
+    assert "Кандидаты пофидерных изменений" not in md
+
+
+def test_candidate_section_appears_when_enabled():
+    old = _pe([_circ("ВРУ4", "ВРУ4", power=233.6, current=387.2, cable="2x(5x120)")])
+    new = _pe([_circ("ГРЩ1-РП2-4", "ВРУ4 - Ввод 2 Корпус 4", power=190.6, current=296.7,
+                     cable="3хППГнг(А)-HF 5х120мм²")])
+    md = fm.feeder_md_for_pair(old, new, include_candidates=True)
+    assert "Кандидаты пофидерных изменений из таблицы сопоставления" in md
+    assert "FEEDER_CANDIDATE_CHANGES" in md           # prompt signal
+    assert "recommended_finding_title" in md           # table header
+
+
+def test_candidate_high_medium_with_cable_delta():
+    cands = _candidates(
+        [_circ("ВРУ-ХЦ", "Шкаф управления холодильным центром", power=37.5, cable="5x70")],
+        [_circ("ГРЩ1-РП1-7", "Шкаф управления холодильным центром", power=37.5, cable="5x120")],
+    )
+    cc = [c for c in cands if c.consumer_key == "cooling_center"]
+    assert cc and "cable_changed" in cc[0].detected_delta
+    assert cc[0].confidence > 0 and cc[0].recommended_finding_title
+
+
+def test_candidate_power_current_delta():
+    cands = _candidates(
+        [_circ("ЭБ-ГВС", "Резервные баки ГВС", power=60, current=91.3)],
+        [_circ("ГРЩ1-РП1-14", "Резервные баки ГВС", power=193.3, current=193.3)],
+    )
+    cc = [c for c in cands if c.consumer_key == "gvs"]
+    assert cc
+    assert "power_changed" in cc[0].detected_delta or "current_changed" in cc[0].detected_delta
+    assert cc[0].requires_human_review is False
+
+
+def test_candidate_parallel_lines_delta():
+    cands = _candidates(
+        [_circ("ВРУ4", "ВРУ4", power=233.6, cable="2x(5x120)")],
+        [_circ("ГРЩ1-РП2-4", "ВРУ4 - Ввод 2 Корпус 4", power=233.6, cable="3хППГнг(А)-HF 5х120мм²")],
+    )
+    cc = [c for c in cands if c.consumer_key == "vru_input_4"]
+    assert cc and "parallel_lines_changed" in cc[0].detected_delta
+
+
+def test_candidate_ambiguous_goes_to_human_review():
+    # два неотличимых OLD ХМ → ambiguous → requires_human_review, не firm
+    cands = _candidates(
+        [_circ("ХМ1", "Холодильная машина ХМ1", power=157.5),
+         _circ("ХМ2", "Холодильная машина ХМ2", power=157.5)],
+        [_circ("ГРЩ1-РП1-12", "Холодильная машина (чиллер)", power=676.8)],
+    )
+    ch = [c for c in cands if c.consumer_key.startswith("chiller")]
+    assert ch
+    assert all(c.requires_human_review for c in ch)
+    assert not any(c.requires_human_review is False and c.kind == "matched" and
+                   c.consumer_key.startswith("chiller") for c in cands)
+
+
+def test_candidate_no_engineering_delta_no_candidate():
+    # идентичные нагрузка/кабель → нет дельты → нет кандидата
+    cands = _candidates(
+        [_circ("ВРУ3", "ВРУ3", power=143.2, current=246.6, cable="2x(5x95)")],
+        [_circ("ГРЩ1-РП2-3", "ВРУ3 - Ввод 2 Корпус 3", power=143.2, current=246.6, cable="2x(5x95)")],
+    )
+    assert [c for c in cands if c.consumer_key == "vru_input_3"] == []
+
+
+def test_candidate_duplicate_old_only_no_false_finding():
+    # потребитель уже matched + дублирующее OLD-представление → не плодим
+    # ложный feeder_removed (rule 5)
+    cands = _candidates(
+        [_circ("ШУ-АПТ", "Насосная АПТ", power=22.5, current=52.7),
+         _circ("1ГРЩ-ЩУ.АПТ", "ЩУ.АПТ", current=52.7)],   # дубль укрупнённого представления
+        [_circ("ГРЩ1-РП1-8", "Насосная АПТ а/ст", power=14.0, current=14.0)],
+    )
+    apt = [c for c in cands if c.consumer_key == "apt"]
+    # есть matched-кандидат, но НЕ должно быть feeder_removed для apt
+    assert apt
+    assert not any("feeder_removed" in c.detected_delta for c in apt)
+
+
+def test_candidate_added_feeder_is_human_review():
+    # новый потребитель без пары → feeder_added, но как requires_human_review
+    cands = _candidates(
+        [_circ("ВРУ1", "ВРУ1", power=365.7)],
+        [_circ("ГРЩ1-РП1-1", "ВРУ1", power=365.7),
+         _circ("ГРЩ1-РП1-15", "АУКРМ №1", power=272.7, cable="5x185")],
+    )
+    added = [c for c in cands if "feeder_added" in c.detected_delta]
+    assert added and all(c.requires_human_review for c in added)
+
+
+def test_candidate_render_empty_when_no_candidates():
+    r = _match(
+        [_circ("ВРУ3", "ВРУ3", power=143.2, current=246.6, cable="2x(5x95)")],
+        [_circ("ГРЩ1-РП2-3", "ВРУ3 - Ввод 2 Корпус 3", power=143.2, current=246.6, cable="2x(5x95)")],
+    )
+    assert fm.render_feeder_candidate_changes_md_section(r) == ""

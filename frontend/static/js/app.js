@@ -6170,17 +6170,19 @@ const app = createApp({
         }
 
         function blockFindingsCount(blockId) {
-            const info = blockAnalysis.value[blockId];
-            if (!info) return 0;
-            return (info.findings || []).length;
+            // Бейдж количества на превью блока считаем по ФИНАЛЬНОМУ списку
+            // (03_findings, getBlockFindings), а не по сырым Stage 02 findings —
+            // чтобы число на превью совпадало с модалкой блока и не показывало
+            // отфильтрованные критиком замечания.
+            return getBlockFindings(blockId).length;
         }
 
         function blockMaxSeverity(blockId) {
-            const info = blockAnalysis.value[blockId];
-            if (!info || !info.findings) return null;
+            const findings = getBlockFindings(blockId);
+            if (!findings.length) return null;
             const order = ['КРИТИЧЕСКОЕ', 'ЭКОНОМИЧЕСКОЕ', 'ЭКСПЛУАТАЦИОННОЕ', 'РЕКОМЕНДАТЕЛЬНОЕ', 'ПРОВЕРИТЬ ПО СМЕЖНЫМ'];
             let best = 999;
-            for (const f of info.findings) {
+            for (const f of findings) {
                 const s = (f.severity || '').toUpperCase();
                 for (let i = 0; i < order.length; i++) {
                     if (s.includes(order[i].substring(0, 6)) && i < best) {
@@ -6243,6 +6245,9 @@ const app = createApp({
             if (!selectedBlock.value) return [];
             const bid = selectedBlock.value.block_id;
             const hidden = hiddenHighlightFindings.value;
+            // Подсветки строим ТОЛЬКО по финальным замечаниям (03_findings),
+            // связанным с блоком. Сырые Stage 02 findings не показываем — критик
+            // мог их отфильтровать, и их подсветка вводила бы в заблуждение.
             const findings = getBlockFindings(bid);
             const regions = [];
             for (const f of findings) {
@@ -6254,21 +6259,6 @@ const app = createApp({
                         finding_id: f.id,
                         severity: f.severity,
                     });
-                }
-            }
-            // Также из блочного анализа (G-замечания)
-            const analysis = blockAnalysis.value[bid];
-            if (analysis && analysis.findings) {
-                for (const gf of analysis.findings) {
-                    if (!gf.highlight_regions || !gf.highlight_regions.length) continue;
-                    if (hidden.has(gf.id)) continue;
-                    for (const r of gf.highlight_regions) {
-                        regions.push({
-                            ...r,
-                            finding_id: gf.id,
-                            severity: gf.severity,
-                        });
-                    }
                 }
             }
             return regions;
@@ -6298,12 +6288,6 @@ const app = createApp({
                     const bid = selectedBlock.value.block_id;
                     for (const f of getBlockFindings(bid)) {
                         if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
-                    }
-                    const analysis = blockAnalysis.value[bid];
-                    if (analysis && analysis.findings) {
-                        for (const gf of analysis.findings) {
-                            if (gf.highlight_regions && gf.highlight_regions.length && gf.id) allIds.add(gf.id);
-                        }
                     }
                 }
                 hiddenHighlightFindings.value = allIds;
@@ -9037,9 +9021,11 @@ const app = createApp({
             severity: '', source_layer: '', quality_label: '',
             review_status: '', cost_impact: '', impact_class: '', search: '',
         });
-        // Исключённые (админ/оформление/шум) изменения в V2-ведомости не
-        // показываются: бэкенд по умолчанию (include_excluded=false) уже
-        // отдаёт только инженерно значимые строки.
+        // Исключённые (админ/оформление/шум) изменения в V2-ведомости по
+        // умолчанию не показываются: бэкенд при include_excluded=false отдаёт
+        // только инженерно значимые строки. Кнопка «Показать формальные»
+        // выставляет этот флаг → запрос идёт с include_excluded=true.
+        const scV2ShowFormal   = ref(false);
         // Опции ручного статуса (значение + человекочитаемая метка). Покрывают
         // все действия инженера: подтвердить/отклонить/уточнить/стоимость/маршрут.
         const scV2StatusOptions = [
@@ -9324,12 +9310,23 @@ const app = createApp({
         const scQOConfirm = ref(null);                // preflight payload for confirm modal
         const scQORunning = ref(false);               // start request in flight / job running
         const scQOPreflighting = ref(false);          // preflight request in flight → button feedback
-        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run
+        const scQOClearBeforeRun = ref(false);        // confirm modal: clear findings+review before run (legacy compat)
+        // Режим запуска из диалога «Обработать выбранные»:
+        //   'normal'                 — Qwen → Opus (как раньше);
+        //   'clear_and_run'          — clear-analysis, затем Qwen → Opus;
+        //   'opus_only'              — только Opus по готовым enriched MD (без Qwen);
+        //   'clear_result_opus_only' — очистить comparison_result, затем только Opus.
+        const scQOMode = ref('normal');
         const scQOClearing = ref(false);              // clear-analysis request in flight
         let scQOPollTimer = null;
         const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
         let scQOClockTimer = null;
         const scQOActiveRecog = ref(null);            // live md-enrichment aggregate of the running Qwen pair
+        // Latest persisted Qwen/Opus timing per pair (from qopipe job files).
+        // Survives F5: in-memory scQOJob теряется после refresh, а колонки
+        // 🟦/🟪 должны показывать времена завершённого прогона. Грузится на
+        // загрузке сессии через /pipeline-qwen-opus/pair-timings.
+        const scQOPairTimings = ref({});              // pairId → {qwen_*, opus_*, status,…}
         const scQODetailsOpen = ref(true);            // expand per-pair live timeline
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
@@ -9786,6 +9783,14 @@ const app = createApp({
                 if (!rs.ok) return;
                 const data = await rs.json();
                 scSession.value = data;
+                // Этот путь (object-autoselect после refresh) минует scLoadSession,
+                // поэтому persisted Qwen/Opus времена, статусы сравнения и активные
+                // job'ы тут надо подтянуть явно — иначе после F5 колонки 🟦/🟪
+                // показывают «—», а колонка «Сравнение» теряет статус/режим
+                // (fallback) у реально сравнённых пар.
+                try { await scQORestoreActive(); } catch (_) {}
+                try { await scQOLoadPairTimings(); } catch (_) {}
+                try { await scLoadPairCompareStatuses(); } catch (_) {}
                 scAutoLoadInfo.value = {
                     session_id: match.id,
                     created_at: match.created_at,
@@ -9848,6 +9853,9 @@ const app = createApp({
                 // Re-attach к запущенному Qwen→Opus pipeline job после F5, иначе
                 // панель «Pipeline Qwen→Opus» пропадает, хотя job ещё работает.
                 try { await scQORestoreActive(); } catch (_) {}
+                // Persisted Qwen/Opus времена по парам — чтобы колонки 🟦/🟪
+                // показывали значения после refresh (in-memory job потерян).
+                try { await scQOLoadPairTimings(); } catch (_) {}
                 try { await scLoadPairCompareStatuses(); } catch (_) {}
                 try { await scOpusLoadPreflight(); } catch (_) {}
                 // Per-pair статус «Проверено экспертом» для таблицы загрузки.
@@ -9901,9 +9909,40 @@ const app = createApp({
             if (scQOClockTimer) { clearInterval(scQOClockTimer); scQOClockTimer = null; }
         }
         function scQOItemFor(pid) {
+            if (!pid) return null;
             const job = scQOJob.value;
-            if (!job || !pid) return null;
-            return (job.items || []).find(i => i.pair_id === pid) || null;
+            const jobLive = job && ['running', 'queued'].includes(job.status);
+            // 1) ЖИВОЙ job (running/queued) — приоритет: содержит live-прогресс.
+            if (jobLive) {
+                const it = (job.items || []).find(i => i.pair_id === pid);
+                if (it) return it;
+            }
+            // 2) persisted timing (переживает F5; авторитетно для ПОСЛЕДНЕГО
+            //    прогона по паре — включая ручной repair через unified/large_sheet/
+            //    md, который не идёт через qopipe). Берётся РАНЬШЕ терминального
+            //    in-memory job, иначе устаревший qopipe-item (failed/skipped)
+            //    перебивал бы свежий repair-результат.
+            const t = scQOPairTimings.value && scQOPairTimings.value[pid];
+            if (t) return t;
+            // 3) терминальный in-memory job — последний резерв (сразу после
+            //    завершения, пока persisted-карта ещё не обновилась).
+            if (job) {
+                const it = (job.items || []).find(i => i.pair_id === pid);
+                if (it) return it;
+            }
+            return null;
+        }
+        // Подтянуть последние Qwen/Opus времена по всем парам из persisted
+        // qopipe job-файлов (read-only, маленькие json). Вызывается на загрузке
+        // сессии и после завершения прогона, чтобы колонки 🟦/🟪 показывали
+        // времена и ПОСЛЕ refresh.
+        async function scQOLoadPairTimings() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/pair-timings`;
+                const data = await fetch(url).then(r => r.json());
+                scQOPairTimings.value = (data && data.timings) || {};
+            } catch (_) { /* fail-soft: остаётся прежняя карта / пусто → «—» */ }
         }
         // Overall job elapsed: from the first Qwen start (else created_at) to now
         // while live, frozen at updated_at once terminal.
@@ -9926,7 +9965,12 @@ const app = createApp({
         function scQOItemLaneMs(it, lane) {
             if (!it) return null;
             const st = scQOParseTs(it[lane + '_started_at']);
-            if (st == null) return null;
+            if (st == null) {
+                // Нет start-таймстампа (persisted repair/manual timing) → берём
+                // готовую длительность *_duration_sec, если она есть.
+                const d = it[lane + '_duration_sec'];
+                return (typeof d === 'number' && d >= 0) ? d * 1000 : null;
+            }
             const fin = scQOParseTs(it[lane + '_finished_at']);
             return Math.max(0, (fin != null ? fin : scQOClock.value) - st);
         }
@@ -9940,7 +9984,9 @@ const app = createApp({
             if (!it) return '—';
             const st = it[lane + '_status'];
             const dur = scQOItemLaneLabel(it, lane);
-            if (st === 'done') return '✓ ' + (dur || '0с');
+            // «✓ 22,8м» если длительность известна; иначе просто «✓» (repair-
+            // сигнал без per-pair длительности — лучше, чем вводящее «✓ 0с»).
+            if (st === 'done') return dur ? '✓ ' + dur : '✓';
             if (st === 'running') {
                 // Qwen-дорожка обрабатываемой сейчас пары: показать прогресс по
                 // блокам «… N/M» (живой из активной md-enrichment job), иначе —
@@ -10101,6 +10147,7 @@ const app = createApp({
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
             if (!ids.length || scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
+            scQOMode.value = 'normal';         // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight(ids); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -10109,6 +10156,7 @@ const app = createApp({
         async function scQOProcessPair(pid) {
             if (scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
+            scQOMode.value = 'normal';         // safe default each open
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight([pid]); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -10128,9 +10176,17 @@ const app = createApp({
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
             if (!ids.length) { scQOConfirm.value = null; return; }
-            // Режим «Очистить и запустить»: 1) clear-analysis, 2) дождаться успеха,
-            // 3) обновить статусы пар, 4) обычный pipeline. Очистка молча НЕ идёт.
-            if (scQOClearBeforeRun.value) {
+            const mode = scQOMode.value || 'normal';
+            // Режимы «Только Opus»: unified-analysis по готовым enriched MD без Qwen.
+            if (mode === 'opus_only' || mode === 'clear_result_opus_only') {
+                await scQOStartOpusOnly(ids, mode === 'clear_result_opus_only');
+                scQOMode.value = 'normal';
+                scQOConfirm.value = null;
+                return;
+            }
+            // Режим «Очистить и запустить»: 1) clear-analysis, 2) обычный pipeline.
+            // Очистка молча НЕ идёт.
+            if (mode === 'clear_and_run') {
                 scQOClearing.value = true;
                 try {
                     const res = await scQOClearAnalysis(ids);
@@ -10154,7 +10210,40 @@ const app = createApp({
             }
             await scQOStart(ids);
             scQOClearBeforeRun.value = false;
+            scQOMode.value = 'normal';
             scQOConfirm.value = null;
+        }
+        // Запустить ТОЛЬКО Opus по выбранным парам (без Qwen) через endpoint
+        // /pairs/opus-only. clearResult=true → очистить текущий comparison_result
+        // (с backup) перед Opus. Пары без enriched MD пропускаются с предупреждением.
+        // Серверный unified-job подхватывается обычным трекером (scOpusRestoreActive).
+        async function scQOStartOpusOnly(pairIds, clearResult) {
+            if (!scSession.value || !scSession.value.id || !pairIds || !pairIds.length) return;
+            scQORunning.value = true;
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/opus-only`;
+                const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pair_ids: pairIds, force: true, backup_existing: true,
+                                           clear_comparison_result: !!clearResult }) });
+                if (!r.ok) { scQORunning.value = false; alert('Только Opus: HTTP ' + r.status); return; }
+                const res = await r.json();
+                const skipped = (res && res.skipped) || [];
+                if (skipped.length) {
+                    const txt = skipped.map(s => s.pair_id + ' (' + (s.reason || '?') + ')').join(', ');
+                    alert('Часть пар пропущена (только Opus): ' + txt +
+                        '.\nПары без enriched MD сначала нужно распознать (Qwen).');
+                }
+                // Подхватить запущенный unified-job (если стартовал) + обновить статусы.
+                if (res && res.job_id && typeof scOpusRestoreActive === 'function') {
+                    try { await scOpusRestoreActive(); } catch (e) {}
+                }
+                if (typeof scQOLoadPairTimings === 'function') { try { await scQOLoadPairTimings(); } catch (e) {} }
+                if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
+            } catch (e) {
+                alert('Не удалось запустить только Opus: ' + ((e && e.message) || e));
+            } finally {
+                scQORunning.value = false;
+            }
         }
         async function scQOStart(pairIds) {
             if (!scSession.value || !scSession.value.id) return;
@@ -10234,6 +10323,9 @@ const app = createApp({
                         scQOClockStop();
                         scQOActiveRecog.value = null;
                         scQOForget();
+                        // Закешировать времена завершённого прогона, чтобы они
+                        // пережили последующий refresh (scQOJob будет очищен).
+                        if (typeof scQOLoadPairTimings === 'function') { try { await scQOLoadPairTimings(); } catch (e) {} }
                         if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
                         if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
                         return;
@@ -12468,6 +12560,9 @@ const app = createApp({
                     comparison_status: persisted.status,
                     changes_count: persisted.changes_count,
                     _via_fallback: !!persisted.via_fallback,
+                    _present_one_side: persisted.present_one_side_count,
+                    _requires_human_review: persisted.requires_human_review_count,
+                    _mode: persisted.mode,
                 });
             }
             if (live) return scOpusBadgeFromRecord(live);
@@ -12512,9 +12607,15 @@ const app = createApp({
             if (st === 'done' || cmp === 'done') {
                 const n = Number(it.changes_count || 0);
                 const suffix = viaFb ? ' (fallback)' : '';
-                return {label: '✓ сравнено' + suffix, cls: 'sc-status-matched',
-                        title: (n ? `сравнено · расхождений: ${n}` : 'сравнено')
-                             + (viaFb ? ' · через Opus fallback (evidence_first)' : '')};
+                const pos = Number(it._present_one_side || 0);
+                const rhr = Number(it._requires_human_review || 0);
+                // Бейдж «✓ сравнено» НЕ зависит от экспертной проверки: «Проверено
+                // 0/N» означает лишь, что инженер ещё не размечал расхождения.
+                let title = (n ? `сравнено · расхождений: ${n}` : 'сравнено')
+                          + (viaFb ? ' · через Opus fallback (evidence_first)' : '');
+                if (pos) title += ` · видно с одной стороны: ${pos}`;
+                if (rhr) title += ` · на проверку инженером: ${rhr}`;
+                return {label: '✓ сравнено' + suffix, cls: 'sc-status-matched', title};
             }
             if (st === 'failed' || st === 'failed_interrupted' || st === 'error') {
                 return {label: '✗ ошибка', cls: 'sc-status-unmatched', title: it.error || 'ошибка сравнения'};
@@ -12671,7 +12772,8 @@ const app = createApp({
             scV2Loading.value = true;
             scV2Error.value = '';
             try {
-                const r = await fetch(`${_scV2Base()}/changes`);
+                const qs = scV2ShowFormal.value ? '?include_excluded=true' : '';
+                const r = await fetch(`${_scV2Base()}/changes${qs}`);
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 scV2Data.value = await r.json();
             } catch (e) {
@@ -12680,6 +12782,39 @@ const app = createApp({
             } finally {
                 scV2Loading.value = false;
             }
+        }
+        // «Показать формальные» — подмешать админ/оформительские изменения
+        // (include_excluded=true) и перезагрузить ведомость текущей пары.
+        function scV2ToggleShowFormal() {
+            scV2ShowFormal.value = !scV2ShowFormal.value;
+            return scLoadV2Changes();
+        }
+        // ─── Профиль анализа результата (Быстрый / Глубокий ГРЩ) ───
+        // Бейдж в шапке V2: каким профилем графического извлечения получен
+        // результат. rich_grsh даёт пофидерные отличия ГРЩ (эталон), default —
+        // быстрый. Старые результаты без метаданных → «неизвестен».
+        function scV2ProfileBadge() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            if (!ap) return null;
+            const name = String(ap.analysis_profile || 'unknown');
+            if (name === 'rich_grsh') {
+                return { name, label: 'Глубокий ГРЩ', style: 'background:#dcfce7;color:#166534',
+                         title: 'Глубокий ГРЩ: пофидерное графическое извлечение однолинейных схем (эталонный профиль).' };
+            }
+            if (name === 'default') {
+                return { name, label: 'Быстрый', style: 'background:#e2e8f0;color:#475569',
+                         title: 'Быстрый режим: глубокое графическое извлечение ГРЩ выключено. Для ГРЩ-листов может найти меньше отличий.' };
+            }
+            return { name, label: 'неизвестен', style: 'background:#fef3c7;color:#92400e',
+                     title: 'Профиль результата неизвестен (старый результат без метаданных профиля анализа).' };
+        }
+        function scV2DenseWarning() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            return !!(ap && ap.dense_graphics_default_profile);
+        }
+        function scV2DowngradeBlocked() {
+            const ap = scV2Data.value && scV2Data.value.analysis_profile;
+            return !!(ap && ap.profile_downgrade_blocked);
         }
         const scV2FilteredItems = computed(() => {
             const data = scV2Data.value;
@@ -12728,6 +12863,40 @@ const app = createApp({
                 { key: 'rej',    label: 'отклон.',      value: s.rejected || 0,          bg: '#fee2e2', border: '#fca5a5', fg: '#b91c1c' },
                 { key: 'notrev', label: 'не пров.',     value: s.not_reviewed || 0,      bg: '#f1f5f9', border: '#e2e8f0', fg: '#475569' },
             ];
+        }
+        // Однозначные счётчики ревью V2 для шапки. Раньше «10 из 38» можно было
+        // прочитать как «принято + отклонено», хотя в 10 входят ещё и
+        // автоматически исключённые (формальные) изменения. Разводим понятия:
+        //   total          = engineering_total + excluded_total   (все raw-расхождения)
+        //   processed      = confirmed + rejected + excluded       («обработано»)
+        //   expert_decided = confirmed + rejected                  («экспертно решено»)
+        //   not_reviewed   = total - processed
+        // «Принято/Отклонено» считаем строго по ИНЖЕНЕРНЫМ (не исключённым)
+        // строкам — так toggle «Показать формальные» (include_excluded) не двоит
+        // счётчик, а engineering_total/excluded_total берём из backend-summary
+        // (он считает корректно и стабилен независимо от toggle). Тот же скоуп по
+        // текущим items + review_status, что и в scExpertReviewSummary — сироты
+        // после регенерации сравнения в счётчик не попадают.
+        function scV2ReviewProgress() {
+            const s = (scV2Data.value && scV2Data.value.summary) || {};
+            const items = (scV2Data.value && Array.isArray(scV2Data.value.items))
+                ? scV2Data.value.items : [];
+            let confirmed = 0, rejected = 0;
+            for (const it of items) {
+                if (it && it.excluded_from_main) continue;   // исключённые → в «Исключено»
+                const rs = String((it && it.review_status) || '');
+                if (rs === 'confirmed') confirmed++;
+                else if (rs === 'rejected') rejected++;
+            }
+            const excluded = Number(s.excluded_total) || 0;
+            const engineering = (s.engineering_total != null)
+                ? (Number(s.engineering_total) || 0)
+                : (Number(s.total) || 0);
+            const total = engineering + excluded;
+            const processed = confirmed + rejected + excluded;
+            const expert_decided = confirmed + rejected;
+            const not_reviewed = Math.max(0, total - processed);
+            return { total, processed, expert_decided, confirmed, rejected, excluded, not_reviewed };
         }
         function scV2SourceLabel(s) { return scUnifiedSourceLabel(s); }
         // ─── Impact class (инженерная значимость) ───
@@ -12889,6 +13058,26 @@ const app = createApp({
             if (decisions.size > 1) return 'mixed';
             return [...decisions][0];
         }
+        // Решение ДЛЯ ОТОБРАЖЕНИЯ в колонке «Решение». Сначала явное
+        // живое/перенесённое expert-решение (scGetExpertDecision, ключ pid::id),
+        // а если его нет — канонический review_status (его backend резолвит по
+        // стабильному raw_id, и именно по нему summary считает «Принято/Отклонено»).
+        // Без этого fallback строка, попавшая в summary как confirmed/rejected,
+        // не получала галочку, если решение эксперта сохранено под ключом
+        // pid::raw_id, а не pid::v2_id (расхождение «Принято: 8» в summary vs
+        // меньше галочек в таблице — orphan-ключи legacy expert_review).
+        // ВАЖНО: только ОТОБРАЖЕНИЕ. Логика редактирования (scSetExpertDecision
+        // toggle, _scDecisionRank) по-прежнему опирается на scGetExpertDecision —
+        // только явные клики, иначе первый клик по «унаследованной» строке снял
+        // бы отметку вместо подтверждения.
+        function scResolvedDecision(itemOrGroup) {
+            const d = scGetExpertDecision(itemOrGroup);
+            if (d) return d;   // 'accepted' | 'rejected' | 'mixed'
+            const rs = itemOrGroup && itemOrGroup.review_status;
+            if (rs === 'confirmed') return 'accepted';
+            if (rs === 'rejected') return 'rejected';
+            return null;
+        }
         // Приоритет в очереди: принятые сверху (0), нерешённые/смешанные в
         // середине (1), отклонённые внизу (2).
         function _scDecisionRank(itemOrGroup) {
@@ -12989,19 +13178,48 @@ const app = createApp({
             return keys;
         }
         function scExpertReviewSummary() {
-            // Счётчики «Принято/Отклонено» — только по текущей паре, а не по всей
-            // сессии. Учитываем лишь ключи активного представления: V2 хранит
-            // решения по `v2_…`, классические «Расхождения» — по `chg_…/uf_…`.
-            // Иначе после переноса оценок (chg_ + v2_ на одну пару) счётчик
-            // удвоился бы.
+            // Счётчики «Принято/Отклонено» — только по ТЕКУЩЕЙ паре.
             const v2view = (scV2View.value === 'v2');
+            if (v2view) {
+                // V2: считаем строго по текущим загруженным изменениям пары
+                // (scV2Data.items), а НЕ по всем expert-решениям сессии. id вида
+                // `v2_<hash>` — контент-хеши: при регенерации сравнения они
+                // меняются, оставляя осиротевшие expert-решения от прошлых
+                // прогонов. Раньше V2-ветка не скоупила решения по текущим
+                // строкам и накручивала этих сирот (на ИОС1.1 шапка показывала
+                // 26/4 вместо честных 10). Теперь источник решения каждой строки
+                // тот же, что и в самой таблице: живой экспертный клик
+                // (ключ = текущий pid::item.id, сиротой быть не может) ИЛИ
+                // канонический review_status (confirmed/rejected; regen-устойчив,
+                // т.к. бэкенд резолвит его по стабильному raw_id). Согласовано с
+                // backend `_per_pair_status` (тот же «размечено N из M»).
+                const items = (scV2Data.value && Array.isArray(scV2Data.value.items))
+                    ? scV2Data.value.items : [];
+                let accepted = 0, rejected = 0;
+                for (const it of items) {
+                    let d = null;
+                    if (scExpertReviewMode.value) {
+                        const ed = scGetExpertDecision(it);   // ключ = текущий pid::item.id
+                        if (ed === 'accepted' || ed === 'rejected') d = ed;
+                    }
+                    if (!d) {
+                        const rs = String((it && it.review_status) || '');
+                        if (rs === 'confirmed') d = 'accepted';
+                        else if (rs === 'rejected') d = 'rejected';
+                    }
+                    if (d === 'accepted') accepted++;
+                    else if (d === 'rejected') rejected++;
+                }
+                return { accepted, rejected, total: accepted + rejected };
+            }
+            // Классический вид «Расхождения» — поведение без изменений: считаем по
+            // chg_/uf_ ключам, скоуп по строкам загруженного scUnifiedFlat
+            // (orphan-решения по исчезнувшим raw_id в счётчик не входят).
             const known = _scSummaryKnownKeys();   // не-null только для классического вида
             const vals = _scExpertDecisionsForActivePair()
                 .filter(([k]) => {
                     const raw = String(k).split('::').slice(1).join('::');
-                    const viewOk = v2view ? raw.startsWith('v2_') : !raw.startsWith('v2_');
-                    if (!viewOk) return false;
-                    // orphan-решения по исчезнувшим raw_id счётчик не накручивают.
+                    if (raw.startsWith('v2_')) return false;   // только chg_/uf_
                     return known === null || known.has(k);
                 })
                 .map(([, d]) => d);
@@ -14468,8 +14686,11 @@ const app = createApp({
             // V2 режим вкладки «Расхождения» (pair-scoped ручная верификация)
             scV2View, scV2Data, scV2Loading, scV2Error, scV2SaveBusy,
             scV2Selected, scV2Filters, scV2StatusOptions,
+            scV2ShowFormal, scV2ToggleShowFormal,
+            scV2ProfileBadge, scV2DenseWarning, scV2DowngradeBlocked,
             scSetV2View, scLoadV2Changes, scV2FilteredItems, scV2SelectedIds,
             scV2AllSelected, scV2ToggleAll, scV2ToggleOne, scV2SummaryCards,
+            scV2ReviewProgress,
             scV2SourceLabel, scV2ExportXlsxUrl, scV2SetStatus, scV2SaveComment,
             scV2ImpactLabel,
             scV2IsExcludedClass, scV2ImpactBadgeStyle, scV2ImpactClassOptions,
@@ -14478,7 +14699,7 @@ const app = createApp({
             scExpertReviewMode, scExpertDecisions, scExpertReviewSaving,
             scToggleExpertReview, scLoadExpertDecisions,
             scSetExpertDecision, scSetExpertReason,
-            scGetExpertDecision, scGetExpertReason, scExpertReviewSummary,
+            scGetExpertDecision, scResolvedDecision, scGetExpertReason, scExpertReviewSummary,
             scExpertItemFlags, scV2TransferBusy, scV2TransferReviews,
             scSubmitExpertReview,
             scLoadUnifiedConfig, scLoadUnifiedPairStatus, scLoadUnifiedFlat,
@@ -14518,10 +14739,11 @@ const app = createApp({
             scScanFolders, scOpenProject, scLoadSessionsList, scFetchSessionsList, scLoadSession,
             scOpenPair, scLoadPairData, scLoadAlignment,
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
-            scQOClearBeforeRun, scQOClearing, scQOClearAnalysis,
+            scQOClearBeforeRun, scQOMode, scQOClearing, scQOClearAnalysis, scQOStartOpusOnly,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
+            scQOPairTimings, scQOLoadPairTimings,
             scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,
             scFailedPopoverPairId, scFailedBlocks, scFailedBlocksLoading, scFailedBlocksError,
             scToggleFailedPopover, scLoadFailedBlocks, scGotoFailedBlock, scFocusBlock,

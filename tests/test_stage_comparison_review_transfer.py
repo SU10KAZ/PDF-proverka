@@ -280,3 +280,56 @@ def test_failsoft_when_claude_unavailable(monkeypatch):
     assert rep["totals"]["exact"] == 1            # точный всё равно перенесён
     assert rep["totals"]["semantic"] == 0
     assert rep["totals"]["unmatched_source"] == 1  # orphan не сопоставлен
+
+
+# ─── Endpoint (router-level) ─────────────────────────────────────────────
+
+
+def test_transfer_endpoint_runs_exact_transfer():
+    """POST .../v2-review/transfer (router-level): без Claude переносит точные
+    совпадения по raw_id и возвращает отчёт. Проверяет регистрацию роута."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison as router_mod
+    from backend.app.services.stage_comparison import expert_review as er
+
+    sid, pid = "s_endpoint", "p1"
+    _write_session(sid, [pid])
+    _write_pair(sid, pid)
+    _write_comparison_result(sid, pid, [
+        _change("chg_a", title="A"), _change("chg_b", title="B"),
+    ])
+    _seed_source_decisions(sid, pid, [
+        ("chg_a", "rejected", "оформительское"),
+        ("chg_b", "accepted", ""),
+    ])
+
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    client = TestClient(app)
+    base = f"/api/stage-comparison/sessions/{sid}/v2-review/transfer"
+
+    r = client.post(base, json={"use_claude": False})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["totals"]["exact"] == 2
+    assert body["totals"]["applied"] == 2
+    assert body["totals"]["conflicts"] == 0
+    # решение реально легло на v2-скоупленный ключ
+    items = {it["raw_id"]: it for it in _built_items(sid, pid)}
+    store = er.load(sid)["decisions"]
+    assert store[er.make_key(pid, items["chg_a"]["id"])]["decision"] == "rejected"
+
+
+def test_transfer_endpoint_unknown_session_404():
+    """Несуществующая сессия → 404 (KeyError → HTTPException)."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison as router_mod
+
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    client = TestClient(app)
+    r = client.post("/api/stage-comparison/sessions/nope_missing/v2-review/transfer",
+                    json={"use_claude": False})
+    assert r.status_code == 404, r.text

@@ -633,17 +633,17 @@ def test_v2_export_include_excluded_sheet(session_mixed_impact):
     }
 
 
-# 12. UI больше НЕ содержит переключатель «Показать административные /
-#     оформление / шум»: исключённые изменения просто не показываются.
-def test_ui_has_no_show_excluded_toggle():
+# 12. V2-ведомость содержит тогл «Показать формальные» (admin/оформление):
+#     по умолчанию показываются только инженерно значимые изменения, по кнопке
+#     подмешиваются формальные. (Старое имя scV2ShowExcluded не используется.)
+def test_ui_has_show_formal_toggle():
     html = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
-    assert "Показать административные / оформление / шум" not in html
+    assert "scV2ShowFormal" in html
     assert "scV2ShowExcluded" not in html
     app_js = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    assert "scV2ShowFormal" in app_js
+    assert "scV2ToggleShowFormal" in app_js
     assert "scV2ShowExcluded" not in app_js
-    assert "scV2ToggleShowExcluded" not in app_js
-    # колонка «№» больше не запрашивает исключённые
-    assert "include_excluded=true" not in app_js
 
 
 # 12b. Колонка «№» показывает только источник сравнения (текст/изображение)

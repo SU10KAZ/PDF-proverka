@@ -182,3 +182,59 @@ def test_sc_page_str_handles_list_and_scalar():
     assert _sc_page_str([3, 4]) == "3, 4"
     assert _sc_page_str(46) == "46"
     assert _sc_page_str(None) == ""
+
+
+# ─── Endpoint (router-level) ─────────────────────────────────────────────
+
+
+def test_grouped_export_endpoint_returns_xlsx(monkeypatch):
+    """GET .../unified-diff-flat/export.xlsx?grouped=true отдаёт валидный XLSX
+    с корректным content-type / filename. build_unified_flat и get_session
+    замоканы — без runtime data / Qwen / Opus."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison as router_mod
+
+    sid = "sess_grouped_endpoint"
+    monkeypatch.setattr(router_mod.unified_findings_mod, "build_unified_flat",
+                        lambda session_id, pair_id=None: {"items": _sample_items()})
+    monkeypatch.setattr(router_mod.store, "get_session",
+                        lambda session_id: {"id": sid, "pairs": [
+                            {"id": "pf06effb7"}, {"id": "pOTHER"}]})
+
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    client = TestClient(app)
+    r = client.get(f"/api/stage-comparison/sessions/{sid}/unified-diff-flat/export.xlsx",
+                   params={"grouped": "true"})
+
+    assert r.status_code == 200, r.text
+    assert r.headers["content-type"] == \
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    assert ".xlsx" in r.headers.get("content-disposition", "")
+    # тело — валидный workbook со сворачиваемыми разделами пар
+    ws = load_workbook(io.BytesIO(r.content)).active
+    pair_headers = [
+        ws.cell(row=ri, column=1).value
+        for ri in range(1, ws.max_row + 1)
+        if ws.row_dimensions[ri].outline_level == 0 and ws.row_dimensions[ri].collapsed
+    ]
+    assert len(pair_headers) == 2
+
+
+def test_grouped_export_endpoint_unknown_session_404(monkeypatch):
+    """build_unified_flat бросает KeyError для несуществующей сессии → 404."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison as router_mod
+
+    def _boom(session_id, pair_id=None):
+        raise KeyError(session_id)
+
+    monkeypatch.setattr(router_mod.unified_findings_mod, "build_unified_flat", _boom)
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    client = TestClient(app)
+    r = client.get("/api/stage-comparison/sessions/nope/unified-diff-flat/export.xlsx",
+                   params={"grouped": "true"})
+    assert r.status_code == 404, r.text

@@ -44,6 +44,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
+from . import analysis_profile as analysis_profile_mod
 from . import paths as paths_mod
 from .text_llm_provider import (
     BaseTextLLMProvider,
@@ -952,9 +953,42 @@ def _read_existing_result(session_id: str, pair_id: str) -> Optional[dict]:
         return None
 
 
+def _stamp_analysis_profile(payload: dict, session_id: str, pair_id: str) -> None:
+    """Записать в результат метаданные профиля анализа (плоские поля) и, для
+    default-профиля на паре с плотной графикой, warning о возможных пропусках.
+
+    Fail-soft: профиль — диагностика, не должен валить запись результата.
+    """
+    try:
+        if "analysis_profile" not in payload:
+            meta = analysis_profile_mod.profile_metadata()
+            payload["analysis_profile"] = meta["analysis_profile"]
+            payload["analysis_profile_label"] = meta["analysis_profile_label"]
+            payload["profile_flags"] = meta["profile_flags"]
+            payload["profile_created_at"] = meta["profile_created_at"]
+            payload["profile_source"] = meta["profile_source"]
+        # Warning: быстрый профиль на паре с плотной графикой может пропустить
+        # часть графических отличий — детектим по маркерам в enriched MD.
+        if (
+            payload.get("status") == "done"
+            and payload.get("analysis_profile") == analysis_profile_mod.DEFAULT_PROFILE
+        ):
+            left_md = _read_enriched_md(session_id, pair_id, "left")
+            right_md = _read_enriched_md(session_id, pair_id, "right")
+            if analysis_profile_mod.has_dense_graphics(left_md, right_md):
+                warns = list(payload.get("warnings") or [])
+                if analysis_profile_mod.DENSE_DEFAULT_WARNING not in warns:
+                    warns.append(analysis_profile_mod.DENSE_DEFAULT_WARNING)
+                payload["warnings"] = warns
+                payload["dense_graphics_default_profile"] = True
+    except Exception:  # noqa: BLE001 — профиль не должен ломать запись результата
+        logger.debug("analysis_profile stamping failed", exc_info=True)
+
+
 def _write_result(session_id: str, pair_id: str, payload: dict) -> dict:
     p = paths_mod.enriched_comparison_result_path(session_id, pair_id)
     p.parent.mkdir(parents=True, exist_ok=True)
+    _stamp_analysis_profile(payload, session_id, pair_id)
     payload.setdefault("version", VERSION)
     payload.setdefault("created_at", _utc_now())
     payload["updated_at"] = _utc_now()
@@ -1074,6 +1108,8 @@ def run_enriched_comparison(
     *,
     force: bool = False,
     force_fallback: bool = False,
+    analysis_profile: Optional[str] = None,
+    allow_profile_downgrade: bool = False,
     provider: Optional[BaseTextLLMProvider] = None,
     config: Optional[EnrichedCompareConfig] = None,
 ) -> dict:
@@ -1090,11 +1126,65 @@ def run_enriched_comparison(
     STAGE_COMPARISON_EVIDENCE_FIRST_FALLBACK_ENABLED выключен. Алгоритм
     fallback при этом не меняется; меняется только верхний gate включения.
     Используется UI-кнопкой «запустить fallback» на большой паре.
+
+    `analysis_profile` ("rich_grsh"/"default") — per-run override профиля
+    графического извлечения БЕЗ правки .env. rich_grsh включает глубокий
+    GRSH/structured/block-PDF. Для реального rich-результата вызывать через
+    run_pair с force_enrichment=True (профиль влияет на обогащение). Профиль
+    записывается в comparison_result.json. None → не трогаем внешний override
+    (его мог выставить run_pair вокруг enrichment+comparison).
+
+    `allow_profile_downgrade=False` — защита (Stage 4): НЕ перезаписывать
+    сохранённый rich_grsh результат быстрым (default) прогоном без явного
+    подтверждения.
     """
+    with analysis_profile_mod.profile_override_for(analysis_profile):
+        return _run_enriched_comparison_impl(
+            session_id, pair_id,
+            force=force, force_fallback=force_fallback,
+            allow_profile_downgrade=allow_profile_downgrade,
+            provider=provider, config=config,
+        )
+
+
+def _run_enriched_comparison_impl(
+    session_id: str,
+    pair_id: str,
+    *,
+    force: bool = False,
+    force_fallback: bool = False,
+    allow_profile_downgrade: bool = False,
+    provider: Optional[BaseTextLLMProvider] = None,
+    config: Optional[EnrichedCompareConfig] = None,
+) -> dict:
     with _lock:
         existing = _read_existing_result(session_id, pair_id)
         if existing and not force and existing.get("status") == "done":
             return existing
+        # Stage 4: не затирать сохранённый rich_grsh результат быстрым прогоном.
+        if existing and force and existing.get("status") == "done":
+            existing_profile = existing.get("analysis_profile")
+            requested_profile = analysis_profile_mod.classify_profile(
+                analysis_profile_mod.current_flags()
+            )
+            if (
+                existing_profile == analysis_profile_mod.RICH_GRSH_PROFILE
+                and requested_profile != analysis_profile_mod.RICH_GRSH_PROFILE
+                and not allow_profile_downgrade
+            ):
+                guarded = dict(existing)
+                warns = list(guarded.get("warnings") or [])
+                msg = (
+                    "Нельзя перезаписать результат глубокого анализа (rich_grsh) "
+                    f"быстрым профилем ({requested_profile}) без подтверждения. "
+                    "Передайте allow_profile_downgrade=true либо запустите "
+                    "«Глубокий ГРЩ» (analysis_profile=rich_grsh)."
+                )
+                if msg not in warns:
+                    warns.append(msg)
+                guarded["warnings"] = warns
+                guarded["profile_downgrade_blocked"] = True
+                return guarded
 
         cfg = config or load_config()
         prov: Optional[BaseTextLLMProvider]
@@ -1468,11 +1558,27 @@ def get_session_comparison_statuses(session_id: str) -> dict[str, dict]:
             continue
         result = get_comparison_result(session_id, pid)
         if result is not None:
+            changes = result.get("changes") or []
+            strategy = result.get("strategy") or None
+            status_str = str(result.get("status") or "not_run")
+            via_fb = bool(result.get("fallback")) or strategy == "evidence_first_s2_fallback"
+            pos = sum(1 for c in changes
+                      if isinstance(c, dict) and c.get("type") == "present_one_side")
+            rhr = sum(1 for c in changes
+                      if isinstance(c, dict) and c.get("requires_human_review"))
             out[pid] = {
-                "status": str(result.get("status") or "not_run"),
-                "changes_count": len(result.get("changes") or []),
-                "strategy": (result.get("strategy") or None),
-                "via_fallback": bool(result.get("fallback")),
+                "status": status_str,
+                "changes_count": len(changes),
+                "strategy": strategy,
+                "via_fallback": via_fb,
+                # mode — компактный признак режима для UI-бейджа (без чтения job'ов):
+                # «fallback» для too_large/evidence_first, иначе «normal». «repair»
+                # тут не выводим — comparison_result его не фиксирует, а пара после
+                # repair — это валидное normal-сравнение.
+                "mode": "fallback" if (via_fb or status_str == "too_large") else "normal",
+                "present_one_side_count": pos,
+                "requires_human_review_count": rhr,
+                "created_at": result.get("updated_at") or result.get("created_at"),
             }
             continue
         # Нет сохранённого результата. Если обе enriched MD готовы, но суммарный
@@ -1495,6 +1601,10 @@ def get_session_comparison_statuses(session_id: str) -> dict[str, dict]:
                     "changes_count": 0,
                     "strategy": None,
                     "via_fallback": False,
+                    "mode": "fallback",
+                    "present_one_side_count": 0,
+                    "requires_human_review_count": 0,
+                    "created_at": None,
                     "total_chars": total_chars,
                     "limit_chars": cfg.max_chars,
                 }

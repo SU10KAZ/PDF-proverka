@@ -38,6 +38,11 @@ __all__ = [
     "build_feeder_match_report",
     "render_feeder_match_md_section",
     "feeder_section_for_pair",
+    "feeder_candidate_changes_enabled",
+    "FeederCandidate",
+    "build_feeder_candidate_changes",
+    "render_feeder_candidate_changes_md_section",
+    "feeder_md_for_pair",
     "run_offline_feeder_match",
 ]
 
@@ -80,6 +85,20 @@ def cfg_low_threshold() -> float:
 
 def cfg_ambiguous_margin() -> float:
     return _env_float("STAGE_COMPARISON_LARGE_SHEET_FEEDER_AMBIG_MARGIN", 0.06)
+
+
+def feeder_candidate_changes_enabled() -> bool:
+    """Default OFF. При true в rich MD после таблицы сопоставления добавляется
+    секция «Кандидаты пофидерных изменений» — предвычисленные per-feeder
+    candidate changes с detected_delta + рекомендованным заголовком finding'а
+    + prompt-сигналом для Opus. Поведение при false идентично прежнему."""
+    return _env_bool("STAGE_COMPARISON_LARGE_SHEET_FEEDER_CANDIDATE_CHANGES_ENABLED", False)
+
+
+def cfg_candidate_delta_threshold() -> float:
+    """Относительный порог «значимого» изменения мощности/тока (default 0.08 =
+    8%). Ниже — считаем разницу пересчётом/округлением, не инженерной дельтой."""
+    return _env_float("STAGE_COMPARISON_LARGE_SHEET_FEEDER_DELTA_THRESHOLD", 0.08)
 
 
 # ─── нормализация потребителя ───────────────────────────────────────────────
@@ -730,6 +749,288 @@ def render_feeder_match_md_section(result: FeederMatchResult, *, top: int = 0) -
         )
     lines.append("")
     return "\n".join(lines)
+
+
+# ─── candidate changes (per-feeder, default OFF) ────────────────────────────
+
+# Только потребительские фидеры. Системные ключи (заземление, шины, ввод от ТП,
+# СН ТП, резерв) покрываются core/system findings (топология/шинопровод/ТТ/ГЗШ)
+# и НЕ должны порождать пофидерные дубли.
+_CANDIDATE_SYSTEMS = {
+    "vru_input", "parking", "itp", "apt", "water_pump", "gvs",
+    "chiller", "cooler", "cooling_center", "aukrm", "lighting",
+}
+
+_CABLE_PARALLEL_RE = re.compile(r"^\s*(\d+)\s*[хx×]\s*(\(|[а-яёa-z])", re.IGNORECASE)
+
+
+def _cable_parallel(text: object) -> Optional[int]:
+    """Число параллельных линий: '2x(5x120)'→2, '3хППГнг…'→3, '5х185'→1."""
+    if not text:
+        return None
+    s = unicodedata.normalize("NFKC", str(text)).strip().lower()
+    m = _CABLE_PARALLEL_RE.match(s)
+    if m:
+        try:
+            return int(m.group(1))
+        except ValueError:
+            return None
+    return 1 if _cable_section(text) else None
+
+
+def _breaker_rating(f: Feeder) -> Optional[str]:
+    """Номинал автомата (ток, А) — только из явного breaker-поля. Поля с
+    маркерами расчётной мощности/тока (Py/Рр/Ip) игнорируются, чтобы расчётный
+    ток не выдавался за смену номинала автомата (анти-false-positive)."""
+    for src in (f.breaker_params, f.breaker):
+        if not src:
+            continue
+        s = _norm_text(src)
+        if any(t in s for t in ("py", "рр", "ip", "iрасч", "iр")):
+            continue
+        m = re.search(r"(\d{2,4})\s*а\b", s)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _detect_feeder_delta(o: Feeder, n: Feeder) -> list[str]:
+    """Список инженерных дельт между matched OLD↔NEW фидерами (пусто = нет)."""
+    thr = cfg_candidate_delta_threshold()
+    deltas: list[str] = []
+    ps = _value_sim(o.power_kw, n.power_kw)
+    if ps is not None and ps < (1.0 - thr):
+        deltas.append("power_changed")
+    cs = _value_sim(o.current_a, n.current_a)
+    if cs is not None and cs < (1.0 - thr):
+        deltas.append("current_changed")
+    co, cn = _cable_section(o.cable), _cable_section(n.cable)
+    if co and cn and co != cn:
+        deltas.append("cable_changed")
+    po, pn = _cable_parallel(o.cable), _cable_parallel(n.cable)
+    if po and pn and po != pn:
+        deltas.append("parallel_lines_changed")
+    bo, bn = _breaker_rating(o), _breaker_rating(n)
+    if bo and bn and bo != bn:
+        deltas.append("breaker_changed")
+    if o.nc.system_key != n.nc.system_key and "other" not in (o.nc.system_key, n.nc.system_key):
+        deltas.append("consumer_type_changed")
+    return deltas
+
+
+@dataclass
+class FeederCandidate:
+    consumer_key: str
+    system_label: str
+    kind: str                 # matched | ambiguous | feeder_added | feeder_removed
+    confidence: float
+    old_feeder: Optional[str]
+    new_feeder: Optional[str]
+    old_consumer: Optional[str]
+    new_consumer: Optional[str]
+    old_power_current: Optional[str]
+    new_power_current: Optional[str]
+    old_cable: Optional[str]
+    new_cable: Optional[str]
+    old_breaker: Optional[str]
+    new_breaker: Optional[str]
+    detected_delta: list[str]
+    recommended_finding_title: str
+    requires_human_review: bool
+    reason: str
+
+
+def _consumer_label(p: FeederPair) -> str:
+    o, n = p.old, p.new
+    for f in (n, o):
+        if f and (f.load_name or "").strip():
+            return f.load_name.strip()
+    return _SYSTEM_LABEL.get((n or o).nc.system_key, p.consumer_key)
+
+
+def _recommend_title(p: FeederPair, deltas: list[str]) -> str:
+    o, n = p.old, p.new
+    name = _consumer_label(p)
+    if "feeder_added" in deltas:
+        return f"Добавлен фидер потребителя «{name}» ({n.designation if n else '—'})"
+    if "feeder_removed" in deltas:
+        return f"Удалён фидер потребителя «{name}» ({o.designation if o else '—'})"
+    bits: list[str] = []
+    if "power_changed" in deltas or "current_changed" in deltas:
+        bits.append(f"нагрузка {_fmt_pi(o)} → {_fmt_pi(n)}")
+    if "cable_changed" in deltas:
+        bits.append(f"сечение {_cable_section(o.cable)}→{_cable_section(n.cable)}")
+    if "parallel_lines_changed" in deltas:
+        bits.append(f"парал. линий {_cable_parallel(o.cable)}→{_cable_parallel(n.cable)}")
+    if "breaker_changed" in deltas:
+        bits.append(f"номинал автомата {_breaker_rating(o)}→{_breaker_rating(n)} А")
+    if "consumer_type_changed" in deltas:
+        bits.append("тип потребителя изменён")
+    head = f"Фидер «{name}» ({o.designation if o else '—'}→{n.designation if n else '—'})"
+    return head + ": " + "; ".join(bits) if bits else head
+
+
+def _candidate_reason(p: FeederPair, deltas: list[str]) -> str:
+    base = {
+        "matched_high_confidence": "высокая уверенность сопоставления",
+        "matched_medium_confidence": "средняя уверенность сопоставления",
+        "ambiguous": "неоднозначное сопоставление (несколько правдоподобных OLD)",
+        "old_only": "фидер без пары на новой стадии",
+        "new_only": "новый фидер без пары на старой стадии",
+    }.get(p.status, p.status)
+    return f"{base}; score={p.score:.2f}; дельты: {', '.join(deltas) or 'нет'}"
+
+
+def _make_candidate(p: FeederPair, deltas: list[str], *, requires_human_review: bool, kind: str) -> FeederCandidate:
+    o, n = p.old, p.new
+    sys_key = (n or o).nc.system_key
+    return FeederCandidate(
+        consumer_key=p.consumer_key,
+        system_label=_SYSTEM_LABEL.get(sys_key, sys_key),
+        kind=kind,
+        confidence=round(p.score, 3),
+        old_feeder=(o.designation if o else None),
+        new_feeder=(n.designation if n else None),
+        old_consumer=((o.load_name or o.designation) if o else None),
+        new_consumer=((n.load_name or n.designation) if n else None),
+        old_power_current=(_fmt_pi(o) if o else None),
+        new_power_current=(_fmt_pi(n) if n else None),
+        old_cable=(o.cable if o else None),
+        new_cable=(n.cable if n else None),
+        old_breaker=((o.breaker_params or o.breaker) if o else None),
+        new_breaker=((n.breaker_params or n.breaker) if n else None),
+        detected_delta=deltas,
+        recommended_finding_title=_recommend_title(p, deltas),
+        requires_human_review=requires_human_review,
+        reason=_candidate_reason(p, deltas),
+    )
+
+
+def build_feeder_candidate_changes(result: FeederMatchResult) -> list[FeederCandidate]:
+    """Предвычисленные per-feeder candidate changes из результата сопоставления.
+
+    Правила: high/medium с инженерной дельтой → твёрдый кандидат; ambiguous с
+    дельтой → requires_human_review; old_only/new_only → feeder_removed/added,
+    но ТОЛЬКО если consumer_key не покрыт matched-парой (не дубль укрупнённого
+    представления OLD) и система — потребительская. Без дельты — не кандидат."""
+    matched_keys = {
+        p.consumer_key for p in result.pairs
+        if p.status in ("matched_high_confidence", "matched_medium_confidence", "ambiguous")
+    }
+    out: list[FeederCandidate] = []
+    seen_addremove: set[str] = set()
+    for p in result.pairs:
+        sys_key = (p.new or p.old).nc.system_key if (p.new or p.old) else "other"
+        if sys_key not in _CANDIDATE_SYSTEMS:
+            continue  # системные ключи покрыты core findings
+        if p.status in ("matched_high_confidence", "matched_medium_confidence", "ambiguous"):
+            deltas = _detect_feeder_delta(p.old, p.new)
+            if not deltas:
+                continue  # rule 3: нет инженерной дельты → нет кандидата
+            out.append(_make_candidate(
+                p, deltas,
+                requires_human_review=(p.status == "ambiguous"),
+                kind=("ambiguous" if p.status == "ambiguous" else "matched")))
+        elif p.status in ("old_only", "new_only"):
+            if p.consumer_key in matched_keys:
+                continue  # rule 5: дубль укрупнённого представления потребителя
+            if p.consumer_key in seen_addremove:
+                continue  # один add/remove на consumer_key (не плодим дубли OLD-реп.)
+            seen_addremove.add(p.consumer_key)
+            delta = ["feeder_removed"] if p.status == "old_only" else ["feeder_added"]
+            # add/remove из сопоставления — гипотеза (unit-None wildcard может
+            # ошибиться), поэтому ВСЕГДА requires_human_review, не firm finding.
+            out.append(_make_candidate(p, delta, requires_human_review=True, kind=p.status))
+        # low_confidence → не кандидат
+    return out
+
+
+_FEEDER_CANDIDATE_PROMPT_SIGNAL = (
+    "<!-- FEEDER_CANDIDATE_CHANGES -->\n"
+    "Каждая строка ниже — ПРЕДВЫЧИСЛЕННЫЙ кандидат отдельного изменения по "
+    "конкретному потребителю/фидеру (сопоставление по нагрузке, НЕ по имени щита). "
+    "Инструкция для сравнения:\n"
+    "- рассматривай КАЖДУЮ строку high/medium как потенциальное ОТДЕЛЬНОЕ изменение;\n"
+    "- НЕ сворачивай числовые изменения разных matched-фидеров в один общий "
+    "design_logic;\n"
+    "- выпусти ОТДЕЛЬНЫЙ finding для каждого high/medium кандидата с инженерной "
+    "дельтой (мощность/ток/кабель/номинал/параллельные линии/добавление/удаление "
+    "фидера), процитировав ОБА значения OLD и NEW;\n"
+    "- кандидаты из раздела «Неоднозначные» выпускай только как "
+    "requires_human_review (или объедини в одну осторожную карточку), не как "
+    "high-confidence;\n"
+    "- НЕ дублируй уже выпущенные core/system findings (топология ГРЩ, шинопровод "
+    "от ТП, учёт/ТТ, заземление/ДСУП) — это системные изменения, не пофидерные."
+)
+
+_CAND_HEADER = (
+    "| consumer_key | old_feeder | new_feeder | confidence | old P/I | new P/I | "
+    "old cable | new cable | old breaker | new breaker | detected_delta | "
+    "recommended_finding_title |"
+)
+_CAND_SEP = "|---|---|---|---|---|---|---|---|---|---|---|---|"
+
+
+def _cand_row(c: FeederCandidate) -> str:
+    return "| " + " | ".join([
+        _md_cell(c.consumer_key), _md_cell(c.old_feeder), _md_cell(c.new_feeder),
+        f"{c.confidence:.2f}", _md_cell(c.old_power_current), _md_cell(c.new_power_current),
+        _md_cell(c.old_cable), _md_cell(c.new_cable), _md_cell(c.old_breaker),
+        _md_cell(c.new_breaker), _md_cell(", ".join(c.detected_delta)),
+        _md_cell(c.recommended_finding_title),
+    ]) + " |"
+
+
+def render_feeder_candidate_changes_md_section(result: FeederMatchResult) -> str:
+    """MD-секция «Кандидаты пофидерных изменений» (+ prompt-сигнал для Opus).
+    Пусто, если кандидатов нет."""
+    cands = build_feeder_candidate_changes(result)
+    if not cands:
+        return ""
+    firm = [c for c in cands if not c.requires_human_review]
+    review = [c for c in cands if c.requires_human_review]
+    lines: list[str] = []
+    lines.append("### Кандидаты пофидерных изменений из таблицы сопоставления")
+    lines.append("")
+    lines.append(_FEEDER_CANDIDATE_PROMPT_SIGNAL)
+    lines.append("")
+    lines.append(
+        f"Твёрдых кандидатов (high/medium с инженерной дельтой): **{len(firm)}**; "
+        f"неоднозначных (requires_human_review): **{len(review)}**."
+    )
+    lines.append("")
+    lines.append(_CAND_HEADER)
+    lines.append(_CAND_SEP)
+    for c in firm:
+        lines.append(_cand_row(c))
+    lines.append("")
+    if review:
+        lines.append("#### Неоднозначные кандидаты (requires_human_review)")
+        lines.append("")
+        lines.append(_CAND_HEADER)
+        lines.append(_CAND_SEP)
+        for c in review:
+            lines.append(_cand_row(c))
+        lines.append("")
+    return "\n".join(lines)
+
+
+def feeder_md_for_pair(
+    old_page_enriched: dict, new_page_enriched: dict, *, include_candidates: bool = False
+) -> str:
+    """Сборка feeder-секций rich MD за один match: таблица сопоставления + (опц.)
+    секция кандидатов пофидерных изменений. "" если у стороны нет цепей."""
+    olds = extract_feeders(old_page_enriched or {})
+    news = extract_feeders(new_page_enriched or {})
+    if not olds or not news:
+        return ""
+    result = match_feeders(olds, news)
+    parts = [render_feeder_match_md_section(result)]
+    if include_candidates:
+        cand_md = render_feeder_candidate_changes_md_section(result)
+        if cand_md:
+            parts.append(cand_md)
+    return "\n\n".join(parts)
 
 
 def feeder_section_for_pair(old_page_enriched: dict, new_page_enriched: dict) -> str:

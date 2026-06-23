@@ -202,3 +202,34 @@ def test_get_with_summary_is_non_destructive(er_module, monkeypatch):
     assert er_module.make_key("pA", "chg_gone") in out["decisions"]
     data = er_module.load(sid)
     assert er_module.make_key("pA", "chg_gone") in data["decisions"]
+
+
+def test_prune_orphans_endpoint_dry_run_then_real(er_module, monkeypatch):
+    """Endpoint POST .../expert-review/prune-orphans: dry_run считает без записи,
+    реальный прогон удаляет orphan. (router-level, проверяет регистрацию роута.)"""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.api.routers import stage_comparison as router_mod
+
+    sid = "sess_prune_endpoint"
+    er_module.apply_batch(sid, decisions=[
+        {"item_id": er_module.make_key("pA", "chg_keep"), "decision": "accepted"},
+        {"item_id": er_module.make_key("pA", "chg_gone"), "decision": "accepted"},
+    ])
+    monkeypatch.setattr(er_module, "_iter_session_pair_changes",
+                        lambda _sid: [("pA", "chg_keep")])
+    app = FastAPI()
+    app.include_router(router_mod.router)
+    client = TestClient(app)
+    base = f"/api/stage-comparison/sessions/{sid}/expert-review/prune-orphans"
+
+    r = client.post(base + "?dry_run=true")
+    assert r.status_code == 200, r.text
+    assert r.json()["dry_run"] is True
+    assert r.json()["removed_count"] == 1
+    assert er_module.make_key("pA", "chg_gone") in er_module.load(sid)["decisions"]
+
+    r2 = client.post(base)
+    assert r2.status_code == 200, r2.text
+    assert r2.json()["removed_count"] == 1
+    assert er_module.make_key("pA", "chg_gone") not in er_module.load(sid)["decisions"]

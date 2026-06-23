@@ -228,15 +228,22 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         # --- project_info.json (версия, fallback на корень логического проекта) ---
+        # pi — путь к project_info.json; вычисляем БЕЗУСЛОВНО, т.к. он нужен и
+        # ниже для _resolve_version_pdf (иначе в ветке project_info из v2
+        # переменная осталась бы неопределённой → UnboundLocalError).
+        pi = version_dir / "project_info.json"
+        if not pi.exists():
+            pi = project_dir / "project_info.json"
         project_info = load_version_project_info(version_dir)
         if project_info:
             zf.writestr("project_info.json", json.dumps(project_info, ensure_ascii=False, indent=2))
-        else:
-            pi = version_dir / "project_info.json"
-            if not pi.exists():
-                pi = project_dir / "project_info.json"
-            if pi.exists():
-                zf.write(str(pi), "project_info.json")
+        elif pi.exists():
+            zf.write(str(pi), "project_info.json")
+
+        # --- PDF этой версии (источник истины) ---
+        pdf_path = _resolve_version_pdf(version_dir, pi)
+        if pdf_path is not None:
+            zf.write(str(pdf_path), pdf_path.name)
 
         # --- MD-файл (основной текст документа) ---
         try:
@@ -338,6 +345,31 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
     )
 
 
+def _resolve_version_pdf(version_dir: Path, pi_path: Path) -> Optional[Path]:
+    """Найти PDF обрабатывавшейся версии.
+
+    Приоритет: `pdf_file` из project_info.json → одиночный *.pdf-файл в папке
+    версии. Возвращает None, если PDF не найден.
+    """
+    # 1. Явный pdf_file из метаданных
+    if pi_path.exists():
+        try:
+            info = json.loads(pi_path.read_text(encoding="utf-8"))
+            pdf_file = (info.get("pdf_file") or "").strip()
+            if pdf_file:
+                cand = version_dir / pdf_file
+                if cand.is_file():
+                    return cand
+        except Exception:
+            pass
+
+    # 2. Fallback: *.pdf-файлы в папке версии (исключаем папки `<name>.pdf/`)
+    pdfs = sorted(p for p in version_dir.glob("*.pdf") if p.is_file())
+    if pdfs:
+        return pdfs[0]
+    return None
+
+
 def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
     """Генерирует README.md с описанием пакета аудита для LLM."""
     # Прочитать project_info
@@ -397,6 +429,7 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 |------|----------|
 | `README.md` | Этот файл — описание пакета и инструкции |
 | `project_info.json` | Метаданные проекта (название, раздел, дисциплина) |
+| `*.pdf` | Исходный PDF этой версии — источник истины |
 | `*_document.md` | Полный текст документа (OCR из PDF) |
 | `document_graph.json` | Структура документа: текст и блоки по страницам |
 | `01_text_analysis.json` | Этап 1: анализ текста (таблицы, нормативные ссылки) |

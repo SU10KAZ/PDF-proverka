@@ -641,6 +641,242 @@ def find_active_pipeline_job(session_id: str) -> Optional[dict]:
         if task is not None and not task.done():
             return job
     return None
+def _iso_dur_sec(start: Optional[str], end: Optional[str]) -> Optional[float]:
+    """Длительность в секундах между двумя ISO-таймстампами; None если нет данных."""
+    if not start or not end:
+        return None
+    try:
+        a = datetime.fromisoformat(str(start).replace("Z", "+00:00"))
+        b = datetime.fromisoformat(str(end).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+    d = (b - a).total_seconds()
+    return round(d, 1) if d >= 0 else None
+
+
+def _iso_epoch(s: Optional[str]) -> Optional[float]:
+    """ISO-таймстамп → epoch-секунды (float); None если нет/непарсится."""
+    if not s:
+        return None
+    try:
+        return datetime.fromisoformat(str(s).replace("Z", "+00:00")).timestamp()
+    except (ValueError, TypeError):
+        return None
+
+
+def _is_later(a: Optional[str], b: Optional[str]) -> bool:
+    """True если ISO-таймстамп a строго позже b (None = самый ранний)."""
+    ea, eb = _iso_epoch(a), _iso_epoch(b)
+    if ea is None:
+        return False
+    if eb is None:
+        return True
+    return ea > eb
+
+
+def _session_level_jobs(session_id: str) -> list[dict]:
+    """Маленькие job-json из session-level `jobs/` (md_enrichment / large_sheet /
+    unified-analysis). Без тяжёлых Qwen/tile/page_enriched артефактов."""
+    d = paths_mod.session_dir(session_id) / "jobs"
+    out: list[dict] = []
+    if not d.exists():
+        return out
+    for p in sorted(d.glob("*.json")):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                j = json.load(f)
+            if isinstance(j, dict):
+                out.append(j)
+        except (OSError, json.JSONDecodeError):
+            continue
+    return out
+
+
+def _comparison_result_opus_meta(session_id: str, pid: str) -> Optional[dict]:
+    """Лёгкая Opus-метадата из comparison_result.json (status/changes/duration/
+    finished). Читаем только метаданные — без обхода тяжёлых артефактов."""
+    p = paths_mod.enriched_comparison_result_path(session_id, pid)
+    try:
+        if not p.exists():
+            return None
+        with open(p, "r", encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(d, dict):
+        return None
+    status = d.get("status")
+    if status not in ("done", "failed", "error", "too_large"):
+        return None
+    fin = d.get("updated_at") or d.get("created_at")
+    if not fin:
+        try:
+            fin = datetime.fromtimestamp(
+                p.stat().st_mtime, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+        except OSError:
+            fin = None
+    changes = d.get("changes")
+    return {
+        "status": status,
+        "finished_at": fin,
+        "duration_sec": d.get("duration_sec"),
+        "changes_count": (len(changes) if isinstance(changes, list) else None),
+        "strategy": d.get("strategy"),
+    }
+
+
+def _empty_timing(pid: str) -> dict:
+    return {
+        "pair_id": pid, "qwen_status": None, "qwen_started_at": None,
+        "qwen_finished_at": None, "qwen_duration_sec": None,
+        "opus_status": None, "opus_started_at": None, "opus_finished_at": None,
+        "opus_duration_sec": None, "status": None, "changes_count": None,
+        "qwen_error": None, "opus_error": None, "job_id": None,
+        "job_status": None, "updated_at": None,
+    }
+
+
+def _overlay_repair_timings(session_id: str, base: dict) -> dict:
+    """Поверх qopipe-базы накладывает сигналы РУЧНОГО repair / selected-workflow:
+
+      * Qwen — успешный `md_enrichment` / `large_sheet` job по паре (Qwen пересобран);
+      * Opus — успешный `unified-analysis` job ИЛИ `comparison_result.json`.
+
+    Сигнал переопределяет qopipe только если он СВЕЖЕЕ (later finished_at), чтобы
+    не затирать актуальный pipeline-прогон старым repair'ом. Пары, отсутствующие
+    в qopipe (manual-only workflow), добавляются. Read-only, маленькие json."""
+    jobs = _session_level_jobs(session_id)
+    qwen_sig: dict = {}
+    opus_sig: dict = {}
+    for job in jobs:
+        jtype = str(job.get("type") or "")
+        jcreated = job.get("created_at")
+        jupd = job.get("updated_at") or jcreated
+        items = job.get("items") or []
+        is_md = jtype == "md_enrichment_batch"
+        is_unified = "unified" in jtype
+        is_large_sheet = ("large_sheet" in jtype) or (
+            not jtype and bool(items) and all(
+                ("page" in (it or {}) and "tiles_total" in (it or {})) for it in items))
+        if is_md or is_large_sheet:
+            # Qwen-repair: пары, у которых хотя бы одна сторона/страница done.
+            src = "md_enrichment" if is_md else "large_sheet"
+            for pid in {str(it.get("pair_id")) for it in items
+                        if it.get("pair_id") and it.get("status") == "done"}:
+                prev = qwen_sig.get(pid)
+                if prev is None or _is_later(jupd, prev.get("finished_at")):
+                    # per-pair длительности у этих job нет (job покрывает много
+                    # пар/страниц) → duration не синтезируем, показываем «✓».
+                    qwen_sig[pid] = {"finished_at": jupd, "duration_sec": None,
+                                     "source": src}
+        if is_unified:
+            for it in items:
+                pid = it.get("pair_id")
+                st = it.get("status")
+                if not pid or st not in ("done", "failed", "error"):
+                    continue
+                pid = str(pid)
+                prev = opus_sig.get(pid)
+                if prev is None or _is_later(jupd, prev.get("finished_at")):
+                    opus_sig[pid] = {
+                        "status": "done" if st == "done" else "failed",
+                        "finished_at": jupd, "duration_sec": it.get("duration_sec"),
+                        "changes_count": it.get("changes_count"), "source": "unified"}
+    # comparison_result fallback — только если Opus ещё не done в базе/unified.
+    pids = set(base) | set(qwen_sig) | set(opus_sig)
+    for pid in list(pids):
+        if base.get(pid, {}).get("opus_status") == "done":
+            continue
+        if opus_sig.get(pid, {}).get("status") == "done":
+            continue
+        cr = _comparison_result_opus_meta(session_id, pid)
+        if cr and cr.get("status") == "done":
+            prev = opus_sig.get(pid)
+            if prev is None or _is_later(cr.get("finished_at"), prev.get("finished_at")):
+                opus_sig[pid] = {
+                    "status": "done", "finished_at": cr.get("finished_at"),
+                    "duration_sec": cr.get("duration_sec"),
+                    "changes_count": cr.get("changes_count"),
+                    "source": "comparison_result"}
+    # merge
+    for pid in pids:
+        entry = base.get(pid) or _empty_timing(pid)
+        qs = qwen_sig.get(pid)
+        if qs and _is_later(qs.get("finished_at"), entry.get("qwen_finished_at")):
+            entry["qwen_status"] = "done"
+            entry["qwen_finished_at"] = qs.get("finished_at")
+            entry["qwen_duration_sec"] = qs.get("duration_sec")
+            entry["qwen_error"] = None
+            entry["qwen_source"] = qs.get("source")
+        osig = opus_sig.get(pid)
+        if osig and _is_later(osig.get("finished_at"), entry.get("opus_finished_at")):
+            entry["opus_status"] = osig.get("status")
+            entry["opus_finished_at"] = osig.get("finished_at")
+            entry["opus_duration_sec"] = osig.get("duration_sec")
+            if osig.get("changes_count") is not None:
+                entry["changes_count"] = osig.get("changes_count")
+            if osig.get("status") == "done":
+                entry["opus_error"] = None
+            entry["opus_source"] = osig.get("source")
+        if entry.get("opus_status") == "done":
+            entry["status"] = "done"
+        base[pid] = entry
+    return base
+
+
+def latest_pair_timings(session_id: str) -> dict:
+    """Для каждой пары — Qwen/Opus timing из qopipe + overlay ручного repair.
+
+    База — самый свежий qopipe job, где у пары есть timestamp. Поверх неё
+    `_overlay_repair_timings` накладывает selected/manual repair: Qwen из
+    `md_enrichment`/`large_sheet` job, Opus из `unified-analysis` job или
+    `comparison_result.json` (если он свежее qopipe-сигнала).
+
+    Назначение: показать колонки 🟦 Qwen / 🟪 Opus в таблице пар ПОСЛЕ refresh
+    страницы, когда in-memory job на фронте уже потерян. Читает только
+    маленькие job-json + comparison_result-метаданные, без тяжёлых артефактов.
+
+    Возвращает `{pair_id: {qwen_status, qwen_started_at, qwen_finished_at,
+    qwen_duration_sec, opus_status, opus_started_at, opus_finished_at,
+    opus_duration_sec, status, changes_count, job_id, job_status, updated_at,
+    [qwen_source], [opus_source]}}`.
+    """
+    jobs = list_jobs(session_id)
+    # По возрастанию created_at → более свежий job перезаписывает старый.
+    jobs.sort(key=lambda j: (j.get("created_at") or j.get("updated_at") or ""))
+    out: dict = {}
+    for job in jobs:
+        jid = job.get("job_id")
+        jstatus = job.get("status")
+        upd = job.get("updated_at")
+        for it in job.get("items") or []:
+            pid = it.get("pair_id")
+            if not pid:
+                continue
+            # пара числится в этом job только если реально стартовала (есть ts)
+            if not (it.get("qwen_started_at") or it.get("opus_started_at")):
+                continue
+            out[str(pid)] = {
+                "pair_id": str(pid),
+                "qwen_status": it.get("qwen_status"),
+                "qwen_started_at": it.get("qwen_started_at"),
+                "qwen_finished_at": it.get("qwen_finished_at"),
+                "qwen_duration_sec": _iso_dur_sec(
+                    it.get("qwen_started_at"), it.get("qwen_finished_at")),
+                "opus_status": it.get("opus_status"),
+                "opus_started_at": it.get("opus_started_at"),
+                "opus_finished_at": it.get("opus_finished_at"),
+                "opus_duration_sec": _iso_dur_sec(
+                    it.get("opus_started_at"), it.get("opus_finished_at")),
+                "status": it.get("status"),
+                "changes_count": it.get("changes_count"),
+                "qwen_error": it.get("qwen_error"),
+                "opus_error": it.get("opus_error"),
+                "job_id": jid,
+                "job_status": jstatus,
+                "updated_at": upd,
+            }
+    return _overlay_repair_timings(session_id, out)
 
 
 def _maybe_mark_interrupted(session_id: str, job: dict) -> dict:

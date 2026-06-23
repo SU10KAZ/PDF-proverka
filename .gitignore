@@ -180,3 +180,8 @@ project_rename.reverse.json
 # === Knowledge base runtime ===
 /knowledge_base/decisions_log.json
 /knowledge_base/patterns.json
+
+# === Из origin/main: локальный scratch + seed-конфиг под защиту ===
+/nnn.md
+/сравнение.xlsx
+!backend/app/data/consumer_synonyms.json

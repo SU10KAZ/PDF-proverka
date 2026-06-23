@@ -3052,68 +3052,13 @@
                                     </ul>
                                 </div>
 
-                                <!-- findings -->
-                                <div v-if="selectedBlockAnalysis.findings && selectedBlockAnalysis.findings.length > 0"
-                                     class="tile-analysis-section">
-                                    <div class="tile-analysis-section__header">
-                                        <h4>Замечания ({{ selectedBlockAnalysis.findings.length }})</h4>
-                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
-                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <template v-if="allHighlightsVisible">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                    <circle cx="12" cy="12" r="3"/>
-                                                </template>
-                                                <template v-else>
-                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
-                                                    <line x1="1" y1="1" x2="23" y2="23"/>
-                                                </template>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div v-for="(f, i) in selectedBlockAnalysis.findings" :key="i"
-                                         class="tile-finding-card"
-                                         :class="['tile-finding-card--' + sevClass(f.severity),
-                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
-                                                    'tile-finding-card--dimmed': f.id && !isFindingHighlightVisible(f.id),
-                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
-                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
-                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
-                                        <div class="tile-finding-card__header">
-                                            <label v-if="f.id && f.highlight_regions && f.highlight_regions.length"
-                                                   class="finding-visibility-toggle" @click.stop
-                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
-                                                <input type="checkbox"
-                                                       :checked="isFindingHighlightVisible(f.id)"
-                                                       @change="toggleFindingHighlight(f.id)">
-                                            </label>
-                                            <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
-                                                {{ f.severity || 'N/A' }}
-                                            </span>
-                                            <span v-if="f.id" class="tile-finding-card__id">{{ f.id }}</span>
-                                            <span v-if="f.highlight_regions && f.highlight_regions.length"
-                                                  class="tile-finding-card__locate"
-                                                  title="Показать на чертеже">&#9678;</span>
-                                        </div>
-                                        <div class="tile-finding-card__text">
-                                            {{ f.description || f.problem || f.finding || '' }}
-                                        </div>
-                                        <div v-if="f.norm" class="tile-finding-card__norm">
-                                            {{ f.norm }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="(!selectedBlockAnalysis.findings || selectedBlockAnalysis.findings.length === 0) && !selectedBlockAnalysis.summary"
-                                     class="tile-analysis-empty">
-                                    Анализ выполнен, данных мало.
-                                </div>
-
-                                <!-- Связанные F-замечания (из 03_findings) -->
-                                <div v-if="getBlockFindings(selectedBlock.block_id).length > 0"
-                                     class="tile-analysis-section tile-analysis-section--findings">
-                                    <div class="tile-analysis-section__header">
-                                        <h4>Финальные замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
+                                <!-- Замечания: только финальный список (03_findings), прошедший критика. -->
+                                <!-- Сырые Stage 02 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
+                                <!-- — критик мог их отфильтровать; источник истины = финальные замечания проекта. -->
+                                <div class="tile-analysis-section tile-analysis-section--findings">
+                                    <div class="tile-analysis-section__header"
+                                         v-if="getBlockFindings(selectedBlock.block_id).length > 0">
+                                        <h4>Замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
                                         <button class="btn-toggle-highlights" @click="toggleAllHighlights"
                                                 :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3158,6 +3103,10 @@
                                         <div v-if="f.norm" class="tile-finding-card__norm">
                                             {{ f.norm }}
                                         </div>
+                                    </div>
+                                    <div v-if="getBlockFindings(selectedBlock.block_id).length === 0"
+                                         class="tile-analysis-empty tile-analysis-empty--inline">
+                                        Финальных замечаний по этому блоку не выявлено.
                                     </div>
                                 </div>
                             </template>
@@ -5099,14 +5048,65 @@
                             {{ scQOPreflighting ? 'Подготовка…' : ('Обработать выбранные (' + scQOSelectedCount + ')') }}
                         </button>
                         <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
-                        <span v-if="scQOJob && ['running','queued'].includes(scQOJob.status)"
-                              style="margin-left:auto; display:flex; align-items:center; gap:10px; font-size:11px; color:#374151; font-variant-numeric:tabular-nums">
-                            <span :title="'job ' + scQOJob.job_id">Pipeline: {{ scQOJob.status }}</span>
-                            <span title="Общее время с момента старта">⏱ {{ formatDuration(scQOElapsedMs()) || '0с' }}</span>
-                            <span v-if="scQOEtaSec()!=null" style="color:#6b7280" title="Оценка оставшегося времени">~{{ formatEta(scQOEtaSec()) }}</span>
-                            <span style="color:#6b7280">🟦 {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} · 🟪 {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }}</span>
-                            <button class="btn btn-sm btn-secondary" @click="scQOCancel()">Остановить</button>
-                        </span>
+                    </div>
+
+                    <!-- Pipeline status panel -->
+                    <div v-if="scQOJob" style="margin-bottom:10px; padding:10px 12px; background:linear-gradient(90deg,#f0fdf4,#fff); border:1px solid #bbf7d0; border-radius:8px; font-size:12px">
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+                            <strong>Pipeline Qwen→Opus</strong>
+                            <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
+                            <span style="color:#374151; font-variant-numeric:tabular-nums" title="Общее время с момента старта">⏱ {{ formatDuration(scQOElapsedMs()) || '0с' }}</span>
+                            <span v-if="scQOEtaSec()!=null" style="color:#6b7280; font-variant-numeric:tabular-nums" title="Оценка оставшегося времени по средней длительности завершённых пар (медленная из двух дорожек)">· осталось ~{{ formatEta(scQOEtaSec()) }}</span>
+                            <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
+                        </div>
+                        <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
+                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.qwen_worker.current_pair_id), 'qwen') }})</span></span></span>
+                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.opus_worker.current_pair_id), 'opus') }})</span></span></span>
+                            <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
+                        </div>
+                        <!-- job-wide block total: how many blocks Qwen must process across all pairs, and how many done -->
+                        <div v-if="scQOBlocksOverall()" style="margin-top:6px; padding:5px 9px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; color:#166534; font-variant-numeric:tabular-nums" title="Всего графических блоков по всем парам прогона и сколько уже обработано Qwen (готовые пары целиком + текущая по блокам)">
+                            🧱 Блоки Qwen всего: <strong>{{ scQOBlocksOverall().done }}</strong> / {{ scQOBlocksOverall().total }}
+                            <span style="color:#15803d"> · пары {{ scQOBlocksOverall().pairsDone }} / {{ scQOBlocksOverall().pairsTotal }}</span>
+                        </div>
+                        <!-- live image-block detail of the Qwen lane current pair -->
+                        <div v-if="scQOCurrentBlock()" style="margin-top:6px; padding:5px 9px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; color:#1e40af; font-variant-numeric:tabular-nums">
+                            🧩 Блоки текущей пары: <strong>{{ scQOCurrentBlock().index }}</strong> / {{ scQOCurrentBlock().total }}
+                            <span v-if="scQOCurrentBlock().side"> · {{ scQOCurrentBlock().side==='left' ? 'слева' : 'справа' }}</span>
+                            <span v-if="scQOCurrentBlock().page"> · стр. {{ scQOCurrentBlock().page }}</span>
+                            <span v-if="scQOCurrentBlock().avg_sec"> · ~{{ scFormatDuration(scQOCurrentBlock().avg_sec) }}/блок</span>
+                            <span v-if="scQOCurrentBlock().eta_sec!=null" style="color:#3b82f6"> · пара ~{{ formatEta(scQOCurrentBlock().eta_sec) }}</span>
+                            <span v-if="scQOCurrentBlock().message" style="color:#60a5fa"> · {{ scQOCurrentBlock().message }}</span>
+                        </div>
+                        <!-- per-pair live timeline (dynamics) -->
+                        <div style="margin-top:8px">
+                            <a href="#" @click.prevent="scQODetailsOpen=!scQODetailsOpen" style="font-size:11px; color:#2563eb; text-decoration:none">
+                                {{ scQODetailsOpen ? '▾' : '▸' }} Динамика по парам ({{ scQOJob.items.length }})
+                            </a>
+                            <div v-if="scQODetailsOpen" style="margin-top:5px; max-height:240px; overflow:auto; border:1px solid #e5e7eb; border-radius:6px; background:#fff">
+                                <table style="width:100%; border-collapse:collapse; font-size:11px; font-variant-numeric:tabular-nums">
+                                    <thead>
+                                        <tr style="background:#f9fafb; color:#6b7280; position:sticky; top:0">
+                                            <th style="text-align:left; padding:4px 8px; font-weight:600">Пара</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟦 Qwen</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟪 Opus</th>
+                                            <th style="text-align:center; padding:4px 8px; font-weight:600" title="Полное время пары (обе дорожки)">Σ</th>
+                                            <th style="text-align:right; padding:4px 8px; font-weight:600" title="Найдено изменений">изм.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="it in scQOJob.items" :key="it.pair_id"
+                                            :style="{borderTop:'1px solid #f1f5f9', background: (it.status==='qwen_running'||it.status==='opus_running') ? '#fffbeb' : 'transparent'}">
+                                            <td style="padding:3px 8px; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" :title="scQOPairLabel(it.pair_id)">{{ scQOPairLabel(it.pair_id) }}</td>
+                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'qwen')}">{{ scQOLaneCell(it,'qwen') }}</td>
+                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'opus')}">{{ scQOLaneCell(it,'opus') }}</td>
+                                            <td style="padding:3px 8px; text-align:center; color:#374151">{{ scQOItemTotalLabel(it) }}</td>
+                                            <td style="padding:3px 8px; text-align:right; color:#16a34a">{{ it.opus_status==='done' ? it.changes_count : '' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Confirm modal -->
@@ -5121,7 +5121,43 @@
                                 <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
                                 <span v-if="scQOConfirm.health && scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#16a34a">✓ LLM/ngrok доступен (модель загружена, ctx ok)</span>
                                 <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
-                                <span style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                                <span v-if="scQOMode !== 'opus_only' && scQOMode !== 'clear_result_opus_only'" style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
+                                <span v-else style="display:block; margin-top:6px; color:#6b7280">Только Opus по уже готовым enriched MD. Qwen / распознавание графики повторно НЕ запускаются.</span>
+                            </div>
+                            <div style="font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
+                                <div style="font-weight:600; margin-bottom:6px">Режим запуска:</div>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="normal" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Обычная обработка (Qwen → Opus)</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="clear_and_run" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Очистить анализ и запустить заново (Qwen → Opus)</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="opus_only" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Запустить <strong>только Opus</strong> по выбранным парам</span>
+                                </label>
+                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
+                                    <input type="radio" value="clear_result_opus_only" v-model="scQOMode" style="margin-top:2px">
+                                    <span>Очистить результат сравнения и запустить <strong>только Opus</strong></span>
+                                </label>
+                                <div v-if="scQOMode==='clear_and_run'" style="margin-top:6px; color:#9a3412; line-height:1.6">
+                                    Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
+                                    Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются. Перед очисткой — backup.
+                                </div>
+                                <div v-else-if="scQOMode==='opus_only'" style="margin-top:6px; color:#1e40af; line-height:1.6">
+                                    Будет запущено только сравнение Opus по уже готовым enriched MD.
+                                    Qwen и распознавание графики повторно запускаться не будут.
+                                    Если enriched MD отсутствует, такая пара будет пропущена с предупреждением.
+                                </div>
+                                <div v-else-if="scQOMode==='clear_result_opus_only'" style="margin-top:6px; color:#9a3412; line-height:1.6">
+                                    Будет удалён текущий comparison_result.json (с backup), затем запущен только Opus.
+                                    Ручные отметки expert_review / v2_review_status не удаляются, если не выбрана полная очистка анализа.
+                                </div>
+                                <div v-else style="margin-top:6px; color:#6b7280; line-height:1.5">
+                                    По умолчанию — обработка без очистки: Qwen (локально) + Opus (Claude Code). Перед запуском — backup артефактов пар.
+                                </div>
                             </div>
                             <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
                                 <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
@@ -5139,7 +5175,7 @@
                             </label>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOClearBeforeRun ? 'Очистить и запустить' : 'Запустить обработку') }}</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='opus_only' ? 'Запустить только Opus' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : (scQOMode==='clear_and_run' ? 'Очистить и запустить' : 'Запустить обработку'))) }}</button>
                             </div>
                         </div>
                     </div>
@@ -5368,6 +5404,16 @@
                             title="Сопоставить листы старой и новой стадии по имени листа из штампа и предложить поставить их напротив друг друга (находит листы, уехавшие далеко между стадиями)">
                         {{ scStampLoading ? 'Сопоставление…' : '🏷 Сопоставить листы' }}
                     </button>
+                    <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
+                            :disabled="scAutoMatchApplyLoading || scStampLoading"
+                            title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
+                        {{ scAutoMatchApplyLoading ? 'Сопоставление…' : '🪄 Сопоставить и применить' }}
+                    </button>
+                    <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#374151; cursor:pointer"
+                           title="После точного/нечёткого матчинга доматчить остаток через нейросеть Haiku: ловит листы с одинаковым смыслом, но разными названиями («Однолинейная расчетная схема ГРЩ» = «Однолинейная схема ГРЩ»)">
+                        <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
+                        🧠 ИИ-доматчинг
+                    </label>
                     <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
                             :disabled="scAutoMatchApplyLoading || scStampLoading"
                             title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
@@ -5889,6 +5935,14 @@
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px; margin-right:3px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             Экспертная оценка
                         </button>
+                        <!-- Показать формальные (админ/оформление) — include_excluded=true -->
+                        <button class="btn btn-sm"
+                                :class="scV2ShowFormal ? 'btn-primary' : 'btn-secondary'"
+                                @click="scV2ToggleShowFormal()"
+                                :disabled="scV2Loading"
+                                title="Подмешать административные и оформительские изменения (смена организации, ответственных, год, перенумерация, заключения экспертизы). По умолчанию V2 показывает только инженерно значимые.">
+                            Показать формальные<template v-if="scV2Data && scV2Data.summary && scV2Data.summary.excluded_total"> ({{ scV2Data.summary.excluded_total }})</template>
+                        </button>
                         <!-- Экспорт в Excel — правый край ряда -->
                         <a v-if="scV2Data && (scV2Data.items || []).length"
                            class="btn btn-sm btn-secondary"
@@ -5907,6 +5961,46 @@
                             <code>{{ (scActivePair.left && scActivePair.left.filename) || scActivePair.id }}</code>
                             ↔ <code>{{ (scActivePair.right && scActivePair.right.filename) || '' }}</code>
                         </span>
+                        <!-- Профиль анализа результата (Быстрый / Глубокий ГРЩ / неизвестен) -->
+                        <span v-if="scV2ProfileBadge()"
+                              :style="'margin-left:auto; padding:1px 8px; border-radius:10px; font-weight:600; ' + scV2ProfileBadge().style"
+                              :title="scV2ProfileBadge().title">
+                            Профиль: {{ scV2ProfileBadge().label }}
+                        </span>
+                    </div>
+
+                    <!-- Однозначные счётчики ревью. «Обработано» = принято+отклонено+исключено,
+                         «Экспертно решено» = принято+отклонено. Развели понятия, чтобы
+                         «10 из 38» не читалось как только принято+отклонено (в 10 входят
+                         и автоматически исключённые формальные изменения). -->
+                    <div v-if="scV2Data && (scV2Data.items||[]).length" class="sc-card sc-v2-review-progress"
+                         style="display:flex; gap:6px 14px; align-items:baseline; flex-wrap:wrap; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px; background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; font-variant-numeric:tabular-nums">
+                        <span title="Обработано = принято + отклонено + исключено (из общего числа расхождений)">
+                            Обработано: <b>{{ scV2ReviewProgress().processed }}</b> из <b>{{ scV2ReviewProgress().total }}</b>
+                        </span>
+                        <span style="opacity:.4">·</span>
+                        <span title="Экспертно решено = принято + отклонено (без автоматически исключённых формальных изменений)">
+                            Экспертно решено: <b>{{ scV2ReviewProgress().expert_decided }}</b> из <b>{{ scV2ReviewProgress().total }}</b>
+                        </span>
+                        <span style="opacity:.4">·</span>
+                        <span title="Принято экспертом">Принято: <b style="color:#15803d">{{ scV2ReviewProgress().confirmed }}</b></span>
+                        <span title="Отклонено экспертом">Отклонено: <b style="color:#b91c1c">{{ scV2ReviewProgress().rejected }}</b></span>
+                        <span title="Исключено фильтром инженерной значимости (административные / оформительские / косметические изменения)">Исключено: <b style="color:#92400e">{{ scV2ReviewProgress().excluded }}</b></span>
+                        <span title="Ещё не проверено экспертом">Не проверено: <b style="color:#475569">{{ scV2ReviewProgress().not_reviewed }}</b></span>
+                    </div>
+
+                    <!-- Warning: быстрый профиль на паре с плотной графикой ГРЩ -->
+                    <div v-if="scV2DenseWarning()"
+                         style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px">
+                        ⚠ В этой паре есть плотные однолинейные схемы (ГРЩ/ВРУ). Быстрый профиль мог
+                        пропустить часть графических отличий. Для эталонной проверки запустите
+                        <b>«Глубокий ГРЩ»</b> (перепроверка с графическим извлечением).
+                    </div>
+                    <!-- Notice: rich-результат защищён от перезаписи быстрым прогоном -->
+                    <div v-if="scV2DowngradeBlocked()"
+                         style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px">
+                        ℹ Сохранённый результат глубокого анализа (ГРЩ) НЕ был перезаписан быстрым
+                        профилем. Чтобы пересчитать быстрым — подтвердите перезапись явно.
                     </div>
 
                     <div v-if="scV2Error"
@@ -6009,14 +6103,14 @@
                                     <td v-if="scExpertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
                                             <button class="btn-decision btn-accept btn-sm"
-                                                    :class="{ active: scGetExpertDecision(it) === 'accepted' }"
+                                                    :class="{ active: scResolvedDecision(it) === 'accepted' }"
                                                     @click.stop="scSetExpertDecision(it, 'accepted')" title="Принять">
-                                                <span v-if="scGetExpertDecision(it) === 'accepted'" class="decision-glyph">✓</span>
+                                                <span v-if="scResolvedDecision(it) === 'accepted'" class="decision-glyph">✓</span>
                                             </button>
                                             <button class="btn-decision btn-reject btn-sm"
-                                                    :class="{ active: scGetExpertDecision(it) === 'rejected' }"
+                                                    :class="{ active: scResolvedDecision(it) === 'rejected' }"
                                                     @click.stop="scSetExpertDecision(it, 'rejected')" title="Отклонить">
-                                                <span v-if="scGetExpertDecision(it) === 'rejected'" class="decision-glyph">✗</span>
+                                                <span v-if="scResolvedDecision(it) === 'rejected'" class="decision-glyph">✗</span>
                                             </button>
                                         </div>
                                         <!-- Метки переноса из «Расхождений» -->
@@ -6035,11 +6129,11 @@
                                     </td>
                                     <!-- Причина -->
                                     <td v-if="scExpertReviewMode" class="reason-cell">
-                                        <textarea v-if="scGetExpertDecision(it)"
+                                        <textarea v-if="scResolvedDecision(it)"
                                                   class="rejection-reason-input"
                                                   :value="scGetExpertReason(it)"
                                                   @input="scSetExpertReason(it, $event.target.value)"
-                                                  :placeholder="scGetExpertDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
+                                                  :placeholder="scResolvedDecision(it) === 'accepted' ? 'Почему подтверждено…' : 'Почему отклонено…'"
                                                   rows="2"></textarea>
                                     </td>
                                     <!-- Перейти к месту -->
