@@ -1193,8 +1193,62 @@ def save_project_info(
     return True
 
 
+def _move_v2_document_discipline(project_id: str, section: str) -> None:
+    """Под v2-primary физически перенести документ в папку целевой дисциплины.
+
+    В projects_v2 дисциплина проекта определяется ПАПКОЙ
+    ``objects/<obj>/disciplines/<code>/documents/<doc>`` (read_canary группирует
+    список именно по ней), а НЕ полем ``section`` в project_info. Поэтому смена
+    раздела под v2-primary обязана физически переносить документ, иначе изменение
+    раздела в UI «не срабатывает».
+
+    No-op, если документ уже в нужной дисциплине или не найден в v2. Конфликт
+    (в целевой дисциплине уже есть одноимённый документ) → ``ValueError``.
+    """
+    target = (section or "").strip()
+    if not target:
+        return
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    adapter = ProjectsV2Adapter()
+    if not adapter.is_available():
+        return
+    doc = adapter.find_document_by_project_id(project_id)
+    if not doc:
+        return
+    doc_dir = Path(doc["doc_dir"])
+    # objects/<obj>/disciplines/<dc>/documents/<doc_name>
+    current_disc = doc_dir.parent.parent.name
+    if current_disc == target:
+        return
+    object_dir = doc_dir.parents[3]
+    target_docs = object_dir / "disciplines" / target / "documents"
+    target_dir = target_docs / doc_dir.name
+    if target_dir.exists():
+        raise ValueError(
+            f"В разделе '{target}' уже есть проект '{doc_dir.name}'"
+        )
+    target_docs.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(doc_dir), str(target_dir))
+    # document.json.discipline — для консистентности (группировка идёт по папке,
+    # но поле тоже хранит дисциплину и читается отдельными местами).
+    dj_path = target_dir / "document.json"
+    try:
+        dj = json.loads(dj_path.read_text(encoding="utf-8"))
+        dj["discipline"] = target
+        dj_path.write_text(
+            json.dumps(dj, ensure_ascii=False, indent=1), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
 def set_project_section(project_id: str, section: str) -> dict:
-    """Сменить дисциплину проекта (только метаданные, без перемещения файлов).
+    """Сменить дисциплину проекта.
+
+    Legacy: пишет поле ``section`` в project_info.json (дисциплина определяется
+    этим полем). Под v2-primary дополнительно ФИЗИЧЕСКИ переносит документ в
+    папку ``disciplines/<section>/`` — иначе read_canary продолжает группировать
+    проект по старой папке и смена раздела в UI не видна.
 
     Для незарегистрированных проектов (папка с PDF, без project_info.json)
     создаёт минимальный project_info.json с указанным разделом.
@@ -1215,6 +1269,19 @@ def set_project_section(project_id: str, section: str) -> dict:
         }
     else:
         info["section"] = section
+    # Под v2-primary дисциплина = физическая папка disciplines/<code>/, поэтому
+    # переносим документ ДО записи section: конфликт/ошибка переноса → section не
+    # пишется, без рассинхрона «поле сменилось, папка осталась».
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _v2_primary = _swf.v2_is_primary()
+    except Exception:
+        _v2_primary = False
+    if _v2_primary:
+        _move_v2_document_discipline(project_id, section)
+        # документ мог переехать в другую папку — сбрасываем кеш, чтобы
+        # save_project_info разрезолвил новый путь.
+        invalidate_project_cache()
     if not save_project_info(project_id, info):
         raise ValueError(f"Не удалось сохранить project_info.json для '{project_id}'")
     # #78: создание project_info.json для голой папки может поменять классификацию
