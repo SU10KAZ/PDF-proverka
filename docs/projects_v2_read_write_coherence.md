@@ -56,3 +56,21 @@ Target run on 2026-06-23: `python3 -m pytest tests/test_v2_primary_version_uploa
 ## Integration notes
 
 Do not edit deploy `read_canary.py` on fix. During deploy integration, preserve the deployed read-canary functions and cherry-pick/apply only the write-side compatibility changes: `01_input` public listing alignment, v2 `blocks/` alias, and the new contract tests/docs.
+
+### Finding 2026-06-23 (surfaced during real integ-on-deploy cherry-pick)
+
+Under the integrated branch (deploy + fix), `GET /versions/{vid}/files` is served
+by deploy `read_canary.v2_version_files`, whose response is
+`{project_id, version_id, file_count, files, storage_backend, canary}` — it does
+**not** include the top-level `project_info` key that fix's
+`version_service.list_version_files` returns. This shape difference cannot be seen
+on the fix branch alone (there the endpoint never routes through read_canary).
+
+Decision: **acceptable, no read_canary change required.** The frontend consumes
+only `data.files` from this endpoint (both `app.js` call sites: GET sets
+`versionFiles.value = data.files`, upload reload re-fetches `.files`); the
+`project_info` key is vestigial and not part of the consumed contract. The
+contract test `test_v2_only_version_endpoints_create_and_upload` was made tolerant
+of both implementations: it asserts the real `.files` listing strictly
+(`Endpoint.pdf`, `project_info.json` present; `02_work/document.pdf` absent) and
+checks `project_info.pdf_file` only when the key is present.
