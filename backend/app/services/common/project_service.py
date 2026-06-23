@@ -4,6 +4,7 @@
 """
 import contextvars
 import json
+import logging
 import os
 import re
 import shutil
@@ -27,6 +28,8 @@ from backend.app.services.storage.projects_v2_source_resolver import (
     load_version_project_info,
     resolve_version_source_files,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ─── Per-job object binding ────────────────────────────────────────────────
@@ -1222,19 +1225,168 @@ def _write_v2_doc_section(doc_dir: Path, section: str) -> None:
             pass
 
 
+
+
+def _load_v2_document_json(doc_dir: Path) -> dict:
+    try:
+        data = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _dump_v2_json(path: Path, data: dict) -> None:
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def _legacy_unit_from_project_path(project_path: Path) -> tuple[Path, Path]:
+    path = Path(project_path)
+    if path.is_file():
+        path = path.parent
+    if path.parent.name.endswith(version_service.CONTAINER_SUFFIX):
+        return path.parent, path
+    return path, path
+
+
+def _replace_path_prefix(value, old_base: Path, new_base: Path):
+    if not isinstance(value, str) or not value:
+        return value
+    try:
+        rel = Path(value).relative_to(old_base)
+    except ValueError:
+        return value
+    return str(new_base / rel)
+
+
+def _resolve_v2_legacy_project_path(project_id: str, doc_dir: Path) -> Path | None:
+    dj = _load_v2_document_json(doc_dir)
+    raw = str(dj.get("legacy_project_path") or "").strip()
+    if raw:
+        path = Path(raw)
+        if path.exists():
+            return path
+    try:
+        return resolve_project_dir(project_id, must_exist=True)
+    except ProjectNotResolvedError:
+        return None
+    except Exception as exc:
+        logger.warning(
+            "[projects_v2] legacy path resolve failed for %s: %s",
+            project_id,
+            exc,
+        )
+        return None
+
+
+def _plan_legacy_discipline_move(project_id: str, doc_dir: Path, target: str) -> dict | None:
+    legacy_project_path = _resolve_v2_legacy_project_path(project_id, doc_dir)
+    if legacy_project_path is None or not legacy_project_path.exists():
+        return None
+    source_unit, old_project_path = _legacy_unit_from_project_path(legacy_project_path)
+    if not source_unit.exists():
+        return None
+    source_disc_dir = source_unit.parent
+    target_disc_dir = source_disc_dir.parent / target
+    target_unit = target_disc_dir / source_unit.name
+    try:
+        rel = old_project_path.relative_to(source_unit)
+    except ValueError:
+        rel = Path()
+    new_project_path = target_unit / rel
+    return {
+        "source_unit": source_unit,
+        "source_disc": source_disc_dir.name,
+        "target_disc_dir": target_disc_dir,
+        "target_unit": target_unit,
+        "old_project_path": old_project_path,
+        "new_project_path": new_project_path,
+        "needs_move": source_disc_dir.name != target,
+    }
+
+
+def _ensure_legacy_move_has_no_conflict(plan: dict | None, target: str) -> None:
+    if not plan or not plan.get("needs_move"):
+        return
+    target_unit = Path(plan["target_unit"])
+    if target_unit.exists():
+        raise ValueError(
+            f"В legacy-разделе '{target}' уже есть проект '{target_unit.name}'"
+        )
+
+
+def _update_document_json_legacy_paths(doc_dir: Path, plan: dict) -> None:
+    dj_path = doc_dir / "document.json"
+    dj = _load_v2_document_json(doc_dir)
+    if not dj:
+        return
+    old_unit = Path(plan["source_unit"])
+    new_unit = Path(plan["target_unit"])
+    dj["legacy_project_path"] = str(plan["new_project_path"])
+    for key in ("legacy_folder_path", "legacy_path"):
+        if key in dj:
+            dj[key] = _replace_path_prefix(dj[key], old_unit, new_unit)
+    versions = dj.get("versions")
+    if isinstance(versions, list):
+        for version in versions:
+            if not isinstance(version, dict):
+                continue
+            for key in ("legacy_project_path", "legacy_folder_path", "legacy_path"):
+                if key in version:
+                    version[key] = _replace_path_prefix(version[key], old_unit, new_unit)
+    _dump_v2_json(dj_path, dj)
+
+    for vj_path in doc_dir.glob("versions/*/version.json"):
+        try:
+            vj = json.loads(vj_path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(vj, dict):
+            continue
+        changed = False
+        for key in ("legacy_project_path", "legacy_folder_path", "legacy_path"):
+            if key in vj:
+                updated = _replace_path_prefix(vj[key], old_unit, new_unit)
+                if updated != vj[key]:
+                    vj[key] = updated
+                    changed = True
+        if changed:
+            _dump_v2_json(vj_path, vj)
+
+
+def _write_v2_doc_discipline(doc_dir: Path, target: str) -> None:
+    dj_path = doc_dir / "document.json"
+    try:
+        dj = _load_v2_document_json(doc_dir)
+        if dj:
+            dj["discipline"] = target
+            _dump_v2_json(dj_path, dj)
+    except Exception:
+        pass
+
+
+def _apply_legacy_discipline_move(project_id: str, doc_dir: Path, plan: dict | None) -> None:
+    if not plan:
+        return
+    if not plan.get("needs_move"):
+        _update_document_json_legacy_paths(doc_dir, plan)
+        return
+    try:
+        target_disc_dir = Path(plan["target_disc_dir"])
+        target_unit = Path(plan["target_unit"])
+        target_disc_dir.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(plan["source_unit"]), str(target_unit))
+        _update_document_json_legacy_paths(doc_dir, plan)
+        invalidate_project_cache()
+    except Exception as exc:
+        logger.warning(
+            "[projects_v2] legacy folder move failed for %s: %s",
+            project_id,
+            exc,
+        )
+
 def _move_v2_document_discipline(project_id: str, section: str) -> bool:
-    """Под v2-primary перенести документ в папку целевой дисциплины + записать section.
-
-    В projects_v2 дисциплина определяется ПАПКОЙ
-    ``objects/<obj>/disciplines/<code>/documents/<doc>`` (read_canary группирует
-    список именно по ней), а НЕ полем ``section``. Поэтому смена раздела обязана
-    физически переносить документ.
-
-    Возвращает ``True``, если v2-документ найден и обработан (перенесён в нужную
-    дисциплину или уже там; ``section`` записан в его project_info), ``False`` —
-    если документ в v2 не найден (caller использует legacy-запись). Конфликт
-    (в целевой дисциплине уже есть одноимённый документ) → ``ValueError``.
-    """
+    # v2 discipline is the folder name. Move the v2 document first, then move
+    # the matching legacy unit so future re-migration cannot recreate old-disc duplicates.
     target = (section or "").strip()
     if not target:
         return False
@@ -1246,7 +1398,9 @@ def _move_v2_document_discipline(project_id: str, section: str) -> bool:
     if not doc:
         return False
     doc_dir = Path(doc["doc_dir"])
-    # objects/<obj>/disciplines/<dc>/documents/<doc_name>
+    legacy_plan = _plan_legacy_discipline_move(project_id, doc_dir, target)
+    _ensure_legacy_move_has_no_conflict(legacy_plan, target)
+
     current_disc = doc_dir.parent.parent.name
     if current_disc != target:
         object_dir = doc_dir.parents[3]
@@ -1259,18 +1413,10 @@ def _move_v2_document_discipline(project_id: str, section: str) -> bool:
         target_docs.mkdir(parents=True, exist_ok=True)
         shutil.move(str(doc_dir), str(target_dir))
         doc_dir = target_dir
-        # document.json.discipline — для консистентности (группировка по папке,
-        # но поле тоже хранит дисциплину).
-        dj_path = doc_dir / "document.json"
-        try:
-            dj = json.loads(dj_path.read_text(encoding="utf-8"))
-            dj["discipline"] = target
-            dj_path.write_text(
-                json.dumps(dj, ensure_ascii=False, indent=1), encoding="utf-8"
-            )
-        except Exception:
-            pass
+
+    _write_v2_doc_discipline(doc_dir, target)
     _write_v2_doc_section(doc_dir, target)
+    _apply_legacy_discipline_move(project_id, doc_dir, legacy_plan)
     return True
 
 
