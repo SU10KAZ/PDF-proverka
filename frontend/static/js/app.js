@@ -8681,7 +8681,7 @@ const app = createApp({
         // DEV-fallback: инженеры графика, если API недоступен/пуст.
         const _SCHED_MOCK_ENGINEERS = [
             { id: 'uzun',     name: 'Узун А. И.' },
-            { id: 'grivash',  name: 'Гриваш А. А.' },
+            { id: 'grivash',  name: 'Гривапш А. А.' },
             { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
             { id: 'olar',     name: 'Оларь М. И.' },
             { id: 'repnikov', name: 'Репников И. А.' },
@@ -8695,7 +8695,7 @@ const app = createApp({
         const _SCHED_REQUIRED_ENGINEERS = [
             { id: 'kuldyaev-f-s', name: 'Кульдяев Ф. С.', role: 'expert' },
             { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
-            { id: 'grivash-a-a', name: 'Гриваш А. А.', role: 'expert' },
+            { id: 'grivash-a-a', name: 'Гривапш А. А.', role: 'expert' },
             { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
         ];
 
@@ -8749,7 +8749,7 @@ const app = createApp({
             add('uzun', _schedAddDays(monday, 2), '214. Alia', '214. Москфильмовская «Alia» (ASTERUS)', 'AR');
             add('uzun', _schedAddDays(monday, 2), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
             add('uzun', _schedAddDays(monday, 2), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR'); // Ср → «214. Alia +2»
-            // Гриваш А. А.
+            // Гривапш А. А.
             add('grivash', _schedAddDays(monday, 1), 'Asterus', 'Asterus — общий комплекс', 'EOM');
             add('grivash', _schedAddDays(monday, 1), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM'); // Вт → «Asterus +1»
             add('grivash', _schedAddDays(monday, 3), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM');
@@ -9065,7 +9065,7 @@ const app = createApp({
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──
-        // Инициалы инженера для аватара: «Гриваш А. А.» → «ГА».
+        // Инициалы инженера для аватара: «Гривапш А. А.» → «ГА».
         function schedInitials(name) {
             const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
             if (!parts.length) return '?';
