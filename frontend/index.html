@@ -506,6 +506,17 @@
                         </div>
                         <svg class="dash-section-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
+                    <div class="dash-section-row dash-section-row--total">
+                        <span class="dash-section-row__badge dash-section-row__badge--total">Σ</span>
+                        <span class="dash-section-row__name">Итого</span>
+                        <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--done" title="Всего полностью отработано экспертом">{{ sectionStatsTotals.checked }}</span>
+                            <span class="dash-stat dash-stat--wait" title="Всего без единой отметки эксперта">{{ sectionStatsTotals.waiting }}</span>
+                            <span class="dash-stat dash-stat--total" title="Всего проектов">{{ sectionStatsTotals.total }}</span>
+                            <span class="dash-stat dash-stat--find" title="Всего замечаний">{{ sectionStatsTotals.findings }}</span>
+                        </div>
+                        <span class="dash-section-row__arrow"></span>
+                    </div>
                 </div>
             </div>
         </div>

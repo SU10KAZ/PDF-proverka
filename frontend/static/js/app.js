@@ -4184,6 +4184,20 @@ const app = createApp({
             return m;
         });
 
+        // Итого по всем разделам — сумма каждого числового столбца для
+        // строки «Итого» внизу таблицы «Разделы проекта».
+        const sectionStatsTotals = computed(() => {
+            const t = { checked: 0, waiting: 0, total: 0, findings: 0 };
+            for (const code in sectionStatsMap.value) {
+                const s = sectionStatsMap.value[code];
+                t.checked += s.checked;
+                t.waiting += s.waiting;
+                t.total += s.total;
+                t.findings += s.findings;
+            }
+            return t;
+        });
+
         const filteredSectionProjects = computed(() => {
             if (!sidebarFilterSection.value) return [];
             return projects.value.filter(p => p.section === sidebarFilterSection.value);
@@ -16778,7 +16792,7 @@ const app = createApp({
             loadObjects, switchObject, addNewObject,
             // Dashboard stats
             auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
-            sectionFindingsCount, sectionStatsMap, filteredSectionProjects,
+            sectionFindingsCount, sectionStatsMap, sectionStatsTotals, filteredSectionProjects,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
