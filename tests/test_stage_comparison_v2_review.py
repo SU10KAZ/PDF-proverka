@@ -432,6 +432,7 @@ def test_ui_app_js_exposes_v2_methods():
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  Impact classification: исключение admin / documentation / cosmetic из V2
+#  (V2 router/export glue: include_excluded + V2 XLSX export)
 # ═══════════════════════════════════════════════════════════════════════════
 
 

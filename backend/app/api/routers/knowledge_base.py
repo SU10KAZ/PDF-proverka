@@ -1,21 +1,58 @@
 """
 REST API для базы знаний — экспертные решения, паттерны, импорт/экспорт.
 """
+import logging
 import os
 import tempfile
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Query
 
+from backend.app.core import portal_auth
 from backend.app.models.expert_review import (
     ExpertReviewSubmission, CustomerConfirmRequest, PatternActionRequest,
 )
 from backend.app.services.common import version_service
+import backend.app.services.common.user_service as user_service
 from backend.app.services.common.project_service import ProjectNotResolvedError
 import backend.app.services.knowledge_base.knowledge_base_service as kb_svc
 import backend.app.services.knowledge_base.missing_norms_service as mn_svc
 
 router = APIRouter(prefix="/api/knowledge-base", tags=["knowledge-base"])
+
+_log = logging.getLogger(__name__)
+
+
+def _resolve_reviewer(request: Request, body_reviewer: str = "") -> str:
+    """Серверная атрибуция автора экспертной оценки.
+
+    Когда портальная авторизация ВКЛЮЧЕНА — автор берётся СТРОГО из активной
+    сессии (логин → сотрудник из users.json), а не из тела запроса. Это
+    закрывает два класса багов:
+
+    * клиент мог прислать reviewer глобального дефолта («Узун А. И.»), если его
+      сессия не разрезолвилась в сотрудника (откат на current_id) — теперь такой
+      случай даёт ЧЕСТНОЕ пустое имя, а не приписывается Узуну;
+    * Excel-импорт раньше вообще не знал автора (reviewer="") — теперь знает.
+
+    Когда auth ВЫКЛЮЧЕН (локальная разработка) — доверяем телу запроса как
+    раньше (никакой сессии нет).
+    """
+    settings = portal_auth.get_settings()
+    if not settings.enabled:
+        return body_reviewer or ""
+    username = portal_auth.request_username(request, settings)
+    user = user_service.get_user_by_login(username) if username else None
+    if user:
+        return user.get("name") or ""
+    # auth включён, но логин не сопоставлен с сотрудником — НЕ откатываемся на
+    # глобального current_id (Узуна). Лучше пустой автор, чем чужой.
+    _log.warning(
+        "[attribution] auth enabled but session login %r not mapped to a user; "
+        "saving review with empty reviewer instead of global default",
+        username,
+    )
+    return ""
 
 
 async def use_version(version_id: Optional[str] = None):
@@ -35,11 +72,13 @@ async def use_version(version_id: Optional[str] = None):
 async def submit_expert_review(
     project_id: str,
     body: ExpertReviewSubmission,
+    request: Request,
     _vid: Optional[str] = Depends(use_version),
 ):
     """Сохранить решения эксперта по проекту."""
     try:
-        result = kb_svc.save_expert_review(project_id, body.decisions, body.reviewer, removed_ids=body.removed_ids)
+        reviewer = _resolve_reviewer(request, body.reviewer)
+        result = kb_svc.save_expert_review(project_id, body.decisions, reviewer, removed_ids=body.removed_ids)
         return {"status": "ok", **result}
     except ProjectNotResolvedError as e:
         # project_id не резолвится в реальную папку → НЕ создаём orphan _output.
@@ -153,6 +192,7 @@ async def edit_pattern(pattern_id: str, body: PatternActionRequest):
 
 @router.post("/upload-excel")
 async def upload_decisions_excel(
+    request: Request,
     file: UploadFile = File(...),
     project_id: Optional[str] = None,
     _vid: Optional[str] = Depends(use_version),
@@ -175,8 +215,11 @@ async def upload_decisions_excel(
         tmp_path = tmp.name
 
     try:
-        results = kb_svc.import_decisions_from_excel(tmp_path, default_project_id=project_id)
-        return {"status": "ok", "projects": results}
+        reviewer = _resolve_reviewer(request)
+        results = kb_svc.import_decisions_from_excel(
+            tmp_path, default_project_id=project_id, reviewer=reviewer
+        )
+        return {"status": "ok", "projects": results, "reviewer": reviewer}
     except Exception as e:
         raise HTTPException(500, f"Ошибка импорта: {e}")
     finally:

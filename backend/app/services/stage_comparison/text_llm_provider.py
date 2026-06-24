@@ -218,6 +218,12 @@ class ClaudeCodeProvider(BaseTextLLMProvider):
         sys_file: Optional[Path] = None
         try:
             if work_dir:
+                # ОБЯЗАТЕЛЬНО абсолютный путь: ниже subprocess запускается с
+                # cwd=work_dir, и относительный --append-system-prompt-file
+                # резолвился бы Claude CLI от нового CWD → задвоение пути
+                # (work_dir/work_dir/_text_llm_system_prompt.tmp.md) и
+                # «Append system prompt file not found».
+                work_dir = Path(work_dir).resolve()
                 work_dir.mkdir(parents=True, exist_ok=True)
                 # УНИКАЛЬНОЕ имя на каждый вызов. При chunk_concurrency>1
                 # (evidence_first_fallback) несколько потоков делят ОДИН work_dir;

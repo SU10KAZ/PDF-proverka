@@ -247,6 +247,13 @@ resume/skip больше не считаются валидными. Нужно 
 - `_output/blocks_gemma_300/index.json` только если есть high-detail candidates
 - `_output/blocks_stage02_100/index.json` перед Stage 02
 
+## Git-коммиты
+
+**Все git-коммиты оформляй с русскими комментариями** (заголовок и тело
+сообщения — на русском). Допускается технический префикс conventional commits
+(`feat`/`fix`/`docs` и т.п.) и сохранение trailer'а `Co-Authored-By`; сам текст
+описания и тела — по-русски.
+
 ## Автономный режим
 
 Все инструменты pre-approved в `.claude/settings.json`. Работай как конвейер, не как ассистент.

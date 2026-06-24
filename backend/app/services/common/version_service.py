@@ -675,74 +675,6 @@ def _invalidate_project_cache() -> None:
         pass
 
 
-def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
-    """Удалить версию проекта: папку с диска + запись из манифеста.
-
-    Правила:
-    - Нельзя удалить единственную оставшуюся версию.
-    - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
-    - После удаления latest_version_id перемещается на предыдущую версию.
-
-    Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
-    """
-    import shutil
-
-    manifest, base = _read_versions_and_base(project_dir, project_id)
-    versions = manifest.get("versions", [])
-
-    if len(versions) <= 1:
-        raise VersionFileError("Нельзя удалить единственную версию проекта.")
-
-    entry = _find_version(manifest, version_id)
-    if entry is None:
-        raise VersionNotFoundError(f"Версия '{version_id}' не найдена в проекте '{project_id}'")
-
-    folder = entry.get("folder") or "."
-    container = container_dir_for(project_dir)
-
-    # V1 в некontейнерном проекте — папка == корень проекта, нельзя удалять так
-    if folder in (".", "") and container is None:
-        raise VersionFileError(
-            "Нельзя удалить V1 некontейнерного проекта (папка проекта совпадает с папкой версии)."
-        )
-
-    # Физически удаляем папку версии
-    if folder in (".", ""):
-        version_path = base  # container-модель, V1 внутри контейнера
-    else:
-        version_path = base / folder
-
-    if version_path.exists():
-        shutil.rmtree(version_path)
-
-    # Обновляем манифест
-    remaining = [v for v in versions if v.get("version_id") != version_id]
-    # Новый latest = максимальный version_no среди оставшихся
-    remaining_sorted = sorted(remaining, key=lambda v: v.get("version_no", 0))
-    new_latest = remaining_sorted[-1]["version_id"]
-
-    if container is not None:
-        raw = _read_group_manifest_raw(container) or {}
-        raw["versions"] = remaining
-        raw["latest_version_id"] = new_latest
-        if not _write_group_manifest(container, raw):
-            raise VersionFileError("Не удалось сохранить version_group.json после удаления версии")
-    else:
-        raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
-        raw["versions"] = remaining
-        raw["latest_version_id"] = new_latest
-        if not _write_manifest(project_dir, raw):
-            raise VersionFileError("Не удалось сохранить project_versions.json после удаления версии")
-
-    _invalidate_project_cache()
-
-    return {
-        "deleted_version_id": version_id,
-        "new_latest_version_id": new_latest,
-        "versions_summary": get_versions_summary(project_dir, project_id),
-    }
-
-
 def _v1_entry(folder_name: str, *, status: str = "active",
               source: str = "promoted") -> dict[str, Any]:
     return {
@@ -1036,6 +968,14 @@ def create_next_version(
         raise VersionFileError("Не удалось записать version_group.json для новой версии")
     _invalidate_project_cache()
 
+    # Step 9/10 dual-write canary: shadow-зеркало контейнера в v2 после создания
+    # новой версии (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:
+        pass
+
     return new_entry
 
 
@@ -1135,6 +1075,21 @@ def resolve_version_output_dir(
         project_id, version_id, resolve_project_dir_fn=resolve_project_dir_fn,
     )
     return ctx["output_dir"]
+
+
+def resolve_active_output_dir(project_id: str) -> Path:
+    """reserc.md #97: ЕДИНЫЙ резолвер папки `_output` активной версии с fallback.
+
+    Сводит идентичные обёртки `_version_output_dir` (prepare/findings_merge) в одну
+    точку. Сначала :func:`resolve_version_output_dir` (учитывает bind_version()
+    ContextVar и v2-primary run-dir); если версия не определена/не найдена
+    (V1/legacy) — root `project_dir/_output`. Поведение совпадает с прежними
+    локальными обёртками — это дедуп, а не смена контракта."""
+    try:
+        return resolve_version_output_dir(project_id)
+    except (VersionNotFoundError, FileNotFoundError):
+        from backend.app.services.common.project_service import resolve_project_dir
+        return resolve_project_dir(project_id) / "_output"
 
 
 # ─── Загрузка исходных файлов в версию ─────────────────────────────────────
@@ -1570,6 +1525,14 @@ def save_files_to_version(
     )
     if is_projects_v2:
         _sync_v2_work_copies(version_dir, info)
+
+    # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
+    # входного комплекта версии (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(project_id)
+    except Exception:
+        pass
 
     return {
         "project_id": project_id,
@@ -2079,6 +2042,23 @@ def merge_project_as_version(
         # Инвалидируем кеш списка проектов, иначе удалённый source ещё ~30 сек
         # будет висеть в `/api/projects` из-за TTL.
         _invalidate_project_cache()
+        # Убрать v2-документ source: иначе после привязки версии остаётся
+        # orphan-карточка в projects_v2 (read-default = v2). no-op в legacy,
+        # fail-soft. map-сопоставление по строке пути переживает rmtree.
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.remove_project_from_v2_safe(source_dir)
+        except Exception:
+            pass
+
+    # project_info новой версии отредактирован ПОСЛЕ внутреннего mirror в
+    # save_files_to_version → пере-зеркалим target-контейнер, иначе validate
+    # видит "LEGACY CHANGED since migration" по project_info.json новой версии.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(target_project_id)
+    except Exception:
+        pass
 
     return {
         "status": "ok",
@@ -2090,4 +2070,79 @@ def merge_project_as_version(
         "saved": saved_result["saved"],
         "warnings": [],
         "versions_summary": get_versions_summary(fresh_target_dir, target_project_id),
+    }
+
+
+def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Правила:
+    - Нельзя удалить единственную оставшуюся версию.
+    - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
+    - После удаления latest_version_id перемещается на предыдущую версию.
+
+    Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
+    """
+    import shutil
+
+    manifest, base = _read_versions_and_base(project_dir, project_id)
+    versions = manifest.get("versions", [])
+
+    if len(versions) <= 1:
+        raise VersionFileError("Нельзя удалить единственную версию проекта.")
+
+    entry = _find_version(manifest, version_id)
+    if entry is None:
+        raise VersionNotFoundError(f"Версия '{version_id}' не найдена в проекте '{project_id}'")
+
+    folder = entry.get("folder") or "."
+    container = container_dir_for(project_dir)
+
+    # V1 в неконтейнерном проекте — папка == корень проекта, нельзя удалять так
+    if folder in (".", "") and container is None:
+        raise VersionFileError(
+            "Нельзя удалить V1 неконтейнерного проекта (папка проекта совпадает с папкой версии)."
+        )
+
+    # Физически удаляем папку версии
+    if folder in (".", ""):
+        version_path = base  # container-модель, V1 внутри контейнера
+    else:
+        version_path = base / folder
+
+    if version_path.exists():
+        shutil.rmtree(version_path)
+
+    # reserc.md #92: убрать v2-документ удалённой версии, иначе в projects_v2
+    # (read-default = v2) остаётся orphan-карточка. no-op в legacy, fail-soft;
+    # map-сопоставление по строке пути переживает rmtree (как в merge-плече).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.remove_project_from_v2_safe(version_path)
+    except Exception:
+        pass
+
+    # Обновляем манифест
+    remaining = [v for v in versions if v.get("version_id") != version_id]
+    # Новый latest = максимальный version_no среди оставшихся
+    remaining_sorted = sorted(remaining, key=lambda v: v.get("version_no", 0))
+    new_latest = remaining_sorted[-1]["version_id"]
+
+    if container is not None:
+        raw = _read_group_manifest_raw(container) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        _write_group_manifest(container, raw)
+    else:
+        raw = _read_json_dict(project_dir / VERSIONS_MANIFEST_FILENAME) or {}
+        raw["versions"] = remaining
+        raw["latest_version_id"] = new_latest
+        _write_manifest(project_dir, raw)
+
+    _invalidate_project_cache()
+
+    return {
+        "deleted_version_id": version_id,
+        "new_latest_version_id": new_latest,
+        "versions_summary": get_versions_summary(project_dir, project_id),
     }

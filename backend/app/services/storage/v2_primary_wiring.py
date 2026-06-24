@@ -27,10 +27,16 @@ from backend.app.services.storage import v2_primary_prototype as _proto
 from backend.app.services.storage.storage_write_facade import (
     StorageWriteFacade,
     V2Target,
+    v2_is_primary,
 )
 
 
 _V2LIB_CACHE = None
+
+
+def v2_primary_enabled() -> bool:
+    """Service-layer gate for v2-primary branches used by API routers."""
+    return v2_is_primary()
 
 
 def _load_v2lib():

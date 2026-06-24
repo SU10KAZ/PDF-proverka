@@ -798,7 +798,11 @@ def _resolve_project_id_from_sheet(ws_title: str) -> str:
     return name  # fallback — вернуть как есть
 
 
-def import_decisions_from_excel(file_path: str, default_project_id: Optional[str] = None) -> dict:
+def import_decisions_from_excel(
+    file_path: str,
+    default_project_id: Optional[str] = None,
+    reviewer: str = "",
+) -> dict:
     """Импортировать решения из Excel-файла с колонками 'Решение эксперта' и 'Причина отклонения'.
 
     Возвращает {project_id: {saved, accepted, rejected}} для каждого обнаруженного проекта.
@@ -806,6 +810,10 @@ def import_decisions_from_excel(file_path: str, default_project_id: Optional[str
     `default_project_id` — fallback из UI-контекста, когда в Excel ни скрытая
     ячейка, ни имя листа не дают валидный project_id (старые экспорты для V2
     клали в скрытую ячейку "v2" вместо реального ID).
+
+    `reviewer` — автор импорта (ФИО сотрудника). Резолвится роутером из
+    портал-сессии; раньше не передавался → импортированные решения теряли
+    автора (expert_reviewer="") и не показывались в графике работ.
     """
     import openpyxl
 
@@ -953,7 +961,7 @@ def import_decisions_from_excel(file_path: str, default_project_id: Optional[str
         )
 
         if decisions and project_id:
-            result = save_expert_review(project_id, decisions)
+            result = save_expert_review(project_id, decisions, reviewer)
             results[project_id] = result
         elif decisions and not project_id:
             _log.warning("[import-excel] decisions=%d but project_id not resolved for sheet=%r", len(decisions), ws.title)

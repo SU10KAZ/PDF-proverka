@@ -591,7 +591,14 @@ _WS_RUN = re.compile(r"[ \t\f\v]+")
 def canonicalize_text(text: Optional[str]) -> str:
     """Канонизация текста для строгого сравнения: NFKC, trim, нормализация
     пробелов и переводов строк. Регистр и содержимое СОХРАНЯЮТСЯ (изменение
-    регистра/символов может быть значимым)."""
+    регистра/символов может быть значимым).
+
+    reserc.md #98: это НАМЕРЕННО строгий режим (регистр + переводы строк), не
+    то же, что :func:`text_norm.norm_for_grounding`. Живой путь сравнения
+    эквивалентности блоков (:func:`compare_text_blocks`) использует
+    ``normalize_block_text`` (= ``text_norm.normalize_block_content``, со
+    strip_html) — два слоя согласованы по HTML (#60/#13). Эта функция оставлена
+    как строгий утилитарный канонизатор."""
     if not text:
         return ""
     t = unicodedata.normalize("NFKC", str(text))

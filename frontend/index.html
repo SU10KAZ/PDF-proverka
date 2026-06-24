@@ -482,17 +482,40 @@
         <div v-if="currentView === 'dashboard' && (!sidebarFilterSection || sidebarFilterSection === '__all__')" class="container">
             <div class="dash-sections-overview">
                 <h3 class="dash-section-title">Разделы проекта</h3>
+                <div class="dash-sections-head">
+                    <span class="dash-sections-head__name">Раздел</span>
+                    <div class="dash-section-row__stats">
+                        <span class="dash-stat__head" title="Проектов полностью отработано экспертом (обе галочки: замечания + оптимизации)">Проверено</span>
+                        <span class="dash-stat__head" title="Проектов без единой отметки эксперта (нет галочек)">Ждёт</span>
+                        <span class="dash-stat__head" title="Всего проектов в разделе">Всего</span>
+                        <span class="dash-stat__head" title="Суммарно замечаний по разделу">Замечаний</span>
+                    </div>
+                    <span class="dash-sections-head__arrow"></span>
+                </div>
                 <div class="dash-sections-grid">
                     <div v-for="[code, items] in projectsBySection" :key="code"
                          class="dash-section-row"
                          @click="sidebarFilterSection = code">
                         <span class="dash-section-row__badge" :style="disciplineBadgeStyle(code)">{{ code }}</span>
                         <span class="dash-section-row__name">{{ disciplineLabel(code) }}</span>
-                        <span class="dash-section-row__count">{{ items.length }}</span>
-                        <span class="dash-section-row__findings" v-if="sectionFindingsCount(code) > 0">
-                            {{ sectionFindingsCount(code) }} замечаний
-                        </span>
+                        <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--done" title="Полностью отработано экспертом (обе галочки)">{{ sectionStatsMap[code].checked }}</span>
+                            <span class="dash-stat dash-stat--wait" title="Без единой отметки эксперта (нет галочек)">{{ sectionStatsMap[code].waiting }}</span>
+                            <span class="dash-stat dash-stat--total" title="Всего проектов в разделе">{{ sectionStatsMap[code].total }}</span>
+                            <span class="dash-stat dash-stat--find" title="Суммарно замечаний по разделу">{{ sectionStatsMap[code].findings }}</span>
+                        </div>
                         <svg class="dash-section-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </div>
+                    <div class="dash-section-row dash-section-row--total">
+                        <span class="dash-section-row__badge dash-section-row__badge--total">Σ</span>
+                        <span class="dash-section-row__name">Итого</span>
+                        <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--done" title="Всего полностью отработано экспертом">{{ sectionStatsTotals.checked }}</span>
+                            <span class="dash-stat dash-stat--wait" title="Всего без единой отметки эксперта">{{ sectionStatsTotals.waiting }}</span>
+                            <span class="dash-stat dash-stat--total" title="Всего проектов">{{ sectionStatsTotals.total }}</span>
+                            <span class="dash-stat dash-stat--find" title="Всего замечаний">{{ sectionStatsTotals.findings }}</span>
+                        </div>
+                        <span class="dash-section-row__arrow"></span>
                     </div>
                 </div>
             </div>
@@ -731,7 +754,8 @@
 
         <!-- ═══ Add Project Modal ═══ -->
         <div v-if="showAddProject" class="modal-overlay" @click="closeAddProject">
-            <div class="modal-content modal-add-project" @click.stop>
+            <div class="modal-content modal-add-project"
+                 :class="{'modal-add-project--wide': addProjectStep === 'upload'}" @click.stop>
                 <button class="modal-close" @click="closeAddProject">&times;</button>
 
                 <!-- Шаг 1: Выбор действия -->
@@ -743,10 +767,10 @@
                             <div class="add-choose-card__title">Раздел</div>
                             <div class="add-choose-card__desc">Создать группу для проектов (ОВ, ЭОМ, КР...)</div>
                         </div>
-                        <div class="add-choose-card" @click="goToAddProject">
-                            <div class="add-choose-card__icon">&#x1F4C4;</div>
-                            <div class="add-choose-card__title">Проект</div>
-                            <div class="add-choose-card__desc">Добавить PDF из папки projects/</div>
+                        <div class="add-choose-card" @click="goToUploadFolder">
+                            <div class="add-choose-card__icon">&#x1F4BB;</div>
+                            <div class="add-choose-card__title">Из папки на компьютере</div>
+                            <div class="add-choose-card__desc">Загрузить папку проекта со своего ПК через браузер</div>
                         </div>
                     </div>
                 </template>
@@ -785,162 +809,139 @@
                     </div>
                 </template>
 
-                <!-- Шаг 3: Добавить проект (из папки) -->
-                <template v-if="addProjectStep === 'project'">
-                    <h3>Добавить проект</h3>
+                <!-- Шаг 4: Загрузить папку с компьютера (browser folder upload) -->
+                <template v-if="addProjectStep === 'upload'">
+                    <h3>Загрузить папку проекта с компьютера</h3>
 
-                    <!-- Переключатель источника -->
-                    <div class="source-tabs">
-                        <button class="source-tab" :class="{active: projectSource === 'local'}"
-                                @click="projectSource = 'local'; scanFolders()">
-                            Из projects/
-                        </button>
-                        <button class="source-tab" :class="{active: projectSource === 'external'}"
-                                @click="projectSource = 'external'; unregisteredFolders = []">
-                            Из другой папки
-                        </button>
-                    </div>
-
-                    <!-- Поле пути для внешней папки -->
-                    <div v-if="projectSource === 'external'" class="external-path-row">
-                        <input type="text" v-model="externalPath" class="form-input"
-                               placeholder="D:\Путь\к\папке\с\проектами"
-                               @keyup.enter="scanExternalFolder()">
-                        <button class="btn btn-primary btn-sm" @click="scanExternalFolder()"
-                                :disabled="addProjectLoading || !externalPath.trim()">
-                            Сканировать
-                        </button>
-                    </div>
-
-                    <div v-if="addProjectLoading" class="empty-state">Сканирование...</div>
-
-                    <div v-else-if="unregisteredFolders.length === 0 && projectSource === 'local'" class="empty-state">
-                        Все папки с PDF уже зарегистрированы.
-                    </div>
-
-                    <div v-else-if="unregisteredFolders.length === 0 && projectSource === 'external' && externalPath.trim()" class="empty-state">
-                        PDF-файлы не найдены в указанной папке.
-                    </div>
-
-                    <template v-if="unregisteredFolders.length > 0">
-                        <div class="add-all-bar">
-                            <span class="add-all-bar__count">Найдено: {{ unregisteredFolders.length }}</span>
-                            <button class="btn btn-success btn-add-all" @click="registerAllProjects()"
-                                    :disabled="addProjectLoading">
-                                + Добавить все
-                            </button>
-                        </div>
-                        <div class="add-project-list">
-                            <div v-for="f in unregisteredFolders" :key="f.folder" class="add-project-item">
-                                <div class="add-project-item__header">
-                                    <div class="add-project-item__info">
-                                        <div class="add-project-item__name">{{ f.folder }}</div>
-                                        <!-- Список PDF с чекбоксами (если > 1) -->
-                                        <div v-if="f.pdf_files.length > 1" class="add-project-item__files">
-                                            <label v-for="pdf in f.pdf_files" :key="pdf" class="file-checkbox">
-                                                <input type="checkbox" :value="pdf"
-                                                       v-model="f._selectedPdfs">
-                                                <span class="file-checkbox__name">{{ pdf }}</span>
-                                            </label>
-                                        </div>
-                                        <div class="add-project-item__details">
-                                            <span v-if="f.pdf_files.length === 1" class="stat">
-                                                PDF: {{ f.pdf_files[0] }}
-                                                <template v-if="f.pdf_size_mb"> ({{ f.pdf_size_mb }} MB)</template>
-                                            </span>
-                                            <span v-else class="stat">
-                                                PDF: {{ f._selectedPdfs.length }}/{{ f.pdf_files.length }} выбрано
-                                            </span>
-                                            <!-- MD файлы -->
-                                            <template v-if="f.md_files.length > 1">
-                                                <label v-for="md in f.md_files" :key="md" class="file-checkbox file-checkbox--md">
-                                                    <input type="checkbox" :value="md"
-                                                           v-model="f._selectedMds">
-                                                    <span class="file-checkbox__name">{{ md }}</span>
-                                                </label>
-                                            </template>
-                                            <span v-else-if="f.md_files.length === 1" class="stat stat--md">
-                                                MD: {{ f.md_files[0] }}
-                                            </span>
-                                            <span v-else class="stat stat--no-md">Нет MD</span>
-                                            <span v-if="f._isExternal" class="stat stat--external">Копируется</span>
-                                        </div>
-                                    </div>
+                    <!-- ═══ MULTI: итог batch ═══ -->
+                    <template v-if="uploadMode==='multi' && uploadBatchResult">
+                        <div class="upload-success">
+                            <div class="upload-success__title">📦 Загрузка завершена</div>
+                            <div class="upload-batch-summary">
+                                <span class="ubs ubs--ok">Загружено: {{ uploadBatchResult.uploaded.length }}</span>
+                                <span class="ubs ubs--skip">Пропущено (дубли): {{ uploadBatchResult.skipped.length }}</span>
+                                <span class="ubs ubs--err">Ошибки: {{ uploadBatchResult.failed.length }}</span>
+                            </div>
+                            <div v-if="uploadBatchResult.uploaded.length" class="upload-success__files">
+                                <div class="upload-files-label">Загруженные проекты:</div>
+                                <ul>
+                                    <li v-for="r in uploadBatchResult.uploaded" :key="r.project_id">
+                                        <a href="#" @click.prevent="openProjectById(r.project_id)">{{ r.project_id }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-if="uploadBatchResult.failed.length" class="upload-warnings">
+                                <div v-for="r in uploadBatchResult.failed" :key="r.folder" class="upload-warning">
+                                    ⛔ {{ r.folder }}: {{ r.error }}
                                 </div>
-                                <div class="add-project-item__bottom">
-                                    <div class="add-project-item__discipline">
-                                        <select class="discipline-select"
-                                                v-model="f._selectedDiscipline"
-                                                :disabled="addProjectLoading || f._addMode === 'version'">
-                                            <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
-                                                {{ d.short_name }} — {{ d.name }}
-                                            </option>
-                                        </select>
-                                        <span v-if="f._detectedDiscipline" class="discipline-auto-badge"
-                                              :style="{borderColor: getDisciplineColor(f._detectedDiscipline)}">
-                                            авто
-                                        </span>
-                                    </div>
-                                    <button class="btn btn-success btn-sm"
-                                            @click="onCandidatePrimaryAction(f)"
-                                            :disabled="addProjectLoading
-                                                       || (f.pdf_files.length > 1 && f._selectedPdfs.length === 0)
-                                                       || (f._addMode === 'version' && !f._targetProjectId)"
-                                            style="flex-shrink:0">
-                                        <template v-if="f._addMode === 'version'">
-                                            + Добавить как {{ candidateNextVersionLabel(f) }}
-                                        </template>
-                                        <template v-else>+ Добавить проект</template>
-                                    </button>
-                                </div>
-                                <!-- Add-as: новый проект / новая версия существующего -->
-                                <div class="add-project-item__addmode">
-                                    <div class="addmode-row">
-                                        <span class="addmode-label">Добавить как:</span>
-                                        <label class="addmode-option">
-                                            <input type="radio" :name="'addmode-' + f.folder"
-                                                   value="new"
-                                                   v-model="f._addMode">
-                                            <span>Новый проект</span>
-                                        </label>
-                                        <label class="addmode-option">
-                                            <input type="radio" :name="'addmode-' + f.folder"
-                                                   value="version"
-                                                   v-model="f._addMode"
-                                                   :disabled="!candidateTargetOptions(f).length">
-                                            <span>Новая версия существующего проекта</span>
-                                        </label>
-                                    </div>
-                                    <div v-if="f._addMode === 'version'" class="addmode-version-row">
-                                        <label class="addmode-target-label">Проект-основание:</label>
-                                        <select class="discipline-select addmode-target-select"
-                                                v-model="f._targetProjectId"
-                                                :disabled="addProjectLoading">
-                                            <option value="" disabled>— выберите проект —</option>
-                                            <option v-for="p in candidateTargetOptions(f)"
-                                                    :key="p.project_id" :value="p.project_id"
-                                                    :class="{'editp-merge-option--suggested': p._suggested}"
-                                                    :style="p._suggested
-                                                        ? { color: '#c0392b', fontWeight: '600' }
-                                                        : { color: 'inherit', fontWeight: '400' }">
-                                                {{ p.name || p.project_id }}
-                                                <template v-if="p._suggested"> · совпадение</template>
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div v-if="f._addMode === 'version' && f._targetProjectId" class="addmode-hint">
-                                        Этот файл будет добавлен как
-                                        <strong>{{ candidateNextVersionLabel(f) }}</strong> к проекту
-                                        «{{ candidateTargetName(f) }}».
-                                        Новая карточка проекта создана не будет.
-                                    </div>
-                                </div>
+                            </div>
+                            <div class="form-actions" style="margin-top:14px">
+                                <button class="btn btn-outline btn-sm" @click="resetUploadFolder">Загрузить ещё</button>
+                                <button class="btn btn-success btn-sm" @click="closeAddProject">Готово</button>
                             </div>
                         </div>
                     </template>
-                    <div class="form-actions" style="margin-top:12px">
-                        <button class="btn btn-outline btn-sm" @click="addProjectStep = 'choose'">Назад</button>
-                    </div>
+
+                    <!-- ═══ MULTI: выбор и таблица кандидатов ═══ -->
+                    <template v-else-if="uploadMode==='multi'">
+                        <p class="modal-subtitle">
+                            Выберите <strong>одну родительскую папку</strong> (браузер позволяет
+                            выбрать только одну за раз — выделить несколько папок, в т.ч. через Shift,
+                            нельзя). Внутри поддерживаются две раскладки:
+                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF)
+                            <em>либо</em> просто <strong>PDF-файлы рядом</strong> — тогда каждый PDF
+                            станет отдельным кандидатом-проектом. Загрузка последовательная,
+                            дубли блокируются.
+                        </p>
+                        <div class="upload-form">
+                            <div class="form-row">
+                                <label>Объект</label>
+                                <select class="form-input" v-model="uploadObjectId" :disabled="uploadLoading">
+                                    <option value="" disabled>— выберите объект —</option>
+                                    <option v-for="o in objectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Дисциплина (для всех)</label>
+                                <select class="form-input" v-model="uploadDiscipline" :disabled="uploadLoading"
+                                        @change="recheckAllCandidates">
+                                    <option value="" disabled>— выберите дисциплину —</option>
+                                    <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">
+                                        {{ d.short_name }} — {{ d.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label>Родительская папка</label>
+                                <input type="file" webkitdirectory directory multiple
+                                       :disabled="uploadLoading"
+                                       @change="onMultiFolderSelected" class="form-input">
+                            </div>
+                        </div>
+
+                        <div v-if="uploadCandidates.length" class="upload-multi-wrap">
+                            <table class="upload-multi-table">
+                                <thead><tr>
+                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr</th>
+                                    <th>Дисциплина</th><th>Название / режим</th><th>Статус</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr v-for="c in uploadCandidates" :key="c.folder" :class="'cand--'+c.status">
+                                        <td><input type="checkbox" v-model="c.checked"
+                                                   :disabled="uploadLoading || !candUploadable(c)"></td>
+                                        <td :title="c.folder">{{ c.folder }}</td>
+                                        <td>{{ c.pdfName || '— нет —' }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
+                                        <td class="cand-bundle">{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }}</td>
+                                        <td>
+                                            <select class="form-input form-input--sm" v-model="c.discipline"
+                                                    :disabled="uploadLoading" @change="recheckCandidate(c)">
+                                                <option v-for="d in supportedDisciplines" :key="d.code" :value="d.code">{{ d.code }}</option>
+                                            </select>
+                                            <div v-if="c.disciplineSource" class="cand-msg">авто: {{ disciplineSourceLabel(c.disciplineSource) }}</div>
+                                        </td>
+                                        <td>
+                                            <input class="form-input form-input--sm" v-model="c.name"
+                                                   :disabled="uploadLoading || c.addMode==='new_version'"
+                                                   @change="recheckCandidate(c)">
+                                            <div class="cand-mode-row">
+                                                <label><input type="radio" :value="'new_project'" v-model="c.addMode"> новый</label>
+                                                <label><input type="radio" :value="'new_version'" v-model="c.addMode"
+                                                              :disabled="!candTargetOptions(c).length"> версия</label>
+                                            </div>
+                                            <div v-if="c.addMode==='new_version'" class="cand-target-row">
+                                                <select class="form-input form-input--sm" v-model="c.targetProjectId" :disabled="uploadLoading">
+                                                    <option value="" disabled>— основание —</option>
+                                                    <option v-for="p in candTargetOptions(c)" :key="p.project_id" :value="p.project_id"
+                                                            :style="p._suggested ? {color:'#c0392b',fontWeight:'600'} : {}">
+                                                        {{ p.name || p.project_id }}<template v-if="p._suggested"> ·совпад.</template>
+                                                    </option>
+                                                </select>
+                                                <span v-if="c.targetProjectId" class="addmode-version-badge">→ {{ candVersionLabel(c) }}</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="cand-status" :class="'cand-status--'+c.status">{{ candStatusLabel(c) }}</span>
+                                            <div v-if="c.message" class="cand-msg">{{ c.message }}</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="upload-multi-counts">
+                                Готово: {{ candCount('ready') }} · предупреждений: {{ candCount('warning') }} ·
+                                дублей: {{ candCount('duplicate') }} · ошибок: {{ candCount('error') }}
+                            </div>
+                        </div>
+                        <div v-if="uploadError" class="upload-preview__err" style="margin-top:8px">⛔ {{ uploadError }}</div>
+
+                        <div class="form-actions" style="margin-top:14px">
+                            <button class="btn btn-outline btn-sm" @click="addProjectStep='choose'" :disabled="uploadLoading">Назад</button>
+                            <button class="btn btn-outline btn-sm" @click="recheckAllCandidates"
+                                    :disabled="uploadLoading || !uploadCandidates.length">Проверить заново</button>
+                            <button class="btn btn-success btn-sm" @click="submitMultiUpload"
+                                    :disabled="uploadLoading || selectedCandidateCount===0">
+                                {{ uploadLoading ? ('Загрузка ' + uploadBatchProgress + '…') : ('Загрузить выбранные (' + selectedCandidateCount + ')') }}
+                            </button>
+                        </div>
+                    </template>
+
                 </template>
             </div>
         </div>
@@ -980,8 +981,9 @@
                 <button class="modal-close" @click="showEditProjectsModal = false">&times;</button>
                 <h3>Изменить выбранные проекты ({{ editProjectsSelected.length }})</h3>
                 <p class="modal-subtitle">
-                    Сменить дисциплину или скрыть проекты из UI. Файлы на диске не перемещаются и не удаляются —
-                    меняется только запись <code>section</code> в <code>project_info.json</code>.
+                    Сменить дисциплину, привязать как версию, скрыть из UI или
+                    <strong>удалить</strong>. «Скрыть» оставляет файлы на диске; «🗑 Удалить» —
+                    безвозвратно убирает папку проекта и его документ в projects_v2.
                 </p>
                 <div class="edit-projects-list">
                     <div v-for="p in editProjectsSelected" :key="p.project_id"
@@ -1027,6 +1029,11 @@
                             :disabled="editProjectsLoading"
                             title="Скрыть выбранные проекты из UI (файлы остаются на диске)">
                         Скрыть из UI
+                    </button>
+                    <button class="btn btn-danger" @click="deleteSelectedProjects"
+                            :disabled="editProjectsLoading"
+                            title="Безвозвратно удалить выбранные проекты (папка + projects_v2)">
+                        🗑 Удалить
                     </button>
                     <div style="flex:1"></div>
                     <button class="btn btn-outline" @click="showEditProjectsModal = false">Отмена</button>
@@ -1553,16 +1560,10 @@
                         <!-- Audit actions + навигация: колонка справа внутри белой карточки пайплайна -->
                         <div class="audit-actions-col">
                         <div class="audit-buttons-inline">
-                            <button class="btn btn-primary"
-                                    v-if="resumeInfo && resumeInfo.can_resume && !isProjectRunning(currentProject.project_id)"
-                                    @click="resumePipeline(currentProject.project_id)"
-                                    :title="resumeInfo.stage_label + (resumeInfo.detail ? ' (' + resumeInfo.detail + ')' : '')">
-                                Продолжить
-                            </button>
                             <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
                                     :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
                                     :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
-                                &#9654; Запустить аудит
+                                &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
                             </button>
                             <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
                                     v-if="isProjectRunning(currentProject.project_id)">
@@ -1666,7 +1667,6 @@
                         <span class="block-crop-warning__icon">&#9888;</span>
                         <span>Не все блоки скачались. Обновите OCR-результат и перезапустите кроп.</span>
                     </div>
-
 
                     <!-- ═══ Состояние новой версии (V2+, пустая) ═══ -->
                     <div v-if="activeVersionEntry && !activeVersionEntry.has_source_files && activeVersionEntry.version_id !== 'v1'"
@@ -3674,7 +3674,6 @@
             </div>
         </div>
 
-        <!-- ═══ Prompts Editor ═══ -->
         <!-- ═══ Live Log ═══ -->
         <div v-if="currentView === 'log'" class="container container--flex">
             <div class="log-page">
@@ -4812,6 +4811,12 @@
                             :disabled="!scSession">
                         4. Отчёт<span v-if="scReportTotalApproved" class="project-tab__count project-tab__count--amber">{{ scReportTotalApproved }}</span>
                     </button>
+                    <button class="project-tab" :class="{'project-tab--active': scTab==='pv2'}"
+                            @click="scTab='pv2'; scPv2EnsureLoaded()"
+                            :disabled="!scSession"
+                            title="Read-only панель Pipeline V2: показывает готовые артефакты, ничего не запускает">
+                        Pipeline V2 <span style="opacity:.55; font-size:10px">β</span>
+                    </button>
                 </div>
             </div>
 
@@ -5159,20 +5164,6 @@
                                     По умолчанию — обработка без очистки: Qwen (локально) + Opus (Claude Code). Перед запуском — backup артефактов пар.
                                 </div>
                             </div>
-                            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
-                                <input type="checkbox" v-model="scQOClearBeforeRun" style="margin-top:2px">
-                                <span>
-                                    <strong>Очистить найденные и отмеченные изменения перед запуском</strong>
-                                    <span v-if="scQOClearBeforeRun" style="display:block; margin-top:6px; color:#9a3412; line-height:1.6">
-                                        Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
-                                        Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются.
-                                        Перед очисткой будет создан backup.
-                                    </span>
-                                    <span v-else style="display:block; margin-top:4px; color:#6b7280; line-height:1.5">
-                                        По умолчанию — обработка без очистки (продолжить). Включите, чтобы сбросить старые расхождения и отметки проверки и сравнить заново.
-                                    </span>
-                                </span>
-                            </label>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
                                 <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='opus_only' ? 'Запустить только Opus' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : (scQOMode==='clear_and_run' ? 'Очистить и запустить' : 'Запустить обработку'))) }}</button>
@@ -5333,10 +5324,57 @@
                                     <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning || scQOPreflighting"
                                             @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
+                                    <button class="btn btn-sm"
+                                            :class="scPv2RunState(p.id)==='idle' ? 'btn-secondary' : ''"
+                                            :disabled="!p.left || !p.right || scPv2RunState(p.id)==='running'"
+                                            @click="scPv2RunOpenModal(p)"
+                                            :title="scPv2RunBtnTitle(p.id)"
+                                            style="margin-left:4px">{{ scPv2RunBtnLabel(p.id) }}</button>
+                                    <div v-if="scPv2RunErrorFor(p.id)"
+                                         style="color:#b91c1c; font-size:10px; max-width:170px; white-space:normal; margin-top:2px; text-align:right">{{ scPv2RunErrorFor(p.id) }}</div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Pipeline V2 controlled-run confirm modal (typed confirmation) -->
+                    <div v-if="scPv2RunModal" class="retry-dialog-overlay" @click.self="scPv2RunModal=null">
+                        <div class="retry-dialog" @click.stop>
+                            <h3 class="retry-dialog__title">
+                                {{ scPv2RunModal.is_rerun ? 'Перезапустить Pipeline V2' : 'Запустить Pipeline V2' }}
+                            </h3>
+                            <div style="font-size:12px; color:#374151; line-height:1.7; margin-bottom:10px">
+                                Пара <code>{{ scPv2RunModal.pair_id }}</code>:
+                                <strong>{{ scPv2RunModal.left_name }}</strong> ↔ <strong>{{ scPv2RunModal.right_name }}</strong>
+                                <ul style="margin:8px 0 0 16px; padding:0; color:#4b5563">
+                                    <li>Будет запущен <b>backend Pipeline V2</b> (offline dry-run). Это <b>не read-only</b> операция.</li>
+                                    <li>Операция может занять время; артефакты пишутся в
+                                        <code>comparison/sessions/&lt;sid&gt;/pairs/{{ scPv2RunModal.pair_id }}/pipeline_v2/</code>.</li>
+                                    <li>По умолчанию модели (Qwen/Gemma/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
+                                    <li v-if="scPv2RunModal.is_rerun" style="color:#b45309">
+                                        ⚠ Существующие артефакты будут сохранены в
+                                        <code>pipeline_v2_backup_before_ui_run_&lt;TS&gt;</code> перед перезаписью.</li>
+                                </ul>
+                            </div>
+                            <div style="font-size:12px; color:#374151; margin-bottom:6px">
+                                Для подтверждения введите pair_id: <code>{{ scPv2RunModal.pair_id }}</code>
+                            </div>
+                            <input v-model="scPv2RunModal.typed" type="text"
+                                   :placeholder="scPv2RunModal.pair_id"
+                                   :disabled="scPv2RunModal.busy"
+                                   style="width:100%; padding:6px 8px; font-size:12px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box"
+                                   @keyup.enter="scPv2RunSubmit()">
+                            <div v-if="scPv2RunModal.error" style="color:#b91c1c; font-size:11px; margin-top:6px">{{ scPv2RunModal.error }}</div>
+                            <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px">
+                                <button class="btn btn-sm btn-secondary" :disabled="scPv2RunModal.busy" @click="scPv2RunModal=null">Отмена</button>
+                                <button class="btn btn-sm btn-primary"
+                                        :disabled="scPv2RunModal.busy || scPv2RunModal.typed !== scPv2RunModal.pair_id"
+                                        @click="scPv2RunSubmit()">
+                                    {{ scPv2RunModal.busy ? 'Запуск…' : (scPv2RunModal.is_rerun ? 'Перезапустить' : 'Запустить') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div v-if="scPairOrderSaving" style="margin-top:4px; font-size:11px; opacity:.7">
                         Сохраняю новый порядок…
                     </div>
@@ -5402,10 +5440,17 @@
                         <input type="checkbox" v-model="scStampUseLlm" :disabled="scStampLoading" />
                         🧠 ИИ-доматчинг
                     </label>
-                    <button class="btn btn-primary" @click="scAutoMatchApplySheets(false)"
-                            :disabled="scAutoMatchApplyLoading || scStampLoading"
-                            title="One-click: умно сопоставить листы и СРАЗУ применить надёжные пары; сомнительные — на проверку; результат сохраняется в page_alignment.json. Связи блоков не удаляются (только stale-пометка).">
-                        {{ scAutoMatchApplyLoading ? 'Сопоставление…' : '🪄 Сопоставить и применить' }}
+                    <button class="btn"
+                            :class="{'btn-primary': scPv2LpVisible, 'btn-secondary': !scPv2LpVisible}"
+                            @click="scPv2LpToggle()"
+                            title="Read-only превью предложенных Pipeline V2 связей блоков OLD↔NEW: страницы рядом, блоки подсвечены по статусу (strong/weak/manual review/без пары). Ничего не применяет и не меняет ручные связи.">
+                        🔗 Pipeline V2 связи <span style="opacity:.55; font-size:10px">β</span>
+                    </button>
+                    <button class="btn"
+                            :class="{'btn-primary': scPv2EaVisible, 'btn-secondary': !scPv2EaVisible}"
+                            @click="scPv2EaToggle()"
+                            title="Read-only Pipeline V2 «Сущности и маппинг»: классифицирует графические пары OLD↔NEW (та же сущность / переименование / реорганизация / mismatch / проверка связи) + сущности без пары. Ничего не применяет, ручной маппинг не подтверждает.">
+                        🧩 Pipeline V2 сущности <span style="opacity:.55; font-size:10px">β</span>
                     </button>
                     <button class="btn btn-secondary" @click="scRunAutoLink()" :disabled="scLinking || scAnalysisMode==='concept_no_block_links'"
                             :title="scAnalysisMode==='concept_no_block_links' ? 'Недоступно в режиме «Блоки без связей»' : ''">Авто-связь по IoU</button>
@@ -5420,6 +5465,918 @@
                             title="Запомнить связи блоков и карту страниц. При следующем создании сессии с этими же PDF — применится автоматически.">
                         {{ scTemplateSaving ? 'Сохранение…' : '💾 Сохранить конфигурацию пары' }}
                     </button>
+                </div>
+
+                <!-- Pipeline V2 — предложенные связи (read-only превью) -->
+                <div v-if="scPv2LpVisible" class="sc-card"
+                     style="background:#fff; border:1px solid #c7d2fe; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#3730a3">🔗 Pipeline V2 — предложенные связи</strong>
+                        <span style="opacity:.6">read-only: ничего не применяется, ручные связи не меняются</span>
+                        <div style="flex:1"></div>
+                        <select v-model="scPv2LpPairId" class="form-control" style="padding:3px 6px; font-size:12px; max-width:280px"
+                                title="Пара документов (по умолчанию — активная)">
+                            <option value="">— активная пара —</option>
+                            <option v-for="p in scPairs" :key="'pv2lp-'+p.id" :value="p.id">
+                                {{ (p.left && p.left.filename) || p.id }}
+                            </option>
+                        </select>
+                        <button class="btn btn-sm btn-primary" @click="scPv2LpLoad()" :disabled="scPv2LpLoading">
+                            {{ scPv2LpLoading ? 'Загрузка…' : 'Загрузить предложенные связи' }}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" @click="scPv2LpVisible=false">Закрыть</button>
+                    </div>
+                    <!-- banner: переход по grounding-карточке -->
+                    <div v-if="scPv2GdJumpBanner" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:6px 10px; margin-bottom:8px; display:flex; gap:8px; align-items:center">
+                        <span>🔗 Открыта связь по grounding-карточке: <b>{{ scPv2GdJumpBanner }}</b></span>
+                        <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:1px 8px; font-size:11px" @click="scPv2GdClearJumpBanner()">✕</button>
+                    </div>
+                    <div v-if="scPv2GdJumpWarning" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        ⚠ {{ scPv2GdJumpWarning }}
+                    </div>
+                    <!-- transport / HTTP errors -->
+                    <div v-if="scPv2LpError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        {{ scPv2LpError }}
+                    </div>
+                    <!-- envelope status=error -->
+                    <div v-else-if="scPv2LpRespError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        Артефакты Pipeline V2 нечитаемы: {{ scPv2LpRespError }}
+                    </div>
+                    <!-- not_found: артефактов нет — это норма, пока dry-run не записан -->
+                    <div v-else-if="scPv2LpNotFound" style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:14px; text-align:center; color:#6b7280">
+                        Для этой пары ещё нет артефактов Pipeline V2 (block_matching_report).<br>
+                        Превью появится после offline dry-run прогона Pipeline V2 для пары.
+                    </div>
+                    <template v-else-if="scPv2LpReport">
+                        <!-- Счётчики + фильтры -->
+                        <div v-if="scPv2LpSummary" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                            <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:2px 8px">страниц: {{ scPv2LpSummary.page_links_total }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:2px 8px">🟢 strong: {{ scPv2LpSummary.strong_links }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:2px 8px">🟡 weak: {{ scPv2LpSummary.weak_links }}</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:2px 8px">🟠 manual: {{ scPv2LpSummary.manual_review_links }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">⚪ без пары: {{ scPv2LpSummary.unmatched_left_blocks }} / {{ scPv2LpSummary.unmatched_right_blocks }}</span>
+                            <span style="background:#e0f2fe; color:#075985; border-radius:10px; padding:2px 8px">📐 графика: {{ scPv2LpSummary.graphic_links_total }}</span>
+                            <span v-if="scPv2LpSummary.visual_gate_available" style="background:#ede9fe; color:#5b21b6; border-radius:10px; padding:2px 8px"
+                                  title="visual equivalence gate: = идентично · ≈ шум рендера · ≠ изменено · ? неуверенно · ⏭ не сравнивалось (cap)">
+                                👁 visual: ={{ scPv2LpSummary.visual_identical }}<template v-if="scPv2LpSummary.visual_minor"> ≈{{ scPv2LpSummary.visual_minor }}</template> ≠{{ scPv2LpSummary.visual_changed }} ?{{ scPv2LpSummary.visual_uncertain }}<template v-if="scPv2LpSummary.visual_skipped"> ⏭{{ scPv2LpSummary.visual_skipped }}</template>
+                            </span>
+                        </div>
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px">
+                            <button v-for="f in SC_PV2_LP_FILTERS" :key="'pv2lpf-'+f.key"
+                                    class="btn btn-sm"
+                                    :class="scPv2LpFilter===f.key ? 'btn-primary' : 'btn-secondary'"
+                                    style="padding:1px 8px; font-size:11px"
+                                    @click="scPv2LpFilter=f.key">{{ f.label }}</button>
+                            <span style="margin-left:auto; opacity:.6; align-self:center">показано связей: {{ scPv2LpFilteredLinks.length }}</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:230px 1fr; gap:10px">
+                            <!-- Список пар страниц -->
+                            <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:560px; overflow:auto">
+                                <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Пары страниц</div>
+                                <div v-for="p in scPv2LpPageLinks" :key="p.page_link_id"
+                                     @click="scPv2LpSelectPage(p.page_link_id)"
+                                     :style="{background: scPv2LpSelectedPage===p.page_link_id ? '#dbeafe' : 'transparent'}"
+                                     style="padding:4px 8px; border-bottom:1px solid #f3f4f6; cursor:pointer; font-size:11px">
+                                    <b>{{ p.left_page_number ?? '—' }} ↔ {{ p.right_page_number ?? '—' }}</b>
+                                    <span style="opacity:.6"> · {{ (p.block_link_ids||[]).length }} св.</span>
+                                    <span v-if="p.page_link_kind==='one_sided'" style="color:#6b7280" title="лист есть только в одной стадии"> · только {{ p.left_page_number != null ? 'старая' : 'новая' }}</span>
+                                    <span v-else-if="p.match_confidence" :style="{color: p.match_confidence==='strong' ? '#16a34a' : '#ca8a04'}"> · {{ p.match_confidence }}</span>
+                                    <div v-if="p.left_sheet_name || p.right_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis"
+                                         :title="(p.left_sheet_name||'') + ' ↔ ' + (p.right_sheet_name||'')">
+                                        {{ p.left_sheet_name || p.right_sheet_name }}
+                                    </div>
+                                </div>
+                                <div v-if="!scPv2LpPageLinks.length" style="padding:10px; opacity:.6">Совпавших страниц нет</div>
+                            </div>
+                            <!-- Side-by-side: OLD слева, NEW справа -->
+                            <div>
+                                <div v-if="scPv2LpSelectedPageLink" style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+                                    <div v-for="side in ['left','right']" :key="'pv2lp-pane-'+side"
+                                         style="border:1px solid #e5e7eb; border-radius:6px; overflow:auto; max-height:560px; background:#fafafa">
+                                        <div style="position:sticky; top:0; z-index:2; background:#f1f5f9; padding:3px 8px; font-size:11px; border-bottom:1px solid #e5e7eb">
+                                            <b>{{ side==='left' ? 'Старая стадия' : 'Новая стадия' }}</b>
+                                            · стр. {{ side==='left' ? (scPv2LpSelectedPageLink.left_page_number ?? '—') : (scPv2LpSelectedPageLink.right_page_number ?? '—') }}
+                                        </div>
+                                        <div v-if="side==='left' ? scPv2LpSelectedPageLink.left_page_number : scPv2LpSelectedPageLink.right_page_number"
+                                             style="position:relative">
+                                            <img :src="scPv2LpPageImageUrl(side, side==='left' ? scPv2LpSelectedPageLink.left_page_number : scPv2LpSelectedPageLink.right_page_number)"
+                                                 loading="lazy" decoding="async"
+                                                 style="display:block; width:100%; height:auto" />
+                                            <div v-for="ov in scPv2LpPageOverlays[side]"
+                                                 :key="'pv2lp-ov-'+side+'-'+ov.entry.block_link_id"
+                                                 :style="scPv2LpOverlayStyle(ov)"
+                                                 :title="ov.entry.ui ? ov.entry.ui.label : ''"
+                                                 @click.stop="scPv2LpSelectLink(ov.entry)"></div>
+                                        </div>
+                                        <div v-else style="padding:40px; text-align:center; color:#9ca3af">∅ нет страницы</div>
+                                    </div>
+                                </div>
+                                <div v-else style="padding:24px; text-align:center; color:#9ca3af; border:1px dashed #e5e7eb; border-radius:6px">
+                                    Выберите пару страниц слева
+                                </div>
+                                <!-- Карточка выбранной связи -->
+                                <div v-if="scPv2LpSelectedLinkObj" style="margin-top:8px; border:2px solid #2563eb; border-radius:6px; padding:8px 10px; background:#eff6ff">
+                                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+                                        <span :style="{background: scPv2LpStatusColor(scPv2LpSelectedLinkObj), color:'#fff', borderRadius:'10px', padding:'1px 8px', fontWeight:600}">
+                                            {{ scPv2LpSelectedLinkObj.ui ? scPv2LpSelectedLinkObj.ui.label : scPv2LpSelectedLinkObj.link_status }}
+                                        </span>
+                                        <span v-if="scPv2LpSelectedLinkObj.kind==='link'">
+                                            <code>{{ scPv2LpSelectedLinkObj.left_block_id }}</code> (стр. {{ scPv2LpSelectedLinkObj.left_page_number }})
+                                            ↔ <code>{{ scPv2LpSelectedLinkObj.right_block_id }}</code> (стр. {{ scPv2LpSelectedLinkObj.right_page_number }})
+                                        </span>
+                                        <span v-else>
+                                            <code>{{ scPv2LpSelectedLinkObj.block_id }}</code>
+                                            ({{ scPv2LpSelectedLinkObj.side==='left' ? 'старая' : 'новая' }} стадия, стр. {{ scPv2LpSelectedLinkObj.page_number }})
+                                        </span>
+                                        <span>тип: <b>{{ scPv2LpSelectedLinkObj.semantic_type }}</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.method">метод: <b>{{ scPv2LpSelectedLinkObj.method }}</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.confidence_score != null">score: <b>{{ Math.round(scPv2LpSelectedLinkObj.confidence_score*100) }}%</b></span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_status">visual: <b>{{ scPv2LpSelectedLinkObj.visual_status }}</b> → {{ scPv2LpSelectedLinkObj.visual_decision }}</span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_metrics && scPv2LpSelectedLinkObj.visual_metrics.mask_iou != null">IoU: {{ scPv2LpSelectedLinkObj.visual_metrics.mask_iou }}</span>
+                                        <span v-if="scPv2LpSelectedLinkObj.visual_metrics && scPv2LpSelectedLinkObj.visual_metrics.normalized_correlation != null">NCC: {{ scPv2LpSelectedLinkObj.visual_metrics.normalized_correlation }}</span>
+                                    </div>
+                                    <div v-if="(scPv2LpSelectedLinkObj.risk_flags||[]).length" style="margin-top:4px">
+                                        <span v-for="f in scPv2LpSelectedLinkObj.risk_flags" :key="f"
+                                              style="display:inline-block; margin-right:4px; padding:0 6px; border-radius:4px; background:#fef3c7; color:#92400e; font-size:10px">⚠ {{ f }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Список связей (фильтрованный) -->
+                        <details style="margin-top:10px" open>
+                            <summary style="cursor:pointer; color:#3730a3; font-weight:600">Связи блоков ({{ scPv2LpFilteredLinks.length }})</summary>
+                            <table style="width:100%; border-collapse:collapse; margin-top:4px; font-size:11px">
+                                <tr style="color:#6b7280; text-align:left">
+                                    <th style="padding:2px 6px">статус</th><th>OLD блок</th><th>NEW блок</th>
+                                    <th>стр.</th><th>тип</th><th>метод</th><th>score</th><th>visual</th><th>риски</th>
+                                </tr>
+                                <tr v-for="l in scPv2LpFilteredLinks" :key="'pv2lpr-'+l.block_link_id"
+                                    :data-bllink="l.block_link_id"
+                                    @click="scPv2LpSelectLink(l)"
+                                    :style="{background: scPv2LpSelectedLink===l.block_link_id ? '#dbeafe' : 'transparent', cursor:'pointer', borderTop:'1px solid #f1f5f9'}">
+                                    <td style="padding:2px 6px">
+                                        <span :style="{color: scPv2LpStatusColor(l), fontWeight:600}">●</span>
+                                        {{ l.link_status }}
+                                    </td>
+                                    <td><code>{{ l.kind==='link' ? (l.left_block_id||'—') : (l.side==='left' ? l.block_id : '—') }}</code></td>
+                                    <td><code>{{ l.kind==='link' ? (l.right_block_id||'—') : (l.side==='right' ? l.block_id : '—') }}</code></td>
+                                    <td>{{ l.kind==='link' ? ((l.left_page_number??'—') + '→' + (l.right_page_number??'—')) : (l.page_number??'—') }}</td>
+                                    <td>{{ l.semantic_type }}{{ l.is_graphic ? ' 📐' : '' }}</td>
+                                    <td>{{ l.method || '—' }}</td>
+                                    <td>{{ l.confidence_score != null ? Math.round(l.confidence_score*100)+'%' : '—' }}</td>
+                                    <td>{{ l.visual_status || '—' }}</td>
+                                    <td>
+                                        <span v-if="(l.risk_flags||[]).length" :title="(l.risk_flags||[]).join(', ')" style="color:#92400e">⚠ {{ (l.risk_flags||[]).length }}</span>
+                                        <span v-else>—</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </details>
+                    </template>
+                    <div v-else-if="!scPv2LpLoading" style="opacity:.6; padding:6px 0">
+                        Нажмите «Загрузить предложенные связи».
+                    </div>
+                </div>
+
+                <!-- Pipeline V2 — выравнивание сущностей (read-only, mark-only) -->
+                <div v-if="scPv2EaVisible" class="sc-card"
+                     style="background:#fff; border:1px solid #ddd6fe; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:12px">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
+                        <strong style="color:#5b21b6">🧩 Pipeline V2 — сущности и маппинг</strong>
+                        <span style="opacity:.6">read-only: ничего не применяется, ручной маппинг не подтверждается</span>
+                        <div style="flex:1"></div>
+                        <select v-model="scPv2EaPairId" class="form-control" style="padding:3px 6px; font-size:12px; max-width:280px"
+                                title="Пара документов (по умолчанию — активная)">
+                            <option value="">— активная пара —</option>
+                            <option v-for="p in scPairs" :key="'pv2ea-'+p.id" :value="p.id">
+                                {{ (p.left && p.left.filename) || p.id }}
+                            </option>
+                        </select>
+                        <button class="btn btn-sm btn-primary" @click="scPv2EaLoad()" :disabled="scPv2EaLoading">
+                            {{ scPv2EaLoading ? 'Загрузка…' : 'Загрузить' }}
+                        </button>
+                        <button class="btn btn-sm btn-secondary" @click="scPv2EaVisible=false">Закрыть</button>
+                    </div>
+                    <!-- read-only note: ручные решения = отдельный обратимый override, авто-запуска нет -->
+                    <div style="background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; border-radius:6px; padding:5px 10px; margin-bottom:8px">
+                        ℹ Ручные решения сохраняются как отдельный обратимый override и будут использованы в следующем этапе отбора vision-кандидатов. Block links и vision при этом НЕ трогаются.
+                    </div>
+                    <!-- save hint после сохранения mapping (auto-run нет) -->
+                    <div v-if="scPv2EaSaveHint" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:6px; padding:6px 10px; margin-bottom:8px; display:flex; gap:8px; align-items:center">
+                        <span>✅ {{ scPv2EaSaveHint }}</span>
+                        <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:1px 8px; font-size:11px" @click="scPv2EaSaveHint=''">✕</button>
+                    </div>
+
+                    <!-- 🔎 Link validation (read-only, mark-only) -->
+                    <div v-if="scPv2LvAvailable || scPv2LvNotFound || scPv2LvRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🔎 Link validation</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · vision-проверка manual mapping</span>
+                        </div>
+                        <!-- mark-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Link validation is mark-only. It is not used as grounded fact and is not used for delta explanation.
+                        </div>
+                        <div v-if="scPv2LvRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2LvRespError }}</div>
+                        <div v-else-if="scPv2LvNotFound" style="opacity:.6; font-size:11px">
+                            Link validation report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2LvAvailable && scPv2LvSummary">
+                            <!-- summary -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">attempted: {{ scPv2LvSummary.attempted }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">🟢 valid: {{ scPv2LvSummary.valid_mapping }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">🟡 review: {{ scPv2LvSummary.manual_review }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 reject: {{ scPv2LvSummary.reject_mapping }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">agrees: {{ scPv2LvSummary.agrees_with_manual_mapping }}</span>
+                                <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 8px">⚠ conflicts: {{ scPv2LvSummary.conflicts_with_manual_mapping }}</span>
+                                <span v-if="scPv2LvSummary.orientation_failed" style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">orient.failed: {{ scPv2LvSummary.orientation_failed }}</span>
+                            </div>
+                            <!-- validation item cards -->
+                            <div v-for="(it, i) in scPv2LvItems" :key="'pv2lv-'+i"
+                                 :style="{borderLeft: '4px solid ' + ((it.agreement && it.agreement.conflicts_with_manual_mapping) ? '#ea580c' : '#16a34a'), border:'1px solid #e5e7eb', borderRadius:'6px', padding:'6px 8px', marginBottom:'5px', background:'#fff'}">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px">
+                                    <div style="border-right:1px dashed #e5e7eb; padding-right:6px">
+                                        <span style="opacity:.55">OLD:</span> <b>{{ it.left_entity_label || '—' }}</b>
+                                        <span style="opacity:.6"> · стр. {{ it.left_page_number ?? '—' }}</span>
+                                        <div style="opacity:.55"><code>{{ it.left_block_id || '—' }}</code></div>
+                                    </div>
+                                    <div>
+                                        <span style="opacity:.55">NEW:</span> <b>{{ it.right_entity_label || '—' }}</b>
+                                        <span style="opacity:.6"> · стр. {{ it.right_page_number ?? '—' }}</span>
+                                        <div style="opacity:.55"><code>{{ it.right_block_id || '—' }}</code></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:5px; font-size:11px">
+                                    <span style="background:#f1f5f9; color:#475569; border-radius:8px; padding:1px 6px">Manual: <b>{{ it.manual_decision }}</b></span>
+                                    <span v-if="it.validation" :style="{background: scPv2LvDecisionMeta(it.validation.decision).bg, color: scPv2LvDecisionMeta(it.validation.decision).fg, borderRadius:'8px', padding:'1px 6px', fontWeight:600}">
+                                        {{ scPv2LvDecisionMeta(it.validation.decision).icon }} {{ it.validation.entity_relation }} / {{ it.validation.decision }}
+                                    </span>
+                                    <span v-if="scPv2LvConfPct(it)" style="opacity:.7">conf: {{ scPv2LvConfPct(it) }}</span>
+                                    <span v-if="it.agreement && it.agreement.conflicts_with_manual_mapping" style="background:#ffedd5; color:#9a3412; border-radius:8px; padding:1px 6px; font-weight:600">⚠ конфликт с manual mapping</span>
+                                    <span v-else-if="it.agreement && it.agreement.agrees_with_manual_mapping" style="background:#dcfce7; color:#166534; border-radius:8px; padding:1px 6px; font-weight:600">✓ согласуется</span>
+                                    <span v-if="it.validation && !it.validation.old_new_orientation_ok" style="background:#f3f4f6; color:#6b7280; border-radius:8px; padding:1px 6px">⚠ OLD/NEW orientation failed</span>
+                                </div>
+                                <div v-if="it.recommended_action" style="margin-top:3px; font-size:11px; opacity:.8">Рекомендация: <b>{{ it.recommended_action }}</b></div>
+                                <div v-if="it.agreement && it.agreement.reason" style="margin-top:2px; font-size:11px; opacity:.65">{{ it.agreement.reason }}</div>
+                                <div style="margin-top:4px">
+                                    <button class="btn btn-sm btn-secondary" style="padding:0 8px; font-size:11px"
+                                            @click="scPv2LvOpenBlockLink(it)"
+                                            title="Read-only переход в «Связь блоков». Связь не применяется.">🔗 Открыть связь блоков</button>
+                                </div>
+                            </div>
+                            <div v-if="!scPv2LvItems.length" style="opacity:.6; font-size:11px">Нет validation-items для этого фильтра.</div>
+                        </template>
+                    </div>
+
+                    <!-- ─── Exclusion Preview v2 (read-only, mark-only) ─── -->
+                    <div v-if="scPv2XpAvailable || scPv2XpNotFound || scPv2XpRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🚫 Exclusion Preview v2</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · mark-only · агрегатор сигналов исключения</span>
+                        </div>
+                        <!-- mark-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Exclusion Preview v2 is mark-only. Nothing is excluded, applied, or enforced. All decisions require human confirmation.
+                        </div>
+                        <div v-if="scPv2XpRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2XpRespError }}</div>
+                        <div v-else-if="scPv2XpNotFound" style="opacity:.6; font-size:11px">
+                            Exclusion Preview v2 report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2XpAvailable && scPv2XpSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">items: {{ scPv2XpSummary.items_total }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 exclude: {{ scPv2XpSummary.candidate_exclude }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">🟡 review: {{ scPv2XpSummary.review_only }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">🟢 keep: {{ scPv2XpSummary.keep }}</span>
+                                <span style="background:#ede9fe; color:#4c1d95; border-radius:10px; padding:1px 8px">🔵 need LV: {{ scPv2XpSummary.link_validation_required }}</span>
+                                <span v-if="scPv2XpSummary.repeated_reject_transitions"
+                                      style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 8px">↩ repeated: {{ scPv2XpSummary.repeated_reject_transitions }}</span>
+                                <span v-if="scPv2XpSummary.manual_vision_conflict"
+                                      style="background:#fde68a; color:#92400e; border-radius:10px; padding:1px 8px">⚠ conflict: {{ scPv2XpSummary.manual_vision_conflict }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce: off</span>
+                                <!-- operator review summary -->
+                                <template v-if="scPv2XpSummary.operator_review && scPv2XpSummary.operator_review.total">
+                                    <span style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 8px">
+                                        ✓ reviewed: {{ scPv2XpSummary.operator_review.total }}
+                                    </span>
+                                    <span v-if="scPv2XpSummary.operator_review.approve_exclude"
+                                          style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">
+                                        ✅ approve: {{ scPv2XpSummary.operator_review.approve_exclude }}
+                                    </span>
+                                    <span v-if="scPv2XpSummary.operator_review.reject_exclude"
+                                          style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">
+                                        🚫 reject: {{ scPv2XpSummary.operator_review.reject_exclude }}
+                                    </span>
+                                </template>
+                            </div>
+                            <!-- item cards -->
+                            <div v-for="(it, i) in scPv2XpItems" :key="'pv2xp-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <!-- classification badge -->
+                                    <span :style="{background: scPv2XpClassMeta(it.classification).bg,
+                                                   color: scPv2XpClassMeta(it.classification).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2XpClassMeta(it.classification).icon }}
+                                        {{ it.classification }}
+                                    </span>
+                                    <!-- severity -->
+                                    <span v-if="it.severity === 'high'" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px">▲ high</span>
+                                    <span v-else-if="it.severity === 'medium'" style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 6px">▼ medium</span>
+                                    <!-- confidence -->
+                                    <span style="opacity:.6">{{ scPv2XpConfPct(it) }}</span>
+                                    <!-- risk flags -->
+                                    <span v-for="rf in (it.risk_flags||[])" :key="rf"
+                                          style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 6px">
+                                        ⚑ {{ rf }}
+                                    </span>
+                                </div>
+                                <!-- entity labels OLD → NEW -->
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:3px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- reasons + recommended action -->
+                                <div v-if="it.reasons && it.reasons.length" style="opacity:.7; margin-bottom:2px">
+                                    {{ it.reasons.join(' · ') }}
+                                </div>
+                                <div v-if="it.recommended_action"
+                                     style="display:inline-block; background:#eef2ff; color:#3730a3; border-radius:6px; padding:1px 7px">
+                                    → {{ it.recommended_action }}
+                                </div>
+                                <!-- operator review badge (already saved) -->
+                                <div v-if="it.operator_review && it.operator_review.status === 'reviewed'"
+                                     style="margin-top:4px; display:flex; gap:5px; align-items:center; flex-wrap:wrap">
+                                    <span :style="scPv2XrDecisionMeta(it.operator_review.operator_decision).style"
+                                          style="border-radius:8px; padding:1px 8px; font-size:10px; font-weight:600">
+                                        ✓ {{ scPv2XrDecisionMeta(it.operator_review.operator_decision).label }}
+                                    </span>
+                                    <span v-if="it.operator_review.comment" style="opacity:.6; font-size:10px">
+                                        "{{ it.operator_review.comment.slice(0,60) }}{{ it.operator_review.comment.length > 60 ? '…' : '' }}"
+                                    </span>
+                                    <span style="opacity:.4; font-size:10px">{{ it.operator_review.updated_at ? it.operator_review.updated_at.slice(0,16) : '' }}</span>
+                                    <button @click="scPv2XrDeleteDecision(it)"
+                                            :disabled="scPv2XrSaving[it.item_id]"
+                                            style="background:none; border:none; cursor:pointer; color:#ef4444; font-size:10px; padding:0 3px" title="Удалить решение">✕</button>
+                                </div>
+                                <!-- operator review inline form -->
+                                <div style="margin-top:4px; display:flex; gap:4px; align-items:flex-start; flex-wrap:wrap">
+                                    <select v-model="scPv2XrGetDraft(it).decision"
+                                            style="font-size:11px; border:1px solid #cbd5e1; border-radius:4px; padding:1px 4px; background:#fff">
+                                        <option value="">— решение оператора —</option>
+                                        <option value="approve_exclude">✅ approve_exclude</option>
+                                        <option value="reject_exclude">🚫 reject_exclude</option>
+                                        <option value="needs_review">🔎 needs_review</option>
+                                        <option value="keep">✓ keep</option>
+                                        <option value="run_link_validation">🔗 run_link_validation</option>
+                                    </select>
+                                    <input v-model="scPv2XrGetDraft(it).comment"
+                                           placeholder="комментарий (опц.)"
+                                           style="font-size:11px; border:1px solid #cbd5e1; border-radius:4px; padding:1px 5px; width:160px; flex:1; min-width:80px; max-width:240px" />
+                                    <button @click="scPv2XrSaveDecision(it)"
+                                            :disabled="!scPv2XrGetDraft(it).decision || scPv2XrSaving[it.item_id]"
+                                            style="font-size:11px; padding:1px 8px; border-radius:4px; border:1px solid #3b82f6; background:#eff6ff; color:#1d4ed8; cursor:pointer; white-space:nowrap">
+                                        {{ scPv2XrSaving[it.item_id] ? '…' : '💾 Сохранить' }}
+                                    </button>
+                                </div>
+                                <div v-if="scPv2XrSaveErr[it.item_id]"
+                                     style="color:#991b1b; font-size:10px; margin-top:2px">
+                                    {{ scPv2XrSaveErr[it.item_id] }}
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- ─── Skip Readiness (read-only, mark-only, observe) ─── -->
+                    <div v-if="scPv2SrAvailable || scPv2SrNotFound || scPv2SrRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🛡 Skip Readiness</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · mark-only · observe · план пропуска (без применения)</span>
+                        </div>
+                        <!-- mark-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Skip Readiness is mark-only / observe. На данном этапе никакие блоки не пропускаются. Пропуск требует явного одобрения оператора на следующем этапе (auto_enforce_enabled=false).
+                        </div>
+                        <div v-if="scPv2SrRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2SrRespError }}</div>
+                        <div v-else-if="scPv2SrNotFound" style="opacity:.6; font-size:11px">
+                            Skip Readiness report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2SrAvailable && scPv2SrSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">items: {{ scPv2SrSummary.items_total }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✅ к пропуску: {{ scPv2SrSummary.ready_to_skip }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 blocked: {{ scPv2SrSummary.blocked }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">🟡 review: {{ scPv2SrSummary.needs_review }}</span>
+                                <span style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 8px">🟢 keep: {{ scPv2SrSummary.keep }}</span>
+                                <span v-if="scPv2SrSummary.operator_approved"
+                                      style="background:#d1fae5; color:#065f46; border-radius:10px; padding:1px 8px">✓ одобрено: {{ scPv2SrSummary.operator_approved }}</span>
+                                <span v-if="scPv2SrSummary.operator_rejected"
+                                      style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">✕ отклонено: {{ scPv2SrSummary.operator_rejected }}</span>
+                                <span v-if="scPv2SrSummary.missing_operator_decision"
+                                      style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">⏳ без решения: {{ scPv2SrSummary.missing_operator_decision }}</span>
+                                <span style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 8px">enforce: off</span>
+                            </div>
+                            <!-- item cards -->
+                            <div v-for="(it, i) in scPv2SrItems" :key="'pv2sr-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <!-- readiness badge -->
+                                    <span :style="{background: scPv2SrReadinessMeta(it.readiness_status).bg,
+                                                   color: scPv2SrReadinessMeta(it.readiness_status).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2SrReadinessMeta(it.readiness_status).icon }}
+                                        {{ it.readiness_status }}
+                                    </span>
+                                    <!-- classification -->
+                                    <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        {{ it.classification }}
+                                    </span>
+                                    <!-- blocked/review reason -->
+                                    <span v-if="it.blocked_reason" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔒 {{ it.blocked_reason }}
+                                    </span>
+                                    <span v-if="it.review_reason" style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔎 {{ it.review_reason }}
+                                    </span>
+                                    <!-- confidence -->
+                                    <span style="opacity:.6">{{ scPv2SrConfPct(it) }}</span>
+                                </div>
+                                <!-- entity labels OLD → NEW -->
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:3px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- skip scope -->
+                                <div v-if="it.skip_scope" style="opacity:.7; font-size:10px; margin-bottom:2px">
+                                    enrichment: {{ it.skip_scope.exclude_from_enrichment ? 'skip' : 'run' }}
+                                    · evidence: {{ it.skip_scope.exclude_from_grounded_evidence ? 'skip' : 'run' }}
+                                    · delta: {{ it.skip_scope.exclude_from_delta_explanation ? 'skip' : 'run' }}
+                                    · findings: {{ it.skip_scope.exclude_from_findings ? 'skip' : 'run' }}
+                                </div>
+                                <!-- operator decision (if any) -->
+                                <div v-if="it.operator_decision"
+                                     style="display:inline-block; background:#f0fdf4; color:#166534; border-radius:6px; padding:1px 7px; font-size:10px; margin-top:2px">
+                                    operator: {{ it.operator_decision }}
+                                    <span v-if="it.operator_comment" style="opacity:.7"> · "{{ it.operator_comment.slice(0,40) }}"</span>
+                                </div>
+                                <!-- mark-only reminder: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- ─── Controlled Enforce Preflight (read-only, observe-only) ─── -->
+                    <div v-if="scPv2CeAvailable || scPv2CeNotFound || scPv2CeRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🧯 Controlled Enforce Preflight</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · observe-only · preflight (без enforce)</span>
+                        </div>
+                        <!-- observe-only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Controlled Enforce Preflight is observe-only. It does not skip, exclude, enforce, change links, or create findings. (would_apply=false, enforce_enabled=false)
+                        </div>
+                        <div v-if="scPv2CeRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2CeRespError }}</div>
+                        <div v-else-if="scPv2CeNotFound" style="opacity:.6; font-size:11px">
+                            Controlled Enforce Preflight report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2CeAvailable && scPv2CeSummary">
+                            <!-- status chip -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span :style="{background: scPv2CeStatusMeta(scPv2CeReportStatus).bg,
+                                               color: scPv2CeStatusMeta(scPv2CeReportStatus).fg,
+                                               borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                    {{ scPv2CeStatusMeta(scPv2CeReportStatus).icon }}
+                                    {{ scPv2CeReportStatus }}
+                                </span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✅ ready_to_skip: {{ scPv2CeSummary.ready_to_skip_items }}</span>
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">eligible: {{ scPv2CeSummary.eligible_items }}</span>
+                                <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">🔴 blocked: {{ scPv2CeSummary.blocked_items }}</span>
+                                <span style="background:#fef3c7; color:#92400e; border-radius:10px; padding:1px 8px">fatal: {{ scPv2CeSummary.fatal_blocks }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">would_apply: false</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce_enabled: false</span>
+                                <span v-if="scPv2CeRuntimeRoot && scPv2CeRuntimeRoot.confirmed"
+                                      style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">✓ active root confirmed</span>
+                                <span v-else style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 8px">⚠ active root not confirmed</span>
+                            </div>
+                            <!-- fatal blocks -->
+                            <div v-if="scPv2CeFatalBlocks.length"
+                                 style="background:#fff1f2; border:1px solid #fecdd3; border-radius:6px; padding:5px 8px; margin-bottom:6px; font-size:11px">
+                                <div style="color:#9f1239; font-weight:600; margin-bottom:2px">Fatal blocks:</div>
+                                <div v-for="(fb, i) in scPv2CeFatalBlocks" :key="'pv2ce-fb-'+i"
+                                     style="color:#9f1239">- {{ fb }}</div>
+                            </div>
+                            <!-- eligible items (preflight only — НЕ применяются) -->
+                            <div v-if="scPv2CeEligibleItems.length" style="margin-bottom:4px">
+                                <div style="font-size:10px; opacity:.6; margin-bottom:2px">eligible (would_skip — без применения):</div>
+                                <div v-for="(it, i) in scPv2CeEligibleItems" :key="'pv2ce-el-'+i"
+                                     style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:4px 8px; margin-bottom:4px; font-size:11px">
+                                    <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 7px; font-weight:600">eligible</span>
+                                    <span style="opacity:.7"> {{ it.item_id }}</span>
+                                    <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px; margin-left:4px">applied: false</span>
+                                </div>
+                            </div>
+                            <!-- blocked items -->
+                            <div v-for="(it, i) in scPv2CeBlockedItems" :key="'pv2ce-bl-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <span :style="{background: scPv2CeBlockMeta(it.source_readiness).bg,
+                                                   color: scPv2CeBlockMeta(it.source_readiness).fg,
+                                                   borderRadius:'10px', padding:'1px 8px', fontWeight:'600'}">
+                                        {{ scPv2CeBlockMeta(it.source_readiness).icon }}
+                                        {{ it.source_readiness || '—' }}
+                                    </span>
+                                    <span v-if="it.reason" style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        🔒 {{ it.reason }}
+                                    </span>
+                                    <span v-if="it.operator_decision" style="background:#f0fdf4; color:#166534; border-radius:10px; padding:1px 6px; font-size:10px">
+                                        operator: {{ it.operator_decision }}
+                                    </span>
+                                    <span style="opacity:.5; font-size:10px">{{ it.item_id }}</span>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px">
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">OLD</div>
+                                        <div style="font-weight:500">{{ it.left_entity_label || it.left_block_id || '—' }}</div>
+                                    </div>
+                                    <div style="background:#f8fafc; border-radius:4px; padding:3px 6px">
+                                        <div style="opacity:.5; font-size:10px">NEW</div>
+                                        <div style="font-weight:500">{{ it.right_entity_label || it.right_block_id || '—' }}</div>
+                                    </div>
+                                </div>
+                                <!-- observe-only: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- ─── Controlled Enforce Dry-run (read-only, observe-only) ─── -->
+                    <div v-if="scPv2CdrAvailable || scPv2CdrNotFound || scPv2CdrRespError"
+                         style="border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f8fafc">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#334155">🧪 Controlled Enforce Dry-run</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · observe-only · impact preview (без enforce)</span>
+                        </div>
+                        <!-- dry-run only warning -->
+                        <div style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            ℹ Dry-run only. Nothing is skipped or written. (would_apply=false, enforce_enabled=false)
+                        </div>
+                        <div v-if="scPv2CdrRespError" style="color:#991b1b; font-size:11px">Отчёт нечитаем: {{ scPv2CdrRespError }}</div>
+                        <div v-else-if="scPv2CdrNotFound" style="opacity:.6; font-size:11px">
+                            Controlled Enforce Dry-run report ещё не построен для этой пары.
+                        </div>
+                        <template v-else-if="scPv2CdrAvailable && scPv2CdrSummary">
+                            <!-- summary chips -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">{{ scPv2CdrReportStatus }}</span>
+                                <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:1px 8px">eligible: {{ scPv2CdrSummary.eligible_items }}</span>
+                                <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">logical transitions: {{ scPv2CdrSummary.logical_transitions }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">would_skip block-pairs: {{ scPv2CdrSummary.would_skip_block_pairs }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">would_apply: false</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">enforce_enabled: false</span>
+                            </div>
+                            <!-- logical transition cards -->
+                            <div v-for="(t, i) in scPv2CdrTransitions" :key="'pv2cdr-t-'+i"
+                                 style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px">
+                                    <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">
+                                        {{ t.transition_id }}
+                                    </span>
+                                    <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 6px; font-size:10px">items: {{ t.item_count }} block-pairs</span>
+                                    <span v-if="t.operator_decision" style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 6px; font-size:10px">operator: {{ t.operator_decision }}</span>
+                                    <span v-for="(lv, j) in (t.link_validation_decisions || [])" :key="'pv2cdr-lv-'+i+'-'+j"
+                                          style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:1px 6px; font-size:10px">link validation: {{ lv }}</span>
+                                </div>
+                                <div v-if="t.recommended_scope" style="opacity:.7; font-size:10px">
+                                    scope: exclude_from_enrichment only
+                                    (enrichment: {{ t.recommended_scope.exclude_from_enrichment ? 'skip' : 'run' }}
+                                    · evidence: {{ t.recommended_scope.exclude_from_grounded_evidence ? 'skip' : 'run' }}
+                                    · delta: {{ t.recommended_scope.exclude_from_delta_explanation ? 'skip' : 'run' }}
+                                    · findings: {{ t.recommended_scope.exclude_from_findings ? 'skip' : 'run' }})
+                                </div>
+                                <!-- dry-run only: NO action buttons -->
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- ─── Controlled Enforce State (read-only visibility, NOT enforce) ─── -->
+                    <div v-if="scPv2CesAvailable"
+                         style="border:1px solid #bbf7d0; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#f0fdf4">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#166534">🟢 Controlled Enforce State</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · active state visibility (НЕ enforce)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11px">
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px; font-weight:600">active exclusions: {{ scPv2CesSection.active_exclusions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">active transitions: {{ scPv2CesSection.active_transitions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">active block-pairs: {{ scPv2CesSection.active_block_pairs }}</span>
+                            <span style="background:#ecfccb; color:#3f6212; border-radius:10px; padding:1px 8px">scope: enrichment only</span>
+                            <span v-if="scPv2CesSection.transition" style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">transition: {{ scPv2CesSection.transition }}</span>
+                            <span v-if="scPv2CesSection.run_id" style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">run_id: {{ scPv2CesSection.run_id }}</span>
+                            <span v-if="scPv2CesSection.rollback_id" style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">rollback_id: {{ scPv2CesSection.rollback_id }}</span>
+                        </div>
+                        <!-- mandatory clarification hint -->
+                        <div style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:4px 8px; font-size:11px; margin-bottom:6px">
+                            State is active, but it only affects future selection when explicitly enabled.
+                            No existing findings, links, deltas, or grounded evidence were changed.
+                        </div>
+
+                        <!-- ── Deactivate / rollback (write: ТОЛЬКО controlled_enforce_state.json) ── -->
+                        <div v-if="scPv2CdsDone" style="background:#dcfce7; color:#166534; border:1px solid #86efac; border-radius:6px; padding:4px 8px; font-size:11px">
+                            Controlled state deactivated. No findings, links, deltas, grounded evidence were changed.
+                        </div>
+                        <template v-else>
+                            <button v-if="!scPv2CdsOpen" class="btn btn-sm btn-secondary"
+                                    style="padding:2px 10px; font-size:11px"
+                                    @click="scPv2CdsBegin">Деактивировать state</button>
+                            <div v-else style="border:1px solid #fde68a; background:#fffbeb; border-radius:6px; padding:6px 8px; margin-top:4px">
+                                <div style="font-size:11px; color:#92400e; margin-bottom:4px">
+                                    Деактивация пометит state <b>active=false</b> (audit + history, не удаляя запись).
+                                    Подтвердите, введя точную фразу:
+                                </div>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:4px">
+                                    <input v-model="scPv2CdsConfirmText" type="text"
+                                           :placeholder="SC_PV2_CDS_PHRASE"
+                                           style="font-size:11px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px; width:280px" />
+                                    <span style="font-size:10px; opacity:.6">{{ SC_PV2_CDS_PHRASE }}</span>
+                                </div>
+                                <input v-model="scPv2CdsComment" type="text" placeholder="комментарий (необязательно)"
+                                       style="font-size:11px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px; width:280px; margin-bottom:4px" />
+                                <div v-if="scPv2CdsError" style="color:#991b1b; font-size:11px; margin-bottom:4px">{{ scPv2CdsError }}</div>
+                                <div style="display:flex; gap:6px;">
+                                    <button class="btn btn-sm btn-danger" style="padding:2px 10px; font-size:11px"
+                                            :disabled="!scPv2CdsConfirmOk || scPv2CdsBusy"
+                                            @click="scPv2CdsSubmit">
+                                        {{ scPv2CdsBusy ? 'Деактивация…' : 'Подтвердить деактивацию' }}
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" style="padding:2px 10px; font-size:11px"
+                                            :disabled="scPv2CdsBusy" @click="scPv2CdsCancel">Отмена</button>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- deactivate = ТОЛЬКО state rollback; без enforce/skip/qwen/recalc/finding/link write-controls -->
+                    </div>
+
+                    <!-- ─── Selection Observe (read-only observe-mode, no Qwen) ─── -->
+                    <div v-if="scPv2CesoAvailable"
+                         style="border:1px solid #c7d2fe; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#eef2ff">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#3730a3">👁 Selection observe</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · default OFF vs state ON (Qwen НЕ вызывался)</span>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:11px">
+                            <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">default selected: {{ scPv2CesoSection.default_selected }}</span>
+                            <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px">state ON selected: {{ scPv2CesoSection.state_on_selected }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">excluded_by_state: {{ scPv2CesoSection.excluded_by_state }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px">excluded logical transitions: {{ scPv2CesoSection.excluded_logical_transitions }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">qwen_calls: {{ scPv2CesoSection.qwen_calls }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">runtime_not_modified_by_selection: true</span>
+                        </div>
+                        <!-- observe-only: NO action buttons -->
+                    </div>
+
+                    <!-- ─── Enrichment Selection Observe (real production path, no Qwen) ─── -->
+                    <div v-if="scPv2EsoAvailable"
+                         style="border:1px solid #bfdbfe; border-radius:8px; padding:8px 10px; margin-bottom:10px; background:#eff6ff">
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px">
+                            <strong style="color:#1e40af">🧭 Enrichment Selection Observe</strong>
+                            <span style="opacity:.6; font-size:11px">read-only · real production selection path</span>
+                        </div>
+                        <!-- Production selection (real path) — основной результат -->
+                        <div style="margin-bottom:6px">
+                            <div style="font-size:11px; font-weight:600; color:#1e40af; margin-bottom:3px">Production selection (real path):</div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:11px">
+                                <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">OFF: {{ scPv2EsoSection.real_default_candidates_total }}</span>
+                                <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:1px 8px">ON: {{ scPv2EsoSection.real_state_on_candidates_total }}</span>
+                                <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:1px 8px; font-weight:600">Excluded by controlled state in real path: {{ scPv2EsoSection.real_excluded_by_state }}</span>
+                                <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:1px 8px">Qwen calls: {{ scPv2EsoSection.qwen_calls }}</span>
+                            </div>
+                        </div>
+                        <!-- Already excluded before state -->
+                        <div style="margin-bottom:6px; font-size:11px">
+                            <span style="font-weight:600; color:#9a3412">Already excluded before state:</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 8px; margin-left:4px">mismatch_likely: {{ scPv2EsoSection.mismatch_excluded_before_state }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px; margin-left:4px">redundant state pairs: {{ scPv2EsoSection.redundant_state_pairs }}</span>
+                        </div>
+                        <!-- redundant state cards -->
+                        <div v-for="(p, i) in scPv2EsoRedundant" :key="'pv2eso-rd-'+i"
+                             style="background:#fff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 8px; margin-bottom:5px; font-size:11px">
+                            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                <span style="background:#e0e7ff; color:#3730a3; border-radius:10px; padding:1px 8px; font-weight:600">{{ p.transition_id }}</span>
+                                <span style="background:#f1f5f9; color:#475569; border-radius:10px; padding:1px 6px; font-size:10px">{{ p.left_block_id }} → {{ p.right_block_id }}</span>
+                                <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:1px 6px; font-size:10px">already excluded by: {{ p.already_excluded_by }}</span>
+                                <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 6px; font-size:10px">{{ p.controlled_state_effect }}</span>
+                            </div>
+                        </div>
+                        <!-- Gate-only diagnostic (вспомогательная) -->
+                        <div style="margin-bottom:6px; font-size:11px; opacity:.85">
+                            <span style="font-weight:600; color:#6b7280">Gate-only diagnostic:</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px; margin-left:4px">OFF: {{ scPv2EsoSection.gate_only_default_candidates_total }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">ON: {{ scPv2EsoSection.gate_only_state_on_candidates_total }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:1px 8px">controlled state would exclude: {{ scPv2EsoSection.gate_only_excluded_by_state }}</span>
+                        </div>
+                        <!-- Conclusion -->
+                        <div style="background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; border-radius:6px; padding:4px 8px; margin-bottom:6px; font-size:11px">
+                            Conclusion: Controlled state is currently a safety-net; these pairs are already excluded by mismatch_likely before the hook.
+                        </div>
+                        <!-- mandatory observe hint -->
+                        <div style="background:#fffbeb; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:4px 8px; font-size:11px">
+                            Observe only. No Qwen was called and no pipeline artifacts were recalculated.
+                        </div>
+                        <!-- observe-only: NO action buttons -->
+                    </div>
+
+
+                    <!-- transport / HTTP errors -->
+                    <div v-if="scPv2EaError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        {{ scPv2EaError }}
+                    </div>
+                    <!-- detail status=error -->
+                    <div v-else-if="scPv2EaRespError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:6px 10px; margin-bottom:8px">
+                        Артефакты Pipeline V2 нечитаемы: {{ scPv2EaRespError }}
+                    </div>
+                    <!-- not_found: отчёта ещё нет — это норма, пока dry-run не записан -->
+                    <div v-else-if="scPv2EaNotFound" style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:14px; text-align:center; color:#6b7280">
+                        Entity alignment preview ещё не построен для этой пары.<br>
+                        Появится после offline dry-run прогона Pipeline V2 для пары.
+                    </div>
+                    <template v-else-if="scPv2EaResp && scPv2EaSummary">
+                        <!-- Summary cards -->
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                            <span style="background:#eef2ff; color:#3730a3; border-radius:10px; padding:2px 8px">пар: {{ scPv2EaSummary.graphic_pairs_total }}</span>
+                            <span style="background:#dcfce7; color:#166534; border-radius:10px; padding:2px 8px">🟢 same: {{ scPv2EaSummary.same_entity_likely }}</span>
+                            <span style="background:#dbeafe; color:#1e40af; border-radius:10px; padding:2px 8px">🔵 rename: {{ scPv2EaSummary.possible_rename }}</span>
+                            <span style="background:#ffedd5; color:#9a3412; border-radius:10px; padding:2px 8px">🟠 реорг: {{ scPv2EaSummary.scope_reorganized }}</span>
+                            <span style="background:#fee2e2; color:#991b1b; border-radius:10px; padding:2px 8px">🔴 mismatch: {{ scPv2EaSummary.mismatch_likely }}</span>
+                            <span style="background:#ede9fe; color:#5b21b6; border-radius:10px; padding:2px 8px">🟣 проверка связи: {{ scPv2EaSummary.link_validation_candidate }}</span>
+                            <span style="background:#fef9c3; color:#854d0e; border-radius:10px; padding:2px 8px" title="possible_rename + scope_reorganized">✋ ручной маппинг: {{ scPv2EaSummary.needs_manual_mapping }}</span>
+                            <span style="background:#f3f4f6; color:#6b7280; border-radius:10px; padding:2px 8px">⚪ без пары: {{ scPv2EaSummary.unpaired_left }} / {{ scPv2EaSummary.unpaired_right }}</span>
+                        </div>
+                        <!-- Filters -->
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px">
+                            <button v-for="f in SC_PV2_EA_FILTERS" :key="'pv2eaf-'+f.key"
+                                    class="btn btn-sm"
+                                    :class="scPv2EaFilter===f.key ? 'btn-primary' : 'btn-secondary'"
+                                    style="padding:1px 8px; font-size:11px"
+                                    @click="scPv2EaFilter=f.key">{{ f.label }}</button>
+                            <span style="margin-left:auto; opacity:.6; align-self:center">показано пар: {{ scPv2EaFilteredPairs.length }}</span>
+                        </div>
+                        <!-- Pair cards -->
+                        <div v-if="scPv2EaShowPairs" style="display:flex; flex-direction:column; gap:6px; max-height:560px; overflow:auto">
+                            <div v-for="(p, i) in scPv2EaFilteredPairs" :key="'pv2eapair-'+i"
+                                 :style="{borderLeft: '4px solid ' + scPv2EaClassMeta(p.classification).color, border:'1px solid #e5e7eb', borderRadius:'6px', padding:'6px 10px', background:'#fafafa'}">
+                                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:4px">
+                                    <span :style="{background: scPv2EaClassMeta(p.classification).bg, color: scPv2EaClassMeta(p.classification).fg, borderRadius:'10px', padding:'1px 8px', fontWeight:600}">
+                                        {{ scPv2EaClassMeta(p.classification).icon }} {{ scPv2EaClassMeta(p.classification).label }}
+                                    </span>
+                                    <span v-if="scPv2EaConfPct(p)" style="opacity:.7">уверенность: {{ scPv2EaConfPct(p) }}</span>
+                                    <span v-if="p.entity_family" style="background:#f1f5f9; color:#475569; border-radius:10px; padding:1px 8px">{{ p.entity_family }}</span>
+                                    <div style="flex:1"></div>
+                                    <button class="btn btn-sm btn-secondary" style="padding:1px 8px; font-size:11px"
+                                            @click="scPv2EaOpenBlockLink(p)"
+                                            title="Read-only переход в «Связь блоков» с подсветкой этой пары. Связь не применяется.">
+                                        🔗 Открыть связь блоков
+                                    </button>
+                                </div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+                                    <div style="border-right:1px dashed #e5e7eb; padding-right:8px">
+                                        <div><span style="opacity:.55">OLD:</span> <b>{{ p.left_entity_label || '—' }}</b>
+                                            <span style="opacity:.6"> · стр. {{ p.left_page_number ?? '—' }}</span></div>
+                                        <div style="opacity:.6"><code>{{ p.left_block_id || '—' }}</code></div>
+                                        <div v-if="p.left_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="p.left_sheet_name">{{ p.left_sheet_name }}</div>
+                                    </div>
+                                    <div>
+                                        <div><span style="opacity:.55">NEW:</span> <b>{{ p.right_entity_label || '—' }}</b>
+                                            <span style="opacity:.6"> · стр. {{ p.right_page_number ?? '—' }}</span></div>
+                                        <div style="opacity:.6"><code>{{ p.right_block_id || '—' }}</code></div>
+                                        <div v-if="p.right_sheet_name" style="opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="p.right_sheet_name">{{ p.right_sheet_name }}</div>
+                                    </div>
+                                </div>
+                                <div v-if="p.recommended_action" style="margin-top:4px; opacity:.8">Рекомендация: <b>{{ p.recommended_action }}</b></div>
+                                <div v-if="(p.reasons||[]).length" style="margin-top:4px; display:flex; gap:4px; flex-wrap:wrap">
+                                    <span v-for="(r, ri) in p.reasons" :key="'pv2ear-'+i+'-'+ri"
+                                          style="background:#f1f5f9; color:#475569; border-radius:8px; padding:1px 6px; font-size:11px">{{ r }}</span>
+                                </div>
+                                <div v-if="(p.risk_flags||[]).length" style="margin-top:4px; color:#9a3412">
+                                    ⚠ <span v-for="(rf, rfi) in p.risk_flags" :key="'pv2earf-'+i+'-'+rfi"
+                                          style="background:#ffedd5; border-radius:8px; padding:1px 6px; font-size:11px; margin-right:4px">{{ rf }}</span>
+                                </div>
+                                <!-- Manual mapping decision (write; block links/vision НЕ трогаются) -->
+                                <div v-if="scPv2EaDrafts[scPv2EaPairKey(p)]" style="margin-top:6px; border-top:1px dashed #e5e7eb; padding-top:6px">
+                                    <div v-if="p.manual_mapping && p.manual_mapping.status && p.manual_mapping.status!=='none'"
+                                         style="margin-bottom:4px; display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                        <span :style="{background:(scPv2EaManualMeta(p.manual_mapping.status)||{}).bg || '#f3f4f6', color:(scPv2EaManualMeta(p.manual_mapping.status)||{}).fg || '#374151', borderRadius:'8px', padding:'1px 8px', fontWeight:600}">
+                                            Manual: {{ p.manual_mapping.decision }}
+                                        </span>
+                                        <span v-if="p.manual_mapping.comment" style="opacity:.7">Комментарий: {{ p.manual_mapping.comment }}</span>
+                                        <span v-if="p.manual_mapping.updated_at" style="opacity:.45; font-size:11px">{{ p.manual_mapping.updated_at }}</span>
+                                    </div>
+                                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                                        <span style="opacity:.55">Решение:</span>
+                                        <select v-model="scPv2EaDrafts[scPv2EaPairKey(p)].decision" class="form-control" style="padding:2px 6px; font-size:11px; max-width:230px">
+                                            <option value="">— выбрать —</option>
+                                            <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2d-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                        </select>
+                                        <input v-model="scPv2EaDrafts[scPv2EaPairKey(p)].comment" placeholder="Комментарий (необязательно)"
+                                               class="form-control" style="padding:2px 6px; font-size:11px; flex:1; min-width:140px" />
+                                        <button class="btn btn-sm btn-primary" style="padding:1px 10px; font-size:11px"
+                                                :disabled="scPv2EaSaving[scPv2EaPairKey(p)] || !scPv2EaDrafts[scPv2EaPairKey(p)].decision"
+                                                @click="scPv2EaSavePair(p)">
+                                            {{ scPv2EaSaving[scPv2EaPairKey(p)] ? 'Сохранение…' : '💾 Сохранить решение' }}
+                                        </button>
+                                    </div>
+                                    <div v-if="scPv2EaSaveErr[scPv2EaPairKey(p)]" style="color:#991b1b; font-size:11px; margin-top:3px">{{ scPv2EaSaveErr[scPv2EaPairKey(p)] }}</div>
+                                </div>
+                            </div>
+                            <div v-if="!scPv2EaFilteredPairs.length" style="padding:10px; opacity:.6; text-align:center">
+                                Нет пар в этой категории.
+                            </div>
+                        </div>
+                        <!-- Unpaired entities (manual mapping needed) -->
+                        <details v-if="scPv2EaShowUnpaired && ((scPv2EaUnpaired.left||[]).length || (scPv2EaUnpaired.right||[]).length)"
+                                 open style="margin-top:10px; border-top:1px solid #eee; padding-top:6px">
+                            <summary style="cursor:pointer; color:#5b21b6; font-weight:600">
+                                Сущности без пары — требуют ручного маппинга (OLD {{ (scPv2EaUnpaired.left||[]).length }} / NEW {{ (scPv2EaUnpaired.right||[]).length }})
+                            </summary>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px">
+                                <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:300px; overflow:auto">
+                                    <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Старая стадия (OLD)</div>
+                                    <div v-for="(e, i) in scPv2EaUnpaired.left" :key="'pv2eaul-'+i" style="padding:4px 8px; border-bottom:1px solid #f3f4f6">
+                                        <b>{{ e.entity_label }}</b>
+                                        <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
+                                        <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                        <div v-if="e.manual_mapping && e.manual_mapping.status && e.manual_mapping.status!=='none'"
+                                             :style="{color:(scPv2EaManualMeta(e.manual_mapping.status)||{}).fg || '#374151', fontSize:'11px', marginTop:'2px'}">
+                                            Manual: <b>{{ e.manual_mapping.decision }}</b>
+                                        </div>
+                                        <div v-if="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')]" style="margin-top:3px; display:flex; gap:4px; flex-wrap:wrap; align-items:center">
+                                            <select v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">— решение —</option>
+                                                <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2dul-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                            </select>
+                                            <select v-if="['confirmed_same_entity','confirmed_rename','confirmed_reorganized'].includes(scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision)"
+                                                    v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].counterpart" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">→ NEW counterpart</option>
+                                                <option v-for="(c, ci) in scPv2EaUnpairedCounterparts('left')" :key="'pv2cpl-'+i+'-'+ci" :value="(c.block_ids&&c.block_ids[0])||c.entity_label">{{ c.entity_label }}</option>
+                                            </select>
+                                            <button class="btn btn-sm btn-primary" style="padding:0 8px; font-size:11px"
+                                                    :disabled="scPv2EaSaving[scPv2EaUnpairedKey(e,'left')] || !scPv2EaDrafts[scPv2EaUnpairedKey(e,'left')].decision"
+                                                    @click="scPv2EaSaveUnpaired(e,'left')">{{ scPv2EaSaving[scPv2EaUnpairedKey(e,'left')] ? '…' : '💾' }}</button>
+                                            <span v-if="scPv2EaSaveErr[scPv2EaUnpairedKey(e,'left')]" style="color:#991b1b; font-size:10px; width:100%">{{ scPv2EaSaveErr[scPv2EaUnpairedKey(e,'left')] }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="!(scPv2EaUnpaired.left||[]).length" style="padding:8px; opacity:.6">Нет</div>
+                                </div>
+                                <div style="border:1px solid #e5e7eb; border-radius:6px; max-height:300px; overflow:auto">
+                                    <div style="position:sticky; top:0; background:#f1f5f9; padding:4px 8px; font-weight:600; border-bottom:1px solid #e5e7eb">Новая стадия (NEW)</div>
+                                    <div v-for="(e, i) in scPv2EaUnpaired.right" :key="'pv2eaur-'+i" style="padding:4px 8px; border-bottom:1px solid #f3f4f6">
+                                        <b>{{ e.entity_label }}</b>
+                                        <span v-if="e.graphic_type" style="opacity:.6"> · {{ e.graphic_type }}</span>
+                                        <div v-if="e.sheet_name" style="opacity:.7; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis" :title="e.sheet_name">{{ e.sheet_name }}</div>
+                                        <div v-if="e.manual_mapping && e.manual_mapping.status && e.manual_mapping.status!=='none'"
+                                             :style="{color:(scPv2EaManualMeta(e.manual_mapping.status)||{}).fg || '#374151', fontSize:'11px', marginTop:'2px'}">
+                                            Manual: <b>{{ e.manual_mapping.decision }}</b>
+                                        </div>
+                                        <div v-if="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')]" style="margin-top:3px; display:flex; gap:4px; flex-wrap:wrap; align-items:center">
+                                            <select v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">— решение —</option>
+                                                <option v-for="d in SC_PV2_EA_DECISIONS" :key="'pv2dur-'+i+'-'+d.key" :value="d.key">{{ d.label }}</option>
+                                            </select>
+                                            <select v-if="['confirmed_same_entity','confirmed_rename','confirmed_reorganized'].includes(scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision)"
+                                                    v-model="scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].counterpart" class="form-control" style="padding:1px 4px; font-size:11px; max-width:150px">
+                                                <option value="">→ OLD counterpart</option>
+                                                <option v-for="(c, ci) in scPv2EaUnpairedCounterparts('right')" :key="'pv2cpr-'+i+'-'+ci" :value="(c.block_ids&&c.block_ids[0])||c.entity_label">{{ c.entity_label }}</option>
+                                            </select>
+                                            <button class="btn btn-sm btn-primary" style="padding:0 8px; font-size:11px"
+                                                    :disabled="scPv2EaSaving[scPv2EaUnpairedKey(e,'right')] || !scPv2EaDrafts[scPv2EaUnpairedKey(e,'right')].decision"
+                                                    @click="scPv2EaSaveUnpaired(e,'right')">{{ scPv2EaSaving[scPv2EaUnpairedKey(e,'right')] ? '…' : '💾' }}</button>
+                                            <span v-if="scPv2EaSaveErr[scPv2EaUnpairedKey(e,'right')]" style="color:#991b1b; font-size:10px; width:100%">{{ scPv2EaSaveErr[scPv2EaUnpairedKey(e,'right')] }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="!(scPv2EaUnpaired.right||[]).length" style="padding:8px; opacity:.6">Нет</div>
+                                </div>
+                            </div>
+                        </details>
+                    </template>
+                    <div v-else-if="!scPv2EaLoading" style="opacity:.6; padding:6px 0">
+                        Нажмите «Загрузить».
+                    </div>
                 </div>
 
                 <!-- One-click авто-сопоставление листов: ошибка -->
@@ -7014,6 +7971,396 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Pipeline V2 (β) — read-only панель поверх готовых
+                 артефактов. ТОЛЬКО читает ui-payload endpoint: ничего не
+                 запускает, ничего не пишет. -->
+            <div v-if="scTab==='pv2' && scSession">
+                <!-- Шапка: выбор пары + обновить + статус -->
+                <div class="sc-card" style="background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; padding:8px 12px; margin-bottom:8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                    <div style="font-weight:600; font-size:14px">Pipeline V2 <span style="opacity:.5; font-size:11px">β · read-only</span></div>
+                    <select v-model="scPv2PairId" @change="scPv2Load()" class="form-control" style="padding:4px 8px; font-size:12px; max-width:340px">
+                        <option value="">— вся сессия (session-level) —</option>
+                        <option v-for="p in scPairs" :key="'pv2'+p.id" :value="p.id">
+                            {{ p.id }}{{ (p.left && p.left.filename) ? ' · ' + p.left.filename : ((p.right && p.right.filename) ? ' · ' + p.right.filename : '') }}
+                        </option>
+                    </select>
+                    <button class="btn btn-secondary" @click="scPv2Load()" :disabled="scPv2Loading"
+                            title="Перечитать готовые артефакты (ничего не запускает)">⟳</button>
+                    <span v-if="scPv2Resp && !scPv2Loading" style="font-size:11px; color:#6b7280">
+                        {{ scPv2StatusBadge(scPv2Resp.status) }}
+                        <template v-if="scPv2Resp.source"> · {{ scPv2Resp.source === 'ready_payload' ? 'готовый payload' : 'собран из артефактов' }}</template>
+                        <template v-if="scPv2Resp.artifacts_dir"> · {{ scPv2Resp.artifacts_dir }}</template>
+                    </span>
+                </div>
+
+                <!-- Загрузка -->
+                <div v-if="scPv2Loading" class="sc-card" style="padding:18px; text-align:center; color:#6b7280; font-size:13px">
+                    Загрузка Pipeline V2 payload…
+                </div>
+
+                <!-- Транспорт / доступ -->
+                <div v-else-if="scPv2Error" class="sc-card" style="padding:12px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; font-size:13px; color:#991b1b">
+                    ⚠ {{ scPv2Error }}
+                </div>
+
+                <template v-else-if="scPv2Resp">
+                    <!-- not_found: нормальное состояние, пока артефактов нет -->
+                    <div v-if="scPv2Resp.status==='not_found'" class="sc-card" style="padding:26px 18px; text-align:center; border:1px dashed #d1d5db; border-radius:8px; background:#fafafa">
+                        <div style="font-size:26px; margin-bottom:8px">∅</div>
+                        <div style="font-size:14px; font-weight:600; margin-bottom:4px">Pipeline V2 ещё не запускался для этой {{ scPv2PairId ? 'пары' : 'сессии' }}.</div>
+                        <div style="font-size:12.5px; color:#6b7280">Артефакты не найдены. Панель только читает готовые результаты — запуск анализа отсюда не выполняется.</div>
+                        <div v-if="scPv2Resp.available_pairs && scPv2Resp.available_pairs.length" style="margin-top:12px; font-size:12.5px">
+                            Артефакты есть у пар:
+                            <button v-for="pid in scPv2Resp.available_pairs" :key="'pv2ap'+pid"
+                                    class="btn btn-secondary" style="margin:2px 3px; padding:2px 10px; font-size:12px"
+                                    @click="scPv2OpenPair(pid)">{{ pid }}</button>
+                        </div>
+                    </div>
+
+                    <!-- error: артефакты есть, но непригодны -->
+                    <div v-else-if="scPv2Resp.status==='error'" class="sc-card" style="padding:12px 14px; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; font-size:13px">
+                        <div style="font-weight:600; color:#92400e; margin-bottom:4px">⚠ Артефакты Pipeline V2 найдены, но непригодны для отображения.</div>
+                        <div style="font-size:12px; color:#92400e">{{ scPv2Resp.message }}</div>
+                        <ul v-if="scPv2Resp.warnings && scPv2Resp.warnings.length" style="margin:6px 0 0 18px; font-size:11.5px; color:#a16207">
+                            <li v-for="(w, wi) in scPv2Resp.warnings.slice(0, 8)" :key="'pv2w'+wi">{{ w }}</li>
+                        </ul>
+                    </div>
+
+                    <!-- ok / partial: payload -->
+                    <template v-else-if="scPv2Payload">
+                        <div v-if="scPv2Payload.status==='failed'"
+                             style="margin-bottom:8px; padding:6px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:6px; font-size:12px; color:#991b1b">
+                            ❌ Pipeline V2 dry-run завершился с ошибкой — результаты ниже неполные или недостоверны.
+                            <span v-if="scPv2AllWarnings.length" style="opacity:.85">{{ scPv2AllWarnings[0] }}</span>
+                        </div>
+                        <div v-else-if="scPv2Resp.status==='partial' || scPv2Payload.status==='completed_with_warnings'"
+                             style="margin-bottom:8px; padding:6px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; font-size:12px; color:#92400e">
+                            ◐ Payload собран с предупреждениями — часть отчётов dry-run недоступна или деградирована.
+                            <span v-if="scPv2AllWarnings.length" style="opacity:.8">({{ scPv2AllWarnings.length }} warning)</span>
+                        </div>
+
+                        <!-- Headline -->
+                        <div v-if="scPv2Headline" class="sc-card" style="display:flex; gap:14px; flex-wrap:wrap; padding:10px 14px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; font-size:12.5px">
+                            <div><b>{{ scPv2Headline.deltas_total }}</b> изменений всего</div>
+                            <div>· в LLM: <b>{{ scPv2Headline.selected_for_explanation_total }}</b></div>
+                            <div style="color:#15803d">✅ подтверждённые: <b>{{ scPv2Headline.confirmed_total }}</b></div>
+                            <div style="color:#a16207">🟡 на проверку: <b>{{ scPv2Headline.needs_review_total }}</b></div>
+                            <div style="color:#c2410c">🟠 слабая графика: <b>{{ scPv2Headline.weak_graphic_total }}</b></div>
+                            <div style="color:#6b7280">⚪ скрытый шум: <b>{{ scPv2Headline.hidden_noise_total }}</b></div>
+                            <div style="color:#b91c1c">🔴 ошибки/пропущенные: <b>{{ scPv2Headline.failed_or_skipped_total }}</b></div>
+                            <div v-if="scPv2Headline.coverage_notes_total" style="opacity:.7">⚑ coverage notes: {{ scPv2Headline.coverage_notes_total }}</div>
+                        </div>
+
+                        <!-- Графика / Vision grounding (read-only сводка) -->
+                        <div class="sc-card" style="padding:10px 14px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px; font-size:12.5px">
+                            <div style="font-weight:600; margin-bottom:8px; color:#3730a3">📐 Графика / Vision grounding</div>
+
+                            <!-- Vision -->
+                            <div v-if="scPv2GraphicVision" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:8px">
+                                <span style="color:#6b7280">Vision:</span>
+                                <span>обработано блоков: <b>{{ scPv2GraphicVision.selected_total != null ? scPv2GraphicVision.selected_total : '—' }}</b></span>
+                                <span style="color:#15803d">✅ vision-вызовов: <b>{{ scPv2GraphicVision.vision_calls_succeeded || 0 }}</b></span>
+                                <span v-if="scPv2GraphicVision.vision_calls_failed" style="color:#b91c1c">🔴 ошибок: <b>{{ scPv2GraphicVision.vision_calls_failed }}</b></span>
+                                <span v-if="scPv2GraphicVision.skipped_no_runner" style="color:#6b7280">⏭ skipped: <b>{{ scPv2GraphicVision.skipped_no_runner }}</b></span>
+                                <span style="font-size:11px; color:#9ca3af; border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">{{ scPv2GraphicVision.status }}</span>
+                            </div>
+                            <div v-else style="color:#9ca3af; margin-bottom:8px">
+                                Vision-описание графики ещё не запускалось для этой пары.
+                            </div>
+
+                            <!-- Grounding -->
+                            <div v-if="scPv2GraphicGrounding">
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px">
+                                    <span style="color:#6b7280">Сущности ({{ scPv2GraphicGrounding.entities_total != null ? scPv2GraphicGrounding.entities_total : (scPv2GraphicGrounding.entities_grounded || 0) + (scPv2GraphicGrounding.entities_weakly_grounded || 0) + (scPv2GraphicGrounding.entities_ungrounded || 0) }}):</span>
+                                    <span style="color:#15803d">✅ подтверждено: <b>{{ scPv2GraphicGrounding.entities_grounded || 0 }}</b></span>
+                                    <span style="color:#a16207">🟡 частично: <b>{{ scPv2GraphicGrounding.entities_weakly_grounded || 0 }}</b></span>
+                                    <span style="color:#6b7280">⚪ не подтверждено: <b>{{ scPv2GraphicGrounding.entities_ungrounded || 0 }}</b></span>
+                                    <span style="color:#b91c1c">🔴 отклонено: <b>{{ scPv2GroundingRejectedTotal }}</b></span>
+                                </div>
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px; color:#6b7280">
+                                    <span>Изменения:</span>
+                                    <span style="color:#15803d">✅ подтверждено: <b>{{ scPv2GraphicGrounding.changes_grounded || 0 }}</b></span>
+                                    <span style="color:#a16207">🟡 частично: <b>{{ scPv2GraphicGrounding.changes_weakly_grounded || 0 }}</b></span>
+                                    <span style="color:#b91c1c">🔴 отклонено: <b>{{ scPv2GraphicGrounding.changes_rejected || 0 }}</b></span>
+                                </div>
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:6px; font-size:11.5px; color:#6b7280">
+                                    <span>Снято как галлюцинации:</span>
+                                    <span>искусственные ряды: <b>{{ scPv2GraphicGrounding.artificial_series_rejected || 0 }}</b></span>
+                                    <span>designator-range: <b>{{ scPv2GraphicGrounding.designator_range_rejected || 0 }}</b></span>
+                                    <span>no-op: <b>{{ scPv2GraphicGrounding.noop_changes_rejected || 0 }}</b></span>
+                                </div>
+                                <div style="font-size:11px; color:#6b7280; margin-top:4px">
+                                    Grounded / weakly grounded можно использовать как подтверждающий слой.
+                                    Ungrounded и rejected_* не используются как факт.
+                                </div>
+                                <button class="btn btn-sm btn-secondary" style="margin-top:8px; padding:3px 10px; font-size:12px"
+                                        @click="scPv2GdOpenDrawer()">Показать детали grounding</button>
+                            </div>
+                            <div v-else style="color:#9ca3af">
+                                Grounding ещё не выполнен.
+                            </div>
+                        </div>
+
+                        <!-- Grounded vision evidence (per-delta связка, mark-only) -->
+                        <div v-if="scPv2GroundedEvidence" style="margin-top:14px; padding:10px 12px; border:1px solid var(--border,#e5e7eb); border-radius:8px; background:var(--card-bg,#fff)">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
+                                <strong style="color:#3730a3">🔗 Grounded evidence</strong>
+                                <span v-if="!scPv2GeAvailable" style="font-size:11px; color:#9ca3af">(нет grounding-связки)</span>
+                            </div>
+                            <div v-if="scPv2GeAvailable">
+                                <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px">
+                                    <span style="color:#166534">✅ с подтверждением: <b>{{ scPv2GroundedEvidence.deltas_with_grounded_evidence || 0 }}</b></span>
+                                    <span style="color:#854d0e">🟡 слабое: <b>{{ scPv2GroundedEvidence.deltas_with_weak_evidence || 0 }}</b></span>
+                                    <span style="color:#9a3412">⚠ conflicts/rejected: <b>{{ scPv2GroundedEvidence.deltas_with_rejected_conflicts || 0 }}</b></span>
+                                    <span style="color:#6b7280">⚪ без подтверждения: <b>{{ scPv2GroundedEvidence.deltas_without_evidence || 0 }}</b></span>
+                                </div>
+                                <!-- breakdown по вердикту критика (по объяснённым дельтам с evidence) -->
+                                <div v-if="scPv2GeVerdictBreakdown.total" style="margin-top:6px; font-size:12px; color:#475569">
+                                    <span style="color:#6b7280">Grounded evidence по критику:</span>
+                                    <span style="color:#166534; margin-left:6px">✅ accept: <b>{{ scPv2GeVerdictBreakdown.accept }}</b></span>
+                                    <span style="color:#854d0e; margin-left:8px">🟡 на проверку: <b>{{ scPv2GeVerdictBreakdown.needs_review }}</b></span>
+                                    <span style="color:#9a3412; margin-left:8px">⚠ weak/rejected: <b>{{ scPv2GeVerdictBreakdown.weak_other }}</b></span>
+                                </div>
+                                <!-- компактный список интересных дельт -->
+                                <div v-if="scPv2GeInterestingCards.length" style="margin-top:8px; display:flex; flex-direction:column; gap:4px; max-height:260px; overflow:auto">
+                                    <div v-for="c in scPv2GeInterestingCards.slice(0,20)" :key="'ge'+c.delta_id"
+                                         style="display:flex; align-items:center; gap:8px; font-size:12px; padding:3px 0; border-top:1px solid #f1f5f9">
+                                        <span v-if="scPv2GeBadgeStyle(c.evidence_level)"
+                                              :style="{background: scPv2GeBadgeStyle(c.evidence_level).bg, color: scPv2GeBadgeStyle(c.evidence_level).fg, border:'1px solid '+scPv2GeBadgeStyle(c.evidence_level).border, borderRadius:'10px', padding:'1px 8px', fontSize:'11px', whiteSpace:'nowrap'}">
+                                            {{ scPv2GeBadgeStyle(c.evidence_level).emoji }} {{ scPv2GeBadgeStyle(c.evidence_level).text }}
+                                        </span>
+                                        <span style="color:#374151">{{ c.old_value || '—' }} → {{ c.new_value || '—' }}</span>
+                                        <span v-if="c.top_anchors && c.top_anchors.length" style="color:#6b7280">
+                                            · anchor: {{ scPv2GeAnchorText(c.top_anchors[0]) }}
+                                        </span>
+                                        <span v-if="c.page_numbers && (c.page_numbers.left != null || c.page_numbers.right != null)" style="color:#9ca3af; margin-left:auto; white-space:nowrap">
+                                            OLD {{ c.page_numbers.left != null ? c.page_numbers.left : '—' }} → NEW {{ c.page_numbers.right != null ? c.page_numbers.right : '—' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="font-size:11px; color:#6b7280; margin-top:6px">
+                                    Grounded vision evidence подтверждает deterministic delta по текстовым anchors.
+                                    Weak evidence — только подсказка для ручной проверки.
+                                    Rejected/ungrounded не используются как факт.
+                                </div>
+                            </div>
+                            <div v-else style="color:#9ca3af; font-size:12px">
+                                Связка дельт с grounded vision пока не построена для этой пары.
+                            </div>
+                        </div>
+
+                        <!-- Grounding detail drawer (read-only) -->
+                        <div v-if="scPv2GdOpen"
+                             style="position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:1000; display:flex; justify-content:flex-end"
+                             @click.self="scPv2GdClose()">
+                            <div style="width:min(680px,96vw); height:100%; background:var(--card-bg,#fff); box-shadow:-4px 0 24px rgba(0,0,0,.2); display:flex; flex-direction:column">
+                                <!-- header -->
+                                <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border,#e5e7eb)">
+                                    <strong style="color:#3730a3">📐 Детали grounding</strong>
+                                    <span v-if="scPv2GdLoading" style="font-size:12px; color:#6b7280">загрузка…</span>
+                                    <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:2px 10px" @click="scPv2GdClose()">✕ закрыть</button>
+                                </div>
+                                <div style="flex:1; overflow:auto; padding:14px 16px; font-size:12.5px">
+                                    <div v-if="scPv2GdError" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; padding:8px 10px; margin-bottom:10px">
+                                        {{ scPv2GdError }}
+                                    </div>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.status==='not_found'">
+                                        <div style="color:#9ca3af; padding:12px 0">Детальный grounding-отчёт ещё не найден.</div>
+                                    </template>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.status==='error'">
+                                        <div style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:6px; padding:8px 10px">
+                                            Отчёт повреждён: {{ scPv2GdResp.message }}
+                                        </div>
+                                    </template>
+                                    <template v-else-if="scPv2GdResp && scPv2GdResp.summary">
+                                        <!-- summary -->
+                                        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px">
+                                            <span style="color:#15803d">✅ Подтверждено: <b>{{ scPv2GdResp.summary.entities_grounded || 0 }}</b></span>
+                                            <span style="color:#a16207">🟡 Частично: <b>{{ scPv2GdResp.summary.entities_weakly_grounded || 0 }}</b></span>
+                                            <span style="color:#6b7280">⚪ Не подтверждено: <b>{{ scPv2GdResp.summary.entities_ungrounded || 0 }}</b></span>
+                                            <span style="color:#b91c1c">🔴 Отклонено: <b>{{ (scPv2GdResp.summary.designator_range_rejected||0) + (scPv2GdResp.summary.artificial_series_rejected||0) + (scPv2GdResp.summary.noop_changes_rejected||0) }}</b></span>
+                                        </div>
+                                        <!-- filter tabs -->
+                                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px">
+                                            <button v-for="t in [['all','Все'],['grounded','✅ Подтверждённые'],['weak','🟡 Частично'],['ungrounded','⚪ Не подтверждены'],['rejected','🔴 Отклонённые'],['changes','🔁 Изменения']]"
+                                                    :key="'gdtab'+t[0]"
+                                                    class="btn btn-sm" :class="scPv2GdFilter===t[0] ? 'btn-primary' : 'btn-secondary'"
+                                                    style="padding:2px 9px; font-size:11.5px"
+                                                    @click="scPv2GdFilter=t[0]">{{ t[1] }}</button>
+                                        </div>
+                                        <div style="font-size:11px; color:#6b7280; margin-bottom:8px">
+                                            показано {{ scPv2GdFilteredCards.length }}<template v-if="scPv2GdPagination"> из {{ scPv2GdPagination.total }} (limit {{ scPv2GdPagination.limit }})</template>
+                                        </div>
+                                        <!-- cards -->
+                                        <div v-if="!scPv2GdFilteredCards.length" style="color:#9ca3af; padding:10px 0">
+                                            Нет элементов в выбранной категории.
+                                        </div>
+                                        <div v-for="card in scPv2GdFilteredCards" :key="'gdc'+card.id"
+                                             :style="{border:'1px solid '+scPv2GdStatusColor(card.status).br, background:scPv2GdStatusColor(card.status).bg, borderRadius:'6px', padding:'7px 10px', marginBottom:'6px'}">
+                                            <div style="display:flex; gap:8px; align-items:baseline; flex-wrap:wrap">
+                                                <code style="background:rgba(255,255,255,.6); border-radius:4px; padding:1px 5px; font-size:12px">{{ card.card_type==='change' ? card.value : card.value }}</code>
+                                                <span :style="{color:scPv2GdStatusColor(card.status).fg, fontWeight:600, fontSize:'11px'}">{{ card.status }}</span>
+                                                <span style="font-size:10.5px; color:#6b7280">{{ card.reason }}</span>
+                                                <span v-if="card.use_as_fact" style="font-size:10px; color:#166534; border:1px solid #bbf7d0; border-radius:8px; padding:0 6px">факт{{ card.fact_level==='weak' ? ' (проверить)' : '' }}</span>
+                                                <span v-else style="font-size:10px; color:#6b7280; border:1px solid #e5e7eb; border-radius:8px; padding:0 6px">не факт</span>
+                                            </div>
+                                            <div style="font-size:10.5px; color:#6b7280; margin-top:4px; display:flex; gap:10px; flex-wrap:wrap">
+                                                <span v-if="card.anchor">anchor: {{ card.anchor }}</span>
+                                                <span v-if="card.anchor_source">source: {{ card.anchor_source }}</span>
+                                                <span v-if="card.card_type==='change' && (card.left_page_number!=null || card.right_page_number!=null)">стр. {{ card.left_page_number!=null?card.left_page_number:'—' }} → {{ card.right_page_number!=null?card.right_page_number:'—' }}</span>
+                                                <span v-else-if="card.page_number!=null">стр. {{ card.page_number }}</span>
+                                                <span v-if="card.block_id">block: {{ card.block_id }}</span>
+                                                <span v-if="card.left_block_id || card.right_block_id">blocks: {{ card.left_block_id||'—' }} / {{ card.right_block_id||'—' }}</span>
+                                            </div>
+                                            <div style="margin-top:6px">
+                                                <button v-if="scPv2GdCardHasTarget(card)" class="btn btn-sm btn-secondary"
+                                                        style="padding:2px 8px; font-size:11px"
+                                                        @click="scPv2OpenBlockLinkFromGrounding(card)">🔗 К связи блоков</button>
+                                            </div>
+                                        </div>
+                                        <div style="font-size:11px; color:#6b7280; margin-top:10px; border-top:1px solid var(--border,#e5e7eb); padding-top:8px">
+                                            Grounded можно использовать как подтверждающий слой.
+                                            Weakly grounded — только как подсказку для ручной проверки.
+                                            Ungrounded и rejected_* не используются как факт.
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Фильтры -->
+                        <div v-if="scPv2HasFilterOptions" class="sc-card" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px 12px; margin-bottom:8px; background:var(--card-bg,#fff); border:1px solid var(--border,#e5e7eb); border-radius:8px">
+                            <select v-model="scPv2Filters.entity_type" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">тип сущности: все</option>
+                                <option v-for="v in scPv2FilterOptions.entity_type" :key="'pv2fe'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.delta_type" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">тип изменения: все</option>
+                                <option v-for="v in scPv2FilterOptions.delta_type" :key="'pv2fd'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.risk_level" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">риск: все</option>
+                                <option v-for="v in scPv2FilterOptions.risk_level" :key="'pv2fr'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <select v-model="scPv2Filters.critic_verdict" class="form-control" style="padding:3px 6px; font-size:12px">
+                                <option value="">вердикт критика: все</option>
+                                <option v-for="v in scPv2FilterOptions.critic_verdict" :key="'pv2fv'+v" :value="v">{{ v }}</option>
+                            </select>
+                            <button v-if="scPv2FiltersActive" class="btn btn-secondary" style="padding:2px 10px; font-size:12px" @click="scPv2ResetFilters()">✕ сбросить</button>
+                        </div>
+
+                        <!-- Секции -->
+                        <div v-for="sec in scPv2Sections" :key="'pv2s'+sec.key"
+                             class="sc-card" style="margin-bottom:8px; border:1px solid var(--border,#e5e7eb); border-radius:8px; background:var(--card-bg,#fff); overflow:hidden">
+                            <div @click="scPv2ToggleSection(sec.key)"
+                                 style="display:flex; gap:8px; align-items:center; padding:8px 12px; cursor:pointer; user-select:none; background:#f8fafc">
+                                <span style="font-size:13px">{{ scPv2Open[sec.key] ? '▾' : '▸' }}</span>
+                                <span>{{ scPv2SectionEmoji(sec.key) }}</span>
+                                <span style="font-weight:600; font-size:13px">{{ sec.title || sec.key }}</span>
+                                <span style="font-size:11.5px; color:#6b7280">{{ sec.count }}</span>
+                                <span v-if="scPv2FiltersActive && scPv2CardsFor(sec).length !== (sec.cards || []).length"
+                                      style="font-size:11px; color:#a16207">(показано {{ scPv2CardsFor(sec).length }})</span>
+                                <span v-if="sec.display_hint==='warning'" style="font-size:10.5px; color:#c2410c; border:1px solid #fed7aa; border-radius:8px; padding:0 6px">предупреждение</span>
+                                <span v-if="sec.show_in_diagnostics" style="font-size:10.5px; color:#6b7280; border:1px solid #e5e7eb; border-radius:8px; padding:0 6px">диагностика</span>
+                            </div>
+                            <div v-if="scPv2Open[sec.key]" style="padding:8px 12px">
+                                <div style="font-size:11.5px; color:#6b7280; margin-bottom:8px">{{ sec.description }}</div>
+                                <div v-if="!scPv2CardsFor(sec).length" style="font-size:12px; color:#9ca3af; padding:4px 0 8px">
+                                    {{ (sec.cards || []).length ? 'Нет карточек под выбранные фильтры.' : (sec.count ? 'Карточки недоступны (см. warnings) — известны только id дельт.' : 'Пусто.') }}
+                                </div>
+                                <!-- Карточки -->
+                                <div v-for="(card, ci) in scPv2CardsFor(sec)" :key="'pv2c' + sec.key + (card.delta_id || ci)"
+                                     style="border:1px solid #e5e7eb; border-radius:6px; padding:8px 10px; margin-bottom:6px">
+                                    <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap">
+                                        <div style="font-weight:600; font-size:13px">{{ card.title || card.delta_id || '—' }}</div>
+                                        <div style="font-size:11px; color:#6b7280; white-space:nowrap">{{ card.subtitle }}</div>
+                                    </div>
+                                    <div v-if="card.old_value || card.new_value" style="font-size:12px; margin-top:5px">
+                                        <code style="background:#fef2f2; border:1px solid #fecaca; border-radius:4px; padding:1px 5px">{{ card.old_value || '∅' }}</code>
+                                        <span style="opacity:.6"> → </span>
+                                        <code style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px">{{ card.new_value || '∅' }}</code>
+                                    </div>
+                                    <!-- Evidence + critic: ДВА разных сигнала (графика ≠ вердикт критика) -->
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:10.5px; align-items:center">
+                                        <!-- 1) grounded vision evidence badge (mark-only) -->
+                                        <span v-if="card.grounded_evidence && scPv2GeBadgeStyle(card.grounded_evidence.evidence_level)"
+                                              :style="{background: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).bg, color: scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).fg, border:'1px solid '+scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).border, borderRadius:'8px', padding:'0 7px', fontWeight:600}"
+                                              :title="(card.grounded_evidence.warnings||[]).join('; ')">
+                                            {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).emoji }} {{ scPv2GeBadgeStyle(card.grounded_evidence.evidence_level).text }}
+                                        </span>
+                                        <!-- 2) critic verdict — отдельный цветной чип -->
+                                        <span style="color:#6b7280">Critic:</span>
+                                        <span v-if="scPv2CriticVerdictStyle(card.critic_verdict)"
+                                              :style="{background: scPv2CriticVerdictStyle(card.critic_verdict).bg, color: scPv2CriticVerdictStyle(card.critic_verdict).fg, border:'1px solid '+scPv2CriticVerdictStyle(card.critic_verdict).border, borderRadius:'8px', padding:'0 7px', fontWeight:600}">
+                                            {{ scPv2CriticVerdictStyle(card.critic_verdict).text }}
+                                        </span>
+                                        <span v-else style="border:1px solid #e5e7eb; background:#f8fafc; color:#9ca3af; border-radius:8px; padding:0 7px">нет объяснения</span>
+                                        <!-- 3) risk + show -->
+                                        <span v-if="card.risk_level && card.risk_level !== 'unknown'" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px">Риск: {{ card.risk_level }}</span>
+                                        <span v-if="card.should_show_to_engineer != null"
+                                              :style="{border:'1px solid '+(card.should_show_to_engineer ? '#e5e7eb' : '#fde68a'), background:(card.should_show_to_engineer ? 'transparent' : '#fffbeb'), color:(card.should_show_to_engineer ? '#374151' : '#92400e'), borderRadius:'8px', padding:'0 7px'}">
+                                            Показать: {{ scPv2ShowText(card.should_show_to_engineer) }}
+                                        </span>
+                                        <span v-if="card.confidence != null" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px; color:#9ca3af">confidence: {{ card.confidence }}</span>
+                                        <span v-if="card.groundedness" style="border:1px solid #e5e7eb; border-radius:8px; padding:0 7px; color:#9ca3af">{{ card.groundedness }}</span>
+                                    </div>
+                                    <div v-if="card.summary" style="font-size:12px; margin-top:6px">{{ card.summary }}</div>
+                                    <div v-if="card.contractor_impact" style="font-size:11.5px; color:#6b7280; margin-top:3px">Влияние: {{ card.contractor_impact }}</div>
+                                    <!-- grounded evidence detail (top anchors + use_in_critic) -->
+                                    <div v-if="card.grounded_evidence && card.grounded_evidence.evidence_level !== 'none'"
+                                         style="font-size:11px; margin-top:6px; padding:5px 8px; border-radius:6px; background:#f8fafc; border:1px solid #eef2f7">
+                                        <div style="color:#475569">
+                                            <b>{{ card.grounded_evidence.label }}</b>
+                                            · use_in_critic: {{ card.grounded_evidence.use_in_critic ? 'да' : 'нет' }}
+                                        </div>
+                                        <div v-for="(a, ai) in (card.grounded_evidence.top_anchors||[])" :key="'gea'+ai" style="color:#6b7280; margin-top:2px">
+                                            anchor: {{ scPv2GeAnchorText(a) }}
+                                            <span v-if="a.left_page_number != null || a.right_page_number != null">· OLD {{ a.left_page_number != null ? a.left_page_number : '—' }} → NEW {{ a.right_page_number != null ? a.right_page_number : '—' }}</span>
+                                            <span v-if="a.match_score != null">· score {{ a.match_score }}</span>
+                                        </div>
+                                        <div v-if="(card.grounded_evidence.warnings||[]).length" style="color:#9a3412; margin-top:2px">
+                                            ⚠ {{ card.grounded_evidence.warnings.join('; ') }}
+                                        </div>
+                                        <!-- rejected/conflict — НЕ факт -->
+                                        <div v-if="card.grounded_evidence.evidence_level === 'rejected_only' || card.grounded_evidence.evidence_level === 'conflict'"
+                                             style="color:#9a3412; margin-top:2px; font-weight:600">
+                                            Rejected/ungrounded vision не используется как факт.
+                                        </div>
+                                        <!-- подсказка: evidence ≠ critic -->
+                                        <div style="color:#94a3b8; margin-top:4px; font-size:10.5px">
+                                            Grounded vision подтверждает данные по текстовым anchors. Critic verdict
+                                            показывает, принял ли критик изменение или отправил на ручную проверку.
+                                        </div>
+                                    </div>
+                                    <div style="font-size:10.5px; color:#9ca3af; margin-top:6px">
+                                        <template v-if="card.page_numbers">стр. A: {{ card.page_numbers.left != null ? card.page_numbers.left : '—' }} · стр. B: {{ card.page_numbers.right != null ? card.page_numbers.right : '—' }}</template>
+                                        <template v-if="card.block_ids && (card.block_ids.left || card.block_ids.right)"> · блоки: {{ card.block_ids.left || '—' }} / {{ card.block_ids.right || '—' }}</template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Готовность графики + warnings -->
+                        <div v-if="scPv2Payload.graphic_readiness" style="font-size:11.5px; color:#6b7280; margin-bottom:6px">
+                            Графика: {{ scPv2Payload.graphic_readiness.status }}
+                            · блоков {{ scPv2Payload.graphic_readiness.graphic_blocks_total }}
+                            · пригодно для diff {{ scPv2Payload.graphic_readiness.usable_for_diff_total }}
+                        </div>
+                        <details v-if="scPv2AllWarnings.length" style="font-size:11px; color:#6b7280; margin-bottom:10px">
+                            <summary style="cursor:pointer">Warnings ({{ scPv2AllWarnings.length }})</summary>
+                            <ul style="margin:4px 0 0 18px">
+                                <li v-for="(w, wi) in scPv2AllWarnings" :key="'pv2pw'+wi">{{ w }}</li>
+                            </ul>
+                        </details>
+                    </template>
+                </template>
+
+                <!-- Ещё не загружали -->
+                <div v-else class="sc-card" style="padding:18px; text-align:center; color:#9ca3af; font-size:13px">
+                    Нажмите ⟳, чтобы прочитать готовые артефакты Pipeline V2.
                 </div>
             </div>
 

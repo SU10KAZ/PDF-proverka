@@ -45,16 +45,15 @@ def _version_output_dir(project_id: str) -> Path:
 
     Используем для всех reads/writes runtime artefacts, чтобы V2 audit не
     читал V1 cached artifacts (01_text_analysis.json, 02_blocks_analysis.json и др.).
+    Делегирует единому резолверу version_service.resolve_active_output_dir
+    (reserc.md #97).
     """
     env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
     if env_output_dir:
         return Path(env_output_dir)
 
     from backend.app.services.common import version_service
-    try:
-        return version_service.resolve_version_output_dir(project_id)
-    except (version_service.VersionNotFoundError, FileNotFoundError):
-        return resolve_project_dir(project_id) / "_output"
+    return version_service.resolve_active_output_dir(project_id)
 
 
 def _version_project_dir(project_id: str) -> Path:

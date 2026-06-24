@@ -51,15 +51,13 @@ def _error_detail(exit_code: int, output: str, max_len: int = 200) -> str:
 # ─── Pure helper functions (re-exported from previous pass) ──────────────────
 
 def _version_output_dir(project_id: str):
-    """Папка _output активной версии (через bind_version), fallback на корень."""
+    """Папка _output активной версии. AUDIT_OUTPUT_DIR override → иначе единый
+    резолвер version_service.resolve_active_output_dir (reserc.md #97, v2-aware)."""
     env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
     if env_output_dir:
         return Path(env_output_dir)
     from backend.app.services.common import version_service
-    try:
-        return version_service.resolve_version_output_dir(project_id)
-    except (version_service.VersionNotFoundError, FileNotFoundError):
-        return resolve_project_dir(project_id) / "_output"
+    return version_service.resolve_active_output_dir(project_id)
 
 
 def backfill_text_evidence_in_findings(project_id: str):
@@ -253,6 +251,15 @@ def apply_phase0_dedup(project_id: str) -> dict | None:
                 f"phase0_dedup count invariant violated: in={before} out={len(kept)}"
             )
 
+        # reserc.md #28: merge_similar_findings перенумеровывает F-ID, а dedup
+        # дропает записи ПОСЛЕ него → в id появлялись дыры (F-001, F-003, …).
+        # Перенумеровываем оставшиеся сквозь F-001..F-NNN: это ФИНАЛЬНЫЙ шаг
+        # findings_merge, downstream (critic/norms/opt) ещё не читал эти id и
+        # ссылок на старые id внутри прогона нет → безопасно. Идемпотентно
+        # (на уже-сплошной нумерации даёт тот же результат).
+        for _new_idx, _it in enumerate(kept, start=1):
+            _it["id"] = f"F-{_new_idx:03d}"
+
         # ── Write back ────────────────────────────────────────────────────
         fd["findings"] = kept
         meta = fd.get("meta") or {}
@@ -331,6 +338,7 @@ def merge_similar_findings(project_id: str) -> dict | None:
     """Объединить похожие замечания в 03_findings.json."""
     from backend.app.services.findings.findings_service import (
         _normalize_problem_pattern,
+        aggregate_merged_fields,
     )
     from collections import OrderedDict
     import re as _re
@@ -376,59 +384,19 @@ def merge_similar_findings(project_id: str) -> dict | None:
             leader["id"] = f"F-{new_id:03d}"
             new_id += 1
 
-            all_sheets = []
-            all_pages = []
-            all_block_ids = []
-            all_source_block_ids = []
-            all_etr = []
-            all_evidence = []
-            details_lines = []
-
-            for i, it in enumerate(group_items, 1):
-                sh = it.get("sheet", "")
-                pg = it.get("page")
-                problem = it.get("problem") or it.get("description") or it.get("finding") or ""
-                details_lines.append(f"{i}) {problem}")
-
-                if sh and sh not in all_sheets:
-                    all_sheets.append(sh)
-                if pg:
-                    pgs = pg if isinstance(pg, list) else [pg]
-                    for p in pgs:
-                        if p not in all_pages:
-                            all_pages.append(p)
-                for bid in (it.get("related_block_ids") or []):
-                    if bid not in all_block_ids:
-                        all_block_ids.append(bid)
-                for sbid in (it.get("source_block_ids") or []):
-                    if sbid not in all_source_block_ids:
-                        all_source_block_ids.append(sbid)
-                for etr in (it.get("evidence_text_refs") or []):
-                    if etr not in all_etr:
-                        all_etr.append(etr)
-                for ev in (it.get("evidence") or []):
-                    all_evidence.append(ev)
-
+            details_lines = [
+                f"{i}) " + (it.get("problem") or it.get("description")
+                           or it.get("finding") or "")
+                for i, it in enumerate(group_items, 1)
+            ]
             leader_problem = leader.get("problem") or leader.get("description") or ""
-            summary = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
-            leader["problem"] = summary
+            # Единая агрегация source-of-truth полей (reserc.md #92/#6/#27): sheet/
+            # page/related_block_ids/source_block_ids/evidence_text_refs/evidence +
+            # norm_quote/highlight_regions. Иначе critic ложно ставит no_evidence/
+            # phantom и теряются норм-цитаты.
+            leader.update(aggregate_merged_fields(group_items, leader))
+            leader["problem"] = f"[Объединено {len(group_items)} замечаний] {leader_problem}"
             leader["description"] = "\n".join(details_lines)
-            leader["sheet"] = ", ".join(all_sheets) if all_sheets else leader.get("sheet", "")
-            leader["page"] = sorted(set(all_pages)) if all_pages else leader.get("page")
-            leader["related_block_ids"] = all_block_ids
-            leader["evidence"] = all_evidence
-            # Сохранить source-of-truth поля поглощённых замечаний (reserc.md #6/#27):
-            # иначе critic ложно ставит no_evidence/phantom и теряются норм-цитаты.
-            if all_source_block_ids:
-                leader["source_block_ids"] = all_source_block_ids
-            if all_etr:
-                leader["evidence_text_refs"] = all_etr
-            for _qf in ("norm_quote", "highlight_regions"):
-                if not leader.get(_qf):
-                    for it in group_items:
-                        if it.get(_qf):
-                            leader[_qf] = it[_qf]
-                            break
             leader["sub_findings"] = [
                 {
                     "original_id": it.get("id", ""),

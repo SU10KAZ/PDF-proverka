@@ -131,8 +131,16 @@ async def delete_group(section: str, group_id: str, object_id: Optional[str] = N
 # ─── Статичные роуты (ПЕРЕД динамическими /{project_id}/...) ───
 
 @router.get("")
-async def list_projects():
-    """Список всех проектов с их статусом."""
+async def list_projects(request: Request):
+    """Список всех проектов с их статусом.
+
+    opt-in read canary: при `?storage=projects_v2` (или header
+    `X-Audit-Storage: projects_v2`) И включённом `AUDIT_PROJECTS_V2_READ_CANARY_ENABLED`
+    список отдаётся из projects_v2 (read-only). Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_projects_list()
     from backend.app.services.common.object_service import get_current_object
     current_obj = get_current_object()
     object_name = current_obj["name"] if current_obj else "Объект"
@@ -205,6 +213,106 @@ async def register_external(req: RegisterExternalRequest):
         return {"status": "ok", "project_info": info}
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+@router.post("/upload-folder")
+async def upload_folder(
+    discipline: str = Form(...),
+    project_name: str = Form(...),
+    object_id: Optional[str] = Form(None),
+    object_name: Optional[str] = Form(None),
+    description: str = Form(""),
+    upload_mode: str = Form("new_project"),
+    target_project_id: Optional[str] = Form(None),
+    files: list[UploadFile] = File(..., description="Файлы папки проекта"),
+):
+    """Загрузить папку проекта с компьютера инженера (browser folder upload).
+
+    `upload_mode=new_project` (default) — создать новый проект. `new_version` —
+    добавить новую версию существующего `target_project_id` (в этом же объекте/
+    разделе) через проверенный version-flow (без orphan, с пере-зеркалированием
+    target в projects_v2). Сначала legacy (авторитетно), затем dual_write_shadow.
+    """
+    oid = object_id
+    if not oid and object_name:
+        from backend.app.services.common import object_service
+        for o in object_service.list_objects():
+            if o.get("name") == object_name:
+                oid = o.get("id")
+                break
+    if not oid:
+        raise HTTPException(422, "Не указан объект (object_id или object_name)")
+    if not files:
+        raise HTTPException(422, "Не передан ни один файл")
+
+    if upload_mode == "new_version":
+        if not target_project_id:
+            raise HTTPException(422, "Не указан target_project_id для режима new_version")
+        from backend.app.pipeline.manager import pipeline_manager
+        if pipeline_manager.is_running(target_project_id):
+            raise HTTPException(409, f"Проект-основание «{target_project_id}» сейчас в аудите. Сначала отмените.")
+
+    payload: list[tuple[str, bytes]] = []
+    for f in files:
+        payload.append((f.filename or "", await f.read()))
+
+    try:
+        result = project_service.save_uploaded_project_folder(
+            object_id=oid,
+            discipline=discipline,
+            project_name=project_name,
+            files=payload,
+            description=description,
+            upload_mode=upload_mode,
+            target_project_id=target_project_id,
+        )
+    except project_service.UploadFolderConflict as e:
+        raise HTTPException(409, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except project_service.UploadFolderError as e:
+        raise HTTPException(422, str(e))
+    return {"status": "ok", **result}
+
+
+@router.post("/upload-folder/precheck")
+async def upload_folder_precheck(
+    project_name: str = Form(...),
+    discipline: Optional[str] = Form(None),
+    object_id: Optional[str] = Form(None),
+    object_name: Optional[str] = Form(None),
+    folder_name: Optional[str] = Form(None),
+    files: list[UploadFile] = File(..., description="Файлы папки проекта"),
+):
+    """Dry-run проверка папки перед загрузкой — НИЧЕГО не пишет.
+
+    Если `discipline` не передана — определяется автоматически (имя папки → имя
+    PDF → текст document.md → fallback). Возвращает verdict (ready|warning|
+    duplicate|error) + blocks[]/warnings[] + fingerprint + detected_discipline/
+    source + suggested_target_project/version (предложение версии). Backend всё
+    равно повторяет hard-проверки при фактической загрузке (race guard).
+    """
+    oid = object_id
+    if not oid and object_name:
+        from backend.app.services.common import object_service
+        for o in object_service.list_objects():
+            if o.get("name") == object_name:
+                oid = o.get("id")
+                break
+    if not oid:
+        raise HTTPException(422, "Не указан объект (object_id или object_name)")
+    if not files:
+        raise HTTPException(422, "Не передан ни один файл")
+
+    payload: list[tuple[str, bytes]] = []
+    for f in files:
+        payload.append((f.filename or "", await f.read()))
+
+    verdict = project_service.precheck_uploaded_project_folder(
+        object_id=oid, discipline=discipline, project_name=project_name,
+        files=payload, folder_name=folder_name,
+    )
+    return {"status": "ok", "precheck": verdict}
 
 
 # ─── Flat endpoints (target_project_id в body) — ДО динамических роутов ───
@@ -340,12 +448,18 @@ async def flat_create_version_from_candidate(req: FlatVersionFromCandidateReques
 # ─── Динамические роуты /{project_id}/... ───
 
 @router.get("/{project_id:path}/versions")
-async def list_project_versions(project_id: str):
+async def list_project_versions(project_id: str, request: Request):
     """Список версий проекта.
 
     Для legacy-проектов (без project_versions.json) возвращает синтетическую
     единственную версию V1, указывающую на корневую папку проекта.
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → versions
+    из projects_v2 (read-only). Без opt-in — legacy как прежде.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_project_versions(request, project_id)
     from backend.app.services.common import version_service
     proj_dir = _resolve_project_dir_for_version_api(project_id)
     return version_service.get_versions_summary(proj_dir, project_id)
@@ -433,18 +547,46 @@ async def create_project_version(project_id: str, req: CreateVersionRequest):
 
 
 @router.get("/{project_id:path}/versions/{version_id}/files")
-async def list_version_files_endpoint(project_id: str, version_id: str):
+async def list_version_files_endpoint(project_id: str, version_id: str, request: Request):
     """Список исходных файлов конкретной версии проекта.
 
     Не включает `_output/`, манифест и `project_info.json`. Возвращает также
     текущий `project_info.json` версии.
+
+    opt-in/default read canary: при v2-backend список берётся из projects_v2
+    01_input (read-only). `?storage=legacy` форсит legacy.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_version_files(request, project_id, version_id)
     from backend.app.services.common import version_service
     _resolve_project_dir_for_version_api(project_id)
     try:
         return version_service.list_version_files(project_id, version_id)
     except version_service.VersionNotFoundError as e:
         raise HTTPException(404, str(e))
+
+
+@router.delete("/{project_id:path}/versions/{version_id}")
+async def delete_project_version(project_id: str, version_id: str):
+    """Удалить версию проекта: папку с диска + запись из манифеста.
+
+    Нельзя удалить единственную версию. После удаления latest переключается
+    на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
+    станут orphan-записями (очищаются через KB-утилиты).
+
+    Операция работает на legacy-сторе (источник истины при
+    READ_DEFAULT_ENABLED=false). projects_v2-shadow остаётся теневой копией.
+    """
+    from backend.app.services.common import version_service
+    proj_dir = _resolve_project_dir_for_version_api(project_id)
+    try:
+        result = version_service.delete_version(proj_dir, project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except version_service.VersionFileError as e:
+        raise HTTPException(400, str(e))
+    return {"status": "ok", **result}
 
 
 @router.post("/{project_id:path}/versions/{version_id}/files")
@@ -495,27 +637,6 @@ async def upload_version_files_endpoint(
     except version_service.VersionFileError as e:
         raise HTTPException(400, str(e))
 
-    return {"status": "ok", **result}
-
-
-@router.delete("/{project_id:path}/versions/{version_id}")
-async def delete_project_version(project_id: str, version_id: str):
-    """Удалить версию проекта: папку с диска + запись из манифеста.
-
-    Нельзя удалить единственную версию. После удаления latest переключается
-    на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
-    станут orphan-записями (очищаются через KB-утилиты).
-    """
-    from backend.app.services.common import version_service
-    proj_dir = project_service.resolve_project_dir(project_id)
-    if not proj_dir.exists():
-        raise HTTPException(404, f"Проект '{project_id}' не найден")
-    try:
-        result = version_service.delete_version(proj_dir, project_id, version_id)
-    except version_service.VersionNotFoundError as e:
-        raise HTTPException(404, str(e))
-    except version_service.VersionFileError as e:
-        raise HTTPException(400, str(e))
     return {"status": "ok", **result}
 
 
@@ -703,13 +824,19 @@ async def rename_project_endpoint(project_id: str, req: RenameProjectRequest):
 
 
 @router.get("/{project_id:path}")
-async def get_project(project_id: str, version_id: Optional[str] = None):
+async def get_project(project_id: str, request: Request, version_id: Optional[str] = None):
     """Детали одного проекта.
 
     Query param `version_id` (опционально): получить статус конкретной версии.
     По умолчанию возвращается latest. Для legacy-проектов без манифеста
     допустим только `v1` (это и есть корень проекта).
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → детали из
+    projects_v2 (read-only). Без opt-in — legacy как прежде.
     """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_project_details(request, project_id)
     from backend.app.services.common import version_service
     # Заранее проверяем валидность version_id, чтобы 404 не путал
     # «проекта нет» и «версии нет».
@@ -815,33 +942,16 @@ async def clean_project(
 async def restore_clean_project(project_id: str, req: RestoreCleanRequest):
     """Восстановить v2-primary версию из backup, созданного clean-project."""
     from backend.app.pipeline.manager import pipeline_manager
-    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
-    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target, v2_is_primary
-    from backend.app.services.storage.v2_primary_wiring import restore_from_backup_id
 
-    if not v2_is_primary():
-        raise HTTPException(409, "restore-clean доступен только в projects_v2_primary")
     if pipeline_manager.is_running(project_id):
         raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
 
-    v2_root = StorageWriteFacade().v2_root()
-    if v2_root is None:
-        raise HTTPException(404, "projects_v2 root не настроен")
-    adapter = ProjectsV2Adapter(v2_root)
-    doc = adapter.find_document_by_project_id(project_id)
-    if doc is None:
-        raise HTTPException(404, f"Проект '{project_id}' не найден в projects_v2")
-    target_vid = adapter.resolve_version_id(doc, req.version_id)
-    if not target_vid:
-        raise HTTPException(404, f"Версия '{req.version_id}' проекта '{project_id}' не найдена в projects_v2")
-    target = V2Target(
-        object_folder=doc["object_folder"],
-        discipline=doc["discipline"],
-        document_code=doc["document_code"],
-        version_id=target_vid,
-    )
     try:
-        result = restore_from_backup_id(target, v2_root, req.backup_id)
+        result = project_service.restore_clean_backup(
+            project_id, backup_id=req.backup_id, version_id=req.version_id,
+        )
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
     except ValueError as e:
@@ -878,3 +988,21 @@ async def unhide_project_endpoint(project_id: str):
     """Вернуть скрытый проект в UI."""
     project_service.unhide_project(project_id)
     return {"status": "ok", "project_id": project_id, "hidden": False}
+
+
+# Жёсткое удаление проекта. Зарегистрировано ПОСЛЕ `/{project_id:path}/clean`,
+# чтобы жадный path-конвертер не перехватывал `…/clean` (тот матчится первым).
+@router.delete("/{project_id:path}")
+async def delete_project_endpoint(project_id: str):
+    """Безвозвратно удалить проект: legacy-папку (все версии, если контейнер) +
+    документ(ы) в projects_v2 + записи old_to_new_map. Гард: нельзя во время
+    запущенного аудита.
+    """
+    from backend.app.pipeline.manager import pipeline_manager
+    if pipeline_manager.is_running(project_id):
+        raise HTTPException(409, f"Аудит проекта '{project_id}' сейчас выполняется. Сначала отмените.")
+    try:
+        result = project_service.delete_project(project_id)
+    except ValueError as e:
+        raise HTTPException(404, str(e))
+    return {"status": "ok", **result}

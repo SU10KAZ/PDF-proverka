@@ -31,12 +31,12 @@ _WORD_RE = re.compile(r"[0-9A-Za-zА-Яа-яЁё]+")
 
 
 def _norm_text(s) -> str:
-    if s is None:
-        return ""
+    # reserc.md #98: dict-evidence извлекаем здесь (доменная обёртка), а саму
+    # строку нормализуем единым text_norm.norm_for_grounding.
     if isinstance(s, dict):  # evidence-like
         s = s.get("quote") or s.get("text") or ""
-    s = unicodedata.normalize("NFKC", str(s)).lower().replace("ё", "е")
-    return re.sub(r"\s+", " ", s).strip()
+    from .text_norm import norm_for_grounding
+    return norm_for_grounding(s)
 
 
 def _title_tokens(title: str, top: int = 6) -> str:

@@ -697,10 +697,10 @@ _NONVISUAL_EVIDENCE_ORIGINS = {"text", "table", "stamp"}
 
 
 def _norm_text(s: str) -> str:
-    s = unicodedata.normalize("NFKC", s or "")
-    s = s.replace("ё", "е").replace("Ё", "Е")
-    s = re.sub(r"\s+", " ", s).strip().lower()
-    return s
+    # reserc.md #98: делегирует единому text_norm.norm_for_grounding
+    # (NFKC+ё→е+collapse+strip+lower) — семантика идентична прежней локальной.
+    from .text_norm import norm_for_grounding
+    return norm_for_grounding(s)
 
 
 def _quote_grounded(quote: str, haystack_norm: str, cfg: FallbackConfig) -> tuple[bool, float]:

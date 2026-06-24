@@ -209,8 +209,8 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
 @router.get("/audit-package/{project_id:path}")
 async def download_audit_package(project_id: str, version_id: Optional[str] = None):
     """Скачать ZIP-пакет аудита для обсуждения в любой нейронке."""
-    from backend.app.services.storage.storage_write_facade import v2_is_primary
-    if v2_is_primary():
+    from backend.app.services.storage.v2_primary_wiring import v2_primary_enabled
+    if v2_primary_enabled():
         return await _download_audit_package_v2(project_id, version_id)
 
     project_dir = resolve_project_dir(project_id)

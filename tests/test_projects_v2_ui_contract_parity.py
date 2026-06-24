@@ -278,3 +278,144 @@ def test_ui_contract_endpoint_enabled(tmp_path, monkeypatch):
     assert codes["doc-complete"]["analysis_status"] == "complete"
     ak = codes["doc-ak"]
     assert ak["is_legacy_preserve"] is True and ak["kb_link_entry_count"] == 4
+
+
+# ---------------------------------------------------------------------------
+# tooling-fix (2026-06-16): robust legacy matcher — naming artifacts больше не
+# дают ложный MISSING_IN_LEGACY/MISMATCH; реальные потери всё ещё ловятся.
+# ---------------------------------------------------------------------------
+
+
+def _single(tmp_path, *, disc, code, legacy_folder_name=None, in_map=True,
+            doc_legacy_path=None, make_legacy_dir=True, findings=None,
+            v2_versions=None, vg_versions=None):
+    """Гермётично: один v2-документ + (опц.) legacy-папка с произвольным именем +
+    old_to_new_map. Возвращает (result, report). legacy_folder_name может отличаться
+    от code (`.pdf` / `(main)` / ` V2`). vg_versions → version_group.json контейнера.
+    """
+    v2 = tmp_path / "projects_v2"
+    legacy = tmp_path / "projects"
+    _wj(v2 / "objects" / OBJF / "object.json",
+        {"object_id": OID, "display_name": OBJ_DISPLAY, "folder_name": OBJF})
+    legacy_folder_name = legacy_folder_name or code
+    v2_versions = v2_versions or [{"version_id": "v001", "version_no": 1}]
+    doc = v2 / "objects" / OBJF / "disciplines" / disc / "documents" / code
+    legacy_dir = legacy / OBJ_DISPLAY / disc / legacy_folder_name
+    dj = {"document_code": code, "object_id": OID, "discipline": disc, "kind": "plain",
+          "versions": v2_versions, "current_version": v2_versions[-1]["version_id"]}
+    dj["legacy_project_path"] = (doc_legacy_path if doc_legacy_path is not None
+                                 else str(legacy_dir))
+    _wj(doc / "document.json", dj)
+    (doc / "current_version.txt").write_text(
+        v2_versions[-1]["version_id"] + "\n", encoding="utf-8")
+    st = "complete" if findings is not None else "none"
+    for v in v2_versions:
+        _v2_version(doc, v["version_id"], v["version_no"], status=st,
+                    has01=findings is not None, has02=findings is not None,
+                    findings=findings)
+    if make_legacy_dir:
+        legacy_dir.mkdir(parents=True, exist_ok=True)
+        if vg_versions is not None:
+            _wj(legacy_dir / "version_group.json",
+                {"logical_project_id": code,
+                 "latest_version_id": f"v{len(vg_versions)}", "versions": vg_versions})
+        if findings is not None:
+            _legacy_output(legacy_dir, has01=True, has02=True, findings=findings)
+    migs = []
+    if in_map:
+        migs.append({"object_id": OID, "object_name": OBJ_DISPLAY, "discipline": disc,
+                     "document_code": code, "version_id": v2_versions[-1]["version_id"],
+                     "version_no": v2_versions[-1]["version_no"],
+                     "legacy_folder_name": legacy_folder_name,
+                     "legacy_folder_path": str(legacy_dir), "files": []})
+    _wj(v2 / "_system" / "old_to_new_map.json", {"schema_version": 1, "migrations": migs})
+    _wj(tmp_path / "knowledge_base" / "decisions_log.json", {"entries": []})
+    rep = UC.run_contract_parity(ProjectsV2Adapter(v2), projects_root=legacy,
+                                 explicit_codes=[code])
+    return rep["results"][0], rep
+
+
+def test_pdf_suffix_legacy_id_no_false_missing(tmp_path):
+    """`.pdf` в имени legacy-папки → EXPECTED_NAMING_DIFFERENCE, не MISSING/MISMATCH."""
+    r, rep = _single(tmp_path, disc="VK", code="13АВ-РД-ВК1-К2",
+                     legacy_folder_name="13АВ-РД-ВК1-К2.pdf", findings=None)
+    assert r["doc_status"] == UC.EXPECTED_NAMING
+    assert r["naming_diff"] is True and r["legacy_exists"] is True
+    assert rep["doc_status_counts"][UC.MISSING_LEGACY] == 0
+    assert rep["doc_status_counts"][UC.MISMATCH] == 0
+    nm = next(f for f in r["fields"] if f["field"] == "legacy_folder_naming")
+    assert nm["status"] == UC.EXPECTED_NAMING and nm["legacy"] == "13АВ-РД-ВК1-К2.pdf"
+    dc = next(f for f in r["fields"] if f["field"] == "document_code")
+    assert dc["status"] == UC.MATCH  # коды связаны через old_to_new_map
+
+
+def test_version_suffix_legacy_folder_no_false_mismatch(tmp_path):
+    """legacy `<base> V2` folder ↔ чистый v2 document_code → EXPECTED_NAMING, не MISMATCH."""
+    r, rep = _single(tmp_path, disc="AR", code="133_23-ГК-АР2",
+                     legacy_folder_name="133_23-ГК-АР2 V2", findings=5)
+    assert r["doc_status"] == UC.EXPECTED_NAMING
+    assert r["findings_loss"] is False and rep["contract_ok"] is True
+    dc = next(f for f in r["fields"] if f["field"] == "document_code")
+    assert dc["status"] == UC.MATCH
+
+
+def test_main_container_matched(tmp_path):
+    """legacy `(main)` контейнер сопоставляется (document_code_for → logical_project_id)."""
+    r, rep = _single(tmp_path, disc="EOM", code="133_23-ГК-ЭМ1",
+                     legacy_folder_name="133_23-ГК-ЭМ1(main)",
+                     vg_versions=[{"version_id": "v1", "version_no": 1}], findings=None)
+    assert r["doc_status"] in (UC.MATCH, UC.EXPECTED_NAMING)
+    assert r["legacy_exists"] is True
+    assert rep["doc_status_counts"][UC.MISSING_LEGACY] == 0
+    assert rep["doc_status_counts"][UC.MISMATCH] == 0
+
+
+def test_legacy_folder_name_used_when_doc_path_empty(tmp_path):
+    """document.json без legacy_project_path → резолв через map (object/discipline/folder)."""
+    r, rep = _single(tmp_path, disc="OV", code="doc-mapname", doc_legacy_path="",
+                     legacy_folder_name="doc-mapname", findings=4)
+    assert r["legacy_match_via"] == "old_to_new_map"
+    assert r["doc_status"] == UC.MATCH and r["legacy_exists"] is True
+    obj = next(f for f in r["fields"] if f["field"] == "object_display_name")
+    assert obj["status"] == UC.MATCH and obj["legacy"] == OBJ_DISPLAY
+
+
+def test_old_to_new_map_has_priority_over_bogus_doc_path(tmp_path):
+    """document.json указывает на несуществующий путь, но map верный → резолв по map."""
+    r, rep = _single(tmp_path, disc="OV", code="doc-prio",
+                     doc_legacy_path="/nonexistent/wrong/path",
+                     legacy_folder_name="doc-prio", findings=2)
+    assert r["legacy_match_via"] == "old_to_new_map"
+    assert r["legacy_exists"] is True and r["doc_status"] == UC.MATCH
+
+
+def test_real_missing_legacy_still_caught(tmp_path):
+    """Нет map-записи, legacy_project_path битый, папки нет → MISSING_IN_LEGACY (ловится)."""
+    r, rep = _single(tmp_path, disc="OV", code="doc-ghost", in_map=False,
+                     doc_legacy_path="/nonexistent/ghost", make_legacy_dir=False,
+                     findings=None)
+    assert r["doc_status"] == UC.MISSING_LEGACY
+    assert r["legacy_exists"] is False
+    assert "doc-ghost" in rep["missing_in_legacy_real"]
+
+
+def test_findings_loss_still_caught_after_fix(tmp_path):
+    """Реальная потеря findings (v2 < legacy) всё ещё → MISMATCH + findings_loss."""
+    v2, legacy = _build(tmp_path, findings_loss=True)
+    rep = UC.run_contract_parity(ProjectsV2Adapter(v2), projects_root=legacy,
+                                 explicit_codes=["doc-loss"])
+    r = rep["results"][0]
+    assert r["doc_status"] == UC.MISMATCH and r["findings_loss"] is True
+    assert "doc-loss" in rep["findings_losses"] and rep["contract_ok"] is False
+
+
+def test_version_loss_still_caught_after_fix(tmp_path):
+    """legacy (main) с 3 версиями, v2 — 1 (не King&Sons) → version_count MISMATCH + version_loss."""
+    r, rep = _single(tmp_path, disc="AR", code="doc-vloss",
+                     legacy_folder_name="doc-vloss(main)",
+                     vg_versions=[{"version_id": f"v{i}", "version_no": i} for i in (1, 2, 3)],
+                     v2_versions=[{"version_id": "v001", "version_no": 1}], findings=2)
+    assert r["version_loss"] is True and r["doc_status"] == UC.MISMATCH
+    assert "doc-vloss" in rep["version_losses"]
+    vc = next(f for f in r["fields"] if f["field"] == "version_count")
+    assert vc["status"] == UC.MISMATCH and vc["legacy"] == 3 and vc["v2"] == 1

@@ -45,13 +45,17 @@ def _safe_id(value: str) -> str:
     return safe
 
 
-def comparison_root() -> Path:
-    """Корень comparison/. Создаётся при первом обращении."""
+def comparison_root_path() -> Path:
+    """Путь корня comparison/ БЕЗ создания (для read-only потребителей)."""
     raw = os.environ.get("COMPARISON_ROOT", "").strip()
     if raw:
-        root = Path(raw).expanduser().resolve()
-    else:
-        root = ROOT_DIR / "comparison"
+        return Path(raw).expanduser().resolve()
+    return ROOT_DIR / "comparison"
+
+
+def comparison_root() -> Path:
+    """Корень comparison/. Создаётся при первом обращении."""
+    root = comparison_root_path()
     root.mkdir(parents=True, exist_ok=True)
     keep = root / ".gitkeep"
     if not keep.exists():
@@ -60,6 +64,11 @@ def comparison_root() -> Path:
         except OSError:
             pass
     return root
+
+
+def sessions_root_path() -> Path:
+    """Путь sessions/ БЕЗ создания (для read-only потребителей)."""
+    return comparison_root_path() / "sessions"
 
 
 def sessions_root() -> Path:

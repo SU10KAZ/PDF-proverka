@@ -43,6 +43,11 @@ from backend.app.services.stage_comparison import graphic_llm_local as graphic_l
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
 from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
+from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
+from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
+from backend.app.services.stage_comparison import pipeline_v2_controlled_enforce_state as pipeline_v2_ce_state_mod
+from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
+from backend.app.services.stage_comparison import pipeline_v2_run_jobs as pipeline_v2_run_jobs_mod
 from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
@@ -185,6 +190,43 @@ class CreateManualPairRequest(BaseModel):
 
 class DeletePairRequest(BaseModel):
     hard: bool = False
+
+
+class EntityMappingItem(BaseModel):
+    """Один ручной override выравнивания сущности (mark-only)."""
+    left_entity_label: Optional[str] = None
+    right_entity_label: Optional[str] = None
+    left_block_id: Optional[str] = None
+    right_block_id: Optional[str] = None
+    left_page_number: Optional[int] = None
+    right_page_number: Optional[int] = None
+    source_classification: Optional[str] = None
+    pair_key: Optional[str] = None
+    manual_decision: str
+    comment: Optional[str] = None
+
+
+class EntityMappingUpsertRequest(BaseModel):
+    mapping: EntityMappingItem
+    created_by: Optional[str] = None
+
+
+class ExclusionReviewDecisionItem(BaseModel):
+    """Одно решение оператора по exclusion preview item (mark-only)."""
+    exclusion_item_id: Optional[str] = None
+    left_block_id: Optional[str] = None
+    right_block_id: Optional[str] = None
+    left_entity_label: Optional[str] = None
+    right_entity_label: Optional[str] = None
+    preview_classification: Optional[str] = None
+    preview_severity: Optional[str] = None
+    operator_decision: str
+    comment: Optional[str] = None
+
+
+class ExclusionReviewUpsertRequest(BaseModel):
+    decision: ExclusionReviewDecisionItem
+    created_by: Optional[str] = None
 
 
 class GraphicDiffJobItem(BaseModel):
@@ -2877,11 +2919,6 @@ async def prune_expert_review_orphans_endpoint(session_id: str, dry_run: bool = 
     return expert_review_mod.prune_orphans(session_id, dry_run=dry_run)
 
 
-class V2ReviewTransferRequest(BaseModel):
-    """Запрос переноса решений из «Расхождений» в V2 (на всю сессию)."""
-    use_claude: bool = True
-
-
 @router.post("/sessions/{session_id}/v2-review/transfer")
 async def v2_review_transfer_endpoint(session_id: str, req: Optional[V2ReviewTransferRequest] = None):
     """Перенести решения из классических «Расхождений» в V2 по всей сессии.
@@ -3456,3 +3493,488 @@ async def cancel_graphic_diff_job(session_id: str, job_id: str):
 #     эндпоинты удалены вместе с переездом вкладки «Отчёт» на read-only
 #     сводку согласованных расхождений (см. unified-diff-flat/export.xlsx
 #     ?accepted_only=true). ───────────────────────────────────────────────
+
+
+# ─── Pipeline V2 (controlled integration): read-only UI payload ────────────
+#
+# Endpoint НИЧЕГО не запускает (ни Pipeline V2, ни Qwen/Opus/LLM, ни jobs)
+# и НИЧЕГО не пишет: отдаёт готовый pipeline_v2_ui_payload.json или собирает
+# payload из готовых артефактов dry-run. Отсутствие артефактов — обычный
+# JSON-ответ {"status": "not_found", ...}, не 404 (контракт для портала).
+# Дисковое I/O уведено в threadpool (sync-тяжёлый handler в event loop
+# блокирует /api/info и провоцирует watchdog-restart).
+
+
+@router.get("/pipeline-v2/{session_id}/ui-payload")
+async def get_pipeline_v2_ui_payload_endpoint(session_id: str,
+                                              pair_id: Optional[str] = None):
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_pipeline_v2_payload,
+            session_id, pair_id)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/graphic-vision-grounding")
+async def get_pipeline_v2_grounding_detail_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        kind: str = "all", status: str = "all",
+        item_id: Optional[str] = None, limit: int = 100, offset: int = 0):
+    """Read-only детализация graphic_vision_grounding_report.json.
+
+    Отдаёт конкретные grounded/weakly_grounded/ungrounded/rejected_* сущности и
+    изменения карточками (value/status/reason/anchor/source/page/fact_level).
+    НИЧЕГО не запускает и не пишет; отсутствие отчёта — обычный JSON
+    {"status":"not_found"}, битый — {"status":"error"}, не 500.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_graphic_vision_grounding_detail,
+            session_id, pair_id, kind=kind, status=status, item_id=item_id,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/block-link-preview")
+async def get_pipeline_v2_block_link_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only превью предложенных связей блоков Pipeline V2.
+
+    Отдаёт готовый block_link_preview_report.json либо собирает его
+    on-the-fly из артефактов dry-run (models + block_matching, опц. graphic /
+    visual gate). НИЧЕГО не запускает и не пишет; отсутствие артефактов —
+    обычный JSON {"status": "not_found"}, не 404.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_block_link_preview,
+            session_id, pair_id)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/entity-alignment-preview")
+async def get_pipeline_v2_entity_alignment_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        classification: str = "all", limit: int = 100, offset: int = 0):
+    """Read-only mapping-aware entity alignment preview Pipeline V2.
+
+    Классифицирует графические пары OLD↔NEW (same_entity_likely /
+    possible_rename / scope_reorganized / mismatch_likely /
+    link_validation_candidate) + unpaired-сущности. Отдаёт готовый
+    entity_alignment_preview_report.json либо собирает его on-the-fly из
+    артефактов dry-run (visual gate + descriptors + models, опц. matched /
+    grounding). НИЧЕГО не запускает, не пишет, не вызывает модели; отсутствие
+    отчёта — обычный JSON {"status":"not_found"}, битый — {"status":"error"},
+    не 500. Фильтр classification + пагинация (limit clamp ≤500) применяются к
+    pairs; summary/unpaired_entities отдаются целиком. Raw-текст не отдаётся.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_entity_alignment_preview,
+            session_id, pair_id, classification=classification,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/link-validation")
+async def get_pipeline_v2_link_validation_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        decision: str = "all", agreement: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only link validation report Pipeline V2.
+
+    Отдаёт готовый link_validation_report.json (vision-проверка manual mapping
+    пар: same/reorganized/different + agreement с ручным решением). Отсутствие
+    отчёта — обычный JSON {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. НИЧЕГО не запускает, не пишет, не вызывает
+    модели. Фильтры decision/agreement + пагинация (limit clamp ≤500) к items;
+    summary целиком. Raw prompt/image не отдаются. Результат — НЕ grounded-факт
+    (use_as_grounded_fact / use_for_delta_explanation всегда false).
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_link_validation,
+            session_id, pair_id, decision=decision, agreement=agreement,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        # невалидный session_id/pair_id (path traversal и т.п.)
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/exclusion-preview-v2")
+async def get_pipeline_v2_exclusion_preview_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        classification: str = "all", severity: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only Exclusion Preview v2 report Pipeline V2.
+
+    Отдаёт готовый exclusion_preview_v2_report.json. Не запускает модели.
+    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. НИЧЕГО не пишет. Фильтры
+    classification/severity + пагинация (limit clamp ≤500). Mark-only:
+    auto_apply/enforce_allowed/use_as_grounded_fact=false на всех items.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_exclusion_preview,
+            session_id, pair_id,
+            classification=classification, severity=severity,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/skip-readiness")
+async def get_pipeline_v2_skip_readiness_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        readiness: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only mark-only Skip Readiness report Pipeline V2.
+
+    Отдаёт готовый skip_readiness_report.json. Не запускает модели, не пишет.
+    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
+    {"status":"error"}, не 404/500. Фильтр readiness + пагинация (limit clamp
+    ≤500). Mark-only: auto_apply/enforce_allowed/requires_explicit_operator_approval
+    форсируются на всех items. auto_enforce_enabled=false гарантировано.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_skip_readiness,
+            session_id, pair_id,
+            readiness=readiness,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-preflight")
+async def get_pipeline_v2_controlled_enforce_preflight_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        status: str = "all",
+        limit: int = 100, offset: int = 0):
+    """Read-only observe-only Controlled Enforce Preflight report Pipeline V2.
+
+    Отдаёт готовый controlled_enforce_preflight_report.json. Это НЕ enforce:
+    ничего не пропускает/исключает, не создаёт jobs, не вызывает модели, не
+    пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не
+    строится), битый — {"status":"error"}, не 404/500. Фильтр status
+    (blocked|preflight_ok|no_eligible_items|all) + пагинация blocked_items
+    (limit clamp ≤500). Observe-only инварианты форсируются в ответе:
+    auto_apply=false, enforce_allowed=false, would_apply=false,
+    enforce_enabled=false. Raw/debug-поля не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_preflight,
+            session_id, pair_id,
+            status=status,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-dry-run")
+async def get_pipeline_v2_controlled_enforce_dry_run_endpoint(
+        session_id: str, pair_id: Optional[str] = None,
+        limit: int = 100, offset: int = 0):
+    """Read-only observe-only Controlled Enforce DRY-RUN / impact report Pipeline V2.
+
+    Отдаёт готовый controlled_enforce_dry_run_report.json. Это НЕ enforce и НЕ
+    real skip: показывает «что было бы пропущено» (would_skip_items +
+    logical_transitions), но ничего не применяет, не создаёт jobs, не вызывает
+    модели, не пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО
+    не строится), битый — {"status":"error"}, не 404/500. Пагинация
+    would_skip_items (limit clamp ≤500). Observe-only инварианты форсируются:
+    would_apply=false, enforce_enabled=false, per-item runtime_write_allowed=false,
+    enforce_allowed=false. Raw/debug-поля не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_dry_run,
+            session_id, pair_id,
+            limit=limit, offset=offset)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/pipeline-v2/{session_id}/controlled-enforce-state")
+async def get_pipeline_v2_controlled_enforce_state_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only видимость active controlled_enforce_state.json пары.
+
+    Отдаёт активное controlled exclusion state (что первый controlled skip
+    пометил исключённым из будущего enrichment). Это НЕ enforce и НЕ изменение:
+    ничего не применяет, не создаёт jobs, не вызывает модели, **не меняет
+    state**, не пишет на диск. Отсутствие state'а — {"status":"not_found"}
+    (НИЧЕГО не строится), битый — {"status":"error"}, не 404/500. Raw/debug-поля
+    не отдаются. summary: active_exclusions / active_transitions /
+    active_block_pairs / scope_enrichment_only.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_controlled_enforce_state,
+            session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/pipeline-v2/{session_id}/controlled-enforce-state/deactivate")
+async def post_pipeline_v2_controlled_enforce_state_deactivate_endpoint(
+        session_id: str, payload: dict, pair_id: str):
+    """Деактивировать active controlled enforce state (ручной rollback оператора).
+
+    Пишет ТОЛЬКО controlled_enforce_state.json: помечает записи run_id'а
+    ``active=false`` + audit (deactivated_at/by/comment) + запись в history.
+    Запись НЕ удаляется (обратимо). НЕ запускает jobs/models, НЕ меняет protected
+    reports / findings / block links / delta / grounded, НЕ трогает другие пары,
+    НЕ продолжает очередь. Требует точного
+    ``confirmation="DEACTIVATE_CONTROLLED_STATE"`` — иначе 422 без записи.
+    Неизвестный/уже неактивный run_id → 422 без записи. Нет state → not_found.
+    Возвращает updated summary.
+    """
+    art_dir = pipeline_v2_payload_mod.pipeline_v2_artifacts_dir(session_id, pair_id)
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_ce_state_mod.run_deactivate_controlled_enforce_state,
+            art_dir, payload)
+    except pipeline_v2_ce_state_mod.ControlledEnforceStateError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+# ─── Pipeline V2: controlled operator-triggered run («Запустить V2») ──────
+# State-changing: запускает существующий dry-run runner в фоновом job'е.
+# read-only ui-payload сервис этим НЕ затрагивается.
+
+class PipelineV2RunRequest(BaseModel):
+    """Тело POST .../pairs/{pair_id}/run."""
+    mode: str = Field(default="dry_run")
+    confirm: bool = Field(default=False)
+    confirm_session_id: Optional[str] = Field(default=None)
+    confirm_pair_id: Optional[str] = Field(default=None)
+    rerun_existing: bool = Field(default=False)
+    create_backup: bool = Field(default=True)
+    operator_note: Optional[str] = Field(default=None)
+
+
+def _pipeline_v2_run_payload(job: dict) -> dict:
+    """Компактный accepted-ответ для UI."""
+    return {
+        "ok": True,
+        "job_id": job.get("id"),
+        "session_id": job.get("session_id"),
+        "pair_id": job.get("pair_id"),
+        "status": job.get("status"),
+        "status_url": pipeline_v2_run_jobs_mod.status_url(
+            job.get("session_id"), job.get("pair_id"), job.get("id")),
+        "message": "Pipeline V2 run accepted",
+    }
+
+
+@router.post("/pipeline-v2/{session_id}/pairs/{pair_id}/run")
+async def post_pipeline_v2_run_endpoint(
+        session_id: str, pair_id: str, req: PipelineV2RunRequest):
+    """Запустить controlled Pipeline V2 run для пары (operator-triggered).
+
+    Запускает СУЩЕСТВУЮЩИЙ ``run_pipeline_v2_dry_run`` в фоновом job'е
+    (offline: ``llm_runner=None``/``vision_runner=None`` → модели НЕ
+    задействуются). Гейты: confirm + confirm_session_id/pair_id (422);
+    сессия/пара существуют (404); артефакты уже есть без ``rerun_existing``
+    (409); уже идёт run на эту пару (409). При rerun создаётся backup
+    ``pipeline_v2_backup_before_ui_run_<TS>``. Пишет ТОЛЬКО артефакты
+    pipeline_v2 этой пары + job-статус + manifest. ui-payload остаётся
+    read-only.
+    """
+    payload = req.model_dump()
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.create_run_job, session_id, pair_id, payload)
+    except pipeline_v2_run_jobs_mod.PipelineV2RunConfirmError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except pipeline_v2_run_jobs_mod.PipelineV2RunError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except ValueError as exc:  # невалидный session_id/pair_id (_safe_id отверг)
+        raise HTTPException(400, str(exc)) from exc
+    pipeline_v2_run_jobs_mod.start_job_in_background(session_id, job["id"])
+    return _pipeline_v2_run_payload(job)
+
+
+@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-status/{job_id}")
+async def get_pipeline_v2_run_status_endpoint(
+        session_id: str, pair_id: str, job_id: str):
+    """Статус controlled Pipeline V2 run job'а (для polling'а UI)."""
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.get_job, session_id, job_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    if job is None or job.get("pair_id") != pair_id:
+        raise HTTPException(404, "run_job_not_found")
+    return job
+
+
+@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-active")
+async def get_pipeline_v2_run_active_endpoint(
+        session_id: str, pair_id: str):
+    """Активный (running/queued) run job по паре — для восстановления UI."""
+    try:
+        job = await run_in_threadpool(
+            pipeline_v2_run_jobs_mod.find_active_pair_job, session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"job": job}
+
+
+@router.get("/pipeline-v2/{session_id}/enrichment-selection-observe")
+async def get_pipeline_v2_enrichment_selection_observe_endpoint(
+        session_id: str, pair_id: Optional[str] = None):
+    """Read-only enrichment-selection observe plan под controlled state.
+
+    Отдаёт готовый controlled_enforce_enrichment_selection_observe_report.json:
+    какой enrichment-selection список ушёл бы дальше, какие пары исключены active
+    controlled state, какие остались. Это observe-only: НЕ enforce, НЕ запускает
+    Qwen/jobs/models, **не меняет state**, не пересчитывает pipeline, не пишет на
+    диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не строится), битый —
+    {"status":"error"}, не 404/500. Observe-инварианты (qwen_calls=0,
+    runtime_modified=false, protected_reports_modified=false) форсируются.
+    Raw/debug не отдаются.
+    """
+    try:
+        return await run_in_threadpool(
+            pipeline_v2_payload_mod.discover_enrichment_selection_observe,
+            session_id, pair_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+# ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
+#
+# Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО
+# не запускают (ни vision/Qwen/Opus/Claude, ни jobs), не меняют block links,
+# entity_alignment_preview, сравнения или findings. Пишут ТОЛЬКО overrides
+# целевой пары. Дисковое I/O — в threadpool (sync write в event loop блокирует).
+
+
+@router.get("/pipeline-v2/{session_id}/entity-mapping-overrides")
+async def get_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, pair_id: str):
+    """Read-only текущие ручные override'ы выравнивания сущностей пары.
+
+    Нет файла → пустой ok-результат (mappings=[]). Битый файл → status=error,
+    не 500. НИЧЕГО не запускает/не пишет.
+    """
+    try:
+        return await run_in_threadpool(
+            entity_mapping_overrides_mod.read_entity_mapping_overrides,
+            session_id, pair_id)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.put("/pipeline-v2/{session_id}/entity-mapping-overrides")
+async def put_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, req: EntityMappingUpsertRequest, pair_id: str):
+    """Создать/обновить один ручной override (upsert, идемпотентно).
+
+    Пишет ТОЛЬКО entity_mapping_overrides.json целевой пары. НЕ запускает
+    vision/Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
+    НЕ продолжает очередь. Возвращает {ok, override, created, summary}.
+    """
+    try:
+        result = await run_in_threadpool(
+            entity_mapping_overrides_mod.upsert_entity_mapping,
+            session_id, pair_id, req.mapping.model_dump(),
+            created_by=req.created_by)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+@router.delete("/pipeline-v2/{session_id}/entity-mapping-overrides/{mapping_id}")
+async def delete_pipeline_v2_entity_mapping_overrides_endpoint(
+        session_id: str, mapping_id: str, pair_id: str,
+        created_by: Optional[str] = None):
+    """Удалить один override по mapping_id (обратимо — overrides отдельный artifact)."""
+    try:
+        result = await run_in_threadpool(
+            entity_mapping_overrides_mod.delete_entity_mapping,
+            session_id, pair_id, mapping_id, created_by=created_by)
+    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+# ─── Pipeline V2: решения оператора по Exclusion Preview v2 (write) ──────────
+#
+# Отдельный обратимый artifact exclusion_review_overrides.json. Endpoints НИЧЕГО
+# не запускают (ни Qwen/Opus/Claude/jobs), не меняют block links, не меняют
+# exclusion_preview_v2_report.json, не создают замечаний. Пишут ТОЛЬКО overrides
+# целевой пары. mark-only layer: решение сохраняется для будущего enforce.
+
+
+@router.get("/pipeline-v2/{session_id}/exclusion-review-overrides")
+async def get_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, pair_id: str):
+    """Read-only текущие решения оператора по Exclusion Preview v2.
+
+    Нет файла → пустой ok-результат (decisions=[]). Битый файл → status=error,
+    не 500. НИЧЕГО не запускает/не пишет. mark-only: decisions не применяются
+    автоматически.
+    """
+    try:
+        data = await run_in_threadpool(
+            excl_review_mod.read_exclusion_review_overrides,
+            session_id, pair_id)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    data["summary"] = excl_review_mod.summarize_decisions(data)
+    return data
+
+
+@router.put("/pipeline-v2/{session_id}/exclusion-review-overrides")
+async def put_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, req: ExclusionReviewUpsertRequest, pair_id: str):
+    """Создать/обновить одно решение оператора (upsert, идемпотентно).
+
+    Пишет ТОЛЬКО exclusion_review_overrides.json целевой пары. НЕ запускает
+    Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
+    НЕ продолжает очередь, НЕ меняет exclusion_preview_v2_report.json.
+    mark-only: решение будет учтено в будущем контролируемом enforce/skip,
+    который здесь НЕ реализован. Возвращает {ok, decision, created, summary}.
+    """
+    try:
+        result = await run_in_threadpool(
+            excl_review_mod.upsert_exclusion_review_decision,
+            session_id, pair_id, req.decision.model_dump(),
+            created_by=req.created_by)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"ok": True, **result}
+
+
+@router.delete("/pipeline-v2/{session_id}/exclusion-review-overrides/{decision_id}")
+async def delete_pipeline_v2_exclusion_review_overrides_endpoint(
+        session_id: str, decision_id: str, pair_id: str,
+        created_by: Optional[str] = None):
+    """Удалить одно решение оператора по decision_id (обратимо).
+
+    Возвращает {ok, deleted, summary}. Несуществующий decision_id → deleted=false,
+    не 404. НЕ запускает модели/jobs.
+    """
+    try:
+        result = await run_in_threadpool(
+            excl_review_mod.delete_exclusion_review_decision,
+            session_id, pair_id, decision_id, created_by=created_by)
+    except excl_review_mod.ExclusionReviewValidationError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return {"ok": True, **result}

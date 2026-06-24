@@ -225,6 +225,16 @@ async def run_gemma_enrichment_stage(
     # ── Обработка результата ──
     status = summary.get("status", "unknown")
 
+    if status == "cancelled":
+        # #14: enrich_project отменён до финализации — summary НЕ записан,
+        # чтобы прерванный прогон не считался завершённым при resume/skip.
+        await ctx.log("Gemma enrichment отменён — summary не записан", "warn")
+        ctx.update_pipeline_log(
+            "gemma_enrichment", "error",
+            error="gemma_enrichment: отменено пользователем",
+        )
+        return StageResult.cancel()
+
     if status == "no_blocks":
         summary_path = gemma_output_root(project_dir) / "gemma_enrichment_summary.json"
         summary_path.write_text(
