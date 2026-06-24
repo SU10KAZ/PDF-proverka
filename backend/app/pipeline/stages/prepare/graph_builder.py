@@ -376,7 +376,18 @@ def build_document_graph_v2(
     all_pages: list[dict] = []
     document_id = ""
 
-    for rj_path in result_jsons:
+    # #6: детерминированная защита от коллизий page_number в multi-PDF.
+    # page_number в каждом result.json — 1-based ОТНОСИТЕЛЬНО своего PDF,
+    # поэтому у разных PDF страницы «1,2,3...» совпадают и затирают друг друга
+    # (findings page→sheet привязываются не к той странице). Коллизии ремапим в
+    # глобально-уникальные номера (продолжаем нумерацию), сохраняя исходные
+    # source_file/source_page_number. Single-PDF: коллизий нет → ремапа нет,
+    # вывод идентичен прежнему (плюс новые additive-поля source_*).
+    assigned_pages: set[int] = set()
+    max_assigned_page = 0
+    remapped_pages: list[dict] = []
+
+    for pdf_index, rj_path in enumerate(result_jsons):
         try:
             rj_data = json.loads(rj_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError) as e:
@@ -387,8 +398,22 @@ def build_document_graph_v2(
             document_id = rj_path.stem.replace("_result", "")
 
         for rj_page in rj_data.get("pages", []):
-            # page_number в result.json — 1-based (human-readable)
-            page_number = rj_page.get("page_number", rj_page.get("page_index", 0))
+            # page_number в result.json — 1-based (human-readable), но локальный
+            # для своего PDF. Ремапим коллизии между PDF (см. #6 выше).
+            source_page_number = rj_page.get("page_number", rj_page.get("page_index", 0))
+            if source_page_number in assigned_pages:
+                page_number = max_assigned_page + 1
+                remapped_pages.append({
+                    "source_file": rj_path.name,
+                    "source_pdf_index": pdf_index,
+                    "source_page_number": source_page_number,
+                    "assigned_page_number": page_number,
+                })
+            else:
+                page_number = source_page_number
+            assigned_pages.add(page_number)
+            if page_number > max_assigned_page:
+                max_assigned_page = page_number
             page_width = rj_page.get("width", 0)
             page_height = rj_page.get("height", 0)
             blocks = rj_page.get("blocks", [])
@@ -420,6 +445,7 @@ def build_document_graph_v2(
                         "coords_norm": coords_norm,
                         "source": source,
                         "page": page_number,  # 1-based (unified)
+                        "source_file": rj_path.name,  # #6: из какого PDF блок
                     })
                 elif btype == "image":
                     image_blocks.append({
@@ -431,14 +457,18 @@ def build_document_graph_v2(
                         "coords_norm": coords_norm,
                         "source": source,
                         "page": page_number,  # 1-based (unified)
+                        "source_file": rj_path.name,  # #6: из какого PDF блок
                         # Обогащаются из blocks/index.json:
                         "file": None,
                         "size_kb": None,
                     })
 
             page_entry = {
-                "page": page_number,               # 1-based (human-readable)
+                "page": page_number,               # 1-based (human-readable, global-unique)
                 "page_index": page_number - 1,      # 0-based (internal, for PyMuPDF etc.)
+                "source_file": rj_path.name,        # #6: исходный PDF/result.json
+                "source_pdf_index": pdf_index,      # #6: индекс PDF в multi-PDF
+                "source_page_number": source_page_number,  # #6: 1-based внутри своего PDF
                 "sheet_no_raw": sheet_no_raw,
                 "sheet_no_normalized": sheet_no_normalized,
                 "sheet_name": sheet_name,
@@ -463,13 +493,19 @@ def build_document_graph_v2(
     # Сортируем по page number
     all_pages.sort(key=lambda p: p["page"])
 
-    # Проверка на дублированные page numbers
-    seen_pages = {}
-    for pg in all_pages:
-        pn = pg["page"]
-        if pn in seen_pages:
-            print(f"  [GRAPH v2] WARNING: дублированный page number {pn}")
-        seen_pages[pn] = True
+    # #6: вместо предупреждения о дублях — лог фактического ремапа коллизий.
+    # После ремапа page numbers гарантированно уникальны, поэтому отдельная
+    # проверка на дубли больше не нужна.
+    if remapped_pages:
+        print(
+            f"  [GRAPH v2] multi-PDF: ремапнуто {len(remapped_pages)} "
+            f"коллизий page_number в глобально-уникальные номера"
+        )
+        for rm in remapped_pages:
+            print(
+                f"  [GRAPH v2]   {rm['source_file']} "
+                f"p{rm['source_page_number']} → p{rm['assigned_page_number']}"
+            )
 
     # Обогащаем из blocks/index.json
     index_path = output_dir / "blocks" / "index.json"
@@ -498,6 +534,7 @@ def build_document_graph_v2(
         "total_text_blocks": sum(len(p["text_blocks"]) for p in all_pages),
         "total_image_blocks": sum(len(p["image_blocks"]) for p in all_pages),
         "blocks_enriched": blocks_enriched,
+        "remapped_pages": remapped_pages,  # #6: список ремапнутых коллизий (multi-PDF)
         "pages": all_pages,
     }
 

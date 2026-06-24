@@ -2291,6 +2291,14 @@ async def enrich_project(
             summary_block["high_detail_safety"] = high_detail_safety[block_id]
         summary_blocks.append(summary_block)
 
+    # #14: при отмене НЕ перезаписывать MD и НЕ писать summary. Иначе финальный
+    # summary помечает stage как ok/partial с валидной метадатой, и resume/skip
+    # считает прерванный enrichment завершённым («отравленный» summary). Возврат
+    # status="cancelled" обрабатывается в runner → StageResult.cancel().
+    if cancel_event is not None and cancel_event.is_set():
+        await _emit(progress_cb, {"type": "cancelled"})
+        return {"status": "cancelled", "reason": "cancelled_before_finalize"}
+
     new_md = _augment_md(md_text, final_enrichments, model, ts)
     ok_count = len(final_enrichments)
     marker = f"<!-- ENRICHMENT: {model} @ {ts} blocks={ok_count}/{total} ok -->\n"
