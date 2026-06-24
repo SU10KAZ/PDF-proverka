@@ -8681,7 +8681,7 @@ const app = createApp({
         // DEV-fallback: инженеры графика, если API недоступен/пуст.
         const _SCHED_MOCK_ENGINEERS = [
             { id: 'uzun',     name: 'Узун А. И.' },
-            { id: 'grivash',  name: 'Гривапш А. А.' },
+            { id: 'grivash',  name: 'Гриваш А. А.' },
             { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
             { id: 'olar',     name: 'Оларь М. И.' },
             { id: 'repnikov', name: 'Репников И. А.' },
@@ -8695,7 +8695,7 @@ const app = createApp({
         const _SCHED_REQUIRED_ENGINEERS = [
             { id: 'kuldyaev-f-s', name: 'Кульдяев Ф. С.', role: 'expert' },
             { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
-            { id: 'grivapsh-a-a', name: 'Гривапш А. А.', role: 'expert' },
+            { id: 'grivash-a-a', name: 'Гриваш А. А.', role: 'expert' },
             { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
         ];
 
@@ -9065,7 +9065,7 @@ const app = createApp({
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──
-        // Инициалы инженера для аватара: «Гривапш А. А.» → «ГА».
+        // Инициалы инженера для аватара: «Гриваш А. А.» → «ГА».
         function schedInitials(name) {
             const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
             if (!parts.length) return '?';
