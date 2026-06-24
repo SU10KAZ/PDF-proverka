@@ -4158,24 +4158,28 @@ const app = createApp({
                 .reduce((sum, p) => sum + (p.findings_count || 0), 0);
         }
 
-        // Сводка по разделу для «Главной»: сколько проектов проверено
-        // (есть артефакты аудита), сколько ждёт проверки, всего и суммарно
-        // замечаний. Ключуется тем же группированием, что projectsBySection,
-        // чтобы цифры совпадали с items.length в строке.
+        // Сводка по разделу для «Главной». Определения совпадают с галочками
+        // на карточке проекта в разделе:
+        //   checked  — эксперт отработал проект ПОЛНОСТЬЮ (обе галочки:
+        //              замечания + оптимизации) → expert_review_status==='complete';
+        //   waiting  — нет ни одной отметки эксперта → expert_review_status пуст;
+        //   (частично отработанные, expert_review_status==='partial', не попадают
+        //    ни в checked, ни в waiting — у них одна галочка/точка).
+        //   total    — общее число проектов раздела;
+        //   findings — суммарно замечаний.
+        // Ключуется тем же группированием, что projectsBySection, чтобы цифры
+        // совпадали с items.length и с карточками раздела.
         const sectionStatsMap = computed(() => {
             const m = {};
             for (const [code, items] of projectsBySection.value) {
-                let checked = 0, findings = 0;
+                let checked = 0, waiting = 0, findings = 0;
                 for (const p of items) {
-                    if (_projectHasAuditArtifacts(p)) checked++;
+                    const rs = p.expert_review_status;
+                    if (rs === 'complete') checked++;
+                    else if (!rs) waiting++;
                     findings += (p.findings_count || 0);
                 }
-                m[code] = {
-                    total: items.length,
-                    checked,
-                    waiting: items.length - checked,
-                    findings,
-                };
+                m[code] = { total: items.length, checked, waiting, findings };
             }
             return m;
         });
