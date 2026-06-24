@@ -2294,13 +2294,27 @@ tr.row-rejected td.sc-cell-goto {
     min-width: 40px; padding: 2px 8px; border-radius: 6px;
     font-size: 11px; font-weight: 700; text-transform: uppercase;
 }
-.dash-section-row__name { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; }
-.dash-section-row__count {
-    min-width: 28px; height: 28px; display: inline-flex;
-    align-items: center; justify-content: center; border-radius: 8px;
-    background: var(--teal-light); color: var(--teal); font-size: 13px; font-weight: 700;
+.dash-section-row__name { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; min-width: 0; }
+/* Группа из 4 выровненных по столбцам мини-метрик */
+.dash-section-row__stats { display: flex; gap: 12px; flex-shrink: 0; }
+.dash-stat {
+    width: 76px; text-align: center; font-size: 15px; font-weight: 700;
+    color: var(--text); font-variant-numeric: tabular-nums;
 }
-.dash-section-row__findings { font-size: 12px; color: var(--text3); }
+.dash-stat--done  { color: var(--green); }
+.dash-stat--wait  { color: var(--amber); }
+.dash-stat--total { color: var(--text2); }
+.dash-stat--find  { color: var(--red); }
+/* Шапка столбцов — те же ширины, что у .dash-stat, чтобы цифры стояли в колонку */
+.dash-sections-head {
+    display: flex; align-items: center; gap: 12px; padding: 2px 16px 6px;
+}
+.dash-sections-head__name { flex: 1; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .03em; }
+.dash-stat__head {
+    width: 76px; text-align: center; font-size: 11px; font-weight: 600;
+    color: var(--text3); text-transform: uppercase; letter-spacing: .02em;
+}
+.dash-sections-head__arrow { width: 16px; flex-shrink: 0; }
 .dash-section-row__arrow { color: var(--text3); flex-shrink: 0; }
 
 /* Dashboard actions row */

@@ -4158,6 +4158,28 @@ const app = createApp({
                 .reduce((sum, p) => sum + (p.findings_count || 0), 0);
         }
 
+        // Сводка по разделу для «Главной»: сколько проектов проверено
+        // (есть артефакты аудита), сколько ждёт проверки, всего и суммарно
+        // замечаний. Ключуется тем же группированием, что projectsBySection,
+        // чтобы цифры совпадали с items.length в строке.
+        const sectionStatsMap = computed(() => {
+            const m = {};
+            for (const [code, items] of projectsBySection.value) {
+                let checked = 0, findings = 0;
+                for (const p of items) {
+                    if (_projectHasAuditArtifacts(p)) checked++;
+                    findings += (p.findings_count || 0);
+                }
+                m[code] = {
+                    total: items.length,
+                    checked,
+                    waiting: items.length - checked,
+                    findings,
+                };
+            }
+            return m;
+        });
+
         const filteredSectionProjects = computed(() => {
             if (!sidebarFilterSection.value) return [];
             return projects.value.filter(p => p.section === sidebarFilterSection.value);
@@ -16752,7 +16774,7 @@ const app = createApp({
             loadObjects, switchObject, addNewObject,
             // Dashboard stats
             auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
-            sectionFindingsCount, filteredSectionProjects,
+            sectionFindingsCount, sectionStatsMap, filteredSectionProjects,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,

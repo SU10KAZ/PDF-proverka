@@ -482,16 +482,28 @@
         <div v-if="currentView === 'dashboard' && (!sidebarFilterSection || sidebarFilterSection === '__all__')" class="container">
             <div class="dash-sections-overview">
                 <h3 class="dash-section-title">Разделы проекта</h3>
+                <div class="dash-sections-head">
+                    <span class="dash-sections-head__name">Раздел</span>
+                    <div class="dash-section-row__stats">
+                        <span class="dash-stat__head" title="Проверено проектов">Проверено</span>
+                        <span class="dash-stat__head" title="Ожидают проверки">Ждёт</span>
+                        <span class="dash-stat__head" title="Всего проектов">Всего</span>
+                        <span class="dash-stat__head" title="Суммарно замечаний">Замечаний</span>
+                    </div>
+                    <span class="dash-sections-head__arrow"></span>
+                </div>
                 <div class="dash-sections-grid">
                     <div v-for="[code, items] in projectsBySection" :key="code"
                          class="dash-section-row"
                          @click="sidebarFilterSection = code">
                         <span class="dash-section-row__badge" :style="disciplineBadgeStyle(code)">{{ code }}</span>
                         <span class="dash-section-row__name">{{ disciplineLabel(code) }}</span>
-                        <span class="dash-section-row__count">{{ items.length }}</span>
-                        <span class="dash-section-row__findings" v-if="sectionFindingsCount(code) > 0">
-                            {{ sectionFindingsCount(code) }} замечаний
-                        </span>
+                        <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--done" title="Проверено проектов">{{ sectionStatsMap[code].checked }}</span>
+                            <span class="dash-stat dash-stat--wait" title="Ожидают проверки">{{ sectionStatsMap[code].waiting }}</span>
+                            <span class="dash-stat dash-stat--total" title="Всего проектов">{{ sectionStatsMap[code].total }}</span>
+                            <span class="dash-stat dash-stat--find" title="Суммарно замечаний">{{ sectionStatsMap[code].findings }}</span>
+                        </div>
                         <svg class="dash-section-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
                 </div>
