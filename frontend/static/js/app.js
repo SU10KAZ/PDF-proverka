@@ -8681,7 +8681,7 @@ const app = createApp({
         // DEV-fallback: инженеры графика, если API недоступен/пуст.
         const _SCHED_MOCK_ENGINEERS = [
             { id: 'uzun',     name: 'Узун А. И.' },
-            { id: 'grivash',  name: 'Гривапш А. А.' },
+            { id: 'grivapsh', name: 'Гривапш А. А.' },
             { id: 'kuldyaev', name: 'Кульдяев Ф. С.' },
             { id: 'olar',     name: 'Оларь М. И.' },
             { id: 'repnikov', name: 'Репников И. А.' },
@@ -8695,7 +8695,7 @@ const app = createApp({
         const _SCHED_REQUIRED_ENGINEERS = [
             { id: 'kuldyaev-f-s', name: 'Кульдяев Ф. С.', role: 'expert' },
             { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
-            { id: 'grivash-a-a', name: 'Гривапш А. А.', role: 'expert' },
+            { id: 'grivapsh-a-a', name: 'Гривапш А. А.', role: 'expert' },
             { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
         ];
 
@@ -8750,9 +8750,9 @@ const app = createApp({
             add('uzun', _schedAddDays(monday, 2), '213. Metromash', '213. Мосфильмовская 31А «King&Sons» (Metromash)', 'AR');
             add('uzun', _schedAddDays(monday, 2), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR'); // Ср → «214. Alia +2»
             // Гривапш А. А.
-            add('grivash', _schedAddDays(monday, 1), 'Asterus', 'Asterus — общий комплекс', 'EOM');
-            add('grivash', _schedAddDays(monday, 1), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM'); // Вт → «Asterus +1»
-            add('grivash', _schedAddDays(monday, 3), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM');
+            add('grivapsh', _schedAddDays(monday, 1), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('grivapsh', _schedAddDays(monday, 1), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM'); // Вт → «Asterus +1»
+            add('grivapsh', _schedAddDays(monday, 3), 'ОДИ', 'ОДИ — отдельные доработки', 'EOM');
             // Кульдяев Ф. С.
             add('kuldyaev', _schedAddDays(monday, 0), 'ИКЕО', 'ИКЕО — интегрированная комплексная ...', 'SS');
             add('kuldyaev', _schedAddDays(monday, 3), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
@@ -8768,7 +8768,7 @@ const app = createApp({
 
             // ── Дополнительные события по месяцу (для режима «Месяц») ──
             add('uzun', dom(3), 'ДС3-АР', 'АА-БЭ-03-ДС3-АР (Балчуг)', 'AR');
-            add('grivash', dom(6), 'Asterus', 'Asterus — общий комплекс', 'EOM');
+            add('grivapsh', dom(6), 'Asterus', 'Asterus — общий комплекс', 'EOM');
             add('kuldyaev', dom(9), 'ЭЭ', 'ЭЭ — электроснабжение', 'EOM');
             add('repnikov', dom(11), 'КЖ', 'КЖ — конструкции железобетонные', 'KJ');
             add('olar', dom(24), 'ПОС', 'ПОС — проект организации строительства', 'POS');
