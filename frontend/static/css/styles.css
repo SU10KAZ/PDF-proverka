@@ -2324,6 +2324,9 @@ tr.row-rejected td.sc-cell-goto {
 .dash-section-row--total:hover { border-color: var(--border); border-top-color: var(--border); background: var(--card-bg); }
 .dash-section-row--total .dash-section-row__name { font-weight: 700; }
 .dash-section-row--total .dash-stat { font-size: 16px; }
+/* Пустой «arrow» в строке Итого держит те же 16px, что svg-стрелка в строках
+   разделов — иначе столбцы цифр уезжают вправо на ширину стрелки. */
+.dash-section-row--total .dash-section-row__arrow { width: 16px; }
 .dash-section-row__badge--total {
     background: var(--text3); color: #fff;
 }
