@@ -2673,20 +2673,6 @@ const app = createApp({
                 connectGlobalWS();
                 loadProject(id);
                 loadDocument(id);
-            } else if (hash.match(/^\/project\/(.+)\/prompts$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/prompts$/)[1]);
-                currentView.value = 'prompts';
-                currentProjectId.value = id;
-                promptsProjectId.value = id;
-                activePromptTab.value = 0;
-                connectGlobalWS();
-                loadProject(id);
-                loadPromptDisciplines().then(() => {
-                    const proj = projects.value.find(p => p.name === id || p.project_id === id);
-                    const section = proj?.section || 'EOM';
-                    promptsDiscipline.value = section;
-                    loadTemplates(section);
-                });
             } else if (hash.match(/^\/project\/(.+)\/critic-v2-disagreements$/)) {
                 // Project-scoped Critic v2 — opens straight on the disagreements filter.
                 // Same view, same endpoint; only the default filter and the
@@ -2999,6 +2985,40 @@ const app = createApp({
                 editProjectsLoading.value = false;
             }
         }
+        async function deleteSelectedProjects() {
+            const ids = Array.from(selectedProjects.value);
+            if (ids.length === 0) return;
+            const names = ids.slice(0, 8).join('\n  • ');
+            const extra = ids.length > 8 ? `\n  …и ещё ${ids.length - 8}` : '';
+            if (!confirm(
+                `БЕЗВОЗВРАТНО удалить ${ids.length} проект(ов)?\n\n  • ${names}${extra}\n\n` +
+                `Будут удалены папка проекта и его документ в projects_v2. Это действие нельзя отменить.`
+            )) return;
+            editProjectsLoading.value = true;
+            try {
+                let failed = 0;
+                const failedIds = [];
+                for (const pid of ids) {
+                    try {
+                        const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}`, { method: 'DELETE' });
+                        if (!resp.ok) { failed += 1; failedIds.push(pid); }
+                    } catch (e) {
+                        failed += 1; failedIds.push(pid);
+                    }
+                }
+                if (failed > 0) {
+                    alert(`Не удалось удалить ${failed} из ${ids.length} проектов:\n${failedIds.join('\n')}\n` +
+                          `(возможно, идёт аудит — сначала отмените его)`);
+                }
+                selectedProjects.value = new Set();
+                selectAllChecked.value = false;
+                showEditProjectsModal.value = false;
+                await refreshProjects();
+            } finally {
+                editProjectsLoading.value = false;
+            }
+        }
+
         async function hideSelectedFromUI() {
             const ids = Array.from(selectedProjects.value);
             if (ids.length === 0) return;
@@ -3946,21 +3966,6 @@ const app = createApp({
             } catch (e) { alert(e.message); }
         }
 
-        async function deleteVersion(versionId) {
-            const pid = currentProject.value?.project_id;
-            if (!pid) return;
-            const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
-            if (!confirm(`Удалить версию ${verLabel} проекта "${currentProject.value?.name}"?\n\nБудут удалены:\n- Вся папка версии (PDF, MD, результаты аудита)\n- Запись о версии из манифеста\n\nДействие необратимо.`)) return;
-            try {
-                const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(versionId)}`, { method: 'DELETE' });
-                const data = await resp.json();
-                if (!resp.ok) { alert(data.detail || 'Ошибка удаления версии'); return; }
-                await refreshProjects();
-                // Переключиться на новую latest версию
-                const newLatest = data.new_latest_version_id;
-                if (newLatest) selectVersion(newLatest);
-            } catch (e) { alert(e.message); }
-        }
 
         function retryStage(projectId, stage) {
             const labels = {
@@ -4153,13 +4158,53 @@ const app = createApp({
                 .reduce((sum, p) => sum + (p.findings_count || 0), 0);
         }
 
+        // Сводка по разделу для «Главной». Определения совпадают с галочками
+        // на карточке проекта в разделе:
+        //   checked  — эксперт отработал проект ПОЛНОСТЬЮ (обе галочки:
+        //              замечания + оптимизации) → expert_review_status==='complete';
+        //   waiting  — нет ни одной отметки эксперта → expert_review_status пуст;
+        //   (частично отработанные, expert_review_status==='partial', не попадают
+        //    ни в checked, ни в waiting — у них одна галочка/точка).
+        //   total    — общее число проектов раздела;
+        //   findings — суммарно замечаний.
+        // Ключуется тем же группированием, что projectsBySection, чтобы цифры
+        // совпадали с items.length и с карточками раздела.
+        const sectionStatsMap = computed(() => {
+            const m = {};
+            for (const [code, items] of projectsBySection.value) {
+                let checked = 0, waiting = 0, findings = 0;
+                for (const p of items) {
+                    const rs = p.expert_review_status;
+                    if (rs === 'complete') checked++;
+                    else if (!rs) waiting++;
+                    findings += (p.findings_count || 0);
+                }
+                m[code] = { total: items.length, checked, waiting, findings };
+            }
+            return m;
+        });
+
+        // Итого по всем разделам — сумма каждого числового столбца для
+        // строки «Итого» внизу таблицы «Разделы проекта».
+        const sectionStatsTotals = computed(() => {
+            const t = { checked: 0, waiting: 0, total: 0, findings: 0 };
+            for (const code in sectionStatsMap.value) {
+                const s = sectionStatsMap.value[code];
+                t.checked += s.checked;
+                t.waiting += s.waiting;
+                t.total += s.total;
+                t.findings += s.findings;
+            }
+            return t;
+        });
+
         const filteredSectionProjects = computed(() => {
             if (!sidebarFilterSection.value) return [];
             return projects.value.filter(p => p.section === sidebarFilterSection.value);
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
-            'project', 'blocks', 'prompts', 'log',
+            'project', 'blocks', 'log',
             'findings', 'optimization', 'discussions',
             'document', 'critic-v2-project',
         ]);
@@ -4247,33 +4292,6 @@ const app = createApp({
             }
         }
 
-        // ─── Excel по одному проекту ───
-        const projectExcelLoading = ref(false);
-
-        async function exportProjectExcel(projectId) {
-            if (!projectId) return;
-            projectExcelLoading.value = true;
-            try {
-                const resp = await fetch('/api/export/excel/section', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        section: '',
-                        project_ids: [projectId],
-                    }),
-                });
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
-                    throw new Error(err.detail || resp.statusText);
-                }
-                const data = await resp.json();
-                window.open('/api/export/download/' + encodeURIComponent(data.file), '_blank');
-            } catch (e) {
-                alert('Ошибка генерации Excel: ' + e.message);
-            } finally {
-                projectExcelLoading.value = false;
-            }
-        }
 
         // ─── Excel по разделу ───
         const sectionExcelLoading = ref(null);
@@ -4646,6 +4664,496 @@ const app = createApp({
         const externalPath = ref('');
         const projectSource = ref('local'); // 'local' | 'external'
 
+        // ─── Upload folder from computer (browser folder upload) ───
+        const uploadObjectId = ref('');
+        const uploadDiscipline = ref('');
+        const uploadProjectName = ref('');
+        const uploadFiles = ref([]);          // raw File[] из <input webkitdirectory>
+        const uploadScan = ref(null);         // {pdf, md, result, ocr, ignored:[]}
+        const uploadScanError = ref('');      // блокирующая проблема (нет/неск. PDF)
+        const uploadScanWarnings = ref([]);   // не блокирует (нет md/result/ocr)
+        const uploadError = ref('');          // ошибка сервера
+        const uploadLoading = ref(false);
+        const uploadResult = ref(null);       // ответ сервера при успехе (single)
+        // precheck (single) + multi-folder
+        const uploadMode = ref('multi');     // только multi (одна папка убрана)
+        const uploadPrecheck = ref(null);     // verdict {status, blocks, warnings, ...}
+        const uploadPrecheckLoading = ref(false);
+        const uploadOverrideWarning = ref(false);
+        const uploadCandidates = ref([]);     // multi: [{folder, pdf, name, status, ...}]
+        const uploadBatchResult = ref(null);  // multi: {uploaded, skipped, failed}
+        const uploadBatchProgress = ref('');
+        // авто-дисциплина + предложение версии (single)
+        const uploadDetectedDiscipline = ref('');
+        const uploadDisciplineSource = ref('');   // folder_name|pdf_name|document_text|fallback
+        const uploadFolderName = ref('');         // имя выбранной папки (для детекции)
+        const uploadAddMode = ref('new_project'); // 'new_project' | 'new_version'
+        const uploadTargetProjectId = ref('');
+        const uploadDisciplineManual = ref(false); // пользователь выбрал дисциплину вручную
+
+        const _DISC_SOURCE_LABEL = {
+            folder_name: 'по имени папки', pdf_name: 'по имени PDF',
+            document_text: 'по тексту', fallback: 'по умолчанию',
+        };
+        function disciplineSourceLabel(src) { return _DISC_SOURCE_LABEL[src] || src || ''; }
+
+        // следующая версия у target-проекта (переиспат. логику candidateNextVersionLabel)
+        function versionLabelForTarget(pid) {
+            const t = (projects.value || []).find(p => p.project_id === pid);
+            if (!t) return 'V?';
+            if (Array.isArray(t.versions_summary)) {
+                const latest = t.versions_summary.find(v => v.is_latest);
+                if (latest && latest.version_id !== 'v1' && (latest.pdf_count || 0) === 0) {
+                    return (latest.label || 'V' + latest.version_no) + ' (пустая)';
+                }
+            }
+            return 'V' + ((t.version_count || 1) + 1);
+        }
+
+        function fmtSize(bytes) {
+            if (!bytes && bytes !== 0) return '';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // только релевантные файлы (pdf + md + result + ocr) из scan-like объекта
+        function _uploadBundleFiles(s) {
+            const out = [];
+            if (s.pdf) out.push(s.pdf);
+            if (s.md) out.push(s.md);
+            if (s.result) out.push(s.result);
+            if (s.ocr) out.push(s.ocr);
+            return out;
+        }
+
+        // существующие проекты выбранного раздела — варианты «привязать как версию»
+        const uploadTargetOptions = computed(() => {
+            const sec = uploadDiscipline.value;
+            if (!sec) return [];
+            const cand = normalizeProjectName(uploadProjectName.value || '');
+            const out = (projects.value || []).filter(p => p.section === sec).map(p =>
+                Object.assign({}, p, {
+                    _suggested: !!cand && normalizeProjectName(p.name || p.project_id) === cand,
+                }));
+            out.sort((a, b) => (a._suggested === b._suggested)
+                ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
+                : (a._suggested ? -1 : 1));
+            return out;
+        });
+
+        const canSubmitUpload = computed(() => {
+            if (!uploadObjectId.value || !uploadDiscipline.value) return false;
+            if (!uploadScan.value || !uploadScan.value.pdf || uploadScanError.value) return false;
+            if (uploadAddMode.value === 'new_version') {
+                // версия: нужен target; имя-дубли не блокируют (это и есть версия)
+                return !!uploadTargetProjectId.value;
+            }
+            if (!uploadProjectName.value.trim()) return false;
+            const pc = uploadPrecheck.value;
+            if (pc) {
+                if (pc.status === 'duplicate' || pc.status === 'error') return false;
+                if (pc.status === 'warning' && !uploadOverrideWarning.value) return false;
+            }
+            return true;
+        });
+
+        function setUploadMode(m) {
+            uploadMode.value = m;
+            uploadScan.value = null; uploadPrecheck.value = null; uploadOverrideWarning.value = false;
+            uploadScanError.value = ''; uploadScanWarnings.value = [];
+            uploadCandidates.value = []; uploadBatchResult.value = null;
+            uploadResult.value = null; uploadError.value = '';
+            uploadAddMode.value = 'new_project'; uploadTargetProjectId.value = '';
+            uploadDetectedDiscipline.value = ''; uploadDisciplineSource.value = '';
+            uploadDiscipline.value = ''; uploadDisciplineManual.value = false;
+        }
+
+        function goToUploadFolder() {
+            addProjectStep.value = 'upload';
+            resetUploadFolder();
+            uploadMode.value = 'multi';
+            uploadObjectId.value = currentObjectId.value || '';
+            if (!objectsList.value.length) loadObjects();
+            if (!supportedDisciplines.value.length) loadDisciplines();
+        }
+
+        function resetUploadFolder() {
+            // объект сохраняем; дисциплину СБРАСЫВАЕМ — иначе она «залипает» от
+            // прошлой загрузки и расходится с авто-определением.
+            uploadProjectName.value = '';
+            uploadDiscipline.value = '';
+            uploadDisciplineManual.value = false;
+            uploadFiles.value = [];
+            uploadScan.value = null;
+            uploadScanError.value = '';
+            uploadScanWarnings.value = [];
+            uploadError.value = '';
+            uploadResult.value = null;
+            uploadPrecheck.value = null;
+            uploadPrecheckLoading.value = false;
+            uploadOverrideWarning.value = false;
+            uploadCandidates.value = [];
+            uploadBatchResult.value = null;
+            uploadBatchProgress.value = '';
+        }
+
+        // пользователь вручную сменил дисциплину → фиксируем и перепроверяем
+        function onUploadDisciplineChange() {
+            uploadDisciplineManual.value = true;
+            runSinglePrecheck();
+        }
+
+        function onUploadFolderSelected(ev) {
+            uploadError.value = '';
+            uploadPrecheck.value = null;
+            uploadOverrideWarning.value = false;
+            uploadAddMode.value = 'new_project';
+            uploadTargetProjectId.value = '';
+            uploadDetectedDiscipline.value = '';
+            uploadDisciplineSource.value = '';
+            uploadDisciplineManual.value = false;  // новая папка → снова авто-детект
+            const all = Array.from(ev.target.files || []);
+            uploadFiles.value = all;
+            uploadFolderName.value = (all[0] && (all[0].webkitRelativePath || '').split('/')[0]) || '';
+            if (!all.length) { uploadScan.value = null; return; }
+
+            const pdfs = [], mds = [], results = [], ocrs = [], ignored = [];
+            for (const f of all) {
+                const name = (f.name || '').toLowerCase();
+                if (name.endsWith('.pdf')) pdfs.push(f);
+                else if (name.endsWith('_document.md')) mds.push(f);
+                else if (name.endsWith('.md')) mds.push(f);
+                else if (name.endsWith('_result.json')) results.push(f);
+                else if (name.endsWith('_ocr.html') || name.endsWith('_ocr.htm')) ocrs.push(f);
+                else ignored.push(f);
+            }
+
+            uploadScanError.value = '';
+            uploadScanWarnings.value = [];
+            if (pdfs.length === 0) {
+                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта.';
+            } else if (pdfs.length > 1) {
+                uploadScanError.value = 'В папке найдено несколько PDF. Выберите папку одного проекта.';
+            } else {
+                if (!uploadProjectName.value.trim()) {
+                    uploadProjectName.value = pdfs[0].name.replace(/\.pdf$/i, '');
+                }
+            }
+            const md = mds.find(m => (m.name || '').toLowerCase().endsWith('_document.md')) || mds[0] || null;
+            if (!md) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
+            if (!results.length) uploadScanWarnings.value.push('Нет *_result.json — кроп блоков потребует подготовки.');
+            if (!ocrs.length) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
+
+            uploadScan.value = {
+                pdf: pdfs.length === 1 ? pdfs[0] : null,
+                md, result: results[0] || null, ocr: ocrs[0] || null,
+                ignored,
+            };
+            // авто-precheck дублей (если задано имя/объект/дисциплина)
+            runSinglePrecheck();
+        }
+
+        async function runSinglePrecheck() {
+            const s = uploadScan.value;
+            if (!s || !s.pdf || !uploadObjectId.value || !uploadProjectName.value.trim()) {
+                uploadPrecheck.value = null; return;
+            }
+            uploadPrecheckLoading.value = true;
+            try {
+                const fd = new FormData();
+                fd.append('object_id', uploadObjectId.value);
+                // дисциплину НЕ форсим — backend определит сам, если поле пустое
+                if (uploadDiscipline.value) fd.append('discipline', uploadDiscipline.value);
+                if (uploadFolderName.value) fd.append('folder_name', uploadFolderName.value);
+                fd.append('project_name', uploadProjectName.value.trim());
+                for (const f of _uploadBundleFiles(s)) fd.append('files', f, f.name);
+                const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
+                const data = await resp.json().catch(() => ({}));
+                const pc = (resp.ok && data.precheck) ? data.precheck : null;
+                uploadPrecheck.value = pc;
+                if (pc) {
+                    uploadDetectedDiscipline.value = pc.detected_discipline || '';
+                    uploadDisciplineSource.value = pc.discipline_source || '';
+                    // если пользователь ещё не выбрал дисциплину — подставить определённую
+                    // синхронизируем дропдаун с авто-определением, пока пользователь
+                    // не выбрал дисциплину вручную (иначе бейдж и дропдаун расходятся)
+                    if (!uploadDisciplineManual.value && pc.detected_discipline) {
+                        uploadDiscipline.value = pc.detected_discipline;
+                    }
+                    // авто-предложение версии: если нашёлся target и пользователь не
+                    // переключал режим вручную — предложить «новая версия»
+                    if (pc.suggested_target_project && uploadAddMode.value === 'new_project'
+                        && !uploadTargetProjectId.value) {
+                        uploadAddMode.value = 'new_version';
+                        uploadTargetProjectId.value = pc.suggested_target_project;
+                    }
+                }
+            } catch (e) {
+                uploadPrecheck.value = null;
+            } finally {
+                uploadPrecheckLoading.value = false;
+            }
+        }
+
+        async function submitUploadFolder() {
+            if (uploadLoading.value) return;
+            const s = uploadScan.value;
+            if (!s || !s.pdf) { uploadError.value = 'Выберите папку с одним PDF.'; return; }
+            if (!uploadObjectId.value || !uploadDiscipline.value) {
+                uploadError.value = 'Заполните объект и дисциплину.'; return;
+            }
+            const isVersion = uploadAddMode.value === 'new_version';
+            if (isVersion && !uploadTargetProjectId.value) {
+                uploadError.value = 'Выберите проект-основание для новой версии.'; return;
+            }
+            if (!isVersion && !uploadProjectName.value.trim()) {
+                uploadError.value = 'Укажите название проекта.'; return;
+            }
+            uploadError.value = '';
+            uploadLoading.value = true;
+            try {
+                if (!isVersion) {
+                    // новый проект: свежий precheck перед загрузкой (race-aware)
+                    await runSinglePrecheck();
+                    const pc = uploadPrecheck.value;
+                    if (pc && (pc.status === 'duplicate' || pc.status === 'error')) {
+                        uploadError.value = (pc.blocks[0] && pc.blocks[0].message) || 'Загрузка заблокирована (дубль).';
+                        return;
+                    }
+                    if (pc && pc.status === 'warning' && !uploadOverrideWarning.value) {
+                        uploadError.value = 'Найдено предупреждение — отметьте «Всё равно загрузить».';
+                        return;
+                    }
+                }
+                const fd = new FormData();
+                fd.append('object_id', uploadObjectId.value);
+                fd.append('discipline', uploadDiscipline.value);
+                fd.append('project_name', uploadProjectName.value.trim() || (s.pdf.name || '').replace(/\.pdf$/i, ''));
+                fd.append('upload_mode', isVersion ? 'new_version' : 'new_project');
+                if (isVersion) fd.append('target_project_id', uploadTargetProjectId.value);
+                for (const f of _uploadBundleFiles(s)) fd.append('files', f, f.name);
+
+                const resp = await fetch('/api/projects/upload-folder', { method: 'POST', body: fd });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    uploadError.value = data.detail || ('Ошибка загрузки (HTTP ' + resp.status + ')');
+                    return;
+                }
+                uploadResult.value = data;
+                await refreshProjects();
+            } catch (e) {
+                uploadError.value = 'Сбой загрузки: ' + (e && e.message ? e.message : e);
+            } finally {
+                uploadLoading.value = false;
+            }
+        }
+
+        function openUploadedProject() {
+            const pid = uploadResult.value && uploadResult.value.project_id;
+            closeAddProject();
+            if (pid) navigate('/project/' + encodeURIComponent(pid));
+        }
+
+        function openProjectById(pid) {
+            closeAddProject();
+            if (pid) navigate('/project/' + encodeURIComponent(pid));
+        }
+
+        // ─── Multi-folder upload ───
+        // один кандидат из набора файлов (label = подпапка или basename PDF)
+        function _buildUploadCandidate(label, files) {
+            const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
+            const md = files.find(f => /_document\.md$/i.test(f.name)) || files.find(f => /\.md$/i.test(f.name)) || null;
+            const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
+            const ocr = files.find(f => /_ocr\.html?$/i.test(f.name)) || null;
+            const pdf = pdfs.length === 1 ? pdfs[0] : null;
+            return {
+                folder: label, files, pdf,
+                pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
+                md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
+                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : label,
+                discipline: '', detectedDiscipline: '', disciplineSource: '',
+                addMode: 'new_project', targetProjectId: '',
+                status: 'pending', message: '', checked: false, precheck: null,
+            };
+        }
+
+        function onMultiFolderSelected(ev) {
+            uploadError.value = ''; uploadBatchResult.value = null;
+            const all = Array.from(ev.target.files || []);
+            if (!all.length) { uploadCandidates.value = []; return; }
+            // Две поддерживаемые раскладки внутри выбранной родительской папки:
+            //  (A) подпапки-проекты: "parent/sub/.../file" (глубина ≥3) → группа = sub;
+            //  (B) плоские файлы: "parent/file" (глубина 2) → каждый PDF = отдельный
+            //      кандидат-проект, sidecar'ы (_document.md / _result.json / _ocr.html)
+            //      привязываются по префиксу имени PDF.
+            const groups = {};           // sub → файлы (раскладка A)
+            const flat = [];             // файлы прямо в выбранной папке (раскладка B)
+            for (const f of all) {
+                const rel = (f.webkitRelativePath || f.name).split('/');
+                if (rel.length >= 3) {
+                    const sub = rel[1];
+                    (groups[sub] = groups[sub] || []).push(f);
+                } else if (rel.length === 2) {
+                    flat.push(f);
+                }
+            }
+            const cands = [];
+            // (A) кандидаты из подпапок
+            for (const sub of Object.keys(groups).sort()) {
+                cands.push(_buildUploadCandidate(sub, groups[sub]));
+            }
+            // (B) кандидаты из плоских PDF — каждый PDF отдельный проект
+            const flatPdfs = flat.filter(f => /\.pdf$/i.test(f.name))
+                .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+            for (const pdf of flatPdfs) {
+                const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
+                const sidecars = flat.filter(f => f !== pdf
+                    && /(_document\.md|\.md|_result\.json|_ocr\.html?)$/i.test(f.name)
+                    && f.name.toLowerCase().startsWith(stem));
+                cands.push(_buildUploadCandidate(pdf.name.replace(/\.pdf$/i, ''), [pdf, ...sidecars]));
+            }
+            // запасной случай: на верхнем уровне есть файлы, но PDF не нашёлся —
+            // отдать всё одним кандидатом (precheck честно покажет «нет PDF»).
+            if (!cands.length && flat.length) {
+                const top = ((all[0].webkitRelativePath || all[0].name || '').split('/')[0]) || 'project';
+                cands.push(_buildUploadCandidate(top, flat));
+            }
+            uploadCandidates.value = cands;
+            if (cands.length) recheckAllCandidates();
+        }
+
+        // precheck одной строки. discipline берётся per-row (c.discipline) либо,
+        // если пусто, глобальный uploadDiscipline; если и он пуст — авто-детект.
+        async function recheckCandidate(c) {
+            if (!uploadObjectId.value) { c.status = 'error'; c.message = 'Выберите объект'; c.checked = false; return; }
+            if (c.pdfCount === 0) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
+            if (c.pdfCount > 1) { c.status = 'error'; c.message = 'Несколько PDF — оставьте один PDF на проект'; c.checked = false; return; }
+            c.status = 'pending'; c.message = 'проверка…';
+            try {
+                const fd = new FormData();
+                fd.append('object_id', uploadObjectId.value);
+                const disc = c.discipline || uploadDiscipline.value || '';
+                if (disc) fd.append('discipline', disc);
+                fd.append('folder_name', c.folder);
+                fd.append('project_name', (c.name || '').trim());
+                for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
+                const resp = await fetch('/api/projects/upload-folder/precheck', { method: 'POST', body: fd });
+                const data = await resp.json().catch(() => ({}));
+                const pc = (resp.ok && data.precheck) ? data.precheck : null;
+                if (!pc) { c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false; return; }
+                c.precheck = pc; c.status = pc.status;
+                c.detectedDiscipline = pc.detected_discipline || '';
+                c.disciplineSource = pc.discipline_source || '';
+                if (!c.discipline && pc.discipline) c.discipline = pc.discipline;  // авто
+                // авто-предложение версии (если режим ещё не трогали вручную)
+                if (pc.suggested_target_project && c.addMode === 'new_project' && !c.targetProjectId) {
+                    c.addMode = 'new_version';
+                    c.targetProjectId = pc.suggested_target_project;
+                }
+                c.message = (pc.blocks[0] && pc.blocks[0].message)
+                    || (pc.warnings[0] && pc.warnings[0].message) || '';
+                // для new_version имя-дубли не мешают; считаем строку готовой к загрузке
+                if (c.addMode === 'new_version' && c.targetProjectId) {
+                    c.checked = true;
+                } else {
+                    c.checked = (pc.status === 'ready' || pc.status === 'warning');
+                }
+            } catch (e) {
+                c.status = 'error'; c.message = 'ошибка проверки'; c.checked = false;
+            }
+        }
+
+        async function recheckAllCandidates() {
+            if (!uploadCandidates.value.length) return;
+            // последовательно, чтобы не залить backend параллельными precheck'ами
+            for (const c of uploadCandidates.value) {
+                await recheckCandidate(c);
+            }
+        }
+
+        // варианты target для строки (проекты раздела строки), с пометкой совпадения
+        function candTargetOptions(c) {
+            const sec = c.discipline || uploadDiscipline.value;
+            if (!sec) return [];
+            const cand = normalizeProjectName(c.name || '');
+            const out = (projects.value || []).filter(p => p.section === sec).map(p =>
+                Object.assign({}, p, {
+                    _suggested: !!cand && normalizeProjectName(p.name || p.project_id) === cand,
+                }));
+            out.sort((a, b) => (a._suggested === b._suggested)
+                ? String(a.name || a.project_id).localeCompare(String(b.name || b.project_id))
+                : (a._suggested ? -1 : 1));
+            return out;
+        }
+        function candVersionLabel(c) {
+            return c.targetProjectId ? versionLabelForTarget(c.targetProjectId) : 'V?';
+        }
+        function candUploadableRow(c) {
+            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
+            return c.status === 'ready' || c.status === 'warning';
+        }
+
+        function candUploadable(c) {
+            if (c.addMode === 'new_version') return !!c.targetProjectId && c.status !== 'error';
+            return c.status === 'ready' || c.status === 'warning';
+        }
+        function candStatusLabel(c) {
+            return ({ ready: 'готов', warning: '⚠ предупреждение', duplicate: '⛔ дубль',
+                      error: '⛔ ошибка', pending: '…', done: '✓ загружен' })[c.status] || c.status;
+        }
+        function candCount(status) {
+            return uploadCandidates.value.filter(c => c.status === status).length;
+        }
+        const selectedCandidateCount = computed(() =>
+            uploadCandidates.value.filter(c => c.checked && candUploadable(c)).length
+        );
+
+        async function submitMultiUpload() {
+            const toUpload = uploadCandidates.value.filter(c => c.checked && candUploadable(c));
+            if (!toUpload.length || uploadLoading.value) return;
+            uploadError.value = ''; uploadLoading.value = true;
+            const uploaded = [], skipped = [], failed = [];
+            let i = 0;
+            try {
+                // ПОСЛЕДОВАТЕЛЬНО (await на каждый), не параллельно — защита от гонки
+                // old_to_new_map.json и от перегрузки dual_write_shadow.
+                for (const c of toUpload) {
+                    i++; uploadBatchProgress.value = i + '/' + toUpload.length;
+                    const fd = new FormData();
+                    fd.append('object_id', uploadObjectId.value);
+                    fd.append('discipline', c.discipline || uploadDiscipline.value || '');
+                    fd.append('project_name', (c.name || '').trim());
+                    const isVer = c.addMode === 'new_version';
+                    fd.append('upload_mode', isVer ? 'new_version' : 'new_project');
+                    if (isVer) fd.append('target_project_id', c.targetProjectId);
+                    for (const f of _uploadBundleFiles(c)) fd.append('files', f, f.name);
+                    try {
+                        const resp = await fetch('/api/projects/upload-folder', { method: 'POST', body: fd });
+                        const data = await resp.json().catch(() => ({}));
+                        if (resp.status === 409) {
+                            c.status = 'duplicate'; c.checked = false; c.message = data.detail || 'дубль';
+                            skipped.push({ folder: c.folder, error: data.detail || 'дубль' });
+                        } else if (!resp.ok) {
+                            c.status = 'error'; c.checked = false; c.message = data.detail || ('HTTP ' + resp.status);
+                            failed.push({ folder: c.folder, error: data.detail || ('HTTP ' + resp.status) });
+                        } else {
+                            c.status = 'done'; c.checked = false;
+                            uploaded.push({ project_id: data.project_id, folder: c.folder });
+                        }
+                    } catch (e) {
+                        c.status = 'error'; c.checked = false; c.message = String(e && e.message || e);
+                        failed.push({ folder: c.folder, error: String(e && e.message || e) });
+                    }
+                }
+                uploadBatchResult.value = { uploaded, skipped, failed };
+                await refreshProjects();
+            } finally {
+                uploadLoading.value = false; uploadBatchProgress.value = '';
+            }
+        }
+
         function openAddModal() {
             addProjectStep.value = 'choose';
             showAddProject.value = true;
@@ -4658,12 +5166,6 @@ const app = createApp({
             newSectionColor.value = '#3498db';
         }
 
-        async function goToAddProject() {
-            addProjectStep.value = 'project';
-            projectSource.value = 'local';
-            externalPath.value = '';
-            await scanFolders();
-        }
 
         async function addSection() {
             const code = newSectionCode.value.trim().toUpperCase();
@@ -5169,6 +5671,22 @@ const app = createApp({
             window.location.hash = window.VersionAPI
                 ? window.VersionAPI.buildHashRoute(path, versionId)
                 : path + '?version_id=' + encodeURIComponent(versionId);
+        }
+
+        async function deleteVersion(versionId) {
+            const pid = currentProject.value?.project_id;
+            if (!pid) return;
+            const verLabel = projectVersions.value.find(v => v.version_id === versionId)?.label || versionId;
+            if (!confirm(`Удалить версию ${verLabel} проекта "${currentProject.value?.name}"?\n\nБудут удалены:\n- Вся папка версии (PDF, MD, результаты аудита)\n- Запись о версии из манифеста\n\nДействие необратимо.`)) return;
+            try {
+                const resp = await fetch(`/api/projects/${encodeURIComponent(pid)}/versions/${encodeURIComponent(versionId)}`, { method: 'DELETE' });
+                const data = await resp.json();
+                if (!resp.ok) { alert(data.detail || 'Ошибка удаления версии'); return; }
+                await refreshProjects();
+                // Переключиться на новую latest версию
+                const newLatest = data.new_latest_version_id;
+                if (newLatest) selectVersion(newLatest);
+            } catch (e) { alert(e.message); }
         }
 
         // ─── Переименование папки проекта ───
@@ -8169,6 +8687,18 @@ const app = createApp({
             { id: 'repnikov', name: 'Репников И. А.' },
         ];
 
+        // Закреплённый состав бригады — эти инженеры показываются в графике
+        // ВСЕГДА (даже если за период у них нет ни одного решения в
+        // decisions_log). id = eng_slug ФИО из users.json — он совпадает с id,
+        // которые присылает /api/schedule, поэтому дедуп по id «склеивает»
+        // строку, если у инженера всё-таки есть события за период.
+        const _SCHED_REQUIRED_ENGINEERS = [
+            { id: 'kuldyaev-f-s', name: 'Кульдяев Ф. С.', role: 'expert' },
+            { id: 'repnikov-i-a', name: 'Репников И. А.', role: 'expert' },
+            { id: 'grivash-a-a', name: 'Гриваш А. А.', role: 'expert' },
+            { id: 'kalinina-a',   name: 'Калинина А.',    role: 'expert' },
+        ];
+
         // План работ грузится из backend GET /api/schedule/plan?period_type=&from=&to=
         // и редактируется админом через PUT /api/schedule/plan.
         const schedPlanMap = ref({});      // engineer_id -> plan (сохранённый, текущий период)
@@ -8248,15 +8778,28 @@ const app = createApp({
             return ev;
         });
 
-        // Эффективный источник: API, если есть непустой результат, иначе mock.
-        const schedUsingMock = computed(() =>
-            !Array.isArray(schedApiEvents.value) || schedApiEvents.value.length === 0);
+        // Эффективный источник: показываем РЕАЛЬНЫЕ данные, как только backend
+        // успешно ответил (массив событий получен — пусть даже пустой). На mock
+        // (демо) откатываемся ТОЛЬКО если запрос упал / ещё не загружен. Это
+        // отличает «за период нет решений» (живой пустой график) от «API
+        // недоступен» — раньше пустой ответ ошибочно прятал реальных инженеров.
+        const schedApiOk = computed(() => Array.isArray(schedApiEvents.value));
+        const schedUsingMock = computed(() => !schedApiOk.value);
         const schedEvents = computed(() =>
             schedUsingMock.value ? _schedMockEvents.value : schedApiEvents.value);
         const schedEngineers = computed(() => {
-            if (!schedUsingMock.value && Array.isArray(schedApiEngineers.value) && schedApiEngineers.value.length)
-                return schedApiEngineers.value;
-            return _SCHED_MOCK_ENGINEERS;
+            if (schedUsingMock.value) return _SCHED_MOCK_ENGINEERS;
+            // Живые данные: API-инженеры (те, у кого были решения за период) плюс
+            // ЗАКРЕПЛЁННЫЙ состав — он показывается ВСЕГДА, даже без решений.
+            // Дедуп по id (id = eng_slug ФИО, совпадает с id из API): реальная
+            // запись перекрывает заглушку. Сортировка по имени.
+            const byId = new Map();
+            for (const e of _SCHED_REQUIRED_ENGINEERS) byId.set(e.id, { ...e });
+            for (const e of (schedApiEngineers.value || [])) {
+                if (e && e.id) byId.set(e.id, e);
+            }
+            return Array.from(byId.values()).sort((a, b) =>
+                (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase(), 'ru'));
         });
 
         // Баннер состояния над графиком.
@@ -8522,7 +9065,7 @@ const app = createApp({
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──
-        // Инициалы инженера для аватара: «Гривапш А. А.» → «ГА».
+        // Инициалы инженера для аватара: «Гриваш А. А.» → «ГА».
         function schedInitials(name) {
             const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
             if (!parts.length) return '?';
@@ -10342,6 +10885,135 @@ const app = createApp({
             const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(scQOJob.value.job_id)}/cancel`;
             try { await fetch(url, { method: 'POST' }); } catch (e) {}
         }
+
+        // ─── Pipeline V2 controlled run («Запустить V2» в «Связь блоков») ──
+        // Кнопка POST'ит на /pipeline-v2/{sid}/pairs/{pid}/run (state-changing
+        // controlled endpoint), затем polling'ит run-status. ui-payload —
+        // read-only, его не трогаем. Прогон offline (без моделей).
+        const scPv2RunByPair = reactive({});        // pid -> job {status, ...}
+        const scPv2RunArtifactPairs = reactive({}); // pid -> true (артефакты есть)
+        const scPv2RunModal = ref(null);            // confirm-модалка
+        let scPv2RunTimers = {};                    // pid -> setTimeout id
+
+        function scPv2RunState(pid) {
+            const j = scPv2RunByPair[pid];
+            const s = j && j.status;
+            if (s === 'queued' || s === 'running') return 'running';
+            if (s === 'completed') return 'completed';
+            if (s === 'failed' || s === 'failed_interrupted' || s === 'cancelled') return 'failed';
+            if (scPv2RunArtifactPairs[pid]) return 'has_artifacts';
+            return 'idle';
+        }
+        function scPv2RunBtnLabel(pid) {
+            const st = scPv2RunState(pid);
+            if (st === 'running') return '⏳ V2…';
+            if (st === 'failed') return '↻ V2';
+            if (st === 'has_artifacts' || st === 'completed') return '↻ V2';
+            return '▶ V2';
+        }
+        function scPv2RunBtnTitle(pid) {
+            const st = scPv2RunState(pid);
+            if (st === 'running') return 'Pipeline V2 выполняется…';
+            if (st === 'failed') return 'Повторить Pipeline V2 (последний прогон не удался)';
+            if (st === 'has_artifacts' || st === 'completed') return 'Перезапустить Pipeline V2 (создаст backup существующих артефактов)';
+            return 'Запустить backend Pipeline V2 и создать артефакты для этой пары';
+        }
+        function scPv2RunErrorFor(pid) {
+            const j = scPv2RunByPair[pid];
+            return (j && (j.status === 'failed' || j.status === 'failed_interrupted') && j.error) ? j.error : '';
+        }
+        async function scPv2RunLoadArtifactPairs() {
+            if (!scSession.value || !scSession.value.id) return;
+            try {
+                const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/ui-payload`;
+                const data = await fetch(url).then(r => r.ok ? r.json() : null);
+                const list = (data && (data.available_pairs
+                    || (data.payload && data.payload.available_pairs))) || [];
+                Object.keys(scPv2RunArtifactPairs).forEach(k => delete scPv2RunArtifactPairs[k]);
+                list.forEach(pid => { scPv2RunArtifactPairs[pid] = true; });
+            } catch (e) { /* read-only best-effort */ }
+        }
+        function scPv2RunOpenModal(p) {
+            if (!p || !p.left || !p.right) return;
+            if (scPv2RunState(p.id) === 'running') return;
+            const st = scPv2RunState(p.id);
+            scPv2RunModal.value = {
+                pair_id: p.id,
+                left_name: (p.left && p.left.filename) || '?',
+                right_name: (p.right && p.right.filename) || '?',
+                is_rerun: (st === 'has_artifacts' || st === 'completed' || st === 'failed'),
+                typed: '', busy: false, error: ''
+            };
+        }
+        function scPv2RunStopPoll(pid) {
+            if (scPv2RunTimers[pid]) { clearTimeout(scPv2RunTimers[pid]); delete scPv2RunTimers[pid]; }
+        }
+        function scPv2RunPoll(pid, jobId) {
+            scPv2RunStopPoll(pid);
+            const terminal = ['completed', 'failed', 'cancelled', 'failed_interrupted'];
+            const tick = async () => {
+                if (!scSession.value || !scSession.value.id) return;
+                try {
+                    const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pid)}/run-status/${encodeURIComponent(jobId)}`;
+                    const r = await fetch(url);
+                    if (r.ok) {
+                        const job = await r.json();
+                        scPv2RunByPair[pid] = job;
+                        if (terminal.includes(job.status)) {
+                            scPv2RunStopPoll(pid);
+                            if (job.status === 'completed') scPv2RunArtifactPairs[pid] = true;
+                            try { await scPv2RunLoadArtifactPairs(); } catch (e) {}
+                            if (typeof scPv2LpLoad === 'function' && scPv2LpVisible.value
+                                && scPv2LpPairId.value === pid) {
+                                try { await scPv2LpLoad(); } catch (e) {}
+                            }
+                            return;
+                        }
+                    }
+                    scPv2RunTimers[pid] = setTimeout(tick, 3000);
+                } catch (e) { scPv2RunTimers[pid] = setTimeout(tick, 5000); }
+            };
+            tick();
+        }
+        async function scPv2RunSubmit() {
+            const mdl = scPv2RunModal.value;
+            if (!mdl || !scSession.value || !scSession.value.id) return;
+            if (mdl.typed !== mdl.pair_id) {
+                mdl.error = 'Введите точный pair_id для подтверждения'; return;
+            }
+            mdl.busy = true; mdl.error = '';
+            const pid = mdl.pair_id;
+            try {
+                const url = `/api/stage-comparison/pipeline-v2/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pid)}/run`;
+                const r = await fetch(url, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: 'dry_run', confirm: true,
+                        confirm_session_id: scSession.value.id, confirm_pair_id: pid,
+                        rerun_existing: !!mdl.is_rerun, create_backup: true
+                    })
+                });
+                if (!r.ok) {
+                    let msg = 'HTTP ' + r.status;
+                    try { const e = await r.json(); if (e && e.detail) msg = e.detail; } catch (x) {}
+                    if (r.status === 409) msg = 'Уже есть артефакты или идёт прогон (' + msg + ')';
+                    mdl.busy = false; mdl.error = msg; return;
+                }
+                const data = await r.json();
+                scPv2RunByPair[pid] = { status: 'queued', job_id: data.job_id };
+                scPv2RunModal.value = null;
+                scPv2RunPoll(pid, data.job_id);
+            } catch (e) {
+                mdl.busy = false; mdl.error = (e && e.message) || String(e);
+            }
+        }
+        // Подгрузить пары с артефактами при смене сессии (бейдж «Запустить» vs
+        // «Перезапустить»).
+        watch(() => scSession.value && scSession.value.id, (sid) => {
+            Object.keys(scPv2RunByPair).forEach(k => delete scPv2RunByPair[k]);
+            Object.keys(scPv2RunArtifactPairs).forEach(k => delete scPv2RunArtifactPairs[k]);
+            if (sid) { scPv2RunLoadArtifactPairs(); }
+        });
 
         async function scOpenPair(pair) {
             if (!pair || !pair.left || !pair.right) return;
@@ -14343,6 +15015,1643 @@ const app = createApp({
             }
         }
 
+        // ─── Stage Comparison: Pipeline V2 (β) — read-only панель ────────
+        // Панель ТОЛЬКО читает GET /api/stage-comparison/pipeline-v2/{sid}/
+        // ui-payload (+?pair_id=). Ничего не запускает (ни Pipeline V2, ни
+        // Qwen/Opus), ничего не пишет. not_found — нормальное состояние,
+        // пока артефакты dry-run не записаны в comparison/sessions/.
+        const scPv2Loading = ref(false);
+        const scPv2Error = ref('');          // транспорт / HTTP / доступ
+        const scPv2Resp = ref(null);         // envelope {status, payload, …}
+        const scPv2PairId = ref('');         // '' = session-level
+        const scPv2LoadedFor = ref('');      // ключ sid|pair последней загрузки
+        const scPv2Open = reactive({});      // sectionKey -> развёрнута ли
+        const scPv2Filters = reactive({ entity_type: '', risk_level: '',
+                                        critic_verdict: '', delta_type: '' });
+
+        const scPv2Payload = computed(() =>
+            (scPv2Resp.value && scPv2Resp.value.payload) || null);
+        const scPv2Sections = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.sections) || []);
+        const scPv2Headline = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.headline) || null);
+        // Графика / Vision grounding — read-only сводка из ui-payload
+        // (backend пишет graphic_vision / graphic_vision_grounding). Если поля
+        // нет — секции просто не рендерятся (empty state), панель не падает.
+        const scPv2GraphicVision = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.graphic_vision) || null);
+        const scPv2GraphicGrounding = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.graphic_vision_grounding) || null);
+        // суммарно «отклонено как галлюцинация»: artificial ряды +
+        // designator-range + no-op изменения
+        const scPv2GroundingRejectedTotal = computed(() => {
+            const g = scPv2GraphicGrounding.value;
+            if (!g) return 0;
+            const n = (x) => (typeof x === 'number' && x > 0 ? x : 0);
+            return n(g.artificial_series_rejected) + n(g.designator_range_rejected)
+                + n(g.noop_changes_rejected);
+        });
+        // ─── Grounded vision evidence (per-delta badges + summary) ──────────
+        // payload.grounded_evidence: {available, counts…, cards:[…]}. Связь
+        // deterministic-дельты с подтверждённой графикой (mark-only).
+        const scPv2GroundedEvidence = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.grounded_evidence) || null);
+        const scPv2GeAvailable = computed(() => {
+            const g = scPv2GroundedEvidence.value;
+            return !!(g && g.available);
+        });
+        // карточки с подтверждением/конфликтом вперёд; «none» не показываем
+        const scPv2GeInterestingCards = computed(() => {
+            const g = scPv2GroundedEvidence.value;
+            const cards = (g && Array.isArray(g.cards)) ? g.cards : [];
+            return cards.filter(c => c && c.evidence_level && c.evidence_level !== 'none');
+        });
+        // визуальный стиль badge по уровню evidence
+        function scPv2GeBadgeStyle(level) {
+            const L = (level || '').toLowerCase();
+            if (L === 'grounded') return {emoji: '✅', text: 'Grounded vision',
+                bg: '#dcfce7', fg: '#166534', border: '#86efac'};
+            if (L === 'weak') return {emoji: '🟡', text: 'Weak vision',
+                bg: '#fef9c3', fg: '#854d0e', border: '#fde047'};
+            if (L === 'conflict' || L === 'rejected_only')
+                return {emoji: '⚠', text: 'Rejected/conflict', bg: '#ffedd5',
+                    fg: '#9a3412', border: '#fdba74'};
+            return null;   // none / unknown — badge не показываем
+        }
+        function scPv2GeAnchorText(a) {
+            if (!a) return '';
+            const parts = [];
+            if (a.designator) parts.push(String(a.designator).toUpperCase());
+            const ov = a.old_anchor || '';
+            const nv = a.new_anchor || '';
+            if (ov || nv) parts.push((ov || '—') + ' → ' + (nv || '—'));
+            return parts.join(': ');
+        }
+        // Цвет/подпись чипа вердикта критика. evidence ≠ critic — это РАЗНЫЕ
+        // сигналы (grounded vision может идти с needs_human_review). null →
+        // вызывающий показывает серое «нет объяснения».
+        function scPv2CriticVerdictStyle(v) {
+            const V = (v || '').toLowerCase();
+            if (V === 'accept') return {text: 'accept',
+                bg: '#dcfce7', fg: '#166534', border: '#86efac'};
+            if (V === 'needs_human_review') return {text: 'на проверку',
+                bg: '#fef9c3', fg: '#854d0e', border: '#fde047'};
+            if (V === 'possible_weak_graphic') return {text: 'слабая графика',
+                bg: '#ffedd5', fg: '#9a3412', border: '#fdba74'};
+            if (V === 'possible_ocr_noise') return {text: 'возможно OCR-шум',
+                bg: '#f1f5f9', fg: '#475569', border: '#cbd5e1'};
+            if (V === 'reject') return {text: 'отклонено',
+                bg: '#fee2e2', fg: '#991b1b', border: '#fecaca'};
+            if (V === 'failed' || V === 'skipped') return {text: 'сбой/пропуск',
+                bg: '#fee2e2', fg: '#991b1b', border: '#fecaca'};
+            return null;   // missing
+        }
+        // «Показать инженеру» из should_show_to_engineer (true/false/—).
+        function scPv2ShowText(v) {
+            if (v === true) return 'да';
+            if (v === false) return 'нет';
+            return '—';
+        }
+        // Breakdown grounded-evidence карточек по вердикту критика (join по
+        // секционным карточкам, где есть и grounded_evidence, и critic_verdict).
+        const scPv2GeVerdictBreakdown = computed(() => {
+            const out = {accept: 0, needs_review: 0, weak_other: 0, total: 0};
+            for (const sec of (scPv2Sections.value || [])) {
+                for (const c of ((sec && sec.cards) || [])) {
+                    const ge = c && c.grounded_evidence;
+                    if (!ge || !ge.evidence_level || ge.evidence_level === 'none') continue;
+                    out.total++;
+                    const lvl = ge.evidence_level;
+                    const v = (c.critic_verdict || '').toLowerCase();
+                    if (lvl === 'conflict' || lvl === 'rejected_only' || lvl === 'weak') {
+                        out.weak_other++;            // не-grounded evidence
+                    } else if (v === 'accept') {
+                        out.accept++;                // grounded + критик принял
+                    } else {
+                        out.needs_review++;          // grounded, но на проверку/прочее
+                    }
+                }
+            }
+            return out;
+        });
+        // ─── Grounding detail drawer (read-only) ────────────────────────────
+        // Грузит GET …/pipeline-v2/{sid}/graphic-vision-grounding?pair_id=…
+        // Один fetch (limit 500) → клиентская фильтрация по табам.
+        const scPv2GdOpen = ref(false);
+        const scPv2GdLoading = ref(false);
+        const scPv2GdError = ref('');
+        const scPv2GdResp = ref(null);       // detail-ответ {summary, flat, …}
+        const scPv2GdFilter = ref('all');    // all|grounded|weak|ungrounded|rejected|changes
+        let scPv2GdReqSeq = 0;
+        const scPv2GdCards = computed(() => {
+            const f = scPv2GdResp.value && scPv2GdResp.value.flat;
+            if (!f) return [];
+            return [].concat(f.entities || [], f.changes || [], f.rejected || []);
+        });
+        function scPv2GdMatch(card, tab) {
+            if (tab === 'all') return true;
+            if (tab === 'changes') return card.card_type === 'change';
+            if (tab === 'grounded') return card.status === 'grounded';
+            if (tab === 'weak') return card.status === 'weakly_grounded';
+            if (tab === 'ungrounded')
+                return card.status === 'ungrounded' || card.status === 'no_anchor_available';
+            if (tab === 'rejected')
+                return typeof card.status === 'string' && card.status.indexOf('rejected_') === 0;
+            return true;
+        }
+        const scPv2GdFilteredCards = computed(() =>
+            scPv2GdCards.value.filter(c => scPv2GdMatch(c, scPv2GdFilter.value)));
+        const scPv2GdPagination = computed(() =>
+            (scPv2GdResp.value && scPv2GdResp.value.pagination) || null);
+        function scPv2GdStatusColor(status) {
+            if (status === 'grounded') return { bg: '#dcfce7', fg: '#166534', br: '#bbf7d0' };
+            if (status === 'weakly_grounded') return { bg: '#fef9c3', fg: '#854d0e', br: '#fde68a' };
+            if (typeof status === 'string' && status.indexOf('rejected_') === 0)
+                return { bg: '#fee2e2', fg: '#991b1b', br: '#fecaca' };
+            return { bg: '#f3f4f6', fg: '#6b7280', br: '#e5e7eb' };  // ungrounded
+        }
+        async function scPv2GdLoad() {
+            if (!scSession.value || !scSession.value.id) return;
+            const myReq = ++scPv2GdReqSeq;
+            scPv2GdLoading.value = true;
+            scPv2GdError.value = '';
+            const sid = scSession.value.id;
+            const pid = scPv2PairId.value;
+            let url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/graphic-vision-grounding?limit=500';
+            if (pid) url += '&pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2GdReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2GdResp.value = null;
+                    scPv2GdError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2GdReqSeq) return;
+                scPv2GdResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2GdReqSeq) return;
+                scPv2GdResp.value = null;
+                scPv2GdError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2GdReqSeq) scPv2GdLoading.value = false;
+            }
+        }
+        function scPv2GdOpenDrawer() {
+            scPv2GdOpen.value = true;
+            scPv2GdFilter.value = 'all';
+            scPv2GdLoad();
+        }
+        function scPv2GdClose() { scPv2GdOpen.value = false; }
+        // Мост grounding-карточка → block link preview (read-only UX, без
+        // автоприменения связей): баннер «открыта связь по карточке» и warning,
+        // если matching block_link не найден.
+        const scPv2GdJumpBanner = ref('');    // label карточки, по которой прыгнули
+        const scPv2GdJumpWarning = ref('');   // связь не найдена
+        const scPv2FilterOptions = computed(() => {
+            const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
+            return {
+                entity_type: f.entity_types || [],
+                risk_level: f.risk_levels || [],
+                critic_verdict: f.critic_verdicts || [],
+                delta_type: f.delta_types || [],
+            };
+        });
+        const scPv2HasFilterOptions = computed(() => {
+            const o = scPv2FilterOptions.value;
+            return Object.values(o).some(list => list && list.length);
+        });
+        const scPv2FiltersActive = computed(() =>
+            Object.values(scPv2Filters).some(v => v));
+
+        const SC_PV2_SECTION_EMOJI = {
+            confirmed_changes: '✅', needs_review: '🟡',
+            weak_graphic_review: '🟠', likely_noise_hidden_by_default: '⚪',
+            llm_failed_or_skipped: '🔴',
+        };
+        function scPv2SectionEmoji(key) {
+            return SC_PV2_SECTION_EMOJI[key] || '▫';
+        }
+
+        // Карточка проходит фильтры? Отсутствующие поля карточки не валят
+        // фильтрацию (null != выбранное значение → просто скрыта).
+        function scPv2CardMatches(card, filters) {
+            if (!card) return false;
+            const f = filters || scPv2Filters;
+            return (!f.entity_type || card.entity_type === f.entity_type)
+                && (!f.risk_level || card.risk_level === f.risk_level)
+                && (!f.critic_verdict || card.critic_verdict === f.critic_verdict)
+                && (!f.delta_type || card.delta_type === f.delta_type);
+        }
+        function scPv2CardsFor(sec) {
+            const cards = (sec && sec.cards) || [];
+            if (!scPv2FiltersActive.value) return cards;
+            return cards.filter(c => scPv2CardMatches(c));
+        }
+        function scPv2ResetFilters() {
+            scPv2Filters.entity_type = '';
+            scPv2Filters.risk_level = '';
+            scPv2Filters.critic_verdict = '';
+            scPv2Filters.delta_type = '';
+        }
+
+        // default_visible → секция развёрнута; noise/llm_failed свёрнуты.
+        function scPv2ApplyDefaultOpen(payload) {
+            for (const sec of (payload && payload.sections) || []) {
+                if (sec && sec.key) scPv2Open[sec.key] = !!sec.default_visible;
+            }
+        }
+        function scPv2ToggleSection(key) {
+            scPv2Open[key] = !scPv2Open[key];
+        }
+
+        function scPv2StatusBadge(status) {
+            return { ok: '✓ ok', partial: '◐ partial', not_found: '∅',
+                     error: '⚠ error' }[status] || (status || '');
+        }
+
+        // Объединённые warnings: envelope (чтение артефактов) + payload
+        // (adapter/summary warnings вида «section_X: … without card data»).
+        const scPv2AllWarnings = computed(() => {
+            const env = (scPv2Resp.value && scPv2Resp.value.warnings) || [];
+            const pl = (scPv2Payload.value && scPv2Payload.value.warnings) || [];
+            return [...env, ...pl];
+        });
+
+        // sequence-guard: авторитетен только ПОСЛЕДНИЙ запрос — поздний ответ
+        // старой пары/сессии не должен перетирать актуальный (race).
+        let scPv2ReqSeq = 0;
+
+        async function scPv2Load() {
+            if (!scSession.value || !scSession.value.id) return;
+            const myReq = ++scPv2ReqSeq;
+            scPv2Loading.value = true;
+            scPv2Error.value = '';
+            const sid = scSession.value.id;
+            const pid = scPv2PairId.value;
+            let url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/ui-payload';
+            if (pid) url += '?pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2ReqSeq) return;     // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    // portal_auth-интерсептор обычно сам уводит на /login;
+                    // это запасной понятный текст, если редиректа не было
+                    scPv2Resp.value = null;
+                    scPv2Error.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2ReqSeq) return;     // устаревший ответ
+                scPv2Resp.value = j;
+                if (j && j.payload) scPv2ApplyDefaultOpen(j.payload);
+                scPv2LoadedFor.value = sid + '|' + pid;
+            } catch (e) {
+                if (myReq !== scPv2ReqSeq) return;
+                scPv2Resp.value = null;
+                scPv2Error.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2ReqSeq) scPv2Loading.value = false;
+            }
+        }
+        // Ленивая загрузка при входе на вкладку / смене сессии-пары.
+        function scPv2EnsureLoaded() {
+            if (!scSession.value || !scSession.value.id) return;
+            const key = scSession.value.id + '|' + scPv2PairId.value;
+            if (scPv2LoadedFor.value !== key && !scPv2Loading.value) scPv2Load();
+        }
+        function scPv2OpenPair(pid) {
+            scPv2PairId.value = pid || '';
+            scPv2Load();
+        }
+        // Смена пары → сброс фильтров: значения старой пары могли исчезнуть
+        // из options новой (селекты выглядели бы пустыми и скрывали карточки).
+        // Grounding-drawer тоже закрываем: detail старой пары не должен висеть.
+        watch(scPv2PairId, () => {
+            scPv2ResetFilters();
+            scPv2GdReqSeq++;
+            scPv2GdOpen.value = false;
+            scPv2GdResp.value = null;
+            scPv2GdError.value = '';
+            scPv2GdFilter.value = 'all';
+            scPv2GdJumpBanner.value = '';
+            scPv2GdJumpWarning.value = '';
+        });
+        // Смена сессии → полный сброс панели: pair из старой сессии не должен
+        // утекать в запросы новой, фильтры и payload устаревают; инвалидация
+        // sequence отменяет in-flight ответы старой сессии.
+        watch(() => (scSession.value && scSession.value.id) || '', () => {
+            scPv2ReqSeq++;
+            scPv2PairId.value = '';
+            scPv2Resp.value = null;
+            scPv2LoadedFor.value = '';
+            scPv2Error.value = '';
+            scPv2Loading.value = false;
+            scPv2ResetFilters();
+        });
+
+        // ─── Stage Comparison: Pipeline V2 Block Link Preview ────────────
+        // Read-only режим «Pipeline V2 — предложенные связи» в разделе
+        // «Связь блоков»: GET /api/stage-comparison/pipeline-v2/{sid}/
+        // block-link-preview?pair_id=. Ничего не применяет: ручные связи
+        // блоков пары не читаются и не изменяются, никаких job'ов.
+        const scPv2LpVisible = ref(false);     // панель открыта
+        const scPv2LpLoading = ref(false);
+        const scPv2LpError = ref('');
+        const scPv2LpResp = ref(null);         // envelope {status, payload, …}
+        const scPv2LpPairId = ref('');         // выбранная пара (дефолт — активная)
+        const scPv2LpFilter = ref('all');      // all|strong|weak|manual_review|unmatched|graphic|visual_changed|visual_identical
+        const scPv2LpSelectedPage = ref('');   // page_link_id
+        const scPv2LpSelectedLink = ref('');   // block_link_id / un_<side>_<id>
+        let scPv2LpReqSeq = 0;
+
+        const SC_PV2_LP_COLORS = { green: '#16a34a', yellow: '#ca8a04',
+                                   orange: '#ea580c', gray: '#6b7280',
+                                   blue: '#2563eb' };
+        const SC_PV2_LP_FILTERS = [
+            { key: 'all', label: 'Все' },
+            { key: 'strong', label: '🟢 strong' },
+            { key: 'weak', label: '🟡 weak' },
+            { key: 'manual_review', label: '🟠 manual review' },
+            { key: 'unmatched', label: '⚪ без пары' },
+            { key: 'graphic', label: '📐 только графика' },
+            { key: 'visual_changed', label: '👁 visual changed' },
+            { key: 'visual_identical', label: '👁 visual identical' },
+        ];
+
+        const scPv2LpReport = computed(() =>
+            (scPv2LpResp.value && scPv2LpResp.value.payload) || null);
+        const scPv2LpSummary = computed(() =>
+            (scPv2LpReport.value && scPv2LpReport.value.summary) || null);
+        const scPv2LpPageLinks = computed(() =>
+            (scPv2LpReport.value && scPv2LpReport.value.page_links) || []);
+        const scPv2LpNotFound = computed(() =>
+            !!scPv2LpResp.value && scPv2LpResp.value.status === 'not_found');
+        const scPv2LpRespError = computed(() =>
+            (scPv2LpResp.value && scPv2LpResp.value.status === 'error')
+                ? ((scPv2LpResp.value.warnings || []).join('; ')
+                   || scPv2LpResp.value.message || 'error')
+                : '');
+        // Связи + односторонние блоки в одном списке (kind: link|unmatched).
+        const scPv2LpAllLinks = computed(() => {
+            const r = scPv2LpReport.value;
+            if (!r) return [];
+            const links = (r.block_links || []).map(l =>
+                ({ ...l, kind: 'link' }));
+            const un = r.unmatched || {};
+            const one = [...(un.left_blocks || []), ...(un.right_blocks || [])]
+                .map(u => ({ ...u, kind: 'unmatched',
+                             block_link_id: 'un_' + u.side + '_' + u.block_id }));
+            return [...links, ...one];
+        });
+        function scPv2LpLinkMatchesFilter(l) {
+            const f = scPv2LpFilter.value;
+            if (!f || f === 'all') return true;
+            if (f === 'unmatched') return l.kind === 'unmatched';
+            if (f === 'graphic') return !!l.is_graphic;
+            if (f === 'visual_changed') return l.visual_status === 'changed_visual';
+            if (f === 'visual_identical')
+                return l.visual_status === 'identical_visual'
+                    || l.visual_status === 'minor_visual';
+            return l.link_status === f;
+        }
+        const scPv2LpFilteredLinks = computed(() =>
+            scPv2LpAllLinks.value.filter(l => scPv2LpLinkMatchesFilter(l)));
+        const scPv2LpSelectedPageLink = computed(() =>
+            scPv2LpPageLinks.value.find(
+                p => p.page_link_id === scPv2LpSelectedPage.value) || null);
+        const scPv2LpSelectedLinkObj = computed(() =>
+            scPv2LpAllLinks.value.find(
+                l => l.block_link_id === scPv2LpSelectedLink.value) || null);
+        // Блоки для overlay выбранной пары страниц (обе стороны).
+        const scPv2LpPageOverlays = computed(() => {
+            const p = scPv2LpSelectedPageLink.value;
+            const out = { left: [], right: [] };
+            if (!p) return out;
+            for (const l of scPv2LpAllLinks.value) {
+                if (l.kind === 'link') {
+                    if (l.page_match_id !== p.page_link_id) continue;
+                    if (l.left_bbox_norm)
+                        out.left.push({ entry: l, side: 'left', bbox: l.left_bbox_norm });
+                    if (l.right_bbox_norm)
+                        out.right.push({ entry: l, side: 'right', bbox: l.right_bbox_norm });
+                } else {
+                    // unmatched: только на своей стороне и своей странице
+                    const page = l.side === 'left' ? p.left_page_number
+                                                   : p.right_page_number;
+                    if (page != null && l.page_number === page && l.bbox_norm)
+                        out[l.side].push({ entry: l, side: l.side, bbox: l.bbox_norm });
+                }
+            }
+            return out;
+        });
+        function scPv2LpEffectivePairId() {
+            return scPv2LpPairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+        }
+        function scPv2LpPageImageUrl(side, page) {
+            const sid = scSession.value && scSession.value.id;
+            // картинки ДОЛЖНЫ соответствовать паре загруженного отчёта
+            // (envelope.pair_id), а не живому селектору — иначе при смене
+            // пары в селекторе bbox старой пары лёг бы на листы новой
+            const pid = (scPv2LpResp.value && scPv2LpResp.value.pair_id)
+                || scPv2LpEffectivePairId();
+            if (!sid || !pid || !page) return '';
+            return `/api/stage-comparison/sessions/${encodeURIComponent(sid)}/pairs/${encodeURIComponent(pid)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
+        }
+        function scPv2LpOverlayStyle(ov) {
+            const b = ov.bbox || [0, 0, 0, 0];
+            const sel = scPv2LpSelectedLink.value
+                && ov.entry.block_link_id === scPv2LpSelectedLink.value;
+            const color = SC_PV2_LP_COLORS[(ov.entry.ui && ov.entry.ui.color) || 'gray']
+                || SC_PV2_LP_COLORS.gray;
+            return {
+                position: 'absolute',
+                left: (b[0] * 100) + '%',
+                top: (b[1] * 100) + '%',
+                width: (Math.max(0, b[2] - b[0]) * 100) + '%',
+                height: (Math.max(0, b[3] - b[1]) * 100) + '%',
+                border: sel ? ('3px solid ' + SC_PV2_LP_COLORS.blue)
+                            : ('2px solid ' + color),
+                boxShadow: sel ? ('inset 0 0 0 2px ' + color) : 'none',
+                background: sel ? 'rgba(37,99,235,.12)' : (color + '22'),
+                cursor: 'pointer',
+                boxSizing: 'border-box',
+            };
+        }
+        function scPv2LpStatusColor(l) {
+            return SC_PV2_LP_COLORS[(l && l.ui && l.ui.color) || 'gray']
+                || SC_PV2_LP_COLORS.gray;
+        }
+        function scPv2LpSelectLink(l) {
+            if (!l) return;
+            scPv2LpSelectedLink.value =
+                scPv2LpSelectedLink.value === l.block_link_id
+                    ? '' : l.block_link_id;
+            // выбор из списка подтягивает страницу связи
+            if (scPv2LpSelectedLink.value) {
+                if (l.kind === 'link' && l.page_match_id) {
+                    scPv2LpSelectedPage.value = l.page_match_id;
+                } else if (l.kind === 'unmatched') {
+                    const p = scPv2LpPageLinks.value.find(pl =>
+                        (l.side === 'left' ? pl.left_page_number
+                                           : pl.right_page_number) === l.page_number);
+                    if (p) scPv2LpSelectedPage.value = p.page_link_id;
+                }
+            }
+        }
+        function scPv2LpSelectPage(pid) {
+            scPv2LpSelectedPage.value = pid || '';
+            scPv2LpSelectedLink.value = '';
+        }
+        async function scPv2LpLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2LpEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2LpReqSeq;
+            scPv2LpLoading.value = true;
+            scPv2LpError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/block-link-preview?pair_id=' + encodeURIComponent(pid);
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    scPv2LpResp.value = null;
+                    scPv2LpError.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
+                scPv2LpResp.value = j;
+                scPv2LpSelectedLink.value = '';
+                // автоселект первой пары страниц со связями
+                const pages = (j && j.payload && j.payload.page_links) || [];
+                const first = pages.find(p =>
+                    (p.block_link_ids || []).length) || pages[0];
+                scPv2LpSelectedPage.value = first ? first.page_link_id : '';
+            } catch (e) {
+                if (myReq !== scPv2LpReqSeq) return;
+                scPv2LpResp.value = null;
+                scPv2LpError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2LpReqSeq) scPv2LpLoading.value = false;
+            }
+        }
+        function scPv2LpToggle() {
+            scPv2LpVisible.value = !scPv2LpVisible.value;
+            if (scPv2LpVisible.value && !scPv2LpResp.value
+                    && !scPv2LpLoading.value) {
+                scPv2LpPairId.value = scPv2LpEffectivePairId();
+                scPv2LpLoad();
+            }
+        }
+        // Смена сессии/активной пары → полный сброс панели (поздние ответы
+        // старой пары отменяются инвалидацией sequence).
+        function scPv2LpReset() {
+            scPv2LpReqSeq++;
+            scPv2LpVisible.value = false;
+            scPv2LpResp.value = null;
+            scPv2LpError.value = '';
+            scPv2LpLoading.value = false;
+            scPv2LpPairId.value = '';
+            scPv2LpFilter.value = 'all';
+            scPv2LpSelectedPage.value = '';
+            scPv2LpSelectedLink.value = '';
+        }
+        watch(() => (scSession.value && scSession.value.id) || '', scPv2LpReset);
+        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2LpReset);
+        // Смена пары в селекторе панели → сброс загруженного отчёта до
+        // явного «Загрузить»: данные и изображения не могут разъехаться
+        // по парам (поздние ответы отменяет sequence guard).
+        watch(scPv2LpPairId, () => {
+            scPv2LpReqSeq++;
+            scPv2LpResp.value = null;
+            scPv2LpError.value = '';
+            scPv2LpLoading.value = false;
+            scPv2LpSelectedPage.value = '';
+            scPv2LpSelectedLink.value = '';
+        });
+
+        // ── Мост: grounding-карточка → block link preview ───────────────────
+        // Выводит block ids из карточки (или из item_id gv_<L>__<R>).
+        function scPv2GdBlockIdsFromCard(card) {
+            let left = (card && card.left_block_id) || null;
+            let right = (card && card.right_block_id) || null;
+            if ((!left || !right) && card && card.item_id) {
+                const parts = String(card.item_id).replace(/^gv_/, '').split('__');
+                if (parts.length === 2) {
+                    left = left || parts[0];
+                    right = right || parts[1];
+                }
+            }
+            if (!left && card && card.side === 'old' && card.block_id) left = card.block_id;
+            if (!right && card && card.side === 'new' && card.block_id) right = card.block_id;
+            if (!left && card && card.block_id) left = card.block_id;   // either
+            return { left, right };
+        }
+        function scPv2GdCardHasTarget(card) {
+            if (!card) return false;
+            return !!(card.left_block_id || card.right_block_id || card.item_id
+                || card.block_id || card.left_page_number != null
+                || card.right_page_number != null || card.page_number != null);
+        }
+        function scPv2GdMatchLink(target) {
+            const links = scPv2LpAllLinks.value || [];
+            // 1) exact: оба block_id совпали
+            let m = links.find(l => l.kind === 'link'
+                && l.left_block_id === target.left_block_id
+                && l.right_block_id === target.right_block_id);
+            if (m) return m;
+            // 2) по одному block_id
+            m = links.find(l => l.kind === 'link'
+                && (l.left_block_id === target.left_block_id
+                    || l.right_block_id === target.right_block_id));
+            if (m) return m;
+            // 3) односторонний блок (unmatched)
+            m = links.find(l => l.kind === 'unmatched'
+                && (l.block_id === target.left_block_id
+                    || l.block_id === target.right_block_id));
+            if (m) return m;
+            // 4) по номерам страниц
+            if (target.left_page_number != null && target.right_page_number != null) {
+                m = links.find(l => l.kind === 'link'
+                    && l.left_page_number === target.left_page_number
+                    && l.right_page_number === target.right_page_number);
+                if (m) return m;
+            }
+            return null;
+        }
+        function scPv2GdSelectMatchingLink(target) {
+            const link = scPv2GdMatchLink(target);
+            if (link) {
+                scPv2LpSelectedLink.value = '';     // сброс → toggle выберет
+                scPv2LpSelectLink(link);            // ставит link + page
+                scPv2GdJumpWarning.value = '';
+                nextTick(() => {
+                    try {
+                        const el = (typeof document !== 'undefined')
+                            && document.querySelector('[data-bllink="' + link.block_link_id + '"]');
+                        if (el && el.scrollIntoView)
+                            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    } catch (_) { /* no-op в jsdom/без DOM */ }
+                });
+                return true;
+            }
+            scPv2GdJumpWarning.value =
+                'Связь блоков для этой grounding-карточки не найдена. Откройте пару вручную.';
+            return false;
+        }
+        // Главный обработчик кнопки «🔗 К связи блоков» в grounding-карточке.
+        async function scPv2OpenBlockLinkFromGrounding(card) {
+            if (!card) return;
+            const ids = scPv2GdBlockIdsFromCard(card);
+            const pid = scPv2PairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+            const target = {
+                pair_id: pid, item_id: card.item_id || '',
+                left_block_id: ids.left, right_block_id: ids.right,
+                left_page_number: (card.left_page_number != null ? card.left_page_number
+                    : (card.side === 'old' ? card.page_number : null)),
+                right_page_number: (card.right_page_number != null ? card.right_page_number
+                    : (card.side === 'new' ? card.page_number : null)),
+                label: card.value || '',
+            };
+            // 1) закрыть grounding drawer
+            scPv2GdOpen.value = false;
+            scPv2GdJumpWarning.value = '';
+            // 2) активировать пару + вкладку «Связь блоков» (если другая активна;
+            //    scActivePair-watch сбросит LP-панель — поэтому ДО открытия LP)
+            if (pid && (!scActivePair.value || scActivePair.value.id !== pid)) {
+                const pairObj = (scPairs.value || []).find(p => p && p.id === pid);
+                if (pairObj && pairObj.left && pairObj.right) {
+                    await scOpenPair(pairObj);
+                } else {
+                    scTab.value = 'links';
+                }
+            } else {
+                scTab.value = 'links';
+            }
+            // 3) открыть LP-панель на нужной паре
+            scPv2LpPairId.value = pid;
+            scPv2LpVisible.value = true;
+            // 4) загрузить отчёт пары, если не загружен / другой пары
+            const loadedPid = scPv2LpResp.value && scPv2LpResp.value.pair_id;
+            if (!scPv2LpResp.value || loadedPid !== pid) {
+                await scPv2LpLoad();
+            }
+            // 5) баннер + поиск/выбор связи
+            scPv2GdJumpBanner.value = target.label;
+            scPv2GdSelectMatchingLink(target);
+        }
+        function scPv2GdClearJumpBanner() {
+            scPv2GdJumpBanner.value = '';
+            scPv2GdJumpWarning.value = '';
+        }
+
+        // ─── Stage Comparison: Pipeline V2 Entity Alignment Preview ──────────
+        // Read-only «Сущности и маппинг»: GET /api/stage-comparison/pipeline-v2/
+        // {sid}/entity-alignment-preview?pair_id=. Классифицирует графические
+        // пары OLD↔NEW (same_entity_likely / possible_rename / scope_reorganized
+        // / mismatch_likely / link_validation_candidate) + unpaired-сущности.
+        // Ничего не применяет: подтверждения/перепривязки маппинга НЕТ (это
+        // отдельный будущий этап). Никаких job'ов, моделей, мутаций.
+        const scPv2EaVisible = ref(false);
+        const scPv2EaLoading = ref(false);
+        const scPv2EaError = ref('');
+        const scPv2EaResp = ref(null);         // detail {status, summary, pairs, unpaired_entities, …}
+        const scPv2EaPairId = ref('');
+        const scPv2EaFilter = ref('all');      // all|<classification>|unpaired
+        let scPv2EaReqSeq = 0;
+
+        const SC_PV2_EA_CLASS_META = {
+            same_entity_likely:        { label: 'Same entity', icon: '🟢', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
+            possible_rename:           { label: 'Возможно переименование', icon: '🔵', color: '#2563eb', bg: '#dbeafe', fg: '#1e40af' },
+            scope_reorganized:         { label: 'Реорганизация', icon: '🟠', color: '#ea580c', bg: '#ffedd5', fg: '#9a3412' },
+            mismatch_likely:           { label: 'Mismatch', icon: '🔴', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
+            link_validation_candidate: { label: 'Проверка связи', icon: '🟣', color: '#7c3aed', bg: '#ede9fe', fg: '#5b21b6' },
+        };
+        const SC_PV2_EA_FILTERS = [
+            { key: 'all', label: 'Все' },
+            { key: 'same_entity_likely', label: '🟢 Same entity' },
+            { key: 'scope_reorganized', label: '🟠 Реорганизация' },
+            { key: 'mismatch_likely', label: '🔴 Mismatch' },
+            { key: 'link_validation_candidate', label: '🟣 Проверка связи' },
+            { key: 'unpaired', label: '⚪ Без пары' },
+        ];
+
+        const scPv2EaSummary = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.summary) || null);
+        const scPv2EaPairs = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.pairs) || []);
+        const scPv2EaUnpaired = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.unpaired_entities) || { left: [], right: [] });
+        const scPv2EaNotFound = computed(() =>
+            !!scPv2EaResp.value && scPv2EaResp.value.status === 'not_found');
+        const scPv2EaRespError = computed(() =>
+            (scPv2EaResp.value && scPv2EaResp.value.status === 'error')
+                ? ((scPv2EaResp.value.warnings || []).join('; ')
+                   || scPv2EaResp.value.message || 'error')
+                : '');
+        const scPv2EaShowUnpaired = computed(() =>
+            scPv2EaFilter.value === 'all' || scPv2EaFilter.value === 'unpaired');
+        const scPv2EaShowPairs = computed(() => scPv2EaFilter.value !== 'unpaired');
+        const scPv2EaFilteredPairs = computed(() => {
+            const f = scPv2EaFilter.value;
+            if (f === 'unpaired') return [];
+            if (!f || f === 'all') return scPv2EaPairs.value;
+            return scPv2EaPairs.value.filter((p) => p.classification === f);
+        });
+        function scPv2EaClassMeta(c) {
+            return SC_PV2_EA_CLASS_META[c]
+                || { label: c || '—', icon: '⚪', color: '#6b7280', bg: '#f3f4f6', fg: '#6b7280' };
+        }
+        function scPv2EaConfPct(p) {
+            const c = p && p.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        function scPv2EaEffectivePairId() {
+            return scPv2EaPairId.value
+                || (scActivePair.value && scActivePair.value.id) || '';
+        }
+        async function scPv2EaLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2EaReqSeq;
+            scPv2EaLoading.value = true;
+            scPv2EaError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/entity-alignment-preview?pair_id=' + encodeURIComponent(pid)
+                + '&limit=500';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
+                if (r.status === 401 || r.status === 403) {
+                    scPv2EaResp.value = null;
+                    scPv2EaError.value = 'Доступ запрещён (' + r.status
+                        + '). Войдите в портал заново.';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
+                scPv2EaResp.value = j;
+                // инициализировать draft-объекты решений (seed из manual_mapping)
+                for (const k of Object.keys(scPv2EaDrafts)) delete scPv2EaDrafts[k];
+                for (const k of Object.keys(scPv2EaSaveErr)) delete scPv2EaSaveErr[k];
+                scPv2EaSaveHint.value = '';
+                for (const p of (j.pairs || [])) {
+                    scPv2EaDraft(scPv2EaPairKey(p),
+                                 (p.manual_mapping && p.manual_mapping.decision) || '');
+                }
+                const un = j.unpaired_entities || {};
+                for (const e of (un.left || [])) {
+                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'left'),
+                                 (e.manual_mapping && e.manual_mapping.decision) || '');
+                }
+                for (const e of (un.right || [])) {
+                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
+                                 (e.manual_mapping && e.manual_mapping.decision) || '');
+                }
+                // подгрузить link validation, exclusion preview, skip readiness
+                // и controlled enforce preflight для той же пары (read-only)
+                scPv2LvLoad();
+                scPv2XpLoad();
+                scPv2SrLoad();
+                scPv2CeLoad();
+                scPv2CdrLoad();
+            } catch (e) {
+                if (myReq !== scPv2EaReqSeq) return;
+                scPv2EaResp.value = null;
+                scPv2EaError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2EaReqSeq) scPv2EaLoading.value = false;
+            }
+        }
+        function scPv2EaToggle() {
+            scPv2EaVisible.value = !scPv2EaVisible.value;
+            if (scPv2EaVisible.value && !scPv2EaResp.value
+                    && !scPv2EaLoading.value) {
+                scPv2EaPairId.value = scPv2EaEffectivePairId();
+                scPv2EaLoad();
+            }
+        }
+        function scPv2EaReset() {
+            scPv2EaReqSeq++;
+            scPv2EaVisible.value = false;
+            scPv2EaResp.value = null;
+            scPv2EaError.value = '';
+            scPv2EaLoading.value = false;
+            scPv2EaPairId.value = '';
+            scPv2EaFilter.value = 'all';
+            scPv2LvReset();
+            scPv2XpReset();
+            scPv2SrReset();
+            scPv2CeReset();
+            scPv2CdrReset();
+        }
+        watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
+        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
+        watch(scPv2EaPairId, () => {
+            scPv2EaReqSeq++;
+            scPv2EaResp.value = null;
+            scPv2EaError.value = '';
+            scPv2EaLoading.value = false;
+            scPv2LvReset();
+            scPv2XpReset();
+            scPv2SrReset();
+            scPv2CeReset();
+            scPv2CdrReset();
+        });
+        // Read-only jump: карточка выравнивания сущностей → block link preview.
+        // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
+        // НЕ применяет связь, только подсвечивает её в панели «Связь блоков».
+        function scPv2EaOpenBlockLink(p) {
+            if (!p) return;
+            scPv2OpenBlockLinkFromGrounding({
+                item_id: '',
+                left_block_id: p.left_block_id,
+                right_block_id: p.right_block_id,
+                left_page_number: p.left_page_number,
+                right_page_number: p.right_page_number,
+                value: (p.left_entity_label || p.right_entity_label
+                        || p.entity_family || ''),
+            });
+        }
+
+        // ── Link validation (read-only, mark-only) ───────────────────────────
+        // GET /api/stage-comparison/pipeline-v2/{sid}/link-validation?pair_id=.
+        // Vision-проверка manual mapping пар (same/reorganized/different) +
+        // agreement с ручным решением. НЕ grounded-факт, НЕ для delta. Read-only:
+        // ничего не запускает/применяет/создаёт.
+        const scPv2LvResp = ref(null);          // detail {status, summary, items, …}
+        const scPv2LvLoading = ref(false);
+        const scPv2LvError = ref('');
+        let scPv2LvReqSeq = 0;
+
+        const SC_PV2_LV_DECISION_META = {
+            valid_mapping: { label: 'valid_mapping', icon: '🟢', bg: '#dcfce7', fg: '#166534' },
+            manual_review: { label: 'manual_review', icon: '🟡', bg: '#fef9c3', fg: '#854d0e' },
+            reject_mapping: { label: 'reject_mapping', icon: '🔴', bg: '#fee2e2', fg: '#991b1b' },
+        };
+
+        const scPv2LvSummary = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.summary) || null);
+        const scPv2LvItems = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.items) || []);
+        const scPv2LvAvailable = computed(() =>
+            !!scPv2LvResp.value && scPv2LvResp.value.status === 'ok'
+            && scPv2LvResp.value.available);
+        const scPv2LvNotFound = computed(() =>
+            !!scPv2LvResp.value && scPv2LvResp.value.status === 'not_found');
+        const scPv2LvRespError = computed(() =>
+            (scPv2LvResp.value && scPv2LvResp.value.status === 'error')
+                ? ((scPv2LvResp.value.warnings || []).join('; ')
+                   || scPv2LvResp.value.message || 'error')
+                : '');
+        function scPv2LvDecisionMeta(d) {
+            return SC_PV2_LV_DECISION_META[d]
+                || { label: d || '—', icon: '⚪', bg: '#f3f4f6', fg: '#374151' };
+        }
+        function scPv2LvConfPct(it) {
+            const c = it && it.validation && it.validation.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        async function scPv2LvLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2LvReqSeq;
+            scPv2LvLoading.value = true;
+            scPv2LvError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/link-validation?pair_id=' + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2LvReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2LvResp.value = null;
+                    scPv2LvError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2LvReqSeq) return;
+                scPv2LvResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2LvReqSeq) return;
+                scPv2LvResp.value = null;
+                scPv2LvError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2LvReqSeq) scPv2LvLoading.value = false;
+            }
+        }
+        function scPv2LvReset() {
+            scPv2LvReqSeq++;
+            scPv2LvResp.value = null;
+            scPv2LvError.value = '';
+            scPv2LvLoading.value = false;
+        }
+        // read-only jump: validation item → block link preview (reuse мост)
+        function scPv2LvOpenBlockLink(it) {
+            if (!it) return;
+            scPv2OpenBlockLinkFromGrounding({
+                item_id: '', left_block_id: it.left_block_id,
+                right_block_id: it.right_block_id,
+                left_page_number: it.left_page_number,
+                right_page_number: it.right_page_number,
+                value: (it.left_entity_label || it.right_entity_label || ''),
+            });
+        }
+
+        // ── Exclusion Preview v2 (read-only, mark-only) ─────────────────────
+
+        const scPv2XpResp = ref(null);          // detail {status, summary, items, …}
+        const scPv2XpLoading = ref(false);
+        const scPv2XpError = ref('');
+        let scPv2XpReqSeq = 0;
+
+        const SC_PV2_XP_CLASS_META = {
+            candidate_exclude:       { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'исключить' },
+            review_only:             { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'ручная проверка' },
+            keep:                    { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'оставить' },
+            link_validation_required:{ icon: '🔵', bg: '#ede9fe', fg: '#4c1d95', label: 'нужна LV' },
+        };
+
+        const scPv2XpSummary = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.summary) || null);
+        const scPv2XpItems = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.items) || []);
+        const scPv2XpAvailable = computed(() =>
+            !!scPv2XpResp.value && scPv2XpResp.value.status === 'ok'
+            && scPv2XpResp.value.available);
+        const scPv2XpNotFound = computed(() =>
+            !!scPv2XpResp.value && scPv2XpResp.value.status === 'not_found');
+        const scPv2XpRespError = computed(() =>
+            (scPv2XpResp.value && scPv2XpResp.value.status === 'error')
+                ? ((scPv2XpResp.value.warnings || []).join('; ')
+                   || scPv2XpResp.value.message || 'error')
+                : '');
+        function scPv2XpClassMeta(cls) {
+            return SC_PV2_XP_CLASS_META[cls]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: cls || '—' };
+        }
+        function scPv2XpConfPct(it) {
+            const c = it && it.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        async function scPv2XpLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2XpReqSeq;
+            scPv2XpLoading.value = true;
+            scPv2XpError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/exclusion-preview-v2?pair_id=' + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2XpReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2XpResp.value = null;
+                    scPv2XpError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2XpReqSeq) return;
+                scPv2XpResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2XpReqSeq) return;
+                scPv2XpResp.value = null;
+                scPv2XpError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2XpReqSeq) scPv2XpLoading.value = false;
+            }
+        }
+        function scPv2XpReset() {
+            scPv2XpReqSeq++;
+            scPv2XpResp.value = null;
+            scPv2XpError.value = '';
+            scPv2XpLoading.value = false;
+        }
+
+        // ── Skip Readiness (read-only, mark-only) ────────────────────────────
+        // ТОЛЬКО чтение GET .../skip-readiness — НЕ запускает модели,
+        // НЕ пишет файлы, НЕ применяет пропуски. Observe / mark-only.
+
+        const scPv2SrResp = ref(null);          // detail {status, summary, items, …}
+        const scPv2SrLoading = ref(false);
+        const scPv2SrError = ref('');
+        let scPv2SrReqSeq = 0;
+
+        const SC_PV2_SR_READINESS_META = {
+            ready_to_skip: { icon: '✅', bg: '#dcfce7', fg: '#166534', label: 'к пропуску' },
+            blocked:       { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'заблокирован' },
+            needs_review:  { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нужна проверка' },
+            keep:          { icon: '🟢', bg: '#f0fdf4', fg: '#166534', label: 'оставить' },
+        };
+
+        const scPv2SrSummary = computed(() =>
+            (scPv2SrResp.value && scPv2SrResp.value.summary) || null);
+        const scPv2SrItems = computed(() =>
+            (scPv2SrResp.value && scPv2SrResp.value.items) || []);
+        const scPv2SrAvailable = computed(() =>
+            !!scPv2SrResp.value && scPv2SrResp.value.status === 'ok'
+            && scPv2SrResp.value.available);
+        const scPv2SrNotFound = computed(() =>
+            !!scPv2SrResp.value && scPv2SrResp.value.status === 'not_found');
+        const scPv2SrRespError = computed(() =>
+            (scPv2SrResp.value && scPv2SrResp.value.status === 'error')
+                ? ((scPv2SrResp.value.warnings || []).join('; ')
+                   || scPv2SrResp.value.message || 'error')
+                : '');
+        function scPv2SrReadinessMeta(status) {
+            return SC_PV2_SR_READINESS_META[status]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
+        }
+        function scPv2SrConfPct(it) {
+            const c = it && it.confidence;
+            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
+        }
+        async function scPv2SrLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2SrReqSeq;
+            scPv2SrLoading.value = true;
+            scPv2SrError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/skip-readiness?pair_id=' + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2SrReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2SrResp.value = null;
+                    scPv2SrError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2SrReqSeq) return;
+                scPv2SrResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2SrReqSeq) return;
+                scPv2SrResp.value = null;
+                scPv2SrError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2SrReqSeq) scPv2SrLoading.value = false;
+            }
+        }
+        function scPv2SrReset() {
+            scPv2SrReqSeq++;
+            scPv2SrResp.value = null;
+            scPv2SrError.value = '';
+            scPv2SrLoading.value = false;
+        }
+
+        // ── Controlled Enforce Preflight (read-only, observe-only) ───────────
+        // ТОЛЬКО чтение GET .../controlled-enforce-preflight. Это НЕ enforce:
+        // НЕ пропускает/исключает, НЕ применяет, НЕ запускает модели/jobs,
+        // НЕ создаёт замечаний, НЕ меняет block links. Observe / preflight-only.
+
+        const scPv2CeResp = ref(null);          // detail {status, summary, …}
+        const scPv2CeLoading = ref(false);
+        const scPv2CeError = ref('');
+        let scPv2CeReqSeq = 0;
+
+        const SC_PV2_CE_STATUS_META = {
+            blocked:          { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'enforce заблокирован' },
+            preflight_ok:     { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'preflight ok (не применяется)' },
+            no_eligible_items:{ icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нет eligible' },
+        };
+        const SC_PV2_CE_BLOCK_META = {
+            blocked:      { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'заблокирован' },
+            needs_review: { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нужна проверка' },
+            keep:         { icon: '🟢', bg: '#f0fdf4', fg: '#166534', label: 'оставить' },
+            ready_to_skip:{ icon: '✅', bg: '#dcfce7', fg: '#166534', label: 'к пропуску' },
+        };
+
+        const scPv2CeSummary = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.summary) || null);
+        const scPv2CeGuards = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.global_guards) || null);
+        const scPv2CeRuntimeRoot = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.runtime_root) || null);
+        const scPv2CeFatalBlocks = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.fatal_blocks) || []);
+        const scPv2CeBlockedItems = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.blocked_items) || []);
+        const scPv2CeEligibleItems = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.eligible_items) || []);
+        const scPv2CeReportStatus = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.report_status) || '');
+        const scPv2CeAvailable = computed(() =>
+            !!scPv2CeResp.value && scPv2CeResp.value.status === 'ok'
+            && scPv2CeResp.value.available);
+        const scPv2CeNotFound = computed(() =>
+            !!scPv2CeResp.value && scPv2CeResp.value.status === 'not_found');
+        const scPv2CeRespError = computed(() =>
+            (scPv2CeResp.value && scPv2CeResp.value.status === 'error')
+                ? ((scPv2CeResp.value.warnings || []).join('; ')
+                   || scPv2CeResp.value.message || 'error')
+                : '');
+        function scPv2CeStatusMeta(status) {
+            return SC_PV2_CE_STATUS_META[status]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
+        }
+        function scPv2CeBlockMeta(status) {
+            return SC_PV2_CE_BLOCK_META[status]
+                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
+        }
+        async function scPv2CeLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2CeReqSeq;
+            scPv2CeLoading.value = true;
+            scPv2CeError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/controlled-enforce-preflight?pair_id='
+                + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2CeReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2CeResp.value = null;
+                    scPv2CeError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2CeReqSeq) return;
+                scPv2CeResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2CeReqSeq) return;
+                scPv2CeResp.value = null;
+                scPv2CeError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2CeReqSeq) scPv2CeLoading.value = false;
+            }
+        }
+        function scPv2CeReset() {
+            scPv2CeReqSeq++;
+            scPv2CeResp.value = null;
+            scPv2CeError.value = '';
+            scPv2CeLoading.value = false;
+        }
+
+        // ── Controlled Enforce Dry-run (read-only, observe-only) ─────────────
+        // ТОЛЬКО чтение GET .../controlled-enforce-dry-run. Показывает «что было
+        // бы пропущено», но НИЧЕГО не применяет/не пишет. Dry-run only.
+
+        const scPv2CdrResp = ref(null);
+        const scPv2CdrLoading = ref(false);
+        const scPv2CdrError = ref('');
+        let scPv2CdrReqSeq = 0;
+
+        const scPv2CdrSummary = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.summary) || null);
+        const scPv2CdrTransitions = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.logical_transitions) || []);
+        const scPv2CdrItems = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.would_skip_items) || []);
+        const scPv2CdrReportStatus = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.report_status) || '');
+        const scPv2CdrAvailable = computed(() =>
+            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'ok'
+            && scPv2CdrResp.value.available);
+        const scPv2CdrNotFound = computed(() =>
+            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'not_found');
+        const scPv2CdrRespError = computed(() =>
+            (scPv2CdrResp.value && scPv2CdrResp.value.status === 'error')
+                ? ((scPv2CdrResp.value.warnings || []).join('; ')
+                   || scPv2CdrResp.value.message || 'error')
+                : '');
+        async function scPv2CdrLoad() {
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const myReq = ++scPv2CdrReqSeq;
+            scPv2CdrLoading.value = true;
+            scPv2CdrError.value = '';
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid)
+                + '/controlled-enforce-dry-run?pair_id='
+                + encodeURIComponent(pid) + '&limit=200';
+            try {
+                const r = await fetch(url);
+                if (myReq !== scPv2CdrReqSeq) return;
+                if (r.status === 401 || r.status === 403) {
+                    scPv2CdrResp.value = null;
+                    scPv2CdrError.value = 'Доступ запрещён (' + r.status + ').';
+                    return;
+                }
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (myReq !== scPv2CdrReqSeq) return;
+                scPv2CdrResp.value = j;
+            } catch (e) {
+                if (myReq !== scPv2CdrReqSeq) return;
+                scPv2CdrResp.value = null;
+                scPv2CdrError.value = String((e && e.message) || e);
+            } finally {
+                if (myReq === scPv2CdrReqSeq) scPv2CdrLoading.value = false;
+            }
+        }
+        function scPv2CdrReset() {
+            scPv2CdrReqSeq++;
+            scPv2CdrResp.value = null;
+            scPv2CdrError.value = '';
+            scPv2CdrLoading.value = false;
+        }
+
+        // ── Controlled Enforce STATE (read-only видимость active state) ──────
+        // Источник — ui-payload (controlled_enforce_state section). Это ВИДИМОСТЬ
+        // active controlled exclusion state, НЕ enforce/apply. Никаких действий.
+        const scPv2CesSection = computed(() =>
+            (scPv2Payload.value && scPv2Payload.value.controlled_enforce_state) || null);
+        const scPv2CesAvailable = computed(() =>
+            !!(scPv2CesSection.value && scPv2CesSection.value.available));
+
+        // ── Selection Observe (read-only observe-mode, Qwen НЕ вызывался) ────
+        // Источник — ui-payload (controlled_enforce_selection_observe section).
+        const scPv2CesoSection = computed(() =>
+            (scPv2Payload.value
+             && scPv2Payload.value.controlled_enforce_selection_observe) || null);
+        const scPv2CesoAvailable = computed(() =>
+            !!(scPv2CesoSection.value && scPv2CesoSection.value.available));
+
+        // ── Enrichment Selection Observe (read-only observe-plan, Qwen НЕ зван) ──
+        // Источник — ui-payload (enrichment_selection_observe section).
+        const scPv2EsoSection = computed(() =>
+            (scPv2Payload.value
+             && scPv2Payload.value.enrichment_selection_observe) || null);
+        const scPv2EsoAvailable = computed(() =>
+            !!(scPv2EsoSection.value && scPv2EsoSection.value.available));
+        // redundant_state_matches — пары, уже исключённые ДО хука (real path)
+        const scPv2EsoRedundant = computed(() =>
+            (scPv2EsoSection.value && scPv2EsoSection.value.redundant_state_matches) || []);
+
+        // ── Controlled Enforce State DEACTIVATE (rollback, write-слой) ───────
+        // POST .../controlled-enforce-state/deactivate — пишет ТОЛЬКО state
+        // (active=false + audit + history). Требует точного confirmation.
+        // Никаких enforce/qwen/jobs/findings/links. Жёсткий confirm.
+        const SC_PV2_CDS_PHRASE = 'DEACTIVATE_CONTROLLED_STATE';
+        const scPv2CdsOpen = ref(false);
+        const scPv2CdsConfirmText = ref('');
+        const scPv2CdsComment = ref('');
+        const scPv2CdsRunId = ref('');
+        const scPv2CdsBusy = ref(false);
+        const scPv2CdsError = ref('');
+        const scPv2CdsDone = ref(false);
+        const scPv2CdsConfirmOk = computed(() =>
+            scPv2CdsConfirmText.value === SC_PV2_CDS_PHRASE);
+
+        async function scPv2CdsBegin() {
+            scPv2CdsOpen.value = true;
+            scPv2CdsConfirmText.value = '';
+            scPv2CdsComment.value = '';
+            scPv2CdsError.value = '';
+            scPv2CdsDone.value = false;
+            scPv2CdsRunId.value = (scPv2CesSection.value && scPv2CesSection.value.run_id) || '';
+            // авторитетный run_id — из read-only GET state endpoint
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            try {
+                const r = await fetch('/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid) + '/controlled-enforce-state?pair_id='
+                    + encodeURIComponent(pid));
+                if (r.ok) {
+                    const j = await r.json();
+                    if (j && j.run_id) scPv2CdsRunId.value = j.run_id;
+                }
+            } catch (e) { /* run_id может остаться из секции */ }
+        }
+        function scPv2CdsCancel() {
+            scPv2CdsOpen.value = false;
+            scPv2CdsConfirmText.value = '';
+            scPv2CdsError.value = '';
+        }
+        async function scPv2CdsSubmit() {
+            if (!scPv2CdsConfirmOk.value || scPv2CdsBusy.value) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) { scPv2CdsError.value = 'Нет сессии/пары'; return; }
+            if (!scPv2CdsRunId.value) { scPv2CdsError.value = 'run_id не загружен'; return; }
+            scPv2CdsBusy.value = true;
+            scPv2CdsError.value = '';
+            try {
+                const r = await fetch('/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/controlled-enforce-state/deactivate?pair_id='
+                    + encodeURIComponent(pid), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        run_id: scPv2CdsRunId.value,
+                        confirmation: SC_PV2_CDS_PHRASE,
+                        comment: scPv2CdsComment.value
+                            || 'manual rollback / deactivate controlled state',
+                        updated_by: 'operator',
+                    }),
+                });
+                if (!r.ok) {
+                    let msg = 'HTTP ' + r.status;
+                    try { const j = await r.json(); msg = (j && (j.detail || j.message)) || msg; } catch (e) {}
+                    throw new Error(msg);
+                }
+                scPv2CdsDone.value = true;
+                scPv2CdsOpen.value = false;
+                scPv2Load();   // перечитать ui-payload — панель отразит inactive
+            } catch (e) {
+                scPv2CdsError.value = String((e && e.message) || e);
+            } finally {
+                scPv2CdsBusy.value = false;
+            }
+        }
+
+        // ── Operator review write-layer для Exclusion Preview v2 ─────────────
+        // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
+        // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
+        // НЕ меняет exclusion_preview_v2_report.json, НЕ создаёт замечаний.
+
+        const scPv2XrDrafts = reactive({});       // item_id → { decision, comment }
+        const scPv2XrSaving = reactive({});        // item_id → bool
+        const scPv2XrSaveErr = reactive({});       // item_id → string
+
+        const SC_PV2_XR_DECISION_META = {
+            approve_exclude:    { label: 'approve_exclude', style: 'background:#dcfce7; color:#166534' },
+            reject_exclude:     { label: 'reject_exclude',  style: 'background:#fee2e2; color:#991b1b' },
+            needs_review:       { label: 'needs_review',    style: 'background:#fef9c3; color:#854d0e' },
+            keep:               { label: 'keep',            style: 'background:#f0fdf4; color:#15803d' },
+            run_link_validation:{ label: 'run_link_valid.', style: 'background:#ede9fe; color:#4c1d95' },
+        };
+
+        function scPv2XrDecisionMeta(decision) {
+            return SC_PV2_XR_DECISION_META[decision]
+                || { label: decision || '—', style: 'background:#f3f4f6; color:#374151' };
+        }
+
+        function scPv2XrGetDraft(it) {
+            const key = it && (it.item_id || it.left_block_id || String(it._index || ''));
+            if (!key) return { decision: '', comment: '' };
+            if (!scPv2XrDrafts[key]) {
+                // pre-fill from existing decision if present
+                const rev = it.operator_review;
+                scPv2XrDrafts[key] = reactive({
+                    decision: (rev && rev.status === 'reviewed' && rev.operator_decision) || '',
+                    comment:  (rev && rev.comment) || '',
+                });
+            }
+            return scPv2XrDrafts[key];
+        }
+
+        async function scPv2XrSaveDecision(it) {
+            const key = it && (it.item_id || it.left_block_id || '');
+            if (!key) return;
+            const draft = scPv2XrGetDraft(it);
+            if (!draft.decision) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            scPv2XrSaving[key] = true;
+            scPv2XrSaveErr[key] = '';
+            try {
+                const body = {
+                    decision: {
+                        exclusion_item_id:   it.item_id || null,
+                        left_block_id:       it.left_block_id || null,
+                        right_block_id:      it.right_block_id || null,
+                        left_entity_label:   it.left_entity_label || null,
+                        right_entity_label:  it.right_entity_label || null,
+                        preview_classification: it.classification || null,
+                        preview_severity:    it.severity || null,
+                        operator_decision:   draft.decision,
+                        comment:             draft.comment || null,
+                    },
+                    created_by: null,
+                };
+                const r = await fetch(
+                    '/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/exclusion-review-overrides?pair_id='
+                    + encodeURIComponent(pid),
+                    { method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(body) });
+                if (!r.ok) {
+                    const t = await r.text().catch(() => '');
+                    throw new Error('HTTP ' + r.status + ': ' + t);
+                }
+                // reload preview to get fresh operator_review in items
+                await scPv2XpLoad();
+            } catch (e) {
+                scPv2XrSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2XrSaving[key] = false;
+            }
+        }
+
+        async function scPv2XrDeleteDecision(it) {
+            const rev = it && it.operator_review;
+            if (!rev || !rev.decision_id) return;
+            const sid = scSession.value && scSession.value.id;
+            const pid = scPv2EaEffectivePairId();
+            if (!sid || !pid) return;
+            const key = it.item_id || it.left_block_id || '';
+            scPv2XrSaving[key] = true;
+            scPv2XrSaveErr[key] = '';
+            try {
+                const r = await fetch(
+                    '/api/stage-comparison/pipeline-v2/'
+                    + encodeURIComponent(sid)
+                    + '/exclusion-review-overrides/'
+                    + encodeURIComponent(rev.decision_id)
+                    + '?pair_id=' + encodeURIComponent(pid),
+                    { method: 'DELETE' });
+                if (!r.ok) {
+                    const t = await r.text().catch(() => '');
+                    throw new Error('HTTP ' + r.status + ': ' + t);
+                }
+                // clear local draft and reload
+                const draftKey = it.item_id || it.left_block_id || '';
+                if (scPv2XrDrafts[draftKey]) {
+                    scPv2XrDrafts[draftKey].decision = '';
+                    scPv2XrDrafts[draftKey].comment = '';
+                }
+                await scPv2XpLoad();
+            } catch (e) {
+                scPv2XrSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2XrSaving[key] = false;
+            }
+        }
+
+        // ── Manual entity mapping (write-слой поверх preview) ─────────────────
+        // PUT .../entity-mapping-overrides — отдельный обратимый artifact. НЕ
+        // применяет block links, НЕ запускает vision/Qwen/Opus, НЕ создаёт
+        // замечаний. Только сохраняет ручное решение и обновляет UI-state.
+        const SC_PV2_EA_DECISIONS = [
+            { key: 'confirmed_same_entity', label: '✅ Та же сущность' },
+            { key: 'confirmed_rename', label: '🔁 Переименование' },
+            { key: 'confirmed_reorganized', label: '🟠 Реорганизация' },
+            { key: 'rejected_mapping', label: '❌ Отклонить связь' },
+            { key: 'no_match', label: '⚪ Нет пары' },
+        ];
+        const SC_PV2_EA_MANUAL_META = {
+            mapped:   { label: 'Подтверждено', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
+            rejected: { label: 'Отклонено', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
+            no_match: { label: 'Нет пары', color: '#6b7280', bg: '#f3f4f6', fg: '#374151' },
+        };
+        // decision → цвет (для бейджа сохранённого решения)
+        const SC_PV2_EA_DECISION_META = {
+            confirmed_same_entity: { label: 'confirmed_same_entity', color: '#16a34a' },
+            confirmed_rename:      { label: 'confirmed_rename', color: '#2563eb' },
+            confirmed_reorganized: { label: 'confirmed_reorganized', color: '#ea580c' },
+            rejected_mapping:      { label: 'rejected_mapping', color: '#dc2626' },
+            no_match:              { label: 'no_match', color: '#6b7280' },
+        };
+        const scPv2EaDrafts = reactive({});     // key → {decision, comment, counterpart}
+        const scPv2EaSaving = reactive({});      // key → bool
+        const scPv2EaSaveErr = reactive({});     // key → string
+        const scPv2EaSaveHint = ref('');         // глобальная подсказка после сохранения
+
+        function scPv2EaPairKey(p) {
+            return (p && (p.pair_key
+                || ((p.left_block_id || '') + '__' + (p.right_block_id || '')))) || '';
+        }
+        function scPv2EaUnpairedKey(e, side) {
+            const b = (e && e.block_ids && e.block_ids[0]) || '';
+            return side + ':' + ((e && e.entity_label) || '') + ':' + b;
+        }
+        function scPv2EaDraft(key, initDecision) {
+            if (!scPv2EaDrafts[key]) {
+                scPv2EaDrafts[key] = { decision: initDecision || '', comment: '',
+                                       counterpart: '' };
+            }
+            return scPv2EaDrafts[key];
+        }
+        function scPv2EaDecisionMeta(decision) {
+            return SC_PV2_EA_DECISION_META[decision]
+                || { label: decision || '', color: '#6b7280' };
+        }
+        function scPv2EaManualMeta(status) {
+            return SC_PV2_EA_MANUAL_META[status] || null;
+        }
+        async function _scPv2EaPutMapping(mapping) {
+            const sid = scSession.value && scSession.value.id;
+            const pid = (scPv2EaResp.value && scPv2EaResp.value.pair_id)
+                || scPv2EaEffectivePairId();
+            if (!sid || !pid) throw new Error('Нет активной пары');
+            const url = '/api/stage-comparison/pipeline-v2/'
+                + encodeURIComponent(sid) + '/entity-mapping-overrides?pair_id='
+                + encodeURIComponent(pid);
+            const by = (typeof currentUserName === 'function' ? currentUserName() : '')
+                || usersLoggedInUsername.value || '';
+            const r = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mapping, created_by: by }),
+            });
+            if (r.status === 401 || r.status === 403) {
+                throw new Error('Доступ запрещён (' + r.status + ')');
+            }
+            if (!r.ok) {
+                let msg = 'HTTP ' + r.status;
+                try { const j = await r.json(); if (j && j.detail) msg = j.detail; }
+                catch (_) { /* no-op */ }
+                throw new Error(msg);
+            }
+            return r.json();
+        }
+        function _scPv2EaApplyManual(targetObj, override, summary) {
+            if (override) {
+                targetObj.manual_mapping = {
+                    status: override.manual_decision
+                        && (['confirmed_same_entity', 'confirmed_rename', 'confirmed_reorganized']
+                            .includes(override.manual_decision) ? 'mapped'
+                            : override.manual_decision === 'rejected_mapping' ? 'rejected'
+                            : override.manual_decision === 'no_match' ? 'no_match' : 'none'),
+                    decision: override.manual_decision,
+                    mapping_id: override.mapping_id,
+                    comment: override.comment || null,
+                    updated_at: override.updated_at,
+                };
+            }
+            if (summary && scPv2EaResp.value && scPv2EaResp.value.summary) {
+                scPv2EaResp.value.summary.manual_mapping = summary;
+            }
+            scPv2EaSaveHint.value = 'Ручной mapping сохранён. Он будет использован в '
+                + 'следующем этапе отбора vision-кандидатов, но сейчас ничего не '
+                + 'запускается (block links и vision не трогаются).';
+        }
+        async function scPv2EaSavePair(p) {
+            if (!p) return;
+            const key = scPv2EaPairKey(p);
+            const draft = scPv2EaDraft(key);
+            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
+            scPv2EaSaving[key] = true;
+            scPv2EaSaveErr[key] = '';
+            try {
+                const res = await _scPv2EaPutMapping({
+                    left_entity_label: p.left_entity_label,
+                    right_entity_label: p.right_entity_label,
+                    left_block_id: p.left_block_id,
+                    right_block_id: p.right_block_id,
+                    left_page_number: p.left_page_number,
+                    right_page_number: p.right_page_number,
+                    source_classification: p.classification,
+                    pair_key: p.pair_key,
+                    manual_decision: draft.decision,
+                    comment: draft.comment || null,
+                });
+                _scPv2EaApplyManual(p, res.override, res.summary);
+            } catch (e) {
+                scPv2EaSaveErr[key] = String((e && e.message) || e);
+            } finally {
+                scPv2EaSaving[key] = false;
+            }
+        }
+        // Кандидаты-counterpart для unpaired-сущности (с противоположной стороны).
+        function scPv2EaUnpairedCounterparts(side) {
+            const u = scPv2EaUnpaired.value || {};
+            const other = side === 'left' ? (u.right || []) : (u.left || []);
+            return other;
+        }
+        async function scPv2EaSaveUnpaired(e, side) {
+            if (!e) return;
+            const key = scPv2EaUnpairedKey(e, side);
+            const draft = scPv2EaDraft(key);
+            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
+            const myBlock = (e.block_ids && e.block_ids[0]) || null;
+            // counterpart нужен только для confirmed_*
+            const isConfirmed = ['confirmed_same_entity', 'confirmed_rename',
+                                 'confirmed_reorganized'].includes(draft.decision);
+            let cp = null;
+            if (isConfirmed) {
+                const list = scPv2EaUnpairedCounterparts(side);
+                cp = list.find((x) => ((x.block_ids && x.block_ids[0]) || x.entity_label)
+                    === draft.counterpart);
+                if (!cp) { scPv2EaSaveErr[key] = 'Выберите counterpart с другой стороны'; return; }
+            }
+            const cpBlock = cp ? ((cp.block_ids && cp.block_ids[0]) || null) : null;
+            const mapping = side === 'left'
+                ? { left_entity_label: e.entity_label, left_block_id: myBlock,
+                    right_entity_label: cp ? cp.entity_label : null, right_block_id: cpBlock }
+                : { right_entity_label: e.entity_label, right_block_id: myBlock,
+                    left_entity_label: cp ? cp.entity_label : null, left_block_id: cpBlock };
+            mapping.manual_decision = draft.decision;
+            mapping.comment = draft.comment || null;
+            mapping.source_classification = 'unpaired';
+            scPv2EaSaving[key] = true;
+            scPv2EaSaveErr[key] = '';
+            try {
+                const res = await _scPv2EaPutMapping(mapping);
+                _scPv2EaApplyManual(e, res.override, res.summary);
+            } catch (err) {
+                scPv2EaSaveErr[key] = String((err && err.message) || err);
+            } finally {
+                scPv2EaSaving[key] = false;
+            }
+        }
+
         return {
             // Theme
             theme, toggleTheme,
@@ -14416,7 +16725,7 @@ const app = createApp({
             startFromStage, canStartFrom, pipelineToStage,
             retryStage, retryDialog, retryStageToQueue,
             canRetryStage,
-            skipStage, cleanProject, deleteVersion,
+            skipStage, cleanProject,
             // Batch selection
             selectedProjects, selectAllChecked, selectedCount,
             batchRunning, batchQueue,
@@ -14424,7 +16733,7 @@ const app = createApp({
             // Edit projects (смена раздела / скрытие)
             showEditProjectsModal, editProjectsNewSection, editProjectsLoading,
             editProjectsSelected, openEditProjectsModal,
-            applyNewSectionToSelected, hideSelectedFromUI,
+            applyNewSectionToSelected, hideSelectedFromUI, deleteSelectedProjects,
             // Edit projects — merge as version of existing (per-row)
             editProjectsMergeMap, editProjectsMergeReadyCount,
             mergeTargetsFor, mergeNextLabelFor, mergeTargetNameFor,
@@ -14445,7 +16754,6 @@ const app = createApp({
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
             sectionExcelLoading, exportSectionExcel,
-            projectExcelLoading, exportProjectExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
             // Queue management
@@ -14457,10 +16765,24 @@ const app = createApp({
             queueAvailableProjects,
             // Add project
             showAddProject, addProjectStep, unregisteredFolders, addProjectLoading,
-            openAddModal, goToAddSection, goToAddProject, addSection,
+            openAddModal, goToAddSection, addSection,
             newSectionName, newSectionCode, newSectionColor,
             scanFolders, scanExternalFolder, registerProject, registerAllProjects, closeAddProject,
             externalPath, projectSource,
+            // Upload folder from computer
+            uploadObjectId, uploadDiscipline, uploadProjectName, uploadScan,
+            uploadScanError, uploadScanWarnings, uploadError, uploadLoading, uploadResult,
+            canSubmitUpload, fmtSize, goToUploadFolder, resetUploadFolder,
+            onUploadFolderSelected, submitUploadFolder, openUploadedProject,
+            uploadMode, uploadPrecheck, uploadPrecheckLoading, uploadOverrideWarning,
+            uploadCandidates, uploadBatchResult, uploadBatchProgress,
+            setUploadMode, runSinglePrecheck, openProjectById, onMultiFolderSelected,
+            recheckAllCandidates, candUploadable, candStatusLabel, candCount,
+            selectedCandidateCount, submitMultiUpload,
+            uploadDetectedDiscipline, uploadDisciplineSource, uploadAddMode,
+            uploadTargetProjectId, uploadTargetOptions, versionLabelForTarget,
+            disciplineSourceLabel, recheckCandidate, candTargetOptions, candVersionLabel,
+            onUploadDisciplineChange,
             // Add project — version-of-existing mode
             onCandidatePrimaryAction, registerProjectAsVersion,
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,
@@ -14470,7 +16792,7 @@ const app = createApp({
             loadObjects, switchObject, addNewObject,
             // Dashboard stats
             auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
-            sectionFindingsCount, filteredSectionProjects,
+            sectionFindingsCount, sectionStatsMap, sectionStatsTotals, filteredSectionProjects,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
@@ -14599,7 +16921,7 @@ const app = createApp({
             showCreateVersionModal, newVersionComment, versionsPanelOpen,
             renameEditing, renameValue, renameError, renameBusy, renameInput,
             startRename, cancelRename, submitRename,
-            loadProjectVersions, loadVersionFiles, selectVersion,
+            loadProjectVersions, loadVersionFiles, selectVersion, deleteVersion,
             createNewVersion, uploadFilesToVersion,
             handleUploadInput, handleUploadInputReplace,
             activeVersionEntry, canStartAuditNow, versionBadgeFor,
@@ -14611,6 +16933,78 @@ const app = createApp({
             findingExtRegBadge,
             // ─── Stage Comparison ───
             scTab, scDiffSubtab, scStageAPath, scStageBPath,
+            // Pipeline V2 (β) — read-only панель
+            scPv2Loading, scPv2Error, scPv2Resp, scPv2PairId,
+            scPv2Open, scPv2Filters, scPv2Payload, scPv2Sections,
+            scPv2Headline, scPv2GraphicVision, scPv2GraphicGrounding,
+            scPv2GroundingRejectedTotal,
+            scPv2GroundedEvidence, scPv2GeAvailable, scPv2GeInterestingCards,
+            scPv2GeBadgeStyle, scPv2GeAnchorText,
+            scPv2CriticVerdictStyle, scPv2ShowText, scPv2GeVerdictBreakdown,
+            scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
+            scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
+            scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,
+            scPv2GdJumpBanner, scPv2GdJumpWarning, scPv2GdCardHasTarget,
+            scPv2OpenBlockLinkFromGrounding, scPv2GdClearJumpBanner,
+            scPv2FilterOptions, scPv2HasFilterOptions,
+            scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
+            scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
+            scPv2AllWarnings, scPv2Load, scPv2EnsureLoaded, scPv2OpenPair,
+            // Pipeline V2 Block Link Preview («Связь блоков», read-only)
+            scPv2LpVisible, scPv2LpLoading, scPv2LpError, scPv2LpResp,
+            scPv2LpPairId, scPv2LpFilter, scPv2LpSelectedPage, scPv2LpSelectedLink,
+            scPv2LpReport, scPv2LpSummary, scPv2LpPageLinks, scPv2LpNotFound,
+            scPv2LpRespError, scPv2LpFilteredLinks, scPv2LpSelectedPageLink,
+            scPv2LpSelectedLinkObj, scPv2LpPageOverlays,
+            scPv2LpPageImageUrl, scPv2LpOverlayStyle, scPv2LpStatusColor,
+            scPv2LpSelectLink, scPv2LpSelectPage, scPv2LpLoad, scPv2LpToggle,
+            SC_PV2_LP_FILTERS,
+            // Pipeline V2 Entity Alignment Preview («Сущности и маппинг», read-only)
+            scPv2EaVisible, scPv2EaLoading, scPv2EaError, scPv2EaResp,
+            scPv2EaPairId, scPv2EaFilter, scPv2EaSummary, scPv2EaPairs,
+            scPv2EaUnpaired, scPv2EaNotFound, scPv2EaRespError,
+            scPv2EaShowUnpaired, scPv2EaShowPairs, scPv2EaFilteredPairs,
+            scPv2EaClassMeta, scPv2EaConfPct, scPv2EaLoad, scPv2EaToggle,
+            scPv2EaOpenBlockLink, SC_PV2_EA_FILTERS,
+            // Pipeline V2 Link Validation (read-only, mark-only)
+            scPv2LvResp, scPv2LvLoading, scPv2LvError, scPv2LvSummary,
+            scPv2LvItems, scPv2LvAvailable, scPv2LvNotFound, scPv2LvRespError,
+            scPv2LvDecisionMeta, scPv2LvConfPct, scPv2LvLoad, scPv2LvOpenBlockLink,
+            // Pipeline V2 Exclusion Preview v2 (read-only, mark-only)
+            scPv2XpResp, scPv2XpLoading, scPv2XpError,
+            scPv2XpSummary, scPv2XpItems, scPv2XpAvailable, scPv2XpNotFound, scPv2XpRespError,
+            scPv2XpClassMeta, scPv2XpConfPct, scPv2XpLoad, scPv2XpReset,
+            // Pipeline V2 Skip Readiness (read-only, mark-only, observe)
+            scPv2SrResp, scPv2SrLoading, scPv2SrError,
+            scPv2SrSummary, scPv2SrItems, scPv2SrAvailable, scPv2SrNotFound, scPv2SrRespError,
+            scPv2SrReadinessMeta, scPv2SrConfPct, scPv2SrLoad, scPv2SrReset,
+            SC_PV2_SR_READINESS_META,
+            // Pipeline V2 Controlled Enforce Preflight (read-only / observe-only)
+            scPv2CeResp, scPv2CeLoading, scPv2CeError,
+            scPv2CeSummary, scPv2CeGuards, scPv2CeRuntimeRoot,
+            scPv2CeFatalBlocks, scPv2CeBlockedItems, scPv2CeEligibleItems,
+            scPv2CeReportStatus, scPv2CeAvailable, scPv2CeNotFound, scPv2CeRespError,
+            scPv2CeStatusMeta, scPv2CeBlockMeta, scPv2CeLoad, scPv2CeReset,
+            SC_PV2_CE_STATUS_META, SC_PV2_CE_BLOCK_META,
+            // Pipeline V2 Controlled Enforce Dry-run (read-only / observe-only)
+            scPv2CdrResp, scPv2CdrLoading, scPv2CdrError,
+            scPv2CdrSummary, scPv2CdrTransitions, scPv2CdrItems,
+            scPv2CdrReportStatus, scPv2CdrAvailable, scPv2CdrNotFound, scPv2CdrRespError,
+            scPv2CdrLoad, scPv2CdrReset,
+            // Pipeline V2 Controlled Enforce State + Selection Observe (read-only)
+            scPv2CesSection, scPv2CesAvailable,
+            scPv2CesoSection, scPv2CesoAvailable,
+            // Pipeline V2 Enrichment Selection Observe (read-only observe-plan)
+            scPv2EsoSection, scPv2EsoAvailable, scPv2EsoRedundant,
+            // Pipeline V2 Controlled Enforce State deactivate (rollback, write)
+            SC_PV2_CDS_PHRASE, scPv2CdsOpen, scPv2CdsConfirmText, scPv2CdsComment,
+            scPv2CdsRunId, scPv2CdsBusy, scPv2CdsError, scPv2CdsDone, scPv2CdsConfirmOk,
+            scPv2CdsBegin, scPv2CdsCancel, scPv2CdsSubmit,
+            // Pipeline V2 Manual Entity Mapping (write-слой)
+            SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
+            scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,
+            scPv2EaDecisionMeta, scPv2EaManualMeta, scPv2EaSavePair,
+            scPv2EaUnpairedCounterparts, scPv2EaSaveUnpaired,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,
@@ -14742,6 +17136,8 @@ const app = createApp({
             scQOClearBeforeRun, scQOMode, scQOClearing, scQOClearAnalysis, scQOStartOpusOnly,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
             scQOStartConfirmed, scQOStart, scQOCancel,
+            scPv2RunByPair, scPv2RunModal, scPv2RunState, scPv2RunBtnLabel,
+            scPv2RunBtnTitle, scPv2RunErrorFor, scPv2RunOpenModal, scPv2RunSubmit,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
             scQOPairTimings, scQOLoadPairTimings,
             scQOLaneCell, scQOLaneColor, scQOItemTotalLabel, scQOCurrentBlock, scQOBlocksOverall,

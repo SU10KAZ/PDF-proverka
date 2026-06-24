@@ -65,7 +65,7 @@ Desktop.ini
 *.bak
 *_temp.py
 check_*.py
-# committed tools (exceptions to the scratch check_*.py rule above)
+# committed projects_v2 CLI tools (exceptions to the scratch check_*.py rule above)
 !scripts/projects_v2/check_backend_parity.py
 !scripts/projects_v2/check_shadow_api.py
 !scripts/projects_v2/check_ui_contract_parity.py
@@ -74,6 +74,9 @@ find_sections*.py
 .codex_test_tmp/
 tmp_write_probe/
 autonomous_audit/
+
+# === projects_v2 runtime data (NEVER commit) ===
+/projects_v2/
 
 # === Keep project_info.json and project structure ===
 # (PDF and _output are ignored, but config files are tracked)
@@ -138,6 +141,26 @@ experiments/qwen_problem_block_recognition/
 
 # === projects_v2 runtime/generated data (миграция, не для git) ===
 /projects_v2/
+
+# === Live project / runtime data (Tier A) ===
+# Проектные OCR-артефакты, версии и метаданные — live-data, не для git.
+# Файлы остаются на диске; git их просто не отслеживает.
+projects/
+
+# Live runtime state in backend/app/data (пофайлово — НЕ вся папка!)
+backend/app/data/objects.json
+backend/app/data/project_groups.json
+backend/app/data/missing_norms_vault.json
+
+# Live expert/knowledge data
+knowledge_base/decisions_log.json
+
+# Local generated reports / scratch
+/nnn.md
+/сравнение.xlsx
+
+# Static config seed — keep tracked despite rules above
+!backend/app/data/consumer_synonyms.json
 
 # === Папка дисциплин для сравнения (локальная, не для git) ===
 дисциплины для сравнения/

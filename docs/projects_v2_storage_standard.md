@@ -499,9 +499,22 @@ loss 0.
 
 ### Классификация (на поле и на документ)
 
-`MATCH` | `EXPECTED_DIFFERENCE` | `MISMATCH` | `MISSING_IN_V2` | `MISSING_IN_LEGACY`.
-Подсчёт findings — **симметричный** (один приоритет файла
-`03a_norms_verified > 03_findings` и в legacy `_output`, и в v2 `latest`).
+`MATCH` | `EXPECTED_DIFFERENCE` | `EXPECTED_NAMING_DIFFERENCE` | `MISMATCH` |
+`MISSING_IN_V2` | `MISSING_IN_LEGACY`. Подсчёт findings — **симметричный** (один
+приоритет файла `03a_norms_verified > 03_findings` и в legacy `_output`, и в v2
+`latest`). `EXPECTED_NAMING_DIFFERENCE` не блокирует cutover (как `EXPECTED_DIFFERENCE`).
+
+### Как сопоставляется legacy ↔ v2 (robust matcher, 2026-06-16)
+
+Legacy-папка резолвится по приоритету: **`old_to_new_map`** (авторитетная связь по
+`document_code` + `object_name`/`discipline`/`legacy_folder_name`/`legacy_folder_path`)
+→ `document.json.legacy_project_path` → вывод object/discipline из пути относительно
+`projects_root` → скан `projects_root/<obj>/<disc>` по нормализованному имени
+(`document_code_for` снимает `.pdf`/`(main)`, дополнительно снимается ` V{N}`).
+`projects_root` по умолчанию = sibling `<v2-root>/../projects` (НЕ code-relative),
+переопределяется `--legacy-root`. Существование папки проверяется на диске; битый
+`legacy_project_path` без записи в map и без папки → честный `MISSING_IN_LEGACY`
+(не фабрикуется ложный `MISMATCH`).
 
 ### Какие расхождения считаются EXPECTED
 
@@ -514,7 +527,14 @@ loss 0.
   документов, чьи findings лежат в KB, а не файлами) → `EXPECTED_DIFFERENCE`;
 - **иной формат legacy version container** при равном нормализованном
   `version_count` → `MATCH`; расхождение числа версий допускается только для
-  King&Sons.
+  King&Sons;
+- **naming artifacts** (`EXPECTED_NAMING_DIFFERENCE`) — legacy-папка существует и
+  связана с v2, но её имя отличается от чистого `document_code` лишь:
+  хвостовым `.pdf` (`13АВ-РД-ВК1-К2.pdf`), контейнером `(main)`
+  (`133_23-ГК-ЭМ1(main)`) или версионным суффиксом (`133_23-ГК-АР2 V2`). Это
+  артефакт ИМЕНОВАНИЯ, НЕ потеря данных: `old_to_new_map` связывает папку с v2
+  `document_code`, findings/versions сохранены, UI/adapter резолвят по basename.
+  Полная нормализация имён — отдельный необязательный этап.
 
 ### Что блокирует будущий cutover
 
@@ -611,12 +631,62 @@ backend parity, UI contract parity, live dual-read sample → рекоменда
 6. **full cutover** — после стабильной канарейки переключить чтение на
    `projects_v2`, legacy оставить архивом.
 
+## Контракт записи (write facade, Step 8/10 — подготовка)
+
+Модуль [backend/app/services/storage/storage_write_facade.py](../backend/app/services/storage/storage_write_facade.py)
+— фасад записи данных проекта в `projects_v2`. **По умолчанию (`legacy`) ничего
+не пишет в v2.** С Step 9/10 фасад **подключён** к write-chokepoints (см. ниже),
+но это no-op в режиме legacy.
+
+**Подключение (Step 9/10).** Safe-обёртки `shadow_mirror_project_path_safe` /
+`shadow_mirror_project_id_safe` вызываются ПОСЛЕ успешной legacy-записи в:
+`project_service.register_external_project / register_project / save_project_info`,
+`version_service.save_files_to_version / create_next_version`,
+`knowledge_base_service.save_expert_review`, и в `pipeline/manager` на завершении
+аудита. В режиме legacy обёртки выходят немедленно (no-op, без импорта v2lib и
+резолва путей); в `dual_write_shadow` — зеркалят проект через проверенную
+`v2lib.migrate_project` (идемпотентно, обновляет `old_to_new_map`). Каждый хук
+обёрнут в `try/except` → legacy байт-идентичен даже при сбое импорта хука.
+Canary-валидация: `projects_v2/_system/dual_write_canary_report.{json,md}`.
+
+**Режим записи — env `AUDIT_PROJECTS_V2_WRITE_MODE` (default `legacy`):**
+
+| Режим | Поведение |
+|---|---|
+| `legacy` (default, prod) | фасад — no-op для v2; авторитетна только legacy-запись |
+| `dual_write_shadow` | legacy ПЕРВОЙ (авторитетна) → затем v2-тень; сбой v2 fail-soft, не ломает legacy |
+| `projects_v2_primary` | v2 primary → затем legacy как архив (будущее) |
+
+Значение читается из env на КАЖДЫЙ вызов; неизвестное/пустое → `legacy`
+(fail-safe: непонятный конфиг никогда не включает запись в v2).
+
+**Инварианты записи:**
+1. production default = `legacy`;
+2. в `dual_write_shadow` v2-запись происходит ТОЛЬКО после успешной legacy;
+3. сбой v2-записи в shadow логируется и НЕ ломает legacy (никакой silent loss);
+4. деструктивные операции в v2 (`clean_project_data`, `delete_pair(hard)`, rmtree
+   версии) **заблокированы** (`DestructiveWriteBlocked`) до появления контракта
+   backup + явного подтверждения (Step 9/10);
+5. имена входных файлов/артефактов санируются до basename (нет выхода за пределы
+   `01_input` / `03_analysis`).
+
+**Безопасные методы (реализованы):** `save_version_metadata` (`version.json` +
+каркас документа), `save_input_bundle` (`01_input/`), `save_analysis_artifact`
+(`03_analysis/latest/` + опц. `runs/<run>/`). Dry-run симулятор:
+[scripts/projects_v2/simulate_write_cutover.py](../scripts/projects_v2/simulate_write_cutover.py).
+
+Карта всех путей записи backend (где что пишется, какие chokepoint'ы заводить
+через фасад) — runtime-отчёт `projects_v2/_system/write_path_audit_report.{json,md}`
++ Этап 6 в [projects_v2_migration_plan.md](projects_v2_migration_plan.md).
+
 ## Инварианты безопасности
 
 1. legacy `projects/` и `comparison/` — **только чтение**, никогда не изменяются.
 2. Все записи только в `projects_v2/`.
 3. Миграция идемпотентна; verbatim run-копия гарантирует отсутствие потерь.
 4. backend/UI к `projects_v2` на этапе 1 **не подключены**.
+5. Запись в `projects_v2` управляется `AUDIT_PROJECTS_V2_WRITE_MODE` (default
+   `legacy` → запись выключена); см. «Контракт записи» выше.
 
 ## Связанные файлы
 

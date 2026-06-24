@@ -641,6 +641,8 @@ def find_active_pipeline_job(session_id: str) -> Optional[dict]:
         if task is not None and not task.done():
             return job
     return None
+
+
 def _iso_dur_sec(start: Optional[str], end: Optional[str]) -> Optional[float]:
     """Длительность в секундах между двумя ISO-таймстампами; None если нет данных."""
     if not start or not end:

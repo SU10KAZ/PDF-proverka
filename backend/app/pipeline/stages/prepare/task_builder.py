@@ -40,17 +40,15 @@ def _version_output_dir(project_id: str) -> Path:
 
     V2 audit binds version_id="v2" в ContextVar в начале job, поэтому все reads/writes
     runtime artefacts (01_text_analysis, 02_blocks_analysis, document_graph, blocks/...)
-    автоматически уезжают в `_versions/v2/_output`.
+    автоматически уезжают в папку версии. Делегирует единому резолверу
+    version_service.resolve_active_output_dir (reserc.md #97).
     """
     env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
     if env_output_dir:
         return Path(env_output_dir)
 
     from backend.app.services.common import version_service
-    try:
-        return version_service.resolve_version_output_dir(project_id)
-    except (version_service.VersionNotFoundError, FileNotFoundError):
-        return resolve_project_dir(project_id) / "_output"
+    return version_service.resolve_active_output_dir(project_id)
 
 
 def _version_project_dir(project_id: str) -> Path:

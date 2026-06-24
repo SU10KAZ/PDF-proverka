@@ -89,24 +89,12 @@ def find_project_markdown(
     return None
 
 
-def partial_gemma_allowed(project_info: dict[str, Any] | None = None) -> bool:
-    """Backward-compatible flag. Partial coverage is now first-class.
-
-    Supported project_info forms:
-      - {"allow_partial_gemma_enrichment": true}
-      - {"gemma_enrichment": {"allow_partial": true}}
-      - {"gemma_enrichment": {"partial_mode": "allow" | "allowed"}}
-    """
-    project_info = project_info or {}
-    if project_info.get("allow_partial_gemma_enrichment") is True:
-        return True
-
-    gemma_cfg = project_info.get("gemma_enrichment")
-    if not isinstance(gemma_cfg, dict):
-        return False
-    if gemma_cfg.get("allow_partial") is True:
-        return True
-    return str(gemma_cfg.get("partial_mode", "")).lower() in {"allow", "allowed", "true"}
+# reserc.md #17: мёртвый partial-гейт удалён. Функция partial_gemma_allowed
+# вычисляла флаг allow_partial / partial_mode, но РЕЗУЛЬТАТ нигде не использовался
+# — gate всегда отдавал ready=True на status='partial'. Контракт зафиксирован
+# явно: partial-покрытие Gemma — first-class ready (см. docs/gemma_enrichment.md
+# «Ready status may still be partial …»). Config-ключи allow_partial/partial_mode
+# были no-op и убраны вместе с функцией.
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -214,7 +202,6 @@ def evaluate_gemma_enrichment(
     project_dir = Path(project_dir)
     project_info = project_info if project_info is not None else load_project_info(project_dir)
     output_dir = gemma_output_root(project_dir)
-    partial_allowed = partial_gemma_allowed(project_info)
 
     md_path = find_project_markdown(project_dir, project_info)
     state: dict[str, Any] = {
@@ -223,6 +210,7 @@ def evaluate_gemma_enrichment(
         "label": GEMMA_STAGE_LABEL,
         "has_md": md_path is not None,
         "md_path": str(md_path) if md_path else "",
+        # Контракт #17: partial Gemma всегда ready (флаг allow_partial удалён).
         "partial_allowed": True,
         "blocks_ok": 0,
         "blocks_total": 0,

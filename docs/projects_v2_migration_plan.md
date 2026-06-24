@@ -780,6 +780,68 @@ base smoke 15/15, cutover/dual-read smoke 13/13, default→404, backend default 
 `production_shadow_rollout_report.{json,md}`, `full_corpus_parity_report.{json,md,csv}`,
 `cutover_readiness_report.{json,md}`.
 
+### Этап 3.9 — robust legacy matcher в parity (tooling-fix, 2026-06-16) ✅
+
+`check_ui_contract_parity.py` давал **ложные** `MISSING_IN_LEGACY` (а на
+versioned-доках — `MISMATCH`) из-за хрупкого сопоставления legacy↔v2:
+
+- `projects_root` брался из `v2lib.legacy_projects_root()` = `repo_root()/projects`
+  (code-relative). В worktree-деплое это НЕ совпадает с реальными данными
+  (`AUDIT_DATA_DIR/projects`), поэтому `Path(legacy_project_path).relative_to(projects_root)`
+  падал → `legacy_object/discipline` = null → весь корпус как `MISSING_IN_LEGACY`;
+- `document_code` сравнивался с именем legacy-папки as-is: `13АВ-РД-ВК1-К2.pdf`
+  (хвостовой `.pdf`) и `133_23-ГК-АР2 V2` (версионный суффикс) не нормализовались
+  → `MISMATCH`, хотя `old_to_new_map` авторитетно связывает их по `document_code`.
+
+**Исправлено:**
+
+1. `projects_root` по умолчанию = **sibling** `--v2-root/../projects`; добавлен
+   флаг `--legacy-root` (override). Больше не зависит от code-relative пути.
+2. Robust-резолвер `_resolve_legacy` — приоритет источников:
+   `old_to_new_map` (object_name/discipline/legacy_folder_name/legacy_folder_path,
+   document_code — авторитетная связь) → `document.json.legacy_project_path` →
+   вывод object/discipline из пути → скан `projects_root/<obj>/<disc>` по
+   нормализованному имени. Существование папки проверяется на диске.
+3. Новая категория **`EXPECTED_NAMING_DIFFERENCE`** (не блокирует cutover, как
+   `EXPECTED_DIFFERENCE`): legacy-папка существует и связана с v2, но её имя
+   отличается от чистого `document_code` лишь `.pdf` / `(main)` / ` V{N}`.
+
+**Результат full-corpus (184 дока):** `MATCH 117 / EXPECTED_DIFFERENCE 2 /
+EXPECTED_NAMING_DIFFERENCE 65 / MISSING_IN_LEGACY 0 / MISSING_IN_V2 0 / MISMATCH 0`;
+`findings_loss 0`, `version_loss 0`, `missing_in_legacy_real []`, `contract_ok=True`
+(184 ложных доко-флага устранены). Реальные потери ловятся по-прежнему:
+`findings_loss` (v2 < legacy), `version_loss` (version_count MISMATCH вне King&Sons),
+genuinely missing legacy → `MISSING_IN_LEGACY` + `missing_in_legacy_real`.
+
+#### Known naming artifacts (почему `.pdf` в legacy project_id — НЕ потеря данных)
+
+Часть legacy-папок исторически названа с артефактами, которых нет в чистом v2
+`document_code`:
+
+| Артефакт | Пример legacy-папки | v2 document_code | Почему норма |
+|---|---|---|---|
+| хвостовой `.pdf` | `13АВ-РД-ВК1-К2.pdf` | `13АВ-РД-ВК1-К2` | имя папки оканчивается на `.pdf` (legacy-конвенция); содержимое то же |
+| контейнер `(main)` | `133_23-ГК-ЭМ1(main)` | `133_23-ГК-ЭМ1` | версионный контейнер; `document_code_for` берёт `logical_project_id` |
+| версионный суффикс | `133_23-ГК-АР2 V2` | `133_23-ГК-АР2` | legacy хранит версии sibling-папками `<base> V{N}`; v2 — под `versions/` |
+
+Это артефакты ИМЕНОВАНИЯ, а не данных: `old_to_new_map` связывает каждую такую
+папку с её v2 `document_code`, findings/versions сохранены (0 loss), а UI/adapter
+резолвят документ по basename. Parity помечает их `EXPECTED_NAMING_DIFFERENCE` и
+НЕ блокирует cutover. Полное устранение рассинхрона имён — отдельная необязательная
+нормализация (не потеря).
+
+**Как parity matcher должен сопоставлять legacy ↔ v2 (контракт):**
+по `old_to_new_map` (приоритет, авторитетная связь по `document_code`), затем по
+`legacy_project_path`/`legacy_folder_name`, затем по нормализованному basename
+(`document_code_for` снимает `.pdf`/`(main)`; ` V{N}` снимается дополнительно), с
+проверкой существования папки. MATCH/EXPECTED при совпадении кода и сохранности
+findings/versions; `EXPECTED_NAMING_DIFFERENCE` для имени-артефакта; `MISMATCH`/
+`MISSING_IN_LEGACY` — только при реальной потере или отсутствии.
+
+Тесты: `tests/test_projects_v2_ui_contract_parity.py` (+8 кейсов: `.pdf`/`(main)`/
+` V{N}` → не false-positive; `old_to_new_map` priority; legacy_folder_name matching;
+реальные missing/findings_loss/version_loss всё ещё ловятся).
+
 ### Этап 4 — подключение adapter за флагом к основным read-path (план, НЕ в этом PR)
 
 - Подключить adapter к реальным read-path (project list / findings / pipeline
@@ -794,6 +856,133 @@ base smoke 15/15, cutover/dual-read smoke 13/13, default→404, backend default 
 - Включить `STORAGE_BACKEND=v2` для одного объекта, наблюдать.
 - Постепенно расширить на все объекты.
 - legacy `projects/` сохранить как архив до полной верификации.
+
+### Этап 6 — подготовка write/upload cutover (Step 8/10) ✅ (подготовка; запись на проде НЕ включена)
+
+**Цель:** подготовить backend к записи новых данных в `projects_v2`, **не включая
+запись на production**. На этом этапе создан скелет фасада записи + симулятор +
+тесты + документация. `AUDIT_STORAGE_BACKEND=legacy` сохранён, новые загрузки
+инженерами не переключаются, ни один production-endpoint не вызывает фасад.
+
+**Preflight gate (PASS, 2026-06-16):** validate_migration PASS (849 ok); parity
+`contract_ok=True` (MISMATCH=0, MISSING_real=0, findings_loss=0, version_loss=0);
+drift=1 — единственный документ `13АВ-РД-СОУЭ-ПА V1` (`missing_legacy`, `stable`,
+legacy-папка названа `…V1.pdf`) — это известный `.pdf`-naming артефакт из
+`EXPECTED_NAMING_DIFFERENCE`, без потери данных (см. Этап 3.9 → «Known naming
+artifacts»). Реальные интеграционные гейты зелёные.
+
+**Карта путей записи (runtime-отчёт `projects_v2/_system/write_path_audit_report.{json,md}`).**
+~Все записи данных проекта проходят через **6 chokepoint'ов**, и достаточно
+завести их через фасад (стейдж-раннеры переписывать не нужно):
+
+1. `version_service.resolve_version_output_dir / get_version_dir` (output_dir + version dir)
+2. `manager._resolve_job_paths` / `PipelineStageContext.output_dir` (pipeline `_output`)
+3. `project_service.register_project / register_external_project` (новая загрузка)
+4. `version_service.save_files_to_version / create_next_version / create_version_from_existing_files / merge_project_as_version`
+5. `project_service.save_project_info` (`project_info.json`)
+6. `knowledge_base_service.save_expert_review` (per-project `expert_review.json`)
+
+Категории записи: **project data** (→ v2; `_output/`, `project_info.json`,
+version-манифесты, входные PDF/MD) · **runtime queue** (остаётся в
+`APP_DATA_DIR`: prepare/batch queue, usage/cost) · **knowledge base** (общие
+файлы `decisions_log.json` / `missing_norms_vault.json` — НЕ форкать на документ)
+· **app registries** (`objects/groups/hidden`, `disciplines/_registry`) ·
+**comparison** (вне scope) · **export** (xlsx в `REPORTS_DIR`, read-only) ·
+**destructive** (`clean_project_data`, `delete_pair(hard)` — без бэкапа → для v2
+**заблокированы**).
+
+**Выбор стратегии (A/B/C/D):**
+
+| Вариант | Суть | Вердикт |
+|---|---|---|
+| A — legacy + delta-sync | писать в legacy, периодически синкать в v2 | отложенная консистентность, гонки с регеном; ❌ |
+| **B — dual-write shadow** | legacy ПЕРВОЙ (авторитетна), затем v2-тень fail-soft | ✅ **рекомендуется**: legacy всегда цел, v2 наполняется на реальной нагрузке без риска |
+| C — v2-primary + legacy-archive | v2 авторитетна, legacy архив | для будущего после валидации shadow |
+| D — v2-only | только v2 | преждевременно, нет точки отката |
+
+Рекомендация — **B (dual_write_shadow)** для новых загрузок: v2 нормализуется
+сразу при записи (а не пакетной миграцией постфактум), legacy остаётся fallback,
+деструктив в v2 выключен.
+
+**Фасад записи** [backend/app/services/storage/storage_write_facade.py](../backend/app/services/storage/storage_write_facade.py):
+флаг `AUDIT_PROJECTS_V2_WRITE_MODE ∈ {legacy, dual_write_shadow, projects_v2_primary}`,
+**default `legacy`** (читается из env на каждый вызов; неизвестное значение →
+legacy fail-safe). Инварианты: в `dual_write_shadow` v2 пишется ТОЛЬКО после
+успешной legacy; сбой v2 в shadow логируется и не ломает legacy; деструктив в v2
+→ `DestructiveWriteBlocked`; никакой silent data loss. Реализованы 3 безопасных
+метода (`save_version_metadata`, `save_input_bundle`, `save_analysis_artifact`) +
+`block_destructive`. **Не подключён** ни к одному endpoint'у (гарантируется
+тестом `test_write_facade_not_wired_to_routers`).
+
+**Симулятор** [scripts/projects_v2/simulate_write_cutover.py](../scripts/projects_v2/simulate_write_cutover.py):
+dry-run на tempfile-фикстурах, прогоняет все 3 режима + forced v2-fail +
+destructive-guard, проверяет инварианты, exit 0; production `projects/` и
+`projects_v2/` не трогает (жёсткая страховка «temp вне репозитория»).
+
+**Что на Этапе 9/10 (НЕ в этом этапе):** подключить фасад к 6 chokepoint'ам за
+флагом на shadow-объекте; включить `dual_write_shadow` на одной новой загрузке и
+сверить v2-результат с legacy через parity; политика run_id/ретеншена прогонов;
+version-aware ключи `decisions_log`/`expert_review`; контракт backup+подтверждение
+для деструктива до любого v2-плеча. Включение записи на проде требует явного
+подтверждения + restart (правила проекта).
+
+**Откат Этапа 6:** ничего откатывать не нужно — фасад инертен (default legacy,
+не подключён). Полное отключение записи в будущем — `AUDIT_PROJECTS_V2_WRITE_MODE=legacy`
++ restart.
+
+**Тесты:** [tests/test_projects_v2_write_facade.py](../tests/test_projects_v2_write_facade.py),
+[tests/test_projects_v2_write_cutover_simulation.py](../tests/test_projects_v2_write_cutover_simulation.py).
+
+### Этап 7 — controlled dual-write canary (Step 9/10) ✅ (запись на проде НЕ включена)
+
+**Цель:** подключить подготовленный write-facade к реальным write-chokepoints и
+проверить `dual_write_shadow` на ОДНОМ контролируемом canary-кейсе, не включая
+запись на production. `AUDIT_STORAGE_BACKEND=legacy` и
+`AUDIT_PROJECTS_V2_WRITE_MODE=legacy` (default) сохранены; production-процесс не
+перезапускался; wired-код на проде НЕ активен (активируется только при
+подтверждённом рестарте — Step 10/10).
+
+**Preflight gate (PASS):** idle (batch absent / prepare idle / 0 workers / 0
+comparison jobs); validate PASS (849 ok); parity contract_ok=True (MISMATCH=0,
+findings_loss=0, version_loss=0); drift=1 — известный `.pdf` naming артефакт
+`13АВ-РД-СОУЭ-ПА V1` (без потери данных).
+
+**Подключённые chokepoints (6 категорий / 7 сайтов):** `register_external_project`,
+`register_project`, `save_project_info` (project_service); `save_files_to_version`,
+`create_next_version` (version_service); `save_expert_review` (knowledge_base);
+audit-completion (pipeline/manager). Все вызывают safe-обёртки
+`shadow_mirror_project_path_safe` / `shadow_mirror_project_id_safe`, которые в
+режиме legacy — **no-op**, а в `dual_write_shadow` после успешной legacy-записи
+зеркалят проект в v2 через проверенную `v2lib.migrate_project` (идемпотентно,
+parity-faithful, обновляет `old_to_new_map`). Каждый хук обёрнут в `try/except`
+→ legacy байт-идентичен даже при сбое импорта хука. v2lib импортируется лениво
+только при разрешённой v2-записи.
+
+**Canary (out-of-process, изолированный tempdir, реальный wired chokepoint
+`save_project_info`):**
+- legacy mode → v2 не создаётся (no-op);
+- `dual_write_shadow` → legacy записан первым и авторитетен; v2 shadow-копия
+  создана (`01_input` pdf/md/result/project_info, `02_work`); `project_info.json`
+  **байт-идентичен** legacy↔v2; `old_to_new_map` обновлён (1 запись);
+- v2 shadow errors: нет (forced-fail отдельно подтвердил fail-soft);
+- validate canary-doc **PASS**; parity canary-tree **contract_ok=True**.
+
+Production `projects/` и `projects_v2/` каноническим прогоном НЕ менялись (всё в
+tempdir). Артефакт прогона: `projects_v2/_system/dual_write_canary_report.{json,md}`.
+
+**Адверсариальное ревью (Workflow, 6 линз):** 33 находки, **0 подтверждённых**
+(≥medium = 0). LOW-замечания (bare import вне try/except; `return True` вне try)
+устранены hardening'ом.
+
+**Решение:** оставить production в `legacy`. Live-canary в реальный `projects_v2`
+и включение shadow для загрузок инженеров требуют подтверждённого рестарта
+(флаг читается из env процесса) — это Step 10/10. Загрузки инженеров на паузе,
+поэтому live-включение сейчас не даёт выгоды и добавляет риск.
+
+**Откат:** wired-хуки инертны при `AUDIT_PROJECTS_V2_WRITE_MODE=legacy` (default);
+выключение shadow = вернуть legacy + restart; полный откат = `git revert` коммита
+Step 9/10. Shadow только ДОБАВЛЯЕТ идемпотентные зеркала в v2; legacy `projects/`
+не мутируется; деструктив не включён.
 
 ## Открытые вопросы (решить до этапа 3)
 

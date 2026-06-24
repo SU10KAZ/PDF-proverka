@@ -94,3 +94,39 @@ def test_nothing_resolves_is_graceful_not_500(fake_projects, tmp_path):
     results = kb.import_decisions_from_excel(str(xlsx), default_project_id="also-unknown")
 
     assert results == {}  # ни одна папка не найдена → ничего не сохранили, но не упали
+
+
+def test_import_attributes_reviewer(fake_projects, tmp_path):
+    """Регрессия: импорт прокидывает автора в expert_reviewer (не теряет его).
+
+    Раньше import_decisions_from_excel звал save_expert_review без reviewer →
+    решения попадали в decisions_log с пустым автором и пропадали из графика
+    работ. Теперь автор (резолвится роутером из портал-сессии) сохраняется.
+    """
+    import json
+
+    xlsx = tmp_path / "decisions.xlsx"
+    _make_xlsx(xlsx, hidden_pid="1232-ЧМ-КМ-1")
+
+    kb.import_decisions_from_excel(
+        str(xlsx), default_project_id="1232-ЧМ-КМ-1", reviewer="Калинина А."
+    )
+
+    review = json.loads(
+        (fake_projects / "_output" / "expert_review.json").read_text(encoding="utf-8")
+    )
+    assert review["reviewer"] == "Калинина А."
+
+    log = json.loads((tmp_path / "decisions_log.json").read_text(encoding="utf-8"))
+    entries = log.get("entries", log) if isinstance(log, dict) else log
+    assert entries and all(e.get("expert_reviewer") == "Калинина А." for e in entries)
+
+
+def test_import_without_reviewer_stays_empty(fake_projects, tmp_path):
+    """auth выключен / автор не определён → пустой reviewer (как раньше), не падаем."""
+    xlsx = tmp_path / "decisions.xlsx"
+    _make_xlsx(xlsx, hidden_pid="1232-ЧМ-КМ-1")
+
+    results = kb.import_decisions_from_excel(str(xlsx), default_project_id="1232-ЧМ-КМ-1")
+
+    assert results["1232-ЧМ-КМ-1"]["saved"] == 1

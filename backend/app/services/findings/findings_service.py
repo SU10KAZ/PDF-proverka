@@ -477,24 +477,46 @@ def get_finding_block_map(
     # blocks_by_page больше не используется для привязки (page-fallback убран),
     # но _load_blocks_data остаётся источником all_block_ids / block_info.
     _blocks_by_page, block_info, all_block_ids = _load_blocks_data(project_id, version_id)
-    block_id_re = re.compile(r'\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b')
 
+    # Строгая привязка вынесена в compute_finding_block_map (prod refactor для
+    # projects_v2 read canary). Функция содержит ту же логику reserc.md:
+    # evidence[type=image] → related_block_ids/source_block_ids → block_id в
+    # описании; page/sheet-fallback намеренно убран (см. docstring выше).
     items = findings_data.get("findings", findings_data.get("items", []))
+    result = compute_finding_block_map(items, all_block_ids)
+
+    # ── Текстовые evidence из document_graph ──
+    text_evidence = _build_text_evidence(project_id, items, version_id=version_id)
+
+    return {
+        "project_id": project_id,
+        "block_map": result,
+        "block_info": block_info,
+        "text_evidence": text_evidence,
+    }
+
+
+def compute_finding_block_map(items: list, all_block_ids: set) -> dict:
+    """Чистая строгая привязка finding_id → [block_ids] (без чтения файлов).
+
+    Та же логика, что в get_finding_block_map; выделена для переиспользования
+    в projects_v2 read canary (одинаковый результат на тех же данных). НЕ
+    добавляет page/sheet-fallback и ложных привязок.
+    """
+    import re
+    block_id_re = re.compile(r'\b([A-Z0-9]{3,5}-[A-Z0-9]{3,5}-[A-Z0-9]{2,4})\b')
     result: dict[str, list[str]] = {}
 
     def _norm_bid(bid: str) -> str:
-        """Нормализация block_id: убрать префикс 'block_' если есть."""
         return bid[6:] if bid and bid.startswith("block_") else (bid or "")
 
     for f in items:
         fid = f.get("id", "")
         if not fid:
             continue
-
         matched_blocks: list[str] = []
         seen: set[str] = set()
 
-        # 1. evidence[] с type="image" — точная трассировка к конкретному блоку.
         evidence = f.get("evidence")
         if evidence and isinstance(evidence, list):
             for ev in evidence:
@@ -505,7 +527,6 @@ def get_finding_block_map(
                     matched_blocks.append(bid)
                     seen.add(bid)
 
-        # 2. Явные поля привязки к блоку: related_block_ids + source_block_ids.
         if not matched_blocks:
             for field in ("related_block_ids", "source_block_ids"):
                 value = f.get(field)
@@ -517,7 +538,6 @@ def get_finding_block_map(
                         matched_blocks.append(bid)
                         seen.add(bid)
 
-        # 3. Явный block_id, упомянутый прямо в тексте замечания.
         if not matched_blocks:
             desc = f.get("description", "")
             for m in block_id_re.finditer(desc):
@@ -526,20 +546,39 @@ def get_finding_block_map(
                     matched_blocks.append(bid)
                     seen.add(bid)
 
-        # Page/sheet fallback намеренно УДАЛЁН — см. docstring.
-
         if matched_blocks:
             result[fid] = matched_blocks
+    return result
 
-    # ── Текстовые evidence из document_graph ──
-    text_evidence = _build_text_evidence(project_id, items, version_id=version_id)
 
-    return {
-        "project_id": project_id,
-        "block_map": result,
-        "block_info": block_info,
-        "text_evidence": text_evidence,
-    }
+def blocks_data_from_sources(blocks_analysis: Optional[dict],
+                             index_data: Optional[dict]) -> tuple[dict, dict, set]:
+    """Чистая сборка (blocks_by_page, block_info, all_block_ids) из уже загруженных
+    02_blocks_analysis + blocks/index.json. Та же логика, что в _load_blocks_data;
+    выделена для projects_v2 (адаптер знает раскладку и грузит источники сам)."""
+    blocks_by_page: dict = {}
+    all_block_ids: set = set()
+    block_info: dict = {}
+    if blocks_analysis:
+        block_list = blocks_analysis.get("blocks") or blocks_analysis.get("block_analyses") or []
+        for block in block_list:
+            bid = block.get("block_id", "")
+            page = block.get("page")
+            if bid and page is not None:
+                all_block_ids.add(bid)
+                blocks_by_page.setdefault(page, []).append(bid)
+    if index_data:
+        for b in index_data.get("blocks", []):
+            bid = b.get("block_id", "")
+            if bid:
+                block_info[bid] = {"block_id": bid, "page": b.get("page"),
+                                   "ocr_label": b.get("ocr_label", "")}
+                page = b.get("page")
+                if page is not None:
+                    all_block_ids.add(bid)
+                    if bid not in blocks_by_page.get(page, []):
+                        blocks_by_page.setdefault(page, []).append(bid)
+    return blocks_by_page, block_info, all_block_ids
 
 
 def _escape_with_markdown(text: str) -> str:
@@ -979,7 +1018,14 @@ def _build_text_evidence(
 
     # Пробуем загрузить готовый HTML из OCR файла (приоритет)
     ocr_index = _build_ocr_html_index(project_dir)
+    return compute_text_evidence(graph, ocr_index, findings)
 
+
+def compute_text_evidence(graph: dict, ocr_index: dict, findings: list) -> dict:
+    """Чистый маппинг finding_id → [text_refs] из уже загруженных graph + ocr_index.
+
+    Выделено из _build_text_evidence для переиспользования в projects_v2 read
+    canary (адаптер грузит document_graph и OCR HTML сам). Идентичная логика."""
     # Индекс text_block_id → {text, html, page}
     text_index: dict[str, dict] = {}
     for page_data in graph.get("pages", []):
@@ -988,24 +1034,17 @@ def _build_text_evidence(
             tb_id = tb.get("id", "")
             if tb_id:
                 raw = (tb.get("text") or "")[:2000]
-                # Приоритет: OCR HTML → fallback на _text_to_html
                 html = ocr_index.get(tb_id) or _text_to_html(raw)
-                text_index[tb_id] = {
-                    "text": raw[:500],
-                    "html": html,
-                    "page": page_num,
-                }
+                text_index[tb_id] = {"text": raw[:500], "html": html, "page": page_num}
 
     result: dict[str, list[dict]] = {}
     for f in findings:
         fid = f.get("id", "")
         if not fid:
             continue
-
         text_refs: list[dict] = []
         seen: set[str] = set()
 
-        # 1. evidence_text_refs (приоритет — точная трассировка с ролями)
         etr = f.get("evidence_text_refs")
         if etr and isinstance(etr, list):
             for ref in etr:
@@ -1014,15 +1053,10 @@ def _build_text_evidence(
                     seen.add(tb_id)
                     info = text_index[tb_id]
                     text_refs.append({
-                        "text_block_id": tb_id,
-                        "role": ref.get("role", ""),
+                        "text_block_id": tb_id, "role": ref.get("role", ""),
                         "used_for": ref.get("used_for", ""),
-                        "text": info["text"],
-                        "html": info["html"],
-                        "page": info["page"],
-                    })
+                        "text": info["text"], "html": info["html"], "page": info["page"]})
 
-        # 2. evidence[type=text] (fallback)
         ev = f.get("evidence")
         if ev and isinstance(ev, list):
             for e in ev:
@@ -1032,15 +1066,9 @@ def _build_text_evidence(
                         seen.add(tb_id)
                         info = text_index[tb_id]
                         text_refs.append({
-                            "text_block_id": tb_id,
-                            "role": "",
-                            "used_for": "",
-                            "text": info["text"],
-                            "html": info["html"],
-                            "page": info["page"],
-                        })
+                            "text_block_id": tb_id, "role": "", "used_for": "",
+                            "text": info["text"], "html": info["html"], "page": info["page"]})
 
-        # 3. source_block_ids (last fallback — могут быть текстовые)
         sids = f.get("source_block_ids")
         if sids and isinstance(sids, list):
             for tb_id in sids:
@@ -1048,17 +1076,11 @@ def _build_text_evidence(
                     seen.add(tb_id)
                     info = text_index[tb_id]
                     text_refs.append({
-                        "text_block_id": tb_id,
-                        "role": "",
-                        "used_for": "",
-                        "text": info["text"],
-                        "html": info["html"],
-                        "page": info["page"],
-                    })
+                        "text_block_id": tb_id, "role": "", "used_for": "",
+                        "text": info["text"], "html": info["html"], "page": info["page"]})
 
         if text_refs:
             result[fid] = text_refs
-
     return result
 
 
@@ -1344,6 +1366,63 @@ def _normalize_problem_pattern(text: str) -> str:
     return s
 
 
+def aggregate_merged_fields(group_items: list[dict], leader: dict) -> dict:
+    """reserc.md #92: ЕДИНАЯ агрегация source-of-truth полей при слиянии похожих
+    замечаний. Используется и :func:`group_similar_findings` (здесь), и
+    ``findings_merge.runner.merge_similar_findings`` — раньше эти два цикла
+    дублировались и рисковали разойтись (одно место агрегирует поле, другое нет).
+
+    Собирает по всей группе: sheet/page/related_block_ids/source_block_ids/
+    evidence_text_refs/evidence + переносит norm_quote/highlight_regions от первого
+    замечания, у которого они есть (если у лидера их нет). Возвращает dict полей,
+    готовый к ``leader.update(...)`` или ``{**leader, **fields}``."""
+    all_sheets: list = []
+    all_pages: list = []
+    all_block_ids: list = []
+    all_source_block_ids: list = []
+    all_etr: list = []
+    all_evidence: list = []
+    for it in group_items:
+        sh = it.get("sheet")
+        if sh and sh not in all_sheets:
+            all_sheets.append(sh)
+        pg = it.get("page")
+        if pg:
+            pgs = pg if isinstance(pg, list) else [pg]
+            for p in pgs:
+                if p not in all_pages:
+                    all_pages.append(p)
+        for bid in (it.get("related_block_ids") or []):
+            if bid not in all_block_ids:
+                all_block_ids.append(bid)
+        for sbid in (it.get("source_block_ids") or []):
+            if sbid not in all_source_block_ids:
+                all_source_block_ids.append(sbid)
+        for etr in (it.get("evidence_text_refs") or []):
+            if etr not in all_etr:
+                all_etr.append(etr)
+        for ev in (it.get("evidence") or []):
+            all_evidence.append(ev)
+
+    fields: dict = {
+        "sheet": ", ".join(all_sheets) if all_sheets else leader.get("sheet", ""),
+        "page": sorted(set(all_pages)) if all_pages else leader.get("page"),
+        "related_block_ids": all_block_ids,
+        "evidence": all_evidence,
+    }
+    if all_source_block_ids:
+        fields["source_block_ids"] = all_source_block_ids
+    if all_etr:
+        fields["evidence_text_refs"] = all_etr
+    for _qf in ("norm_quote", "highlight_regions"):
+        if not leader.get(_qf):
+            for it in group_items:
+                if it.get(_qf):
+                    fields[_qf] = it[_qf]
+                    break
+    return fields
+
+
 def group_similar_findings(findings: list[dict]) -> list[dict]:
     """Группирует похожие замечания по нормализованному паттерну problem + severity + category.
 
@@ -1371,40 +1450,9 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
         if len(items) == 1:
             result.append(items[0])
         else:
-            # Собрать объединённую группу
-            # Лидер — первый по порядку
+            # Лидер — первый по порядку. Агрегация source-of-truth полей —
+            # единым helper'ом aggregate_merged_fields (reserc.md #92/#6/#27).
             leader = items[0]
-
-            # Собрать все sheet/page
-            all_sheets = []
-            all_pages = []
-            all_block_ids = []
-            all_source_block_ids = []
-            all_etr = []
-            all_evidence = []
-            for it in items:
-                sh = it.get("sheet")
-                if sh and sh not in all_sheets:
-                    all_sheets.append(sh)
-                pg = it.get("page")
-                if pg:
-                    if isinstance(pg, list):
-                        all_pages.extend(pg)
-                    elif pg not in all_pages:
-                        all_pages.append(pg)
-                for bid in (it.get("related_block_ids") or []):
-                    if bid not in all_block_ids:
-                        all_block_ids.append(bid)
-                for sbid in (it.get("source_block_ids") or []):
-                    if sbid not in all_source_block_ids:
-                        all_source_block_ids.append(sbid)
-                for etr in (it.get("evidence_text_refs") or []):
-                    if etr not in all_etr:
-                        all_etr.append(etr)
-                for ev in (it.get("evidence") or []):
-                    all_evidence.append(ev)
-
-            # Объединённое замечание
             merged = {
                 **leader,
                 "_group": {
@@ -1412,22 +1460,8 @@ def group_similar_findings(findings: list[dict]) -> list[dict]:
                     "merged_ids": [it.get("id", "") for it in items],
                     "items": items,
                 },
-                "sheet": ", ".join(all_sheets) if all_sheets else leader.get("sheet", ""),
-                "page": sorted(set(all_pages)) if all_pages else leader.get("page"),
-                "related_block_ids": all_block_ids,
-                "evidence": all_evidence,
+                **aggregate_merged_fields(items, leader),
             }
-            # source-of-truth поля поглощённых замечаний (reserc.md #6/#27)
-            if all_source_block_ids:
-                merged["source_block_ids"] = all_source_block_ids
-            if all_etr:
-                merged["evidence_text_refs"] = all_etr
-            for _qf in ("norm_quote", "highlight_regions"):
-                if not merged.get(_qf):
-                    for it in items:
-                        if it.get(_qf):
-                            merged[_qf] = it[_qf]
-                            break
             result.append(merged)
 
     return result

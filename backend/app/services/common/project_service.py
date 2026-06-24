@@ -3,11 +3,13 @@
 Сканирование, чтение project_info.json, определение статуса конвейера.
 """
 import contextvars
+import hashlib
 import json
 import logging
 import os
 import re
 import shutil
+import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
@@ -615,6 +617,66 @@ def unhide_project(project_id: str) -> None:
     hidden.discard(project_id)
     _save_hidden_projects(hidden)
 
+
+def delete_project(project_id: str) -> dict:
+    """Жёстко удалить проект: legacy-папку (контейнер версий или plain) + его
+    документ(ы) в projects_v2 + записи old_to_new_map + запись в hidden_projects.
+
+    Семантика — безвозвратное удаление (выбор оператора). Сначала убираем v2
+    (fail-soft, пока legacy ещё на месте для резолва по map), затем удаляем
+    legacy-папку (авторитетно). Гард «не во время аудита» — на уровне endpoint.
+
+    Raises:
+        ValueError: проект не найден.
+    """
+    try:
+        proj_dir = resolve_project_dir(project_id, must_exist=True)
+    except (ProjectNotResolvedError, AmbiguousProjectError, FileNotFoundError) as e:
+        raise ValueError(f"Проект '{project_id}' не найден") from e
+
+    # верхнеуровневая запись: контейнер `(main)` (удалит все версии) или plain
+    root_entry = Path(proj_dir)
+    try:
+        c = version_service.container_dir_for(proj_dir)
+        if c is not None:
+            root_entry = Path(c)
+    except Exception:
+        pass
+    root_entry = root_entry.resolve()
+
+    if not root_entry.exists():
+        raise ValueError(f"Проект '{project_id}' не найден")
+
+    # 1) убрать v2-документ(ы) (no-op в legacy-режиме, fail-soft). Делается до
+    #    rmtree, но сопоставление с map идёт по строке пути — переживает удаление.
+    v2_info = None
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        wr = _swf.remove_project_from_v2_safe(root_entry)
+        v2_info = wr.to_dict() if wr is not None else None
+    except Exception:
+        v2_info = None
+
+    # 2) жёсткое удаление legacy (авторитетно)
+    shutil.rmtree(root_entry)
+
+    # 3) очистить запись из hidden_projects (если была)
+    try:
+        unhide_project(project_id)
+    except Exception:
+        pass
+
+    # 4) инвалидировать кеш списка проектов (иначе удалённый висит ~30с по TTL)
+    try:
+        invalidate_project_cache()
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "deleted_legacy": str(root_entry),
+        "v2": v2_info,
+    }
 
 
 def _v2_read_enabled() -> bool:
@@ -2252,6 +2314,561 @@ def scan_external_folder(folder_path: str) -> list[dict]:
     return result
 
 
+# ── Browser folder upload (Добавить проект → Из папки на компьютере) ──────────
+# Инженер загружает папку проекта со своего компьютера через сайт. Браузер не
+# отдаёт абсолютный путь, поэтому мы получаем список (имя_файла, байты) и сами
+# раскладываем их в legacy projects/, генерируем project_info.json (клиентский
+# не доверяем) и запускаем dual_write_shadow зеркало.
+
+_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm"}
+
+
+class UploadFolderError(ValueError):
+    """Невалидный запрос загрузки папки (маппится в HTTP 422)."""
+
+
+class UploadFolderConflict(FileExistsError):
+    """Проект с таким именем уже существует (маппится в HTTP 409)."""
+
+
+def _safe_upload_basename(name: str) -> str:
+    """Безопасный basename без path-traversal.
+
+    Браузер кладёт в webkitRelativePath относительный путь (`folder/sub/file.pdf`).
+    Берём только basename, отбрасываем директории, запрещаем `..`/абсолютные/NUL.
+    """
+    raw = (name or "").replace("\\", "/")
+    base = os.path.basename(raw).strip()
+    if not base or base in (".", "..") or "/" in base or "\x00" in base:
+        raise UploadFolderError(f"Небезопасное имя файла: {name!r}")
+    return base
+
+
+def _v2_document_exists(object_id: str, project_name: str) -> bool:
+    """Best-effort проверка дубля в projects_v2 (по object_id + document_code).
+
+    Никогда не бросает: недоступный/сбойный v2 → False (legacy-проверка
+    остаётся авторитетной).
+    """
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return False
+        return adapter.find_document(project_name, object_id=object_id) is not None
+    except Exception:
+        return False
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
+    """(имя, байты)[] → {pdfs, mds, results, ocrs, ignored}. Бросает UploadFolderError
+    на небезопасном имени (path-traversal). Общая логика для save и precheck."""
+    pdfs: list[tuple[str, bytes]] = []
+    mds: list[tuple[str, bytes]] = []
+    results: list[tuple[str, bytes]] = []
+    ocrs: list[tuple[str, bytes]] = []
+    ignored: list[str] = []
+    for fname, data in files:
+        safe = _safe_upload_basename(fname)  # бросает на traversal
+        ext = os.path.splitext(safe)[1].lower()
+        low = safe.lower()
+        if ext not in _ALLOWED_UPLOAD_EXTS:
+            ignored.append(safe)
+            continue
+        if ext == ".pdf":
+            pdfs.append((safe, data))
+        elif ext == ".md":
+            mds.append((safe, data))
+        elif ext == ".json" and low.endswith("_result.json"):
+            results.append((safe, data))
+        elif ext in (".html", ".htm") and low.endswith("_ocr.html"):
+            ocrs.append((safe, data))
+        else:
+            ignored.append(safe)
+    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs, "ignored": ignored}
+
+
+def _compute_upload_fingerprint(cls: dict) -> dict:
+    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr и их
+    sha256 (имя+роль+хэш) — `*_ocr.html` входит в отпечаток."""
+    files_manifest: list[dict] = []
+    pdf_sha: Optional[str] = None
+    for role, items in (("pdf", cls["pdfs"]), ("md", cls["mds"]),
+                        ("result", cls["results"]), ("ocr", cls["ocrs"])):
+        for name, data in items:
+            h = _sha256_bytes(data)
+            files_manifest.append({"role": role, "name": name, "sha256": h, "size": len(data)})
+            if role == "pdf" and pdf_sha is None:
+                pdf_sha = h
+    canon = "\n".join(sorted(f"{m['role']}:{m['name']}:{m['sha256']}" for m in files_manifest))
+    bundle_fp = hashlib.sha256(canon.encode("utf-8")).hexdigest() if files_manifest else None
+    return {"pdf_sha256": pdf_sha, "bundle_fingerprint": bundle_fp, "files": files_manifest}
+
+
+def _normalize_name_for_similarity(name: str) -> str:
+    """Нормализация имени проекта для детекта похожих (снимает ревизии/копии/даты)."""
+    n = (name or "").strip().lower()
+    n = re.sub(r"\(main\)$", "", n)
+    n = re.sub(r"\.pdf$", "", n)
+    n = re.sub(r"^\d{2}\.\d{2}\.\d{2}_", "", n)            # дата-префикс
+    n = re.sub(r"\s*\((?:изм\.?\s*\d+|\d+)\)", "", n)      # (1) (2) (Изм.1)
+    n = re.sub(r"\s*v\d+$", "", n)                          # V2
+    n = re.sub(r"_в\d+$", "", n)                            # _в2
+    n = re.sub(r"\s+", " ", n).strip()
+    return n
+
+
+def _scan_object_fingerprints(obj_projects_dir) -> dict:
+    """Скан project_info.json объекта → индексы fingerprint'ов + нормализованных имён.
+
+    Только legacy (авторитетно, зеркалится в v2). Старые проекты без fingerprint
+    участвуют лишь в name-индексе (checksum-дедуп — forward-looking).
+    """
+    pdf_idx: dict[str, list[str]] = {}
+    bundle_idx: dict[str, list[str]] = {}
+    names_list: list[dict] = []
+    try:
+        for pi in Path(obj_projects_dir).rglob("project_info.json"):
+            try:
+                info = json.loads(pi.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            pid = info.get("project_id") or pi.parent.name
+            nm = info.get("name") or pi.parent.name
+            sect = info.get("section") or ""
+            ps = info.get("pdf_sha256")
+            bf = info.get("bundle_fingerprint")
+            if ps:
+                pdf_idx.setdefault(ps, []).append(pid)
+            if bf:
+                bundle_idx.setdefault(bf, []).append(pid)
+            names_list.append({"pid": pid, "discipline": sect,
+                               "norm": _normalize_name_for_similarity(nm)})
+    except Exception:
+        pass
+    return {"pdf": pdf_idx, "bundle": bundle_idx, "names_list": names_list}
+
+
+# error-коды precheck, означающие «нельзя загрузить вообще» (не дубль)
+_PRECHECK_ERROR_CODES = {
+    "no_pdf", "multiple_pdf", "bad_name", "bad_discipline",
+    "object_not_found", "unsafe_filename",
+}
+
+
+def _suggested_version_label(obj_projects_dir, object_id: str, target_pid: str) -> str:
+    """«V{N+1}» для target-проекта (best-effort, для подсказки в UI)."""
+    try:
+        from backend.app.services.common import version_service as _vs
+        tdir = resolve_project_dir(target_pid, object_id=object_id)
+        summ = _vs.get_versions_summary(tdir, target_pid)
+        return f"V{int(summ.get('version_count', 1)) + 1}"
+    except Exception:
+        return "V2"
+
+
+def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str] = None,
+                                     project_name: str,
+                                     files: list[tuple[str, bytes]],
+                                     folder_name: Optional[str] = None) -> dict:
+    """Dry-run проверка загрузки папки — НИЧЕГО не пишет. Возвращает verdict
+    (ready/warning/duplicate/error) + авто-дисциплину + предложение версии.
+
+    Дисциплина: если не передана — определяется (имя папки → имя PDF → текст
+    document.md → fallback EOM) через discipline_service. Дубли проверяются под
+    эффективной дисциплиной. Предложение версии: точное совпадение
+    нормализованного имени с существующим проектом того же раздела.
+    """
+    from backend.app.services.common.object_service import (
+        get_object_by_id, get_projects_dir_for,
+    )
+    from backend.app.services.common import discipline_service as _ds
+
+    provided_discipline = (discipline or "").strip()
+    project_name = (project_name or "").strip()
+    blocks: list[dict] = []
+    warnings: list[dict] = []
+
+    obj = get_object_by_id(object_id)
+    obj_dir = get_projects_dir_for(object_id) if obj else None
+
+    try:
+        cls = _classify_upload_files(files)
+    except UploadFolderError as e:
+        blocks.append({"code": "unsafe_filename", "message": str(e)})
+        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "ignored": []}
+    fp = _compute_upload_fingerprint(cls)
+
+    # --- авто-определение дисциплины -----------------------------------------
+    pdf_name = cls["pdfs"][0][0] if cls["pdfs"] else ""
+    doc_text = ""
+    if cls["mds"]:
+        try:
+            doc_text = cls["mds"][0][1].decode("utf-8", "ignore")[:8000]
+        except Exception:
+            doc_text = ""
+    det = _ds.detect_discipline_detailed(folder_name or "", pdf_name, doc_text)
+    detected_discipline = det["code"]
+    effective_discipline = provided_discipline or detected_discipline
+
+    name_invalid = (not project_name or project_name.startswith("_")
+                    or any(s in project_name for s in ("/", "\\", "..", "\x00")))
+    disc_invalid = (not effective_discipline or effective_discipline.startswith("_")
+                    or any(s in effective_discipline for s in ("/", "\\", "..", "\x00")))
+
+    npdf = len(cls["pdfs"])
+    if npdf == 0:
+        blocks.append({"code": "no_pdf", "message": "В папке не найден PDF. Нужен ровно один PDF проекта."})
+    elif npdf > 1:
+        blocks.append({"code": "multiple_pdf", "message": "В папке найдено несколько PDF. Оставьте один PDF на проект."})
+    if name_invalid:
+        blocks.append({"code": "bad_name", "message": "Недопустимое название проекта (пустое, с '_' или спецсимволами)."})
+    if disc_invalid:
+        blocks.append({"code": "bad_discipline", "message": "Недопустимая дисциплина."})
+    if obj is None:
+        blocks.append({"code": "object_not_found", "message": f"Объект не найден: {object_id!r}"})
+
+    project_id = (f"{effective_discipline}/{project_name}"
+                  if (project_name and effective_discipline and not name_invalid and not disc_invalid)
+                  else None)
+    normalized_project_name = _normalize_name_for_similarity(project_name)
+    suggested_target = None
+    suggested_target_name = None
+    suggested_version_label = None
+
+    if obj_dir is not None and project_id:
+        dest = obj_dir / effective_discipline / project_name
+        if dest.exists() and (dest / "project_info.json").exists():
+            blocks.append({"code": "legacy_name_exists", "message": f"Проект «{project_id}» уже существует в projects/."})
+        if _v2_document_exists(object_id, project_name):
+            blocks.append({"code": "v2_name_exists", "message": f"Проект «{project_id}» уже существует в projects_v2."})
+
+        idx = _scan_object_fingerprints(obj_dir)
+        bf = fp.get("bundle_fingerprint")
+        ps = fp.get("pdf_sha256")
+        if bf and bf in idx["bundle"]:
+            dup = idx["bundle"][bf]
+            blocks.append({"code": "bundle_exact_duplicate",
+                           "message": f"Точный комплект уже загружался: {', '.join(dup[:3])}"})
+        elif ps and ps in idx["pdf"]:
+            dup = idx["pdf"][ps]
+            warnings.append({"code": "pdf_checksum_duplicate",
+                             "message": f"Такой PDF уже загружался: {', '.join(dup[:3])}"})
+        # совпадение нормализованного имени в том же разделе → предложение версии
+        sim = [r["pid"] for r in idx["names_list"]
+               if r["discipline"] == effective_discipline
+               and r["norm"] == normalized_project_name and r["pid"] != project_id]
+        if sim:
+            suggested_target = sim[0]
+            suggested_target_name = suggested_target.split("/")[-1]
+            suggested_version_label = _suggested_version_label(obj_dir, object_id, suggested_target)
+            warnings.append({"code": "similar_name",
+                             "message": f"Похоже на новую версию проекта: {', '.join(sim[:3])}"})
+
+    if blocks:
+        status = "error" if any(b["code"] in _PRECHECK_ERROR_CODES for b in blocks) else "duplicate"
+    elif warnings:
+        status = "warning"
+    else:
+        status = "ready"
+
+    return {
+        "project_id": project_id, "object_id": object_id,
+        "discipline": effective_discipline,
+        "detected_discipline": detected_discipline,
+        "discipline_source": det["source"], "discipline_reason": det["reason"],
+        "discipline_was_provided": bool(provided_discipline),
+        "project_name": project_name,
+        "normalized_project_name": normalized_project_name,
+        "suggested_target_project": suggested_target,
+        "suggested_target_name": suggested_target_name,
+        "suggested_version_label": suggested_version_label,
+        "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
+        "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
+        "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "ignored_files": cls["ignored"],
+        "status": status, "blocks": blocks, "warnings": warnings,
+        "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"])),
+    }
+
+
+def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
+                                  target_project_id: str,
+                                  files: list[tuple[str, bytes]]) -> dict:
+    """Загрузить папку как НОВУЮ ВЕРСИЮ существующего проекта.
+
+    Переиспользует проверенный `create_version_from_existing_files`: in-memory
+    байты пишутся во временную папку, оттуда копируются в новую версию target.
+    Валидация (target существует, тот же раздел) — внутри version_service.
+    Привязка к объекту обеспечивается object-bound резолвером. Orphan не
+    создаётся (нет source-проекта). После — пере-зеркаливание target в v2.
+    """
+    from backend.app.services.common import version_service as _vs
+
+    target_project_id = (target_project_id or "").strip()
+    if not target_project_id:
+        raise UploadFolderError("Не указан target_project_id для режима new_version")
+
+    cls = _classify_upload_files(files)
+    if len(cls["pdfs"]) == 0:
+        raise UploadFolderError("В папке не найден PDF. Нужен ровно один PDF проекта.")
+    if len(cls["pdfs"]) > 1:
+        raise UploadFolderError("В папке найдено несколько PDF. Оставьте один PDF на проект.")
+
+    # object-bound резолвер: target обязан быть в ЭТОМ объекте (иначе not found)
+    def _resolver(pid, **kw):
+        return resolve_project_dir(pid, object_id=object_id)
+
+    with tempfile.TemporaryDirectory(prefix="upload_ver_") as tmp:
+        tmpd = Path(tmp)
+        def _w(items):
+            out = []
+            for name, data in items:
+                p = tmpd / name
+                p.write_bytes(data)
+                out.append(str(p))
+            return out
+        pdf_paths = _w(cls["pdfs"])
+        md_paths = _w(cls["mds"])
+        result_paths = _w(cls["results"])
+        ocr_paths = _w(cls["ocrs"])
+        try:
+            res = _vs.create_version_from_existing_files(
+                target_project_id,
+                candidate_files={
+                    "pdf": pdf_paths[0],
+                    "md": md_paths[0] if md_paths else None,
+                    "result_json": result_paths[0] if result_paths else None,
+                    "extra": ocr_paths,  # *_ocr.html едет в версию
+                },
+                expected_section=discipline or None,
+                comment="Загружено как версия из «Из папки на компьютере»",
+                source="upload_folder_modal",
+                allowed_roots=[tmpd],
+                resolve_project_dir_fn=_resolver,
+            )
+        except _vs.VersionFileConflictError as e:
+            raise UploadFolderConflict(str(e))
+        except _vs.VersionFileError as e:
+            raise UploadFolderError(str(e))
+        except ValueError as e:
+            # несовпадение раздела target и т.п.
+            raise UploadFolderError(str(e))
+
+    # пере-зеркалить target в v2 (project_info версии правится после mirror) —
+    # как в merge_project_as_version; no-op в legacy, fail-soft.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_id_safe(target_project_id)
+    except Exception:
+        pass
+
+    return {
+        "mode": "new_version",
+        "project_id": target_project_id,
+        "name": target_project_id.split("/")[-1],
+        "section": discipline,
+        "object_id": object_id,
+        "version": res.get("version"),
+        "version_id": (res.get("version") or {}).get("version_id"),
+        "saved_files": res.get("saved", []),
+        "warnings": res.get("warnings", []),
+        "versions_summary": res.get("versions_summary"),
+        "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+    }
+
+
+def save_uploaded_project_folder(*, object_id: str, discipline: str,
+                                 project_name: str,
+                                 files: list[tuple[str, bytes]],
+                                 description: str = "",
+                                 upload_mode: str = "new_project",
+                                 target_project_id: Optional[str] = None) -> dict:
+    """Сохранить папку проекта, загруженную инженером через браузер.
+
+    Args:
+        object_id: id объекта (резолвится в его projects_dir).
+        discipline: код дисциплины (EOM/OV/…), служит подпапкой.
+        project_name: имя проекта = basename папки версии (project_id без слеша).
+        files: список (имя_файла, байты). project_info.json игнорируется
+               (генерируем сами). Принимаются только pdf/md/json(*_result)/html(*_ocr).
+        description: опциональное описание.
+        upload_mode: `new_project` (default) или `new_version`.
+        target_project_id: для `new_version` — проект-основание (в этом объекте).
+
+    Returns: словарь с project_id/saved_files/ignored_files/has_* и project_info
+        (new_project) либо version/versions_summary (new_version).
+
+    Raises:
+        UploadFolderError (→422): нет/несколько PDF, кривое имя/дисциплина,
+            небезопасное имя файла, объект не найден, раздел target не совпал.
+        UploadFolderConflict (→409): проект уже есть в legacy/v2 или версия-дубль.
+        FileNotFoundError (→404): target для new_version не найден.
+    """
+    from backend.app.services.common.object_service import (
+        get_object_by_id, get_projects_dir_for,
+    )
+
+    discipline = (discipline or "").strip()
+    project_name = (project_name or "").strip()
+
+    if upload_mode == "new_version":
+        # резолв объекта (для проверки существования) делается внутри резолвера
+        if get_object_by_id(object_id) is None:
+            raise UploadFolderError(f"Объект не найден: {object_id!r}")
+        return _save_uploaded_as_new_version(
+            object_id=object_id, discipline=discipline,
+            target_project_id=target_project_id or "", files=files,
+        )
+
+    # --- валидация имён (path-traversal / служебные префиксы) -----------------
+    if not project_name:
+        raise UploadFolderError("Не указано название проекта")
+    if project_name.startswith("_"):
+        raise UploadFolderError("Название проекта не может начинаться с '_'")
+    if any(s in project_name for s in ("/", "\\", "..", "\x00")):
+        raise UploadFolderError("Недопустимое название проекта")
+    if not discipline:
+        raise UploadFolderError("Не указана дисциплина")
+    if any(s in discipline for s in ("/", "\\", "..", "\x00")) or discipline.startswith("_"):
+        raise UploadFolderError("Недопустимая дисциплина")
+
+    # --- резолв объекта ------------------------------------------------------
+    obj = get_object_by_id(object_id)
+    if obj is None:
+        raise UploadFolderError(f"Объект не найден: {object_id!r}")
+    obj_projects_dir = get_projects_dir_for(object_id)
+    if obj_projects_dir is None:
+        raise UploadFolderError(f"Не удалось определить папку объекта: {object_id!r}")
+
+    # --- классификация файлов (project_info.json и прочее — игнор) ------------
+    cls = _classify_upload_files(files)
+    pdfs, mds, results, ocrs, ignored = (
+        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"], cls["ignored"]
+    )
+
+    if len(pdfs) == 0:
+        raise UploadFolderError("В папке не найден PDF. Нужен ровно один PDF проекта.")
+    if len(pdfs) > 1:
+        raise UploadFolderError(
+            "В папке найдено несколько PDF. Выберите папку одного проекта."
+        )
+
+    fp = _compute_upload_fingerprint(cls)
+
+    # --- проверка дубля (legacy авторитетно + best-effort v2). Повторяется и
+    #     здесь (не только в precheck) для защиты от race condition. -----------
+    project_id = f"{discipline}/{project_name}"
+    dest = obj_projects_dir / discipline / project_name
+    if dest.exists() and (dest / "project_info.json").exists():
+        raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects/")
+    if _v2_document_exists(object_id, project_name):
+        raise UploadFolderConflict(f"Проект '{project_id}' уже существует в projects_v2")
+    # точный bundle-дубль (тот же комплект файлов) — hard block
+    bf = fp.get("bundle_fingerprint")
+    if bf:
+        idx = _scan_object_fingerprints(obj_projects_dir)
+        if bf in idx["bundle"]:
+            dup = ", ".join(idx["bundle"][bf][:3])
+            raise UploadFolderConflict(f"Точный комплект уже загружался: {dup}")
+
+    # --- запись в legacy (авторитетно, первым) -------------------------------
+    dest.mkdir(parents=True, exist_ok=True)
+    saved: list[str] = []
+
+    def _write_all(items: list[tuple[str, bytes]]) -> None:
+        for safe, data in items:
+            (dest / safe).write_bytes(data)
+            saved.append(safe)
+
+    _write_all(pdfs)
+    _write_all(mds)
+    _write_all(results)
+    _write_all(ocrs)
+
+    md_names = [n for n, _ in mds]
+    md_doc = next((n for n in md_names if n.lower().endswith("_document.md")), None)
+    md_primary = md_doc or (md_names[0] if md_names else None)
+
+    info: dict = {
+        "project_id": project_id,
+        "name": project_name,
+        "section": discipline,
+        "description": description or "",
+        "pdf_file": pdfs[0][0],
+        "pdf_files": [n for n, _ in pdfs],
+        "object_id": object_id,
+        "source": "upload-folder",
+        # fingerprint для дедупа (precheck сканирует именно эти поля)
+        "pdf_sha256": fp.get("pdf_sha256"),
+        "bundle_fingerprint": fp.get("bundle_fingerprint"),
+        "tile_config": {},
+    }
+    if md_names:
+        info["md_file"] = md_primary
+        info["md_files"] = md_names
+
+    (dest / "project_info.json").write_text(
+        json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    # input_manifest.json — расширенный отпечаток (per-file sha256). Зеркалится в
+    # v2 01_input вместе с прочими input-файлами.
+    manifest = {
+        "schema_version": 1,
+        "source": "upload-folder",
+        "project_id": project_id,
+        "object_id": object_id,
+        "pdf_sha256": fp.get("pdf_sha256"),
+        "bundle_fingerprint": fp.get("bundle_fingerprint"),
+        "files": fp.get("files", []),
+    }
+    (dest / "input_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    (dest / "_output").mkdir(exist_ok=True)
+
+    # --- dual_write_shadow зеркало (no-op в legacy, fail-soft) ----------------
+    # *_ocr.html попадёт в v2 01_input/02_work автоматически: find_input_quad
+    # распознаёт _ocr.html. try/except гарантирует, что сбой v2 не ломает legacy.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(dest)
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "name": project_name,
+        "section": discipline,
+        "object_id": object_id,
+        "dest": str(dest),
+        "saved_files": saved,
+        "ignored_files": ignored,
+        "has_pdf": True,
+        "has_md": bool(md_names),
+        "has_result": bool(results),
+        "has_ocr": bool(ocrs),
+        "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs)),
+        "project_info": info,
+    }
+
+
+def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool) -> list[str]:
+    """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах."""
+    warns: list[str] = []
+    if not has_md:
+        warns.append("Не найден *_document.md — текстовый анализ потребует OCR/Chandra.")
+    if not has_result:
+        warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
+    if not has_ocr:
+        warns.append("Не найден *_ocr.html — text_evidence будет ограничен.")
+    return warns
+
+
 def register_external_project(source_path: str, pdf_file: str,
                               pdf_files: list[str] | None = None,
                               md_file: Optional[str] = None,
@@ -2296,6 +2913,12 @@ def register_external_project(source_path: str, pdf_file: str,
     for rj in source.glob("*_result.json"):
         shutil.copy2(str(rj), str(dest / rj.name))
 
+    # Копируем *_ocr.html (нужен для text_evidence; фикс 2026-06-17 — раньше не
+    # копировался). v2-зеркало подхватит его автоматически (find_input_quad
+    # распознаёт _ocr.html и кладёт в 01_input/02_work).
+    for oh in source.glob("*_ocr.html"):
+        shutil.copy2(str(oh), str(dest / oh.name))
+
     # Создаём project_info.json
     project_id = folder_name
     info = {
@@ -2318,6 +2941,15 @@ def register_external_project(source_path: str, pdf_file: str,
     info_path = dest / "project_info.json"
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
+
+    # Step 9/10 dual-write canary: после успешной legacy-записи зеркалим проект в
+    # projects_v2 (no-op в режиме legacy, fail-soft — никогда не ломает legacy).
+    # try/except гарантирует байт-идентичность legacy даже при сбое импорта хука.
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(dest)
+    except Exception:
+        pass
 
     return info
 
@@ -2382,10 +3014,174 @@ def register_project(folder: str, pdf_file: str, pdf_files: list[str] | None = N
     with open(info_path, "w", encoding="utf-8") as f:
         json.dump(info, f, ensure_ascii=False, indent=2)
 
+    # Step 9/10 dual-write canary: legacy-first, затем shadow-зеркало в v2
+    # (no-op в legacy, fail-soft).
+    try:
+        from backend.app.services.storage import storage_write_facade as _swf
+        _swf.shadow_mirror_project_path_safe(proj_dir)
+    except Exception:
+        pass
+
     # #78: новый project_info.json мог перевести голую папку в статус проекта —
     # сбрасываем кеш списка проектов.
     invalidate_project_cache()
     return info
+
+
+# ── projects_v2 arm для clean (read-cutover делает legacy-очистку невидимой) ──
+
+# Generated/runtime подпапки версии в projects_v2, отвечающие за состояние аудита
+# и pipeline status (то, что читает UI при v2-read). Source (01_input) и
+# метаданные (version.json) сюда НЕ входят — они сохраняются.
+_V2_GENERATED_VERSION_DIRS = ("02_work", "03_analysis", "04_review", "05_export", "99_service")
+
+
+def _resolve_v2_version_id(adapter, doc_dir, current, legacy_version_id):
+    """legacy version_id (`v1`) → v2-форма (`v001`). Неизвестный → current.
+
+    Зеркалит read_canary._resolve_version, чтобы clean целился ТОЧНО в ту версию,
+    из которой UI читает статус.
+    """
+    try:
+        vids = [v.get("version_id") for v in adapter.list_versions(doc_dir)]
+    except Exception:
+        vids = []
+    r = str(legacy_version_id or "").strip().lower()
+    if r and r in vids:
+        return r
+    if r.startswith("v") and r[1:].isdigit():
+        cand = "v%03d" % int(r[1:])
+        if cand in vids:
+            return cand
+    return current
+
+
+def _clean_projects_v2_artifacts(project_id: str, legacy_version_id: Optional[str],
+                                 *, object_id: Optional[str] = None) -> dict:
+    """Очистить generated/runtime артефакты версии проекта в projects_v2.
+
+    Срабатывает ТОЛЬКО когда включён v2-read default
+    (`AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED`) — т.е. когда UI читает статус из
+    projects_v2 и legacy-очистка визуально невидима. Иначе — no-op (поведение
+    как раньше: чистится только legacy).
+
+    Удаляет (backup-move в `projects_v2/_system/clean_backups/` ПЕРЕД удалением):
+      `versions/<vid>/{02_work,03_analysis,04_review,05_export,99_service}`
+    Сохраняет: `01_input` (source), `version.json`, doc-метаданные
+    (`document.json`, `current_version.txt`, `versions/`), соседние версии.
+
+    Безопасность: path-safe (target строго внутри
+    `projects_v2/objects/.../versions/<vid>/`), version-scoped, fail-soft (любая
+    ошибка → warning, не исключение — legacy-очистка не должна падать из-за v2).
+    """
+    out = {
+        "v2_attempted": False, "v2_cleaned": False,
+        "v2_doc_dir": None, "v2_version_id": None,
+        "v2_removed": [], "v2_backup": None, "warnings": [],
+    }
+    try:
+        from backend.app.services.storage import read_canary
+    except Exception:
+        return out  # v2-read слой отсутствует (legacy-only ветка) → no-op
+    try:
+        if not read_canary.default_read_enabled():
+            return out  # v2-read не активен → UI читает legacy, v2 не трогаем
+
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            out["warnings"].append("projects_v2 storage недоступно")
+            return out
+        out["v2_attempted"] = True
+
+        if object_id is None:
+            try:
+                from backend.app.services.common import object_service
+                object_id = object_service.get_current_id()
+            except Exception:
+                object_id = None
+
+        # Маппинг как в read_canary: document_code = basename(project_id) − «(main)».
+        document_code = Path(project_id).name.replace("(main)", "").strip()
+        doc = adapter.find_document(document_code, object_id=object_id)
+        if doc is None and object_id is not None:
+            # Мягкий fallback (как read_canary без object_id) — первое совпадение.
+            doc = adapter.find_document(document_code, object_id=None)
+        if doc is None:
+            out["warnings"].append(f"projects_v2: документ '{document_code}' не найден")
+            return out
+
+        doc_dir = Path(doc["doc_dir"])
+        v2vid = _resolve_v2_version_id(
+            adapter, doc_dir, doc.get("current_version"), legacy_version_id,
+        )
+        if not v2vid:
+            out["warnings"].append("projects_v2: версия не определена")
+            return out
+        vdir = adapter.version_dir(doc_dir, v2vid)
+        out["v2_doc_dir"] = str(doc_dir)
+        out["v2_version_id"] = v2vid
+
+        # --- safety guards (деструктив) ---
+        objects_root = adapter.objects_root.resolve()
+        try:
+            vdir_res = vdir.resolve()
+        except Exception:
+            out["warnings"].append("projects_v2: не удалось резолвить version_dir")
+            return out
+        # (1) version_dir строго внутри projects_v2/objects/
+        if not str(vdir_res).startswith(str(objects_root) + os.sep):
+            out["warnings"].append("projects_v2: version_dir вне objects-root — пропуск (safety)")
+            return out
+        # (2) это именно .../versions/<vid> (не doc root, не вся versions/)
+        if vdir.parent.name != "versions":
+            out["warnings"].append("projects_v2: неожиданная структура version_dir — пропуск (safety)")
+            return out
+        if not vdir.exists():
+            out["warnings"].append(f"projects_v2: version_dir '{v2vid}' отсутствует")
+            return out
+
+        # --- backup-move generated подпапок ---
+        removed: list[str] = []
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup_root = (adapter.v2_root / "_system" / "clean_backups"
+                       / f"{ts}_{document_code}_{v2vid}")
+        for name in _V2_GENERATED_VERSION_DIRS:
+            d = vdir / name
+            if not d.exists():
+                continue
+            # (3) каждый target строго внутри version_dir (анти-traversal)
+            try:
+                if not str(d.resolve()).startswith(str(vdir_res) + os.sep):
+                    out["warnings"].append(f"projects_v2: '{name}' вне version_dir — пропуск (safety)")
+                    continue
+            except Exception:
+                continue
+            try:
+                backup_root.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(d), str(backup_root / name))
+                removed.append(name)
+            except Exception as e:
+                out["warnings"].append(f"projects_v2: не удалось убрать '{name}': {e}")
+
+        out["v2_removed"] = removed
+        out["v2_backup"] = str(backup_root) if removed else None
+        out["v2_cleaned"] = bool(removed)
+
+        try:
+            print(
+                f"[clean v2] project_id={project_id} discipline={doc.get('discipline')} "
+                f"document={document_code} version={v2vid} legacy_version={legacy_version_id} "
+                f"doc_dir={doc_dir} removed={removed} backup={out['v2_backup']} "
+                f"warnings={out['warnings']}"
+            )
+        except Exception:
+            pass
+        return out
+    except Exception as e:
+        # Fail-soft: v2-arm не должен валить legacy-очистку.
+        out["warnings"].append(f"projects_v2 clean failed: {e}")
+        return out
 
 
 def _clean_project_data_v2_primary(
@@ -2476,6 +3272,34 @@ def _clean_project_data_v2_primary(
 
     result["freed_mb"] = round(total_size / 1024 / 1024, 1)
     return result
+
+
+def restore_clean_backup(project_id: str, *, backup_id: str, version_id: Optional[str] = None) -> dict:
+    """Восстановить v2-primary версию из destructive backup."""
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import restore_from_backup_id, v2_primary_enabled
+
+    if not v2_primary_enabled():
+        raise RuntimeError("restore-clean доступен только в projects_v2_primary")
+
+    v2_root = StorageWriteFacade().v2_root()
+    if v2_root is None:
+        raise FileNotFoundError("projects_v2 root не настроен")
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise FileNotFoundError(f"Проект '{project_id}' не найден в projects_v2")
+    target_vid = adapter.resolve_version_id(doc, version_id)
+    if not target_vid:
+        raise FileNotFoundError(f"Версия '{version_id}' проекта '{project_id}' не найдена в projects_v2")
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=doc["document_code"],
+        version_id=target_vid,
+    )
+    return restore_from_backup_id(target, v2_root, backup_id)
 
 
 def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _confirmed: bool = False) -> dict:
@@ -2585,6 +3409,20 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _co
     # 4. Пересоздаём пустую _output/
     output_dir.mkdir(exist_ok=True)
 
+    # 5. projects_v2 arm: при включённом v2-read default UI читает статус из
+    #    projects_v2, поэтому одной legacy-очистки недостаточно (визуально «ничего
+    #    не очистилось»). Дочищаем generated/runtime артефакты ТОЙ ЖЕ версии в v2.
+    #    Fail-soft: не влияет на успех legacy-очистки. object_id резолвится из
+    #    активного объекта внутри helper'а.
+    result["legacy_cleaned"] = True
+    v2 = _clean_projects_v2_artifacts(project_id, target_vid)
+    result["v2_attempted"] = v2.get("v2_attempted", False)
+    result["v2_cleaned"] = v2.get("v2_cleaned", False)
+    for k in ("v2_doc_dir", "v2_version_id", "v2_removed", "v2_backup"):
+        if v2.get(k):
+            result[k] = v2[k]
+    result["warnings"] = v2.get("warnings", [])
+
     return result
 
 
@@ -2679,7 +3517,21 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
     except Exception:
         return None
 
-    # Разбиваем по страницам
+    result = parse_md_text(md_text, project_id=project_id, md_file=md_file_name)
+    if result is None:
+        return None
+
+    _document_cache[cache_key] = {"ts": time.time(), "data": result}
+    return result
+
+
+def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[dict]:
+    """Чистый парсер MD-текста по страницам/блокам (без резолва путей/кеша).
+
+    Выделено из parse_md_document, чтобы тот же парсер можно было применить к MD
+    из projects_v2 (read canary), гарантируя идентичный контракт. Возвращает None,
+    если в тексте нет ни одного маркера `## СТРАНИЦА N`.
+    """
     page_splits = list(_PAGE_RE.finditer(md_text))
     if not page_splits:
         return None
@@ -2732,15 +3584,12 @@ def parse_md_document(project_id: str, *, version_id: Optional[str] = None) -> O
             "blocks": blocks,
         })
 
-    result = {
+    return {
         "project_id": project_id,
-        "md_file": md_file_name,
+        "md_file": md_file,
         "total_pages": len(pages),
         "pages": pages,
     }
-
-    _document_cache[cache_key] = {"ts": time.time(), "data": result}
-    return result
 
 
 def get_document_page(

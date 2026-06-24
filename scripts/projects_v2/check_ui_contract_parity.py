@@ -23,6 +23,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
+import re
 import sys
 from pathlib import Path
 from typing import Optional
@@ -38,10 +40,12 @@ from backend.app.services.storage.projects_v2_adapter import (  # noqa: E402
 
 MATCH = "MATCH"
 EXPECTED = "EXPECTED_DIFFERENCE"
+EXPECTED_NAMING = "EXPECTED_NAMING_DIFFERENCE"  # legacy .pdf/(main) naming artifact, не потеря
 MISMATCH = "MISMATCH"
 MISSING_V2 = "MISSING_IN_V2"
 MISSING_LEGACY = "MISSING_IN_LEGACY"
-STATUS_ORDER = [MATCH, EXPECTED, MISSING_LEGACY, MISSING_V2, MISMATCH]  # worst-last
+# worst-last: EXPECTED_NAMING не блокирует cutover (как EXPECTED), стоит до MISSING/MISMATCH
+STATUS_ORDER = [MATCH, EXPECTED, EXPECTED_NAMING, MISSING_LEGACY, MISSING_V2, MISMATCH]
 
 _LEGACY_PRESERVE_STATUSES = {"legacy_partial", "source_only"}
 
@@ -72,6 +76,138 @@ def cmp_field(name, legacy, v2, *, expected=False, soft=False, na=False) -> dict
     else:
         status = MISMATCH
     return {"field": name, "legacy": legacy, "v2": v2, "status": status, "soft": soft}
+
+
+_VER_SUFFIX_RE = re.compile(r"\s+V\d+$")
+
+
+def _strip_version_suffix(s: Optional[str]) -> Optional[str]:
+    """Снять хвостовой ` V2`/` V3` (legacy-конвенция версий-папок: `<base> V2`).
+
+    v2 хранит версии под `versions/`, а document_code — чистый логический код без
+    суффикса; legacy versioned-папка называется `<base> V{N}`.
+    """
+    if not s:
+        return s
+    return _VER_SUFFIX_RE.sub("", s).strip()
+
+
+def _scan_legacy_folder(cand_dir: Path, v2_code: str) -> Optional[Path]:
+    """Найти legacy-папку в cand_dir, чья НОРМАЛИЗОВАННАЯ форма == v2 document_code.
+
+    `document_code_for` снимает хвостовой `.pdf` и контейнер `(main)` →
+    legacy-папка `13АВ-РД-ВК1-К2.pdf` или `…(main)` матчится с чистым v2-кодом.
+    """
+    if not cand_dir.is_dir():
+        return None
+    for name in sorted(os.listdir(cand_dir)):
+        p = cand_dir / name
+        if not p.is_dir():
+            continue
+        try:
+            if v2lib.document_code_for(p) == v2_code:
+                return p
+        except Exception:
+            continue
+    return None
+
+
+def _resolve_legacy(dj: dict, recs: dict, cur: Optional[str], cur_rec: Optional[dict],
+                    projects_root: Path, v2_code: str) -> dict:
+    """Надёжно сопоставить v2-документ ↔ legacy-папку. Возвращает:
+
+      object, discipline, folder_name (raw), folder_path, code (нормализованный),
+      exists (bool), via (как нашли), naming_diff (bool — legacy имя != v2_code,
+      но нормализуется одинаково: `.pdf` / `(main)` / basename артефакт).
+
+    Приоритет источников (от точного к фолбэку):
+      1. old_to_new_map запись текущей версии (object_name/discipline/folder_*);
+      2. любая запись map (если cur отсутствует);
+      3. document.json `legacy_project_path`;
+      4. вывод object/discipline из пути относительно projects_root;
+      5. скан projects_root/<object>/<discipline> по нормализованному имени.
+    """
+    obj = disc = folder_name = folder_path = rec_code = None
+    via = None
+    if cur_rec:
+        folder_path = cur_rec.get("legacy_folder_path")
+        obj = cur_rec.get("object_name")
+        disc = cur_rec.get("discipline")
+        folder_name = cur_rec.get("legacy_folder_name")
+        rec_code = cur_rec.get("document_code")
+        via = "old_to_new_map"
+    if folder_path is None and recs:
+        any_rec = next(iter(recs.values()))
+        folder_path = any_rec.get("legacy_folder_path")
+        obj = obj or any_rec.get("object_name")
+        disc = disc or any_rec.get("discipline")
+        folder_name = folder_name or any_rec.get("legacy_folder_name")
+        rec_code = rec_code or any_rec.get("document_code")
+        via = via or "old_to_new_map_any_version"
+    lp = dj.get("legacy_project_path")
+    if folder_path is None and lp:
+        folder_path = lp
+        via = via or "legacy_project_path"
+    # object/discipline из пути (projects_root уже корректный — sibling от v2)
+    if (obj is None or disc is None) and folder_path:
+        try:
+            rel = Path(folder_path).resolve().relative_to(Path(projects_root).resolve())
+            if obj is None and len(rel.parts) > 0:
+                obj = rel.parts[0]
+            if disc is None and len(rel.parts) > 1:
+                disc = rel.parts[1]
+            via = via or "legacy_path_relative"
+        except Exception:
+            pass
+    if folder_name is None and folder_path:
+        folder_name = Path(folder_path).name
+    exists = bool(folder_path) and Path(folder_path).exists()
+    # фолбэк: скан legacy-дерева по нормализованному имени (.pdf/(main)-aware)
+    if not exists and obj and disc:
+        hit = _scan_legacy_folder(Path(projects_root) / obj / disc, v2_code)
+        if hit is not None:
+            folder_path = str(hit)
+            folder_name = hit.name
+            exists = True
+            via = (via + "+scan") if via else "scan"
+    raw = folder_name or (Path(folder_path).name if folder_path else None)
+    # legacy logical code:
+    #   * old_to_new_map матчит запись ПО document_code → запись авторитетно
+    #     связывает legacy↔v2, rec_code == v2_code (коды совпадают по построению);
+    #   * иначе нормализуем имя папки (снимаем .pdf/(main) через document_code_for
+    #     и хвостовой ` V{N}` версионной папки).
+    if rec_code is not None:
+        legacy_code = rec_code
+    elif folder_path and exists:
+        # код выводим из имени ТОЛЬКО для реально существующей папки; иначе None
+        # (битый legacy_project_path не должен фабриковать legacy_code → ложный
+        #  MISMATCH вместо честного MISSING_IN_LEGACY).
+        try:
+            legacy_code = _strip_version_suffix(v2lib.document_code_for(Path(folder_path)))
+        except Exception:
+            legacy_code = None
+    else:
+        legacy_code = None
+    # привязка установлена через map ИЛИ нормализованный код совпал на существующей папке
+    linked = (rec_code is not None) or (legacy_code == v2_code and exists)
+    # naming-артефакт: фактическое имя legacy-папки (`.pdf` / `(main)` / ` V{N}`)
+    # отличается от чистого v2-кода, но документ привязан → НЕ потеря данных
+    naming_diff = bool(raw) and (raw != v2_code) and linked
+    return {"object": obj, "discipline": disc, "folder_name": folder_name,
+            "folder_path": folder_path, "code": legacy_code, "exists": exists,
+            "via": via, "naming_diff": naming_diff}
+
+
+def _naming_field(leg: dict, v2_code: str) -> dict:
+    """Поле legacy_folder_naming: EXPECTED_NAMING_DIFFERENCE для .pdf/(main)-артефактов.
+
+    Когда legacy-папка существует, но её имя отличается от чистого v2 document_code
+    лишь хвостовым `.pdf` или контейнером `(main)` (нормализуются в один код) —
+    это артефакт именования, НЕ потеря данных. Не блокирует cutover.
+    """
+    status = EXPECTED_NAMING if leg.get("naming_diff") else MATCH
+    return {"field": "legacy_folder_naming", "legacy": leg.get("folder_name"),
+            "v2": v2_code, "status": status, "soft": False}
 
 
 def _severity_in_dir(d: Optional[Path]) -> dict:
@@ -122,31 +258,33 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list,
     cur_meta = adapter.version_metadata(doc_dir, cur)
     cur_rec = recs.get(cur)
 
-    # ---- object / discipline / code (из legacy_project_path) ----
-    lp = dj.get("legacy_project_path") or (cur_rec or {}).get("legacy_folder_path")
-    legacy_object = legacy_discipline = None
-    if lp:
-        try:
-            rel = Path(lp).resolve().relative_to(projects_root.resolve())
-            legacy_object = rel.parts[0] if len(rel.parts) > 0 else None
-            legacy_discipline = rel.parts[1] if len(rel.parts) > 1 else None
-        except Exception:
-            pass
+    # ---- robust legacy resolution (old_to_new_map → legacy_path → scan) ----
+    # Раньше: object/discipline выводились ТОЛЬКО через
+    # Path(legacy_project_path).relative_to(projects_root); при неверном
+    # projects_root (repo-relative вместо sibling от v2) relative_to падал →
+    # legacy=null → ложный MISSING_IN_LEGACY на ВЕСЬ корпус. Теперь источник —
+    # old_to_new_map (object_name/discipline) + существование папки на диске.
+    leg = _resolve_legacy(dj, recs, cur, cur_rec, projects_root, snap["document_code"])
+    legacy_object = leg["object"]
+    legacy_discipline = leg["discipline"]
     v2_obj = next((o for o in adapter.list_objects()
                    if o["folder_name"] == snap["object_folder"]), {})
     v2_object_name = v2_obj.get("display_name")
 
     # ---- versions ----
+    # legacy_project_path в production задан у всех доков (priority); fallback на
+    # robustly-резолвнутую legacy-папку (map) — на случай пустого пути в document.json.
+    legacy_pp = dj.get("legacy_project_path") or leg["folder_path"]
     v2_vcount = snap["version_count"]
-    legacy_vcount = BP.legacy_actual_version_count(dj)
+    legacy_vcount = _legacy_version_count(legacy_pp)
     v2_cur_no = cur_meta.get("version_no")
-    legacy_cur_no = _legacy_current_version_no(dj)
+    legacy_cur_no = _legacy_current_version_no(legacy_pp)
 
     # ---- analysis (current version) ----
     v2_latest = adapter.latest_dir(doc_dir, cur)
-    legacy_out = None
-    if cur_rec and cur_rec.get("legacy_folder_path"):
-        legacy_out = BP.legacy_output_with_findings(Path(cur_rec["legacy_folder_path"]))
+    legacy_folder = (cur_rec or {}).get("legacy_folder_path") or leg["folder_path"]
+    legacy_out = (BP.legacy_output_with_findings(Path(legacy_folder))
+                  if legacy_folder else None)
 
     v2_status = cur_meta.get("analysis_status")
     legacy_status = _derive_status(legacy_out)
@@ -171,8 +309,8 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list,
     fields = [
         cmp_field("object_display_name", legacy_object, v2_object_name),
         cmp_field("discipline", legacy_discipline, snap["discipline"]),
-        cmp_field("document_code", v2lib.document_code_for(Path(lp)) if lp else None,
-                  snap["document_code"]),
+        cmp_field("document_code", leg["code"], snap["document_code"]),
+        _naming_field(leg, snap["document_code"]),
         cmp_field("current_version_no", legacy_cur_no, v2_cur_no, expected=is_kingsons),
         cmp_field("version_count", legacy_vcount, v2_vcount, expected=is_kingsons),
         cmp_field("analysis_status", legacy_status, v2_status, expected=status_expected),
@@ -182,7 +320,11 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list,
         cmp_field("has_03_findings", legacy_has[crit[2]], v2_has[crit[2]]),
         cmp_field("findings_count", legacy_fc, v2_fc),
         cmp_field("findings_by_severity", legacy_sev, v2_sev, soft=True),
-        cmp_field("pipeline_log_present", legacy_plog is not None, v2_plog is not None),
+        # v2 может иметь pipeline_log там, где legacy его не сохранил (миграция
+        # прогоняла gemma_enrichment даже для no-analysis доков) — это v2-superset,
+        # НЕ потеря. Обратное (legacy есть, v2 нет) остаётся MISMATCH (реальная потеря).
+        cmp_field("pipeline_log_present", legacy_plog is not None, v2_plog is not None,
+                  expected=(v2_plog is not None and legacy_plog is None)),
         cmp_field("pipeline_log_stage_count", _pipeline_stage_count(legacy_plog),
                   _pipeline_stage_count(v2_plog), soft=True),
         cmp_field("v2_legacy_preserve_flag", None, v2_preserve_flag,
@@ -223,18 +365,33 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list,
         "findings_legacy": legacy_fc, "findings_v2": v2_fc,
         "version_loss": (vcount_field["status"] == MISMATCH),
         "version_legacy": legacy_vcount, "version_v2": v2_vcount,
+        "legacy_match_via": leg["via"],
+        "legacy_exists": leg["exists"],
+        "legacy_folder_name": leg["folder_name"],
+        "naming_diff": leg["naming_diff"],
     }
 
 
-def _legacy_current_version_no(dj: dict) -> Optional[int]:
-    lp = dj.get("legacy_project_path")
-    if not lp:
+def _legacy_version_count(legacy_pp) -> Optional[int]:
+    """Фактическое число legacy-версий из version_group.json контейнера `(main)`,
+    иначе 1. Принимает РЕЗОЛВНУТЫЙ путь (dj legacy_project_path или map folder_path)."""
+    if not legacy_pp:
         return None
-    p = Path(lp)
+    p = Path(legacy_pp)
+    if p.name.endswith("(main)"):
+        vg = _read_json(p / "version_group.json")
+        if vg and isinstance(vg.get("versions"), list):
+            return len(vg["versions"])
+    return 1
+
+
+def _legacy_current_version_no(legacy_pp) -> Optional[int]:
+    if not legacy_pp:
+        return None
+    p = Path(legacy_pp)
     if p.name.endswith("(main)"):
         vg = _read_json(p / "version_group.json") or {}
         latest = str(vg.get("latest_version_id") or "").strip()
-        import re
         m = re.match(r"v(\d+)$", latest)
         if m:
             return int(m.group(1))
@@ -275,7 +432,12 @@ def run_contract_parity(adapter: ProjectsV2Adapter, *, per_type: int = 3,
                   or {}).get("migrations", [])
     kb_file = adapter.v2_root.parent / "knowledge_base" / "decisions_log.json"
     decisions = (_read_json(kb_file) or {}).get("entries", []) if kb_file.exists() else []
-    projects_root = Path(projects_root) if projects_root else v2lib.legacy_projects_root()
+    # legacy projects/ — sibling от projects_v2 (AUDIT_DATA_DIR/projects vs
+    # /projects_v2). v2lib.legacy_projects_root() даёт repo-relative путь, который в
+    # worktree-деплое НЕ совпадает с реальными данными → relative_to падал → ложный
+    # MISSING_IN_LEGACY. Дефолт теперь sibling; --legacy-root переопределяет.
+    projects_root = (Path(projects_root) if projects_root
+                     else (adapter.v2_root.parent / "projects"))
 
     if explicit_codes:
         docs = [d for c in explicit_codes for d in [adapter.find_document(c)] if d]
@@ -304,6 +466,12 @@ def run_contract_parity(adapter: ProjectsV2Adapter, *, per_type: int = 3,
     findings_losses = [r["document_code"] for r in results if r["findings_loss"]]
     version_losses = [r["document_code"] for r in results if r["version_loss"]]
     hard_mismatch_docs = [r["document_code"] for r in results if r["doc_status"] == MISMATCH]
+    # реально отсутствующие в legacy (после robust-резолва не нашлась папка)
+    missing_legacy_real = [r["document_code"] for r in results
+                           if r["doc_status"] == MISSING_LEGACY and not r["legacy_exists"]]
+    naming_diff_docs = [r["document_code"] for r in results if r.get("naming_diff")]
+    from collections import Counter
+    via_counts = dict(Counter(r.get("legacy_match_via") for r in results))
 
     return {
         "schema_version": 1,
@@ -319,6 +487,9 @@ def run_contract_parity(adapter: ProjectsV2Adapter, *, per_type: int = 3,
         "any_version_loss": bool(version_losses),
         "contract_ok": not hard_mismatch_docs,
         "hard_mismatch_documents": hard_mismatch_docs,
+        "missing_in_legacy_real": missing_legacy_real,
+        "naming_difference_documents": naming_diff_docs,
+        "legacy_match_via_counts": via_counts,
         "results": results,
     }
 
@@ -337,6 +508,9 @@ def render_md(rep: dict) -> str:
     A(f"- Поля по статусу: {rep['field_status_counts']}")
     A(f"- Потери findings: {'❌ ' + str(rep['findings_losses']) if rep['any_findings_loss'] else '✅ нет'}")
     A(f"- Потери versions: {'❌ ' + str(rep['version_losses']) if rep['any_version_loss'] else '✅ нет'}")
+    A(f"- Реально отсутствуют в legacy: {'❌ ' + str(rep.get('missing_in_legacy_real')) if rep.get('missing_in_legacy_real') else '✅ нет'}")
+    A(f"- Naming-артефакты (.pdf/(main), не потеря): {len(rep.get('naming_difference_documents', []))} → EXPECTED_NAMING_DIFFERENCE")
+    A(f"- Как сопоставлено legacy↔v2 (match_via): {rep.get('legacy_match_via_counts')}")
     A("")
     A("| Документ | тип | статус | findings L/v2 | versions L/v2 |")
     A("|---|---|---|---|---|")
@@ -360,6 +534,10 @@ def render_md(rep: dict) -> str:
     A("- source_only / проекты без анализа: отсутствие 01/02/03 — норма (с обеих сторон).")
     A("- legacy version container иной формы, но v2 нормализован: при равном "
       "version_count → MATCH; расхождение допускается только для King&Sons.")
+    A("- **EXPECTED_NAMING_DIFFERENCE**: legacy-папка существует, но её имя отличается "
+      "от чистого v2 `document_code` лишь хвостовым `.pdf` или контейнером `(main)` "
+      "(нормализуются в один код). Это артефакт именования, НЕ потеря данных, НЕ "
+      "блокирует cutover. См. docs/projects_v2_migration_plan.md → «Known naming artifacts».")
     A("")
     A("## Что блокирует будущий cutover")
     A("")
@@ -396,6 +574,8 @@ def write_reports(rep: dict, v2_root: Path, stem: str = "ui_contract_parity_repo
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Read-only UI/API contract parity legacy ↔ projects_v2")
     ap.add_argument("--v2-root", default=None)
+    ap.add_argument("--legacy-root", default=None,
+                    help="корень legacy projects/ (по умолчанию sibling от --v2-root)")
     ap.add_argument("--per-type", type=int, default=3)
     ap.add_argument("--documents", default=None, help="явные document_code через запятую")
     ap.add_argument("--all", action="store_true",
@@ -409,8 +589,9 @@ def main(argv=None) -> int:
     adapter = ProjectsV2Adapter(v2_root)
     codes = [c.strip() for c in args.documents.split(",")] if args.documents else None
 
+    legacy_root = Path(args.legacy_root).resolve() if args.legacy_root else None
     rep = run_contract_parity(adapter, per_type=args.per_type, explicit_codes=codes,
-                              all_docs=args.all)
+                              projects_root=legacy_root, all_docs=args.all)
     stem = args.report_stem or ("full_corpus_parity_report" if args.all
                                 else "ui_contract_parity_report")
     jp, mp, cp = write_reports(rep, v2_root, stem=stem)
@@ -421,6 +602,9 @@ def main(argv=None) -> int:
     print(f"field_status: {rep['field_status_counts']}")
     print(f"findings_loss: {rep['any_findings_loss']} {rep['findings_losses']}")
     print(f"version_loss: {rep['any_version_loss']} {rep['version_losses']}")
+    print(f"missing_in_legacy_real: {rep.get('missing_in_legacy_real')}")
+    print(f"naming_difference (EXPECTED_NAMING): {len(rep.get('naming_difference_documents', []))}")
+    print(f"legacy_match_via: {rep.get('legacy_match_via_counts')}")
     print(f"contract_ok: {rep['contract_ok']}")
     for r in rep["results"]:
         print(f"  [{r['doc_status']:<19}] {r['type']:<26} {r['document_code']} "

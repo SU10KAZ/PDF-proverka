@@ -347,6 +347,205 @@ class ProjectsV2Adapter:
         p = self._latest_file(doc_dir, version_id, "02_blocks_analysis.json")
         return _read_json(p) if p else None
 
+    def blocks_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка кропнутых блоков версии (read-only).
+
+        В projects_v2 кропы лежат под `03_analysis/latest/blocks/` либо (чаще)
+        под последним `03_analysis/runs/<run>/blocks/`. Возвращает первую папку,
+        где есть `index.json`, иначе None.
+        """
+        vdir = self.version_dir(doc_dir, version_id)
+        analysis = vdir / "03_analysis"
+        cand = analysis / "latest" / "blocks"
+        if (cand / "index.json").is_file():
+            return cand
+        runs = analysis / "runs"
+        if runs.is_dir():
+            for run in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
+                bd = run / "blocks"
+                if (bd / "index.json").is_file():
+                    return bd
+        # King&Sons legacy_findings_preserve: блоки лежат в сохранённом legacy-бандле
+        # `99_service/legacy_output/<...>/_output/blocks/` (read-only).
+        legacy_out = vdir / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for idx in sorted(legacy_out.glob("*/_output/blocks/index.json")):
+                return idx.parent
+        return None
+
+    def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        bd = self.blocks_dir(doc_dir, version_id)
+        return _read_json(bd / "index.json") if bd else None
+
+    def read_document_graph(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """document_graph.json версии (read-only): latest, иначе King&Sons-бандл."""
+        p = self._latest_file(doc_dir, version_id, "document_graph.json")
+        if p:
+            return _read_json(p)
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for g in sorted(legacy_out.glob("*/_output/document_graph.json")):
+                return _read_json(g)
+        return None
+
+    def read_block_batches(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """block_batches.json версии (read-only) для классификации merged_into блоков.
+
+        Приоритет: тот же run, что и blocks index (чтобы merged-карта совпадала с
+        index.json) → 99_service → 03_analysis/latest → King&Sons legacy-бандл.
+        Возвращает None, если файла нет (тогда merged_into просто не строится).
+        """
+        candidates: list[Path] = []
+        bd = self.blocks_dir(doc_dir, version_id)
+        if bd is not None:
+            candidates.append(bd.parent / "block_batches.json")  # run папки index'а
+        vdir = self.version_dir(doc_dir, version_id)
+        candidates += [
+            vdir / "99_service" / "block_batches.json",
+            vdir / "03_analysis" / "latest" / "block_batches.json",
+        ]
+        legacy_out = vdir / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            candidates += sorted(legacy_out.glob("*/_output/block_batches.json"))
+        for p in candidates:
+            if p and p.is_file():
+                data = _read_json(p)
+                if data is not None:
+                    return data
+        return None
+
+    def read_findings_03(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """Именно 03_findings.json из latest (read-only).
+
+        В отличие от read_findings (priority chain c 03a_norms_verified), здесь
+        нужен конкретно 03_findings.json — так legacy get_blocks_analysis строит
+        blocks_in_findings. King&Sons-бандл — fallback.
+        """
+        p = self._latest_file(doc_dir, version_id, "03_findings.json")
+        if p:
+            return _read_json(p)
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for g in sorted(legacy_out.glob("*/_output/03_findings.json")):
+                return _read_json(g)
+        return None
+
+    # -- gap-closure readers (optimization / review / batches / inputs) -------
+    def _legacy_bundle_output(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """King&Sons legacy_findings_preserve: единый `_output`-снимок
+        `99_service/legacy_output/<code>/_output` (там лежат ВСЕ артефакты)."""
+        legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for o in sorted(legacy_out.glob("*/_output")):
+                if o.is_dir():
+                    return o
+        return None
+
+    def review_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка 04_review версии (expert_review/optimization_review/findings_review)."""
+        d = self.version_dir(doc_dir, version_id) / "04_review"
+        return d if d.is_dir() else None
+
+    def read_optimization(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """optimization.json: latest → King&Sons-бандл (read-only)."""
+        p = self._latest_file(doc_dir, version_id, "optimization.json")
+        if p:
+            return _read_json(p)
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / "optimization.json").is_file():
+            return _read_json(b / "optimization.json")
+        return None
+
+    def read_review(self, doc_dir: Path, version_id: str, name: str) -> Optional[dict]:
+        """Файл ревью по имени (expert_review.json / optimization_review.json /
+        03_findings_review.json): 04_review → latest → King&Sons-бандл (read-only)."""
+        rd = self.review_dir(doc_dir, version_id)
+        if rd and (rd / name).is_file():
+            return _read_json(rd / name)
+        p = self._latest_file(doc_dir, version_id, name)
+        if p:
+            return _read_json(p)
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / name).is_file():
+            return _read_json(b / name)
+        return None
+
+    def block_batches_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
+        """Папка с block_batches.json + block_batch_*.json (для подсчёта батчей):
+        99_service → King&Sons-бандл → latest → последний run. None, если нет."""
+        vdir = self.version_dir(doc_dir, version_id)
+        for cand in (vdir / "99_service", vdir / "03_analysis" / "latest"):
+            if (cand / "block_batches.json").is_file():
+                return cand
+        b = self._legacy_bundle_output(doc_dir, version_id)
+        if b and (b / "block_batches.json").is_file():
+            return b
+        runs = vdir / "03_analysis" / "runs"
+        if runs.is_dir():
+            for r in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
+                if (r / "block_batches.json").is_file():
+                    return r
+        return None
+
+    def input_pdf_files(self, doc_dir: Path, version_id: str) -> list[tuple[str, int]]:
+        """[(имя, размер)] исходных PDF в 01_input (read-only)."""
+        inp = self.version_dir(doc_dir, version_id) / "01_input"
+        out: list[tuple[str, int]] = []
+        if inp.is_dir():
+            for p in sorted(inp.glob("*.pdf")):
+                if p.is_file():
+                    try:
+                        out.append((p.name, p.stat().st_size))
+                    except Exception:
+                        out.append((p.name, 0))
+        return out
+
+    def input_md_files(self, doc_dir: Path, version_id: str) -> list[tuple[str, int]]:
+        """[(имя, размер)] MD-файлов версии: 01_input/*.md или 02_work/document.md."""
+        vdir = self.version_dir(doc_dir, version_id)
+        out: list[tuple[str, int]] = []
+        inp = vdir / "01_input"
+        if inp.is_dir():
+            seen = set()
+            for pat in ("*_document.md", "*.md"):
+                for p in sorted(inp.glob(pat)):
+                    if p.is_file() and p.name not in seen:
+                        seen.add(p.name)
+                        try:
+                            out.append((p.name, p.stat().st_size))
+                        except Exception:
+                            out.append((p.name, 0))
+        w = vdir / "02_work" / "document.md"
+        if not out and w.is_file():
+            try:
+                out.append((w.name, w.stat().st_size))
+            except Exception:
+                out.append((w.name, 0))
+        return out
+
+    def input_dir(self, doc_dir: Path, version_id: str) -> Path:
+        """Папка 01_input версии (там же лежит *_ocr.html для text_evidence)."""
+        return self.version_dir(doc_dir, version_id) / "01_input"
+
+    def md_text(self, doc_dir: Path, version_id: str) -> tuple[Optional[str], Optional[str]]:
+        """(текст MD, имя MD-файла) для версии (read-only).
+
+        Приоритет: 02_work/document.md → 01_input/*_document.md → 01_input/*.md.
+        Возвращает (None, None), если MD не найден/нечитаем.
+        """
+        vdir = self.version_dir(doc_dir, version_id)
+        candidates = [vdir / "02_work" / "document.md"]
+        inp = vdir / "01_input"
+        if inp.is_dir():
+            candidates += sorted(inp.glob("*_document.md")) + sorted(inp.glob("*.md"))
+        for p in candidates:
+            if p.is_file():
+                try:
+                    return p.read_text(encoding="utf-8"), p.name
+                except Exception:
+                    continue
+        return None, None
+
     def read_analysis_artifact(self, doc_dir: Path, version_id: str, name: str) -> Optional[dict]:
         p = self._latest_file(doc_dir, version_id, name)
         return _read_json(p) if p else None

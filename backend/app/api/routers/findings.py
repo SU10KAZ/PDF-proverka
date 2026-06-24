@@ -1,7 +1,7 @@
 """
 REST API для замечаний аудита.
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import Optional
 import backend.app.services.findings.findings_service as findings_service
 
@@ -42,9 +42,17 @@ def _validate_version_id(project_id: str, version_id: Optional[str]) -> None:
 @router.get("/{project_id:path}/block-map")
 async def get_finding_block_map(
     project_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None, description="Конкретная версия (v1/v2/...), по умолчанию latest"),
 ):
-    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении."""
+    """Маппинг finding_id → [block_ids] для подсветки блоков при наведении.
+
+    opt-in/default read canary: при v2-backend строится из projects_v2
+    (read-only, та же строгая логика). `?storage=legacy` форсит legacy.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_block_map(request, project_id)
     _validate_version_id(project_id, version_id)
     result = findings_service.get_finding_block_map(project_id, version_id=version_id)
     if result is None:
@@ -56,9 +64,17 @@ async def get_finding_block_map(
 async def get_finding(
     project_id: str,
     finding_id: str,
+    request: Request,
     version_id: Optional[str] = Query(None),
 ):
-    """Одно замечание по ID."""
+    """Одно замечание по ID.
+
+    opt-in read canary: `?storage=projects_v2` (или header) + флаг → замечание из
+    projects_v2 (read-only). Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_finding_by_id(request, project_id, finding_id)
     _validate_version_id(project_id, version_id)
     finding = findings_service.get_finding_by_id(project_id, finding_id, version_id=version_id)
     if finding is None:
@@ -69,6 +85,7 @@ async def get_finding(
 @router.get("/{project_id:path}")
 async def get_findings(
     project_id: str,
+    request: Request,
     severity: Optional[str] = Query(None, description="Фильтр по критичности"),
     category: Optional[str] = Query(None, description="Фильтр по категории"),
     sheet: Optional[str] = Query(None, description="Фильтр по листу"),
@@ -78,7 +95,16 @@ async def get_findings(
     group: bool = Query(False, description="Группировать похожие замечания"),
     version_id: Optional[str] = Query(None, description="Конкретная версия (v1/v2/...), по умолчанию latest"),
 ):
-    """Замечания проекта с фильтрацией и пагинацией."""
+    """Замечания проекта с фильтрацией и пагинацией.
+
+    opt-in read canary: при `?storage=projects_v2` (или header
+    `X-Audit-Storage: projects_v2`) И включённом `AUDIT_PROJECTS_V2_READ_CANARY_ENABLED`
+    findings/counts отдаются из projects_v2 (read-only, без silent fallback).
+    Без opt-in — legacy как прежде.
+    """
+    from backend.app.services.storage import read_canary
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_findings(request, project_id)
     _validate_version_id(project_id, version_id)
     result = findings_service.get_findings(
         project_id,
