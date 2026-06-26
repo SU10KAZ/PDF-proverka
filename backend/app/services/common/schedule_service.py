@@ -13,10 +13,15 @@
   * `section`         — раздел/часть проекта;
   * `object_id`       — объект (опциональный фильтр).
 
-Агрегация идёт по тройке (инженер, день, проект): если инженер в один день
-сделал N решений по одному проекту — это ОДНО событие; если по нескольким
-проектам — несколько событий с одной датой (frontend уже умеет показывать
-первый проект + бейдж «+N»).
+Агрегация: ОДИН проект = ОДНО событие. Все решения по проекту (замечания и
+оптимизации, в любые дни) схлопываются в одно событие на ЕДИНСТВЕННЫЙ день, а не
+размазываются по дням. День события:
+  * замороженный «день завершения» из schedule_completion.json, если он есть
+    (проставлен, когда эксперт разметил ВСЕ замечания и оптимизации; не меняется
+    при последующих правках);
+  * иначе — предварительный день: последняя активность по проекту.
+Если инженер за период вёл несколько проектов — несколько событий (frontend
+показывает первый проект + бейдж «+N» при совпадении дня).
 
 Чтение лога безопасно: нет файла → пусто; битый JSON → пусто + warning.
 Тяжёлый разбор большого файла роутер выполняет через asyncio.to_thread.
@@ -41,6 +46,11 @@ from backend.app.core.config import DECISIONS_LOG_FILE, KNOWLEDGE_BASE_DIR
 DECISIONS_LOG_FILE = DECISIONS_LOG_FILE
 # План работ по инженерам на период (week/month) — редактируется админом.
 WORK_PLANS_FILE = KNOWLEDGE_BASE_DIR / "work_plans.json"
+# Замороженный «день завершения» проекта для графика. Ставится ОДИН раз, когда
+# эксперт разметил ВСЕ замечания и ВСЕ оптимизации проекта, и больше не меняется
+# при последующих правках. Ключ — (object_id, source_project), значение —
+# YYYY-MM-DD. Пишется из knowledge_base_service.save_expert_review.
+SCHEDULE_COMPLETION_FILE = KNOWLEDGE_BASE_DIR / "schedule_completion.json"
 
 # Транслитерация кириллицы для стабильного engId из ФИО.
 _TRANSLIT = {
@@ -118,15 +128,28 @@ def aggregate_events(
     from_day: str,
     to_day: str,
     object_id: Optional[str] = None,
+    completions: Optional[dict[tuple[str, str], str]] = None,
 ) -> list[dict]:
-    """Свести записи лога в события графика.
+    """Свести записи лога в события графика — ОДИН проект = ОДНО событие.
 
-    Группировка по (engId, день, проект): дубли-решения по одному проекту в
-    один день схлопываются в одно событие. Диапазон [from_day, to_day]
-    включительно (строки YYYY-MM-DD сравниваются лексикографически).
+    Группировка по (engId, проект, объект): ВСЕ решения по одному проекту (и
+    замечания, и оптимизации, в любые дни) схлопываются в одно событие, чтобы
+    проект показывался строго одним днём.
+
+    День события:
+      * если для (object_id, source_project) есть замороженный день завершения
+        в `completions` — берётся он (проставлен, когда разметка стала полной,
+        и не двигается при последующих правках);
+      * иначе — предварительный день: последняя активность по проекту
+        (максимальная дата среди решений).
+
+    Диапазон [from_day, to_day] включительно применяется к ИТОГОВОМУ дню
+    события (а не к каждому решению): проект попадает в период по своему
+    единственному дню. Строки YYYY-MM-DD сравниваются лексикографически.
     """
+    completions = completions or {}
     obj_filter = (object_id or "").strip() or None
-    out: dict[tuple, dict] = {}
+    groups: dict[tuple, dict] = {}
     for e in entries:
         if not isinstance(e, dict):
             continue
@@ -136,28 +159,41 @@ def aggregate_events(
         day = parse_day(e.get("expert_date"))
         if not day:
             continue
-        if not (from_day <= day <= to_day):
-            continue
         obj = (e.get("object_id") or "").strip()
         if obj_filter and obj != obj_filter:
             continue
         proj = (e.get("source_project") or "").strip()
         eid = eng_slug(reviewer)
-        gkey = (eid, day, proj)
-        if gkey in out:
+        gkey = (eid, proj, obj)
+        g = groups.get(gkey)
+        if g is None:
+            g = {
+                "engId": eid,
+                "engineerName": reviewer,
+                "short": short_name(proj),
+                "full": proj,
+                "source_project": proj,
+                "section": (e.get("section") or "").strip(),
+                "object_id": obj,
+                "_days": [],
+            }
+            groups[gkey] = g
+        g["_days"].append(day)
+
+    events: list[dict] = []
+    for (eid, proj, obj), g in groups.items():
+        frozen = completions.get((obj, proj))
+        # frozen уже нормализован в YYYY-MM-DD (load_schedule_completions), но на
+        # всякий случай валидируем; иначе — предварительный день последней активности.
+        date = frozen if (frozen and parse_day(frozen)) else (max(g["_days"]) if g["_days"] else None)
+        if not date:
             continue
-        out[gkey] = {
-            "engId": eid,
-            "engineerName": reviewer,
-            "date": day,
-            "key": day,
-            "short": short_name(proj),
-            "full": proj,
-            "source_project": proj,
-            "section": (e.get("section") or "").strip(),
-            "object_id": obj,
-        }
-    events = list(out.values())
+        if not (from_day <= date <= to_day):
+            continue
+        ev = {k: v for k, v in g.items() if k != "_days"}
+        ev["date"] = date
+        ev["key"] = date
+        events.append(ev)
     events.sort(key=lambda ev: (ev["date"], ev["engineerName"].lower(), ev["short"].lower()))
     return events
 
@@ -195,9 +231,12 @@ def build_schedule(
     to_day: str,
     object_id: Optional[str] = None,
     users: Optional[list[dict]] = None,
+    completions: Optional[dict[tuple[str, str], str]] = None,
 ) -> dict:
     """Чистая сборка payload графика из уже загруженных записей лога."""
-    events = aggregate_events(entries, from_day=from_day, to_day=to_day, object_id=object_id)
+    events = aggregate_events(
+        entries, from_day=from_day, to_day=to_day, object_id=object_id, completions=completions
+    )
     engineers = build_engineers(events, users=users)
     return {
         "events": events,
@@ -234,18 +273,102 @@ def load_decisions_log() -> tuple[list, Optional[str]]:
 
 
 def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) -> dict:
-    """Полный payload графика: читает лог + users, агрегирует, добавляет warning."""
+    """Полный payload графика: читает лог + users + замороженные дни, агрегирует."""
     entries, warning = load_decisions_log()
+    completions = load_schedule_completions()
     try:
         import backend.app.services.common.user_service as user_service
         users = user_service.list_users()
     except Exception:
         users = []
     payload = build_schedule(
-        entries, from_day=from_day, to_day=to_day, object_id=object_id, users=users
+        entries, from_day=from_day, to_day=to_day, object_id=object_id,
+        users=users, completions=completions,
     )
     payload["warning"] = warning
     return payload
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Замороженный день завершения проекта (schedule_completion.json)
+#
+# Когда эксперт разметил ВСЕ замечания И ВСЕ оптимизации проекта, день
+# завершения фиксируется здесь ОДИН раз. При последующих правках разметки день
+# НЕ меняется — проект остаётся в графике на дне завершения. Ключ —
+# (object_id, source_project). Стор производный (восстановим из лога), поэтому
+# при повреждении просто перезаписываем, без бэкап-плясок.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Отдельный лок (не делим с work_plans), чтобы PUT плана и штамп завершения не
+# сериализовались друг через друга без нужды.
+_COMPLETION_LOCK = threading.Lock()
+
+
+def _completion_key(object_id, source_project) -> tuple[str, str]:
+    return ((object_id or "").strip(), (source_project or "").strip())
+
+
+def load_schedule_completions() -> dict[tuple[str, str], str]:
+    """{(object_id, source_project): 'YYYY-MM-DD'}. Нет файла/битый → {}.
+
+    Никогда не бросает: график не должен падать из-за производного стора.
+    """
+    if not SCHEDULE_COMPLETION_FILE.exists():
+        return {}
+    try:
+        data = json.loads(SCHEDULE_COMPLETION_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    items = data.get("completions") if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        return {}
+    out: dict[tuple[str, str], str] = {}
+    for rec in items:
+        if not isinstance(rec, dict):
+            continue
+        day = parse_day(rec.get("date"))
+        if not day:
+            continue
+        out[_completion_key(rec.get("object_id"), rec.get("source_project"))] = day
+    return out
+
+
+def set_completion_once(*, object_id, source_project, date, reviewer: str = "") -> dict:
+    """Зафиксировать день завершения проекта ОДИН раз (идемпотентно).
+
+    Если для (object_id, source_project) запись уже есть — НЕ перезаписываем
+    (требование: день не меняется при правках). Возвращает
+    {'date': YYYY-MM-DD|None, 'created': bool}. Read-modify-write под локом.
+    """
+    day = parse_day(date)
+    if not day:
+        return {"date": None, "created": False}
+    key = _completion_key(object_id, source_project)
+    with _COMPLETION_LOCK:
+        items: list[dict] = []
+        if SCHEDULE_COMPLETION_FILE.exists():
+            try:
+                data = json.loads(SCHEDULE_COMPLETION_FILE.read_text(encoding="utf-8"))
+                if isinstance(data, dict) and isinstance(data.get("completions"), list):
+                    items = [r for r in data["completions"] if isinstance(r, dict)]
+            except (OSError, json.JSONDecodeError):
+                items = []  # битый стор перезапишем (он производный)
+        for rec in items:
+            if _completion_key(rec.get("object_id"), rec.get("source_project")) == key:
+                return {"date": parse_day(rec.get("date")) or day, "created": False}
+        now = datetime.now().isoformat(timespec="seconds")
+        items.append({
+            "object_id": key[0],
+            "source_project": key[1],
+            "date": day,
+            "reviewer": reviewer or "",
+            "set_at": now,
+        })
+        _atomic_write_json(
+            SCHEDULE_COMPLETION_FILE,
+            {"version": 1, "updated_at": now, "completions": items},
+        )
+    return {"date": day, "created": True}
 
 
 # ─────────────────────────────────────────────────────────────────────────────

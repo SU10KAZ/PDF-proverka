@@ -199,6 +199,10 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     enriched = _enrich_decisions(project_id, decisions, reviewer)
     _append_to_decisions_log(enriched)
 
+    # 2b. Зафиксировать день завершения проекта для графика, если разметка стала
+    # полной (все замечания + все оптимизации). Идемпотентно, fail-soft.
+    _stamp_schedule_completion_if_complete(project_id, reviewer)
+
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся
     # общим shared-файлом (его v2-плечо здесь намеренно НЕ форкается).
@@ -322,6 +326,84 @@ def _hydrate_kb_entry_from_source(entry: dict, source_cache: dict[str, tuple[dic
     return entry
 
 
+def _resolve_object_id() -> str:
+    """Текущий объект (здание/комплекс): из bound-контекста, иначе выбранный.
+
+    Единый резолвер, чтобы object_id в decisions_log и в штампе дня завершения
+    графика были одинаковыми (иначе ключ (object_id, source_project) не сойдётся).
+    """
+    try:
+        from backend.app.services.common import object_service, project_service
+        return project_service._get_bound_object_id() or object_service.get_current_id() or ""
+    except Exception:
+        return ""
+
+
+def _project_completion_day(project_id: str) -> Optional[str]:
+    """День завершения проекта или None, если разметка ещё не полная.
+
+    «Полная» = у КАЖДОГО исходного замечания и КАЖДОЙ исходной оптимизации есть
+    решение эксперта (item_id из 03_findings.json / optimization.json ⊆ решённых
+    в expert_review.json). День завершения = последний день среди решений (момент,
+    когда разметка стала полной); fallback — сегодня. Если в проекте вообще нет
+    исходных пунктов → None (нечего фиксировать).
+
+    Чистая функция (без object_id и без записи) — переиспользуется runtime-штампом
+    и backfill-скриптом.
+    """
+    review = load_expert_review(project_id) or {}
+    decided_find: set[str] = set()
+    decided_opt: set[str] = set()
+    days: list[str] = []
+    for d in (review.get("decisions") or []):
+        if not isinstance(d, dict):
+            continue
+        iid = str(d.get("item_id") or "").strip()
+        if not iid:
+            continue
+        if str(d.get("item_type") or "").strip() == "optimization":
+            decided_opt.add(iid)
+        else:
+            decided_find.add(iid)
+        ts = str(d.get("timestamp") or "")[:10]
+        if len(ts) == 10:
+            days.append(ts)
+
+    findings_map, opt_map = _load_source_item_maps(project_id)
+    src_find = {str(k) for k in findings_map.keys()}
+    src_opt = {str(k) for k in opt_map.keys()}
+    if not src_find and not src_opt:
+        return None  # нечего размечать
+    if not (src_find <= decided_find and src_opt <= decided_opt):
+        return None  # ещё размечено не всё
+    return max(days) if days else _now_iso()[:10]
+
+
+def _stamp_schedule_completion_if_complete(project_id: str, reviewer: str) -> None:
+    """Зафиксировать день завершения проекта для графика — если разметка полная.
+
+    Ставится ОДИН раз и не меняется при правках (см.
+    schedule_service.set_completion_once). Fail-soft — ошибки не мешают сохранению
+    экспертной разметки.
+    """
+    try:
+        comp_day = _project_completion_day(project_id)
+        if not comp_day:
+            return
+        import backend.app.services.common.schedule_service as schedule_service
+        schedule_service.set_completion_once(
+            object_id=_resolve_object_id(),
+            source_project=project_id,
+            date=comp_day,
+            reviewer=reviewer,
+        )
+    except Exception:
+        import logging
+        logging.getLogger(__name__).debug(
+            "schedule completion stamp failed for %s", project_id, exc_info=True
+        )
+
+
 def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer: str) -> list[KnowledgeBaseEntry]:
     """Обогатить решения контекстом из findings/optimization JSON."""
     findings_map, opt_map = _load_source_item_maps(project_id)
@@ -334,12 +416,7 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
     section = info.get("section", "")
 
     # Объект (здание/комплекс): из bound-контекста, иначе текущий выбранный.
-    object_id = ""
-    try:
-        from backend.app.services.common import object_service, project_service
-        object_id = project_service._get_bound_object_id() or object_service.get_current_id() or ""
-    except Exception:
-        object_id = ""
+    object_id = _resolve_object_id()
 
     # Следующий ID (монотонный max+1, НЕ len+1 — см. _next_decision_num)
     existing_log = _load_decisions_log()

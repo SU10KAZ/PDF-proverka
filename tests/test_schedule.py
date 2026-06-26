@@ -112,6 +112,49 @@ def test_multiple_projects_same_day_multiple_events():
     assert {e["source_project"] for e in events} == {"214. Alia", "213. Metromash", "ДС3-АР"}
 
 
+# ─── ОДИН проект = ОДИН день (схлопывание разных дней) ───────────────────────
+
+def test_same_project_spanning_two_days_collapses_to_latest():
+    # Замечания размечены 16-го, оптимизация — 18-го: один проект, НЕ два дня.
+    # Без замороженного дня берётся предварительный — последняя активность (18-е).
+    entries = [
+        _entry("Узун А. И.", "2026-06-16T06:00:00Z", "214. Alia", item_id="F-1", item_type="finding"),
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "214. Alia", item_id="OPT-1", item_type="optimization"),
+    ]
+    events = schedule_service.aggregate_events(entries, from_day="2026-06-15", to_day="2026-06-21")
+    assert len(events) == 1
+    assert events[0]["date"] == events[0]["key"] == "2026-06-18"
+    assert events[0]["source_project"] == "214. Alia"
+
+
+def test_frozen_completion_date_overrides_activity_days():
+    # Тот же проект, но день завершения заморожен на 16-е → событие на 16-м,
+    # даже если решения переписаны на 18-е (правки не двигают день).
+    entries = [
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "214. Alia", item_id="F-1", item_type="finding"),
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "214. Alia", item_id="OPT-1", item_type="optimization"),
+    ]
+    completions = {("214", "214. Alia"): "2026-06-16"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-15", to_day="2026-06-21", completions=completions
+    )
+    assert len(events) == 1
+    assert events[0]["date"] == "2026-06-16"
+
+
+def test_frozen_completion_date_filtered_out_of_period():
+    # Заморожен на прошлый месяц → в текущей неделе проект НЕ показывается,
+    # хотя в логе есть свежие правки этой недели.
+    entries = [
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "214. Alia", item_id="F-1"),
+    ]
+    completions = {("214", "214. Alia"): "2026-05-20"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-15", to_day="2026-06-21", completions=completions
+    )
+    assert events == []
+
+
 def test_date_range_filter_inclusive():
     entries = [
         _entry("Узун А. И.", "2026-06-14T10:00:00Z", "P-before"),   # вне
@@ -307,6 +350,51 @@ def test_endpoint_bad_date_param_400(client_with_log):
     client, _ = client_with_log
     r = client.get("/api/schedule?from=18-06-2026&to=2026-06-21")
     assert r.status_code == 400
+
+
+# ─── schedule_completion.json: замороженный день завершения ───────────────────
+
+@pytest.fixture
+def completion_file(tmp_path, monkeypatch):
+    f = tmp_path / "schedule_completion.json"
+    monkeypatch.setattr(schedule_service, "SCHEDULE_COMPLETION_FILE", f)
+    return f
+
+
+def test_completions_missing_file_returns_empty(completion_file):
+    assert schedule_service.load_schedule_completions() == {}
+
+
+def test_set_completion_once_creates_and_roundtrips(completion_file):
+    res = schedule_service.set_completion_once(
+        object_id="214", source_project="214. Alia", date="2026-06-16T07:00:00Z", reviewer="Узун А. И.")
+    assert res == {"date": "2026-06-16", "created": True}
+    assert completion_file.exists()
+    comps = schedule_service.load_schedule_completions()
+    assert comps[("214", "214. Alia")] == "2026-06-16"
+
+
+def test_set_completion_once_is_idempotent_and_frozen(completion_file):
+    schedule_service.set_completion_once(
+        object_id="214", source_project="214. Alia", date="2026-06-16", reviewer="A")
+    # повторная фиксация другой датой НЕ перезаписывает — день заморожен
+    res2 = schedule_service.set_completion_once(
+        object_id="214", source_project="214. Alia", date="2026-06-25", reviewer="B")
+    assert res2["created"] is False
+    assert res2["date"] == "2026-06-16"
+    assert schedule_service.load_schedule_completions()[("214", "214. Alia")] == "2026-06-16"
+
+
+def test_set_completion_invalid_date_noop(completion_file):
+    res = schedule_service.set_completion_once(
+        object_id="214", source_project="P", date="не дата")
+    assert res == {"date": None, "created": False}
+    assert not completion_file.exists()
+
+
+def test_completions_broken_json_returns_empty(completion_file):
+    completion_file.write_text("{ broken", encoding="utf-8")
+    assert schedule_service.load_schedule_completions() == {}
 
 
 # ──────────────────────────────────────────────────────────────────────────────

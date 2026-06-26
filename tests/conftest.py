@@ -71,3 +71,26 @@ def _isolate_storage_cutover_env(monkeypatch):
     """Every test starts from legacy storage unless it opts into v2 explicitly."""
     for name, value in _DEFAULT_STORAGE_ENV.items():
         monkeypatch.setenv(name, value)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_schedule_completion_file(tmp_path, monkeypatch):
+    """НИ ОДИН тест не должен писать в реальный knowledge_base/schedule_completion.json.
+
+    save_expert_review теперь штампует «день завершения» проекта через
+    schedule_service.set_completion_once. Тесты, дёргающие save_expert_review
+    (expert-review, external_register), без изоляции пишут в живой стор графика
+    (инцидент: фейковые проекты DOC-REVIEW/1232-ЧМ-КМ-1 в проде). Перенаправляем
+    module-global SCHEDULE_COMPLETION_FILE в per-test tmp для КАЖДОГО теста.
+
+    Тест, которому нужен собственный путь, переопределяет повторным
+    monkeypatch.setattr (его значение победит, оба откатятся LIFO).
+    """
+    try:
+        import backend.app.services.common.schedule_service as _sched
+    except Exception:
+        return
+    monkeypatch.setattr(
+        _sched, "SCHEDULE_COMPLETION_FILE",
+        tmp_path / "schedule_completion.json", raising=False,
+    )
