@@ -83,6 +83,26 @@ def eng_slug(name: str) -> str:
     return s or "unknown"
 
 
+def canonical_project(source_project: str, section: str = "") -> str:
+    """Каноническое имя проекта: убрать дисциплинарный префикс «<SECTION>/».
+
+    Один и тот же проект иногда попадает в decisions_log под двумя написаниями
+    `source_project`: каноническим `OV/13АВ-РД-ОВ2-К1 V1` и «голым»
+    `13АВ-РД-ОВ2-К1 V1` (баг pid-нормализации при сохранении разметки). Для
+    графика это ОДИН проект — иначе он двоится в одном дне. Срезаем ведущий
+    `<section>/` (если он совпадает с разделом записи), чтобы обе формы дали
+    одинаковый ключ. section берётся из самой записи, поэтому разные дисциплины
+    с одинаковым «голым» именем НЕ сольются (ключ группы включает section).
+    """
+    pr = (source_project or "").strip()
+    sec = (section or "").strip()
+    if sec:
+        prefix = f"{sec}/"
+        if pr[: len(prefix)].lower() == prefix.lower():
+            return pr[len(prefix):]
+    return pr
+
+
 def short_name(full: str) -> str:
     """Короткое имя проекта для плашки в ячейке. Полное сохраняется отдельно.
 
@@ -162,9 +182,13 @@ def aggregate_events(
         obj = (e.get("object_id") or "").strip()
         if obj_filter and obj != obj_filter:
             continue
-        proj = (e.get("source_project") or "").strip()
+        raw_proj = (e.get("source_project") or "").strip()
+        section = (e.get("section") or "").strip()
+        # Каноническое имя схлопывает формы `<name>` и `<SECTION>/<name>` в один
+        # проект; section в ключе не даёт слиться разным дисциплинам.
+        proj = canonical_project(raw_proj, section)
         eid = eng_slug(reviewer)
-        gkey = (eid, proj, obj)
+        gkey = (eid, section, proj, obj)
         g = groups.get(gkey)
         if g is None:
             g = {
@@ -173,24 +197,34 @@ def aggregate_events(
                 "short": short_name(proj),
                 "full": proj,
                 "source_project": proj,
-                "section": (e.get("section") or "").strip(),
+                "section": section,
                 "object_id": obj,
                 "_days": [],
+                "_raw": set(),
             }
             groups[gkey] = g
         g["_days"].append(day)
+        g["_raw"].add(raw_proj)
 
     events: list[dict] = []
-    for (eid, proj, obj), g in groups.items():
-        frozen = completions.get((obj, proj))
-        # frozen уже нормализован в YYYY-MM-DD (load_schedule_completions), но на
-        # всякий случай валидируем; иначе — предварительный день последней активности.
-        date = frozen if (frozen and parse_day(frozen)) else (max(g["_days"]) if g["_days"] else None)
+    for (eid, section, proj, obj), g in groups.items():
+        # Заморозку ищем по ЛЮБОЙ форме source_project проекта: встреченные в
+        # записях формы + каноническая `<name>` + префиксная `<section>/<name>`
+        # (стор мог зафиксировать форму, которой в этих записях уже нет). Берём
+        # самый ранний зафиксированный день.
+        candidate_forms = set(g["_raw"]) | {proj}
+        if section:
+            candidate_forms.add(f"{section}/{proj}")
+        frozen_days = [
+            d for form in candidate_forms
+            if (d := completions.get((obj, form))) and parse_day(d)
+        ]
+        date = min(frozen_days) if frozen_days else (max(g["_days"]) if g["_days"] else None)
         if not date:
             continue
         if not (from_day <= date <= to_day):
             continue
-        ev = {k: v for k, v in g.items() if k != "_days"}
+        ev = {k: v for k, v in g.items() if k not in ("_days", "_raw")}
         ev["date"] = date
         ev["key"] = date
         events.append(ev)

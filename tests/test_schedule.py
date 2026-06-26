@@ -155,6 +155,55 @@ def test_frozen_completion_date_filtered_out_of_period():
     assert events == []
 
 
+# ─── Схлопывание форм source_project (<name> / <SECTION>/<name>) ──────────────
+
+def test_canonical_project_strips_discipline_prefix():
+    assert schedule_service.canonical_project("OV/13АВ-РД-ОВ2-К1 V1", "OV") == "13АВ-РД-ОВ2-К1 V1"
+    assert schedule_service.canonical_project("13АВ-РД-ОВ2-К1 V1", "OV") == "13АВ-РД-ОВ2-К1 V1"
+    # без section префикс не трогаем
+    assert schedule_service.canonical_project("OV/Foo", "") == "OV/Foo"
+    # префикс не совпадает с section — не трогаем
+    assert schedule_service.canonical_project("EOM/Foo", "OV") == "EOM/Foo"
+
+
+def test_bare_and_prefixed_forms_collapse_to_one_event_same_day():
+    # один проект записан под двумя формами в один день → НЕ двоится
+    entries = [
+        _entry("Калинина А.", "2026-06-26T05:23:45Z", "OV/13АВ-РД-ОВ2-К1 V1",
+               section="OV", item_id="F-1"),
+        _entry("Калинина А.", "2026-06-26T10:44:05Z", "13АВ-РД-ОВ2-К1 V1",
+               section="OV", item_id="F-2"),
+    ]
+    events = schedule_service.aggregate_events(entries, from_day="2026-06-22", to_day="2026-06-28")
+    assert len(events) == 1
+    assert events[0]["source_project"] == "13АВ-РД-ОВ2-К1 V1"
+    assert events[0]["date"] == "2026-06-26"
+
+
+def test_same_bare_name_different_section_not_merged():
+    # одинаковое «голое» имя, но РАЗНЫЕ дисциплины → два проекта (не сливаем)
+    entries = [
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "OV/X", section="OV"),
+        _entry("Узун А. И.", "2026-06-18T06:00:00Z", "EOM/X", section="EOM"),
+    ]
+    events = schedule_service.aggregate_events(entries, from_day="2026-06-15", to_day="2026-06-21")
+    assert len(events) == 2
+
+
+def test_frozen_lookup_matches_any_raw_form():
+    # заморозка зафиксирована на ПРЕФИКСНОЙ форме, а свежие правки — на голой;
+    # день берётся из заморозки (по любой форме), не из активности.
+    entries = [
+        _entry("Калинина А.", "2026-06-26T10:44:00Z", "13АВ-РД-ОВ2-К1 V1",
+               section="OV", item_id="F-1"),
+    ]
+    completions = {("214", "OV/13АВ-РД-ОВ2-К1 V1"): "2026-06-20"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-15", to_day="2026-06-28", completions=completions)
+    assert len(events) == 1
+    assert events[0]["date"] == "2026-06-20"
+
+
 def test_date_range_filter_inclusive():
     entries = [
         _entry("Узун А. И.", "2026-06-14T10:00:00Z", "P-before"),   # вне
