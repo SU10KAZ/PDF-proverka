@@ -3,6 +3,9 @@
    ═══════════════════════════════════════════════════════════════ */
 * { margin:0; padding:0; box-sizing:border-box; }
 
+/* Скрывать неготовый Vue-шаблон до монтирования (убирает мелькание сырых {{ }}) */
+[v-cloak] { display: none !important; }
+
 /* ── THEME VARIABLES ── */
 :root {
   --bg:          #f0f2f7;
