@@ -1914,6 +1914,9 @@
                                 <th style="width:65px; text-align:center">Лист</th>
                                 <th style="width:35%">Замечание</th>
                                 <th style="width:120px">Норма</th>
+                                <!-- HIDDEN по запросу: колонки Critic v2 / KB-Agent / EV скрыты в таблице
+                                     «Замечания». Чтобы вернуть, раскомментировать заголовки здесь и
+                                     соответствующие ячейки td ниже (cv2-disp-cell / kb-val-cell / ev-val-cell).
                                 <th v-if="findingsCv2Available" style="width:78px; text-align:center; cursor:pointer; user-select:none"
                                     @click="toggleCv2Sort()"
                                     :class="{ 'cv2-sort-active': cv2SortDir }"
@@ -1923,6 +1926,7 @@
                                 </th>
                                 <th style="width:86px; text-align:center" title="KB-agent verdict">KB-Agent</th>
                                 <th style="width:86px; text-align:center" title="Evidence Verifier — проверка по документу">EV</th>
+                                -->
                                 <th :style="{ width: expertReviewMode ? '20%' : '30%' }">Рекомендация</th>
                                 <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
                                 <th v-if="expertReviewMode" style="width:150px">Причина</th>
@@ -1993,6 +1997,8 @@
                                         </div>
                                     </td>
                                     <td class="norm-cell">{{ f.norm }}</td>
+                                    <!-- HIDDEN по запросу: ячейки колонок Critic v2 / KB-Agent / EV.
+                                         Парные заголовки th скрыты выше. Восстанавливать строго вместе.
                                     <td v-if="findingsCv2Available" class="cv2-disp-cell" style="text-align:center"
                                         :title="findingCv2Tooltip(f.id)">
                                         <template v-if="findingCv2Score(f.id) != null">
@@ -2024,6 +2030,7 @@
                                         </template>
                                         <span v-else class="ev-val-na">—</span>
                                     </td>
+                                    -->
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
@@ -2057,7 +2064,7 @@
                                 <!-- Раскрывающаяся полоска: блоки + текстовые evidence -->
                                 <tr v-if="expandedFindingId === f.id && (getFindingBlocks(f.id).length > 0 || getFindingTextEvidence(f.id).length > 0)"
                                     class="finding-blocks-row">
-                                    <td :colspan="(expertReviewMode ? 9 : 7) + (findingsCv2Available ? 1 : 0)">
+                                    <td :colspan="expertReviewMode ? 9 : 7">
                                         <!-- Графические блоки -->
                                         <div v-if="getFindingBlocks(f.id).length > 0" class="finding-blocks-strip">
                                             <div v-for="b in getFindingBlocks(f.id)" :key="b.block_id"
