@@ -1515,6 +1515,8 @@ const app = createApp({
         const kbLoading = ref(false);
         const kbSearch = ref('');
         const kbSectionFilter = ref('');
+        const kbItemType = ref('finding');   // 'finding' | 'optimization' — фильтр колонки «Тип» (по умолчанию замечания)
+        const kbTypeMenuOpen = ref(false);   // открыт ли дропдаун выбора типа в шапке таблицы
         const kbObjectFilter = ref('');   // id выбранного объекта (БЗ только по нему)
         const missingNorms = ref([]);
         const missingNormsStats = ref({ pending: 0, added: 0, dismissed: 0, total: 0 });
@@ -9376,6 +9378,7 @@ const app = createApp({
             try {
                 const params = new URLSearchParams({ status: kbTab.value, limit: '200', offset: '0' });
                 if (kbSearch.value) params.set('search', kbSearch.value);
+                if (kbItemType.value) params.set('item_type', kbItemType.value);
                 // Замечания фильтруются по глобально выбранному объекту (верхний селектор «Объект»).
                 if (currentObjectId.value) params.set('object_id', currentObjectId.value);
                 const resp = await fetch(`/api/knowledge-base/entries?${params}`);
@@ -9418,6 +9421,18 @@ const app = createApp({
             } else {
                 loadKnowledgeBase();
             }
+        }
+
+        // Дропдаун выбора типа («Замечания» / «Оптимизации») в шапке колонки «Тип».
+        function toggleKbTypeMenu() {
+            kbTypeMenuOpen.value = !kbTypeMenuOpen.value;
+        }
+
+        function setKbItemType(t) {
+            kbTypeMenuOpen.value = false;
+            if (kbItemType.value === t) return;
+            kbItemType.value = t;
+            loadKnowledgeBase();
         }
 
         async function loadMissingNorms() {
@@ -9615,6 +9630,8 @@ const app = createApp({
         onMounted(() => {
             window.addEventListener('hashchange', handleRoute);
             window.addEventListener('click', _scInlineMatchOutsideClick);
+            // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
+            window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
             handleRoute();
             connectGlobalWS();
             startPolling();
@@ -17009,6 +17026,7 @@ const app = createApp({
             // Knowledge Base
             kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
             kbObjectFilter, onKbObjectChange, openKBItem,
+            kbItemType, kbTypeMenuOpen, toggleKbTypeMenu, setKbItemType,
             kbUploadLoading,
             loadKnowledgeBase, loadKBStats, switchKBTab,
             missingNorms, missingNormsStats, missingNormsFilter,

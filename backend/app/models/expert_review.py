@@ -40,6 +40,11 @@ class KnowledgeBaseEntry(BaseModel):
     sheet: str = ""
     page: Optional[object] = None
 
+    # Evidence / grounding (from source finding)
+    grounding_level: str = ""
+    primary_block_ids: list[str] = []
+    evidence_types: list[str] = []
+
     # Решение эксперта
     expert_decision: str = ""             # "accepted" | "rejected"
     expert_reason: str = ""

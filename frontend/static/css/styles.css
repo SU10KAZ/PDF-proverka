@@ -2133,6 +2133,30 @@ tr.row-rejected td.sc-cell-goto {
 }
 .kb-type--finding { background: rgba(59,130,246,.15); color: #3b82f6; }
 .kb-type--optimization { background: rgba(168,85,247,.15); color: #a855f7; }
+/* Шапка колонки «Тип» с дропдауном-фильтром (Замечания / Оптимизации) */
+.kb-table th.kb-type-th { position: relative; overflow: visible; }
+.kb-type-th__btn {
+    display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+    user-select: none; padding: 2px 4px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: .3px;
+}
+.kb-type-th__btn:hover { background: var(--bg3); }
+.kb-type-th__caret { font-size: 9px; color: var(--text2); transition: transform .12s; }
+.kb-type-th__caret--open { transform: rotate(180deg); }
+.kb-type-menu {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    margin-top: 4px; z-index: 30; min-width: 140px;
+    background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35); padding: 4px; text-align: left;
+}
+.kb-type-menu__item {
+    display: block; width: 100%; text-align: left;
+    padding: 7px 10px; border: none; background: transparent;
+    color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer;
+    border-radius: 6px; text-transform: none; letter-spacing: 0;
+}
+.kb-type-menu__item:hover { background: var(--bg3); }
+.kb-type-menu__item--active { background: var(--teal); color: #fff; }
 .kb-section-badge {
     display: inline-block; padding: 2px 8px; border-radius: 4px;
     background: var(--bg3); color: var(--text2); font-size: 11px; font-weight: 600;

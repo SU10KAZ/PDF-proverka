@@ -2407,7 +2407,21 @@
                         <thead>
                             <tr>
                                 <th style="width:90px">ID</th>
-                                <th style="width:70px">Тип</th>
+                                <th style="width:96px" class="kb-type-th">
+                                    <span class="kb-type-th__btn" @click.stop="toggleKbTypeMenu"
+                                          :title="kbItemType === 'optimization' ? 'Показаны оптимизации' : 'Показаны замечания'">
+                                        Тип
+                                        <span class="kb-type-th__caret" :class="{ 'kb-type-th__caret--open': kbTypeMenuOpen }">&#9662;</span>
+                                    </span>
+                                    <div v-if="kbTypeMenuOpen" class="kb-type-menu" @click.stop>
+                                        <button type="button" class="kb-type-menu__item"
+                                                :class="{ 'kb-type-menu__item--active': kbItemType === 'finding' }"
+                                                @click="setKbItemType('finding')">Замечания</button>
+                                        <button type="button" class="kb-type-menu__item"
+                                                :class="{ 'kb-type-menu__item--active': kbItemType === 'optimization' }"
+                                                @click="setKbItemType('optimization')">Оптимизации</button>
+                                    </div>
+                                </th>
                                 <th style="width:100px">Проект</th>
                                 <th style="width:50px">Дисц.</th>
                                 <th style="width:100px">Критичн.</th>
