@@ -862,9 +862,12 @@ def v2_findings(request, project_id: str) -> dict:
                 project_id, doc["document_code"], ver, legacy_out,
             )
             return fallback
+    f_count = a.findings_count(doc_dir, ver)
+    f_by_sev = a.findings_by_severity(doc_dir, ver)
     return {
         "storage_backend": BACKEND_V2,
         "canary": True,
+        "project_id": project_id,
         "document_code": doc["document_code"],
         "object_id": doc["object_id"],
         "object_folder": doc["object_folder"],
@@ -872,8 +875,13 @@ def v2_findings(request, project_id: str) -> dict:
         "version_id": ver,
         "version_count": doc["version_count"],
         "analysis_status": a.analysis_status(doc_dir, ver),
-        "findings_count": a.findings_count(doc_dir, ver),
-        "findings_by_severity": a.findings_by_severity(doc_dir, ver),
+        "findings_count": f_count,
+        "findings_by_severity": f_by_sev,
+        # legacy-контракт FindingsResponse: фронт читает total/by_severity для
+        # строки «Всего:» и бейджей критичности. Без них итог/бейджи пустые.
+        "total": f_count,
+        "filtered_total": None,
+        "by_severity": f_by_sev,
         "findings": a.findings_list(doc_dir, ver),
     }
 

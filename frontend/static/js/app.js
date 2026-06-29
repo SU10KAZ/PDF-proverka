@@ -6146,7 +6146,16 @@ const app = createApp({
                     return b && b.key === displayFilter;
                 });
             }
-            findingsData.value = { ..._findingsAll.value, findings: items };
+            // Нормализуем сводку под legacy-контракт шаблона (строка «Всего:» и
+            // бейджи): v2-canary исторически отдавал findings_count/findings_by_severity
+            // вместо total/by_severity — поддерживаем обе формы.
+            const src = _findingsAll.value;
+            findingsData.value = {
+                ...src,
+                findings: items,
+                total: src.total ?? src.findings_count ?? 0,
+                by_severity: src.by_severity ?? src.findings_by_severity ?? {},
+            };
         }
 
         // Сколько findings скрыто по умолчанию (для счётчика возле toggle).
