@@ -7076,8 +7076,19 @@ const app = createApp({
                 _cacheSet('project', id, currentProject.value);
                 const resp = await api(`/optimization/${id}`);
                 if (resp.has_data) {
-                    optimizationData.value = resp.data;
-                    _cacheSet('optimization', id, resp.data);
+                    // Нормализуем сводку под шаблон («Всего:» и бейджи по типам):
+                    // в optimization.json total/by_type лежат под meta
+                    // (meta.total_items / meta.by_type), а шаблон читает их с
+                    // верхнего уровня. Поддерживаем обе формы.
+                    const d = resp.data || {};
+                    const meta = d.meta || {};
+                    const norm = {
+                        ...d,
+                        total: d.total ?? meta.total_items ?? (Array.isArray(d.items) ? d.items.length : 0),
+                        by_type: d.by_type ?? meta.by_type ?? {},
+                    };
+                    optimizationData.value = norm;
+                    _cacheSet('optimization', id, norm);
                 }
                 loadOptBlockMap(id);
             } catch (e) {
