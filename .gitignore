@@ -8,6 +8,16 @@
 *.jpeg
 *.webp
 
+# === Knowledge base (живые данные: решения экспертов, work_plans, .bak, .lock) ===
+knowledge_base/
+_output_kb/
+
+# === Frontend restore-бэкапы (см. *.kbev-backup-*) ===
+*.kbev-backup-*
+
+# === Experiment outputs (большие result-JSON, не код) ===
+experiments/**/results/
+
 # === Project runtime artifacts ===
 projects/**/_output/
 projects/**/blocks/
