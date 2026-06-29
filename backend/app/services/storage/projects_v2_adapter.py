@@ -347,30 +347,41 @@ class ProjectsV2Adapter:
         p = self._latest_file(doc_dir, version_id, "02_blocks_analysis.json")
         return _read_json(p) if p else None
 
+    # Имена папок кропов в приоритете чтения. `blocks_gemma_100` — production
+    # Gemma-пайплайн (GEMMA_BASE_BLOCKS_DIRNAME из gemma_enrichment_contract),
+    # `blocks` — legacy-имя старых прогонов. Если искать только `blocks`, у
+    # любой версии с новым Gemma-аудитом index.json не находится → /blocks
+    # отдаёт 404 и UI показывает «Блоки не найдены».
+    _BLOCKS_DIRNAMES = ("blocks_gemma_100", "blocks")
+
     def blocks_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Папка кропнутых блоков версии (read-only).
 
-        В projects_v2 кропы лежат под `03_analysis/latest/blocks/` либо (чаще)
-        под последним `03_analysis/runs/<run>/blocks/`. Возвращает первую папку,
-        где есть `index.json`, иначе None.
+        В projects_v2 кропы лежат под `03_analysis/latest/<blocks-dir>/` либо
+        (чаще) под последним `03_analysis/runs/<run>/<blocks-dir>/`, где
+        `<blocks-dir>` = `blocks_gemma_100` (production) или legacy `blocks`.
+        Возвращает первую папку, где есть `index.json`, иначе None.
         """
         vdir = self.version_dir(doc_dir, version_id)
         analysis = vdir / "03_analysis"
-        cand = analysis / "latest" / "blocks"
-        if (cand / "index.json").is_file():
-            return cand
+        for name in self._BLOCKS_DIRNAMES:
+            cand = analysis / "latest" / name
+            if (cand / "index.json").is_file():
+                return cand
         runs = analysis / "runs"
         if runs.is_dir():
             for run in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
-                bd = run / "blocks"
-                if (bd / "index.json").is_file():
-                    return bd
+                for name in self._BLOCKS_DIRNAMES:
+                    bd = run / name
+                    if (bd / "index.json").is_file():
+                        return bd
         # King&Sons legacy_findings_preserve: блоки лежат в сохранённом legacy-бандле
-        # `99_service/legacy_output/<...>/_output/blocks/` (read-only).
+        # `99_service/legacy_output/<...>/_output/<blocks-dir>/` (read-only).
         legacy_out = vdir / "99_service" / "legacy_output"
         if legacy_out.is_dir():
-            for idx in sorted(legacy_out.glob("*/_output/blocks/index.json")):
-                return idx.parent
+            for name in self._BLOCKS_DIRNAMES:
+                for idx in sorted(legacy_out.glob(f"*/_output/{name}/index.json")):
+                    return idx.parent
         return None
 
     def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:

@@ -250,6 +250,47 @@ def test_find_document(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# blocks_dir: production Gemma-папка `blocks_gemma_100`, не только legacy `blocks`
+# ---------------------------------------------------------------------------
+
+
+def test_blocks_dir_resolves_gemma_dir_in_runs(tmp_path):
+    """Регресс: версия, отаудированная production Gemma-пайплайном, кладёт кропы в
+    `runs/<run>/blocks_gemma_100/`, а не в legacy `blocks/`. Адаптер обязан её
+    находить — иначе /api/tiles/.../blocks отдаёт 404 («Блоки не найдены»)."""
+    v2 = tmp_path / "projects_v2"
+    doc = _mkdoc(v2, "AR", "doc-gemma")
+    vroot = _mkversion(doc, "v001", analysis_status="complete", latest=[])
+    run = vroot / "03_analysis" / "runs" / "run_20260619T090741" / "blocks_gemma_100"
+    _w(run / "index.json", {"total_blocks": 2, "blocks": [
+        {"block_id": "AAA", "page": 1, "file": "block_AAA.png"},
+        {"block_id": "BBB", "page": 2, "file": "block_BBB.png"},
+    ]})
+    _w(run / "block_AAA.png", "x")
+
+    a = ProjectsV2Adapter(v2)
+    bd = a.blocks_dir(doc, "v001")
+    assert bd is not None and bd.name == "blocks_gemma_100"
+    idx = a.read_blocks_index(doc, "v001")
+    assert idx is not None and len(idx["blocks"]) == 2
+
+
+def test_blocks_dir_prefers_gemma_over_legacy_blocks(tmp_path):
+    """Если в одном run есть и `blocks_gemma_100`, и legacy `blocks`, берём Gemma
+    (полный production-набор), как делает legacy-роутер через gemma_blocks_dir."""
+    v2 = tmp_path / "projects_v2"
+    doc = _mkdoc(v2, "AR", "doc-both")
+    vroot = _mkversion(doc, "v001", analysis_status="complete", latest=[])
+    run = vroot / "03_analysis" / "runs" / "run_X"
+    _w(run / "blocks" / "index.json", {"total_blocks": 1, "blocks": [{"block_id": "OLD"}]})
+    _w(run / "blocks_gemma_100" / "index.json", {"total_blocks": 1, "blocks": [{"block_id": "NEW"}]})
+
+    a = ProjectsV2Adapter(v2)
+    bd = a.blocks_dir(doc, "v001")
+    assert bd is not None and bd.name == "blocks_gemma_100"
+
+
+# ---------------------------------------------------------------------------
 # read-only invariant
 # ---------------------------------------------------------------------------
 
