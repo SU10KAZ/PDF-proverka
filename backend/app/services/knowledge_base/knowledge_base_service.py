@@ -3,6 +3,7 @@
 """
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -58,15 +59,47 @@ def _v2_primary_enabled() -> bool:
         return False
 
 
-def _analysis_dirs(project_id: str, *, must_exist: bool = False) -> list[Path]:
-    """Analysis artifacts for enrichment: v2 latest first, legacy _output as before."""
-    version_dir = _version_dir(project_id, must_exist=must_exist)
+def _analysis_dirs_for_version_dir(version_dir: Path) -> list[Path]:
+    """Analysis artifacts inside ONE version dir: v2 03_analysis/latest, then _output."""
     if is_projects_v2_version_dir(version_dir):
         return [
             version_dir / "03_analysis" / "latest",
             version_dir / "_output",
         ]
     return [version_dir / "_output"]
+
+
+def _analysis_dirs(project_id: str, *, must_exist: bool = False) -> list[Path]:
+    """Analysis artifacts for enrichment: v2 latest first, legacy _output as before."""
+    return _analysis_dirs_for_version_dir(
+        _version_dir(project_id, must_exist=must_exist)
+    )
+
+
+_VERSION_DIR_RE = re.compile(r"v\d+$")
+
+
+def _document_version_dirs(version_dir: Path) -> list[Path]:
+    """Все версии документа, новейшая первой.
+
+    Для projects_v2 перечисляет сестринские `versions/vNNN` (числовая сортировка =
+    хронологическая, т.к. id zero-padded). Для legacy-раскладки или если перечислить
+    не удалось — возвращает `[version_dir]`. Нужна для version-aware fallback
+    хайдрейтинга БЗ: решение по item_id из старой версии находит источник там."""
+    if not is_projects_v2_version_dir(version_dir):
+        return [version_dir]
+    versions_root = version_dir.parent  # .../versions
+    try:
+        siblings = [
+            p for p in versions_root.iterdir()
+            if p.is_dir() and _VERSION_DIR_RE.match(p.name)
+        ]
+    except OSError:
+        return [version_dir]
+    if not siblings:
+        return [version_dir]
+    siblings.sort(key=lambda p: p.name, reverse=True)  # vNNN … v001
+    return siblings
 
 
 def _review_paths(project_id: str, *, must_exist: bool = False) -> list[Path]:
@@ -231,10 +264,10 @@ def load_expert_review(project_id: str) -> Optional[dict]:
     return None
 
 
-def _load_source_item_maps(project_id: str) -> tuple[dict[str, dict], dict[str, dict]]:
-    """Source findings/optimizations for KB enrichment, latest-first."""
-    analysis_dirs = _analysis_dirs(project_id)
-
+def _load_item_maps_from_analysis_dirs(
+    analysis_dirs: list[Path],
+) -> tuple[dict[str, dict], dict[str, dict]]:
+    """findings/opt карты ОДНОЙ версии по её analysis-папкам (latest-first внутри версии)."""
     findings_map: dict[str, dict] = {}
     for output_dir in analysis_dirs:
         for fname in ["03a_norms_verified.json", "03_findings.json"]:
@@ -256,6 +289,40 @@ def _load_source_item_maps(project_id: str) -> tuple[dict[str, dict], dict[str, 
                     opt_map[str(item.get("id"))] = item
             break
 
+    return findings_map, opt_map
+
+
+def _load_source_item_maps(project_id: str) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Source findings/optimizations активной (latest) версии, latest-first.
+
+    Только текущая версия — для write-time enrich и расчёта дня завершения, где
+    «источник» = именно активные findings. Для KB-хайдрейтинга (которому нужен
+    fallback по версиям) используйте `_load_source_item_maps_versioned`."""
+    return _load_item_maps_from_analysis_dirs(_analysis_dirs(project_id))
+
+
+def _load_source_item_maps_versioned(
+    project_id: str,
+) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Version-aware источник для хайдрейтинга БЗ.
+
+    Берём активную (latest) версию, затем добираем из более ранних версий те item_id,
+    которых в latest нет. Новейшая версия выигрывает (`setdefault`), старые лишь
+    заполняют пробелы. Это чинит пустые «Суть»/«Критичн.» у орфанных записей БЗ:
+    решение принято по item_id (`F-NNN`) из старой версии, которого в latest уже нет
+    после переаудита/перенумерации. Для item_id, присутствующих в latest, поведение
+    НЕ меняется. Недеструктивно — только чтение."""
+    version_dir = _version_dir(project_id)
+    findings_map: dict[str, dict] = {}
+    opt_map: dict[str, dict] = {}
+    for vdir in _document_version_dirs(version_dir):  # newest-first
+        f_map, o_map = _load_item_maps_from_analysis_dirs(
+            _analysis_dirs_for_version_dir(vdir)
+        )
+        for k, v in f_map.items():
+            findings_map.setdefault(k, v)
+        for k, v in o_map.items():
+            opt_map.setdefault(k, v)
     return findings_map, opt_map
 
 
@@ -333,7 +400,9 @@ def _source_for_entry(entry: dict, source_cache: dict[str, tuple[dict[str, dict]
         return {}
     if project_id not in source_cache:
         try:
-            source_cache[project_id] = _load_source_item_maps(project_id)
+            # Version-aware: добираем item_id из старых версий, если в latest нет
+            # (орфаны БЗ после переаудита/перенумерации F-NNN).
+            source_cache[project_id] = _load_source_item_maps_versioned(project_id)
         except Exception:
             source_cache[project_id] = ({}, {})
     findings_map, opt_map = source_cache[project_id]
