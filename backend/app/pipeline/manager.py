@@ -1807,6 +1807,33 @@ class PipelineManager:
         finally:
             self._end_main_gemma_lock_intent()
 
+    async def _run_block_grounding_stage(self, job: AuditJob) -> None:
+        """Усиление предобработки: Value Grounding (вектор-сверка значений gemma).
+
+        OFF по умолчанию (BLOCK_VALUE_GROUNDING_ENABLED) → полный no-op. Fail-soft:
+        ошибки усиления не роняют основной пайплайн. Запускается после gemma_enrichment,
+        до text_analysis (значения уже прочитаны, вектор-слой доступен из result.json).
+        """
+        from backend.app.core.config import BLOCK_VALUE_GROUNDING_ENABLED
+        if not BLOCK_VALUE_GROUNDING_ENABLED:
+            return
+        try:
+            from backend.app.pipeline.stages.block_grounding.runner import (
+                run_block_grounding_stage,
+            )
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                bind_output_root,
+                unbind_output_root,
+            )
+            ctx = self._make_stage_context(job)
+            _token = bind_output_root(ctx.output_dir)
+            try:
+                await run_block_grounding_stage(ctx)
+            finally:
+                unbind_output_root(_token)
+        except Exception as exc:
+            await self._log(job, f"Value Grounding пропущен (soft): {exc}", "warn")
+
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
         pid = job.project_id
@@ -2694,6 +2721,9 @@ class PipelineManager:
 
                 if job.status == JobStatus.CANCELLED:
                     return
+
+                # Усиление предобработки: Value Grounding. OFF по умолчанию, fail-soft.
+                await self._run_block_grounding_stage(job)
 
             # ═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══
             if start_idx <= 2:
@@ -4317,6 +4347,9 @@ class PipelineManager:
 
             if job.status == JobStatus.CANCELLED:
                 return
+
+            # Усиление предобработки: Value Grounding (вектор-сверка). OFF по умолчанию, fail-soft.
+            await self._run_block_grounding_stage(job)
 
             # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             files_to_clean = [

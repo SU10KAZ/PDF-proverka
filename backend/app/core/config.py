@@ -592,6 +592,21 @@ CHANDRA_BASIC_PASS = os.environ.get("NGROK_AUTH_PASS", "")
 
 LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
 GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)
+# Value Grounding (усиление предобработки графики): сверка значений gemma с векторным
+# текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
+# OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
+BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False)
+# Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
+BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
+# Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
+BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
+# Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).
+# 0 = режим crop выключен (только тайлинг крупных). Общий бюджет — MAX_BLOCKS на оба режима.
+BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH", "0"))
+BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS", "12"))
+BLOCK_VALUE_GROUNDING_QWEN_MODEL = os.environ.get(
+    "BLOCK_VALUE_GROUNDING_QWEN_MODEL",
+    os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "qwen/qwen3.6-35b-a3b"))
 # 8192 — практический минимум для 100 DPI image-блока с page_text:
 # на 4096 в проде стабильно падают блоки 800×500 с "Context size has been exceeded".
 GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "8192"))
