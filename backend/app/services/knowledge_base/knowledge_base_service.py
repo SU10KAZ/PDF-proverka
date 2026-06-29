@@ -288,6 +288,44 @@ def _norm_refs_from_source(source: dict) -> list[str]:
     return [norm] if isinstance(norm, str) else norm
 
 
+def _primary_block_ids_from_source(source: dict) -> list[str]:
+    """Первичные block_id замечания: source_block_ids + evidence-блоки, fallback related."""
+    ids: list[str] = []
+    seen: set[str] = set()
+
+    def _add(value) -> None:
+        if not value:
+            return
+        bid = str(value).strip()
+        if bid and bid not in seen:
+            seen.add(bid)
+            ids.append(bid)
+
+    for bid in source.get("source_block_ids") or []:
+        _add(bid)
+    for e in source.get("evidence") or []:
+        if isinstance(e, dict) and e.get("source") != "grounding_service":
+            _add(e.get("block_id") or e.get("id"))
+    if not ids:
+        for bid in source.get("related_block_ids") or []:
+            _add(bid)
+    return ids
+
+
+def _evidence_types_from_source(source: dict) -> list[str]:
+    """Уникальные типы evidence (image/text/...) у замечания."""
+    types: list[str] = []
+    seen: set[str] = set()
+    for e in source.get("evidence") or []:
+        if not isinstance(e, dict):
+            continue
+        etype = str(e.get("type") or "").strip()
+        if etype and etype not in seen:
+            seen.add(etype)
+            types.append(etype)
+    return types
+
+
 def _source_for_entry(entry: dict, source_cache: dict[str, tuple[dict[str, dict], dict[str, dict]]]) -> dict:
     project_id = str(entry.get("source_project") or "").strip()
     item_id = str(entry.get("item_id") or "").strip()
