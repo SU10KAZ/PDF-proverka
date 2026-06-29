@@ -2995,6 +2995,10 @@
                     <div class="tile-split-container" @click.stop>
                         <button v-if="blockBackRoute" class="block-back-btn" @click="goBackFromBlock()" title="Назад к замечаниям">&larr; Назад</button>
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
+                        <!-- Тоггл: показать текст, реально уходящий в нейронку (Stage 02) вместо картинки -->
+                        <button class="tile-split-txt-toggle" :class="{'is-active': showBlockLlmText}"
+                                @click.stop="toggleBlockLlmText()"
+                                title="Показать текст, уходящий в нейронку (Stage 02): enrichment + текст страницы">txt</button>
                         <!-- Prev/Next navigation (в рамках текущей страницы или виртуальной 'Без сущностей') -->
                         <button v-if="currentBlocksList.length > 1"
                                 class="block-nav-btn block-nav-btn--prev"
@@ -3020,6 +3024,25 @@
                                  :style="blockImageStyle"
                                  draggable="false"
                                  @load="onBlockImageLoad">
+                            <!-- Текст, реально уходящий в нейронку для этого блока (поверх картинки) -->
+                            <div v-if="showBlockLlmText" class="block-llm-text"
+                                 @click.stop @wheel.stop @mousedown.stop @dblclick.stop>
+                                <div v-if="blockLlmTextLoading" class="block-llm-text__msg">Загрузка…</div>
+                                <template v-else-if="blockLlmText && blockLlmText.user_text">
+                                    <div class="block-llm-text__meta">
+                                        Что уходит в нейронку (Stage 02) ·
+                                        enrichment: <b>{{ blockLlmText.enrichment_source }}</b>
+                                        <span v-if="!blockLlmText.has_enrichment" style="color:var(--accent-orange,#e08a3c)">
+                                            (описание блока пустое — нет enrichment)</span>
+                                    </div>
+                                    <pre class="block-llm-text__body">{{ blockLlmText.user_text }}</pre>
+                                    <details class="block-llm-text__sys">
+                                        <summary>System prompt ({{ (blockLlmText.system_prompt || '').length }} симв)</summary>
+                                        <pre class="block-llm-text__body">{{ blockLlmText.system_prompt }}</pre>
+                                    </details>
+                                </template>
+                                <div v-else class="block-llm-text__msg">{{ blockLlmTextError || 'Нет данных' }}</div>
+                            </div>
                             <!-- SVG overlay для подсветки замечаний -->
                             <svg v-if="currentBlockHighlights.length > 0"
                                  class="block-highlight-svg"

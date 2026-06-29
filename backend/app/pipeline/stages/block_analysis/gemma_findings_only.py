@@ -403,6 +403,24 @@ def load_page_text(graph: dict, page: int) -> str:
     return ""
 
 
+def build_block_user_text(block_id: str, page, enrichment: Optional[dict], page_text: str) -> str:
+    """Текст блока, уходящий в LLM на Stage 02 (без изображения).
+
+    ЕДИНЫЙ источник: эту же функцию вызывает реальный анализ блока (call_gpt_for_block)
+    и UI-endpoint предпросмотра «что отправляем в нейронку», чтобы они не разъезжались.
+    """
+    return (
+        f"# Блок {block_id} | страница PDF {page}\n\n"
+        f"## Уже извлечённое описание блока (контекст, считай верным):\n"
+        f"```json\n{json.dumps(enrichment, ensure_ascii=False, indent=2)}\n```\n\n"
+        f"## Текст страницы (общие указания, спецификации и т.д.):\n"
+        f"{page_text or '(недоступен)'}\n\n"
+        f"## Задача:\n"
+        f"Посмотри на изображение блока и верни findings[]. Только проблемы. "
+        f"Не описывай что видишь. Если всё корректно — пустой массив."
+    )
+
+
 def sheet_for_page(graph: dict, page: int) -> Optional[str]:
     for p in graph.get("pages", []):
         if p.get("page") == page:
@@ -443,16 +461,7 @@ async def call_gpt_for_block(
     if not png_path.exists():
         return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
 
-    user_text = (
-        f"# Блок {block['block_id']} | страница PDF {block['page']}\n\n"
-        f"## Уже извлечённое описание блока (контекст, считай верным):\n"
-        f"```json\n{json.dumps(enrichment, ensure_ascii=False, indent=2)}\n```\n\n"
-        f"## Текст страницы (общие указания, спецификации и т.д.):\n"
-        f"{page_text or '(недоступен)'}\n\n"
-        f"## Задача:\n"
-        f"Посмотри на изображение блока и верни findings[]. Только проблемы. "
-        f"Не описывай что видишь. Если всё корректно — пустой массив."
-    )
+    user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
 
     # ─── Paid response cache check (до guard и до сети) ────────────
     # Если этот блок с этим model/prompt/image уже отвечал — берём из

@@ -559,6 +559,110 @@ async def get_blocks(
     }
 
 
+def _lookup_block_page(output_dir: Path, block_id: str) -> Optional[int]:
+    """Найти страницу блока: 02_blocks_analysis.json (v2+legacy) → gemma index."""
+    ba = output_dir / "02_blocks_analysis.json"
+    if ba.exists():
+        try:
+            d = json.loads(ba.read_text(encoding="utf-8"))
+            for b in (d.get("block_analyses") or d.get("blocks_reviewed") or []):
+                if str(b.get("block_id")) == block_id and b.get("page") is not None:
+                    return b.get("page")
+        except (OSError, json.JSONDecodeError):
+            pass
+    idx_path = gemma_blocks_index_path(output_dir.parent)
+    if not idx_path.exists():
+        legacy = output_dir / "blocks" / "index.json"
+        idx_path = legacy if legacy.exists() else idx_path
+    if idx_path.exists():
+        try:
+            idx = json.loads(idx_path.read_text(encoding="utf-8"))
+            for b in idx.get("blocks", []):
+                if str(b.get("block_id")) == block_id:
+                    return b.get("page")
+        except (OSError, json.JSONDecodeError):
+            pass
+    return None
+
+
+@router.get("/{project_id:path}/blocks/llm-text/{block_id}")
+async def get_block_llm_text(
+    project_id: str,
+    block_id: str,
+    request: Request,
+    version_id: Optional[str] = Query(None),
+    page: Optional[int] = Query(None, description="Страница блока (если известна на клиенте)"),
+):
+    """Текст, реально уходящий в LLM для блока на Stage 02 (без изображения).
+
+    Для визуальной сверки «что мы отправляем в нейронку»: тот же `system_prompt` +
+    `user_text` (enrichment JSON + текст страницы), что собирает реальный анализ блока
+    (`call_gpt_for_block` через общий `build_block_user_text`). Работает на v2 и legacy.
+    """
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+        build_block_user_text,
+        build_system_prompt,
+        get_enrichment,
+        load_page_text,
+    )
+
+    try:
+        ctx = version_service.resolve_project_version_context(project_id, version_id)
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError:
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    output_dir: Path = ctx["output_dir"]
+    version_dir: Path = ctx.get("version_dir") or output_dir.parent
+
+    # 1) Страница блока: с клиента (query) или из 02_blocks_analysis.json / gemma index
+    if page is None:
+        page = _lookup_block_page(output_dir, block_id)
+    if page is None:
+        raise HTTPException(404, f"Блок '{block_id}' не найден для '{project_id}'")
+
+    # 2) project_info (источник enrichment + секция). v2: 01_input/, legacy: корень версии
+    project_info: dict = {}
+    for cand in (version_dir / "01_input" / "project_info.json", version_dir / "project_info.json"):
+        if cand.exists():
+            try:
+                project_info = json.loads(cand.read_text(encoding="utf-8"))
+                break
+            except (OSError, json.JSONDecodeError):
+                continue
+
+    # 3) enrichment — ТОТ ЖЕ источник, что у Stage 02 (MD [ENRICHED] → gemma experiments)
+    enrichment, enr_source = get_enrichment(version_dir, {}, project_info, block_id)
+
+    # 4) текст страницы из document_graph.json
+    page_text = ""
+    graph_path = output_dir / "document_graph.json"
+    if graph_path.exists():
+        try:
+            page_text = load_page_text(json.loads(graph_path.read_text(encoding="utf-8")), page)
+        except (OSError, json.JSONDecodeError):
+            page_text = ""
+
+    section = str(project_info.get("section") or "")
+    user_text = build_block_user_text(block_id, page, enrichment, page_text)
+    try:
+        system_prompt = build_system_prompt(section, extended=True)
+    except Exception:
+        system_prompt = build_system_prompt(section, extended=False)
+
+    return {
+        "project_id": project_id,
+        "block_id": block_id,
+        "page": page,
+        "enrichment": enrichment,
+        "enrichment_source": enr_source,
+        "has_enrichment": enrichment is not None,
+        "page_text": page_text,
+        "system_prompt": system_prompt,
+        "user_text": user_text,
+    }
+
+
 @router.get("/{project_id:path}/blocks/analysis")
 async def get_blocks_analysis(
     project_id: str,

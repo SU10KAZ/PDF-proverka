@@ -1466,6 +1466,12 @@ const app = createApp({
         const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
         const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
 
+        // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 02)
+        const showBlockLlmText = ref(false);
+        const blockLlmText = ref(null);
+        const blockLlmTextLoading = ref(false);
+        const blockLlmTextError = ref('');
+
         // Optimization
         const optimizationData = ref(null);
         const optimizationLoading = ref(false);
@@ -6704,7 +6710,38 @@ const app = createApp({
             highlightedFindingId.value = null;
             allHighlightsVisible.value = true;
             hiddenHighlightFindings.value = new Set();
+            // txt-режим переживает навигацию: при открытии нового блока подгружаем его текст
+            blockLlmText.value = null;
+            blockLlmTextError.value = '';
+            if (showBlockLlmText.value) loadBlockLlmText();
             resetBlockZoom();
+        }
+
+        // Загрузить текст блока, реально уходящий в нейронку (Stage 02)
+        async function loadBlockLlmText() {
+            const block = selectedBlock.value;
+            if (!block) return;
+            blockLlmTextLoading.value = true;
+            blockLlmTextError.value = '';
+            try {
+                const url = '/api/tiles/' + blocksProjectId.value + '/blocks/llm-text/' + block.block_id
+                          + (block.page != null ? '?page=' + block.page : '');
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                blockLlmText.value = await resp.json();
+            } catch (e) {
+                blockLlmText.value = null;
+                blockLlmTextError.value = 'Не удалось загрузить текст блока: ' + (e.message || e);
+            } finally {
+                blockLlmTextLoading.value = false;
+            }
+        }
+
+        function toggleBlockLlmText() {
+            showBlockLlmText.value = !showBlockLlmText.value;
+            if (showBlockLlmText.value && (!blockLlmText.value || !blockLlmText.value.user_text)) {
+                loadBlockLlmText();
+            }
         }
 
         // Рассчитать scale и offset для вписывания картинки в контейнер
@@ -16847,6 +16884,8 @@ const app = createApp({
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
             blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
+            // «txt»-режим: текст блока, уходящий в нейронку
+            showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,

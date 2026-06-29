@@ -1124,6 +1124,18 @@ th.cv2-sort-active {
 .tile-split-container { background: var(--card-bg); border: 1px solid var(--border2); border-radius: 16px; width: 100%; max-width: 1200px; max-height: 90vh; display: flex; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.2); position: relative; }
 .tile-split-close { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border2); background: var(--card2-bg); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; z-index: 10; transition: all 0.13s; }
 .tile-split-close:hover { background: var(--red-light); color: var(--red); }
+/* Тоггл «txt» — показать текст блока, уходящий в нейронку (слева от ×) */
+.tile-split-txt-toggle { position: absolute; top: 12px; right: 48px; height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--border2); background: var(--card2-bg); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; z-index: 11; transition: all 0.13s; }
+.tile-split-txt-toggle:hover { background: var(--accent-cyan, #1f9ec4); color: #fff; }
+.tile-split-txt-toggle.is-active { background: var(--accent-cyan, #1f9ec4); color: #fff; border-color: var(--accent-cyan, #1f9ec4); }
+/* Панель текста блока поверх картинки */
+.block-llm-text { position: absolute; inset: 0; background: var(--card-bg); z-index: 9; overflow: auto; padding: 16px 18px 24px; cursor: default; }
+.block-llm-text__meta { font-size: 12px; color: var(--text2); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); position: sticky; top: -16px; background: var(--card-bg); }
+.block-llm-text__body { white-space: pre-wrap; word-break: break-word; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.55; color: var(--text2); margin: 0; }
+.block-llm-text__msg { color: var(--text2); font-size: 13px; padding: 24px 0; text-align: center; }
+.block-llm-text__sys { margin-top: 16px; border-top: 1px dashed var(--border2); padding-top: 10px; }
+.block-llm-text__sys summary { cursor: pointer; font-size: 12px; color: var(--text2); user-select: none; }
+.block-llm-text__sys[open] summary { margin-bottom: 8px; }
 .block-back-btn { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 7px; border: 1px solid var(--border2); background: var(--card2-bg); color: var(--text2); cursor: pointer; font-size: 12px; font-family: inherit; z-index: 10; transition: all 0.13s; }
 .block-back-btn:hover { background: var(--teal-light); color: var(--teal); }
 
