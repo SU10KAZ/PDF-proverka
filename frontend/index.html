@@ -1895,6 +1895,12 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                         </label>
+                        <button class="btn-expert-toggle" :class="{ disabled: evidenceValidationRunning }"
+                                @click="runEvidenceValidation()"
+                                title="Evidence Verifier — проверка по документу и графическим блокам (долго)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                            {{ evidenceValidationRunning ? 'EV…' : 'Запустить EV' }}
+                        </button>
                     </div>
                 </div>
 
@@ -1915,6 +1921,8 @@
                                     Critic v2 <span class="cv2-exp-mark">эксп.</span>
                                     <span class="cv2-sort-indicator">{{ cv2SortDir === 'desc' ? '▼' : (cv2SortDir === 'asc' ? '▲' : '') }}</span>
                                 </th>
+                                <th style="width:86px; text-align:center" title="KB-agent verdict">KB-Agent</th>
+                                <th style="width:86px; text-align:center" title="Evidence Verifier — проверка по документу">EV</th>
                                 <th :style="{ width: expertReviewMode ? '20%' : '30%' }">Рекомендация</th>
                                 <th v-if="expertReviewMode" style="width:90px; text-align:center">Решение</th>
                                 <th v-if="expertReviewMode" style="width:150px">Причина</th>
@@ -1994,6 +2002,27 @@
                                             <div class="cv2-disp-label">{{ findingCv2Label(f.id) }}</div>
                                         </template>
                                         <span v-else class="cv2-disp-na">—</span>
+                                    </td>
+                                    <td class="kb-val-cell" style="text-align:center"
+                                        :title="findingKbTooltip(f.id)">
+                                        <span v-if="kbValidationLoading" class="kb-val-na">…</span>
+                                        <template v-else-if="findingKbDecision(f.id)">
+                                            <span class="kb-val-badge" :class="findingKbClass(f.id)">
+                                                {{ findingKbLabel(f.id) }}
+                                            </span>
+                                        </template>
+                                        <span v-else class="kb-val-na">—</span>
+                                    </td>
+                                    <td class="ev-val-cell" style="text-align:center"
+                                        :title="findingEvTooltip(f.id)">
+                                        <span v-if="evidenceValidationLoading" class="ev-val-na">…</span>
+                                        <template v-else-if="findingEvDecision(f.id) && findingEvDecision(f.id).verification_path !== 'skipped'">
+                                            <span class="ev-val-badge" :class="findingEvClass(f.id)">
+                                                {{ findingEvLabel(f.id) }}
+                                            </span>
+                                            <div v-if="findingEvPathLabel(f.id)" class="ev-val-path">{{ findingEvPathLabel(f.id) }}</div>
+                                        </template>
+                                        <span v-else class="ev-val-na">—</span>
                                     </td>
                                     <td class="rec-cell">{{ f.solution || f.recommendation || '' }}</td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">

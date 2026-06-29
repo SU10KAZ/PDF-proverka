@@ -6194,6 +6194,117 @@ const app = createApp({
             return lines.join('\n');
         }
 
+        const evidenceValidationMap = ref({});
+        const evidenceValidationAvailable = ref(false);
+        const evidenceValidationLoading = ref(false);
+        const evidenceValidationRunning = ref(false);
+
+        async function _loadEvidenceValidation(projectId) {
+            evidenceValidationLoading.value = true;
+            try {
+                const data = await api('/findings/' + encodeURIComponent(projectId) + '/evidence-validation');
+                const map = {};
+                for (const d of (data.decisions || [])) { map[d.finding_id] = d; }
+                evidenceValidationMap.value = map;
+                evidenceValidationAvailable.value = Object.keys(map).length > 0;
+            } catch(e) {
+                console.warn('[EV] load failed:', e);
+                evidenceValidationAvailable.value = false;
+                evidenceValidationMap.value = {};
+            } finally {
+                evidenceValidationLoading.value = false;
+            }
+        }
+
+        async function runEvidenceValidation() {
+            const id = currentProjectId.value;
+            if (!id || evidenceValidationRunning.value) return;
+            evidenceValidationRunning.value = true;
+            try {
+                await api('/findings/' + encodeURIComponent(id) + '/evidence-validation/run', { method: 'POST' });
+                await _loadEvidenceValidation(id);
+            } catch(e) {
+                console.error('[EV] run failed:', e);
+                alert('Ошибка запуска Evidence Verifier: ' + (e.message || e));
+            } finally {
+                evidenceValidationRunning.value = false;
+            }
+        }
+
+        function findingEvDecision(fid) { return (evidenceValidationMap.value || {})[fid] || null; }
+        function findingEvLabel(fid) {
+            const d = findingEvDecision(fid);
+            if (!d) return '';
+            if (d.verification_path === 'skipped') return '—';
+            const L = {accept:'принять',reject:'отклонить',borderline:'под вопросом',needs_human:'эксперт'};
+            return L[d.llm_decision] || d.llm_decision;
+        }
+        function findingEvClass(fid) {
+            const d = findingEvDecision(fid);
+            if (!d || d.verification_path === 'skipped') return 'ev-val-na';
+            const C = {accept:'ev-val-accept',reject:'ev-val-reject',borderline:'ev-val-border',needs_human:'ev-val-human'};
+            return C[d.llm_decision] || 'ev-val-na';
+        }
+        function findingEvPathLabel(fid) {
+            const d = findingEvDecision(fid);
+            if (!d || !d.verification_path) return '';
+            const P = {graphic:'графика',text:'текст',mixed:'смеш.',weak:'слабый',skipped:'пропуск'};
+            return P[d.verification_path] || d.verification_path;
+        }
+        function findingEvTooltip(fid) {
+            const d = findingEvDecision(fid);
+            if (!d) return '';
+            const lines = ['Evidence Verifier'];
+            if (d.verification_path) lines.push('Путь: ' + findingEvPathLabel(fid));
+            if (d.block_ids_used && d.block_ids_used.length) lines.push('Блоки: ' + d.block_ids_used.join(', '));
+            lines.push('Решение: ' + d.llm_decision + ' (conf=' + (d.confidence || '?') + ')');
+            if (d.explanation) lines.push(d.explanation.slice(0, 250));
+            return lines.join('\n');
+        }
+
+        const kbValidationMap = ref({});
+        const kbValidationAvailable = ref(false);
+
+        const kbValidationLoading = ref(false);
+        async function _loadKBValidation(projectId) {
+            kbValidationLoading.value = true;
+            try {
+                const data = await api('/findings/' + encodeURIComponent(projectId) + '/kb-validation');
+                const map = {};
+                for (const d of (data.decisions || [])) { map[d.finding_id] = d; }
+                kbValidationMap.value = map;
+                kbValidationAvailable.value = Object.keys(map).length > 0;
+            } catch(e) {
+                console.warn('[KB-Agent] load failed:', e);
+                kbValidationAvailable.value = false;
+                kbValidationMap.value = {};
+            } finally {
+                kbValidationLoading.value = false;
+            }
+        }
+
+        function findingKbDecision(id) { return (kbValidationMap.value || {})[id] || null; }
+        function findingKbLabel(id) {
+            const d = findingKbDecision(id);
+            if (!d) return '';
+            const L = {accept:'принять',reject:'отклонить',borderline:'под вопросом',needs_human:'эксперт'};
+            return L[d.llm_decision] || d.llm_decision;
+        }
+        function findingKbClass(id) {
+            const d = findingKbDecision(id);
+            if (!d) return 'kb-val-na';
+            const C = {accept:'kb-val-accept',reject:'kb-val-reject',borderline:'kb-val-border',needs_human:'kb-val-human'};
+            return C[d.llm_decision] || 'kb-val-na';
+        }
+        function findingKbTooltip(id) {
+            const d = findingKbDecision(id);
+            if (!d) return '';
+            const lines = ['KB-агент'];
+            lines.push('Решение: ' + d.llm_decision + ' (conf=' + (d.confidence || '?') + ')');
+            if (d.explanation) lines.push(d.explanation.slice(0, 250));
+            return lines.join('\n');
+        }
+
         // ─── Blocks (OCR) ───
 
         const blockFieldLabels = {
@@ -16675,6 +16786,10 @@ const app = createApp({
             // State
             currentView, currentProject, currentProjectId, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
+            // KB-Validation
+            kbValidationAvailable, kbValidationLoading, findingKbDecision, findingKbLabel, findingKbClass, findingKbTooltip,
+            evidenceValidationAvailable, evidenceValidationLoading, evidenceValidationRunning,
+            findingEvDecision, findingEvLabel, findingEvClass, findingEvPathLabel, findingEvTooltip, runEvidenceValidation,
             // Inline Critic v2 (experimental, в обычной таблице)
             findingsCv2Available, findingsCv2Warning, findingsCv2Loading,
             cv2ShowHidden, cv2DisplayFilter, cv2DebugVisible, scDevTools,
