@@ -1140,6 +1140,19 @@ th.cv2-sort-active {
 .block-llm-text__sys { margin-top: 16px; border-top: 1px dashed var(--border2); padding-top: 10px; }
 .block-llm-text__sys summary { cursor: pointer; font-size: 12px; color: var(--text2); user-select: none; }
 .block-llm-text__sys[open] summary { margin-bottom: 8px; }
+/* Структурированный граф схемы (таблица отходящих линий) */
+.block-llm-text__section--struct { color: #2bb673; border-top: 1px solid var(--border); padding-top: 14px; }
+.block-llm-text__ok { font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 6px; background: #2bb673; color: #fff; }
+.block-llm-text__muted { font-size: 11px; color: var(--text2); font-weight: 500; }
+.sld-section { margin: 8px 0 14px; }
+.sld-section__head { font-size: 12px; font-weight: 700; color: var(--text2); margin: 10px 0 4px; }
+.sld-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+.sld-table th { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--border2); color: var(--text2); font-weight: 700; white-space: nowrap; }
+.sld-table td { padding: 3px 6px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+.sld-table tr:hover td { background: var(--card2-bg); }
+.sld-conf-high td:first-child { border-left: 3px solid #2bb673; }
+.sld-conf-medium td:first-child { border-left: 3px solid var(--accent-orange, #e08a3c); }
+.sld-conf-low td:first-child, .sld-conf-none td:first-child { border-left: 3px solid var(--border3); }
 .block-back-btn { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 7px; border: 1px solid var(--border2); background: var(--card2-bg); color: var(--text2); cursor: pointer; font-size: 12px; font-family: inherit; z-index: 10; transition: all 0.13s; }
 .block-back-btn:hover { background: var(--teal-light); color: var(--teal); }
 

@@ -684,6 +684,24 @@ async def get_block_llm_text(
     except Exception:
         v_usable = bool(vector_text and len(vector_text) >= 30)
 
+    # 6) Структурированный граф однолинейной схемы (ввод→секции→линии). None, если не схема.
+    structured_graph = None
+    try:
+        if v_usable and vector_text:
+            from backend.app.pipeline.stages.block_grounding.singleline_structurer import (
+                structure_singleline_text,
+            )
+            panel_name = ""
+            if isinstance(enrichment, dict):
+                mk = enrichment.get("marks")
+                if isinstance(mk, list) and mk:
+                    panel_name = str(mk[0])
+                elif enrichment.get("subject"):
+                    panel_name = str(enrichment["subject"])[:48]
+            structured_graph = structure_singleline_text(vector_text, panel=panel_name or "схема")
+    except Exception:
+        structured_graph = None
+
     return {
         "project_id": project_id,
         "block_id": block_id,
@@ -699,6 +717,8 @@ async def get_block_llm_text(
         "vector_text": vector_text,
         "vector_len": len(vector_text),
         "vector_usable": v_usable,
+        # структурированный граф схемы (демо метода) — None, если блок не однолинейная схема
+        "structured_graph": structured_graph,
     }
 
 

@@ -3037,6 +3037,39 @@
                                     </div>
                                     <pre class="block-llm-text__body">{{ blockLlmText.user_text }}</pre>
 
+                                    <!-- СТРУКТУРИРОВАННЫЙ ГРАФ СХЕМЫ (демо метода): ввод→секции→линии -->
+                                    <template v-if="blockLlmText.structured_graph">
+                                        <div class="block-llm-text__section block-llm-text__section--struct">
+                                            🔌 Структура схемы — {{ blockLlmText.structured_graph.feeder_total }} отходящих линий
+                                            <span class="block-llm-text__ok">физика {{ Math.round((blockLlmText.structured_graph.validation.power_rate||0)*100) }}% / {{ Math.round((blockLlmText.structured_graph.validation.current_rate||0)*100) }}%</span>
+                                            <span class="block-llm-text__muted">автоматы {{ blockLlmText.structured_graph.validation.breaker_bound }} · QF {{ blockLlmText.structured_graph.validation.qf_bound_strict }}</span>
+                                        </div>
+                                        <div v-for="sec in blockLlmText.structured_graph.bus_sections" :key="sec.bus_section_id" class="sld-section">
+                                            <div class="sld-section__head">▮ {{ sec.bus_section_id }} · {{ sec.phases }} · {{ sec.feeder_count }} линий</div>
+                                            <table class="sld-table">
+                                                <thead><tr>
+                                                    <th>QF</th><th>Автомат</th><th>Потребитель</th><th>Код цепи</th>
+                                                    <th>Pрасч</th><th>I,А</th><th>cosφ</th><th>Кабель</th><th>L,м</th><th>ΔU%</th><th>Iкз</th>
+                                                </tr></thead>
+                                                <tbody>
+                                                    <tr v-for="(fd,fi) in sec.feeders" :key="fi" :class="'sld-conf-'+(fd.binding_confidence||'none')">
+                                                        <td>{{ fd.feeder_qf || '—' }}</td>
+                                                        <td><span v-if="fd.breaker_type">{{ fd.breaker_type }}<span v-if="fd.breaker_rating && fd.breaker_rating.in_a"> {{ fd.breaker_rating.icn_ka }}кА/{{ fd.breaker_rating.in_a }}А</span></span><span v-else>—</span></td>
+                                                        <td>{{ fd.consumer || '—' }}</td>
+                                                        <td>{{ fd.circuit_code }}</td>
+                                                        <td>{{ fd.P_calc_kw }}</td>
+                                                        <td>{{ fd.I_a }}</td>
+                                                        <td>{{ fd.cosphi }}</td>
+                                                        <td>{{ fd.cable || '—' }}</td>
+                                                        <td>{{ fd.length_m }}</td>
+                                                        <td>{{ fd.voltage_drop_pct }}</td>
+                                                        <td>{{ fd.Ikz_ka }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </template>
+
                                     <!-- Вектор-слой PDF: точные значения, СЕЙЧАС не уходят в нейронку -->
                                     <template v-if="blockLlmText.vector_text">
                                         <div class="block-llm-text__section block-llm-text__section--vector">
