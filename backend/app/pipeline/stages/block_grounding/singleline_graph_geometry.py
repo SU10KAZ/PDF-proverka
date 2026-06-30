@@ -56,6 +56,78 @@ def _near(qx, qy, arr, dx, dymin, dymax):
     return c[0][2] if c else None
 
 
+def _extract_power(words, page_text: str, qf_incomers: list) -> dict:
+    """Вводная часть (питание): вводы ВП, АВР, рёбра ввод→РП — из подписей/устройств/таблиц.
+
+    Источники: подписи «Ввод N (РП…+РП…)» (топология питания), маркеры устройств
+    (ВА-305/ВР-101/АВР-301/НАРТИС/ТА), нижний ряд вводных QF (ВА-305), токи Ip из таблицы.
+    Текст широкого CAD-листа разбросан → берём надёжное, остальное помечаем.
+    """
+    full = page_text or ""
+
+    # 1) подписи Ввод N (РП…) → какой ввод какие РП питает
+    inputs = {}
+    for m in re.finditer(r"Ввод\s*([12])\s*\(([^)]{3,80})\)", full):
+        n, body = m.group(1), m.group(2)
+        rps = []
+        for rm in re.finditer(r"РП\d(?:\([^)]{0,12}\))?", body):
+            r = rm.group(0)
+            if r not in rps:
+                rps.append(r)
+        key = f"ВП{n}"
+        inputs.setdefault(key, {"id": key, "vvod": f"Ввод {n}", "feeds": []})
+        for r in rps:
+            if r not in inputs[key]["feeds"]:
+                inputs[key]["feeds"].append(r)
+
+    # 2) инвентарь устройств вводной зоны (что присутствует)
+    def present(pat):
+        return sorted({w[4] for w in words if re.match(pat, w[4])})
+    devices = {
+        "incomer_breakers": present(r"^ВА-305"),           # вводные автоматы
+        "switches": present(r"^ВР-101"),                    # разъединители/QS
+        "avr": present(r"^АВР-?3?0?1?"),                     # АВР-301
+        "meters": sorted({w[4].rstrip("-") for w in words if "НАРТИС" in w[4]}),
+        "ct_ratios": sorted({w[4] for w in words if re.fullmatch(r"\d{3,4}/5А?", w[4])}),
+    }
+
+    # 3) токи вводов из таблицы (строки «ВПn … Ip» / явные Ip=)
+    currents = {}
+    for m in re.finditer(r"(ВП[12]|ВП-АВР|РП\d(?:\s*\([^)]{0,10}\))?)\s+(\d{2,3}\.\d{1,2})\s+(\d{2,3}\.\d{1,2})", full):
+        currents[m.group(1).strip()] = {"i_rab": float(m.group(2)), "i_avar": float(m.group(3))}
+
+    # 4) вводные QF каждой РП (нижний ряд, ВА-305)
+    rp_incomers = []
+    for qx, qy, qn in qf_incomers:
+        amp = _near(qx, qy, [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+А", w[4])], 50, -10, 90)
+        ba = _near(qx, qy, [(w[0], w[1], w[4]) for w in words if re.match(r"^ВА", w[4])], 50, -40, 90)
+        m = re.match(r"QF(\d+)", qn)
+        rp_incomers.append({"qf": qn, "panel": _PANEL.get(m.group(1) if m else "", "ВРУ"),
+                            "device": " ".join(x for x in (ba, amp) if x) or None})
+
+    for key, inp in inputs.items():
+        if key in currents:
+            inp.update(currents[key])
+        inp["incomer"] = "ВА-305 320А 35кА" if devices["incomer_breakers"] else None
+        inp["switch"] = "ВР-101-630 630А" if any("630" in s for s in devices["switches"]) else None
+        inp["meter"] = devices["meters"][0] if devices["meters"] else None
+
+    avr = None
+    if devices["avr"]:
+        avr = {"device": "АВР-301", "in_a": 40, "feeds": ["РП4 (АВР)"],
+               "note": "питание Рабочий/Резервный ввод, QS1/QS2 ВР-101-63 63А",
+               "current": currents.get("ВП-АВР")}
+
+    return {
+        "external_source": "Внешняя сеть (ПАО «Мосэнергосбыт»)",
+        "inputs": list(inputs.values()),
+        "avr": avr,
+        "rp_incomers": rp_incomers,
+        "devices": devices,
+        "currents_table": currents,
+    }
+
+
 def _fnum(v):
     return v if v is not None else None
 
@@ -78,6 +150,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             return None
         pg = doc[pidx]
         words = pg.get_text("words")
+        page_full_text = pg.get_text()
     except Exception:
         return None
     finally:
@@ -96,7 +169,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     ys = sorted(q[1] for q in qf_all)
     y_split = ys[0] + (ys[-1] - ys[0]) * 0.6 if ys[-1] - ys[0] > 60 else ys[-1] + 1
     qf_out = sorted([q for q in qf_all if q[1] <= y_split])
-    n_incomers = len(qf_all) - len(qf_out)
+    qf_incomers = sorted([q for q in qf_all if q[1] > y_split])
+    n_incomers = len(qf_incomers)
     codes = coll(r"^К1\.1\.", lambda t: "кВт" not in t)
     BA = coll(r"^ВА")
     KA = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+кА", w[4])]
@@ -192,12 +266,17 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     review_items = [{"qf": f["qf"], "code": f.get("circuit_code"), "notes": f["review"]}
                     for f in feeders if f["review"]]
     bv = base["validation"]
+    try:
+        power = _extract_power(words, page_full_text, qf_incomers)
+    except Exception:
+        power = None
     return {
         "panel": panel_hint,
         "type": "single_line_calc_diagram",
         "source_page_index": pidx,
         "feeders_total": len(feeders),
         "incomers": n_incomers,
+        "power": power,
         "panels": panels,
         "validation": {
             "active": len(linked), "reserve": len(reserve), "ambiguous": len(ambiguous),

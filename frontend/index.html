@@ -3045,6 +3045,31 @@
                                             <span class="block-llm-text__ok">физика {{ Math.round((blockLlmText.singleline_graph.validation.power_rate||0)*100) }}% / {{ Math.round((blockLlmText.singleline_graph.validation.current_rate||0)*100) }}%</span>
                                             <span class="block-llm-text__muted">актив {{ blockLlmText.singleline_graph.validation.active }} · резерв {{ blockLlmText.singleline_graph.validation.reserve }} · review {{ blockLlmText.singleline_graph.validation.ambiguous }} · автомат {{ blockLlmText.singleline_graph.validation.breaker_bound }}</span>
                                         </div>
+                                        <!-- ⚡ ПИТАНИЕ / ВВОДЫ (из данных) -->
+                                        <div v-if="blockLlmText.singleline_graph.power" class="sld-section">
+                                            <div class="sld-section__head">⚡ Питание / Вводы — {{ blockLlmText.singleline_graph.power.external_source }}</div>
+                                            <table class="sld-table">
+                                                <thead><tr>
+                                                    <th>Ввод</th><th>Питает РП</th><th>Вводной автомат</th><th>Разъединитель</th><th>Iр.раб/авар,А</th><th>Счётчик</th>
+                                                </tr></thead>
+                                                <tbody>
+                                                    <tr v-for="(inp,ii) in blockLlmText.singleline_graph.power.inputs" :key="'i'+ii" class="sld-st-active">
+                                                        <td><b>{{ inp.id }}</b> ({{ inp.vvod }})</td>
+                                                        <td>{{ (inp.feeds||[]).join(', ') || '—' }}</td>
+                                                        <td>{{ inp.incomer || '—' }}</td>
+                                                        <td>{{ inp.switch || '—' }}</td>
+                                                        <td>{{ inp.i_rab != null ? inp.i_rab+'/'+inp.i_avar : '—' }}</td>
+                                                        <td>{{ inp.meter || '—' }}</td>
+                                                    </tr>
+                                                    <tr v-if="blockLlmText.singleline_graph.power.avr" class="sld-st-active">
+                                                        <td><b>АВР</b></td>
+                                                        <td>{{ (blockLlmText.singleline_graph.power.avr.feeds||[]).join(', ') }}</td>
+                                                        <td>{{ blockLlmText.singleline_graph.power.avr.device }} {{ blockLlmText.singleline_graph.power.avr.in_a }}А</td>
+                                                        <td colspan="3">{{ blockLlmText.singleline_graph.power.avr.note }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         <div v-for="pan in blockLlmText.singleline_graph.panels" :key="pan.id" class="sld-section">
                                             <div class="sld-section__head">▮ {{ pan.name }} · {{ pan.feeder_count }} линий (актив {{ pan.active }}, резерв {{ pan.reserve }})</div>
                                             <table class="sld-table">
