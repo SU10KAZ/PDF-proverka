@@ -3,12 +3,18 @@
 Восстанавливает граф ввод→панели(РПn)→отходящие линии по чертежу:
 - находит правильную PDF-страницу блока (page_index из result.json НЕ совпадает с PDF — баг нумерации);
 - кластеризует токены чертежа по X-колонкам (каждая колонка = отходящая линия);
-- внутри панели (QF-префикс=РПn) QF и коды цепей идут слева-направо → МОНОТОННАЯ привязка
-  (резерв пропускает код) — без коллизий, проверено визуально на РП1/РП2/РП3;
+- внутри панели привязка QF↔код — по ГЕОМЕТРИИ КОЛОНКИ (offset-corrected nearest column,
+  `_bind_codes_columnwise`): код ставится в ТУ QF, в чьей x-колонке он реально лежит. QF без
+  отходящего кода (QF3.1 на ВРУ-К1.2) остаётся непривязанным, а не «сдвигает» весь ряд;
+  монотонная привязка — только fallback при ненадёжной геометрии, расхождения → GEOMETRY_CONFLICT;
 - автомат/уставка/полюса/управление(АСУД/ПС)/резерв — из геометрии колонки;
-- параметры линии — из валидированной таблицы (structure_singleline_text, физика 100%) по коду.
+- параметры линии — из валидированной таблицы (structure_singleline_text, физика 100%) по коду;
+- метаданные листа (расчёты панелей, таблица ТТ, примечания, служебные элементы, дерево питания)
+  извлекаются из текста страницы и собираются в полный граф.
 
 build_singleline_graph(pdf_path, vector_text, *, panel_hint) -> dict | None
+render_graph_for_prompt(graph)       — компактный текст для промпта Stage 02.
+render_graph_etalon_markdown(graph)  — полный Markdown в формате эталона (8 разделов).
 Возвращает None, если это не однолинейная feeder-схема или PDF/страница недоступны. fail-soft.
 """
 from __future__ import annotations
@@ -76,6 +82,26 @@ def _convex_hull(points):
 def _near(qx, qy, arr, dx, dymin, dymax):
     c = sorted((abs(x - qx), y, t) for x, y, t in arr if abs(x - qx) < dx and dymin < (y - qy) < dymax)
     return c[0][2] if c else None
+
+
+def _near_xy(qx, qy, arr, dx, dymin, dymax):
+    """Как _near, но возвращает (x, y, text) ближайшего токена (нужны координаты строки)."""
+    c = sorted((abs(x - qx), y, x, t) for x, y, t in arr if abs(x - qx) < dx and dymin < (y - qy) < dymax)
+    return (c[0][2], c[0][1], c[0][3]) if c else None
+
+
+def _pole_for_breaker(qx, qy, ba_xy, poles, dx=44):
+    """Полюса автомата = [123]Р на СТРОКЕ автомата (ближайший по Y к ВА-токену), а не ближайший
+    по X — иначе захватывается «2Р» от устройства МК103/УЗО в колонке потребителя (выше QF)."""
+    if not poles:
+        return None
+    if ba_xy:
+        _, ba_y, _ = ba_xy
+        cand = [(abs(y - ba_y), abs(x - qx), t) for x, y, t in poles
+                if abs(x - qx) < dx and abs(y - ba_y) < 26]
+        if cand:
+            return sorted(cand)[0][2]
+    return _near(qx, qy, poles, dx, -95, 110)
 
 
 def render_graph_for_prompt(graph: dict) -> str:
@@ -402,9 +428,14 @@ def _extract_tt_check(page_text: str) -> list:
         if len(body) < 10:
             continue
         f = body[:10]
-        # хвост = комментарий, но НЕ затягивать соседние блоки расчёта (строки с «=»/«режим»/РПn)
-        tail = [l for l in body[10:]
-                if "=" not in l and "режим" not in l.lower() and not re.match(r"^РП\d", l)]
+        # хвост = комментарий-прозой; ОБОРВАТЬ на первой «схемной» строке, иначе для последней
+        # строки таблицы (РП4 ОДН) в комментарий утечёт весь остаток листа (фидеры/режимы).
+        _stop = re.compile(r"QF\d|ВА-?\d|К\d+\.\d|АВР\d|ВР-101|TA\d\.|УЗО|МК103|Розетка|=|режим|^РП\d")
+        tail = []
+        for l in body[10:]:
+            if _stop.search(l):
+                break
+            tail.append(l)
         rows.append({
             "panel": lines[i], "Ir_rab": _calc_num(f[0]), "Ir_avar": _calc_num(f[1]),
             "In1tt": _calc_num(f[2]), "In1tt_avar": _calc_num(f[3]),
@@ -497,13 +528,13 @@ def _extract_hierarchy(page_text: str, power: dict, panels: list) -> dict:
     """Дерево питания ГРЩ→ВП→РП + рёбра. Источник: подписи «Ввод N (РП…)» + «КЛ, см. том ГРЩ»."""
     txt = page_text or ""
     flat = re.sub(r"\s+", " ", txt)
-    # feeds по каждому вводу: окно после «Ввод N (» → все РПn(суффикс), плюс к РП5/РП5.1
+    # feeds по каждому вводу: окно после «Ввод N (» → все РПn(.m)(суффикс), плюс к РП5/РП5.1
     feeds = {"1": [], "2": []}
     for m in re.finditer(r"Ввод\s*([12])\s*\(", flat):
         n = m.group(1)
         win = flat[m.end():m.end() + 110]
         win = win[:win.find("))") + 1] if "))" in win else win
-        for rm in re.finditer(r"РП\d(?:\s*\((?:ПЭСПЗ|ОДН|АВР)\))?", win):
+        for rm in re.finditer(r"РП\d(?:\.\d)?(?:\s*\((?:ПЭСПЗ|ОДН|АВР)\))?", win):
             r = re.sub(r"\s+", " ", rm.group(0)).strip()
             if r not in feeds[n]:
                 feeds[n].append(r)
@@ -515,9 +546,9 @@ def _extract_hierarchy(page_text: str, power: dict, panels: list) -> dict:
         grsh = f"ГРЩ с.ш.{n}"
         vp = f"ВП{n}"
         f = list(feeds[n])
-        if has5 and not any("РП5 " in x or x == "РП5" for x in f):
+        if has5 and not any(re.match(r"^РП5(?!\.)", x) for x in f):
             f.append("к РП5")
-        if has51 and not any("РП5.1" in x for x in f):
+        if has51 and not any(x.startswith("РП5.1") for x in f):
             f.append("к РП5.1")
         nodes += [grsh, vp]
         edges.append({"from": grsh, "to": vp, "type": "питание", "label": src_label})
@@ -526,7 +557,7 @@ def _extract_hierarchy(page_text: str, power: dict, panels: list) -> dict:
         lines.append(f"{grsh} -> {vp} -> " + " / ".join(f) if f else f"{grsh} -> {vp}")
     # РП4 (АВР) → свои QF4.*
     qf4 = sorted({q for q in re.findall(r"QF4\.\d+", txt)},
-                 key=lambda s: float(s[2:]))
+                 key=lambda s: [int(x) for x in s[2:].split(".")])
     if qf4:
         lines.append(f"РП4 (АВР) -> {qf4[0]}..{qf4[-1]}: отходящие линии АВР-зоны")
     return {"nodes": nodes, "edges": edges, "tree_lines": lines, "feeds": feeds}
@@ -536,7 +567,7 @@ def _extract_title_source(page_text: str, pdf_path: Path, page_index, panel_hint
     """Заголовок/метаданные листа из штампа (имя схемы, раздел, объект)."""
     txt = page_text or ""
     sheet_name = None
-    m = re.search(r"Однолинейная расчетная схема\s*([^\n]+?)\s*(?:\n\s*(\([^)]*\)))?", txt)
+    m = re.search(r"Однолинейная расчетная схема\s*([^\n]+)(?:\s*\n\s*(\([^)\n]*\)))?", txt)
     if m:
         sheet_name = ("Однолинейная расчетная схема " + m.group(1).strip()
                       + (" " + m.group(2) if m.group(2) else "")).strip()
@@ -545,10 +576,17 @@ def _extract_title_source(page_text: str, pdf_path: Path, page_index, panel_hint
     if not title:
         tm = re.search(r"схема\s+(ВРУ-?\S+|ГРЩ-?\S+)", txt)
         title = tm.group(1) if tm else (panel_hint or "схема")
+    # Раздел: код «NNАВ-РД-…» из ШТАМПА, а не из ссылок «см. том …» в примечаниях.
+    # Берём самый частый код, НЕ предварённый «см» (ссылки на смежные тома).
     section = None
-    sm = re.search(r"\b(\d{2}АВ-РД-[А-Яа-яA-Za-z0-9.\-]+)", txt)
-    if sm:
-        section = sm.group(1)
+    cand = collections.Counter()
+    for sm in re.finditer(r"(\d{2}АВ-РД-[А-Яа-яA-Za-z0-9.\-]+)", txt):
+        prefix = txt[max(0, sm.start() - 8):sm.start()].lower()
+        if "см" in prefix or "том" in prefix:
+            continue
+        cand[sm.group(1).rstrip(".")] += 1
+    if cand:
+        section = cand.most_common(1)[0][0]
     obj = None
     om = re.search(r"(Внутреннее электроснабжение\s*\.?\s*Корпус\s*\d+)", txt)
     if om:
@@ -614,11 +652,12 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
 
     geo = {}
     for qx, qy, qn in qf_out:
+        ba_xy = _near_xy(qx, qy, BA, 34, -95, 110)
         geo[qn] = {
-            "ba": _near(qx, qy, BA, 34, -95, 110),
+            "ba": ba_xy[2] if ba_xy else None,
             "ka": _near(qx, qy, KA, 44, -30, 100),
             "amp": _near(qx, qy, AMP, 44, -30, 100),
-            "pole": _near(qx, qy, POLE, 44, -95, 110),
+            "pole": _pole_for_breaker(qx, qy, ba_xy, POLE),
             "reserve": any(abs(x - qx) < 38 and -320 < (y - qy) < 80 for x, y in RES),
             "control": ([t for t in (["ПС"] if any(abs(x - qx) < 42 and -320 < (y - qy) < 130 for x, y in PS) else [])]
                         + (["АСУД"] if any(abs(x - qx) < 42 and -320 < (y - qy) < 130 for x, y in ASUD) else [])),
@@ -725,15 +764,14 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             y_bot = qy + 60
             bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
                          round(right / page_w, 5), round(y_bot / page_h, 5)]
-            # Полигон ТОЧНО по тексту фидера: выпуклая оболочка слов колонки (потребитель +
-            # формула + кабель + трасса + QF-метка + автомат) → плотно облегает реальный текст,
-            # ширина фигуры = ширина текста. + узкая ножка до шины (qx, y_bot).
-            fw = [w for w in words if left <= (w[0] + w[2]) / 2 < right and qy - 285 < w[1] < qy + 30]
-            if len(fw) >= 2:
+            # Полигон = ПЛОТНАЯ выпуклая оболочка слов ТЕКСТА линии (потребитель + формула +
+            # кабель + трасса). Просто обводим реальные слова по их координатам — как выделяет
+            # пользователь. БЕЗ ножки к шине и БЕЗ QF/автомата (они дают кривой треугольник).
+            tw = [w for w in words if left <= (w[0] + w[2]) / 2 < right and qy - 285 < w[1] < qy - 45]
+            if len(tw) >= 2:
                 pts = []
-                for w in fw:
+                for w in tw:
                     pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
-                pts.append((qx, y_bot))   # ножка до шины
                 hull = _convex_hull(pts)
                 if len(hull) >= 3:
                     polygon_page = [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in hull]
