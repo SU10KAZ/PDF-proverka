@@ -768,16 +768,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             # Область линии — по ЗНАЧЕНИЯМ из графа (а не геометрической полосой): берём слова PDF,
             # чей текст совпадает с известными данными линии (потребитель/код/автомат/кабель/трасса/
             # числа), в пределах колонки → обводим именно их (минимальная траектория по данным).
-            # Две части одной заливкой (текст + автомат), чтобы оболочка не срезала углы текста.
-            def _hull_norm(ws):
-                if len(ws) < 2:
-                    return None
-                pts = []
-                for w in ws:
-                    pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
-                h = _convex_hull(pts)
-                return [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in h] if len(h) >= 3 else None
-
+            # ОДНА фигура «I-контур»: текст-блок (сверху) + перешеек-провод + автомат-блок (снизу),
+            # без выпуклого объединения (оно срезало бы углы текста — автомат уже и левее текста).
             def _nrm(t):
                 return t.strip(" .,;:()[]«»\"'").replace("ё", "е").replace("Ё", "Е").lower()
             txt_targets, brk_targets = set(), set()
@@ -804,10 +796,26 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                   and qy - 330 < w[1] < qy - 40 and _hits(w, txt_targets)]
             brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= qx + 34
                    and -2 < (w[1] - qy) < 45 and _hits(w, brk_targets)]
-            parts = [h for h in (_hull_norm(tw), _hull_norm(brw)) if h]
-            if parts:
-                polygons_page = parts        # части линии по данным графа (текст + автомат)
-                polygon_page = parts[0]
+            def _bbox(ws):
+                return ((min(w[0] for w in ws), min(w[1] for w in ws),
+                         max(w[2] for w in ws), max(w[3] for w in ws)) if ws else None)
+            tb, bb = _bbox(tw), _bbox(brw)
+            poly = None
+            if tb and bb:
+                tx0, ty0, tx1, ty1 = tb
+                bx0, by0, bx1, by1 = bb
+                ox0, ox1 = max(tx0, bx0), min(tx1, bx1)   # X-перекрытие = перешеек
+                if ox0 >= ox1:                            # нет перекрытия → перешеек у символа
+                    ox0, ox1 = qx - 4, qx + 4
+                raw = [(tx0, ty0), (tx1, ty0), (tx1, ty1), (ox1, ty1), (ox1, by0),
+                       (bx1, by0), (bx1, by1), (bx0, by1), (bx0, by0), (ox0, by0), (ox0, ty1), (tx0, ty1)]
+                poly = [pt for i, pt in enumerate(raw) if pt != raw[i - 1]]   # без дублей
+            elif tb or bb:
+                x0, y0, x1, y1 = tb or bb
+                poly = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+            if poly:
+                polygon_page = [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in poly]
+                polygons_page = [polygon_page]            # одна фигура линии
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
