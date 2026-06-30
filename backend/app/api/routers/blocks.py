@@ -719,6 +719,7 @@ async def get_block_llm_text(
         singleline_graph = None
 
     # Для СХЕМНЫХ блоков в промпт уходит имя блока + ГРАФ (а не скудный enrichment/page_text).
+    singleline_graph_markdown = None
     if singleline_graph:
         try:
             from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
@@ -730,6 +731,16 @@ async def get_block_llm_text(
                          f"{render_graph_for_prompt(singleline_graph)}\n\n{_task}")
         except Exception:
             pass
+
+        # Полный Markdown графа в формате эталона (для фронта/просмотра; в Stage 02 пока НЕ уходит —
+        # переключение прод-промпта на этот формат сделать отдельным шагом за флагом).
+        try:
+            from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+                render_graph_etalon_markdown,
+            )
+            singleline_graph_markdown = render_graph_etalon_markdown(singleline_graph)
+        except Exception:
+            singleline_graph_markdown = None
 
         # bbox каждой линии (page-norm) → координаты БЛОКА (для полупрозрачных областей в UI)
         cn = rblock.get("coords_norm")
@@ -766,6 +777,8 @@ async def get_block_llm_text(
         "structured_graph": structured_graph,
         # полный граф из геометрии PDF (QF↔панель РПn, автомат, управление) — None, если недоступно
         "singleline_graph": singleline_graph,
+        # полный Markdown графа в формате эталона (8 разделов) — None, если блок не схема
+        "singleline_graph_markdown": singleline_graph_markdown,
     }
 
 
