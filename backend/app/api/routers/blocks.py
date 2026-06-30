@@ -757,6 +757,10 @@ async def get_block_llm_text(
                     if pp:
                         f["polygon"] = [[round((px - cn[0]) / bw, 5), round((py - cn[1]) / bh, 5)]
                                         for px, py in pp]
+                    pps = f.get("polygons_page")
+                    if pps:
+                        f["polygons"] = [[[round((px - cn[0]) / bw, 5), round((py - cn[1]) / bh, 5)]
+                                          for px, py in poly] for poly in pps]
 
     return {
         "project_id": project_id,

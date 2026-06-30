@@ -6768,16 +6768,19 @@ const app = createApp({
             const out = [];
             for (const pan of g.panels) {
                 for (const f of (pan.feeders || [])) {
-                    let poly = null;
-                    if (f.polygon && f.polygon.length >= 3) {
-                        poly = f.polygon.map(p => [cl(p[0]), cl(p[1])]);
+                    // области линии — список частей (текст + автомат); fallback на одиночный polygon/bbox
+                    let polys = null;
+                    if (f.polygons && f.polygons.length) {
+                        polys = f.polygons.filter(p => p && p.length >= 3).map(p => p.map(q => [cl(q[0]), cl(q[1])]));
+                    } else if (f.polygon && f.polygon.length >= 3) {
+                        polys = [f.polygon.map(p => [cl(p[0]), cl(p[1])])];
                     } else if (f.bbox && f.bbox.length === 4) {
                         const x0 = cl(f.bbox[0]), y0 = cl(f.bbox[1]), x1 = cl(f.bbox[2]), y1 = cl(f.bbox[3]);
-                        poly = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+                        polys = [[[x0, y0], [x1, y0], [x1, y1], [x0, y1]]];
                     }
-                    if (poly) {
+                    if (polys && polys.length) {
                         out.push({ qf: f.qf, consumer: f.consumer || '', status: f.status,
-                                   polygon: poly, labelX: poly[0][0], labelY: poly[0][1] });
+                                   polys: polys, labelX: polys[0][0][0], labelY: polys[0][0][1] });
                     }
                 }
             }

@@ -759,28 +759,34 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         colw = [w for w in words if left <= w[0] < right and qy - 280 < w[1] < qy + 30]
         bbox_page = None
         polygon_page = None
+        polygons_page = None
         if page_w and page_h:
             y_top = min((w[1] for w in colw), default=qy - 230)
             y_bot = qy + 60
             bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
                          round(right / page_w, 5), round(y_bot / page_h, 5)]
-            # Полигон = плотная выпуклая оболочка РЕАЛЬНЫХ слов линии по их координатам:
+            # Область линии = ДВЕ плотные оболочки реальных слов, одной заливкой (НЕ объединяем
+            # в одну выпуклую оболочку — она срезает углы текста, т.к. автомат уже и левее текста):
             #  • ТЕКСТ (потребитель+формула+кабель+трасса) — смещён вправо, полоса [qx-2, tright);
-            #  • АВТОМАТ (ВА-…) + метка QF — центрированы на символе, полоса [qx-20, qx+20], ниже текста.
-            tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright and qy - 285 < w[1] < qy - 45]
-            brw = [w for w in words if qx - 20 <= (w[0] + w[2]) / 2 <= qx + 20 and -2 < (w[1] - qy) < 45]
-            allw = tw + brw
-            if len(allw) >= 2:
+            #  • АВТОМАТ (ВА-…)+метка QF — центрирован на символе, полоса [qx-20, qx+20].
+            def _hull_norm(ws):
+                if len(ws) < 2:
+                    return None
                 pts = []
-                for w in allw:
+                for w in ws:
                     pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
-                hull = _convex_hull(pts)
-                if len(hull) >= 3:
-                    polygon_page = [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in hull]
+                h = _convex_hull(pts)
+                return [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in h] if len(h) >= 3 else None
+            tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright and qy - 330 < w[1] < qy - 45]
+            brw = [w for w in words if qx - 20 <= (w[0] + w[2]) / 2 <= qx + 20 and -2 < (w[1] - qy) < 45]
+            parts = [h for h in (_hull_norm(tw), _hull_norm(brw)) if h]
+            if parts:
+                polygons_page = parts        # все части линии (текст + автомат), без срезов
+                polygon_page = parts[0]      # совместимость: основная часть (текст)
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
-            "bbox_page": bbox_page, "polygon_page": polygon_page,
+            "bbox_page": bbox_page, "polygon_page": polygon_page, "polygons_page": polygons_page,
             "breaker_type": g["ba"], "breaker_poles": g["pole"],
             "breaker_icn": g["ka"], "breaker_in": g["amp"],
             "P_inst_kw": (p or {}).get("P_inst_kw"), "Kc": (p or {}).get("Kc"),

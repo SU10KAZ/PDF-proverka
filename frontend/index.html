@@ -3164,7 +3164,8 @@
                                  :style="blockImageStyle"
                                  :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
                                 <template v-for="(r, ri) in blockRegionRects" :key="'rg'+ri">
-                                    <polygon :points="r.polygon.map(p => (p[0]*blockNatW)+','+(p[1]*blockNatH)).join(' ')"
+                                    <polygon v-for="(poly, pi) in r.polys" :key="'rg'+ri+'p'+pi"
+                                             :points="poly.map(p => (p[0]*blockNatW)+','+(p[1]*blockNatH)).join(' ')"
                                              class="block-region-rect"
                                              :class="'block-region-rect--' + r.status">
                                         <title>{{ r.qf }} — {{ r.consumer }}</title>
