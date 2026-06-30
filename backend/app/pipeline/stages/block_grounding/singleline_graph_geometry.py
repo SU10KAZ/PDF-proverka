@@ -29,7 +29,7 @@ _FLOOR_RE = re.compile(
 def _distinct_tokens(vector_text: str) -> list:
     """Несколько редких токенов из вектора блока — для поиска его PDF-страницы."""
     toks = []
-    for m in re.finditer(r"К1\.1\.\S+|QF\d+\.\d+|\d{3}\.\d+А|\d{2,3}кВт", vector_text):
+    for m in re.finditer(r"К\d+\.\d+\.\S+|QF\d+\.\d+|\d{3}\.\d+А|\d{2,3}кВт", vector_text):
         t = m.group(0)
         if t not in toks:
             toks.append(t)
@@ -175,6 +175,61 @@ def _fnum(v):
     return v if v is not None else None
 
 
+# «распознанное» (НЕ подпись): формула/кабель/трасса/автомат/управление/устройство/разделители.
+# Голые ЦЕЛЫЕ числа (счёт квартир, этаж, категория) НЕ исключаем; десятичные — да (Кс/cos/%).
+_CONSUMER_KNOWN_RE = re.compile(
+    r"^К\d+\.\d"                                                  # код цепи
+    r"|кВт|^[\d.]+[АAaа]$|^\d+%$|^\d+[.,]\d+$|cos"                # формула (P/I/cos/Кс-десятичные)
+    r"|ППГ|^\dх[\d.]|Iкз|^[\d.]+кА|FRHF|HF$"                       # кабель
+    r"|ВА-|Icn|^\d+Р$"                                             # автомат
+    r"|Лоток|Пг\.|Пз\.|Па\.|Каб\.нес|констр|^\d+м;?$"             # трасса
+    r"|систем|управлен|^к$|^АСУД|^АПС|^ПС$|откл|пожар|диспетчер"   # управление (^ якорь: «ЩД-АСУД» = подпись, не съедать)
+    r"|МК103|^УЗО|^КМ$|ОП101|НПН|-230В|^2Р$|мА|^\dН[ОЗ]$|НО\+|1НЗ"  # устройство+контакты
+    r"|TA\d|^\dхТ|хТ-0|/5[АAaа]|НАРТИС|И300|^Wh$|W132"             # учёт/ТТ/счётчик
+    r"|^[-–:;]$"                                                   # разделители
+)
+
+
+def _extract_consumer_geo(qx, qy, nx, words, formula_vals) -> Optional[str]:
+    """Подпись потребителя из вектора по колонке: «распарсить известное → ОСТАТОК = подпись».
+
+    Вычитаем структурные элементы (формула/кабель/трасса/автомат/управление) + ТОЧНЫЕ
+    значения формулы (Кс/cos/P/I, чтобы убрать целые типа Кс=1), описательный остаток на
+    X-линии подписи — это потребитель. Без словаря потребителей.
+    """
+    half = min((nx - qx) / 2 + 3, 35)
+    col = [w for w in words if qx - half <= w[0] < qx + half and qy - 262 < w[1] < qy - 5]
+    if not col:
+        return None
+    fset = set()
+    for v in formula_vals:
+        if v is None:
+            continue
+        fset.add(str(v))
+        try:
+            fv = float(v)
+            if fv == int(fv):
+                fset.add(str(int(fv)))
+        except (TypeError, ValueError):
+            pass
+
+    def known(t):
+        if _CONSUMER_KNOWN_RE.search(t):
+            return True
+        if re.fullmatch(r"\d+(?:[.,]\d+)?", t) and t.replace(",", ".") in fset:
+            return True
+        return False
+
+    rest = [w for w in col if not known(w[4])]
+    cyr = [w for w in rest if re.search(r"[А-Яа-яё]", w[4])]
+    if not cyr:
+        return "Резерв" if any("езерв" in w[4] for w in col) else None
+    mx = collections.Counter(round(w[0] / 5) * 5 for w in cyr).most_common(1)[0][0]
+    line = sorted([w for w in rest if abs(round(w[0] / 5) * 5 - mx) <= 16], key=lambda w: -w[1])
+    text = re.sub(r"\s+", " ", " ".join(w[4] for w in line)).strip(" -–:;,")
+    return text or None
+
+
 def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ") -> Optional[dict]:
     """Построить граф однолинейной схемы. None — если не feeder-схема / нет геометрии."""
     base = structure_singleline_text(vector_text)
@@ -214,7 +269,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     qf_out = sorted([q for q in qf_all if q[1] <= y_split])
     qf_incomers = sorted([q for q in qf_all if q[1] > y_split])
     n_incomers = len(qf_incomers)
-    codes = coll(r"^К1\.1\.", lambda t: "кВт" not in t)
+    codes = coll(r"^К\d+\.\d+\.", lambda t: "кВт" not in t)
     BA = coll(r"^ВА")
     KA = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+кА", w[4])]
     AMP = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+А", w[4])]
@@ -255,11 +310,20 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                 assign[qn] = None
 
     feeders = []
+    qf_xs = sorted(q[0] for q in qf_out)
     for qx, qy, qn in qf_out:
         g = geo[qn]
         code = assign.get(qn)
         p = params.get(code) if code else None
-        consumer = p.get("consumer") if p else ("Резерв (свободная ячейка)" if g["reserve"] else None)
+        nx = next((x for x in qf_xs if x > qx + 1), qx + 70)
+        consumer_geo = _extract_consumer_geo(
+            qx, qy, nx, words,
+            [(p or {}).get("P_inst_kw"), (p or {}).get("Kc"), (p or {}).get("cosphi"),
+             (p or {}).get("P_calc_kw"), (p or {}).get("I_a")])
+        if consumer_geo == "Резерв":
+            consumer_geo = "Резерв (свободная ячейка)"
+        consumer = consumer_geo or (p.get("consumer") if p else None) \
+            or ("Резерв (свободная ячейка)" if g["reserve"] else None)
         status = "reserve" if g["reserve"] else ("active" if p else "ambiguous")
         review = []
         if status == "ambiguous":
