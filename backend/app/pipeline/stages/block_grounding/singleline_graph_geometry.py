@@ -365,12 +365,14 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         if consumer:
             m = _FLOOR_RE.search(consumer)
             loc = m.group(0) if m else None
-        # bbox колонки «одна линия» (page-normalized) — для визуальной проверки связи данных.
-        # X — границы = СЕРЕДИНЫ до соседних QF (тайлинг без наложения), cap 38px на сторону.
-        prev_x = max([x for x in qf_xs if x < qx - 1], default=qx - 64)
+        # bbox/полигон колонки «одна линия» (page-normalized).
+        # ВАЖНО: текст-колонка СМЕЩЕНА ВПРАВО от символа QF (~+12px) и шире межсимвольного
+        # спейсинга. Если резать по серединам между символами — правый текст (кабель/трасса)
+        # уходит соседнему фидеру. Поэтому полоса = «ОТ символа ДО следующего символа»
+        # (символ+автомат слева, текст справа), cap по типовой ширине.
         next_x = min([x for x in qf_xs if x > qx + 1], default=qx + 64)
-        left = qx - min((qx - prev_x) / 2, 38)
-        right = qx + min((next_x - qx) / 2, 38)
+        left = qx - 10
+        right = min(next_x - 10, qx + 56)
         colw = [w for w in words if left <= w[0] < right and qy - 280 < w[1] < qy + 30]
         bbox_page = None
         polygon_page = None
