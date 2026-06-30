@@ -181,8 +181,10 @@ def graph_k11():
 
 
 def test_k11_panels_and_feeders(graph_k11):
-    names = {p["name"] for p in graph_k11["panels"]}
-    assert {"РП1", "РП2", "РП3", "РП4 (АВР)"} <= names
+    names = [p["name"] for p in graph_k11["panels"]]
+    # имена панелей берутся из штампа листа (РП3 → «РП3 (ОДН)»), поэтому префиксная проверка
+    for pref in ("РП1", "РП2", "РП3", "РП4"):
+        assert any(n.startswith(pref) for n in names), (pref, names)
     assert any(f["qf"].startswith("QF3.") for f in graph_k11["feeders_flat"])
 
 

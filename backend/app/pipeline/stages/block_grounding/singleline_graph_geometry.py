@@ -290,18 +290,20 @@ def _median(xs):
 
 
 def _bind_codes_columnwise(pq, pc):
-    """Привязка код→QF по ГЕОМЕТРИИ КОЛОНКИ (а не по порядку текста).
+    """Привязка код→QF по ГЕОМЕТРИИ КОЛОНКИ (а не по порядку текста), alias-устойчивая.
 
     pq: отсортированный по X список панели [(qx, qy, qn)]; pc: коды панели [(cx, cy, code)].
 
-    Метод: коды цепей систематически смещены вправо от своей QF на ~постоянную величину
-    (на 9VCW δ≈24..29px при шаге колонок ~63px). Оцениваем медианное смещение δ и
-    привязываем каждый код к ближайшему ЦЕНТРУ QF-колонки после коррекции (cx − δ). Это
-    устойчивее «середин между QF» (код может почти касаться границы) и корректно оставляет
-    QF без отходящего кода НЕпривязанным (QF3.1 на ВРУ-К1.2 → требует ручной проверки).
+    Коды смещены от своей QF на ~постоянную величину δ. Простая медиана «code−nearest_qf»
+    работает, пока |δ| < полушага колонки. Но на листах-окончаниях (РП5.1) δ≈+38px при шаге
+    ~62px — БОЛЬШЕ полушага: код ближе к СОСЕДНЕЙ QF, и медиана даёт алиас (δ−шаг), что сдвигает
+    весь ряд на 1 (QF5.1.14→К1.2.1.12а вместо .13а). Поэтому перебираем алиасы δ ∈ {δ₀−шаг, δ₀,
+    δ₀+шаг} в пределах одной колонки (|δ|<шаг) и среди равно-хороших по невязке выбираем тот, что
+    даёт МИНИМУМ ведущих пустых колонок (физически резервы — в хвосте, а не в начале). Это:
+    - сохраняет 9VCW (δ≈+20<полушага: QF3.1 верно без кода, QF3.10→К1.2.4-2);
+    - чинит 7TLY РП5.1 (δ≈+38>полушага: QF5.1.1→К1.2.1.1а).
 
-    Возвращает (assign{qn: code|None}, conflicts{qn: [note...]}). conflicts — реальные
-    геометрические коллизии: код у границы двух колонок или 2 кода в одной колонке.
+    Возвращает (assign{qn: code|None}, conflicts{qn: [note...]}).
     """
     names = [n for _, _, n in pq]
     centers = [x for x, _, _ in pq]
@@ -313,25 +315,87 @@ def _bind_codes_columnwise(pq, pc):
     def nearest(t):
         return min(range(len(centers)), key=lambda i: abs(centers[i] - t))
 
-    diffs = [cx - centers[nearest(cx)] for cx, _, _ in pc]
-    delta = _median(diffs)
-    owner_code = {}
+    spacing = (_median([centers[i + 1] - centers[i] for i in range(len(centers) - 1)])
+               if len(centers) > 1 else 60.0) or 60.0
+    code_xs = [cx for cx, _, _ in pc]
+    draw = _median([cx - centers[nearest(cx)] for cx in code_xs])
+    cands = [d for d in (draw - spacing, draw, draw + spacing) if abs(d) < spacing * 0.9] or [draw]
+
+    def evaluate(d):
+        fit, hit = 0, set()
+        for cx in code_xs:
+            j = nearest(cx - d)
+            hit.add(j)
+            if abs(centers[j] - (cx - d)) < 0.35 * spacing:
+                fit += 1
+        return fit, (min(hit) if hit else len(centers))   # (невязка-fit, ведущие пустые)
+
+    scored = [(evaluate(d), d) for d in cands]
+    max_fit = max(s[0][0] for s in scored)
+    # среди δ с почти-лучшим fit: min ведущих пустых, затем min |δ|
+    _, _, delta = min((s[0][1], abs(s[1]), s[1]) for s in scored if s[0][0] >= max_fit - 2)
+
+    owner = {}
     for cx, _, code in pc:
-        t = cx - delta
-        j = nearest(t)
-        d1 = abs(centers[j] - t)
-        d2 = min((abs(centers[k] - t) for k in range(len(centers)) if k != j), default=1e9)
-        n = names[j]
-        if n in owner_code and owner_code[n] != code:
-            conflicts.setdefault(n, []).append(
-                f"GEOMETRY_CONFLICT: в колонку {n} попадает 2 кода ({owner_code[n]}, {code})")
-            continue
-        owner_code[n] = code
+        j = nearest(cx - delta)
+        d1 = abs(centers[j] - (cx - delta))
+        d2 = min((abs(centers[k] - (cx - delta)) for k in range(len(centers)) if k != j), default=1e9)
+        owner.setdefault(names[j], []).append((d1, d2, code))
+    for n, lst in owner.items():
+        lst.sort()
+        d1, d2, code = lst[0]
         assign[n] = code
-        if d2 - d1 < 12:  # код почти равноудалён от двух колонок — спорная привязка
+        if d2 - d1 < 10:   # код почти равноудалён от двух колонок — спорно
             conflicts.setdefault(n, []).append(
                 f"GEOMETRY_CONFLICT: код {code} у границы колонки (Δ={d2 - d1:.0f}px) — требует проверки")
+        for _d1, _d2, code2 in lst[1:]:
+            if code2 != code:   # 2 РАЗНЫХ кода в одну колонку — реальная коллизия
+                conflicts.setdefault(n, []).append(
+                    f"GEOMETRY_CONFLICT: в колонку {n} попадает 2 кода ({code}, {code2})")
     return assign, conflicts
+
+
+# Метка QF: 2 сегмента (QF5.30 → панель «5») или 3 сегмента (QF5.1.17 → суб-панель «5.1»).
+_QF_RE = re.compile(r"QF\d+(?:\.\d+){1,2}")
+
+
+def _qf_panel_key(qn: str):
+    """(panel_key, feeder_no). QF5.30 → ('5','30'); QF5.1.17 → ('5.1','17').
+
+    Критично: QF5.1 — ПЕРВАЯ линия панели РП5 (key='5'), а НЕ панель РП5.1. Панель РП5.1
+    появляется только для трёхсегментных QF5.1.N.
+    """
+    parts = qn[2:].split(".")
+    if len(parts) >= 3:
+        return ".".join(parts[:2]), parts[2]
+    return parts[0], (parts[1] if len(parts) > 1 else "")
+
+
+def _panel_name(panel_key: str, page_text: str) -> str:
+    """Имя панели: из текста листа «РП<key> (ПЭСПЗ/ОДН/АВР)», иначе статическая карта / «РП<key>»."""
+    m = re.search(r"РП" + re.escape(panel_key) + r"\s*\((ПЭСПЗ|ОДН|АВР)\)", page_text or "")
+    if m:
+        return f"РП{panel_key} ({m.group(1)})"
+    return _PANEL.get(panel_key, f"РП{panel_key}")
+
+
+def _split_codes_by_y_rows(qy_med: float, panel_codes):
+    """Разделить коды панели на PRIMARY (ряд отходящих кодов, ближайший к ряду QF) и
+    SECONDARY (верхние ряды вторичных цепей «ад»/«ан» — управление двигателями/нагревом).
+
+    На листах-окончаниях основной код фидера и вторичная цепь стоят в почти одной X-колонке,
+    но в РАЗНЫХ Y-рядах: primary ≈ на 70-135px выше QF, secondary ≈ на 500-780px выше. Только
+    primary участвуют в привязке QF→circuit_code; secondary сохраняются отдельным слоем.
+
+    panel_codes: [(x, y, code)]. Возвращает (primary, secondary) как списки тех же кортежей.
+    """
+    items = sorted(((qy_med - c[1]), c) for c in panel_codes if (qy_med - c[1]) > 5)
+    if not items:
+        return [], []
+    base = items[0][0]                       # минимальное расстояние вверх = primary-ряд
+    primary = [c for d, c in items if d <= base + 160]
+    secondary = [c for d, c in items if d > base + 160]
+    return primary, secondary
 
 
 # ── Извлечение метаданных листа из текста страницы (расчёты/ТТ/примечания/служебное) ──
@@ -629,9 +693,17 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     def coll(pat, pred=None):
         return [(w[0], w[1], w[4]) for w in words if re.match(pat, w[4]) and (pred is None or pred(w[4]))]
 
-    qf_all = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"QF\d+\.\d+", w[4])]
+    qf_all = [(w[0], w[1], w[4]) for w in words if _QF_RE.fullmatch(w[4])]
     if len(qf_all) < 3:
         return None
+    # Суб-панель из 3-сегментных QF (QF5.1.x → РП5.1) признаём только при ≥2 членах. Одиночный
+    # 3-сегментный QF (вложенный, напр. QF3.10.1 на ВРУ-К1.1) исключаем — он не образует панель и
+    # не должен конкурировать за код в родительской панели (поведение как до 3-сегментной поддержки).
+    _key_count = collections.Counter(_qf_panel_key(q[2])[0] for q in qf_all)
+    dropped_subpanel_qf = sorted({q[2] for q in qf_all
+                                  if "." in _qf_panel_key(q[2])[0] and _key_count[_qf_panel_key(q[2])[0]] < 2})
+    if dropped_subpanel_qf:
+        qf_all = [q for q in qf_all if q[2] not in dropped_subpanel_qf]
     # исходящие vs вводные по Y (вводные — нижний ряд)
     ys = sorted(q[1] for q in qf_all)
     y_split = ys[0] + (ys[-1] - ys[0]) * 0.6 if ys[-1] - ys[0] > 60 else ys[-1] + 1
@@ -648,7 +720,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     ASUD = [(w[0], w[1]) for w in words if "АСУД" in w[4]]
 
     def pref(qn):
-        return re.match(r"QF(\d+)", qn).group(1)
+        return _qf_panel_key(qn)[0]
 
     geo = {}
     for qx, qy, qn in qf_out:
@@ -671,11 +743,24 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     assign = {}
     bind_method = {}
     bind_conflicts = {}
+    primary_tokens = []          # все PRIMARY код-токены (occurrences, для честного покрытия)
+    secondary_circuits = []      # вторичные цепи «ад»/«ан» отдельным слоем (не primary feeder code)
+    panel_keys = sorted(set(pref(q[2]) for q in qf_out))
+    panel_name_map = {pk: _panel_name(pk, page_full_text) for pk in panel_keys}
     dup = collections.Counter(q[2] for q in qf_out)
-    for p in sorted(set(pref(q[2]) for q in qf_out)):
+    for p in panel_keys:
         pq = sorted([q for q in qf_out if pref(q[2]) == p])
         xs = [q[0] for q in pq]
-        pc = sorted([c for c in codes if min(xs) - 45 <= c[0] <= max(xs) + 45])
+        qy_med = _median([q[1] for q in pq])
+        pcodes = [c for c in codes if min(xs) - 50 <= c[0] <= max(xs) + 50]
+        # Y-aware: только PRIMARY-ряд кодов участвует в привязке; SECONDARY (ад/ан) — отдельно
+        prim, sec = _split_codes_by_y_rows(qy_med, pcodes)
+        primary_tokens += [c[2] for c in prim]
+        for cx, cy, code in sec:
+            near = min(pq, key=lambda q: abs(q[0] - cx))
+            secondary_circuits.append({"code": code, "panel": panel_name_map[p],
+                                       "panel_key": p, "near_qf": near[2]})
+        pc = sorted(prim)
         col_assign, conflicts = _bind_codes_columnwise(pq, pc)
         # монотонная привязка (резерв пропускает код) — для cross-check и fallback
         mono = {}
@@ -817,7 +902,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                 polygon_page = [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in poly]
                 polygons_page = [polygon_page]            # одна фигура линии
         feeders.append({
-            "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
+            "qf": qn, "panel": panel_name_map.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
             "bbox_page": bbox_page, "polygon_page": polygon_page, "polygons_page": polygons_page,
             "breaker_type": g["ba"], "breaker_poles": g["pole"],
@@ -884,9 +969,45 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             for pc_ in panel_calcs for m in pc_.get("modes", [])):
         warnings.append("в расчётных режимах есть «Ру=----» / «Кс=#ДЕЛ/0!» — сохранено как в ПД")
 
-    codes_linked = len({f.get("circuit_code") for f in linked})
-    confidence = round(codes_linked / max(len(params), 1), 3)
-    status = "ok" if (not ambiguous and not geometry_conflicts) else "needs_review"
+    # ── Честные счётчики покрытия (occurrences vs unique; дубли и пропуски НЕ маскируем) ──
+    param_list = [f["circuit_code"] for s in base["bus_sections"] for f in s["feeders"]]
+    param_occ = collections.Counter(param_list)
+    bound_codes = [f["circuit_code"] for f in linked]
+    bound_counter = collections.Counter(bound_codes)
+    duplicate_param_codes = sorted(c for c, n in param_occ.items() if n > 1)
+    duplicate_bindings = sorted(c for c, n in bound_counter.items() if n > 1)
+    unbound_param_codes = sorted(c for c in param_occ if c not in bound_counter)
+    codes_linked = len(set(bound_codes))              # backward-compat (unique)
+    # Пропущенная панель = КЛАСТЕР непривязанных PRIMARY-кодов с общим суб-префиксом (К<a>.<b>.<c>…),
+    # т.е. на листе есть коды, но нет QF-колонок под них (как РП5.1 на 7TLY до фикса). По ОРФАНАМ,
+    # а не по текстовым ссылкам — иначе начало-лист ложно «теряет» РП5/РП5.1 из таблицы ТТ.
+    _bound_set = set(bound_codes)
+    _orphan_primary = [c for c in primary_tokens if c not in _bound_set]
+    _sub = collections.Counter()
+    for c in _orphan_primary:
+        if re.match(r"К\d+\.\d+\.\d+\.\d+", c):       # 4-числовой код = суб-панель РПx.y (К a.b.c.d)
+            _sub[re.match(r"(К\d+\.\d+\.\d+)", c).group(1)] += 1
+    missing_panel_warnings = [
+        f"непривязанная суб-панель: коды {pre}.*а ×{n}, нет QF-колонок"
+        for pre, n in _sub.items() if n >= 2]
+    if missing_panel_warnings:
+        warnings.append("пропущены панели: " + "; ".join(missing_panel_warnings))
+    if duplicate_param_codes:
+        warnings.append("дубль кода в ПД (не исправлено молча): " + ", ".join(duplicate_param_codes))
+    if duplicate_bindings:
+        warnings.append("один код на нескольких QF (дубль в вектор-слое ПД): "
+                        + ", ".join(duplicate_bindings))
+    codes_linked_occurrences = len(bound_codes)
+    codes_total_occurrences = len(primary_tokens)
+    coverage_gap = codes_linked_occurrences < codes_total_occurrences
+    if coverage_gap:
+        warnings.append(f"покрытие неполное: привязано {codes_linked_occurrences} из "
+                        f"{codes_total_occurrences} primary-кодов")
+
+    confidence = round(codes_linked / max(len(param_occ), 1), 3)
+    status = "ok" if not (ambiguous or geometry_conflicts or coverage_gap
+                          or missing_panel_warnings or duplicate_param_codes
+                          or duplicate_bindings) else "needs_review"
 
     return {
         "panel": panel_hint,
@@ -903,13 +1024,25 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "panel_calculations": panel_calcs,
         "tt_check_table": tt_check,
         "service_elements": service_elements,
+        "secondary_circuits": secondary_circuits,
         "notes": notes,
         "validation": {
             "active": len(linked), "reserve": len(reserve), "ambiguous": len(ambiguous),
             "breaker_bound": f"{sum(1 for f in feeders if f.get('breaker_type'))}/{len(feeders)}",
             "power_rate": bv.get("power_rate"), "current_rate": bv.get("current_rate"),
-            "codes_total": len(params), "codes_linked": codes_linked,
+            "codes_total": len(param_occ), "codes_linked": codes_linked,
             "geometry_conflicts": geometry_conflicts,
+            # ── честные счётчики (occurrences vs unique; дубли/пропуски явно) ──
+            "codes_total_occurrences": codes_total_occurrences,
+            "codes_linked_occurrences": codes_linked_occurrences,
+            "codes_total_unique": len(param_occ),
+            "codes_linked_unique": codes_linked,
+            "unbound_param_codes": unbound_param_codes,
+            "duplicate_param_codes": duplicate_param_codes,
+            "duplicate_bindings": duplicate_bindings,
+            "secondary_codes_total": len(secondary_circuits),
+            "panels_detected": [p["name"] for p in panels],
+            "missing_panel_warnings": missing_panel_warnings,
         },
         "warnings": warnings,
         "confidence": confidence,
@@ -1008,10 +1141,12 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append("**Раздел/объект:** " + " | ".join(meta))
     L.append(
         f"**Сводка валидации:** линий {graph.get('feeders_total')}, привязано кодов "
-        f"{v.get('codes_linked')}/{v.get('codes_total')}, актив {v.get('active')}, резерв "
-        f"{v.get('reserve')}, неоднозначных {v.get('ambiguous')}, геом.конфликтов "
-        f"{v.get('geometry_conflicts')}, физика P/I {v.get('power_rate')}/{v.get('current_rate')}, "
-        f"confidence {graph.get('confidence')}, status `{graph.get('status')}`")
+        f"{v.get('codes_linked_occurrences')}/{v.get('codes_total_occurrences')} "
+        f"(uniq {v.get('codes_linked_unique')}/{v.get('codes_total_unique')}), актив {v.get('active')}, "
+        f"резерв {v.get('reserve')}, неоднозначных {v.get('ambiguous')}, геом.конфликтов "
+        f"{v.get('geometry_conflicts')}, вторичных {v.get('secondary_codes_total')}, физика P/I "
+        f"{v.get('power_rate')}/{v.get('current_rate')}, confidence {graph.get('confidence')}, "
+        f"status `{graph.get('status')}`")
     for w in graph.get("warnings", []):
         L.append(f"  - ⚠ {w}")
 
@@ -1068,6 +1203,18 @@ def render_graph_etalon_markdown(graph: dict) -> str:
     if not graph.get("service_elements"):
         L.append("| (служебные элементы не извлечены) | — | — |")
 
+    # 5.1 Вторичные цепи (ад/ан) — отдельный слой, НЕ primary feeder code
+    sec = graph.get("secondary_circuits") or []
+    if sec:
+        L.append("\n## 5.1 Вторичные цепи (управление/дымоудаление)\n")
+        L.append("_Коды верхних рядов («ад»/«ан») — вторичные цепи двигателей/нагрева, "
+                 "не основные коды отходящих линий._\n")
+        L.append("| Код | Панель | Ближайшая QF |")
+        L.append("| --- | --- | --- |")
+        for s in sec:
+            L.append(f"| {_md_cell(s.get('code'))} | {_md_cell(s.get('panel'))} "
+                     f"| {_md_cell(s.get('near_qf'))} |")
+
     # 6. Таблица проверки трансформаторов тока
     L.append("\n## 6. Таблица проверки трансформаторов тока\n")
     tt = graph.get("tt_check_table") or []
@@ -1095,7 +1242,19 @@ def render_graph_etalon_markdown(graph: dict) -> str:
 
     # 8. Validation / requires_review
     L.append("\n## 8. Validation / requires_review\n")
-    L.append(f"- codes_total: {v.get('codes_total')}; codes_linked: {v.get('codes_linked')}")
+    L.append(f"- panels_detected: {', '.join(v.get('panels_detected') or []) or '—'}")
+    L.append(f"- codes (occurrences): linked {v.get('codes_linked_occurrences')}/"
+             f"{v.get('codes_total_occurrences')}; (unique): {v.get('codes_linked_unique')}/"
+             f"{v.get('codes_total_unique')}")
+    if v.get("unbound_param_codes"):
+        L.append(f"- unbound_param_codes: {', '.join(v['unbound_param_codes'])}")
+    if v.get("duplicate_param_codes"):
+        L.append(f"- duplicate_param_codes (дубль в ПД): {', '.join(v['duplicate_param_codes'])}")
+    if v.get("duplicate_bindings"):
+        L.append(f"- duplicate_bindings (один код на >1 QF): {', '.join(v['duplicate_bindings'])}")
+    if v.get("missing_panel_warnings"):
+        L.append(f"- missing_panel_warnings: {'; '.join(v['missing_panel_warnings'])}")
+    L.append(f"- secondary_codes_total: {v.get('secondary_codes_total')}")
     L.append(f"- active: {v.get('active')}; reserve: {v.get('reserve')}; "
              f"ambiguous: {v.get('ambiguous')}")
     L.append(f"- breaker_bound: {v.get('breaker_bound')}; geometry_conflicts: "
