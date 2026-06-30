@@ -6764,15 +6764,20 @@ const app = createApp({
         const blockRegionRects = computed(() => {
             const g = blockLlmText.value && blockLlmText.value.singleline_graph;
             if (!g || !g.panels) return [];
+            const cl = v => Math.max(0, Math.min(1, v));
             const out = [];
             for (const pan of g.panels) {
                 for (const f of (pan.feeders || [])) {
-                    const b = f.bbox;
-                    if (b && b.length === 4) {
-                        const x0 = Math.max(0, Math.min(1, b[0])), y0 = Math.max(0, Math.min(1, b[1]));
-                        const x1 = Math.max(0, Math.min(1, b[2])), y1 = Math.max(0, Math.min(1, b[3]));
+                    let poly = null;
+                    if (f.polygon && f.polygon.length >= 3) {
+                        poly = f.polygon.map(p => [cl(p[0]), cl(p[1])]);
+                    } else if (f.bbox && f.bbox.length === 4) {
+                        const x0 = cl(f.bbox[0]), y0 = cl(f.bbox[1]), x1 = cl(f.bbox[2]), y1 = cl(f.bbox[3]);
+                        poly = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+                    }
+                    if (poly) {
                         out.push({ qf: f.qf, consumer: f.consumer || '', status: f.status,
-                                   x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) });
+                                   polygon: poly, labelX: poly[0][0], labelY: poly[0][1] });
                     }
                 }
             }

@@ -51,6 +51,28 @@ def _find_page_index(doc, vector_text: str) -> Optional[int]:
     return best if best_hits >= max(2, len(needles) // 2) else None
 
 
+def _convex_hull(points):
+    """Выпуклая оболочка (monotone chain). Плотно облегает точки, без самопересечений."""
+    pts = sorted(set((round(x, 2), round(y, 2)) for x, y in points))
+    if len(pts) <= 2:
+        return pts
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+
 def _near(qx, qy, arr, dx, dymin, dymax):
     c = sorted((abs(x - qx), y, t) for x, y, t in arr if abs(x - qx) < dx and dymin < (y - qy) < dymax)
     return c[0][2] if c else None
@@ -351,16 +373,29 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         right = qx + min((next_x - qx) / 2, 38)
         colw = [w for w in words if left <= w[0] < right and qy - 280 < w[1] < qy + 30]
         bbox_page = None
+        polygon_page = None
         if page_w and page_h:
             # Y — от верха текста потребителя ВНИЗ до шины (всё над автоматом и под ним)
             y_top = min((w[1] for w in colw), default=qy - 230)
             y_bot = qy + 60
             bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
                          round(right / page_w, 5), round(y_bot / page_h, 5)]
+            # Полигон ТОЧНО по тексту фидера: выпуклая оболочка слов колонки (потребитель +
+            # формула + кабель + трасса + QF-метка + автомат) → плотно облегает реальный текст,
+            # ширина фигуры = ширина текста. + узкая ножка до шины (qx, y_bot).
+            fw = [w for w in words if left <= (w[0] + w[2]) / 2 < right and qy - 285 < w[1] < qy + 30]
+            if len(fw) >= 2:
+                pts = []
+                for w in fw:
+                    pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
+                pts.append((qx, y_bot))   # ножка до шины
+                hull = _convex_hull(pts)
+                if len(hull) >= 3:
+                    polygon_page = [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in hull]
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
-            "bbox_page": bbox_page,
+            "bbox_page": bbox_page, "polygon_page": polygon_page,
             "breaker_type": g["ba"], "breaker_poles": g["pole"],
             "breaker_icn": g["ka"], "breaker_in": g["amp"],
             "P_inst_kw": (p or {}).get("P_inst_kw"), "Kc": (p or {}).get("Kc"),

@@ -3164,16 +3164,13 @@
                                  :style="blockImageStyle"
                                  :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
                                 <template v-for="(r, ri) in blockRegionRects" :key="'rg'+ri">
-                                    <rect :x="r.x * blockNatW" :y="r.y * blockNatH"
-                                          :width="r.w * blockNatW" :height="r.h * blockNatH"
-                                          class="block-region-rect"
-                                          :class="'block-region-rect--' + r.status"
-                                          rx="3" ry="3">
+                                    <polygon :points="r.polygon.map(p => (p[0]*blockNatW)+','+(p[1]*blockNatH)).join(' ')"
+                                             class="block-region-rect"
+                                             :class="'block-region-rect--' + r.status">
                                         <title>{{ r.qf }} — {{ r.consumer }}</title>
-                                    </rect>
-                                    <text :x="r.x * blockNatW + (r.w * blockNatW) / 2"
-                                          :y="r.y * blockNatH - 5"
-                                          class="block-region-label" text-anchor="middle">{{ r.qf }}</text>
+                                    </polygon>
+                                    <text :x="r.labelX * blockNatW + 3" :y="r.labelY * blockNatH - 4"
+                                          class="block-region-label">{{ r.qf }}</text>
                                 </template>
                             </svg>
                             <p class="tile-split-image__label">
