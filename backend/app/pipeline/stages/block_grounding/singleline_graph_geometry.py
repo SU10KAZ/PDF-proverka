@@ -343,16 +343,20 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         if consumer:
             m = _FLOOR_RE.search(consumer)
             loc = m.group(0) if m else None
-        # bbox колонки «одна линия» (page-normalized) — для визуальной проверки связи данных
-        half = min((nx - qx) / 2 + 3, 35)
-        colw = [w for w in words if qx - half <= w[0] < qx + half and qy - 280 < w[1] < qy + 52]
+        # bbox колонки «одна линия» (page-normalized) — для визуальной проверки связи данных.
+        # X — границы = СЕРЕДИНЫ до соседних QF (тайлинг без наложения), cap 38px на сторону.
+        prev_x = max([x for x in qf_xs if x < qx - 1], default=qx - 64)
+        next_x = min([x for x in qf_xs if x > qx + 1], default=qx + 64)
+        left = qx - min((qx - prev_x) / 2, 38)
+        right = qx + min((next_x - qx) / 2, 38)
+        colw = [w for w in words if left <= w[0] < right and qy - 280 < w[1] < qy + 30]
         bbox_page = None
-        if colw and page_w and page_h:
-            # X — по полосе сегментации (qx±half, соседние области стыкуются), Y — по содержимому
-            bbox_page = [round((qx - half) / page_w, 5),
-                         round(min(w[1] for w in colw) / page_h, 5),
-                         round((qx + half) / page_w, 5),
-                         round(max(w[3] for w in colw) / page_h, 5)]
+        if page_w and page_h:
+            # Y — от верха текста потребителя ВНИЗ до шины (всё над автоматом и под ним)
+            y_top = min((w[1] for w in colw), default=qy - 230)
+            y_bot = qy + 60
+            bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
+                         round(right / page_w, 5), round(y_bot / page_h, 5)]
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
