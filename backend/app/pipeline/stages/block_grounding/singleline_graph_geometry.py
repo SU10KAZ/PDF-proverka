@@ -765,10 +765,10 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             y_bot = qy + 60
             bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
                          round(right / page_w, 5), round(y_bot / page_h, 5)]
-            # Область линии = ДВЕ плотные оболочки реальных слов, одной заливкой (НЕ объединяем
-            # в одну выпуклую оболочку — она срезает углы текста, т.к. автомат уже и левее текста):
-            #  • ТЕКСТ (потребитель+формула+кабель+трасса) — смещён вправо, полоса [qx-2, tright);
-            #  • АВТОМАТ (ВА-…)+метка QF — центрирован на символе, полоса [qx-20, qx+20].
+            # Область линии — по ЗНАЧЕНИЯМ из графа (а не геометрической полосой): берём слова PDF,
+            # чей текст совпадает с известными данными линии (потребитель/код/автомат/кабель/трасса/
+            # числа), в пределах колонки → обводим именно их (минимальная траектория по данным).
+            # Две части одной заливкой (текст + автомат), чтобы оболочка не срезала углы текста.
             def _hull_norm(ws):
                 if len(ws) < 2:
                     return None
@@ -777,14 +777,37 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                     pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
                 h = _convex_hull(pts)
                 return [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in h] if len(h) >= 3 else None
-            tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright and qy - 330 < w[1] < qy - 45]
-            # автомат смещён правее символа и имеет 2 колонки (ВА-300|1Р / 15кА|16А) →
-            # полоса шире вправо (qx+34), иначе правая колонка «1Р/16А» не попадает в область.
-            brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= qx + 34 and -2 < (w[1] - qy) < 45]
+
+            def _nrm(t):
+                return t.strip(" .,;:()[]«»\"'").replace("ё", "е").replace("Ё", "Е").lower()
+            txt_targets, brk_targets = set(), set()
+            for s in (consumer, code, (p or {}).get("cable"), (p or {}).get("routing")):
+                if s:
+                    for tok in re.split(r"\s+", str(s)):
+                        n = _nrm(tok)
+                        if len(n) >= 3:
+                            txt_targets.add(n)
+            for val, unit in (((p or {}).get("length_m"), "м"), ((p or {}).get("I_a"), "а"),
+                              ((p or {}).get("Ikz_ka"), "ка"), ((p or {}).get("P_calc_kw"), "квт")):
+                if isinstance(val, (int, float)):
+                    txt_targets.add(_nrm(f"{val:g}{unit}"))
+            for v in (g.get("ba"), g.get("ka"), g.get("amp"), g.get("pole")):
+                if v:
+                    brk_targets.add(_nrm(str(v)))
+            brk_targets.add(_nrm(qn))
+
+            def _hits(w, targets):
+                nw = _nrm(w[4])
+                return bool(nw) and any(nw == t or (len(t) >= 4 and t in nw) or (len(nw) >= 4 and nw in t)
+                                        for t in targets)
+            tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright
+                  and qy - 330 < w[1] < qy - 40 and _hits(w, txt_targets)]
+            brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= qx + 34
+                   and -2 < (w[1] - qy) < 45 and _hits(w, brk_targets)]
             parts = [h for h in (_hull_norm(tw), _hull_norm(brw)) if h]
             if parts:
-                polygons_page = parts        # все части линии (текст + автомат), без срезов
-                polygon_page = parts[0]      # совместимость: основная часть (текст)
+                polygons_page = parts        # части линии по данным графа (текст + автомат)
+                polygon_page = parts[0]
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
