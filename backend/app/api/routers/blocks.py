@@ -702,6 +702,22 @@ async def get_block_llm_text(
     except Exception:
         structured_graph = None
 
+    # 7) Полный граф схемы из ГЕОМЕТРИИ PDF (топология QF↔линия↔панель РПn, управление АСУД/ПС).
+    singleline_graph = None
+    try:
+        if v_usable and vector_text and structured_graph:
+            from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+                build_singleline_graph,
+            )
+            pdf = version_dir / "02_work" / "document.pdf"
+            if not pdf.exists() and (version_dir / "document.pdf").exists():
+                pdf = version_dir / "document.pdf"
+            if pdf.exists():
+                ph = (structured_graph or {}).get("panel") or "ВРУ"
+                singleline_graph = build_singleline_graph(pdf, vector_text, panel_hint=ph)
+    except Exception:
+        singleline_graph = None
+
     return {
         "project_id": project_id,
         "block_id": block_id,
@@ -719,6 +735,8 @@ async def get_block_llm_text(
         "vector_usable": v_usable,
         # структурированный граф схемы (демо метода) — None, если блок не однолинейная схема
         "structured_graph": structured_graph,
+        # полный граф из геометрии PDF (QF↔панель РПn, автомат, управление) — None, если недоступно
+        "singleline_graph": singleline_graph,
     }
 
 
