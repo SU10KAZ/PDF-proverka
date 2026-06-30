@@ -3036,6 +3036,20 @@
                                             (описание блока пустое — нет enrichment)</span>
                                     </div>
                                     <pre class="block-llm-text__body">{{ blockLlmText.user_text }}</pre>
+
+                                    <!-- Вектор-слой PDF: точные значения, СЕЙЧАС не уходят в нейронку -->
+                                    <template v-if="blockLlmText.vector_text">
+                                        <div class="block-llm-text__section block-llm-text__section--vector">
+                                            📐 Вектор-слой PDF — {{ blockLlmText.vector_len }} симв точных значений
+                                            <span class="block-llm-text__warn">сейчас НЕ уходит в нейронку</span>
+                                        </div>
+                                        <pre class="block-llm-text__body block-llm-text__body--vector">{{ blockLlmText.vector_text }}</pre>
+                                    </template>
+
+                                    <details v-if="blockLlmText.gemma_ocr_text" class="block-llm-text__sys">
+                                        <summary>Сырой gemma-OCR блока ({{ (blockLlmText.gemma_ocr_text || '').length }} симв)</summary>
+                                        <pre class="block-llm-text__body">{{ blockLlmText.gemma_ocr_text }}</pre>
+                                    </details>
                                     <details class="block-llm-text__sys">
                                         <summary>System prompt ({{ (blockLlmText.system_prompt || '').length }} симв)</summary>
                                         <pre class="block-llm-text__body">{{ blockLlmText.system_prompt }}</pre>

@@ -585,6 +585,29 @@ def _lookup_block_page(output_dir: Path, block_id: str) -> Optional[int]:
     return None
 
 
+def _block_from_result_json(version_dir: Path, block_id: str) -> dict:
+    """Запись блока из 02_work/result.json (Chandra): pdfplumber_text (вектор) + ocr_text (gemma)."""
+    rp = version_dir / "02_work" / "result.json"
+    if not rp.exists():
+        return {}
+    try:
+        rj = json.loads(rp.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+    def _match(b):
+        return isinstance(b, dict) and (str(b.get("id")) == block_id or str(b.get("block_id")) == block_id)
+
+    for pg in rj.get("pages", []):
+        for b in (pg.get("blocks") or []):
+            if _match(b):
+                return b
+    for b in (rj.get("blocks") or []):
+        if _match(b):
+            return b
+    return {}
+
+
 @router.get("/{project_id:path}/blocks/llm-text/{block_id}")
 async def get_block_llm_text(
     project_id: str,
@@ -650,6 +673,17 @@ async def get_block_llm_text(
     except Exception:
         system_prompt = build_system_prompt(section, extended=False)
 
+    # 5) Сырьё блока из result.json: вектор-слой PDF + сырой gemma-ocr (для полного UI-просмотра).
+    #    Вектор СЕЙЧАС в промпт Stage 02 НЕ попадает — показываем, чтобы видеть «что доступно».
+    rblock = _block_from_result_json(version_dir, block_id)
+    vector_text = rblock.get("pdfplumber_text") or ""
+    gemma_ocr_text = rblock.get("ocr_text") or ""
+    try:
+        from backend.app.pipeline.stages.block_grounding.grounding import vector_usable
+        v_usable = vector_usable(vector_text)
+    except Exception:
+        v_usable = bool(vector_text and len(vector_text) >= 30)
+
     return {
         "project_id": project_id,
         "block_id": block_id,
@@ -660,6 +694,11 @@ async def get_block_llm_text(
         "page_text": page_text,
         "system_prompt": system_prompt,
         "user_text": user_text,
+        # доступное сырьё блока (НЕ в промпте сейчас)
+        "gemma_ocr_text": gemma_ocr_text,
+        "vector_text": vector_text,
+        "vector_len": len(vector_text),
+        "vector_usable": v_usable,
     }
 
 
