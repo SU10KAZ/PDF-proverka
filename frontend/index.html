@@ -3105,6 +3105,18 @@
                                             ⚑ Требует проверки ({{ blockLlmText.singleline_graph.review.length }}):
                                             <span v-for="(rv,ri) in blockLlmText.singleline_graph.review" :key="ri" class="sld-review__item">{{ rv.qf }} — {{ (rv.notes||[]).join('; ') }}</span>
                                         </div>
+                                        <!-- 📋 Полная разметка в формате эталона (8 разделов): расчёты панелей · таблица ТТ ·
+                                             примечания · реестр служебных · дерево питания. НЕ уходит в нейронку — только просмотр. -->
+                                        <details v-if="blockLlmText.singleline_graph_markdown" class="sld-section sld-md">
+                                            <summary class="sld-section__head" style="cursor:pointer; user-select:none">
+                                                📋 Полная разметка схемы (формат эталона, 8 разделов) —
+                                                расчёты панелей · таблица ТТ · примечания · реестр служебных · дерево питания
+                                                <span class="block-llm-text__muted">(только просмотр, в нейронку не уходит)</span>
+                                            </summary>
+                                            <div class="sld-md__body markdown-body"
+                                                 style="max-height:60vh; overflow:auto; padding:8px 10px; font-size:12px"
+                                                 v-html="renderMarkdown(blockLlmText.singleline_graph_markdown)"></div>
+                                        </details>
                                     </template>
                                     <!-- Fallback: плоская структура по секциям шин (если геометрия недоступна) -->
                                     <template v-else-if="blockLlmText.structured_graph">
