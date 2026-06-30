@@ -6727,7 +6727,7 @@ const app = createApp({
             // txt-режим переживает навигацию: при открытии нового блока подгружаем его текст
             blockLlmText.value = null;
             blockLlmTextError.value = '';
-            if (showBlockLlmText.value) loadBlockLlmText();
+            if (showBlockLlmText.value || showBlockRegions.value) loadBlockLlmText();
             resetBlockZoom();
         }
 
@@ -6753,8 +6753,36 @@ const app = createApp({
 
         function toggleBlockLlmText() {
             showBlockLlmText.value = !showBlockLlmText.value;
-            if (showBlockLlmText.value && (!blockLlmText.value || !blockLlmText.value.user_text)) {
-                loadBlockLlmText();
+            if (showBlockLlmText.value) {
+                showBlockRegions.value = false; // txt и области взаимоисключающие
+                if (!blockLlmText.value || !blockLlmText.value.user_text) loadBlockLlmText();
+            }
+        }
+
+        // Полупрозрачные области линий поверх блока — визуальная проверка связи данных
+        const showBlockRegions = ref(false);
+        const blockRegionRects = computed(() => {
+            const g = blockLlmText.value && blockLlmText.value.singleline_graph;
+            if (!g || !g.panels) return [];
+            const out = [];
+            for (const pan of g.panels) {
+                for (const f of (pan.feeders || [])) {
+                    const b = f.bbox;
+                    if (b && b.length === 4) {
+                        const x0 = Math.max(0, Math.min(1, b[0])), y0 = Math.max(0, Math.min(1, b[1]));
+                        const x1 = Math.max(0, Math.min(1, b[2])), y1 = Math.max(0, Math.min(1, b[3]));
+                        out.push({ qf: f.qf, consumer: f.consumer || '', status: f.status,
+                                   x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) });
+                    }
+                }
+            }
+            return out;
+        });
+        function toggleBlockRegions() {
+            showBlockRegions.value = !showBlockRegions.value;
+            if (showBlockRegions.value) {
+                showBlockLlmText.value = false; // показываем картинку, а не текст
+                if (!blockLlmText.value || !blockLlmText.value.singleline_graph) loadBlockLlmText();
             }
         }
 
@@ -16900,6 +16928,7 @@ const app = createApp({
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
+            showBlockRegions, blockRegionRects, toggleBlockRegions,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,

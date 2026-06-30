@@ -3158,9 +3158,31 @@
                                     </text>
                                 </template>
                             </svg>
+                            <!-- SVG overlay: ОБЛАСТИ ЛИНИЙ (визуальная проверка связи данных) -->
+                            <svg v-if="showBlockRegions && blockRegionRects.length"
+                                 class="block-highlight-svg block-region-svg"
+                                 :style="blockImageStyle"
+                                 :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
+                                <template v-for="(r, ri) in blockRegionRects" :key="'rg'+ri">
+                                    <rect :x="r.x * blockNatW" :y="r.y * blockNatH"
+                                          :width="r.w * blockNatW" :height="r.h * blockNatH"
+                                          class="block-region-rect"
+                                          :class="'block-region-rect--' + r.status"
+                                          rx="3" ry="3">
+                                        <title>{{ r.qf }} — {{ r.consumer }}</title>
+                                    </rect>
+                                    <text :x="r.x * blockNatW + (r.w * blockNatW) / 2"
+                                          :y="r.y * blockNatH - 5"
+                                          class="block-region-label" text-anchor="middle">{{ r.qf }}</text>
+                                </template>
+                            </svg>
                             <p class="tile-split-image__label">
                                 {{ selectedBlock.block_id }}
                                 <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
+                                <span v-if="showBlockRegions && blockRegionRects.length"
+                                      style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
+                                    &#9632; {{ blockRegionRects.length }} областей линий
+                                </span>
                                 <span v-if="currentBlockHighlights.length > 0"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
                                     &#9679; {{ currentBlockHighlights.length }} подсветок
@@ -3192,6 +3214,13 @@
                                             @click.stop="toggleBlockLlmText()"
                                             title="Показать текст/граф, реально уходящий в нейронку (Stage 02)">
                                         {{ showBlockLlmText ? '✓ txt' : 'txt' }}
+                                    </button>
+                                    <!-- Тоггл областей: полупрозрачные прямоугольники колонок линий поверх блока -->
+                                    <button class="tile-status-pill tile-status-pill--regions"
+                                            :class="{'is-active': showBlockRegions}"
+                                            @click.stop="toggleBlockRegions()"
+                                            title="Показать области линий поверх блока для визуальной проверки связи данных">
+                                        {{ showBlockRegions ? '✓ области' : 'области' }}
                                     </button>
                                 </div>
 

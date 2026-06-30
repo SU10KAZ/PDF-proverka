@@ -731,6 +731,18 @@ async def get_block_llm_text(
         except Exception:
             pass
 
+        # bbox каждой линии (page-norm) → координаты БЛОКА (для полупрозрачных областей в UI)
+        cn = rblock.get("coords_norm")
+        if cn and len(cn) == 4:
+            bw = (cn[2] - cn[0]) or 1.0
+            bh = (cn[3] - cn[1]) or 1.0
+            for pan in singleline_graph.get("panels", []):
+                for f in pan.get("feeders", []):
+                    bp = f.get("bbox_page")
+                    if bp and len(bp) == 4:
+                        f["bbox"] = [round((bp[0] - cn[0]) / bw, 5), round((bp[1] - cn[1]) / bh, 5),
+                                     round((bp[2] - cn[0]) / bw, 5), round((bp[3] - cn[1]) / bh, 5)]
+
     return {
         "project_id": project_id,
         "block_id": block_id,

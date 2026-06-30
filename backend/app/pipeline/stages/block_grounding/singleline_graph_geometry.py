@@ -249,6 +249,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         pg = doc[pidx]
         words = pg.get_text("words")
         page_full_text = pg.get_text()
+        page_w, page_h = float(pg.rect.width), float(pg.rect.height)
     except Exception:
         return None
     finally:
@@ -342,9 +343,20 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         if consumer:
             m = _FLOOR_RE.search(consumer)
             loc = m.group(0) if m else None
+        # bbox колонки «одна линия» (page-normalized) — для визуальной проверки связи данных
+        half = min((nx - qx) / 2 + 3, 35)
+        colw = [w for w in words if qx - half <= w[0] < qx + half and qy - 280 < w[1] < qy + 52]
+        bbox_page = None
+        if colw and page_w and page_h:
+            # X — по полосе сегментации (qx±half, соседние области стыкуются), Y — по содержимому
+            bbox_page = [round((qx - half) / page_w, 5),
+                         round(min(w[1] for w in colw) / page_h, 5),
+                         round((qx + half) / page_w, 5),
+                         round(max(w[3] for w in colw) / page_h, 5)]
         feeders.append({
             "qf": qn, "panel": _PANEL.get(pref(qn), panel_hint),
             "consumer": consumer, "location": loc, "circuit_code": code,
+            "bbox_page": bbox_page,
             "breaker_type": g["ba"], "breaker_poles": g["pole"],
             "breaker_icn": g["ka"], "breaker_in": g["amp"],
             "P_inst_kw": (p or {}).get("P_inst_kw"), "Kc": (p or {}).get("Kc"),
