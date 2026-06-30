@@ -751,26 +751,28 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         next_x = min([x for x in qf_xs if x > qx + 1], default=qx + 64)
         spacing = next_x - qx
         left = qx - 8
-        # Граница линии = ТОЧНАЯ координата следующего символа QF (а не фикс. ширина qx+56):
-        # весь текст линии лежит ДО следующего QF (его текст начинается ещё правее). Для
-        # последней линии панели (большой разрыв до соседней панели) — типовая ширина.
-        right = (next_x - 8) if spacing < 90 else (qx + 56)
+        # Граница ТЕКСТА линии = координата СЛЕДУЮЩЕГО символа QF (весь текст линии лежит до
+        # него; текст соседа начинается ещё правее, +12px). Раньше брал next_x-8 — это резало
+        # правую трассу («Лоток»), когда она дотягивалась близко к соседнему символу → уходила соседу.
+        tright = next_x if spacing < 90 else (qx + 58)
+        right = tright
         colw = [w for w in words if left <= w[0] < right and qy - 280 < w[1] < qy + 30]
         bbox_page = None
         polygon_page = None
         if page_w and page_h:
-            # Y — от верха текста потребителя ВНИЗ до шины (всё над автоматом и под ним)
             y_top = min((w[1] for w in colw), default=qy - 230)
             y_bot = qy + 60
             bbox_page = [round(left / page_w, 5), round(y_top / page_h, 5),
                          round(right / page_w, 5), round(y_bot / page_h, 5)]
-            # Полигон = ПЛОТНАЯ выпуклая оболочка слов ТЕКСТА линии (потребитель + формула +
-            # кабель + трасса). Просто обводим реальные слова по их координатам — как выделяет
-            # пользователь. БЕЗ ножки к шине и БЕЗ QF/автомата (они дают кривой треугольник).
-            tw = [w for w in words if left <= (w[0] + w[2]) / 2 < right and qy - 285 < w[1] < qy - 45]
-            if len(tw) >= 2:
+            # Полигон = плотная выпуклая оболочка РЕАЛЬНЫХ слов линии по их координатам:
+            #  • ТЕКСТ (потребитель+формула+кабель+трасса) — смещён вправо, полоса [qx-2, tright);
+            #  • АВТОМАТ (ВА-…) + метка QF — центрированы на символе, полоса [qx-20, qx+20], ниже текста.
+            tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright and qy - 285 < w[1] < qy - 45]
+            brw = [w for w in words if qx - 20 <= (w[0] + w[2]) / 2 <= qx + 20 and -2 < (w[1] - qy) < 45]
+            allw = tw + brw
+            if len(allw) >= 2:
                 pts = []
-                for w in tw:
+                for w in allw:
                     pts += [(w[0], w[1]), (w[2], w[1]), (w[2], w[3]), (w[0], w[3])]
                 hull = _convex_hull(pts)
                 if len(hull) >= 3:
