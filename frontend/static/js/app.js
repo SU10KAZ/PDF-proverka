@@ -6786,6 +6786,15 @@ const app = createApp({
             }
         }
 
+        // База картинки блока: в режиме областей — рендер из fitz (совпадает с геометрией bbox),
+        // иначе обычный кроп Chandra. Иначе SVG-области сдвинуты на колонку (разная нормировка страниц).
+        const blockImageSrc = computed(() => {
+            const b = selectedBlock.value;
+            if (!b) return '';
+            const kind = showBlockRegions.value ? 'region-image' : 'image';
+            return '/api/tiles/' + blocksProjectId.value + '/blocks/' + kind + '/' + b.block_id;
+        });
+
         // Рассчитать scale и offset для вписывания картинки в контейнер
         function computeFit() {
             const container = blockImageContainer.value;
@@ -16928,7 +16937,7 @@ const app = createApp({
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
-            showBlockRegions, blockRegionRects, toggleBlockRegions,
+            showBlockRegions, blockRegionRects, toggleBlockRegions, blockImageSrc,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,

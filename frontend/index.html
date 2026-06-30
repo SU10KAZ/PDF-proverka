@@ -3022,7 +3022,7 @@
                              @wheel.prevent="onBlockZoomWheel"
                              @mousedown="onBlockPanStart"
                              @dblclick="resetBlockZoom">
-                            <img :src="'/api/tiles/' + blocksProjectId + '/blocks/image/' + selectedBlock.block_id"
+                            <img :src="blockImageSrc"
                                  :alt="selectedBlock.block_id"
                                  :style="blockImageStyle"
                                  draggable="false"

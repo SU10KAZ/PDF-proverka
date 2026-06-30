@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
@@ -1018,3 +1018,47 @@ async def get_block_image(
         else:
             raise HTTPException(404, f"Блок {block_id} не найден")
     return FileResponse(str(block_path), media_type="image/png")
+
+
+@router.get("/{project_id:path}/blocks/region-image/{block_id}")
+async def get_block_region_image(
+    project_id: str,
+    block_id: str,
+    version_id: Optional[str] = Query(None),
+):
+    """PNG блока, отрендеренный ИЗ FITZ (та же страница/координаты, что и геометрия графа).
+
+    Картинка `/blocks/image` — кроп Chandra-страницы с иной нормировкой → SVG-области линий
+    на ней сдвинуты на колонку. Эта база рендерится из той же fitz-страницы (найденной по
+    контенту) и того же coords_norm, что и bbox линий → области совпадают точно.
+    """
+    import fitz
+    from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+        _find_page_index,
+    )
+    try:
+        ctx = version_service.resolve_project_version_context(project_id, version_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        raise HTTPException(404, f"Проект '{project_id}' не найден")
+    version_dir: Path = ctx.get("version_dir") or ctx["output_dir"].parent
+    rblock = _block_from_result_json(version_dir, block_id)
+    cn = rblock.get("coords_norm")
+    vector_text = rblock.get("pdfplumber_text") or ""
+    pdf = version_dir / "02_work" / "document.pdf"
+    if not pdf.exists() and (version_dir / "document.pdf").exists():
+        pdf = version_dir / "document.pdf"
+    if not (cn and len(cn) == 4 and pdf.exists()):
+        raise HTTPException(404, "Нет данных для рендера области блока")
+    doc = fitz.open(str(pdf))
+    try:
+        pidx = _find_page_index(doc, vector_text)
+        if pidx is None:
+            pidx = int(rblock.get("page_index") or 0)
+        pg = doc[pidx]
+        W, H = pg.rect.width, pg.rect.height
+        clip = fitz.Rect(cn[0] * W, cn[1] * H, cn[2] * W, cn[3] * H)
+        pix = pg.get_pixmap(clip=clip, matrix=fitz.Matrix(2.0, 2.0))
+        data = pix.tobytes("png")
+    finally:
+        doc.close()
+    return Response(content=data, media_type="image/png")
