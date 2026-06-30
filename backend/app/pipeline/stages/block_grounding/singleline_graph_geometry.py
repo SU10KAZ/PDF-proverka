@@ -778,7 +778,9 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                 h = _convex_hull(pts)
                 return [[round(x / page_w, 5), round(y / page_h, 5)] for x, y in h] if len(h) >= 3 else None
             tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright and qy - 330 < w[1] < qy - 45]
-            brw = [w for w in words if qx - 20 <= (w[0] + w[2]) / 2 <= qx + 20 and -2 < (w[1] - qy) < 45]
+            # автомат смещён правее символа и имеет 2 колонки (ВА-300|1Р / 15кА|16А) →
+            # полоса шире вправо (qx+34), иначе правая колонка «1Р/16А» не попадает в область.
+            brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= qx + 34 and -2 < (w[1] - qy) < 45]
             parts = [h for h in (_hull_norm(tw), _hull_norm(brw)) if h]
             if parts:
                 polygons_page = parts        # все части линии (текст + автомат), без срезов
