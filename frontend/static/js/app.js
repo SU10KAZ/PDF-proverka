@@ -6648,8 +6648,22 @@ const app = createApp({
             [...noFindingsBlocksList.value, ...skippedBlocksList.value]
         );
 
+        // Все блоки всех страниц подряд (для чипа "Все блоки" — просмотр за раз)
+        const allBlocksList = computed(() => {
+            if (!blockPages.value.length) return [];
+            const result = [];
+            for (const pg of blockPages.value) {
+                for (const b of (pg.blocks || [])) result.push(b);
+            }
+            return result;
+        });
+
         const currentPageBlocks = computed(() => {
             if (!blockPages.value.length) return null;
+            // Виртуальная страница "Все блоки" — плоский список всех блоков
+            if (selectedBlockPage.value === 'all') {
+                return { page_num: 'all', blocks: allBlocksList.value };
+            }
             // Виртуальная страница "Без сущностей" — плоский список для совместимости с prev/next навигацией
             if (selectedBlockPage.value === 'empty') {
                 return { page_num: 'empty', blocks: emptyBlocksList.value };
@@ -16875,7 +16889,7 @@ const app = createApp({
             // Blocks (OCR)
             blocksProjectId, blockPages, blockCropErrors, blockTotalExpected,
             selectedBlockPage, selectedBlock,
-            blockAnalysis, selectedBlockAnalysis, currentPageBlocks,
+            blockAnalysis, selectedBlockAnalysis, currentPageBlocks, allBlocksList,
             emptyBlocksList, noFindingsBlocksList, skippedBlocksList,
             blockStatus, blockParentId, blockMergedBadge, blockOriginalLabel,
             currentBlocksList, currentBlockIndex, navigateBlock,

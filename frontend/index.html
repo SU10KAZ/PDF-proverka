@@ -2891,6 +2891,13 @@
             <div class="tiles-page">
                 <!-- Page selector -->
                 <div class="page-selector">
+                    <button class="page-btn page-btn--all"
+                            :class="{'page-btn--active': selectedBlockPage === 'all'}"
+                            @click="selectedBlockPage = 'all'"
+                            title="Показать все блоки всех страниц подряд">
+                        <span>Все блоки</span>
+                        <span class="page-btn__count">({{ allBlocksList.length }})</span>
+                    </button>
                     <button v-for="pg in blockPages" :key="pg.page_num"
                             class="page-btn" :class="{'page-btn--active': selectedBlockPage === pg.page_num}"
                             @click="selectedBlockPage = pg.page_num">
@@ -2995,10 +3002,6 @@
                     <div class="tile-split-container" @click.stop>
                         <button v-if="blockBackRoute" class="block-back-btn" @click="goBackFromBlock()" title="Назад к замечаниям">&larr; Назад</button>
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
-                        <!-- Тоггл: показать текст, реально уходящий в нейронку (Stage 02) вместо картинки -->
-                        <button class="tile-split-txt-toggle" :class="{'is-active': showBlockLlmText}"
-                                @click.stop="toggleBlockLlmText()"
-                                title="Показать текст, уходящий в нейронку (Stage 02): enrichment + текст страницы">txt</button>
                         <!-- Prev/Next navigation (в рамках текущей страницы или виртуальной 'Без сущностей') -->
                         <button v-if="currentBlocksList.length > 1"
                                 class="block-nav-btn block-nav-btn--prev"
@@ -3183,6 +3186,13 @@
                                          class="tile-status-pill tile-status-pill--skipped">
                                         Без значимого содержимого
                                     </div>
+                                    <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 02), в стиле бейджа -->
+                                    <button class="tile-status-pill tile-status-pill--txt"
+                                            :class="{'is-active': showBlockLlmText}"
+                                            @click.stop="toggleBlockLlmText()"
+                                            title="Показать текст/граф, реально уходящий в нейронку (Stage 02)">
+                                        {{ showBlockLlmText ? '✓ txt' : 'txt' }}
+                                    </button>
                                 </div>
 
                                 <!-- Исходный OCR-label фрагмента для merged-блоков -->
