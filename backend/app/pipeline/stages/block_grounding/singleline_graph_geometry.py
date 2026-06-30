@@ -56,6 +56,49 @@ def _near(qx, qy, arr, dx, dymin, dymax):
     return c[0][2] if c else None
 
 
+def render_graph_for_prompt(graph: dict) -> str:
+    """Компактный текст графа схемы для промпта GPT (вместо скудного enrichment)."""
+    if not graph:
+        return ""
+    L = []
+    v = graph.get("validation", {})
+    L.append(f"## Структура схемы (распознанный граф, считай верным):")
+    L.append(f"Панель: {graph.get('panel')} | линий {graph.get('feeders_total')} "
+             f"(актив {v.get('active')}, резерв {v.get('reserve')}, проверить {v.get('ambiguous')})")
+    p = graph.get("power")
+    if p:
+        L.append("\nПИТАНИЕ:")
+        L.append(f"- Источник: {p.get('external_source')}")
+        for inp in p.get("inputs", []):
+            cur = (f" | Iр.раб/авар {inp['i_rab']}/{inp.get('i_avar')}А"
+                   if inp.get("i_rab") is not None else "")
+            L.append(f"- {inp['id']} ({inp.get('vvod')}) → {', '.join(inp.get('feeds') or []) or '?'} | "
+                     f"{inp.get('incomer') or '?'} | {inp.get('switch') or ''}{cur} | счётчик {inp.get('meter') or '-'}")
+        if p.get("avr"):
+            a = p["avr"]
+            L.append(f"- АВР: {a['device']} {a.get('in_a')}А → {', '.join(a.get('feeds') or [])} ({a.get('note')})")
+    for pan in graph.get("panels", []):
+        L.append(f"\n{pan['name']} — {pan['feeder_count']} линий (актив {pan['active']}, резерв {pan['reserve']}):")
+        for f in pan.get("feeders", []):
+            if f["status"] == "reserve":
+                L.append(f"  {f['qf']}: РЕЗЕРВ ({f.get('breaker_type') or ''} {f.get('breaker_icn') or ''}/{f.get('breaker_in') or ''})".rstrip())
+                continue
+            br = f"{f.get('breaker_type') or '?'} {f.get('breaker_icn') or ''}/{f.get('breaker_in') or ''}".strip()
+            if f["status"] == "ambiguous" or f.get("P_calc_kw") is None:
+                L.append(f"  {f['qf']}: ‼ requires_review — автомат {br}; потребитель/код не сопоставлены")
+                continue
+            ctrl = (" | упр:" + ",".join(f.get("control"))) if f.get("control") else ""
+            L.append(f"  {f['qf']}: {f.get('consumer') or '?'} | {br} | {f.get('circuit_code') or '?'} | "
+                     f"Pрасч {f.get('P_calc_kw')}кВт | I {f.get('I_a')}А | {f.get('cable') or '?'} | "
+                     f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}")
+    rv = graph.get("review") or []
+    if rv:
+        L.append("\nТРЕБУЕТ ПРОВЕРКИ:")
+        for r in rv:
+            L.append(f"- {r['qf']}: {'; '.join(r.get('notes') or [])}")
+    return "\n".join(L)
+
+
 def _extract_power(words, page_text: str, qf_incomers: list) -> dict:
     """Вводная часть (питание): вводы ВП, АВР, рёбра ввод→РП — из подписей/устройств/таблиц.
 

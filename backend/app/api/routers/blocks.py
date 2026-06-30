@@ -718,6 +718,19 @@ async def get_block_llm_text(
     except Exception:
         singleline_graph = None
 
+    # Для СХЕМНЫХ блоков в промпт уходит имя блока + ГРАФ (а не скудный enrichment/page_text).
+    if singleline_graph:
+        try:
+            from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+                render_graph_for_prompt,
+            )
+            _task = ("## Задача:\nПосмотри на изображение блока и верни findings[]. "
+                     "Только проблемы. Не описывай что видишь. Если всё корректно — пустой массив.")
+            user_text = (f"# Блок {block_id} | страница PDF {page}\n\n"
+                         f"{render_graph_for_prompt(singleline_graph)}\n\n{_task}")
+        except Exception:
+            pass
+
     return {
         "project_id": project_id,
         "block_id": block_id,
