@@ -3105,17 +3105,126 @@
                                             ⚑ Требует проверки ({{ blockLlmText.singleline_graph.review.length }}):
                                             <span v-for="(rv,ri) in blockLlmText.singleline_graph.review" :key="ri" class="sld-review__item">{{ rv.qf }} — {{ (rv.notes||[]).join('; ') }}</span>
                                         </div>
-                                        <!-- 📋 Полная разметка в формате эталона (8 разделов): расчёты панелей · таблица ТТ ·
-                                             примечания · реестр служебных · дерево питания. НЕ уходит в нейронку — только просмотр. -->
-                                        <details v-if="blockLlmText.singleline_graph_markdown" class="sld-section sld-md">
-                                            <summary class="sld-section__head" style="cursor:pointer; user-select:none">
-                                                📋 Полная разметка схемы (формат эталона, 8 разделов) —
-                                                расчёты панелей · таблица ТТ · примечания · реестр служебных · дерево питания
+                                        <!-- 📋 Полная разметка в формате эталона (стилизованные таблицы, как «Граф схемы»):
+                                             дерево питания · расчёты панелей · связи · таблица ТТ · реестр служебных · примечания.
+                                             НЕ уходит в нейронку — только просмотр. -->
+                                        <details v-if="blockLlmText.singleline_graph_markdown" class="sld-full" open>
+                                            <summary class="block-llm-text__section block-llm-text__section--struct" style="cursor:pointer; user-select:none">
+                                                📋 Полная разметка схемы (формат эталона)
+                                                <span v-if="blockLlmText.singleline_graph.title">— {{ blockLlmText.singleline_graph.title }}</span>
                                                 <span class="block-llm-text__muted">(только просмотр, в нейронку не уходит)</span>
                                             </summary>
-                                            <div class="sld-md__body markdown-body"
-                                                 style="max-height:60vh; overflow:auto; padding:8px 10px; font-size:12px"
-                                                 v-html="renderMarkdown(blockLlmText.singleline_graph_markdown)"></div>
+
+                                            <!-- 0. Источник / штамп -->
+                                            <div v-if="blockLlmText.singleline_graph.source" class="sld-section">
+                                                <div class="sld-section__head">📄 Лист</div>
+                                                <div style="padding:4px 8px; font-size:12px; line-height:1.6">
+                                                    <div v-if="blockLlmText.singleline_graph.source.sheet_name"><b>{{ blockLlmText.singleline_graph.source.sheet_name }}</b></div>
+                                                    <div class="block-llm-text__muted">
+                                                        <span v-if="blockLlmText.singleline_graph.source.section">Раздел: {{ blockLlmText.singleline_graph.source.section }} · </span>
+                                                        <span v-if="blockLlmText.singleline_graph.source.object">{{ blockLlmText.singleline_graph.source.object }} · </span>
+                                                        <span v-if="blockLlmText.singleline_graph.source.pdf_file">{{ blockLlmText.singleline_graph.source.pdf_file }}, PDF стр.{{ blockLlmText.singleline_graph.source_page_index != null ? blockLlmText.singleline_graph.source_page_index + 1 : '?' }}</span>
+                                                    </div>
+                                                    <div v-if="(blockLlmText.singleline_graph.warnings||[]).length" style="margin-top:4px">
+                                                        <span v-for="(w,wi) in blockLlmText.singleline_graph.warnings" :key="'w'+wi" class="sld-review__item">⚠ {{ w }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- 1. Дерево питания -->
+                                            <div v-if="blockLlmText.singleline_graph.hierarchy && (blockLlmText.singleline_graph.hierarchy.tree_lines||[]).length" class="sld-section">
+                                                <div class="sld-section__head">🌳 Текстовое дерево питания</div>
+                                                <pre class="block-llm-text__body" style="margin:0">{{ (blockLlmText.singleline_graph.hierarchy.tree_lines||[]).join('\n') }}</pre>
+                                            </div>
+
+                                            <!-- 2. Панели и основные параметры (расчётные режимы) -->
+                                            <div v-if="(blockLlmText.singleline_graph.panel_calculations||[]).length" class="sld-section">
+                                                <div class="sld-section__head">▦ Панели и расчётные режимы</div>
+                                                <table class="sld-table">
+                                                    <thead><tr>
+                                                        <th>Панель</th><th>Iкз(3),кА</th><th>Iу,кА</th><th>Iкз(1),кА</th>
+                                                        <th>Режим</th><th>Ру,кВт</th><th>Кс</th><th>Cosφ</th><th>Рр,кВт</th><th>Sр,кВА</th><th>Ip,А</th>
+                                                    </tr></thead>
+                                                    <tbody>
+                                                        <template v-for="(pc,pci) in blockLlmText.singleline_graph.panel_calculations">
+                                                            <tr v-for="(m,mi) in (pc.modes && pc.modes.length ? pc.modes : [{}])" :key="'pc'+pci+'_'+mi" class="sld-st-active">
+                                                                <td><b v-if="mi===0">{{ pc.id }}</b></td>
+                                                                <td>{{ mi===0 ? (pc.ikz3 != null ? pc.ikz3 : '—') : '' }}</td>
+                                                                <td>{{ mi===0 ? (pc.iu != null ? pc.iu : '—') : '' }}</td>
+                                                                <td>{{ mi===0 ? (pc.ikz1 != null ? pc.ikz1 : '—') : '' }}</td>
+                                                                <td>{{ m.mode || '—' }}</td>
+                                                                <td>{{ m.Pu != null ? m.Pu : '' }}</td>
+                                                                <td>{{ m.Kc != null ? m.Kc : '' }}</td>
+                                                                <td>{{ m.cosphi != null ? m.cosphi : '' }}</td>
+                                                                <td>{{ m.Pr != null ? m.Pr : '' }}</td>
+                                                                <td>{{ m.Sr != null ? m.Sr : '' }}</td>
+                                                                <td>{{ m.Ip != null ? m.Ip : '' }}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- 3. Таблица связей (межпанельный граф) -->
+                                            <div v-if="(blockLlmText.singleline_graph.edges||[]).length" class="sld-section">
+                                                <div class="sld-section__head">🔗 Связи (межпанельный граф)</div>
+                                                <table class="sld-table">
+                                                    <thead><tr><th>Откуда</th><th>Куда</th><th>Тип</th><th>Аппарат / примечание</th></tr></thead>
+                                                    <tbody>
+                                                        <tr v-for="(e,ei) in blockLlmText.singleline_graph.edges" :key="'e'+ei" class="sld-st-active">
+                                                            <td>{{ e.from }}</td><td>{{ e.to }}</td><td>{{ e.type }}</td><td>{{ e.label || '—' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- 4. Таблица проверки трансформаторов тока -->
+                                            <div v-if="(blockLlmText.singleline_graph.tt_check_table||[]).length" class="sld-section">
+                                                <div class="sld-section__head">📐 Проверка трансформаторов тока</div>
+                                                <table class="sld-table">
+                                                    <thead><tr>
+                                                        <th>Панель</th><th>Iр.раб,А</th><th>Iр.авар,А</th><th>Iн1тт</th><th>Iн1тт.авар</th>
+                                                        <th>Iсч.max</th><th>Iр.мин</th><th>Доп.20%</th><th>Макс.авар</th><th>Комментарий</th>
+                                                    </tr></thead>
+                                                    <tbody>
+                                                        <tr v-for="(r,ri) in blockLlmText.singleline_graph.tt_check_table" :key="'tt'+ri" :class="r.review ? 'sld-st-ambiguous' : 'sld-st-active'">
+                                                            <td><b>{{ r.panel }}</b></td>
+                                                            <td>{{ r.Ir_rab != null ? r.Ir_rab : '—' }}</td>
+                                                            <td>{{ r.Ir_avar != null ? r.Ir_avar : '—' }}</td>
+                                                            <td>{{ r.In1tt != null ? r.In1tt : '—' }}</td>
+                                                            <td>{{ r.In1tt_avar != null ? r.In1tt_avar : '—' }}</td>
+                                                            <td>{{ r.Isch_max || '—' }}</td>
+                                                            <td>{{ r.Ir_min != null ? r.Ir_min : '—' }}</td>
+                                                            <td>{{ r.max20 || '—' }}</td>
+                                                            <td>{{ r.max_avar || '—' }}</td>
+                                                            <td style="white-space:normal; max-width:280px">{{ r.comment || '—' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- 5. Реестр служебных элементов -->
+                                            <div v-if="(blockLlmText.singleline_graph.service_elements||[]).length" class="sld-section">
+                                                <div class="sld-section__head">🧩 Реестр служебных элементов</div>
+                                                <table class="sld-table">
+                                                    <thead><tr><th>Элемент</th><th>Значение</th><th>Как учитывать</th></tr></thead>
+                                                    <tbody>
+                                                        <tr v-for="(s,si) in blockLlmText.singleline_graph.service_elements" :key="'se'+si" class="sld-st-active">
+                                                            <td><b>{{ s.element }}</b></td>
+                                                            <td style="white-space:normal; max-width:320px">{{ s.value || '—' }}</td>
+                                                            <td style="white-space:normal; max-width:260px">{{ s.note || '—' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- 6. Примечания -->
+                                            <div v-if="(blockLlmText.singleline_graph.notes||[]).length" class="sld-section">
+                                                <div class="sld-section__head">📝 Примечания ({{ blockLlmText.singleline_graph.notes.length }})</div>
+                                                <ol style="margin:4px 0; padding-left:26px; font-size:12px; line-height:1.55">
+                                                    <li v-for="(n,ni) in blockLlmText.singleline_graph.notes" :key="'n'+ni" :value="n.n">{{ n.text }}</li>
+                                                </ol>
+                                            </div>
                                         </details>
                                     </template>
                                     <!-- Fallback: плоская структура по секциям шин (если геометрия недоступна) -->
