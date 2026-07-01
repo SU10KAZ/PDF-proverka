@@ -11,9 +11,19 @@ class ExpertDecision(BaseModel):
     item_id: str                          # F-001, OPT-003
     item_type: str                        # "finding" | "optimization"
     decision: str                         # "accepted" | "rejected"
+    # `rejection_reason` используется как ОБЩИЙ комментарий эксперта (не только для
+    # отклонений): для авто-переноса вердикта из прошлой версии сюда кладётся
+    # пояснение и для accepted, и для rejected (Excel-отчёт уже читает это поле).
     rejection_reason: Optional[str] = None
     reviewer: str = ""
     timestamp: str = ""
+
+    # Авто-перенос вердикта из предыдущей проверенной версии (decision carryover).
+    # carried_over=True → решение проставлено автоматически, эксперт может
+    # переопределить. Ручные решения (carried_over=False) авто-этап не трогает.
+    carried_over: bool = False
+    carried_from_version: Optional[str] = None
+    carried_from_item_id: Optional[str] = None
 
 
 class ExpertReviewSubmission(BaseModel):
@@ -59,6 +69,13 @@ class KnowledgeBaseEntry(BaseModel):
     customer_confirmed: bool = False
     customer_date: Optional[str] = None
     customer_note: Optional[str] = None
+
+    # Авто-перенос вердикта из предыдущей версии (decision carryover).
+    # current_version_id нужен, чтобы отличать запись V2 от записи V1 в
+    # decisions_log.json (ключ дедупа (source_project, item_id) не версионный).
+    carried_over: bool = False
+    carried_from_version: str = ""
+    current_version_id: str = ""
 
     @property
     def status(self) -> str:

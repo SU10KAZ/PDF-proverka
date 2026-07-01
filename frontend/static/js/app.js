@@ -9369,7 +9369,7 @@ const app = createApp({
                 const data = await resp.json();
                 if (data.has_review && data.data && data.data.decisions) {
                     for (const d of data.data.decisions) {
-                        map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                        map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding', carried_over: !!d.carried_over, carried_from_version: d.carried_from_version || '' };
                     }
                 }
             } catch (e) { console.warn('Failed to load expert review:', e); }
@@ -9484,6 +9484,14 @@ const app = createApp({
         }
         function getExpertReason(itemId) {
             return (expertDecisions.value[itemId] || {}).rejection_reason || '';
+        }
+        // Авто-перенос вердикта из предыдущей версии (decision carryover).
+        function isCarriedOver(itemId) {
+            return !!(expertDecisions.value[itemId] || {}).carried_over;
+        }
+        function carriedFromVersion(itemId) {
+            const v = (expertDecisions.value[itemId] || {}).carried_from_version || '';
+            return v ? String(v).toUpperCase() : '';
         }
         function expertReviewSummary() {
             const vals = Object.values(expertDecisions.value);
@@ -9714,7 +9722,7 @@ const app = createApp({
                         if (revData.has_review && revData.data && revData.data.decisions) {
                             const map = {};
                             for (const d of revData.data.decisions) {
-                                map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding' };
+                                map[d.item_id] = { decision: d.decision, rejection_reason: d.rejection_reason || '', item_type: d.item_type || 'finding', carried_over: !!d.carried_over, carried_from_version: d.carried_from_version || '' };
                             }
                             expertDecisions.value = map;
                             expertReviewMode.value = true;
@@ -17147,7 +17155,7 @@ const app = createApp({
             // Expert Review
             expertReviewMode, expertDecisions, expertReviewSaving,
             toggleExpertReview, loadExpertDecisions, setExpertDecision, setExpertReason, submitExpertReview,
-            getExpertDecision, getExpertReason, expertReviewSummary,
+            getExpertDecision, getExpertReason, isCarriedOver, carriedFromVersion, expertReviewSummary,
             // Knowledge Base
             kbTab, kbEntries, kbStats, kbLoading, kbSearch, kbSectionFilter,
             kbObjectFilter, onKbObjectChange, openKBItem,

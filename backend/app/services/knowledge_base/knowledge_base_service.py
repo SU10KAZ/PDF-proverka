@@ -189,12 +189,16 @@ def _save_json(path: Path, data):
 # Экспертная оценка (per-project)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None) -> dict:
+def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewer: str = "", removed_ids: list[str] | None = None, *, stamp_schedule: bool = True) -> dict:
     """Сохранить решения эксперта по проекту.
 
     1. Записывает expert_review.json в canonical review storage проекта
     2. Обогащает решения контекстом из findings/optimization
     3. Добавляет записи в глобальный decisions_log.json
+
+    stamp_schedule: если False — НЕ штамповать «день завершения» проекта в графике.
+        Используется авто-переносом вердиктов (decision carryover): авто-решения
+        не должны фиксировать день завершения — его ставит только ручная разметка.
     """
     # must_exist=True: не создаём orphan `_output` на несуществующем пути —
     # если project_id не резолвится в реальный проект/контейнер, поднимется
@@ -234,7 +238,10 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
 
     # 2b. Зафиксировать день завершения проекта для графика, если разметка стала
     # полной (все замечания + все оптимизации). Идемпотентно, fail-soft.
-    _stamp_schedule_completion_if_complete(project_id, reviewer)
+    # Авто-перенос вердиктов вызывает с stamp_schedule=False — авто-решения не
+    # должны фиксировать день завершения проекта.
+    if stamp_schedule:
+        _stamp_schedule_completion_if_complete(project_id, reviewer)
 
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся
@@ -556,6 +563,12 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
             expert_reviewer=dec.reviewer or reviewer,
             expert_date=dec.timestamp or _now_iso(),
             customer_response=(source.get("external_register") or {}).get("customer_response", ""),
+            # Авто-перенос вердикта из предыдущей версии (decision carryover).
+            # current_version_id берём из bound-контекста (авто-этап bind-ит версию
+            # перед записью) — нужен для кросс-версионного guard в decisions_log.
+            carried_over=bool(getattr(dec, "carried_over", False)),
+            carried_from_version=getattr(dec, "carried_from_version", "") or "",
+            current_version_id=version_service.get_bound_version_id() or "",
         )
         entries.append(entry)
         next_num += 1
@@ -630,6 +643,16 @@ def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
         for item in incoming:
             key = (item.get("source_project"), item.get("item_id"))
             previous = updated_map.get(key)
+            # Кросс-версионный guard для авто-переноса: ключ (source_project, item_id)
+            # не версионный, а source_project = базовый pid для всех версий, поэтому
+            # F-001 из V1 и V2 дают один ключ. Авто-перенос НЕ должен затирать запись,
+            # относящуюся к другой версии. Ключи БЗ целиком не переделываем (это
+            # отдельный трек docs/stable_finding_id.md).
+            if item.get("carried_over") and previous is not None:
+                prev_ver = str(previous.get("current_version_id") or "")
+                cur_ver = str(item.get("current_version_id") or "")
+                if prev_ver and cur_ver and prev_ver != cur_ver:
+                    continue  # чужая версия — не трогаем
             if previous:
                 if previous.get("id"):
                     item["id"] = previous.get("id")
