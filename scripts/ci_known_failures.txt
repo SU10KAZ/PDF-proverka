@@ -3,7 +3,7 @@
 # В основном устаревшие тесты / frontend-drift / ожидания старых флагов —
 # это НЕ регрессии прода. CI зелёный, если НЕТ новых падений сверх этого списка.
 # Пересоздать в свежем окружении: python scripts/ci_regression_gate.py --record
-# Кол-во: 78
+# Кол-во: 79
 
 backend.tests.test_critic_v2_triage_stage::test_default_config_flags_keep_critic_v2_disabled
 backend.tests.test_critic_v2_ui_project_local_priority::test_ar_project_id_with_pdf_suffix_resolves_to_folder_without_pdf
@@ -52,6 +52,7 @@ tests.test_stage_comparison_md_enrichment::test_get_prompt_for_block_type_return
 tests.test_stage_comparison_md_enrichment::test_ui_findings_use_card_grid_not_table_columns
 tests.test_stage_comparison_md_enrichment::test_ui_problem_pairs_filter_excludes_done_with_salvage
 tests.test_stage_comparison_md_enrichment::test_ui_retry_errors_filters_only_real_errors
+tests.test_stage_comparison_pipeline_v2_block_link_preview::test_15_no_vision_or_external_model_imports
 tests.test_stage_comparison_unified_analysis::test_ui_default_subtab_is_unified
 tests.test_static_parity::test_static_file_parity[app.js-app.js]
 tests.test_static_parity::test_static_file_parity[index.html-index.html]
