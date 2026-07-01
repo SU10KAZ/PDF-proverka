@@ -593,7 +593,14 @@ def test_findings_merge_inferred_from_findings_critic_done(tmp_path, monkeypatch
 
 
 def test_text_analysis_inferred_from_block_analysis_done(tmp_path, monkeypatch):
-    """block_analysis done → text_analysis должен быть done."""
+    """block_analysis done → text_analysis должен быть done.
+
+    Инференция «block done ⇒ text done» верна ТОЛЬКО в порядке text→block (флаг OFF).
+    В порядке block→text блоки идут первыми и это подтверждение не работает —
+    пиним флаг OFF, чтобы тест проверял именно legacy-инференцию.
+    """
+    from backend.app.core import config as _cfg
+    monkeypatch.setattr(_cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False, raising=False)
     project_dir = tmp_path / "proj"
     output_dir = project_dir / "_output"
     _write_pipeline_log(output_dir, {
