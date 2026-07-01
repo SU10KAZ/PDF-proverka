@@ -71,6 +71,7 @@ from backend.app.core.config import (
     STAGE_MODELS_OPENROUTER, GEMINI_MAX_OUTPUT_TOKENS, GPT_MAX_OUTPUT_TOKENS,
     DEFAULT_TEMPERATURE, SCHEMAS_DIR,
     CHANDRA_BASE_URL, CHANDRA_API_BASE_URL, CHANDRA_BASIC_USER, CHANDRA_BASIC_PASS,
+    CHANDRA_AUTH_MODE, CHANDRA_BEARER_TOKEN, CHANDRA_CHAT_TRANSPORT,
     LMSTUDIO_AUTO_RELOAD_ENABLED,
     LOCAL_GEMMA_CONTEXT_LENGTH, LOCAL_GEMMA_MAX_OUTPUT_TOKENS,
     LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS,
@@ -121,7 +122,22 @@ def _get_client() -> "AsyncOpenAI":
 
 
 def _build_chandra_headers() -> dict[str, str]:
-    """Заголовки для Chandra ngrok endpoint."""
+    """Заголовки авторизации к локальному LM Studio.
+
+    basic (legacy ngrok): Basic base64(user:pass) + ngrok-skip-browser-warning.
+    bearer (новый сервер): Authorization: Bearer <token>, без ngrok-заголовка.
+    Токен нигде не логируется.
+    """
+    if CHANDRA_AUTH_MODE == "bearer":
+        if not CHANDRA_BEARER_TOKEN:
+            raise RuntimeError(
+                "CHANDRA_AUTH_MODE=bearer, но токен не задан "
+                "(CHANDRA_BEARER_TOKEN / LMSTUDIO_API_KEY в .env)"
+            )
+        return {
+            "Authorization": f"Bearer {CHANDRA_BEARER_TOKEN}",
+            "content-type": "application/json",
+        }
     token = base64.b64encode(
         f"{CHANDRA_BASIC_USER}:{CHANDRA_BASIC_PASS}".encode("utf-8")
     ).decode("ascii")
@@ -130,6 +146,22 @@ def _build_chandra_headers() -> dict[str, str]:
         "content-type": "application/json",
         "ngrok-skip-browser-warning": "true",
     }
+
+
+def _local_auth_missing() -> str | None:
+    """Настроена ли авторизация к локальному LM Studio.
+
+    bearer: нужен CHANDRA_BEARER_TOKEN/LMSTUDIO_API_KEY.
+    basic:  нужны NGROK_AUTH_USER/NGROK_AUTH_PASS.
+    Возвращает текст ошибки, если чего-то не хватает; иначе None.
+    """
+    if CHANDRA_AUTH_MODE == "bearer":
+        if not CHANDRA_BEARER_TOKEN:
+            return "CHANDRA_BEARER_TOKEN/LMSTUDIO_API_KEY не задан (bearer)"
+        return None
+    if not CHANDRA_BASIC_USER or not CHANDRA_BASIC_PASS:
+        return "NGROK_AUTH_USER/NGROK_AUTH_PASS не заданы"
+    return None
 
 
 def _coerce_message_content(content: Any) -> str:
@@ -541,11 +573,12 @@ async def _run_local_chandra_chat(
             model=model,
             cost_source="local",
         )
-    if not CHANDRA_BASIC_USER or not CHANDRA_BASIC_PASS:
+    _auth_err = _local_auth_missing()
+    if _auth_err:
         return LLMResult(
             text="",
             is_error=True,
-            error_message="NGROK_AUTH_USER/NGROK_AUTH_PASS не заданы",
+            error_message=_auth_err,
             model=model,
             cost_source="local",
         )
@@ -705,11 +738,12 @@ async def _run_local_chat_completions(
             model=model,
             cost_source="local",
         )
-    if not CHANDRA_BASIC_USER or not CHANDRA_BASIC_PASS:
+    _auth_err = _local_auth_missing()
+    if _auth_err:
         return LLMResult(
             text="",
             is_error=True,
-            error_message="NGROK_AUTH_USER/NGROK_AUTH_PASS не заданы",
+            error_message=_auth_err,
             model=model,
             cost_source="local",
         )
@@ -999,7 +1033,8 @@ async def run_llm(
     if is_local_llm_model(model):
         # Local path:
         # - text-only structured stages -> /v1/chat/completions (json_schema)
-        # - multimodal/freeform stages -> /api/v1/chat
+        # - multimodal/freeform stages -> /api/v1/chat (native) ИЛИ
+        #   /v1/chat/completions (openai_completions, новый LM Studio)
         local_format = _build_local_response_format(stage_key)
         if (
             stage_key in _LOCAL_STRUCTURED_COMPLETION_STAGES
@@ -1013,6 +1048,19 @@ async def run_llm(
                 temperature=temp,
                 timeout=timeout,
                 response_format=local_format,
+            )
+        if CHANDRA_CHAT_TRANSPORT == "openai_completions":
+            # Новый сервер: native /api/v1/chat отсутствует → шлём в OpenAI
+            # /v1/chat/completions. messages уже в OpenAI-формате (text + image_url).
+            # response_format не форсируем (модель может не поддерживать json_schema;
+            # отдаёт голый JSON — парсер _run_local_chat_completions вытащит).
+            return await _run_local_chat_completions(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temp,
+                timeout=timeout,
+                response_format=None,
             )
         return await _run_local_chandra_chat(
             model=model,

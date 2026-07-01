@@ -44,6 +44,8 @@ from urllib.parse import urlparse
 
 import httpx
 
+from backend.app.core.config import _normalize_local_base_url
+
 logger = logging.getLogger(__name__)
 
 
@@ -181,6 +183,8 @@ class LocalGraphicLLMConfig:
     unload_after_batch: bool = False
     basic_user: str = field(default="", repr=False)
     basic_pass: str = field(default="", repr=False)
+    # Bearer-токен нового LM Studio (auth == "bearer"). Не логируется (repr=False).
+    bearer_token: str = field(default="", repr=False)
 
     @property
     def is_active(self) -> bool:
@@ -188,9 +192,11 @@ class LocalGraphicLLMConfig:
 
     @property
     def auth_configured(self) -> bool:
-        if self.auth != "basic":
-            return True
-        return bool(self.basic_user and self.basic_pass)
+        if self.auth == "bearer":
+            return bool(self.bearer_token)
+        if self.auth == "basic":
+            return bool(self.basic_user and self.basic_pass)
+        return True
 
     @property
     def base_url_present(self) -> bool:
@@ -205,9 +211,22 @@ def load_local_graphic_llm_config() -> LocalGraphicLLMConfig:
         os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_PROVIDER", "existing").strip().lower()
         or "existing"
     )
+    # base_url: свой env, fallback на общий CHANDRA_BASE_URL/LMSTUDIO_BASE_URL.
+    # Нормализуем (обе формы — с /v1 и без — валидны).
+    base_url = _normalize_local_base_url(
+        os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL")
+        or os.environ.get("CHANDRA_BASE_URL")
+        or os.environ.get("LMSTUDIO_BASE_URL", "")
+    )
+    # Bearer-токен: свой env → общий CHANDRA_BEARER_TOKEN → LMSTUDIO_API_KEY (один токен).
+    bearer_token = (
+        os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_BEARER_TOKEN")
+        or os.environ.get("CHANDRA_BEARER_TOKEN")
+        or os.environ.get("LMSTUDIO_API_KEY", "")
+    )
     return LocalGraphicLLMConfig(
         provider=provider,
-        base_url=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL", "").rstrip("/"),
+        base_url=base_url,
         model=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "").strip(),
         fallback_model=os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_FALLBACK_MODEL", "").strip(),
         temperature=_env_float("STAGE_COMPARISON_GRAPHIC_LLM_TEMPERATURE", 0.0),
@@ -238,6 +257,7 @@ def load_local_graphic_llm_config() -> LocalGraphicLLMConfig:
         ),
         basic_user=os.environ.get("NGROK_AUTH_USER", ""),
         basic_pass=os.environ.get("NGROK_AUTH_PASS", ""),
+        bearer_token=bearer_token,
     )
 
 
@@ -275,8 +295,8 @@ def check_local_graphic_llm_available(
     url_err = _validate_base_url(cfg.base_url)
     if url_err:
         return False, url_err
-    if cfg.auth == "basic" and not cfg.auth_configured:
-        return False, "basic_auth_credentials_missing"
+    if cfg.auth in ("basic", "bearer") and not cfg.auth_configured:
+        return False, f"{cfg.auth}_auth_credentials_missing"
     return True, None
 
 
@@ -321,7 +341,14 @@ def _png_bytes_to_data_url(data: bytes) -> str:
 
 
 def _build_headers(cfg: LocalGraphicLLMConfig) -> dict[str, str]:
-    headers: dict[str, str] = {
+    # bearer (новый сервер): Bearer <token>, без ngrok-заголовка. Токен не логируется.
+    if cfg.auth == "bearer":
+        headers: dict[str, str] = {"Content-Type": "application/json"}
+        if cfg.bearer_token:
+            headers["Authorization"] = f"Bearer {cfg.bearer_token}"
+        return headers
+    # basic/legacy (ngrok): ngrok-skip + (для basic) Basic base64(user:pass)
+    headers = {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
     }
@@ -2997,6 +3024,21 @@ async def probe_qwen_health(
         avail, areason = check_local_graphic_llm_available(cfg)
         if not avail:
             return {"ok": False, "reason": f"provider_unavailable:{areason}", "details": details}
+
+        # Новый LM Studio: native management (/api/v1/models) отсутствует. При
+        # enable_model_load=false модели предзагружены на сервере — не требуем
+        # loaded_models-диагностику, полагаемся на live /v1/chat/completions
+        # (единственный кросс-серверный сигнал живости).
+        if not cfg.enable_model_load:
+            details["model_load_enabled"] = False
+            if do_live_test:
+                live = await _live_completion_probe(cfg)
+                details["live_test"] = live
+                if not live.get("ok"):
+                    return {"ok": False, "reason": f"live_test_failed:{live.get('reason')}",
+                            "details": details}
+            return {"ok": True, "reason": "ok", "details": details}
+
         try:
             diag = await loaded_models_diagnostics(cfg)
         except Exception as exc:  # noqa: BLE001

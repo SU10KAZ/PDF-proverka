@@ -404,7 +404,11 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
     return True
 
 
-CHANDRA_GEMMA_MODEL = "google/gemma-4-26b-a4b"
+# Локальная модель enrichment/анализа. Раньше был хардкод; теперь env-управляемо
+# (дефолт = прежнее значение), чтобы при миграции на новый LM Studio задать id новой
+# модели (напр. chandra-ocr-2 / qwen36-27b-mtp) без правки кода. LOCAL_LLM_MODELS и
+# AVAILABLE_MODELS ниже привязаны к переменной → is_local_llm_model() подхватит новый id.
+CHANDRA_GEMMA_MODEL = os.environ.get("CHANDRA_GEMMA_MODEL", "google/gemma-4-26b-a4b")
 LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
 
 AVAILABLE_MODELS = [
@@ -585,10 +589,39 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_SITE_URL = "http://localhost:8081"
 OPENROUTER_SITE_NAME = "BIM Audit Pipeline"
 
-CHANDRA_BASE_URL = os.environ.get("CHANDRA_BASE_URL", "").rstrip("/")
+def _normalize_local_base_url(url: str) -> str:
+    """Нормализовать base URL локального LM Studio.
+
+    Принимает обе формы — `https://host` и `https://host/v1` — и возвращает базу
+    БЕЗ хвостового `/v1` (и без хвостового слэша), т.к. код сам добавляет суффиксы
+    `/v1/chat/completions`, `/v1/models`, `/api/v1/*`. Оператору не нужно помнить,
+    где URL с `/v1`, а где без.
+    """
+    u = (url or "").strip().rstrip("/")
+    if u.endswith("/v1"):
+        u = u[:-3].rstrip("/")
+    return u
+
+
+# base URL читаем из CHANDRA_BASE_URL, fallback на LMSTUDIO_BASE_URL (имя из инструкции сервера)
+CHANDRA_BASE_URL = _normalize_local_base_url(
+    os.environ.get("CHANDRA_BASE_URL") or os.environ.get("LMSTUDIO_BASE_URL", "")
+)
 CHANDRA_API_BASE_URL = f"{CHANDRA_BASE_URL}/v1" if CHANDRA_BASE_URL else ""
 CHANDRA_BASIC_USER = os.environ.get("NGROK_AUTH_USER", "")
 CHANDRA_BASIC_PASS = os.environ.get("NGROK_AUTH_PASS", "")
+# Тип auth для локального LM Studio: "basic" (ngrok legacy) | "bearer" (новый сервер).
+# Дефолт basic → прод/тесты не меняются, пока .env не переключат на bearer.
+CHANDRA_AUTH_MODE = os.environ.get("CHANDRA_AUTH_MODE", "basic").strip().lower()
+# Bearer-токен нового сервера. Читаем с fallback на LMSTUDIO_API_KEY (имя из инструкции).
+# Никогда не логировать.
+CHANDRA_BEARER_TOKEN = os.environ.get("CHANDRA_BEARER_TOKEN") or os.environ.get(
+    "LMSTUDIO_API_KEY", ""
+)
+# Транспорт мультимодального/freeform локального пути:
+#   "native"            → POST /api/v1/chat  (legacy ngrok Chandra)
+#   "openai_completions"→ POST /v1/chat/completions с OpenAI vision (стандартный LM Studio)
+CHANDRA_CHAT_TRANSPORT = os.environ.get("CHANDRA_CHAT_TRANSPORT", "native").strip().lower()
 
 LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
 GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)

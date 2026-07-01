@@ -83,13 +83,18 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
     load_project_info,
 )
 
-from backend.app.core.config import ROOT_DIR as _ROOT_DIR
+from backend.app.core.config import (
+    ROOT_DIR as _ROOT_DIR,
+    CHANDRA_GEMMA_MODEL as _CONFIG_ENRICH_MODEL,
+)
 load_dotenv(_ROOT_DIR / ".env")
 
 
 # ─── Constants ─────────────────────────────────────────────────────────────
 
-DEFAULT_MODEL = "google/gemma-4-26b-a4b"
+# Модель enrichment — из config (env CHANDRA_GEMMA_MODEL), дефолт google/gemma-4-26b-a4b.
+# При миграции на новый LM Studio задаётся id новой OCR-модели через .env.
+DEFAULT_MODEL = _CONFIG_ENRICH_MODEL
 DEFAULT_PARALLELISM = 1
 HIGH_DETAIL_PARALLELISM = 1
 # context_length для двух проходов (адаптивный reload).
@@ -194,6 +199,26 @@ def _env(name: str) -> str:
 
 
 def _auth_header() -> dict[str, str]:
+    """Заголовки авторизации к локальному LM Studio.
+
+    basic (legacy ngrok): Basic base64(user:pass) + ngrok-skip-browser-warning.
+    bearer (новый сервер): Authorization: Bearer <token>, без ngrok-заголовка и
+    без требования NGROK_AUTH_*. Токен нигде не логируется.
+    """
+    auth_mode = (os.environ.get("CHANDRA_AUTH_MODE", "basic") or "basic").strip().lower()
+    if auth_mode == "bearer":
+        token = os.environ.get("CHANDRA_BEARER_TOKEN") or os.environ.get(
+            "LMSTUDIO_API_KEY", ""
+        )
+        if not token:
+            raise RuntimeError(
+                "CHANDRA_AUTH_MODE=bearer, но токен не задан "
+                "(CHANDRA_BEARER_TOKEN / LMSTUDIO_API_KEY в .env)"
+            )
+        return {
+            "Authorization": f"Bearer {token}",
+            "content-type": "application/json",
+        }
     user = _env("NGROK_AUTH_USER")
     pwd = _env("NGROK_AUTH_PASS")
     token = base64.b64encode(f"{user}:{pwd}".encode()).decode()
@@ -868,21 +893,43 @@ async def _gemma_call_attempt(
     max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS,
 ) -> tuple[int, dict | None, str, int]:
     data_url = _png_to_data_url(png_path, scale=scale)
-    payload = {
-        "model": model,
-        "system_prompt": SYSTEM_PROMPT,
-        "input": [
-            {"type": "text", "content": user_text},
-            {"type": "image", "data_url": data_url},
-        ],
-        "temperature": 0.1,
-        "max_output_tokens": max_output_tokens,
-        "store": False,
-    }
+    # Транспорт: native /api/v1/chat (legacy ngrok Chandra) ИЛИ OpenAI vision
+    # /v1/chat/completions (новый LM Studio, native-эндпоинта нет).
+    transport = (os.environ.get("CHANDRA_CHAT_TRANSPORT", "native") or "native").strip().lower()
+    if transport == "openai_completions":
+        url = f"{base_url}/v1/chat/completions"
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": user_text},
+                        {"type": "image_url", "image_url": {"url": data_url}},
+                    ],
+                },
+            ],
+            "temperature": 0.1,
+            "max_tokens": max_output_tokens,
+        }
+    else:
+        url = f"{base_url}/api/v1/chat"
+        payload = {
+            "model": model,
+            "system_prompt": SYSTEM_PROMPT,
+            "input": [
+                {"type": "text", "content": user_text},
+                {"type": "image", "data_url": data_url},
+            ],
+            "temperature": 0.1,
+            "max_output_tokens": max_output_tokens,
+            "store": False,
+        }
     started = time.monotonic()
     try:
         resp = await client.post(
-            f"{base_url}/api/v1/chat",
+            url,
             headers=_auth_header(),
             json=payload,
             timeout=timeout,
