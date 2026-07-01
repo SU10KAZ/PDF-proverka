@@ -463,6 +463,23 @@ async def call_gpt_for_block(
 
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
 
+    # ─── SINGLELINE_RICH_PROMPT: для СХЕМНЫХ блоков — полная rich-разметка графа ─────
+    # Вместо базового enrichment+page_text подаём render_graph_etalon_markdown (расчёты панелей,
+    # ТТ, примечания, отходящие линии). Default OFF → прод не меняется. Меняет user_text ДО
+    # cache_key ниже → rich/compact кэшируются раздельно. fail-soft (любая ошибка → базовый текст).
+    try:
+        from backend.app.core import config as _slcfg
+        if getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False) and output_dir is not None:
+            from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+                resolve_singleline_prompt as _resolve_sl_prompt,
+            )
+            _rich = _resolve_sl_prompt(Path(output_dir).parent, block.get("block_id", ""),
+                                       block.get("page"), rich=True)
+            if _rich:
+                user_text = _rich
+    except Exception:
+        pass
+
     # ─── Paid response cache check (до guard и до сети) ────────────
     # Если этот блок с этим model/prompt/image уже отвечал — берём из
     # cache, никаких paid_event и денег. Спасает в инциденте 2026-05-16,

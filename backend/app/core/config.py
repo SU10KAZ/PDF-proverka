@@ -596,6 +596,12 @@ GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
 BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False)
+# Stage 02: для СХЕМНЫХ (однолинейных) блоков подавать в промпт полную rich-разметку графа
+# (render_graph_etalon_markdown: расчёты панелей + ТТ + примечания + отходящие линии) вместо
+# базового enrichment+page_text. OFF по умолчанию — прод не меняется. Влияет и на реальный
+# Stage 02 (call_gpt_for_block), и на превью /blocks/llm-text (чтобы совпадали). Детерминированно,
+# без OCR/Qwen. Переключать после замера «до/после» (размер промпта + качество findings).
+SINGLELINE_RICH_PROMPT_ENABLED = _env_bool("SINGLELINE_RICH_PROMPT_ENABLED", False)
 # Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
 BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.

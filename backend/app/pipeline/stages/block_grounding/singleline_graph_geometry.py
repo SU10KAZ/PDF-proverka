@@ -20,6 +20,8 @@ render_graph_etalon_markdown(graph)  — полный Markdown в формате
 from __future__ import annotations
 
 import collections
+import functools
+import json
 import re
 from pathlib import Path
 from typing import Optional
@@ -1276,3 +1278,65 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append("\n_Строк, требующих ручной проверки, не выявлено._")
 
     return "\n".join(L)
+
+
+# ── Промпт Stage 02 для схемного блока (компактный / rich) + резолвер по version_dir ──────
+
+_STAGE02_TASK = ("## Задача:\nПосмотри на изображение блока и верни findings[]. "
+                 "Только проблемы. Не описывай что видишь. Если всё корректно — пустой массив.")
+
+
+def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
+                            rich: bool = False, block_id: str = "", page=None) -> Optional[str]:
+    """Собрать user_text Stage 02 для СХЕМНОГО блока. None — если блок не однолинейная схема.
+
+    rich=False → компактный граф (`render_graph_for_prompt`, как было в превью);
+    rich=True  → полная эталонная разметка (`render_graph_etalon_markdown`, 8 разделов).
+    Один источник для реального Stage 02 и превью — чтобы не разъезжались.
+    """
+    graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint)
+    if not graph:
+        return None
+    body = render_graph_etalon_markdown(graph) if rich else render_graph_for_prompt(graph)
+    return f"# Блок {block_id} | страница PDF {page}\n\n{body}\n\n{_STAGE02_TASK}"
+
+
+@functools.lru_cache(maxsize=8)
+def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
+    """block_id → pdfplumber_text из result.json (кэш по пути+mtime, чтобы не читать 2МБ на блок)."""
+    try:
+        rj = json.loads(Path(rp_str).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    idx = {}
+    for pg in rj.get("pages", []):
+        for b in (pg.get("blocks") or []):
+            bid = str(b.get("id") or b.get("block_id") or "")
+            if bid:
+                idx[bid] = b.get("pdfplumber_text") or ""
+    return idx
+
+
+def resolve_singleline_prompt(version_dir, block_id: str, page, *, rich: bool) -> Optional[str]:
+    """Промпт схемного блока по version_dir (читает 02_work/result.json + document.pdf). fail-soft.
+
+    None — если нет данных или блок не однолинейная схема. Используется реальным Stage 02
+    (call_gpt_for_block) и превью, чтобы флаг SINGLELINE_RICH_PROMPT давал одинаковый результат.
+    """
+    vd = Path(version_dir)
+    rp = vd / "02_work" / "result.json"
+    if not rp.exists():
+        return None
+    try:
+        idx = _result_blocks_vector_index(str(rp), rp.stat().st_mtime)
+    except OSError:
+        return None
+    vector_text = idx.get(str(block_id)) or ""
+    if not vector_text or len(vector_text) < 30:
+        return None
+    pdf = vd / "02_work" / "document.pdf"
+    if not pdf.exists() and (vd / "document.pdf").exists():
+        pdf = vd / "document.pdf"
+    if not pdf.exists():
+        return None
+    return build_singleline_prompt(pdf, vector_text, rich=rich, block_id=str(block_id), page=page)

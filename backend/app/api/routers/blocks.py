@@ -718,29 +718,27 @@ async def get_block_llm_text(
     except Exception:
         singleline_graph = None
 
-    # Для СХЕМНЫХ блоков в промпт уходит имя блока + ГРАФ (а не скудный enrichment/page_text).
+    # user_text превью = РЕАЛЬНЫЙ user_text Stage 02 (правдиво):
+    #  - SINGLELINE_RICH_PROMPT ON  → полная rich-разметка графа (совпадает с call_gpt_for_block);
+    #  - OFF (default) → базовый build_block_user_text (enrichment+page_text), как в проде.
+    # singleline_graph_markdown отдаётся ВСЕГДА (для UI-отображения, независимо от флага).
     singleline_graph_markdown = None
+    stage02_prompt_mode = "base"
     if singleline_graph:
-        try:
-            from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
-                render_graph_for_prompt,
-            )
-            _task = ("## Задача:\nПосмотри на изображение блока и верни findings[]. "
-                     "Только проблемы. Не описывай что видишь. Если всё корректно — пустой массив.")
-            user_text = (f"# Блок {block_id} | страница PDF {page}\n\n"
-                         f"{render_graph_for_prompt(singleline_graph)}\n\n{_task}")
-        except Exception:
-            pass
-
-        # Полный Markdown графа в формате эталона (для фронта/просмотра; в Stage 02 пока НЕ уходит —
-        # переключение прод-промпта на этот формат сделать отдельным шагом за флагом).
         try:
             from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
                 render_graph_etalon_markdown,
             )
             singleline_graph_markdown = render_graph_etalon_markdown(singleline_graph)
+            from backend.app.core import config as _slcfg
+            if getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False):
+                _task = ("## Задача:\nПосмотри на изображение блока и верни findings[]. "
+                         "Только проблемы. Не описывай что видишь. Если всё корректно — пустой массив.")
+                user_text = (f"# Блок {block_id} | страница PDF {page}\n\n"
+                             f"{singleline_graph_markdown}\n\n{_task}")
+                stage02_prompt_mode = "singleline_rich"
         except Exception:
-            singleline_graph_markdown = None
+            singleline_graph_markdown = singleline_graph_markdown or None
 
         # bbox каждой линии (page-norm) → координаты БЛОКА (для полупрозрачных областей в UI)
         cn = rblock.get("coords_norm")
@@ -772,6 +770,8 @@ async def get_block_llm_text(
         "page_text": page_text,
         "system_prompt": system_prompt,
         "user_text": user_text,
+        # режим промпта Stage 02: "base" (enrichment+page_text) | "singleline_rich" (флаг ON)
+        "stage02_prompt_mode": stage02_prompt_mode,
         # доступное сырьё блока (НЕ в промпте сейчас)
         "gemma_ocr_text": gemma_ocr_text,
         "vector_text": vector_text,
