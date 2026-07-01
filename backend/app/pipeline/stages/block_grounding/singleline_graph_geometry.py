@@ -879,7 +879,13 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                                         for t in targets)
             tw = [w for w in words if qx - 2 <= (w[0] + w[2]) / 2 < tright
                   and qy - 330 < w[1] < qy - 40 and _hits(w, txt_targets)]
-            brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= qx + 34
+            # Подпись автомата — ДВА столбца: левый (ВА-300/15кА/метка ≈ qx+12..+17) и правый
+            # (поль/номинал «1Р», «10А» ≈ qx+35..+37). Жёсткое qx+34 срезало правый столбец у
+            # фидеров, где символ qx сдвинут левее подписи (напр. с контактором МК103). Правую
+            # границу расширяем до qx+46, но капим по соседнему символу (next_x-8), чтобы не
+            # захватить подпись соседа (она начинается на next_x+12..+15).
+            brk_right = min(qx + 46, next_x - 8)
+            brw = [w for w in words if qx - 22 <= (w[0] + w[2]) / 2 <= brk_right
                    and -2 < (w[1] - qy) < 45 and _hits(w, brk_targets)]
             def _bbox(ws):
                 return ((min(w[0] for w in ws), min(w[1] for w in ws),
