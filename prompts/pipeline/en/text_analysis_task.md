@@ -15,6 +15,12 @@
 
 2. **Normative reference** — READ via Read tool: `{DISCIPLINE_NORMS_FILE}` (if available)
 
+3. **Block analysis (Stage 02, compact view)** — READ via Read tool: `{BLOCKS_ANALYSIS_PATH}`
+   - Visual analysis of graphic blocks by GPT-5.4 (findings G-NNN, `value_found`,
+     `block_evidence`, `coverage_status` per block).
+   - **If the file does not exist — work without block context** (normal for the text→block
+     order; in that case leave `items_verified_from_blocks` empty `[]`).
+
 ## Task
 
 ### Stage 1: Text Data Analysis
@@ -56,6 +62,17 @@ Analyze the MD content COMPLETELY. Extract:
    - Equipment on drawing not in specification → finding
    - Specification item not on any drawing → finding
 
+8. **Cross-check your findings against Stage 02 blocks** (if `{BLOCKS_ANALYSIS_PATH}` is available):
+   - For EACH of your `text_findings[].id` (T-NNN), check whether it is confirmed by what GPT
+     saw on the blocks: compare with the block's `findings`, its `value_found`, `block_evidence`.
+   - Fill in `items_verified_from_blocks[]` (see output schema).
+   - **HARD RULE:** set `confirmed: true` ONLY with concrete visual evidence — a specific
+     `block_id` AND a `value_found`/`block_evidence` matching in meaning/value. A mere «the block
+     says something similar» or matching wording is NOT confirmation (otherwise two models
+     self-confirm each other and inflate severity). No concrete evidence → `confirmed: false`
+     or omit the record.
+   - This does NOT create new drawing findings (Stage 02 finds those) — it only verifies YOUR text findings.
+
 {DISCIPLINE_CHECKLIST}
 
 ## Finding Categories
@@ -94,9 +111,20 @@ Analyze the MD content COMPLETELY. Extract:
       "norm_quote": "Точная цитата из нормы или null",
       "related_block_ids": ["block_id"]
     }
+  ],
+  "items_verified_from_blocks": [
+    {
+      "finding_id": "T-001",
+      "block_id": "<block_id from Stage 02>",
+      "confirmed": true,
+      "evidence": "What exactly is visible on the block (value_found/block_evidence) confirming T-001"
+    }
   ]
 }
 ```
+
+> `items_verified_from_blocks` is optional. If `{BLOCKS_ANALYSIS_PATH}` is unavailable, leave it
+> empty `[]`. Include a record ONLY with concrete visual evidence (see task step 8).
 
 ## Normative Accuracy (norm_quote)
 

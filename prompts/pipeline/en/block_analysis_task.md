@@ -12,10 +12,11 @@
 
 ## Input Data
 
-1. **Text analysis context** — provided inline.
-   - `text_findings` — text-based findings (for verification against drawings)
-   - `project_params` — project parameters (loads, capacities, equipment marks)
-   If not available — proceed without context.
+1. **Text analysis context** (OPTIONAL) — provided inline if available.
+   - `text_findings` — text-based findings; `project_params` — parameters (loads, capacities, marks)
+   - **May be absent** (in the block→text order the text analysis has not run yet) — then proceed
+     without it. Verification of text findings against blocks is done by the text stage (Stage 01)
+     itself; it is NOT required here.
 
 2. **Structured page context** (from Document Knowledge Graph):
 
@@ -79,9 +80,9 @@ If a block contains a mounting detail, node (узел), section (разрез), 
 - `"Кабельный ввод снизу через стальную гильзу Ø50, заделка огнестойкой пеной"`
 - `"Лоток 200×50 на шпильках М8 к перекрытию, шаг 1000 мм"`
 
-## Cross-Check with Text Analysis (MANDATORY)
+## Cross-Check with Text Analysis (if text analysis context is available)
 
-From text analysis context → `project_params`, extract numerical data.
+If the text analysis context is present → from `project_params`, extract numerical data.
 On EACH drawing, cross-check visible values against text data:
 - Flow rates, loads, powers — match the tables?
 - Diameters, cross-sections — match the specification?
@@ -151,14 +152,6 @@ Any discrepancy → finding.
           ]
         }
       ]
-    }
-  ],
-  "items_verified_from_stage_01": [
-    {
-      "finding_id": "T-NNN",
-      "block_id": "...",
-      "confirmed": true,
-      "evidence": "что видно на чертеже"
     }
   ]
 }

@@ -224,7 +224,8 @@ def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> 
     compact: dict[str, object] = {
         "stage": data.get("stage"),
         "meta": data.get("meta"),
-        "items_verified_from_stage_01": data.get("items_verified_from_stage_01"),
+        # Верификация текст↔блоки теперь приходит из 01_text_analysis.json
+        # (items_verified_from_blocks); 01 читается целиком отдельно в build_findings_merge_messages.
         "block_analyses": [],
     }
     compact_blocks: list[dict[str, object]] = []

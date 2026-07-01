@@ -2,15 +2,15 @@
   "_comment": "Tracking sync between Russian and English templates",
   "templates": {
     "text_analysis_task.md": {
-      "ru_hash": "3205255dd1765ea304703806ec046e62",
+      "ru_hash": "f70dddca8ffe7cf300044d70c8f156ff",
       "synced": true
     },
     "block_analysis_task.md": {
-      "ru_hash": "41447e2ed79e5124a5072466d2d07ce1",
+      "ru_hash": "73d8e880800459ab613ac18f52ceb22c",
       "synced": true
     },
     "findings_merge_task.md": {
-      "ru_hash": "471c1d116dc4b8e5c7a9849fb62f77e7",
+      "ru_hash": "67e9e530fcc4aefca6b9218bb115ccab",
       "synced": true
     },
     "findings_critic_task.md": {

@@ -97,21 +97,6 @@
         },
         "additionalProperties": false
       }
-    },
-    "items_verified_from_stage_01": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["finding_id", "block_id", "confirmed", "evidence"],
-        "properties": {
-          "finding_id": { "type": "string" },
-          "block_id": { "type": "string" },
-          "confirmed": { "type": "boolean" },
-          "evidence": { "type": "string" }
-        },
-        "additionalProperties": false
-      },
-      "default": []
     }
   }
 }

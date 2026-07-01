@@ -472,11 +472,16 @@ def prepare_text_analysis_task(
 
     template = _inject_discipline(template, project_info)
 
+    # Компактный view анализа блоков (порядок block→text). Файла может не быть (порядок
+    # text→block или standalone-прогон) — тогда шаблон работает без блочного контекста.
+    blocks_analysis_path = str(Path(output_path) / "02_blocks_for_text.json")
+
     task = (
         template
         .replace("{PROJECT_ID}", project_id)
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
+        .replace("{BLOCKS_ANALYSIS_PATH}", blocks_analysis_path)
     )
     return task
 
@@ -503,6 +508,7 @@ def build_text_analysis_prompt(
         .replace("{PROJECT_ID}", project_id)
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
+        .replace("{BLOCKS_ANALYSIS_PATH}", str(Path(output_path) / "02_blocks_for_text.json"))
     )
 
 

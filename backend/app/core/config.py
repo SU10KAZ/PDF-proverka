@@ -609,6 +609,12 @@ SINGLELINE_RICH_PROMPT_ENABLED = _env_bool("SINGLELINE_RICH_PROMPT_ENABLED", Fal
 NEIGHBOR_TEXT_BLOCKS_ENABLED = _env_bool("NEIGHBOR_TEXT_BLOCKS_ENABLED", True)
 # Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
 BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
+# Разворот порядка конвейера: блоки (Stage 02, GPT) идут ПЕРЕД текстом (Stage 01, Opus).
+# Новый порядок: gemma → block_analysis → block_retry → text_analysis → findings_merge.
+# Текст становится финальным синтезатором: читает компактный view 02 (02_blocks_for_text.json)
+# и сверяет свои T-замечания с блоками (items_verified_from_blocks) вместо обратной сверки.
+# OFF по умолчанию — прод (порядок text→block) не меняется. Выкатка через A/B на реальном проекте.
+PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False)
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
 # Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).

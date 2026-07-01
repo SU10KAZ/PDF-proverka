@@ -74,6 +74,22 @@
         },
         "additionalProperties": false
       }
+    },
+    "items_verified_from_blocks": {
+      "description": "Опционально (порядок block→text): текст сверил свои T-замечания с блоками Stage 02. confirmed=true ТОЛЬКО при конкретном визуальном evidence (block_id + значение/деталь), не по похожей формулировке.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "block_id", "confirmed", "evidence"],
+        "properties": {
+          "finding_id": { "type": "string", "pattern": "^T-\\d{3}$" },
+          "block_id": { "type": "string" },
+          "confirmed": { "type": "boolean" },
+          "evidence": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "default": []
     }
   }
 }

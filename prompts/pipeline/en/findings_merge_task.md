@@ -11,9 +11,12 @@
 
 1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/01_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
+   - `items_verified_from_blocks` (optional) — present if text ran AFTER blocks: its cross-check
+     of its own T-findings against Stage 02 blocks.
 
 2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/02_blocks_analysis.json`
-   - `block_analyses` (findings G-001... within each block), `items_verified_from_stage_01`
+   - `block_analyses` (findings G-001... within each block)
+   - `items_verified_from_stage_01` (optional, legacy) — present if blocks ran AFTER text.
    - If `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks`, or block-level
      `coverage_status: "missing_gemma_enrichment" | "single_block_analysis_failed"` is present,
      DO NOT treat those blocks as “no findings”. They were not fully analyzed.
@@ -56,23 +59,31 @@ If `02_blocks_analysis.json` contains uncovered/failed blocks, add three section
 These blocks are not clean “no findings” blocks; they were not fully analyzed. Do not invent
 findings for them, but preserve their block ids and reasons in meta.
 
-### Processing items_verified_from_stage_01 (MANDATORY)
+### Processing text↔block verification (MANDATORY)
 
-Before merging — process `items_verified_from_stage_01`:
+Take the verification array from whichever file has it (stage order may be either):
+- `items_verified_from_blocks` from `01_text_analysis.json` (block→text order — primary), OR
+- `items_verified_from_stage_01` from `02_blocks_analysis.json` (legacy text→block order).
 
-- **`confirmed: true`** → text finding confirmed by drawing. Elevate severity by one level (РЕКОМЕНДАТЕЛЬНОЕ → ЭКСПЛУАТАЦИОННОЕ, ЭКСПЛУАТАЦИОННОЕ → ЭКОНОМИЧЕСКОЕ). Keep КРИТИЧЕСКОЕ as-is.
+Both describe the same thing: a text finding T-NNN cross-checked against a drawing. Process each record:
+
+- **`confirmed: true` WITH CONCRETE evidence** (a `block_id` and an `evidence` citing a specific
+  value/detail from the drawing) → text finding confirmed. Elevate severity by one level
+  (РЕКОМЕНДАТЕЛЬНОЕ → ЭКСПЛУАТАЦИОННОЕ, ЭКСПЛУАТАЦИОННОЕ → ЭКОНОМИЧЕСКОЕ). Keep КРИТИЧЕСКОЕ as-is.
+  **Do NOT elevate** on a bare `confirmed: true` without concrete evidence (otherwise two models
+  self-confirm each other and inflate severity).
 - **`confirmed: false`** → drawing shows something different from text. Two options:
   - If the error is in text (typo, outdated data) but drawing is correct → **remove finding** or downgrade to РЕКОМЕНДАТЕЛЬНОЕ with note "расхождение текста и чертежа"
   - If the drawing also has an error, but a different one → **keep and clarify** description
-- **Finding without verification** (T-NNN not in items_verified) → keep as-is, do not elevate severity
+- **Finding without verification** (T-NNN not in the array) → keep as-is, do not elevate severity
 
 ### Merge Rules
 
 1. **Deduplication**: same finding in both text and drawing → single entry with more complete description
-2. **Severity elevation**: text finding confirmed by drawing → severity increases (see items_verified above)
+2. **Severity elevation**: text finding confirmed by drawing with concrete evidence → severity increases (see verification section above)
 3. **Severity reduction**: text suspicion NOT confirmed by drawing → downgrade or remove
 4. **Renumbering**: final IDs: F-001, F-002...
-5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from block analysis that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from `items_verified`). For cross-block → all participating block_ids.
+5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from block analysis that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from the verification array). For cross-block → all participating block_ids.
 
 ### Finding Fields
 
