@@ -717,7 +717,12 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             return None
         pg = doc[pidx]
         words = pg.get_text("words")
-        page_full_text = pg.get_text()
+        # Текст-разделы (питание, панели-расчёты, связи, служебные элементы, ТТ, примечания,
+        # заголовок) берём из текста САМОГО БЛОКА (vector_text = pdfplumber по кропу блока), а не из
+        # всей страницы: описание блока должно опираться только на его собственный текст. Остальной
+        # текст листа подаётся в LLM отдельно. Геометрия (words с координатами) — из fitz, т.к. в
+        # строке vector_text координат нет. Фолбэк на полный текст страницы, если блок-текст пуст.
+        page_full_text = vector_text or pg.get_text()
         page_w, page_h = float(pg.rect.width), float(pg.rect.height)
     except Exception:
         return None
