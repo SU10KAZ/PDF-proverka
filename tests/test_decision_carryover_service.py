@@ -372,6 +372,52 @@ def test_decisions_log_gets_carryover_flag(monkeypatch):
 # ─── 8. Кросс-версионный guard в _append_to_decisions_log ────────────────
 
 
+def test_previous_checked_version_v2_layout(monkeypatch):
+    """previous_checked_version учитывает v2-раскладку: findings/review НЕ в _output.
+
+    Регрессия: раньше использовался migrated_findings_service.get_previous_checked_version
+    (только _output/), из-за чего на реальных v2-проектах (вердикты в 04_review/)
+    предыдущая версия не находилась и перенос был no-op.
+    """
+    from backend.app.services.common import version_service
+    manifest = {"versions": [
+        {"version_id": "v1", "version_no": 1, "label": "V1"},
+        {"version_id": "v2", "version_no": 2, "label": "V2"},
+    ]}
+    monkeypatch.setattr(version_service, "read_project_versions", lambda pd, pid: manifest)
+    monkeypatch.setattr(dc, "_load_findings", lambda pd, pid, vid: [{"id": "F-001"}])
+    monkeypatch.setattr(dc, "_load_review_map",
+                        lambda pd, pid, vid: {"F-001": {"decision": "accepted"}} if vid == "v1" else {})
+    assert dc.previous_checked_version(Path("/x"), "P", "v2") == "v1"
+
+
+def test_previous_checked_version_none_when_prev_unreviewed(monkeypatch):
+    from backend.app.services.common import version_service
+    manifest = {"versions": [
+        {"version_id": "v1", "version_no": 1},
+        {"version_id": "v2", "version_no": 2},
+    ]}
+    monkeypatch.setattr(version_service, "read_project_versions", lambda pd, pid: manifest)
+    monkeypatch.setattr(dc, "_load_findings", lambda pd, pid, vid: [{"id": "F-001"}])
+    monkeypatch.setattr(dc, "_load_review_map", lambda pd, pid, vid: {})  # ничья версия не проверена
+    assert dc.previous_checked_version(Path("/x"), "P", "v2") is None
+
+
+def test_dry_run_writes_nothing(monkeypatch):
+    projects_dir = dc.resolve_project_dir("M31A").parent
+    _write_v1(projects_dir)
+    out = _make_v2()
+    _write_v2_findings(out)
+    monkeypatch.setattr(dc, "_run_sonnet_sync", _confirm_all)
+
+    result = dc.run_decision_carryover("M31A", "v2", dry_run=True)
+    assert result["dry_run"] is True
+    # Посчитано, но НЕ записано.
+    assert result["summary"]["carried_over"] == 2
+    assert not (out / "expert_review.json").exists()
+    assert not (out / dc.REPORT_FILENAME).exists()
+
+
 class _FakeCtx:
     """Минимальный PipelineStageContext-совместимый объект для стадии."""
     def __init__(self, project_id, version_id):

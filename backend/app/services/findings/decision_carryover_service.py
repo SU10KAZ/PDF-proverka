@@ -163,6 +163,41 @@ def _load_review_map(project_dir: Path, project_id: str, version_id: str) -> dic
 
 # ─── Кандидаты из решённых замечаний прошлой версии ──────────────────────
 
+def _version_checked(project_dir: Path, project_id: str, version_id: str) -> bool:
+    """Версия «проверена» = есть findings И ≥1 решение эксперта (v2-aware)."""
+    if not _load_findings(project_dir, project_id, version_id):
+        return False
+    return bool(_load_review_map(project_dir, project_id, version_id))
+
+
+def previous_checked_version(
+    project_dir: Path, project_id: str, current_version_id: str,
+) -> Optional[str]:
+    """Ближайшая более ранняя ПРОВЕРЕННАЯ версия (v2-aware).
+
+    В отличие от migrated_findings_service.get_previous_checked_version (который
+    ищет только в `_output/`), учитывает v2-раскладку `04_review/` +
+    `03_analysis/latest/` через _load_findings/_load_review_map.
+    """
+    try:
+        manifest = version_service.read_project_versions(project_dir, project_id)
+    except Exception:
+        return None
+    cur = next(
+        (v for v in manifest.get("versions", []) if v.get("version_id") == current_version_id),
+        None,
+    )
+    if cur is None:
+        return None
+    cur_no = int(cur.get("version_no") or 0)
+    earlier = [v for v in manifest.get("versions", []) if int(v.get("version_no") or 0) < cur_no]
+    earlier.sort(key=lambda v: int(v.get("version_no") or 0), reverse=True)
+    for v in earlier:
+        if _version_checked(project_dir, project_id, v["version_id"]):
+            return v["version_id"]
+    return None
+
+
 def build_decided_candidates(
     project_dir: Path, project_id: str, source_version_id: str,
 ) -> list[dict]:
@@ -344,7 +379,9 @@ def _write_report(project_id: str, current_version_id: str, report: dict) -> Pat
 
 # ─── Главный сценарий ────────────────────────────────────────────────────
 
-def run_decision_carryover(project_id: str, current_version_id: str) -> dict:
+def run_decision_carryover(
+    project_id: str, current_version_id: str, *, dry_run: bool = False,
+) -> dict:
     """Перенести вердикты из предыдущей проверенной версии в текущую.
 
     Returns dict: {status, source_version_id, summary, report_path, saved}.
@@ -355,7 +392,8 @@ def run_decision_carryover(project_id: str, current_version_id: str) -> dict:
         return {"status": "skipped", "reason": "no_previous_version"}
 
     project_dir = resolve_project_dir(project_id)
-    prev = mfs.get_previous_checked_version(project_id, current_version_id)
+    # v2-aware поиск предыдущей проверенной версии (04_review/03_analysis, не только _output).
+    prev = previous_checked_version(project_dir, project_id, current_version_id)
     if not prev:
         report = {
             "schema_version": SCHEMA_VERSION,
@@ -369,7 +407,8 @@ def run_decision_carryover(project_id: str, current_version_id: str) -> dict:
             "summary": {},
             "items": [],
         }
-        _write_report(project_id, current_version_id, report)
+        if not dry_run:
+            _write_report(project_id, current_version_id, report)
         return {"status": "ok", "source_version_id": None,
                 "reason": "no_previous_checked_version", "saved": 0}
 
@@ -482,8 +521,9 @@ def run_decision_carryover(project_id: str, current_version_id: str) -> dict:
         items.append(row)
 
     # Запись вердиктов: bind текущей версии + stamp_schedule=False.
+    # dry_run: ничего не пишем (превью — что перенеслось бы).
     saved = 0
-    if decisions:
+    if decisions and not dry_run:
         from backend.app.services.knowledge_base import knowledge_base_service as kb
         with version_service.pinned_version(current_version_id):
             result = kb.save_expert_review(
@@ -519,12 +559,14 @@ def run_decision_carryover(project_id: str, current_version_id: str) -> dict:
         "summary": summary,
         "items": items,
     }
-    report_path = _write_report(project_id, current_version_id, report)
+    report_path = None if dry_run else _write_report(project_id, current_version_id, report)
 
     return {
         "status": "ok",
         "source_version_id": prev,
+        "dry_run": dry_run,
         "summary": summary,
         "saved": saved,
-        "report_path": str(report_path),
+        "report_path": str(report_path) if report_path else None,
+        "items": items,
     }
