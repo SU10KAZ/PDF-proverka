@@ -3159,7 +3159,7 @@
                                                     <table class="sld-table">
                                                         <thead><tr>
                                                             <th>QF</th><th>Автомат (тип; Icn; In)</th><th>Потребитель</th><th>Код</th>
-                                                            <th>Ру/Кс/Cosφ/Рр/Ip</th><th>L/ΔU/кабель/Iкз(1)/трасса</th><th>Упр.</th><th>Статус</th><th>Review</th>
+                                                            <th>Ру/Кс/Cosφ/Рр/Ip</th><th>L/ΔU/кабель/Iкз(1)/трасса</th><th>Доп. аппараты</th><th>Упр.</th><th>Статус</th><th>Review</th>
                                                         </tr></thead>
                                                         <tbody>
                                                             <tr v-for="(fd,fi) in pan.feeders" :key="'olf'+fi" :class="'sld-st-'+fd.status">
@@ -3169,6 +3169,7 @@
                                                                 <td>{{ fd.circuit_code || '—' }}</td>
                                                                 <td style="white-space:normal; max-width:230px"><span v-if="fd.P_calc_kw != null">Ру={{ fd.P_inst_kw }}кВт; Кс={{ fd.Kc }}; Cosφ={{ fd.cosphi }}; Рр={{ fd.P_calc_kw }}кВт; Ip={{ fd.I_a }}А</span><span v-else>—</span></td>
                                                                 <td style="white-space:normal; max-width:300px"><template v-if="fd.cable || fd.length_m != null"><span v-if="fd.length_m != null">L={{ fd.length_m }}м; </span><span v-if="fd.voltage_drop_pct != null">ΔU={{ fd.voltage_drop_pct }}%; </span><span v-if="fd.cable">{{ fd.cable }}; </span><span v-if="fd.Ikz_ka != null">Iкз(1)={{ fd.Ikz_ka }}кА; </span><span v-if="fd.routing">{{ fd.routing }}</span></template><span v-else>—</span></td>
+                                                                <td style="white-space:normal; max-width:220px">{{ (fd.additional_devices||[]).join('; ') || '—' }}</td>
                                                                 <td>{{ (fd.control||[]).join(', ') || '—' }}</td>
                                                                 <td>{{ fd.status }}</td>
                                                                 <td style="white-space:normal; max-width:220px; color:var(--accent-orange,#c2691c)">{{ (fd.review||[]).join('; ') || '—' }}</td>

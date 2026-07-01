@@ -216,3 +216,44 @@ def _scheme_7hyd_vt():
                 if s > sc:
                     sc, best = s, vt
     return best
+
+
+# ── Доп-аппараты линии (УЗО03/КМ/МК103 в вертикали QF после автомата) ──────────────────
+
+def test_additional_line_devices_7hyd():
+    """Стр.8 (7HYD): УЗО03/КМ/МК103 извлекаются в feeder.additional_devices по X-колонке."""
+    g = _build(_scheme_7hyd_vt(), "ВРУ-К1.1")
+    ff = _ff(g)
+
+    def devs(q):
+        return " || ".join(ff[q].get("additional_devices") or [])
+
+    # QF3.27-QF3.34: УЗО03 4Р (100мА АС) + КМ (1НО+1НЗ)
+    for q in ("QF3.27", "QF3.30", "QF3.33"):
+        assert re.search(r"УЗО03.*4Р.*100мА.*АС", devs(q)), (q, devs(q))
+        assert re.search(r"КМ.*1НО\+1НЗ", devs(q)), (q, devs(q))
+    # QF3.35-QF3.36: УЗО03 2Р 16А 30мА АС
+    for q in ("QF3.35", "QF3.36"):
+        assert re.search(r"УЗО03.*2Р.*16А.*30мА.*АС", devs(q)), (q, devs(q))
+    # QF3.37-QF3.38, QF3.10: УЗО03-2Р … 16А
+    for q in ("QF3.37", "QF3.38", "QF3.10"):
+        assert "УЗО03-2Р" in devs(q) and "16А" in devs(q), (q, devs(q))
+    # МК103 где указан (QF3.4/QF3.8/QF3.18); QF3.5 — БЕЗ устройства (не выдумываем)
+    for q in ("QF3.4", "QF3.8", "QF3.18"):
+        assert "МК103" in devs(q), (q, devs(q))
+    assert (ff["QF3.5"].get("additional_devices") or []) == []
+    # не путаем с автоматом: устройства не содержат «ВА-»
+    for f in g["feeders_flat"]:
+        for d in (f.get("additional_devices") or []):
+            assert "ВА-" not in d, (f["qf"], d)
+
+
+def test_additional_devices_match_etalon_9vcw():
+    """ВРУ-К1.2 (9VCW): совпадение с эталоном — QF3.10→МК103, QF3.26→УЗО03-2Р 30мА 20А."""
+    vt = _scheme_9vcw_vt()
+    if not vt:
+        pytest.skip("нет блока 9VCW")
+    g = _build(vt, "ВРУ-К1.2")
+    ff = _ff(g)
+    assert any("МК103" in d for d in (ff["QF3.10"].get("additional_devices") or []))
+    assert any(re.search(r"УЗО03-2Р.*30мА.*20А", d) for d in (ff["QF3.26"].get("additional_devices") or []))

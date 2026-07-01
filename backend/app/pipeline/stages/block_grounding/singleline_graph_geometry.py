@@ -138,9 +138,10 @@ def render_graph_for_prompt(graph: dict) -> str:
                 L.append(f"  {f['qf']}: ‼ requires_review — автомат {br}; потребитель/код не сопоставлены")
                 continue
             ctrl = (" | упр:" + ",".join(f.get("control"))) if f.get("control") else ""
+            dev = (" | доп:" + "; ".join(f.get("additional_devices"))) if f.get("additional_devices") else ""
             L.append(f"  {f['qf']}: {f.get('consumer') or '?'} | {br} | {f.get('circuit_code') or '?'} | "
                      f"Pрасч {f.get('P_calc_kw')}кВт | I {f.get('I_a')}А | {f.get('cable') or '?'} | "
-                     f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}")
+                     f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}{dev}")
     rv = graph.get("review") or []
     if rv:
         L.append("\nТРЕБУЕТ ПРОВЕРКИ:")
@@ -281,6 +282,40 @@ def _extract_consumer_geo(qx, qy, nx, words, formula_vals) -> Optional[str]:
     line = sorted([w for w in rest if abs(round(w[0] / 5) * 5 - mx) <= 16], key=lambda w: -w[1])
     text = re.sub(r"\s+", " ", " ".join(w[4] for w in line)).strip(" -–:;,")
     return text or None
+
+
+# Доп-аппараты линии (после автомата, в вертикали QF): УЗО03/КМ/МК103 и их параметры.
+_DEV_ANCHOR_RE = re.compile(r"^(УЗО|МК103|КМ$)")
+_DEV_EXCLUDE_RE = re.compile(
+    r"ППГ|Лоток|Пг\.|Пз\.|Каб|констр|^К\d+\.|кВт|%|см\.|систем|управл|пожар|откл|диспетч"
+    r"|АСУД|^ПС$|^[А-Яа-яё]{4,}|^\d+м$|^\d+\.\d|FRHF|HF$|^[а-яё]$|^[:;.,)(+\-]+$")
+
+
+def _extract_additional_devices(qx, qy, nx, words) -> list:
+    """Доп-аппараты линии (УЗО03/КМ/МК103…), стоящие в ВЕРТИКАЛИ QF после автомата.
+
+    Аппараты сидят в X-колонке QF между автоматом (чуть ниже метки) и подписью потребителя
+    (кластерами по Y). Привязка по колонке (x±half от QF, half < полушага до соседа — чтобы не
+    подхватить аппарат соседней линии) и по Y-полосе вокруг анкера устройства (УЗО/КМ/МК103).
+    Возвращает список строк-аппаратов (напр. ["УЗО03 4Р 32А 100мА АС", "КМ 3Р 1НО+1НЗ 25А"]),
+    сверху вниз. [] — если аппаратов нет (не выдумываем).
+    """
+    half = min((nx - qx) / 2, 31)
+    zone = [(w[0], w[1], w[4]) for w in words
+            if abs(w[0] - qx) < half and (qy - 120) < w[1] < (qy - 18)]
+    anchors = sorted((y, x, t) for x, y, t in zone if _DEV_ANCHOR_RE.match(t.rstrip(",.")))
+    if not anchors:
+        return []
+    out, seen = [], set()
+    for ay, ax, at in anchors:
+        near = sorted((y, x, t) for x, y, t in zone
+                      if abs(y - ay) <= 22 and not _DEV_EXCLUDE_RE.search(t))
+        s = re.sub(r"[,\s]+", " ", " ".join(t for _, _, t in near)).strip(" ,-")
+        s = re.sub(r"(\d)\s+мА", r"\1мА", s)   # «30 мА» → «30мА»
+        if s and s not in seen:
+            seen.add(s)
+            out.append(s)
+    return out
 
 
 def _median(xs):
@@ -806,6 +841,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         code = assign.get(qn)
         p = params.get(code) if code else None
         nx = next((x for x in qf_xs if x > qx + 1), qx + 70)
+        additional_devices = _extract_additional_devices(qx, qy, nx, words)
         consumer_geo = _extract_consumer_geo(
             qx, qy, nx, words,
             [(p or {}).get("P_inst_kw"), (p or {}).get("Kc"), (p or {}).get("cosphi"),
@@ -925,6 +961,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "length_m": (p or {}).get("length_m"), "voltage_drop_pct": (p or {}).get("voltage_drop_pct"),
             "Ikz_ka": (p or {}).get("Ikz_ka"), "routing": (p or {}).get("routing"),
             "phase": (p or {}).get("phase"), "control": g["control"],
+            "additional_devices": additional_devices,
             "binding_method": bind_method.get(qn), "status": status, "review": review,
         })
 
@@ -1196,15 +1233,16 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append(f"\n### {pan['name']} — {pan['feeder_count']} линий "
                  f"(актив {pan['active']}, резерв {pan['reserve']})\n")
         L.append("| QF | Автомат (тип; Icn; In) | Потребитель | Код | "
-                 "Ру/Кс/Cosφ/Рр/Ip | L/ΔU/кабель/Iкз(1)/трасса | Доп./управление | status | review |")
-        L.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- |")
+                 "Ру/Кс/Cosφ/Рр/Ip | L/ΔU/кабель/Iкз(1)/трасса | Доп. аппараты | Управление | status | review |")
+        L.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
         for f in pan.get("feeders", []):
             ctrl = ", ".join(f.get("control") or []) or "—"
+            devs = "; ".join(f.get("additional_devices") or []) or "—"
             rev = "; ".join(f.get("review") or []) or "—"
             L.append(
                 f"| {_md_cell(f.get('qf'))} | {_md_cell(_fmt_breaker(f))} | {_md_cell(f.get('consumer'))} "
                 f"| {_md_cell(f.get('circuit_code'))} | {_md_cell(_fmt_load(f))} | {_md_cell(_fmt_cable(f))} "
-                f"| {_md_cell(ctrl)} | {_md_cell(f.get('status'))} | {_md_cell(rev)} |")
+                f"| {_md_cell(devs)} | {_md_cell(ctrl)} | {_md_cell(f.get('status'))} | {_md_cell(rev)} |")
 
     # 5. Реестр служебных элементов
     L.append("\n## 5. Реестр служебных элементов\n")
