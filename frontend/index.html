@@ -474,6 +474,34 @@
                     <span v-if="renameError" class="project-version-switch__rename-error">{{ renameError }}</span>
                 </span>
             </div>
+            <button class="version-pdf-btn"
+                    :class="{'version-pdf-btn--active': showVersionPdf}"
+                    @click="toggleVersionPdf()"
+                    title="Открыть PDF этой версии снизу">
+                <span class="version-pdf-btn__icon">📄</span>
+                <span>Просмотр PDF</span>
+            </button>
+        </div>
+
+        <!-- ═══ PDF версии — выезжающая снизу панель (родной просмотрщик браузера) ═══ -->
+        <!-- v-if гарантирует: iframe и запрос PDF создаются только при открытии → фронт не грузится до клика -->
+        <div v-if="isProjectView && currentProject && showVersionPdf"
+             class="version-pdf-drawer">
+            <div class="version-pdf-drawer__header">
+                <span class="version-pdf-drawer__title">
+                    PDF — {{ currentProject.name }}
+                    <span v-if="activeVersionLabel" class="version-pdf-drawer__ver">{{ activeVersionLabel }}</span>
+                </span>
+                <div class="version-pdf-drawer__actions">
+                    <a v-if="versionPdfUrl" :href="versionPdfUrl" target="_blank" rel="noopener"
+                       class="version-pdf-drawer__ext" title="Открыть в новой вкладке">↗</a>
+                    <button class="version-pdf-drawer__close"
+                            @click="showVersionPdf = false" title="Закрыть">✕</button>
+                </div>
+            </div>
+            <iframe v-if="versionPdfUrl" :src="versionPdfUrl"
+                    class="version-pdf-drawer__frame"
+                    title="PDF версии"></iframe>
         </div>
 
         <!-- ═══ Dashboard ═══ -->

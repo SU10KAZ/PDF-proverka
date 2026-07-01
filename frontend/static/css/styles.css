@@ -3017,6 +3017,111 @@ tr.row-rejected td.sc-cell-goto {
     color: #e05555;
     background: var(--bg2, rgba(255,255,255,0.06));
 }
+/* Отдельная кнопка «Просмотр PDF» рядом с пилюлей версии */
+.version-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text2, #888);
+    background: transparent;
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.13s;
+    white-space: nowrap;
+}
+.version-pdf-btn:hover {
+    color: #5d8efc;
+    border-color: #5d8efc;
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
+.version-pdf-btn--active {
+    color: #5d8efc;
+    border-color: #5d8efc;
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
+.version-pdf-btn__icon { font-size: 13px; line-height: 1; }
+
+/* ─── PDF версии: выезжающая снизу панель (drawer) ─────────────────── */
+.version-pdf-drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 85vh;
+    z-index: 900;              /* выше контента, ниже модалок (обычно 1000+) */
+    display: flex;
+    flex-direction: column;
+    background: var(--bg, #fff);
+    border-top: 1px solid var(--border, #2a2a2a);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+}
+.version-pdf-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--bg2, rgba(255,255,255,0.04));
+    border-bottom: 1px solid var(--border, #2a2a2a);
+}
+.version-pdf-drawer__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text, #eee);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.version-pdf-drawer__ver {
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal, #008f7e);
+}
+.version-pdf-drawer__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.version-pdf-drawer__ext {
+    text-decoration: none;
+    color: var(--text2, #888);
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.version-pdf-drawer__ext:hover {
+    color: #5d8efc;
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
+.version-pdf-drawer__close {
+    background: transparent;
+    border: none;
+    color: var(--text2, #888);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.version-pdf-drawer__close:hover {
+    color: #e05555;
+    background: var(--bg2, rgba(255,255,255,0.06));
+}
+.version-pdf-drawer__frame {
+    flex: 1 1 auto;
+    width: 100%;
+    border: none;
+    background: #525659;       /* нейтральный фон под PDF, как в браузерном вьювере */
+}
 .project-version-switch__rename {
     display: inline-flex;
     align-items: center;

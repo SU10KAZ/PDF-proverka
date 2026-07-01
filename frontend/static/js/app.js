@@ -45,6 +45,9 @@ const app = createApp({
         const showCreateVersionModal = ref(false);
         const newVersionComment = ref('');
         const versionsPanelOpen = ref(false);  // боковая панель/блок в info-вкладке
+        // Выезжающая снизу панель с PDF активной версии (родной просмотрщик
+        // браузера в <iframe>). false по умолчанию → до клика ничего не грузится.
+        const showVersionPdf = ref(false);
         // ─── Переименование папки проекта (карандаш рядом с версией) ───
         const renameEditing = ref(false);
         const renameValue = ref('');
@@ -77,6 +80,24 @@ const app = createApp({
                 withVersion: withVersion !== false,
             });
         }
+
+        // ─── PDF версии (drawer снизу) ──────────────────────────────────
+        // URL стрим-эндпоинта PDF активной версии. Зависит от activeVersionId
+        // через _apiUrl (тот подмешивает ?version_id=) → при смене версии
+        // iframe сам перезагрузит нужный PDF. Отдаётся браузеру частями (Range).
+        const versionPdfUrl = computed(() => {
+            if (!currentProject.value) return '';
+            return _apiUrl('/document/' +
+                encodeURIComponent(currentProject.value.project_id) + '/pdf');
+        });
+        // Метка активной версии для заголовка панели (V1/V2/…).
+        const activeVersionLabel = computed(() => {
+            const vid = activeVersionId.value ||
+                (currentProject.value && currentProject.value.latest_version_id);
+            const v = (projectVersions.value || []).find(x => x.version_id === vid);
+            return v ? v.label : '';
+        });
+        function toggleVersionPdf() { showVersionPdf.value = !showVersionPdf.value; }
 
         // ─── Data Cache ───
         const _cache = {
@@ -5567,6 +5588,11 @@ const app = createApp({
         }
 
         async function loadProject(id, forceRefresh) {
+            // Закрываем PDF-панель только при реальной смене проекта; при
+            // переключении вкладок/версий того же проекта она остаётся открытой.
+            if (currentProjectId.value !== id) {
+                showVersionPdf.value = false;
+            }
             currentProjectId.value = id;
             // Кеш ключуется по (id, activeVersionId), чтобы V1/V2 одного проекта
             // не наступали друг на друга.
@@ -17171,6 +17197,7 @@ const app = createApp({
             activeVersionId, projectVersions, projectVersionsLoading,
             versionFiles, versionUploading, versionUploadError,
             showCreateVersionModal, newVersionComment, versionsPanelOpen,
+            showVersionPdf, versionPdfUrl, activeVersionLabel, toggleVersionPdf,
             renameEditing, renameValue, renameError, renameBusy, renameInput,
             startRename, cancelRename, submitRename,
             loadProjectVersions, loadVersionFiles, selectVersion, deleteVersion,

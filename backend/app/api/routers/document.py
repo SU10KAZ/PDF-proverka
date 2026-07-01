@@ -1,9 +1,11 @@
 """
 REST API для просмотра MD-документа проекта (постранично).
 """
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import FileResponse
 import backend.app.services.common.project_service as project_service
 from backend.app.services.common import version_service
 
@@ -78,3 +80,47 @@ async def get_document_page(
     if not page:
         raise HTTPException(404, f"Страница {page_num} не найдена для '{project_id}'")
     return page
+
+
+@router.get("/{project_id:path}/pdf")
+async def get_document_pdf(
+    project_id: str,
+    request: Request,
+    version_id: Optional[str] = Query(None, description="Конкретная версия, по умолчанию latest"),
+):
+    """Отдать исходный PDF нужной версии (inline, со стримингом HTTP Range).
+
+    Резолвит PDF конкретной версии (projects_v2: `02_work/document.pdf` →
+    `01_input/*.pdf`; legacy: `*.pdf` в корне / `project_info.pdf_file`) и отдаёт
+    как `application/pdf`. `FileResponse` (Starlette) выставляет
+    `Accept-Ranges: bytes` и обрабатывает `Range` → браузер тянет файл частями по
+    мере листания, не загружая фронтенд. Просмотрщик встраивается в `<iframe>`,
+    поэтому disposition = inline.
+    """
+    from backend.app.services.storage.projects_v2_source_resolver import (
+        resolve_version_source_files,
+    )
+
+    _validate_version(project_id, version_id)
+    try:
+        ctx = version_service.resolve_project_version_context(
+            project_id,
+            version_id,
+            resolve_project_dir_fn=project_service.resolve_project_dir,
+        )
+    except version_service.VersionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+
+    sources = resolve_version_source_files(ctx["version_dir"], project_id)
+    pdf_path = sources.pdf_path
+    if not pdf_path or not Path(pdf_path).is_file():
+        raise HTTPException(404, f"PDF не найден для версии '{ctx.get('version_id')}'")
+
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        filename=Path(pdf_path).name,
+        content_disposition_type="inline",
+    )
