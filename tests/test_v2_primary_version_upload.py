@@ -186,6 +186,73 @@ def test_v2_only_version_endpoints_create_and_upload(monkeypatch, tmp_path):
         assert payload["project_info"]["pdf_file"] == "Endpoint.pdf"
 
 
+def test_create_version_v2_primary_survives_shadow_mirror(monkeypatch, tmp_path):
+    """Регресс: в projects_v2-primary добавление версии из файлов НЕ должно
+    теряться из-за пост-зеркалирования `shadow_mirror`.
+
+    `shadow_mirror_project_id_safe` пере-мигрирует документ ИЗ legacy-контейнера
+    (где новой версии ещё нет — v2-путь legacy-манифест не трогает) и раньше
+    затирал только что зарегистрированную версию в document.json → следующий
+    `get_version_dir` падал `VersionNotFoundError` (HTTP 500 при загрузке папки
+    как версии). Фикс: при записи напрямую в v2 mirror не вызывается.
+    """
+    v2_root = tmp_path / "projects_v2"
+    doc_dir = _make_v2_doc(v2_root, "DOC-MIRROR")
+    # latest (v001) должна быть НЕ пустой (есть PDF), иначе сработает ветка
+    # «переиспользовать пустую latest» и v002 не создастся (как в реальном проде,
+    # где предыдущая версия уже с чертежом).
+    (doc_dir / "versions" / "v001" / "01_input" / "Existing.pdf").write_bytes(_PDF_BYTES)
+    _set_v2_env(monkeypatch, v2_root)
+
+    from backend.app.services.common import version_service
+    from backend.app.services.storage import storage_write_facade as swf
+
+    # Симулируем ВРЕДНОЕ поведение mirror: если его вызвать — он «откатывает»
+    # document.json к состоянию legacy (только v001), удаляя новую версию.
+    called = {"n": 0}
+
+    def _reverting_mirror(project_id, **kw):
+        called["n"] += 1
+        dj = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+        dj["versions"] = [v for v in dj["versions"] if v.get("version_id") == "v001"]
+        dj["version_ids"] = ["v001"]
+        dj["current_version"] = "v001"
+        (doc_dir / "document.json").write_text(
+            json.dumps(dj, ensure_ascii=False), encoding="utf-8"
+        )
+        return None
+
+    monkeypatch.setattr(swf, "shadow_mirror_project_id_safe", _reverting_mirror)
+
+    src = tmp_path / "incoming"
+    src.mkdir()
+    (src / "New.pdf").write_bytes(_PDF_BYTES)
+    (src / "New_document.md").write_bytes(_MD_BYTES)
+
+    res = version_service.create_version_from_existing_files(
+        "DOC-MIRROR",
+        candidate_files={
+            "pdf": str(src / "New.pdf"),
+            "md": str(src / "New_document.md"),
+        },
+        expected_section=None,
+        comment="regression",
+        source="upload_folder_modal",
+        allowed_roots=[src],
+        resolve_project_dir_fn=lambda pid, **kw: doc_dir,
+    )
+
+    # Версия создалась и НЕ потерялась из document.json
+    assert res["version_id"] == "v002"
+    doc_json = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+    assert "v002" in [v["version_id"] for v in doc_json["versions"]]
+    assert doc_json["current_version"] == "v002"
+    # mirror НЕ вызывался (запись ушла напрямую в v2) → ревёрта не было
+    assert called["n"] == 0
+    # входной файл лёг в v2 01_input
+    assert (doc_dir / "versions" / "v002" / "01_input" / "New.pdf").read_bytes() == _PDF_BYTES
+
+
 def test_storage_write_facade_scaffold_is_visible_to_v2_adapter(monkeypatch, tmp_path):
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
     from backend.app.services.storage.storage_write_facade import (

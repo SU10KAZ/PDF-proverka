@@ -1528,11 +1528,19 @@ def save_files_to_version(
 
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # входного комплекта версии (no-op в legacy, fail-soft).
-    try:
-        from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_id_safe(project_id)
-    except Exception:
-        pass
+    #
+    # В projects_v2-primary входной комплект уже записан НАПРЯМУЮ в v2
+    # (is_projects_v2=True). `shadow_mirror` пере-мигрирует документ ИЗ legacy —
+    # а там новой версии нет (v2-путь legacy-манифест не трогает) — и затирает
+    # только что зарегистрированную версию в document.json → следующий resolve
+    # падает с VersionNotFoundError (HTTP 500). Поэтому зеркалим ТОЛЬКО когда
+    # запись реально ушла в legacy.
+    if not is_projects_v2:
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.shadow_mirror_project_id_safe(project_id)
+        except Exception:
+            pass
 
     return {
         "project_id": project_id,
@@ -2054,11 +2062,15 @@ def merge_project_as_version(
     # project_info новой версии отредактирован ПОСЛЕ внутреннего mirror в
     # save_files_to_version → пере-зеркалим target-контейнер, иначе validate
     # видит "LEGACY CHANGED since migration" по project_info.json новой версии.
-    try:
-        from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_id_safe(target_project_id)
-    except Exception:
-        pass
+    #
+    # НО в projects_v2-primary версия создана напрямую в v2; повторный mirror
+    # ИЗ legacy затрёт её в document.json (см. save_files_to_version). Пропускаем.
+    if not _projects_v2_context_enabled():
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.shadow_mirror_project_id_safe(target_project_id)
+        except Exception:
+            pass
 
     return {
         "status": "ok",

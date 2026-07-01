@@ -2661,11 +2661,16 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
 
     # пере-зеркалить target в v2 (project_info версии правится после mirror) —
     # как в merge_project_as_version; no-op в legacy, fail-soft.
-    try:
-        from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_id_safe(target_project_id)
-    except Exception:
-        pass
+    #
+    # В projects_v2-primary версия уже записана напрямую в v2
+    # (create_version_from_existing_files), и повторный mirror ИЗ legacy затёр бы
+    # её в document.json → VersionNotFoundError. Зеркалим только в legacy/shadow.
+    if not _vs._projects_v2_context_enabled():
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.shadow_mirror_project_id_safe(target_project_id)
+        except Exception:
+            pass
 
     return {
         "mode": "new_version",
