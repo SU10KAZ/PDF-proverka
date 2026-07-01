@@ -1834,6 +1834,24 @@ class PipelineManager:
         except Exception as exc:
             await self._log(job, f"Value Grounding пропущен (soft): {exc}", "warn")
 
+    async def _run_decision_carryover(self, job: AuditJob) -> None:
+        """Перенос вердиктов эксперта из предыдущей проверенной версии (fail-soft).
+
+        Always-on для V2+ (kill-switch DECISION_CARRYOVER_ENABLED). Ошибки НЕ роняют
+        аудит. Sonnet сверяет каждое текущее замечание с решёнными замечаниями прошлой
+        версии; при подтверждении переносит вердикт в expert_review.json (только там,
+        где эксперт ещё не решил) + decisions_log.json и пишет
+        _output/decision_carryover_report.json. Сервис внутри синхронный (claude -p),
+        поэтому запускается через asyncio.to_thread внутри stage runner-а.
+        """
+        try:
+            from backend.app.pipeline.stages.decision_carryover.runner import (
+                run_decision_carryover_stage,
+            )
+            await run_decision_carryover_stage(self._make_stage_context(job))
+        except Exception as exc:
+            await self._log(job, f"Перенос вердиктов пропущен (soft): {exc}", "warn")
+
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
         pid = job.project_id
@@ -2475,29 +2493,36 @@ class PipelineManager:
             if gemma_state.get("status") == "missing_blocks":
                 raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
-        # text_analysis may enqueue when Gemma is incomplete: _run_resumed_pipeline()
-        # will run gemma_enrichment first. block_analysis and later stages cannot.
-        if normalized in {
-            "block_analysis", "findings_merge", "findings_review",
-            "norm_verify", "excel",
-        } and not gemma_state.get("ready"):
+        # Первый LLM-этап может встать в очередь при неполной Gemma: _run_resumed_pipeline()
+        # сначала догонит gemma_enrichment. Остальные этапы — нет. Первый LLM-этап зависит от
+        # порядка: text_analysis (старый порядок) или block_analysis (новый порядок block→text).
+        blocks_before_text = self._blocks_before_text_enabled()
+        _first_llm_stage = "block_analysis" if blocks_before_text else "text_analysis"
+        strict_gemma = {"findings_merge", "findings_review", "norm_verify", "excel"} | (
+            {"text_analysis", "block_analysis"} - {_first_llm_stage}
+        )
+        if normalized in strict_gemma and not gemma_state.get("ready"):
             raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
-        if normalized in {
-            "block_analysis", "findings_merge", "findings_review",
-            "norm_verify", "excel",
-        } and not (output_dir / "01_text_analysis.json").exists():
+        # Требование 01 (текст) — у этапов ниже текста по потоку.
+        needs_text = {"findings_merge", "findings_review", "norm_verify", "excel"}
+        if not blocks_before_text:
+            needs_text = needs_text | {"block_analysis"}
+        if normalized in needs_text and not (output_dir / "01_text_analysis.json").exists():
             raise RuntimeError(
-                "Нельзя запускать block_analysis: 01_text_analysis.json отсутствует. "
+                f"Нельзя запускать {normalized}: 01_text_analysis.json отсутствует. "
                 "Сначала выполните text_analysis."
             )
 
-        if normalized in {"findings_merge", "findings_review", "norm_verify", "excel"}:
-            if not (output_dir / "02_blocks_analysis.json").exists():
-                raise RuntimeError(
-                    "Нельзя запускать findings_merge: 02_blocks_analysis.json отсутствует. "
-                    "Сначала выполните block_analysis."
-                )
+        # Требование 02 (блоки) — у findings_merge+ и (в новом порядке) у text_analysis.
+        needs_blocks = {"findings_merge", "findings_review", "norm_verify", "excel"}
+        if blocks_before_text:
+            needs_blocks = needs_blocks | {"text_analysis"}
+        if normalized in needs_blocks and not (output_dir / "02_blocks_analysis.json").exists():
+            raise RuntimeError(
+                f"Нельзя запускать {normalized}: 02_blocks_analysis.json отсутствует. "
+                "Сначала выполните block_analysis."
+            )
 
         if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "excel"}:
             if not (output_dir / "03_findings.json").exists():
@@ -2592,6 +2617,15 @@ class PipelineManager:
                 "Сначала выполните text_analysis."
             )
 
+    @staticmethod
+    def _assert_block_analysis_exists(output_dir: Path, target_stage: str) -> None:
+        """Симметрично _assert_text_analysis_exists — для порядка block→text."""
+        if not (output_dir / "02_blocks_analysis.json").exists():
+            raise RuntimeError(
+                f"Нельзя запускать {target_stage}: 02_blocks_analysis.json отсутствует. "
+                "Сначала выполните block_analysis."
+            )
+
     async def start_from_stage(
         self,
         project_id: str,
@@ -2633,18 +2667,26 @@ class PipelineManager:
             # Нормализация stage: legacy aliases → OCR stages
             normalized = self._normalize_ocr_stage(start_stage)
 
-            # Порядок этапов OCR-пайплайна (без дублей)
+            # Порядок этапов OCR-пайплайна (без дублей). По флагу
+            # PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED блоки идут ПЕРЕД текстом.
+            blocks_before_text = self._blocks_before_text_enabled()
+            _mid = (
+                ["block_analysis", "text_analysis"]
+                if blocks_before_text else
+                ["text_analysis", "block_analysis"]
+            )
             ocr_stages = [
                 "prepare",
                 "gemma_enrichment",
-                "text_analysis",
-                "block_analysis",
+                *_mid,
                 "findings_merge",
                 "findings_review",
                 "norm_verify",
                 "excel",
             ]
             start_idx = ocr_stages.index(normalized) if normalized in ocr_stages else 0
+            idx_text = ocr_stages.index("text_analysis")
+            idx_block = ocr_stages.index("block_analysis")
 
             await self._log(
                 job,
@@ -2725,56 +2767,85 @@ class PipelineManager:
                 # Усиление предобработки: Value Grounding. OFF по умолчанию, fail-soft.
                 await self._run_block_grounding_stage(job)
 
-            # ═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══
-            if start_idx <= 2:
-                if start_idx == 2:
+            # ═══ Текст (01) и блоки (02) — порядок по флагу PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED ═══
+            async def _resume_run_text_stage() -> bool:
+                """Текстовый анализ. Возвращает False если джоба отменена (нужно return)."""
+                if start_idx == idx_text:
                     await self._ensure_gemma_ready_or_run(job, project_info, "text_analysis")
-                    # Resume с этого этапа — бэкап findings перед очисткой
+                    if blocks_before_text:
+                        # Новый порядок: текст читает финальный 02 — он обязан существовать.
+                        self._assert_block_analysis_exists(output_dir, "text_analysis")
                     self._backup_findings_before_restart(pid)
-                    # Очистить старые результаты
-                    self._clean_stage_files(pid, [
-                        "01_text_analysis.json", "02_blocks_analysis.json",
-                        "03_findings.json", "block_batch_*.json", "block_batches.json",
-                        RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
-                    ])
+                    if blocks_before_text:
+                        # Не трогаем 02 (посчитан на block-этапе выше).
+                        clean = ["01_text_analysis.json", "03_findings.json"]
+                    else:
+                        clean = [
+                            "01_text_analysis.json", "02_blocks_analysis.json",
+                            "03_findings.json", "block_batch_*.json", "block_batches.json",
+                            RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
+                        ]
+                    self._clean_stage_files(pid, clean)
                 self._reset_job_progress(job)
                 job.stage = AuditStage.TEXT_ANALYSIS
                 job.status = JobStatus.RUNNING
-                print(f"[{pid}:resume] ═══ ЭТАП 3: Текстовый анализ MD ═══")
-                await self._log(job, "═══ ЭТАП 3: Текстовый анализ MD (Claude) ═══")
+                print(f"[{pid}:resume] ═══ Текстовый анализ MD ═══")
+                await self._log(job, "═══ Текстовый анализ MD (Claude) ═══")
                 await self._start_heartbeat(job)
-
                 _ta_result = await _run_text_analysis_stage(
                     self._make_stage_context(job),
                     with_rate_limit_retry=False,
                 )
                 if _ta_result.cancelled:
                     job.status = JobStatus.CANCELLED
-                    return
+                    return False
                 if not _ta_result.success:
                     raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
-
                 self._promote_v2_analysis_artifacts(
                     job, ("01_text_analysis.json", "pipeline_log.json")
                 )
+                return job.status != JobStatus.CANCELLED
 
-                if job.status == JobStatus.CANCELLED:
-                    return
-
-            # ═══ ЭТАП 4-5: Генерация пакетов + анализ блоков (Claude) ═══
-            if start_idx <= 3:
+            async def _resume_run_block_stage() -> bool:
+                """Анализ блоков. Возвращает False если джоба отменена (нужно return)."""
                 await self._assert_gemma_ready_for_stage(job, project_info, "block_analysis")
-                self._assert_text_analysis_exists(output_dir, "block_analysis")
+                if not blocks_before_text:
+                    self._assert_text_analysis_exists(output_dir, "block_analysis")
+                if blocks_before_text:
+                    if start_idx == idx_block:
+                        # Resume прямо с блоков (новый порядок) — почистить 02/03, но не 01.
+                        self._backup_findings_before_restart(pid)
+                        self._clean_stage_files(pid, [
+                            "02_blocks_analysis.json", "block_analysis_summary.json",
+                            RUNTIME_BATCHES_FILE, "03_findings.json",
+                        ])
+                    # Полноценный блок-этап (findings_only + retry + promote 02 + компакт для текста).
+                    await self._ocr_block_analysis_and_retry(job, pid, project_info, output_dir)
+                    if job.status == JobStatus.CANCELLED:
+                        return False
+                elif get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
+                    # Старый порядок: findings_only без retry (unreadable_text не помечается).
+                    await self._run_block_analysis_findings_only(job)
+                    if job.status == JobStatus.CANCELLED:
+                        return False
+                    self.active_jobs[pid] = job
+                    self._tasks[pid] = asyncio.current_task()
+                return job.status != JobStatus.CANCELLED
 
-            if start_idx <= 3 and get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
-                # Ветвь findings_only_gemma_pair — single-block через GPT-5.4 + gemma-enrichment.
-                # Не использует blocks.py batches/merge — пишет 02_blocks_analysis.json напрямую.
-                await self._run_block_analysis_findings_only(job)
-                if job.status == JobStatus.CANCELLED:
-                    return
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-                # Block retry пропускаем: findings-only не помечает unreadable_text=true.
+            if blocks_before_text:
+                if start_idx <= idx_block:
+                    if not await _resume_run_block_stage():
+                        return
+                if start_idx <= idx_text:
+                    if not await _resume_run_text_stage():
+                        return
+            else:
+                if start_idx <= idx_text:
+                    if not await _resume_run_text_stage():
+                        return
+                if start_idx <= idx_block:
+                    if not await _resume_run_block_stage():
+                        return
 
             # ═══ ЭТАП 5: Свод замечаний ═══
             if start_idx <= 4:
@@ -2898,6 +2969,9 @@ class PipelineManager:
 
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
+
+            # ═══ Перенос вердиктов из предыдущей версии ═══
+            await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 7: Excel ═══
             self._reset_job_progress(job)
@@ -4048,6 +4122,9 @@ class PipelineManager:
             else:
                 await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
+            # ═══ Перенос вердиктов из предыдущей версии ═══
+            await self._run_decision_carryover(job)
+
             # ═══ ЭТАП 7: Excel ═══
             self._reset_job_progress(job)
             job.stage = AuditStage.EXCEL
@@ -4255,6 +4332,62 @@ class PipelineManager:
             self._update_pipeline_log(pid, "block_retry", "skipped",
                                       message="Все блоки читаемы")
 
+    @staticmethod
+    def _blocks_before_text_enabled() -> bool:
+        """Флаг разворота порядка: блоки (Stage 02) ПЕРЕД текстом (Stage 01)."""
+        from backend.app.core import config as cfg
+        return bool(getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False))
+
+    def _write_blocks_for_text_compact(self, output_dir: Path) -> None:
+        """Записать компактный view 02 (02_blocks_for_text.json) для текстового этапа. Fail-soft."""
+        try:
+            from backend.app.pipeline.stages.block_analysis.blocks_for_text import (
+                write_blocks_for_text_compact,
+            )
+            write_blocks_for_text_compact(Path(output_dir))
+        except Exception:
+            pass
+
+    async def _ocr_block_analysis_and_retry(
+        self, job: AuditJob, pid: str, project_info: dict, output_dir: Path,
+    ) -> None:
+        """Stage 02: анализ блоков (findings_only) + block_retry + promote 02.
+
+        При PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED дополнительно пишет компактный view
+        02_blocks_for_text.json (после retry — уже финальный 02) для текстового этапа.
+        Единый источник для обоих порядков (block→text и text→block).
+        """
+        if get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
+            # findings_only_gemma_pair: single-block GPT-5.4 + gemma-enrichment.
+            # Пишет 02_blocks_analysis.json напрямую, без block_batches.json.
+            await self._run_block_analysis_findings_only(job)
+            if job.status == JobStatus.CANCELLED:
+                return
+            self.active_jobs[pid] = job
+            self._tasks[pid] = asyncio.current_task()
+
+        if job.status == JobStatus.CANCELLED:
+            return
+
+        # Re-register
+        self.active_jobs[pid] = job
+        self._tasks[pid] = asyncio.current_task()
+
+        # ═══ Block Retry — перекачка нечитаемых блоков ═══
+        await self._run_block_retry(job, pid, project_info, output_dir)
+
+        promote = [
+            "02_blocks_analysis.json",
+            "block_analysis_summary.json",
+            RUNTIME_BATCHES_FILE,
+            "pipeline_log.json",
+        ]
+        # Порядок block→text: компактный view финального 02 для текстового этапа.
+        if self._blocks_before_text_enabled():
+            self._write_blocks_for_text_compact(output_dir)
+            promote.append("02_blocks_for_text.json")
+        self._promote_v2_analysis_artifacts(job, tuple(promote))
+
     async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = True):
         """
         OCR-пайплайн: полный аудит всех блоков.
@@ -4351,14 +4484,26 @@ class PipelineManager:
             # Усиление предобработки: Value Grounding (вектор-сверка). OFF по умолчанию, fail-soft.
             await self._run_block_grounding_stage(job)
 
+            # ═══ Порядок block↔text по флагу PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED ═══
+            blocks_before_text = self._blocks_before_text_enabled()
+
+            if blocks_before_text:
+                # Новый порядок: блоки (GPT) + retry ПЕРЕД текстом; текст читает компактный view 02.
+                await self._ocr_block_analysis_and_retry(job, pid, project_info, output_dir)
+                if job.status == JobStatus.CANCELLED:
+                    return
+
             # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             files_to_clean = [
                 "01_text_analysis.json",
                 "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
-                "block_batch_*.json", "block_batches.json", RUNTIME_BATCHES_FILE,
-                "block_analysis_summary.json",
-                "02_blocks_analysis.json",
             ]
+            if not blocks_before_text:
+                # Старый порядок: текст первый — чистим и блочные артефакты (пересоберутся ниже).
+                files_to_clean += [
+                    "block_batch_*.json", "block_batches.json", RUNTIME_BATCHES_FILE,
+                    "block_analysis_summary.json", "02_blocks_analysis.json",
+                ]
             self._clean_stage_files(pid, files_to_clean)
             self._reset_job_progress(job)
             job.stage = AuditStage.TEXT_ANALYSIS
@@ -4399,36 +4544,11 @@ class PipelineManager:
             if job.status == JobStatus.CANCELLED:
                 return
 
-            if get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
-                # findings_only_gemma_pair: single-block GPT-5.4 + gemma-enrichment.
-                # Пишет 02_blocks_analysis.json напрямую, без block_batches.json.
-                await self._run_block_analysis_findings_only(job)
+            if not blocks_before_text:
+                # Старый порядок: блоки (Stage 02) + retry ПОСЛЕ текста.
+                await self._ocr_block_analysis_and_retry(job, pid, project_info, output_dir)
                 if job.status == JobStatus.CANCELLED:
                     return
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # Re-register
-            self.active_jobs[pid] = job
-            self._tasks[pid] = asyncio.current_task()
-
-            # ═══ ЭТАП 5b: Block Retry — перекачка нечитаемых блоков ═══
-            await self._run_block_retry(job, pid, project_info, output_dir)
-            self._promote_v2_analysis_artifacts(
-                job,
-                (
-                    "02_blocks_analysis.json",
-                    "block_analysis_summary.json",
-                    RUNTIME_BATCHES_FILE,
-                    "pipeline_log.json",
-                ),
-            )
-
-            if job.status == JobStatus.CANCELLED:
-                return
 
             # ═══ ЭТАП 6: Свод замечаний ═══
             self._reset_job_progress(job)
@@ -4474,6 +4594,9 @@ class PipelineManager:
                 self._tasks[pid] = asyncio.current_task()
             else:
                 await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
+
+            # ═══ ЭТАП 7.7: Перенос вердиктов из предыдущей версии ═══
+            await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 8: Excel ═══
             self._reset_job_progress(job)

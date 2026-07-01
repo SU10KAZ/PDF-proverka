@@ -1682,8 +1682,19 @@ _PIPELINE_STAGE_ORDER = [
 ]
 
 def _get_stage_order(pipeline_version: str = "legacy") -> list[tuple[str, str]]:
-    """Вернуть список (key, label) этапов конвейера."""
-    return _PIPELINE_STAGE_ORDER
+    """Вернуть список (key, label) этапов конвейера.
+
+    По флагу PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED блоки (+retry) идут ПЕРЕД текстом.
+    """
+    from backend.app.core import config as cfg
+    if not getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False):
+        return _PIPELINE_STAGE_ORDER
+    order = [p for p in _PIPELINE_STAGE_ORDER if p[0] != "text_analysis"]
+    text_tuple = next(p for p in _PIPELINE_STAGE_ORDER if p[0] == "text_analysis")
+    anchor_keys = {"block_retry", "block_analysis"}
+    insert_at = max(i for i, p in enumerate(order) if p[0] in anchor_keys) + 1
+    order.insert(insert_at, text_tuple)
+    return order
 
 
 def _build_pipeline_issues(output_dir: Path, pipeline_version: str = "legacy") -> list[str]:
@@ -2067,6 +2078,12 @@ def _downstream_done(
     проходе. Сюда же подтягиваются alias-этапы.
     """
     downstream_keys = _DOWNSTREAM_DEPENDENCY.get(key, ())
+    if key == "text_analysis":
+        # В порядке block→text «block_analysis done» больше НЕ подтверждает text
+        # (блоки идут первыми). Оставляем только реальную зависимость findings_merge.
+        from backend.app.core import config as cfg
+        if getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False):
+            downstream_keys = tuple(k for k in downstream_keys if k != "block_analysis")
     if not downstream_keys:
         return False
     for dk in downstream_keys:

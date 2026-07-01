@@ -64,6 +64,10 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
     has_01_text = (output_dir / "01_text_analysis.json").exists()
 
+    # Порядок этапов: по флагу блоки (02) могут идти ПЕРЕД текстом (01).
+    from backend.app.core import config as _cfg
+    blocks_before_text = bool(getattr(_cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False))
+
     # Legacy (тайлы)
     has_tile_batches = (output_dir / "tile_batches.json").exists()
     has_02_tiles = (output_dir / "02_tiles_analysis.json").exists()
@@ -109,6 +113,9 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             return _gemma_resume(
                 f"{detail}; сначала требуется {GEMMA_STAGE_LABEL}: {gemma_state.get('detail')}"
             )
+        if blocks_before_text and has_blocks and not has_02_blocks:
+            # Новый порядок: текст идёт после блоков и требует 02.
+            return _block_resume("02_blocks_analysis.json отсутствует; text_analysis требует блоки")
         return {
             "stage": "text_analysis",
             "stage_label": "Анализ текста",
@@ -119,7 +126,8 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     def _block_resume(detail: str, *, start_from: int | None = None, legacy_tile: bool = False) -> dict:
         if has_blocks and not gemma_ready:
             return _gemma_resume(gemma_gate_error(gemma_state, "block_analysis"))
-        if has_blocks and not has_01_text:
+        if (not blocks_before_text) and has_blocks and not has_01_text:
+            # Старый порядок: блоки требуют 01. В новом порядке (block→text) — нет.
             return {
                 "stage": "text_analysis",
                 "stage_label": "Анализ текста",
@@ -144,15 +152,22 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     def _findings_resume(detail: str) -> dict:
         if has_blocks and not gemma_ready:
             return _gemma_resume(gemma_gate_error(gemma_state, "findings_merge"))
-        if has_blocks and not has_01_text:
-            return {
-                "stage": "text_analysis",
-                "stage_label": "Анализ текста",
-                "detail": "01_text_analysis.json отсутствует; findings_merge невозможен",
-                "can_resume": True,
-            }
-        if has_blocks and not has_02_blocks:
-            return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+        # Порядок отсутствующих предпосылок зависит от порядка этапов.
+        if blocks_before_text:
+            if has_blocks and not has_02_blocks:
+                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+            if has_blocks and not has_01_text:
+                return _text_resume("01_text_analysis.json отсутствует; findings_merge невозможен")
+        else:
+            if has_blocks and not has_01_text:
+                return {
+                    "stage": "text_analysis",
+                    "stage_label": "Анализ текста",
+                    "detail": "01_text_analysis.json отсутствует; findings_merge невозможен",
+                    "can_resume": True,
+                }
+            if has_blocks and not has_02_blocks:
+                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
         return {
             "stage": "findings_merge",
             "stage_label": "Свод замечаний",
@@ -192,13 +207,21 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             with open(log_path, "r", encoding="utf-8") as f:
                 log = json.load(f)
             stages_log = log.get("stages", {})
+            _text_tuple = ("text_analysis", "text_analysis", "Анализ текста")
+            _block_tuples = [
+                ("block_analysis", "block_analysis", "Анализ блоков"),
+                ("tile_audit", "tile_audit", "Анализ блоков"),
+            ]
+            _mid_order = (
+                [*_block_tuples, _text_tuple]
+                if blocks_before_text else
+                [_text_tuple, *_block_tuples]
+            )
             stage_order = [
                 ("prepare", "prepare", "Подготовка"),
                 ("crop_blocks", "crop_blocks", "Кроп блоков"),
                 ("gemma_enrichment", "gemma_enrichment", GEMMA_STAGE_LABEL),
-                ("text_analysis", "text_analysis", "Анализ текста"),
-                ("block_analysis", "block_analysis", "Анализ блоков"),
-                ("tile_audit", "tile_audit", "Анализ блоков"),
+                *_mid_order,
                 ("main_audit", "main_audit", "Основной аудит"),
                 ("findings_merge", "findings_merge", "Свод замечаний"),
                 ("norm_verify", "norm_verify", "Верификация норм"),
@@ -267,29 +290,35 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     if not has_tiles and not has_blocks:
         return _prepare_resume("Блоки не созданы")
 
+    _first_llm = "block_analysis" if blocks_before_text else "text_analysis"
     if has_blocks and not gemma_ready:
-        return _gemma_resume(gemma_gate_error(gemma_state, "text_analysis"))
+        return _gemma_resume(gemma_gate_error(gemma_state, _first_llm))
 
-    if has_blocks and not has_01_text:
-        return {
-            "stage": "text_analysis",
-            "stage_label": "Анализ текста",
-            "detail": "01_text_analysis.json не создан",
-            "can_resume": True,
-        }
+    def _need_text() -> Optional[dict]:
+        if has_blocks and not has_01_text:
+            return _text_resume("01_text_analysis.json не создан")
+        return None
 
-    if not has_02:
-        if completed_batches > 0 and completed_batches < total_batches:
-            return _block_resume(
-                f"Пакеты: {completed_batches}/{total_batches}",
-                start_from=completed_batches + 1,
-                legacy_tile=has_tile_batches and not has_blocks,
-            )
-        else:
+    def _need_blocks() -> Optional[dict]:
+        if not has_02:
+            if completed_batches > 0 and completed_batches < total_batches:
+                return _block_resume(
+                    f"Пакеты: {completed_batches}/{total_batches}",
+                    start_from=completed_batches + 1,
+                    legacy_tile=has_tile_batches and not has_blocks,
+                )
             return _block_resume(
                 "02_blocks_analysis.json не создан",
                 legacy_tile=has_tile_batches and not has_blocks,
             )
+        return None
+
+    # Порядок проверок соответствует порядку этапов.
+    _checks = [_need_blocks, _need_text] if blocks_before_text else [_need_text, _need_blocks]
+    for _check in _checks:
+        _res = _check()
+        if _res is not None:
+            return _res
 
     if not has_03:
         return {

@@ -45,6 +45,20 @@ _PIPELINE_STAGE_ORDER_KEYS = [
 ]
 _TERMINAL_STATUSES = {"done", "partial", "skipped", "error", "interrupted"}
 
+
+def _stage_order_keys() -> list[str]:
+    """Порядок этапов для каскадного сброса downstream. По флагу
+    PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED блоки (+retry) идут ПЕРЕД текстом."""
+    from backend.app.core import config as cfg
+    if not getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False):
+        return _PIPELINE_STAGE_ORDER_KEYS
+    keys = [k for k in _PIPELINE_STAGE_ORDER_KEYS if k != "text_analysis"]
+    # Вставить text_analysis сразу после block_retry (или block_analysis).
+    anchor = "block_retry" if "block_retry" in keys else "block_analysis"
+    idx = keys.index(anchor) + 1
+    keys.insert(idx, "text_analysis")
+    return keys
+
 # Этапы, которые выполняются параллельно с findings_critic/findings_corrector
 # и не должны сбрасываться при их перезапуске.
 _PARALLEL_TO_FINDINGS_REVIEW = {
@@ -96,9 +110,10 @@ def update_pipeline_log(
         # больше не валидны. Удаляем только терминальные (done/error/skipped/
         # interrupted) — running/pending не трогаем, чтобы не мешать параллельным
         # этапам, которые стартуют одновременно.
-        if stage_key in _PIPELINE_STAGE_ORDER_KEYS:
-            idx = _PIPELINE_STAGE_ORDER_KEYS.index(stage_key)
-            for downstream in _PIPELINE_STAGE_ORDER_KEYS[idx + 1:]:
+        _order_keys = _stage_order_keys()
+        if stage_key in _order_keys:
+            idx = _order_keys.index(stage_key)
+            for downstream in _order_keys[idx + 1:]:
                 # Параллельные этапы (norm_verify, optimization и их critic/corrector)
                 # выполняются одновременно с findings_critic/corrector, поэтому их
                 # статус не сбрасывается при перезапуске findings-review.

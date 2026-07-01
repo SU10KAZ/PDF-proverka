@@ -333,8 +333,13 @@ class UsageTracker:
         except Exception:
             return None
         stages = log.get("stages", {})
-        # Ищем started_at первого этапа по порядку
-        for key in ("crop_blocks", "text_analysis", "block_analysis", "findings_merge"):
+        # Ищем started_at первого этапа по порядку. По флагу block→text блоки идут первыми.
+        from backend.app.core import config as cfg
+        if getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False):
+            order = ("crop_blocks", "block_analysis", "text_analysis", "findings_merge")
+        else:
+            order = ("crop_blocks", "text_analysis", "block_analysis", "findings_merge")
+        for key in order:
             started = (stages.get(key) or {}).get("started_at")
             if started:
                 return started
