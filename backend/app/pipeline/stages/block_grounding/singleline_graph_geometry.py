@@ -698,14 +698,15 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     qf_all = [(w[0], w[1], w[4]) for w in words if _QF_RE.fullmatch(w[4])]
     if len(qf_all) < 3:
         return None
-    # Суб-панель из 3-сегментных QF (QF5.1.x → РП5.1) признаём только при ≥2 членах. Одиночный
-    # 3-сегментный QF (вложенный, напр. QF3.10.1 на ВРУ-К1.1) исключаем — он не образует панель и
-    # не должен конкурировать за код в родительской панели (поведение как до 3-сегментной поддержки).
+    # Суб-панель из 3-сегментных QF (QF5.1.x → РП5.1) признаём только при ≥2 членах. ОДИНОЧНЫЙ
+    # 3-сегментный QF (вложенный, напр. QF3.10.1 на ВРУ-К1.1) суб-панель НЕ образует — но и НЕ
+    # выбрасываем его: пере-родителяем в ВЕРХНЮЮ панель (QF3.10.1 → РП3), чтобы у него была своя
+    # область и свой код по колонке. Раньше выброс приводил к тому, что его код «утекал» соседу
+    # (напр. К1.1.6-3 попадал в колонку QF3.9 → GEOMETRY_CONFLICT). Множество таких меток —
+    # lone_subpanel_qf; их panel_key переопределяет pref() (ниже) на первый сегмент.
     _key_count = collections.Counter(_qf_panel_key(q[2])[0] for q in qf_all)
-    dropped_subpanel_qf = sorted({q[2] for q in qf_all
-                                  if "." in _qf_panel_key(q[2])[0] and _key_count[_qf_panel_key(q[2])[0]] < 2})
-    if dropped_subpanel_qf:
-        qf_all = [q for q in qf_all if q[2] not in dropped_subpanel_qf]
+    lone_subpanel_qf = {q[2] for q in qf_all
+                        if "." in _qf_panel_key(q[2])[0] and _key_count[_qf_panel_key(q[2])[0]] < 2}
     # исходящие vs вводные по Y (вводные — нижний ряд)
     ys = sorted(q[1] for q in qf_all)
     y_split = ys[0] + (ys[-1] - ys[0]) * 0.6 if ys[-1] - ys[0] > 60 else ys[-1] + 1
@@ -722,6 +723,9 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     ASUD = [(w[0], w[1]) for w in words if "АСУД" in w[4]]
 
     def pref(qn):
+        # Одиночный 3-сегментный QF не образует суб-панель → относим к верхней панели (QF3.10.1 → «3»).
+        if qn in lone_subpanel_qf:
+            return qn[2:].split(".")[0]
         return _qf_panel_key(qn)[0]
 
     geo = {}
