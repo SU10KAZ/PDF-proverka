@@ -1491,18 +1491,8 @@
                             <div class="stage-label">Gemma OCR</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
-                             @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
-                             :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
-                            <div class="stage-num">01</div>
-                            <div class="stage-label">Текст</div>
-                            <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
-                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
-                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('text_analysis').out }}</span>
-                            </div>
-                            <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
-                        </div>
-                        <div class="pipeline-arrow">&rarr;</div>
+                        <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
+                             Бейджи 01/02 — канонические ID стадий (текст=01, блоки=02), не порядок исполнения. -->
                         <div class="pipeline-stage"
                              :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
                              @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
@@ -1515,6 +1505,18 @@
                                 <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('blocks_analysis').out }}</span>
                             </div>
                             <div class="stage-model" v-if="stageModel('blocks_analysis')">{{ stageModel('blocks_analysis') }}</div>
+                        </div>
+                        <div class="pipeline-arrow">&rarr;</div>
+                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
+                             @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
+                             :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
+                            <div class="stage-num">01</div>
+                            <div class="stage-label">Текст</div>
+                            <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
+                                <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
+                                <span class="stage-tokens__out">&#8593;{{ stageTokensFormatted('text_analysis').out }}</span>
+                            </div>
+                            <div class="stage-model" v-if="stageModel('text_analysis')">{{ stageModel('text_analysis') }}</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <div class="pipeline-stage"
@@ -2071,6 +2073,11 @@
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
                                             </button>
                                         </div>
+                                        <div v-if="isCarriedOver(f.id)" class="carryover-badge"
+                                             :title="getExpertReason(f.id)"
+                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:nowrap">
+                                            ↩ Перенесено из {{ carriedFromVersion(f.id) }}
+                                        </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
                                         <textarea v-if="getExpertDecision(f.id)"
@@ -2254,6 +2261,11 @@
                                                     @click.stop="setExpertDecision(item.id, 'optimization', 'rejected')" title="Отклонить">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M6 18L18 6"/></svg>
                                             </button>
+                                        </div>
+                                        <div v-if="isCarriedOver(item.id)" class="carryover-badge"
+                                             :title="getExpertReason(item.id)"
+                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:nowrap">
+                                            ↩ Перенесено из {{ carriedFromVersion(item.id) }}
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
