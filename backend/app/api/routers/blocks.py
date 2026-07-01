@@ -608,6 +608,39 @@ def _block_from_result_json(version_dir: Path, block_id: str) -> dict:
     return {}
 
 
+def _neighbor_text_blocks_from_result_json(version_dir: Path, block_id: str) -> list[dict]:
+    """Соседние `text`-блоки ТОЙ ЖЕ страницы, что и block_id (без самого блока).
+
+    Скоуп по странице обязателен: одноимённые примечания есть на многих листах, и без
+    ограничения страницей дедуп ловил бы дубли с чужих листов.
+    """
+    rp = version_dir / "02_work" / "result.json"
+    if not rp.exists():
+        return []
+    try:
+        rj = json.loads(rp.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+
+    def _id(b) -> str:
+        return str(b.get("id") or b.get("block_id") or "")
+
+    for pg in rj.get("pages", []):
+        blocks = pg.get("blocks") or []
+        if not any(_id(b) == block_id for b in blocks):
+            continue
+        out = []
+        for b in blocks:
+            if b.get("block_type") == "text" and _id(b) != block_id:
+                out.append({
+                    "block_id": _id(b),
+                    "label": b.get("ocr_label") or b.get("label") or "",
+                    "text": b.get("pdfplumber_text") or b.get("ocr_text") or "",
+                })
+        return out
+    return []
+
+
 @router.get("/{project_id:path}/blocks/llm-text/{block_id}")
 async def get_block_llm_text(
     project_id: str,
@@ -760,6 +793,27 @@ async def get_block_llm_text(
                         f["polygons"] = [[[round((px - cn[0]) / bw, 5), round((py - cn[1]) / bh, 5)]
                                           for px, py in poly] for poly in pps]
 
+    # Дедуп соседних текст-блоков: какие text-блоки той же страницы УЖЕ есть в текст-слое блока
+    # (не слать повторно в LLM) и какие уникальны. Аддитивно, разметку/промпт не меняет. fail-soft.
+    neighbor_text_blocks = None
+    try:
+        from backend.app.core import config as _cfg
+        if getattr(_cfg, "NEIGHBOR_TEXT_BLOCKS_ENABLED", True) and vector_text:
+            from backend.app.services.common.neighbor_block_dedup import (
+                DEFAULT_THRESHOLD,
+                filter_neighbor_blocks,
+            )
+            _neighbors = _neighbor_text_blocks_from_result_json(version_dir, block_id)
+            if _neighbors:
+                _send, _dropped = filter_neighbor_blocks(vector_text, _neighbors)
+                neighbor_text_blocks = {
+                    "send": _send,  # уникальные соседи (с полем bigram_in_text_layer)
+                    "dropped": [{k: v for k, v in d.items() if k != "text"} for d in _dropped],
+                    "threshold": DEFAULT_THRESHOLD,
+                }
+    except Exception:
+        neighbor_text_blocks = None
+
     return {
         "project_id": project_id,
         "block_id": block_id,
@@ -783,6 +837,8 @@ async def get_block_llm_text(
         "singleline_graph": singleline_graph,
         # полный Markdown графа в формате эталона (8 разделов) — None, если блок не схема
         "singleline_graph_markdown": singleline_graph_markdown,
+        # соседние text-блоки страницы: send=уникальные (слать), dropped=дубли текст-слоя (не слать)
+        "neighbor_text_blocks": neighbor_text_blocks,
     }
 
 

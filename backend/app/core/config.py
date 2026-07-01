@@ -602,6 +602,11 @@ BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False
 # Stage 02 (call_gpt_for_block), и на превью /blocks/llm-text (чтобы совпадали). Детерминированно,
 # без OCR/Qwen. Переключать после замера «до/после» (размер промпта + качество findings).
 SINGLELINE_RICH_PROMPT_ENABLED = _env_bool("SINGLELINE_RICH_PROMPT_ENABLED", False)
+# Дедуп соседних текст-блоков против текст-слоя блока: /blocks/llm-text отдаёт поле
+# neighbor_text_blocks {send, dropped} — какие соседние text-блоки той же страницы УЖЕ есть в
+# текст-слое блока (не слать повторно) и какие уникальны. Аддитивное поле, разметку не трогает.
+# ON по умолчанию (безопасно: только доп. инфо в ответе, поведение Stage 02 не меняется).
+NEIGHBOR_TEXT_BLOCKS_ENABLED = _env_bool("NEIGHBOR_TEXT_BLOCKS_ENABLED", True)
 # Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
 BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
