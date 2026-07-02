@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from .fusion import FusedVerdict, fuse
 from .kb_routing import should_run_evidence_verifier
+from .precedent import PrecedentSignal, run_precedent_check
 from .verify import (
     DEFAULT_RUNS,
     Verdict,
@@ -32,4 +33,6 @@ __all__ = [
     "verify_finding_multi",
     "verify_finding_multi_async",
     "should_run_evidence_verifier",
+    "PrecedentSignal",
+    "run_precedent_check",
 ]

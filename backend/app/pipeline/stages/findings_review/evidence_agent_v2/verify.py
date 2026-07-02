@@ -138,11 +138,15 @@ async def verify_finding_multi_async(
     runs: int = DEFAULT_RUNS,
     use_norm: bool = True,
     use_cross_block: bool = True,
+    use_precedent: bool = True,
+    enforce_precedent: bool = False,
     ctx=None,
 ):
-    """Async-ядро многоисточникового верификатора (норма+кросс-блок офлайн + зрение).
+    """Async-ядро многоисточникового верификатора (норма+кросс-блок+прецедент офлайн + зрение).
 
-    Ранние выходы экономят vision. Инвариант: норм-сигнал не может породить reject.
+    Ранние выходы экономят vision. Инвариант: ни норм-сигнал, ни прецедент не могут
+    породить reject. `enforce_precedent` управляет только влиянием прецедента на
+    decision (False = shadow: сигнал считается и пишется, но не меняет вердикт).
     ctx можно передать готовым (аудит по точной версии через load_context_from_dir).
     """
     from .cross_block import run_cross_block
@@ -150,10 +154,24 @@ async def verify_finding_multi_async(
     from .norm_check import run_norm_check
 
     fid = str(finding.get("id", "?"))
+
+    precedent = None
+    if use_precedent:
+        try:
+            from backend.app.core import config as _cfg
+            from .precedent import run_precedent_check
+            precedent = run_precedent_check(
+                finding, section=section, enforce=enforce_precedent,
+                min_score=getattr(_cfg, "EV_PRECEDENT_MIN_SCORE", 0.45),
+                top_k=getattr(_cfg, "EV_PRECEDENT_TOP_K", 5),
+            )
+        except Exception:  # fail-soft: прецедент опционален
+            precedent = None
+
     if ctx is None:
         ctx = load_context(project_id, finding, version_id=version_id, section=section)
     if ctx is None:
-        return fuse(None, None, None, finding_id=fid)
+        return fuse(None, None, None, precedent, finding_id=fid)
 
     norm_signal = run_norm_check(finding) if use_norm else None
     cross_block = run_cross_block(finding, ctx.graph) if use_cross_block else None
@@ -162,16 +180,16 @@ async def verify_finding_multi_async(
 
     # --- ранние выходы без зрения ---
     if norm_hint == "accept_with_flag" and xb_kind != "xref_refutes":
-        return fuse(None, norm_signal, cross_block, finding_id=fid)
+        return fuse(None, norm_signal, cross_block, precedent, finding_id=fid)
     if xb_kind == "xref_supports":
-        return fuse(None, norm_signal, cross_block, finding_id=fid)
+        return fuse(None, norm_signal, cross_block, precedent, finding_id=fid)
     if route(ctx) != "graphic" or not ctx.primary_png:
-        return fuse(None, norm_signal, cross_block, finding_id=fid)
+        return fuse(None, norm_signal, cross_block, precedent, finding_id=fid)
 
     # --- дорогой визуал (Фаза 4: коллаж с блоками-кандидатами) ---
     extra = getattr(cross_block, "candidate_block_ids", None) if cross_block else None
     visual = await verify_graphic_async(ctx, model=model, runs=runs, extra_block_ids=extra)
-    return fuse(visual, norm_signal, cross_block, finding_id=fid)
+    return fuse(visual, norm_signal, cross_block, precedent, finding_id=fid)
 
 
 def verify_finding_multi(project_id: str, finding: dict, **kw):

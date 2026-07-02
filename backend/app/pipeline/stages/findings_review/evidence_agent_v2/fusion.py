@@ -30,6 +30,11 @@ class FusedVerdict:
     candidate_block_ids: list = field(default_factory=list)
     requires_human_review: bool = False
     evidence_quote: str = ""
+    # --- precedent-источник (память экспертных решений); всегда пишется для
+    # наблюдаемости, на decision влияет только при enforce (см. _apply_precedent) ---
+    precedent_flags: list = field(default_factory=list)
+    precedent_examples: list = field(default_factory=list)
+    precedent_hint: str = ""
 
 
 def _is_strong_visual_reject(visual) -> bool:
@@ -41,8 +46,48 @@ def _vis_decision(visual) -> Optional[str]:
     return getattr(visual, "decision", None) if visual is not None else None
 
 
-def fuse(visual, norm_signal, cross_block, *, finding_id: str) -> FusedVerdict:
-    """Чистая детерминированная функция. norm_signal не может дать reject."""
+def fuse(visual, norm_signal, cross_block, precedent_signal=None, *, finding_id: str) -> FusedVerdict:
+    """Чистая детерминированная функция. Ни norm_signal, ни precedent_signal НЕ
+    могут дать reject — reject достижим только из визуала (F1) или кросс-блока (F2)."""
+    verdict = _fuse_base(visual, norm_signal, cross_block, finding_id=finding_id)
+    return _apply_precedent(verdict, precedent_signal)
+
+
+def _apply_precedent(verdict: FusedVerdict, precedent) -> FusedVerdict:
+    """Наложить precedent-сигнал на базовый вердикт.
+
+    Наблюдаемость (flags/examples/hint) пишется ВСЕГДА. На decision прецедент влияет
+    только при enforce и только в «unsure»-зоне (needs_human / borderline), поднимая
+    замечание к эксперту. НИКОГДА не трогает accept/reject/conflict → инвариант
+    «прецедент не удаляет реальное замечание» держится (property-тест)."""
+    if precedent is None:
+        return verdict
+
+    verdict.precedent_flags = list(getattr(precedent, "flags", []) or [])
+    verdict.precedent_examples = list(getattr(precedent, "examples", []) or [])
+    verdict.precedent_hint = getattr(precedent, "hint", "") or ""
+    if getattr(precedent, "kind", "none") not in ("none", ""):
+        if "precedent" not in verdict.sources_used:
+            verdict.sources_used = verdict.sources_used + ["precedent"]
+
+    enforce = bool(getattr(precedent, "enforce", False))
+    suspect = getattr(precedent, "hint", "") == "suspect_flag"
+    if enforce and suspect and verdict.source != "conflict" \
+            and verdict.decision in ("needs_human", "borderline"):
+        p_conf = float(getattr(precedent, "confidence", 0.0) or 0.0)
+        p_reason = getattr(precedent, "reason", "") or ""
+        verdict.decision = "borderline"
+        verdict.source = "precedent_flag"
+        verdict.taxonomy = getattr(precedent, "taxonomy", "") or verdict.taxonomy
+        verdict.requires_human_review = True
+        verdict.confidence = round(max(verdict.confidence, min(0.6, p_conf)), 2)
+        verdict.reason = ("Похоже на ранее отклонённые экспертом замечания. "
+                          + p_reason).strip()
+    return verdict
+
+
+def _fuse_base(visual, norm_signal, cross_block, *, finding_id: str) -> FusedVerdict:
+    """Базовое слияние visual+norm+cross_block. norm_signal не может дать reject."""
     vis = _vis_decision(visual)
     vis_conf = getattr(visual, "confidence", 0.0) if visual is not None else 0.0
     vis_votes = getattr(visual, "votes", {}) if visual is not None else {}

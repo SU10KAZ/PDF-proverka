@@ -654,6 +654,18 @@ PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENA
 # как «временно отключена», но фактически не выполняется (полная обратная
 # совместимость). Включим позже (замер времени + ngrok-окно локальной 35B).
 EVIDENCE_VERIFY_IN_PIPELINE_ENABLED = _env_bool("EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False)
+# EV precedent-источник: память экспертных решений (decisions_log.json) как ЧЕТВЁРТЫЙ
+# офлайн-сигнал слияния EV (visual+norm+cross_block+PRECEDENT). Закрывает зону, где
+# зрение слепо (невизуальные ложные срабатывания: дубли/неприменимая норма/формальные).
+# ИНВАРИАНТ: прецедент НИКОГДА не даёт reject сам по себе (как норма) — максимум
+# поднимает «unsure» замечание в borderline + requires_human_review.
+#   OFF (default) = SHADOW: сигнал считается и пишется в evidence_validation.json
+#                   (precedent_*), но на вердикт НЕ влияет — снимаем цифры без риска.
+#   ON            = сигнал участвует в fuse() (правило F8.5).
+EV_PRECEDENT_ENABLED = _env_bool("EV_PRECEDENT_ENABLED", False)
+# Порог «сильного» прецедента (score ретривера 0..1). Консервативно выше KB-дефолта 0.15.
+EV_PRECEDENT_MIN_SCORE = float(os.environ.get("EV_PRECEDENT_MIN_SCORE", "0.45"))
+EV_PRECEDENT_TOP_K = int(os.environ.get("EV_PRECEDENT_TOP_K", "5"))
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
 # Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).

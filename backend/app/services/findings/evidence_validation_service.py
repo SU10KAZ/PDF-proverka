@@ -106,6 +106,11 @@ def _fused_to_decision(fused, model: str) -> dict:
         "norm_flags": list(getattr(fused, "norm_flags", []) or []),
         "norm_suggestions": dict(getattr(fused, "norm_suggestions", {}) or {}),
         "visual_votes": dict(getattr(fused, "visual_votes", {}) or {}),
+        # --- precedent-источник (память эксперта); в shadow-режиме пишется, но на
+        # decision не влияет (EV_PRECEDENT_ENABLED=False) ---
+        "precedent_hint": getattr(fused, "precedent_hint", "") or "",
+        "precedent_flags": list(getattr(fused, "precedent_flags", []) or []),
+        "precedent_examples": list(getattr(fused, "precedent_examples", []) or []),
     }
 
 
@@ -119,6 +124,7 @@ async def _run_batch_async(
     model: str,
     force: bool,
     respect_kb_routing: bool,
+    enforce_precedent: bool = False,
 ) -> tuple[list, list, int]:
     """Прогнать EV2 по замечаниям ПОСЛЕДОВАТЕЛЬНО (concurrency=1 к LM Studio через
     ngrok — не перегружаем локальную 35B). KB-фильтр отсекает уверенные accept."""
@@ -141,6 +147,7 @@ async def _run_batch_async(
         try:
             fused = await verify_finding_multi_async(
                 project_id, finding, section=section, version_id=version_id, model=model,
+                enforce_precedent=enforce_precedent,
             )
             decisions.append(_fused_to_decision(fused, model))
         except Exception as exc:  # fail-soft на конкретном замечании
@@ -192,6 +199,12 @@ def run_evidence_validation(
     kb_map = get_kb_decision_map(project_id, version_id) if respect_kb_routing else {}
     model = graphic_model or _default_graphic_model()
 
+    try:
+        from backend.app.core import config as _cfg
+        enforce_precedent = bool(getattr(_cfg, "EV_PRECEDENT_ENABLED", False))
+    except Exception:
+        enforce_precedent = False
+
     decisions, skipped, errors = asyncio.run(_run_batch_async(
         project_id,
         findings,
@@ -201,7 +214,13 @@ def run_evidence_validation(
         model=model,
         force=force,
         respect_kb_routing=respect_kb_routing,
+        enforce_precedent=enforce_precedent,
     ))
+
+    # сводка по прецеденту (shadow-наблюдаемость): на скольких замечаниях сигнал
+    # сработал бы / реально повлиял
+    precedent_suspect = sum(1 for d in decisions if d.get("precedent_hint") == "suspect_flag")
+    precedent_influenced = sum(1 for d in decisions if d.get("source") == "precedent_flag")
 
     output = {
         "generated_at": datetime.datetime.now().isoformat(),
@@ -217,6 +236,9 @@ def run_evidence_validation(
         "total_processed": len(decisions),
         "skipped_count": len(skipped),
         "errors_count": errors,
+        "precedent_enabled": enforce_precedent,
+        "precedent_suspect_count": precedent_suspect,
+        "precedent_influenced_count": precedent_influenced,
         "decisions": decisions,
     }
 
