@@ -153,9 +153,19 @@ def _write_v2_findings(out: Path, extra: list[dict] | None = None):
     )
 
 
-def _confirm_all(prompt: str) -> dict:
-    return {"same_issue": True, "confidence": 0.95, "prior_verdict_applies": True,
-            "reason": "то же нарушение"}
+def _pick_top(prompt: str) -> str | None:
+    """Из batch-промпта достать id ТОП-кандидата (первый в отсортированном списке)."""
+    import re
+    tail = prompt.split("КАНДИДАТЫ ИЗ ПРЕДЫДУЩЕЙ ВЕРСИИ:", 1)
+    if len(tail) < 2:
+        return None
+    m = re.search(r'"id":\s*"([^"]+)"', tail[1])
+    return m.group(1) if m else None
+
+
+def _confirm_all(prompt: str, **kw) -> dict:
+    return {"match_origin_id": _pick_top(prompt), "confidence": 0.95,
+            "prior_verdict_applies": True, "reason": "то же нарушение"}
 
 
 # ─── 1. Перенос accepted и rejected ──────────────────────────────────────
@@ -305,9 +315,10 @@ def test_no_previous_checked_version(monkeypatch):
 
 
 @pytest.mark.parametrize("fake", [
-    lambda p: None,                                                        # недоступен
-    lambda p: {"same_issue": False, "confidence": 0.9},                    # разные
-    lambda p: {"same_issue": True, "confidence": 0.4},                     # низкий confidence
+    lambda p, **kw: None,                                                  # недоступен
+    lambda p, **kw: {"match_origin_id": None, "confidence": 0.9},          # никто не совпал
+    lambda p, **kw: {"match_origin_id": _pick_top(p), "confidence": 0.4},  # низкий confidence
+    lambda p, **kw: {"match_origin_id": "F-999", "confidence": 0.99},      # галлюцинация (id вне shortlist)
 ])
 def test_no_write_when_unconfirmed(monkeypatch, fake):
     projects_dir = dc.resolve_project_dir("M31A").parent
@@ -341,7 +352,8 @@ def test_pending_not_in_knowledge_base(monkeypatch):
     _write_v1(projects_dir)
     out = _make_v2()
     _write_v2_findings(out)
-    monkeypatch.setattr(dc, "_run_sonnet_sync", lambda p: {"same_issue": True, "confidence": 0.4})
+    monkeypatch.setattr(dc, "_run_sonnet_sync",
+                        lambda p, **kw: {"match_origin_id": _pick_top(p), "confidence": 0.4})
     dc.run_decision_carryover("M31A", "v2")
     # В expert_review есть pending, а в decisions_log — нет (нет вердикта).
     log_path = kb.DECISIONS_LOG_FILE
@@ -356,9 +368,10 @@ def test_rejected_prior_not_applicable_not_carried(monkeypatch):
     out = _make_v2()
     _write_v2_findings(out)
 
-    def fake(prompt):
-        # rejected origin: same issue, но старая причина неприменима.
-        return {"same_issue": True, "confidence": 0.95, "prior_verdict_applies": False}
+    def fake(prompt, **kw):
+        # rejected origin: тот же вопрос, но старая причина неприменима.
+        return {"match_origin_id": _pick_top(prompt), "confidence": 0.95,
+                "prior_verdict_applies": False}
 
     monkeypatch.setattr(dc, "_run_sonnet_sync", fake)
     result = dc.run_decision_carryover("M31A", "v2")
@@ -394,6 +407,75 @@ def test_decisions_log_gets_carryover_flag(monkeypatch):
 
 
 # ─── 8. Кросс-версионный guard в _append_to_decisions_log ────────────────
+
+
+def test_llm_call_limit_overflow_to_pending(monkeypatch):
+    """Замечания сверх лимита Sonnet-вызовов уходят в pending без вызова."""
+    projects_dir = dc.resolve_project_dir("M31A").parent
+    _write_v1(projects_dir)
+    out = _make_v2()
+    _write_v2_findings(out)
+    calls = {"n": 0}
+
+    def counting(prompt, **kw):
+        calls["n"] += 1
+        return _confirm_all(prompt)
+
+    monkeypatch.setattr(dc, "_run_sonnet_sync", counting)
+    monkeypatch.setenv("DECISION_CARRYOVER_MAX_LLM_CALLS", "1")
+    result = dc.run_decision_carryover("M31A", "v2", dry_run=True)
+
+    assert calls["n"] == 1  # лимит соблюдён
+    s = result["summary"]
+    # 1 замечание сверено (перенос), 1 ушло в pending по лимиту, CF-003 без пары.
+    assert s["carried_over"] == 1
+    assert s["needs_manual_review"] == 1
+    statuses = {i["current_id"]: i["status"] for i in result["items"]}
+    assert sorted(statuses.values()) == ["carried_over", "needs_manual_review", "no_candidate"]
+    # Overflow-строка несёт причину про лимит.
+    over = [i for i in result["items"] if i["status"] == "needs_manual_review"][0]
+    assert "лимит" in (over.get("llm") or {}).get("reason", "")
+
+
+def test_worker_exception_is_failsoft(monkeypatch):
+    """Исключение в воркере — pending одного замечания, не крах прогона."""
+    projects_dir = dc.resolve_project_dir("M31A").parent
+    _write_v1(projects_dir)
+    out = _make_v2()
+    _write_v2_findings(out)
+    calls = {"n": 0}
+
+    def flaky(prompt, **kw):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("boom")
+        return _confirm_all(prompt)
+
+    monkeypatch.setattr(dc, "_run_sonnet_sync", flaky)
+    result = dc.run_decision_carryover("M31A", "v2", dry_run=True)
+    # Прогон не упал; одно замечание в pending, второе перенесено.
+    assert result["status"] == "ok"
+    s = result["summary"]
+    assert s["carried_over"] == 1
+    assert s["needs_manual_review"] == 1
+
+
+def test_concurrency_same_result(monkeypatch):
+    """Параллельный режим (4 воркера) даёт тот же результат, что 1 воркер."""
+    projects_dir = dc.resolve_project_dir("M31A").parent
+    _write_v1(projects_dir)
+    out = _make_v2()
+    _write_v2_findings(out)
+    monkeypatch.setattr(dc, "_run_sonnet_sync", _confirm_all)
+
+    monkeypatch.setenv("DECISION_CARRYOVER_CONCURRENCY", "1")
+    r1 = dc.run_decision_carryover("M31A", "v2", dry_run=True)
+    monkeypatch.setenv("DECISION_CARRYOVER_CONCURRENCY", "4")
+    r4 = dc.run_decision_carryover("M31A", "v2", dry_run=True)
+
+    assert r1["summary"] == r4["summary"]
+    key = lambda r: [(i["current_id"], i["status"], i.get("origin_finding_id")) for i in r["items"]]
+    assert key(r1) == key(r4)
 
 
 def test_previous_checked_version_v2_layout(monkeypatch):

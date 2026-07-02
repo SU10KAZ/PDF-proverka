@@ -13,12 +13,14 @@
 
 Принципы:
 - решения человека (carried_over=False) НЕ перезаписываются;
-- вердикт переносим ТОЛЬКО при Sonnet same_issue=true и confidence >= порога;
-- fail-soft: Sonnet недоступен/timeout → замечание уходит в needs_manual_review,
-  в expert_review.json ничего не пишется;
+- сверка batch-режимом: один Sonnet-вызов на замечание (все top-K кандидатов в
+  одном промпте), параллельно DECISION_CARRYOVER_CONCURRENCY воркеров; вердикт
+  переносим ТОЛЬКО при валидном match_origin_id из shortlist и confidence >= порога;
+- fail-soft: Sonnet недоступен/timeout/не уверен → pending-пометка в
+  expert_review.json БЕЗ вердикта («возможный повтор — проверьте»), эксперт решает сам;
 - идемпотентно: повторный прогон не плодит дублей (merge по item_id);
 - запись в expert_review.json + decisions_log.json идёт через save_expert_review
-  под bind_version(current) и с stamp_schedule=False.
+  под bind_version(current) и с stamp_schedule=False (pending в БЗ не попадают).
 """
 from __future__ import annotations
 
@@ -97,6 +99,22 @@ def _timeout_sec() -> int:
 
 def _model() -> str:
     return os.environ.get("DECISION_CARRYOVER_MODEL", "").strip() or DEFAULT_MODEL
+
+
+DEFAULT_CONCURRENCY = 4
+
+
+def _concurrency() -> int:
+    """Сколько Sonnet-сверок гнать параллельно (по одному замечанию на вызов).
+
+    3 параллельных `claude -p` проверены вживую (dry-run 2026-07-02); clamp 1..8.
+    """
+    raw = os.environ.get("DECISION_CARRYOVER_CONCURRENCY", "").strip()
+    try:
+        v = int(raw) if raw else DEFAULT_CONCURRENCY
+    except ValueError:
+        v = DEFAULT_CONCURRENCY
+    return max(1, min(v, 8))
 
 
 # ─── v2-aware чтение findings / expert_review нужной версии ──────────────
@@ -236,10 +254,13 @@ def build_decided_candidates(
     return candidates
 
 
-# ─── Sonnet: подтверждение пары ─────────────────────────────────────────
+# ─── Sonnet: подтверждение (batch — все кандидаты одного замечания за 1 вызов) ──
 
-def _build_carryover_llm_prompt(current: dict, candidate: dict) -> str:
-    """Промпт для Sonnet: то же ли это нарушение и применим ли старый вердикт."""
+def _build_carryover_batch_prompt(current: dict, candidates: list[dict]) -> str:
+    """Промпт для Sonnet: одно текущее замечание против ВСЕХ top-K кандидатов
+    прошлой версии сразу. Модель выбирает лучшего (или «никто») — один вызов
+    вместо K последовательных, и качество лучше: кандидаты сравниваются между собой.
+    """
     cur_block = json.dumps({
         "id": current.get("id"),
         "severity": current.get("severity"),
@@ -250,42 +271,45 @@ def _build_carryover_llm_prompt(current: dict, candidate: dict) -> str:
         "description": current.get("description"),
         "norm": current.get("norm") or mfs._extract_norm_refs(current),
     }, ensure_ascii=False, indent=2)
-    prev_block = json.dumps({
-        "id": candidate.get("origin_finding_id"),
-        "severity": candidate.get("origin_severity"),
-        "category": candidate.get("origin_category"),
-        "page": candidate.get("origin_page"),
-        "sheet": candidate.get("origin_sheet"),
-        "problem": candidate.get("origin_title"),
-        "description": candidate.get("origin_description"),
-        "norm": candidate.get("origin_norm_refs"),
-        "expert_decision": candidate.get("origin_expert_status"),
-        "expert_reason": candidate.get("origin_reason"),
-    }, ensure_ascii=False, indent=2)
+    cand_blocks = json.dumps([
+        {
+            "id": c.get("origin_finding_id"),
+            "severity": c.get("origin_severity"),
+            "category": c.get("origin_category"),
+            "page": c.get("origin_page"),
+            "sheet": c.get("origin_sheet"),
+            "problem": c.get("origin_title"),
+            "description": c.get("origin_description"),
+            "norm": c.get("origin_norm_refs"),
+            "expert_decision": c.get("origin_expert_status"),
+            "expert_reason": c.get("origin_reason"),
+        }
+        for c in candidates
+    ], ensure_ascii=False, indent=2)
     return (
-        "Ты — эксперт по проектной документации МКД. Сравни ДВА замечания: одно из "
-        "предыдущей версии проекта (по нему эксперт уже вынес вердикт), второе — из "
-        "текущей версии. Определи, описывают ли они ОДНО И ТО ЖЕ нарушение по сути "
-        "(даже если формулировки разные), либо это РАЗНЫЕ нарушения, случайно "
-        "совпавшие по норме/странице.\n\n"
-        f"ЗАМЕЧАНИЕ ПРЕДЫДУЩЕЙ ВЕРСИИ (вердикт эксперта: "
-        f"{candidate.get('origin_expert_status')}):\n{prev_block}\n\n"
+        "Ты — эксперт по проектной документации МКД. Дано ОДНО замечание текущей "
+        "версии проекта и НЕСКОЛЬКО замечаний-кандидатов из предыдущей версии (по "
+        "каждому эксперт уже вынес вердикт). Определи, описывает ли КАКОЙ-ТО ОДИН "
+        "из кандидатов ТО ЖЕ САМОЕ нарушение по сути (даже если формулировки разные), "
+        "либо все кандидаты — разные нарушения, случайно совпавшие по норме/странице.\n\n"
         f"ЗАМЕЧАНИЕ ТЕКУЩЕЙ ВЕРСИИ:\n{cur_block}\n\n"
-        "Если предыдущий вердикт — rejected, дополнительно оцени, применима ли "
-        "прежняя причина отклонения к текущему замечанию.\n\n"
+        f"КАНДИДАТЫ ИЗ ПРЕДЫДУЩЕЙ ВЕРСИИ:\n{cand_blocks}\n\n"
+        "Если лучший кандидат имеет вердикт rejected, дополнительно оцени, применима "
+        "ли прежняя причина отклонения к текущему замечанию.\n\n"
         "Ответ — строго JSON в одной строке, без markdown и комментариев:\n"
         "{\n"
-        '  "same_issue": true | false,\n'
+        '  "match_origin_id": "<id совпавшего кандидата>" | null,\n'
         '  "confidence": 0.0..1.0,\n'
         '  "prior_verdict_applies": true | false,\n'
         '  "reason": "1-2 предложения почему"\n'
         "}\n"
         "Если норма/страница общие, но объект/числа/тип проблемы разные — "
-        "same_issue:false. Если то же нарушение другими словами — same_issue:true."
+        "match_origin_id:null. Если то же нарушение другими словами — верни id этого "
+        "кандидата. Выбирай не более ОДНОГО кандидата — самого точного."
     )
 
 
-def _run_sonnet_sync(prompt: str) -> Optional[dict]:
+def _run_sonnet_sync(prompt: str, required_key: str = "match_origin_id") -> Optional[dict]:
     """Синхронный `claude -p` (Sonnet). fail-soft: любой сбой → None.
 
     Работает по подписке (feedback_subscription_only) — paid_api_guard не нужен.
@@ -336,7 +360,7 @@ def _run_sonnet_sync(prompt: str) -> Optional[dict]:
         parsed = json.loads(match.group(0))
     except json.JSONDecodeError:
         return None
-    if not isinstance(parsed, dict) or "same_issue" not in parsed:
+    if not isinstance(parsed, dict) or required_key not in parsed:
         return None
     return parsed
 
@@ -453,6 +477,11 @@ def run_decision_carryover(
     items: list[dict] = []
     decisions: list[ExpertDecision] = []
 
+    # ── Фаза 1 (последовательно): статусы без Sonnet + shortlist для остальных ──
+    # tasks: (index в items, current finding, shortlist) — по одному Sonnet-вызову
+    # на замечание (batch-промпт со всеми top-K кандидатами сразу).
+    tasks: list[tuple[int, dict, list]] = []
+
     for cur in current_findings:
         cur_id = str(cur.get("id", ""))
         row: dict[str, Any] = {
@@ -490,39 +519,81 @@ def run_decision_carryover(
             items.append(row)
             continue
 
-        # Sonnet подтверждает пары shortlist до первого уверенного совпадения.
+        items.append(row)  # статус проставится в фазе 3
+        tasks.append((len(items) - 1, cur, shortlist))
+
+    # Лимит Sonnet-вызовов: 1 вызов = 1 замечание (batch); хвост сверх лимита
+    # уходит в pending без вызова.
+    if max_calls and len(tasks) > max_calls:
+        overflow = tasks[max_calls:]
+        tasks = tasks[:max_calls]
+    else:
+        overflow = []
+
+    # ── Фаза 2 (параллельно): batch-сверки Sonnet ──
+    # subprocess.run отпускает GIL — ThreadPoolExecutor подходит; порядок
+    # результатов фиксируем по индексу задачи (детерминированная сборка).
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _judge(task):
+        _idx, cur, shortlist = task
+        # fail-soft на уровне вызова: любое неожиданное исключение воркера — это
+        # pending для одного замечания, а не крах всего прогона (P1 ревью).
+        try:
+            return _run_sonnet_sync(
+                _build_carryover_batch_prompt(cur, [c for _, c, _ in shortlist])
+            )
+        except Exception:  # noqa: BLE001
+            logger.warning("decision-carryover: judge worker failed", exc_info=True)
+            return None
+
+    llm_results: list[Optional[dict]] = []
+    if tasks:
+        with ThreadPoolExecutor(max_workers=_concurrency()) as pool:
+            llm_results = list(pool.map(_judge, tasks))
+        llm_calls = len(tasks)
+
+    # ── Фаза 3 (последовательно, в исходном порядке): интерпретация ──
+    for (idx, cur, shortlist), llm in zip(tasks, llm_results, strict=True):
+        cur_id = str(cur.get("id", ""))
+        row = items[idx]
+        by_oid = {c["origin_finding_id"]: (score, c) for score, c, _ in shortlist}
+
         confirmed = None
         llm_info = None
-        for score, cand, sdiag in shortlist:
-            if max_calls and llm_calls >= max_calls:
-                break
-            llm = _run_sonnet_sync(_build_carryover_llm_prompt(cur, cand))
-            llm_calls += 1
-            if llm is None:
-                continue
-            same = bool(llm.get("same_issue"))
-            conf = float(llm.get("confidence") or 0.0)
+        if llm is not None:
+            match_id = llm.get("match_origin_id")
+            try:
+                conf = float(llm.get("confidence") or 0.0)
+            except (TypeError, ValueError):  # модель вернула нечисло (P2 ревью)
+                conf = 0.0
             prior_applies = llm.get("prior_verdict_applies")
             reason = str(llm.get("reason") or "")[:300]
-            rejected_but_na = (
-                cand["origin_expert_status"] == "rejected"
-                and prior_applies is False
-            )
-            if same and conf >= conf_threshold and not rejected_but_na:
-                confirmed = (cand, score, sdiag)
-                llm_info = {"same_issue": same, "confidence": conf,
-                            "prior_verdict_applies": prior_applies, "reason": reason}
-                break
-            # Запомним лучший «почти» для диагностики.
-            if llm_info is None:
-                llm_info = {"same_issue": same, "confidence": conf,
-                            "prior_verdict_applies": prior_applies, "reason": reason}
+            llm_info = {"match_origin_id": match_id, "confidence": conf,
+                        "prior_verdict_applies": prior_applies, "reason": reason}
+            # Валидация: выбранный id обязан быть из shortlist (анти-галлюцинация).
+            picked = by_oid.get(str(match_id)) if match_id else None
+            if picked is not None:
+                score, cand = picked
+                rejected_but_na = (
+                    cand["origin_expert_status"] == "rejected"
+                    and prior_applies is False
+                )
+                if conf >= conf_threshold and not rejected_but_na:
+                    confirmed = (cand, score)
 
         if confirmed is None:
             # Похожий кандидат есть, но уверенности недостаточно. Записываем в
             # решения эксперта БЕЗ вердикта (decision="") — пометка «возможный
             # повтор из прошлой версии», чтобы эксперт САМ принял решение.
-            top_cand = shortlist[0][1]
+            # Если Sonnet выбрал валидного кандидата, но не добрал порог — берём
+            # его для ноты; иначе топ по детерминированному скору.
+            note_cand = None
+            if llm_info and llm_info.get("match_origin_id"):
+                picked = by_oid.get(str(llm_info["match_origin_id"]))
+                if picked is not None:
+                    note_cand = picked[1]
+            top_cand = note_cand or shortlist[0][1]
             note = _manual_note(
                 prev, top_cand["origin_finding_id"],
                 top_cand.get("origin_expert_status", ""),
@@ -547,10 +618,9 @@ def run_decision_carryover(
             )
             if llm_info:
                 row["llm"] = llm_info
-            items.append(row)
             continue
 
-        cand, score, sdiag = confirmed
+        cand, score = confirmed
         status = cand["origin_expert_status"]  # accepted | rejected
         comment = _carryover_comment(
             status, prev, cand["origin_finding_id"],
@@ -577,7 +647,32 @@ def run_decision_carryover(
             top_score=round(score, 3),
             llm=llm_info,
         )
-        items.append(row)
+
+    # Хвост сверх лимита Sonnet-вызовов → pending без вызова (эксперт решит сам).
+    for idx, cur, shortlist in overflow:
+        cur_id = str(cur.get("id", ""))
+        row = items[idx]
+        top_cand = shortlist[0][1]
+        note = _manual_note(
+            prev, top_cand["origin_finding_id"],
+            top_cand.get("origin_expert_status", ""),
+            top_cand.get("origin_title") or top_cand.get("origin_description", ""),
+        )
+        decisions.append(ExpertDecision(
+            item_id=cur_id, item_type="finding", decision="",
+            rejection_reason=note,
+            reviewer=f"Авто-перенос из {str(prev).upper()}",
+            timestamp=mfs._now_iso(),
+            carried_over=True, carried_from_version=prev,
+            carried_from_item_id=top_cand["origin_finding_id"],
+        ))
+        row.update(
+            status="needs_manual_review",
+            top_score=round(shortlist[0][0], 3),
+            top_candidate_id=top_cand["origin_finding_id"],
+            carried_comment=note,
+            llm={"reason": "лимит Sonnet-вызовов на прогон исчерпан"},
+        )
 
     # Запись вердиктов: bind текущей версии + stamp_schedule=False.
     # dry_run: ничего не пишем (превью — что перенеслось бы).
