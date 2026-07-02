@@ -176,18 +176,21 @@ def test_carryover_accepted_and_rejected(monkeypatch):
     review = json.loads((out / "expert_review.json").read_text(encoding="utf-8"))
     dec = {d["item_id"]: d for d in review["decisions"]}
 
-    # CF-001 → accepted + комментарий «не исправил»
+    # CF-001 → accepted + комментарий «не исправил» + суть замечания V1 в причине
     assert dec["CF-001"]["decision"] == "accepted"
     assert dec["CF-001"]["carried_over"] is True
     assert dec["CF-001"]["carried_from_version"] == "v1"
     assert dec["CF-001"]["carried_from_item_id"] == "F-001"
     assert "не исправил" in dec["CF-001"]["rejection_reason"]
+    assert "Перенесено" in dec["CF-001"]["rejection_reason"]
+    assert "Кабель" in dec["CF-001"]["rejection_reason"]  # суть замечания V1 (F-001)
 
-    # CF-002 → rejected + комментарий «замечание отменено»
+    # CF-002 → rejected + вердикт «отклонено» + суть замечания V1
     assert dec["CF-002"]["decision"] == "rejected"
     assert dec["CF-002"]["carried_over"] is True
     assert dec["CF-002"]["carried_from_item_id"] == "F-002"
-    assert "отменено" in dec["CF-002"]["rejection_reason"]
+    assert "отклонено" in dec["CF-002"]["rejection_reason"].lower()
+    assert "Спецификация" in dec["CF-002"]["rejection_reason"]  # суть замечания V1 (F-002)
 
     # CF-003 — нет решённого аналога, вердикт не проставлен
     assert "CF-003" not in dec

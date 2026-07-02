@@ -343,27 +343,46 @@ def _run_sonnet_sync(prompt: str) -> Optional[dict]:
 
 # ─── Тексты комментариев переноса ────────────────────────────────────────
 
-def _carryover_comment(status: str, prev_version_id: str) -> str:
+def _trim(text: str, limit: int = 400) -> str:
+    s = " ".join(str(text or "").split())
+    return s if len(s) <= limit else s[:limit].rstrip() + "…"
+
+
+def _origin_tail(v: str, origin_id: str, origin_problem: str) -> str:
+    """Хвост причины: суть замечания прошлой версии — чтобы инженер сравнил."""
+    body = _trim(origin_problem)
+    if body:
+        return f" Замечание {v} ({origin_id}): «{body}»."
+    return f" (исходное замечание {v}: {origin_id})."
+
+
+def _carryover_comment(status: str, prev_version_id: str,
+                       origin_id: str = "", origin_problem: str = "") -> str:
     v = str(prev_version_id or "").upper()
     if status == "rejected":
-        return (
-            f"Замечание отклонено экспертом в предыдущей версии ({v}) и повторяется "
-            f"в текущей проверке — замечание отменено."
+        head = (
+            f"↩ Перенесено из предыдущей версии ({v}): в {v} это замечание было "
+            f"ОТКЛОНЕНО и повторяется в текущей проверке — вердикт «отклонено»."
         )
-    return (
-        f"Замечание согласовано в предыдущей версии ({v}) и повторяется в текущей "
-        f"проверке — заказчик/проектировщик его не исправил."
-    )
+    else:
+        head = (
+            f"↩ Перенесено из предыдущей версии ({v}): в {v} это замечание было "
+            f"СОГЛАСОВАНО и снова присутствует — заказчик/проектировщик его не исправил."
+        )
+    return head + _origin_tail(v, origin_id, origin_problem)
 
 
-def _manual_note(prev_version_id: str, origin_id: str, origin_status: str) -> str:
+def _manual_note(prev_version_id: str, origin_id: str, origin_status: str,
+                 origin_problem: str = "") -> str:
     v = str(prev_version_id or "").upper()
     st = {"accepted": "было согласовано", "rejected": "было отклонено"}.get(origin_status, "")
-    st = f" (в {v} {st})" if st else ""
-    return (
-        f"Возможный повтор замечания из предыдущей версии ({v}, {origin_id}){st}: "
-        f"похоже, но автоматически вердикт не проставлен — проверьте и примите решение сами."
+    st = f", в {v} {st}" if st else ""
+    head = (
+        f"↩ Возможный повтор из предыдущей версии ({v}): похоже на замечание "
+        f"{origin_id}{st}, но автоматически вердикт не проставлен — сверьте с текущим "
+        f"и примите решение сами."
     )
+    return head + _origin_tail(v, origin_id, origin_problem)
 
 
 # ─── Отчёт ───────────────────────────────────────────────────────────────
@@ -504,8 +523,11 @@ def run_decision_carryover(
             # решения эксперта БЕЗ вердикта (decision="") — пометка «возможный
             # повтор из прошлой версии», чтобы эксперт САМ принял решение.
             top_cand = shortlist[0][1]
-            note = _manual_note(prev, top_cand["origin_finding_id"],
-                                top_cand.get("origin_expert_status", ""))
+            note = _manual_note(
+                prev, top_cand["origin_finding_id"],
+                top_cand.get("origin_expert_status", ""),
+                top_cand.get("origin_title") or top_cand.get("origin_description", ""),
+            )
             decisions.append(ExpertDecision(
                 item_id=cur_id,
                 item_type="finding",
@@ -530,7 +552,10 @@ def run_decision_carryover(
 
         cand, score, sdiag = confirmed
         status = cand["origin_expert_status"]  # accepted | rejected
-        comment = _carryover_comment(status, prev)
+        comment = _carryover_comment(
+            status, prev, cand["origin_finding_id"],
+            cand.get("origin_title") or cand.get("origin_description", ""),
+        )
         decisions.append(ExpertDecision(
             item_id=cur_id,
             item_type="finding",
