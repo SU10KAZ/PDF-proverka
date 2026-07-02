@@ -315,17 +315,36 @@ def test_no_write_when_unconfirmed(monkeypatch, fake):
     monkeypatch.setattr(dc, "_run_sonnet_sync", fake)
     result = dc.run_decision_carryover("M31A", "v2")
 
-    # Ничего не перенесено.
+    # Ни одного ВЕРДИКТА не перенесено.
     assert result["summary"]["carried_over"] == 0
-    review_path = out / "expert_review.json"
-    if review_path.exists():
-        review = json.loads(review_path.read_text(encoding="utf-8"))
-        carried = [d for d in review.get("decisions", []) if d.get("carried_over")]
-        assert carried == []
+    review = json.loads((out / "expert_review.json").read_text(encoding="utf-8"))
+    dec = {d["item_id"]: d for d in review["decisions"]}
+    # Но записаны pending-пометки (без вердикта, carried_over=True).
+    for fid in ("CF-001", "CF-002"):
+        assert dec[fid]["decision"] == ""
+        assert dec[fid]["carried_over"] is True
+        assert "проверьте" in dec[fid]["rejection_reason"].lower() or \
+               "повтор" in dec[fid]["rejection_reason"].lower()
+    assert result["summary"]["pending_written"] == 2
     report = json.loads((out / dc.REPORT_FILENAME).read_text(encoding="utf-8"))
     statuses = {i["current_id"]: i["status"] for i in report["items"]}
     assert statuses["CF-001"] == "needs_manual_review"
     assert statuses["CF-002"] == "needs_manual_review"
+
+
+def test_pending_not_in_knowledge_base(monkeypatch):
+    """Pending-пометки (без вердикта) НЕ попадают в decisions_log."""
+    projects_dir = dc.resolve_project_dir("M31A").parent
+    _write_v1(projects_dir)
+    out = _make_v2()
+    _write_v2_findings(out)
+    monkeypatch.setattr(dc, "_run_sonnet_sync", lambda p: {"same_issue": True, "confidence": 0.4})
+    dc.run_decision_carryover("M31A", "v2")
+    # В expert_review есть pending, а в decisions_log — нет (нет вердикта).
+    log_path = kb.DECISIONS_LOG_FILE
+    entries = json.loads(log_path.read_text(encoding="utf-8"))["entries"] if log_path.exists() else []
+    kb_ids = {e["item_id"] for e in entries}
+    assert "CF-001" not in kb_ids and "CF-002" not in kb_ids
 
 
 def test_rejected_prior_not_applicable_not_carried(monkeypatch):
@@ -342,8 +361,10 @@ def test_rejected_prior_not_applicable_not_carried(monkeypatch):
     result = dc.run_decision_carryover("M31A", "v2")
     review = json.loads((out / "expert_review.json").read_text(encoding="utf-8"))
     dec = {d["item_id"]: d for d in review["decisions"]}
-    # rejected-повтор CF-002 не перенесён (причина неприменима).
-    assert "CF-002" not in dec
+    # rejected-повтор CF-002 не получил ВЕРДИКТ (причина неприменима),
+    # но записан как pending (без decision) — эксперт решит сам.
+    assert dec["CF-002"]["decision"] == ""
+    assert dec["CF-002"]["carried_over"] is True
     report = json.loads((out / dc.REPORT_FILENAME).read_text(encoding="utf-8"))
     statuses = {i["current_id"]: i["status"] for i in report["items"]}
     assert statuses["CF-002"] == "needs_manual_review"

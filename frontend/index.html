@@ -2075,8 +2075,8 @@
                                         </div>
                                         <div v-if="isCarriedOver(f.id)" class="carryover-badge"
                                              :title="getExpertReason(f.id)"
-                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:nowrap">
-                                            ↩ Перенесено из {{ carriedFromVersion(f.id) }}
+                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:normal">
+                                            {{ getExpertDecision(f.id) ? '↩ Перенесено из ' + carriedFromVersion(f.id) : '↩ Возможный повтор из ' + carriedFromVersion(f.id) + ' — проверьте' }}
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">
@@ -2264,8 +2264,8 @@
                                         </div>
                                         <div v-if="isCarriedOver(item.id)" class="carryover-badge"
                                              :title="getExpertReason(item.id)"
-                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:nowrap">
-                                            ↩ Перенесено из {{ carriedFromVersion(item.id) }}
+                                             style="margin-top:4px;font-size:11px;color:#7c3aed;white-space:normal">
+                                            {{ getExpertDecision(item.id) ? '↩ Перенесено из ' + carriedFromVersion(item.id) : '↩ Возможный повтор из ' + carriedFromVersion(item.id) + ' — проверьте' }}
                                         </div>
                                     </td>
                                     <td v-if="expertReviewMode" class="reason-cell">

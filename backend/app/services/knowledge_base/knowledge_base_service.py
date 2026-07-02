@@ -538,6 +538,10 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
 
     entries = []
     for dec in decisions:
+        # Записи без вердикта (pending-пометки авто-переноса, decision="") —
+        # это НЕ решения эксперта, в глобальный decisions_log их не заносим.
+        if not (dec.decision or "").strip():
+            continue
         source = findings_map.get(dec.item_id) or opt_map.get(dec.item_id) or {}
 
         norm_refs = _norm_refs_from_source(source)

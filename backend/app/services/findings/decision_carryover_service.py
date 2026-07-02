@@ -356,6 +356,16 @@ def _carryover_comment(status: str, prev_version_id: str) -> str:
     )
 
 
+def _manual_note(prev_version_id: str, origin_id: str, origin_status: str) -> str:
+    v = str(prev_version_id or "").upper()
+    st = {"accepted": "было согласовано", "rejected": "было отклонено"}.get(origin_status, "")
+    st = f" (в {v} {st})" if st else ""
+    return (
+        f"Возможный повтор замечания из предыдущей версии ({v}, {origin_id}){st}: "
+        f"похоже, но автоматически вердикт не проставлен — проверьте и примите решение сами."
+    )
+
+
 # ─── Отчёт ───────────────────────────────────────────────────────────────
 
 def _report_path(project_id: str, version_id: str) -> Path:
@@ -431,10 +441,14 @@ def run_decision_carryover(
             "current_problem": cur.get("problem") or cur.get("title") or "",
         }
 
-        # Решение человека по этому замечанию не трогаем.
+        # Не трогаем замечание, по которому уже есть ВЕРДИКТ (accepted/rejected):
+        # ни решение человека, ни ранее перенесённый вердикт не перезаписываем.
+        # Пустые pending-пометки (от прошлого прогона) перепроверяем — их вердикт
+        # может проставиться в этот раз.
         existing = current_review.get(cur_id)
-        if existing is not None and not existing.get("carried_over"):
-            row["status"] = "already_human_decided"
+        if existing is not None and existing.get("decision"):
+            row["status"] = ("already_human_decided"
+                             if not existing.get("carried_over") else "already_carried")
             items.append(row)
             continue
 
@@ -486,9 +500,29 @@ def run_decision_carryover(
                             "prior_verdict_applies": prior_applies, "reason": reason}
 
         if confirmed is None:
-            row["status"] = "needs_manual_review"
-            row["top_score"] = round(shortlist[0][0], 3)
-            row["top_candidate_id"] = shortlist[0][1]["origin_finding_id"]
+            # Похожий кандидат есть, но уверенности недостаточно. Записываем в
+            # решения эксперта БЕЗ вердикта (decision="") — пометка «возможный
+            # повтор из прошлой версии», чтобы эксперт САМ принял решение.
+            top_cand = shortlist[0][1]
+            note = _manual_note(prev, top_cand["origin_finding_id"],
+                                top_cand.get("origin_expert_status", ""))
+            decisions.append(ExpertDecision(
+                item_id=cur_id,
+                item_type="finding",
+                decision="",  # без вердикта — эксперт решает сам
+                rejection_reason=note,
+                reviewer=f"Авто-перенос из {str(prev).upper()}",
+                timestamp=mfs._now_iso(),
+                carried_over=True,
+                carried_from_version=prev,
+                carried_from_item_id=top_cand["origin_finding_id"],
+            ))
+            row.update(
+                status="needs_manual_review",
+                top_score=round(shortlist[0][0], 3),
+                top_candidate_id=top_cand["origin_finding_id"],
+                carried_comment=note,
+            )
             if llm_info:
                 row["llm"] = llm_info
             items.append(row)
@@ -542,8 +576,11 @@ def run_decision_carryover(
             1 for i in items
             if i["status"] == "carried_over" and i.get("carried_decision") == "rejected"),
         "needs_manual_review": sum(1 for i in items if i["status"] == "needs_manual_review"),
+        # Pending-пометки без вердикта, записанные в expert_review для эксперта.
+        "pending_written": sum(1 for d in decisions if not d.decision),
         "no_candidate": sum(1 for i in items if i["status"] == "no_candidate"),
         "already_human_decided": sum(1 for i in items if i["status"] == "already_human_decided"),
+        "already_carried": sum(1 for i in items if i["status"] == "already_carried"),
     }
     report = {
         "schema_version": SCHEMA_VERSION,
