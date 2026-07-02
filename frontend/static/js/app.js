@@ -6853,13 +6853,24 @@ const app = createApp({
             }
         }
 
+        // URL картинки блока с активной версией. Сырые `<img :src>` в шаблоне НЕ
+        // проходят через api()/_apiUrl, поэтому ?version_id нужно добавлять здесь
+        // вручную. Иначе бэкенд резолвит ТЕКУЩУЮ версию документа (например,
+        // свежезалитую V2 без прогнанного аудита) → у неё нет папки блоков → 404
+        // → пустые превью в сетке, хотя список блоков (через api()) грузится.
+        function blockImgUrl(pid, blockId, kind = 'image') {
+            const base = '/api/tiles/' + pid + '/blocks/' + kind + '/' + blockId;
+            const vid = activeVersionId.value;
+            return vid ? base + '?version_id=' + encodeURIComponent(vid) : base;
+        }
+
         // База картинки блока: в режиме областей — рендер из fitz (совпадает с геометрией bbox),
         // иначе обычный кроп Chandra. Иначе SVG-области сдвинуты на колонку (разная нормировка страниц).
         const blockImageSrc = computed(() => {
             const b = selectedBlock.value;
             if (!b) return '';
             const kind = showBlockRegions.value ? 'region-image' : 'image';
-            return '/api/tiles/' + blocksProjectId.value + '/blocks/' + kind + '/' + b.block_id;
+            return blockImgUrl(blocksProjectId.value, b.block_id, kind);
         });
 
         // Рассчитать scale и offset для вписывания картинки в контейнер
@@ -17024,7 +17035,7 @@ const app = createApp({
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
-            showBlockRegions, blockRegionRects, toggleBlockRegions, blockImageSrc,
+            showBlockRegions, blockRegionRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,
