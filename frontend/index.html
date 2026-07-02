@@ -1582,6 +1582,36 @@
                                 <span class="stage-tokens__out" v-if="stageTokensFormatted('optimization_corrector')">F: &#8595;{{ stageTokensFormatted('optimization_corrector').inp }}</span>
                             </div>
                         </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm"
+                             :class="[stepClass(currentProject.pipeline.debt_control), {'pipeline-stage--clickable': canStartFrom('debt_control')}]"
+                             @click="canStartFrom('debt_control') && startFromStage(currentProject.project_id, 'debt_control')"
+                             :title="canStartFrom('debt_control') ? 'Клик: перезапустить контроль долгов' : 'Контроль долгов: согласованные замечания прошлой версии не теряются при новом аудите'"
+                        >
+                            <div class="stage-num">КД</div>
+                            <div class="stage-label">Долги</div>
+                        </div>
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm"
+                             :class="[stepClass(currentProject.pipeline.decision_carryover), {'pipeline-stage--clickable': canStartFrom('decision_carryover')}]"
+                             @click="canStartFrom('decision_carryover') && startFromStage(currentProject.project_id, 'decision_carryover')"
+                             :title="canStartFrom('decision_carryover') ? 'Клик: перезапустить перенос вердиктов' : 'Перенос вердиктов эксперта из предыдущей версии'"
+                        >
+                            <div class="stage-num">ПВ</div>
+                            <div class="stage-label">Перенос</div>
+                        </div>
+                        <!-- Evidence Verifier (EV): интегрирован в пайплайн, по умолчанию OFF.
+                             Показывается всегда; при status 'disabled' — карточка приглушена + бейдж OFF.
+                             Некликабельна пока отключена (включим через EVIDENCE_VERIFY_IN_PIPELINE_ENABLED). -->
+                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
+                        <div class="pipeline-stage pipeline-stage--sm pipeline-stage--ev"
+                             :class="stepClass(currentProject.pipeline.evidence_verify)"
+                             :title="currentProject.pipeline.evidence_verify === 'disabled' ? 'Evidence Verifier: перепроверка замечаний по фактам документа/чертежа. Интегрирован в пайплайн, временно отключён — включим позже.' : 'Проверка фактов: перепроверка замечаний по документу/чертежу (Evidence Verifier)'"
+                        >
+                            <div class="stage-num">EV</div>
+                            <div class="stage-label">Факты</div>
+                            <div class="stage-off-badge" v-if="currentProject.pipeline.evidence_verify === 'disabled'">OFF</div>
+                        </div>
                         <!-- Banner: legacy runner блокирует аудит V2 -->
                         <div v-if="canStartAuditNow.code === 'runner_no_v2'" class="runner-warning">
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>

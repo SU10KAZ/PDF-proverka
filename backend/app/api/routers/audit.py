@@ -1059,6 +1059,8 @@ async def retry_stage(
         "findings_critic": "findings_review",
         "findings_review": "findings_review",
         "findings_corrector": "findings_review",
+        "debt_control": "debt_control",
+        "decision_carryover": "decision_carryover",
         "prepare": "prepare",
         "tile_audit": "block_analysis",
         "main_audit": "findings_merge",

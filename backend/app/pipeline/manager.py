@@ -2479,7 +2479,8 @@ class PipelineManager:
         valid_stages = {
             "prepare", "gemma_enrichment", "text_analysis", "block_analysis",
             "findings_merge", "findings_review", "norm_verify",
-            "optimization", "optimization_review", "decision_carryover", "excel",
+            "optimization", "optimization_review", "debt_control",
+            "decision_carryover", "excel",
         }
         if normalized not in valid_stages:
             raise RuntimeError(f"Неизвестный этап: {stage}")
@@ -2526,14 +2527,14 @@ class PipelineManager:
         # порядка: text_analysis (старый порядок) или block_analysis (новый порядок block→text).
         blocks_before_text = self._blocks_before_text_enabled()
         _first_llm_stage = "block_analysis" if blocks_before_text else "text_analysis"
-        strict_gemma = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"} | (
+        strict_gemma = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"} | (
             {"text_analysis", "block_analysis"} - {_first_llm_stage}
         )
         if normalized in strict_gemma and not gemma_state.get("ready"):
             raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
         # Требование 01 (текст) — у этапов ниже текста по потоку.
-        needs_text = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"}
+        needs_text = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"}
         if not blocks_before_text:
             needs_text = needs_text | {"block_analysis"}
         if normalized in needs_text and not (output_dir / "01_text_analysis.json").exists():
@@ -2543,7 +2544,7 @@ class PipelineManager:
             )
 
         # Требование 02 (блоки) — у findings_merge+ и (в новом порядке) у text_analysis.
-        needs_blocks = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"}
+        needs_blocks = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"}
         if blocks_before_text:
             needs_blocks = needs_blocks | {"text_analysis"}
         if normalized in needs_blocks and not (output_dir / "02_blocks_analysis.json").exists():
@@ -2552,7 +2553,7 @@ class PipelineManager:
                 "Сначала выполните block_analysis."
             )
 
-        if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "decision_carryover", "excel"}:
+        if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "debt_control", "decision_carryover", "excel"}:
             if not (output_dir / "03_findings.json").exists():
                 raise RuntimeError(
                     "Нельзя запускать этот этап: 03_findings.json отсутствует. "
@@ -2710,6 +2711,7 @@ class PipelineManager:
                 "findings_merge",
                 "findings_review",
                 "norm_verify",
+                "debt_control",
                 "decision_carryover",
                 "excel",
             ]
@@ -2999,9 +3001,11 @@ class PipelineManager:
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
 
-            # ═══ Перенос вердиктов из предыдущей версии ═══
-            await self._run_debt_control(job)
-            await self._run_decision_carryover(job)
+            # ═══ Контроль долгов + перенос вердиктов (по start_idx) ═══
+            if start_idx <= ocr_stages.index("debt_control"):
+                await self._run_debt_control(job)
+            if start_idx <= ocr_stages.index("decision_carryover"):
+                await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 7: Excel ═══
             self._reset_job_progress(job)
@@ -3763,6 +3767,11 @@ class PipelineManager:
                 "warn",
             )
 
+        # Evidence Verifier — интегрирован в пайплайн, по умолчанию OFF (no-op).
+        # Запускается ПОСЛЕ финализации findings/норм/оптимизации, т.к. читает
+        # готовые 03_findings.json + KB-вердикты. Fail-soft.
+        await self._run_evidence_verify_stage(job, project_info)
+
         self._promote_v2_analysis_artifacts(
             job,
             (
@@ -3775,10 +3784,71 @@ class PipelineManager:
                 "optimization.json",
                 "optimization_review.json",
                 "optimization_pre_review.json",
+                "evidence_validation.json",
                 "pipeline_log.json",
             ),
         )
         self._promote_completed_audit_v2(job)
+
+    async def _run_evidence_verify_stage(self, job: AuditJob, project_info: dict) -> None:
+        """Evidence Verifier как стадия пайплайна (интегрирована, по умолчанию OFF).
+
+        Перепроверяет замечания по фактам документа/чертежа: графические — через
+        локальные vision-модели (ngrok/LM Studio), текстовые — через Claude CLI;
+        пишет evidence_validation.json. Маршрутизация по KB-вердиктам (проверяются
+        только спорные), поэтому запускается после финализации findings.
+
+        Гейт — EVIDENCE_VERIFY_IN_PIPELINE_ENABLED (default False): при OFF стадия
+        не выполняется (no-op), в UI показывается как «временно отключена». Fail-soft —
+        любая ошибка стадии НЕ валит аудит (evidence_validation.json — вспомогательный
+        артефакт, а не мастер замечаний).
+        """
+        from backend.app.core import config as cfg
+
+        pid = job.project_id
+        if not getattr(cfg, "EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False):
+            # Тихий no-op: не пишем в pipeline_log, чтобы статус остался 'disabled'.
+            await self._log(
+                job,
+                "Evidence Verifier: интегрирован, но отключён "
+                "(EVIDENCE_VERIFY_IN_PIPELINE_ENABLED=false) — пропуск",
+            )
+            return
+        if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+            return
+
+        section = (project_info or {}).get("section") or "TX"
+        version_id = getattr(job, "version_id", None)
+        job.stage = AuditStage.EVIDENCE_VERIFY
+        await self._log(job, "═══ Проверка фактов (Evidence Verifier) ═══")
+        self._update_pipeline_log(pid, "evidence_verify", "running")
+        try:
+            import backend.app.services.findings.evidence_validation_service as evsvc
+            # run_evidence_validation синхронный (subprocess + локальные vision-вызовы)
+            # → выносим в thread, чтобы не блокировать event loop.
+            result = await asyncio.to_thread(
+                evsvc.run_evidence_validation,
+                pid,
+                version_id,
+                section,
+            )
+            processed = result.get("total_processed", 0)
+            skipped = result.get("skipped_count", 0)
+            errors = result.get("errors_count", 0)
+            await self._log(
+                job,
+                f"Evidence Verifier: проверено {processed}, пропущено {skipped}, ошибок {errors}",
+            )
+            self._update_pipeline_log(
+                pid, "evidence_verify", "done",
+                detail={"processed": processed, "skipped": skipped, "errors": errors},
+            )
+        except Exception as exc:  # noqa: BLE001 — fail-soft, не валим аудит
+            await self._log(job, f"Evidence Verifier упал (не критично): {exc}", "warn")
+            self._update_pipeline_log(
+                pid, "evidence_verify", "error",
+                error=str(exc), detail={"non_blocking": True},
+            )
 
     async def _run_norm_verification(
         self,
@@ -5158,6 +5228,7 @@ class PipelineManager:
                 "norm_verify": "Верификация норм",
                 "optimization": "Оптимизация",
                 "optimization_review": "Проверка оптимизации",
+                "debt_control": "Контроль долгов",
                 "decision_carryover": "Перенос вердиктов",
                 "excel": "Excel-отчёт",
             }.get(item.retry_stage, item.retry_stage)
@@ -5438,6 +5509,7 @@ class PipelineManager:
             "optimization": "optimization",
             "optimization_critic": "optimization_review",
             "optimization_corrector": "optimization_review",
+            "debt_control": "debt_control",
             "decision_carryover": "decision_carryover",
             "prepare": "prepare",
             "tile_audit": "block_analysis",
@@ -5458,6 +5530,7 @@ class PipelineManager:
             "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
             "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
             "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
+            "debt_control": "Контроль долгов",
             "decision_carryover": "Перенос вердиктов",
         }.get(internal_stage, internal_stage)
         await ws_manager.broadcast_global(

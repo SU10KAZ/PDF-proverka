@@ -25,6 +25,9 @@ class PipelineStatus(BaseModel):
     optimization: str = "pending"           # pending / running / done / error / skipped
     optimization_critic: str = "pending"    # pending / running / done / error / skipped
     optimization_corrector: str = "pending" # pending / running / done / error / skipped
+    debt_control: str = "pending"           # pending / running / done / error / skipped
+    decision_carryover: str = "pending"     # pending / running / done / error / skipped
+    evidence_verify: str = "disabled"       # disabled (feature OFF) / pending / running / done / error / skipped
     excel: str = "pending"                  # pending / running / done / error / skipped
 
 

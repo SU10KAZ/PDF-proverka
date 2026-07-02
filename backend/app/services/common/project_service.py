@@ -742,6 +742,7 @@ def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStat
         "optimization": "optimization",
         "optimization_critic": "optimization_critic",
         "optimization_corrector": "optimization_corrector",
+        "evidence_verify": "evidence_verify",
         "excel": "excel",
         "prepare": "crop_blocks",
         "main_audit": "findings",
@@ -764,6 +765,18 @@ def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStat
         status.optimization = "done"
     if adapter.analysis_artifact_path(doc_dir, version_id, "optimization_review.json") and status.optimization_critic == "pending":
         status.optimization_critic = "done"
+    # Evidence Verifier — интегрирован в пайплайн, по умолчанию OFF.
+    # При OFF всегда показываем 'disabled' (в UI — «временно отключена»), даже
+    # если в pipeline_log осталась старая запись. При ON — обычная логика: статус
+    # из лога, а если он ещё дефолтный — вычисляем по наличию артефакта.
+    from backend.app.core import config as _cfg
+    if not getattr(_cfg, "EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False):
+        status.evidence_verify = "disabled"
+    elif status.evidence_verify in ("disabled", "pending"):
+        if adapter.analysis_artifact_path(doc_dir, version_id, "evidence_validation.json"):
+            status.evidence_verify = "done"
+        else:
+            status.evidence_verify = "pending"
     return status
 
 
@@ -1566,6 +1579,8 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
             "optimization": "optimization",
             "optimization_critic": "optimization_critic",
             "optimization_corrector": "optimization_corrector",
+            "debt_control": "debt_control",
+            "decision_carryover": "decision_carryover",
             "excel": "excel",
             # Legacy aliases
             "prepare": "crop_blocks",
@@ -1586,6 +1601,8 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
             "optimization": "optimization.json",
             "optimization_critic": "optimization_review.json",
             "optimization_corrector": "optimization.json",
+            "debt_control": "migrated_findings_report.json",
+            "decision_carryover": "decision_carryover_report.json",
             # Legacy aliases
             "prepare": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
             "tile_audit": "02_blocks_analysis.json",
@@ -1656,6 +1673,12 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
     if (output_dir / "optimization.json").exists():
         status.optimization = "done"
 
+    if (output_dir / "migrated_findings_report.json").exists():
+        status.debt_control = "done"
+
+    if (output_dir / "decision_carryover_report.json").exists():
+        status.decision_carryover = "done"
+
     return status
 
 
@@ -1678,6 +1701,8 @@ _PIPELINE_STAGE_ORDER = [
     ("optimization", "Оптимизация"),
     ("optimization_critic", "Critic оптимизации"),
     ("optimization_corrector", "Corrector оптимизации"),
+    ("debt_control", "Контроль долгов"),
+    ("decision_carryover", "Перенос вердиктов"),
     ("excel", "Excel-отчёт"),
 ]
 
@@ -1962,6 +1987,8 @@ _PIPELINE_STAGE_ARTIFACTS: dict[str, tuple[str, ...]] = {
     "optimization": ("optimization.json",),
     "optimization_critic": ("optimization_review.json",),
     "optimization_corrector": ("optimization.json",),
+    "debt_control": ("migrated_findings_report.json",),
+    "decision_carryover": ("decision_carryover_report.json",),
 }
 
 # Канонический порядок индексов для downstream-проверок. Если индекс этапа i
@@ -2158,6 +2185,21 @@ def _normalize_pipeline_stage_status(
         # Подбираем дружелюбный message.
         msg = raw_message or "Готово (обнаружен артефакт)"
         return "done", msg, raw_message or None, alias_used
+
+    # decision_carryover появился позже остальных этапов: у уже завершённых
+    # аудитов нет ни записи в pipeline_log, ни отчёта. Если Excel (финальный
+    # этап) done — аудит выполнен до внедрения переноса, показываем skipped.
+    if key in ("decision_carryover", "debt_control"):
+        excel_status = inferred_status.get("excel") or (
+            (stages.get("excel") or {}).get("status") or ""
+        )
+        if excel_status in ("done", "partial") or _has_legacy_marker(stages):
+            return (
+                "skipped",
+                "Пропущено: аудит выполнен до внедрения этого этапа.",
+                raw_message or None,
+                alias_used,
+            )
 
     # Downstream-based inference.
     if _downstream_done(stages, key, inferred_status):
