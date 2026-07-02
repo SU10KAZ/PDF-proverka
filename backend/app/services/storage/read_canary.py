@@ -156,21 +156,27 @@ def _resolve_version(a, doc_dir, cur, requested):
 def _resolve_doc_or_404(request, project_id):
     """(adapter, doc, doc_dir, current_version) или 404. Общий резолвер canary-билдеров.
 
-    `project_id` (legacy путь/идентификатор) → v2 document_code по basename
-    (срез `(main)`); `?object_id=` уточняет объект. Не найден → 404 canary-error
-    (НЕ silent fallback в legacy).
+    `project_id` → v2 document: ПОЛНЫЙ pid первым, basename — fallback
+    (find_document_by_project_id); `?object_id=` уточняет объект. Не найден →
+    404 canary-error (НЕ silent fallback в legacy).
+
+    Прежний срез до basename ломал документы, чей document_code содержит
+    дисциплинный префикс (напр. «OV/13АВ-РД-ОВ2-К4 V1»): при наличии стейл-дубля
+    с чистым basename-кодом ВСЕ canary-read (versions/findings/optimization)
+    попадали в дубль → в UI «видна только V1», решения эксперта «пропадали»
+    (инцидент 2026-07-02, ОВ2-К4).
     """
     a = _adapter()
     if not a.is_available():
         raise HTTPException(status_code=404,
                             detail="projects_v2 storage not available")
     object_id = request.query_params.get("object_id") if request is not None else None
-    document_code = Path(project_id).name.replace("(main)", "").strip()
-    doc = a.find_document(document_code, object_id=object_id)
+    raw_pid = str(project_id or "").replace("(main)", "").strip()
+    doc = a.find_document_by_project_id(raw_pid, object_id=object_id)
     if doc is None:
         raise HTTPException(
             status_code=404,
-            detail=(f"projects_v2 canary: document '{document_code}' not found in "
+            detail=(f"projects_v2 canary: document '{raw_pid}' not found in "
                     "projects_v2 (no silent legacy fallback)"),
         )
     return a, doc, Path(doc["doc_dir"]), doc["current_version"]

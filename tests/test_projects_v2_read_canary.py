@@ -278,3 +278,38 @@ def test_canary_independent_of_storage_backend(monkeypatch, v2tree):
     # сам флаг backend не трогается модулем
     import os
     assert os.environ.get("AUDIT_STORAGE_BACKEND") == "legacy"
+
+
+def test_prefixed_document_code_resolves_before_basename_dupe(monkeypatch, v2tree, tmp_path):
+    """Рецидив ОВ2-К4 (2026-07-02): document_code с дисциплинным префиксом
+    («OV/<код> V1») при наличии СТЕЙЛ-ДУБЛЯ с чистым basename-кодом резолвился в
+    дубль (basename-срез в _resolve_doc_or_404) → в UI видна только V1 дубля,
+    решения эксперта «пропадали». Полный pid должен выигрывать у basename."""
+    v2 = v2tree
+    # стейл-дубль: чистый basename-код, ОДНА версия
+    _doc(v2, "OV", "dup-code V1", statuses={"v001": "complete"}, findings={"v001": 4})
+    # живой документ: код с префиксом (папка с U+2215, как пишет мигратор), ДВЕ версии
+    _doc(v2, "OV", "OV∕dup-code V1", kind="container",
+         versions=[{"version_id": "v001", "version_no": 1},
+                   {"version_id": "v002", "version_no": 2}], current="v002",
+         statuses={"v001": "complete", "v002": "complete"},
+         findings={"v001": 4, "v002": 9})
+    # document_code в document.json должен быть С «/» (как в реале), папка — с ∕
+    doc_dir = v2 / "objects" / OBJF / "disciplines" / "OV" / "documents" / "OV∕dup-code V1"
+    dj = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+    dj["document_code"] = "OV/dup-code V1"
+    _wj(doc_dir / "document.json", dj)
+
+    _on(monkeypatch)
+    # полный префиксный pid → живой документ (обе версии)
+    r = client.get("/api/projects/OV%2Fdup-code%20V1/versions",
+                   headers={"X-Audit-Storage": "projects_v2"})
+    assert r.status_code == 200
+    data = r.json()
+    assert data["project_id"] == "OV/dup-code V1"
+    assert [v["version_id"] for v in data["versions"]] == ["v1", "v2"]
+    # basename-pid по-прежнему находит свой (стейл) документ — поведение не менялось
+    r2 = client.get("/api/projects/dup-code%20V1/versions",
+                    headers={"X-Audit-Storage": "projects_v2"})
+    assert r2.status_code == 200
+    assert [v["version_id"] for v in r2.json()["versions"]] == ["v1"]
