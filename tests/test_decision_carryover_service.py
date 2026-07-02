@@ -581,6 +581,33 @@ async def test_stage_runner_disabled(monkeypatch):
     assert ctx.pipeline["decision_carryover"][0] == "skipped"
 
 
+def test_kb_guard_protects_legacy_entry_without_version(monkeypatch):
+    """Инцидент 02.07: carried НЕ перезаписывает legacy-запись БЕЗ current_version_id."""
+    legacy = KnowledgeBaseEntry(
+        id="DEC-0001", source_project="M31A", section="EOM",
+        item_id="F-001", item_type="finding",
+        summary="Живой вердикт V1", expert_decision="rejected",
+        expert_reviewer="Калинина А.", carried_over=False,
+        # current_version_id отсутствует (запись старого формата)
+    )
+    kb._append_to_decisions_log([legacy])
+
+    carried = KnowledgeBaseEntry(
+        id="DEC-0002", source_project="M31A", section="EOM",
+        item_id="F-001", item_type="finding",
+        summary="Авто-перенос V2", expert_decision="accepted",
+        carried_over=True, current_version_id="v2", carried_from_version="v1",
+    )
+    kb._append_to_decisions_log([carried])
+
+    log = json.loads((kb.DECISIONS_LOG_FILE).read_text(encoding="utf-8"))
+    rows = [e for e in log["entries"] if e["item_id"] == "F-001"]
+    assert len(rows) == 1
+    assert rows[0]["expert_reviewer"] == "Калинина А."
+    assert rows[0]["expert_decision"] == "rejected"
+    assert not rows[0].get("carried_over")
+
+
 def test_kb_cross_version_guard_protects_other_version(monkeypatch):
     """V2-перенос не затирает запись V1 (тот же (source_project,item_id))."""
     # Сид: запись V1 в decisions_log.

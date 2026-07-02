@@ -658,14 +658,18 @@ def _append_to_decisions_log(new_entries: list[KnowledgeBaseEntry]):
             previous = updated_map.get(key)
             # Кросс-версионный guard для авто-переноса: ключ (source_project, item_id)
             # не версионный, а source_project = базовый pid для всех версий, поэтому
-            # F-001 из V1 и V2 дают один ключ. Авто-перенос НЕ должен затирать запись,
-            # относящуюся к другой версии. Ключи БЗ целиком не переделываем (это
-            # отдельный трек docs/stable_finding_id.md).
+            # F-001 из V1 и V2 дают один ключ. Авто-перенос НЕ должен затирать НИКАКУЮ
+            # уже существующую запись (в т.ч. legacy без current_version_id — инцидент
+            # 02.07: перенос перезаписал 18 живых V1-вердиктов). Слот занят → carried
+            # в БЗ не идёт; сам перенос всё равно виден в expert_review.json версии.
+            # Ключи БЗ целиком не переделываем (отдельный трек docs/stable_finding_id.md).
             if item.get("carried_over") and previous is not None:
+                if not previous.get("carried_over"):
+                    continue  # живую запись (человека/легаси) не трогаем
                 prev_ver = str(previous.get("current_version_id") or "")
                 cur_ver = str(item.get("current_version_id") or "")
                 if prev_ver and cur_ver and prev_ver != cur_ver:
-                    continue  # чужая версия — не трогаем
+                    continue  # авто-запись другой версии — не трогаем
             if previous:
                 if previous.get("id"):
                     item["id"] = previous.get("id")
