@@ -2689,7 +2689,8 @@
 
                 <!-- main: основная таблица (план и статистика — отдельным блоком ниже) -->
                 <div class="sched-layout">
-                    <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]">
+                    <div class="sched-gridwrap" :class="['sched-gridwrap--'+schedMode, {'sched-loading': schedLoading}]"
+                         @scroll.passive="schedClosePopover()">
                         <table class="sched-grid">
                             <thead>
                                 <tr>
@@ -2711,7 +2712,7 @@
                                     </td>
                                     <td v-for="d in schedDays" :key="e.id+'|'+d.key" class="sched-cell"
                                         :class="{'sched-cell--today': d.isToday, 'sched-cell--weekend': d.isWeekend, 'sched-cell--has': schedCell(e.id,d.key).length}"
-                                        @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length)">
+                                        @click.stop="schedToggleCell(e.id, d.key, schedCell(e.id,d.key).length, $event)">
                                         <template v-if="schedCell(e.id,d.key).length">
                                             <div class="sched-daystack">
                                                 <div v-for="(it,i) in schedCell(e.id,d.key).slice(0,2)" :key="e.id+'|'+d.key+'|'+i"
@@ -2719,12 +2720,12 @@
                                                     <span class="sched-plashka__txt">{{ it.short }}</span>
                                                 </div>
                                                 <button v-if="schedCell(e.id,d.key).length > 2" class="sched-more"
-                                                        @click.stop="schedToggleCell(e.id, d.key, true)"
+                                                        @click.stop="schedToggleCell(e.id, d.key, true, $event)"
                                                         :title="'Ещё ' + (schedCell(e.id,d.key).length - 2) + ' — показать все'">
                                                     +{{ schedCell(e.id,d.key).length - 2 }}
                                                 </button>
                                             </div>
-                                            <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" @click.stop>
+                                            <div v-if="schedIsPopover(e.id,d.key)" class="sched-popover" :style="schedPopoverStyle()" @click.stop>
                                                 <div class="sched-popover__head">{{ e.name }} · {{ d.dowLabel }} {{ d.dom }}</div>
                                                 <div v-for="(it,i) in schedCell(e.id,d.key)" :key="'pp-'+i" class="sched-popover__item" :title="it.full">
                                                     <span class="sched-dot" :style="{background: getDisciplineColor(it.section)}"></span>

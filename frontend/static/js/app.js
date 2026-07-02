@@ -9204,14 +9204,43 @@ const app = createApp({
         }
         function schedToday() { schedAnchor.value = _schedStartOfDay(new Date()); schedPopover.value = null; }
 
-        function schedToggleCell(engId, key, hasEvents) {
+        function schedToggleCell(engId, key, hasEvents, ev) {
             if (!hasEvents) { schedPopover.value = null; return; }
             const p = schedPopover.value;
-            schedPopover.value = (p && p.engId === engId && p.key === key) ? null : { engId, key };
+            if (p && p.engId === engId && p.key === key) { schedPopover.value = null; return; }
+            // fixed-позиционирование от кликнутого элемента — чтобы поповер не резался
+            // overflow-контейнером таблицы (.sched-gridwrap) и был виден целиком
+            let pos = null;
+            const el = ev && (ev.currentTarget || ev.target);
+            if (el && el.getBoundingClientRect) {
+                const r = el.getBoundingClientRect();
+                const vw = window.innerWidth || 1200;
+                const vh = window.innerHeight || 800;
+                const count = schedCell(engId, key).length;
+                const estH = 44 + count * 22;              // прикидка высоты поповера
+                const PW = 320;                            // max-width поповера
+                const flipUp = (r.bottom + estH > vh - 8) && (r.top - estH > 8);
+                let left = Math.max(8, r.left);
+                if (left + PW > vw - 8) left = Math.max(8, vw - 8 - PW);
+                pos = {
+                    left: Math.round(left),
+                    top: flipUp ? null : Math.round(r.bottom - 2),
+                    bottom: flipUp ? Math.round(vh - r.top - 2) : null,
+                };
+            }
+            schedPopover.value = { engId, key, pos };
         }
         function schedIsPopover(engId, key) {
             const p = schedPopover.value;
             return !!p && p.engId === engId && p.key === key;
+        }
+        function schedPopoverStyle() {
+            const p = schedPopover.value;
+            if (!p || !p.pos) return {};
+            const st = { position: 'fixed', left: p.pos.left + 'px', right: 'auto' };
+            if (p.pos.top != null) st.top = p.pos.top + 'px';
+            if (p.pos.bottom != null) st.bottom = p.pos.bottom + 'px';
+            return st;
         }
         function schedClosePopover() { schedPopover.value = null; }
 
@@ -16972,7 +17001,7 @@ const app = createApp({
             schedHiddenEngineers, schedPlanEdit, schedEngineers,
             schedEvents, schedVisibleEngineers, schedDays, schedPeriodLabel,
             schedCell, schedSetMode, schedPrev, schedNext, schedToday,
-            schedToggleCell, schedIsPopover, schedClosePopover,
+            schedToggleCell, schedIsPopover, schedPopoverStyle, schedClosePopover,
             schedToggleEngineer, schedIsEngineerHidden,
             schedTogglePlanEdit, schedPlanFor, schedFactFor, schedPctClass, schedPctColor,
             schedStats, schedTotals, schedInitials, schedStatusFor, schedAvatarStyle,

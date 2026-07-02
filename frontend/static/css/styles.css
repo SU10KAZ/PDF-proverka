@@ -4164,7 +4164,10 @@ tr.row-rejected td.sc-cell-goto {
 
 /* popover — все проекты за день */
 .sched-popover {
-  position: absolute; top: calc(100% - 2px); left: 4px; z-index: 30; min-width: 240px; max-width: 320px;
+  /* position/top/left задаются инлайном из schedPopoverStyle() (fixed от кликнутой ячейки),
+     чтобы поповер не резался overflow-контейнером .sched-gridwrap и был виден целиком */
+  position: fixed; z-index: 60; min-width: 240px; max-width: 320px;
+  max-height: 70vh; overflow-y: auto;
   background: var(--card-bg); border: 1px solid var(--border2); border-radius: var(--radius);
   box-shadow: 0 10px 30px rgba(0,0,0,0.18); padding: 8px 10px; text-align: left;
 }
