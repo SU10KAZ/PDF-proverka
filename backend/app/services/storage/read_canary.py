@@ -422,7 +422,8 @@ _PIPELINE_LOG_MAP = {
     "findings_critic": "findings_critic", "findings_corrector": "findings_corrector",
     "norm_verify": "norms_verified", "optimization": "optimization",
     "optimization_critic": "optimization_critic",
-    "optimization_corrector": "optimization_corrector", "excel": "excel",
+    "optimization_corrector": "optimization_corrector",
+    "decision_carryover": "decision_carryover", "excel": "excel",
     "prepare": "crop_blocks", "tile_audit": "blocks_analysis", "main_audit": "findings",
 }
 _PIPELINE_VALID = {"done", "error", "partial", "running", "skipped", "interrupted"}
