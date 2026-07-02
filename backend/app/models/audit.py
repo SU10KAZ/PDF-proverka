@@ -24,6 +24,7 @@ class AuditStage(str, Enum):
     BLOCK_ANALYSIS = "block_analysis"
     FINDINGS_MERGE = "findings_merge"
     FINDINGS_REVIEW = "findings_review"
+    EVIDENCE_VERIFY = "evidence_verify"  # Evidence Verifier: перепроверка замечаний по фактам (default OFF)
 
 
 class JobStatus(str, Enum):

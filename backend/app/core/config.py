@@ -648,6 +648,12 @@ BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABL
 # и сверяет свои T-замечания с блоками (items_verified_from_blocks) вместо обратной сверки.
 # OFF по умолчанию — прод (порядок text→block) не меняется. Выкатка через A/B на реальном проекте.
 PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False)
+# Evidence Verifier как стадия пайплайна. Перепроверяет замечания по фактам
+# документа/чертежа (локальные vision-модели + Claude CLI для текста) и пишет
+# evidence_validation.json. OFF по умолчанию — стадия интегрирована и видна в UI
+# как «временно отключена», но фактически не выполняется (полная обратная
+# совместимость). Включим позже (замер времени + ngrok-окно локальной 35B).
+EVIDENCE_VERIFY_IN_PIPELINE_ENABLED = _env_bool("EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False)
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
 # Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).

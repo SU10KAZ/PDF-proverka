@@ -2291,6 +2291,7 @@ const app = createApp({
                 'norm_fix': 'Пересмотр замечаний',
                 'debt_control': 'Контроль долгов',
                 'decision_carryover': 'Перенос вердиктов',
+                'evidence_verify': 'Проверка фактов (EV)',
                 'excel': 'Excel-отчёт',
                 'optimization': 'Оптимизация',
                 'full': 'Полный конвейер',
@@ -8013,6 +8014,7 @@ const app = createApp({
             if (status === 'migration_required') return 'step-partial';
             if (status === 'running') return 'step-running';
             if (status === 'skipped') return 'step-skipped';
+            if (status === 'disabled') return 'step-disabled';  // фича интегрирована, но выключена (EV)
             return '';
         }
 

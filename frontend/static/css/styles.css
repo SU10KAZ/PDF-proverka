@@ -856,6 +856,12 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .stage-tokens__in { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--green); }
 .stage-tokens__out { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--red); }
 .stage-model { font-size: 8px; color: var(--text3); font-weight: 500; margin-top: 1px; }
+/* Стадия интегрирована, но временно отключена (Evidence Verifier). Приглушённая
+   пунктирная карточка + бейдж OFF; не кликабельна, пока фича выключена. */
+.pipeline-stage.step-disabled { border-style: dashed; border-color: var(--border2); background: var(--card2-bg); opacity: 0.55; cursor: default; }
+.pipeline-stage.step-disabled .stage-num,
+.pipeline-stage.step-disabled .stage-label { color: var(--text3); }
+.stage-off-badge { font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 800; letter-spacing: 0.1em; color: #fff; background: var(--text3); border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
 .pipeline-arrow { flex-shrink: 0; color: var(--text3); padding: 0 6px; font-size: 14px; }
 .pipeline-arrow--sm { padding: 0 3px; font-size: 12px; }
 .audit-actions-col { margin-left: auto; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; align-self: flex-end; }
