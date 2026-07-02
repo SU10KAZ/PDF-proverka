@@ -55,7 +55,7 @@ def mocked_manager(monkeypatch):
 
     for name in [
         "start_prepare", "start_tile_audit", "start_main_audit",
-        "start_smart_audit", "start_audit", "resume_pipeline",
+        "start_audit", "resume_pipeline",
         "start_from_stage", "start_norm_verify", "start_optimization",
     ]:
         setattr(manager_mock, name, AsyncMock(return_value=job_mock))
@@ -117,7 +117,6 @@ def test_full_audit_with_v3_also_rejected(legacy_client, mocked_manager):
     ("/api/audit/X/prepare", "start_prepare"),
     ("/api/audit/X/tile-audit", "start_tile_audit"),
     ("/api/audit/X/main-audit", "start_main_audit"),
-    ("/api/audit/X/smart-audit", "start_smart_audit"),
     ("/api/audit/X/full-audit", "start_audit"),
     ("/api/audit/X/standard-audit", "start_audit"),
     ("/api/audit/X/pro-audit", "start_audit"),
@@ -199,7 +198,6 @@ def test_old_endpoints_still_register_in_openapi(legacy_client):
         "/api/audit/{project_id}/prepare",
         "/api/audit/{project_id}/tile-audit",
         "/api/audit/{project_id}/main-audit",
-        "/api/audit/{project_id}/smart-audit",
         "/api/audit/{project_id}/full-audit",
         "/api/audit/{project_id}/standard-audit",
         "/api/audit/{project_id}/pro-audit",

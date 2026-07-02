@@ -6,7 +6,6 @@ Stage runner для этапа text_analysis (анализ текста MD че�
 Покрывает все три call-site в manager.py:
   1. _run_resumed_pipeline  — стандартный run_text_analysis, без rate-limit retry
   2. _run_ocr_pipeline      — run_text_analysis с rate-limit retry
-  3. _run_smart_pipeline    — run_triage (= run_text_analysis с тем же prompt)
 
 Публичный API:
   run_text_analysis(ctx, *, stage_label, use_triage) -> StageResult

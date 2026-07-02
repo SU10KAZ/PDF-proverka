@@ -472,7 +472,6 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     - job.stage / job.status (выставляет оркестратор);
     - _stream_findings_events (WS — вызывает оркестратор после возврата);
     - heartbeat / cleanup (оркестратор);
-    - smart_merge / gap_analysis (другой путь в _run_smart_pipeline).
     """
     pid = ctx.project_id
     project_info = ctx.project_info or {}

@@ -376,11 +376,6 @@ def prepare_triage_task(project_id: str, project_info: dict = None, **kwargs) ->
     """Legacy stub — триаж теперь часть text_analysis."""
     return prepare_text_analysis_task(project_info or {}, project_id)
 
-def prepare_smart_merge_task(project_id: str, project_info: dict = None, **kwargs) -> str:
-    """Legacy stub — smart merge заменён на findings_merge."""
-    return prepare_findings_merge_task(project_info or {}, project_id)
-
-
 # ─── Верификация нормативных ссылок ───
 
 def prepare_norm_verify_task(

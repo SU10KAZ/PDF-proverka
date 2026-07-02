@@ -69,7 +69,6 @@ from backend.app.pipeline.stages.prepare.task_builder import (
     prepare_tile_batch_task,
     prepare_main_audit_task,
     prepare_triage_task,
-    prepare_smart_merge_task,
 )
 from backend.app.models.usage import CLIResult, LLMResult
 
@@ -162,8 +161,8 @@ __all__ = [
     "prepare_findings_critic_task", "prepare_findings_corrector_task",
     # legacy stubs (перенаправляют на новый пайплайн)
     "prepare_tile_batch_task", "prepare_main_audit_task",
-    "prepare_triage_task", "prepare_smart_merge_task",
-    "run_tile_batch", "run_main_audit", "run_triage", "run_smart_merge",
+    "prepare_triage_task",
+    "run_tile_batch", "run_main_audit", "run_triage",
 ]
 
 
@@ -1312,17 +1311,3 @@ async def run_triage(
     )
 
 
-async def run_smart_merge(
-    project_info: dict,
-    project_id: str,
-    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
-    *,
-    output_dir: str | Path | None = None,
-    version_dir: str | Path | None = None,
-    version_id: str | None = None,
-) -> tuple[int, str, AnyResult]:
-    """Legacy: запускает findings_merge вместо smart_merge."""
-    return await run_findings_merge(
-        project_info, project_id, on_output,
-        output_dir=output_dir, version_dir=version_dir, version_id=version_id,
-    )

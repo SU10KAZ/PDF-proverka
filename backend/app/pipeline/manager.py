@@ -3838,329 +3838,6 @@ class PipelineManager:
         from backend.app.pipeline.stages.norms.runner import count_manual_check_flags
         return count_manual_check_flags(output_dir)
 
-    # ─── Запуск интеллектуального аудита (smart) ───
-    async def start_smart_audit(
-        self,
-        project_id: str,
-        *,
-        version_id: Optional[str] = None,
-    ) -> AuditJob:
-        """Интеллектуальный аудит: текст → триаж → выборочная нарезка → анализ."""
-        return await self._enqueue_single(
-            project_id, action="smart", version_id=version_id,
-        )
-
-    async def _run_smart_pipeline(self, job: AuditJob):
-        """
-        Smart Parallel Pipeline — параллельный интеллектуальный аудит.
-
-        Этапы:
-        1. Подготовка текста (process_project.py)
-        2. Триаж страниц (отдельная Claude-сессия → 01_text_analysis.json)
-        3. Выборочная нарезка тайлов (только HIGH+MEDIUM страницы)
-        4. Параллельный анализ тайлов (N Claude-сессий одновременно)
-        5. Свод замечаний (Claude-сессия → 03_findings.json + отчёт)
-        6. [Опционально] Gap analysis → донарезка → доанализ (макс. 2 итерации)
-        7. Верификация норм
-        8. Excel
-        """
-        start_time = datetime.now()
-        pid = job.project_id
-        try:
-            # Version-aware пути: для V1 это root проекта, для V2+ — _versions/v{N}/.
-            # См. _resolve_job_paths() — единый helper, чтобы MD-check и source-файлы
-            # больше не утекали из V1 root при V2-аудите.
-            _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
-            info_path = self._project_info_path_for_paths(_root_dir, project_dir)
-
-            # ═══ Проверка MD-файла (version-aware, обязательный источник текста) ═══
-            self._require_project_md(pid, _root_dir, project_dir, info_path)
-
-            # ═══ ЭТАП 1: Подготовка текста ═══
-            job.stage = AuditStage.PREPARE
-            self._update_pipeline_log(pid, "prepare", "running")
-            print(f"[{pid}:smart] ═══ ЭТАП 1: Подготовка текста ═══")
-            await self._log(job, "═══ ЭТАП 1: Подготовка текста ═══")
-
-            exit_code, _, stderr = await self._run_script_for_job(
-                job,
-                str(PROCESS_PROJECT_SCRIPT),
-                [self._project_path_for_job(job)],
-                on_output=lambda msg: self._log(job, msg),
-            )
-            if exit_code != 0:
-                self._update_pipeline_log(pid, "prepare", "error",
-                                           error=stderr or f"Exit code: {exit_code}")
-                raise RuntimeError(f"Подготовка: {stderr}")
-            self._update_pipeline_log(pid, "prepare", "done", message="OK")
-            print(f"[{pid}:smart] ЭТАП 1 OK")
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # ═══ ЭТАП 2: Триаж страниц (отдельная Claude-сессия) ═══
-            self._clean_stage_files(pid, [
-                "00_init.json", "01_text_analysis.json",
-                "02_tiles_analysis.json", "03_findings.json",
-                "tile_batch_*.json", "tile_batches.json",
-            ])
-            self._reset_job_progress(job)
-            job.stage = AuditStage.MAIN_AUDIT
-            job.status = JobStatus.RUNNING
-            print(f"[{pid}:smart] ═══ ЭТАП 2: Триаж страниц ═══")
-            await self._log(job, "═══ ЭТАП 2: Триаж страниц (Claude определяет приоритеты) ═══")
-
-            project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
-
-            _triage_result = await _run_text_analysis_stage(
-                self._make_stage_context(job),
-                use_triage=True,
-                with_rate_limit_retry=True,
-                stage_label="text_analysis",
-            )
-            if _triage_result.cancelled:
-                job.status = JobStatus.CANCELLED
-                await self._log(job, "Триаж отменён", "warn")
-                return
-            if not _triage_result.success:
-                raise RuntimeError(_triage_result.error or "Триаж: ошибка")
-
-            # Прочитать результат триажа — оркестратор читает priority_pages сам
-            triage_file = output_dir / "01_text_analysis.json"
-            with open(triage_file, "r", encoding="utf-8") as f:
-                triage_data = json.load(f)
-
-            page_triage = triage_data.get("page_triage", [])
-            priority_pages = [
-                pt["page"] for pt in page_triage
-                if pt.get("priority") in ("HIGH", "MEDIUM")
-            ]
-            # Обновить log message с количеством приоритетных страниц
-            self._update_pipeline_log(pid, "text_analysis", "done",
-                                       message=f"{len(priority_pages)} приоритетных из {len(page_triage)}")
-            print(f"[{pid}:smart] Триаж: {len(priority_pages)} приоритетных страниц из {len(page_triage)}")
-            await self._log(job, f"Триаж завершён: {len(priority_pages)} приоритетных страниц ({priority_pages})")
-            self._promote_v2_analysis_artifacts(
-                job, ("01_text_analysis.json", "pipeline_log.json")
-            )
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # ═══ ЭТАП 3: Выборочная нарезка тайлов ═══
-            if priority_pages:
-                # FIXME (Pass C, 2026-05-14): tile-нарезка через
-                # process_project.py с `--pages`/`--quality` фактически НЕ
-                # работала — process_project.py этих аргументов не понимает
-                # (argparse → exit 2). Раньше код всё равно вызывал subprocess
-                # и падал с traceback. Теперь — controlled failure: явно
-                # сообщаем, что фича временно отключена, и job завершается
-                # без запуска дорогих стадий.
-                #
-                # TODO: либо реализовать полноценный --pages в
-                # process_project.py (отдельный pass), либо переписать
-                # priority_pages branch на отдельный supported script.
-                pages_str = ",".join(str(p) for p in priority_pages)
-                msg = (
-                    f"priority_pages smart-pipeline branch is temporarily "
-                    f"disabled because process_project.py does not support "
-                    f"--pages/--quality (запрошены страницы: {pages_str})"
-                )
-                print(f"[{pid}:smart] ═══ ЭТАП 3 SKIP: {msg} ═══")
-                await self._log(job, msg, "error")
-                self._update_pipeline_log(pid, "prepare", "error", error=msg)
-                raise RuntimeError(msg)
-            else:
-                await self._log(job, "Нет приоритетных страниц — пропуск нарезки", "warn")
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # ═══ ЭТАП 4: Параллельный анализ тайлов ═══
-            max_iterations = 3
-            all_analyzed_pages = list(priority_pages)
-
-            for iteration in range(1, max_iterations + 1):
-                current_pages = priority_pages if iteration == 1 else additional_pages
-
-                if not current_pages:
-                    break
-
-                self._clean_stage_files(pid, ["tile_batch_*.json", "tile_batches.json"])
-                self._reset_job_progress(job)
-                job.status = JobStatus.RUNNING
-
-                iter_label = f" (итерация {iteration})" if iteration > 1 else ""
-                print(f"[{pid}:smart] ═══ ЭТАП 4{iter_label}: Параллельный анализ тайлов ═══")
-                await self._log(job, f"═══ ЭТАП 4{iter_label}: Параллельный анализ тайлов ({len(current_pages)} стр.) ═══")
-
-                # Re-register job (tile audit cleanup removes it)
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-                await self._run_tile_audit(job, start_from=1, pages_filter=current_pages)
-                print(f"[{pid}:smart] ЭТАП 4{iter_label} завершён, status={job.status.value}")
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    return
-
-                # Re-register after tile audit
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-
-                # ═══ ЭТАП 5: Свод замечаний + Gap Analysis ═══
-                self._reset_job_progress(job)
-                job.stage = AuditStage.MAIN_AUDIT
-                job.status = JobStatus.RUNNING
-                self._update_pipeline_log(pid, "main_audit", "running")
-                print(f"[{pid}:smart] ═══ ЭТАП 5{iter_label}: Свод замечаний ═══")
-                await self._log(job, f"═══ ЭТАП 5{iter_label}: Свод замечаний + анализ пробелов ═══")
-
-                # Перечитываем project_info (могли обновиться tile_config)
-                with open(info_path, "r", encoding="utf-8") as f:
-                    project_info = json.load(f)
-
-                # ── Проверка rate limit перед сводом замечаний ──
-                can_go = await self._check_before_launch(job)
-                if not can_go:
-                    raise RuntimeError("Rate limit: ожидание превышено или отменено")
-
-                exit_code, output, cli_result = await claude_runner.run_smart_merge(
-                    project_info, pid,
-                    on_output=lambda msg: self._log(job, msg),
-                    output_dir=output_dir,
-                    version_dir=project_dir,
-                    version_id=job.version_id,
-                )
-                self._record_cli_usage(job, cli_result, "smart_merge")
-                if claude_runner.is_cancelled(exit_code):
-                    job.status = JobStatus.CANCELLED
-                    await self._log(job, "Свод замечаний отменён", "warn")
-                    return
-                if claude_runner.is_rate_limited(exit_code, output or "", ""):
-                    await self._log(job, "Rate limit при своде замечаний, ожидание...", "warn")
-                    can_continue = await self._wait_for_rate_limit(job, "rate limit при своде замечаний", cli_output=output or "")
-                    if can_continue:
-                        exit_code, output, cli_result = await claude_runner.run_smart_merge(
-                            project_info, pid,
-                            on_output=lambda msg: self._log(job, msg),
-                            output_dir=output_dir,
-                            version_dir=project_dir,
-                            version_id=job.version_id,
-                        )
-                        self._record_cli_usage(job, cli_result, "smart_merge_retry")
-                if exit_code != 0:
-                    await self._log(job, f"Свод замечаний: код {exit_code}", "error")
-                    self._update_pipeline_log(pid, "main_audit", "error",
-                                               error=f"Свод: код {exit_code}")
-                    # Не fatal — продолжаем
-                else:
-                    self._update_pipeline_log(pid, "main_audit", "done", message="OK")
-                    self._promote_v2_analysis_artifacts(
-                        job, ("03_findings.json", "pipeline_log.json")
-                    )
-
-                # Проверяем gap_analysis — нужны ли ещё страницы?
-                additional_pages = []
-                findings_path = output_dir / "03_findings.json"
-                if findings_path.exists() and iteration < max_iterations:
-                    try:
-                        with open(findings_path, "r", encoding="utf-8") as f:
-                            findings_data = json.load(f)
-                        gap = findings_data.get("gap_analysis")
-                        if gap and gap.get("additional_pages_needed"):
-                            additional_pages = [
-                                p for p in gap["additional_pages_needed"]
-                                if p not in all_analyzed_pages
-                            ]
-                            if additional_pages:
-                                all_analyzed_pages.extend(additional_pages)
-                                pages_str = ",".join(str(p) for p in additional_pages)
-                                await self._log(job, f"Gap analysis: нужны ещё страницы {pages_str}")
-
-                                # FIXME (Pass C, 2026-05-14): см. priority_pages
-                                # выше — process_project.py не понимает
-                                # `--pages`/`--quality`. Раньше код всё равно
-                                # вызывал subprocess и ловил exit 2 в warn.
-                                # Теперь — controlled skip с понятным логом
-                                # вместо генерации мусорного stderr.
-                                await self._log(
-                                    job,
-                                    "Донарезка тайлов временно отключена: "
-                                    "process_project.py не поддерживает "
-                                    "--pages/--quality. Gap-страницы пропущены: "
-                                    f"{pages_str}",
-                                    "warn",
-                                )
-                                additional_pages = []
-                    except Exception as e:
-                        print(f"[{pid}:smart] Gap analysis error: {e}")
-
-                if not additional_pages:
-                    break
-
-            if job.status == JobStatus.CANCELLED:
-                return
-
-            # Re-register
-            self.active_jobs[pid] = job
-            self._tasks[pid] = asyncio.current_task()
-
-            # ═══ ЭТАПЫ 5.5-6: Параллельный запуск critic + norms ═══
-            # output_dir уже version-aware (см. начало _run_smart_pipeline).
-            findings_path = output_dir / "03_findings.json"
-            if findings_path.exists():
-                await self._run_post_findings_parallel(
-                    job, project_info, include_optimization=False,
-                )
-
-                if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                    return
-
-                self.active_jobs[pid] = job
-                self._tasks[pid] = asyncio.current_task()
-            else:
-                await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
-
-            # ═══ Перенос вердиктов из предыдущей версии ═══
-            await self._run_decision_carryover(job)
-
-            # ═══ ЭТАП 7: Excel ═══
-            self._reset_job_progress(job)
-            job.stage = AuditStage.EXCEL
-            job.status = JobStatus.RUNNING
-            print(f"[{pid}:smart] ═══ ЭТАП 7: Excel ═══")
-            from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
-            _xls_result = await _run_excel(self._make_stage_context(job))
-            if not _xls_result.success:
-                await self._log(job, f"Excel-отчёт не создан: {_xls_result.error}", "warn")
-
-            wall_sec = (datetime.now() - start_time).total_seconds()
-            net_sec = max(0, wall_sec - job.pause_total_sec)
-            duration = round(net_sec / 60, 1)
-            job.status = JobStatus.COMPLETED
-            self._promote_completed_audit_v2(job)
-            pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
-            print(f"[{pid}:smart] ═══ Smart Parallel завершён за {duration} мин{pause_note} ═══")
-            await self._log(job, f"Smart Parallel конвейер завершён за {duration} мин{pause_note}.", "info")
-
-            await ws_manager.broadcast_to_project(
-                pid, WSMessage.complete(pid, duration_minutes=duration,
-                                        pause_minutes=round(job.pause_total_sec / 60, 1)),
-            )
-
-        except asyncio.CancelledError:
-            job.status = JobStatus.CANCELLED
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            job.status = JobStatus.FAILED
-            job.error_message = str(e)
-            await self._log(job, f"Исключение: {e}", "error")
-        finally:
-            job.completed_at = datetime.now().isoformat()
-            self._cleanup(pid)
-
     # ─── Запуск аудита (OCR-пайплайн) ───
     async def start_audit(
         self,
@@ -5373,7 +5050,7 @@ class PipelineManager:
         kill зомби-процессов + сброс usage/audit_log + cleanup stage-файлов
         + вызов соответствующего `_run_*` пайплайна.
 
-        Любой single-start (start_audit, start_smart_audit, ...) проходит
+        Любой single-start (start_audit, ...) проходит
         через очередь и попадает сюда же — `start_*` не запускают coroutine
         самостоятельно.
         """
@@ -5391,7 +5068,7 @@ class PipelineManager:
 
         # Сброс audit-log/usage только для свежих прогонов (не retry/resume/optimization-only)
         fresh_actions = {
-            "full", "audit", "standard", "pro", "smart",
+            "full", "audit", "standard", "pro",
             "audit+optimization", "standard+optimization", "pro+optimization",
             "main_audit", "tile_audit", "prepare",
         }
@@ -5485,9 +5162,6 @@ class PipelineManager:
             await self._run_resumed_pipeline(job, resume_info["stage"], resume_info)
             return
 
-        if action == "smart":
-            await self._run_smart_pipeline(job)
-            return
         if action == "main_audit":
             await self._run_main_audit(job)
             return
@@ -5513,34 +5187,35 @@ class PipelineManager:
             return
 
         # Полный аудит / batch-actions. Для V2+ ищем _result.json в V2 dir.
+        # Smart-ветка (тайловый триаж) удалена: неподготовленный проект (нет
+        # result.json от Qwen-prepare) — это ошибка конфигурации, а не повод
+        # уходить в legacy-конвейер. Сообщаем явно.
         _root, proj_dir, _od = self._resolve_job_paths(job)
         is_ocr = _has_ocr_result_json(proj_dir)
 
+        if not is_ocr:
+            job.status = JobStatus.FAILED
+            job.error_message = (
+                "Проект не подготовлен: нет result.json (Qwen enrichment). "
+                "Запустите подготовку проекта, затем полный аудит "
+                "(smart-режим удалён)."
+            )
+            job.completed_at = datetime.now().isoformat()
+            await self._log(job, job.error_message, "error")
+            return
+
         if action == "full":
-            # single-start "запустить аудит" — full audit + optimization для OCR, smart иначе
-            if is_ocr:
-                await self._run_ocr_pipeline(job, include_optimization=True)
-            else:
-                await self._run_smart_pipeline(job)
+            await self._run_ocr_pipeline(job, include_optimization=True)
             return
         if action in ("audit", "standard", "pro"):
-            if is_ocr:
-                await self._run_ocr_pipeline(job)
-            else:
-                await self._run_smart_pipeline(job)
+            await self._run_ocr_pipeline(job)
             return
         if action in ("audit+optimization", "standard+optimization", "pro+optimization"):
-            if is_ocr:
-                await self._run_ocr_pipeline(job, include_optimization=True)
-            else:
-                await self._run_smart_pipeline(job)
+            await self._run_ocr_pipeline(job, include_optimization=True)
             return
 
         # fallback
-        if is_ocr:
-            await self._run_ocr_pipeline(job)
-        else:
-            await self._run_smart_pipeline(job)
+        await self._run_ocr_pipeline(job)
 
     # ─── Единая очередь: enqueue single-project ───────────────────────
     def _ensure_batch_worker(self, action_for_label: str = "full") -> BatchQueueStatus:
@@ -5597,7 +5272,7 @@ class PipelineManager:
 
         Возвращает placeholder AuditJob со status=QUEUED. Реальный pipeline
         запустится, когда worker дойдёт до этого item. Это единственный путь
-        запуска одиночного проекта — start_audit/start_smart_audit/... все
+        запуска одиночного проекта — start_audit/... все
         теперь делегируют сюда.
 
         `version_id` фиксируется на момент enqueue. Если None — берётся

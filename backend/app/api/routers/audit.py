@@ -844,17 +844,6 @@ async def start_main_audit(project_id: str, version_id: Optional[str] = Query(No
         raise HTTPException(409, str(e))
 
 
-@router.post("/{project_id:path}/smart-audit")
-async def start_smart_audit(project_id: str, version_id: Optional[str] = Query(None)):
-    """Запустить интеллектуальный аудит (текст → триаж → выборочная нарезка → анализ → Excel)."""
-    _check_project(project_id, version_id)
-    try:
-        job = await pipeline_manager.start_smart_audit(project_id, version_id=version_id)
-        return {"status": "started", "mode": "smart", "job": job.model_dump()}
-    except RuntimeError as e:
-        raise HTTPException(409, str(e))
-
-
 @router.post("/{project_id:path}/full-audit")
 async def start_audit(
     project_id: str,

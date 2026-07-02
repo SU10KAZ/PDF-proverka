@@ -3720,14 +3720,6 @@ const app = createApp({
             } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
         }
 
-        async function startSmartAudit(projectId) {
-            try {
-                auditRunning.value = true;
-                await apiPost(`/audit/${encodeURIComponent(projectId)}/smart-audit`);
-                _afterAuditStart(projectId);
-            } catch (e) { _friendlyAuditError(e); auditRunning.value = false; }
-        }
-
         async function startAudit(projectId) {
             // Показать модальник с выбором моделей перед запуском
             openModelConfig(projectId);
@@ -17007,7 +16999,7 @@ const app = createApp({
             // Audit actions
             auditRunning, allRunning,
             startPrepare, startMainAudit,
-            startSmartAudit, startAudit, startStandardAudit, startProAudit,
+            startAudit, startStandardAudit, startProAudit,
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
