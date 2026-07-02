@@ -173,6 +173,13 @@ def aggregate_events(
     for e in entries:
         if not isinstance(e, dict):
             continue
+        # Авто-перенос вердикта из предыдущей версии (decision carryover) — это
+        # действие СИСТЕМЫ, а не эксперта. Такие записи несут carried_over=True и
+        # служебного «ревьюера» вида «Авто-перенос из V1»; в график их не пускаем,
+        # чтобы не появлялась фиктивная строка-инженер. Ручное решение по тому же
+        # замечанию перезаписывает запись без carried_over и корректно покажется.
+        if e.get("carried_over"):
+            continue
         reviewer = (e.get("expert_reviewer") or "").strip()
         if not reviewer or reviewer.lower() in _SYSTEM_REVIEWERS:
             continue

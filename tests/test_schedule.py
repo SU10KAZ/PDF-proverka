@@ -267,6 +267,28 @@ def test_aggregate_handles_non_dict_entries():
     assert len(events) == 1
 
 
+def test_carried_over_entries_skipped():
+    # авто-перенос вердикта из прошлой версии — действие системы, не эксперта:
+    # в график не попадает (иначе появляется фиктивная строка «Авто-перенос из V1»)
+    entries = [
+        _entry("Авто-перенос из V1", "2026-06-18T10:00:00Z", "P-carried",
+               carried_over=True, expert_decision="rejected"),
+        _entry("Репников И. А.", "2026-06-18T10:00:00Z", "P-real"),
+    ]
+    events = schedule_service.aggregate_events(entries, from_day="2026-06-01", to_day="2026-06-30")
+    assert [e["source_project"] for e in events] == ["P-real"]
+
+
+def test_human_override_of_carried_finding_shows():
+    # ручное решение эксперта по тому же замечанию (carried_over отсутствует/False)
+    # — это реальная работа, должна показываться в графике
+    entries = [
+        _entry("Калинина А.", "2026-06-18T10:00:00Z", "P-human", carried_over=False),
+    ]
+    events = schedule_service.aggregate_events(entries, from_day="2026-06-01", to_day="2026-06-30")
+    assert [e["engineerName"] for e in events] == ["Калинина А."]
+
+
 # ─── build_engineers ─────────────────────────────────────────────────────────
 
 def test_build_engineers_role_from_users_and_sorted():
