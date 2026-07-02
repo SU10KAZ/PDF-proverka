@@ -718,6 +718,7 @@ async def get_block_llm_text(
         v_usable = bool(vector_text and len(vector_text) >= 30)
 
     # 6) Структурированный граф однолинейной схемы (ввод→секции→линии). None, если не схема.
+    #    Часть механизма «Вектограф» (vectograf) — разбор текста-формул. См. docs/vectograf.md.
     structured_graph = None
     try:
         if v_usable and vector_text:
@@ -736,6 +737,7 @@ async def get_block_llm_text(
         structured_graph = None
 
     # 7) Полный граф схемы из ГЕОМЕТРИИ PDF (топология QF↔линия↔панель РПn, управление АСУД/ПС).
+    #    Ядро механизма «Вектограф» (vectograf) — топология по координатам. См. docs/vectograf.md.
     singleline_graph = None
     try:
         if v_usable and vector_text and structured_graph:
