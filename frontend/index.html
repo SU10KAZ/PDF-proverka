@@ -1912,8 +1912,8 @@
                                 {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
                             </button>
                             <span class="expert-review-counter">
-                                Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
-                                Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                                Принято: <b style="color:#22c55e">{{ expertReviewSummary('finding').accepted }}</b>
+                                Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('finding').rejected }}</b>
                             </span>
                         </template>
                         <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
@@ -2178,8 +2178,8 @@
                                     {{ expertReviewSaving ? 'Сохранение...' : 'Сохранить решения' }}
                                 </button>
                                 <span class="expert-review-counter">
-                                    Принято: <b style="color:#22c55e">{{ expertReviewSummary().accepted }}</b>
-                                    Отклонено: <b style="color:#ef4444">{{ expertReviewSummary().rejected }}</b>
+                                    Принято: <b style="color:#22c55e">{{ expertReviewSummary('optimization').accepted }}</b>
+                                    Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('optimization').rejected }}</b>
                                 </span>
                             </template>
                             <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">

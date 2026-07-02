@@ -9493,8 +9493,11 @@ const app = createApp({
             const v = (expertDecisions.value[itemId] || {}).carried_from_version || '';
             return v ? String(v).toUpperCase() : '';
         }
-        function expertReviewSummary() {
-            const vals = Object.values(expertDecisions.value);
+        function expertReviewSummary(itemType) {
+            // itemType ('finding' | 'optimization') — счётчик только своего типа:
+            // вкладка «Оптимизация» не должна показывать числа решений по замечаниям.
+            let vals = Object.values(expertDecisions.value);
+            if (itemType) vals = vals.filter(d => (d.item_type || 'finding') === itemType);
             return {
                 total: vals.filter(d => d.decision).length,
                 accepted: vals.filter(d => d.decision === 'accepted').length,
