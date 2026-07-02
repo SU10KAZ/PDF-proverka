@@ -1,6 +1,8 @@
 """
 REST API для замечаний аудита.
 """
+import asyncio
+
 from fastapi import APIRouter, HTTPException, Query, Request
 from typing import Optional
 import backend.app.services.findings.findings_service as findings_service
@@ -113,10 +115,14 @@ async def run_evidence_validation(
     """Run Evidence Verifier (document + graphic blocks). May take a long time."""
     import backend.app.services.findings.evidence_validation_service as evsvc
     try:
-        return evsvc.run_evidence_validation(
+        # Сервис синхронный (внутри asyncio.run + локальные vision-вызовы) —
+        # выносим в поток, чтобы не блокировать event loop и не падать на
+        # вложенном asyncio.run внутри уже работающего loop.
+        return await asyncio.to_thread(
+            evsvc.run_evidence_validation,
             project_id,
-            version_id=version_id,
-            section=section,
+            version_id,
+            section,
             graphic_model=graphic_model,
             text_model=text_model,
             force=force,
