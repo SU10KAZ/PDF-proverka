@@ -6771,8 +6771,16 @@ const app = createApp({
             blockLlmTextLoading.value = true;
             blockLlmTextError.value = '';
             try {
+                // version_id ОБЯЗАТЕЛЕН: без него бэкенд резолвит latest-версию (напр. свежую V2
+                // без вектор-слоя блока) → пустой enrichment и singleline_graph=null (граф схемы
+                // пропадает), хотя в UI выбрана V1. Тот же класс бага, что чинили в blockImgUrl.
+                const params = new URLSearchParams();
+                if (block.page != null) params.set('page', block.page);
+                const vid = activeVersionId.value;
+                if (vid) params.set('version_id', vid);
+                const qs = params.toString();
                 const url = '/api/tiles/' + blocksProjectId.value + '/blocks/llm-text/' + block.block_id
-                          + (block.page != null ? '?page=' + block.page : '');
+                          + (qs ? '?' + qs : '');
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 blockLlmText.value = await resp.json();
