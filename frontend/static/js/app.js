@@ -37,15 +37,11 @@ const app = createApp({
         // versions_summary текущего проекта (массив записей из backend).
         const projectVersions = ref([]);
         const projectVersionsLoading = ref(false);
-        // Список файлов активной версии (для панели "Версии" / upload).
+        // Список файлов активной версии (для upload).
         const versionFiles = ref([]);
         // Прогресс / последняя ошибка загрузки файлов в версию.
         const versionUploading = ref(false);
         const versionUploadError = ref('');
-        // Состояние modal-а "Создать версию".
-        const showCreateVersionModal = ref(false);
-        const newVersionComment = ref('');
-        const versionsPanelOpen = ref(false);  // боковая панель/блок в info-вкладке
         // Выезжающая снизу панель с PDF активной версии (родной просмотрщик
         // браузера в <iframe>). false по умолчанию → до клика ничего не грузится.
         const showVersionPdf = ref(false);
@@ -5816,28 +5812,6 @@ const app = createApp({
             } catch (e) {
                 renameBusy.value = false;
                 renameError.value = e.message || 'Ошибка переименования';
-            }
-        }
-
-        async function createNewVersion() {
-            if (!currentProjectId.value) return;
-            const comment = (newVersionComment.value || '').trim();
-            try {
-                const data = await apiPost(
-                    `/projects/${encodeURIComponent(currentProjectId.value)}/versions`,
-                    { comment, source: 'manual', status: 'new' },
-                    { withVersion: false },
-                );
-                const newId = data.version && data.version.version_id;
-                newVersionComment.value = '';
-                showCreateVersionModal.value = false;
-                // Обновляем список и активируем новую версию
-                await loadProjectVersions(currentProjectId.value);
-                if (newId) selectVersion(newId);
-                versionsPanelOpen.value = true;
-                return data;
-            } catch (e) {
-                alert('Не удалось создать версию: ' + e.message);
             }
         }
 
@@ -17260,12 +17234,11 @@ const app = createApp({
             // ─── Версионность проекта ───
             activeVersionId, projectVersions, projectVersionsLoading,
             versionFiles, versionUploading, versionUploadError,
-            showCreateVersionModal, newVersionComment, versionsPanelOpen,
             showVersionPdf, versionPdfUrl, activeVersionLabel, toggleVersionPdf,
             renameEditing, renameValue, renameError, renameBusy, renameInput,
             startRename, cancelRename, submitRename,
             loadProjectVersions, loadVersionFiles, selectVersion, deleteVersion,
-            createNewVersion, uploadFilesToVersion,
+            uploadFilesToVersion,
             handleUploadInput, handleUploadInputReplace,
             activeVersionEntry, canStartAuditNow, versionBadgeFor,
             // ─── Migrated findings (контроль ранее согласованных замечаний) ───
