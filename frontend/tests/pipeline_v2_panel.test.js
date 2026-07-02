@@ -1157,12 +1157,22 @@ describe('Pipeline V2 — Entity Alignment read-only contract (files)', () => {
     expect(end).toBeGreaterThan(start);
     return indexHtml.slice(start, end);
   }
+  // EA-код в app.js НЕ непрерывен: read/preview-функции идут сразу за маркером,
+  // а write-layer (_scPv2EaPutMapping / scPv2EaSavePair) — ниже, в секции
+  // «Manual entity mapping», между ними вклинены ДРУГИЕ панели (link-validation,
+  // exclusion-review, controlled-state) со своими POST/PUT. Поэтому берём именно
+  // два EA-региона, а не сплошной срез до setup-return (иначе либо не доходим до
+  // PUT, либо цепляем чужой POST). Границы — по уникальным секц. комментариям.
   function eaJsBlock() {
-    const start = appJs.indexOf('Pipeline V2 Entity Alignment Preview');
-    const end = appJs.indexOf('return {', start);
-    expect(start).toBeGreaterThan(0);
-    expect(end).toBeGreaterThan(start);
-    return appJs.slice(start, end);
+    const r1s = appJs.indexOf('Pipeline V2 Entity Alignment Preview'); // EA read/preview
+    const r1e = appJs.indexOf('Link validation (read-only, mark-only)', r1s);
+    const r2s = appJs.indexOf('Manual entity mapping (write-слой поверх preview)', r1e); // EA write
+    const r2e = appJs.indexOf('\n        return {', r2s); // setup()-return (8 пробелов)
+    expect(r1s).toBeGreaterThan(0);
+    expect(r1e).toBeGreaterThan(r1s);
+    expect(r2s).toBeGreaterThan(r1e);
+    expect(r2e).toBeGreaterThan(r2s);
+    return appJs.slice(r1s, r1e) + '\n' + appJs.slice(r2s, r2e);
   }
 
   it('1. панель сущностей присутствует с summary-карточками и фильтрами', () => {
