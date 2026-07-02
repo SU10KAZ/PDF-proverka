@@ -60,6 +60,7 @@ class SimilarDecision:
     summary: str
     expert_reason: str
     similarity_score: float
+    text_sim: float = 0.0   # чистое текстовое сходство (Jaccard), БЕЗ метаданных
 
 
 @dataclass
@@ -103,8 +104,11 @@ class PrecedentRetriever:
         q_section = _as_text(finding.get("section"))
         q_category = _as_text(finding.get("category"))
         q_severity = _as_text(finding.get("severity"))
+        # схема findings v2: текст замечания = title + description (поля problem/
+        # summary — из старых форматов, оставлены для совместимости)
         q_tokens = _tokenize(
-            _as_text(finding.get("problem")) + " "
+            _as_text(finding.get("title")) + " "
+            + _as_text(finding.get("problem")) + " "
             + _as_text(finding.get("description")) + " "
             + _as_text(finding.get("summary"))
         )
@@ -120,13 +124,14 @@ class PrecedentRetriever:
                 score += 0.30
             if q_severity and _as_text(e.get("severity")) == q_severity:
                 score += 0.10
-            score += _jaccard(q_tokens, self._entry_tokens[i]) * 0.20
+            text_sim = _jaccard(q_tokens, self._entry_tokens[i])
+            score += text_sim * 0.20
             if score >= min_score:
-                scored.append((score, i))
+                scored.append((score, text_sim, i))
 
         scored.sort(key=lambda x: -x[0])
         out = []
-        for score, i in scored[:top_k]:
+        for score, text_sim, i in scored[:top_k]:
             e = self._entries[i]
             out.append(SimilarDecision(
                 decision_id=_as_text(e.get("id")) or "?",
@@ -137,6 +142,7 @@ class PrecedentRetriever:
                 summary=_as_text(e.get("summary")),
                 expert_reason=_as_text(e.get("expert_reason")),
                 similarity_score=round(score, 3),
+                text_sim=round(text_sim, 3),
             ))
         return out
 
@@ -169,12 +175,18 @@ def run_precedent_check(
     enforce: bool = False,
     retriever: Optional[PrecedentRetriever] = None,
     min_score: float = 0.45,
+    text_min: float = 0.12,
     top_k: int = 5,
 ) -> PrecedentSignal:
     """Офлайн-проверка: похоже ли замечание на ранее ОТКЛОНЁННЫЕ экспертом.
 
     Никогда не возвращает reject-хинт. `enforce` управляет только тем, влияет ли
     сигнал на decision в fusion (shadow vs live) — сам поиск идёт всегда.
+
+    «Сильным» (suspect_flag) прецедент считается ТОЛЬКО при реальном СОДЕРЖАТЕЛЬНОМ
+    совпадении (text_sim >= text_min). Совпадение по одним метаданным (раздел+
+    критичность даёт 0.50 у любого замечания секции) НЕ считается — иначе сигнал
+    срабатывал бы на всём подряд (проверено shadow-прогоном).
     """
     retriever = retriever if retriever is not None else get_default_retriever()
     if retriever is None:
@@ -192,36 +204,37 @@ def run_precedent_check(
         return PrecedentSignal(kind="none", hint=HINT_NONE, enforce=enforce,
                                reason="Похожих отклонённых решений не найдено.")
 
-    top = examples[0]
-    top_score = top.similarity_score
-    n_strong = sum(1 for ex in examples if ex.similarity_score >= min_score)
-
-    # «сильный» прецедент: топ выше порога ИЛИ ≥2 согласных выше половины порога
-    strong = top_score >= min_score or n_strong >= 2 or (
-        len(examples) >= 3 and top_score >= min_score * 0.8
-    )
+    # «сильные» = содержательно похожие (text_sim >= text_min) И общий score >= порога
+    strong_examples = [ex for ex in examples
+                       if ex.text_sim >= text_min and ex.similarity_score >= min_score]
+    strong = bool(strong_examples)
     hint = HINT_SUSPECT if strong else HINT_NEUTRAL
+    lead = strong_examples[0] if strong else examples[0]
 
     ex_out = [{
         "decision_id": ex.decision_id,
         "score": ex.similarity_score,
+        "text_sim": ex.text_sim,
         "expert_reason": ex.expert_reason[:200],
         "source_project": ex.source_project,
-    } for ex in examples[:3]]
-    flags = [f"precedent_reject:{ex.decision_id}" for ex in examples[:3]]
+    } for ex in (strong_examples or examples)[:3]]
+    flags = [f"precedent_reject:{ex.decision_id}" for ex in strong_examples[:3]]
     reason = (
-        f"{len(examples)} похожих отклонённых экспертом "
-        f"(топ {top.decision_id}, score {top_score}): {top.expert_reason[:160]}"
+        f"{len(strong_examples)} содержательно похожих отклонённых экспертом "
+        f"(топ {lead.decision_id}, score {lead.similarity_score}, "
+        f"text_sim {lead.text_sim}): {lead.expert_reason[:150]}"
+    ) if strong else (
+        f"Есть {len(examples)} совпадений только по метаданным (без сходства текста)."
     )
     return PrecedentSignal(
         kind="precedent_reject" if strong else "none",
         hint=hint,
         enforce=enforce,
-        confidence=top_score,
+        confidence=lead.similarity_score if strong else 0.0,
         taxonomy="matches_rejected_precedent",
         reason=reason,
         flags=flags,
         examples=ex_out,
-        top_score=top_score,
-        n_matches=len(examples),
+        top_score=lead.similarity_score,
+        n_matches=len(strong_examples),
     )

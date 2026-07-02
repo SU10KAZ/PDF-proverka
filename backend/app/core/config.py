@@ -663,8 +663,11 @@ EVIDENCE_VERIFY_IN_PIPELINE_ENABLED = _env_bool("EVIDENCE_VERIFY_IN_PIPELINE_ENA
 #                   (precedent_*), но на вердикт НЕ влияет — снимаем цифры без риска.
 #   ON            = сигнал участвует в fuse() (правило F8.5).
 EV_PRECEDENT_ENABLED = _env_bool("EV_PRECEDENT_ENABLED", False)
-# Порог «сильного» прецедента (score ретривера 0..1). Консервативно выше KB-дефолта 0.15.
+# Порог «сильного» прецедента (общий score ретривера 0..1). Консервативно выше KB-дефолта 0.15.
 EV_PRECEDENT_MIN_SCORE = float(os.environ.get("EV_PRECEDENT_MIN_SCORE", "0.45"))
+# Порог ЧИСТО ТЕКСТОВОГО сходства (Jaccard, без метаданных). Ключевой анти-over-firing:
+# совпадение только по разделу+критичности (0.50 у любого замечания) НЕ считается сильным.
+EV_PRECEDENT_TEXT_MIN = float(os.environ.get("EV_PRECEDENT_TEXT_MIN", "0.12"))
 EV_PRECEDENT_TOP_K = int(os.environ.get("EV_PRECEDENT_TOP_K", "5"))
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))

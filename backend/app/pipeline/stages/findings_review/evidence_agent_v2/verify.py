@@ -163,6 +163,7 @@ async def verify_finding_multi_async(
             precedent = run_precedent_check(
                 finding, section=section, enforce=enforce_precedent,
                 min_score=getattr(_cfg, "EV_PRECEDENT_MIN_SCORE", 0.45),
+                text_min=getattr(_cfg, "EV_PRECEDENT_TEXT_MIN", 0.12),
                 top_k=getattr(_cfg, "EV_PRECEDENT_TOP_K", 5),
             )
         except Exception:  # fail-soft: прецедент опционален
