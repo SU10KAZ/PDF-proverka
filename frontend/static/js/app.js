@@ -25,6 +25,7 @@ const app = createApp({
         const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
         const currentProjectId = ref(null);
         const currentProject = ref(null);
+        const projectLoading = ref(false);   // идёт ли сейчас загрузка карточки проекта
         const projects = ref([]);
         const loading = ref(false);
 
@@ -5588,6 +5589,10 @@ const app = createApp({
             loading.value = false;
         }
 
+        // Монотонный счётчик загрузок проекта: защита от гонки, когда медленный
+        // ответ по РАНЕЕ открытому проекту приходит позже и затирает уже
+        // выбранный. Применяем результат только если это последняя загрузка.
+        let _projectLoadSeq = 0;
         async function loadProject(id, forceRefresh) {
             // Закрываем PDF-панель только при реальной смене проекта; при
             // переключении вкладок/версий того же проекта она остаётся открытой.
@@ -5595,6 +5600,14 @@ const app = createApp({
                 showVersionPdf.value = false;
             }
             currentProjectId.value = id;
+            // Смена проекта: сразу гасим данные ранее открытого проекта, чтобы
+            // на время (возможно медленной) загрузки не висела «чужая» страница.
+            const _loadedId = currentProject.value
+                && (currentProject.value.project_id || currentProject.value.id);
+            if (_loadedId && _loadedId !== id) {
+                currentProject.value = null;
+            }
+            const _mySeq = ++_projectLoadSeq;
             // Кеш ключуется по (id, activeVersionId), чтобы V1/V2 одного проекта
             // не наступали друг на друга.
             const cacheKey = activeVersionId.value
@@ -5602,13 +5615,22 @@ const app = createApp({
                 : id;
             if (!forceRefresh) {
                 const cached = _cacheGet('project', cacheKey);
-                if (cached) { currentProject.value = cached; return; }
+                if (cached) { currentProject.value = cached; projectLoading.value = false; return; }
             }
+            projectLoading.value = true;
             try {
-                // Загружаем список версий параллельно — он нужен и для UI,
-                // и для определения latest, если activeVersionId ещё не задан.
-                await loadProjectVersions(id);
-                const project = await api(`/projects/${encodeURIComponent(id)}`);
+                // Версии (нужны для дропдауна и определения latest) и карточку
+                // проекта грузим ПАРАЛЛЕЛЬНО: endpoint /projects/{id} не зависит
+                // от списка версий, поэтому шапка появляется за один round-trip,
+                // а не за два последовательных (раньше versions блокировали
+                // отрисовку карточки).
+                const [, project] = await Promise.all([
+                    loadProjectVersions(id),
+                    api(`/projects/${encodeURIComponent(id)}`),
+                ]);
+                // Пока ждали ответ, пользователь мог уйти на другой проект —
+                // тогда наш результат устарел, не затираем актуальный.
+                if (_mySeq !== _projectLoadSeq) return;
                 // V2-leak fix: legacy webapp игнорирует ?version_id= в
                 // /api/projects/{id} → возвращает V1 счётчики/pipeline даже
                 // на V2 запрос. Для V2+ на legacy runner обнуляем поля,
@@ -5637,8 +5659,13 @@ const app = createApp({
                     _migratedReset();
                 }
             } catch (e) {
+                if (_mySeq !== _projectLoadSeq) return;
                 console.error('Failed to load project:', e);
                 currentProject.value = null;
+            } finally {
+                // Снимаем индикатор только для АКТУАЛЬНОЙ загрузки, чтобы не
+                // погасить спиннер более свежего перехода.
+                if (_mySeq === _projectLoadSeq) projectLoading.value = false;
             }
         }
 
@@ -6106,7 +6133,11 @@ const app = createApp({
             });
         }
 
+        let _findingsLoadSeq = 0;
         async function loadFindings(id, forceRefresh) {
+            // Бампаем в самом начале (в т.ч. до cache-hit), чтобы ответ по
+            // ранее открытому проекту, пришедший позже, не затёр таблицу.
+            const _mySeq = ++_findingsLoadSeq;
             expandedFindingId.value = null;
             findingsPage.value = 1;
             // Сбрасываем inline-критика при смене проекта
@@ -6132,6 +6163,7 @@ const app = createApp({
             try {
                 // Загружаем ВСЕ findings без фильтров — фильтруем на клиенте
                 const data = await api(`/findings/${id}`);
+                if (_mySeq !== _findingsLoadSeq) return;
                 _findingsAll.value = data;
                 _cacheSet('findings', id, data);
                 _applyFindingsFilter();
@@ -7182,7 +7214,9 @@ const app = createApp({
             return blockIds.map(bid => optBlockInfo.value[bid] || { block_id: bid, page: null, ocr_label: '' });
         }
 
+        let _optimizationLoadSeq = 0;
         async function loadOptimization(id, forceRefresh) {
+            const _mySeq = ++_optimizationLoadSeq;
             currentProjectId.value = id;
             expandedOptId.value = null;
             optimizationPage.value = 1;
@@ -7197,9 +7231,15 @@ const app = createApp({
             optimizationLoading.value = true;
             optimizationData.value = null;
             try {
-                currentProject.value = await api(`/projects/${id}`);
+                const proj = await api(`/projects/${id}`);
+                // currentProject — общий стейт: не затираем его, если пользователь
+                // уже ушёл на другой проект (currentProjectId ставится синхронно
+                // при любой навигации).
+                if (_mySeq !== _optimizationLoadSeq || currentProjectId.value !== id) return;
+                currentProject.value = proj;
                 _cacheSet('project', id, currentProject.value);
                 const resp = await api(`/optimization/${id}`);
+                if (_mySeq !== _optimizationLoadSeq || currentProjectId.value !== id) return;
                 if (resp.has_data) {
                     // Нормализуем сводку под шаблон («Всего:» и бейджи по типам):
                     // в optimization.json total/by_type лежат под meta
@@ -16956,7 +16996,7 @@ const app = createApp({
             schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
             schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
             // State
-            currentView, currentProject, currentProjectId, projects, loading, isProjectView,
+            currentView, currentProject, currentProjectId, projectLoading, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
             // KB-Validation
             kbValidationAvailable, kbValidationLoading, findingKbDecision, findingKbLabel, findingKbClass, findingKbTooltip,

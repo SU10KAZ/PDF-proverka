@@ -1477,6 +1477,8 @@
 
         <!-- ═══ Project Detail ═══ -->
         <div v-if="currentView === 'project'" class="container">
+            <div v-if="!currentProject && projectLoading" class="loading">Загрузка проекта…</div>
+            <div v-else-if="!currentProject" class="empty-state">Не удалось загрузить проект. Обновите страницу.</div>
             <div v-if="currentProject" class="project-detail">
 
                 <!-- === Tab: Инфо (content) === -->
@@ -1891,42 +1893,6 @@
         <!-- ═══ Findings Table ═══ -->
         <div v-if="currentView === 'findings'" class="container">
             <div class="findings-page">
-                <!-- Filters -->
-                <div class="filters">
-                    <select v-model="filterSeverity" class="filter-select">
-                        <option value="">Все критичности</option>
-                        <option v-for="sev in severityOptions" :key="sev" :value="sev">{{ sev }}</option>
-                    </select>
-                    <input v-model="filterSearch" class="filter-input"
-                           placeholder="Поиск по тексту..." @input="debounceSearch">
-                    <!-- Critic v2 (experimental) — фильтр по display-bucket'у.
-                         Грузится deferred, не блокирует таблицу. -->
-                    <template v-if="findingsCv2Available">
-                        <select v-model="cv2DisplayFilter" class="filter-select"
-                                title="Экспериментальная оценка Critic v2 (0–100)">
-                            <option value="">Critic v2: все</option>
-                            <option v-for="b in CV2_DISPLAY_BUCKETS" :key="b.key" :value="b.key">
-                                {{ b.label }} ({{ b.lo }}–{{ b.hi }})
-                            </option>
-                        </select>
-                        <label class="cv2-show-hidden-toggle"
-                               title="Скрыто Critic v2 — замечания не удаляются, только не показываются по умолчанию">
-                            <input type="checkbox" v-model="cv2ShowHidden">
-                            Показать скрытые Critic v2
-                            <span class="cv2-hidden-counter">({{ cv2HiddenCount() }})</span>
-                        </label>
-                    </template>
-                    <span v-else-if="findingsCv2Loading" class="cv2-loading-pill"
-                          title="Critic v2 эксп. — догружается, обычная таблица уже работает">
-                        <span class="cv2-loading-dot"></span>
-                        Critic v2: загрузка…
-                    </span>
-                    <span v-else-if="findingsCv2Warning" class="cv2-warning-pill"
-                          :title="findingsCv2Warning">
-                        Critic v2: нет данных
-                    </span>
-                </div>
-
                 <!-- Summary + Expert Review (одна строка) -->
                 <div v-if="findingsData" class="severity-badges severity-badges--large" style="display:flex; align-items:center; flex-wrap:wrap;">
                     <span v-for="(count, sev) in findingsData.by_severity" :key="sev"
@@ -2168,21 +2134,6 @@
         <!-- ═══ Optimization ═══ -->
         <div v-if="currentView === 'optimization'" class="container">
             <div class="optimization-page">
-                <!-- Фильтры (как в замечаниях) -->
-                <div class="filters">
-                    <select v-model="optimizationFilter" class="filter-select">
-                        <option value="">Все типы</option>
-                        <option v-for="(label, type) in optimizationTypeLabels" :key="type" :value="type">{{ label }}</option>
-                    </select>
-                    <input v-model="optimizationSearch" class="filter-input"
-                           placeholder="Поиск по тексту...">
-                    <button class="btn btn-optimization btn-sm"
-                            @click="startOptimization(currentProjectId)"
-                            :disabled="isProjectRunning(currentProjectId)">
-                        Запустить анализ
-                    </button>
-                </div>
-
                 <div v-if="optimizationLoading" class="loading">Загрузка...</div>
 
                 <!-- Результаты -->
@@ -2342,7 +2293,7 @@
 
                 <!-- Нет данных -->
                 <div v-else class="empty-state">
-                    Анализ оптимизации ещё не проводился. Нажмите «Запустить анализ».
+                    Анализ оптимизации ещё не проводился.
                 </div>
             </div>
         </div>
