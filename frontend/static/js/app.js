@@ -2289,6 +2289,8 @@ const app = createApp({
                 'findings_merge': 'Свод замечаний',
                 'norm_verify': 'Верификация норм',
                 'norm_fix': 'Пересмотр замечаний',
+                'debt_control': 'Контроль долгов',
+                'decision_carryover': 'Перенос вердиктов',
                 'excel': 'Excel-отчёт',
                 'optimization': 'Оптимизация',
                 'full': 'Полный конвейер',
@@ -3818,6 +3820,8 @@ const app = createApp({
             'optimization': 'optimization',
             'optimization_critic': 'optimization_critic',
             'optimization_corrector': 'optimization_corrector',
+            'debt_control': 'debt_control',
+            'decision_carryover': 'decision_carryover',
         };
 
         const stageLabelMap = {
@@ -3833,6 +3837,8 @@ const app = createApp({
             'optimization': 'Оптимизация',
             'optimization_critic': 'Critic оптимизации',
             'optimization_corrector': 'Corrector оптимизации',
+            'debt_control': 'Контроль долгов',
+            'decision_carryover': 'Перенос вердиктов',
         };
 
         function canStartFrom(pipelineKey) {
@@ -3856,7 +3862,7 @@ const app = createApp({
             if ([
                 'findings', 'findings_critic', 'findings_corrector',
                 'norms_verified', 'optimization', 'optimization_critic',
-                'optimization_corrector', 'excel',
+                'optimization_corrector', 'debt_control', 'decision_carryover', 'excel',
             ].includes(pipelineKey)) {
                 return gemmaOk() && ready('text_analysis') && ready('blocks_analysis');
             }
@@ -3878,7 +3884,8 @@ const app = createApp({
             if ([
                 'findings_merge', 'findings_critic', 'findings_review',
                 'findings_corrector', 'norm_verify', 'optimization',
-                'optimization_critic', 'optimization_corrector', 'excel',
+                'optimization_critic', 'optimization_corrector',
+                'debt_control', 'decision_carryover', 'excel',
             ].includes(stage)) {
                 return gemmaOk() && ready('text_analysis') && ready('blocks_analysis');
             }
@@ -3997,6 +4004,7 @@ const app = createApp({
                 'findings_corrector': 'Corrector замечаний',
                 'norm_verify': 'Верификация норм', 'optimization': 'Оптимизация',
                 'optimization_critic': 'Critic оптимизации', 'optimization_corrector': 'Corrector оптимизации',
+                'decision_carryover': 'Перенос вердиктов',
             };
             retryDialog.value = {
                 show: true,

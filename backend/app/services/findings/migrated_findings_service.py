@@ -211,10 +211,32 @@ def _resolve_version_sources(
         return result
     output_dir = version_dir / "_output"
 
-    # 1. Прямые файлы в _output/.
-    primary_findings = _find_findings_file_in_dir(output_dir)
-    primary_review_path = output_dir / EXPERT_REVIEW_FILE
-    primary_review: Optional[Path] = primary_review_path if primary_review_path.exists() else None
+    # 1. Прямые файлы: v2-раскладка (03_analysis/latest + 04_review) первой,
+    # затем legacy `_output/`. Без v2-кандидатов на projects_v2-primary сервис
+    # был слеп: findings лежат в 03_analysis/latest, вердикты — в 04_review.
+    findings_dirs = [output_dir]
+    review_candidates = [output_dir / EXPERT_REVIEW_FILE]
+    try:
+        from backend.app.services.storage.projects_v2_source_resolver import (
+            is_projects_v2_version_dir,
+        )
+        if is_projects_v2_version_dir(version_dir):
+            findings_dirs = [version_dir / "03_analysis" / "latest", output_dir]
+            review_candidates = [
+                version_dir / "04_review" / EXPERT_REVIEW_FILE,
+                version_dir / "03_analysis" / "latest" / EXPERT_REVIEW_FILE,
+                output_dir / EXPERT_REVIEW_FILE,
+            ]
+    except Exception:  # noqa: BLE001 — fail-soft: остаёмся на legacy-путях
+        pass
+
+    primary_findings = next(
+        (p for d in findings_dirs if (p := _find_findings_file_in_dir(d)) is not None),
+        None,
+    )
+    primary_review: Optional[Path] = next(
+        (p for p in review_candidates if p.exists()), None,
+    )
 
     if primary_findings is not None and (primary_review is not None or not require_review):
         result.update(

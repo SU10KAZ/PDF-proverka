@@ -13,6 +13,8 @@ class AuditStage(str, Enum):
     MERGE = "merge"
     NORM_VERIFY = "norm_verify"
     NORM_FIX = "norm_fix"
+    DEBT_CONTROL = "debt_control"  # контроль долгов: согласованные замечания V-пред не теряются
+    DECISION_CARRYOVER = "decision_carryover"  # перенос вердиктов из предыдущей версии
     EXCEL = "excel"
     OPTIMIZATION = "optimization"
     # OCR-пайплайн

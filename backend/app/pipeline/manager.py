@@ -1834,6 +1834,31 @@ class PipelineManager:
         except Exception as exc:
             await self._log(job, f"Value Grounding пропущен (soft): {exc}", "warn")
 
+    async def _run_debt_control(self, job: AuditJob) -> None:
+        """«Контроль долгов»: согласованные замечания прошлой версии не теряются.
+
+        Always-on для V2+ (kill-switch DEBT_CONTROL_ENABLED). Fail-soft. Обёртка
+        над migrated_findings_service: дубли обогащаются origin-метой, потерянные
+        аудитом «долги» добавляются в 03_findings.json как MIG-замечания, спорные
+        уходят в отчёт migrated_findings_report.json. Ставится ПЕРЕД
+        decision_carryover: добавленные MIG-замечания тут же получают вердикт
+        «согласовано» переносом.
+        """
+        try:
+            from backend.app.pipeline.stages.debt_control.runner import (
+                run_debt_control_stage,
+            )
+            self._reset_job_progress(job)
+            job.stage = AuditStage.DEBT_CONTROL
+            job.status = JobStatus.RUNNING
+            await run_debt_control_stage(self._make_stage_context(job))
+            self._promote_v2_analysis_artifacts(
+                job, ("03_findings.json", "migrated_findings_report.json",
+                      "pipeline_log.json")
+            )
+        except Exception as exc:
+            await self._log(job, f"Контроль долгов пропущен (soft): {exc}", "warn")
+
     async def _run_decision_carryover(self, job: AuditJob) -> None:
         """Перенос вердиктов эксперта из предыдущей проверенной версии (fail-soft).
 
@@ -1848,6 +1873,9 @@ class PipelineManager:
             from backend.app.pipeline.stages.decision_carryover.runner import (
                 run_decision_carryover_stage,
             )
+            self._reset_job_progress(job)
+            job.stage = AuditStage.DECISION_CARRYOVER
+            job.status = JobStatus.RUNNING
             await run_decision_carryover_stage(self._make_stage_context(job))
         except Exception as exc:
             await self._log(job, f"Перенос вердиктов пропущен (soft): {exc}", "warn")
@@ -2451,7 +2479,7 @@ class PipelineManager:
         valid_stages = {
             "prepare", "gemma_enrichment", "text_analysis", "block_analysis",
             "findings_merge", "findings_review", "norm_verify",
-            "optimization", "optimization_review", "excel",
+            "optimization", "optimization_review", "decision_carryover", "excel",
         }
         if normalized not in valid_stages:
             raise RuntimeError(f"Неизвестный этап: {stage}")
@@ -2486,7 +2514,7 @@ class PipelineManager:
 
         if normalized in {
             "text_analysis", "block_analysis", "findings_merge",
-            "findings_review", "norm_verify", "excel",
+            "findings_review", "norm_verify", "decision_carryover", "excel",
         }:
             if gemma_state.get("status") == "missing_md":
                 raise RuntimeError(gemma_gate_error(gemma_state, normalized))
@@ -2498,14 +2526,14 @@ class PipelineManager:
         # порядка: text_analysis (старый порядок) или block_analysis (новый порядок block→text).
         blocks_before_text = self._blocks_before_text_enabled()
         _first_llm_stage = "block_analysis" if blocks_before_text else "text_analysis"
-        strict_gemma = {"findings_merge", "findings_review", "norm_verify", "excel"} | (
+        strict_gemma = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"} | (
             {"text_analysis", "block_analysis"} - {_first_llm_stage}
         )
         if normalized in strict_gemma and not gemma_state.get("ready"):
             raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
         # Требование 01 (текст) — у этапов ниже текста по потоку.
-        needs_text = {"findings_merge", "findings_review", "norm_verify", "excel"}
+        needs_text = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"}
         if not blocks_before_text:
             needs_text = needs_text | {"block_analysis"}
         if normalized in needs_text and not (output_dir / "01_text_analysis.json").exists():
@@ -2515,7 +2543,7 @@ class PipelineManager:
             )
 
         # Требование 02 (блоки) — у findings_merge+ и (в новом порядке) у text_analysis.
-        needs_blocks = {"findings_merge", "findings_review", "norm_verify", "excel"}
+        needs_blocks = {"findings_merge", "findings_review", "norm_verify", "decision_carryover", "excel"}
         if blocks_before_text:
             needs_blocks = needs_blocks | {"text_analysis"}
         if normalized in needs_blocks and not (output_dir / "02_blocks_analysis.json").exists():
@@ -2524,7 +2552,7 @@ class PipelineManager:
                 "Сначала выполните block_analysis."
             )
 
-        if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "excel"}:
+        if normalized in {"findings_review", "norm_verify", "optimization", "optimization_review", "decision_carryover", "excel"}:
             if not (output_dir / "03_findings.json").exists():
                 raise RuntimeError(
                     "Нельзя запускать этот этап: 03_findings.json отсутствует. "
@@ -2682,6 +2710,7 @@ class PipelineManager:
                 "findings_merge",
                 "findings_review",
                 "norm_verify",
+                "decision_carryover",
                 "excel",
             ]
             start_idx = ocr_stages.index(normalized) if normalized in ocr_stages else 0
@@ -2971,6 +3000,7 @@ class PipelineManager:
                     self._tasks[pid] = asyncio.current_task()
 
             # ═══ Перенос вердиктов из предыдущей версии ═══
+            await self._run_debt_control(job)
             await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 7: Excel ═══
@@ -4273,6 +4303,7 @@ class PipelineManager:
                 await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
             # ═══ ЭТАП 7.7: Перенос вердиктов из предыдущей версии ═══
+            await self._run_debt_control(job)
             await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 8: Excel ═══
@@ -5127,6 +5158,7 @@ class PipelineManager:
                 "norm_verify": "Верификация норм",
                 "optimization": "Оптимизация",
                 "optimization_review": "Проверка оптимизации",
+                "decision_carryover": "Перенос вердиктов",
                 "excel": "Excel-отчёт",
             }.get(item.retry_stage, item.retry_stage)
 
@@ -5406,6 +5438,7 @@ class PipelineManager:
             "optimization": "optimization",
             "optimization_critic": "optimization_review",
             "optimization_corrector": "optimization_review",
+            "decision_carryover": "decision_carryover",
             "prepare": "prepare",
             "tile_audit": "block_analysis",
             "main_audit": "findings_merge",
@@ -5425,6 +5458,7 @@ class PipelineManager:
             "block_analysis": "Анализ блоков", "findings_merge": "Свод замечаний",
             "findings_review": "Critic замечаний", "norm_verify": "Верификация норм",
             "optimization": "Оптимизация", "optimization_review": "Проверка оптимизации",
+            "decision_carryover": "Перенос вердиктов",
         }.get(internal_stage, internal_stage)
         await ws_manager.broadcast_global(
             WSMessage.log("__BATCH__", f"+ В очередь: {project_id} → {stage_label}", "info")
