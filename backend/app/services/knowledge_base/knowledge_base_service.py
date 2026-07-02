@@ -246,9 +246,18 @@ def save_expert_review(project_id: str, decisions: list[ExpertDecision], reviewe
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # expert_review.json (no-op в legacy, fail-soft). decisions_log остаётся
     # общим shared-файлом (его v2-плечо здесь намеренно НЕ форкается).
+    #
+    # ВАЖНО (рецидив бага dc485098, 2026-07-02): в projects_v2-primary review уже записан
+    # НАПРЯМУЮ в v2 (04_review версии), а mirror пере-мигрирует документ ИЗ legacy и
+    # ПЕРЕЗАПИСЫВАЕТ document.json — v2-native версии (без legacy-папки) выбрасываются из
+    # индекса → «Версия 'vN' не найдена» → импорт Excel/сохранение разметки ломает документ.
+    # Инцидент: 13АВ-РД-АР0.2-ПА v003 дважды выброшена (11:13 и 11:31), 12 оптимизационных
+    # решений импорта потеряны. Guard — тот же паттерн, что в dc485098.
     try:
-        from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_id_safe(project_id)
+        from backend.app.services.common import version_service as _vs
+        if not _vs._projects_v2_context_enabled():
+            from backend.app.services.storage import storage_write_facade as _swf
+            _swf.shadow_mirror_project_id_safe(project_id)
     except Exception:  # noqa: BLE001 — fail-soft, но #91: не молчим (наблюдаемость)
         import logging
         logging.getLogger(__name__).debug(

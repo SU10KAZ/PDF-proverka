@@ -309,3 +309,66 @@ def test_scan_expert_review_split_reports_output_decisions_missing_from_04(tmp_p
     })
 
     assert module.scan(v2_root)["split_count"] == 0
+
+
+def test_v2_primary_save_expert_review_does_not_fire_reverting_shadow_mirror(monkeypatch, tmp_path):
+    """Рецидив dc485098 (2026-07-02, 13АВ-РД-АР0.2-ПА): save_expert_review после записи
+    review вызывал shadow_mirror, который пере-мигрирует документ ИЗ legacy и выбрасывает
+    v2-native версии из document.json → «Версия 'vN' не найдена», потеря решений импорта.
+    В projects_v2-primary mirror вызываться НЕ должен (review уже записан напрямую в v2)."""
+    import backend.app.services.knowledge_base.knowledge_base_service as kb_mod
+    from backend.app.services.storage import storage_write_facade as swf
+
+    kb = _patch_kb_side_effects(monkeypatch, tmp_path)
+    v2_root = tmp_path / "projects_v2"
+    doc_dir, vdir = _make_v2_doc(v2_root)
+    legacy_project = tmp_path / "projects" / "DOC-REVIEW"
+    legacy_project.mkdir(parents=True)
+    _write_json(legacy_project / "project_info.json", {"project_id": "DOC-REVIEW", "section": "AR"})
+    _enable_v2_primary(monkeypatch, v2_root)
+
+    calls = []
+
+    def _reverting_mirror(project_id, **kw):
+        # симулируем ВРЕДНОЕ поведение: перемиграция из legacy стирает v2-native версию
+        calls.append(project_id)
+        dj = doc_dir / "document.json"
+        d = json.loads(dj.read_text(encoding="utf-8"))
+        d["versions"] = [v for v in d["versions"] if v["version_id"] == "v001-legacy-only"]
+        dj.write_text(json.dumps(d, ensure_ascii=False), encoding="utf-8")
+
+    monkeypatch.setattr(swf, "shadow_mirror_project_id_safe", _reverting_mirror)
+
+    kb.save_expert_review("DOC-REVIEW", [
+        ExpertDecision(item_id="F-9", item_type="finding", decision="accepted"),
+    ], reviewer="qa")
+
+    # mirror НЕ вызывался → document.json не «ревертнут», версия на месте
+    assert calls == []
+    d = json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+    assert [v["version_id"] for v in d["versions"]] == ["v001"]
+    # решение реально сохранено в canonical 04_review
+    saved = json.loads((vdir / "04_review" / "expert_review.json").read_text(encoding="utf-8"))
+    assert any(x["item_id"] == "F-9" for x in saved["decisions"])
+
+
+def test_legacy_save_expert_review_still_fires_shadow_mirror(monkeypatch, tmp_path):
+    """В legacy-режиме поведение прежнее: после сохранения review mirror ВЫЗЫВАЕТСЯ
+    (новые проекты пишутся legacy-first и попадают в v2 именно через mirror)."""
+    from backend.app.services.storage import storage_write_facade as swf
+
+    kb = _patch_kb_side_effects(monkeypatch, tmp_path)
+    legacy_project = tmp_path / "projects" / "DOC-LEGACY-M"
+    out = legacy_project / "_output"
+    out.mkdir(parents=True)
+    _write_json(legacy_project / "project_info.json", {"project_id": "DOC-LEGACY-M", "section": "AR"})
+
+    calls = []
+    monkeypatch.setattr(swf, "shadow_mirror_project_id_safe",
+                        lambda project_id, **kw: calls.append(project_id))
+
+    kb.save_expert_review("DOC-LEGACY-M", [
+        ExpertDecision(item_id="F-1", item_type="finding", decision="accepted"),
+    ], reviewer="qa")
+
+    assert calls == ["DOC-LEGACY-M"]
