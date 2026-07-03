@@ -5835,26 +5835,31 @@ class PipelineManager:
         if not queue or queue.status != "running":
             raise RuntimeError("Нет активной групповой очереди")
 
-        # Разделяем: обработанные (уже не pending) и pending
-        processed = []
-        pending_map = {}
-        for item in queue.items:
-            if item.status in ("completed", "failed", "skipped", "running"):
-                processed.append(item)
-            else:
-                pending_map[item.project_id] = item
+        # Инвариант (баг C3 аудита пайплайна): ЛЮБОЙ не-pending элемент
+        # (completed/failed/skipped/running, а также cancelled/interrupted)
+        # остаётся ровно на своей позиции — worker-цикл держит локальный
+        # индекс, и сдвиг позиций running/обработанных рассинхронивал его
+        # (пропуск pending-элемента, «выполняется» не тот проект в UI).
+        # Раньше cancelled/interrupted считались «pending» и уезжали в хвост,
+        # двигая всё после себя. Переставляем pending только между их же
+        # слотами.
+        pending_map = {
+            item.project_id: item
+            for item in queue.items
+            if item.status == "pending"
+        }
+        reordered_pending = [
+            pending_map.pop(pid) for pid in new_order if pid in pending_map
+        ]
+        reordered_pending.extend(pending_map.values())
 
-        # Собираем новый порядок pending из new_order
-        reordered_pending = []
-        for pid in new_order:
-            if pid in pending_map:
-                reordered_pending.append(pending_map.pop(pid))
-        # Добавляем оставшиеся pending (не упомянутые в new_order)
-        for item in pending_map.values():
-            reordered_pending.append(item)
-
-        queue.items = processed + reordered_pending
+        _pending_iter = iter(reordered_pending)
+        queue.items = [
+            item if item.status != "pending" else next(_pending_iter)
+            for item in queue.items
+        ]
         queue.total = len(queue.items)
+        self._persist_queue()
         await self._broadcast_batch_progress(queue)
         return queue
 
