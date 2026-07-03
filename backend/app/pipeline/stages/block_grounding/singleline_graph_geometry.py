@@ -706,6 +706,70 @@ def _extract_title_source(page_text: str, pdf_path: Path, page_index, panel_hint
     }
 
 
+def _extract_bus_sections(words, qf_out, qf_incomers):
+    """Секции шин: кластеры отходящих QF по X-разрывам + маркер шины (L1,L2,L3 / PEN) у кластера.
+
+    На двухсекционных листах (ГРЩ) фидеры двух секций разделены большим X-разрывом, и у каждой
+    группы своя подпись шины ЧУТЬ НИЖЕ ряда QF (QF y≈808..825, шина y≈844..862). Кластер
+    признаётся секцией только если в его X-диапазоне есть свой маркер шины — иначе разрыв
+    может быть просто компоновкой листа. Имя: токен «с.ш.N» рядом с маркером, иначе «шина N».
+
+    Возвращает (sections:[{id,name,x_range,marker,feeder_qfs,incomer_qfs}], qf→section_id).
+    Пустой список — если секция одна (не плодить сущность без информации).
+    """
+    if len(qf_out) < 4:
+        return [], {}
+    xs = sorted(q[0] for q in qf_out)
+    step = _median([xs[i + 1] - xs[i] for i in range(len(xs) - 1)]) or 60.0
+    qy_max = max(q[1] for q in qf_out)
+    # маркеры шин: подпись L1,L2,L3 или PEN в полосе чуть ниже ряда отходящих QF
+    marks = [(w[0], w[1]) for w in words
+             if (re.fullmatch(r"L1,\s*L2,\s*L3", w[4]) or w[4] == "PEN")
+             and qy_max - 5 < w[1] < qy_max + 150]
+    if not marks:
+        return [], {}
+    # кластеры фидеров по X-разрывам
+    clusters, cur = [], [sorted(qf_out)[0]]
+    for q in sorted(qf_out)[1:]:
+        if q[0] - cur[-1][0] > max(3 * step, 150):
+            clusters.append(cur)
+            cur = [q]
+        else:
+            cur.append(q)
+    clusters.append(cur)
+    # секция = кластер, в чьём X-диапазоне (с запасом) есть свой маркер шины
+    sections, qmap = [], {}
+    for cl in clusters:
+        x0, x1 = cl[0][0] - 120, cl[-1][0] + 120
+        m = [mk for mk in marks if x0 <= mk[0] <= x1]
+        if not m:
+            continue
+        # имя: «с.ш.N» в окрестности маркера (±300px по X, ±60 по Y), иначе порядковое
+        name = None
+        for w in words:
+            if "с.ш" in w[4] and any(abs(w[0] - mx) < 300 and abs(w[1] - my) < 60 for mx, my in m):
+                name = w[4].strip(" ,;")
+                break
+        sections.append({"cluster": cl, "marker": [round(m[0][0]), round(m[0][1])], "name": name})
+    if len(sections) < 2:      # одна секция = нет секционирования, слой не нужен
+        return [], {}
+    out = []
+    for i, s in enumerate(sections, 1):
+        sid = f"BS{i}"
+        cl = s.pop("cluster")
+        s["id"] = sid
+        s["name"] = s["name"] or f"шина {i}"
+        s["x_range"] = [round(cl[0][0]), round(cl[-1][0])]
+        s["feeder_qfs"] = [q[2] for q in cl]
+        for q in cl:
+            qmap[q[2]] = sid
+        # вводные аппараты секции (нижний ряд в X-диапазоне секции с запасом)
+        s["incomer_qfs"] = [q[2] for q in qf_incomers
+                            if cl[0][0] - 150 <= q[0] <= cl[-1][0] + 150]
+        out.append(s)
+    return out, qmap
+
+
 def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
     """Дожать привязку для колонки, оставшейся без кода. Код мог не попасть в primary-ряд
     (секционные «С2»-линии: К3.1.2С2 на dy≈-72) или лежать В ПОДПИСИ потребителя («Щит М4-1.1»
@@ -891,6 +955,12 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             if notes:
                 bind_conflicts[qn] = notes
 
+    # Секции шин (ребро фидер→секция): fail-soft, пусто если секция одна
+    try:
+        bus_sections, _bs_map = _extract_bus_sections(words, qf_out, qf_incomers)
+    except Exception:
+        bus_sections, _bs_map = [], {}
+
     feeders = []
     qf_xs = sorted(q[0] for q in qf_out)
     assigned_codes = {v for v in assign.values() if v}   # занятые коды — не переиспользовать в fallback
@@ -1058,6 +1128,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "phase": (p or {}).get("phase"), "control": g["control"],
             "additional_devices": additional_devices,
             "binding_method": bind_method.get(qn), "status": status, "review": review,
+            "bus_section": _bs_map.get(qn),
         })
 
     feeders.sort(key=lambda f: (int(re.match(r"QF(\d+)", f["qf"]).group(1)),
@@ -1070,6 +1141,13 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                "reserve": sum(1 for x in fl if x["status"] == "reserve"),
                "feeders": fl}
               for name, fl in sorted(panels_map.items())]
+    # панель → секция шин (по большинству её фидеров); секции → имена панелей
+    if bus_sections:
+        for p in panels:
+            cnt = collections.Counter(f.get("bus_section") for f in p["feeders"] if f.get("bus_section"))
+            p["bus_section"] = cnt.most_common(1)[0][0] if cnt else None
+        for s in bus_sections:
+            s["panels"] = sorted({p["name"] for p in panels if p.get("bus_section") == s["id"]})
 
     linked = [f for f in feeders if f.get("circuit_code")]
     reserve = [f for f in feeders if f["status"] == "reserve"]
@@ -1166,6 +1244,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "power": power,
         "hierarchy": hierarchy,
         "edges": hierarchy.get("edges", []),
+        "bus_sections": bus_sections,
         "panels": panels,
         "panel_calculations": panel_calcs,
         "tt_check_table": tt_check,
@@ -1325,6 +1404,18 @@ def render_graph_etalon_markdown(graph: dict) -> str:
                  f"| {_md_cell(e.get('label'))} |")
     if not graph.get("edges"):
         L.append("| — | — | — | — |")
+
+    # 3.1 Секции шин (только если секций ≥2 — иначе слой пуст)
+    bs = graph.get("bus_sections") or []
+    if bs:
+        L.append("\n### 3.1 Секции шин (фидер → секция, по геометрии)\n")
+        L.append("| Секция | Панели | Отходящих фидеров | Вводные аппараты | X-диапазон |")
+        L.append("| --- | --- | --- | --- | --- |")
+        for s in bs:
+            L.append(f"| {_md_cell(s.get('name'))} | {_md_cell(', '.join(s.get('panels') or []) or '—')} "
+                     f"| {len(s.get('feeder_qfs') or [])} | "
+                     f"{_md_cell(', '.join(s.get('incomer_qfs') or []) or '—')} "
+                     f"| {s.get('x_range')} |")
 
     # 4. Отходящие линии (по панелям)
     L.append("\n## 4. Отходящие линии\n")
