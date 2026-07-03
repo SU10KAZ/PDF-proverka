@@ -1892,6 +1892,36 @@ class PipelineManager:
         except Exception as exc:
             await self._log(job, f"Value Grounding пропущен (soft): {exc}", "warn")
 
+    async def _log_stage_degradations(self, job: AuditJob) -> None:
+        """Видимая сводка деградаций при «зелёном» финале аудита.
+
+        Fail-soft стадии (debt_control, decision_carryover, critic-чанки,
+        coverage и т.п.) пишут error/partial в pipeline_log, но аудит
+        завершается COMPLETED — раньше эксперт узнавал о невыполненном
+        переносе вердиктов только заметив пустые строки. Теперь финал явно
+        перечисляет стадии с error/partial.
+        """
+        try:
+            _root, _proj, output_dir = self._resolve_job_paths(job)
+            log_path = output_dir / "pipeline_log.json"
+            if not log_path.exists():
+                return
+            stages = (json.loads(log_path.read_text(encoding="utf-8"))
+                      .get("stages") or {})
+            degraded = [
+                f"{name}: {info.get('error') or info.get('message') or info.get('status')}"
+                for name, info in stages.items()
+                if isinstance(info, dict) and info.get("status") in ("error", "partial")
+            ]
+            if degraded:
+                await self._log(
+                    job,
+                    "⚠ Аудит завершён С ДЕГРАДАЦИЯМИ: " + "; ".join(degraded),
+                    "error",
+                )
+        except Exception:
+            pass  # сводка не должна ломать финализацию
+
     async def _run_debt_control(self, job: AuditJob) -> None:
         """«Контроль долгов»: согласованные замечания прошлой версии не теряются.
 
@@ -1915,7 +1945,15 @@ class PipelineManager:
                       "pipeline_log.json")
             )
         except Exception as exc:
-            await self._log(job, f"Контроль долгов пропущен (soft): {exc}", "warn")
+            # Fail-soft сохранён (аудит не валим), но деградация видимая:
+            # error в pipeline_log + error-уровень лога (раньше warn терялся
+            # в потоке, а исключение ДО runner'а вообще не оставляло следа).
+            self._update_pipeline_log(
+                job.project_id, "debt_control", "error", error=str(exc)[:200],
+            )
+            await self._log(
+                job, f"Контроль долгов НЕ выполнен (деградация): {exc}", "error",
+            )
 
     async def _run_decision_carryover(self, job: AuditJob) -> None:
         """Перенос вердиктов эксперта из предыдущей проверенной версии (fail-soft).
@@ -1936,7 +1974,14 @@ class PipelineManager:
             job.status = JobStatus.RUNNING
             await run_decision_carryover_stage(self._make_stage_context(job))
         except Exception as exc:
-            await self._log(job, f"Перенос вердиктов пропущен (soft): {exc}", "warn")
+            # Симметрично debt_control: fail-soft, но с видимым следом —
+            # иначе эксперт молча получал пустые вердикты и решал всё заново.
+            self._update_pipeline_log(
+                job.project_id, "decision_carryover", "error", error=str(exc)[:200],
+            )
+            await self._log(
+                job, f"Перенос вердиктов НЕ выполнен (деградация): {exc}", "error",
+            )
 
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
@@ -3143,6 +3188,7 @@ class PipelineManager:
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}:resume] ═══ Конвейер завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Конвейер завершён за {duration} мин{pause_note}.", "info")
+            await self._log_stage_degradations(job)
 
             await ws_manager.broadcast_to_project(
                 pid, WSMessage.complete(pid, duration_minutes=duration,
@@ -4560,6 +4606,7 @@ class PipelineManager:
             pause_note = f" (паузы: {round(job.pause_total_sec / 60, 1)} мин)" if job.pause_total_sec > 60 else ""
             print(f"[{pid}] ═══ Аудит завершён за {duration} мин{pause_note} ═══")
             await self._log(job, f"Аудит завершён за {duration} мин{pause_note}.", "info")
+            await self._log_stage_degradations(job)
 
             await ws_manager.broadcast_to_project(
                 pid, WSMessage.complete(pid, duration_minutes=duration,
