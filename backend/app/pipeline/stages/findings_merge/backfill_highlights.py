@@ -12,18 +12,23 @@ import json
 from pathlib import Path
 
 
-def backfill_project(project_dir: Path) -> dict:
+def backfill_project(project_dir: Path, output_dir: Path | None = None) -> dict:
     """Восстановить highlight_regions в 03_findings.json.
 
     Для каждого finding без highlight_regions ищет matching block_analysis
     по source_block_ids / related_block_ids / block_evidence и копирует
     highlight_regions оттуда.
 
+    output_dir: явная папка артефактов. Без неё берётся project_dir/_output —
+    в v2-раскладке такой папки НЕТ (артефакты в 03_analysis/...), и функция
+    молча превращалась в no-op: у v2-прогонов highlight_regions не
+    восстанавливались вообще.
+
     Returns:
         {"fixed": int, "checked": int}
     """
     project_dir = Path(project_dir)
-    output_dir = project_dir / "_output"
+    output_dir = Path(output_dir) if output_dir is not None else project_dir / "_output"
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
 

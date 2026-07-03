@@ -200,22 +200,27 @@ def write_block_analysis_runtime_summary(
     return summary
 
 
-def attach_stage02_coverage_to_findings(project_id: str) -> dict:
+def attach_stage02_coverage_to_findings(
+    project_id: str, output_dir: Path | None = None
+) -> dict:
     """Attach deterministic Stage 02 coverage warnings to final findings.
 
-    Использует bind_version() из ContextVar — это значит, что когда функцию
-    зовут из активного pipeline job-а для V2, она будет писать в
-    `_versions/v2/_output`, а не в корень.
+    output_dir: явная папка артефактов (run dir стадии) — обязательна при
+    вызове из живого прогона v2-primary, иначе резолв уйдёт в latest (не ту
+    копию, которую пишет стадия) и правки затрутся promote'ом run→latest.
+    Без параметра — прежний резолв (AUDIT_OUTPUT_DIR / bind_version()) для
+    внешних вызовов.
     """
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
-    if env_output_dir:
-        output_dir = Path(env_output_dir)
-    else:
-        from backend.app.services.common import version_service
-        try:
-            output_dir = version_service.resolve_version_output_dir(project_id)
-        except (version_service.VersionNotFoundError, FileNotFoundError):
-            output_dir = resolve_project_dir(project_id) / "_output"
+    if output_dir is None:
+        env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+        if env_output_dir:
+            output_dir = Path(env_output_dir)
+        else:
+            from backend.app.services.common import version_service
+            try:
+                output_dir = version_service.resolve_version_output_dir(project_id)
+            except (version_service.VersionNotFoundError, FileNotFoundError):
+                output_dir = resolve_project_dir(project_id) / "_output"
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"

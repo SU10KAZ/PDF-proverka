@@ -60,13 +60,17 @@ def _version_output_dir(project_id: str):
     return version_service.resolve_active_output_dir(project_id)
 
 
-def backfill_text_evidence_in_findings(project_id: str):
+def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None = None):
     """Backfill text-evidence + sheet в 03_findings.json.
 
     1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
     2. sheet — детерминированно из document_graph.json page_sheet_map
+
+    output_dir: явная папка артефактов (run dir стадии). Без неё резолв по
+    project_id даёт v2 latest — НЕ ту копию, в которую пишет стадия, и вся
+    работа затиралась последующим promote run→latest.
     """
-    output_dir = _version_output_dir(project_id)
+    output_dir = output_dir or _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
     blocks_path = output_dir / "02_blocks_analysis.json"
     graph_path = output_dir / "document_graph.json"
@@ -172,7 +176,7 @@ def backfill_text_evidence_in_findings(project_id: str):
         )
 
 
-def apply_phase0_dedup(project_id: str) -> dict | None:
+def apply_phase0_dedup(project_id: str, output_dir: Path | None = None) -> dict | None:
     """Phase 0 post-merge dedup: class-key + fuzzy. Gated by STAGE01_DEDUP_ENABLED.
 
     Reads 03_findings.json, runs class_dedup.collapse_to_canonical then
@@ -205,7 +209,7 @@ def apply_phase0_dedup(project_id: str) -> dict | None:
     if not STAGE01_DEDUP_ENABLED:
         return None
 
-    output_dir = _version_output_dir(project_id)
+    output_dir = output_dir or _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
     if not findings_path.exists():
         return None
@@ -321,9 +325,10 @@ def apply_phase0_dedup(project_id: str) -> dict | None:
 def refresh_finding_quality(
     project_id: str,
     filename: str = "03_findings.json",
+    output_dir: Path | None = None,
 ) -> dict | None:
     """Refresh deterministic practicality metadata for findings."""
-    target_path = _version_output_dir(project_id) / filename
+    target_path = (output_dir or _version_output_dir(project_id)) / filename
     if not target_path.exists():
         return None
 
@@ -334,7 +339,7 @@ def refresh_finding_quality(
         return None
 
 
-def merge_similar_findings(project_id: str) -> dict | None:
+def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> dict | None:
     """Объединить похожие замечания в 03_findings.json."""
     from backend.app.services.findings.findings_service import (
         _normalize_problem_pattern,
@@ -344,7 +349,7 @@ def merge_similar_findings(project_id: str) -> dict | None:
     import re as _re
     import shutil
 
-    output_dir = _version_output_dir(project_id)
+    output_dir = output_dir or _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
     if not findings_path.exists():
         return None
@@ -551,9 +556,14 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     ctx.update_pipeline_log("findings_merge", "done", message="OK")
 
     # ── Post-merge operations ─────────────────────────────────────────────────
-    backfill_text_evidence_in_findings(pid)
+    # ВСЕМ хелперам передаётся ctx.output_dir (run dir стадии). Раньше они
+    # резолвили папку сами по pid → v2 latest: обогащали ЧУЖУЮ копию
+    # 03_findings.json, которую последующий promote run→latest затирал.
+    # Подтверждено эмпирически: у v2-прогонов 0 замечаний с finding_quality/
+    # text_evidence/highlight_regions против 100% в legacy.
+    backfill_text_evidence_in_findings(pid, output_dir=ctx.output_dir)
 
-    merge_result = merge_similar_findings(pid)
+    merge_result = merge_similar_findings(pid, output_dir=ctx.output_dir)
     if merge_result and merge_result.get("merged_groups", 0) > 0:
         await ctx.log(
             f"Объединено похожих замечаний: {merge_result['before']} → {merge_result['after']} "
@@ -563,7 +573,7 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     # ── Phase 0 post-merge dedup (class-key + fuzzy) ─────────────────────────
     # OFF by default (STAGE01_DEDUP_ENABLED=false). On A0 baseline this is a
     # provable no-op. Fail-open: errors are logged, original findings preserved.
-    dedup_telemetry = apply_phase0_dedup(pid)
+    dedup_telemetry = apply_phase0_dedup(pid, output_dir=ctx.output_dir)
     if dedup_telemetry and dedup_telemetry.get("enabled"):
         crit_collapsed = int(dedup_telemetry.get("critical_collapsed_count") or 0)
         err = dedup_telemetry.get("error")
@@ -586,13 +596,13 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             else:
                 await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
 
-    refresh_finding_quality(pid)
+    refresh_finding_quality(pid, output_dir=ctx.output_dir)
 
     from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
-    backfill_project(ctx.project_dir)
+    backfill_project(ctx.project_dir, output_dir=ctx.output_dir)
 
     from backend.app.pipeline.stages.block_analysis.runner import attach_stage02_coverage_to_findings
-    coverage = attach_stage02_coverage_to_findings(pid)
+    coverage = attach_stage02_coverage_to_findings(pid, output_dir=ctx.output_dir)
     excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
     if excluded_count:
         await ctx.log(
