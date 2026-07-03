@@ -2351,7 +2351,12 @@ async def enrich_project(
     marker = f"<!-- ENRICHMENT: {model} @ {ts} blocks={ok_count}/{total} ok -->\n"
     new_md = marker + new_md
 
-    md_path.write_text(new_md, encoding="utf-8")
+    # Атомарно (tmp + os.replace): перезаписываем ИСХОДНЫЙ Markdown —
+    # источник истины для всего пайплайна. Kill процесса (вотчдог/OOM)
+    # посреди прямого write_text оставлял обрезанный/пустой MD.
+    _md_tmp = md_path.with_suffix(md_path.suffix + ".tmp")
+    _md_tmp.write_text(new_md, encoding="utf-8")
+    os.replace(_md_tmp, md_path)
 
     elapsed_s = time.monotonic() - started
     all_results = list(base_results) + list(high_detail_results_by_id.values())

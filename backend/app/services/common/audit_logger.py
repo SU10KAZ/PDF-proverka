@@ -4,6 +4,7 @@
 """
 import asyncio
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -84,6 +85,10 @@ def update_pipeline_log(
             with open(log_path, "r", encoding="utf-8") as f:
                 log_data = json.load(f)
         except (json.JSONDecodeError, UnicodeDecodeError):
+            # Не молчать: сброс истории стадий ломает resume-детекцию.
+            # После перехода на атомарную запись (tmp+replace) битый файл —
+            # аномалия, о которой надо знать.
+            print(f"[audit_logger] ПОВРЕЖДЁН {log_path} — история стадий сброшена")
             log_data = {"version": 1, "stages": {}}
     else:
         log_data = {"version": 1, "stages": {}}
@@ -141,8 +146,13 @@ def update_pipeline_log(
 
     log_data["stages"][stage_key] = stage_info
 
-    with open(log_path, "w", encoding="utf-8") as f:
+    # Атомарно (tmp + os.replace): kill процесса посреди прямой записи
+    # оставлял битый pipeline_log.json, и следующее чтение молча сбрасывало
+    # историю стадий в {} — resume-детектор считал, что ничего не сделано.
+    tmp_path = log_path.with_suffix(log_path.suffix + ".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(log_data, f, ensure_ascii=False, indent=2)
+    os.replace(tmp_path, log_path)
 
     # WS-broadcast для реактивного обновления UI
     try:

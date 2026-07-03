@@ -43,7 +43,17 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             "detail": f"Версия '{version_id}' не найдена",
             "can_resume": False,
         }
-    output_dir = project_dir / "_output"
+    # v2-primary: артефакты версии лежат в 03_analysis/latest, а не в
+    # version_dir/_output (его там вообще нет). Голый `_output` заставлял
+    # детектор видеть «ничего не сделано» на любом v2-проекте: resume
+    # предлагал prepare/полный перезапуск при готовых 01/02/03.
+    try:
+        output_dir = version_service.resolve_version_output_dir(
+            project_id, version_id,
+        )
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        # Legacy V1 / проект без manifest — прежнее поведение.
+        output_dir = project_dir / "_output"
     tiles_dir = output_dir / "tiles"
     gemma_state = evaluate_gemma_enrichment(project_dir)
     gemma_ready = bool(gemma_state.get("ready"))

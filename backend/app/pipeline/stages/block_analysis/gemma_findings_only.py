@@ -1316,7 +1316,11 @@ async def run_findings_only_for_project(
             bak = target_path.with_suffix(".classic.bak.json")
             if not bak.exists():
                 bak.write_text(target_path.read_text(encoding="utf-8"), encoding="utf-8")
-        target_path.write_text(json.dumps(output_doc, ensure_ascii=False, indent=2), encoding="utf-8")
+        # Атомарно (tmp + os.replace): финальная запись итога многочасовой
+        # стадии — kill посреди прямого write_text корёжил 02_blocks_analysis.
+        _tmp = target_path.with_suffix(target_path.suffix + ".tmp")
+        _tmp.write_text(json.dumps(output_doc, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(_tmp, target_path)
 
     # Run summary
     ok = [r for r in results if r["result"].get("ok")]
