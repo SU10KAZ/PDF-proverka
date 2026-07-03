@@ -770,6 +770,122 @@ def _extract_bus_sections(words, qf_out, qf_incomers):
     return out, qmap
 
 
+def _extract_feeder_pairs(feeders):
+    """Пары С1↔С2 (двухсекционные стояки/шины): коды с общей базой и суффиксами С1/С2
+    (К1.1.1С1 ↔ К1.1.1С2) — одна нагрузка, питаемая с двух секций (взаиморезерв).
+
+    Ребро позволяет ловить: несимметричное резервирование пары (разные номиналы
+    автоматов/сечения кабеля у С1 и С2), пару без второй половины.
+    """
+    by_code = {}
+    for f in feeders:
+        c = f.get("circuit_code")
+        if c:
+            by_code.setdefault(c, f)   # при дубле привязки берём первого
+    pairs = []
+    for code, f1 in sorted(by_code.items()):
+        m = re.match(r"(.+?)С1$", code)
+        if not m:
+            continue
+        code2 = m.group(1) + "С2"
+        f2 = by_code.get(code2)
+        if not f2:
+            pairs.append({"base": m.group(1), "c1": code, "c1_qf": f1.get("qf"),
+                          "c2": None, "c2_qf": None,
+                          "note": "пара не найдена: код С2 отсутствует/не привязан"})
+            continue
+        notes = []
+        if f1.get("breaker_in") != f2.get("breaker_in"):
+            notes.append(f"номиналы автоматов различаются: {f1.get('breaker_in')} vs {f2.get('breaker_in')}")
+        if (f1.get("cable") or "").strip() != (f2.get("cable") or "").strip():
+            notes.append("кабели пары различаются")
+        pairs.append({"base": m.group(1), "c1": code, "c1_qf": f1.get("qf"),
+                      "c2": code2, "c2_qf": f2.get("qf"),
+                      "note": "; ".join(notes) or None})
+    return pairs
+
+
+_INPUT_DEV_TYPES = [
+    ("switch", re.compile(r"^QS\d|^ВР-?\d|^ВН-?\d")),          # рубильник/выключатель нагрузки
+    ("fuse", re.compile(r"^FU\d|^ППН-?\d")),                    # предохранитель
+    ("spd", re.compile(r"^ОП10\d|^УЗИП|^FV\d")),                # УЗИП/разрядник
+    ("relay_voltage", re.compile(r"^РН-?\d|^KV\d")),            # реле контроля напряжения
+    ("indicator", re.compile(r"^HL\d")),                        # лампа индикации
+]
+
+
+def _extract_input_devices(words, qf_out, qf_incomers, bus_sections):
+    """Устройства ВВОДНОЙ ЗОНЫ (ниже ряда отходящих QF): QS/ВР рубильники, FU/ППН
+    предохранители, УЗИП (ОП10x/FV), РН/KV реле напряжения, HL индикация.
+
+    Привязка: ближайший вводной аппарат (qf_incomers, X<150px) → incomer;
+    иначе секция шин по x_range → bus_section; иначе unbound. Раньше эти
+    устройства не моделировались вовсе (FU — 0 в графе, QS 18 за бортом).
+    """
+    if not qf_out:
+        return []
+    qy_out_max = max(q[1] for q in qf_out)
+    devs = []
+    for w in words:
+        if w[1] <= qy_out_max + 40:      # только вводная зона (низ листа)
+            continue
+        for dtype, pat in _INPUT_DEV_TYPES:
+            if pat.match(w[4]):
+                devs.append({"device": w[4], "dtype": dtype, "x": round(w[0]), "y": round(w[1])})
+                break
+    for d in devs:
+        d["incomer"] = None
+        d["bus_section"] = None
+        if qf_incomers:
+            q = min(qf_incomers, key=lambda q: abs(q[0] - d["x"]))
+            if abs(q[0] - d["x"]) < 150:
+                d["incomer"] = q[2]
+        if d["incomer"] is None:
+            for s in bus_sections or []:
+                x0, x1 = s.get("x_range") or (None, None)
+                if x0 is not None and x0 - 150 <= d["x"] <= x1 + 150:
+                    d["bus_section"] = s["id"]
+                    break
+    return devs
+
+
+def _fallback_power_inputs(input_devices, bus_sections, metering):
+    """Вводы из геометрии, когда паттерны подписи (ВП1/ВП2) не сработали (ГРЩ-номенклатура,
+    power.inputs=[]). Каждый switch-кластер вводной зоны (QS/ВР, X-разрыв >300px) = ввод;
+    ввод получает секцию по X, счётчик — из непривязанных/вводных точек учёта рядом (<250px)."""
+    sw = sorted([d for d in input_devices if d["dtype"] == "switch"], key=lambda d: d["x"])
+    if not sw:
+        return []
+    clusters, cur = [], [sw[0]]
+    for d in sw[1:]:
+        if d["x"] - cur[-1]["x"] > 300:
+            clusters.append(cur)
+            cur = [d]
+        else:
+            cur.append(d)
+    clusters.append(cur)
+    inputs = []
+    for i, cl in enumerate(clusters, 1):
+        cx = sum(d["x"] for d in cl) / len(cl)
+        bs = next((s for s in bus_sections or []
+                   if (s.get("x_range") or [9e9, -9e9])[0] - 200 <= cx <= (s.get("x_range") or [9e9, -9e9])[1] + 200), None)
+        meter = None
+        for p in metering or []:
+            if p.get("kind") in ("incomer", "unbound") and p.get("meter"):
+                meter = ", ".join(p["meter"])
+                break
+        inputs.append({
+            "id": f"Ввод {i} (гео)", "vvod": None,
+            "switch": ", ".join(sorted({d["device"] for d in cl})),
+            "incomer": None, "meter": meter,
+            "feeds": (bs or {}).get("panels") or ([] if bs is None else [bs["name"]]),
+            "bus_section": (bs or {}).get("id"),
+            "i_rab": None, "i_avar": None,
+            "source": "geometry_fallback",
+        })
+    return inputs
+
+
 _METER_DEV_RE = re.compile(r"^(TA|ТА)\d|^Wh$|^НАРТИС|^Меркур|^МТ-72")
 
 
@@ -1021,12 +1137,14 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
 
     feeders = []
     qf_xs = sorted(q[0] for q in qf_out)
+    _qf_geom = {}   # qn → (qx, qy, next_x) для пост-обработки (control_edges)
     assigned_codes = {v for v in assign.values() if v}   # занятые коды — не переиспользовать в fallback
     for qx, qy, qn in qf_out:
         g = geo[qn]
         code = assign.get(qn)
         p = params.get(code) if code else None
         nx = next((x for x in qf_xs if x > qx + 1), qx + 70)
+        _qf_geom.setdefault(qn, (qx, qy, nx))
         additional_devices = _extract_additional_devices(qx, qy, nx, words)
         consumer_geo = _extract_consumer_geo(
             qx, qy, nx, words,
@@ -1214,6 +1332,38 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     ambiguous = [f for f in feeders if f["status"] == "ambiguous"]
     no_code = [f for f in feeders if f["status"] == "no_code"]
     structural = [f for f in feeders if f["status"] == "structural"]
+
+    # ── Рёбра roadmap №3-9 (все fail-soft) ──
+    try:
+        feeder_pairs = _extract_feeder_pairs(feeders)              # №6: пары С1↔С2
+    except Exception:
+        feeder_pairs = []
+    try:
+        input_devices = _extract_input_devices(words, qf_out, qf_incomers, bus_sections)  # №4/5/8/9
+    except Exception:
+        input_devices = []
+    # №7: сигнал (ПС/АСУД) → коммутационный аппарат (КМ/МК103) → линия; action из текста колонки
+    control_edges = []
+    try:
+        for f in feeders:
+            if not f.get("control"):
+                continue
+            qg = _qf_geom.get(f["qf"])
+            action = None
+            if qg:
+                qx0, qy0, nx0 = qg
+                col = " ".join(w[4] for w in words
+                               if qx0 - 46 <= w[0] < nx0 and qy0 - 330 < w[1] < qy0 + 40)
+                if re.search(r"откл", col, re.I):
+                    action = "отключение при пожаре" if "ПС" in f["control"] else "отключение по сигналу"
+            dev = next((d for d in (f.get("additional_devices") or [])
+                        if re.search(r"КМ|МК103", d)), None)
+            for sig in f["control"]:
+                control_edges.append({"signal": sig, "device": dev, "qf": f["qf"],
+                                      "circuit_code": f.get("circuit_code"),
+                                      "consumer": f.get("consumer"), "action": action})
+    except Exception:
+        control_edges = []
     review_items = [{"qf": f["qf"], "code": f.get("circuit_code"), "notes": f["review"]}
                     for f in feeders if f["review"]]
     bv = base["validation"]
@@ -1221,6 +1371,16 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         power = _extract_power(words, page_full_text, qf_incomers)
     except Exception:
         power = None
+    # №3: вводы из геометрии, когда подписи ВП1/ВП2 не сработали (ГРЩ-номенклатура)
+    try:
+        if input_devices and (power is None or not (power or {}).get("inputs")):
+            _fb = _fallback_power_inputs(input_devices, bus_sections, metering)
+            if _fb:
+                power = power or {"external_source": None, "avr": None}
+                power["inputs"] = _fb
+                power["inputs_source"] = "geometry_fallback"
+    except Exception:
+        pass
     # ── Дополнительные слои графа (best-effort, fail-soft по каждому) ──
     def _safe(fn, *a, default=None):
         try:
@@ -1306,6 +1466,9 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "edges": hierarchy.get("edges", []),
         "bus_sections": bus_sections,
         "metering": metering,
+        "feeder_pairs": feeder_pairs,
+        "input_devices": input_devices,
+        "control_edges": control_edges,
         "panels": panels,
         "panel_calculations": panel_calcs,
         "tt_check_table": tt_check,
@@ -1477,6 +1640,40 @@ def render_graph_etalon_markdown(graph: dict) -> str:
                      f"| {len(s.get('feeder_qfs') or [])} | "
                      f"{_md_cell(', '.join(s.get('incomer_qfs') or []) or '—')} "
                      f"| {s.get('x_range')} |")
+
+    # 3.2 Пары С1↔С2 (взаиморезерв секций)
+    fp = graph.get("feeder_pairs") or []
+    if fp:
+        L.append("\n### 3.2 Пары С1↔С2 (взаиморезерв с двух секций)\n")
+        L.append("| База | С1 (QF) | С2 (QF) | Замечание |")
+        L.append("| --- | --- | --- | --- |")
+        for p in fp:
+            L.append(f"| {_md_cell(p.get('base'))} | {_md_cell(p.get('c1'))} ({_md_cell(p.get('c1_qf'))}) "
+                     f"| {_md_cell(p.get('c2'))} ({_md_cell(p.get('c2_qf'))}) | {_md_cell(p.get('note') or '—')} |")
+
+    # 3.3 Управление: сигнал → аппарат → линия
+    ce = graph.get("control_edges") or []
+    if ce:
+        L.append("\n### 3.3 Управление (сигнал → аппарат → линия)\n")
+        L.append("| Сигнал | Аппарат | Линия (QF/код) | Потребитель | Действие |")
+        L.append("| --- | --- | --- | --- | --- |")
+        for e in ce:
+            L.append(f"| {_md_cell(e.get('signal'))} | {_md_cell(e.get('device') or '—')} "
+                     f"| {_md_cell(e.get('qf'))} / {_md_cell(e.get('circuit_code') or '—')} "
+                     f"| {_md_cell(e.get('consumer') or '—')} | {_md_cell(e.get('action') or '—')} |")
+
+    # 3.4 Устройства вводной зоны (QS/FU/УЗИП/РН/HL)
+    idv = graph.get("input_devices") or []
+    if idv:
+        _dt = {"switch": "рубильник", "fuse": "предохранитель", "spd": "УЗИП",
+               "relay_voltage": "реле напряжения", "indicator": "индикация"}
+        L.append("\n### 3.4 Устройства вводной зоны\n")
+        L.append("| Устройство | Тип | Привязка |")
+        L.append("| --- | --- | --- |")
+        for d in idv:
+            b = d.get("incomer") or d.get("bus_section") or "не привязано"
+            L.append(f"| {_md_cell(d.get('device'))} | {_md_cell(_dt.get(d.get('dtype'), d.get('dtype')))} "
+                     f"| {_md_cell(b)} |")
 
     # 4. Отходящие линии (по панелям)
     L.append("\n## 4. Отходящие линии\n")
