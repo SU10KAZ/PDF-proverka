@@ -1587,12 +1587,14 @@ class PipelineManager:
             print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
 
     @staticmethod
-    def _attach_stage02_coverage_to_findings(project_id: str) -> dict:
+    def _attach_stage02_coverage_to_findings(
+        project_id: str, output_dir: Optional[Path] = None
+    ) -> dict:
         """Attach deterministic Stage 02 coverage warnings to final findings."""
         from backend.app.pipeline.stages.block_analysis.runner import (
             attach_stage02_coverage_to_findings,
         )
-        return attach_stage02_coverage_to_findings(project_id)
+        return attach_stage02_coverage_to_findings(project_id, output_dir=output_dir)
 
     @staticmethod
     def _backfill_text_evidence_in_findings(project_id: str):
@@ -3815,7 +3817,21 @@ class PipelineManager:
                 await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
                 print(f"[{pid}] Parallel task {task_name} exception: {result}")
 
-        coverage = self._attach_stage02_coverage_to_findings(pid)
+        # Баг A4 аудита пайплайна: review_error выставлялся, но НИГДЕ не
+        # читался — promote выполнялся безусловно, и аудит завершался
+        # COMPLETED без вердиктов критика (findings уходили эксперту
+        # непроверенными, а latest выглядел «как будто review прошёл»).
+        if review_error:
+            job.error_message = (
+                job.error_message
+                or "findings_review упал — вердикты критика отсутствуют"
+            )
+            raise RuntimeError(job.error_message)
+
+        # coverage — в run dir job'а (класс бага B2: резолв по pid уходил в
+        # v2 latest, правки затирались promote'ом run→latest).
+        _cov_root, _cov_proj, _cov_out = self._resolve_job_paths(job)
+        coverage = self._attach_stage02_coverage_to_findings(pid, output_dir=_cov_out)
         excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)
         if excluded_count:
             await self._log(
@@ -3934,12 +3950,22 @@ class PipelineManager:
                 return
 
             if not result.success:
-                job.status = JobStatus.FAILED
-                job.error_message = result.error
+                # standalone=False: job ОБЩИЙ с critic/corrector/optimization —
+                # мутация статуса здесь затирала бы их состояние (см. ниже).
+                if standalone:
+                    job.status = JobStatus.FAILED
+                    job.error_message = result.error
                 await self._log(job, f"Верификация норм: {result.error}", "error")
                 return
 
-            job.status = JobStatus.COMPLETED
+            # ГОНКА (баг C1 аудита пайплайна): при standalone=False нормы
+            # финишируют первыми и ставили COMPLETED на общем job, пока
+            # critic/optimization ещё работают часами. Heartbeat-цикл выходит
+            # по status != RUNNING → live-status видел «зомби», cleanup мог
+            # убить живой аудит; а FAILED от critic затирался COMPLETED.
+            # Статус общего job'а ставит только оркестратор после gather.
+            if standalone:
+                job.status = JobStatus.COMPLETED
             self._promote_v2_analysis_artifacts(
                 job,
                 (
@@ -3955,8 +3981,9 @@ class PipelineManager:
             job.status = JobStatus.CANCELLED
             self._update_pipeline_log(pid, "norm_verify", "error", error="Отменено")
         except Exception as e:
-            job.status = JobStatus.FAILED
-            job.error_message = str(e)
+            if standalone:
+                job.status = JobStatus.FAILED
+                job.error_message = str(e)
             await self._log(job, f"Исключение: {e}", "error")
             self._update_pipeline_log(pid, "norm_verify", "error", error=str(e))
         finally:
