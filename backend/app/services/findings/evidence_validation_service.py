@@ -140,7 +140,9 @@ async def _run_batch_async(
     for finding in findings:
         fid = str(finding.get("id", ""))
         if respect_kb_routing and not force:
-            run, reason = should_run_evidence_verifier(finding, kb_decision=kb_map.get(fid))
+            run, reason = should_run_evidence_verifier(
+                finding, kb_decision=kb_map.get(fid), section=section,
+            )
             if not run:
                 skipped.append({"finding_id": fid, "reason": reason})
                 continue
@@ -205,17 +207,29 @@ def run_evidence_validation(
     except Exception:
         enforce_precedent = False
 
-    decisions, skipped, errors = asyncio.run(_run_batch_async(
-        project_id,
-        findings,
-        section=section,
-        version_id=version_id,
-        kb_map=kb_map,
-        model=model,
-        force=force,
-        respect_kb_routing=respect_kb_routing,
-        enforce_precedent=enforce_precedent,
-    ))
+    # EV2 нужен ОДИН короткий JSON — континуации графического LLM только замедляют
+    # (лишние вызовы qwen). Локально глушим их на время прогона EV2; стадия
+    # standalone (stage_comparison параллельно не идёт), поэтому override безопасен.
+    _cont_key = "STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS"
+    _cont_prev = os.environ.get(_cont_key)
+    os.environ[_cont_key] = os.environ.get("EVIDENCE_VERIFY_MAX_CONTINUATIONS", "0")
+    try:
+        decisions, skipped, errors = asyncio.run(_run_batch_async(
+            project_id,
+            findings,
+            section=section,
+            version_id=version_id,
+            kb_map=kb_map,
+            model=model,
+            force=force,
+            respect_kb_routing=respect_kb_routing,
+            enforce_precedent=enforce_precedent,
+        ))
+    finally:
+        if _cont_prev is None:
+            os.environ.pop(_cont_key, None)
+        else:
+            os.environ[_cont_key] = _cont_prev
 
     # сводка по прецеденту (shadow-наблюдаемость): на скольких замечаниях сигнал
     # сработал бы / реально повлиял

@@ -272,3 +272,17 @@ def test_kb_routing_reject_graphic():
     finding = {"id": "F-1", "evidence": [{"type": "image", "block_id": "ABC-1"}]}
     run, reason = should_run_evidence_verifier(finding, kb_decision={"llm_decision": "reject"})
     assert run is True and reason == "kb_reject_graphic"
+
+
+def test_kb_routing_critical_always_runs():
+    # критическое замечание проверяем всегда, даже без KB-вердикта и прецедента
+    finding = {"id": "F-1", "severity": "КРИТИЧЕСКОЕ"}
+    run, reason = should_run_evidence_verifier(finding, use_precedent=False)
+    assert run is True and reason == "critical"
+
+
+def test_kb_routing_plain_finding_not_selected():
+    # обычное некритическое замечание без прецедента — визуально НЕ проверяем (быстрый пропуск)
+    finding = {"id": "F-1", "severity": "РЕКОМЕНДАТЕЛЬНОЕ"}
+    run, reason = should_run_evidence_verifier(finding, use_precedent=False)
+    assert run is False and reason == "not_selected"
