@@ -198,5 +198,5 @@ python3 scripts/projects_v2/check_ui_contract_parity.py --all
   remains a watched smoke. Codex did not run external LLM.
 - Manual integration into deploy must cherry-pick current fix commits onto the
   deploy line; do not merge the whole fix branch blindly. See
-  `migration_deploy_fix_conflicts.md`.
+  `docs/migration_deploy_fix_conflicts.md`.
 - Actual flag flip and backend restart are human-only steps.
