@@ -535,7 +535,12 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
         await ctx.log(f"{error} — свод замечаний считается ошибкой", "error")
         return FindingsMergeResult(success=False, error=error)
 
-    is_valid, repair_msg = validate_and_repair_json(findings_path)
+    # to_thread: repair-ветка функции квадратичная — на большом битом JSON
+    # блокировала event loop (вотчдог убивал бэкенд, инциденты 03.07).
+    import asyncio as _asyncio
+    is_valid, repair_msg = await _asyncio.to_thread(
+        validate_and_repair_json, findings_path
+    )
     if not is_valid:
         error = f"03_findings.json невалиден: {repair_msg}"
         ctx.update_pipeline_log("findings_merge", "error", error=error)

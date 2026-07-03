@@ -560,7 +560,10 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
     # Валидация JSON после corrector
     findings_path = output_dir / "03_findings.json"
     if findings_path.exists():
-        is_valid, repair_msg = validate_and_repair_json(findings_path)
+        # to_thread: repair-ветка квадратичная, на большом JSON блокирует loop.
+        is_valid, repair_msg = await asyncio.to_thread(
+            validate_and_repair_json, findings_path
+        )
         if not is_valid:
             await ctx.log(
                 f"ВНИМАНИЕ: 03_findings.json невалиден после Corrector: {repair_msg}. "

@@ -189,9 +189,8 @@ async def set_stage_batch_modes_config(request: dict):
     return {"status": "ok", "updated": updated, "modes": dict(STAGE_BATCH_MODES)}
 
 
-@router.get("/account")
-async def get_claude_account():
-    """Получить информацию о текущем аккаунте Claude CLI."""
+def _claude_auth_status_sync() -> dict:
+    """Sync-опрос `claude auth status` (subprocess до 10с) — звать из to_thread."""
     try:
         cli = get_claude_cli()
         result = subprocess.run(
@@ -213,14 +212,21 @@ async def get_claude_account():
         return {"email": "—", "org": "—", "plan": "—", "loggedIn": False, "error": str(e)}
 
 
+@router.get("/account")
+async def get_claude_account():
+    """Получить информацию о текущем аккаунте Claude CLI."""
+    # subprocess.run (до 10с) в event loop → /api/info замирал → вотчдог
+    # убивал бэкенд. Только через to_thread.
+    return await asyncio.to_thread(_claude_auth_status_sync)
+
+
 # ─── Смена аккаунта ───
 # Хранит текущий процесс login и auth URL
 _login_state: dict = {"proc": None, "url": None, "done": False}
 
 
-@router.post("/account/switch")
-async def switch_claude_account():
-    """Выйти из текущего аккаунта и начать логин в новый. Возвращает auth URL."""
+def _switch_claude_account_sync() -> dict:
+    """Sync-часть смены аккаунта (logout до 10с + ожидание URL до 5с)."""
     global _login_state
     cli = get_claude_cli()
     shell = cli.endswith(".cmd")
@@ -267,28 +273,25 @@ async def switch_claude_account():
     return {"status": "started", "message": "Ожидание URL авторизации..."}
 
 
+@router.post("/account/switch")
+async def switch_claude_account():
+    """Выйти из текущего аккаунта и начать логин в новый. Возвращает auth URL."""
+    # logout (до 10с) + join(5с) блокировали event loop — только to_thread.
+    return await asyncio.to_thread(_switch_claude_account_sync)
+
+
 @router.get("/account/switch/status")
 async def switch_account_status():
     """Проверить статус login — завершён ли."""
     if _login_state.get("done"):
-        # Получить данные нового аккаунта
-        try:
-            cli = get_claude_cli()
-            result = subprocess.run(
-                [cli, "auth", "status", "--json"],
-                capture_output=True, text=True, timeout=10,
-                encoding="utf-8", errors="replace",
-                shell=cli.endswith(".cmd"),
-            )
-            if result.returncode == 0 and result.stdout.strip():
-                data = json.loads(result.stdout.strip())
-                return {
-                    "status": "done",
-                    "email": data.get("email", "—"),
-                    "plan": data.get("subscriptionType", "—"),
-                }
-        except Exception:
-            pass
+        # Получить данные нового аккаунта (subprocess до 10с — в to_thread).
+        info = await asyncio.to_thread(_claude_auth_status_sync)
+        if info.get("loggedIn"):
+            return {
+                "status": "done",
+                "email": info.get("email", "—"),
+                "plan": info.get("plan", "—"),
+            }
         return {"status": "done"}
 
     if _login_state.get("url"):

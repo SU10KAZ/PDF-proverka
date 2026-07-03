@@ -244,7 +244,10 @@ async def run_text_analysis(
         validate_and_repair_json,
     )
 
-    is_valid, repair_msg = validate_and_repair_json(output_path)
+    # to_thread: repair-ветка квадратичная, на большом JSON блокирует loop.
+    is_valid, repair_msg = await asyncio.to_thread(
+        validate_and_repair_json, output_path
+    )
     if not is_valid:
         error = f"01_text_analysis.json невалиден (не починить): {repair_msg}"
         ctx.update_pipeline_log(log_stage, "error", error=error)

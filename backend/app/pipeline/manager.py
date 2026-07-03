@@ -636,6 +636,43 @@ class PipelineManager:
         except Exception as e:
             print(f"[PipelineManager] Ошибка удаления batch_queue.json: {e}")
 
+    async def auto_resume_interrupted_batch(self, delay_sec: float = 20.0) -> None:
+        """Авто-возобновление прерванной очереди после старта бэкенда.
+
+        Инцидент 03.07.2026: вотчдог дважды убивал бэкенд посреди ночного
+        батча, и до ручного POST /api/audit/batch/resume очередь простаивала.
+        Этот метод вызывается фоновым таском из lifespan-startup.
+
+        Безопасность:
+          - kill-switch: BATCH_AUTO_RESUME_ENABLED=false отключает полностью;
+          - задержка delay_sec даёт серверу подняться (health, роутеры),
+            чтобы тяжёлый пайплайн не стартовал в момент инициализации;
+          - вся логика гонок/идемпотентности — внутри resume_interrupted_batch
+            (лок, проверка живого worker'а/аудита); здесь только мягкие
+            отказы в лог, никаких исключений наружу.
+        """
+        enabled = (os.environ.get("BATCH_AUTO_RESUME_ENABLED", "true").strip().lower()
+                   not in ("false", "0", "no", "off"))
+        if not enabled:
+            print("[Recovery] Авто-resume батча отключён (BATCH_AUTO_RESUME_ENABLED=false)")
+            return
+        try:
+            await asyncio.sleep(delay_sec)
+            queue = self._batch_queue
+            if queue is None or queue.status != "interrupted":
+                return
+            if not any(it.status in ("pending", "interrupted") for it in queue.items):
+                return
+            resumed = await self.resume_interrupted_batch()
+            print(
+                f"[Recovery] Авто-resume батча: очередь {resumed.queue_id} "
+                f"возобновлена ({resumed.completed}/{resumed.total} уже готово)"
+            )
+        except BatchResumeBlockedError as e:
+            print(f"[Recovery] Авто-resume батча отложен: {e}")
+        except Exception as e:
+            print(f"[Recovery] Авто-resume батча не удался: {e}")
+
     async def resume_interrupted_batch(self) -> BatchQueueStatus:
         """Restart a persisted interrupted queue from unfinished items.
 
@@ -1176,7 +1213,16 @@ class PipelineManager:
             if killed:
                 print(f"[{project_id}] Убито {killed} дочерних процессов")
             task = self._tasks.get(project_id)
-            if task:
+            # _tasks[pid] у батч-item'а указывает на корутину ВСЕГО worker'а
+            # очереди (см. `self._tasks[pid] = asyncio.current_task()` в
+            # _run_batch_queue). task.cancel() в этом случае убивал бы всю
+            # очередь: CancelledError — BaseException, пролетает мимо
+            # `except Exception` item-цикла, worker умирает, очередь виснет
+            # в 'running' (фантом). Отменяем таск только если он НЕ worker:
+            # для item'а достаточно job.status=CANCELLED + убитых процессов —
+            # стадия завершится сама, item-цикл штатно пометит cancelled и
+            # перейдёт к следующему проекту.
+            if task is not None and task is not self._tasks.get("__BATCH__"):
                 task.cancel()
             self._cleanup(project_id)
             await ws_manager.broadcast_to_project(
@@ -1884,10 +1930,15 @@ class PipelineManager:
         """Ensure findings_only Stage 02 has its own 100 DPI crop index."""
         pid = job.project_id
         # Version-aware: V1 = root, V2+ = _versions/v{N}/.
-        _root, project_dir, _output = self._resolve_job_paths(job)
+        _root, project_dir, output_dir = self._resolve_job_paths(job)
         policy = stage02_crop_policy()
-        index_path = stage02_blocks_index_path(project_dir)
-        blocks_dir = stage02_blocks_dir(project_dir)
+        # v2-primary: crop-субпроцесс пишет в output_dir (ему передаётся
+        # AUDIT_OUTPUT_DIR = run dir). Проверку строим от того же output_dir, а не
+        # через gemma_output_root(project_dir): без активного bind_output_root
+        # (например, на пути resume) он падает на latest/_output — мимо run dir,
+        # и готовый crop не находится. output_dir корректен и в legacy (= _output).
+        index_path = output_dir / STAGE02_BLOCKS_DIRNAME / "index.json"
+        blocks_dir = output_dir / STAGE02_BLOCKS_DIRNAME
         stale_existing_dir = (
             not index_path.exists()
             and blocks_dir.exists()
@@ -2859,6 +2910,12 @@ class PipelineManager:
                     await self._run_block_analysis_findings_only(job)
                     if job.status == JobStatus.CANCELLED:
                         return False
+                    if job.status == JobStatus.FAILED:
+                        # Симметрично _ocr_block_analysis_and_retry: FAILED нельзя
+                        # проглатывать — иначе merge пойдёт без 02_blocks_analysis.
+                        raise RuntimeError(
+                            job.error_message or "Stage 02 (block_analysis) failed"
+                        )
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
                 return job.status != JobStatus.CANCELLED
@@ -4018,7 +4075,12 @@ class PipelineManager:
                 await self._log(job, f"Block retry: {len(block_ids)} нечитаемых → promote compact→full")
                 self._update_pipeline_log(pid, "block_retry", "running",
                                           message=f"Promote {len(block_ids)} блоков")
-                promote_result = promote_to_full(proj_path, block_ids)
+                # to_thread: внутри — fitz-рендер PDF (sync). Прямой вызов
+                # блокировал event loop → health-check /api/info молчал →
+                # вотчдог убивал живой бэкенд (инциденты 03.07).
+                promote_result = await asyncio.to_thread(
+                    promote_to_full, proj_path, block_ids
+                )
                 if promote_result.get("promoted", 0) == 0:
                     await self._log(job, "Block retry: нет full-версий для промоута")
                     break
@@ -4026,7 +4088,12 @@ class PipelineManager:
                 await self._log(job, f"Block retry (итерация {retry_iter}): {len(block_ids)} нечитаемых блоков → перекачка ×2")
                 self._update_pipeline_log(pid, "block_retry", "running",
                                           message=f"Итерация {retry_iter}: {len(block_ids)} блоков")
-                recrop_result = recrop_blocks(proj_path, block_ids, scale_multiplier=2.0)
+                # to_thread: внутри — urllib-скачивание с retry/backoff
+                # (time.sleep) и fitz-рендер, всё синхронное. На большом
+                # наборе блоков блокировало event loop на десятки секунд.
+                recrop_result = await asyncio.to_thread(
+                    recrop_blocks, proj_path, block_ids, scale_multiplier=2.0
+                )
                 if recrop_result.get("recropped", 0) == 0:
                     await self._log(job, "Block retry: все блоки уже на максимальном разрешении, стоп")
                     break
@@ -4140,6 +4207,14 @@ class PipelineManager:
             await self._run_block_analysis_findings_only(job)
             if job.status == JobStatus.CANCELLED:
                 return
+            if job.status == JobStatus.FAILED:
+                # Иначе провал Stage 02 (paid_api_guard / «все блоки упали» /
+                # result.success=False) молча проглатывается: следующая стадия
+                # перетирает статус RUNNING и аудит доезжает до COMPLETED без
+                # ~60% визуальных замечаний. Роняем job штатно, как text/merge.
+                raise RuntimeError(
+                    job.error_message or "Stage 02 (block_analysis) failed"
+                )
             self.active_jobs[pid] = job
             self._tasks[pid] = asyncio.current_task()
 
@@ -5085,6 +5160,10 @@ class PipelineManager:
                     self._stop_heartbeat(pid)
                     self.active_jobs.pop(pid, None)
                     self._tasks.pop(pid, None)
+                    # Итог item'а — на диск сразу: иначе он живёт только в
+                    # памяти (persist был лишь side-effect prefetch-тасков),
+                    # и kill бэкенда в окне терял completed/failed-статусы.
+                    self._persist_queue()
                     await self._broadcast_batch_progress(queue)
                     # Снимаем bind_version, выставленный перед dispatch
                     try:
@@ -5109,7 +5188,6 @@ class PipelineManager:
             await self._broadcast_batch_progress(queue, complete=True)
 
         except Exception as e:
-            queue.status = "completed"
             meta_job.status = JobStatus.FAILED
             # Не оставлять текущий item в 'running' — иначе UI вечно покажет
             # «Выполняется» при мёртвом воркере.
@@ -5118,10 +5196,21 @@ class PipelineManager:
                     _it.status = "failed"
                     if not _it.error:
                         _it.error = f"Сбой воркера очереди: {e}"
+                    queue.failed += 1
+            # Раньше здесь безусловно ставился 'completed' — при живых pending
+            # это делало очередь невозобновимой (resume требует interrupted),
+            # и остаток батча застревал навсегда. Честный статус: interrupted,
+            # если есть кого продолжать.
+            has_pending = any(_it.status == "pending" for _it in queue.items)
+            queue.status = "interrupted" if has_pending else "completed"
             print(f"[BATCH] КРИТИЧЕСКАЯ ОШИБКА: {e}")
             import traceback
             traceback.print_exc()
         finally:
+            # Зафиксировать финальное состояние очереди на диске: до этого
+            # persist происходил только как side-effect prefetch-тасков, и
+            # kill процесса в окне оставлял batch_queue.json со стейл-статусами.
+            self._persist_queue()
             # Остановить фоновые таски (pre-crop, pre-Gemma)
             for _task in (precrop_task, pregemma_task):
                 if _task is not None and not _task.done():
@@ -5334,6 +5423,53 @@ class PipelineManager:
         # дубль. Доверяем _batch_worker_alive().
         if queue is not None and queue.status == "running" and self._batch_worker_alive():
             return queue
+
+        # Прерванная очередь (interrupted, либо running с мёртвым worker'ом —
+        # рестарт бэкенда) с незавершёнными items НЕ затирается: раньше здесь
+        # безусловно создавалась новая пустая очередь, и один одиночный запуск
+        # после рестарта безвозвратно стирал items ночного батча. Вместо этого
+        # переиспользуем её — нормализуем зависшие статусы и поднимаем worker
+        # над ТОЙ ЖЕ очередью (эквивалент resume_interrupted_batch), а новый
+        # item enqueue-caller допишет в хвост.
+        if queue is not None and not self._batch_worker_alive():
+            unfinished = any(
+                it.status in ("pending", "running", "interrupted")
+                for it in queue.items
+            )
+            if unfinished and self._has_live_project_audit():
+                # Worker-регистрацию могли ошибочно снять (cleanup_zombies),
+                # но корутина/процессы живы — поднимать второй worker нельзя
+                # (как в resume_interrupted_batch). Возвращаем очередь как
+                # есть: caller допишет item, живая корутина его подхватит.
+                return queue
+            if unfinished:
+                for it in queue.items:
+                    if it.status in ("running", "interrupted"):
+                        it.status = "pending"
+                        it.error = None
+                queue.current_index = next(
+                    (i for i, it in enumerate(queue.items) if it.status == "pending"),
+                    0,
+                )
+                queue.status = "running"
+
+                meta_job = AuditJob(
+                    job_id=queue.queue_id,
+                    object_id=self._resolve_object_id(None),
+                    project_id="__BATCH__",
+                    stage=AuditStage.PREPARE,
+                    status=JobStatus.RUNNING,
+                    started_at=datetime.now().isoformat(),
+                    progress_total=queue.total,
+                    progress_current=queue.completed + queue.failed,
+                )
+                self.active_jobs["__BATCH__"] = meta_job
+                self._tasks["__BATCH__"] = self._create_bound_task(
+                    self._run_batch_queue(queue, meta_job),
+                    meta_job,
+                )
+                self._persist_queue()
+                return queue
 
         queue = BatchQueueStatus(
             queue_id=str(uuid4()),

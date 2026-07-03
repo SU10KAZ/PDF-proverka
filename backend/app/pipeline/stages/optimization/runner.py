@@ -150,10 +150,20 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
                 )
             except Exception:
                 await ctx.log(f"optimization.json создан ({size_kb} KB)", "info")
-        else:
-            await ctx.log("optimization.json не создан — Claude не записал результат", "warn")
-        ctx.update_pipeline_log("optimization", "done", message="OK")
-        return OptimizationResult(success=True)
+            ctx.update_pipeline_log("optimization", "done", message="OK")
+            return OptimizationResult(success=True)
+        # exit 0 без файла = агент отработал, но Write не сделал (не-JSON /
+        # усечённый ответ). Раньше это помечалось done «OK» — тихий пустой
+        # успех: opt_critic/corrector крутились вхолостую, в отчёте молча
+        # не было раздела оптимизации. Теперь честный провал этапа.
+        await ctx.log("optimization.json не создан после exit 0 — этап провален", "error")
+        ctx.update_pipeline_log(
+            "optimization", "error",
+            error="optimization.json не создан (exit 0 без Write)",
+        )
+        return OptimizationResult(
+            success=False, error="optimization.json не создан (exit 0 без Write)"
+        )
 
     if is_rate_limited(exit_code, output or "", ""):
         await ctx.log("Rate limit при оптимизации, ожидание...", "warn")
@@ -177,6 +187,20 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
         )
         ctx.record_cli_usage(cli_result, "optimization_retry")
         if exit_code == 0:
+            # Тот же post-check, что и в основной ветке: exit 0 без файла = провал.
+            if not (ctx.output_dir / "optimization.json").exists():
+                await ctx.log(
+                    "optimization.json не создан после retry (exit 0) — этап провален",
+                    "error",
+                )
+                ctx.update_pipeline_log(
+                    "optimization", "error",
+                    error="optimization.json не создан (retry exit 0 без Write)",
+                )
+                return OptimizationResult(
+                    success=False,
+                    error="optimization.json не создан (retry exit 0 без Write)",
+                )
             await ctx.log("Оптимизация завершена (после паузы)", "info")
             ctx.update_pipeline_log("optimization", "done",
                                     message="OK (после rate limit паузы)")
@@ -369,7 +393,11 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
         await ctx.log("Optimization Corrector завершён — optimization.json обновлён")
 
     if opt_path.exists():
-        is_valid, repair_msg = validate_and_repair_json(opt_path)
+        # to_thread: repair-ветка квадратичная, на большом JSON блокирует loop.
+        import asyncio as _asyncio
+        is_valid, repair_msg = await _asyncio.to_thread(
+            validate_and_repair_json, opt_path
+        )
         if not is_valid:
             await ctx.log(
                 f"ВНИМАНИЕ: optimization.json невалиден после Corrector: {repair_msg}. "

@@ -71,6 +71,13 @@ async def lifespan(app: FastAPI):
     pipeline_manager.load_persisted_queue()
     from backend.app.pipeline.stages.prepare.prepare_service import load_persisted_queue as load_prepare_queue
     load_prepare_queue()
+    # Авто-возобновление прерванной батч-очереди (инцидент 03.07: после kill
+    # вотчдогом очередь простаивала до ручного POST /batch/resume). Отложенный
+    # фоновый таск; kill-switch BATCH_AUTO_RESUME_ENABLED=false.
+    import asyncio as _asyncio
+    _auto_resume_task = _asyncio.create_task(
+        pipeline_manager.auto_resume_interrupted_batch()
+    )
     yield
 
 
