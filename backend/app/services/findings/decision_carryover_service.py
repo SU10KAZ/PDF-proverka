@@ -197,18 +197,19 @@ def previous_checked_version(
     ищет только в `_output/`), учитывает v2-раскладку `04_review/` +
     `03_analysis/latest/` через _load_findings/_load_review_map.
     """
+    # v2-aware листинг + нормализация id: legacy-манифест на v2-primary
+    # устаревал (id v1/v2 без поздних версий) — текущая v003 «не находилась»,
+    # и carryover ложно пропускался «no_previous_checked_version» при 66
+    # решениях эксперта в v002 (инцидент батча V+1 03.07.2026).
     try:
-        manifest = version_service.read_project_versions(project_dir, project_id)
+        versions = version_service.list_versions_for_history(project_dir, project_id)
     except Exception:
         return None
-    cur = next(
-        (v for v in manifest.get("versions", []) if v.get("version_id") == current_version_id),
-        None,
-    )
+    cur = version_service.find_version_entry(versions, current_version_id)
     if cur is None:
         return None
     cur_no = int(cur.get("version_no") or 0)
-    earlier = [v for v in manifest.get("versions", []) if int(v.get("version_no") or 0) < cur_no]
+    earlier = [v for v in versions if int(v.get("version_no") or 0) < cur_no]
     earlier.sort(key=lambda v: int(v.get("version_no") or 0), reverse=True)
     for v in earlier:
         if _version_checked(project_dir, project_id, v["version_id"]):

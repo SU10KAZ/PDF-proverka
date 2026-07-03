@@ -314,20 +314,19 @@ def get_previous_checked_version(
         version_id предыдущей проверенной версии или None.
     """
     project_dir = resolve_project_dir(project_id)
-    manifest = version_service.read_project_versions(project_dir, project_id)
-
-    try:
-        cur = next(
-            v for v in manifest["versions"] if v["version_id"] == current_version_id
-        )
-    except StopIteration:
+    # v2-aware листинг + нормализация id: legacy-манифест на v2-primary
+    # устаревал (id v1/v2 без поздних версий) — текущая v003 «не находилась»
+    # и debt_control падал (инцидент батча V+1 03.07.2026).
+    versions = version_service.list_versions_for_history(project_dir, project_id)
+    cur = version_service.find_version_entry(versions, current_version_id)
+    if cur is None:
         raise version_service.VersionNotFoundError(
             f"Версия '{current_version_id}' не найдена"
         )
     cur_no = int(cur.get("version_no") or 0)
 
     earlier = [
-        v for v in manifest["versions"]
+        v for v in versions
         if int(v.get("version_no") or 0) < cur_no
     ]
     earlier.sort(key=lambda v: int(v.get("version_no") or 0), reverse=True)

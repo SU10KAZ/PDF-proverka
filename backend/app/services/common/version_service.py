@@ -330,6 +330,45 @@ def read_project_versions(project_dir: Path, project_id: str) -> dict[str, Any]:
     return manifest
 
 
+def list_versions_for_history(project_dir: Path, project_id: str) -> list[dict[str, Any]]:
+    """Список версий для межверсионных сервисов (debt_control/carryover и т.п.).
+
+    v2-primary: ФИЗИЧЕСКИЕ id (v001..) + version_no из document.json;
+    fallback — legacy-манифест. Нужен потому, что legacy read_project_versions
+    на v2-primary отдаёт устаревший манифест (id v1/v2, поздних версий нет
+    вовсе) — mfs/carryover не находили в нём текущую v00N: debt_control падал
+    «Версия 'v003' не найдена», carryover ложно пропускался
+    «no_previous_checked_version» при 66 решениях эксперта в v002
+    (живой инцидент батча V+1 03.07.2026).
+    """
+    try:
+        summary = _get_projects_v2_versions_summary(project_id)
+    except Exception:
+        summary = None
+    if summary and summary.get("versions"):
+        return list(summary["versions"])
+    manifest = read_project_versions(project_dir, project_id)
+    return list((manifest or {}).get("versions") or [])
+
+
+def find_version_entry(
+    versions: list[dict[str, Any]], version_id: str,
+) -> Optional[dict[str, Any]]:
+    """Найти запись версии с нормализацией логический↔физический id (v3↔v003)."""
+    wanted = (version_id or "").strip()
+    if not wanted:
+        return None
+    candidates = [wanted]
+    if wanted.startswith("v") and wanted[1:].isdigit():
+        n = int(wanted[1:])
+        candidates += [f"v{n:03d}", f"v{n}"]
+    for cand in candidates:
+        for v in versions:
+            if v.get("version_id") == cand or v.get("physical_version_id") == cand:
+                return v
+    return None
+
+
 def ensure_project_versions_manifest(project_dir: Path, project_id: str) -> dict[str, Any]:
     """Создать `project_versions.json` для legacy-проекта, если его нет.
 
