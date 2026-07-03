@@ -2852,11 +2852,20 @@ class PipelineManager:
                 and "03_analysis" in output_dir.parts
             ):
                 output_dir.mkdir(parents=True, exist_ok=True)
+                # ПЕР-ПРОГОННЫЕ файлы НЕ сидируем: они отражают статус/лог
+                # ИМЕННО этого прогона, а не прошлого. Иначе старые записи
+                # (напр. debt_control:error от прогона до фикса версий)
+                # «переезжают» в новый run и промоутятся обратно в latest —
+                # UI показывает ложную ошибку при успешном перезапуске.
+                _NO_SEED = {"pipeline_log.json"}
                 _seeded = 0
                 for _src in sorted(_latest_dir.iterdir()):
                     if not _src.is_file():
                         continue
                     if _src.suffix not in (".json", ".jsonl", ".md"):
+                        continue
+                    # audit_log.jsonl и его архивы audit_log_*.jsonl — пер-прогонный лог.
+                    if _src.name in _NO_SEED or _src.name.startswith("audit_log"):
                         continue
                     _dst = output_dir / _src.name
                     if _dst.exists():
