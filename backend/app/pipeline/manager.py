@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 import random
+import shutil
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
@@ -2754,6 +2755,7 @@ class PipelineManager:
         """Запуск OCR-пайплайна с указанного этапа."""
         start_time = datetime.now()
         pid = job.project_id
+        _resume_output_root_token = None
         try:
             # Нормализация stage: legacy aliases → OCR stages
             normalized = self._normalize_ocr_stage(start_stage)
@@ -2791,6 +2793,51 @@ class PipelineManager:
             # Version-aware пути: V1 = root, V2+ = _versions/v{N}/.
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
             project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
+
+            # Баг B1 аудита пайплайна: retry/resume на v2-primary исполняется
+            # в СВЕЖЕМ ПУСТОМ runs/<новый job_id>, а валидатор проверял
+            # артефакты в 03_analysis/latest — retry поздних стадий либо
+            # падал на prereq-проверках ниже, либо шёл без входов. Сидируем
+            # run dir JSON-артефактами из latest (только отсутствующие;
+            # тяжёлые PNG-каталоги не копируем — их пересоздаёт pre-crop).
+            _latest_dir = project_dir / "03_analysis" / "latest"
+            if (
+                _latest_dir.is_dir()
+                and output_dir != _latest_dir
+                and "03_analysis" in output_dir.parts
+            ):
+                output_dir.mkdir(parents=True, exist_ok=True)
+                _seeded = 0
+                for _src in sorted(_latest_dir.iterdir()):
+                    if not _src.is_file():
+                        continue
+                    if _src.suffix not in (".json", ".jsonl", ".md"):
+                        continue
+                    _dst = output_dir / _src.name
+                    if _dst.exists():
+                        continue
+                    try:
+                        shutil.copy2(_src, _dst)
+                        _seeded += 1
+                    except OSError as _copy_err:
+                        await self._log(
+                            job, f"Seed run dir: не скопирован {_src.name}: {_copy_err}",
+                            "warn",
+                        )
+                if _seeded:
+                    await self._log(
+                        job,
+                        f"Resume: run dir засеян {_seeded} артефактами из latest",
+                        "info",
+                    )
+
+            # Симметрично _run_ocr_pipeline: все резолвы через
+            # gemma_output_root/AUDIT_OUTPUT_DIR внутри стадий должны видеть
+            # run dir этого job'а, а не latest.
+            from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                bind_output_root as _bind_or,
+            )
+            _resume_output_root_token = _bind_or(output_dir)
 
             if start_idx >= 4:
                 await self._assert_gemma_ready_for_stage(job, project_info, normalized)
@@ -3109,6 +3156,14 @@ class PipelineManager:
             job.error_message = str(e)
             await self._log(job, f"Исключение: {e}", "error")
         finally:
+            if _resume_output_root_token is not None:
+                from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+                    unbind_output_root as _unbind_or,
+                )
+                try:
+                    _unbind_or(_resume_output_root_token)
+                except Exception:
+                    pass
             job.completed_at = datetime.now().isoformat()
             self._cleanup(pid)
 
