@@ -118,10 +118,13 @@ def test_k12_qf3_11_follows_qf3_10(graph_k12):
 
 
 def test_k12_qf3_1_unbound_requires_review(graph_k12):
-    """QF3.1 — отдельный аппарат без отходящего кода → не привязан, requires_review."""
+    """QF3.1 — отдельный аппарат без отходящего кода → НЕ привязан (главный инвариант:
+    чужой код не украден, ряд не сдвинут). После реклассификации статусов такой автомат
+    получает честный `structural` (секционный/вводной), а не «ambiguous»."""
     f = _feeders_by_qf(graph_k12)["QF3.1"]
     assert f["circuit_code"] is None
-    assert f["status"] == "ambiguous"
+    assert f["status"] in ("structural", "no_code", "ambiguous")
+    assert f["status"] == "structural"
 
 
 def test_k12_markdown_has_sections(md_k12):

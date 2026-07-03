@@ -1163,6 +1163,11 @@ th.cv2-sort-active {
 .sld-st-reserve td:first-child { border-left: 3px solid var(--border3); }
 .sld-st-reserve td { opacity: 0.6; }
 .sld-st-ambiguous td:first-child { border-left: 3px solid var(--accent-orange, #e08a3c); }
+/* реклассификация статусов Вектографа: structural (секционный/вводной автомат) и
+   no_code (реальная линия без построчного кода) — НЕ ошибки, нейтральная/синяя полоса */
+.sld-st-structural td:first-child { border-left: 3px solid var(--border3); }
+.sld-st-structural td { opacity: 0.75; }
+.sld-st-no_code td:first-child { border-left: 3px solid #4a90d9; }
 .sld-review { margin: 10px 0 4px; font-size: 11px; color: var(--text2); display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
 .sld-review__item { padding: 2px 7px; border-radius: 6px; background: var(--accent-orange, #e08a3c); color: #fff; }
 .block-back-btn { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 7px; border: 1px solid var(--border2); background: var(--card2-bg); color: var(--text2); cursor: pointer; font-size: 12px; font-family: inherit; z-index: 10; transition: all 0.13s; }

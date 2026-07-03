@@ -134,6 +134,13 @@ def render_graph_for_prompt(graph: dict) -> str:
                 L.append(f"  {f['qf']}: РЕЗЕРВ ({f.get('breaker_type') or ''} {f.get('breaker_icn') or ''}/{f.get('breaker_in') or ''})".rstrip())
                 continue
             br = f"{f.get('breaker_type') or '?'} {f.get('breaker_icn') or ''}/{f.get('breaker_in') or ''}".strip()
+            if f["status"] == "structural":
+                L.append(f"  {f['qf']}: секционный/вводной автомат {br} (без отходящей линии)")
+                continue
+            if f["status"] == "no_code":
+                L.append(f"  {f['qf']}: {f.get('consumer') or '?'} | {br} | без построчного кода "
+                         f"в спецификации (не ошибка)")
+                continue
             if f["status"] == "ambiguous" or f.get("P_calc_kw") is None:
                 L.append(f"  {f['qf']}: ‼ requires_review — автомат {br}; потребитель/код не сопоставлены")
                 continue
@@ -910,11 +917,39 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                 assigned_codes.add(fb)
                 if not consumer:
                     consumer = (p.get("consumer") if p else None) or consumer
-        status = "reserve" if g["reserve"] else ("active" if p else "ambiguous")
+        # Статус линии. Бывший «ambiguous» разделён на три честных случая:
+        #  - no_code:    реальная линия (есть потребитель/кабельные маркеры в колонке),
+        #                но БЕЗ построчного кода в спецификации (ПС-системы, щиты, ТР через КМ);
+        #  - structural: секционный/вводной автомат — в колонке только сам аппарат
+        #                (ВА-… + номиналы), ни кода, ни кабеля, ни потребителя;
+        #  - ambiguous:  остальное — настоящая неопределённость (requires_review).
+        if g["reserve"]:
+            status = "reserve"
+        elif p:
+            status = "active"
+        else:
+            _cons_letters = sum(ch.isalpha() for ch in (consumer or ""))
+            # Слова текст-колонки часто НАЧИНАЮТСЯ левее символа QF (dx до −46: «Лоток-40м;»
+            # у QF4.15) — полоса от qx−8 их теряла и реальная линия падала в ambiguous.
+            _col_txt = " ".join(w[4] for w in words
+                                if qx - 46 <= w[0] < min(nx, qx + 58) and qy - 330 < w[1] < qy + 40)
+            _line_markers = re.search(r"Лоток|Пг\.|ППГнг|ВВГ|\dм;|\dм\b|Iкз|систем", _col_txt)
+            if _cons_letters >= 4 or _line_markers:
+                status = "no_code"
+            elif not _cons_letters:
+                status = "structural"
+            else:
+                status = "ambiguous"
         review = []
         if status == "ambiguous":
             review.append("колонка без сопоставленного кода — requires_review "
                           "(визуально отдельный аппарат, отходящий код не привязан)")
+        elif status == "no_code":
+            review.append("линия без построчного кода в спецификации (потребитель/кабель "
+                          "извлечены; привязывать нечего — это не ошибка)")
+        elif status == "structural":
+            review.append("секционный/вводной автомат (только аппарат в колонке, без "
+                          "отходящей линии)")
         review.extend(bind_conflicts.get(qn, []))
         if dup[qn] > 1:
             review.append(f"метка {qn} повторяется ({dup[qn]}×)")
@@ -1039,6 +1074,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     linked = [f for f in feeders if f.get("circuit_code")]
     reserve = [f for f in feeders if f["status"] == "reserve"]
     ambiguous = [f for f in feeders if f["status"] == "ambiguous"]
+    no_code = [f for f in feeders if f["status"] == "no_code"]
+    structural = [f for f in feeders if f["status"] == "structural"]
     review_items = [{"qf": f["qf"], "code": f.get("circuit_code"), "notes": f["review"]}
                     for f in feeders if f["review"]]
     bv = base["validation"]
@@ -1137,6 +1174,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "notes": notes,
         "validation": {
             "active": len(linked), "reserve": len(reserve), "ambiguous": len(ambiguous),
+            "no_code": len(no_code), "structural": len(structural),
             "breaker_bound": f"{sum(1 for f in feeders if f.get('breaker_type'))}/{len(feeders)}",
             "power_rate": bv.get("power_rate"), "current_rate": bv.get("current_rate"),
             "codes_total": len(param_occ), "codes_linked": codes_linked,
@@ -1252,7 +1290,8 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         f"**Сводка валидации:** линий {graph.get('feeders_total')}, привязано кодов "
         f"{v.get('codes_linked_occurrences')}/{v.get('codes_total_occurrences')} "
         f"(uniq {v.get('codes_linked_unique')}/{v.get('codes_total_unique')}), актив {v.get('active')}, "
-        f"резерв {v.get('reserve')}, неоднозначных {v.get('ambiguous')}, геом.конфликтов "
+        f"резерв {v.get('reserve')}, неоднозначных {v.get('ambiguous')}, без кода {v.get('no_code', 0)}, "
+        f"структурных {v.get('structural', 0)}, геом.конфликтов "
         f"{v.get('geometry_conflicts')}, вторичных {v.get('secondary_codes_total')}, физика P/I "
         f"{v.get('power_rate')}/{v.get('current_rate')}, confidence {graph.get('confidence')}, "
         f"status `{graph.get('status')}`")
