@@ -669,6 +669,21 @@ async def run_norm_verification(
             )
 
     # ── Финальные операции ──
+    # Выгрузить семантические модели норм из процесса: native verify/requote
+    # затянули в backend e5-large+reranker (~4.3 ГБ RSS) через module-cache
+    # search.py — без release они жили в uvicorn навсегда (профиль OOM 01.07).
+    # Замер: 4063 МБ → 477 МБ после release+malloc_trim.
+    try:
+        from search import release_models as _release_norm_models  # norms/tools в sys.path
+        _rss_after = await asyncio.to_thread(_release_norm_models)
+        if _rss_after:
+            await ctx.log(
+                f"Семантические модели норм выгружены (RSS процесса ≈{_rss_after} МБ)",
+                "info",
+            )
+    except Exception:
+        pass  # release — оптимизация памяти, не должна ронять стадию
+
     await ctx.log("Верификация нормативных ссылок завершена", "info")
 
     if ctx.refresh_finding_quality:
@@ -678,7 +693,9 @@ async def run_norm_verification(
         from backend.app.pipeline.stages.findings_merge.runner import (
             refresh_finding_quality as _rfq,
         )
-        _rfq(pid, "03a_norms_verified.json")
+        # output_dir обязателен (класс бага B2): без него резолв по pid уходит
+        # в v2 latest — обогащалась чужая копия, затираемая promote'ом.
+        _rfq(pid, "03a_norms_verified.json", output_dir=output_dir)
 
     manual_check_count = count_manual_check_flags(output_dir)
     ctx.update_pipeline_log("norm_verify", "done", message="OK")

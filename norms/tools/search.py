@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -36,6 +37,47 @@ _index_cache = None
 _model_cache = None
 _reranker_cache = None
 _reranker_failed = False  # если reranker не загрузился — больше не пытаемся
+
+
+def release_models() -> int:
+    """Выгрузить модели/индекс из памяти процесса и вернуть RAM ОС.
+
+    Норм-этап пайплайна через _native_verify грузит e5-large (2.1 ГБ) +
+    bge-reranker (2.2 ГБ) + npz-индекс ПРЯМО в процесс backend'а и раньше
+    держал их навсегда (module-cache) — RSS uvicorn раздувался до 5.5 ГБ,
+    профиль OOM-инцидента 01.07 (всего 11 ГБ RAM). Вызывается в конце
+    norm-этапа. malloc_trim возвращает освобождённые арены glibc ОС —
+    замер: 4063 МБ → 477 МБ.
+
+    Возвращает RSS процесса в МБ после освобождения (0 если не читается).
+    """
+    global _index_cache, _model_cache, _reranker_cache, _reranker_failed
+    import gc
+    _index_cache = None
+    _model_cache = None
+    _reranker_cache = None
+    _reranker_failed = False  # при следующем вызове пробуем загрузить заново
+    gc.collect()
+    try:
+        import torch
+        if torch.cuda.is_available():  # pragma: no cover - на сервере CPU
+            torch.cuda.empty_cache()
+    except Exception:
+        pass
+    gc.collect()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except Exception:  # pragma: no cover - не-glibc платформа
+        pass
+    try:
+        with open(f"/proc/{os.getpid()}/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    return int(line.split()[1]) // 1024
+    except Exception:
+        pass
+    return 0
 
 
 def load_index():
