@@ -91,6 +91,12 @@ h1 {
   align-items: start;
 }
 
+/* Одноколоночный режим (honest monitor: без левой панели управления).
+   display:block перебивает базовый display:grid и НЕ трогается правилом
+   `body.embed .layout { grid-template-columns: … }` (оно задаёт только колонки),
+   поэтому единственный .content занимает всю ширину и в embed-режиме тоже. */
+.layout--single { display: block; }
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -463,6 +469,69 @@ h1 {
   color: var(--muted);
 }
 
+/* ─── Переключатель серверов обработки ─── */
+.server-switch { margin-bottom: 14px; }
+
+.btn--sm { padding: 8px 12px; font-size: 13px; }
+
+.server-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.server-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.68);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.server-card--active {
+  border-color: rgba(11, 143, 119, 0.45);
+  background: var(--teal-soft);
+  box-shadow: 0 0 0 1px rgba(11, 143, 119, 0.25) inset;
+}
+
+.server-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.server-card__title { font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
+
+.server-card__badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+}
+
+.server-card__url {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.server-card__desc { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+.server-card__health { font-size: 13px; min-height: 20px; }
+
+.server-card__foot { margin-top: auto; }
+
+.server-card__foot .btn { width: 100%; }
+
 @media (max-width: 1280px) {
   .layout {
     grid-template-columns: 1fr;
@@ -492,7 +561,8 @@ h1 {
   .cards-grid,
   .banner-grid,
   .field-grid,
-  .estimate-grid {
+  .estimate-grid,
+  .server-cards {
     grid-template-columns: 1fr;
   }
 }
@@ -556,3 +626,10 @@ body.embed .panel + .panel { margin-top: 8px; }
 
 /* Topbar action: ссылка "Основное приложение" не нужна когда мы внутри */
 body.embed .topbar-actions a.btn { display: none; }
+
+/* Переключатель серверов в embed-режиме */
+body.embed .server-cards { gap: 8px; }
+body.embed .server-card { padding: 8px 10px; gap: 6px; border-radius: 8px; }
+body.embed .server-card__title { font-size: 13px; }
+body.embed .server-card__desc { display: none; }
+body.embed .server-card__url { font-size: 11px; }

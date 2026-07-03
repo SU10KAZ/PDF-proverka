@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+import subprocess
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 import backend.app.services.llm.model_control_service as model_control_service
+import backend.app.services.llm.model_capabilities as model_capabilities
+import backend.app.services.llm.server_profiles as server_profiles
+from backend.app.core.config import ROOT_DIR
 
 
 router = APIRouter(prefix="/api/model-control", tags=["model-control"])
@@ -30,10 +36,55 @@ class UnloadInstanceRequest(BaseModel):
     instance_id: str
 
 
+class ActivateProfileRequest(BaseModel):
+    profile_id: str
+
+
+def _schedule_backend_restart() -> None:
+    """Отложенный detached-рестарт backend (той же связкой, что и cron-watchdog).
+
+    Запускается в отдельной сессии (`start_new_session`), чтобы пережить убийство
+    текущего процесса stop_server.sh. Пауза даёт FastAPI отдать HTTP-ответ до
+    рестарта. Watchdog (раз в минуту) — страховка, если detached-старт не поднимет.
+    """
+    webapp_dir = Path(ROOT_DIR) / "webapp"
+    log = webapp_dir / "profile_switch_restart.log"
+    cmd = (
+        f"sleep 2; cd {webapp_dir!s} && "
+        f"./stop_server.sh && ./start_server_deploy.sh"
+    )
+    with open(log, "ab") as fh:
+        subprocess.Popen(
+            ["setsid", "bash", "-lc", cmd],
+            stdin=subprocess.DEVNULL,
+            stdout=fh,
+            stderr=fh,
+            start_new_session=True,
+            cwd=str(webapp_dir),
+        )
+
+
 @router.get("/status")
 async def get_status():
     """Получить текущий статус подключения, моделей и памяти."""
     return model_control_service.get_status()
+
+
+@router.get("/remote-status")
+async def get_remote_status():
+    """Честный статус для удалённого bearer-сервера (01.vibe).
+
+    Ходит только в OpenAI /v1/models (нативное управление недоступно). Плюс
+    ресурсы AUDIT-хоста (RAM/CPU) — это webapp-сервер, а не LLM-хост; GPU LLM
+    находится на удалённом хосте и локально не виден.
+    """
+    status = model_capabilities.get_remote_models_status()
+    try:
+        status["audit_host"] = model_control_service._system_memory()
+    except Exception as exc:  # noqa: BLE001
+        status["audit_host"] = {"error": f"{type(exc).__name__}: {exc}"}
+    status["gpu_note"] = "GPU/VRAM находятся на удалённом LLM-хосте (01.vibe) — локально недоступны."
+    return status
 
 
 @router.post("/estimate")
@@ -69,3 +120,34 @@ async def unload_instance(req: UnloadInstanceRequest):
 async def unload_all():
     """Выгрузить все загруженные instance моделей."""
     return model_control_service.unload_all()
+
+
+@router.get("/server-profiles")
+async def get_server_profiles():
+    """Список профилей LLM-серверов + какой активен сейчас (по живому config)."""
+    return server_profiles.list_profiles()
+
+
+@router.get("/server-profiles/probe")
+async def probe_server_profiles():
+    """Health обоих серверов — чтобы видеть, какой жив, ДО переключения."""
+    return server_profiles.probe_all()
+
+
+@router.post("/server-profiles/activate")
+async def activate_server_profile(req: ActivateProfileRequest):
+    """Переключить весь пайплайн на выбранный сервер: правка .env + рестарт backend.
+
+    ВНИМАНИЕ: рестарт прервёт идущие джобы. Фронтенд предупреждает пользователя.
+    """
+    try:
+        result = server_profiles.apply_profile(req.profile_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    _schedule_backend_restart()
+    result["restarting"] = True
+    result["message"] = (
+        "Профиль применён. Backend перезапускается (~5–10 с) — страница "
+        "переподключится автоматически."
+    )
+    return result

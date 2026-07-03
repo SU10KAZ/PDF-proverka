@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/model-control.css?v={{css_version}}">
     <script>
-        // Когда открывается внутри основного приложения (iframe) — добавляем компактный режим
+        // Когда открывается внутри основного приложения (iframe) — компактный режим
         if (new URLSearchParams(location.search).get('embed') === '1') {
             document.documentElement.classList.add('embed');
             document.addEventListener('DOMContentLoaded', () => document.body.classList.add('embed'));
@@ -21,10 +21,11 @@
         <header class="topbar">
             <div>
                 <p class="eyebrow">Model Control</p>
-                <h1>Отдельное окно управления моделью</h1>
+                <h1>Модели и состояние LLM-сервера</h1>
                 <p class="lead">
-                    Можно менять контекст, загружать и выгружать модели, смотреть потребление памяти и прикидывать,
-                    поместится ли новая конфигурация до запуска анализа.
+                    Мониторинг удалённого LM Studio (OpenAI-совместимый /v1): список моделей и их
+                    возможности, здоровье эндпоинта, какие модели использует пайплайн.
+                    Управление загрузкой/выгрузкой на удалённом сервере не отдаётся — им управляет сам сервер.
                 </p>
             </div>
             <div class="topbar-actions">
@@ -33,171 +34,64 @@
                     <span>Автообновление</span>
                 </label>
                 <select id="autoRefreshSeconds" class="input input--compact">
-                    <option value="5">5 сек</option>
                     <option value="10">10 сек</option>
                     <option value="15">15 сек</option>
+                    <option value="30" selected>30 сек</option>
                 </select>
                 <button id="refreshBtn" class="btn btn--primary">Обновить</button>
                 <a href="/" class="btn btn--ghost">Основное приложение</a>
             </div>
         </header>
 
+        <section class="panel server-switch" id="serverSwitch">
+            <div class="panel__header">
+                <div>
+                    <h2>Сервер обработки</h2>
+                    <p>Через какой LLM-сервер идёт весь пайплайн (текст-enrichment + графика).
+                       Переключение переписывает <span class="mono">.env</span> и перезапускает backend
+                       (~5–10 с). <b>Идущие аудиты прервутся.</b></p>
+                </div>
+                <button id="probeServersBtn" class="btn btn--ghost btn--sm">Проверить оба</button>
+            </div>
+            <div class="server-cards" id="serverCards">
+                <div class="empty-row">Загрузка профилей...</div>
+            </div>
+        </section>
+
         <section class="banner-grid">
             <div class="banner-card">
-                <div class="banner-card__label">Chandra / LM Studio</div>
+                <div class="banner-card__label">Подключение (OpenAI /v1)</div>
                 <div class="banner-card__value" id="connectionBadge">Проверка...</div>
                 <div class="banner-card__meta" id="connectionMeta"></div>
             </div>
             <div class="banner-card">
-                <div class="banner-card__label">Источник live-памяти</div>
-                <div class="banner-card__value" id="hostScopeValue">Текущий хост</div>
+                <div class="banner-card__label">Модели на сервере</div>
+                <div class="banner-card__value" id="hostScopeValue">—</div>
                 <div class="banner-card__meta" id="hostScopeMeta"></div>
             </div>
             <div class="banner-card">
-                <div class="banner-card__label">Источник оценки загрузки</div>
-                <div class="banner-card__value" id="estimateScopeValue">lms CLI</div>
+                <div class="banner-card__label">Health / латентность</div>
+                <div class="banner-card__value" id="estimateScopeValue">—</div>
                 <div class="banner-card__meta" id="estimateScopeMeta"></div>
             </div>
         </section>
 
         <section class="info-strip" id="scopeWarning">
-            Live RAM/VRAM ниже показываются для хоста, где запущен `webapp`.
-            Если Chandra подключён удалённо через ngrok, это не удалённые счётчики GPU, а локальные метрики хоста панели.
+            <b>Удалённый bearer-сервер:</b> нативное управление LM Studio (загрузка/выгрузка/reload,
+            оценка памяти, GPU/VRAM, процессы) недоступно — сервер сам держит модели в памяти.
+            Карточки RAM/CPU ниже — это ресурсы <b>audit-сервера</b> (где крутится панель), а не LLM-хоста.
         </section>
 
-        <main class="layout">
-            <section class="panel panel--sticky">
-                <div class="panel__header">
-                    <div>
-                        <h2>Настройки загрузки модели</h2>
-                        <p>Смените контекст и параметры перед следующим запуском анализа.</p>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label for="selectedModel">Модель</label>
-                    <select id="selectedModel" class="input"></select>
-                </div>
-
-                <div class="quick-row" id="quickContexts">
-                    <button class="chip" data-context="8192">8k</button>
-                    <button class="chip" data-context="16384">16k</button>
-                    <button class="chip" data-context="32768">32k</button>
-                    <button class="chip" data-context="65536">64k</button>
-                    <button class="chip" data-context="100000">100k</button>
-                </div>
-
-                <div class="field">
-                    <label for="contextLength">Контекст</label>
-                    <input id="contextLength" class="input" type="number" min="512" step="512" value="8192">
-                    <div class="field__hint" id="modelHint">Выберите модель, чтобы увидеть лимиты и capabilities.</div>
-                </div>
-
-                <div class="field-grid">
-                    <label class="checkbox">
-                        <input type="checkbox" id="flashAttention" checked>
-                        <span>Flash Attention</span>
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox" id="offloadKvCache" checked>
-                        <span>Offload KV cache to GPU</span>
-                    </label>
-                </div>
-
-                <div class="field-grid field-grid--inputs">
-                    <div class="field">
-                        <label for="evalBatchSize">Eval batch size</label>
-                        <input id="evalBatchSize" class="input" type="number" min="1" placeholder="не менять">
-                    </div>
-                    <div class="field">
-                        <label for="numExperts">Num experts</label>
-                        <input id="numExperts" class="input" type="number" min="1" placeholder="auto">
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label for="estimateGpu">GPU для estimate-only</label>
-                    <input id="estimateGpu" class="input" type="text" placeholder="например 0 или RTX 4090">
-                    <div class="field__hint">Используется только для локальной оценки через `lms load --estimate-only`.</div>
-                </div>
-
-                <div class="action-row">
-                    <button id="estimateBtn" class="btn btn--ghost">Оценить память</button>
-                    <button id="loadBtn" class="btn btn--primary">Загрузить модель</button>
-                    <button id="unloadAllBtn" class="btn btn--danger">Выгрузить всё</button>
-                </div>
-
-                <div class="estimate-box" id="estimateBox">
-                    <div class="estimate-box__title">Оценка памяти</div>
-                    <div class="estimate-box__empty">Нажмите «Оценить память», чтобы прикинуть RAM/VRAM под текущий контекст.</div>
-                </div>
-
-                <div class="result-box" id="actionResult">
-                    <div class="result-box__title">Последнее действие</div>
-                    <div class="result-box__empty">Действий пока не было.</div>
-                </div>
-            </section>
-
+        <main class="layout layout--single">
             <section class="content">
                 <div class="cards-grid" id="metricCards"></div>
 
                 <section class="panel">
                     <div class="panel__header">
                         <div>
-                            <h2>Загруженные instance</h2>
-                            <p>Здесь видно, что реально висит в LM Studio прямо сейчас.</p>
-                        </div>
-                        <div class="pill" id="loadedCountPill">0 instance</div>
-                    </div>
-                    <div class="table-wrap">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Модель</th>
-                                    <th>Instance</th>
-                                    <th>Контекст</th>
-                                    <th>Параметры</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="loadedInstancesBody">
-                                <tr><td colspan="5" class="empty-row">Загрузка...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="panel">
-                    <div class="panel__header">
-                        <div>
-                            <h2>LM Studio процессы на этом хосте</h2>
-                            <p>Если панель и LM Studio на одной машине, здесь будет виден RSS по процессам.</p>
-                        </div>
-                    </div>
-                    <div class="table-wrap">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>PID</th>
-                                    <th>Процесс</th>
-                                    <th>RAM</th>
-                                    <th>VRAM</th>
-                                    <th>CPU</th>
-                                    <th>Команда</th>
-                                </tr>
-                            </thead>
-                            <tbody id="processBody">
-                                <tr><td colspan="6" class="empty-row">Загрузка...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="panel">
-                    <div class="panel__header">
-                        <div>
                             <h2>Доступные модели</h2>
-                            <p>Список тянется из LM Studio endpoint, так что по нему удобно выбирать профиль перед запуском.</p>
+                            <p>Список из <span class="mono">/v1/models</span>. Возможности (vision / тип / reasoning)
+                               измерены пробой; отмечено, какие модели использует пайплайн.</p>
                         </div>
                         <div class="pill" id="modelsCountPill">0 моделей</div>
                     </div>
@@ -207,18 +101,36 @@
                                 <tr>
                                     <th>Модель</th>
                                     <th>Vision</th>
+                                    <th>Тип</th>
                                     <th>Reasoning</th>
-                                    <th>Max context</th>
-                                    <th>Размер</th>
-                                    <th>Loaded</th>
+                                    <th>Используется пайплайном</th>
                                 </tr>
                             </thead>
                             <tbody id="modelsBody">
-                                <tr><td colspan="6" class="empty-row">Загрузка...</td></tr>
+                                <tr><td colspan="5" class="empty-row">Загрузка...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </section>
+
+                <section class="panel">
+                    <div class="panel__header">
+                        <div>
+                            <h2>Управление моделями</h2>
+                            <p>Недоступно на удалённом сервере.</p>
+                        </div>
+                    </div>
+                    <div class="info-strip" style="margin:0">
+                        Загрузка / выгрузка / reload, оценка памяти и просмотр загруженных instance работают
+                        только когда LM Studio запущен локально с нативным управлением. На <span class="mono" id="serverEndpoint">—</span>
+                        доступен лишь OpenAI-слой <span class="mono">/v1</span> — сервер сам выбирает, что держать в VRAM.
+                    </div>
+                </section>
+
+                <div class="result-box" id="actionResult" style="display:none">
+                    <div class="result-box__title">Последнее действие</div>
+                    <div class="result-box__empty">Действий пока не было.</div>
+                </div>
             </section>
         </main>
     </div>
