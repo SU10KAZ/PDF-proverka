@@ -1112,6 +1112,15 @@ class PipelineManager:
             # Любой проект с живыми дочерними процессами — реально работает.
             if has_live_processes(pid):
                 continue
+            # Живой asyncio-таск = НЕ зомби, независимо от status/heartbeat.
+            # Раньше job снимался без task.cancel(): корутина оставалась жить
+            # «призраком» (невидима в active_jobs/_tasks), а повторный запуск
+            # проекта мог поднять ПАРАЛЛЕЛЬНЫЙ аудит того же проекта. Сетевые
+            # стадии (OpenRouter/critic между claude-вызовами) не имеют живых
+            # дочерних процессов — has_live_processes ложно давал False.
+            _task = self._tasks.get(pid)
+            if _task is not None and not _task.done():
+                continue
             if job.status != JobStatus.RUNNING:
                 zombies.append(pid)
                 continue
