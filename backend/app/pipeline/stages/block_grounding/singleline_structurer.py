@@ -31,19 +31,21 @@ U_LL = 0.38   # кВ, линейное
 U_PH = 0.22   # кВ, фазное
 
 # Якорь отходящей линии: <код> : <Pуст>кВт - <Kc> - <cosφ> - <Pрасч>кВт- <I>А
+# Числа — с точкой ИЛИ запятой (рус. десятичный разделитель): «0,06кВт» и «0.18кВт».
+# Иначе на листах с запятой парсились единицы строк (ЭО-К3: 3 из 37) → почти всё ambiguous.
 PARAM_RE = re.compile(
     r"^(?P<code>\S+?)\s*:\s*"
-    r"(?P<pinst>[\d.]+)\s*кВт\s*-\s*"
-    r"(?P<kc>[\d.]+)\s*-\s*"
-    r"(?P<cos>[\d.]+)\s*-\s*"
-    r"(?P<pcalc>[\d.]+)\s*кВт\s*-\s*"
-    r"(?P<ia>[\d.]+)\s*А\s*$"
+    r"(?P<pinst>[\d.,]+)\s*кВт\s*-\s*"
+    r"(?P<kc>[\d.,]+)\s*-\s*"
+    r"(?P<cos>[\d.,]+)\s*-\s*"
+    r"(?P<pcalc>[\d.,]+)\s*кВт\s*-\s*"
+    r"(?P<ia>[\d.,]+)\s*А\s*$"
 )
 PHYS_RE = re.compile(
-    r"^(?P<len>[\d.]+)\s*м\s*-\s*"
-    r"(?P<du>[\d.]+)\s*%\s*-\s*"
+    r"^(?P<len>[\d.,]+)\s*м\s*-\s*"
+    r"(?P<du>[\d.,]+)\s*%\s*-\s*"
     r"(?P<cable>.+?)\s*-\s*"
-    r"Iкз\(1\)\s*=\s*(?P<ikz>[\d.]+)\s*кА"
+    r"Iкз\(1\)\s*=\s*(?P<ikz>[\d.,]+)\s*кА"
 )
 BA_RE = re.compile(r"(ВА-?\d\d\S*|ВА\d\d\S*)(?:\s*(1Р|1P|2Р|2P|3Р|3P))?")
 KA_RE = re.compile(r"(?P<ka>\d+)\s*кА\s+(?P<a>\d+)\s*А")  # '35кА 200А'
@@ -74,7 +76,7 @@ def _is_noise(s: str) -> bool:
 
 def _f(x):
     try:
-        return float(x)
+        return float(str(x).replace(",", "."))   # рус. десятичная запятая → точка
     except (TypeError, ValueError):
         return None
 
