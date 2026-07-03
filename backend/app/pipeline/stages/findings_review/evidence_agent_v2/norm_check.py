@@ -34,6 +34,45 @@ HINT_SOFT_HUMAN = "soft_human"
 HINT_NONE = "none"
 _SAFE_HINTS = {HINT_NEUTRAL, HINT_ACCEPT_FLAG, HINT_SOFT_HUMAN, HINT_NONE}
 
+def _semantic_search_subprocess(query: str, top: int = 2) -> list[dict]:
+    """Семантический поиск норм в КОРОТКОЖИВУЩЕМ subprocess.
+
+    Раньше здесь был in-process `norms_api.semantic_search`: через
+    module-level кэш norms/tools/search.py он НАВСЕГДА загружал в процесс
+    uvicorn SentenceTransformer+CrossEncoder и материализованный npz-индекс
+    (~2+ ГБ RSS) — главный вклад в раздувание бэкенда до 5.5 ГБ и
+    OOM-инцидент 01.07 (11 ГБ RAM всего). Subprocess грузит модель у себя и
+    умирает вместе с ней; RSS uvicorn не растёт. Цена — холодная загрузка
+    ~15-30с на вызов, что для опциональной подсказки эксперту (EV-стадия)
+    приемлемо. --no-rerank: dense-only достаточен для hint'а и не тянет
+    CrossEncoder.
+    """
+    if not query or not str(query).strip():
+        return []
+    import json as _json
+    import subprocess as _sp
+    script = _NORMS_TOOLS / "search.py"
+    if not script.exists():
+        return []
+    # sentence_transformers стоит в venv norms/tools, не в питоне бэкенда —
+    # запускаем через venv-python (fallback на текущий, если venv снесли).
+    _venv_py = _NORMS_TOOLS / "venv" / "bin" / "python3"
+    _py = str(_venv_py) if _venv_py.exists() else sys.executable
+    try:
+        proc = _sp.run(
+            [_py, str(script), query,
+             "--top", str(top), "--json", "--no-rerank"],
+            capture_output=True, text=True, timeout=120,
+            cwd=str(_NORMS_TOOLS),
+        )
+        if proc.returncode != 0 or not proc.stdout.strip():
+            return []
+        result = _json.loads(proc.stdout)
+        return list(result or [])
+    except Exception:
+        return []
+
+
 # «п.7.1» / «п. 7» / «пункт 7.1», но НЕ «П» из «СП» (lookbehind на кириллицу)
 _PARA_RE = re.compile(r"(?<![А-Яа-яЁё])п(?:\.|ункт)?\s*(\d+(?:\.\d+)*)", re.IGNORECASE)
 # приоритет «худшего» статуса для агрегации по нескольким кодам
@@ -161,8 +200,9 @@ def run_norm_check(
     # опц. «правильная» норма по смыслу — ТОЛЬКО подсказка эксперту
     if with_semantic:
         try:
-            from norms_api import semantic_search
-            hits = semantic_search(str(finding.get("problem") or "")[:200], top=2)
+            hits = _semantic_search_subprocess(
+                str(finding.get("problem") or "")[:200], top=2,
+            )
             if hits and hits[0].get("code") and hits[0]["code"] != code:
                 suggestions["suggested_norm"] = {"code": hits[0]["code"],
                                                  "score": hits[0].get("score")}
