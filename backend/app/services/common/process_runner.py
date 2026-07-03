@@ -77,6 +77,30 @@ def active_process_pids() -> set[str]:
     return {pid for pid in list(_active_processes.keys()) if has_live_processes(pid)}
 
 
+async def _terminate_with_grace(proc, grace_sec: float = 10.0) -> None:
+    """SIGTERM → grace-ожидание → SIGKILL.
+
+    Мгновенный SIGKILL по таймауту убивал claude -p посреди Write: на диске
+    оставались полузаписанные валидные JSON (половина замечаний), которые
+    rescue-эвристики принимали за готовые артефакты. SIGTERM даёт ребёнку
+    шанс дописать текущий файл; не дописал за grace — добиваем.
+    """
+    if proc.returncode is not None:
+        return
+    try:
+        proc.terminate()
+    except ProcessLookupError:
+        return
+    try:
+        await asyncio.wait_for(proc.wait(), timeout=grace_sec)
+    except asyncio.TimeoutError:
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass
+        await proc.wait()
+
+
 async def kill_all_processes(project_id: str) -> int:
     """Убить все активные процессы проекта. Возвращает количество убитых."""
     procs = _active_processes.pop(project_id, set())
@@ -177,8 +201,7 @@ async def run_script(
             )
         await proc.wait()
     except asyncio.TimeoutError:
-        proc.kill()
-        await proc.wait()
+        await _terminate_with_grace(proc)
         stderr_lines.append(f"[TIMEOUT] Процесс превысил таймаут {timeout} сек.")
         return -1, "\n".join(stdout_lines), "\n".join(stderr_lines)
     except asyncio.CancelledError:
@@ -257,38 +280,68 @@ async def run_command(
     stderr_lines = []
 
     if input_text:
-        # Для Claude CLI: подаём задачу через stdin, читаем stdout/stderr
-        try:
-            if timeout:
-                stdout_data, stderr_data = await asyncio.wait_for(
-                    proc.communicate(input=input_text.encode("utf-8")),
-                    timeout=timeout,
-                )
-            else:
-                stdout_data, stderr_data = await proc.communicate(
-                    input=input_text.encode("utf-8")
-                )
-
-            stdout_text = stdout_data.decode("utf-8", errors="replace")
-            stderr_text = stderr_data.decode("utf-8", errors="replace")
-
-            if on_output and stdout_text.strip():
-                for line in stdout_text.splitlines():
+        # Для Claude CLI: подаём задачу через stdin, stdout/stderr читаем
+        # ИНКРЕМЕНТАЛЬНО reader-задачами (как в ветке без stdin). Раньше здесь
+        # был communicate(): при таймауте весь уже полученный stdout
+        # ВЫБРАСЫВАЛСЯ (return -1, "", ...) — маркер «You've hit your limit»
+        # терялся, is_rate_limited видел пустую строку, и rate-limit
+        # классифицировался как обычная ошибка (hard fail вместо ожидания).
+        async def _read_stdin_stream(stream, lines):
+            while True:
+                line = await stream.readline()
+                if not line:
+                    break
+                text = line.decode("utf-8", errors="replace").rstrip()
+                lines.append(text)
+                if on_output and text.strip():
                     try:
-                        await on_output(line)
+                        await on_output(text)
                     except Exception:
                         pass
 
-            return proc.returncode, stdout_text, stderr_text
+        try:
+            try:
+                proc.stdin.write(input_text.encode("utf-8"))
+                await proc.stdin.drain()
+                proc.stdin.close()
+            except (BrokenPipeError, ConnectionResetError):
+                # Процесс умер до/во время записи промпта — читаем, что он
+                # успел сказать (обычно ошибка запуска в stderr).
+                pass
+
+            readers = asyncio.gather(
+                _read_stdin_stream(proc.stdout, stdout_lines),
+                _read_stdin_stream(proc.stderr, stderr_lines),
+            )
+            if timeout:
+                await asyncio.wait_for(readers, timeout=timeout)
+            else:
+                await readers
+            await proc.wait()
+
+            return (
+                proc.returncode,
+                "\n".join(stdout_lines),
+                "\n".join(stderr_lines),
+            )
 
         except asyncio.TimeoutError:
-            proc.kill()
-            await proc.wait()
-            return -1, "", f"[TIMEOUT] Claude-сессия превысила таймаут {timeout} сек."
+            # SIGTERM с grace вместо мгновенного SIGKILL: даём ребёнку шанс
+            # дописать текущий Write (SIGKILL посреди записи оставлял
+            # полузаписанные 03_findings/optimization, которые rescue-
+            # эвристики принимали за готовые артефакты). Частичный stdout
+            # возвращаем — вызывающие детектят по нему rate-limit.
+            await _terminate_with_grace(proc, grace_sec=10)
+            return (
+                -1,
+                "\n".join(stdout_lines),
+                "\n".join(stderr_lines)
+                + f"\n[TIMEOUT] Claude-сессия превысила таймаут {timeout} сек.",
+            )
         except asyncio.CancelledError:
             proc.kill()
             await proc.wait()
-            return -2, "", "Отменено"
+            return -2, "\n".join(stdout_lines), "Отменено"
         finally:
             if project_id:
                 unregister_process(project_id, proc)
@@ -324,8 +377,7 @@ async def run_command(
                 )
             await proc.wait()
         except asyncio.TimeoutError:
-            proc.kill()
-            await proc.wait()
+            await _terminate_with_grace(proc)
             return -1, "\n".join(stdout_lines), "\n".join(stderr_lines) + "\n[TIMEOUT]"
         except asyncio.CancelledError:
             proc.kill()
