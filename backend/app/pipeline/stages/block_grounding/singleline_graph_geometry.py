@@ -770,6 +770,59 @@ def _extract_bus_sections(words, qf_out, qf_incomers):
     return out, qmap
 
 
+_METER_DEV_RE = re.compile(r"^(TA|ТА)\d|^Wh$|^НАРТИС|^Меркур|^МТ-72")
+
+
+def _extract_metering(words, qf_out, qf_incomers):
+    """Цепь коммерческого/технического учёта: TA (трансформаторы тока), Wh (счётчик),
+    модель счётчика (НАРТИС/Меркурий) и мультиметр МТ-72D → привязка к колонке фидера
+    или ввода по X (тот же колоночный приём, что код↔QF).
+
+    На ГРЩ учёт ПОФИДЕРНЫЙ: гребёнка «TA…»+«Wh» стоит над каждой отходящей линией —
+    без этого слоя вся цепь учёта терялась (TA за бортом 60/61 токенов).
+
+    Возвращает (points, qf→point) — точки учёта {kind: feeder|incomer, qf, ta[], wh, meter[]}.
+    """
+    devs = [(w[0], w[1], w[4]) for w in words if _METER_DEV_RE.match(w[4])]
+    if not devs or not qf_out:
+        return [], {}
+    xs = sorted(q[0] for q in qf_out)
+    step = _median([xs[i + 1] - xs[i] for i in range(len(xs) - 1)]) if len(xs) > 1 else 60.0
+    half = 0.55 * (step or 60.0)
+    points = {}
+    for dx_, dy_, t in devs:
+        # ближайшая колонка: отходящий QF (порог полшага) или вводной аппарат (порог 130px)
+        best = None
+        if qf_out:
+            q = min(qf_out, key=lambda q: abs(q[0] - dx_))
+            if abs(q[0] - dx_) < half:
+                best = ("feeder", q[2], abs(q[0] - dx_))
+        if qf_incomers:
+            q = min(qf_incomers, key=lambda q: abs(q[0] - dx_))
+            if abs(q[0] - dx_) < 130 and (best is None or abs(q[0] - dx_) < best[2]):
+                best = ("incomer", q[2], abs(q[0] - dx_))
+        key = (best[0], best[1]) if best else ("unbound", f"x{int(dx_ // 200)}")
+        pt = points.setdefault(key, {"kind": key[0], "qf": key[1] if best else None,
+                                     "ta": [], "wh": 0, "meter": []})
+        if re.match(r"^(TA|ТА)\d", t):
+            pt["ta"].append(t)
+        elif t == "Wh":
+            pt["wh"] += 1
+        else:
+            pt["meter"].append(t)
+    out = []
+    qmap = {}
+    for pt in points.values():
+        pt["ta"] = sorted(set(pt["ta"]))
+        pt["meter"] = sorted(set(pt["meter"]))
+        if not (pt["ta"] or pt["wh"] or pt["meter"]):
+            continue
+        out.append(pt)
+        if pt["kind"] == "feeder" and pt["qf"]:
+            qmap[pt["qf"]] = pt
+    return out, qmap
+
+
 def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
     """Дожать привязку для колонки, оставшейся без кода. Код мог не попасть в primary-ряд
     (секционные «С2»-линии: К3.1.2С2 на dy≈-72) или лежать В ПОДПИСИ потребителя («Щит М4-1.1»
@@ -960,6 +1013,11 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         bus_sections, _bs_map = _extract_bus_sections(words, qf_out, qf_incomers)
     except Exception:
         bus_sections, _bs_map = [], {}
+    # Цепь учёта (ребро линия/ввод → TA → Wh): fail-soft
+    try:
+        metering, _mt_map = _extract_metering(words, qf_out, qf_incomers)
+    except Exception:
+        metering, _mt_map = [], {}
 
     feeders = []
     qf_xs = sorted(q[0] for q in qf_out)
@@ -1129,6 +1187,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "additional_devices": additional_devices,
             "binding_method": bind_method.get(qn), "status": status, "review": review,
             "bus_section": _bs_map.get(qn),
+            "metering": ({"ta": _mt_map[qn]["ta"], "wh": _mt_map[qn]["wh"],
+                          "meter": _mt_map[qn]["meter"]} if qn in _mt_map else None),
         })
 
     feeders.sort(key=lambda f: (int(re.match(r"QF(\d+)", f["qf"]).group(1)),
@@ -1245,6 +1305,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "hierarchy": hierarchy,
         "edges": hierarchy.get("edges", []),
         "bus_sections": bus_sections,
+        "metering": metering,
         "panels": panels,
         "panel_calculations": panel_calcs,
         "tt_check_table": tt_check,
@@ -1470,6 +1531,18 @@ def render_graph_etalon_markdown(graph: dict) -> str:
                 f"| {_md_cell(r.get('comment'))} |")
     else:
         L.append("_Таблица проверки ТТ на листе не обнаружена._")
+
+    # 6.1 Устройства учёта на схеме (TA/Wh/счётчик → колонка фидера/ввода)
+    mt = graph.get("metering") or []
+    if mt:
+        L.append("\n### 6.1 Устройства учёта на схеме (привязка по колонкам)\n")
+        L.append("| Точка | TA (транс. тока) | Wh | Счётчик/прибор |")
+        L.append("| --- | --- | --- | --- |")
+        for p in mt:
+            where = {"feeder": "фидер", "incomer": "ввод"}.get(p.get("kind"), "не привязано")
+            tag = f"{where} {p.get('qf')}" if p.get("qf") else where
+            L.append(f"| {_md_cell(tag)} | {_md_cell(', '.join(p.get('ta') or []) or '—')} "
+                     f"| {p.get('wh') or '—'} | {_md_cell(', '.join(p.get('meter') or []) or '—')} |")
 
     # 7. Примечания
     L.append("\n## 7. Примечания\n")
