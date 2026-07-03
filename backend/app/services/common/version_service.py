@@ -1029,6 +1029,14 @@ def resolve_project_version_context(
     Бросает `VersionNotFoundError`, если запрошенная версия отсутствует.
     Бросает `FileNotFoundError`, если папки проекта нет на ФС.
     """
+    # bind_version() ContextVar обязан действовать и в v2-ветке (баг B3
+    # аудита пайплайна): пере-аудит СТАРОЙ версии биндит её на job, но
+    # v2-резолв игнорировал bind и с version_id=None уходил в latest-версию
+    # документа — pipeline_log/audit_log и все резолвы «по pid» писались в
+    # ЧУЖУЮ версию. Legacy-ветка bind всегда учитывала (через
+    # resolve_effective_version_id ниже) — теперь ветки симметричны.
+    version_id = version_id or get_bound_version_id()
+
     v2_ctx = _resolve_projects_v2_version_context(project_id, version_id)
     if v2_ctx is not None:
         return dict(v2_ctx)
