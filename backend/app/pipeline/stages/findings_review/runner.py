@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import shutil
 from dataclasses import dataclass
 from datetime import datetime
@@ -46,6 +47,25 @@ class FindingsReviewResult:
 
 
 # ─── Internal helpers ────────────────────────────────────────────────────────
+
+def _restore_full_review(output_dir: Path, review_data: dict, need_chunks: bool) -> None:
+    """Атомарно вернуть ПОЛНЫЙ 03_findings_review.json после chunked corrector.
+
+    В chunked-режиме файл на диске перезаписывается срезом текущего чанка
+    (10-20 вердиктов вместо сотен) — любой выход из цикла без restore
+    оставлял огрызок, который downstream (UI вердиктов, экспорт, KB/EV,
+    resume) принимал за полный review. Вызывается после цикла и перед
+    каждым ранним return.
+    """
+    if not need_chunks:
+        return
+    review_path = output_dir / "03_findings_review.json"
+    tmp = review_path.with_suffix(review_path.suffix + ".tmp")
+    tmp.write_text(
+        json.dumps(review_data, ensure_ascii=False, indent=2), encoding="utf-8",
+    )
+    os.replace(tmp, review_path)
+
 
 def _should_chunk_corrector(total_issues: int, deterministic: bool, chunk_size: int) -> bool:
     """#33: детерминированный corrector — Python-only, применяет вердикты за один
@@ -279,6 +299,30 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
                     "error",
                 )
 
+        # Один retry-проход для упавших чанков: раньше упавший чанк молча
+        # выпадал из merged review — его findings оставались без вердикта,
+        # ошибка фиксировалась только если упали ВСЕ чанки (тихая
+        # недопроверка на больших проектах). Input-файлы чанков ещё на
+        # диске — удаляются только после слияния.
+        _failed_idx = [i + 1 for i, cr in enumerate(chunk_results) if cr is None]
+        if _failed_idx:
+            await ctx.log(
+                f"Critic: retry упавших чанков: {_failed_idx}", "warn",
+            )
+            retry_tasks = [
+                asyncio.create_task(_run_critic_chunk(cidx)) for cidx in _failed_idx
+            ]
+            for cidx, result in zip(
+                _failed_idx,
+                await asyncio.gather(*retry_tasks, return_exceptions=True),
+            ):
+                if isinstance(result, Exception):
+                    await ctx.log(
+                        f"Critic чанк {cidx} (retry): исключение — "
+                        f"{type(result).__name__}: {result}",
+                        "error",
+                    )
+
         # Проверка отмены после gather
         # (нет прямого доступа к job.status, cancelled проверяется через check_before_launch)
 
@@ -305,6 +349,7 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
             await ctx.log("Critic: все чанки провалились, пропуск корректировки", "warn")
             return FindingsReviewResult(error="Все чанки провалились")
 
+        _still_failed = [i + 1 for i, cr in enumerate(chunk_results) if cr is None]
         merged_review = {
             "meta": {
                 "project_id": pid,
@@ -313,6 +358,8 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
                 "verdicts": merged_verdicts,
                 "chunks_total": num_chunks,
                 "chunks_ok": chunks_ok,
+                # Трассировка недопроверки: findings этих чанков без вердикта.
+                "failed_chunks": _still_failed,
             },
             "reviews": all_reviews,
         }
@@ -330,8 +377,23 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
                 if p.exists():
                     p.unlink()
 
-        ctx.update_pipeline_log("findings_critic", "done",
-                                message=f"Parallel: {num_chunks} chunks, {total_reviewed_all} reviewed")
+        if _still_failed:
+            # Частичная проверка — видимая деградация, не «done OK»:
+            # findings упавших чанков ушли дальше без вердикта критика.
+            ctx.update_pipeline_log(
+                "findings_critic", "partial",
+                message=f"Parallel: {chunks_ok}/{num_chunks} chunks, "
+                        f"{total_reviewed_all} reviewed",
+                error=f"Чанки без вердикта (после retry): {_still_failed}",
+            )
+            await ctx.log(
+                f"Critic: НЕПОЛНАЯ проверка — чанки {_still_failed} без "
+                f"вердикта (findings ушли дальше непроверенными)",
+                "error",
+            )
+        else:
+            ctx.update_pipeline_log("findings_critic", "done",
+                                    message=f"Parallel: {num_chunks} chunks, {total_reviewed_all} reviewed")
         review_data = merged_review
 
     else:
@@ -463,14 +525,20 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
             chunk_meta["total_reviewed"] = len(chunk_review["reviews"])
             chunk_meta["chunk"] = f"{cidx + 1}/{len(corrector_chunks)}"
             chunk_review["meta"] = chunk_meta
-            review_path.write_text(
+            _rt = review_path.with_suffix(review_path.suffix + ".tmp")
+            _rt.write_text(
                 json.dumps(chunk_review, ensure_ascii=False, indent=2), encoding="utf-8",
             )
+            os.replace(_rt, review_path)
             await ctx.log(f"Corrector{chunk_label}: {', '.join(chunk_ids)}")
 
         can_go = await ctx.check_before_launch()
         if not can_go:
             await ctx.log("Rate limit: ожидание превышено или отменено", "warn")
+            # Ранний выход посреди chunked-цикла: на диске лежит СРЕЗ review
+            # (10-20 вердиктов вместо сотен) — восстановить полный до return,
+            # иначе UI/экспорт/KB видят огрызок без какого-либо маркера.
+            _restore_full_review(output_dir, review_data, need_chunks)
             return FindingsReviewResult(critic_ok=True,
                                         error="Rate limit: ожидание превышено или отменено")
 
@@ -487,6 +555,7 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
         )
 
         if is_cancelled(exit_code):
+            _restore_full_review(output_dir, review_data, need_chunks)
             return FindingsReviewResult(critic_ok=True, cancelled=True)
 
         if exit_code != 0:
@@ -498,13 +567,50 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
                     old_data = json.loads(pre_review.read_text(encoding="utf-8"))
                     new_count = len(new_data.get("findings", []))
                     old_count = len(old_data.get("findings", []))
-                    if new_count > 0 and new_data != old_data:
+                    # Инвариант rescue: «файл изменился» — НЕ доказательство
+                    # успеха. Убитый посреди Write corrector оставляет валидный
+                    # JSON с половиной замечаний, и старая эвристика легализовала
+                    # огрызок как мастер. Замечаний не может пропасть больше,
+                    # чем критик пометил проблемными (не-pass вердикты).
+                    _non_pass = sum(
+                        1 for r in (review_data.get("reviews") or [])
+                        if str(r.get("verdict") or "").lower() != "pass"
+                    )
+                    _plausible = new_count >= max(1, old_count - _non_pass)
+                    if new_count > 0 and new_data != old_data and _plausible:
                         await ctx.log(
                             f"Corrector{chunk_label}: CLI код {exit_code}, но файл обновлён "
                             f"({old_count} → {new_count}) — считаем успехом",
                             "warn",
                         )
                         corrector_ok = True
+                    elif new_count > 0 and new_data != old_data:
+                        # Подозрение на частично переписанный мастер: просадка
+                        # больше объяснимой — восстановить из pre_review.
+                        await ctx.log(
+                            f"Corrector{chunk_label}: код {exit_code}, файл обновлён, но "
+                            f"замечаний {old_count} → {new_count} при {_non_pass} "
+                            f"не-pass вердиктах — похоже на огрызок, восстанавливаю "
+                            f"из 03_findings_pre_review.json",
+                            "error",
+                        )
+                        _ft = findings_path.with_suffix(findings_path.suffix + ".tmp")
+                        _ft.write_text(
+                            json.dumps(old_data, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                        os.replace(_ft, findings_path)
+                        if not need_chunks:
+                            ctx.update_pipeline_log(
+                                "findings_corrector", "error",
+                                error=f"Rescue отклонён: {old_count}→{new_count} "
+                                      f"при {_non_pass} не-pass",
+                            )
+                            _restore_full_review(output_dir, review_data, need_chunks)
+                            return FindingsReviewResult(
+                                critic_ok=True,
+                                error=f"Corrector rescue отклонён: exit {exit_code}",
+                            )
                     else:
                         await ctx.log(
                             f"Corrector{chunk_label}: код {exit_code}, файл не изменился",
@@ -542,11 +648,7 @@ async def run_findings_review(ctx: PipelineStageContext) -> FindingsReviewResult
             await ctx.log(f"Corrector{chunk_label} завершён — 03_findings.json обновлён")
 
     # Восстановить полный review после всех чанков
-    if need_chunks:
-        review_path = output_dir / "03_findings_review.json"
-        review_path.write_text(
-            json.dumps(review_data, ensure_ascii=False, indent=2), encoding="utf-8",
-        )
+    _restore_full_review(output_dir, review_data, need_chunks)
 
     if corrector_ok:
         ctx.update_pipeline_log(
