@@ -753,7 +753,14 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     qf_out = sorted([q for q in qf_all if q[1] <= y_split])
     qf_incomers = sorted([q for q in qf_all if q[1] > y_split])
     n_incomers = len(qf_incomers)
-    codes = coll(r"^К\d+\.\d+\.", lambda t: "кВт" not in t)
+    # Код цепи: искать не по хардкод-префиксу, а по ключам, которые СТРУКТУРЕР уже распознал
+    # (params) — тогда любая схема нумерации проекта подходит (К2.2.24, К5.3п, М-1.2, М4-4.3,
+    # НП6.РП1-1, 1Мп-5.24, НС.А-4…). union с регэкспом `^К\d+\.\d` подстраховывает листы, где
+    # структурер разобрал мало параметров, а на чертеже К-кодов больше (напр. ЭО-К3). Прежний
+    # `^К\d+\.\d+\.` находил только трёхуровневые К-коды → 0% привязки на всех иных нумерациях.
+    _pkeys = set(params)
+    codes = [(w[0], w[1], w[4]) for w in words
+             if w[4] in _pkeys or (re.match(r"^К\d+\.\d", w[4]) and "кВт" not in w[4])]
     BA = coll(r"^ВА")
     KA = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+кА", w[4])]
     AMP = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+А", w[4])]
