@@ -24,7 +24,7 @@
 | Часть | Файл | Роль |
 |-------|------|------|
 | Структуризатор | `backend/app/pipeline/stages/block_grounding/singleline_structurer.py` | Разбор строк-формул текста (`код : Pуст кВт - Kc - cosφ - Pрасч кВт - I А`) → параметры линий. Чистый текст, без PDF. |
-| Геометрия (ядро) | `backend/app/pipeline/stages/block_grounding/singleline_graph_geometry.py` | Открывает PDF, берёт слова с координатами, собирает топологию: QF, привязка кода по колонке, аппарат/номинал/полюса, потребитель, вводы/АВР, валидация физикой, рендер Markdown. ⚠️ Зона параллельной работы Cursor — не редактировать без согласования. |
+| Геометрия (ядро) | `backend/app/pipeline/stages/block_grounding/singleline_graph_geometry.py` | Открывает PDF, берёт слова с координатами, собирает топологию: QF, привязка кода по колонке, аппарат/номинал/полюса, потребитель, вводы/АВР, валидация физикой, рендер Markdown. |
 | Точка входа (API) | `backend/app/api/routers/blocks.py` (эндпоинт `/blocks/llm-text`, секции 6 и 7) | Собирает `structured_graph` и `singleline_graph`, отдаёт фронту. |
 
 Публичные функции: `structure_singleline_text` (структуризатор), `build_singleline_graph`,
