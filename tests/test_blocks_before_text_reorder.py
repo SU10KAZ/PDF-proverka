@@ -92,7 +92,7 @@ def test_write_compact_missing_source(tmp_path):
 
 # ─── Схемы (публичный контракт) ──────────────────────────────────────────────
 
-@pytest.mark.parametrize("base", ["backend/app/schemas", "webapp/schemas"])
+@pytest.mark.parametrize("base", ["backend/app/schemas"])
 def test_text_analysis_schema_has_new_field(base):
     d = json.loads((REPO / base / "text_analysis.json").read_text(encoding="utf-8"))
     props = d.get("properties", {})
@@ -101,7 +101,7 @@ def test_text_analysis_schema_has_new_field(base):
     assert "items_verified_from_blocks" not in d.get("required", [])
 
 
-@pytest.mark.parametrize("base", ["backend/app/schemas", "webapp/schemas"])
+@pytest.mark.parametrize("base", ["backend/app/schemas"])
 def test_block_batch_schema_drops_legacy_field(base):
     d = json.loads((REPO / base / "block_batch.json").read_text(encoding="utf-8"))
     assert "items_verified_from_stage_01" not in d.get("properties", {})

@@ -203,22 +203,15 @@ async def api_info():
 # ─── Static Files & SPA ────────────────────────────────────
 # HTML-страницы берём из frontend/ (рядом с index.html / model-control.html).
 # /static монтируем из frontend/static/ (js/ и css/ лежат там).
-# Fallback на webapp/static/ для обратной совместимости.
 _frontend_dir = ROOT_DIR / "frontend"
 _frontend_static_dir = _frontend_dir / "static"
-_webapp_static_dir = ROOT_DIR / "webapp" / "static"
 
-if _frontend_static_dir.exists():
-    _static_mount_dir = _frontend_static_dir
-elif _webapp_static_dir.exists():
-    _static_mount_dir = _webapp_static_dir
-else:
-    _static_mount_dir = None
+_static_mount_dir = _frontend_static_dir if _frontend_static_dir.exists() else None
 
 if _static_mount_dir is not None:
     app.mount("/static", StaticFiles(directory=str(_static_mount_dir)), name="static")
 
-_html_dir = _frontend_dir if _frontend_dir.exists() else _webapp_static_dir
+_html_dir = _frontend_dir
 
 
 @app.get("/login")

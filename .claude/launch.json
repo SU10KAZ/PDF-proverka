@@ -4,8 +4,8 @@
     {
       "name": "audit-manager",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "webapp.main"],
-      "port": 8080
+      "runtimeArgs": ["-m", "uvicorn", "backend.app.main:app", "--host", "127.0.0.1", "--port", "8081"],
+      "port": 8081
     }
   ]
 }

@@ -136,21 +136,10 @@ def test_backend_projects_summary_contract(monkeypatch):
     _check_summary_shape(tracker.get_all_projects_usage())
 
 
-def test_webapp_projects_summary_contract(monkeypatch):
-    """webapp.services.usage_service (legacy): тот же контракт."""
-    mod = importlib.import_module("webapp.services.usage_service")
-    tracker = mod.UsageTracker.__new__(mod.UsageTracker)
-    tracker._records = []
-    tracker._session_reset_at = datetime.now().isoformat()
-    _seed_tracker(tracker, monkeypatch)
-    _check_summary_shape(tracker.get_all_projects_usage())
-
-
 @pytest.mark.parametrize(
     "module_path",
     [
         "backend.app.services.common.usage_service",
-        "webapp.services.usage_service",
     ],
 )
 def test_projects_summary_matches_project_usage_fields(module_path, monkeypatch):

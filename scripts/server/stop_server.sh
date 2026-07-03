@@ -1,6 +1,8 @@
 #!/bin/bash
-# Linux-эквивалент stop_server.bat: останавливает сервер на порту 8080.
+# Останавливает production-backend на порту 8081.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+LOG_DIR="$ROOT_DIR/logs"
 PORT=8081
 
 echo "Stopping Audit Manager server on port $PORT..."
@@ -9,18 +11,21 @@ PIDS=$(ss -ltnp 2>/dev/null | awk -v p=":$PORT" '$4 ~ p {print $NF}' \
     | grep -oP 'pid=\K[0-9]+' | sort -u)
 
 if [ -z "$PIDS" ]; then
-    # Fallback на сохранённый PID
-    if [ -f "$SCRIPT_DIR/server.pid" ]; then
-        SAVED=$(cat "$SCRIPT_DIR/server.pid")
-        if kill -0 "$SAVED" 2>/dev/null; then
-            PIDS="$SAVED"
+    # Fallback на сохранённый PID (новое место, затем legacy webapp/)
+    for pidfile in "$LOG_DIR/server.pid" "$ROOT_DIR/webapp/server.pid"; do
+        if [ -f "$pidfile" ]; then
+            SAVED=$(cat "$pidfile")
+            if kill -0 "$SAVED" 2>/dev/null; then
+                PIDS="$SAVED"
+                break
+            fi
         fi
-    fi
+    done
 fi
 
 if [ -z "$PIDS" ]; then
     # Последний fallback — поиск по командной строке
-    PIDS=$(pgrep -f "webapp.main|uvicorn.*webapp" || true)
+    PIDS=$(pgrep -f "uvicorn.*backend.app.main" || true)
 fi
 
 if [ -z "$PIDS" ]; then
@@ -42,5 +47,5 @@ for pid in $PIDS; do
     fi
 done
 
-rm -f "$SCRIPT_DIR/server.pid"
+rm -f "$LOG_DIR/server.pid" "$ROOT_DIR/webapp/server.pid" 2>/dev/null
 echo "Stopped."

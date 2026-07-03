@@ -1,8 +1,8 @@
 # Стартовый CI (reserc.md #104). СТАТУС: observe-first — пока НЕ блокирует merge.
 #
 # Почему observe, а не enforce сразу:
-#   - в репозитории ещё НЕТ корневого requirements.txt (зависимости ставятся
-#     вручную / из webapp/requirements.txt) — список deps ниже best-effort;
+#   - корневой requirements.txt перенесён из webapp/ (2026-07-04) — список
+#     deps ниже best-effort;
 #   - baseline известных падений (scripts/ci_known_failures.txt) снят в локальном
 #     окружении и от него зависит — в CI часть тестов падает иначе.
 #
@@ -27,10 +27,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies (best-effort до появления requirements.txt)
+      - name: Install dependencies (best-effort)
         run: |
           python -m pip install --upgrade pip
-          if [ -f webapp/requirements.txt ]; then pip install -r webapp/requirements.txt || true; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
           pip install pytest fastapi httpx starlette pydantic "uvicorn[standard]" jinja2 python-multipart pillow passlib
 
       - name: Регресс-гейт (падает только на НОВЫХ падениях против baseline)

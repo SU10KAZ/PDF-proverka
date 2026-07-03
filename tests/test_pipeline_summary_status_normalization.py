@@ -454,29 +454,7 @@ def test_stale_pipeline_log_partial_does_not_override_summary_done(tmp_path, mon
     assert summary["gemma_enrichment"]["status"] == "done"
 
 
-# ─── 12. Static parity: webapp/static дублирует frontend/static ────────────
-
-
-def test_webapp_static_index_has_partial_branch():
-    """webapp/static/index.html (legacy SPA) должен иметь те же ветки
-    partial/migration_required, что и frontend/index.html."""
-    text = (_ROOT / "webapp" / "static" / "index.html").read_text(encoding="utf-8")
-    assert "s.status === 'partial'" in text
-    assert "s.status === 'migration_required'" in text
-    assert "⚠" in text
-
-
-def test_webapp_static_css_has_partial_classes():
-    text = (_ROOT / "webapp" / "static" / "css" / "styles.css").read_text(encoding="utf-8")
-    assert ".ps-partial" in text
-    assert ".ps-migration_required" in text
-    assert ".pipeline-stage.step-partial" in text
-
-
-def test_webapp_static_app_js_step_class_maps_migration_required():
-    text = (_ROOT / "webapp" / "static" / "js" / "app.js").read_text(encoding="utf-8")
-    assert "status === 'migration_required'" in text
-    assert "step-partial" in text
+# ─── 12. (удалён) Static parity webapp/static — legacy-пакет webapp ликвидирован 2026-07-04
 
 
 # ─── 13. Legacy v4-aliases для AR-проектов (АР0.3, АР0.4, АР1.1-К2) ───────

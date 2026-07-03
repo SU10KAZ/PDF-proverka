@@ -34,7 +34,6 @@ if str(_ROOT) not in sys.path:
 
 _SERVICE_MODULES = [
     "backend.app.services.knowledge_base.missing_norms_service",
-    "webapp.services.missing_norms_service",
 ]
 
 
@@ -187,11 +186,9 @@ def test_mark_pending_restores_status(module_path, isolated_vault):
 
 _INDEX_HTML_FILES = [
     _ROOT / "frontend" / "index.html",
-    _ROOT / "webapp" / "static" / "index.html",
 ]
 _CSS_FILES = [
     _ROOT / "frontend" / "static" / "css" / "styles.css",
-    _ROOT / "webapp" / "static" / "css" / "styles.css",
 ]
 
 
