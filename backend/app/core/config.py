@@ -635,6 +635,12 @@ BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False
 # Stage 02 (call_gpt_for_block), и на превью /blocks/llm-text (чтобы совпадали). Детерминированно,
 # без OCR/Qwen. Переключать после замера «до/после» (размер промпта + качество findings).
 SINGLELINE_RICH_PROMPT_ENABLED = _env_bool("SINGLELINE_RICH_PROMPT_ENABLED", False)
+# «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
+# по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
+# Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о
+# реальной замене. Дёшево: не-схемы отсеиваются структурером за мс (PDF не открывается),
+# однолинейка ~1.2 с. ON по умолчанию (observe-only), env — kill-switch.
+VECTOGRAF_SHADOW_ENABLED = _env_bool("VECTOGRAF_SHADOW_ENABLED", True)
 # Дедуп соседних текст-блоков против текст-слоя блока: /blocks/llm-text отдаёт поле
 # neighbor_text_blocks {send, dropped} — какие соседние text-блоки той же страницы УЖЕ есть в
 # текст-слое блока (не слать повторно) и какие уникальны. Аддитивное поле, разметку не трогает.

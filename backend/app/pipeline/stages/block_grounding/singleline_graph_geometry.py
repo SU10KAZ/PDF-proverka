@@ -1795,9 +1795,15 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
     rich=False → компактный граф (`render_graph_for_prompt`, как было в превью);
     rich=True  → полная эталонная разметка (`render_graph_etalon_markdown`, 8 разделов).
     Один источник для реального Stage 02 и превью — чтобы не разъезжались.
+
+    Для rich (замена описания в Stage 02) дополнительно применяется ГЕЙТ КАЧЕСТВА
+    (evaluate_vectograf_gate): не прошёл → None → вызывающий падает на штатный fallback
+    (enrichment+page_text). Слабый граф хуже, чем честный «нет графа».
     """
     graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint)
     if not graph:
+        return None
+    if rich and not evaluate_vectograf_gate(graph)["use"]:
         return None
     body = render_graph_etalon_markdown(graph) if rich else render_graph_for_prompt(graph)
     return f"# Блок {block_id} | страница PDF {page}\n\n{body}\n\n{_STAGE02_TASK}"
@@ -1817,6 +1823,77 @@ def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
             if bid:
                 idx[bid] = b.get("pdfplumber_text") or ""
     return idx
+
+
+def evaluate_vectograf_gate(graph: Optional[dict]) -> dict:
+    """Гейт качества Вектографа: годится ли граф как ЗАМЕНА Gemma-описания блока.
+
+    Жёсткие критерии (подобраны по 15 боевым однолинейкам, все проходят; мусор — нет):
+      - граф построен и линий ≥ 5 (меньше — не расчётная однолинейка);
+      - физика P ≥ 0.8 (пересчёт P=√3·U·I·cosφ против подписанных значений);
+      - честная привязка active/(active+ambiguous) ≥ 0.85;
+      - геометрических конфликтов ≤ 15% линий.
+    coverage/confidence НЕ блокируют (на честных листах гуляют из-за дублей токенов
+    и кодов чужих панелей: ГРЩ 50%, К7 0.36) — уходят в warnings для shadow-аналитики.
+
+    Возвращает {"use": bool, "reasons": [...], "warnings": [...], "metrics": {...}}.
+    """
+    if not graph:
+        return {"use": False, "reasons": ["граф не построен (не feeder-однолинейка)"],
+                "warnings": [], "metrics": {}}
+    v = graph.get("validation") or {}
+    ft = graph.get("feeders_total") or 0
+    act = v.get("active") or 0
+    amb = v.get("ambiguous") or 0
+    bind = act / max(act + amb, 1)
+    conf_rate = (v.get("geometry_conflicts") or 0) / max(ft, 1)
+    power_rate = v.get("power_rate")
+    cov = (v.get("codes_linked_occurrences") or 0) / max(v.get("codes_total_occurrences") or 1, 1)
+    metrics = {"feeders_total": ft, "bind_rate": round(bind, 3),
+               "power_rate": power_rate, "conflict_rate": round(conf_rate, 3),
+               "coverage": round(cov, 3), "confidence": graph.get("confidence"),
+               "status": graph.get("status")}
+    reasons = []
+    if ft < 5:
+        reasons.append(f"мало линий ({ft} < 5)")
+    if power_rate is not None and power_rate < 0.8:
+        reasons.append(f"физика P {power_rate} < 0.8")
+    if bind < 0.85:
+        reasons.append(f"честная привязка {bind:.0%} < 85%")
+    if conf_rate > 0.15:
+        reasons.append(f"геом. конфликтов {conf_rate:.0%} > 15%")
+    warnings = []
+    if cov < 0.6:
+        warnings.append(f"низкое покрытие кодов {cov:.0%} (дубли токенов/чужие панели?)")
+    if graph.get("status") == "needs_review":
+        warnings.append("status=needs_review")
+    return {"use": not reasons, "reasons": reasons, "warnings": warnings, "metrics": metrics}
+
+
+def vectograf_gate_for_block(version_dir, block_id: str, *, panel_hint: str = "ВРУ"):
+    """Гейт по блоку из result.json: (decision, graph). fail-soft → (use=False, None).
+
+    Используется shadow-режимом enrichment и (при включении) заменой Gemma-описания.
+    """
+    try:
+        vd = Path(version_dir)
+        rp = vd / "02_work" / "result.json"
+        if not rp.exists():
+            return evaluate_vectograf_gate(None), None
+        idx = _result_blocks_vector_index(str(rp), rp.stat().st_mtime)
+        vector_text = idx.get(str(block_id)) or ""
+        if not vector_text or len(vector_text) < 30:
+            return evaluate_vectograf_gate(None), None
+        pdf = vd / "02_work" / "document.pdf"
+        if not pdf.exists() and (vd / "document.pdf").exists():
+            pdf = vd / "document.pdf"
+        if not pdf.exists():
+            return evaluate_vectograf_gate(None), None
+        graph = build_singleline_graph(pdf, vector_text, panel_hint=panel_hint)
+        return evaluate_vectograf_gate(graph), graph
+    except Exception:
+        return {"use": False, "reasons": ["исключение при построении графа"],
+                "warnings": [], "metrics": {}}, None
 
 
 def resolve_singleline_prompt(version_dir, block_id: str, page, *, rich: bool) -> Optional[str]:

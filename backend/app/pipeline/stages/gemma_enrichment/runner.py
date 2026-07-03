@@ -52,6 +52,26 @@ def _project_rel_path(project_dir: Path) -> str:
         return str(project_dir)
 
 
+async def _run_vectograf_shadow(ctx, project_dir: Path) -> None:
+    """«Вектограф» shadow (observe-only): решения гейта «взял бы вместо Gemma» →
+    _output/vectograf_shadow.json. Поведение стадии НЕ меняет, fail-soft целиком."""
+    try:
+        from backend.app.core import config as _cfg
+        if not getattr(_cfg, "VECTOGRAF_SHADOW_ENABLED", True):
+            return
+        from backend.app.pipeline.stages.block_grounding.vectograf_shadow import (
+            write_vectograf_shadow,
+        )
+        report = await asyncio.to_thread(write_vectograf_shadow, project_dir)
+        if report:
+            await ctx.log(
+                f"Вектограф shadow: {report['would_use_vectograf']}/{report['blocks_total']} "
+                f"image-блоков прошли гейт (vectograf_shadow.json)"
+            )
+    except Exception:
+        pass
+
+
 async def run_gemma_enrichment_stage(
     ctx: "PipelineStageContext",
     *,
@@ -119,6 +139,7 @@ async def run_gemma_enrichment_stage(
                 "blocks_total": state_before.get("blocks_total", 0),
             },
         )
+        await _run_vectograf_shadow(ctx, project_dir)
         return StageResult.ok(skipped=True, status=status)
 
     # ── Импорт enrich_project ──
@@ -282,6 +303,7 @@ async def run_gemma_enrichment_stage(
                 },
             )
             await ctx.log(f"  ⚠ {msg}", "warn")
+            await _run_vectograf_shadow(ctx, project_dir)
             return StageResult.ok(
                 blocks_ok=ok_count,
                 blocks_total=total,
@@ -297,4 +319,5 @@ async def run_gemma_enrichment_stage(
 
     ctx.update_pipeline_log("gemma_enrichment", "done", message=msg)
     await ctx.log(f"  ✓ {msg}")
+    await _run_vectograf_shadow(ctx, project_dir)
     return StageResult.ok(blocks_ok=ok_count, blocks_total=total, status="done")
