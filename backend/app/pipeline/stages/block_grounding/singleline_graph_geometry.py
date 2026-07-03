@@ -782,6 +782,15 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     qf_out = sorted([q for q in qf_all if q[1] <= y_split])
     qf_incomers = sorted([q for q in qf_all if q[1] > y_split])
     n_incomers = len(qf_incomers)
+    # Дедуп повторных QF-меток среди отходящих: одна метка может встретиться дважды (повтор ниже
+    # по листу / фрагмент). Дубль, попавший в X-колонку соседа, ВОРУЕТ его код (двухсекц. шина
+    # ЭМ-К3: дубль QF2.1 крал К3.1.2С2 у QF2.2). Оставляем ВЕРХНЮЮ метку (min Y — ближе к ряду
+    # кодов над QF). Активируется только при реальных дублях; на листах с уник. метками — no-op.
+    if len({q[2] for q in qf_out}) != len(qf_out):
+        _keep = {}
+        for q in sorted(qf_out, key=lambda t: t[1]):
+            _keep.setdefault(q[2], q)
+        qf_out = sorted(_keep.values())
     # Код цепи: искать не по хардкод-префиксу, а по ключам, которые СТРУКТУРЕР уже распознал
     # (params) — тогда любая схема нумерации проекта подходит (К2.2.24, К5.3п, М-1.2, М4-4.3,
     # НП6.РП1-1, 1Мп-5.24, НС.А-4…). union с регэкспом `^К\d+\.\d` подстраховывает листы, где
