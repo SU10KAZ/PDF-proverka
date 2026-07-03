@@ -699,6 +699,35 @@ def _extract_title_source(page_text: str, pdf_path: Path, page_index, panel_hint
     }
 
 
+def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
+    """Дожать привязку для колонки, оставшейся без кода. Код мог не попасть в primary-ряд
+    (секционные «С2»-линии: К3.1.2С2 на dy≈-72) или лежать В ПОДПИСИ потребителя («Щит М4-1.1»
+    на ГРЩ-листах). Берём код ТОЛЬКО из params, не занятый другой линией, и однозначно
+    относящийся к ЭТОЙ колонке (в подписи ИЛИ единственный в тесной X-колонке с ближайшей QF=эта).
+    Консервативно — чтобы не утащить код соседа. Возвращает код|None.
+    """
+    pkeys = [k for k in params if k not in assigned]
+    if not pkeys:
+        return None
+    # 1) код в подписи потребителя. Длинные ключи раньше (М4-1.10 проверяется до М4-1.1 —
+    #    иначе префикс украл бы совпадение).
+    if consumer:
+        for k in sorted(pkeys, key=len, reverse=True):
+            if k in consumer:
+                return k
+    # 2) единственный params-токен в тесной X-колонке, чья ближайшая QF — именно эта.
+    xs = sorted(q[0] for q in qf_out)
+    spacing = (_median([xs[i + 1] - xs[i] for i in range(len(xs) - 1)]) if len(xs) > 1 else 60.0) or 60.0
+    half = 0.42 * spacing
+    pk = set(pkeys)
+    found = set()
+    for w in words:
+        if w[4] in pk and abs(w[0] - qx) < half and -430 < (w[1] - qy) < 20:
+            if min(qf_out, key=lambda q: abs(q[0] - w[0]))[2] == qn:
+                found.add(w[4])
+    return found.pop() if len(found) == 1 else None
+
+
 def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ") -> Optional[dict]:
     """Построить граф однолинейной схемы. None — если не feeder-схема / нет геометрии."""
     base = structure_singleline_text(vector_text)
@@ -848,6 +877,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
 
     feeders = []
     qf_xs = sorted(q[0] for q in qf_out)
+    assigned_codes = {v for v in assign.values() if v}   # занятые коды — не переиспользовать в fallback
     for qx, qy, qn in qf_out:
         g = geo[qn]
         code = assign.get(qn)
@@ -862,6 +892,15 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             consumer_geo = "Резерв (свободная ячейка)"
         consumer = consumer_geo or (p.get("consumer") if p else None) \
             or ("Резерв (свободная ячейка)" if g["reserve"] else None)
+        # Дожать привязку недобитой колонки (секционные «С2» / код в подписи щита) — строго из params.
+        if code is None and not g["reserve"]:
+            fb = _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned_codes)
+            if fb:
+                code = fb
+                p = params.get(fb)
+                assigned_codes.add(fb)
+                if not consumer:
+                    consumer = (p.get("consumer") if p else None) or consumer
         status = "reserve" if g["reserve"] else ("active" if p else "ambiguous")
         review = []
         if status == "ambiguous":
