@@ -2869,10 +2869,29 @@ class PipelineManager:
                             job, f"Seed run dir: не скопирован {_src.name}: {_copy_err}",
                             "warn",
                         )
-                if _seeded:
+                # Индексы блоков (НЕ сами PNG): gemma-гейт ниже зовёт
+                # evaluate_gemma_enrichment → gemma_output_root(run dir) и ищет
+                # blocks_gemma_100/index.json. Без него retry поздней стадии
+                # (debt_control/carryover/excel) падал «нужен prepare/crop» на
+                # пустом run dir. Копируем только лёгкие index.json подпапок —
+                # блоки для этих стадий не нужны, гейту хватает индекса+summary.
+                _seeded_idx = 0
+                for _sub in ("blocks_gemma_100", "blocks", "blocks_gemma_300",
+                             "blocks_stage02_100"):
+                    _src_idx = _latest_dir / _sub / "index.json"
+                    _dst_idx = output_dir / _sub / "index.json"
+                    if _src_idx.is_file() and not _dst_idx.exists():
+                        try:
+                            _dst_idx.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(_src_idx, _dst_idx)
+                            _seeded_idx += 1
+                        except OSError:
+                            pass
+                if _seeded or _seeded_idx:
                     await self._log(
                         job,
-                        f"Resume: run dir засеян {_seeded} артефактами из latest",
+                        f"Resume: run dir засеян {_seeded} артефактами + "
+                        f"{_seeded_idx} индексами блоков из latest",
                         "info",
                     )
 
