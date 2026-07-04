@@ -239,17 +239,86 @@ def aggregate_events(
     return events
 
 
-def build_engineers(events: list[dict], *, users: Optional[list[dict]] = None) -> list[dict]:
+def count_remarks_by_engineer(
+    entries: list[dict],
+    *,
+    from_day: str,
+    to_day: str,
+    object_id: Optional[str] = None,
+) -> dict[str, dict]:
+    """Счётчики отработанных замечаний по инженеру ЗА ПЕРИОД (по дате решения).
+
+    В отличие от `aggregate_events` (где проект схлопывается в один замороженный
+    день завершения), здесь считаем ОТДЕЛЬНЫЕ решения по их собственной дате
+    `expert_date`, попадающей в [from_day, to_day]. Это отвечает смыслу «сколько
+    замечаний инженер отработал за месяц» и может расходиться со столбцом ФАКТ.
+
+    Возвращает `{eng_slug: {"agreed": N, "disagreed": M}}`, где:
+      * agreed    — решений `expert_decision == "accepted"` (согласовано);
+      * disagreed — решений `expert_decision == "rejected"` (не согласовано).
+
+    ВАЖНО: считаются ОБА типа решений — и замечания (`item_type == "finding"`),
+    и оптимизации (`item_type == "optimization"`); фильтра по `item_type` здесь
+    НЕТ намеренно (оптимизации — такая же отработанная экспертом позиция, как и
+    замечание). Не добавляйте такой фильтр без явного требования.
+
+    Фильтры повторяют `aggregate_events`: пропускаем авто-перенос (carried_over),
+    системных «ревьюеров» и записи без валидной даты. Решения с иным/пустым
+    `expert_decision` в счётчики не идут (нечего показывать как «отработанное»).
+    """
+    obj_filter = (object_id or "").strip() or None
+    counts: dict[str, dict] = {}
+    for e in entries:
+        if not isinstance(e, dict):
+            continue
+        if e.get("carried_over"):
+            continue
+        reviewer = (e.get("expert_reviewer") or "").strip()
+        if not reviewer or reviewer.lower() in _SYSTEM_REVIEWERS:
+            continue
+        day = parse_day(e.get("expert_date"))
+        if not day or not (from_day <= day <= to_day):
+            continue
+        if obj_filter and (e.get("object_id") or "").strip() != obj_filter:
+            continue
+        decision = (e.get("expert_decision") or "").strip().lower()
+        if decision == "accepted":
+            key = "agreed"
+        elif decision == "rejected":
+            key = "disagreed"
+        else:
+            continue
+        eid = eng_slug(reviewer)
+        c = counts.get(eid)
+        if c is None:
+            c = {"agreed": 0, "disagreed": 0}
+            counts[eid] = c
+        c[key] += 1
+    return counts
+
+
+def build_engineers(
+    events: list[dict],
+    *,
+    users: Optional[list[dict]] = None,
+    remark_counts: Optional[dict[str, dict]] = None,
+) -> list[dict]:
     """Список инженеров, у которых есть события в периоде (без «пустых» строк).
 
     Роль берётся из users API по совпадению имени (best-effort); если совпадения
     нет — по умолчанию «expert». engId всегда из ФИО (стабилен).
+
+    `remark_counts` (см. `count_remarks_by_engineer`) добавляет каждому инженеру
+    поля `agreed`/`disagreed` — счётчики отработанных за период замечаний. Фронт
+    (`_schedRemarkCount`) подхватывает их автоматически; при отсутствии решений у
+    инженера — 0/0 (а не «—»: инженер в периоде есть, просто решений нет).
     """
     by_name = {}
     for u in (users or []):
         nm = (u.get("name") or "").strip().lower()
         if nm:
             by_name[nm] = u
+    remark_counts = remark_counts or {}
     seen: dict[str, dict] = {}
     for ev in events:
         eid = ev["engId"]
@@ -257,10 +326,13 @@ def build_engineers(events: list[dict], *, users: Optional[list[dict]] = None) -
             continue
         name = ev["engineerName"]
         matched = by_name.get(name.strip().lower())
+        rc = remark_counts.get(eid) or {}
         seen[eid] = {
             "id": eid,
             "name": name,
             "role": (matched.get("role") if matched else None) or "expert",
+            "agreed": int(rc.get("agreed", 0)),
+            "disagreed": int(rc.get("disagreed", 0)),
         }
     return sorted(seen.values(), key=lambda x: x["name"].lower())
 
@@ -278,7 +350,10 @@ def build_schedule(
     events = aggregate_events(
         entries, from_day=from_day, to_day=to_day, object_id=object_id, completions=completions
     )
-    engineers = build_engineers(events, users=users)
+    remark_counts = count_remarks_by_engineer(
+        entries, from_day=from_day, to_day=to_day, object_id=object_id
+    )
+    engineers = build_engineers(events, users=users, remark_counts=remark_counts)
     return {
         "events": events,
         "engineers": engineers,

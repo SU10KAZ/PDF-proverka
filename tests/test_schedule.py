@@ -310,6 +310,88 @@ def test_build_engineers_no_empty_rows():
     assert schedule_service.build_engineers([], users=[{"name": "Узун А. И."}]) == []
 
 
+# ─── count_remarks_by_engineer (отработанные замечания за период) ─────────────
+
+def test_count_remarks_accepted_and_rejected():
+    entries = [
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision="accepted"),
+        _entry("Узун А. И.", "2026-06-19", "P1", expert_decision="rejected"),
+        _entry("Узун А. И.", "2026-06-20", "P2", expert_decision="rejected"),
+    ]
+    rc = schedule_service.count_remarks_by_engineer(
+        entries, from_day="2026-06-15", to_day="2026-06-21"
+    )
+    assert rc == {"uzun-a-i": {"agreed": 1, "disagreed": 2}}
+
+
+def test_count_remarks_includes_findings_and_optimizations():
+    # в счётчик входят ОБА типа: замечания и оптимизации (accepted/rejected)
+    entries = [
+        _entry("Узун А. И.", "2026-06-18", "P1", item_type="finding", expert_decision="accepted"),
+        _entry("Узун А. И.", "2026-06-18", "P1", item_type="finding", expert_decision="rejected"),
+        _entry("Узун А. И.", "2026-06-18", "P1", item_type="optimization", expert_decision="accepted"),
+        _entry("Узун А. И.", "2026-06-18", "P1", item_type="optimization", expert_decision="rejected"),
+    ]
+    rc = schedule_service.count_remarks_by_engineer(
+        entries, from_day="2026-06-15", to_day="2026-06-21"
+    )
+    assert rc == {"uzun-a-i": {"agreed": 2, "disagreed": 2}}
+
+
+def test_count_remarks_counts_by_own_date_not_frozen_day():
+    # решения считаются по СВОЕЙ дате — часть вне периода не попадает
+    entries = [
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision="accepted"),
+        _entry("Узун А. И.", "2026-07-01", "P1", expert_decision="accepted"),  # вне периода
+    ]
+    rc = schedule_service.count_remarks_by_engineer(
+        entries, from_day="2026-06-15", to_day="2026-06-21"
+    )
+    assert rc == {"uzun-a-i": {"agreed": 1, "disagreed": 0}}
+
+
+def test_count_remarks_skips_system_carried_and_unknown_decision():
+    entries = [
+        _entry("su10_registry", "2026-06-18", "P1", expert_decision="accepted"),  # система
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision="accepted", carried_over=True),
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision=""),   # пустой вердикт
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision="pending"),  # иной вердикт
+        _entry("Узун А. И.", "2026-06-18", "P1", expert_decision="accepted"),  # единственный валидный
+    ]
+    rc = schedule_service.count_remarks_by_engineer(
+        entries, from_day="2026-06-15", to_day="2026-06-21"
+    )
+    assert rc == {"uzun-a-i": {"agreed": 1, "disagreed": 0}}
+
+
+def test_count_remarks_object_filter():
+    entries = [
+        _entry("Узун А. И.", "2026-06-18", "P1", object_id="214", expert_decision="accepted"),
+        _entry("Узун А. И.", "2026-06-18", "P1", object_id="999", expert_decision="rejected"),
+    ]
+    rc = schedule_service.count_remarks_by_engineer(
+        entries, from_day="2026-06-15", to_day="2026-06-21", object_id="214"
+    )
+    assert rc == {"uzun-a-i": {"agreed": 1, "disagreed": 0}}
+
+
+def test_build_engineers_attaches_remark_counts():
+    events = [{"engId": "uzun-a-i", "engineerName": "Узун А. И."}]
+    engs = schedule_service.build_engineers(
+        events, users=[], remark_counts={"uzun-a-i": {"agreed": 3, "disagreed": 5}}
+    )
+    assert engs[0]["agreed"] == 3
+    assert engs[0]["disagreed"] == 5
+
+
+def test_build_engineers_zero_counts_when_no_decisions():
+    # инженер с событием, но без решений за период → 0/0 (а не отсутствие поля)
+    events = [{"engId": "uzun-a-i", "engineerName": "Узун А. И."}]
+    engs = schedule_service.build_engineers(events, users=[], remark_counts={})
+    assert engs[0]["agreed"] == 0
+    assert engs[0]["disagreed"] == 0
+
+
 # ─── build_schedule (pure) ───────────────────────────────────────────────────
 
 def test_build_schedule_shape():
