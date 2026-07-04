@@ -263,27 +263,59 @@ async def run_text_analysis(
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 
-    # ── Страж отсутствия: непроверенные «нет данных» → «ПРОВЕРИТЬ ПО СМЕЖНЫМ» ──
-    # Промпт-правило слабо соблюдается, поэтому принуждаем детерминированно. Fail-soft:
-    # любая ошибка пост-прохода не должна ронять уже валидный результат этапа.
+    # ── Страж отсутствия: подтверждённо-ложные «нет данных» → «ПРОВЕРИТЬ ПО СМЕЖНЫМ» ──
+    # Кандидаты (похоже на отсутствие, без absence_checked) перепроверяются по ПОЛНОМУ
+    # тексту документа; понижаются только те, где данные фактически есть (present).
+    # Fail-soft: любая ошибка пост-прохода не должна ронять валидный результат этапа.
     done_message = "OK"
     from backend.app.core.config import PIPELINE_ABSENCE_GUARD_ENABLED
     if PIPELINE_ABSENCE_GUARD_ENABLED:
         try:
-            from backend.app.pipeline.stages.text_analysis.absence_guard import (
-                enforce_absence_guard,
-            )
-            stats = enforce_absence_guard(data["text_findings"])
-            if stats["downgraded"]:
-                output_path.write_text(
-                    json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
-                )
-            done_message = (
-                f"OK; absence_guard: понижено {stats['downgraded']}/"
-                f"{stats['absence_claims']} замечаний-об-отсутствии"
+            done_message = await asyncio.to_thread(
+                _apply_absence_guard, output_path, data, project_info, pid
             )
         except Exception as exc:  # noqa: BLE001 — fail-soft
             done_message = f"OK; absence_guard пропущен: {exc}"
 
     ctx.update_pipeline_log(log_stage, "done", message=done_message)
     return StageResult.ok(output_path=str(output_path))
+
+
+def _apply_absence_guard(output_path, data: dict, project_info: dict, pid: str) -> str:
+    """Синхронный пост-проход стража отсутствия (вызывается через to_thread).
+
+    Читает MD, прогоняет enforce_absence_guard с claude-верификатором, при понижениях
+    перезаписывает 01_text_analysis.json. Возвращает сообщение для done-лога. Fail-soft.
+    """
+    from backend.app.pipeline.stages.text_analysis.absence_guard import (
+        enforce_absence_guard, run_claude_verification,
+    )
+    from backend.app.pipeline.stages.prepare.task_builder import _get_md_file_path
+
+    md_text = None
+    try:
+        md_path = _get_md_file_path(project_info, pid)
+        if md_path and md_path != "(нет)":
+            from pathlib import Path as _P
+            md_text = _P(md_path).read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001 — без MD страж уйдёт в безопасный режим (не понижает)
+        md_text = None
+
+    stats = enforce_absence_guard(
+        data["text_findings"], md_text=md_text, verifier=run_claude_verification,
+    )
+    if stats["downgraded"]:
+        output_path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    if not stats["candidates"]:
+        return f"OK; absence_guard: кандидатов нет ({stats['absence_claims']} absence)"
+    if not stats["verified"]:
+        return (
+            f"OK; absence_guard: {stats['candidates']} кандидатов НЕ проверены "
+            "(нет MD/верификатора) — не понижено"
+        )
+    return (
+        f"OK; absence_guard: понижено {stats['downgraded']}/{stats['candidates']} "
+        f"проверенных (из {stats['absence_claims']} absence)"
+    )
