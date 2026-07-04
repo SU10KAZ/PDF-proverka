@@ -147,3 +147,54 @@ def test_parse_verification_response():
     assert out[0] == "present" and out["0_evidence"] == "есть на л.5"
     assert out[1] == "absent"
     assert 2 not in out
+
+
+# ── Stage 02 пост-проход (block findings) ──
+
+def test_stage02_guard_downgrades_present_block_finding(tmp_path, monkeypatch):
+    import json as _json
+    import backend.app.pipeline.stages.text_analysis.absence_guard as ag
+    import backend.app.pipeline.stages.prepare.task_builder as tbmod
+    from backend.app.pipeline.stages.block_analysis.runner import _apply_stage02_absence_guard
+
+    data = {"block_analyses": [
+        {"block_id": "B1", "findings": [
+            {"id": "G-1", "severity": "КРИТИЧЕСКОЕ", "finding": "Не указана огнестойкость."},
+            {"id": "G-2", "severity": "КРИТИЧЕСКОЕ", "finding": "Марка бетона неверная."},
+        ]},
+    ]}
+    p = tmp_path / "02_blocks_analysis.json"
+    p.write_text(_json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    md = tmp_path / "doc.md"
+    md.write_text("огнестойкость REI 90 указана на листе 3", encoding="utf-8")
+
+    monkeypatch.setattr(tbmod, "_get_md_file_path", lambda pi, pid: str(md))
+    # верификатор: первый кандидат present (ложное), больше кандидатов нет (G-2 не absence)
+    monkeypatch.setattr(ag, "run_claude_verification", lambda md_text, cands, **k: {0: "present"})
+
+    msg = _apply_stage02_absence_guard(tmp_path, {}, "proj")
+    saved = _json.loads(p.read_text(encoding="utf-8"))
+    f1 = saved["block_analyses"][0]["findings"][0]
+    assert f1["severity"] == "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
+    assert f1["absence_guard_downgraded"] is True
+    # не-absence осталось
+    assert saved["block_analyses"][0]["findings"][1]["severity"] == "КРИТИЧЕСКОЕ"
+    assert "понижено 1/1" in msg
+
+
+def test_stage02_guard_no_md_safe(tmp_path, monkeypatch):
+    import json as _json
+    import backend.app.pipeline.stages.text_analysis.absence_guard as ag
+    import backend.app.pipeline.stages.prepare.task_builder as tbmod
+    from backend.app.pipeline.stages.block_analysis.runner import _apply_stage02_absence_guard
+
+    data = {"block_analyses": [{"block_id": "B1", "findings": [
+        {"id": "G-1", "severity": "КРИТИЧЕСКОЕ", "finding": "Отсутствует узел."}]}]}
+    p = tmp_path / "02_blocks_analysis.json"
+    p.write_text(_json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setattr(tbmod, "_get_md_file_path", lambda pi, pid: "(нет)")
+    monkeypatch.setattr(ag, "run_claude_verification", lambda *a, **k: {0: "present"})
+    _apply_stage02_absence_guard(tmp_path, {}, "proj")
+    saved = _json.loads(p.read_text(encoding="utf-8"))
+    # без MD — безопасный режим, не понижаем
+    assert saved["block_analyses"][0]["findings"][0]["severity"] == "КРИТИЧЕСКОЕ"

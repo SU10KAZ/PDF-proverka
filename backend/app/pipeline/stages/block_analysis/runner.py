@@ -485,6 +485,57 @@ def validate_and_repair_json(file_path: Path) -> tuple[bool, str]:
 
 # ─── run_block_analysis_findings_only ────────────────────────────────────────
 
+def _apply_stage02_absence_guard(output_dir, project_info: dict, pid: str) -> str:
+    """Пост-проход стража отсутствия по блочным findings (через to_thread). Fail-soft.
+
+    Собирает все block_analyses[].findings, прогоняет enforce_absence_guard с claude-
+    верификатором по ПОЛНОМУ тексту документа; понижает только подтверждённо-ложные
+    (present). Мутирует findings на месте (список хранит ссылки), при понижениях
+    перезаписывает 02_blocks_analysis.json. Возвращает короткое сообщение или "".
+    """
+    from pathlib import Path as _P
+    from backend.app.pipeline.stages.text_analysis.absence_guard import (
+        enforce_absence_guard, run_claude_verification,
+    )
+    from backend.app.pipeline.stages.prepare.task_builder import _get_md_file_path
+
+    blocks_path = _P(output_dir) / "02_blocks_analysis.json"
+    if not blocks_path.is_file():
+        return ""
+    try:
+        data = json.loads(blocks_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return ""
+
+    findings: list = []
+    for ba in data.get("block_analyses") or []:
+        if isinstance(ba, dict):
+            findings.extend(f for f in (ba.get("findings") or []) if isinstance(f, dict))
+    if not findings:
+        return ""
+
+    md_text = None
+    try:
+        md_path = _get_md_file_path(project_info, pid)
+        if md_path and md_path != "(нет)":
+            md_text = _P(md_path).read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001 — без MD страж уйдёт в безопасный режим
+        md_text = None
+
+    stats = enforce_absence_guard(
+        findings, md_text=md_text, verifier=run_claude_verification,
+    )
+    if stats["downgraded"]:
+        blocks_path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    if not stats["candidates"]:
+        return ""
+    if not stats["verified"]:
+        return f"absence_guard: {stats['candidates']} кандидатов не проверены"
+    return f"absence_guard: понижено {stats['downgraded']}/{stats['candidates']} блочных «нет»"
+
+
 async def run_block_analysis_findings_only(
     ctx: "PipelineStageContext",
     *,
@@ -720,6 +771,20 @@ async def run_block_analysis_findings_only(
             ),
             "warn",
         )
+
+    # ── Страж отсутствия для блочных findings (single-block не видит соседние листы) ──
+    # Тот же механизм, что на Stage 01, но ТОЛЬКО пост-проход-верификатор (правила в
+    # промпте нет — модель видит один блок и не может свериться со всем документом).
+    from backend.app.core.config import PIPELINE_ABSENCE_GUARD_ENABLED
+    if PIPELINE_ABSENCE_GUARD_ENABLED:
+        try:
+            guard_msg = await asyncio.to_thread(
+                _apply_stage02_absence_guard, output_dir, ctx.project_info or {}, pid,
+            )
+            if guard_msg:
+                msg += f" — {guard_msg}"
+        except Exception as exc:  # noqa: BLE001 — fail-soft
+            await ctx.log(f"  absence_guard (Stage 02) пропущен: {exc}", "warn")
 
     if summary["blocks_failed"] > 0:
         msg += f" — {summary['blocks_failed']} блоков упали"
