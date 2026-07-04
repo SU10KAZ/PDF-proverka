@@ -287,7 +287,15 @@ def _extract_consumer_geo(qx, qy, nx, words, formula_vals) -> Optional[str]:
         return "Резерв" if any("езерв" in w[4] for w in col) else None
     mx = collections.Counter(round(w[0] / 5) * 5 for w in cyr).most_common(1)[0][0]
     line = sorted([w for w in rest if abs(round(w[0] / 5) * 5 - mx) <= 16], key=lambda w: -w[1])
+    # Анти-мусор (A/B ЭМ-К1 07-04: LLM делала мета-замечания на артефакты разметки):
+    #  - токены из чистой пунктуации («.», «)») выбрасываем (цифры в подписях легитимны:
+    #    «Этажные щиты 43 кв.» — не трогаем);
+    #  - итог с <4 буквами — не подпись, а обрывок («. при )», «1.97% Т.32-50м») → None,
+    #    лучше честное отсутствие потребителя, чем мусор в промпте Stage 02.
+    line = [w for w in line if not re.fullmatch(r"[.,;:()«»\-–+/]+", w[4])]
     text = re.sub(r"\s+", " ", " ".join(w[4] for w in line)).strip(" -–:;,")
+    if sum(ch.isalpha() for ch in text) < 4:
+        return None
     return text or None
 
 
@@ -1735,11 +1743,22 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append("\n### 6.1 Устройства учёта на схеме (привязка по колонкам)\n")
         L.append("| Точка | TA (транс. тока) | Wh | Счётчик/прибор |")
         L.append("| --- | --- | --- | --- |")
+        n_unbound = 0
         for p in mt:
-            where = {"feeder": "фидер", "incomer": "ввод"}.get(p.get("kind"), "не привязано")
+            if p.get("kind") not in ("feeder", "incomer"):
+                n_unbound += 1     # техническое ограничение разметки — не строка таблицы
+                continue
+            where = {"feeder": "фидер", "incomer": "ввод"}[p["kind"]]
             tag = f"{where} {p.get('qf')}" if p.get("qf") else where
             L.append(f"| {_md_cell(tag)} | {_md_cell(', '.join(p.get('ta') or []) or '—')} "
                      f"| {p.get('wh') or '—'} | {_md_cell(', '.join(p.get('meter') or []) or '—')} |")
+        if n_unbound:
+            # A/B ЭМ-К1 07-04: строки «не привязано» в таблице провоцировали LLM на
+            # мета-замечания «учёт не привязан» — а это ограничение АВТОРАЗМЕТКИ, не дефект
+            # проекта. Выносим в явную техническую сноску, не как данные схемы.
+            L.append(f"\n_⚙ Тех. пометка разметки: ещё {n_unbound} устройств(а) учёта не удалось "
+                     f"автоматически привязать к колонке — это ограничение автоматической "
+                     f"разметки, НЕ дефект проекта; замечаний по этому не делать._")
 
     # 7. Примечания
     L.append("\n## 7. Примечания\n")
