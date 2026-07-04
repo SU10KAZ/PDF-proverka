@@ -4291,8 +4291,18 @@ tr.row-rejected td.sc-cell-goto {
 .sched-statusbadge--low  { background: #fef3c7; color: var(--amber); }
 .sched-statusbadge--muted { background: var(--bg); color: var(--text-muted); }
 
-/* ── колонка «Замечания»: согласованные/несогласованные ── */
+/* ── колонка «Счётчик замечаний/оптимизаций»: согласованные/несогласованные ── */
 .sched-stats-table__remarks { white-space: nowrap; }
+/* Компактная трёхстрочная шапка: «Счётчик / Замечаний / Оптимизаций». */
+.sched-remarks-th {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.08;
+    font-size: 10.5px;
+    font-weight: 600;
+}
+.sched-remarks-th__top { font-weight: 700; }
 .sched-remark-ok  { color: var(--green); font-weight: 700; }
 .sched-remark-no  { color: var(--red); font-weight: 700; }
 .sched-remark-sep { color: var(--text3); margin: 0 3px; }

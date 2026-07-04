@@ -2758,7 +2758,13 @@
                                     <th>Факт</th>
                                     <th>Осталось</th>
                                     <th>План</th>
-                                    <th class="sched-stats-table__remarks">Замечания</th>
+                                    <th class="sched-stats-table__remarks">
+                                        <span class="sched-remarks-th">
+                                            <span class="sched-remarks-th__top">Счётчик</span>
+                                            <span>Замечаний</span>
+                                            <span>Оптимизаций</span>
+                                        </span>
+                                    </th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
                                 </tr>
                             </thead>
@@ -2777,9 +2783,9 @@
                                     </td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="s.agreed != null || s.disagreed != null">
-                                            <span class="sched-remark-ok" title="согласованные">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные">{{ s.disagreed || 0 }}</span>
+                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span>
                                         </template>
-                                        <span v-else class="sched-remark-na" title="Нет данных по решениям замечаний за период">—</span>
+                                        <span v-else class="sched-remark-na" title="Нет данных по решениям (замечания и оптимизации) за период">—</span>
                                     </td>
                                     <td class="sched-stats-table__pct">
                                         <div class="sched-stats-table__pctwrap">
