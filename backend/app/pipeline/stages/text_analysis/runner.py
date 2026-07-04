@@ -263,5 +263,27 @@ async def run_text_analysis(
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 
-    ctx.update_pipeline_log(log_stage, "done", message="OK")
+    # ── Страж отсутствия: непроверенные «нет данных» → «ПРОВЕРИТЬ ПО СМЕЖНЫМ» ──
+    # Промпт-правило слабо соблюдается, поэтому принуждаем детерминированно. Fail-soft:
+    # любая ошибка пост-прохода не должна ронять уже валидный результат этапа.
+    done_message = "OK"
+    from backend.app.core.config import PIPELINE_ABSENCE_GUARD_ENABLED
+    if PIPELINE_ABSENCE_GUARD_ENABLED:
+        try:
+            from backend.app.pipeline.stages.text_analysis.absence_guard import (
+                enforce_absence_guard,
+            )
+            stats = enforce_absence_guard(data["text_findings"])
+            if stats["downgraded"]:
+                output_path.write_text(
+                    json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+                )
+            done_message = (
+                f"OK; absence_guard: понижено {stats['downgraded']}/"
+                f"{stats['absence_claims']} замечаний-об-отсутствии"
+            )
+        except Exception as exc:  # noqa: BLE001 — fail-soft
+            done_message = f"OK; absence_guard пропущен: {exc}"
+
+    ctx.update_pipeline_log(log_stage, "done", message=done_message)
     return StageResult.ok(output_path=str(output_path))
