@@ -68,10 +68,13 @@ def test_mismatch_claims_not_flagged_as_absence():
     # «не соответствует» / «указано неверно» — претензии к значению, НЕ отсутствие.
     assert not _is_absence_claim({"finding": "Значение не соответствует ГОСТ."})
     assert not _is_absence_claim({"finding": "Площадь указана неверно."})
+    # «пропущенная цифра/буква» и «недостаточно» — тоже НЕ отсутствие (претензия к значению).
+    assert not _is_absence_claim({"finding": "Пропущена цифра в шифре СП (опечатка)."})
+    assert not _is_absence_claim({"finding": "Недостаточная площадь тамбура по СП."})
     # А это — отсутствие.
     assert _is_absence_claim({"finding": "Не указана площадь помещения."})
     assert _is_absence_claim({"finding": "Отсутствует узел примыкания."})
-    assert _is_absence_claim({"finding": "Пропущена позиция в спецификации."})
+    assert _is_absence_claim({"finding": "Не показан узел примыкания к плите."})
 
 
 def test_malformed_entries_are_skipped():
