@@ -23,15 +23,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _find_result_json():
     env = os.environ.get("SINGLELINE_K1_RESULT_JSON")
-    cands = [Path(env)] if env else []
+    # .resolve() обязателен: относительный env-путь → относительный sibling PDF →
+    # битый симлинк в tmp_path (resolve_singleline_prompt вернёт None). Абсолютим.
+    cands = [Path(env).resolve()] if env else []
     cands += sorted(ROOT.glob("projects/**/13АВ-РД-ЭМ-К1*result.json"))
     return next((rj for rj in cands if rj.exists()), None)
 
 
 def _sibling_pdf(rj: Path):
-    pdf = rj.with_name(rj.name.replace("_result.json", ".pdf"))
-    if pdf.exists():
-        return pdf
+    # v1: «<pid>_result.json» рядом с «<pid>.pdf»; v2: «result.json» + «document.pdf».
+    # Суффикс обязателен — иначе на v2-имени замена не срабатывает и вернётся сам JSON.
+    cand = rj.with_name(rj.name.replace("_result.json", ".pdf"))
+    if cand.suffix == ".pdf" and cand.exists() and cand != rj:
+        return cand
     pdfs = sorted(rj.parent.glob("*.pdf"))
     return pdfs[0] if pdfs else None
 
@@ -64,25 +68,28 @@ def test_flag_exists_and_is_bool():
     assert isinstance(config.SINGLELINE_RICH_PROMPT_ENABLED, bool)
 
 
-def test_build_singleline_prompt_compact_vs_rich():
+def test_build_singleline_prompt_hybrid_single_variant():
+    """Гибрид — ЕДИНЫЙ вариант (решение 07-04): compact и rich (compat-алиас) дают
+    один и тот же результат. Структура гибрида: граф + детерминированная проверка
+    защиты; без 8-разделов эталона; без хардкода «ВА-305 320А» (источник ложного критала)."""
     vt = _scheme_vt()
     assert vt
     compact = build_singleline_prompt(PDF, vt, rich=False, block_id="B", page=10)
     rich = build_singleline_prompt(PDF, vt, rich=True, block_id="B", page=10)
     assert compact and rich
-    # компактный = render_graph_for_prompt (без 8 разделов эталона)
+    # rich схлопнут в гибрид → идентичен compact (не плодим версии)
+    assert compact == rich
+    # структура гибрида: граф + детерминированная проверка защиты (всегда присутствует)
     assert "## Структура схемы" in compact
+    assert "## ⚠ Проверка защиты" in compact
+    # эталонные 8 разделов rich больше НЕ подаются как энричмент
     assert "## 6. Таблица проверки трансформаторов тока" not in compact
-    # rich = полная эталонная разметка (есть отходящие линии + ТТ + примечания)
-    assert "## 4. Отходящие линии" in rich
-    assert "## 6. Таблица проверки трансформаторов тока" in rich
-    assert "## 7. Примечания" in rich
-    # оба несут задачу и заголовок блока
-    for p in (compact, rich):
-        assert p.startswith("# Блок B | страница PDF 10")
-        assert "верни findings[]" in p
-    # rich заметно объёмнее (больше контекста)
-    assert len(rich) > len(compact)
+    assert "## 7. Примечания" not in compact
+    # прежний хардкод-источник ложного критала «занижение вводного 320А» устранён
+    assert "ВА-305 320А" not in compact
+    # заголовок блока + задача
+    assert compact.startswith("# Блок B | страница PDF 10")
+    assert "верни findings[]" in compact
 
 
 def test_build_singleline_prompt_none_for_non_scheme():
@@ -103,8 +110,10 @@ def test_resolve_singleline_prompt_via_version_dir(tmp_path):
 
     rich = resolve_singleline_prompt(tmp_path, "BLK", 10, rich=True)
     compact = resolve_singleline_prompt(tmp_path, "BLK", 10, rich=False)
-    assert rich and "## 6. Таблица проверки трансформаторов тока" in rich
     assert compact and "## Структура схемы" in compact
+    assert "## ⚠ Проверка защиты" in compact
+    # rich схлопнут в гибрид → идентичен compact
+    assert rich == compact
     # неизвестный блок → None
     assert resolve_singleline_prompt(tmp_path, "NOPE", 10, rich=True) is None
     # нет 02_work → None

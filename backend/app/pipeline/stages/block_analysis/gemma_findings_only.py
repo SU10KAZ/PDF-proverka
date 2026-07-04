@@ -463,20 +463,22 @@ async def call_gpt_for_block(
 
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
 
-    # ─── SINGLELINE_RICH_PROMPT: для СХЕМНЫХ блоков — полная rich-разметка графа ─────
-    # Вместо базового enrichment+page_text подаём render_graph_etalon_markdown (расчёты панелей,
-    # ТТ, примечания, отходящие линии). Default OFF → прод не меняется. Меняет user_text ДО
-    # cache_key ниже → rich/compact кэшируются раздельно. fail-soft (любая ошибка → базовый текст).
+    # ─── SINGLELINE граф-энричмент: для СХЕМНЫХ блоков — курируемый ГИБРИД ─────
+    # Вместо скудного enrichment+page_text подаём render_graph_for_prompt (гибрид: ввод+ТТ
+    # без хардкода ВА-305, детерминированная проверка защиты Iкз/сечение, компактные отходящие
+    # линии, анти-boilerplate). ЕДИНЫЙ вариант (rich схлопнут в него, решение 07-04). Флаг
+    # SINGLELINE_RICH_PROMPT_ENABLED = вкл/выкл инъекции (default OFF → прод не меняется до
+    # осознанного включения). Меняет user_text ДО cache_key. fail-soft (ошибка → базовый текст).
     try:
         from backend.app.core import config as _slcfg
         if getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False) and output_dir is not None:
             from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
                 resolve_singleline_prompt as _resolve_sl_prompt,
             )
-            _rich = _resolve_sl_prompt(Path(output_dir).parent, block.get("block_id", ""),
-                                       block.get("page"), rich=True)
-            if _rich:
-                user_text = _rich
+            _graph_prompt = _resolve_sl_prompt(Path(output_dir).parent, block.get("block_id", ""),
+                                               block.get("page"), rich=False)
+            if _graph_prompt:
+                user_text = _graph_prompt
     except Exception:
         pass
 

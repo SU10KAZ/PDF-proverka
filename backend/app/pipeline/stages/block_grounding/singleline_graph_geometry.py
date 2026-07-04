@@ -106,8 +106,141 @@ def _pole_for_breaker(qx, qy, ba_xy, poles, dx=44):
     return _near(qx, qy, poles, dx, -95, 110)
 
 
+# ── Гибрид-энричмент: детерминированная проверка защиты по вектор-значениям ──────────
+# Длительно допустимый ток медной жилы (ППГ/ВВГ, прокладка в трубе/лотке, ~30°C),
+# ГОСТ 31996 / ПУЭ табл. 1.3.4 — консервативно. Используется для проверки
+# «кабель не защищён от перегрузки» (ПУЭ 3.1.11): Iдоп жилы должен быть ≥ In автомата.
+_CABLE_AMPACITY_CU = {
+    1.5: 19, 2.5: 27, 4: 38, 6: 46, 10: 70, 16: 85, 25: 115, 35: 140,
+    50: 175, 70: 215, 95: 260, 120: 300, 150: 355, 185: 405, 240: 480,
+}
+
+
+def _cable_section_mm2(cable) -> Optional[float]:
+    """Сечение фазной жилы (мм²) из строки кабеля. Берём число ПОСЛЕ 'х' (не счётчик жил).
+
+    «3х2.5»→2.5; «4х2.5»→2.5; «5х10»→10; «4х(1х120)+(1х70)»→120 (max = фаза).
+    Только стандартные сечения (иначе None → проверку кабеля пропускаем, без ложных).
+    """
+    if not cable:
+        return None
+    s = str(cable).replace(",", ".")
+    secs = []
+    for x in re.findall(r"х\s*\(?\s*(?:\d+\s*х\s*)?(\d+(?:\.\d+)?)", s):
+        try:
+            fv = float(x)
+        except ValueError:
+            continue
+        if fv in _CABLE_AMPACITY_CU:
+            secs.append(fv)
+    return max(secs) if secs else None
+
+
+def _deterministic_protection_check(graph: dict) -> tuple[list, list]:
+    """Пересчёт защиты по вектор-значениям (0 токенов, детерминированно).
+
+    crit — жёсткие нарушения (недозащита кабеля от перегрузки; k_ч<3);
+    warn — граница 5–10·In (мгновенное отключение C-хар. не гарантировано).
+    Только active-линии с распознанным In. Даём GPT готовые факты, чтобы критику
+    защиты не терять на вариативности прохода (см. 4NPQ: rich упускал Iкз-критал).
+    """
+    crit, warn = [], []
+    for pan in graph.get("panels", []):
+        for f in pan.get("feeders", []):
+            if f.get("status") != "active":
+                continue
+            in_m = re.search(r"(\d+(?:\.\d+)?)", str(f.get("breaker_in") or ""))
+            if not in_m:
+                continue
+            In = float(in_m.group(1))
+            if In <= 0:
+                continue
+            qf = f.get("qf")
+            cons = (f.get("consumer") or "")[:38]
+            sec = _cable_section_mm2(f.get("cable"))
+            if sec is not None:
+                idop = _CABLE_AMPACITY_CU[sec]
+                if idop < In:
+                    crit.append(
+                        f"- ‼ {qf} ({cons}): кабель {f.get('cable')} — Iдоп≈{idop}А < In автомата "
+                        f"{In:.0f}А → жила не защищена от перегрузки (ПУЭ 3.1.11)")
+            ikz = f.get("Ikz_ka")
+            if ikz is not None:
+                try:
+                    kch = float(ikz) * 1000.0 / In
+                except (TypeError, ValueError):
+                    kch = None
+                if kch is not None:
+                    if kch < 3:
+                        crit.append(
+                            f"- ‼ {qf} ({cons}): Iкз(1)={ikz}кА = {kch:.1f}·In({In:.0f}А) < 3 → "
+                            f"защита не проходит по чувствительности (ПУЭ 1.7.79 / 7.3.139)")
+                    elif kch < 10:
+                        warn.append(
+                            f"- ⚠ {qf} ({cons}): Iкз(1)={ikz}кА = {kch:.1f}·In({In:.0f}А) — зона "
+                            f"5–10·In, мгновенное отключение автомата C-хар. не гарантировано")
+    return crit, warn
+
+
+def _render_input_section(graph: dict) -> list:
+    """«Ввод и защита» без хардкода «ВА-305 320А» (источник ложного критала).
+
+    Ввод описываем реальной коммутацией (рубильник ВР-101 из service_elements) и
+    вердиктом таблицы ТТ (Iр.раб vs Iн1тт + коммент ПУЭ) — это грунт, из-за которого
+    rich не галлюцинировал занижение ввода. Плюс явная анти-FP инструкция.
+    """
+    L = []
+    power = graph.get("power") or {}
+    if not power.get("inputs"):
+        return L
+    tt = {}
+    for r in graph.get("tt_check_table") or []:
+        pn = r.get("panel")
+        if pn:
+            tt[str(pn).strip()] = r
+    qs_switch = None
+    for s in graph.get("service_elements") or []:
+        el = str(s.get("element") or "")
+        note = str(s.get("note") or "")
+        if el.startswith("QS") or "рубильник" in note or "разъединит" in note:
+            m = re.search(r"ВР-101-\d+\s*(?:\d+P\s*)?\d*А?", str(s.get("value") or ""))
+            if m:
+                qs_switch = m.group(0).strip()
+                break
+    L.append("\n## Ввод и защита (детерминированно из вектор-слоя, считай верным):")
+    if power.get("external_source"):
+        L.append(f"- Источник: {power['external_source']}")
+    for inp in power.get("inputs", []):
+        feeds = ", ".join(inp.get("feeds") or []) or "?"
+        parts = [f"- {inp.get('id')} ({inp.get('vvod')}) → {feeds}"]
+        if qs_switch:
+            parts.append(f"коммутация ввода: {qs_switch}")
+        elif inp.get("switch"):
+            parts.append(f"коммутация ввода: {inp['switch']}")
+        if inp.get("i_rab") is not None:
+            parts.append(f"Iр.раб/авар {inp['i_rab']}/{inp.get('i_avar')}А")
+        row = tt.get(inp.get("id"))
+        if row:
+            tv = f"ТТ: Iн1тт {row.get('In1tt')}, Iр.раб {row.get('Ir_rab')}"
+            if row.get("comment"):
+                tv += f" — {row['comment']}"
+            L.append(" | ".join(parts) + f" | {tv}")
+        else:
+            L.append(" | ".join(parts))
+    if power.get("avr"):
+        a = power["avr"]
+        L.append(f"- АВР: {a.get('device')} {a.get('in_a')}А → {', '.join(a.get('feeds') or [])} ({a.get('note')})")
+    L.append("_Ввод коммутируется рубильниками ВР-101 и вводными автоматами; при Iр.раб ≤ Iн1тт "
+             "ввод по номиналу НЕ занижен — не делать замечание о занижении вводного аппарата "
+             "без прямого числового расхождения._")
+    return L
+
+
 def render_graph_for_prompt(graph: dict) -> str:
-    """Компактный текст графа схемы для промпта GPT (вместо скудного enrichment)."""
+    """Гибрид-энричмент однолинейной схемы для промпта Stage 02 (заменяет прежний compact
+    и схлопнутый rich — единый вариант). Структура: граф + анти-галлюцинационный ввод
+    (ВР-101 + вердикт ТТ) + ДЕТЕРМИНИРОВАННАЯ проверка защиты (Iкз/сечение) + компактные
+    отходящие линии + анти-boilerplate заметки. ~10–12К токенов."""
     if not graph:
         return ""
     L = []
@@ -115,18 +248,31 @@ def render_graph_for_prompt(graph: dict) -> str:
     L.append(f"## Структура схемы (распознанный граф, считай верным):")
     L.append(f"Панель: {graph.get('panel')} | линий {graph.get('feeders_total')} "
              f"(актив {v.get('active')}, резерв {v.get('reserve')}, проверить {v.get('ambiguous')})")
-    p = graph.get("power")
-    if p:
-        L.append("\nПИТАНИЕ:")
-        L.append(f"- Источник: {p.get('external_source')}")
-        for inp in p.get("inputs", []):
-            cur = (f" | Iр.раб/авар {inp['i_rab']}/{inp.get('i_avar')}А"
-                   if inp.get("i_rab") is not None else "")
-            L.append(f"- {inp['id']} ({inp.get('vvod')}) → {', '.join(inp.get('feeds') or []) or '?'} | "
-                     f"{inp.get('incomer') or '?'} | {inp.get('switch') or ''}{cur} | счётчик {inp.get('meter') or '-'}")
-        if p.get("avr"):
-            a = p["avr"]
-            L.append(f"- АВР: {a['device']} {a.get('in_a')}А → {', '.join(a.get('feeds') or [])} ({a.get('note')})")
+
+    # Ввод + вердикт ТТ (без хардкода ВА-305 320А → нет ложного «вводной занижен»)
+    L += _render_input_section(graph)
+
+    # Детерминированная проверка защиты — готовые факты для findings
+    crit, warn = _deterministic_protection_check(graph)
+    L.append("\n## ⚠ Проверка защиты (детерминированный пересчёт по вектор-значениям — "
+             "считай ФАКТОМ, обязательно отрази найденное в findings):")
+    if crit:
+        L += crit
+    if warn:
+        L += warn[:12]
+        if len(warn) > 12:
+            L.append(f"- … ещё {len(warn) - 12} линий в зоне 5–10·In (аналогично, проверить по листу)")
+    if not crit and not warn:
+        L.append("- по Iкз(1) и сечению кабеля нарушений не выявлено")
+
+    # Взаиморезерв С1↔С2 с расхождениями (грунтованный источник, дёшево)
+    flagged_pairs = [p for p in (graph.get("feeder_pairs") or []) if p.get("note")]
+    if flagged_pairs:
+        L.append("\n## Взаиморезерв С1↔С2 (расхождения номиналов — проверить селективность):")
+        for p in flagged_pairs:
+            L.append(f"- {p.get('base')}: {p.get('c1_qf')} ↔ {p.get('c2_qf')} — {p.get('note')}")
+
+    # Отходящие линии (компактно, 1 строка/QF)
     for pan in graph.get("panels", []):
         L.append(f"\n{pan['name']} — {pan['feeder_count']} линий (актив {pan['active']}, резерв {pan['reserve']}):")
         for f in pan.get("feeders", []):
@@ -149,11 +295,21 @@ def render_graph_for_prompt(graph: dict) -> str:
             L.append(f"  {f['qf']}: {f.get('consumer') or '?'} | {br} | {f.get('circuit_code') or '?'} | "
                      f"Pрасч {f.get('P_calc_kw')}кВт | I {f.get('I_a')}А | {f.get('cable') or '?'} | "
                      f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}{dev}")
+
     rv = graph.get("review") or []
     if rv:
         L.append("\nТРЕБУЕТ ПРОВЕРКИ:")
         for r in rv:
             L.append(f"- {r['qf']}: {'; '.join(r.get('notes') or [])}")
+
+    # Анти-boilerplate: гасим известные ложные направления (см. верификацию 07-04)
+    L.append("\n## Заметки проверяющему (чтобы не плодить ложные замечания):")
+    L.append("- Кабели с индексом FRHF/HF уже огнестойкие/безгалогенные — НЕ поднимать отдельное "
+             "замечание про ОКЛ/огнестойкость, если иных проблем с линией нет.")
+    L.append("- Таблицы проверки ТТ, коэффициенты трансформации и раскладка учёта штатно приводятся "
+             "на смежных листах тома — их неполнота на ДАННОМ листе не является дефектом проекта.")
+    L.append("- Служебные пометки авторазметки (не привязано / геом.конфликты / unbound-коды) — "
+             "ограничения извлечения, НЕ дефекты чертежа; замечаний по ним не делать.")
     return "\n".join(L)
 
 
@@ -1811,20 +1967,21 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
                             rich: bool = False, block_id: str = "", page=None) -> Optional[str]:
     """Собрать user_text Stage 02 для СХЕМНОГО блока. None — если блок не однолинейная схема.
 
-    rich=False → компактный граф (`render_graph_for_prompt`, как было в превью);
-    rich=True  → полная эталонная разметка (`render_graph_etalon_markdown`, 8 разделов).
-    Один источник для реального Stage 02 и превью — чтобы не разъезжались.
+    ЕДИНЫЙ вариант — гибрид `render_graph_for_prompt` (курируемый: ввод+ТТ без
+    хардкода ВА-305, детерминированная проверка защиты, анти-boilerplate). Параметр
+    `rich` сохранён для обратной совместимости сигнатуры, но обе ветки дают гибрид —
+    третьего варианта нет (решение 07-04: не плодить версии, имя «compact»).
 
-    Для rich (замена описания в Stage 02) дополнительно применяется ГЕЙТ КАЧЕСТВА
-    (evaluate_vectograf_gate): не прошёл → None → вызывающий падает на штатный fallback
-    (enrichment+page_text). Слабый граф хуже, чем честный «нет графа».
+    ГЕЙТ КАЧЕСТВА (evaluate_vectograf_gate) применяется ВСЕГДА: не прошёл → None →
+    вызывающий падает на штатный fallback (enrichment+page_text). Слабый граф хуже,
+    чем честный «нет графа».
     """
     graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint)
     if not graph:
         return None
-    if rich and not evaluate_vectograf_gate(graph)["use"]:
+    if not evaluate_vectograf_gate(graph)["use"]:
         return None
-    body = render_graph_etalon_markdown(graph) if rich else render_graph_for_prompt(graph)
+    body = render_graph_for_prompt(graph)
     return f"# Блок {block_id} | страница PDF {page}\n\n{body}\n\n{_STAGE02_TASK}"
 
 
