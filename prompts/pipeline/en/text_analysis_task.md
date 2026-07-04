@@ -75,6 +75,8 @@ Analyze the MD content COMPLETELY. Extract:
 
 {DISCIPLINE_CHECKLIST}
 
+{ABSENCE_GUARD}
+
 ## Finding Categories
 
 {DISCIPLINE_FINDING_CATEGORIES}

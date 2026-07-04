@@ -463,8 +463,10 @@ def build_text_analysis_messages(
     system: шаблон с инъекцией дисциплины + нормативная база inline
     user: полный текст MD-файла
     """
+    from backend.app.pipeline.stages.prepare.task_builder import _absence_guard_block
     system_prompt = _load_and_clean_template(
         TEXT_ANALYSIS_TASK_TEMPLATE, project_info, project_id,
+        ABSENCE_GUARD=_absence_guard_block(),
     )
 
     text_source, source_text, user_prefix = _resolve_text_analysis_source(project_info, project_id)

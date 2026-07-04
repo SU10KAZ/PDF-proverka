@@ -654,6 +654,13 @@ BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABL
 # и сверяет свои T-замечания с блоками (items_verified_from_blocks) вместо обратной сверки.
 # OFF по умолчанию — прод (порядок text→block) не меняется. Выкатка через A/B на реальном проекте.
 PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False)
+# «Страж отсутствия» (absence guard): анти-ложное правило для замечаний вида
+# «нет / не указано / отсутствует». Исследование браков (03.07) показало, что ~32%
+# отклонений эксперта — это «данные ЕСТЬ, ИИ не увидел» (на другом листе/в тексте).
+# Флаг ON вставляет в текстовый промпт (Stage 01) правило: перед утверждением об
+# отсутствии просканировать ВЕСЬ документ и заполнить `absence_checked`; иначе —
+# понизить до «ПРОВЕРИТЬ ПО СМЕЖНЫМ». OFF по умолчанию — прод-промпт не меняется.
+PIPELINE_ABSENCE_GUARD_ENABLED = _env_bool("PIPELINE_ABSENCE_GUARD_ENABLED", False)
 # Evidence Verifier как стадия пайплайна. Перепроверяет замечания по фактам
 # документа/чертежа (локальные vision-модели + Claude CLI для текста) и пишет
 # evidence_validation.json. OFF по умолчанию — стадия интегрирована и видна в UI

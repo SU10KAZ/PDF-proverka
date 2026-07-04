@@ -26,6 +26,17 @@ def test_template_exists(lang):
 
 
 @pytest.mark.parametrize("lang", sorted(_TEMPLATES))
+def test_template_has_absence_guard_placeholder(lang):
+    # Страж отсутствия (PIPELINE_ABSENCE_GUARD_ENABLED) вставляется через плейсхолдер
+    # {ABSENCE_GUARD}; обе языковые версии обязаны его нести, иначе при включённом
+    # флаге правило не дойдёт до LLM в одной из веток (EN идёт в LLM, RU — фолбэк/UI).
+    text = _TEMPLATES[lang].read_text(encoding="utf-8")
+    assert "{ABSENCE_GUARD}" in text, (
+        f"{lang}/text_analysis_task.md потерял плейсхолдер {{ABSENCE_GUARD}}"
+    )
+
+
+@pytest.mark.parametrize("lang", sorted(_TEMPLATES))
 def test_template_has_cross_discipline_criteria_section(lang):
     text = _TEMPLATES[lang].read_text(encoding="utf-8")
     # Заголовок секции критериев (RU или EN вариант).

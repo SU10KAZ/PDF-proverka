@@ -27,11 +27,44 @@ from backend.app.core.config import (
     FINDINGS_MERGE_TASK_TEMPLATE,
     FINDINGS_CRITIC_TASK_TEMPLATE, FINDINGS_CORRECTOR_TASK_TEMPLATE,
     OPTIMIZATION_CRITIC_TASK_TEMPLATE, OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
+    PIPELINE_ABSENCE_GUARD_ENABLED,
 )
 from backend.app.services.common.cli_utils import load_template
 import backend.app.services.common.discipline_service as discipline_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+
+
+# ─── Страж отсутствия (absence guard) ───
+# Текст-правило, вставляемое в промпт Stage 01 при PIPELINE_ABSENCE_GUARD_ENABLED.
+# Бьёт в самый крупный класс браков (~32% отклонений эксперта): «данные ЕСТЬ, ИИ не
+# увидел». Инъекция через плейсхолдер {ABSENCE_GUARD}; при OFF заменяется пустой строкой,
+# поэтому прод-промпт не меняется.
+_ABSENCE_GUARD_TEXT = """## Правило замечаний об ОТСУТСТВИИ (обязательно)
+
+Прежде чем утверждать, что чего-либо «нет / не указано / отсутствует / не хватает /
+пропущено», ты ОБЯЗАН сначала попытаться найти это в документе. Самая частая ошибка
+аудита — заявить об отсутствии данных, которые фактически ЕСТЬ на другом листе, в общих
+указаниях, в спецификации, в ведомости или в описании чертежа (OCR графики уже вписан в MD).
+
+Порядок для КАЖДОГО замечания об отсутствии:
+1. Просканируй ВЕСЬ документ на это значение/элемент: общие указания, ВСЕ листы, таблицы
+   спецификаций, ведомости, примечания, описания [IMAGE]/блоков — а не только тот лист,
+   где заметил пропуск.
+2. Нашёл где-либо — НЕ выдавай замечание (данные есть, просто в другом месте).
+3. Не нашёл — добавь в это замечание (в объект `text_findings[]`) поле `absence_checked` —
+   массив мест, которые РЕАЛЬНО просмотрел (напр. `["Общие указания л.1", "Спецификация л.3",
+   "Планы л.5–7"]`).
+4. Не можешь назвать конкретные просмотренные места — НЕ утверждай нарушение. Поставь
+   severity «ПРОВЕРИТЬ ПО СМЕЖНЫМ» (проверить вручную), а не критическое/нормативное.
+
+Замечание об отсутствии с пустым `absence_checked` считается непроверенным и будет
+автоматически понижено до «ПРОВЕРИТЬ ПО СМЕЖНЫМ»."""
+
+
+def _absence_guard_block() -> str:
+    """Текст стража отсутствия при включённом флаге, иначе пустая строка."""
+    return _ABSENCE_GUARD_TEXT if PIPELINE_ABSENCE_GUARD_ENABLED else ""
 
 
 def _version_output_dir(project_id: str) -> Path:
@@ -477,6 +510,7 @@ def prepare_text_analysis_task(
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
         .replace("{BLOCKS_ANALYSIS_PATH}", blocks_analysis_path)
+        .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
     return task
 
@@ -504,6 +538,7 @@ def build_text_analysis_prompt(
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
         .replace("{BLOCKS_ANALYSIS_PATH}", str(Path(output_path) / "02_blocks_for_text.json"))
+        .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
 
 
