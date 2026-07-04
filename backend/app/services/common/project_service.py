@@ -2268,18 +2268,22 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
         inferred_status[key] = status
         message = user_message or ""
 
-        # Вычислить длительность только если в логе есть метки времени.
-        duration_sec = None
-        started = info.get("started_at")
-        completed = info.get("completed_at") or info.get("interrupted_at")
-        if started and completed:
-            try:
-                from datetime import datetime
-                t0 = datetime.fromisoformat(started)
-                t1 = datetime.fromisoformat(completed)
-                duration_sec = round((t1 - t0).total_seconds())
-            except Exception:
-                pass
+        # ЧИСТОЕ время работы этапа: приоритет записанному duration_sec
+        # (monotonic running→done из audit_logger — без простоев/пауз). Wall-clock
+        # (completed − started) — только fallback для СТАРЫХ записей без него; он
+        # раздувается паузами/падениями (pre-cropped crop показывал 5.5ч).
+        duration_sec = info.get("duration_sec")
+        if duration_sec is None:
+            started = info.get("started_at")
+            completed = info.get("completed_at") or info.get("interrupted_at")
+            if started and completed:
+                try:
+                    from datetime import datetime
+                    t0 = datetime.fromisoformat(started)
+                    t1 = datetime.fromisoformat(completed)
+                    duration_sec = round((t1 - t0).total_seconds())
+                except Exception:
+                    pass
 
         entry = {
             "key": key,

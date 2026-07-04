@@ -5,6 +5,7 @@
 import asyncio
 import json
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -13,6 +14,15 @@ from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.models.audit import AuditJob
 from backend.app.models.websocket import WSMessage
 from backend.app.ws.manager import ws_manager
+
+# ЧИСТОЕ время работы этапа: monotonic-таймер start(running)→finish(done),
+# ключ (project_id, stage_key). В памяти процесса — НЕ через started_at/
+# completed_at из pipeline_log, разница которых = wall-clock и включает простои
+# (паузы, падения сервера, ожидание между этапами). Пример бага: pre-cropped
+# crop показывал 5.5ч (started ночью, completed после восстановления сервера),
+# хотя реальной работы — секунды. Отсутствие записи (done без running в этом
+# процессе: pre-crop/skip/resume-хвост) → duration_sec=0, а не wall-clock.
+_STAGE_RUN_STARTS: dict[tuple, float] = {}
 
 
 def _project_output_dir(project_id: str) -> Path:
@@ -67,6 +77,23 @@ _PARALLEL_TO_FINDINGS_REVIEW = {
 }
 
 
+def _pop_stage_duration(project_id: str, stage_key: str) -> int:
+    """Чистое время работы этапа (сек) от засечки running в ЭТОМ процессе.
+
+    Нет засечки (этап пришёл в терминал без running в текущем процессе —
+    pre-crop/skip/resume-хвост) → 0. Аномалии (отрицательное / > суток —
+    напр. монотоник из старого процесса) → 0. Так duration_sec отражает
+    реальную работу, а не wall-clock с простоями.
+    """
+    mono = _STAGE_RUN_STARTS.pop((project_id, stage_key), None)
+    if mono is None:
+        return 0
+    dur = time.monotonic() - mono
+    if dur < 0 or dur > 86400:
+        return 0
+    return round(dur)
+
+
 def update_pipeline_log(
     project_id: str,
     stage_key: str,
@@ -101,6 +128,10 @@ def update_pipeline_log(
 
     if status == "running":
         stage_info["started_at"] = now
+        # Засечка чистого времени работы (monotonic) — см. _STAGE_RUN_STARTS.
+        _STAGE_RUN_STARTS[(project_id, stage_key)] = time.monotonic()
+        # Стейл-duration от прошлого прогона убираем — этап только стартовал.
+        stage_info.pop("duration_sec", None)
         # completed_at от прошлого прогона нельзя оставлять: с ним UI считает, что
         # этап «свежесделан», пока фактически только что запустился.
         stage_info.pop("completed_at", None)
@@ -130,12 +161,14 @@ def update_pipeline_log(
                     log_data["stages"].pop(downstream, None)
     elif status in ("done", "partial", "skipped"):
         stage_info["completed_at"] = now
+        stage_info["duration_sec"] = _pop_stage_duration(project_id, stage_key)
         # Очистить ложные ошибки от recovery (если этап успешно завершился)
         if not error:
             stage_info.pop("error", None)
             stage_info.pop("interrupted_at", None)
     elif status == "error":
         stage_info["completed_at"] = now
+        stage_info["duration_sec"] = _pop_stage_duration(project_id, stage_key)
 
     if message:
         stage_info["message"] = message
