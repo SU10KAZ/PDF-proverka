@@ -810,6 +810,39 @@ def _extract_panel_calcs(page_text: str) -> list:
     return sorted(panels.values(), key=_ord)
 
 
+_INPUT_CALC_RE = re.compile(
+    r"(Ввод\s*[12]|Аварийный\s+режим)(.{0,170}?)"
+    r"Ру=\s*(----|[\d.,]+)\s*кВт\s*Кс=\s*(#ДЕЛ/0!|[\d.,]+)\s*Cos\s*f=\s*([\d.,]+)\s*"
+    r"Рр=\s*(----|[\d.,]+)\s*кВт\s*Sр=\s*(----|[\d.,]+)\s*кВА\s*Ip=\s*(----|[\d.,]+)\s*А",
+    re.I | re.S)
+
+
+def _extract_input_calcs(page_text: str) -> list:
+    """Сводные расчётные режимы по ВВОДАМ (Ввод 1/Ввод 2/аварийный/пожар: Ру/Кс/Cos f/Рр/Sр/Ip).
+
+    Аналог `_extract_panel_calcs`, но на уровне вводов, а не панелей РПn — вектограф фидеро-центричен
+    и раньше эти сводные расчёты в граф не попадали. Заголовок «Ввод N (РП…+РП…)» может переноситься
+    на несколько строк (re.S, ограниченный хвост ≤170 симв, чтобы не склеить чужой блок). Режим —
+    из текста заголовка (`_mode_key`: рабочий/авария/пожар). Дедуп по (ввод, режим, Ру, Рр). Ничего
+    не выдумывает: '----'/'#ДЕЛ/0!' сохраняются как есть.
+    """
+    txt = page_text or ""
+    rows, seen = [], set()
+    for m in _INPUT_CALC_RE.finditer(txt):
+        head = re.sub(r"\s+", " ", (m.group(1) + m.group(2))).strip()
+        mode = _mode_key(head)
+        panels = re.findall(r"РП\d(?:\s*\((?:ОДН|АВР|ПЭСПЗ)\))?|ПЭСПЗ", head)
+        key = (m.group(1).strip(), mode, m.group(3), m.group(6))
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append({
+            "vvod": head[:90], "mode": mode, "panels": panels,
+            "Pu": _calc_num(m.group(3)), "Kc": _calc_num(m.group(4)), "cosphi": _calc_num(m.group(5)),
+            "Pr": _calc_num(m.group(6)), "Sr": _calc_num(m.group(7)), "Ip": _calc_num(m.group(8))})
+    return rows
+
+
 def _extract_tt_check(page_text: str) -> list:
     """Таблица проверки коэффициентов трансформации ТТ (если присутствует на листе)."""
     txt = page_text or ""
@@ -1708,6 +1741,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         except Exception:
             return default
     panel_calcs = _safe(_extract_panel_calcs, page_full_text, default=[])
+    input_calcs = _safe(_extract_input_calcs, page_full_text, default=[])
     tt_check = _safe(_extract_tt_check, page_full_text, default=[])
     notes = _safe(_extract_notes, page_full_text, default=[])
     service_elements = _safe(_extract_service_elements, page_full_text, default=[])
@@ -1791,6 +1825,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "control_edges": control_edges,
         "panels": panels,
         "panel_calculations": panel_calcs,
+        "input_calculations": input_calcs,
         "tt_check_table": tt_check,
         "service_elements": service_elements,
         "secondary_circuits": secondary_circuits,
@@ -1938,6 +1973,17 @@ def render_graph_etalon_markdown(graph: dict) -> str:
                  f"| {_md_cell(p.get('ikz1'))} | {_md_cell(_fmt_modes(p))} |")
     if not graph.get("panel_calculations"):
         L.append("| (расчёты панелей не извлечены) | — | — | — | — |")
+
+    # 2.1 Расчёты по вводам (сводные режимы: рабочий/авария/пожар) — если извлечены
+    ic = graph.get("input_calculations") or []
+    if ic:
+        L.append("\n### 2.1 Расчёты по вводам (сводные режимы)\n")
+        L.append("| Ввод (питает) | Режим | Ру, кВт | Кс | Cos f | Рр, кВт | Sр, кВА | Ip, А |")
+        L.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
+        for r in ic:
+            L.append(f"| {_md_cell(r.get('vvod'))} | {_md_cell(r.get('mode'))} | {_md_cell(r.get('Pu'))} "
+                     f"| {_md_cell(r.get('Kc'))} | {_md_cell(r.get('cosphi'))} | {_md_cell(r.get('Pr'))} "
+                     f"| {_md_cell(r.get('Sr'))} | {_md_cell(r.get('Ip'))} |")
 
     # 3. Таблица связей
     L.append("\n## 3. Таблица связей (межпанельный граф)\n")
