@@ -5,19 +5,23 @@
         refreshBtn: $("refreshBtn"),
         autoRefreshToggle: $("autoRefreshToggle"),
         autoRefreshSeconds: $("autoRefreshSeconds"),
-        connectionBadge: $("connectionBadge"),
-        connectionMeta: $("connectionMeta"),
-        hostScopeValue: $("hostScopeValue"),
-        hostScopeMeta: $("hostScopeMeta"),
-        estimateScopeValue: $("estimateScopeValue"),
-        estimateScopeMeta: $("estimateScopeMeta"),
-        metricCards: $("metricCards"),
+        loadedModelsBody: $("loadedModelsBody"),
+        loadedCountPill: $("loadedCountPill"),
+        unloadAllBtn: $("unloadAllBtn"),
         modelsBody: $("modelsBody"),
         modelsCountPill: $("modelsCountPill"),
         serverEndpoint: $("serverEndpoint"),
         actionResult: $("actionResult"),
         serverCards: $("serverCards"),
         probeServersBtn: $("probeServersBtn"),
+        // Модалка выбора объёма контекста при загрузке модели
+        loadModal: $("loadModal"),
+        loadModalModel: $("loadModalModel"),
+        loadModalCtx: $("loadModalCtx"),
+        loadModalPresets: $("loadModalPresets"),
+        loadModalHint: $("loadModalHint"),
+        loadModalCancel: $("loadModalCancel"),
+        loadModalConfirm: $("loadModalConfirm"),
     };
 
     const state = { timer: null, lastStatus: null, profiles: null, probes: null, switching: false };
@@ -35,10 +39,6 @@
         return data;
     }
 
-    function formatGiB(value) {
-        return value == null ? "—" : `${Number(value).toFixed(2)} GiB`;
-    }
-
     const KIND_LABEL = {
         vlm: "VLM", ocr: "OCR", embedding: "эмбеддинг", asr: "ASR",
         reranker: "reranker", coder: "coder", llm: "LLM (текст)", unknown: "?",
@@ -51,64 +51,64 @@
         button.textContent = busy ? busyText : button.dataset.idleText;
     }
 
-    function renderConnection(status) {
-        const ok = !!status.ok;
-        const health = status.health || {};
-        elements.connectionBadge.innerHTML =
-            `<span class="status-dot ${ok ? "status-dot--ok" : "status-dot--bad"}">${ok ? "OK" : "Проблема"}</span>`;
-        elements.connectionMeta.innerHTML = `
-            <div><span class="mono">${escapeHtml(status.endpoint || "—")}</span></div>
-            <div>auth: <b>${escapeHtml(status.auth_mode || "—")}</b>${status.error ? ` • <span style="color:#ba3652">${escapeHtml(String(status.error))}</span>` : ""}</div>
-        `;
-        elements.hostScopeValue.textContent = status.ok
-            ? `${status.model_count} (🖼 ${status.vision_count} vision)`
-            : "—";
-        elements.hostScopeMeta.textContent = status.native_management_available
-            ? "нативное управление доступно"
-            : "нативное управление недоступно (сервер сам управляет)";
-        elements.estimateScopeValue.textContent = health.alive
-            ? `${health.latency_ms != null ? health.latency_ms + " мс" : "—"}`
-            : "нет ответа";
-        elements.estimateScopeMeta.textContent = health.alive
-            ? "GET /v1/models"
-            : escapeHtml(health.error || "endpoint недоступен");
-        if (elements.serverEndpoint) elements.serverEndpoint.textContent = status.endpoint || "—";
+    function fmtCtx(n) {
+        return n == null ? null : Number(n).toLocaleString("ru-RU");
     }
 
-    function renderMetricCards(status) {
-        const host = status.audit_host || {};
-        const ram = host.ram || {};
-        const swap = host.swap || {};
-        const cpu = host.cpu || {};
-        const cards = [
-            {
-                label: "RAM audit-сервера",
-                value: `${formatGiB(ram.used_gib)} / ${formatGiB(ram.total_gib)}`,
-                meta: `Свободно ${formatGiB(ram.available_gib)} • ${ram.percent ?? "—"}%`,
-            },
-            {
-                label: "Swap audit-сервера",
-                value: `${formatGiB(swap.used_gib)} / ${formatGiB(swap.total_gib)}`,
-                meta: `Свободно ${formatGiB(swap.free_gib)} • ${swap.percent ?? "—"}%`,
-            },
-            {
-                label: "CPU audit-сервера",
-                value: `${cpu.percent ?? "—"}%`,
-                meta: `${cpu.physical_cores ?? "—"} физ. / ${cpu.logical_cores ?? "—"} логических`,
-            },
-            {
-                label: "GPU / VRAM",
-                value: "на LLM-хосте",
-                meta: escapeHtml(status.gpu_note || "GPU на удалённом LLM-хосте — локально недоступен"),
-            },
-        ];
-        elements.metricCards.innerHTML = cards.map((card) => `
-            <div class="metric-card">
-                <div class="metric-card__label">${escapeHtml(card.label)}</div>
-                <div class="metric-card__value">${escapeHtml(card.value)}</div>
-                <div class="metric-card__meta">${escapeHtml(card.meta)}</div>
-            </div>
-        `).join("");
+    function renderLoadedNow(status) {
+        // Endpoint для примечания панели «Управление моделями».
+        if (elements.serverEndpoint) elements.serverEndpoint.textContent = status.endpoint || "—";
+        if (!elements.loadedModelsBody) return;
+        const loaded = status.loaded_models
+            || (status.models || []).filter((m) => m.loaded);
+        if (elements.loadedCountPill) {
+            elements.loadedCountPill.textContent = status.native_state_available
+                ? `${loaded.length} загружено`
+                : "нет данных";
+        }
+        if (elements.unloadAllBtn) elements.unloadAllBtn.disabled = !loaded.length;
+        // Сервер не сообщил состояние загрузки (native /api/v0/models недоступен).
+        if (!status.native_state_available) {
+            elements.loadedModelsBody.innerHTML =
+                `<tr><td colspan="6" class="empty-row">Сервер не сообщил состояние загрузки` +
+                ` (native <span class="mono">/api/v0/models</span> недоступен).</td></tr>`;
+            return;
+        }
+        if (!loaded.length) {
+            elements.loadedModelsBody.innerHTML =
+                `<tr><td colspan="6" class="empty-row">Сейчас в памяти нет загруженных моделей.</td></tr>`;
+            return;
+        }
+        // Используемые пайплайном — выше, затем по имени.
+        const sorted = [...loaded].sort((a, b) => {
+            if (!!b.used_by - !!a.used_by) return !!b.used_by - !!a.used_by;
+            return String(a.id).localeCompare(String(b.id), "ru");
+        });
+        elements.loadedModelsBody.innerHTML = sorted.map((m) => {
+            const visionChip = m.vision
+                ? `<span class="status-dot status-dot--ok">🖼 да</span>`
+                : `<span class="muted">—</span>`;
+            const kind = KIND_LABEL[m.kind] || m.kind || "?";
+            const lc = fmtCtx(m.loaded_context);
+            const mc = fmtCtx(m.max_context);
+            const ctx = lc ? `${lc}${mc ? " / " + mc : ""}` : "—";
+            const usedChip = m.used_by
+                ? `<span class="status-dot status-dot--ok">${escapeHtml(m.used_by)}</span>`
+                : `<span class="muted">—</span>`;
+            return `
+                <tr style="background:rgba(11,143,119,0.05)">
+                    <td><span class="mono">${escapeHtml(m.id)}</span></td>
+                    <td>${visionChip}</td>
+                    <td>${escapeHtml(kind)}</td>
+                    <td><span class="mono">${escapeHtml(ctx)}</span></td>
+                    <td>${usedChip}</td>
+                    <td><button class="btn btn--ghost btn--sm" data-unload="${escapeHtml(m.id)}">Выгрузить</button></td>
+                </tr>
+            `;
+        }).join("");
+        elements.loadedModelsBody.querySelectorAll("[data-unload]").forEach((el) => {
+            el.addEventListener("click", () => doUnload(el.dataset.unload, el));
+        });
     }
 
     function renderModels(status) {
@@ -116,7 +116,7 @@
         elements.modelsCountPill.textContent = `${models.length} моделей`;
         if (!models.length) {
             elements.modelsBody.innerHTML =
-                `<tr><td colspan="5" class="empty-row">${status.ok ? "Сервер вернул пустой список." : "Не удалось получить список (см. статус выше)."}</td></tr>`;
+                `<tr><td colspan="6" class="empty-row">${status.ok ? "Сервер вернул пустой список." : "Не удалось получить список (см. статус выше)."}</td></tr>`;
             return;
         }
         // Сортировка: используемые пайплайном → vision → по имени
@@ -135,16 +135,23 @@
                 : `<span class="muted">—</span>`;
             const kind = KIND_LABEL[m.kind] || m.kind || "?";
             const measuredMark = m.measured ? "" : ' <span class="muted" title="классифицировано эвристикой">≈</span>';
+            const maxCtx = m.max_context || 262144;
+            const loadedMark = m.loaded ? ' <span class="status-dot status-dot--ok" title="загружена сейчас">●</span>' : "";
+            const loadBtn = `<button class="btn btn--primary btn--sm" data-load="${escapeHtml(m.id)}" data-max="${maxCtx}"${m.loaded ? "" : ""}>${m.loaded ? "Перезагрузить" : "Загрузить"}</button>`;
             return `
                 <tr${m.used_by ? ' style="background:rgba(11,143,119,0.05)"' : ""}>
-                    <td><span class="mono">${escapeHtml(m.id)}</span>${measuredMark}</td>
+                    <td><span class="mono">${escapeHtml(m.id)}</span>${measuredMark}${loadedMark}</td>
                     <td>${visionChip}</td>
                     <td>${escapeHtml(kind)}</td>
                     <td>${reasoningChip}</td>
                     <td>${usedChip}</td>
+                    <td>${loadBtn}</td>
                 </tr>
             `;
         }).join("");
+        elements.modelsBody.querySelectorAll("[data-load]").forEach((el) => {
+            el.addEventListener("click", () => openLoadModal(el.dataset.load, Number(el.dataset.max) || 262144));
+        });
     }
 
     async function apiPost(path, body) {
@@ -156,6 +163,118 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || `HTTP ${response.status}`);
         return data;
+    }
+
+    // ─── Загрузка / выгрузка моделей ───
+
+    function errText(e) {
+        if (!e) return "не удалось выполнить";
+        if (typeof e === "string") return e;
+        if (typeof e === "object") return e.message || e.type || JSON.stringify(e);
+        return String(e);
+    }
+
+    function showActionResult(title, html, isError) {
+        const box = elements.actionResult;
+        if (!box) return;
+        box.style.display = "";
+        box.innerHTML = `
+            <div class="result-box__title">${escapeHtml(title)}</div>
+            <div${isError ? ' style="color:#ba3652"' : ""}>${html}</div>
+        `;
+    }
+
+    const CTX_PRESETS = [4096, 8192, 16384, 32768, 65536, 131072];
+    const CTX_HARD_MAX = 262144;  // потолок LoadModelRequest на бэкенде (le=262144)
+    let loadModalTarget = null;
+
+    function openLoadModal(model, maxCtx) {
+        // Эффективный максимум: не больше жёсткого лимита бэкенда.
+        const effMax = Math.min(maxCtx || CTX_HARD_MAX, CTX_HARD_MAX);
+        loadModalTarget = { model, maxCtx: effMax };
+        if (elements.loadModalModel) elements.loadModalModel.textContent = model;
+        if (elements.loadModalHint) {
+            const capped = (maxCtx && maxCtx > CTX_HARD_MAX)
+                ? ` (у модели ${fmtCtx(maxCtx)}, но сервер грузит не более ${fmtCtx(CTX_HARD_MAX)})`
+                : "";
+            elements.loadModalHint.textContent = `Максимум: ${fmtCtx(effMax)} токенов${capped}.`;
+        }
+        // Пресеты ≤ эффективного максимума + сам максимум
+        if (elements.loadModalPresets) {
+            const presets = CTX_PRESETS.filter((v) => v < effMax).concat([effMax]);
+            elements.loadModalPresets.innerHTML = presets.map((v) =>
+                `<button type="button" class="btn btn--ghost btn--sm" data-preset="${v}">${v === effMax ? "Max" : fmtCtx(v)}</button>`
+            ).join("");
+            elements.loadModalPresets.querySelectorAll("[data-preset]").forEach((el) => {
+                el.addEventListener("click", () => { elements.loadModalCtx.value = el.dataset.preset; });
+            });
+        }
+        if (elements.loadModalCtx) {
+            elements.loadModalCtx.max = String(effMax);
+            // Разумный дефолт: 32768 или максимум, если он меньше
+            elements.loadModalCtx.value = String(Math.min(32768, effMax));
+        }
+        if (elements.loadModal) elements.loadModal.style.display = "flex";
+    }
+
+    function closeLoadModal() {
+        loadModalTarget = null;
+        if (elements.loadModal) elements.loadModal.style.display = "none";
+    }
+
+    async function confirmLoad() {
+        if (!loadModalTarget) return;
+        const model = loadModalTarget.model;
+        const maxCtx = loadModalTarget.maxCtx;
+        let ctx = parseInt(elements.loadModalCtx && elements.loadModalCtx.value, 10);
+        if (!Number.isFinite(ctx) || ctx < 512) ctx = 512;
+        if (ctx > maxCtx) ctx = maxCtx;
+        setBusy(elements.loadModalConfirm, true, "Загружаю...");
+        try {
+            const res = await apiPost("/api/model-control/load", { model, context_length: ctx });
+            closeLoadModal();
+            if (res && res.ok === false) {
+                showActionResult(`Загрузка ${model}`, escapeHtml(errText(res.error)), true);
+            } else {
+                showActionResult(`Загрузка ${model}`, `Загружено с контекстом <b>${fmtCtx(ctx)}</b> токенов. Обновляю состояние...`, false);
+            }
+        } catch (error) {
+            showActionResult(`Загрузка ${model}`, escapeHtml(String(error)), true);
+        } finally {
+            setBusy(elements.loadModalConfirm, false);
+            refreshStatus({ silent: true });
+        }
+    }
+
+    async function doUnload(instanceId, button) {
+        if (!window.confirm(`Выгрузить модель «${instanceId}» из памяти сервера?`)) return;
+        setBusy(button, true, "Выгружаю...");
+        try {
+            const res = await apiPost("/api/model-control/unload", { instance_id: instanceId });
+            if (res && res.ok === false) {
+                showActionResult(`Выгрузка ${instanceId}`, escapeHtml(errText(res.error)), true);
+            } else {
+                showActionResult(`Выгрузка ${instanceId}`, "Выгружено. Обновляю состояние...", false);
+            }
+        } catch (error) {
+            showActionResult(`Выгрузка ${instanceId}`, escapeHtml(String(error)), true);
+        } finally {
+            refreshStatus({ silent: true });
+        }
+    }
+
+    async function doUnloadAll() {
+        if (!window.confirm("Выгрузить ВСЕ загруженные модели из памяти сервера?")) return;
+        setBusy(elements.unloadAllBtn, true, "Выгружаю...");
+        try {
+            const res = await apiPost("/api/model-control/unload-all", {});
+            showActionResult("Выгрузка всех", `Выгружено instance: <b>${res.count ?? 0}</b>. Обновляю состояние...`, res && res.ok === false);
+        } catch (error) {
+            showActionResult("Выгрузка всех", escapeHtml(String(error)), true);
+        } finally {
+            setBusy(elements.unloadAllBtn, false);
+            refreshStatus({ silent: true });
+        }
     }
 
     // ─── Переключатель серверов обработки ───
@@ -274,14 +393,13 @@
         try {
             const status = await api("/api/model-control/remote-status");
             state.lastStatus = status;
-            renderConnection(status);
-            renderMetricCards(status);
+            renderLoadedNow(status);
             renderModels(status);
         } catch (error) {
-            elements.connectionBadge.innerHTML =
-                `<span class="status-dot status-dot--bad">Проблема</span>`;
-            elements.connectionMeta.innerHTML =
-                `<div style="color:#ba3652">${escapeHtml(String(error))}</div>`;
+            const msg = `<tr><td colspan="5" class="empty-row" style="color:#ba3652">${escapeHtml(String(error))}</td></tr>`;
+            if (elements.loadedModelsBody) elements.loadedModelsBody.innerHTML = msg;
+            if (elements.modelsBody) elements.modelsBody.innerHTML = msg;
+            if (elements.loadedCountPill) elements.loadedCountPill.textContent = "ошибка";
         } finally {
             if (!silent) setBusy(elements.refreshBtn, false);
         }
@@ -303,6 +421,12 @@
         if (elements.autoRefreshToggle) elements.autoRefreshToggle.addEventListener("change", startAutoRefresh);
         if (elements.autoRefreshSeconds) elements.autoRefreshSeconds.addEventListener("change", startAutoRefresh);
         if (elements.probeServersBtn) elements.probeServersBtn.addEventListener("click", () => probeServers());
+        if (elements.unloadAllBtn) elements.unloadAllBtn.addEventListener("click", doUnloadAll);
+        if (elements.loadModalCancel) elements.loadModalCancel.addEventListener("click", closeLoadModal);
+        if (elements.loadModalConfirm) elements.loadModalConfirm.addEventListener("click", confirmLoad);
+        if (elements.loadModal) elements.loadModal.addEventListener("click", (e) => {
+            if (e.target === elements.loadModal) closeLoadModal();  // клик по фону закрывает
+        });
     }
 
     async function init() {

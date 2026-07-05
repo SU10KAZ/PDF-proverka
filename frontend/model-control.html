@@ -58,40 +58,47 @@
             </div>
         </section>
 
-        <section class="banner-grid">
-            <div class="banner-card">
-                <div class="banner-card__label">Подключение (OpenAI /v1)</div>
-                <div class="banner-card__value" id="connectionBadge">Проверка...</div>
-                <div class="banner-card__meta" id="connectionMeta"></div>
+        <section class="panel" id="loadedNowPanel">
+            <div class="panel__header">
+                <div>
+                    <h2>Загружено сейчас</h2>
+                    <p>Модели, реально держащиеся в памяти LLM-сервера прямо сейчас
+                       (native <span class="mono">/api/v0/models</span>). Кнопка «Выгрузить»
+                       снимает модель с памяти; загрузить новую — из таблицы ниже.</p>
+                </div>
+                <div class="panel__header-actions">
+                    <div class="pill" id="loadedCountPill">—</div>
+                    <button id="unloadAllBtn" class="btn btn--ghost btn--sm" disabled>Выгрузить всё</button>
+                </div>
             </div>
-            <div class="banner-card">
-                <div class="banner-card__label">Модели на сервере</div>
-                <div class="banner-card__value" id="hostScopeValue">—</div>
-                <div class="banner-card__meta" id="hostScopeMeta"></div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Модель</th>
+                            <th>Vision</th>
+                            <th>Тип</th>
+                            <th>Контекст (loaded / max)</th>
+                            <th>Использует пайплайн</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loadedModelsBody">
+                        <tr><td colspan="6" class="empty-row">Загрузка...</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="banner-card">
-                <div class="banner-card__label">Health / латентность</div>
-                <div class="banner-card__value" id="estimateScopeValue">—</div>
-                <div class="banner-card__meta" id="estimateScopeMeta"></div>
-            </div>
-        </section>
-
-        <section class="info-strip" id="scopeWarning">
-            <b>Удалённый bearer-сервер:</b> нативное управление LM Studio (загрузка/выгрузка/reload,
-            оценка памяти, GPU/VRAM, процессы) недоступно — сервер сам держит модели в памяти.
-            Карточки RAM/CPU ниже — это ресурсы <b>audit-сервера</b> (где крутится панель), а не LLM-хоста.
         </section>
 
         <main class="layout layout--single">
             <section class="content">
-                <div class="cards-grid" id="metricCards"></div>
-
                 <section class="panel">
                     <div class="panel__header">
                         <div>
                             <h2>Доступные модели</h2>
                             <p>Список из <span class="mono">/v1/models</span>. Возможности (vision / тип / reasoning)
-                               измерены пробой; отмечено, какие модели использует пайплайн.</p>
+                               измерены пробой; отмечено, какие модели использует пайплайн.
+                               Кнопка «Загрузить» спросит объём контекста и поднимет модель в память.</p>
                         </div>
                         <div class="pill" id="modelsCountPill">0 моделей</div>
                     </div>
@@ -104,10 +111,11 @@
                                     <th>Тип</th>
                                     <th>Reasoning</th>
                                     <th>Используется пайплайном</th>
+                                    <th>Действие</th>
                                 </tr>
                             </thead>
                             <tbody id="modelsBody">
-                                <tr><td colspan="5" class="empty-row">Загрузка...</td></tr>
+                                <tr><td colspan="6" class="empty-row">Загрузка...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -116,14 +124,15 @@
                 <section class="panel">
                     <div class="panel__header">
                         <div>
-                            <h2>Управление моделями</h2>
-                            <p>Недоступно на удалённом сервере.</p>
+                            <h2>Как это работает</h2>
+                            <p>Управление загрузкой моделей на сервере обработки.</p>
                         </div>
                     </div>
                     <div class="info-strip" style="margin:0">
-                        Загрузка / выгрузка / reload, оценка памяти и просмотр загруженных instance работают
-                        только когда LM Studio запущен локально с нативным управлением. На <span class="mono" id="serverEndpoint">—</span>
-                        доступен лишь OpenAI-слой <span class="mono">/v1</span> — сервер сам выбирает, что держать в VRAM.
+                        Загрузка / выгрузка идут через сервер <span class="mono" id="serverEndpoint">—</span>.
+                        «Загрузить» поднимает модель в память с выбранным объёмом контекста, «Выгрузить» —
+                        снимает её. Оценка памяти (lms CLI) на audit-сервере недоступна — фактический расход
+                        VRAM смотрите на LLM-хосте.
                     </div>
                 </section>
 
@@ -133,6 +142,22 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Модалка выбора объёма контекста при загрузке модели -->
+    <div class="modal-overlay" id="loadModal">
+        <div class="modal">
+            <div class="modal__title">Загрузить модель</div>
+            <div class="modal__model mono" id="loadModalModel">—</div>
+            <label class="modal__label" for="loadModalCtx">Объём контекста (токенов)</label>
+            <input type="number" id="loadModalCtx" class="input" min="512" step="512" value="32768">
+            <div class="modal__presets" id="loadModalPresets"></div>
+            <div class="modal__hint" id="loadModalHint"></div>
+            <div class="modal__actions">
+                <button class="btn btn--ghost" id="loadModalCancel">Отмена</button>
+                <button class="btn btn--primary" id="loadModalConfirm">Загрузить</button>
+            </div>
+        </div>
     </div>
 
     <script src="/static/js/model-control.js?v={{js_version}}"></script>

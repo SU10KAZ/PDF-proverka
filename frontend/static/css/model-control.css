@@ -633,3 +633,53 @@ body.embed .server-card { padding: 8px 10px; gap: 6px; border-radius: 8px; }
 body.embed .server-card__title { font-size: 13px; }
 body.embed .server-card__desc { display: none; }
 body.embed .server-card__url { font-size: 11px; }
+
+/* ─── Управление моделями: кнопки в шапке + модалка выбора контекста ─── */
+.panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-overlay {
+  display: none;            /* показывается через JS (flex) */
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  background: rgba(9, 28, 21, 0.42);
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 440px;
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal__title { font-size: 17px; font-weight: 600; color: var(--text); }
+.modal__model {
+  font-size: 13px;
+  color: var(--teal-dark);
+  word-break: break-all;
+  background: var(--teal-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.modal__label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.modal__presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.modal__hint { font-size: 12px; color: var(--muted); }
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}

@@ -1,7 +1,16 @@
-"""REST API для отдельного окна управления моделями."""
+"""REST API для отдельного окна управления моделями.
+
+Все обращения к model_control_service/model_capabilities/server_profiles —
+синхронные (requests с таймаутами до 900с, subprocess nvidia-smi). Прямой
+вызов из async-эндпоинтов блокировал event loop: /api/info переставал
+отвечать, cron-вотчдог считал бэкенд мёртвым и убивал его вместе с живыми
+аудитами (инциденты 03.07.2026). Поэтому здесь везде asyncio.to_thread.
+"""
 
 from __future__ import annotations
 
+import asyncio
+import os
 import subprocess
 from pathlib import Path
 
@@ -47,15 +56,29 @@ def _schedule_backend_restart() -> None:
     текущего процесса stop_server.sh. Пауза даёт FastAPI отдать HTTP-ответ до
     рестарта. Watchdog (раз в минуту) — страховка, если detached-старт не поднимет.
     """
-    webapp_dir = Path(ROOT_DIR) / "webapp"
-    log = webapp_dir / "profile_switch_restart.log"
+    server_dir = Path(ROOT_DIR) / "scripts" / "server"
+    log_dir = Path(ROOT_DIR) / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log = log_dir / "profile_switch_restart.log"
     cmd = (
-        f"sleep 2; cd {webapp_dir!s} && "
+        f"sleep 2; cd {server_dir!s} && "
         f"./stop_server.sh && ./start_server_deploy.sh"
     )
+    # ФИКС переключения серверов: рестарт-процесс наследует окружение ЭТОГО
+    # backend'а, где routing-ключи уже загружены из СТАРОГО .env. Загрузчик .env
+    # в main.py использует os.environ.setdefault → унаследованные значения
+    # перебивают новый .env, и рестарт НЕ переключает сервер (баг: кнопка
+    # рапортует «перезапускается», но процесс остаётся на старом сервере).
+    # Убираем routing-ключи профилей из окружения ребёнка, чтобы новый процесс
+    # прочитал их СВЕЖИМИ из .env.
+    profile_keys: set[str] = set()
+    for _prof in server_profiles.PROFILES.values():
+        profile_keys.update((_prof.get("env") or {}).keys())
+    child_env = {k: v for k, v in os.environ.items() if k not in profile_keys}
     with open(log, "ab") as fh:
         subprocess.Popen(
             ["setsid", "bash", "-lc", cmd],
+            env=child_env,
             stdin=subprocess.DEVNULL,
             stdout=fh,
             stderr=fh,
@@ -67,7 +90,8 @@ def _schedule_backend_restart() -> None:
 @router.get("/status")
 async def get_status():
     """Получить текущий статус подключения, моделей и памяти."""
-    return model_control_service.get_status()
+    # sync HTTP (timeout=30) + 2× subprocess nvidia-smi — только в to_thread.
+    return await asyncio.to_thread(model_control_service.get_status)
 
 
 @router.get("/remote-status")
@@ -78,19 +102,23 @@ async def get_remote_status():
     ресурсы AUDIT-хоста (RAM/CPU) — это webapp-сервер, а не LLM-хост; GPU LLM
     находится на удалённом хосте и локально не виден.
     """
-    status = model_capabilities.get_remote_models_status()
-    try:
-        status["audit_host"] = model_control_service._system_memory()
-    except Exception as exc:  # noqa: BLE001
-        status["audit_host"] = {"error": f"{type(exc).__name__}: {exc}"}
-    status["gpu_note"] = "GPU/VRAM находятся на удалённом LLM-хосте (01.vibe) — локально недоступны."
-    return status
+    def _collect() -> dict:
+        status = model_capabilities.get_remote_models_status()
+        try:
+            status["audit_host"] = model_control_service._system_memory()
+        except Exception as exc:  # noqa: BLE001
+            status["audit_host"] = {"error": f"{type(exc).__name__}: {exc}"}
+        status["gpu_note"] = "GPU/VRAM находятся на удалённом LLM-хосте (01.vibe) — локально недоступны."
+        return status
+
+    return await asyncio.to_thread(_collect)
 
 
 @router.post("/estimate")
 async def estimate_load(req: EstimateLoadRequest):
     """Локально оценить требования к памяти при выбранном контексте."""
-    return model_control_service.estimate_load(
+    return await asyncio.to_thread(
+        model_control_service.estimate_load,
         model=req.model,
         context_length=req.context_length,
         gpu=req.gpu,
@@ -100,7 +128,10 @@ async def estimate_load(req: EstimateLoadRequest):
 @router.post("/load")
 async def load_model(req: LoadModelRequest):
     """Загрузить модель в LM Studio с выбранными параметрами."""
-    return model_control_service.load_model(
+    # Внутри — sync requests с timeout=900 (загрузка большой модели):
+    # прямой вызов блокировал бы event loop до 15 минут.
+    return await asyncio.to_thread(
+        model_control_service.load_model,
         model=req.model,
         context_length=req.context_length,
         flash_attention=req.flash_attention,
@@ -113,25 +144,28 @@ async def load_model(req: LoadModelRequest):
 @router.post("/unload")
 async def unload_instance(req: UnloadInstanceRequest):
     """Выгрузить конкретный instance модели."""
-    return model_control_service.unload_instance(instance_id=req.instance_id)
+    return await asyncio.to_thread(
+        model_control_service.unload_instance, instance_id=req.instance_id
+    )
 
 
 @router.post("/unload-all")
 async def unload_all():
     """Выгрузить все загруженные instance моделей."""
-    return model_control_service.unload_all()
+    return await asyncio.to_thread(model_control_service.unload_all)
 
 
 @router.get("/server-profiles")
 async def get_server_profiles():
     """Список профилей LLM-серверов + какой активен сейчас (по живому config)."""
-    return server_profiles.list_profiles()
+    return await asyncio.to_thread(server_profiles.list_profiles)
 
 
 @router.get("/server-profiles/probe")
 async def probe_server_profiles():
     """Health обоих серверов — чтобы видеть, какой жив, ДО переключения."""
-    return server_profiles.probe_all()
+    # Сетевые пробы обоих серверов (sync requests) — в thread-пул.
+    return await asyncio.to_thread(server_profiles.probe_all)
 
 
 @router.post("/server-profiles/activate")
