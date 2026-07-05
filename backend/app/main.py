@@ -256,7 +256,10 @@ async def serve_spa():
     js_ver = max(js_mtimes) if js_mtimes else 0
     html = index_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
-    return HTMLResponse(html)
+    # SPA-точка входа не должна кэшироваться: иначе браузер держит старый index.html
+    # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
+    # и кэшируются нормально — no-cache нужен только для HTML-обёртки.
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 @app.get("/model-control")
@@ -271,7 +274,7 @@ async def serve_model_control():
     js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
     html = page_path.read_text(encoding="utf-8")
     html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
-    return HTMLResponse(html)
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
 # ─── Запуск ─────────────────────────────────────────────────

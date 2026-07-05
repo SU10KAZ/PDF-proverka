@@ -4107,11 +4107,36 @@ const app = createApp({
         const showAddObjectModal = ref(false);
         const newObjectName = ref('');
 
+        // ─── Панели шапки (объект / расходы API / аккаунт LLM) ───
+        // Одновременно открыта максимум одна: открытие любой закрывает остальные,
+        // а клик вне (по любому другому элементу) закрывает все — см. onMounted.
+        function toggleHeaderPopover(which) {
+            const target = which === 'object'  ? showObjectPicker
+                         : which === 'paid'    ? showPaidCost
+                         : which === 'account' ? showAccountInfo
+                         : null;
+            if (!target) return;
+            const willOpen = !target.value;
+            showObjectPicker.value = false;
+            showPaidCost.value = false;
+            showAccountInfo.value = false;
+            if (willOpen) target.value = true;
+        }
+
+        function closeHeaderPopovers() {
+            showObjectPicker.value = false;
+            showPaidCost.value = false;
+            showAccountInfo.value = false;
+        }
+
         async function loadObjects() {
             try {
                 const data = await api('/objects');
                 objectsList.value = data.objects || [];
                 currentObjectId.value = data.current_id;
+                // Показать имя выбранного объекта в шапке (не «Объект»-плейсхолдер).
+                const cur = objectsList.value.find(o => o.id === currentObjectId.value);
+                if (cur) objectName.value = cur.name;
             } catch (e) {
                 console.error('Failed to load objects:', e);
             }
@@ -4228,6 +4253,16 @@ const app = createApp({
         const filteredSectionProjects = computed(() => {
             if (!sidebarFilterSection.value) return [];
             return projects.value.filter(p => p.section === sidebarFilterSection.value);
+        });
+
+        // Есть ли в текущем разделе необработанные (без аудита) проекты —
+        // критерий тот же, что у selectUnanalyzedInSection: findings_count == 0.
+        const sectionHasUnanalyzed = computed(() => {
+            const sec = sidebarFilterSection.value;
+            if (!sec || sec === '__all__') return false;
+            return projects.value.some(
+                p => (p.section || 'OTHER') === sec && !(p.findings_count > 0)
+            );
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
@@ -8005,12 +8040,12 @@ const app = createApp({
         });
 
         // ─── Paginated views ───
-        const paginatedFindings = computed(() => {
-            const all = sortedFindings.value;
-            const start = (findingsPage.value - 1) * PAGE_SIZE;
-            return all.slice(start, start + PAGE_SIZE);
-        });
-        const findingsTotalPages = computed(() => Math.max(1, Math.ceil(sortedFindings.value.length / PAGE_SIZE)));
+        // Замечания (findings) выводятся ОДНИМ списком без пагинации (по просьбе Андрея
+        // Ивановича 07-04): эксперту удобнее видеть все замечания сразу, не листая страницы.
+        // totalPages=1 → пагинатор `v-if="findingsTotalPages > 1"` в шаблоне сам скрывается.
+        // Оптимизация/дискуссии пагинацию сохраняют (PAGE_SIZE).
+        const paginatedFindings = computed(() => sortedFindings.value);
+        const findingsTotalPages = computed(() => 1);
 
         const paginatedOptimization = computed(() => {
             const all = sortedOptimization.value;
@@ -9829,6 +9864,9 @@ const app = createApp({
             window.addEventListener('click', _scInlineMatchOutsideClick);
             // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
             window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
+            // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
+            // Триггеры и сами панели используют @click.stop, поэтому не самозакрываются.
+            window.addEventListener('click', closeHeaderPopovers);
             handleRoute();
             connectGlobalWS();
             startPolling();
@@ -9859,6 +9897,7 @@ const app = createApp({
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
             window.removeEventListener('click', _scInlineMatchOutsideClick);
+            window.removeEventListener('click', closeHeaderPopovers);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
             stopLmsHealthPolling();
@@ -17142,9 +17181,11 @@ const app = createApp({
             // Objects
             objectsList, currentObjectId, showObjectPicker, showAddObjectModal, newObjectName,
             loadObjects, switchObject, addNewObject,
+            toggleHeaderPopover, closeHeaderPopovers,
             // Dashboard stats
             auditedProjectsCount, totalFindings, totalBySeverity, sevPercent,
             sectionFindingsCount, sectionStatsMap, sectionStatsTotals, filteredSectionProjects,
+            sectionHasUnanalyzed,
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,

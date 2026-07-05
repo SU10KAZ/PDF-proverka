@@ -96,6 +96,15 @@
                     </svg>
                     Контроль моделей
                 </div>
+                <div class="nav-item" :class="{active: currentView === 'lms'}" @click="navigate('/lms')" title="Загруженные модели LM Studio (удалённое управление)">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="2.5" y="2.5" width="11" height="11" rx="2"/>
+                        <rect x="6" y="6" width="4" height="4" rx="0.5"/>
+                        <path d="M8 2.5V1M8 15v-1.5M2.5 8H1M15 8h-1.5"/>
+                    </svg>
+                    LM Studio
+                    <span v-if="lmsHealth && lmsHealth.loaded_count" class="nav-badge" :title="lmsHealth.loaded_count + ' моделей загружено'">{{ lmsHealth.loaded_count }}</span>
+                </div>
                 <div class="nav-item" :class="{active: currentView === 'stage-comparison'}" @click="navigate('/stage-comparison')" title="Сравнение двух стадий проектной документации">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="2" width="5.5" height="12" rx="1"/>
@@ -135,10 +144,10 @@
         <!-- Header -->
         <header class="header">
             <div class="header-left" style="position:relative">
-                <span class="header-object-name" @click="showObjectPicker = !showObjectPicker" style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;cursor:pointer">{{ objectName || 'Объект' }}
+                <span class="header-object-name" @click.stop="toggleHeaderPopover('object')" style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;cursor:pointer">{{ objectName || 'Объект' }}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-left:4px;opacity:.5"><path d="M6 9l6 6 6-6"/></svg>
                 </span>
-                <div class="dash-object-picker" v-if="showObjectPicker" style="top:100%;left:0;margin-top:8px">
+                <div class="dash-object-picker" v-if="showObjectPicker" @click.stop style="top:100%;left:0;margin-top:8px">
                     <div v-for="obj in objectsList" :key="obj.id"
                          class="dash-object-picker__item"
                          :class="{'dash-object-picker__item--active': obj.id === currentObjectId}"
@@ -163,7 +172,7 @@
 
             <div class="header-right">
                 <!-- Paid API cost counter -->
-                <button class="paid-cost-btn" @click="showPaidCost = !showPaidCost"
+                <button class="paid-cost-btn" @click.stop="toggleHeaderPopover('paid')"
                         :class="{'paid-cost-btn--active': paidCost.display_usd > 0}"
                         title="Расходы на платные API">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -172,7 +181,7 @@
                     <span class="paid-cost-btn__amount">{{ formatCostShort(paidCost.display_usd) }}</span>
                 </button>
                 <!-- Paid cost panel -->
-                <div class="paid-cost-panel" v-if="showPaidCost">
+                <div class="paid-cost-panel" v-if="showPaidCost" @click.stop>
                     <div class="paid-cost-panel__header">Расходы на платные API</div>
                     <!-- Kill-switch статус -->
                     <div class="paid-cost-panel__row" v-if="paidApiStatus">
@@ -345,14 +354,14 @@
                 </button>
 
                 <!-- Account info button -->
-                <button class="account-btn" @click="showAccountInfo = !showAccountInfo"
+                <button class="account-btn" @click.stop="toggleHeaderPopover('account')"
                         :class="{'account-btn--error': !accountInfo.loggedIn}"
                         title="Аккаунт LLM">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                 </button>
-                <div class="account-panel" v-if="showAccountInfo">
+                <div class="account-panel" v-if="showAccountInfo" @click.stop>
                     <div class="account-panel__header">Аккаунт LLM</div>
                     <div class="account-panel__row">
                         <span class="account-panel__label">Email:</span>
@@ -561,7 +570,7 @@
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>
-                    <button v-if="selectedCount > 0" class="btn btn-sm btn-outline"
+                    <button v-if="sectionHasUnanalyzed" class="btn btn-sm btn-outline"
                             style="margin-left:10px; vertical-align:middle;"
                             @click.stop="selectUnanalyzedInSection(sidebarFilterSection)"
                             title="Выделить все непроанализированные проекты раздела (без аудита)">

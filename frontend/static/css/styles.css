@@ -4207,11 +4207,13 @@ tr.row-rejected td.sc-cell-goto {
 .sched-stats-table__nm { font-weight: 600; }
 .sched-stats-table th.sched-stats-table__nm, .sched-stats-table td.sched-stats-table__nm { text-align: left; }
 /* Инженер — широкий слева; Факт/Осталось/План/Замечания узкие, Выполнение шире; данные по центру */
-.sched-stats-table th:nth-child(1) { width: 52%; }
+.sched-stats-table th:nth-child(1) { width: 49%; }
 .sched-stats-table th:nth-child(2),
 .sched-stats-table th:nth-child(3),
-.sched-stats-table th:nth-child(4),
-.sched-stats-table th:nth-child(5) { width: 6%; }
+.sched-stats-table th:nth-child(4) { width: 6%; }
+/* Колонка-счётчик шире: заголовок «Счётчик/Замечаний/Оптимизаций» больше не
+   занимает всю ячейку, появляются симметричные поля — центрирование видно. */
+.sched-stats-table th:nth-child(5) { width: 9%; }
 .sched-stats-table th:nth-child(6) { width: 24%; }
 .sched-stats-table th:nth-child(n+2),
 .sched-stats-table td:nth-child(n+2) { text-align: center; }
@@ -4303,6 +4305,14 @@ tr.row-rejected td.sc-cell-goto {
     font-weight: 600;
 }
 .sched-remarks-th__top { font-weight: 700; }
+/* Заголовок «Счётчик/Замечаний/Оптимизаций» И значения под ним — по центру
+   ячейки. Колонка ужимается под самое широкое слово («Оптимизаций»), поэтому
+   заголовок и числа надо центрировать в ОДНОЙ широкой ячейке, иначе числа
+   прижимаются к правому краю (общий text-align:right), а шапка — по центру.
+   Специфичность th.класс/td.класс (0,3,0) перебивает общий th,td (0,2,0). */
+.sched-stats-table th.sched-stats-table__remarks,
+.sched-stats-table td.sched-stats-table__remarks { text-align: center; }
+.sched-remarks-th { justify-content: center; }
 .sched-remark-ok  { color: var(--green); font-weight: 700; }
 .sched-remark-no  { color: var(--red); font-weight: 700; }
 .sched-remark-sep { color: var(--text3); margin: 0 3px; }
