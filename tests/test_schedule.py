@@ -204,6 +204,73 @@ def test_frozen_lookup_matches_any_raw_form():
     assert events[0]["date"] == "2026-06-20"
 
 
+# ─── Version-aware заморозка (новая версия не наследует день старой) ───────────
+
+def test_norm_version_buckets():
+    nv = schedule_service._norm_version
+    assert nv(None) == "" and nv("") == "" and nv("none") == "" and nv("None") == ""
+    assert nv("v3") == "v3" and nv(" V3 ") == "v3"
+
+
+def test_new_version_does_not_inherit_legacy_frozen_day():
+    # РЕГРЕСС АР1.2-К4: старая версия заморожена version-less на 24-е (прошлая
+    # неделя), свежий переаудит v3 размечен 4-го. v3-группа НЕ наследует
+    # безверсионную заморозку → встаёт на свой живой день (4-е), попадает в неделю.
+    entries = [
+        _entry("Гривапш А. А.", "2026-06-24T06:00:00Z", "13АВ-РД-АР1.2-К4", item_id="F-1"),
+        _entry("Кульдяев Ф. С.", "2026-07-04T08:00:00Z", "13АВ-РД-АР1.2-К4",
+               item_id="F-2", current_version_id="v3"),
+    ]
+    # версионный стор: безверсионная заморозка старой версии
+    completions = {("214", "13АВ-РД-АР1.2-К4", ""): "2026-06-24"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-29", to_day="2026-07-05", completions=completions)
+    # в текущей неделе виден именно v3-переаудит Кульдяева на 4-е
+    assert len(events) == 1
+    ev = events[0]
+    assert ev["engineerName"] == "Кульдяев Ф. С."
+    assert ev["date"] == "2026-07-04"
+    assert ev["version_id"] == "v3"
+
+
+def test_matching_version_frozen_day_is_honored():
+    # заморозка ПОД v3 → v3-группа берёт замороженный день (не двигается правками)
+    entries = [
+        _entry("Кульдяев Ф. С.", "2026-07-04T08:00:00Z", "P", item_id="F-2",
+               current_version_id="v3"),
+    ]
+    completions = {("214", "P", "v3"): "2026-07-02"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-29", to_day="2026-07-05", completions=completions)
+    assert len(events) == 1
+    assert events[0]["date"] == "2026-07-02"
+
+
+def test_versionless_group_still_uses_legacy_2tuple_key():
+    # обратная совместимость: caller передал 2-tuple ключ, запись без версии →
+    # безверсионная группа его подхватывает (старое поведение не сломано)
+    entries = [_entry("Узун А. И.", "2026-06-18T06:00:00Z", "214. Alia", item_id="F-1")]
+    completions = {("214", "214. Alia"): "2026-06-16"}
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-15", to_day="2026-06-21", completions=completions)
+    assert len(events) == 1
+    assert events[0]["date"] == "2026-06-16"
+
+
+def test_two_versions_same_engineer_split_into_two_events():
+    # один инженер разметил v1 и v2 одного проекта → ДВА события (своя версия/день)
+    entries = [
+        _entry("Кульдяев Ф. С.", "2026-06-18T06:00:00Z", "P", item_id="F-1",
+               current_version_id="v1"),
+        _entry("Кульдяев Ф. С.", "2026-06-20T06:00:00Z", "P", item_id="F-2",
+               current_version_id="v2"),
+    ]
+    events = schedule_service.aggregate_events(
+        entries, from_day="2026-06-15", to_day="2026-06-28")
+    assert len(events) == 2
+    assert {(e["version_id"], e["date"]) for e in events} == {("v1", "2026-06-18"), ("v2", "2026-06-20")}
+
+
 def test_date_range_filter_inclusive():
     entries = [
         _entry("Узун А. И.", "2026-06-14T10:00:00Z", "P-before"),   # вне
@@ -524,7 +591,8 @@ def test_set_completion_once_creates_and_roundtrips(completion_file):
     assert res == {"date": "2026-06-16", "created": True}
     assert completion_file.exists()
     comps = schedule_service.load_schedule_completions()
-    assert comps[("214", "214. Alia")] == "2026-06-16"
+    # version-aware ключ: без version_id → безверсионный бакет ''
+    assert comps[("214", "214. Alia", "")] == "2026-06-16"
 
 
 def test_set_completion_once_is_idempotent_and_frozen(completion_file):
@@ -535,7 +603,7 @@ def test_set_completion_once_is_idempotent_and_frozen(completion_file):
         object_id="214", source_project="214. Alia", date="2026-06-25", reviewer="B")
     assert res2["created"] is False
     assert res2["date"] == "2026-06-16"
-    assert schedule_service.load_schedule_completions()[("214", "214. Alia")] == "2026-06-16"
+    assert schedule_service.load_schedule_completions()[("214", "214. Alia", "")] == "2026-06-16"
 
 
 def test_set_completion_invalid_date_noop(completion_file):
@@ -548,6 +616,22 @@ def test_set_completion_invalid_date_noop(completion_file):
 def test_completions_broken_json_returns_empty(completion_file):
     completion_file.write_text("{ broken", encoding="utf-8")
     assert schedule_service.load_schedule_completions() == {}
+
+
+def test_set_completion_once_versions_frozen_independently(completion_file):
+    # заморозка одной версии НЕ блокирует фиксацию другой версии того же проекта
+    r1 = schedule_service.set_completion_once(
+        object_id="214", source_project="P", date="2026-06-16", version_id="v1")
+    r2 = schedule_service.set_completion_once(
+        object_id="214", source_project="P", date="2026-07-04", version_id="v3")
+    assert r1["created"] is True and r2["created"] is True
+    comps = schedule_service.load_schedule_completions()
+    assert comps[("214", "P", "v1")] == "2026-06-16"
+    assert comps[("214", "P", "v3")] == "2026-07-04"
+    # повторная фиксация той же версии другой датой — не перезаписывает
+    r3 = schedule_service.set_completion_once(
+        object_id="214", source_project="P", date="2026-07-10", version_id="v3")
+    assert r3 == {"date": "2026-07-04", "created": False}
 
 
 # ──────────────────────────────────────────────────────────────────────────────

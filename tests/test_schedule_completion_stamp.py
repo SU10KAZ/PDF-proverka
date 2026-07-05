@@ -66,7 +66,7 @@ def test_full_markup_stamps_completion_day(kb_env):
                        timestamp="2026-06-18T08:00:00Z"),
     ], reviewer="Узун А. И.")
     comps = sched.load_schedule_completions()
-    assert comps.get(("", "DOC-STAMP")) == "2026-06-18"
+    assert comps.get(("", "DOC-STAMP", "")) == "2026-06-18"
 
 
 def test_partial_markup_does_not_stamp(kb_env):
@@ -95,7 +95,24 @@ def test_completion_day_frozen_across_later_edits(kb_env):
                        timestamp="2026-06-25T09:00:00Z"),
     ], reviewer="Узун А. И.")
     comps = sched.load_schedule_completions()
-    assert comps.get(("", "DOC-STAMP")) == "2026-06-18"
+    assert comps.get(("", "DOC-STAMP", "")) == "2026-06-18"
+
+
+def test_stamp_is_version_aware(kb_env, monkeypatch):
+    # если разметка идёт под конкретной версией (bound) — день фиксируется ПОД ней,
+    # а не в безверсионном бакете (иначе новая версия наследовала бы день старой)
+    kb, sched, _ = kb_env
+    import backend.app.services.common.version_service as version_service
+    monkeypatch.setattr(version_service, "get_bound_version_id", lambda: "v3")
+    kb.save_expert_review("DOC-STAMP", [
+        ExpertDecision(item_id="F-1", item_type="finding", decision="accepted",
+                       timestamp="2026-07-04T07:00:00Z"),
+        ExpertDecision(item_id="OPT-1", item_type="optimization", decision="rejected",
+                       timestamp="2026-07-04T08:00:00Z"),
+    ], reviewer="Кульдяев Ф. С.")
+    comps = sched.load_schedule_completions()
+    assert comps.get(("", "DOC-STAMP", "v3")) == "2026-07-04"
+    assert ("", "DOC-STAMP", "") not in comps  # не в безверсионном бакете
 
 
 def test_no_optimization_items_completes_on_findings_only(kb_env):
@@ -108,4 +125,4 @@ def test_no_optimization_items_completes_on_findings_only(kb_env):
                        timestamp="2026-06-19T07:00:00Z"),
     ], reviewer="Узун А. И.")
     comps = sched.load_schedule_completions()
-    assert comps.get(("", "DOC-STAMP")) == "2026-06-19"
+    assert comps.get(("", "DOC-STAMP", "")) == "2026-06-19"

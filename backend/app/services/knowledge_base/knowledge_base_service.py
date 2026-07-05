@@ -519,6 +519,11 @@ def _stamp_schedule_completion_if_complete(project_id: str, reviewer: str) -> No
             source_project=project_id,
             date=comp_day,
             reviewer=reviewer,
+            # Version-aware: фиксируем день завершения ПОД версией, размеченной
+            # в этот момент (bound-контекст = та же версия, что в
+            # current_version_id записей лога). Иначе новая версия наследовала
+            # бы замороженный день старой и «пропадала» из текущей недели.
+            version_id=version_service.get_bound_version_id() or "",
         )
     except Exception:
         import logging

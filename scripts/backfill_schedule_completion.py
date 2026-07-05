@@ -70,11 +70,15 @@ def main() -> int:
         print(f"WARN: {warning}")
     groups = _collect_groups(entries)
     existing = sched.load_schedule_completions()
+    # Ключ стора стал version-aware (obj, proj, ver); этот backfill версионно-
+    # нейтрален (стампит без версии), поэтому «уже заморожено» проверяем по паре
+    # (obj, proj) в ЛЮБОМ версионном бакете.
+    existing_pairs = {(o, p) for (o, p, _v) in existing}
 
     to_stamp: list[tuple[str, str, str, str]] = []
     skipped_incomplete = 0
     for (obj, proj), g in sorted(groups.items()):
-        if (obj, proj) in existing:
+        if (obj, proj) in existing_pairs:
             continue  # уже заморожен — не трогаем
         try:
             complete = kb._project_completion_day(proj) is not None

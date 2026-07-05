@@ -46,10 +46,11 @@ from backend.app.core.config import DECISIONS_LOG_FILE, KNOWLEDGE_BASE_DIR
 DECISIONS_LOG_FILE = DECISIONS_LOG_FILE
 # План работ по инженерам на период (week/month) — редактируется админом.
 WORK_PLANS_FILE = KNOWLEDGE_BASE_DIR / "work_plans.json"
-# Замороженный «день завершения» проекта для графика. Ставится ОДИН раз, когда
-# эксперт разметил ВСЕ замечания и ВСЕ оптимизации проекта, и больше не меняется
-# при последующих правках. Ключ — (object_id, source_project), значение —
-# YYYY-MM-DD. Пишется из knowledge_base_service.save_expert_review.
+# Замороженный «день завершения» ВЕРСИИ проекта для графика. Ставится ОДИН раз,
+# когда эксперт разметил ВСЕ замечания и ВСЕ оптимизации версии, и больше не
+# меняется при последующих правках. Ключ version-aware —
+# (object_id, source_project, version_id), значение — YYYY-MM-DD. Разные версии
+# фиксируются независимо. Пишется из knowledge_base_service.save_expert_review.
 SCHEDULE_COMPLETION_FILE = KNOWLEDGE_BASE_DIR / "schedule_completion.json"
 
 # Транслитерация кириллицы для стабильного engId из ФИО.
@@ -68,6 +69,18 @@ _SHORT_MAX = 32
 # записи (массовый импорт реестра заказчика и т.п.). В графике их не показываем.
 # Сравнение регистронезависимое.
 _SYSTEM_REVIEWERS = {"su10_registry"}
+
+
+def _norm_version(version_id) -> str:
+    """Нормализованный id версии для ключа заморозки завершения.
+
+    None / '' / 'none' → '' (безверсионный «легаси» бакет); иначе — lower-trim
+    (`'V3'`→`'v3'`). Применяется по ОБЕ стороны (запись стора и чтение
+    `current_version_id` из лога), чтобы легаси-записи без версии и новые
+    версионные не путались, а один и тот же id всегда давал один ключ.
+    """
+    v = (str(version_id).strip().lower() if version_id is not None else "")
+    return "" if v in ("", "none") else v
 
 
 def eng_slug(name: str) -> str:
@@ -148,20 +161,28 @@ def aggregate_events(
     from_day: str,
     to_day: str,
     object_id: Optional[str] = None,
-    completions: Optional[dict[tuple[str, str], str]] = None,
+    completions: Optional[dict] = None,
 ) -> list[dict]:
-    """Свести записи лога в события графика — ОДИН проект = ОДНО событие.
+    """Свести записи лога в события графика — ОДИН проект+версия = ОДНО событие.
 
-    Группировка по (engId, проект, объект): ВСЕ решения по одному проекту (и
-    замечания, и оптимизации, в любые дни) схлопываются в одно событие, чтобы
-    проект показывался строго одним днём.
+    Группировка по (engId, проект, объект, ВЕРСИЯ): решения по одной версии
+    проекта (и замечания, и оптимизации, в любые дни) схлопываются в одно
+    событие. Версия берётся из `current_version_id` записи (нормализуется
+    `_norm_version`); легаси-записи без версии образуют безверсионный бакет
+    (`''`). Разные версии одного проекта — РАЗНЫЕ события со своим днём, поэтому
+    свежий переаудит новой версии не «наследует» замороженный день старой.
 
     День события:
-      * если для (object_id, source_project) есть замороженный день завершения
-        в `completions` — берётся он (проставлен, когда разметка стала полной,
-        и не двигается при последующих правках);
-      * иначе — предварительный день: последняя активность по проекту
+      * если для (object_id, source_project, ВЕРСИЯ) есть замороженный день
+        завершения в `completions` — берётся он (проставлен, когда разметка
+        версии стала полной, и не двигается при последующих правках);
+      * иначе — предварительный день: последняя активность по версии проекта
         (максимальная дата среди решений).
+
+    Совместимость: `completions` может нести как version-aware ключ
+    `(obj, form, ver)`, так и легаси 2-tuple `(obj, form)`. Легаси-ключ
+    применяется ТОЛЬКО к безверсионной группе (`ver == ''`) — чтобы версионная
+    группа НЕ подхватила безверсионную заморозку прошлой версии.
 
     Диапазон [from_day, to_day] включительно применяется к ИТОГОВОМУ дню
     события (а не к каждому решению): проект попадает в период по своему
@@ -194,8 +215,9 @@ def aggregate_events(
         # Каноническое имя схлопывает формы `<name>` и `<SECTION>/<name>` в один
         # проект; section в ключе не даёт слиться разным дисциплинам.
         proj = canonical_project(raw_proj, section)
+        ver = _norm_version(e.get("current_version_id"))
         eid = eng_slug(reviewer)
-        gkey = (eid, section, proj, obj)
+        gkey = (eid, section, proj, obj, ver)
         g = groups.get(gkey)
         if g is None:
             g = {
@@ -206,6 +228,7 @@ def aggregate_events(
                 "source_project": proj,
                 "section": section,
                 "object_id": obj,
+                "version_id": ver,
                 "_days": [],
                 "_raw": set(),
             }
@@ -214,18 +237,23 @@ def aggregate_events(
         g["_raw"].add(raw_proj)
 
     events: list[dict] = []
-    for (eid, section, proj, obj), g in groups.items():
+    for (eid, section, proj, obj, ver), g in groups.items():
         # Заморозку ищем по ЛЮБОЙ форме source_project проекта: встреченные в
         # записях формы + каноническая `<name>` + префиксная `<section>/<name>`
-        # (стор мог зафиксировать форму, которой в этих записях уже нет). Берём
-        # самый ранний зафиксированный день.
+        # (стор мог зафиксировать форму, которой в этих записях уже нет). Ключ
+        # version-aware `(obj, form, ver)`; легаси 2-tuple `(obj, form)` берём
+        # только для безверсионной группы. Самый ранний зафиксированный день.
         candidate_forms = set(g["_raw"]) | {proj}
         if section:
             candidate_forms.add(f"{section}/{proj}")
-        frozen_days = [
-            d for form in candidate_forms
-            if (d := completions.get((obj, form))) and parse_day(d)
-        ]
+
+        def _frozen_for(form):
+            d = completions.get((obj, form, ver))
+            if not d and ver == "":
+                d = completions.get((obj, form))  # легаси-совместимость
+            return d if d and parse_day(d) else None
+
+        frozen_days = [d for form in candidate_forms if (d := _frozen_for(form))]
         date = min(frozen_days) if frozen_days else (max(g["_days"]) if g["_days"] else None)
         if not date:
             continue
@@ -408,11 +436,12 @@ def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) ->
 # ─────────────────────────────────────────────────────────────────────────────
 # Замороженный день завершения проекта (schedule_completion.json)
 #
-# Когда эксперт разметил ВСЕ замечания И ВСЕ оптимизации проекта, день
+# Когда эксперт разметил ВСЕ замечания И ВСЕ оптимизации версии проекта, день
 # завершения фиксируется здесь ОДИН раз. При последующих правках разметки день
-# НЕ меняется — проект остаётся в графике на дне завершения. Ключ —
-# (object_id, source_project). Стор производный (восстановим из лога), поэтому
-# при повреждении просто перезаписываем, без бэкап-плясок.
+# НЕ меняется — версия остаётся в графике на своём дне завершения. Ключ
+# version-aware — (object_id, source_project, version_id); разные версии одного
+# проекта фиксируются независимо. Стор производный (восстановим из лога),
+# поэтому при повреждении просто перезаписываем, без бэкап-плясок.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Отдельный лок (не делим с work_plans), чтобы PUT плана и штамп завершения не
@@ -420,14 +449,20 @@ def get_schedule(from_day: str, to_day: str, object_id: Optional[str] = None) ->
 _COMPLETION_LOCK = threading.Lock()
 
 
-def _completion_key(object_id, source_project) -> tuple[str, str]:
-    return ((object_id or "").strip(), (source_project or "").strip())
+def _completion_key(object_id, source_project, version_id="") -> tuple[str, str, str]:
+    return (
+        (object_id or "").strip(),
+        (source_project or "").strip(),
+        _norm_version(version_id),
+    )
 
 
-def load_schedule_completions() -> dict[tuple[str, str], str]:
-    """{(object_id, source_project): 'YYYY-MM-DD'}. Нет файла/битый → {}.
+def load_schedule_completions() -> dict[tuple[str, str, str], str]:
+    """{(object_id, source_project, version_id): 'YYYY-MM-DD'}. Нет файла/битый → {}.
 
-    Никогда не бросает: график не должен падать из-за производного стора.
+    Ключ version-aware: `version_id` берётся из записи (`_norm_version`;
+    отсутствует/пусто → `''` — безверсионный легаси-бакет). Никогда не бросает:
+    график не должен падать из-за производного стора.
     """
     if not SCHEDULE_COMPLETION_FILE.exists():
         return {}
@@ -438,28 +473,33 @@ def load_schedule_completions() -> dict[tuple[str, str], str]:
     items = data.get("completions") if isinstance(data, dict) else None
     if not isinstance(items, list):
         return {}
-    out: dict[tuple[str, str], str] = {}
+    out: dict[tuple[str, str, str], str] = {}
     for rec in items:
         if not isinstance(rec, dict):
             continue
         day = parse_day(rec.get("date"))
         if not day:
             continue
-        out[_completion_key(rec.get("object_id"), rec.get("source_project"))] = day
+        out[_completion_key(
+            rec.get("object_id"), rec.get("source_project"), rec.get("version_id")
+        )] = day
     return out
 
 
-def set_completion_once(*, object_id, source_project, date, reviewer: str = "") -> dict:
-    """Зафиксировать день завершения проекта ОДИН раз (идемпотентно).
+def set_completion_once(*, object_id, source_project, date, reviewer: str = "",
+                        version_id="") -> dict:
+    """Зафиксировать день завершения версии проекта ОДИН раз (идемпотентно).
 
-    Если для (object_id, source_project) запись уже есть — НЕ перезаписываем
-    (требование: день не меняется при правках). Возвращает
+    Ключ version-aware: (object_id, source_project, version_id). Если запись
+    для этого ключа уже есть — НЕ перезаписываем (требование: день не меняется
+    при правках), но РАЗНЫЕ версии одного проекта фиксируются независимо. Легаси
+    без version_id → безверсионный бакет (`''`). Возвращает
     {'date': YYYY-MM-DD|None, 'created': bool}. Read-modify-write под локом.
     """
     day = parse_day(date)
     if not day:
         return {"date": None, "created": False}
-    key = _completion_key(object_id, source_project)
+    key = _completion_key(object_id, source_project, version_id)
     with _COMPLETION_LOCK:
         items: list[dict] = []
         if SCHEDULE_COMPLETION_FILE.exists():
@@ -470,12 +510,15 @@ def set_completion_once(*, object_id, source_project, date, reviewer: str = "") 
             except (OSError, json.JSONDecodeError):
                 items = []  # битый стор перезапишем (он производный)
         for rec in items:
-            if _completion_key(rec.get("object_id"), rec.get("source_project")) == key:
+            if _completion_key(
+                rec.get("object_id"), rec.get("source_project"), rec.get("version_id")
+            ) == key:
                 return {"date": parse_day(rec.get("date")) or day, "created": False}
         now = datetime.now().isoformat(timespec="seconds")
         items.append({
             "object_id": key[0],
             "source_project": key[1],
+            "version_id": key[2],
             "date": day,
             "reviewer": reviewer or "",
             "set_at": now,
