@@ -749,7 +749,9 @@ async def get_block_llm_text(
                 pdf = version_dir / "document.pdf"
             if pdf.exists():
                 ph = (structured_graph or {}).get("panel") or "ВРУ"
-                singleline_graph = build_singleline_graph(pdf, vector_text, panel_hint=ph)
+                singleline_graph = build_singleline_graph(
+                    pdf, vector_text, panel_hint=ph, bbox_norm=rblock.get("coords_norm"),
+                    polygon_norm=rblock.get("polygon_points_norm"))
     except Exception:
         singleline_graph = None
 

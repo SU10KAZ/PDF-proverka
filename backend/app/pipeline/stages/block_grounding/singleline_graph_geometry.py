@@ -59,6 +59,131 @@ def _find_page_index(doc, vector_text: str) -> Optional[int]:
     return best if best_hits >= max(2, len(needles) // 2) else None
 
 
+def _bbox_clip_enabled() -> bool:
+    """Флаг VECTOGRAF_BBOX_CLIP_ENABLED (default ON). Лениво, fail-soft."""
+    try:
+        from backend.app.core import config as _cfg
+        return bool(getattr(_cfg, "VECTOGRAF_BBOX_CLIP_ENABLED", True))
+    except Exception:
+        return True
+
+
+def _polygon_text_only_enabled() -> bool:
+    """Флаг VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED (default ON). Лениво, fail-soft."""
+    try:
+        from backend.app.core import config as _cfg
+        return bool(getattr(_cfg, "VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED", True))
+    except Exception:
+        return True
+
+
+def _filter_text_lines_to_region(text, region_words, *, thr=0.6):
+    """Оставить в pdfplumber-тексте только строки, лежащие в области выделения блока — по
+    принадлежности токенов строки множеству region_words (уже клипнутых по полигону/bbox слов).
+
+    СОХРАНЯЕТ порядок строк pdfplumber (НЕ пересобирает: пересборка по Y рассыпает формулы фидеров
+    `код : Pуст - Kc - ... - I` и ломает структуризатор — проверено, 52→0 фидеров). Строка остаётся,
+    если ≥``thr`` её токенов встречаются среди region-слов; пустые/служебные строки сохраняются.
+    Примечания/ТТ в «вырезе» контура уходят (их токены не в полигоне), фидеры/расчёты (внутри) — нет.
+
+    fail-soft: нет текста/region_words, пул пуст или результат пуст → исходный текст.
+    """
+    if not text or not region_words:
+        return text
+    pool = collections.Counter(str(w[4]) for w in region_words
+                               if len(w) >= 5 and str(w[4]).strip())
+    if not pool:
+        return text
+    kept = []
+    for line in text.split("\n"):
+        toks = [t for t in line.split() if t.strip()]
+        if not toks:
+            kept.append(line)
+            continue
+        hit = sum(1 for t in toks if pool.get(t, 0) > 0)
+        if hit / len(toks) >= thr:
+            kept.append(line)
+    result = "\n".join(kept)
+    return result if result.strip() else text
+
+
+def _clip_words_to_bbox(words, bbox_norm, page_w, page_h, *, margin=0.01):
+    """Оставить только слова, чей ЦЕНТР попадает в область выделения блока (coords_norm,
+    page-normalized [x0,y0,x1,y1]). Защищает геометрию Вектографа от чужого текста листа
+    (соседняя схема / таблица / штамп), который ``get_text("words")`` отдаёт со ВСЕЙ страницы.
+
+    fail-soft: bbox нет/битый, страница без размеров, или клип оставил <3 слов при многословном
+    листе (bbox в чужой системе координат / слишком тесный) → возвращаем ВСЕ слова (как раньше).
+    """
+    if not bbox_norm or len(bbox_norm) < 4 or not page_w or not page_h:
+        return words
+    try:
+        x0, y0, x1, y1 = (float(bbox_norm[0]), float(bbox_norm[1]),
+                          float(bbox_norm[2]), float(bbox_norm[3]))
+    except (TypeError, ValueError):
+        return words
+    if not (x1 > x0 and y1 > y0):
+        return words
+    x0 -= margin; y0 -= margin; x1 += margin; y1 += margin
+    kept = []
+    for w in words:
+        try:
+            cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
+            cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
+        except (TypeError, ValueError, ZeroDivisionError):
+            return words
+        if x0 <= cx <= x1 and y0 <= cy <= y1:
+            kept.append(w)
+    if len(kept) < 3 and len(words) >= 10:
+        return words
+    return kept
+
+
+def _point_in_polygon(x, y, poly) -> bool:
+    """Точка (x, y) внутри полигона (список (x, y)-вершин). Ray casting (even-odd)."""
+    n = len(poly)
+    inside = False
+    j = n - 1
+    for i in range(n):
+        xi, yi = poly[i]
+        xj, yj = poly[j]
+        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / ((yj - yi) or 1e-12) + xi):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _clip_words_to_polygon(words, polygon_norm, page_w, page_h):
+    """Оставить только слова, чей ЦЕНТР попадает в ПОЛИГОН выделения блока (polygon_points_norm,
+    page-normalized список [x, y]-вершин). Точнее прямоугольника: у полигональных блоков (L/ступень)
+    осевой bbox захватывает чужой контент в «вырезах» контура — полигон его отсекает
+    (замер ВРУ-2.1: −550 слов таблицы ТТ вне контура при сохранении всех 70 QF схемы).
+
+    fail-soft: полигон битый (<3 вершин), страница без размеров, или клип оставил <3 слов при
+    многословном листе → возвращаем ВСЕ слова (как без клипа).
+    """
+    if not polygon_norm or len(polygon_norm) < 3 or not page_w or not page_h:
+        return words
+    try:
+        poly = [(float(p[0]), float(p[1])) for p in polygon_norm if len(p) >= 2]
+    except (TypeError, ValueError, IndexError):
+        return words
+    if len(poly) < 3:
+        return words
+    kept = []
+    for w in words:
+        try:
+            cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
+            cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
+        except (TypeError, ValueError, ZeroDivisionError):
+            return words
+        if _point_in_polygon(cx, cy, poly):
+            kept.append(w)
+    if len(kept) < 3 and len(words) >= 10:
+        return words
+    return kept
+
+
 def _convex_hull(points):
     """Выпуклая оболочка (monotone chain). Плотно облегает точки, без самопересечений."""
     pts = sorted(set((round(x, 2), round(y, 2)) for x, y in points))
@@ -1132,8 +1257,17 @@ def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
     return found.pop() if len(found) == 1 else None
 
 
-def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ") -> Optional[dict]:
-    """Построить граф однолинейной схемы. None — если не feeder-схема / нет геометрии."""
+def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
+                           bbox_norm: Optional[list] = None,
+                           polygon_norm: Optional[list] = None) -> Optional[dict]:
+    """Построить граф однолинейной схемы. None — если не feeder-схема / нет геометрии.
+
+    Геометрия строится ТОЛЬКО по словам внутри области выделения блока (если включён
+    VECTOGRAF_BBOX_CLIP_ENABLED), чтобы чужой текст листа не протекал в топологию:
+    - ``polygon_norm`` (polygon_points_norm блока — список [x,y]-вершин) → point-in-polygon,
+      точный контур (предпочтительно для полигональных блоков);
+    - иначе ``bbox_norm`` (coords_norm [x0,y0,x1,y1]) → осевой прямоугольник.
+    """
     base = structure_singleline_text(vector_text)
     if not base or base.get("feeder_total", 0) < 3:
         return None
@@ -1150,12 +1284,34 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             return None
         pg = doc[pidx]
         words = pg.get_text("words")
-        # Текст-разделы (питание, панели-расчёты, связи, служебные элементы, ТТ, примечания,
-        # заголовок) берём из текста САМОГО БЛОКА (vector_text = pdfplumber по кропу блока), а не из
-        # всей страницы: описание блока должно опираться только на его собственный текст. Остальной
-        # текст листа подаётся в LLM отдельно. Геометрия (words с координатами) — из fitz, т.к. в
-        # строке vector_text координат нет. Фолбэк на полный текст страницы, если блок-текст пуст.
-        page_full_text = vector_text or pg.get_text()
+        # Геометрию (words с координатами) режем по области выделения блока (bbox_norm), чтобы
+        # чужой текст листа — соседняя схема / таблица / штамп — НЕ протекал в топологию. Раньше
+        # брали слова со ВСЕЙ страницы (координат в vector_text нет). Полигон точнее прямоугольника
+        # (отсекает чужой контент в «вырезах» контура). fail-soft: без области или при подозрительном
+        # клипе — весь лист (прежнее поведение).
+        page_full_text = vector_text
+        if _bbox_clip_enabled():
+            _pw, _ph = float(pg.rect.width), float(pg.rect.height)
+            if polygon_norm:
+                words = _clip_words_to_polygon(words, polygon_norm, _pw, _ph)
+            elif bbox_norm:
+                words = _clip_words_to_bbox(words, bbox_norm, _pw, _ph)
+            # Правило «вектограф = только текст внутри полигона»: ограничиваем и ТЕКСТ-разделы, не
+            # только геометрию. Фильтруем строки vector_text по принадлежности области блока
+            # (VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED). Примечания/ТТ в «вырезе» контура уходят (у них
+            # СВОИ text-блоки + MD → Stage 01, не теряются), фидеры и расчёты панелей (внутри контура)
+            # остаются; фидеры ПЕРЕ-ПАРСИМ из отфильтрованного текста. fail-soft: если фильтр рушит
+            # фидеры (<3) — оставляем исходный текст/base (прежнее поведение).
+            if (polygon_norm or bbox_norm) and _polygon_text_only_enabled():
+                region_text = _filter_text_lines_to_region(vector_text, words)
+                _base2 = structure_singleline_text(region_text)
+                if _base2 and _base2.get("feeder_total", 0) >= 3:
+                    base = _base2
+                    params = {f["circuit_code"]: f for s in base["bus_sections"] for f in s["feeders"]}
+                    page_full_text = region_text
+        # Текст-разделы (питание, панели-расчёты, связи, служебные элементы, ТТ, примечания, заголовок)
+        # берём из текста блока (полигон-отфильтрованного, если правило включено). Фолбэк — весь лист.
+        page_full_text = page_full_text or pg.get_text()
         page_w, page_h = float(pg.rect.width), float(pg.rect.height)
     except Exception:
         return None
@@ -1964,7 +2120,9 @@ _STAGE02_TASK = ("## Задача:\nПосмотри на изображение
 
 
 def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
-                            rich: bool = False, block_id: str = "", page=None) -> Optional[str]:
+                            rich: bool = False, block_id: str = "", page=None,
+                            bbox_norm: Optional[list] = None,
+                            polygon_norm: Optional[list] = None) -> Optional[str]:
     """Собрать user_text Stage 02 для СХЕМНОГО блока. None — если блок не однолинейная схема.
 
     ЕДИНЫЙ вариант — гибрид `render_graph_for_prompt` (курируемый: ввод+ТТ без
@@ -1976,7 +2134,8 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
     вызывающий падает на штатный fallback (enrichment+page_text). Слабый граф хуже,
     чем честный «нет графа».
     """
-    graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint)
+    graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint,
+                                   bbox_norm=bbox_norm, polygon_norm=polygon_norm)
     if not graph:
         return None
     if not evaluate_vectograf_gate(graph)["use"]:
@@ -1987,7 +2146,9 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
 
 @functools.lru_cache(maxsize=8)
 def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
-    """block_id → pdfplumber_text из result.json (кэш по пути+mtime, чтобы не читать 2МБ на блок)."""
+    """block_id → {"text": pdfplumber_text, "bbox_norm": coords_norm|None} из result.json
+    (кэш по пути+mtime, чтобы не читать 2МБ на блок). bbox_norm нужен для клипа геометрии
+    Вектографа по области выделения блока (см. ``_clip_words_to_bbox``)."""
     try:
         rj = json.loads(Path(rp_str).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -1997,7 +2158,11 @@ def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
         for b in (pg.get("blocks") or []):
             bid = str(b.get("id") or b.get("block_id") or "")
             if bid:
-                idx[bid] = b.get("pdfplumber_text") or ""
+                cn = b.get("coords_norm")
+                pn = b.get("polygon_points_norm")
+                idx[bid] = {"text": b.get("pdfplumber_text") or "",
+                            "bbox_norm": list(cn) if isinstance(cn, (list, tuple)) and len(cn) >= 4 else None,
+                            "polygon_norm": list(pn) if isinstance(pn, (list, tuple)) and len(pn) >= 3 else None}
     return idx
 
 
@@ -2057,7 +2222,8 @@ def vectograf_gate_for_block(version_dir, block_id: str, *, panel_hint: str = "�
         if not rp.exists():
             return evaluate_vectograf_gate(None), None
         idx = _result_blocks_vector_index(str(rp), rp.stat().st_mtime)
-        vector_text = idx.get(str(block_id)) or ""
+        entry = idx.get(str(block_id)) or {}
+        vector_text = entry.get("text") or ""
         if not vector_text or len(vector_text) < 30:
             return evaluate_vectograf_gate(None), None
         pdf = vd / "02_work" / "document.pdf"
@@ -2065,7 +2231,9 @@ def vectograf_gate_for_block(version_dir, block_id: str, *, panel_hint: str = "�
             pdf = vd / "document.pdf"
         if not pdf.exists():
             return evaluate_vectograf_gate(None), None
-        graph = build_singleline_graph(pdf, vector_text, panel_hint=panel_hint)
+        graph = build_singleline_graph(pdf, vector_text, panel_hint=panel_hint,
+                                       bbox_norm=entry.get("bbox_norm"),
+                                       polygon_norm=entry.get("polygon_norm"))
         return evaluate_vectograf_gate(graph), graph
     except Exception:
         return {"use": False, "reasons": ["исключение при построении графа"],
@@ -2086,7 +2254,8 @@ def resolve_singleline_prompt(version_dir, block_id: str, page, *, rich: bool) -
         idx = _result_blocks_vector_index(str(rp), rp.stat().st_mtime)
     except OSError:
         return None
-    vector_text = idx.get(str(block_id)) or ""
+    entry = idx.get(str(block_id)) or {}
+    vector_text = entry.get("text") or ""
     if not vector_text or len(vector_text) < 30:
         return None
     pdf = vd / "02_work" / "document.pdf"
@@ -2094,4 +2263,6 @@ def resolve_singleline_prompt(version_dir, block_id: str, page, *, rich: bool) -
         pdf = vd / "document.pdf"
     if not pdf.exists():
         return None
-    return build_singleline_prompt(pdf, vector_text, rich=rich, block_id=str(block_id), page=page)
+    return build_singleline_prompt(pdf, vector_text, rich=rich, block_id=str(block_id), page=page,
+                                   bbox_norm=entry.get("bbox_norm"),
+                                   polygon_norm=entry.get("polygon_norm"))
