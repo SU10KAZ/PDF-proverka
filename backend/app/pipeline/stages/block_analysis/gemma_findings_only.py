@@ -482,6 +482,23 @@ async def call_gpt_for_block(
     except Exception:
         pass
 
+    # ─── OCR-ПОДМЕНА («зеркало»): чистый вектор-текст блока как приоритетный источник ЧИСЕЛ ──
+    # Аддитивно к user_text (не удаляет enrichment). Бьёт по «нейронка не так прочитала графику»
+    # (замер: OCR путает 3х1.5→3x15, вектор-слой — нет). Флаг MIRROR_OCR_ENABLED (default OFF →
+    # прод не меняется). Меняет user_text ДО cache_key. fail-soft. Скан без слоя → None → no-op.
+    try:
+        from backend.app.core import config as _mcfg
+        if getattr(_mcfg, "MIRROR_OCR_ENABLED", False) and output_dir is not None:
+            from backend.app.pipeline.stages.block_grounding.mirror_block_text import (
+                resolve_mirror_block_text as _resolve_mirror,
+                inject_mirror_text as _inject_mirror,
+            )
+            _vtext = _resolve_mirror(Path(output_dir).parent, block.get("block_id", ""))
+            if _vtext:
+                user_text = _inject_mirror(user_text, _vtext)
+    except Exception:
+        pass
+
     # ─── Paid response cache check (до guard и до сети) ────────────
     # Если этот блок с этим model/prompt/image уже отвечал — берём из
     # cache, никаких paid_event и денег. Спасает в инциденте 2026-05-16,

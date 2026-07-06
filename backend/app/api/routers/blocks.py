@@ -797,6 +797,21 @@ async def get_block_llm_text(
                         f["polygons"] = [[[round((px - cn[0]) / bw, 5), round((py - cn[1]) / bh, 5)]
                                           for px, py in poly] for poly in pps]
 
+    # OCR-подмена («зеркало»): добавить чистый вектор-текст блока в промпт как приоритетный
+    # источник ЧИСЕЛ. Флаг MIRROR_OCR_ENABLED (default OFF). Тем же inject_mirror_text, что
+    # call_gpt_for_block — чтобы превью совпадало с реальным Stage 02. fail-soft.
+    try:
+        from backend.app.core import config as _mcfg
+        if getattr(_mcfg, "MIRROR_OCR_ENABLED", False) and vector_text and len(vector_text.strip()) >= 40:
+            from backend.app.pipeline.stages.block_grounding.mirror_block_text import (
+                inject_mirror_text as _inject_mirror,
+            )
+            user_text = _inject_mirror(user_text, vector_text.strip())
+            if stage02_prompt_mode == "base":
+                stage02_prompt_mode = "mirror_ocr"
+    except Exception:
+        pass
+
     # Дедуп соседних текст-блоков: какие text-блоки той же страницы УЖЕ есть в текст-слое блока
     # (не слать повторно в LLM) и какие уникальны. Аддитивно, разметку/промпт не меняет. fail-soft.
     neighbor_text_blocks = None
