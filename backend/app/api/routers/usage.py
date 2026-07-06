@@ -208,6 +208,22 @@ async def get_paid_api_status():
     return status_snapshot()
 
 
+@router.get("/subscription-by-person")
+async def get_subscription_by_person(days: int = 7):
+    """Расход подписки Claude по инженерам за последние N дней.
+
+    Группирует JSONL Claude Code по папкам проектов → инженер
+    (Репников/Гривапш/Кульдяев/Калинина/Узун). Людмила исключена.
+    Токены — точные, стоимость — оценка по прайсу Claude.
+    """
+    import asyncio
+    from backend.app.services.common.usage_service import scan_subscription_by_person
+    days = max(1, min(int(days), 60))
+    # Сканирование JSONL — блокирующее I/O; уводим в поток, чтобы не
+    # подвешивать event loop (иначе вотчдог может убить бэкенд).
+    return await asyncio.to_thread(scan_subscription_by_person, days)
+
+
 @router.get("/config")
 async def get_limits():
     """Текущие лимиты и настройки."""

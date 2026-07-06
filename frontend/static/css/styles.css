@@ -4353,3 +4353,43 @@ tr.row-rejected td.sc-cell-goto {
 .ev-val-border  { background: #fff3cd; color: #856404; }
 .ev-val-human   { background: #d1ecf1; color: #0c5460; }
 .ev-val-na      { color: #aaa; font-size: 12px; }
+
+/* ── Расход подписки по инженерам (модалка) ───────────────────── */
+.sub-spend-modal { max-width: 760px; width: 100%; }
+.sub-spend-controls {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.sub-spend-controls__label { color: var(--text-muted); font-size: 13px; }
+.sub-spend-controls__plan  { margin-left: auto; color: var(--text3); font-size: 12px; }
+.sub-spend-empty { padding: 28px; text-align: center; color: var(--text-muted); }
+.sub-spend-tablewrap { overflow-x: auto; }
+.sub-spend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sub-spend-table th, .sub-spend-table td {
+  padding: 8px 10px; text-align: right; white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.sub-spend-table th {
+  color: var(--text-muted); font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: .03em;
+}
+.sub-spend-table td.sub-spend-name, .sub-spend-table th.sub-spend-name {
+  text-align: left; position: sticky; left: 0; background: var(--card-bg);
+}
+.sub-spend-table td.sub-spend-name { display: flex; align-items: center; gap: 8px; }
+.sub-spend-table tbody tr:hover td { background: var(--card2-bg); }
+.sub-spend-table tbody tr:hover td.sub-spend-name { background: var(--card2-bg); }
+.sub-spend-ava {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 10px; font-weight: 700;
+}
+.sub-spend-total { font-weight: 700; color: var(--text); }
+.sub-spend-zero  { color: var(--text3); }
+.sub-spend-tok   { font-weight: 700; color: var(--text); line-height: 1.25; }
+.sub-spend-usd   { font-size: 11px; color: var(--text-muted); line-height: 1.2; }
+.sub-spend-table tfoot td {
+  border-top: 2px solid var(--border2); border-bottom: none;
+  font-weight: 700; color: var(--text);
+}
+.sub-spend-table tfoot td.sub-spend-name { color: var(--text); }
+.sub-spend-note { margin-top: 12px; color: var(--text-muted); font-size: 12px; line-height: 1.5; }

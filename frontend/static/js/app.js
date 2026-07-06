@@ -9286,6 +9286,52 @@ const app = createApp({
             return !!u && u.role === 'admin';
         });
 
+        // ── Расход подписки Claude по инженерам (модалка) ──────────
+        const subSpendOpen = ref(false);
+        const subSpendLoading = ref(false);
+        const subSpendData = ref(null);
+        const _SUB_SPEND_COLORS = {
+            uzun: '#8b5cf6', repnikov: '#ec4899', grivapsch: '#f472b6',
+            kuldiaev: '#22c55e', kalinina: '#f59e0b',
+        };
+        const _SUB_SPEND_WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        function subSpendColor(id) { return _SUB_SPEND_COLORS[id] || '#94a3b8'; }
+        function subSpendInitials(name) {
+            const parts = String(name || '').split(/\s+/).filter(Boolean);
+            return parts.slice(0, 2).map(s => s[0]).join('').toUpperCase();
+        }
+        function subSpendDayLabel(iso) {
+            const p = String(iso || '').split('-').map(Number);
+            if (p.length !== 3) return iso;
+            const wd = _SUB_SPEND_WD[new Date(p[0], p[1] - 1, p[2]).getDay()];
+            return `${wd} ${String(p[2]).padStart(2, '0')}.${String(p[1]).padStart(2, '0')}`;
+        }
+        function subSpendTok(n) {
+            n = Number(n) || 0;
+            if (n >= 1e9) return (n / 1e9).toFixed(n >= 1e10 ? 0 : 1) + ' млрд';
+            if (n >= 1e6) return Math.round(n / 1e6) + 'М';
+            if (n >= 1e3) return Math.round(n / 1e3) + 'К';
+            return String(n);
+        }
+        const subSpendWeekText = computed(() => {
+            const d = subSpendData.value;
+            if (!d || !d.week_start_date) return '';
+            const [y, m, day] = d.week_start_date.split('-');
+            return `с пятницы ${day}.${m} ${d.week_start_time || '09:00'} (сброс лимитов)`;
+        });
+        async function subSpendLoad() {
+            subSpendLoading.value = true;
+            try {
+                const resp = await fetch('/api/usage/subscription-by-person');
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                subSpendData.value = await resp.json();
+            } catch (e) {
+                subSpendData.value = null;
+            } finally {
+                subSpendLoading.value = false;
+            }
+        }
+
         function schedPlanFor(engId) {
             const v = schedPlanMap.value[engId];
             return (typeof v === 'number') ? v : (_SCHED_DEFAULT_PLAN[schedMode.value] || 0);
@@ -17039,6 +17085,9 @@ const app = createApp({
             // План работ (backend work_plans.json, admin-gated)
             schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
             schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
+            // Расход подписки по инженерам
+            subSpendOpen, subSpendLoading, subSpendData, subSpendWeekText,
+            subSpendLoad, subSpendColor, subSpendInitials, subSpendDayLabel, subSpendTok,
             // State
             currentView, currentProject, currentProjectId, projectLoading, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,

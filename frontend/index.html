@@ -2452,7 +2452,83 @@
                                 <button class="btn btn-sm btn-primary" :disabled="schedPlanSaving" @click="schedSavePlans">{{ schedPlanSaving ? 'Сохранение…' : '✓ Сохранить' }}</button>
                                 <button class="btn btn-sm btn-outline" :disabled="schedPlanSaving" @click="schedCancelPlanEdit">Отмена</button>
                             </template>
+                            <button class="btn btn-sm btn-outline" @click="subSpendOpen = true; subSpendLoad()"
+                                    title="Расход подписки Claude по инженерам">💳 Расход подписки</button>
                         </template>
+                    </div>
+                </div>
+
+                <!-- Модалка: расход подписки Claude по инженерам -->
+                <div v-if="subSpendOpen" class="modal-overlay" @click.self="subSpendOpen = false">
+                    <div class="modal-content sub-spend-modal" @click.stop>
+                        <div class="modal-header">
+                            <h3 style="margin:0;">💳 Расход подписки по инженерам</h3>
+                            <button class="modal-close" @click="subSpendOpen = false">&times;</button>
+                        </div>
+                        <div class="modal-body" style="padding:16px 20px;">
+                            <div class="sub-spend-controls">
+                                <span class="sub-spend-controls__label">
+                                    📅 Текущая неделя<template v-if="subSpendWeekText"> — {{ subSpendWeekText }}</template>
+                                </span>
+                                <button class="btn btn-sm btn-outline" @click="subSpendLoad()" title="Обновить">⟳</button>
+                                <span class="sub-spend-controls__plan">Claude Max 20x · сброс пт 09:00 MSK · оценка $</span>
+                            </div>
+                            <div v-if="subSpendLoading" class="sub-spend-empty">Загрузка…</div>
+                            <div v-else-if="!subSpendData || !subSpendData.people.length" class="sub-spend-empty">
+                                Нет данных за период
+                            </div>
+                            <div v-else class="sub-spend-tablewrap">
+                                <table class="sub-spend-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="sub-spend-name">Инженер</th>
+                                            <th v-for="d in subSpendData.days" :key="'h'+d">{{ subSpendDayLabel(d) }}</th>
+                                            <th class="sub-spend-total">Итого</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="p in subSpendData.people" :key="p.id">
+                                            <td class="sub-spend-name">
+                                                <span class="sub-spend-ava" :style="{background: subSpendColor(p.id)}">{{ subSpendInitials(p.name) }}</span>
+                                                <span>{{ p.name }}</span>
+                                            </td>
+                                            <td v-for="d in subSpendData.days" :key="p.id+d"
+                                                :class="{'sub-spend-zero': !p.by_day[d].cost}">
+                                                <template v-if="p.by_day[d].cost">
+                                                    <div class="sub-spend-tok">{{ subSpendTok(p.by_day[d].tokens) }}</div>
+                                                    <div class="sub-spend-usd">${{ Math.round(p.by_day[d].cost) }}</div>
+                                                </template>
+                                                <template v-else>—</template>
+                                            </td>
+                                            <td class="sub-spend-total">
+                                                <div class="sub-spend-tok">{{ subSpendTok(p.total_tokens) }}</div>
+                                                <div class="sub-spend-usd">${{ Math.round(p.total_cost) }}</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td class="sub-spend-name">ВСЕГО</td>
+                                            <td v-for="d in subSpendData.days" :key="'t'+d">
+                                                <div class="sub-spend-tok">{{ subSpendTok(subSpendData.totals.by_day[d].tokens) }}</div>
+                                                <div class="sub-spend-usd">${{ Math.round(subSpendData.totals.by_day[d].cost) }}</div>
+                                            </td>
+                                            <td class="sub-spend-total">
+                                                <div class="sub-spend-tok">{{ subSpendTok(subSpendData.totals.tokens) }}</div>
+                                                <div class="sub-spend-usd">${{ Math.round(subSpendData.totals.cost) }}</div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="sub-spend-note">
+                                    Всего за период: <b>${{ Math.round(subSpendData.totals.cost) }}</b> ·
+                                    {{ subSpendTok(subSpendData.totals.tokens) }} токенов.
+                                    <b>Токены</b> — только вход+выход (реальная работа модели, без кэша).
+                                    <b>$</b> — полная оценка по прайсу Claude, включая чтение/запись кэша.
+                                    Одна подписка Max 20x; Людмила исключена.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

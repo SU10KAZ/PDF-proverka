@@ -1228,6 +1228,187 @@ class PaidCostTracker:
             )
 
 
+# ══════════════════════════════════════════════════════════════
+# Расход подписки по инженерам (группировка JSONL по папкам проектов)
+# ══════════════════════════════════════════════════════════════
+
+# Прайс Claude, USD за 1M токенов: (input, output, cache_write, cache_read).
+# cache_write = 1.25× input (5-мин TTL), cache_read = 0.1× input.
+# Актуальные тарифы (Opus 4.8 = $5/$25, НЕ старые $15/$75 от Opus 3!).
+# Стоимость — оценка (подписка Max платится фиксировано); нужна лишь для
+# сравнения «кто больше нагрузил».
+_SUBSCRIPTION_PRICE = {
+    "opus":   (5.0, 25.0, 6.25, 0.50),   # claude-opus-4-8 / 4-7 / 4-6
+    "sonnet": (3.0, 15.0, 3.75, 0.30),   # claude-sonnet-4-6 / 5
+    "haiku":  (1.0, 5.0, 1.25, 0.10),    # claude-haiku-4-5
+    "fable":  (10.0, 50.0, 12.50, 1.00), # claude-fable-5
+}
+
+
+def _subscription_price(model_id: str):
+    m = (model_id or "").lower()
+    for key, price in _SUBSCRIPTION_PRICE.items():
+        if key in m:
+            return price
+    return _SUBSCRIPTION_PRICE["sonnet"]
+
+
+def _subscription_person(dirname: str):
+    """Папка транскрипта (~/.claude/projects/<dir>) → (id, ФИО) инженера.
+
+    Людмила (-home-coder-Uzun) и всё прочее намеренно не показываются.
+    """
+    d = dirname or ""
+    if "OSA-Repnikov" in d:
+        return ("repnikov", "Репников И. А.")
+    if "OSA-Grivapsch" in d:
+        return ("grivapsch", "Гривапш А. А.")
+    if "OSA-Kuldiaev" in d:
+        return ("kuldiaev", "Кульдяев Ф. С.")
+    if "OSA-Alexandra" in d:            # Александра Калинина
+        return ("kalinina", "Калинина А.")
+    if "projects-PDF-proverka" in d or "AuditManager" in d:
+        return ("uzun", "Узун")
+    return None
+
+
+def scan_subscription_by_person(days: int = 7) -> dict:
+    """Расход подписки Claude по инженерам за ТЕКУЩУЮ недельную квоту.
+
+    Окно = от последнего еженедельного сброса лимитов (по умолчанию пятница
+    06:00 UTC = 09:00 MSK) до сейчас. Дни-колонки — это 24-часовые бакеты,
+    отсчитанные от момента сброса (день 0 = пятница с 09:00 MSK), поэтому
+    таблица всегда начинается с пятницы.
+
+    Токены считаются точно (из поля usage), стоимость — оценка по прайсу
+    Claude. Людмила исключена по требованию. Параметр `days` игнорируется —
+    окно определяется недельным сбросом.
+    """
+    now_utc = datetime.now(timezone.utc)
+    reset_weekday = getattr(global_scanner, "weekly_reset_weekday", 4)
+    reset_hour = getattr(global_scanner, "weekly_reset_hour_utc", 6)
+    week_start = _prev_weekly_reset(now_utc, reset_weekday, reset_hour)
+
+    # Сколько суток прошло с момента сброса (0..6) — столько колонок и покажем.
+    elapsed = int((now_utc - week_start).total_seconds() // 86400)
+    n_days = max(1, min(elapsed + 1, 7))
+
+    # Локальная дата, на которую приходится начало каждого 24-часового бакета.
+    start_local_date = week_start.astimezone().date()
+    day_keys = [(start_local_date + timedelta(days=i)).isoformat() for i in range(n_days)]
+
+    # mtime-отсечка: файлы, менявшиеся с начала недели (−сутки запаса).
+    cutoff = (week_start - timedelta(days=1)).timestamp()
+
+    people: dict[str, dict] = {}
+
+    def _get_person(pid: str, name: str) -> dict:
+        p = people.get(pid)
+        if p is None:
+            p = {
+                "id": pid, "name": name,
+                "by_day": {d: {"tokens": 0, "cost": 0.0} for d in day_keys},
+                "total_tokens": 0, "total_cost": 0.0,
+            }
+            people[pid] = p
+        return p
+
+    if CLAUDE_SESSIONS_DIR.exists():
+        for project_dir in CLAUDE_SESSIONS_DIR.iterdir():
+            if not project_dir.is_dir():
+                continue
+            person = _subscription_person(project_dir.name)
+            if person is None:
+                continue
+            pid, pname = person
+            for fpath in project_dir.glob("*.jsonl"):
+                try:
+                    if os.path.getmtime(fpath) < cutoff:
+                        continue
+                except OSError:
+                    continue
+                try:
+                    with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                        for line in f:
+                            if '"usage"' not in line:
+                                continue
+                            line = line.strip()
+                            if not line:
+                                continue
+                            try:
+                                obj = json.loads(line)
+                            except json.JSONDecodeError:
+                                continue
+                            if obj.get("type") != "assistant":
+                                continue
+                            msg = obj.get("message", {})
+                            if not isinstance(msg, dict):
+                                continue
+                            usage = msg.get("usage")
+                            if not usage:
+                                continue
+                            ts_str = obj.get("timestamp", "")
+                            if not ts_str:
+                                continue
+                            try:
+                                ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                                if ts.tzinfo is None:
+                                    ts = ts.replace(tzinfo=timezone.utc)
+                            except (ValueError, TypeError):
+                                continue
+                            # Бакет = сколько полных суток прошло от сброса.
+                            idx = int((ts - week_start).total_seconds() // 86400)
+                            if idx < 0 or idx >= n_days:
+                                continue
+                            day = day_keys[idx]
+                            in_tok = usage.get("input_tokens", 0) or 0
+                            out_tok = usage.get("output_tokens", 0) or 0
+                            cache_r = usage.get("cache_read_input_tokens", 0) or 0
+                            cache_c = usage.get("cache_creation_input_tokens", 0) or 0
+                            pi, po, pcw, pcr = _subscription_price(msg.get("model", ""))
+                            # Стоимость — полная (все 4 категории по своим тарифам).
+                            cost = (in_tok * pi + out_tok * po
+                                    + cache_c * pcw + cache_r * pcr) / 1e6
+                            # Счётчик «токенов» — только реальная работа модели
+                            # (вход + выход), без кэша: так число понятно человеку.
+                            tot = in_tok + out_tok
+                            p = _get_person(pid, pname)
+                            cell = p["by_day"][day]
+                            cell["tokens"] += tot
+                            cell["cost"] += cost
+                            p["total_tokens"] += tot
+                            p["total_cost"] += cost
+                except OSError:
+                    continue
+
+    people_list = sorted(people.values(), key=lambda x: -x["total_cost"])
+    totals_by_day = {d: {"tokens": 0, "cost": 0.0} for d in day_keys}
+    g_tokens = 0
+    g_cost = 0.0
+    for p in people_list:
+        for d in day_keys:
+            totals_by_day[d]["tokens"] += p["by_day"][d]["tokens"]
+            totals_by_day[d]["cost"] += p["by_day"][d]["cost"]
+            p["by_day"][d]["cost"] = round(p["by_day"][d]["cost"], 2)
+        g_tokens += p["total_tokens"]
+        g_cost += p["total_cost"]
+        p["total_cost"] = round(p["total_cost"], 2)
+    for d in day_keys:
+        totals_by_day[d]["cost"] = round(totals_by_day[d]["cost"], 2)
+
+    week_start_local = week_start.astimezone()
+    return {
+        "days": day_keys,
+        "people": people_list,
+        "totals": {"by_day": totals_by_day, "tokens": g_tokens, "cost": round(g_cost, 2)},
+        "window_days": n_days,
+        "week_start": week_start_local.isoformat(timespec="minutes"),
+        "week_start_date": start_local_date.isoformat(),
+        "week_start_time": week_start_local.strftime("%H:%M"),
+        "plan": "Claude Max 20x",
+    }
+
+
 # Глобальные экземпляры
 usage_tracker = UsageTracker()
 global_scanner = GlobalUsageScanner()
