@@ -113,6 +113,22 @@ def _resolve_expert_review(version_dir: Path, output_dir: Path) -> Optional[Path
     return None
 
 
+def _resolve_discussions_dir(version_dir: Path, output_dir: Path) -> Optional[Path]:
+    """Найти папку обсуждений (история чатов по замечаниям).
+
+    discussion_service хранит их в СТАБИЛЬНОМ `<version_dir>/_output/discussions`,
+    а output_dir в projects_v2 указывает на `03_analysis/latest`, где их нет.
+    Проверяем оба варианта, возвращаем первый существующий, иначе None.
+    """
+    for cand in (
+        version_dir / "_output" / "discussions",
+        output_dir / "discussions",
+    ):
+        if cand.is_dir():
+            return cand
+    return None
+
+
 async def _download_audit_package_v2(project_id: str, version_id: Optional[str] = None):
     """projects_v2-primary ZIP export. READ-ONLY, no legacy fallback inside branch."""
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
@@ -175,8 +191,8 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
                 zf.write(str(index_file), "blocks/index.json")
                 break
 
-        disc_dir = output_dir / "discussions"
-        if disc_dir.exists():
+        disc_dir = _resolve_discussions_dir(version_dir, output_dir)
+        if disc_dir is not None:
             for disc_file in sorted(disc_dir.glob("*.json")):
                 zf.write(str(disc_file), f"discussions/{disc_file.name}")
 
@@ -297,8 +313,8 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
                 zf.write(str(index_file), "blocks/index.json")
 
         # --- История обсуждений ---
-        disc_dir = output_dir / "discussions"
-        if disc_dir.exists():
+        disc_dir = _resolve_discussions_dir(version_dir, output_dir)
+        if disc_dir is not None:
             for disc_file in sorted(disc_dir.glob("*.json")):
                 zf.write(str(disc_file), f"discussions/{disc_file.name}")
 
