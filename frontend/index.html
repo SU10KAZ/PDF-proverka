@@ -2042,7 +2042,7 @@
                         <span class="page-info">{{ findingsPage }} / {{ findingsTotalPages }} <span class="page-total">({{ sortedFindings.length }})</span></span>
                         <button class="btn-page" :disabled="findingsPage >= findingsTotalPages" @click="findingsPage++">&raquo;</button>
                     </div>
-                    <div v-else class="empty-state">
+                    <div v-if="!findingsData || !findingsData.total" class="empty-state">
                         Замечания не найдены. Аудит ещё не проводился.
                     </div>
                 </div>
