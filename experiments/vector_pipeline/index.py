@@ -24,6 +24,7 @@ sys.path.insert(0, str(HERE.parent / 'crosssheet_valuejoin'))
 import fitz  # noqa: E402
 import valuejoin_mvp as vj   # noqa: E402
 import spec_check as sc      # noqa: E402
+import spec_table_geometry as g  # noqa: E402  геом-разбор спеки (привязка по координатам)
 
 
 def build_index(pdf: Path, dg: dict) -> dict:
@@ -46,18 +47,20 @@ def build_index(pdf: Path, dg: dict) -> dict:
     for code, v in schema.items():
         add_circuit(code, {'source': 'single_line', 'page': v['page'],
                            'cable': v['cable'], 'consumer': v.get('consumer', '')})
-    for key, v in sc.extract_schema_cables(pdf, src['single_line']).items():
-        add_cable_type(key, {'source': 'single_line', 'mark': v['mark'],
-                             'section': v['section'], 'n_feeders': v['n_feeders']})
+    for v in sc.extract_schema_cables(pdf, src['single_line']).values():
+        # ключ канонизируем маркой (срез суффикса напряжения) — консистентно с геом-спекой
+        add_cable_type((g.canon_mark(v['mark']), vj.canon_val(v['section'])),
+                       {'source': 'single_line', 'mark': v['mark'],
+                        'section': v['section'], 'n_feeders': v['n_feeders']})
 
     # ── журнал → коды цепей ──
     for code, v in vj.extract_journal(pdf, src['journal']).items():
         add_circuit(code, {'source': 'journal', 'page': v['page'],
                            'cable': v['cable'], 'consumer': v.get('consumer', '')})
 
-    # ── спека → типы кабеля (СТРОГИЙ извлекатель: точность > охват; терпимый ослаблял
-    #    привязку сечения к марке на перепутанных таблицах → регресс/шум, откачён) ──
-    for key, v in sc.extract_spec_cables(doc, spg).items():
+    # ── спека → типы кабеля (ГЕОМЕТРИЧЕСКИЙ разбор: привязка сечения к марке по координатам
+    #    слов — чинит перепутанные таблицы, где строчная эвристика мис-атрибутировала) ──
+    for key, v in g.extract_spec_cables_geom(doc, spg).items():
         add_cable_type(key, {'source': 'spec', 'mark': v['mark'],
                              'section': v['section'], 'metres': v['metres']})
 
@@ -79,18 +82,21 @@ def checks_from_index(index: dict) -> dict:
     # Пересортица: тип кабеля на схеме, которого нет в спеке.
     # GUARD: если спека вообще не распарсилась (ни одной spec-карточки) — НЕ выдаём,
     # иначе все кабели схемы ложно «не в спеке».
+    # марки, чей блок в спеке РЕАЛЬНО прочитан (есть хоть одно spec-появление этой марки)
+    spec_marks = {key.split(' ')[0] for key, apps in index['cable_types'].items()
+                  if any(a['source'] == 'spec' for a in apps)}
     presence = []
-    spec_seen = any(a['source'] == 'spec'
-                    for apps in index['cable_types'].values() for a in apps)
-    if spec_seen:
+    if spec_marks:
         for key, apps in index['cable_types'].items():
             has_schema = any(a['source'] == 'single_line' for a in apps)
             has_spec = any(a['source'] == 'spec' for a in apps)
-            if has_schema and not has_spec:
+            # GUARD: флагуем только если блок ЭТОЙ марки прочитан (марка есть в спеке).
+            # Марки нет в спеке вообще → мы её блок не разобрали, пересортицу не выдумываем.
+            if has_schema and not has_spec and key.split(' ')[0] in spec_marks:
                 sc_app = next(a for a in apps if a['source'] == 'single_line')
                 presence.append({'cable': f"{sc_app['mark']} {sc_app['section']}",
                                  'n_feeders': sc_app['n_feeders']})
-    return {'type_a': type_a, 'presence': presence, 'spec_parsed': spec_seen}
+    return {'type_a': type_a, 'presence': presence, 'spec_parsed': bool(spec_marks)}
 
 
 def main():
