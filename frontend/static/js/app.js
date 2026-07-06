@@ -2669,28 +2669,6 @@ const app = createApp({
                 loadProject(id);
                 loadOptimization(id);
                 loadExpertDecisions();
-            } else if (hash.match(/^\/project\/(.+)\/discussions\/([^/]+)$/)) {
-                const m = hash.match(/^\/project\/(.+)\/discussions\/([^/]+)$/);
-                const id = decodeURIComponent(m[1]);
-                const itemId = decodeURIComponent(m[2]);
-                currentView.value = 'discussions';
-                currentProjectId.value = id;
-                // Определить тип по префиксу ID
-                discussionTab.value = itemId.startsWith('OPT') ? 'optimization' : 'finding';
-                connectGlobalWS();
-                loadProject(id);
-                loadDiscussionModels();
-                loadDiscussionItems(id, discussionTab.value).then(() => openDiscussion(id, itemId));
-            } else if (hash.match(/^\/project\/(.+)\/discussions$/)) {
-                const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/discussions$/)[1]);
-                currentView.value = 'discussions';
-                currentProjectId.value = id;
-                activeDiscussion.value = null;
-                discussionMessages.value = [];
-                connectGlobalWS();
-                loadProject(id);
-                loadDiscussionModels();
-                loadDiscussionItems(id, discussionTab.value);
             } else if (hash.match(/^\/project\/(.+)\/document$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)\/document$/)[1]);
                 currentView.value = 'document';
