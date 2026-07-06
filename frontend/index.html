@@ -1855,6 +1855,12 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                         </label>
+                        <button class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
+                                :disabled="auditPackageLoading"
+                                @click="downloadAuditPackage()"
+                                title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
+                            &#128230; {{ auditPackageLoading ? 'Формируется...' : 'Скачать пакет аудита' }}
+                        </button>
                     </div>
                 </div>
 
@@ -2100,6 +2106,12 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                 {{ kbUploadLoading ? 'Загрузка...' : 'Загрузить решения' }}
                             </label>
+                            <button class="btn-expert-toggle" :class="{ disabled: auditPackageLoading }"
+                                    :disabled="auditPackageLoading"
+                                    @click="downloadAuditPackage()"
+                                    title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
+                                &#128230; {{ auditPackageLoading ? 'Формируется...' : 'Скачать пакет аудита' }}
+                            </button>
                         </div>
                     </div>
 
@@ -3485,13 +3497,6 @@
                     <select v-model="discussionModel" class="discussion-model-select">
                         <option v-for="m in discussionModels" :key="m.id" :value="m.id">{{ m.label }}</option>
                     </select>
-                    <button class="btn btn-sm btn-outline"
-                            @click="downloadAuditPackage()"
-                            :disabled="auditPackageLoading"
-                            title="Скачать ZIP-архив с результатами аудита для обсуждения в любой нейронке">
-                        <span v-if="auditPackageLoading">Формируется...</span>
-                        <span v-else>&#128230; Скачать пакет аудита</span>
-                    </button>
                     <button class="btn btn-sm"
                             :class="allDiscussionsResolved ? 'btn-resolved-ready' : 'btn-success'"
                             @click="downloadResolvedFindings()"
