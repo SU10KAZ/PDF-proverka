@@ -75,16 +75,21 @@ def checks_from_index(index: dict) -> dict:
             type_a.append({'code': code, 'schema': s['cable'], 'journal': j['cable'],
                            'consumer': s.get('consumer') or j.get('consumer')})
 
-    # Пересортица: тип кабеля на схеме, которого нет в спеке
+    # Пересортица: тип кабеля на схеме, которого нет в спеке.
+    # GUARD: если спека вообще не распарсилась (ни одной spec-карточки) — НЕ выдаём,
+    # иначе все кабели схемы ложно «не в спеке».
     presence = []
-    for key, apps in index['cable_types'].items():
-        has_schema = any(a['source'] == 'single_line' for a in apps)
-        has_spec = any(a['source'] == 'spec' for a in apps)
-        if has_schema and not has_spec:
-            sc_app = next(a for a in apps if a['source'] == 'single_line')
-            presence.append({'cable': f"{sc_app['mark']} {sc_app['section']}",
-                             'n_feeders': sc_app['n_feeders']})
-    return {'type_a': type_a, 'presence': presence}
+    spec_seen = any(a['source'] == 'spec'
+                    for apps in index['cable_types'].values() for a in apps)
+    if spec_seen:
+        for key, apps in index['cable_types'].items():
+            has_schema = any(a['source'] == 'single_line' for a in apps)
+            has_spec = any(a['source'] == 'spec' for a in apps)
+            if has_schema and not has_spec:
+                sc_app = next(a for a in apps if a['source'] == 'single_line')
+                presence.append({'cable': f"{sc_app['mark']} {sc_app['section']}",
+                                 'n_feeders': sc_app['n_feeders']})
+    return {'type_a': type_a, 'presence': presence, 'spec_parsed': spec_seen}
 
 
 def main():
