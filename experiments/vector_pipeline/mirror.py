@@ -24,10 +24,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(HERE.parent / 'crosssheet_valuejoin'))
 import fitz  # noqa: E402
 from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (  # noqa: E402
     _clip_words_to_bbox, _clip_words_to_polygon, build_singleline_graph,
 )
+import valuejoin_mvp as vj  # noqa: E402  структурер журнала (parse_journal_lines)
+import spec_check as sc      # noqa: E402  структурер спеки (parse_spec_lines, spec_range)
 
 CODE_RE = re.compile(r'К\d+\.\d+\.\d+')
 
@@ -50,8 +53,16 @@ def block_text(words) -> str:
 
 def build_mirror(pdf: Path, dg: dict) -> dict:
     doc = fitz.open(str(pdf))
+    # профили листов (гибрид: журнал/спека — по листу/штампу, т.к. MD их не типизирует)
+    try:
+        src = vj.detect_sources(doc, dg.get('pages', []))
+        spec_pages = set(sc.spec_range(doc, src.get('journal', [])))
+        journal_pages = set(src.get('journal', []))
+    except Exception:
+        journal_pages, spec_pages = set(), set()
     pages_out = []
     stats = {'blocks': 0, 'graphic': 0, 'graphic_with_text': 0, 'structured': 0,
+             'by_profile': {'single_line': 0, 'journal': 0, 'spec': 0},
              'chandra_chars': 0, 'vector_chars': 0}
     for p in dg.get('pages', []):
         pi = p.get('page_index', p.get('page'))
@@ -80,26 +91,38 @@ def build_mirror(pdf: Path, dg: dict) -> dict:
                     'chandra_chars': len(str(chandra)),
                     'structured': None,
                 }
+                # СТРУКТУРЕРЫ по профилю ЛИСТА — для блока ЛЮБОГО типа: таблицы журнала/спеки
+                # Чандра часто размечает как TEXT-блок, а не графический (проверено на ЭМ-К1).
+                #   журнал/спека — по листу (MD их не типизирует); однолинейка — вектограф (Схема/коды).
+                try:
+                    if pi in journal_pages:
+                        rows = vj.parse_journal_lines(vtext.splitlines())
+                        if rows:
+                            rec['structured'] = {'profile': 'journal', 'cables': len(rows)}
+                    elif pi in spec_pages:
+                        cabs = sc.parse_spec_lines(vtext.splitlines())
+                        if cabs:
+                            rec['structured'] = {'profile': 'spec', 'cables': len(cabs)}
+                    elif kind == 'graphic' and len(set(CODE_RE.findall(vtext))) >= 3:
+                        g = build_singleline_graph(pdf, page.get_text(), panel_hint='ВРУ',
+                                                   bbox_norm=bbox, polygon_norm=poly)
+                        if g and g.get('feeders_flat'):
+                            ff = g['feeders_flat']
+                            rec['structured'] = {
+                                'profile': 'single_line', 'feeders': len(ff),
+                                'codes_with_cable': sum(1 for f in ff if f.get('cable')),
+                            }
+                except Exception:
+                    pass
                 if kind == 'graphic':
                     stats['graphic'] += 1
                     if vtext.strip():
                         stats['graphic_with_text'] += 1
                     stats['chandra_chars'] += len(str(chandra))
                     stats['vector_chars'] += len(vtext)
-                    # структура: однолинейка → вектограф (там, где ≥3 кодов цепей)
-                    if len(set(CODE_RE.findall(vtext))) >= 3:
-                        try:
-                            g = build_singleline_graph(pdf, page.get_text(), panel_hint='ВРУ',
-                                                       bbox_norm=bbox, polygon_norm=poly)
-                            if g and g.get('feeders_flat'):
-                                ff = g['feeders_flat']
-                                rec['structured'] = {
-                                    'type': 'single_line', 'feeders': len(ff),
-                                    'codes_with_cable': sum(1 for f in ff if f.get('cable')),
-                                }
-                                stats['structured'] += 1
-                        except Exception:
-                            pass
+                if rec['structured']:
+                    stats['structured'] += 1
+                    stats['by_profile'][rec['structured']['profile']] += 1
                 blocks_out.append(rec)
         pages_out.append({'page': pi, 'sheet_name': p.get('sheet_name'), 'blocks': blocks_out})
     return {'source_pdf': pdf.name, 'pages': pages_out, 'stats': stats}
@@ -119,7 +142,9 @@ def main():
     print(f"  блоков всего: {s['blocks']} | графических: {s['graphic']}")
     print(f"  графических с вектор-текстом: {s['graphic_with_text']} "
           f"({100*s['graphic_with_text']//max(s['graphic'],1)}%)")
-    print(f"  из них структурировано (вектограф): {s['structured']}")
+    bp = s['by_profile']
+    print(f"  из них структурировано: {s['structured']} "
+          f"(однолинейка {bp['single_line']}, журнал {bp['journal']}, спека {bp['spec']})")
     print(f"  текст графблоков: Чандра/Gemma {s['chandra_chars']} симв. → "
           f"вектор {s['vector_chars']} симв. (×{s['vector_chars']/max(s['chandra_chars'],1):.1f})")
 

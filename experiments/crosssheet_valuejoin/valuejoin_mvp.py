@@ -114,40 +114,50 @@ def extract_schema(pdf: Path, pages):
 
 
 # ─────────────────────────── Сторона B: кабельный журнал ───────────────────────────
+def parse_journal_lines(lines, page=None, out=None):
+    """ЯДРО парсера журнала по строкам (работает и постранично, и по тексту блока зеркала).
+    code -> {'cable': 'марка сечение', 'length', 'page', 'consumer'} (первое вхождение)."""
+    if out is None:
+        out = {}
+    cur = None
+    pmark = None
+    desc = []  # строки-описания между кодом и маркой (панель + потребитель)
+    for l in (x.strip() for x in lines):
+        if not l:
+            continue
+        if CODE_RE.match(l):
+            cur = l
+            pmark = None
+            desc = []
+            continue
+        if cur and pmark is None and MARK_RE.match(l):
+            pmark = l
+            continue
+        if cur and pmark is not None:
+            # сечение → закрываем строку
+            if SECT_RE.match(l):
+                out.setdefault(cur, {'cable': f'{pmark} {l}', 'length': '', 'page': page,
+                                     'consumer': ' / '.join(desc)})
+                pmark = None
+                cur = None  # одна цепь = один кабель в этом MVP
+                continue
+            # ПРОДОЛЖЕНИЕ марки на отдельной строке (напр. 'FRHF' после 'ППГнг(А)-'):
+            # только буквы/скобки/дефис, без пробелов и цифр. Описания (с пробелами/цифрами)
+            # сюда не попадают. Иначе PDF-фрагментация марки → ложное расхождение.
+            if MARK_CONT_RE.match(l):
+                pmark = pmark + l
+            continue  # прочие строки между маркой и сечением игнорируем, ждём сечение
+        if cur and not INT_RE.match(l):
+            desc.append(l)
+    return out
+
+
 def extract_journal(pdf: Path, pages):
-    """code -> {'cable': 'марка сечение', 'length': str, 'page': int} (первое вхождение)."""
+    """Постранично: собрать журнал по диапазону страниц PDF (обёртка над parse_journal_lines)."""
     doc = fitz.open(str(pdf))
     out = {}
     for pi in pages:
-        lines = [l.strip() for l in doc[pi].get_text().splitlines() if l.strip()]
-        cur = None
-        pmark = None
-        desc = []  # строки-описания между кодом и маркой (панель + потребитель)
-        for l in lines:
-            if CODE_RE.match(l):
-                cur = l
-                pmark = None
-                desc = []
-                continue
-            if cur and pmark is None and MARK_RE.match(l):
-                pmark = l
-                continue
-            if cur and pmark is not None:
-                # сечение → закрываем строку
-                if SECT_RE.match(l):
-                    out.setdefault(cur, {'cable': f'{pmark} {l}', 'length': '', 'page': pi,
-                                         'consumer': ' / '.join(desc)})
-                    pmark = None
-                    cur = None  # одна цепь = один кабель в этом MVP
-                    continue
-                # ПРОДОЛЖЕНИЕ марки на отдельной строке (напр. 'FRHF' после 'ППГнг(А)-'):
-                # только буквы/скобки/дефис, без пробелов и цифр. Описания (с пробелами/цифрами)
-                # сюда не попадают. Иначе PDF-фрагментация марки → ложное расхождение.
-                if MARK_CONT_RE.match(l):
-                    pmark = pmark + l
-                continue  # прочие строки между маркой и сечением игнорируем, ждём сечение
-            if cur and not INT_RE.match(l):
-                desc.append(l)
+        parse_journal_lines(doc[pi].get_text().splitlines(), page=pi, out=out)
     return out
 
 

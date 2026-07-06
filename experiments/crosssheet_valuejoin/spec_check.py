@@ -65,30 +65,42 @@ def spec_range(doc, journal_pages):
     return list(range(start, end))
 
 
-def extract_spec_cables(doc, pages):
-    """(canon марка, canon сечение) → {'mark','section','metres'}."""
-    out = {}
-    cur_mark = None
-    for pi in pages:
-        lines = [l.strip() for l in doc[pi].get_text().splitlines() if l.strip()]
-        i = 0
-        while i < len(lines):
-            l = lines[i]
-            if vj.MARK_RE.match(l) and 'мм2' not in l:
-                cur_mark = l
-                i += 1
-                continue
-            m = SPEC_SECT_RE.match(l)
-            if cur_mark and m:
-                section = m.group(1).strip()
-                unit = lines[i + 1].strip() if i + 1 < len(lines) else ''
-                qty = lines[i + 2].strip() if i + 2 < len(lines) else ''
-                if unit in ('м', 'м.') and re.match(r'^\d+$', qty):
-                    key = (vj.canon_val(cur_mark), vj.canon_val(section))
-                    out.setdefault(key, {'mark': cur_mark, 'section': section, 'metres': int(qty)})
-                    i += 3
-                    continue
+def parse_spec_lines(lines, out=None, state=None):
+    """ЯДРО парсера кабельного раздела спеки по строкам (постранично и по тексту блока зеркала).
+    (canon марка, canon сечение) → {'mark','section','metres'}. state несёт текущую марку
+    между страницами (в спеке сечения идут под маркой, а марка может быть на прошлой стр.)."""
+    if out is None:
+        out = {}
+    if state is None:
+        state = {}
+    lines = [l.strip() for l in lines if l.strip()]
+    i = 0
+    while i < len(lines):
+        l = lines[i]
+        if vj.MARK_RE.match(l) and 'мм2' not in l:
+            state['mark'] = l
             i += 1
+            continue
+        m = SPEC_SECT_RE.match(l)
+        if state.get('mark') and m:
+            section = m.group(1).strip()
+            unit = lines[i + 1].strip() if i + 1 < len(lines) else ''
+            qty = lines[i + 2].strip() if i + 2 < len(lines) else ''
+            if unit in ('м', 'м.') and re.match(r'^\d+$', qty):
+                key = (vj.canon_val(state['mark']), vj.canon_val(section))
+                out.setdefault(key, {'mark': state['mark'], 'section': section, 'metres': int(qty)})
+                i += 3
+                continue
+        i += 1
+    return out
+
+
+def extract_spec_cables(doc, pages):
+    """Постранично: кабельный раздел спеки по диапазону страниц (обёртка над parse_spec_lines)."""
+    out, state = {}, {}
+    for pi in pages:
+        parse_spec_lines(doc[pi].get_text().splitlines(), out=out, state=state)
+    return out
     return out
 
 
