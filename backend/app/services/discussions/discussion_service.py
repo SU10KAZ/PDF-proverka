@@ -56,13 +56,30 @@ def _version_dir(project_id: str) -> Path:
 
 
 def _output_dir(project_id: str) -> Path:
-    return _version_dir(project_id) / "_output"
+    """Папка артефактов пайплайна активной версии (V2-aware).
+
+    Отсюда читаются 03_findings.json, 02_blocks_analysis.json, document_graph.json,
+    *_review.json, norm_checks.json, optimization.json. В projects_v2 они лежат в
+    `03_analysis/latest`, а НЕ в `<version_dir>/_output` (там только shadow-
+    артефакты) — из-за чего «Проработка замечаний» была пустой. Канонический
+    резолвер учитывает bound-версию (ContextVar от роутера) и v2-раскладку —
+    совпадает с findings/kb_validation и ZIP-экспортом. Fallback на
+    `<version_dir>/_output` для legacy/невалидной версии.
+    """
+    try:
+        return version_service.resolve_version_output_dir(project_id)
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return _version_dir(project_id) / "_output"
 
 
 # ─── Хранение ────────────────────────────────────────────────
 
 def _discussions_dir(project_id: str) -> Path:
-    return _output_dir(project_id) / "discussions"
+    # Обсуждения хранятся в СТАБИЛЬНОМ `<version_dir>/_output/discussions`,
+    # который переживает пере-прогоны анализа (03_analysis/latest пересоздаётся
+    # при каждом прогоне). Здесь уже лежат существующие обсуждения, поэтому НЕ
+    # привязываем путь к _output_dir(), который теперь указывает на analysis-папку.
+    return _version_dir(project_id) / "_output" / "discussions"
 
 
 def _discussion_path(project_id: str, item_id: str) -> Path:
@@ -1028,7 +1045,7 @@ def list_discussion_items(
 ) -> list[DiscussionListItem]:
     """Список замечаний/оптимизаций с индикатором статуса обсуждения."""
     output_dir = _output_dir(project_id)
-    discussions_dir = output_dir / "discussions"
+    discussions_dir = _discussions_dir(project_id)
 
     # Загрузить существующие обсуждения
     existing: dict[str, Discussion] = {}
