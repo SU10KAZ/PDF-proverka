@@ -9,8 +9,12 @@ from __future__ import annotations
 from backend.app.pipeline.stages.text_analysis.absence_guard import (
     enforce_absence_guard,
     _is_absence_claim,
+    _candidate_text,
     build_verification_prompt,
     parse_verification_response,
+    _split_md_into_chunks,
+    _merge_chunk_verdicts,
+    run_claude_verification_chunked,
 )
 
 _VERIFY = "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
@@ -130,11 +134,107 @@ def test_malformed_entries_skipped():
     assert stats["downgraded"] == 1
 
 
+# ── Текст кандидата (A1: слитый 03_findings.json без поля finding) ──
+
+def test_candidate_text_prefers_finding_then_problem_then_description():
+    assert _candidate_text({"finding": "F", "problem": "P"}) == "F"
+    assert _candidate_text({"problem": "P", "description": "D"}) == "P"
+    assert _candidate_text({"description": "D"}) == "D"
+    assert _candidate_text({}) == ""
+
+
+def test_detector_reads_problem_field():
+    # В слитом 03_findings.json суть замечания в problem/description, не в finding.
+    assert _is_absence_claim({"problem": "Отсутствует спецификация перемычек."})
+    assert _is_absence_claim({"description": "Не указана огнестойкость."})
+
+
 # ── Промпт/парсер верификатора ──
 
 def test_build_prompt_lists_candidates():
     p = build_verification_prompt("DOC", [{"finding": "Нет данных X"}])
     assert "DOC" in p and "0)" in p and "Нет данных X" in p
+
+
+def test_build_prompt_uses_problem_when_no_finding():
+    # A1: у слитого замечания нет finding — промпт должен взять problem.
+    p = build_verification_prompt("DOC", [{"problem": "Отсутствует лист АР-5"}])
+    assert "Отсутствует лист АР-5" in p
+
+
+# ── Чанкинг больших MD (A2) ──
+
+def test_split_md_into_chunks_by_size():
+    md = "".join(f"строка {i}\n" for i in range(100))
+    chunks = _split_md_into_chunks(md, 50)
+    assert len(chunks) > 1
+    assert "".join(chunks) == md  # без потерь и нахлёста
+    assert all(len(c) <= 50 or "\n" not in c[:-1] for c in chunks)
+
+
+def test_split_md_hard_splits_long_line():
+    md = "x" * 250  # одна строка длиннее целевого размера
+    chunks = _split_md_into_chunks(md, 100)
+    assert len(chunks) == 3
+    assert "".join(chunks) == md
+
+
+def test_merge_chunk_verdicts_present_wins():
+    # кусок 0 не нашёл (absent), кусок 1 нашёл (present) → present по ИЛИ
+    r0 = {0: "absent", "0_evidence": "нет здесь"}
+    r1 = {0: "present", "0_evidence": "есть на л.5"}
+    out = _merge_chunk_verdicts([r0, r1], 1)
+    assert out[0] == "present"
+    assert out["0_evidence"] == "есть на л.5"
+
+
+def test_merge_chunk_verdicts_all_absent():
+    out = _merge_chunk_verdicts([{0: "absent"}, {}], 1)
+    assert out[0] == "absent"
+
+
+def test_chunked_small_md_single_call():
+    calls = []
+    def _fn(md, cands):
+        calls.append(md)
+        return {0: "absent"}
+    out = run_claude_verification_chunked(
+        "короткий MD", [{"problem": "нет X"}], verify_fn=_fn, threshold_chars=1000,
+    )
+    assert len(calls) == 1  # не резали
+    assert out[0] == "absent"
+
+
+def test_chunked_large_md_splits_and_or_aggregates():
+    md = "".join(f"строка {i}\n" for i in range(500))  # достаточно крупный
+    seen = []
+    def _fn(chunk, cands):
+        seen.append(chunk)
+        # present только если в куске есть «строка 400»
+        return {0: "present", "0_evidence": "тут"} if "строка 400" in chunk else {0: "absent"}
+    out = run_claude_verification_chunked(
+        md, [{"problem": "нет строки 400"}],
+        verify_fn=_fn, threshold_chars=100, target_tokens=50, chars_per_token=1.0, workers=2,
+    )
+    assert len(seen) > 1              # порезали на куски
+    assert out[0] == "present"        # OR-агрегация нашла present в одном из кусков
+
+
+def test_chunked_retries_empty_chunk_once():
+    md = "".join(f"строка {i}\n" for i in range(500))
+    attempts = {"n": 0}
+    def _fn(chunk, cands):
+        attempts["n"] += 1
+        if attempts["n"] == 1:
+            return {}  # первый вызов — сбой (пусто) → должен ретрайнуться
+        return {0: "absent"}
+    run_claude_verification_chunked(
+        md, [{"problem": "нет X"}],
+        verify_fn=_fn, threshold_chars=100, target_tokens=50, chars_per_token=1.0, workers=1,
+    )
+    # хотя бы один кусок ретрайнулся: вызовов больше, чем кусков
+    chunks = _split_md_into_chunks(md, 50)
+    assert attempts["n"] > len(chunks)
 
 
 def test_parse_verification_response():

@@ -57,6 +57,17 @@ def _is_absence_claim(finding: dict) -> bool:
     return bool(_ABSENCE_RE.search(text))
 
 
+def _candidate_text(finding: dict) -> str:
+    """Текст кандидата для промпта верификатора.
+
+    В слитом `03_findings.json` поля `finding` НЕТ — суть замечания лежит в
+    `problem`/`description`. Читаем первое непустое (finding → problem → description).
+    """
+    return str(
+        finding.get("finding") or finding.get("problem") or finding.get("description") or ""
+    )
+
+
 def _has_absence_evidence(finding: dict) -> bool:
     """Модель уже указала конкретные проверенные места (`absence_checked` непуст)?"""
     checked = finding.get("absence_checked")
@@ -132,7 +143,7 @@ def enforce_absence_guard(
 def build_verification_prompt(md_text: str, candidates: list[dict]) -> str:
     """Промпт: по полному MD решить для каждого «нет», есть ли элемент в документе."""
     flist = "\n".join(
-        f"{i}) {str(f.get('finding') or '')[:400]}" for i, f in enumerate(candidates)
+        f"{i}) {_candidate_text(f)[:400]}" for i, f in enumerate(candidates)
     )
     return (
         "Ты проверяешь замечания ИИ-аудита проектной документации. Ниже ПОЛНЫЙ текст "
@@ -221,3 +232,120 @@ def run_claude_verification(
         return parse_verification_response(json.loads(m.group(0)))
     except json.JSONDecodeError:
         return {}
+
+
+# ── Чанкинг больших MD (claude -p не берёт >~440КБ за раз — молча падает) ──
+#
+# Замеры A/B (АСКУВТ 1.5МБ/15 кандидатов): куски ~130-150К токенов, ПАРАЛЛЕЛЬНО (лимит 4),
+# БЕЗ нахлёста, retry на сбойный кусок — оптимум (150К=117-163с; нахлёст 15% не окупился;
+# последовательно ×3 медленнее). Агрегация «present» по ИЛИ: элемент есть в документе, если
+# хоть один кусок его нашёл. Для замены на локальную модель — верификатор инъектируется.
+
+_CHARS_PER_TOKEN = 2.2          # кириллица claude -p: ~2.2 симв/токен (эмпирика)
+_CHUNK_TARGET_TOKENS = 130000   # целевой размер куска в токенах
+_CHUNK_THRESHOLD_CHARS = 300000  # MD крупнее — режем (иначе один вызов, как раньше)
+_CHUNK_WORKERS = 4               # параллельных вызовов
+
+
+def _split_md_into_chunks(md_text: str, target_chars: int) -> list[str]:
+    """Порезать MD на куски ~target_chars по границам строк (без нахлёста)."""
+    if target_chars < 1:
+        target_chars = 1
+    chunks: list[str] = []
+    cur: list[str] = []
+    cur_len = 0
+    for ln in md_text.splitlines(keepends=True):
+        if len(ln) > target_chars:  # аномально длинная строка — жёсткая нарезка
+            if cur:
+                chunks.append("".join(cur))
+                cur, cur_len = [], 0
+            for j in range(0, len(ln), target_chars):
+                chunks.append(ln[j:j + target_chars])
+            continue
+        if cur_len + len(ln) > target_chars and cur:
+            chunks.append("".join(cur))
+            cur, cur_len = [], 0
+        cur.append(ln)
+        cur_len += len(ln)
+    if cur:
+        chunks.append("".join(cur))
+    return chunks
+
+
+def _merge_chunk_verdicts(chunk_results: list[dict], n: int) -> dict:
+    """Слить вердикты по кускам: present по ИЛИ (нашёл хоть один кусок → present)."""
+    out: dict = {}
+    for i in range(n):
+        chosen: Optional[str] = None
+        evidence = ""
+        # 1) present имеет приоритет — элемент есть где-то в документе
+        for r in chunk_results:
+            if isinstance(r, dict) and r.get(i) == "present":
+                chosen = "present"
+                evidence = str(r.get(f"{i}_evidence") or "")
+                break
+        # 2) иначе absent > not_absence (для полноты отчёта; на понижение не влияет)
+        if chosen is None:
+            for r in chunk_results:
+                if not isinstance(r, dict):
+                    continue
+                v = r.get(i)
+                if v in ("absent", "not_absence"):
+                    if chosen is None or v == "absent":
+                        chosen = v
+                        if not evidence:
+                            evidence = str(r.get(f"{i}_evidence") or "")
+                    if v == "absent":
+                        break
+        if chosen is not None:
+            out[i] = chosen
+            out[f"{i}_evidence"] = evidence[:300]
+    return out
+
+
+def run_claude_verification_chunked(
+    md_text: str,
+    candidates: list[dict],
+    *,
+    timeout_sec: int = 180,
+    threshold_chars: int = _CHUNK_THRESHOLD_CHARS,
+    target_tokens: int = _CHUNK_TARGET_TOKENS,
+    chars_per_token: float = _CHARS_PER_TOKEN,
+    workers: int = _CHUNK_WORKERS,
+    verify_fn: Optional[Verifier] = None,
+) -> dict:
+    """Верификатор присутствия с чанкингом для больших MD.
+
+    Малый MD (≤ threshold_chars) — один вызов, как раньше. Крупный — режется на куски
+    ~target_tokens, проверяется параллельно (лимит workers), present агрегируется по ИЛИ,
+    сбойный (пустой) кусок ретраится один раз. Fail-soft: любой сбой куска → пусто.
+
+    `verify_fn` — одношаговый верификатор `(md, candidates) -> {i: verdict}`; по умолчанию
+    `run_claude_verification`. Инъектируется для тестов и подмены на локальную модель.
+    """
+    if verify_fn is None:
+        def verify_fn(md, cands):  # noqa: E306 — локальный дефолт
+            return run_claude_verification(md, cands, timeout_sec=timeout_sec)
+
+    if not md_text or not candidates:
+        return {}
+
+    if len(md_text) <= threshold_chars:
+        return verify_fn(md_text, candidates)
+
+    target_chars = max(1, int(target_tokens * chars_per_token))
+    chunks = _split_md_into_chunks(md_text, target_chars)
+    if len(chunks) <= 1:
+        return verify_fn(md_text, candidates)
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _run_one(chunk: str) -> dict:
+        res = verify_fn(chunk, candidates)
+        if not res:  # пусто = сбой куска (не «ничего не нашёл») → один retry
+            res = verify_fn(chunk, candidates)
+        return res if isinstance(res, dict) else {}
+
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
+        results = list(ex.map(_run_one, chunks))
+    return _merge_chunk_verdicts(results, len(candidates))
