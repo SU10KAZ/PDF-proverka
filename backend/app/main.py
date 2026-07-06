@@ -29,6 +29,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from backend.app.core.config import APP_HOST, APP_PORT
@@ -87,6 +88,14 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# ─── Сжатие ответов (gzip) ──────────────────────────────────
+# Фронт-бандл app.js ~920 КБ; без сжатия каждый некэшированный заход (hard
+# refresh) тянет его целиком по WAN (сервер за cloudflared в KZ) → «долго
+# грузится». gzip сжимает JS/HTML/JSON в ~4–6 раз. minimum_size, чтобы не
+# тратить CPU на мелочь. Добавлен раньше PortalAuth → PortalAuth остаётся
+# внешним, gzip сжимает финальные ответы приложения и статики.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # ─── Portal auth ────────────────────────────────────────────
 # Простая защита портала логином/паролем. Включается через PORTAL_AUTH_ENABLED.

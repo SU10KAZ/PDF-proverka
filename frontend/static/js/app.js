@@ -7260,8 +7260,11 @@ const app = createApp({
                 loadOptBlockMap(id);
             } catch (e) {
                 console.error('Failed to load optimization:', e);
+            } finally {
+                // Гасим спиннер даже при раннем return (гонка навигаций/версии) —
+                // но только для актуальной загрузки, чтобы не погасить более свежую.
+                if (_mySeq === _optimizationLoadSeq) optimizationLoading.value = false;
             }
-            optimizationLoading.value = false;
         }
 
         async function startOptimization(id) {
