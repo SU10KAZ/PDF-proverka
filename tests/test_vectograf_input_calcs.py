@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+    _extract_input_cables,
     _extract_input_calcs,
 )
 
@@ -73,3 +74,25 @@ def test_preserves_placeholder_values():
     assert len(rows) == 1
     assert rows[0]["Pu"] == "----"
     assert rows[0]["Kc"] == "#ДЕЛ/0!"
+
+
+# ── Вводные (питающие) кабели: Рабочий/Резервный ──────────────────────────────
+
+
+def test_extract_input_cables_working_reserve():
+    txt = ("Рабочий\nППГнг(А)-FRHF 4х(1х50)+(1х35) L=6м\n"
+           "Резервный\nППГнг(А)-FRHF 4х(1х50)+(1х35) L=6м\n"
+           "Рабочий ППГнг(A)-HF 5х6 L=6м")
+    rows = _extract_input_cables(txt)
+    assert len(rows) == 3
+    frhf = [r for r in rows if "FRHF" in r["cable"]]
+    assert {r["role"] for r in frhf} == {"Рабочий", "Резервный"}
+    assert frhf[0]["cable"] == "ППГнг(А)-FRHF 4х(1х50)+(1х35)"
+    assert frhf[0]["length_m"] == 6
+
+
+def test_extract_input_cables_dedup_and_empty():
+    txt = "Рабочий ППГнг(A)-HF 5х6 L=6м\nРабочий ППГнг(A)-HF 5х6 L=6м"
+    assert len(_extract_input_cables(txt)) == 1
+    assert _extract_input_cables("") == []
+    assert _extract_input_cables("нет кабелей") == []

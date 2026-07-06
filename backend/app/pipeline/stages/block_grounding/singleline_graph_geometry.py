@@ -845,6 +845,28 @@ def _extract_input_calcs(page_text: str) -> list:
     return rows
 
 
+_INPUT_CABLE_RE = re.compile(
+    r"(Рабочий|Резервный)\s+(ППГнг\S*)\s+(\dх\([^\n]*?\)(?:\+\([^\n]*?\))?|\dх[\d.,]+)\s*L=(\d+)\s*м?",
+    re.I)
+
+
+def _extract_input_cables(page_text: str) -> list:
+    """Питающие (вводные) кабели: Рабочий/Резервный «ППГнг… L=Nм» — питание ВП со стороны ГРЩ и
+    кабели учёта/АВР. Вектограф фидеро-центричен, раньше эти вводные кабели в граф не попадали.
+    Дедуп по (роль, марка, сечение, L). Дополняет расчёты вводов (раздел 2.1)."""
+    txt = page_text or ""
+    rows, seen = [], []
+    for m in _INPUT_CABLE_RE.finditer(txt):
+        role = m.group(1).capitalize()
+        cable = f"{m.group(2)} {m.group(3)}".strip()
+        key = (role, cable, m.group(4))
+        if key in seen:
+            continue
+        seen.append(key)
+        rows.append({"role": role, "cable": cable, "length_m": int(m.group(4))})
+    return rows
+
+
 def _extract_tt_check(page_text: str) -> list:
     """Таблица проверки коэффициентов трансформации ТТ (если присутствует на листе)."""
     txt = page_text or ""
@@ -1814,6 +1836,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             return default
     panel_calcs = _safe(_extract_panel_calcs, page_full_text, default=[])
     input_calcs = _safe(_extract_input_calcs, page_full_text, default=[])
+    input_cables = _safe(_extract_input_cables, page_full_text, default=[])
     tt_check = _safe(_extract_tt_check, page_full_text, default=[])
     notes = _safe(_extract_notes, page_full_text, default=[])
     service_elements = _safe(_extract_service_elements, page_full_text, default=[])
@@ -1898,6 +1921,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "panels": panels,
         "panel_calculations": panel_calcs,
         "input_calculations": input_calcs,
+        "input_cables": input_cables,
         "tt_check_table": tt_check,
         "service_elements": service_elements,
         "secondary_circuits": secondary_circuits,
@@ -2068,6 +2092,15 @@ def render_graph_etalon_markdown(graph: dict) -> str:
             L.append(f"| {_md_cell(r.get('vvod'))} | {_md_cell(r.get('mode'))} | {_md_cell(r.get('Pu'))} "
                      f"| {_md_cell(r.get('Kc'))} | {_md_cell(r.get('cosphi'))} | {_md_cell(r.get('Pr'))} "
                      f"| {_md_cell(r.get('Sr'))} | {_md_cell(r.get('Ip'))} |")
+
+    # 2.2 Вводные кабели (питающие: Рабочий/Резервный со стороны ГРЩ + учёт/АВР) — если извлечены
+    icab = graph.get("input_cables") or []
+    if icab:
+        L.append("\n### 2.2 Вводные кабели (питающие)\n")
+        L.append("| Роль | Кабель | Длина, м |")
+        L.append("| --- | --- | --- |")
+        for r in icab:
+            L.append(f"| {_md_cell(r.get('role'))} | {_md_cell(r.get('cable'))} | {_md_cell(r.get('length_m'))} |")
 
     # 3. Таблица связей
     L.append("\n## 3. Таблица связей (межпанельный граф)\n")
