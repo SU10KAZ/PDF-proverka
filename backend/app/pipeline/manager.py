@@ -3979,10 +3979,7 @@ class PipelineManager:
                 "warn",
             )
 
-        # Evidence Verifier — интегрирован в пайплайн, по умолчанию OFF (no-op).
-        # Запускается ПОСЛЕ финализации findings/норм/оптимизации, т.к. читает
-        # готовые 03_findings.json + KB-вердикты. Fail-soft.
-        await self._run_evidence_verify_stage(job, project_info)
+        # (Evidence Verifier удалён как мёртвая подсистема — был default OFF/no-op.)
 
         self._promote_v2_analysis_artifacts(
             job,
@@ -3996,71 +3993,10 @@ class PipelineManager:
                 "optimization.json",
                 "optimization_review.json",
                 "optimization_pre_review.json",
-                "evidence_validation.json",
                 "pipeline_log.json",
             ),
         )
         self._promote_completed_audit_v2(job)
-
-    async def _run_evidence_verify_stage(self, job: AuditJob, project_info: dict) -> None:
-        """Evidence Verifier как стадия пайплайна (интегрирована, по умолчанию OFF).
-
-        Перепроверяет замечания по фактам документа/чертежа: графические — через
-        локальные vision-модели (ngrok/LM Studio), текстовые — через Claude CLI;
-        пишет evidence_validation.json. Маршрутизация по KB-вердиктам (проверяются
-        только спорные), поэтому запускается после финализации findings.
-
-        Гейт — EVIDENCE_VERIFY_IN_PIPELINE_ENABLED (default False): при OFF стадия
-        не выполняется (no-op), в UI показывается как «временно отключена». Fail-soft —
-        любая ошибка стадии НЕ валит аудит (evidence_validation.json — вспомогательный
-        артефакт, а не мастер замечаний).
-        """
-        from backend.app.core import config as cfg
-
-        pid = job.project_id
-        if not getattr(cfg, "EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False):
-            # Тихий no-op: не пишем в pipeline_log, чтобы статус остался 'disabled'.
-            await self._log(
-                job,
-                "Evidence Verifier: интегрирован, но отключён "
-                "(EVIDENCE_VERIFY_IN_PIPELINE_ENABLED=false) — пропуск",
-            )
-            return
-        if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-            return
-
-        section = (project_info or {}).get("section") or "TX"
-        version_id = getattr(job, "version_id", None)
-        job.stage = AuditStage.EVIDENCE_VERIFY
-        await self._log(job, "═══ Проверка фактов (Evidence Verifier) ═══")
-        self._update_pipeline_log(pid, "evidence_verify", "running")
-        try:
-            import backend.app.services.findings.evidence_validation_service as evsvc
-            # run_evidence_validation синхронный (subprocess + локальные vision-вызовы)
-            # → выносим в thread, чтобы не блокировать event loop.
-            result = await asyncio.to_thread(
-                evsvc.run_evidence_validation,
-                pid,
-                version_id,
-                section,
-            )
-            processed = result.get("total_processed", 0)
-            skipped = result.get("skipped_count", 0)
-            errors = result.get("errors_count", 0)
-            await self._log(
-                job,
-                f"Evidence Verifier: проверено {processed}, пропущено {skipped}, ошибок {errors}",
-            )
-            self._update_pipeline_log(
-                pid, "evidence_verify", "done",
-                detail={"processed": processed, "skipped": skipped, "errors": errors},
-            )
-        except Exception as exc:  # noqa: BLE001 — fail-soft, не валим аудит
-            await self._log(job, f"Evidence Verifier упал (не критично): {exc}", "warn")
-            self._update_pipeline_log(
-                pid, "evidence_verify", "error",
-                error=str(exc), detail={"non_blocking": True},
-            )
 
     async def _run_norm_verification(
         self,

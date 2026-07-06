@@ -23,8 +23,7 @@ class AuditStage(str, Enum):
     TEXT_ANALYSIS = "text_analysis"
     BLOCK_ANALYSIS = "block_analysis"
     FINDINGS_MERGE = "findings_merge"
-    FINDINGS_REVIEW = "findings_review"
-    EVIDENCE_VERIFY = "evidence_verify"  # Evidence Verifier: перепроверка замечаний по фактам (default OFF)
+    FINDINGS_REVIEW = "findings_review"  # этап «Верификатор» (findings_verify) использует это значение stage
 
 
 class JobStatus(str, Enum):

@@ -742,7 +742,6 @@ def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStat
         "optimization": "optimization",
         "optimization_critic": "optimization_critic",
         "optimization_corrector": "optimization_corrector",
-        "evidence_verify": "evidence_verify",
         "excel": "excel",
         "prepare": "crop_blocks",
         "main_audit": "findings",
@@ -765,18 +764,7 @@ def _v2_pipeline_status(adapter, doc_dir: Path, version_id: str) -> PipelineStat
         status.optimization = "done"
     if adapter.analysis_artifact_path(doc_dir, version_id, "optimization_review.json") and status.optimization_critic == "pending":
         status.optimization_critic = "done"
-    # Evidence Verifier — интегрирован в пайплайн, по умолчанию OFF.
-    # При OFF всегда показываем 'disabled' (в UI — «временно отключена»), даже
-    # если в pipeline_log осталась старая запись. При ON — обычная логика: статус
-    # из лога, а если он ещё дефолтный — вычисляем по наличию артефакта.
-    from backend.app.core import config as _cfg
-    if not getattr(_cfg, "EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False):
-        status.evidence_verify = "disabled"
-    elif status.evidence_verify in ("disabled", "pending"):
-        if adapter.analysis_artifact_path(doc_dir, version_id, "evidence_validation.json"):
-            status.evidence_verify = "done"
-        else:
-            status.evidence_verify = "pending"
+    # (Evidence Verifier удалён как мёртвая подсистема — статус-ветки больше нет.)
     return status
 
 

@@ -682,27 +682,8 @@ PIPELINE_ABSENCE_GUARD_ENABLED = _env_bool("PIPELINE_ABSENCE_GUARD_ENABLED", Fal
 # Килсвитч: default TRUE («всегда включён» по решению). Поглощает PIPELINE_ABSENCE_GUARD_ENABLED
 # (absence-часть работает внутри этапа). LLM-верификатор инъектируем — под замену на локальную модель.
 PIPELINE_VERIFIER_ENABLED = _env_bool("PIPELINE_VERIFIER_ENABLED", True)
-# Evidence Verifier как стадия пайплайна. Перепроверяет замечания по фактам
-# документа/чертежа (локальные vision-модели + Claude CLI для текста) и пишет
-# evidence_validation.json. OFF по умолчанию — стадия интегрирована и видна в UI
-# как «временно отключена», но фактически не выполняется (полная обратная
-# совместимость). Включим позже (замер времени + ngrok-окно локальной 35B).
-EVIDENCE_VERIFY_IN_PIPELINE_ENABLED = _env_bool("EVIDENCE_VERIFY_IN_PIPELINE_ENABLED", False)
-# EV precedent-источник: память экспертных решений (decisions_log.json) как ЧЕТВЁРТЫЙ
-# офлайн-сигнал слияния EV (visual+norm+cross_block+PRECEDENT). Закрывает зону, где
-# зрение слепо (невизуальные ложные срабатывания: дубли/неприменимая норма/формальные).
-# ИНВАРИАНТ: прецедент НИКОГДА не даёт reject сам по себе (как норма) — максимум
-# поднимает «unsure» замечание в borderline + requires_human_review.
-#   OFF (default) = SHADOW: сигнал считается и пишется в evidence_validation.json
-#                   (precedent_*), но на вердикт НЕ влияет — снимаем цифры без риска.
-#   ON            = сигнал участвует в fuse() (правило F8.5).
-EV_PRECEDENT_ENABLED = _env_bool("EV_PRECEDENT_ENABLED", False)
-# Порог «сильного» прецедента (общий score ретривера 0..1). Консервативно выше KB-дефолта 0.15.
-EV_PRECEDENT_MIN_SCORE = float(os.environ.get("EV_PRECEDENT_MIN_SCORE", "0.45"))
-# Порог ЧИСТО ТЕКСТОВОГО сходства (Jaccard, без метаданных). Ключевой анти-over-firing:
-# совпадение только по разделу+критичности (0.50 у любого замечания) НЕ считается сильным.
-EV_PRECEDENT_TEXT_MIN = float(os.environ.get("EV_PRECEDENT_TEXT_MIN", "0.12"))
-EV_PRECEDENT_TOP_K = int(os.environ.get("EV_PRECEDENT_TOP_K", "5"))
+# (Подсистема Evidence-Verify удалена как мёртвая: флаги EVIDENCE_VERIFY_IN_PIPELINE_ENABLED
+# и EV_PRECEDENT_* убраны вместе с ней.)
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
 # Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).

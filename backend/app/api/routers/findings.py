@@ -84,53 +84,8 @@ async def get_finding(
     return finding
 
 
+# (Эндпоинты evidence-validation удалены вместе с подсистемой Evidence-Verify.)
 
-
-# KB validation
-
-
-
-@router.get("/{project_id:path}/evidence-validation")
-async def get_evidence_validation(
-    project_id: str,
-    version_id: Optional[str] = Query(None),
-):
-    """Return saved Evidence Verifier decisions."""
-    import backend.app.services.findings.evidence_validation_service as evsvc
-    data = evsvc.get_evidence_validation(project_id, version_id=version_id)
-    if data is None:
-        raise HTTPException(404, "Evidence validation has not been generated for this project")
-    return data
-
-
-@router.post("/{project_id:path}/evidence-validation/run")
-async def run_evidence_validation(
-    project_id: str,
-    version_id: Optional[str] = Query(None),
-    section: str = Query("TX"),
-    graphic_model: Optional[str] = Query(None),
-    text_model: Optional[str] = Query(None),
-    force: bool = Query(False),
-):
-    """Run Evidence Verifier (document + graphic blocks). May take a long time."""
-    import backend.app.services.findings.evidence_validation_service as evsvc
-    try:
-        # Сервис синхронный (внутри asyncio.run + локальные vision-вызовы) —
-        # выносим в поток, чтобы не блокировать event loop и не падать на
-        # вложенном asyncio.run внутри уже работающего loop.
-        return await asyncio.to_thread(
-            evsvc.run_evidence_validation,
-            project_id,
-            version_id,
-            section,
-            graphic_model=graphic_model,
-            text_model=text_model,
-            force=force,
-        )
-    except FileNotFoundError as e:
-        raise HTTPException(404, str(e))
-    except Exception as e:
-        raise HTTPException(500, f"Evidence validation error: {e}")
 
 @router.get("/{project_id:path}/kb-validation")
 async def get_kb_validation(
