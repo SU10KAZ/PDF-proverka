@@ -1244,6 +1244,17 @@ _SUBSCRIPTION_PRICE = {
     "fable":  (10.0, 50.0, 12.50, 1.00), # claude-fable-5
 }
 
+# Недельный лимит подписки в «эквиваленте API-стоимости $». Anthropic мерит
+# лимит по взвешенной стоимости (кэш/контекст/output), а не по чистым токенам,
+# поэтому база для «% лимита» — доллары, а не токены.
+# Значения откалиброваны по панели Claude Code: основной лимит 55% ≈ $2463 →
+# ~$4480/нед; Fable — отдельная квота (21% ≈ $686 → ~$3270/нед).
+# Пере-калибровать: env SUBSCRIPTION_WEEKLY_LIMIT_USD / _FABLE_WEEKLY_LIMIT_USD.
+_SUB_WEEKLY_LIMIT_USD = float(os.environ.get("SUBSCRIPTION_WEEKLY_LIMIT_USD", "4480"))
+_SUB_FABLE_WEEKLY_LIMIT_USD = float(
+    os.environ.get("SUBSCRIPTION_FABLE_WEEKLY_LIMIT_USD", "3270")
+)
+
 
 def _subscription_price(model_id: str):
     m = (model_id or "").lower()
@@ -1301,6 +1312,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     cutoff = (week_start - timedelta(days=1)).timestamp()
 
     people: dict[str, dict] = {}
+    fable_cost_total = 0.0  # Fable 5 — отдельная квота Anthropic, не в основном %
 
     def _get_person(pid: str, name: str) -> dict:
         p = people.get(pid)
@@ -1365,7 +1377,8 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             out_tok = usage.get("output_tokens", 0) or 0
                             cache_r = usage.get("cache_read_input_tokens", 0) or 0
                             cache_c = usage.get("cache_creation_input_tokens", 0) or 0
-                            pi, po, pcw, pcr = _subscription_price(msg.get("model", ""))
+                            model_id = (msg.get("model", "") or "").lower()
+                            pi, po, pcw, pcr = _subscription_price(model_id)
                             # Стоимость — полная (все 4 категории по своим тарифам).
                             cost = (in_tok * pi + out_tok * po
                                     + cache_c * pcw + cache_r * pcr) / 1e6
@@ -1375,9 +1388,13 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                             p = _get_person(pid, pname)
                             cell = p["by_day"][day]
                             cell["tokens"] += tot
-                            cell["cost"] += cost
                             p["total_tokens"] += tot
-                            p["total_cost"] += cost
+                            # Fable 5 — отдельная недельная квота, в основной % не идёт.
+                            if "fable" in model_id:
+                                fable_cost_total += cost
+                            else:
+                                cell["cost"] += cost
+                                p["total_cost"] += cost
                 except OSError:
                     continue
 
@@ -1396,16 +1413,33 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     for d in day_keys:
         totals_by_day[d]["cost"] = round(totals_by_day[d]["cost"], 2)
 
+    # Доля недельного лимита (по $, основной лимит Opus/Sonnet/Haiku).
+    limit = _SUB_WEEKLY_LIMIT_USD
+    for p in people_list:
+        p["pct_limit"] = round(p["total_cost"] / limit * 100, 1) if limit else 0.0
+    totals_pct = round(g_cost / limit * 100, 1) if limit else 0.0
+    fable_limit = _SUB_FABLE_WEEKLY_LIMIT_USD
+    fable_pct = round(fable_cost_total / fable_limit * 100, 1) if fable_limit else 0.0
+
     week_start_local = week_start.astimezone()
     return {
         "days": day_keys,
         "people": people_list,
-        "totals": {"by_day": totals_by_day, "tokens": g_tokens, "cost": round(g_cost, 2)},
+        "totals": {
+            "by_day": totals_by_day, "tokens": g_tokens,
+            "cost": round(g_cost, 2), "pct_limit": totals_pct,
+        },
         "window_days": n_days,
         "week_start": week_start_local.isoformat(timespec="minutes"),
         "week_start_date": start_local_date.isoformat(),
         "week_start_time": week_start_local.strftime("%H:%M"),
         "plan": "Claude Max 20x",
+        "weekly_limit_usd": round(limit, 2),
+        "fable": {
+            "cost": round(fable_cost_total, 2),
+            "limit_usd": round(fable_limit, 2),
+            "pct_limit": fable_pct,
+        },
     }
 
 

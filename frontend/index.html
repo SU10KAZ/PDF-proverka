@@ -2484,6 +2484,7 @@
                                             <th class="sub-spend-name">Инженер</th>
                                             <th v-for="d in subSpendData.days" :key="'h'+d">{{ subSpendDayLabel(d) }}</th>
                                             <th class="sub-spend-total">Итого</th>
+                                            <th class="sub-spend-pct">% лимита</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2504,6 +2505,10 @@
                                                 <div class="sub-spend-tok">{{ subSpendTok(p.total_tokens) }}</div>
                                                 <div class="sub-spend-usd">${{ Math.round(p.total_cost) }}</div>
                                             </td>
+                                            <td class="sub-spend-pct">
+                                                <div class="sub-spend-tok">{{ p.pct_limit }}%</div>
+                                                <div class="sub-spend-bar"><i :style="{width: Math.min(100, p.pct_limit) + '%', background: subSpendColor(p.id)}"></i></div>
+                                            </td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
@@ -2517,15 +2522,20 @@
                                                 <div class="sub-spend-tok">{{ subSpendTok(subSpendData.totals.tokens) }}</div>
                                                 <div class="sub-spend-usd">${{ Math.round(subSpendData.totals.cost) }}</div>
                                             </td>
+                                            <td class="sub-spend-pct">
+                                                <div class="sub-spend-tok">{{ subSpendData.totals.pct_limit }}%</div>
+                                                <div class="sub-spend-bar"><i class="sub-spend-bar--all" :style="{width: Math.min(100, subSpendData.totals.pct_limit) + '%'}"></i></div>
+                                            </td>
                                         </tr>
                                     </tfoot>
                                 </table>
                                 <div class="sub-spend-note">
-                                    Всего за период: <b>${{ Math.round(subSpendData.totals.cost) }}</b> ·
-                                    {{ subSpendTok(subSpendData.totals.tokens) }} токенов.
-                                    <b>Токены</b> — только вход+выход (реальная работа модели, без кэша).
-                                    <b>$</b> — полная оценка по прайсу Claude, включая чтение/запись кэша.
-                                    Одна подписка Max 20x; Людмила исключена.
+                                    <b>% лимита</b> — доля основного недельного лимита подписки
+                                    (Opus/Sonnet/Haiku, ≈${{ Math.round(subSpendData.weekly_limit_usd) }}/нед, откалибровано по панели Claude).
+                                    <b>Fable 5</b> — отдельная квота Anthropic: за период ${{ Math.round(subSpendData.fable.cost) }}
+                                    ≈ {{ subSpendData.fable.pct_limit }}% (в основной % не входит).
+                                    <b>Токены</b> = вход+выход (без кэша); <b>$</b> — полная стоимость с кэшем.
+                                    Max 20x; Людмила исключена.
                                 </div>
                             </div>
                         </div>

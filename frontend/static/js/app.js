@@ -2542,12 +2542,38 @@ const app = createApp({
                 if (stub !== null) return stub;
             }
             const url = _apiUrl(path, opts.withVersion);
-            const resp = await fetch(url);
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err.detail || `API error: ${resp.status}`);
+            // Таймаут + ретрай: раньше `await fetch(url)` не имел таймаута — если
+            // соединение зависало (нестабильная сеть/потеря пакетов), запрос ждал
+            // вечно, и спиннер «Загрузка проекта…» висел бесконечно. Теперь
+            // зависший запрос обрывается по таймауту и переповторяется. Ретраим
+            // только сетевые/таймаут-ошибки (не HTTP 4xx/5xx). api() = только GET,
+            // поэтому ретрай идемпотентен.
+            const timeoutMs = opts.timeoutMs || 25000;
+            const retries = opts.retries != null ? opts.retries : 1;
+            let lastErr;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+                let resp;
+                try {
+                    resp = await fetch(url, { signal: ctrl.signal });
+                } catch (e) {
+                    clearTimeout(timer);
+                    lastErr = e;
+                    if (attempt < retries) {
+                        await new Promise(r => setTimeout(r, 600 * (attempt + 1)));
+                        continue;  // сетевой сбой/таймаут — переповтор
+                    }
+                    throw e;
+                }
+                clearTimeout(timer);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `API error: ${resp.status}`);
+                }
+                return resp.json();
             }
-            return resp.json();
+            throw lastErr;
         }
 
         // ─── Theme ───

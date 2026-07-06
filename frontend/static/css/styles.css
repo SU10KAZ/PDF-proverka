@@ -4387,6 +4387,10 @@ tr.row-rejected td.sc-cell-goto {
 .sub-spend-zero  { color: var(--text3); }
 .sub-spend-tok   { font-weight: 700; color: var(--text); line-height: 1.25; }
 .sub-spend-usd   { font-size: 11px; color: var(--text-muted); line-height: 1.2; }
+.sub-spend-pct   { min-width: 80px; }
+.sub-spend-bar   { margin-top: 4px; height: 5px; border-radius: 3px; background: var(--border2); overflow: hidden; }
+.sub-spend-bar > i { display: block; height: 100%; border-radius: 3px; }
+.sub-spend-bar--all { background: var(--accent, #10b981); }
 .sub-spend-table tfoot td {
   border-top: 2px solid var(--border2); border-bottom: none;
   font-weight: 700; color: var(--text);
