@@ -677,6 +677,14 @@ PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENA
 # отсутствии просканировать ВЕСЬ документ и заполнить `absence_checked`; иначе —
 # понизить до «ПРОВЕРИТЬ ПО СМЕЖНЫМ». OFF по умолчанию — прод-промпт не меняется.
 PIPELINE_ABSENCE_GUARD_ENABLED = _env_bool("PIPELINE_ABSENCE_GUARD_ENABLED", False)
+# Этап «Верификатор» (findings_verify) — отдельный этап поверх слитого 03_findings.json:
+#   1) детерминированные структурные проверки (перенос из критика: evidence_presence /
+#      phantom_block / page_sheet_correct) + консервативный корректор (ничего не удаляет);
+#   2) LLM-проверка присутствия («страж отсутствия»): подтверждённо-ложные «нет» → мягко
+#      «ПРОВЕРИТЬ ПО СМЕЖНЫМ». Заменил бесполезный LLM-критик (recall 17%).
+# Килсвитч: default TRUE («всегда включён» по решению). Поглощает PIPELINE_ABSENCE_GUARD_ENABLED
+# (absence-часть работает внутри этапа). LLM-верификатор инъектируем — под замену на локальную модель.
+PIPELINE_VERIFIER_ENABLED = _env_bool("PIPELINE_VERIFIER_ENABLED", True)
 # Evidence Verifier как стадия пайплайна. Перепроверяет замечания по фактам
 # документа/чертежа (локальные vision-модели + Claude CLI для текста) и пишет
 # evidence_validation.json. OFF по умолчанию — стадия интегрирована и видна в UI
