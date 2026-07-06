@@ -93,8 +93,8 @@ from backend.app.pipeline.stages.findings_merge.runner import (
 from backend.app.pipeline.stages.norms.runner import (
     run_norm_verification as _run_norm_verification_stage,
 )
-from backend.app.pipeline.stages.findings_review.runner import (
-    run_findings_review as _run_findings_review_stage,
+from backend.app.pipeline.stages.findings_verify.runner import (
+    run_findings_verify as _run_findings_verify_stage,
 )
 from backend.app.pipeline.stages.critic_v2_triage import (
     run_critic_v2_triage as _run_critic_v2_triage_stage,
@@ -3140,17 +3140,19 @@ class PipelineManager:
                 else:
                     await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
-            # Resume только findings_review (critic+corrector) — без повтора norms/optimization
+            # Resume только этап «Верификатор» — без повтора norms/optimization
             if start_idx == 5:
                 findings_path = output_dir / "03_findings.json"
                 if findings_path.exists():
                     await self._start_heartbeat(job)
-                    await self._run_findings_review(job, project_info)
+                    await self._run_findings_verify(job, project_info)
 
                     if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
                         return
 
-                    # Проверяем: если critic провалился — не маскировать ошибку
+                    # Верификатор fail-soft: 'error' в логе означает сбой ОБЕИХ
+                    # внутренних фаз (структура + присутствие) — это не должно
+                    # молча маскироваться на resume-пути.
                     _plog_path = output_dir / "pipeline_log.json"
                     try:
                         _plog = json.loads(_plog_path.read_text(encoding="utf-8")) if _plog_path.exists() else {}
@@ -3159,7 +3161,7 @@ class PipelineManager:
                     _critic_status = _plog.get("stages", {}).get("findings_critic", {}).get("status")
                     if _critic_status == "error":
                         job.status = JobStatus.FAILED
-                        job.error_message = "Findings critic провалился"
+                        job.error_message = "Верификатор (структурная проверка) провалился"
                         return
 
                     self.active_jobs[pid] = job
@@ -3687,29 +3689,26 @@ class PipelineManager:
         )
 
 
-    async def _run_findings_review(self, job: AuditJob, project_info: dict):
-        """Тонкий оркестратор: делегирует в findings_review/runner.py.
+    async def _run_findings_verify(self, job: AuditJob, project_info: dict):
+        """Тонкий оркестратор этапа «Верификатор» (findings_verify).
 
-        Оркестраторная логика (job.stage, job.status) остаётся здесь.
-        Бизнес-логика critic + corrector — в runner.
+        Пришёл на смену LLM-критику (03b/03c). Делает две полезные вещи над слитым
+        03_findings.json: детерминированные структурные проверки (перенос из критика)
+        + LLM-проверку присутствия («страж отсутствия»). Пишет ТЕ ЖЕ pipeline_log-ключи
+        (findings_critic/findings_corrector) — совместимость со статус-машинерией и
+        объединённым чипом фронта. Бизнес-логика — в stages/findings_verify/runner.py.
         """
         job.stage = AuditStage.FINDINGS_REVIEW
         job.status = JobStatus.RUNNING
         ctx = self._make_stage_context(job)
-        result = await _run_findings_review_stage(ctx)
-        if result.cancelled:
-            job.status = JobStatus.CANCELLED
-        elif result.error and not result.critic_ok:
-            job.status = JobStatus.FAILED
-            job.error_message = result.error
-            return
+        # Верификатор fail-soft: не валит job (замечания не теряются). job.status
+        # остаётся RUNNING — critic_v2 и promote выполняются как раньше.
+        await _run_findings_verify_stage(ctx)
 
         # ─── Critic v2 post-processing (experimental, OFF by default) ──────
-        # Запускается ТОЛЬКО если legacy critic отработал (critic_ok=True) и
-        # CRITIC_V2_ENABLED=True. Никогда не запускается, если job отменён.
-        # Fail-open: ошибка stage не валит весь аудит (если только не включён
-        # CRITIC_V2_FAILS_PIPELINE).
-        if not result.cancelled and result.critic_ok:
+        # Запускается после готовых findings; не трогает production-артефакты.
+        # Fail-open: ошибка stage не валит аудит (если не включён CRITIC_V2_FAILS_PIPELINE).
+        if job.status not in (JobStatus.CANCELLED, JobStatus.FAILED):
             await self._run_critic_v2_post_review(job)
 
         if job.status not in (JobStatus.CANCELLED, JobStatus.FAILED):
@@ -3840,12 +3839,16 @@ class PipelineManager:
         review_error = False
 
         async def _task_findings_review():
-            """Задача A: Critic → Corrector → signal corrector_done."""
+            """Задача A: Верификатор (findings_verify) → signal corrector_done.
+
+            Верификатор fail-soft (замечания не теряются), но если сам ОРКЕСТРАТОР
+            упадёт — norm_fix ждёт corrector_done, поэтому Event ставим в finally.
+            """
             nonlocal review_error
             try:
-                await self._run_findings_review(job, project_info)
+                await self._run_findings_verify(job, project_info)
             except Exception as e:
-                await self._log(job, f"Findings review ошибка: {e}", "error")
+                await self._log(job, f"Верификатор (оркестратор) ошибка: {e}", "error")
                 review_error = True
             finally:
                 corrector_done.set()

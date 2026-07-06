@@ -41,7 +41,13 @@ from typing import Optional
 
 from backend.app.pipeline.context import PipelineStageContext
 
-_STAGE_KEY = "findings_verify"
+# pipeline_log-ключи: этап пишет ТЕ ЖЕ ключи, что и старый критик/корректор
+# (findings_critic = структурная проверка → 03_findings_review.json; findings_corrector =
+# применение вердиктов + absence → 03_findings.json). Так вся статус-машинерия (дашборд,
+# read_canary, resume_detector, usage_service) и объединённый чип фронта работают БЕЗ правок.
+# Ренейм в «Верификатор» — только UI-метка (Фаза B). Внутренний ключ этапа — для логов.
+_CRITIC_KEY = "findings_critic"
+_CORRECTOR_KEY = "findings_corrector"
 
 
 @dataclass
@@ -150,8 +156,9 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
     project_info = ctx.project_info or {}
 
     if not getattr(cfg, "PIPELINE_VERIFIER_ENABLED", True):
-        ctx.update_pipeline_log(_STAGE_KEY, "skipped",
-                                detail={"reason": "PIPELINE_VERIFIER_ENABLED=false"})
+        for key in (_CRITIC_KEY, _CORRECTOR_KEY):
+            ctx.update_pipeline_log(key, "skipped",
+                                    detail={"reason": "PIPELINE_VERIFIER_ENABLED=false"})
         await ctx.log("Верификатор отключён (PIPELINE_VERIFIER_ENABLED=false) — пропуск")
         return FindingsVerifyResult(skipped=True)
 
@@ -160,12 +167,12 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
 
     findings_path = Path(output_dir) / "03_findings.json"
     if not findings_path.is_file():
-        ctx.update_pipeline_log(_STAGE_KEY, "skipped",
-                                detail={"reason": "нет 03_findings.json"})
+        for key in (_CRITIC_KEY, _CORRECTOR_KEY):
+            ctx.update_pipeline_log(key, "skipped", detail={"reason": "нет 03_findings.json"})
         await ctx.log("Верификатор: 03_findings.json не найден — пропуск", "warn")
         return FindingsVerifyResult(skipped=True, error="03_findings.json не найден")
 
-    ctx.update_pipeline_log(_STAGE_KEY, "running")
+    ctx.update_pipeline_log(_CRITIC_KEY, "running")
     await ctx.log("═══ Верификатор — структурные проверки + проверка присутствия ═══")
     result = FindingsVerifyResult()
 
@@ -185,9 +192,17 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
             f"(фантом-блоки: {result.phantom_cleaned}, page/sheet: {result.page_fixed}, "
             f"понижено: {result.downgraded}, на ручную проверку: {result.flagged_human})",
         )
+        # findings_critic = структурная проверка (03_findings_review.json записан)
+        ctx.update_pipeline_log(
+            _CRITIC_KEY, "done" if result.deterministic_ok else "error",
+            message=f"{result.findings_total} проверено, {result.deterministic_issues} проблем",
+            error=(det.get("critic_error") or det.get("corrector_error")),
+        )
     except Exception as e:  # noqa: BLE001 — fail-soft: не валим этап
         await ctx.log(f"Верификатор (структура) упал (не критично): {e}", "warn")
         result.error = f"deterministic: {e}"
+        ctx.update_pipeline_log(_CRITIC_KEY, "error", error=str(e))
+    ctx.update_pipeline_log(_CORRECTOR_KEY, "running")
 
     # ── Фаза 2: LLM-проверка присутствия («страж отсутствия») ──
     try:
@@ -214,8 +229,14 @@ async def run_findings_verify(ctx: PipelineStageContext) -> FindingsVerifyResult
         result.error = (result.error + f"; absence: {e}") if result.error else f"absence: {e}"
 
     result.ok = result.deterministic_ok or result.absence_ok
+    # findings_corrector = применение вердиктов + понижение подтверждённо-ложных «нет»
     ctx.update_pipeline_log(
-        _STAGE_KEY, "done" if result.ok else "error",
+        _CORRECTOR_KEY, "done" if result.ok else "error",
+        message=(
+            f"фантом: {result.phantom_cleaned}, page/sheet: {result.page_fixed}, "
+            f"понижено: {result.downgraded + result.absence_downgraded}, "
+            f"на ручную проверку: {result.flagged_human}"
+        ),
         detail={
             "findings_total": result.findings_total,
             "deterministic_issues": result.deterministic_issues,

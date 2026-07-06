@@ -37,6 +37,12 @@ class _Ctx:
     def is_cancelled(self):
         return self._cancelled
 
+    def last_status(self, stage_key):
+        """Последний статус этапа в pipeline_log (или None)."""
+        return next(
+            (st for k, st, _ in reversed(self.pipeline_log) if k == stage_key), None,
+        )
+
 
 def _write_findings(output_dir, findings):
     (output_dir / "03_findings.json").write_text(
@@ -80,9 +86,9 @@ async def test_verify_cleans_phantom_block_and_writes_review(tmp_path):
     assert f1["severity"] == "КРИТИЧЕСКОЕ"          # инвариант «не reject»
     assert f1.get("requires_human_review") is True
     assert "corrector_note" in f1
-    # pipeline_log — done
-    assert ctx.pipeline_log[-1][0] == "findings_verify"
-    assert ctx.pipeline_log[-1][1] == "done"
+    # pipeline_log — этап пишет легаси-ключи findings_critic/findings_corrector (done)
+    assert ctx.last_status("findings_critic") == "done"
+    assert ctx.last_status("findings_corrector") == "done"
 
 
 # ── LLM-фаза присутствия ──
@@ -156,7 +162,8 @@ async def test_verify_killswitch_off_skips(tmp_path, monkeypatch):
     assert res.skipped is True
     # review-файл НЕ создан, findings не тронут
     assert not (tmp_path / "03_findings_review.json").exists()
-    assert ctx.pipeline_log[-1][1] == "skipped"
+    assert ctx.last_status("findings_critic") == "skipped"
+    assert ctx.last_status("findings_corrector") == "skipped"
 
 
 @pytest.mark.asyncio
@@ -165,7 +172,7 @@ async def test_verify_no_findings_failsoft(tmp_path):
     ctx = _Ctx(tmp_path)
     res = await run_findings_verify(ctx)
     assert res.skipped is True
-    assert ctx.pipeline_log[-1][1] == "skipped"
+    assert ctx.last_status("findings_corrector") == "skipped"
 
 
 @pytest.mark.asyncio
