@@ -101,6 +101,13 @@ def extract_spec_cables_geom(doc, pages):
             if t in ('м', 'м.', 'км') and i + 1 < len(r['toks']) and _INT.match(r['toks'][i + 1]):
                 qty = r['toks'][i + 1]
                 break
+        # Кабель в спеке ВСЕГДА измеряется в метрах. Ряд с NxM-паттерном, но без единицы «м/км»
+        # — это габарит (перфопрофиль «30х20», перчатки «350х135х1,1»), а не кабель.
+        # Сверка с Chandra (колоночный разбор) показала: такие ряды у Chandra в шт./компл.,
+        # а у нас regex ловил их по «\d+х\d+». Фильтр по единице «м» убирает их без потери
+        # реальных кабелей (все кабельные ряды имеют метраж).
+        if qty is None:
+            continue
         out.setdefault((canon_mark(mk), vj.canon_val(sec)),
                        {'mark': mk, 'section': sec, 'metres': qty})
     return out
