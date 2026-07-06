@@ -2072,9 +2072,9 @@
                     <!-- Сводка по типам + Expert Review (одна строка) -->
                     <div class="severity-badges severity-badges--large" style="display:flex; align-items:center; flex-wrap:wrap;">
                         <span v-for="(count, type) in optimizationData.by_type" :key="type"
-                              class="opt-type-badge" :style="{ background: optTypeColor(type) }"
+                              class="sev-badge sev-badge--opt" :class="optTypeClass(type)"
                               @click="optimizationFilter = type" style="cursor:pointer">
-                            {{ count }}
+                            {{ optIcon(type) }} {{ count }}
                         </span>
                         <span class="findings-total" style="color: var(--green)">Всего: {{ optimizationData.total }}</span>
 

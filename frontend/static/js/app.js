@@ -7341,6 +7341,13 @@ const app = createApp({
             return map[type] || '';
         }
 
+        // Цветной кружок для бейджа оптимизации — по аналогии с sevIcon (замечания),
+        // чтобы карточки-счётчики выглядели одинаково.
+        function optIcon(type) {
+            const map = { 'cheaper_analog': '🟢', 'faster_install': '🔵', 'simpler_design': '🟠', 'lifecycle': '🟣' };
+            return map[type] || '⚪';
+        }
+
         // ─── Discussions (чат по замечаниям/оптимизациям) ─────────────
 
         async function loadDiscussionModels() {
@@ -17223,7 +17230,7 @@ const app = createApp({
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, optTypeClass, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, optIcon, loadOptimization,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,
