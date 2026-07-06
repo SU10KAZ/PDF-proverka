@@ -10,7 +10,13 @@
     <script src="/static/js/version_api.js?v={{js_version}}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Шрифты грузим НЕблокирующе (media=print → onload) — иначе render-blocking
+         запрос к fonts.googleapis.com при недоступности Google подвешивает отрисовку
+         всей страницы на десятки секунд (замер: hang 8с → FCP 12.7с). Страница
+         рисуется сразу фолбэком, веб-шрифт подменяется по готовности. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+          media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
 </head>
 <body>
