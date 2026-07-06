@@ -22,7 +22,7 @@ import fitz  # noqa: E402
 import valuejoin_mvp as vj  # noqa: E402
 import spec_check as sc      # noqa: E402
 
-SEC_IN_WORD = re.compile(r'^(\d+\s*[хx]\s*[\d().,+хx]*[\d)])')  # 3х1.5 / 3х2,5(мм2) / 4х(1х70)+(1х50)
+SEC_IN_WORD = re.compile(r'^-?(\d+\s*[хx]\s*[\d().,+хx]*[\d)])')  # 3х1.5 / 3х2,5(мм2) / 4х(1х70)+(1х50) / -3х1,5 (ЭОМ-НС: сечение с дефисом-подпунктом)
 _VOLT = re.compile(r'-\d+([.,]\d+)?$')   # -660 / -1000 (класс напряжения, не идентичность)
 _INT = re.compile(r'^\d+([.,]\d+)?$')
 
