@@ -867,6 +867,38 @@ def _extract_input_cables(page_text: str) -> list:
     return rows
 
 
+_SUB_PANEL_NAME_RE = re.compile(r"Щит[^\n]{0,50}?(Щ[А-Яа-я]{0,3}\d[\w.\-]*)", re.I)
+
+
+def _extract_sub_panels(page_text: str) -> list:
+    """Встроенные суб-щиты на листе (напр. «Щит освещения кладовых ЩСк2») с расчётом (Кс/Cos f/Рр/Ip)
+    и питающим кабелем. Вектограф моделирует основные панели РПn; мелкие именованные щиты раньше
+    терялись. Читает полигон-отфильтрованный текст (суб-щит — часть блока, внутри контура). Дедуп по
+    id. Best-effort: чего нет — None (не выдумывать)."""
+    txt = page_text or ""
+    out, seen = [], set()
+    for m in _SUB_PANEL_NAME_RE.finditer(txt):
+        pid = m.group(1)
+        if pid in seen:
+            continue
+        seen.add(pid)
+        win = txt[m.start():m.start() + 360]
+
+        def _grab(pat):
+            mm = re.search(pat, win, re.I)
+            return _calc_num(mm.group(1)) if mm else None
+
+        cab = re.search(r"(ППГнг\S*)\s*(\d[хx][\d.,]+)[\s\S]{0,22}?L=(\d+)", win, re.I)
+        out.append({
+            "id": pid, "name": re.sub(r"\s+", " ", m.group(0)).strip(),
+            "Kc": _grab(r"Кс=\s*([\d.,]+)"), "cosphi": _grab(r"Cos\s*f=\s*([\d.,]+)"),
+            "Pr": _grab(r"Рр=\s*([\d.,]+)\s*кВт"), "Ip": _grab(r"Ip=?\s*([\d.,]+)"),
+            "feed_cable": (f"{cab.group(1)} {cab.group(2)}" if cab else None),
+            "feed_length_m": (int(cab.group(3)) if cab else None),
+        })
+    return out
+
+
 def _extract_tt_check(page_text: str) -> list:
     """Таблица проверки коэффициентов трансформации ТТ (если присутствует на листе)."""
     txt = page_text or ""
@@ -1837,6 +1869,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     panel_calcs = _safe(_extract_panel_calcs, page_full_text, default=[])
     input_calcs = _safe(_extract_input_calcs, page_full_text, default=[])
     input_cables = _safe(_extract_input_cables, page_full_text, default=[])
+    sub_panels = _safe(_extract_sub_panels, page_full_text, default=[])
     tt_check = _safe(_extract_tt_check, page_full_text, default=[])
     notes = _safe(_extract_notes, page_full_text, default=[])
     service_elements = _safe(_extract_service_elements, page_full_text, default=[])
@@ -1922,6 +1955,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "panel_calculations": panel_calcs,
         "input_calculations": input_calcs,
         "input_cables": input_cables,
+        "sub_panels": sub_panels,
         "tt_check_table": tt_check,
         "service_elements": service_elements,
         "secondary_circuits": secondary_circuits,
@@ -2183,6 +2217,20 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append(f"| {_md_cell(s.get('element'))} | {_md_cell(s.get('value'))} | {_md_cell(s.get('note'))} |")
     if not graph.get("service_elements"):
         L.append("| (служебные элементы не извлечены) | — | — |")
+
+    # 5.0 Встроенные суб-щиты (напр. ЩСк «Щит освещения кладовых») — если извлечены
+    sp = graph.get("sub_panels") or []
+    if sp:
+        L.append("\n### 5.0 Встроенные суб-щиты\n")
+        L.append("| Щит | Наименование | Кс | Cos f | Рр, кВт | Ip, А | Питающий кабель |")
+        L.append("| --- | --- | --- | --- | --- | --- | --- |")
+        for r in sp:
+            cab = r.get("feed_cable") or ""
+            if cab and r.get("feed_length_m") is not None:
+                cab = f"{cab} L={r['feed_length_m']}м"
+            L.append(f"| {_md_cell(r.get('id'))} | {_md_cell(r.get('name'))} | {_md_cell(r.get('Kc'))} "
+                     f"| {_md_cell(r.get('cosphi'))} | {_md_cell(r.get('Pr'))} | {_md_cell(r.get('Ip'))} "
+                     f"| {_md_cell(cab or None)} |")
 
     # 5.1 Вторичные цепи (ад/ан) — отдельный слой, НЕ primary feeder code
     sec = graph.get("secondary_circuits") or []

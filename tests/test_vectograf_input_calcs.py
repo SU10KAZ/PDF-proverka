@@ -9,6 +9,7 @@ from __future__ import annotations
 from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
     _extract_input_cables,
     _extract_input_calcs,
+    _extract_sub_panels,
 )
 
 # Заголовок «Ввод N (...)» может переноситься на несколько строк (как в pdfplumber).
@@ -96,3 +97,27 @@ def test_extract_input_cables_dedup_and_empty():
     assert len(_extract_input_cables(txt)) == 1
     assert _extract_input_cables("") == []
     assert _extract_input_cables("нет кабелей") == []
+
+
+# ── Встроенные суб-щиты (напр. ЩСк2 «Щит освещения кладовых») ──────────────────
+
+def test_extract_sub_panel_scsk2():
+    txt = ("Щит освещения кладовых ЩСк2\nРу=\n кВт\nКс= 0.90\nCos f= 0.95\n"
+           "Рр= 0.48 кВт\nIp=2.29\nWh\nНАРТИС-И100-W113\nВA-103, 1Р, 10A\n"
+           "от ВП1\nВРУ-2.1\nгр.6.1\nППГнг(А)-HF 3x1.5\nв Пг.20 L=100м")
+    rows = _extract_sub_panels(txt)
+    assert len(rows) == 1
+    r = rows[0]
+    assert r["id"] == "ЩСк2"
+    assert r["name"] == "Щит освещения кладовых ЩСк2"
+    assert r["Kc"] == 0.9 and r["cosphi"] == 0.95
+    assert r["Pr"] == 0.48 and r["Ip"] == 2.29
+    assert r["feed_cable"] == "ППГнг(А)-HF 3x1.5" and r["feed_length_m"] == 100
+
+
+def test_sub_panel_dedup_and_none():
+    txt = "Щит освещения кладовых ЩСк2\nКс= 0.9\nЩит освещения кладовых ЩСк2\nКс= 0.9"
+    assert len(_extract_sub_panels(txt)) == 1
+    assert _extract_sub_panels("") == []
+    # основная панель без цифрового Щ-id не считается суб-щитом
+    assert _extract_sub_panels("Щит М4-1.1 стояк квартир") == []
