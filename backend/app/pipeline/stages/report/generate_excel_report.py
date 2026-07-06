@@ -233,13 +233,28 @@ def f_severity(f, _):
 # Экспертные решения — подгружаются из expert_review.json
 _expert_review_cache = {}  # folder_path -> {item_id: {decision, rejection_reason}}
 
+def _expert_review_candidates(folder: str) -> list:
+    """Кандидаты для expert_review.json (folder = version_dir).
+
+    В projects_v2 файл лежит в `<version_dir>/04_review/`, в legacy — в
+    `<version_dir>/_output/`. Порядок совпадает с каноническим резолвером
+    knowledge_base_service._review_paths, иначе решения/причины «Возможный
+    повтор» не попадают в Excel пакета выгрузки для V2-проектов.
+    """
+    return [
+        os.path.join(folder, "04_review", "expert_review.json"),
+        os.path.join(folder, "03_analysis", "latest", "expert_review.json"),
+        os.path.join(folder, "_output", "expert_review.json"),
+    ]
+
+
 def _load_expert_review(folder: str) -> dict:
     """Загрузить решения эксперта для проекта (кешировано)."""
     if folder in _expert_review_cache:
         return _expert_review_cache[folder]
-    path = os.path.join(folder, "_output", "expert_review.json")
     result = {}
-    if os.path.isfile(path):
+    path = next((p for p in _expert_review_candidates(folder) if os.path.isfile(p)), None)
+    if path:
         try:
             with open(path, "r", encoding="utf-8-sig") as f:
                 data = json.load(f)

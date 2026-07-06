@@ -94,6 +94,25 @@ def _project_info_from_v2_version(version_dir: Path) -> dict:
     return info if isinstance(info, dict) else {}
 
 
+def _resolve_expert_review(version_dir: Path, output_dir: Path) -> Optional[Path]:
+    """Найти expert_review.json (решения эксперта + перенос вердиктов).
+
+    В projects_v2 файл лежит в `<version_dir>/04_review/`, а output_dir
+    указывает на `03_analysis/latest`, где его нет. Перебираем канонические
+    пути (совпадает с knowledge_base_service._review_paths), иначе решения и
+    причины «Возможный повтор» не попадают в пакет выгрузки.
+    """
+    for cand in (
+        version_dir / "04_review" / "expert_review.json",
+        version_dir / "03_analysis" / "latest" / "expert_review.json",
+        output_dir / "expert_review.json",
+        version_dir / "_output" / "expert_review.json",
+    ):
+        if cand.exists():
+            return cand
+    return None
+
+
 async def _download_audit_package_v2(project_id: str, version_id: Optional[str] = None):
     """projects_v2-primary ZIP export. READ-ONLY, no legacy fallback inside branch."""
     from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
@@ -185,8 +204,8 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
             if tmp_xlsx and os.path.exists(tmp_xlsx):
                 os.unlink(tmp_xlsx)
 
-        er = output_dir / "expert_review.json"
-        if er.exists():
+        er = _resolve_expert_review(version_dir, output_dir)
+        if er is not None:
             zf.write(str(er), "expert_review.json")
 
         readme = _build_audit_readme(version_dir, output_dir)
@@ -309,8 +328,8 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
                 os.unlink(tmp_xlsx)
 
         # --- expert_review.json (решения эксперта, если есть) ---
-        er = output_dir / "expert_review.json"
-        if er.exists():
+        er = _resolve_expert_review(version_dir, output_dir)
+        if er is not None:
             zf.write(str(er), "expert_review.json")
 
         # --- README.md с инструкцией для LLM ---
