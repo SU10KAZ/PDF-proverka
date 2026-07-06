@@ -55,7 +55,8 @@ def build_index(pdf: Path, dg: dict) -> dict:
         add_circuit(code, {'source': 'journal', 'page': v['page'],
                            'cable': v['cable'], 'consumer': v.get('consumer', '')})
 
-    # ── спека → типы кабеля ──
+    # ── спека → типы кабеля (СТРОГИЙ извлекатель: точность > охват; терпимый ослаблял
+    #    привязку сечения к марке на перепутанных таблицах → регресс/шум, откачён) ──
     for key, v in sc.extract_spec_cables(doc, spg).items():
         add_cable_type(key, {'source': 'spec', 'mark': v['mark'],
                              'section': v['section'], 'metres': v['metres']})
