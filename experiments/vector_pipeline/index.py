@@ -25,6 +25,7 @@ import fitz  # noqa: E402
 import valuejoin_mvp as vj   # noqa: E402
 import spec_check as sc      # noqa: E402
 import spec_table_geometry as g  # noqa: E402  геом-разбор спеки (привязка по координатам)
+import journal_table_geometry as jg  # noqa: E402  геом-разбор журнала (привязка по колонкам)
 
 
 def build_index(pdf: Path, dg: dict) -> dict:
@@ -53,8 +54,9 @@ def build_index(pdf: Path, dg: dict) -> dict:
                        {'source': 'single_line', 'mark': v['mark'],
                         'section': v['section'], 'n_feeders': v['n_feeders']})
 
-    # ── журнал → коды цепей ──
-    for code, v in vj.extract_journal(pdf, src['journal']).items():
+    # ── журнал → коды цепей (ГЕОМЕТРИЧЕСКИЙ разбор: марка/сечение по X-колонкам, устойчиво
+    #    к перепутанному порядку get_text() и обёрнутым ячейкам; = строчному на К1/К6) ──
+    for code, v in jg.extract_journal_geom(pdf, src['journal']).items():
         add_circuit(code, {'source': 'journal', 'page': v['page'],
                            'cable': v['cable'], 'consumer': v.get('consumer', '')})
 
