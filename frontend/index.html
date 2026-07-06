@@ -94,16 +94,7 @@
                         <rect x="2" y="2" width="12" height="12" rx="2"/>
                         <path d="M5 11V8M8 11V5M11 11V7"/>
                     </svg>
-                    Контроль моделей
-                </div>
-                <div class="nav-item" :class="{active: currentView === 'lms'}" @click="navigate('/lms')" title="Загруженные модели LM Studio (удалённое управление)">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="2.5" y="2.5" width="11" height="11" rx="2"/>
-                        <rect x="6" y="6" width="4" height="4" rx="0.5"/>
-                        <path d="M8 2.5V1M8 15v-1.5M2.5 8H1M15 8h-1.5"/>
-                    </svg>
-                    LM Studio
-                    <span v-if="lmsHealth && lmsHealth.loaded_count" class="nav-badge" :title="lmsHealth.loaded_count + ' моделей загружено'">{{ lmsHealth.loaded_count }}</span>
+                    Локальные сервера
                 </div>
                 <div class="nav-item" :class="{active: currentView === 'stage-comparison'}" @click="navigate('/stage-comparison')" title="Сравнение двух стадий проектной документации">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -2436,167 +2427,6 @@
             </div>
         </div>
 
-        <!-- ═══ LM Studio Management View ═══ -->
-        <div v-if="currentView === 'lms'" class="container">
-            <div class="kb-page">
-                <div class="kb-header">
-                    <h2 class="kb-title">&#129534; LM Studio (удалённое управление)</h2>
-                    <div class="kb-header-actions">
-                        <button class="btn btn-sm btn-outline" @click="lmsRefresh" :disabled="lmsLoading">
-                            {{ lmsLoading ? '...' : 'Обновить' }}
-                        </button>
-                    </div>
-                </div>
-
-                <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 12px;">
-                    Управление LM Studio через ngrok+Basic Auth (WSS).
-                    Используется для Gemma enrichment (этап «Подготовить данные»).
-                </p>
-
-                <!-- Health status banner -->
-                <div class="lms-health-banner" :class="'lms-health-banner--' + lmsHealthStatus">
-                    <div class="lms-health-banner__row">
-                        <span class="lms-status-dot lms-status-dot--lg" :class="'lms-status-dot--' + lmsHealthStatus"></span>
-                        <strong style="font-size: 14px;">
-                            <template v-if="lmsHealthStatus === 'ok'">Модель работает</template>
-                            <template v-else-if="lmsHealthStatus === 'busy'">Модель занята</template>
-                            <template v-else-if="lmsHealthStatus === 'unloaded'">Нет загруженной модели</template>
-                            <template v-else-if="lmsHealthStatus === 'error'">Модель не отвечает</template>
-                            <template v-else>Проверка...</template>
-                        </strong>
-                        <span v-if="lmsHealth && lmsHealth.health && lmsHealth.health.latency_ms != null" style="margin-left: 10px; font-size: 12px;">
-                            ping {{ lmsHealth.health.latency_ms }} ms
-                        </span>
-                        <span v-if="lmsHealth && lmsHealth.health && lmsHealth.health.model" style="margin-left: 10px; font-size: 12px; opacity: 0.7;">
-                            <code style="font-size: 11px;">{{ lmsHealth.health.model }}</code>
-                        </span>
-                        <span style="margin-left: auto; font-size: 12px; opacity: 0.6;" v-if="lmsHealthCheckedAt">
-                            Проверено {{ formatEta(Math.floor((Date.now() - lmsHealthCheckedAt) / 1000)) }} назад
-                        </span>
-                        <button class="btn btn-sm btn-outline" style="margin-left: 8px;" @click="lmsCheckHealth" :disabled="lmsLoading">
-                            Проверить сейчас
-                        </button>
-                    </div>
-                    <div v-if="lmsHealth && lmsHealth.inflight && lmsHealth.inflight.total_active > 0" class="lms-health-banner__row" style="margin-top: 8px; font-size: 12px;">
-                        <span style="opacity: 0.8;">
-                            Активных запросов:
-                            <strong>{{ lmsHealth.inflight.prepare_running }}</strong> идёт,
-                            <strong>{{ lmsHealth.inflight.prepare_pending }}</strong> ожидают
-                        </span>
-                    </div>
-                    <div v-if="lmsHealth && lmsHealth.health && lmsHealth.health.error" class="lms-health-banner__row" style="margin-top: 6px; font-size: 12px; opacity: 0.85;">
-                        Ошибка: {{ lmsHealth.health.error }}
-                    </div>
-                </div>
-
-                <!-- Loaded models -->
-                <div class="lms-section">
-                    <h3 class="lms-section-title">Загружено сейчас</h3>
-                    <div v-if="!lmsLoaded || lmsLoaded.length === 0" class="empty-state" style="padding:14px;font-size:13px">
-                        Нет загруженных моделей.
-                    </div>
-                    <table v-else class="lms-table">
-                        <thead>
-                            <tr>
-                                <th>Identifier</th>
-                                <th>Тип</th>
-                                <th>Context length</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="m in lmsLoaded" :key="m.identifier">
-                                <td><code style="font-size:12px">{{ m.identifier }}</code></td>
-                                <td>{{ m.type }}</td>
-                                <td>
-                                    <strong v-if="m.context_length">{{ m.context_length.toLocaleString() }}</strong>
-                                    <span v-else class="text-muted">—</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-danger-outline" @click="lmsUnload(m.identifier)" :disabled="lmsLoading">
-                                        Выгрузить
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Available downloaded models -->
-                <div class="lms-section" style="margin-top: 24px;">
-                    <h3 class="lms-section-title">Скачанные модели ({{ lmsAll ? lmsAll.length : 0 }})</h3>
-                    <div v-if="!lmsAll || lmsAll.length === 0" class="empty-state" style="padding:14px;font-size:13px">
-                        Список пуст.
-                    </div>
-                    <table v-else class="lms-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Тип</th>
-                                <th>Quant</th>
-                                <th>Max ctx</th>
-                                <th>Загр. ctx</th>
-                                <th>State</th>
-                                <th>Загрузка с context</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="m in lmsAll" :key="m.id" :class="{ 'lms-row-loaded': m.state === 'loaded' }">
-                                <td><code style="font-size:12px">{{ m.id }}</code></td>
-                                <td>{{ m.type }}</td>
-                                <td><span class="text-muted" style="font-size:12px">{{ m.quantization }}</span></td>
-                                <td>{{ m.max_context_length ? m.max_context_length.toLocaleString() : '—' }}</td>
-                                <td>
-                                    <span v-if="m.loaded_context_length"><strong>{{ m.loaded_context_length.toLocaleString() }}</strong></span>
-                                    <span v-else class="text-muted">—</span>
-                                </td>
-                                <td>
-                                    <span v-if="m.state === 'loaded'" class="badge-success">loaded</span>
-                                    <span v-else class="text-muted">{{ m.state }}</span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px;align-items:center">
-                                        <input type="number" v-model.number="lmsLoadCtx[m.id]"
-                                               :placeholder="m.max_context_length || '16384'"
-                                               style="width:90px; padding: 3px 6px; font-size: 12px;">
-                                        <button class="btn btn-sm btn-accent" @click="lmsLoad(m.id)" :disabled="lmsLoading">
-                                            Загрузить
-                                        </button>
-                                        <button v-if="m.state === 'loaded'" class="btn btn-sm btn-outline" @click="lmsReload(m.id)" :disabled="lmsLoading"
-                                                title="Выгрузить все instance + загрузить с новым context">
-                                            Reload
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Quick presets -->
-                <div class="lms-section" style="margin-top: 24px;">
-                    <h3 class="lms-section-title">Пресеты context</h3>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap">
-                        <button v-for="ctx in [4096, 8192, 16384, 32768, 65536]" :key="ctx"
-                                class="btn btn-sm btn-outline"
-                                @click="lmsApplyPresetCtx(ctx)">
-                            {{ ctx.toLocaleString() }}
-                        </button>
-                        <span class="text-muted" style="font-size:12px;align-self:center;margin-left:8px">
-                            Применит к выбранным моделям в форме выше
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Last error/result -->
-                <div v-if="lmsMessage" class="lms-message" :class="'lms-message--' + lmsMessage.kind"
-                     style="margin-top:16px;padding:10px 12px;border-radius:6px;font-size:13px">
-                    <strong>{{ lmsMessage.kind === 'error' ? '✗' : '✓' }}</strong>
-                    {{ lmsMessage.text }}
-                </div>
-            </div>
-        </div>
-
         <!-- ═══ График производства работ (mock-данные) ═══ -->
         <div v-if="currentView === 'schedule'" class="container sched-page"
              @click="schedClosePopover(); schedFiltersOpen = false">
@@ -2843,7 +2673,7 @@
         <!-- ═══ Model Control (iframe — отдельное приложение) ═══ -->
         <div v-if="currentView === 'model-control'" class="container model-control-host">
             <iframe src="/model-control?embed=1" class="model-control-iframe"
-                    title="Контроль моделей"></iframe>
+                    title="Локальные сервера"></iframe>
         </div>
 
         <!-- ═══ Blocks Viewer (OCR) ═══ -->

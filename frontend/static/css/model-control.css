@@ -576,7 +576,7 @@ body.embed .topbar > div:first-child .eyebrow,
 body.embed .topbar > div:first-child h1,
 body.embed .topbar > div:first-child .lead { display: none; }
 body.embed .topbar > div:first-child::before {
-    content: "Контроль моделей";
+    content: "Локальные сервера";
     font-weight: 700; font-size: 15px; color: var(--teal-dark);
 }
 body.embed .topbar-actions { gap: 6px; }

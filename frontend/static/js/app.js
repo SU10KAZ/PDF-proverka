@@ -2612,10 +2612,6 @@ const app = createApp({
                 refreshBatchQueue();
                 fetchPrepareQueue();   // подгрузить prepare-data queue
                 refreshProjects();  // для списка добавления
-            } else if (hash === '/lms') {
-                currentView.value = 'lms';
-                connectGlobalWS();
-                lmsRefresh();
             } else if (hash === '/model-control') {
                 currentView.value = 'model-control';
                 connectGlobalWS();
@@ -9891,7 +9887,6 @@ const app = createApp({
                 fetchPaidBlockedEvents();
                 fetchPaidCostDaily();
             }, 60000);
-            startLmsHealthPolling();
         });
 
         onUnmounted(() => {
