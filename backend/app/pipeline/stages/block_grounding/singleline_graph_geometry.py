@@ -417,9 +417,11 @@ def render_graph_for_prompt(graph: dict) -> str:
                 continue
             ctrl = (" | упр:" + ",".join(f.get("control"))) if f.get("control") else ""
             dev = (" | доп:" + "; ".join(f.get("additional_devices"))) if f.get("additional_devices") else ""
+            lr = _fmt_lighting_run(f.get("lighting_run"))
+            light = (" | освещ.прогон: " + lr) if lr else ""
             L.append(f"  {f['qf']}: {f.get('consumer') or '?'} | {br} | {f.get('circuit_code') or '?'} | "
                      f"Pрасч {f.get('P_calc_kw')}кВт | I {f.get('I_a')}А | {f.get('cable') or '?'} | "
-                     f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}{dev}")
+                     f"{f.get('length_m')}м | Iкз {f.get('Ikz_ka')}кА{ctrl}{dev}{light}")
 
     rv = graph.get("review") or []
     if rv:
@@ -1261,6 +1263,57 @@ def _extract_metering(words, qf_out, qf_incomers):
     return out, qmap
 
 
+_LIGHT_LEN_RE = re.compile(r"L=(\d+)\s*м?$")
+_LIGHT_SECT_RE = re.compile(r"\dх[\d.,]+$")
+# Не-осветительные потребители — к ним гребёнку освещения НЕ привязываем (guard против ложной
+# привязки). Силовые (стояк/насос/розетка/завеса) + вентиляция/дымоудаление. Аварийное освещение
+# (ЩАО) и эвакуационные светоуказатели («ВЫХОД»/«ПК») — это освещение, НЕ в стоп-листе.
+_POWER_CONSUMER_RE = re.compile(
+    r"Стояк|насос|розет|завеса|ЩАУВ|ЩД-|дренаж|СКУД|СОТ|электроинструм|конвектор"
+    r"|вент|дымоудал|подпор|огнезадерж|клапан|ПД\d", re.I)
+
+
+def _extract_lighting_runs(words, page_h, *, top_frac=0.30):
+    """Верхняя «гребёнка» освещения: кабель-прогоны к светильникам по этажам («см. схемы УЭРВ»),
+    напр. «ППГнг(A)-HF 3х1.5 в П.32 (закл.)/Пг.20 L=Nм» — нарисованы НАД рядом QF, без построчного
+    кода/Iкз (спецификация — в отдельном проекте ЭО). Якорь — токен «L=Nм» в верхней полосе листа
+    (Y < top_frac·H); рядом ВЫШЕ по X собираем сечение (3х…), способ прокладки (в П.NN/Пг.NN) и марку.
+
+    Возвращает [{x, cable, laying, length_m}]. Привязка к фидеру — снаружи по X-колонке QF (у каждого
+    прогона своя колонка над своей отходящей линией освещения). fail-soft: нет якорей → [].
+    """
+    top_y = top_frac * float(page_h or 0)
+    if top_y <= 0:
+        return []
+    anchors = [w for w in words if len(w) >= 5
+               and ((float(w[1]) + float(w[3])) / 2) < top_y
+               and _LIGHT_LEN_RE.match(str(w[4]))]
+    if not anchors:
+        return []
+    axs = sorted((float(a[0]) + float(a[2])) / 2 for a in anchors)
+    gaps = [axs[i + 1] - axs[i] for i in range(len(axs) - 1) if axs[i + 1] - axs[i] > 1]
+    half = max(6.0, 0.42 * (_median(gaps) if gaps else 40.0))
+
+    def _above(cx, cy, pred):
+        cand = [(abs((float(w[0]) + float(w[2])) / 2 - cx), str(w[4])) for w in words
+                if abs((float(w[0]) + float(w[2])) / 2 - cx) < half
+                and 0 < (cy - (float(w[1]) + float(w[3])) / 2) < top_y and pred(str(w[4]))]
+        return sorted(cand)[0][1] if cand else None
+
+    runs = []
+    for a in sorted(anchors, key=lambda w: float(w[0])):
+        cx = (float(a[0]) + float(a[2])) / 2
+        cy = (float(a[1]) + float(a[3])) / 2
+        sect = _above(cx, cy, lambda s: bool(_LIGHT_SECT_RE.match(s)))
+        laying = _above(cx, cy, lambda s: bool(re.match(r"(?:Пг|П)\.\d", s)))
+        marka = _above(cx, cy, lambda s: s.startswith("ППГнг"))
+        m = _LIGHT_LEN_RE.match(str(a[4]))
+        cable = " ".join(x for x in (marka, sect) if x) or None
+        runs.append({"x": round(cx, 1), "cable": cable, "laying": laying,
+                     "length_m": int(m.group(1)) if m else None})
+    return runs
+
+
 def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
     """Дожать привязку для колонки, оставшейся без кода. Код мог не попасть в primary-ряд
     (секционные «С2»-линии: К3.1.2С2 на dy≈-72) или лежать В ПОДПИСИ потребителя («Щит М4-1.1»
@@ -1488,6 +1541,23 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     except Exception:
         metering, _mt_map = [], {}
 
+    # «Гребёнка» освещения (верхние прогоны к светильникам, «см. схемы УЭРВ») → привязка к
+    # фидеру по X-колонке QF (у каждого прогона своя колонка над своей отходящей линией). fail-soft.
+    _light_map = {}
+    try:
+        _lruns = _extract_lighting_runs(words, page_h)
+        if _lruns and qf_out:
+            _lxs = sorted(q[0] for q in qf_out)
+            _lgaps = [_lxs[i + 1] - _lxs[i] for i in range(len(_lxs) - 1) if _lxs[i + 1] - _lxs[i] > 1]
+            _lhalf = max(6.0, 0.5 * (_median(_lgaps) if _lgaps else 40.0))
+            for _run in _lruns:
+                _q = min(qf_out, key=lambda t: abs(t[0] - _run["x"]))
+                if abs(_q[0] - _run["x"]) <= _lhalf and _q[2] not in _light_map:
+                    _light_map[_q[2]] = {"cable": _run["cable"], "laying": _run["laying"],
+                                         "length_m": _run["length_m"]}
+    except Exception:
+        _light_map = {}
+
     feeders = []
     qf_xs = sorted(q[0] for q in qf_out)
     _qf_geom = {}   # qn → (qx, qy, next_x) для пост-обработки (control_edges)
@@ -1660,6 +1730,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "bus_section": _bs_map.get(qn),
             "metering": ({"ta": _mt_map[qn]["ta"], "wh": _mt_map[qn]["wh"],
                           "meter": _mt_map[qn]["meter"]} if qn in _mt_map else None),
+            "lighting_run": (_light_map.get(qn)
+                             if not (consumer and _POWER_CONSUMER_RE.search(str(consumer))) else None),
         })
 
     feeders.sort(key=lambda f: (int(re.match(r"QF(\d+)", f["qf"]).group(1)),
@@ -1888,8 +1960,17 @@ def _fmt_load(f: dict) -> str:
     return "; ".join(seg)
 
 
+def _fmt_lighting_run(lr: dict) -> str:
+    """Компактная строка прогона освещения (гребёнка УЭРВ): кабель + прокладка + длина."""
+    if not lr:
+        return ""
+    parts = [p for p in (lr.get("cable"), lr.get("laying"),
+                         (f"L={lr['length_m']}м" if lr.get("length_m") is not None else None)) if p]
+    return " ".join(parts)
+
+
 def _fmt_cable(f: dict) -> str:
-    if not any(f.get(k) for k in ("length_m", "cable", "Ikz_ka", "routing")):
+    if not any(f.get(k) for k in ("length_m", "cable", "Ikz_ka", "routing")) and not f.get("lighting_run"):
         return "—"
     seg = []
     if f.get("length_m") is not None:
@@ -1902,6 +1983,9 @@ def _fmt_cable(f: dict) -> str:
         seg.append(f"Iкз(1)={f['Ikz_ka']}кА")
     if f.get("routing"):
         seg.append(str(f["routing"]))
+    lr = _fmt_lighting_run(f.get("lighting_run"))
+    if lr:
+        seg.append(f"прогон освещения: {lr}")
     return "; ".join(seg) or "—"
 
 
