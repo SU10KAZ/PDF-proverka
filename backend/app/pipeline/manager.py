@@ -23,8 +23,6 @@ from backend.app.core.config import (
     is_local_llm_model,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
-    CRITIC_CHUNK_SIZE,
-    CORRECTOR_CHUNK_SIZE,
     validate_current_stage_model_config,
     BATCH_QUEUE_FILE,
 )

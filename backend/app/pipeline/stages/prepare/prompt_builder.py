@@ -19,7 +19,6 @@ from backend.app.core.config import (
     BASE_DIR, PROJECTS_DIR,
     TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
     FINDINGS_MERGE_TASK_TEMPLATE,
-    FINDINGS_CRITIC_TASK_TEMPLATE, FINDINGS_CORRECTOR_TASK_TEMPLATE,
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
     OPTIMIZATION_CRITIC_TASK_TEMPLATE, OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
@@ -625,68 +624,8 @@ def build_findings_merge_messages(
     ]
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# Этап 3b: Critic + Corrector
-# ═══════════════════════════════════════════════════════════════════════════
-
-def build_findings_critic_messages(
-    project_info: dict,
-    project_id: str,
-) -> list[dict]:
-    """Сформировать messages для findings_critic.
-
-    system: шаблон findings_critic
-    user: 03_findings.json + 02_blocks_analysis.json + document_graph.json
-    """
-    system_prompt = _load_and_clean_template(
-        FINDINGS_CRITIC_TASK_TEMPLATE, project_info, project_id,
-    )
-
-    findings = _read_json_file(project_id, "03_findings.json")
-    blocks_analysis = _read_json_file(project_id, "02_blocks_analysis.json")
-    doc_graph = _read_json_file(project_id, "document_graph.json")
-
-    user_text = (
-        f"## 03_findings.json (findings to review):\n\n{findings}\n\n"
-        f"## 02_blocks_analysis.json (block analysis):\n\n{blocks_analysis}\n\n"
-        f"## document_graph.json (document structure):\n\n{doc_graph}"
-    )
-
-    return [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_text},
-    ]
-
-
-def build_findings_corrector_messages(
-    project_info: dict,
-    project_id: str,
-) -> list[dict]:
-    """Сформировать messages для findings_corrector.
-
-    system: шаблон findings_corrector
-    user: 03_findings.json + 03_findings_review.json + 02_blocks_analysis.json + document_graph.json
-    """
-    system_prompt = _load_and_clean_template(
-        FINDINGS_CORRECTOR_TASK_TEMPLATE, project_info, project_id,
-    )
-
-    findings = _read_json_file(project_id, "03_findings.json")
-    review = _read_json_file(project_id, "03_findings_review.json")
-    blocks_analysis = _read_json_file(project_id, "02_blocks_analysis.json")
-    doc_graph = _read_json_file(project_id, "document_graph.json")
-
-    user_text = (
-        f"## 03_findings.json (findings to correct):\n\n{findings}\n\n"
-        f"## 03_findings_review.json (critic verdicts):\n\n{review}\n\n"
-        f"## 02_blocks_analysis.json (block analysis):\n\n{blocks_analysis}\n\n"
-        f"## document_graph.json (document structure):\n\n{doc_graph}"
-    )
-
-    return [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_text},
-    ]
+# Этап 3b (Critic + Corrector) удалён — проверку замечаний делает отдельный этап
+# «Верификатор» (stages/findings_verify) детерминированно, без LLM-фильтра.
 
 
 # ═══════════════════════════════════════════════════════════════════════════

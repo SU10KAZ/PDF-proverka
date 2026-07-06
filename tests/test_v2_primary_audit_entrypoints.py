@@ -170,7 +170,6 @@ async def test_agent_tasks_use_absolute_v2_output_path(monkeypatch, tmp_path):
 
     monkeypatch.setattr(cr, "is_claude_stage", lambda stage: True)
     monkeypatch.setattr(cr, "get_stage_model", lambda stage: "claude-opus-test")
-    monkeypatch.setattr(cr, "_findings_critic_deterministic_enabled", lambda: False)
 
     async def fake_run_cli(task_text, tools, timeout, on_output=None, stage="", project_id="", model=None, clean_cwd=False):
         captured[stage] = task_text
@@ -194,13 +193,7 @@ async def test_agent_tasks_use_absolute_v2_output_path(monkeypatch, tmp_path):
         version_dir=version_dir,
         version_id="v001",
     )
-    await cr.run_findings_critic(
-        project_info,
-        "DOC-W1",
-        output_dir=output_dir,
-        version_dir=version_dir,
-        version_id="v001",
-    )
+    # findings_critic удалён (LLM-критик → детерминированный этап «Верификатор»).
     await cr.run_optimization(
         project_info,
         "DOC-W1",
@@ -209,7 +202,7 @@ async def test_agent_tasks_use_absolute_v2_output_path(monkeypatch, tmp_path):
         version_id="v001",
     )
 
-    for stage in ("findings_merge", "findings_critic", "optimization"):
+    for stage in ("findings_merge", "optimization"):
         assert str(output_dir) in captured[stage]
         assert str(output_dir).startswith("/")
         assert "_output" not in captured[stage]

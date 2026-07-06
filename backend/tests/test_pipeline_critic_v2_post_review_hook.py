@@ -1,6 +1,6 @@
 """
-Integration tests for the post-findings-review Critic v2 hook in
-PipelineManager._run_findings_review.
+Integration tests for the post-findings Critic v2 hook in
+PipelineManager._run_findings_verify (бывш. _run_findings_review).
 
 Контракт:
     * Hook вызывается ТОЛЬКО если CRITIC_V2_ENABLED=true.

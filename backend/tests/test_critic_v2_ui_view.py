@@ -835,7 +835,7 @@ class TestProductionPipelineUntouched:
 
     PRODUCTION_FILES = [
         "backend/app/pipeline/manager.py",
-        "backend/app/pipeline/stages/findings_review/runner.py",
+        "backend/app/pipeline/stages/findings_verify/runner.py",
     ]
 
     @pytest.mark.parametrize("rel", PRODUCTION_FILES)

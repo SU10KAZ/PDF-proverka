@@ -78,8 +78,8 @@ OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
 TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"
 BLOCK_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "block_analysis_task.md"
 FINDINGS_MERGE_TASK_TEMPLATE = _PIPELINE_RU / "findings_merge_task.md"
-FINDINGS_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "findings_critic_task.md"
-FINDINGS_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "findings_corrector_task.md"
+# findings_critic/corrector-шаблоны удалены: проверку замечаний делает детерминированный
+# этап «Верификатор» (stages/findings_verify), не читающий шаблоны задач.
 OPTIMIZATION_CRITIC_TASK_TEMPLATE = _PIPELINE_RU / "optimization_critic_task.md"
 OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_task.md"
 
@@ -209,10 +209,8 @@ CLAUDE_BLOCK_BATCH_CLEAN_CWD = True
 
 CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800
 CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800
-CLAUDE_FINDINGS_CRITIC_TIMEOUT = 1200
-CRITIC_CHUNK_SIZE = 50
-CLAUDE_FINDINGS_CORRECTOR_TIMEOUT = 1200
-CORRECTOR_CHUNK_SIZE = 5
+# findings_critic/corrector-таймауты и chunk-size удалены вместе с LLM-критиком
+# (детерминированный этап «Верификатор» не чанкует и не запускает агентную сессию).
 CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT = 600
 CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT = 600
 
@@ -226,7 +224,6 @@ NORM_VERIFY_TOOLS = (
 TEXT_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 BLOCK_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 FINDINGS_MERGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
-FINDINGS_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 
 # Модель Claude CLI (sonnet = экономит лимит All models)

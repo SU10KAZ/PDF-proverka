@@ -446,7 +446,7 @@ def test_production_pipeline_files_not_touched_by_disagreements_view():
     """The new disagreements entry-point must not have leaked into production files."""
     PROD_FILES = [
         "backend/app/pipeline/manager.py",
-        "backend/app/pipeline/stages/findings_review/runner.py",
+        "backend/app/pipeline/stages/findings_verify/runner.py",
     ]
     for rel in PROD_FILES:
         text = (Path(_PROJECT_ROOT) / rel).read_text(encoding="utf-8")

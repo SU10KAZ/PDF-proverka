@@ -25,7 +25,6 @@ from backend.app.core.config import (
     OPTIMIZATION_TASK_TEMPLATE,
     TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
     FINDINGS_MERGE_TASK_TEMPLATE,
-    FINDINGS_CRITIC_TASK_TEMPLATE, FINDINGS_CORRECTOR_TASK_TEMPLATE,
     OPTIMIZATION_CRITIC_TASK_TEMPLATE, OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
     PIPELINE_ABSENCE_GUARD_ENABLED,
 )
@@ -103,8 +102,6 @@ _ALL_TEMPLATE_MAP = {
     "text_analysis": TEXT_ANALYSIS_TASK_TEMPLATE,
     "block_analysis": BLOCK_ANALYSIS_TASK_TEMPLATE,
     "findings_merge": FINDINGS_MERGE_TASK_TEMPLATE,
-    "findings_critic": FINDINGS_CRITIC_TASK_TEMPLATE,
-    "findings_corrector": FINDINGS_CORRECTOR_TASK_TEMPLATE,
     "optimization": OPTIMIZATION_TASK_TEMPLATE,
     "optimization_critic": OPTIMIZATION_CRITIC_TASK_TEMPLATE,
     "optimization_corrector": OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
@@ -1127,56 +1124,8 @@ def prepare_findings_merge_task(
     return task
 
 
-# ─── Critic + Corrector (проверка замечаний) ───
-
-def prepare_findings_critic_task(
-    project_info: dict,
-    project_id: str,
-    chunk_suffix: str = "",
-) -> str:
-    """Подготовить задачу для критической проверки замечаний.
-
-    chunk_suffix: если задан (напр. "_001") — подменяет имена input/output файлов
-    для параллельного запуска чанков без файловых конфликтов.
-    """
-    template = load_template_for_llm(FINDINGS_CRITIC_TASK_TEMPLATE)
-
-    _, output_path = _get_project_paths(project_id)
-
-    task = (
-        template
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{OUTPUT_PATH}", output_path)
-    )
-
-    if chunk_suffix:
-        task = task.replace(
-            "03_findings.json",
-            f"03_findings_review_input{chunk_suffix}.json",
-        )
-        task = task.replace(
-            "03_findings_review.json",
-            f"03_findings_review{chunk_suffix}.json",
-        )
-
-    return task
-
-
-def prepare_findings_corrector_task(
-    project_info: dict,
-    project_id: str,
-) -> str:
-    """Подготовить задачу для корректировки замечаний по вердиктам критика."""
-    template = load_template_for_llm(FINDINGS_CORRECTOR_TASK_TEMPLATE)
-
-    _, output_path = _get_project_paths(project_id)
-
-    task = (
-        template
-        .replace("{PROJECT_ID}", project_id)
-        .replace("{OUTPUT_PATH}", output_path)
-    )
-    return task
+# Critic + Corrector (LLM-проверка замечаний) удалены — их заменил детерминированный
+# этап «Верификатор» (stages/findings_verify), не читающий шаблоны задач.
 
 
 # ─── Оптимизация проектных решений ───
