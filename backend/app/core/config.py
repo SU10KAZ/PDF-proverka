@@ -641,6 +641,12 @@ SINGLELINE_RICH_PROMPT_ENABLED = _env_bool("SINGLELINE_RICH_PROMPT_ENABLED", Fal
 # Только где есть вектор-слой (сканы → без изменений, fail-soft). Влияет и на call_gpt_for_block,
 # и на превью /blocks/llm-text (чтобы совпадали). OFF по умолчанию — прод не меняется.
 MIRROR_OCR_ENABLED = _env_bool("MIRROR_OCR_ENABLED", False)
+# Сверка МД↔вектор-слой для ТЕКСТ-блоков на Этапе 01 (text_analysis): аддитивная ВРЕЗКА-подсветка
+# в задачу «В MD: X / В вектор: Y» там, где Chandra-OCR разошёлся с точным вектор-слоем PDF
+# (замер: ~97% значений совпадают; расхождения = 2 системных OCR-паттерна: HF→НФ, потеря точки).
+# Нормализатор гасит стиль (кир/лат, ,/., ², пробел) → подсвечиваем только реальное. МД-файл
+# НЕ редактируем (аддитивно в промпт). OFF по умолчанию — прод не меняется. fail-soft.
+MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о
@@ -693,6 +699,19 @@ PIPELINE_ABSENCE_GUARD_ENABLED = _env_bool("PIPELINE_ABSENCE_GUARD_ENABLED", Fal
 PIPELINE_VERIFIER_ENABLED = _env_bool("PIPELINE_VERIFIER_ENABLED", True)
 # (Подсистема Evidence-Verify удалена как мёртвая: флаги EVIDENCE_VERIFY_IN_PIPELINE_ENABLED
 # и EV_PRECEDENT_* убраны вместе с ней.)
+# Детерминированный корректор оптимизаций. Замер 07-07 (92 проекта): агентный
+# optimization_corrector МОЛЧА ТЕРЯЕТ предложения — критик обрывается на больших
+# входах (reviews < items), корректор перезаписывает файл только отрецензированной
+# частью (ЭО1: 14 → 7, потеряно 7 валидных, включая устранявшее КРИТИЧЕСКОЕ). Плюс
+# корректор УДАЛЯЕТ item'ы (41 удаление, 11 — вообще без вердикта). ON → корректор
+# заменяется детерминированным: НИЧЕГО не удаляет (понижение/пометка вместо delete),
+# неотрецензированные item'ы сохраняются как pass (guard против потери данных). Критик
+# пока остаётся агентным (его вердикты по замеру качественные). OFF по умолчанию —
+# прод-путь не меняется.
+OPTIMIZATION_CRITIC_DETERMINISTIC = _env_bool("OPTIMIZATION_CRITIC_DETERMINISTIC", False)
+# Потолок savings_pct для вердикта unrealistic_savings: корректор режет до него,
+# сохраняя исходное значение в savings_pct_original + corrector_note.
+OPTIMIZATION_SAVINGS_CAP_PCT = int(os.environ.get("OPTIMIZATION_SAVINGS_CAP_PCT", "50"))
 # Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
 BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
 # Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).

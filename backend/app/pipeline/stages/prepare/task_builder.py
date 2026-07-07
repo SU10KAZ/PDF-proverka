@@ -387,6 +387,21 @@ def _get_md_file_path(project_info: dict, project_id: str) -> str:
     return "(нет)"
 
 
+def _get_pdf_file_path(project_info: dict, project_id: str) -> str:
+    """Путь к PDF проекта (version-aware) — для сверки МД↔вектор-слой на Этапе 01."""
+    version_dir = _version_project_dir(project_id)
+    try:
+        sources = resolve_version_source_files(version_dir, project_id, project_info=project_info or {})
+        if sources.pdf_path is not None:
+            return str(sources.pdf_path)
+    except Exception:
+        pass
+    pdf_file = (project_info or {}).get("pdf_file")
+    if pdf_file:
+        return str(version_dir / pdf_file)
+    return "(нет)"
+
+
 def _get_project_paths(project_id: str) -> tuple[str, str]:
     """Получить пути к проекту и выходной папке (version-aware: V2 → _versions/v{N}/)."""
     vdir = _version_project_dir(project_id)
@@ -510,6 +525,25 @@ def prepare_text_analysis_task(
         .replace("{BLOCKS_ANALYSIS_PATH}", blocks_analysis_path)
         .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
+
+    # Аддитивная ВРЕЗКА-подсветка сверки МД↔вектор-слой (Этап 01), за флагом MD_MIRROR_RECONCILE_ENABLED
+    # (default OFF → задача не меняется). Показывает нейросети места OCR-расхождений «В MD:X/В вектор:Y»
+    # — доверять вектору. МД-файл НЕ трогаем. fail-soft: любая ошибка → задача без врезки.
+    try:
+        from backend.app.core import config as _cfg
+        if getattr(_cfg, "MD_MIRROR_RECONCILE_ENABLED", False):
+            from backend.app.pipeline.stages.block_grounding.md_mirror_reconcile import (
+                build_reconcile_annotation,
+            )
+            _ann = build_reconcile_annotation(
+                md_file_path,
+                _get_pdf_file_path(project_info, project_id),
+                str(Path(output_path) / "document_graph.json"),
+            )
+            if _ann:
+                task = task + "\n\n" + _ann
+    except Exception:
+        pass
     return task
 
 
