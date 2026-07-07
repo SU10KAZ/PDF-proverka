@@ -282,6 +282,30 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
     else:
         ctx.update_pipeline_log("optimization_critic", "done", message="OK")
 
+    # Детерминированная структурная аугментация критика (флаг): поверх агентных
+    # вердиктов проставляет структурные (no_traceability / basis-aware
+    # unrealistic_savings) и — главное — даёт вердикт КАЖДОМУ предложению, включая
+    # неотрецензированные при обрыве агентного критика (reviews < items). Семантику
+    # (vendor/conflict/technical) не перебивает. См. config.OPTIMIZATION_CRITIC_DETERMINISTIC.
+    from backend.app.core import config as _cfg
+    if getattr(_cfg, "OPTIMIZATION_CRITIC_DETERMINISTIC", False):
+        if (output_dir / "optimization.json").exists():
+            from backend.app.pipeline.stages.optimization.deterministic_critic import (
+                run_deterministic_critic_augment,
+            )
+            try:
+                aug = await run_deterministic_critic_augment(
+                    output_dir,
+                    project_id=pid,
+                    savings_cap=getattr(_cfg, "OPTIMIZATION_SAVINGS_CAP_PCT", 50),
+                    on_log=ctx.log,
+                    write=True,
+                )
+                if aug.error:
+                    await ctx.log(f"Структурная аугментация: {aug.error}", "warn")
+            except Exception as e:  # fail-soft: агентный review остаётся как есть
+                await ctx.log(f"Структурная аугментация критика упала: {e}", "warn")
+
     review_path = output_dir / "optimization_review.json"
     if not review_path.exists():
         await ctx.log("optimization_review.json не создан — пропуск Corrector", "warn")

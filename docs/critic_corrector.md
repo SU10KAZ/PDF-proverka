@@ -141,8 +141,26 @@ single-shot и chunked-режиме.
 | `vendor_violation` / `no_traceability` / `too_vague` / `technical_issue` / `wrong_page` | оставить + `requires_review` + `corrector_note` |
 | нет вердикта | считать `pass`, СОХРАНИТЬ (guard) |
 
-Критик пока агентный (вердикты качественные). Тесты:
+Тесты:
 [test_optimization_deterministic_corrector.py](../tests/test_optimization_deterministic_corrector.py).
+
+### Структурная аугментация критика (2026-07-07, тот же флаг)
+
+Агентный критик оптимизаций **остаётся** (его семантика — vendor / conflict /
+technical — ценна), но поверх его результата
+[deterministic_critic.py](../backend/app/pipeline/stages/optimization/deterministic_critic.py)
+проставляет СТРУКТУРНЫЕ вердикты (чистый Python) и закрывает дыру покрытия:
+
+- `no_traceability` — `spec_items` пуст или `page` не задан;
+- `unrealistic_savings` — `savings_pct` > `OPTIMIZATION_SAVINGS_CAP_PCT` И
+  `savings_basis` НЕ «расчёт» (basis-aware, надёжнее агентного порога >50%).
+
+**Правило слияния:** агентный НЕ-pass (vendor/conflict/technical/too_vague/
+wrong_page) не перебивается; иначе структурный вердикт; иначе pass. **Инвариант
+покрытия:** вердикт получает КАЖДОЕ предложение, включая неотрецензированные при
+обрыве агентного критика (ЭО1: было 7 из 14 → стало 14, +2 `no_traceability`).
+Fail-soft: ошибка аугментации → агентный review остаётся как есть. Тесты:
+[test_optimization_deterministic_critic.py](../tests/test_optimization_deterministic_critic.py).
 
 ## Ключевые поля оптимизации
 
