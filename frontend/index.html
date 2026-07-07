@@ -1540,10 +1540,10 @@
                         <div class="pipeline-stage pipeline-stage--sm"
                              :class="[stepClass(combinedCriticStatus(currentProject.pipeline.findings_critic, currentProject.pipeline.findings_corrector)), {'pipeline-stage--clickable': canStartFrom('findings_critic')}]"
                              @click="canStartFrom('findings_critic') && startFromStage(currentProject.project_id, 'findings_critic')"
-                             :title="canStartFrom('findings_critic') ? 'Клик: перезапустить Critic замечаний' : 'Critic + Fix замечаний'"
+                             :title="canStartFrom('findings_critic') ? 'Клик: перезапустить Верификатор' : 'Верификатор замечаний: детерминированные проверки (фантом-блоки, лист/страница, no-evidence) + страж отсутствия'"
                         >
-                            <div class="stage-num">CF</div>
-                            <div class="stage-label">Crit/Fix</div>
+                            <div class="stage-num">ВФ</div>
+                            <div class="stage-label">Верифик.</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic') || stageTokensFormatted('findings_corrector')">
                                 <span class="stage-tokens__in" v-if="stageTokensFormatted('findings_critic')">C: &#8595;{{ stageTokensFormatted('findings_critic').inp }}</span>
                                 <span class="stage-tokens__out" v-if="stageTokensFormatted('findings_corrector')">F: &#8595;{{ stageTokensFormatted('findings_corrector').inp }}</span>
@@ -1604,18 +1604,9 @@
                             <div class="stage-num">ПВ</div>
                             <div class="stage-label">Перенос</div>
                         </div>
-                        <!-- Evidence Verifier (EV): интегрирован в пайплайн, по умолчанию OFF.
-                             Показывается всегда; при status 'disabled' — карточка приглушена + бейдж OFF.
-                             Некликабельна пока отключена (включим через EVIDENCE_VERIFY_IN_PIPELINE_ENABLED). -->
-                        <div class="pipeline-arrow pipeline-arrow--sm">&rarr;</div>
-                        <div class="pipeline-stage pipeline-stage--sm pipeline-stage--ev"
-                             :class="stepClass(currentProject.pipeline.evidence_verify)"
-                             :title="currentProject.pipeline.evidence_verify === 'disabled' ? 'Evidence Verifier: перепроверка замечаний по фактам документа/чертежа. Интегрирован в пайплайн, временно отключён — включим позже.' : 'Проверка фактов: перепроверка замечаний по документу/чертежу (Evidence Verifier)'"
-                        >
-                            <div class="stage-num">EV</div>
-                            <div class="stage-label">Факты</div>
-                            <div class="stage-off-badge" v-if="currentProject.pipeline.evidence_verify === 'disabled'">OFF</div>
-                        </div>
+                        <!-- Evidence Verifier (EV) удалён: vision-фактчек не даёт лифта
+                             (замер 07-07: recall 13% ценой false-reject 9.7%, потолок не пробит),
+                             подсистема снята в бэкенде (Фаза A). Карточка убрана. -->
                         <!-- Banner: legacy runner блокирует аудит V2 -->
                         <div v-if="canStartAuditNow.code === 'runner_no_v2'" class="runner-warning">
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
