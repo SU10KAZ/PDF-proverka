@@ -327,6 +327,37 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
         f"═══ Optimization Corrector — корректировка {total_issues} предложений ═══",
     )
 
+    # Детерминированный корректор (флаг): ничего не удаляет, неотрецензированные
+    # item'ы сохраняет как pass (guard против тихой потери данных при обрыве критика).
+    # См. docs/critic_corrector.md и config.OPTIMIZATION_CRITIC_DETERMINISTIC.
+    from backend.app.core import config as _cfg
+    if getattr(_cfg, "OPTIMIZATION_CRITIC_DETERMINISTIC", False):
+        from backend.app.pipeline.stages.optimization.deterministic_corrector import (
+            run_deterministic_corrector,
+        )
+        try:
+            det_res = await run_deterministic_corrector(
+                output_dir,
+                savings_cap=getattr(_cfg, "OPTIMIZATION_SAVINGS_CAP_PCT", 50),
+                on_log=ctx.log,
+                write=True,
+            )
+        except Exception as e:  # fail-soft: не роняем этап
+            ctx.update_pipeline_log("optimization_corrector", "error", error=str(e))
+            await ctx.log(f"Детерм. корректор оптимизаций упал: {e}", "warn")
+            return OptimizationReviewResult(critic_ok=True, error=str(e))
+        if det_res.error:
+            ctx.update_pipeline_log("optimization_corrector", "error", error=det_res.error)
+            await ctx.log(f"Детерм. корректор оптимизаций: {det_res.error}", "warn")
+            return OptimizationReviewResult(critic_ok=True, error=det_res.error)
+        ctx.update_pipeline_log(
+            "optimization_corrector", "done",
+            message=(f"OK детерм. (исправлено {det_res.corrected}, "
+                     f"сохранено без вердикта {det_res.unreviewed_kept}, удалено 0)"),
+        )
+        await ctx.log("Optimization Corrector (детерм.) завершён — optimization.json обновлён")
+        return OptimizationReviewResult(critic_ok=True, corrector_ok=True)
+
     can_go = await ctx.check_before_launch()
     if not can_go:
         await ctx.log("Rate limit: ожидание превышено или отменено", "warn")

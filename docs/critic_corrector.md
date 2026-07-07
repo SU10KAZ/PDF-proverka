@@ -109,11 +109,40 @@ single-shot и chunked-режиме.
 
 **Вердикты:** `pass`, `vendor_violation`, `conflicts_with_finding`, `unrealistic_savings`, `no_traceability`, `wrong_page`, `too_vague`, `technical_issue`
 
-**Действия corrector:**
+**Действия corrector (агентный, legacy):**
 - `vendor_violation` → заменить на аналог из вендор-листа или удалить
 - `conflicts_with_finding` → удалить (КРИТИЧЕСКОЕ) или пометить как обязательное
 - `unrealistic_savings` → снизить до реалистичного
 - `no_traceability` / `too_vague` → конкретизировать или удалить
+
+### Детерминированный corrector оптимизаций (2026-07-07, флаг)
+
+**Замер 07-07** (92 проекта, 916 предложений) показал, что **критик** оптимизаций
+качественный (в отличие от findings-критика): `conflicts_with_finding` 21/21
+ссылаются на реальные КРИТ/ЭКОН замечания, `vendor_violation` — против реального
+вендор-листа, `technical_issue` ловит фактические ошибки в своих же предложениях
+(«Stöbich заявлен как РФ, а это немецкая GmbH»). Но **corrector** вредит:
+
+1. **Тихая потеря данных** — агентный критик обрывается на больших входах
+   (`reviews` < `items`: ЭО1 — 14 предложений, отрецензировано 7), а агентный
+   corrector перезаписывает `optimization.json` только отрецензированной частью →
+   7 валидных предложений молча удаляются.
+2. **Удаляет item'ы** — 41 удаление, 11 по неотрецензированным.
+
+[deterministic_corrector.py](../backend/app/pipeline/stages/optimization/deterministic_corrector.py)
+(флаг `OPTIMIZATION_CRITIC_DETERMINISTIC`, default OFF) заменяет агентный corrector:
+**инвариант — ничего не удаляется и не теряется**.
+
+| Вердикт | Действие |
+|---|---|
+| `pass` | без изменений |
+| `unrealistic_savings` | срезать `savings_pct` до потолка `OPTIMIZATION_SAVINGS_CAP_PCT` (по умолч. 50), сохранив `savings_pct_original` |
+| `conflicts_with_finding` | `blocked_by_finding` + `savings_pct`→0 + `requires_review` (замечание в приоритете) |
+| `vendor_violation` / `no_traceability` / `too_vague` / `technical_issue` / `wrong_page` | оставить + `requires_review` + `corrector_note` |
+| нет вердикта | считать `pass`, СОХРАНИТЬ (guard) |
+
+Критик пока агентный (вердикты качественные). Тесты:
+[test_optimization_deterministic_corrector.py](../tests/test_optimization_deterministic_corrector.py).
 
 ## Ключевые поля оптимизации
 
