@@ -463,6 +463,26 @@ async def call_gpt_for_block(
 
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
 
+    # ─── РОУТЕР ИСТОЧНИКА БЛОКА: «вместо Gemma — точный текст чертежа» ──────────
+    # Решение Андрея 2026-07-07: везде сырой вектор-текст, однолинейки — структурированный
+    # рендер Вектографа, скан/растр без слоя — Gemma остаётся (fallback). Единая развилка,
+    # ЗАМЕНЯЕТ user_text (не аддитивно). Когда ON — становится единым авторитетом и отключает
+    # две ad-hoc инъекции ниже. Меняет user_text ДО cache_key. fail-soft. Флаг default OFF.
+    _router_applied = False
+    try:
+        from backend.app.core import config as _rcfg
+        if getattr(_rcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False) and output_dir is not None:
+            from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                resolve_block_source as _resolve_block_source,
+            )
+            _rtext, _rkind = _resolve_block_source(
+                output_dir, block.get("block_id", ""), block.get("page"))
+            if _rtext:
+                user_text = _rtext
+                _router_applied = True
+    except Exception:
+        pass
+
     # ─── SINGLELINE граф-энричмент: для СХЕМНЫХ блоков — курируемый ГИБРИД ─────
     # Вместо скудного enrichment+page_text подаём render_graph_for_prompt (гибрид: ввод+ТТ
     # без хардкода ВА-305, детерминированная проверка защиты Iкз/сечение, компактные отходящие
@@ -471,7 +491,9 @@ async def call_gpt_for_block(
     # осознанного включения). Меняет user_text ДО cache_key. fail-soft (ошибка → базовый текст).
     try:
         from backend.app.core import config as _slcfg
-        if getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False) and output_dir is not None:
+        if (not _router_applied
+                and getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False)
+                and output_dir is not None):
             from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
                 resolve_singleline_prompt as _resolve_sl_prompt,
             )
@@ -488,7 +510,9 @@ async def call_gpt_for_block(
     # прод не меняется). Меняет user_text ДО cache_key. fail-soft. Скан без слоя → None → no-op.
     try:
         from backend.app.core import config as _mcfg
-        if getattr(_mcfg, "MIRROR_OCR_ENABLED", False) and output_dir is not None:
+        if (not _router_applied
+                and getattr(_mcfg, "MIRROR_OCR_ENABLED", False)
+                and output_dir is not None):
             from backend.app.pipeline.stages.block_grounding.mirror_block_text import (
                 resolve_mirror_block_text as _resolve_mirror,
                 inject_mirror_text as _inject_mirror,

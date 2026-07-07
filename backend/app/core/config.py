@@ -655,6 +655,15 @@ MIRROR_OCR_ENABLED = _env_bool("MIRROR_OCR_ENABLED", False)
 # Нормализатор гасит стиль (кир/лат, ,/., ², пробел) → подсвечиваем только реальное. МД-файл
 # НЕ редактируем (аддитивно в промпт). OFF по умолчанию — прод не меняется. fail-soft.
 MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
+# Роутер источника блока для Stage 02 (решение Андрея 2026-07-07 «вместо Gemma везде сырые
+# данные, однолинейки — вектографом»). Единая развилка на блок, ЗАМЕНЯЕТ Gemma-описание в
+# промпте (не аддитивно): (1) однолинейка + гейт Вектографа → полный структурированный рендер;
+# (2) есть вектор-слой → сырой вектор-текст блока (полигон-клип); (3) скан/растр без слоя → None
+# → Gemma+изображение остаются (обязательный fallback). Источник — полигон-клип по
+# document_graph (не пустой pdfplumber_text). Когда ON — заменяет ad-hoc инъекции
+# SINGLELINE_RICH_PROMPT_ENABLED/MIRROR_OCR_ENABLED (единый авторитет). Влияет на
+# call_gpt_for_block и превью /blocks/llm-text. OFF по умолчанию — прод не меняется. fail-soft.
+BLOCK_SOURCE_ROUTER_ENABLED = _env_bool("BLOCK_SOURCE_ROUTER_ENABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о

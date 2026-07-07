@@ -761,6 +761,26 @@ async def get_block_llm_text(
     # singleline_graph_markdown отдаётся ВСЕГДА (для UI-отображения, независимо от флага).
     singleline_graph_markdown = None
     stage02_prompt_mode = "base"
+
+    # РОУТЕР ИСТОЧНИКА БЛОКА (флаг BLOCK_SOURCE_ROUTER_ENABLED, default OFF): единый авторитет
+    # user_text — структурированный рендер для однолинеек / сырой вектор-текст / Gemma-fallback.
+    # Когда ON — отключает ad-hoc singleline_rich и mirror ниже, чтобы превью совпадало с
+    # реальным call_gpt_for_block. singleline_graph_markdown для UI отдаётся независимо. fail-soft.
+    _router_applied = False
+    try:
+        from backend.app.core import config as _rcfg
+        if getattr(_rcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False):
+            from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                resolve_block_source as _resolve_block_source,
+            )
+            _rtext, _rkind = _resolve_block_source(output_dir, block_id, page)
+            if _rtext:
+                user_text = _rtext
+                _router_applied = True
+                stage02_prompt_mode = _rkind
+    except Exception:
+        pass
+
     if singleline_graph:
         try:
             from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
@@ -768,7 +788,7 @@ async def get_block_llm_text(
             )
             singleline_graph_markdown = render_graph_etalon_markdown(singleline_graph)
             from backend.app.core import config as _slcfg
-            if getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False):
+            if not _router_applied and getattr(_slcfg, "SINGLELINE_RICH_PROMPT_ENABLED", False):
                 _task = ("## Задача:\nПосмотри на изображение блока и верни findings[]. "
                          "Только проблемы. Не описывай что видишь. Если всё корректно — пустой массив.")
                 user_text = (f"# Блок {block_id} | страница PDF {page}\n\n"
@@ -802,7 +822,8 @@ async def get_block_llm_text(
     # call_gpt_for_block — чтобы превью совпадало с реальным Stage 02. fail-soft.
     try:
         from backend.app.core import config as _mcfg
-        if getattr(_mcfg, "MIRROR_OCR_ENABLED", False) and vector_text and len(vector_text.strip()) >= 40:
+        if (not _router_applied and getattr(_mcfg, "MIRROR_OCR_ENABLED", False)
+                and vector_text and len(vector_text.strip()) >= 40):
             from backend.app.pipeline.stages.block_grounding.mirror_block_text import (
                 inject_mirror_text as _inject_mirror,
             )
