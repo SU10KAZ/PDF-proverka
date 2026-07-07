@@ -3817,6 +3817,7 @@ class PipelineManager:
         job: AuditJob,
         project_info: dict,
         include_optimization: bool = True,
+        include_norms: bool = True,
     ):
         """
         Параллельный запуск после findings_merge:
@@ -3824,6 +3825,10 @@ class PipelineManager:
         ┌─ findings_critic → corrector ──────────────┐
         ├─ norm_verify ──────────────────────────────┼─→ (done)
         └─ optimization → (ждёт corrector) → opt_review ─┘
+
+        include_norms=False (флаг PIPELINE_NORMS_AFTER_MERGE_ENABLED): norm_verify
+        НЕ запускается здесь — вызывающий код прогонит его последовательно ПОСЛЕ
+        debt_control (merge/stable-id), чтобы нормы верифицировались против финальных F-ID.
 
         Файловая безопасность:
         - critic/corrector пишут: 03_findings_review*.json, 03_findings.json
@@ -3930,29 +3935,36 @@ class PipelineManager:
                 await self._log(job, f"Optimization ошибка: {e}", "error")
                 self._update_pipeline_log(pid, "optimization", "error", error=str(e))
 
-        # Запускаем параллельные задачи
-        tasks = [
-            asyncio.create_task(_task_findings_review()),
-            asyncio.create_task(_task_norm_verify()),
+        # Запускаем параллельные задачи. Список (имя, корутина) строим динамически —
+        # так метки ошибок в gather остаются корректными при любом составе.
+        _specs = [
+            ("findings_review", _task_findings_review()),
         ]
-
+        if include_norms:
+            # include_norms=False (флаг): нормы уйдут в последовательный прогон
+            # после debt_control — тут corrector_done всё равно ставит Верификатор.
+            _specs.append(("norm_verify", _task_norm_verify()))
         if include_optimization:
-            tasks.append(asyncio.create_task(_task_optimization()))
+            _specs.append(("optimization", _task_optimization()))
+
+        _task_names = [name for name, _ in _specs]
+        tasks = [asyncio.create_task(coro) for _, coro in _specs]
 
         await self._log(
             job,
-            f"═══ Параллельный запуск: Critic + Нормы"
+            "═══ Параллельный запуск: Critic"
+            + (" + Нормы" if include_norms else "")
             + (" + Оптимизация" if include_optimization else "")
             + " ═══",
         )
 
-        print(f"[{pid}] Parallel tasks created: {len(tasks)} (include_optimization={include_optimization})")
+        print(f"[{pid}] Parallel tasks created: {len(tasks)} ({', '.join(_task_names)})")
         results = await asyncio.gather(*tasks, return_exceptions=True)
         print(f"[{pid}] Parallel tasks completed: {[type(r).__name__ if isinstance(r, Exception) else 'ok' for r in results]}")
         # Логируем ошибки из параллельных задач
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                task_name = ["findings_review", "norm_verify", "optimization"][i] if i < 3 else f"task_{i}"
+                task_name = _task_names[i] if i < len(_task_names) else f"task_{i}"
                 await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
                 print(f"[{pid}] Parallel task {task_name} exception: {result}")
 
@@ -4284,6 +4296,16 @@ class PipelineManager:
         from backend.app.core import config as cfg
         return bool(getattr(cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False))
 
+    @staticmethod
+    def _norms_after_merge_enabled() -> bool:
+        """Флаг: norm_verify вне параллельного блока, ПОСЛЕ merge/stable-id.
+
+        ON → нормы верифицируются против финальных findings (см. config).
+        Действует только на полный аудит (_run_ocr_pipeline); resume — легаси.
+        """
+        from backend.app.core import config as cfg
+        return bool(getattr(cfg, "PIPELINE_NORMS_AFTER_MERGE_ENABLED", False))
+
     def _write_blocks_for_text_compact(self, output_dir: Path) -> None:
         """Записать компактный view 02 (02_blocks_for_text.json) для текстового этапа. Fail-soft."""
         try:
@@ -4534,11 +4556,19 @@ class PipelineManager:
             # Critic+Corrector, Norm verify и Optimization — независимы.
             # Optimization_critic ждёт corrector (нужны финальные findings).
             # output_dir уже version-aware (см. начало _run_ocr_pipeline).
+            #
+            # Флаг PIPELINE_NORMS_AFTER_MERGE_ENABLED (default OFF): norm_verify
+            # выходит из параллели и запускается ПОСЛЕ debt_control (merge/stable-id) —
+            # тогда нормы верифицируются против финальных F-ID. optimization остаётся
+            # параллельным. Порядок (флаг ON):
+            #   Верификатор ∥ optimization → debt_control → нормы → carryover.
+            norms_after_merge = self._norms_after_merge_enabled()
             findings_path = output_dir / "03_findings.json"
             if findings_path.exists():
                 await self._run_post_findings_parallel(
                     job, project_info,
                     include_optimization=include_optimization,
+                    include_norms=not norms_after_merge,
                 )
 
                 if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
@@ -4550,7 +4580,27 @@ class PipelineManager:
                 await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
             # ═══ ЭТАП 7.7: Перенос вердиктов из предыдущей версии ═══
+            # debt_control (merge-similar + stable-id) ДО норм при флаге ON —
+            # чтобы нормы легли на финальные, стабильные F-ID.
             await self._run_debt_control(job)
+
+            if norms_after_merge:
+                if findings_path.exists() and job.status not in (
+                    JobStatus.CANCELLED, JobStatus.FAILED,
+                ):
+                    await self._log(
+                        job,
+                        "═══ Верификация норм (последовательно, после merge/stable-id) ═══",
+                    )
+                    # standalone=False: НЕ ставит COMPLETED и не делает _cleanup —
+                    # впереди ещё carryover и excel. Верификатор уже завершён →
+                    # wait_before_fix не нужен (corrector_done уже наступил).
+                    await self._run_norm_verification(
+                        job, standalone=False, wait_before_fix=None,
+                    )
+                    if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                        return
+
             await self._run_decision_carryover(job)
 
             # ═══ ЭТАП 8: Excel ═══

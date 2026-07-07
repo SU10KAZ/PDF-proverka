@@ -626,6 +626,14 @@ GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
 BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False)
+# Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
+# ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
+# Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает
+# рассинхронизацию: сейчас нормы крутятся параллельно Верификатору и ДО merge/перенумерации).
+# optimization остаётся параллельным (его review по-прежнему ждёт corrector_done).
+# OFF по умолчанию → прод-порядок не меняется. Действует ТОЛЬКО на полный аудит
+# (_run_ocr_pipeline); resume-путь остаётся на легаси-порядке (параллельные нормы).
+PIPELINE_NORMS_AFTER_MERGE_ENABLED = _env_bool("PIPELINE_NORMS_AFTER_MERGE_ENABLED", False)
 # Stage 02: для СХЕМНЫХ (однолинейных) блоков подавать в промпт полную rich-разметку графа
 # (render_graph_etalon_markdown: расчёты панелей + ТТ + примечания + отходящие линии) вместо
 # базового enrichment+page_text. OFF по умолчанию — прод не меняется. Влияет и на реальный
