@@ -9343,7 +9343,7 @@ const app = createApp({
             const d = subSpendData.value;
             if (!d || !d.week_start_date) return '';
             const [y, m, day] = d.week_start_date.split('-');
-            return `с пятницы ${day}.${m} ${d.week_start_time || '09:00'} (сброс лимитов)`;
+            return `с пятницы ${day}.${m} ${d.week_start_time || '16:00'} (сброс лимитов)`;
         });
         async function subSpendLoad() {
             subSpendLoading.value = true;

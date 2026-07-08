@@ -39,6 +39,17 @@ CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"
 WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 
+# Момент еженедельного сброса лимитов подписки Claude.
+# Пятница 16:00 MSK = 13:00 UTC. Единый источник истины для окна недели
+# и суточных бакетов панели «Расход подписки по инженерам».
+WEEKLY_RESET_WEEKDAY = 4   # пятница (0=пн … 6=вс)
+WEEKLY_RESET_HOUR_UTC = 13  # 13:00 UTC = 16:00 MSK
+
+# Москва (UTC+3, без перехода на летнее время). Столбцы панели «Расход
+# подписки» считаются по календарным суткам именно в этой зоне, независимо
+# от системного времени сервера.
+MSK_TZ = timezone(timedelta(hours=3))
+
 # Автоочистка записей старше N дней
 MAX_RECORD_AGE_DAYS = 30
 
@@ -584,10 +595,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию пятница 9:00 MSK = 06:00 UTC)
+        # Настройки сброса (по умолчанию пятница 16:00 MSK = 13:00 UTC)
         # Можно менять через set_weekly_reset()
-        self.weekly_reset_weekday = 4  # пятница
-        self.weekly_reset_hour_utc = 6  # 06:00 UTC = 09:00 MSK
+        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # пятница
+        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 13:00 UTC = 16:00 MSK
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
@@ -1296,17 +1307,20 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     окно определяется недельным сбросом.
     """
     now_utc = datetime.now(timezone.utc)
-    reset_weekday = getattr(global_scanner, "weekly_reset_weekday", 4)
-    reset_hour = getattr(global_scanner, "weekly_reset_hour_utc", 6)
+    reset_weekday = getattr(global_scanner, "weekly_reset_weekday", WEEKLY_RESET_WEEKDAY)
+    reset_hour = getattr(global_scanner, "weekly_reset_hour_utc", WEEKLY_RESET_HOUR_UTC)
     week_start = _prev_weekly_reset(now_utc, reset_weekday, reset_hour)
 
-    # Сколько суток прошло с момента сброса (0..6) — столько колонок и покажем.
-    elapsed = int((now_utc - week_start).total_seconds() // 86400)
-    n_days = max(1, min(elapsed + 1, 7))
-
-    # Локальная дата, на которую приходится начало каждого 24-часового бакета.
-    start_local_date = week_start.astimezone().date()
+    # Столбцы — настоящие календарные сутки по МСК (00:00–24:00), от даты
+    # сброса до сегодня включительно. Считаем только записи внутри недельного
+    # окна (ts ≥ week_start), поэтому первый столбец (пятница) — частичный,
+    # с момента сброса; сумма столбцов = недельному «Итого».
+    start_local_date = week_start.astimezone(MSK_TZ).date()
+    today_local = now_utc.astimezone(MSK_TZ).date()
+    # До 8 календарных дат: окно пт 16:00 → пт 16:00 может задевать 8 суток.
+    n_days = max(1, min((today_local - start_local_date).days + 1, 8))
     day_keys = [(start_local_date + timedelta(days=i)).isoformat() for i in range(n_days)]
+    day_key_set = set(day_keys)
 
     # mtime-отсечка: файлы, менявшиеся с начала недели (−сутки запаса).
     cutoff = (week_start - timedelta(days=1)).timestamp()
@@ -1368,11 +1382,13 @@ def scan_subscription_by_person(days: int = 7) -> dict:
                                     ts = ts.replace(tzinfo=timezone.utc)
                             except (ValueError, TypeError):
                                 continue
-                            # Бакет = сколько полных суток прошло от сброса.
-                            idx = int((ts - week_start).total_seconds() // 86400)
-                            if idx < 0 or idx >= n_days:
+                            # Только внутри недельного окна (с момента сброса).
+                            if ts < week_start:
                                 continue
-                            day = day_keys[idx]
+                            # Столбец = календарные сутки по МСК.
+                            day = ts.astimezone(MSK_TZ).date().isoformat()
+                            if day not in day_key_set:
+                                continue
                             in_tok = usage.get("input_tokens", 0) or 0
                             out_tok = usage.get("output_tokens", 0) or 0
                             cache_r = usage.get("cache_read_input_tokens", 0) or 0
@@ -1421,7 +1437,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     fable_limit = _SUB_FABLE_WEEKLY_LIMIT_USD
     fable_pct = round(fable_cost_total / fable_limit * 100, 1) if fable_limit else 0.0
 
-    week_start_local = week_start.astimezone()
+    week_start_local = week_start.astimezone(MSK_TZ)
     return {
         "days": day_keys,
         "people": people_list,
