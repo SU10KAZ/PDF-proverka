@@ -4355,7 +4355,9 @@ tr.row-rejected td.sc-cell-goto {
 .ev-val-na      { color: #aaa; font-size: 12px; }
 
 /* ── Расход подписки по инженерам (модалка) ───────────────────── */
-.sub-spend-modal { max-width: 760px; width: 100%; }
+/* Ширина под полную неделю: до 8 дневных колонок (пт→пт) + Итого + % лимита
+   без горизонтальной прокрутки; на узких экранах ограничено 95vw. */
+.sub-spend-modal { max-width: min(1040px, 95vw); width: 100%; }
 .sub-spend-controls {
   display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
 }
