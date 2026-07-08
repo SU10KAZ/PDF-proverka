@@ -4315,6 +4315,7 @@ tr.row-rejected td.sc-cell-goto {
 .sched-remarks-th { justify-content: center; }
 .sched-remark-ok  { color: var(--green); font-weight: 700; }
 .sched-remark-no  { color: var(--red); font-weight: 700; }
+.sched-remark-pct { color: var(--teal); font-weight: 700; }
 .sched-remark-sep { color: var(--text3); margin: 0 3px; }
 .sched-remark-na  { color: var(--text-muted); }
 

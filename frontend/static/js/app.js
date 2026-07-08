@@ -9455,13 +9455,22 @@ const app = createApp({
             for (const k of keys) if (typeof e[k] === 'number') return e[k];
             return null;
         }
+        // Процент принятых (согласованных) = принято / (принято + отклонено).
+        // null, если счётчиков нет вовсе или суммарно 0 (делить не на что).
+        function _schedAcceptPct(agreed, disagreed) {
+            if (agreed == null && disagreed == null) return null;
+            const total = (agreed || 0) + (disagreed || 0);
+            if (total <= 0) return null;
+            return Math.round(((agreed || 0) / total) * 100);
+        }
         const schedStats = computed(() => schedVisibleEngineers.value.map(e => {
             const fact = schedFactFor(e.id);
             const plan = schedPlanFor(e.id);
             const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
             const agreed = _schedRemarkCount(e, 'agreed', 'remarks_agreed');
             const disagreed = _schedRemarkCount(e, 'disagreed', 'remarks_disagreed');
-            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed };
+            const remarkPct = _schedAcceptPct(agreed, disagreed);
+            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed, remarkPct };
         }));
         const schedTotals = computed(() => {
             const s = schedStats.value;
@@ -9471,7 +9480,8 @@ const app = createApp({
             const hasRemarks = s.some(x => x.agreed != null || x.disagreed != null);
             const agreed = hasRemarks ? s.reduce((a, x) => a + (x.agreed || 0), 0) : null;
             const disagreed = hasRemarks ? s.reduce((a, x) => a + (x.disagreed || 0), 0) : null;
-            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed };
+            const remarkPct = _schedAcceptPct(agreed, disagreed);
+            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed, remarkPct };
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──

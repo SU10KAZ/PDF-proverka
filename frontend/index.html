@@ -2520,14 +2520,6 @@
                                         </tr>
                                     </tfoot>
                                 </table>
-                                <div class="sub-spend-note">
-                                    <b>% лимита</b> — доля основного недельного лимита подписки
-                                    (Opus/Sonnet/Haiku, ≈${{ Math.round(subSpendData.weekly_limit_usd) }}/нед, откалибровано по панели Claude).
-                                    <b>Fable 5</b> — отдельная квота Anthropic: за период ${{ Math.round(subSpendData.fable.cost) }}
-                                    ≈ {{ subSpendData.fable.pct_limit }}% (в основной % не входит).
-                                    <b>Токены</b> = вход+выход (без кэша); <b>$</b> — полная стоимость с кэшем.
-                                    Max 20x; Людмила исключена.
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -2675,6 +2667,7 @@
                                             <span class="sched-remarks-th__top">Счётчик</span>
                                             <span>Замечаний</span>
                                             <span>Оптимизаций</span>
+                                            <span>% принятых</span>
                                         </span>
                                     </th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
@@ -2695,7 +2688,7 @@
                                     </td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="s.agreed != null || s.disagreed != null">
-                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span>
+                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ s.remarkPct != null ? s.remarkPct + '%' : '—' }}</span>
                                         </template>
                                         <span v-else class="sched-remark-na" title="Нет данных по решениям (замечания и оптимизации) за период">—</span>
                                     </td>
@@ -2713,7 +2706,7 @@
                                     <td>{{ schedTotals.plan }}</td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
-                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span>
+                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ schedTotals.remarkPct != null ? schedTotals.remarkPct + '%' : '—' }}</span>
                                         </template>
                                         <span v-else class="sched-remark-na">—</span>
                                     </td>
