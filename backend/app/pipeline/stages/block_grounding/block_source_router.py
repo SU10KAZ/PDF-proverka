@@ -95,6 +95,56 @@ def _extract_block(pdf_path: Path, dg: dict, block_id: str):
         doc.close()
 
 
+def vector_covered_block_ids(output_dir) -> dict:
+    """{block_id: вектор-текст} для image-блоков с ГОДНЫМ вектор-слоем (≥ _MIN_VECTOR_CHARS).
+
+    ОБЩИЙ предикат с `resolve_block_source`: тот же полигон-клип, тот же порог. Блок попадает
+    сюда ТОГДА И ТОЛЬКО ТОГДА, когда роутер на Stage 02 отдаст ему вектор-текст (не gemma_fallback).
+    Используется гейтом пропуска стадии Gemma: эти блоки можно НЕ гонять через Gemma — роутер и так
+    подаст их точный текст. Один open PDF (батч). fail-soft → {}.
+
+    ВАЖНО: значение (вектор-текст) кладётся в placeholder-enrichment пропущенного блока —
+    страховка на случай, если роутер на Stage 02 всё же fail-soft'нётся: блок не станет слепым.
+    """
+    try:
+        import fitz  # локально, как в остальных block_grounding
+
+        from .md_mirror_reconcile import _block_text
+
+        pdf, dgp = _locate(output_dir)
+        if pdf is None or dgp is None:
+            return {}
+        dg = json.loads(dgp.read_text(encoding="utf-8"))
+        doc = fitz.open(str(pdf))
+        try:
+            out: dict = {}
+            for p in dg.get("pages", []):
+                pi = p.get("page_index", p.get("page"))
+                if pi is None or pi >= doc.page_count:
+                    continue
+                page = doc[pi]
+                pw, ph = float(page.rect.width), float(page.rect.height)
+                words = page.get_text("words")
+                for b in p.get("image_blocks", []):
+                    bid = b.get("id") or b.get("block_id")
+                    if not bid:
+                        continue
+                    poly = b.get("polygon_points_norm")
+                    clipped = (
+                        _clip_words_to_polygon(words, poly, pw, ph)
+                        if poly
+                        else _clip_words_to_bbox(words, b.get("coords_norm"), pw, ph)
+                    )
+                    txt = _block_text(clipped)
+                    if len((txt or "").strip()) >= _MIN_VECTOR_CHARS:
+                        out[str(bid)] = txt
+            return out
+        finally:
+            doc.close()
+    except Exception:
+        return {}
+
+
 def resolve_block_source(
     output_dir, block_id: str, page, *, panel_hint: str = "ВРУ"
 ) -> Tuple[Optional[str], str]:

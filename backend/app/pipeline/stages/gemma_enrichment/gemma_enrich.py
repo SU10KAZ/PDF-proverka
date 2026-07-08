@@ -1780,6 +1780,22 @@ def _result_status(result: EnrichResult | None) -> str:
     return "failed"
 
 
+def _vector_skip_enrichment(vector_text: str) -> dict:
+    """Синтетический enrichment для блока, пропущенного стадией Gemma (роутер даст его на Stage 02).
+
+    Несёт ЧИСТЫЙ вектор-текст блока: (1) coverage остаётся "ok", summary валиден; (2) MD получает
+    вектор-текст вместо Gemma-OCR (лучше для Stage 01); (3) СТРАХОВКА — если роутер на Stage 02
+    fail-soft'нётся, build_block_user_text всё равно отдаст этот текст, блок не станет слепым.
+    """
+    text = (vector_text or "").strip()
+    return {
+        "block_type": "vector_layer",
+        "subject": "Текст блока взят из вектор-слоя PDF (Gemma пропущена, обработка на Stage 02)",
+        "notes": text[:6000],
+        "_gemma_skipped": "vector_layer",
+    }
+
+
 async def _run_blocks_pass(
     *,
     image_blocks: list[dict],
@@ -1793,8 +1809,10 @@ async def _run_blocks_pass(
     pause_event: Optional[asyncio.Event],
     cancel_event: Optional[asyncio.Event],
     phase: str,
+    skip_enrichments: Optional[dict[str, dict]] = None,
 ) -> tuple[list[EnrichResult], dict[str, Any]]:
     phase = phase.strip() or "base"
+    skip_enrichments = skip_enrichments or {}
     sem = asyncio.Semaphore(max(1, parallelism))
     completed = 0
     completed_lock = asyncio.Lock()
@@ -1838,6 +1856,37 @@ async def _run_blocks_pass(
                             finish_reason="error",
                         )
                     await asyncio.sleep(0.5)
+            # ── Пропуск стадии Gemma для блоков с годным вектор-слоем ──
+            # Роутер отдаст их точный текст на Stage 02 → сетевой вызов Gemma не нужен. Возвращаем
+            # синтетический ok-результат с вектор-текстом в enrichment (0 токенов). coverage="ok".
+            _skip_enr = skip_enrichments.get(block["block_id"])
+            if _skip_enr is not None:
+                async with completed_lock:
+                    if count_progress:
+                        completed += 1
+                await _emit(progress_cb, {
+                    "type": event_names["done"],
+                    "phase": phase,
+                    "block_id": block["block_id"],
+                    "page": block.get("page"),
+                    "ok": True,
+                    "elapsed_ms": 0,
+                    "completed": completed,
+                    "total": len(image_blocks),
+                    "response_source": "vector_skip",
+                    "finish_reason": "vector_skip",
+                })
+                return EnrichResult(
+                    block_id=block["block_id"],
+                    page=block.get("page", 0),
+                    ok=True,
+                    enrichment=_skip_enr,
+                    input_tokens=0,
+                    output_tokens=0,
+                    reasoning_tokens=0,
+                    response_source="vector_skip",
+                    finish_reason="vector_skip",
+                )
             async with sem:
                 if count_progress:
                     await _emit(progress_cb, {
@@ -2050,6 +2099,34 @@ async def enrich_project(
     ]
     total = len(image_blocks)
 
+    # ── Пропуск стадии Gemma для блоков с годным вектор-слоем (оптимизация к роутеру Stage 02) ──
+    # ИНВАРИАНТ: пропуск ТОЛЬКО когда И GEMMA_SKIP_VECTOR_BLOCKS_ENABLED, И BLOCK_SOURCE_ROUTER_ENABLED
+    # включены — иначе роутер не подаст вектор-текст и блок останется слепым. Общий предикат с
+    # роутером (тот же порог/клип). fail-soft: ошибка → {} → полный прогон Gemma как обычно.
+    skip_enrichments: dict[str, dict] = {}
+    try:
+        from backend.app.core import config as _gcfg
+        if (getattr(_gcfg, "GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)
+                and getattr(_gcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False)):
+            from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                vector_covered_block_ids as _vector_covered,
+            )
+            _covered = _vector_covered(out_dir)
+            _image_ids = {b["block_id"] for b in image_blocks}
+            skip_enrichments = {
+                bid: _vector_skip_enrichment(vtext)
+                for bid, vtext in _covered.items() if bid in _image_ids
+            }
+            if skip_enrichments:
+                await _emit(progress_cb, {
+                    "type": "gemma_skip_vector_blocks",
+                    "skipped": len(skip_enrichments),
+                    "total": total,
+                    "block_ids": sorted(skip_enrichments),
+                })
+    except Exception:
+        skip_enrichments = {}
+
     if total == 0:
         summary = build_gemma_summary(
             status="no_blocks",
@@ -2144,6 +2221,7 @@ async def enrich_project(
         pause_event=pause_event,
         cancel_event=cancel_event,
         phase="base",
+        skip_enrichments=skip_enrichments,
     )
     base_results_by_id = {result.block_id: result for result in base_results}
     base_blocks_ok = sum(1 for result in base_results if result.ok)
@@ -2151,6 +2229,9 @@ async def enrich_project(
     candidate_reason_map: dict[str, list[str]] = {}
     candidate_ids: list[str] = []
     for block in image_blocks:
+        # пропущенные по вектор-слою блоки не гоняем и на high-detail (иначе Gemma всё же вызовется)
+        if block["block_id"] in skip_enrichments:
+            continue
         reasons = _base_result_candidate_reasons(block, base_results_by_id.get(block["block_id"]))
         if reasons:
             candidate_ids.append(block["block_id"])

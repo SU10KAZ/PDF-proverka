@@ -664,6 +664,15 @@ MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
 # SINGLELINE_RICH_PROMPT_ENABLED/MIRROR_OCR_ENABLED (единый авторитет). Влияет на
 # call_gpt_for_block и превью /blocks/llm-text. OFF по умолчанию — прод не меняется. fail-soft.
 BLOCK_SOURCE_ROUTER_ENABLED = _env_bool("BLOCK_SOURCE_ROUTER_ENABLED", False)
+# Пропуск СТАДИИ Gemma для блоков с годным вектор-слоем (оптимизация к роутеру выше). Такие
+# блоки роутер и так отдаёт из вектор-слоя на Stage 02 → гонять по ним Gemma незачем (экономит
+# токены/часы). Пропущенным блокам ставится синтетический ok-результат с ЧИСТЫМ вектор-текстом в
+# enrichment (coverage остаётся "ok", summary валиден, MD получает вектор-текст вместо Gemma-OCR).
+# ИНВАРИАНТ БЕЗОПАСНОСТИ: пропуск действует ТОЛЬКО когда BLOCK_SOURCE_ROUTER_ENABLED тоже ON —
+# иначе Stage 02 не подаст вектор-текст и блок останется слепым. Общий предикат
+# vector_covered_block_ids (тот же порог/клип, что у роутера). Скан/растр без слоя → Gemma как
+# обычно. OFF по умолчанию. fail-soft.
+GEMMA_SKIP_VECTOR_BLOCKS_ENABLED = _env_bool("GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о
