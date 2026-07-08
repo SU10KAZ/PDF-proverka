@@ -1290,7 +1290,7 @@ def _subscription_person(dirname: str):
     if "OSA-Alexandra" in d:            # Александра Калинина
         return ("kalinina", "Калинина А.")
     if "projects-PDF-proverka" in d or "AuditManager" in d:
-        return ("uzun", "Узун")
+        return ("uzun", "Узун А.И.")
     return None
 
 
