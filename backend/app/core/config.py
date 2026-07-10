@@ -626,6 +626,16 @@ GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
 BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False)
+# Сохранение экспертных вердиктов при переаудите ТОЙ ЖЕ версии: снапшот решённых
+# перед удалением 03_findings.json + детерминированная перепривязка на новые F-ID
+# после findings_merge (exact fingerprint → fuzzy; carried_over=True, только пустые
+# слоты). Fail-soft: любая ошибка не влияет на пайплайн. ON по умолчанию —
+# требование: разметка эксперта не должна теряться из-за перенумерации F-NNN.
+VERDICT_PRESERVATION_ENABLED = _env_bool("VERDICT_PRESERVATION_ENABLED", True)
+# Shadow-режим: снапшот, матчинг и отчёт verdict_preservation_report.json —
+# полные, но ЗАПИСЬ вердиктов в expert_review/decisions_log выключена.
+# Для наблюдения за качеством матчинга без влияния на живую разметку.
+VERDICT_PRESERVATION_SHADOW = _env_bool("VERDICT_PRESERVATION_SHADOW", False)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает

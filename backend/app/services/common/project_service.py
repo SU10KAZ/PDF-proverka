@@ -3295,6 +3295,15 @@ def _clean_project_data_v2_primary(
     }
     total_size = 0
 
+    # Слепок решённых вердиктов ПЕРЕД удалением findings: после «Очистить» +
+    # нового аудита F-ID перенумеруются, слепок в 04_review позволит перепривязать
+    # разметку эксперта (verdict_preservation, fail-soft).
+    try:
+        from backend.app.services.findings import verdict_preservation as _vp
+        _vp.snapshot_for_project(project_id, version_id=version_id)
+    except Exception as _vp_err:  # noqa: BLE001 — fail-soft, но наблюдаемо
+        print(f"[{project_id}:clean] verdict_preservation snapshot failed: {_vp_err}")
+
     analysis_dir = version_dir / "03_analysis"
     if analysis_dir.exists():
         for f in analysis_dir.rglob("*"):

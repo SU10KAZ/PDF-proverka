@@ -2250,6 +2250,67 @@ class PipelineManager:
             backup_path = output_dir / "03_findings_pre_restart.json"
             shutil.copy2(findings_path, backup_path)
             print(f"[{project_id}:clean] Бэкап findings → 03_findings_pre_restart.json")
+        # Слепок решённых вердиктов ПЕРЕД удалением findings: findings_merge
+        # перенумерует F-ID, слепок позволит перепривязать вердикты после merge
+        # (verdict_preservation, fail-soft — ошибки не роняют пайплайн).
+        try:
+            from backend.app.services.findings import verdict_preservation as _vp
+            job = self.active_jobs.get(project_id)
+            _res = _vp.snapshot_for_project(
+                project_id, version_id=getattr(job, "version_id", None),
+            )
+            if _res.get("status") == "ok":
+                print(
+                    f"[{project_id}:clean] Слепок вердиктов: {_res.get('items')} шт. "
+                    "→ 04_review/verdict_preservation_snapshot.json"
+                )
+        except Exception as _vp_err:  # noqa: BLE001 — fail-soft, но наблюдаемо
+            print(f"[{project_id}:clean] verdict_preservation snapshot failed: {_vp_err}")
+
+    async def _run_verdict_rehydration(
+        self, job: "AuditJob", item_types: tuple = ("finding",),
+    ) -> None:
+        """Перепривязать вердикты эксперта к новым ID после регенерации.
+
+        Вызывается дважды: после findings_merge для ("finding",) и после
+        post-findings блока (этап оптимизации) для ("optimization",).
+        Fail-soft: любая ошибка логируется и не влияет на пайплайн. Первый
+        вызов идёт ДО decision_carryover — carryover заполняет только пустые
+        слоты и восстановленные здесь решения не перезапишет.
+        """
+        try:
+            from backend.app.services.findings import verdict_preservation as _vp
+            if not _vp.is_enabled():
+                return
+            res = await asyncio.to_thread(
+                _vp.rehydrate_for_project,
+                job.project_id,
+                version_id=getattr(job, "version_id", None),
+                item_types=item_types,
+            )
+            status = res.get("status")
+            label = "/".join(item_types)
+            if status == "ok":
+                await self._log(
+                    job,
+                    f"Вердикты после переаудита ({label}): восстановлено "
+                    f"{res.get('restored', 0)} из {res.get('snapshot_items', 0)} "
+                    f"(exact {res.get('restored_exact', 0)}, fuzzy {res.get('restored_fuzzy', 0)}; "
+                    f"не сматчено {res.get('unmatched', 0)}, неоднозначно {res.get('ambiguous', 0)}, "
+                    f"снято устаревших {res.get('stale_removed', 0)})",
+                    "info",
+                )
+            elif status not in {"disabled", "no_snapshot", "already_applied", "no_decisions"}:
+                await self._log(
+                    job, f"Восстановление вердиктов ({label}): {status}", "info",
+                )
+        except Exception as exc:  # noqa: BLE001 — fail-soft
+            try:
+                await self._log(
+                    job, f"Восстановление вердиктов не выполнено: {exc}", "warn",
+                )
+            except Exception:
+                pass
 
     # ─── Валидация JSON после записи LLM ───
 
@@ -3074,6 +3135,8 @@ class PipelineManager:
                             "Нельзя запускать findings_merge: 02_blocks_analysis.json отсутствует. "
                             "Сначала выполните block_analysis."
                         )
+                # Retry merge перенумерует F-ID — бэкап findings + слепок вердиктов.
+                self._backup_findings_before_restart(pid)
                 self._clean_stage_files(pid, [
                     "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
                 ])
@@ -3093,6 +3156,9 @@ class PipelineManager:
                 self._promote_v2_analysis_artifacts(
                     job, ("03_findings.json", "pipeline_log.json")
                 )
+
+                # Перепривязать вердикты эксперта к новым F-ID (fail-soft).
+                await self._run_verdict_rehydration(job)
 
                 # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
                 await self._stream_findings_events(job, "merge")
@@ -3135,6 +3201,11 @@ class PipelineManager:
 
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
+
+                    # Вердикты по оптимизациям: optimization.json пересобран
+                    # внутри post-findings блока — восстановить их можно теперь.
+                    if not _skip_opt:
+                        await self._run_verdict_rehydration(job, item_types=("optimization",))
                 else:
                     await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
@@ -4480,6 +4551,8 @@ class PipelineManager:
                     "block_batch_*.json", "block_batches.json", RUNTIME_BATCHES_FILE,
                     "block_analysis_summary.json", "02_blocks_analysis.json",
                 ]
+            # Полный аудит перенумерует F-ID — бэкап findings + слепок вердиктов.
+            self._backup_findings_before_restart(pid)
             self._clean_stage_files(pid, files_to_clean)
             self._reset_job_progress(job)
             job.stage = AuditStage.TEXT_ANALYSIS
@@ -4542,6 +4615,9 @@ class PipelineManager:
                 job, ("03_findings.json", "pipeline_log.json")
             )
 
+            # Перепривязать вердикты эксперта к новым F-ID (fail-soft).
+            await self._run_verdict_rehydration(job)
+
             # «Размышление модели»: стрим найденных замечаний в live-лог (WS)
             await self._stream_findings_events(job, "merge")
 
@@ -4576,6 +4652,11 @@ class PipelineManager:
 
                 self.active_jobs[pid] = job
                 self._tasks[pid] = asyncio.current_task()
+
+                # Вердикты по оптимизациям: optimization.json пересобран внутри
+                # post-findings блока — восстановить их можно только теперь.
+                if include_optimization:
+                    await self._run_verdict_rehydration(job, item_types=("optimization",))
             else:
                 await self._log(job, "03_findings.json не найден — пропуск верификации", "warn")
 
