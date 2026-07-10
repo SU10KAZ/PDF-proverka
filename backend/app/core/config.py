@@ -408,10 +408,21 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
 CHANDRA_GEMMA_MODEL = os.environ.get("CHANDRA_GEMMA_MODEL", "google/gemma-4-26b-a4b")
 LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
 
+# Codex exec transport for classic agent stages. Stage model IDs use the
+# `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
+CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
+CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
+# Диспетчеризация стадий идёт строго по префиксу "codex/" (is_codex_model). Значение
+# без префикса (перепутали с AUDIT_CODEX_MODEL) попадало в AVAILABLE_MODELS как
+# «Codex exec», но в рантайме молча уходило в OpenRouter-ветку с несуществующим id.
+if not CODEX_STAGE_MODEL_ID.startswith("codex/"):
+    CODEX_STAGE_MODEL_ID = f"codex/{CODEX_STAGE_MODEL_ID}"
+
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
+    {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex exec",             "provider": "codex_cli"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
     {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
 ]
@@ -490,6 +501,24 @@ def is_claude_stage(stage: str) -> bool:
     """Проверить, должен ли этап выполняться через Claude CLI."""
     model = get_stage_model(stage)
     return model.startswith("claude-")
+
+
+def is_codex_model(model: str | None) -> bool:
+    """True для модели classic pipeline, запускаемой через `codex exec`."""
+    return bool((model or "").strip().startswith("codex/"))
+
+
+def resolve_codex_model(model: str | None) -> str:
+    """Преобразовать stage model id `codex/<model>` в реальный model id Codex CLI."""
+    raw = (model or "").strip()
+    if raw.startswith("codex/"):
+        raw = raw.split("/", 1)[1]
+    return raw or CODEX_MODEL_DEFAULT
+
+
+def is_codex_stage(stage: str) -> bool:
+    """Проверить, должен ли этап выполняться через Codex exec."""
+    return is_codex_model(get_stage_model(stage))
 
 
 def is_local_llm_model(model: str) -> bool:
@@ -571,7 +600,7 @@ WEEKLY_TOKEN_LIMIT = 17_000_000
 CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"
 
 WEEKLY_RESET_WEEKDAY = 4    # пятница
-WEEKLY_RESET_HOUR_UTC = 13  # 13:00 UTC = 16:00 MSK
+WEEKLY_RESET_HOUR_UTC = 16  # 16:00 UTC = 19:00 MSK
 
 SEVERITY_CONFIG = {
     "КРИТИЧЕСКОЕ":        {"color": "#e74c3c", "bg": "#fdecea", "icon": "\U0001f534", "order": 1},

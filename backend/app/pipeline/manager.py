@@ -2883,7 +2883,16 @@ class PipelineManager:
                 "decision_carryover",
                 "excel",
             ]
-            start_idx = ocr_stages.index(normalized) if normalized in ocr_stages else 0
+            if normalized in ocr_stages:
+                start_idx = ocr_stages.index(normalized)
+            else:
+                # Раньше: тихий фолбэк в 0 (=prepare) → «resume оптимизации»
+                # молча перезапускал весь конвейер. Такие стадии должны роутиться
+                # в свои ветки ДО вызова (см. action="resume"/retry_stage).
+                raise RuntimeError(
+                    f"_run_resumed_pipeline не поддерживает этап '{normalized}' — "
+                    "он выполняется отдельной веткой, а не OCR-конвейером"
+                )
             idx_text = ocr_stages.index("text_analysis")
             idx_block = ocr_stages.index("block_analysis")
 
@@ -5584,6 +5593,26 @@ class PipelineManager:
                 job.status = JobStatus.FAILED
                 job.error_message = "Нечего возобновлять"
                 job.completed_at = datetime.now().isoformat()
+                return
+            # Стадии оптимизации НЕ входят в ocr_stages конвейера: без этого роутинга
+            # _run_resumed_pipeline падал в start_idx=0 → «resume оптимизации»
+            # перезапускал ВЕСЬ конвейер с prepare (часы + деньги + перегенерация
+            # findings). resume_pipeline() роутит их при enqueue (retry_stage), но
+            # авто-resume и add_resume_to_batch кладут action="resume" и попадают
+            # сюда. Ветки зеркалят retry_stage-обработку выше.
+            _resume_stage = str(resume_info.get("stage") or "")
+            if _resume_stage == "optimization":
+                await self._log(job, "▶ Возобновление: Оптимизация", "info")
+                await self._run_optimization(job, standalone=False)
+                if job.status == JobStatus.COMPLETED:
+                    await self._run_optimization_review(job)
+                return
+            if _resume_stage == "optimization_review":
+                await self._log(job, "▶ Возобновление: Проверка оптимизации", "info")
+                await self._start_heartbeat(job)
+                await self._run_optimization_review(job)
+                if job.status == JobStatus.RUNNING:
+                    job.status = JobStatus.COMPLETED
                 return
             await self._run_resumed_pipeline(job, resume_info["stage"], resume_info)
             return

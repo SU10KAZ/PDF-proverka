@@ -40,7 +40,7 @@ from backend.app.core.config import (
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_FINDINGS_MERGE_TIMEOUT,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT, CLAUDE_NORM_REQUOTE_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
-    get_stage_model, is_claude_stage, is_local_llm_model,
+    get_stage_model, is_claude_stage, is_codex_model, is_codex_stage, is_local_llm_model,
 )
 
 # Локальный GEMMA иногда отвергает слишком большие PNG ("Invalid image detected").
@@ -76,6 +76,11 @@ logger = logging.getLogger(__name__)
 
 # Тип результата — или CLIResult (Claude CLI), или LLMResult (OpenRouter)
 AnyResult = Union[CLIResult, LLMResult]
+
+
+def _is_agent_cli_stage(stage: str) -> bool:
+    """True when a stage should run through an agent CLI transport."""
+    return is_claude_stage(stage) or is_codex_stage(stage)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -225,15 +230,25 @@ async def _run_cli(
     model: str | None = None,
     clean_cwd: bool = False,
 ) -> tuple[int, str, CLIResult]:
-    """Запустить Claude CLI с задачей через stdin, вернуть (exit_code, combined_output, CLIResult).
+    """Запустить agent CLI с задачей через stdin, вернуть (exit_code, output, CLIResult).
 
-    Claude CLI записывает результаты через Write tool (файлы) — Python не записывает JSON.
+    Claude CLI записывает результаты через Write tool (файлы). Codex exec получает
+    тот же task_text и пишет требуемые JSON-файлы через filesystem-доступ.
 
-    clean_cwd=True — запустить subprocess из /tmp/sonnet_clean/ + минимальный env, чтобы
-        не подгружать project CLAUDE.md, hooks, memory, skills (экономит ~47K input/блок).
-        Все пути в task_text должны быть абсолютными — иначе сломается чтение файлов.
-        Валидировано только для stage 02 (block_batch); для других stages — untested.
+    clean_cwd=True применяется только к Claude CLI. Для Codex exec рабочая папка
+    должна оставаться корнем проекта, чтобы workspace-write sandbox видел output.
     """
+    if is_codex_model(model):
+        from backend.app.services.llm.codex_runner import run_codex_exec
+        return await run_codex_exec(
+            task_text,
+            timeout=timeout,
+            on_output=on_output,
+            stage=stage,
+            project_id=project_id,
+            model=model,
+        )
+
     from backend.app.services.common.process_runner import run_command
 
     cmd = _build_cmd(tools, model)
@@ -277,12 +292,19 @@ async def _send_status_llm(on_output, result: LLMResult):
 
 
 def _write_json(path, data):
-    """Записать JSON в файл (с автосозданием директории)."""
+    """Записать JSON атомарно (tmp + os.replace, с автосозданием директории).
+
+    Пишет и мастер-файлы (03_findings.json): kill процесса посреди прямого
+    write_text оставлял обрезанный/пустой JSON — как у MD в gemma_enrich.
+    """
+    path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(
         json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    os.replace(tmp, path)
 
 
 def _resolve_output_dir(project_id: str, output_dir: str | Path | None = None):
@@ -335,6 +357,168 @@ def _scoped_audit_paths(
                 os.environ[key] = value
 
 
+async def _run_codex_json_stage(
+    *,
+    stage: str,
+    messages: list[dict],
+    model: str,
+    timeout: int,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_filename: str,
+    audit_stage: str,
+    output_dir: str | Path | None = None,
+) -> tuple[int, str, LLMResult]:
+    """Run Codex exec in JSON-only mode and let backend write the artifact."""
+    from backend.app.services.llm.codex_runner import run_codex_json_messages
+
+    result = await run_codex_json_messages(
+        messages,
+        timeout=timeout,
+        on_output=on_output,
+        stage=stage,
+        project_id=project_id,
+        model=model,
+    )
+
+    if result.json_data is not None and not result.is_error:
+        output_path = _resolve_output_dir(project_id, output_dir=output_dir) / output_filename
+        _write_json(output_path, result.json_data)
+
+    await _send_status_llm(on_output, result)
+
+    _save_audit_trail(
+        project_id, audit_stage, result.model or model,
+        result.input_tokens, result.output_tokens,
+        result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
+    )
+
+    exit_code = 0 if not result.is_error else 1
+    return exit_code, result.text, result
+
+
+def _codex_targeted_findings_enabled() -> bool:
+    raw = os.environ.get("AUDIT_CODEX_TARGETED_FINDINGS", "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+async def _run_codex_targeted_findings_merge(
+    *,
+    project_info: dict,
+    project_id: str,
+    model: str,
+    base_result: LLMResult,
+    base_text: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+) -> tuple[int, str, LLMResult]:
+    """Run optional Codex targeted findings passes and rewrite 03_findings.json.
+
+    The base Codex merge remains available as ``03_findings_codex_base.json``.
+    Targeted pass failures are non-fatal: the base merge is already valid and
+    should continue through the pipeline.
+    """
+    if not _codex_targeted_findings_enabled() or base_result.is_error:
+        return (0 if not base_result.is_error else 1), base_text, base_result
+
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import (
+        build_targeted_findings_passes,
+        combine_findings_with_targeted,
+        json_dumps,
+    )
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        passes = build_targeted_findings_passes(project_info, project_id)
+    if not passes:
+        return 0, base_text, base_result
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+    base_data = base_result.json_data
+    if not isinstance(base_data, dict):
+        try:
+            base_data = json.loads((resolved_output_dir / "03_findings.json").read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return 0, base_text, base_result
+    if isinstance(base_data, list):
+        # Codex вернул массив findings вместо объекта. Без ремонта combine ниже
+        # выбросил бы ВСЮ базу (`dict(production) if isinstance(...) else {"findings": []}`),
+        # и мастер-файл остался бы только с targeted-замечаниями. Чиним схему на
+        # месте и сразу нормализуем мастер-файл (downstream ждёт dict).
+        base_data = {"findings": base_data}
+        _write_json(resolved_output_dir / "03_findings.json", base_data)
+    if not isinstance(base_data, dict):
+        return 0, base_text, base_result
+
+    _write_json(resolved_output_dir / "03_findings_codex_base.json", base_data)
+
+    targeted_payloads: list[tuple[str, dict]] = []
+    combined_text_parts = [base_text or ""]
+    try:
+        targeted_timeout = int(os.environ.get("AUDIT_CODEX_TARGETED_TIMEOUT", "900"))
+    except ValueError:
+        logger.warning("AUDIT_CODEX_TARGETED_TIMEOUT не число — использую 900с")
+        targeted_timeout = 900
+    total_duration_ms = base_result.duration_ms
+    total_output_tokens = base_result.output_tokens
+    total_input_tokens = base_result.input_tokens
+
+    for targeted_pass in passes:
+        exit_code, targeted_text, targeted_result = await _run_codex_json_stage(
+            stage=targeted_pass.stage,
+            messages=targeted_pass.messages,
+            model=model,
+            timeout=targeted_timeout,
+            project_id=project_id,
+            on_output=on_output,
+            output_filename=targeted_pass.output_filename,
+            audit_stage=f"03_findings_targeted_{targeted_pass.stage}",
+            output_dir=output_dir,
+        )
+        total_duration_ms += targeted_result.duration_ms
+        total_output_tokens += targeted_result.output_tokens
+        total_input_tokens += targeted_result.input_tokens
+        if targeted_text:
+            combined_text_parts.append(targeted_text)
+        if exit_code == 0 and isinstance(targeted_result.json_data, dict):
+            targeted_payloads.append((targeted_pass.stage, targeted_result.json_data))
+        else:
+            logger.warning(
+                "Codex targeted findings pass failed for %s/%s: %s",
+                project_id,
+                targeted_pass.stage,
+                targeted_result.error_message,
+            )
+
+    if not targeted_payloads:
+        return 0, "\n".join(part for part in combined_text_parts if part), base_result
+
+    combined = combine_findings_with_targeted(base_data, targeted_payloads)
+    _write_json(resolved_output_dir / "03_findings.json", combined)
+
+    base_result.json_data = combined
+    base_result.text = json_dumps(combined)
+    base_result.duration_ms = total_duration_ms
+    base_result.output_tokens = total_output_tokens
+    base_result.input_tokens = total_input_tokens
+    _save_audit_trail(
+        project_id,
+        "03_findings_codex_targeted_union",
+        base_result.model or model,
+        base_result.input_tokens,
+        base_result.output_tokens,
+        base_result.duration_ms,
+        {"json_data": combined, "targeted_passes": [stage for stage, _ in targeted_payloads]},
+        output_dir=output_dir,
+    )
+    return 0, "\n".join(part for part in combined_text_parts if part), base_result
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # CLAUDE CLI ЭТАПЫ (5 этапов — Claude сам читает/пишет файлы)
 # ═══════════════════════════════════════════════════════════════════════════
@@ -351,8 +535,24 @@ async def run_text_analysis(
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 01_text_analysis.json (динамический выбор провайдера)."""
+    model = get_stage_model("text_analysis")
+
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+        return await _run_codex_json_stage(
+            stage="text_analysis", messages=messages, model=model,
+            timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename="01_text_analysis.json",
+            audit_stage="01_text_analysis", output_dir=output_dir,
+        )
+
     if is_claude_stage("text_analysis"):
-        model = get_stage_model("text_analysis")
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
@@ -418,6 +618,43 @@ async def run_findings_merge(
     """Запустить свод замечаний из текста + блоков -> 03_findings.json (динамический выбор провайдера)."""
     model = get_stage_model("findings_merge")
 
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_findings_merge_messages(project_info, project_id)
+        exit_code, text, result = await _run_codex_json_stage(
+            stage="findings_merge", messages=messages, model=model,
+            timeout=CLAUDE_FINDINGS_MERGE_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename="03_findings.json",
+            audit_stage="03_findings_merge", output_dir=output_dir,
+        )
+        if exit_code != 0:
+            return exit_code, text, result
+        try:
+            return await _run_codex_targeted_findings_merge(
+                project_info=project_info,
+                project_id=project_id,
+                model=model,
+                base_result=result,
+                base_text=text,
+                on_output=on_output,
+                output_dir=output_dir,
+                version_dir=version_dir,
+                version_id=version_id,
+            )
+        except Exception:
+            # Контракт «targeted-провалы нефатальны»: базовый merge уже валиден и
+            # записан — любое исключение усилителя не должно ронять стадию.
+            logger.exception(
+                "Codex targeted findings: исключение — продолжаю с base merge (%s)",
+                project_id,
+            )
+            return 0, text, result
+
     if is_claude_stage("findings_merge"):
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
@@ -481,6 +718,21 @@ async def run_norm_verify(
 ) -> tuple[int, str, AnyResult]:
     """Запустить верификацию нормативных ссылок -> norm_checks_llm.json (динамический выбор провайдера)."""
     model = get_stage_model("norm_verify")
+
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_norm_verify_messages(norms_list_text, project_id, project_info)
+        return await _run_codex_json_stage(
+            stage="norm_verify", messages=messages, model=model,
+            timeout=CLAUDE_NORM_VERIFY_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename=llm_out_filename,
+            audit_stage="04_norm_verify", output_dir=output_dir,
+        )
 
     if is_claude_stage("norm_verify"):
         with _scoped_audit_paths(
@@ -548,6 +800,41 @@ async def run_norm_fix(
     """Запустить пересмотр замечаний с учётом актуальных норм (динамический выбор провайдера)."""
     model = get_stage_model("norm_fix")
 
+    if is_codex_model(model):
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            task_text = prepare_norm_fix_task(
+                findings_to_fix_text, project_id,
+                project_info=project_info,
+            )
+        task_text = (
+            "## Codex exec mode override\n\n"
+            "This task template may mention Claude Read/Write tools and MCP `norms` tools. "
+            "In this Codex exec run, use direct filesystem access instead of Read/Write tools, "
+            "do not call MCP or web tools, and treat `norm_checks.json` as the authoritative "
+            "norm status source already produced by Python. Use `replacement_doc`, "
+            "`current_version`, `status`, `paragraph_checks`, and `affected_findings` from "
+            "`norm_checks.json`; if exact clause text is unavailable, mark the finding with "
+            "`norm_status: warning` or preserve the wording while adding `norm_revision`. "
+            "Do not refuse only because MCP tools are unavailable.\n\n"
+            + task_text
+        )
+        exit_code, combined, cli_result = await _run_cli(
+            task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT,
+            on_output, stage="norm_fix", project_id=project_id,
+            model=model,
+        )
+
+        _save_audit_trail(
+            project_id, "04b_norm_fix", model,
+            0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
+        )
+
+        return exit_code, combined, cli_result
+
     if is_claude_stage("norm_fix"):
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
@@ -613,6 +900,14 @@ async def run_norm_requote(
 ) -> tuple[int, str, "AnyResult"]:
     """Уточнить цитаты норм для замечаний с [ручная сверка] через MCP semantic search."""
     model = get_stage_model("norm_requote")
+    if is_codex_model(model):
+        msg = (
+            "norm_requote Codex fallback skipped: native Python requote failed, "
+            "and Codex filesystem/MCP agent mode is disabled"
+        )
+        await send_output(on_output, msg)
+        return 1, msg, CLIResult(result_text=msg, is_error=True)
+
     with _scoped_audit_paths(
         output_dir=output_dir, version_dir=version_dir,
         project_id=project_id, version_id=version_id,
@@ -644,6 +939,21 @@ async def run_optimization(
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
     model = get_stage_model("optimization")
+
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_optimization_messages(project_info, project_id)
+        return await _run_codex_json_stage(
+            stage="optimization", messages=messages, model=model,
+            timeout=CLAUDE_OPTIMIZATION_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename="optimization.json",
+            audit_stage="05_optimization", output_dir=output_dir,
+        )
 
     if is_claude_stage("optimization"):
         with _scoped_audit_paths(
@@ -832,8 +1142,24 @@ async def run_optimization_critic(
     """Запустить критическую проверку оптимизации (динамический выбор провайдера)."""
     from backend.app.core.config import CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT, OPTIMIZATION_REVIEW_TOOLS
 
+    model = get_stage_model("optimization_critic")
+
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_optimization_critic_messages(project_info, project_id)
+        return await _run_codex_json_stage(
+            stage="optimization_critic", messages=messages, model=model,
+            timeout=CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename="optimization_review.json",
+            audit_stage="05b_optimization_critic", output_dir=output_dir,
+        )
+
     if is_claude_stage("optimization_critic"):
-        model = get_stage_model("optimization_critic")
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
@@ -900,8 +1226,24 @@ async def run_optimization_corrector(
     if opt_path.exists():
         shutil.copy2(opt_path, pre_review_path)
 
+    model = get_stage_model("optimization_corrector")
+
+    if is_codex_model(model):
+        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            messages = prompt_builder.build_optimization_corrector_messages(project_info, project_id)
+        return await _run_codex_json_stage(
+            stage="optimization_corrector", messages=messages, model=model,
+            timeout=CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT, project_id=project_id,
+            on_output=on_output, output_filename="optimization.json",
+            audit_stage="05c_optimization_corrector", output_dir=output_dir,
+        )
+
     if is_claude_stage("optimization_corrector"):
-        model = get_stage_model("optimization_corrector")
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
@@ -993,5 +1335,3 @@ async def run_triage(
         project_info, project_id, on_output,
         output_dir=output_dir, version_dir=version_dir, version_id=version_id,
     )
-
-

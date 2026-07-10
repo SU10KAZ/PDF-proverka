@@ -178,6 +178,23 @@ def fix_paragraph_refs(output_dir: Path) -> int:
     return fixed
 
 
+def _norm_fix_left_findings_untouched(findings_path: Path, backup_path: Path) -> bool:
+    """True, если norm_fix завершился, НЕ изменив 03_findings.json (байт-в-байт = бэкап).
+
+    Детерминированная замена текстовой эвристики по словам-маркерам («невозможно»,
+    «недоступны»…): те же слова встречаются в резюме УСПЕШНОГО прогона («часть цитат
+    недоступны») и приводили к откату реально применённых правок из бэкапа.
+    Файл не изменился → агент ничего не применил → фолбэк на deterministic enrichment
+    (откат при этом не нужен и не выполняется — содержимое и так равно бэкапу).
+    """
+    try:
+        if not findings_path.exists() or not backup_path.exists():
+            return False
+        return findings_path.read_bytes() == backup_path.read_bytes()
+    except OSError:
+        return False
+
+
 def count_manual_check_flags(output_dir: Path) -> int:
     """Подсчитать количество findings с флагом [Пункт нормы ... ручной сверки]."""
     findings_path = output_dir / "03_findings.json"
@@ -570,6 +587,7 @@ async def run_norm_verification(
     )
 
     # ── Шаг 3: Пересмотр замечаний (если нужен) ──
+    norm_fix_failed = False
     if needs_fix:
         if wait_before_fix is not None and not wait_before_fix.is_set():
             await ctx.log("Ожидание завершения Corrector перед пересмотром норм...")
@@ -592,26 +610,40 @@ async def run_norm_verification(
             ctx.update_pipeline_log("norm_verify", "error", error=error)
             return StageResult.fail(error)
 
-        exit_code, output, cli_result = await claude_runner.run_norm_fix(
-            findings_to_fix_text, pid,
-            on_output=ctx.log,
-            project_info=project_info,
-            output_dir=output_dir,
-            version_dir=ctx.project_dir,
-            version_id=ctx.version_id,
-        )
-        ctx.record_cli_usage(cli_result, "norm_fix")
+        try:
+            exit_code, output, cli_result = await claude_runner.run_norm_fix(
+                findings_to_fix_text, pid,
+                on_output=ctx.log,
+                project_info=project_info,
+                output_dir=output_dir,
+                version_dir=ctx.project_dir,
+                version_id=ctx.version_id,
+            )
+            ctx.record_cli_usage(cli_result, "norm_fix")
+        except Exception as exc:
+            exit_code = 1
+            output = str(exc)
+            norm_fix_failed = True
+            await ctx.log(f"Norm fix: исключение ({exc}); продолжаю с исходными findings", "warn")
+
+        if exit_code == 0 and _norm_fix_left_findings_untouched(findings_path, pre_norm_path):
+            # Файл не изменился → правки не применены. НЕ форсируем exit_code=1:
+            # откат из бэкапа не нужен (содержимое идентично), а реальный успех
+            # с изменённым файлом сюда не попадает по построению.
+            norm_fix_failed = True
+            await ctx.log(
+                "Norm fix: агент завершился без изменений 03_findings.json; "
+                "продолжаю с deterministic norm enrichment",
+                "warn",
+            )
 
         if is_cancelled(exit_code):
             ctx.update_pipeline_log("norm_verify", "error", error="Отменено при norm_fix")
             return StageResult.cancel()
 
-        if exit_code == 0 and findings_path.exists():
-            shutil.copy2(findings_path, verified_path)
-            size_kb = round(verified_path.stat().st_size / 1024, 1)
-            await ctx.log(f"03a_norms_verified.json создан ({size_kb} KB)")
-        elif exit_code != 0:
-            await ctx.log(f"Norm fix: код {exit_code}", "warn")
+        if exit_code != 0:
+            norm_fix_failed = True
+            await ctx.log(f"Norm fix: код {exit_code}; {output[:300] if output else ''}", "warn")
             if pre_norm_path.exists():
                 shutil.copy2(pre_norm_path, findings_path)
                 await ctx.log("Восстановлен 03_findings.json из бэкапа", "warn")
@@ -633,6 +665,19 @@ async def run_norm_verification(
     fixed_paras = fix_paragraph_refs(output_dir)
     if fixed_paras > 0:
         await ctx.log(f"Номера пунктов норм исправлены: {fixed_paras} замечаний")
+
+    if findings_path.exists() and (needs_fix or enriched > 0 or fixed_paras > 0):
+        import shutil
+        shutil.copy2(findings_path, verified_path)
+        size_kb = round(verified_path.stat().st_size / 1024, 1)
+        if norm_fix_failed:
+            await ctx.log(
+                f"03a_norms_verified.json создан из текущих findings ({size_kb} KB); "
+                "LLM-пересмотр норм не применён",
+                "warn",
+            )
+        elif needs_fix:
+            await ctx.log(f"03a_norms_verified.json обновлён ({size_kb} KB)")
 
     # ── Шаг 7: Уточнение оставшихся цитат (Python semantic search) ──
     remaining_flags = count_manual_check_flags(output_dir)

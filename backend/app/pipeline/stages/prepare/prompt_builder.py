@@ -281,15 +281,17 @@ def _read_norms_reference(project_info: dict) -> str:
 
 def _read_md_file(project_info: dict, project_id: str) -> str:
     """Прочитать обязательный MD-файл проекта и вернуть как строку."""
-    md_file = project_info.get("md_file")
-    if not md_file:
+    md_path_raw = _get_md_file_path(project_info or {}, project_id)
+    if not md_path_raw or md_path_raw == "(нет)":
         raise FileNotFoundError(
             "Markdown PDF representation is required: md_file is not set in project_info.json"
         )
-    md_path = _version_project_dir(project_id) / md_file
+
+    md_path = Path(md_path_raw)
     if not md_path.exists():
+        md_name = (project_info or {}).get("md_file") or md_path.name
         raise FileNotFoundError(
-            f"Markdown PDF representation is required: {md_file} not found"
+            f"Markdown PDF representation is required: {md_name} not found"
         )
     try:
         return md_path.read_text(encoding="utf-8")
@@ -466,6 +468,7 @@ def build_text_analysis_messages(
     system_prompt = _load_and_clean_template(
         TEXT_ANALYSIS_TASK_TEMPLATE, project_info, project_id,
         ABSENCE_GUARD=_absence_guard_block(),
+        BLOCKS_ANALYSIS_PATH=str(_version_output_dir(project_id) / "02_blocks_for_text.json"),
     )
 
     text_source, source_text, user_prefix = _resolve_text_analysis_source(project_info, project_id)

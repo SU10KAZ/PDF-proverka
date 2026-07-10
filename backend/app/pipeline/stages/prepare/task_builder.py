@@ -462,12 +462,13 @@ def prepare_norm_fix_task(
     template = load_template_for_llm(NORM_FIX_TASK_TEMPLATE)
     template = _inject_discipline(template, project_info or {})
 
-    project_path, _ = _get_project_paths(project_id)
+    project_path, output_path = _get_project_paths(project_id)
 
     task = (
         template
         .replace("{PROJECT_ID}", project_id)
         .replace("{PROJECT_PATH}", project_path)
+        .replace("{OUTPUT_PATH}", output_path)
         .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{FINDINGS_TO_FIX}", findings_to_fix_text)
     )
