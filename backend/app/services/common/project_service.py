@@ -618,17 +618,148 @@ def unhide_project(project_id: str) -> None:
     _save_hidden_projects(hidden)
 
 
+def _delete_project_v2_primary(project_id: str) -> dict:
+    """projects_v2-primary удаление документа: обязательный backup ВСЕХ версий +
+    confirmation + guard, затем rmtree doc_dir и чистка old_to_new_map по
+    `v2_document_dir` (legacy-путь для map-матча может быть уже недоступен).
+
+    Backup делает удаление восстановимым (`_system/destructive_backups`).
+    Legacy-папка удаляется best-effort, если ещё существует (переходный период).
+    """
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_version_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    facade = StorageWriteFacade()
+    v2_root = facade.v2_root()
+    if v2_root is None:
+        raise ValueError("projects_v2 root не настроен")
+
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise ValueError(f"Проект '{project_id}' не найден")
+
+    version_ids = [v.get("version_id") for v in (doc.get("versions") or []) if v.get("version_id")]
+    if not version_ids:
+        cur = adapter.resolve_version_id(doc, None)
+        version_ids = [cur] if cur else []
+
+    def _target(vid: str) -> V2Target:
+        return V2Target(
+            object_folder=doc["object_folder"],
+            discipline=doc["discipline"],
+            document_code=doc["document_code"],
+            version_id=vid,
+        )
+
+    # 1) backup ВСЕХ версий (append в destructive_backups) — удаление восстановимо
+    backup_ids: list[str] = []
+    for vid in version_ids:
+        t = _target(vid)
+        if t.version_dir(v2_root).is_dir():
+            backup_ids.append(backup_version_before_destructive(t, v2_root, "delete_project"))
+
+    primary_target = _target(version_ids[0]) if version_ids else _target("v1")
+    guard_backup_id = backup_ids[0] if backup_ids else "confirmed_no_version_on_disk"
+    record_destructive_confirmation(
+        primary_target, v2_root, op="delete_project",
+        backup_id=guard_backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary("delete_project", confirmed=True, backup_id=guard_backup_id)
+
+    # 2) удалить doc_dir целиком (защита: только внутри objects/ этого v2root)
+    doc_dir = primary_target.doc_dir(v2_root)
+    removed_doc = None
+    try:
+        inside = str(doc_dir.resolve()).startswith(str((Path(v2_root) / "objects").resolve()) + os.sep)
+    except Exception:
+        inside = False
+    if inside and doc_dir.is_dir():
+        shutil.rmtree(doc_dir)
+        removed_doc = str(doc_dir)
+
+    # 3) почистить old_to_new_map по v2_document_dir (без legacy-пути)
+    try:
+        v2lib = facade._load_v2lib()
+        map_path = Path(v2_root) / "_system" / "old_to_new_map.json"
+        mp = v2lib.load_old_to_new_map(map_path)
+        migs = mp.get("migrations", [])
+        dd_res = str(doc_dir.resolve())
+
+        def _match(e) -> bool:
+            v = e.get("v2_document_dir") or ""
+            try:
+                return str(Path(v).resolve()) == dd_res
+            except Exception:
+                return str(v) == str(doc_dir)
+
+        mp["migrations"] = [e for e in migs if not _match(e)]
+        v2lib.save_old_to_new_map(mp, map_path)
+    except Exception:
+        pass
+
+    # 4) best-effort удаление legacy-папки, если ещё существует (переходный период)
+    legacy_removed = None
+    try:
+        legacy_dir = resolve_project_dir(project_id, must_exist=True)
+        root_entry = Path(legacy_dir)
+        try:
+            c = version_service.container_dir_for(legacy_dir)
+            if c is not None:
+                root_entry = Path(c)
+        except Exception:
+            pass
+        root_entry = root_entry.resolve()
+        if root_entry.exists():
+            shutil.rmtree(root_entry)
+            legacy_removed = str(root_entry)
+    except Exception:
+        legacy_removed = None
+
+    try:
+        unhide_project(project_id)
+    except Exception:
+        pass
+    try:
+        invalidate_project_cache()
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "deleted_v2_doc": removed_doc,
+        "deleted_legacy": legacy_removed,
+        "backup_ids": backup_ids,
+        "v2": {"removed": [removed_doc] if removed_doc else []},
+    }
+
+
 def delete_project(project_id: str) -> dict:
     """Жёстко удалить проект: legacy-папку (контейнер версий или plain) + его
     документ(ы) в projects_v2 + записи old_to_new_map + запись в hidden_projects.
 
-    Семантика — безвозвратное удаление (выбор оператора). Сначала убираем v2
-    (fail-soft, пока legacy ещё на месте для резолва по map), затем удаляем
-    legacy-папку (авторитетно). Гард «не во время аудита» — на уровне endpoint.
+    Семантика — безвозвратное удаление (выбор оператора). В v2-primary идём через
+    v2-native путь с обязательным backup (восстановимо), не завися от legacy. В
+    legacy/dual — прежнее поведение: убрать v2 по map, затем rmtree legacy.
+    Гард «не во время аудита» — на уровне endpoint.
 
     Raises:
         ValueError: проект не найден.
     """
+    v2_primary = False
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        v2_primary = v2_is_primary()
+    except Exception:
+        v2_primary = False
+    if v2_primary:
+        return _delete_project_v2_primary(project_id)
+
     try:
         proj_dir = resolve_project_dir(project_id, must_exist=True)
     except (ProjectNotResolvedError, AmbiguousProjectError, FileNotFoundError) as e:
@@ -2832,13 +2963,35 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
             dup = ", ".join(idx["bundle"][bf][:3])
             raise UploadFolderConflict(f"Точный комплект уже загружался: {dup}")
 
-    # --- запись в legacy (авторитетно, первым) -------------------------------
-    dest.mkdir(parents=True, exist_ok=True)
+    # --- выбор корня записи --------------------------------------------------
+    # В v2-primary НЕ пишем авторитетно в legacy `projects/` (иначе загрузка
+    # воскрешает выведенную из эксплуатации папку и копит там копии). Пишем
+    # bundle во ВРЕМЕННЫЙ staging вне projects/, затем мигрируем в v2 проверенным
+    # `shadow_mirror` и удаляем staging. Basename папки объекта сохраняется в
+    # пути staging — `migrate_project` → `object_id_for` матчит объект ПО ИМЕНИ
+    # папки (by_name fallback), так что привязка объекта корректна без legacy.
+    v2_first = False
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary as _v2_is_primary
+        v2_first = _v2_is_primary()
+    except Exception:
+        v2_first = False
+
+    staging_root: Optional[Path] = None
+    if v2_first:
+        import tempfile
+        staging_root = Path(tempfile.mkdtemp(prefix="v2upload_"))
+        write_dest = staging_root / obj_projects_dir.name / discipline / project_name
+    else:
+        write_dest = dest
+
+    # --- запись bundle (legacy-layout: <obj>/<discipline>/<name>) -------------
+    write_dest.mkdir(parents=True, exist_ok=True)
     saved: list[str] = []
 
     def _write_all(items: list[tuple[str, bytes]]) -> None:
         for safe, data in items:
-            (dest / safe).write_bytes(data)
+            (write_dest / safe).write_bytes(data)
             saved.append(safe)
 
     _write_all(pdfs)
@@ -2868,7 +3021,7 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         info["md_file"] = md_primary
         info["md_files"] = md_names
 
-    (dest / "project_info.json").write_text(
+    (write_dest / "project_info.json").write_text(
         json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     # input_manifest.json — расширенный отпечаток (per-file sha256). Зеркалится в
@@ -2882,26 +3035,44 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "files": fp.get("files", []),
     }
-    (dest / "input_manifest.json").write_text(
+    (write_dest / "input_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    (dest / "_output").mkdir(exist_ok=True)
+    (write_dest / "_output").mkdir(exist_ok=True)
 
-    # --- dual_write_shadow зеркало (no-op в legacy, fail-soft) ----------------
+    # --- миграция/зеркало в v2 -----------------------------------------------
     # *_ocr.html попадёт в v2 01_input/02_work автоматически: find_input_quad
-    # распознаёт _ocr.html. try/except гарантирует, что сбой v2 не ломает legacy.
+    # распознаёт _ocr.html. try/except гарантирует fail-soft.
     try:
         from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_path_safe(dest)
+        _swf.shadow_mirror_project_path_safe(write_dest)
     except Exception:
         pass
 
+    if v2_first:
+        # v2-primary: bundle мигрирован из staging в v2. Проверяем, что документ
+        # реально появился в v2, и удаляем временный staging (в projects/ ничего
+        # не осталось). Если v2-документа нет — это surfaced failure загрузки.
+        try:
+            v2_ok = _v2_document_exists(object_id, project_name)
+        except Exception:
+            v2_ok = False
+        if staging_root is not None:
+            import shutil
+            shutil.rmtree(staging_root, ignore_errors=True)
+        if not v2_ok:
+            raise UploadFolderError(
+                f"Не удалось создать документ '{project_id}' в projects_v2"
+            )
+        invalidate_project_cache()
+
+    result_dest = str(dest) if not v2_first else project_id
     return {
         "project_id": project_id,
         "name": project_name,
         "section": discipline,
         "object_id": object_id,
-        "dest": str(dest),
+        "dest": result_dest,
         "saved_files": saved,
         "ignored_files": ignored,
         "has_pdf": True,

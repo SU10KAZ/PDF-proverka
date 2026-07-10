@@ -137,6 +137,44 @@ def test_delete_project_missing_raises_valueerror(tmp_path, monkeypatch):
         project_service.delete_project("AR/NOPE")
 
 
+def test_delete_project_v2_primary_backs_up_and_removes(tmp_path, monkeypatch):
+    """В v2-primary удаление идёт v2-native: backup версии → удаление doc_dir,
+    без зависимости от legacy (legacy уже недоступен)."""
+    from backend.app.services.storage.storage_write_facade import V2Target
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+    v2root = tmp_path / "projects_v2"
+    target = V2Target(object_folder="OBJ_F", discipline="EOM",
+                      document_code="CODE-1", version_id="v001")
+    vdir = target.version_dir(v2root)
+    vdir.mkdir(parents=True)
+    (vdir / "03_findings.json").write_text("{}", encoding="utf-8")
+    doc_dir = target.doc_dir(v2root)
+
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2root))
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "projects_v2_primary")
+
+    doc = {"object_folder": "OBJ_F", "discipline": "EOM", "document_code": "CODE-1",
+           "versions": [{"version_id": "v001"}]}
+    monkeypatch.setattr(ProjectsV2Adapter, "find_document_by_project_id",
+                        lambda self, pid, **kw: doc)
+    monkeypatch.setattr(ProjectsV2Adapter, "resolve_version_id",
+                        lambda self, d, vid: "v001")
+    # legacy уже удалён → resolve поднимает not-found (best-effort ветка глотает)
+    def _no_legacy(pid, **kw):
+        raise project_service.ProjectNotResolvedError("legacy gone")
+    monkeypatch.setattr(project_service, "resolve_project_dir", _no_legacy)
+    monkeypatch.setattr(project_service, "invalidate_project_cache", lambda: None)
+
+    res = project_service.delete_project("EOM/CODE-1")
+
+    assert res["deleted_v2_doc"] is not None
+    assert not doc_dir.exists()                    # v2-документ удалён
+    assert res["backup_ids"]                       # backup создан
+    backups = list((v2root / "_system" / "destructive_backups").iterdir())
+    assert backups and (backups[0] / "03_findings.json").exists()  # backup восстановим
+
+
 # ─── DELETE endpoint mapping ─────────────────────────────────────────────────
 
 

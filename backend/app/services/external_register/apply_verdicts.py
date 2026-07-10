@@ -32,8 +32,8 @@ from typing import Optional
 
 from backend.app.models.expert_review import ExpertDecision
 from backend.app.services.common import version_service
-from backend.app.services.common.project_service import pinned_object, resolve_project_dir
-from backend.app.services.external_register import parser, section_map
+from backend.app.services.common.project_service import pinned_object
+from backend.app.services.external_register import parser, section_map, service
 from backend.app.services.external_register.models import (
     CustomerResponse,
     MatchStatus,
@@ -67,8 +67,6 @@ SEV_MAP: dict[str, str] = {
 
 # Какие статусы матчинга считаем «замечание уже есть на портале».
 _MATCHED_STATUSES = (MatchStatus.AUTO_MATCHED, MatchStatus.CONFIRMED)
-
-_FINDINGS_REL = Path("_output") / "03_findings.json"
 
 
 # ─── Результат ──────────────────────────────────────────────────────────────
@@ -210,10 +208,10 @@ def build_plan(
 
         plan = by_project.get(project_id)
         if plan is None:
-            proj_dir = resolve_project_dir(project_id, object_id=object_id)
+            out_dir = service._findings_output_dir(object_id, project_id)
             plan = ProjectPlan(
                 project_id=project_id,
-                had_findings_file=(proj_dir / _FINDINGS_REL).exists(),
+                had_findings_file=(out_dir / "03_findings.json").exists(),
             )
             by_project[project_id] = plan
         plan.section_codes.add(entry.section_code)
@@ -262,8 +260,8 @@ def apply_register(
 
     with pinned_object(object_id), version_service.pinned_version("v1"):
         for plan in report.projects:
-            proj_dir = resolve_project_dir(plan.project_id, object_id=object_id)
-            findings_path = proj_dir / _FINDINGS_REL
+            out_dir = service._findings_output_dir(object_id, plan.project_id)
+            findings_path = out_dir / "03_findings.json"
 
             # 1. Создать недостающие findings. Пишем И в master (03_findings.json),
             #    И в отображаемый файл (03a_norms_verified.json), который читает
@@ -271,7 +269,7 @@ def apply_register(
             if plan.create_new:
                 _write_new_findings(findings_path, plan, register.register_id,
                                     create_if_missing=True)
-                display_path = proj_dir / "_output" / "03a_norms_verified.json"
+                display_path = out_dir / "03a_norms_verified.json"
                 if display_path.exists():
                     _write_new_findings(display_path, plan, register.register_id,
                                         create_if_missing=False)

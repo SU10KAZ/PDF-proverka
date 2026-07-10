@@ -149,7 +149,8 @@ def test_apply_creates_findings_and_decisions(tmp_path, monkeypatch):
     proj_dir = tmp_path / "EOM" / "133_23-ГК-ЭО2"
     (proj_dir / "_output").mkdir(parents=True)
 
-    monkeypatch.setattr(apply_verdicts, "resolve_project_dir", lambda pid, **kw: proj_dir)
+    monkeypatch.setattr(apply_verdicts.service, "_findings_output_dir",
+                        lambda oid, pid, version_id="v1": proj_dir / "_output")
 
     saved_calls = []
 
@@ -199,7 +200,8 @@ def test_apply_creates_findings_and_decisions(tmp_path, monkeypatch):
 def test_apply_dry_run_writes_nothing(tmp_path, monkeypatch):
     proj_dir = tmp_path / "EOM" / "133_23-ГК-ЭО2"
     (proj_dir / "_output").mkdir(parents=True)
-    monkeypatch.setattr(apply_verdicts, "resolve_project_dir", lambda pid, **kw: proj_dir)
+    monkeypatch.setattr(apply_verdicts.service, "_findings_output_dir",
+                        lambda oid, pid, version_id="v1": proj_dir / "_output")
     monkeypatch.setattr(apply_verdicts.kb_service, "save_expert_review",
                         lambda *a, **k: pytest.fail("save_expert_review не должен вызываться в dry-run"))
 

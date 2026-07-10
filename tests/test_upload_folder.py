@@ -98,6 +98,38 @@ def test_full_bundle_creates_legacy_and_triggers_v2(env):
     assert shadow_calls == [str(dest)]
 
 
+def test_v2_primary_upload_stages_to_temp_and_skips_legacy(env, monkeypatch):
+    """В v2-primary загрузка НЕ пишет в legacy projects/, а мигрирует из temp-staging."""
+    projects_dir, shadow_calls = env
+    monkeypatch.setattr(swf, "v2_is_primary", lambda: True)
+
+    mirrored = {"done": False}
+
+    def fake_shadow(p):
+        shadow_calls.append(str(p))
+        mirrored["done"] = True
+
+    monkeypatch.setattr(swf, "shadow_mirror_project_path_safe", fake_shadow)
+    # _v2_document_exists: False до миграции (dup-check), True после (verify)
+    monkeypatch.setattr(project_service, "_v2_document_exists",
+                        lambda *a, **k: mirrored["done"])
+
+    res = project_service.save_uploaded_project_folder(
+        object_id="obj-1", discipline="EOM", project_name="PRJ-V2", files=_bundle())
+
+    # legacy projects/ НЕ тронут
+    assert not (projects_dir / "EOM" / "PRJ-V2").exists()
+    # зеркалирование вызвано на staging-путь ВНЕ projects_dir, который затем удалён
+    assert len(shadow_calls) == 1
+    staged = Path(shadow_calls[0])
+    assert projects_dir not in staged.parents
+    assert not staged.exists()  # staging вычищен после миграции
+    # basename папки объекта сохранён в staging-пути (object_id_for by_name)
+    assert staged.parent.parent.name == projects_dir.name
+    assert res["project_id"] == "EOM/PRJ-V2"
+    assert res["dest"] == "EOM/PRJ-V2"
+
+
 def test_ocr_html_is_saved(env):
     projects_dir, _ = env
     res = project_service.save_uploaded_project_folder(

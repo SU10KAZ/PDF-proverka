@@ -32,6 +32,23 @@ logger = logging.getLogger(__name__)
 # ─── Хранилище реестров ───────────────────────────────────────────────────
 
 
+def _findings_output_dir(object_id: str, project_id: str, version_id: str = "v1") -> Path:
+    """Папка findings нужной версии в рамках объекта (v2-aware).
+
+    В v2-primary → `versions/<vid>/03_analysis/latest`; в legacy → `_output`.
+    `object_id` прокидывается через `pinned_object` — `resolve_version_output_dir`
+    сам object_id не принимает. Fallback на legacy-`_output` при любой ошибке
+    резолва (ещё не мигрированный проект / отсутствие версии).
+    """
+    from backend.app.services.common import version_service
+    from backend.app.services.common.project_service import pinned_object
+    with pinned_object(object_id):
+        try:
+            return version_service.resolve_version_output_dir(project_id, version_id)
+        except Exception:
+            return resolve_project_dir(project_id, object_id=object_id) / "_output"
+
+
 def _register_path(object_id: str, register_id: str) -> Path:
     EXTERNAL_REGISTERS_DIR.mkdir(parents=True, exist_ok=True)
     safe_object = object_id.replace("/", "_")
@@ -297,8 +314,7 @@ def _write_finding_external_register(
     if entry.match is None:
         return
 
-    proj_dir = resolve_project_dir(entry.match.project_id, object_id=object_id)
-    findings_path = proj_dir / "_output" / "03_findings.json"
+    findings_path = _findings_output_dir(object_id, entry.match.project_id) / "03_findings.json"
     if not findings_path.exists():
         logger.warning("Findings file missing for %s: %s", entry.match.project_id, findings_path)
         return
@@ -349,8 +365,7 @@ def _clear_finding_external_register(
     expected_key: str,
 ) -> None:
     """Снять external_register поле с finding'а (только если ключ совпадает)."""
-    proj_dir = resolve_project_dir(project_id, object_id=object_id)
-    findings_path = proj_dir / "_output" / "03_findings.json"
+    findings_path = _findings_output_dir(object_id, project_id) / "03_findings.json"
     if not findings_path.exists():
         return
     try:

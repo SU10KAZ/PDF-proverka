@@ -1683,6 +1683,36 @@ def _resolve_candidate_path(
     )
 
 
+def _document_exists_in_v2(project_id: str) -> bool:
+    """True, если документ существует в projects_v2 (без обращения к legacy)."""
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        return adapter.is_available() and adapter.find_document_by_project_id(project_id) is not None
+    except Exception:
+        return False
+
+
+def _read_target_section(proj_dir: Path, project_id: str) -> Optional[str]:
+    """section текущего документа: legacy `project_info.json` → v2 version project_info.
+
+    В v2-primary legacy-папки может не быть — тогда section читается из
+    `project_info.json` текущей версии в projects_v2 (get_version_dir v2-aware).
+    """
+    candidates = [proj_dir / "project_info.json"]
+    try:
+        candidates.append(get_version_dir(proj_dir, project_id) / "project_info.json")
+    except Exception:
+        pass
+    for info_path in candidates:
+        try:
+            if info_path.exists():
+                return (json.loads(info_path.read_text(encoding="utf-8")) or {}).get("section")
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            continue
+    return None
+
+
 def create_version_from_existing_files(
     target_project_id: str,
     candidate_files: dict[str, Optional[str]],
@@ -1727,20 +1757,18 @@ def create_version_from_existing_files(
 
     proj_dir: Path = resolve_project_dir_fn(target_project_id)
     if not proj_dir.exists() or not proj_dir.is_dir():
-        raise FileNotFoundError(
-            f"Проект '{target_project_id}' не найден: {proj_dir}"
-        )
+        # v2-primary: документ может существовать ТОЛЬКО в projects_v2 (legacy
+        # выведен из эксплуатации). Тяжёлая работа ниже (create_next_version /
+        # save_files_to_version / get_version_dir) уже v2-aware и ключуется на
+        # project_id, а не на этой папке — 404 только если нет и в v2.
+        if not _document_exists_in_v2(target_project_id):
+            raise FileNotFoundError(
+                f"Проект '{target_project_id}' не найден: {proj_dir}"
+            )
 
-    # Проверка section.
+    # Проверка section (source — legacy project_info или v2 version project_info).
     if expected_section:
-        root_info_path = proj_dir / "project_info.json"
-        target_section: Optional[str] = None
-        if root_info_path.exists():
-            try:
-                with open(root_info_path, "r", encoding="utf-8") as f:
-                    target_section = (json.load(f) or {}).get("section")
-            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-                target_section = None
+        target_section: Optional[str] = _read_target_section(proj_dir, target_project_id)
         if target_section and target_section != expected_section:
             raise ValueError(
                 f"Раздел target проекта '{target_section}' не совпадает с "

@@ -223,11 +223,19 @@ def _legacy_output_dir_for_doc(doc_dir: Path, vid: str) -> Optional[Path]:
         m = re.match(r"v0*(\d+)$", str(vid))
         ver_n = int(m.group(1)) if m else 1
         container = legacy_root / discipline / f"{code}(main)"
-        candidates = [
-            container / (f"{code} V{ver_n}" if ver_n > 1 else code) / "_output",
-            container / code / "_output",
-            legacy_root / discipline / code / "_output",
-        ]
+        if ver_n > 1:
+            # Версия > 1: ищем ТОЛЬКО папку этой версии. НЕ падаем на `code/_output`
+            # (= v001) — иначе findings старой версии маскируют неаудированную новую.
+            # Имена legacy V-папок бывают и с суффиксом '.pdf' — учитываем оба варианта.
+            ver_names = [f"{code} V{ver_n}", f"{code} V{ver_n}.pdf"]
+            candidates = [container / n / "_output" for n in ver_names]
+            candidates += [legacy_root / discipline / n / "_output" for n in ver_names]
+        else:
+            # v001 — plain / контейнерная раскладка (fallback корректен: та же версия).
+            candidates = [
+                container / code / "_output",
+                legacy_root / discipline / code / "_output",
+            ]
         for cand in candidates:
             if cand.is_dir():
                 return cand

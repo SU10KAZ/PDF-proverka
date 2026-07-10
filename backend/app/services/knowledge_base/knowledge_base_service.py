@@ -1090,7 +1090,7 @@ def import_decisions_from_excel(
             return bool(s and _re.fullmatch(r"v\d+", s.strip(), flags=_re.IGNORECASE))
 
         def _pid_resolves(pid: str) -> bool:
-            """project_id указывает на реальную папку проекта/контейнер."""
+            """project_id указывает на реальный документ (legacy-папку ИЛИ v2)."""
             if not pid:
                 return False
             try:
@@ -1100,7 +1100,21 @@ def import_decisions_from_excel(
                 resolve_project_dir(pid, must_exist=True)
                 return True
             except Exception:
-                return False
+                pass
+            # v2-aware: документ может существовать ТОЛЬКО в projects_v2
+            # (legacy `projects/` выведен из эксплуатации). Без этой ветки
+            # _pid_resolves даёт False на все кандидаты → project_id=None →
+            # вердикты эксперта тихо теряются при импорте из Excel.
+            try:
+                from backend.app.services.storage.projects_v2_adapter import (
+                    ProjectsV2Adapter,
+                )
+                adapter = ProjectsV2Adapter()
+                if adapter.is_available() and adapter.find_document_by_project_id(pid) is not None:
+                    return True
+            except Exception:
+                pass
+            return False
 
         def _strip_version_label(pid: str) -> str:
             """Снять хвостовую метку версии ("<id> V1"/"<id>_v2"/…).
