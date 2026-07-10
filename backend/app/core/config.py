@@ -673,6 +673,19 @@ BLOCK_SOURCE_ROUTER_ENABLED = _env_bool("BLOCK_SOURCE_ROUTER_ENABLED", False)
 # vector_covered_block_ids (тот же порог/клип, что у роутера). Скан/растр без слоя → Gemma как
 # обычно. OFF по умолчанию. fail-soft.
 GEMMA_SKIP_VECTOR_BLOCKS_ENABLED = _env_bool("GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)
+# ПОЛНОЕ отключение OCR-прогона стадии Gemma (решение Андрея 2026-07-10: «описание блоков —
+# из текст-слоя PDF, Gemma выключить»). Расширяет пропуск выше со «только блоки с годным
+# вектор-слоем» на ВСЕ image-блоки: covered-блоки получают синтетический enrichment с чистым
+# вектор-текстом (как при GEMMA_SKIP_VECTOR_BLOCKS_ENABLED), сканы/растры без слоя —
+# placeholder «OCR отключён, анализируй изображение» (Stage 02 анализирует их по PNG, а не
+# скипает как enrichment=None). Стадия становится «сухой»: НИ ОДНОГО обращения к LM Studio
+# (ни adaptive reload, ни preflight; CHANDRA_BASE_URL не требуется) — полная независимость
+# аудита от ngrok/локальной модели. Кропы 100 DPI и summary (schema v2) пишутся как обычно →
+# все гейты/resume/Stage 02 проходят без правок. ИНВАРИАНТ БЕЗОПАСНОСТИ: как и пропуск выше,
+# действует ТОЛЬКО при BLOCK_SOURCE_ROUTER_ENABLED=true (иначе Stage 02 не подаст covered-блокам
+# вектор-текст). Приоритетнее GEMMA_SKIP_VECTOR_BLOCKS_ENABLED (тот можно не выставлять).
+# OFF по умолчанию — прод не меняется.
+GEMMA_STAGE_DISABLED = _env_bool("GEMMA_STAGE_DISABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о

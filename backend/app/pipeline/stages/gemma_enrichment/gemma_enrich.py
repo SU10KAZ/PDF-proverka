@@ -1796,6 +1796,25 @@ def _vector_skip_enrichment(vector_text: str) -> dict:
     }
 
 
+def _ocr_disabled_enrichment() -> dict:
+    """Синтетический enrichment для скана/растра при ПОЛНОСТЬЮ отключённой Gemma
+    (GEMMA_STAGE_DISABLED): вектор-слоя у блока нет, OCR не выполнялся.
+
+    Не None — иначе Stage 02 пропустит блок целиком (skip_no_enrich). С этим placeholder'ом
+    блок остаётся в плане Stage 02 и анализируется по приложенному PNG-изображению.
+    """
+    return {
+        "block_type": "image",
+        "subject": "OCR-обогащение блока отключено; вектор-слоя у блока нет (скан/растр)",
+        "notes": (
+            "Текстовое описание блока не генерировалось: OCR-стадия отключена, а "
+            "вектор-текст-слой PDF для этого блока пуст. Анализ блока выполняется "
+            "по его изображению на этапе анализа блоков."
+        ),
+        "_gemma_skipped": "stage_disabled",
+    }
+
+
 async def _run_blocks_pass(
     *,
     image_blocks: list[dict],
@@ -1861,6 +1880,14 @@ async def _run_blocks_pass(
             # синтетический ok-результат с вектор-текстом в enrichment (0 токенов). coverage="ok".
             _skip_enr = skip_enrichments.get(block["block_id"])
             if _skip_enr is not None:
+                # Различаем в телеметрии: covered вектор-слоем ("vector_skip") vs слепой
+                # placeholder скана при GEMMA_STAGE_DISABLED ("stage_disabled_skip") —
+                # иначе в summary/логах их не отличить при разборе качества.
+                _skip_src = (
+                    "vector_skip"
+                    if _skip_enr.get("_gemma_skipped") == "vector_layer"
+                    else "stage_disabled_skip"
+                )
                 async with completed_lock:
                     if count_progress:
                         completed += 1
@@ -1873,8 +1900,8 @@ async def _run_blocks_pass(
                     "elapsed_ms": 0,
                     "completed": completed,
                     "total": len(image_blocks),
-                    "response_source": "vector_skip",
-                    "finish_reason": "vector_skip",
+                    "response_source": _skip_src,
+                    "finish_reason": _skip_src,
                 })
                 return EnrichResult(
                     block_id=block["block_id"],
@@ -1884,8 +1911,8 @@ async def _run_blocks_pass(
                     input_tokens=0,
                     output_tokens=0,
                     reasoning_tokens=0,
-                    response_source="vector_skip",
-                    finish_reason="vector_skip",
+                    response_source=_skip_src,
+                    finish_reason=_skip_src,
                 )
             async with sem:
                 if count_progress:
@@ -2090,7 +2117,6 @@ async def enrich_project(
             f"{base_policy}. Перекропайте base crops."
         )
 
-    base_url = _env("CHANDRA_BASE_URL").rstrip("/")
     base_index = load_json(base_index_path)
     blocks = base_index.get("blocks", [])
     image_blocks = [
@@ -2100,24 +2126,44 @@ async def enrich_project(
     total = len(image_blocks)
 
     # ── Пропуск стадии Gemma для блоков с годным вектор-слоем (оптимизация к роутеру Stage 02) ──
-    # ИНВАРИАНТ: пропуск ТОЛЬКО когда И GEMMA_SKIP_VECTOR_BLOCKS_ENABLED, И BLOCK_SOURCE_ROUTER_ENABLED
-    # включены — иначе роутер не подаст вектор-текст и блок останется слепым. Общий предикат с
-    # роутером (тот же порог/клип). fail-soft: ошибка → {} → полный прогон Gemma как обычно.
+    # ИНВАРИАНТ: пропуск ТОЛЬКО когда BLOCK_SOURCE_ROUTER_ENABLED включён — иначе роутер не подаст
+    # вектор-текст и блок останется слепым. Общий предикат с роутером (тот же порог/клип).
+    # Два уровня: GEMMA_SKIP_VECTOR_BLOCKS_ENABLED — пропуск только covered-блоков (сканы идут в
+    # Gemma); GEMMA_STAGE_DISABLED — пропуск ВСЕХ image-блоков (сканы получают placeholder
+    # «OCR отключён» и анализируются на Stage 02 по изображению; стадия «сухая» — ни одного
+    # обращения к LM Studio). fail-soft: ошибка → {} → полный прогон Gemma как обычно.
     skip_enrichments: dict[str, dict] = {}
+    stage_disabled = False
     try:
         from backend.app.core import config as _gcfg
-        if (getattr(_gcfg, "GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)
-                and getattr(_gcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False)):
+        _router_on = bool(getattr(_gcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False))
+        stage_disabled = bool(getattr(_gcfg, "GEMMA_STAGE_DISABLED", False)) and _router_on
+        _skip_vector = bool(getattr(_gcfg, "GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)) and _router_on
+        if stage_disabled or _skip_vector:
             from backend.app.pipeline.stages.block_grounding.block_source_router import (
                 vector_covered_block_ids as _vector_covered,
             )
-            _covered = _vector_covered(out_dir)
             _image_ids = {b["block_id"] for b in image_blocks}
+            try:
+                _covered = _vector_covered(out_dir)  # сам fail-soft → {}
+            except Exception:
+                _covered = {}
             skip_enrichments = {
                 bid: _vector_skip_enrichment(vtext)
                 for bid, vtext in _covered.items() if bid in _image_ids
             }
-            if skip_enrichments:
+            _vector_count = len(skip_enrichments)
+            if stage_disabled:
+                # ПОЛНОЕ отключение: сканы/растры без вектор-слоя тоже не гоняем через Gemma.
+                for _bid in sorted(_image_ids - set(skip_enrichments)):
+                    skip_enrichments[_bid] = _ocr_disabled_enrichment()
+                await _emit(progress_cb, {
+                    "type": "gemma_stage_disabled",
+                    "total": total,
+                    "vector_blocks": _vector_count,
+                    "image_only_blocks": len(skip_enrichments) - _vector_count,
+                })
+            elif skip_enrichments:
                 await _emit(progress_cb, {
                     "type": "gemma_skip_vector_blocks",
                     "skipped": len(skip_enrichments),
@@ -2126,6 +2172,7 @@ async def enrich_project(
                 })
     except Exception:
         skip_enrichments = {}
+        stage_disabled = False
 
     if total == 0:
         summary = build_gemma_summary(
@@ -2151,6 +2198,13 @@ async def enrich_project(
         )
         await _emit(progress_cb, {"type": "no_blocks"})
         return summary
+
+    # «Сухая» стадия: ВСЕ image-блоки пропущены → ни одного обращения к LM Studio не будет
+    # (ни enrich-вызовов, ни reload/preflight ниже) → CHANDRA_BASE_URL не требуется. Иначе —
+    # обязателен, как раньше (hard error через _env). Резолвим ПОСЛЕ ветки no_blocks: ей
+    # URL тоже не нужен (иначе текст-only проект падал бы при отключённой Gemma без ngrok).
+    stage_dry = len(skip_enrichments) == total
+    base_url = "" if stage_dry else _env("CHANDRA_BASE_URL").rstrip("/")
 
     # graph (опционально — для page_text/sheet_no)
     graph: dict = {}
@@ -2179,7 +2233,16 @@ async def enrich_project(
     model_reload_events: list[dict[str, Any]] = []
     context_guard_status = "skipped"
     base_reload_event: dict[str, Any] | None = None
-    if adaptive_reload_enabled:
+    if stage_dry:
+        # Все блоки пропущены (вектор-слой / GEMMA_STAGE_DISABLED) — модель не нужна:
+        # ни reload, ни preflight (оба ходят в LM Studio; при недоступном ngrok валили стадию).
+        model_reload_events.append({
+            "phase": "base",
+            "ok": True,
+            "action": "skipped_stage_dry",
+            "reason": "all_blocks_skipped",
+        })
+    elif adaptive_reload_enabled:
         base_reload_event = await _adaptive_reload_to_context(
             model=model,
             target_context_length=base_ctx_target,
@@ -2578,10 +2641,28 @@ async def retry_failed_blocks(
         if str(block.get("high_detail_status") or "") in {"failed", "missing"}
     )
 
-    if force_base_rerun or base_failed_ids:
+    # ПОЛНОЕ отключение Gemma (GEMMA_STAGE_DISABLED + роутер): любой retry сводим к «сухому»
+    # полному прогону enrich_project — иначе high-detail ветка ниже пойдёт в LM Studio
+    # (reload/preflight + _env(CHANDRA_BASE_URL)) вопреки контракту флага.
+    _stage_disabled = False
+    try:
+        from backend.app.core import config as _gcfg
+        _stage_disabled = bool(getattr(_gcfg, "GEMMA_STAGE_DISABLED", False)) and bool(
+            getattr(_gcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False)
+        )
+    except Exception:
+        _stage_disabled = False
+
+    if force_base_rerun or base_failed_ids or _stage_disabled:
+        if _stage_disabled and not (force_base_rerun or base_failed_ids):
+            _retry_mode = "stage_disabled_dry_rerun"
+        elif force_base_rerun:
+            _retry_mode = "force_base_rerun"
+        else:
+            _retry_mode = "base_failed_full_rerun"
         await _emit(progress_cb, {
             "type": "retry_failed_started",
-            "mode": "force_base_rerun" if force_base_rerun else "base_failed_full_rerun",
+            "mode": _retry_mode,
             "to_retry": len(base_failed_ids) or int(prev_summary.get("blocks_total") or 0),
             "missing": [],
             "model": model,
@@ -2596,7 +2677,7 @@ async def retry_failed_blocks(
             pause_event=pause_event,
             cancel_event=cancel_event,
         )
-        rerun["retry_mode"] = "force_base_rerun" if force_base_rerun else "base_failed_full_rerun"
+        rerun["retry_mode"] = _retry_mode
         rerun["retry_request"] = {
             "force_base_rerun": force_base_rerun,
             "force_high_detail_rerun": force_high_detail_rerun,

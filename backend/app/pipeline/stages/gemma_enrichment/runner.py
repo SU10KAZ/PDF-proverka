@@ -203,6 +203,20 @@ async def run_gemma_enrichment_stage(
                 f"t={event.get('elapsed_ms', 0)/1000:.1f}s{tail}",
                 level,
             )
+        elif t == "gemma_stage_disabled":
+            vec = event.get("vector_blocks", 0)
+            await ctx.log(
+                f"  Gemma ОТКЛЮЧЕНА (GEMMA_STAGE_DISABLED): {event.get('total', 0)} блоков без OCR — "
+                f"{vec} из вектор-слоя, "
+                f"{event.get('image_only_blocks', 0)} скан(ов) на Stage 02 по изображению",
+                # 0 covered на проекте с блоками = либо чисто скановый проект, либо сбой
+                # извлечения вектор-слоя (PDF/document_graph не найдены) — подсветить.
+                "warn" if (not vec and event.get("total", 0)) else "info",
+            )
+        elif t == "gemma_skip_vector_blocks":
+            await ctx.log(
+                f"  Пропуск Gemma по вектор-слою: {event.get('skipped', 0)}/{event.get('total', 0)} блоков",
+            )
         elif t == "no_blocks":
             await ctx.log("  Image-блоков для enrichment не найдено", "warn")
 

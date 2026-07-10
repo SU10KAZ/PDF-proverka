@@ -49,18 +49,31 @@ _TASK = (
 
 
 def _locate(output_dir) -> Tuple[Optional[Path], Optional[Path]]:
-    """(pdf_path, document_graph_path) по output_dir. Покрывает V2 (02_work) и legacy (*.pdf)."""
+    """(pdf_path, document_graph_path) по output_dir.
+
+    PDF ищем вверх по родителям (до 4 уровней): legacy (project/_output → PDF в project/),
+    V2 (<version_dir>/_output → 02_work/document.pdf) и v2-primary, где output_dir =
+    <version_dir>/03_analysis/runs/<run_id> или .../latest — PDF лежит в
+    <version_dir>/02_work на 2-3 уровня выше (один od.parent его НЕ находил: роутер и
+    предикат пропуска Gemma молча выключались на всех v2-primary прогонах)."""
     od = Path(output_dir)
     dg = od / "document_graph.json"
-    vd = od.parent
-    pdf = vd / "02_work" / "document.pdf"
-    if not pdf.exists() and (vd / "document.pdf").exists():
-        pdf = vd / "document.pdf"
-    if not pdf.exists():
-        cands = sorted(vd.glob("*.pdf"))
-        if cands:
-            pdf = cands[0]
-    return (pdf if pdf.exists() else None), (dg if dg.exists() else None)
+    dgp = dg if dg.exists() else None
+    parents = list(od.parents)[:4]
+    for vd in parents:
+        for cand in (vd / "02_work" / "document.pdf", vd / "document.pdf"):
+            if cand.exists():
+                return cand, dgp
+    for vd in parents:
+        work = vd / "02_work"
+        if work.is_dir():
+            cands = sorted(work.glob("*.pdf"))
+            if cands:
+                return cands[0], dgp
+    cands = sorted(od.parent.glob("*.pdf"))
+    if cands:
+        return cands[0], dgp
+    return None, dgp
 
 
 def _extract_block(pdf_path: Path, dg: dict, block_id: str):
