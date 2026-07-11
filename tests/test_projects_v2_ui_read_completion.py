@@ -77,7 +77,7 @@ def _full_doc(v2, disc, code, *, run="run_x", with_md=True, with_graph=True, wit
     ]})
     if with_blocks:
         # 02_blocks_analysis + blocks index → all_block_ids/block_info
-        _wj(latest / "02_blocks_analysis.json", {"block_analyses": [
+        _wj(latest / "01_blocks_analysis.json", {"block_analyses": [
             {"block_id": "IMG-BBBB-001", "page": 1}]})
         _wj(doc / "versions" / "v001" / "03_analysis" / "runs" / run / "blocks" / "index.json",
             {"total_blocks": 1, "blocks": [

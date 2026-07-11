@@ -510,19 +510,19 @@ def test_v4_formatter_alias_maps_to_findings_merge(tmp_path, monkeypatch):
     assert fm.get("message"), f"empty message: {fm}"
 
 
-# ─── 14. Artifact-based inference: 02_blocks_analysis.json ───────────────
+# ─── 14. Artifact-based inference: 01_blocks_analysis.json ───────────────
 
 
 def test_block_analysis_done_from_artifact(tmp_path, monkeypatch):
     """В pipeline_log нет block_analysis (ни канонический, ни alias),
-    но 02_blocks_analysis.json существует → block_analysis должен быть done."""
+    но 01_blocks_analysis.json существует → block_analysis должен быть done."""
     project_dir = tmp_path / "proj"
     output_dir = project_dir / "_output"
     _write_pipeline_log(output_dir, {
         "crop_blocks": {"status": "done"},
         "text_analysis": {"status": "done"},
     })
-    (output_dir / "02_blocks_analysis.json").write_text(
+    (output_dir / "01_blocks_analysis.json").write_text(
         json.dumps({"blocks": [{"page": 1}]}), encoding="utf-8",
     )
     _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
@@ -534,11 +534,11 @@ def test_block_analysis_done_from_artifact(tmp_path, monkeypatch):
 
 
 def test_text_analysis_done_from_artifact(tmp_path, monkeypatch):
-    """В pipeline_log нет text_analysis, но 01_text_analysis.json есть → done."""
+    """В pipeline_log нет text_analysis, но 02_text_analysis.json есть → done."""
     project_dir = tmp_path / "proj"
     output_dir = project_dir / "_output"
     _write_pipeline_log(output_dir, {"crop_blocks": {"status": "done"}})
-    (output_dir / "01_text_analysis.json").write_text(
+    (output_dir / "02_text_analysis.json").write_text(
         json.dumps({"text": "x"}), encoding="utf-8",
     )
     _patch_gemma_state(monkeypatch, ready=False, status="missing_summary")
@@ -683,7 +683,7 @@ def test_gemma_legacy_v4_marker_returns_skipped(tmp_path, monkeypatch):
 
 def test_gemma_legacy_via_downstream_done_returns_skipped(tmp_path, monkeypatch):
     """Если в pipeline_log нет v4-маркера, но downstream block_analysis done
-    через 02_blocks_analysis.json — gemma_enrichment тоже skipped (legacy)."""
+    через 01_blocks_analysis.json — gemma_enrichment тоже skipped (legacy)."""
     project_dir = tmp_path / "proj"
     output_dir = project_dir / "_output"
     _write_pipeline_log(output_dir, {
@@ -691,7 +691,7 @@ def test_gemma_legacy_via_downstream_done_returns_skipped(tmp_path, monkeypatch)
         "text_analysis": {"status": "done"},
     })
     # Артефакт block_analysis на диске.
-    (output_dir / "02_blocks_analysis.json").write_text(
+    (output_dir / "01_blocks_analysis.json").write_text(
         json.dumps({"blocks": [{"page": 1}]}), encoding="utf-8",
     )
     _patch_gemma_state(monkeypatch, ready=False, status="missing_blocks",
@@ -727,7 +727,7 @@ def test_gemma_qwen_enrichment_legacy_marker_returns_skipped(tmp_path, monkeypat
 
 def test_gemma_modern_project_without_evidence_stays_pending(tmp_path, monkeypatch):
     """Современный проект (нет legacy v4/qwen маркеров, downstream НЕ done,
-    нет 02_blocks_analysis.json, нет gemma_summary): gemma_enrichment ДОЛЖЕН
+    нет 01_blocks_analysis.json, нет gemma_summary): gemma_enrichment ДОЛЖЕН
     остаться pending, чтобы UI показывал ○ как «ещё не выполнено»."""
     project_dir = tmp_path / "proj"
     output_dir = project_dir / "_output"

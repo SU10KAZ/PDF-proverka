@@ -1,7 +1,7 @@
 """
 backfill_highlights.py
 ----------------------
-Восстановление highlight_regions в 03_findings.json из 02_blocks_analysis.json.
+Восстановление highlight_regions в 03_findings.json из 01_blocks_analysis.json.
 
 При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
 Этот модуль подтягивает координаты обратно по source_block_ids/related_block_ids.
@@ -10,6 +10,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 
 
 def backfill_project(project_dir: Path, output_dir: Path | None = None) -> dict:
@@ -30,7 +35,7 @@ def backfill_project(project_dir: Path, output_dir: Path | None = None) -> dict:
     project_dir = Path(project_dir)
     output_dir = Path(output_dir) if output_dir is not None else project_dir / "_output"
     findings_path = output_dir / "03_findings.json"
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
 
     if not findings_path.exists():
         return {"fixed": 0, "checked": 0}

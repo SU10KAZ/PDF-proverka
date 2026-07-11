@@ -41,7 +41,15 @@ MISSING_V2 = "missing_v2"
 V2_ONLY = "v2_only"
 _RANK = {MATCH: 0, EXPECTED: 1, MISSING_LEGACY: 2, MISSING_V2: 3, MISMATCH: 4}
 
-_CRIT = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
+# Канонические имена; presence-проверки идут через resolve_existing, поэтому
+# legacy-хранилище (всегда старые имена) и v2 (новые/старые) сравниваются корректно.
+_CRIT = (TEXT_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME, "03_findings.json")
 _LEGACY_PRESERVE_STATUSES = {"legacy_partial", "source_only"}
 
 
@@ -96,7 +104,7 @@ def _legacy_output_with_findings(folder: Path) -> Optional[Path]:
 def _derive_legacy_status(legacy_out: Optional[Path]) -> str:
     if legacy_out is None:
         return "none"
-    n = sum(1 for c in _CRIT if (Path(legacy_out) / c).is_file())
+    n = sum(1 for c in _CRIT if resolve_existing(legacy_out, c).is_file())
     return "complete" if n == 3 else ("partial" if n else "none")
 
 
@@ -232,8 +240,8 @@ class DualReadService:
         legacy_status = _derive_legacy_status(legacy_out)
         status_expected = v2_status in _LEGACY_PRESERVE_STATUSES
 
-        v2_has = {n: (v2_latest / n).is_file() for n in _CRIT}
-        legacy_has = {n: bool(legacy_out) and (Path(legacy_out) / n).is_file() for n in _CRIT}
+        v2_has = {n: resolve_existing(v2_latest, n).is_file() for n in _CRIT}
+        legacy_has = {n: bool(legacy_out) and resolve_existing(legacy_out, n).is_file() for n in _CRIT}
 
         v2_fc = _findings_count_in_dir(v2_latest)
         legacy_fc = _findings_count_in_dir(legacy_out)

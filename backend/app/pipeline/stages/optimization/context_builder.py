@@ -8,6 +8,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 
 _TEXT_STOPWORDS = {
     'план', 'разрез', 'лист', 'узел', 'схема', 'вид', 'фрагмент', 'этаж', 'стр',
@@ -145,8 +151,8 @@ def build_optimization_context(
     vendor_list_text: str = '',
 ) -> BuildArtifactResult:
     output_dir = Path(output_dir)
-    text_data = _load_json(output_dir / '01_text_analysis.json') or {}
-    blocks_data = _load_json(output_dir / '02_blocks_analysis.json') or {}
+    text_data = _load_json(resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME)) or {}
+    blocks_data = _load_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)) or {}
     findings_data = _load_json(output_dir / '03_findings.json') or {}
 
     block_rows = []
@@ -182,8 +188,8 @@ def build_optimization_context(
             'generated_at': datetime.now().isoformat(),
             'stage': 'optimization_context',
             'source_files': {
-                'text_analysis': '01_text_analysis.json',
-                'blocks_analysis': '02_blocks_analysis.json',
+                'text_analysis': TEXT_ANALYSIS_FILENAME,
+                'blocks_analysis': BLOCKS_ANALYSIS_FILENAME,
                 'findings': '03_findings.json',
             },
             'block_rows_total': len(block_rows),

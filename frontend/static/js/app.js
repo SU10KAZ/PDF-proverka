@@ -1484,7 +1484,7 @@ const app = createApp({
         const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
         const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
 
-        // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 02)
+        // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 01)
         const showBlockLlmText = ref(false);
         const blockLlmText = ref(null);
         const blockLlmTextLoading = ref(false);
@@ -3087,8 +3087,8 @@ const app = createApp({
         const modelConfigPendingProjectId = ref(null);
         const stageModelSaveError = ref('');
         const stageLabels = {
-            text_analysis: "01 Текст",
-            block_batch: "02 Блоки",
+            text_analysis: "02 Текст",
+            block_batch: "01 Блоки",
             findings_merge: "03 Свод",
             findings_critic: "Верификатор",
             findings_corrector: "Верификатор (фикс)",
@@ -3105,7 +3105,7 @@ const app = createApp({
         const modelPresets = {
             findings_only: {
                 label: "Production Gemma+GPT5.4",
-                hint: "Production: Markdown → Gemma OCR enrichment → Stage 01 → Stage 02 findings-only single-block на GPT-5.4.",
+                hint: "Production: Markdown → Gemma OCR enrichment → Stage 01 (блоки, findings-only single-block на GPT-5.4) → Stage 02 (текст).",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "openai/gpt-5.4",
@@ -3123,7 +3123,7 @@ const app = createApp({
             },
             codex_exec: {
                 label: "Codex exec",
-                hint: "Экспериментально: все поддерживаемые этапы, включая Stage 02 Блоки, идут через Codex exec. Перед запуском backend делает snapshot текущих JSON-результатов в comparison/classic_codex_ab/backups/.",
+                hint: "Экспериментально: все поддерживаемые этапы, включая Stage 01 Блоки, идут через Codex exec. Перед запуском backend делает snapshot текущих JSON-результатов в comparison/classic_codex_ab/backups/.",
                 config: {
                     text_analysis:          CODEX_PRESET_MODEL,
                     block_batch:            CODEX_PRESET_MODEL,
@@ -3141,7 +3141,7 @@ const app = createApp({
             },
             dual_detection: {
                 label: "GPT + Codex",
-                hint: "Stage 02 проверяет каждый блок независимо через GPT-5.4 и Codex; свод объединяет результаты и сохраняет авторство каждого замечания.",
+                hint: "Stage 01 проверяет каждый блок независимо через GPT-5.4 и Codex; свод объединяет результаты и сохраняет авторство каждого замечания.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "ensemble/gpt-codex",
@@ -3157,6 +3157,24 @@ const app = createApp({
                 },
                 batchModes: { block_batch: "findings_only_gemma_pair" },
             },
+            optimization_ensemble: {
+                label: "OPT Claude + Codex",
+                hint: "Этап 05 запускает Opus и Codex exec параллельно, сохраняет оба исходных результата и объединяет только уверенные дубли перед общим Critic/Corrector.",
+                config: {
+                    text_analysis:          "claude-opus-4-7",
+                    block_batch:            "openai/gpt-5.4",
+                    findings_merge:         "claude-opus-4-7",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
+                    norm_requote:           "claude-sonnet-4-6",
+                    optimization:           "ensemble/claude-codex-opt",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+                batchModes: { block_batch: "findings_only_gemma_pair" },
+            },
         };
         const activePreset = ref(null);
         const activePresetHint = computed(() => {
@@ -3166,7 +3184,7 @@ const app = createApp({
         const stageBatchModes = ref({});  // { block_batch: "findings_only_gemma_pair" }
         const stageBatchModeChoices = ref({});
 
-        // Stage 02 supports one independent detector or the explicit dual ensemble.
+        // Stage 01 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
             'openai/gpt-5.4',
             'ensemble/gpt-codex',
@@ -6882,7 +6900,7 @@ const app = createApp({
             resetBlockZoom();
         }
 
-        // Загрузить текст блока, реально уходящий в нейронку (Stage 02)
+        // Загрузить текст блока, реально уходящий в нейронку (Stage 01)
         async function loadBlockLlmText() {
             const block = selectedBlock.value;
             if (!block) return;
@@ -7103,7 +7121,7 @@ const app = createApp({
 
         function blockFindingsCount(blockId) {
             // Бейдж количества на превью блока считаем по ФИНАЛЬНОМУ списку
-            // (03_findings, getBlockFindings), а не по сырым Stage 02 findings —
+            // (03_findings, getBlockFindings), а не по сырым Stage 01 findings —
             // чтобы число на превью совпадало с модалкой блока и не показывало
             // отфильтрованные критиком замечания.
             return getBlockFindings(blockId).length;
@@ -7178,7 +7196,7 @@ const app = createApp({
             const bid = selectedBlock.value.block_id;
             const hidden = hiddenHighlightFindings.value;
             // Подсветки строим ТОЛЬКО по финальным замечаниям (03_findings),
-            // связанным с блоком. Сырые Stage 02 findings не показываем — критик
+            // связанным с блоком. Сырые Stage 01 findings не показываем — критик
             // мог их отфильтровать, и их подсветка вводила бы в заблуждение.
             const findings = getBlockFindings(bid);
             const regions = [];
@@ -8248,6 +8266,8 @@ const app = createApp({
                 gpt: { text: 'GPT', tone: 'gpt', title: 'Найдено GPT через OpenRouter' },
                 codex: { text: 'Codex', tone: 'codex', title: 'Найдено независимым проходом Codex' },
                 gpt_codex: { text: 'GPT + Codex', tone: 'both', title: 'Независимо найдено GPT и Codex' },
+                claude: { text: 'Claude', tone: 'claude', title: 'Найдено Claude' },
+                claude_codex: { text: 'Claude + Codex', tone: 'both', title: 'Независимо найдено Claude и Codex' },
             }[summary];
             if (!meta) return null;
             const detections = Array.isArray(provenance.detections) ? provenance.detections : [];

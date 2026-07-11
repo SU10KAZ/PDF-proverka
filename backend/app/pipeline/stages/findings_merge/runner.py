@@ -24,6 +24,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
@@ -63,7 +67,7 @@ def _version_output_dir(project_id: str):
 def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None = None):
     """Backfill text-evidence + sheet в 03_findings.json.
 
-    1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
+    1. selected_text_block_ids/evidence_text_refs — из 01_blocks_analysis.json
     2. sheet — детерминированно из document_graph.json page_sheet_map
 
     output_dir: явная папка артефактов (run dir стадии). Без неё резолв по
@@ -72,7 +76,7 @@ def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None 
     """
     output_dir = output_dir or _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     graph_path = output_dir / "document_graph.json"
 
     if not findings_path.exists():

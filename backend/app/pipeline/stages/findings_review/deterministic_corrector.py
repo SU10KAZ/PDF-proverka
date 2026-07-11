@@ -4,7 +4,7 @@
 Зачем
 -----
 Corrector раньше был агентным `claude -p`, который читал
-`03_findings.json` + `03_findings_review.json` + `02_blocks_analysis.json` +
+`03_findings.json` + `03_findings_review.json` + `01_blocks_analysis.json` +
 `document_graph.json` и **переписывал** `03_findings.json` целиком. На крупных
 проектах это нестабильно ровно так же, как агентный critic (таймаут/лимит
 ходов), а главное — рискованно: агент перезаписывает мастер-файл замечаний.
@@ -34,6 +34,11 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 
 from backend.app.pipeline.stages.findings_review.deterministic_critic import (
     _Index,
@@ -254,7 +259,7 @@ async def run_deterministic_corrector(
     if review_data is None:
         return DeterministicCorrectorResult(error=f"{review_filename} не найден/невалиден")
 
-    blocks_analysis = _load_json(output_dir / "02_blocks_analysis.json") or {}
+    blocks_analysis = _load_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)) or {}
     doc_graph = _load_json(output_dir / "document_graph.json") or {}
 
     findings_data, result = correct_findings(

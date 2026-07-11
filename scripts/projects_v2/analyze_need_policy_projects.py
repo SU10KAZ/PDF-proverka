@@ -57,7 +57,7 @@ _READY = {
 }
 
 _ANALYSIS_FILES = (
-    "01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json",
+    "02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json",
     "norm_checks.json", "optimization.json", "pipeline_log.json", "audit_log.jsonl",
 )
 

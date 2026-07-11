@@ -6,7 +6,7 @@
 
 **Было:** `findings_critic` и `findings_corrector` запускались агентным
 `claude -p --allowedTools Read,Write` и читали многомегабайтные `03_findings.json`
-+ `02_blocks_analysis.json` + `document_graph.json` инструментом Read (по ~2000
++ `01_blocks_analysis.json` + `document_graph.json` инструментом Read (по ~2000
 строк за вызов). На крупных проектах прогон не доживал до записи
 `03_findings_review.json` (таймаут 1200 c / лимит ходов → `is_error`, пустой
 результат) → этап падал с «critic produced no review artifact», независимо от
@@ -79,7 +79,7 @@ single-shot и chunked-режиме.
 
 **5 проверок critic:**
 1. Наличие `evidence[]` или `related_block_ids[]`
-2. Существование evidence-блоков в `02_blocks_analysis.json`
+2. Существование evidence-блоков в `01_blocks_analysis.json`
 3. Семантическое соответствие evidence смыслу замечания
 4. Корректность page/sheet
 5. Непротиворечивость тексту из `document_graph.json`

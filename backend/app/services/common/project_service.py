@@ -16,6 +16,12 @@ from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 from backend.app.pipeline.stages.crop_blocks.block_markdown import BLOCK_HEADER_RE
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import GEMMA_BLOCKS_DIRNAME, gemma_blocks_index_path
 from backend.app.core.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG, HIDDEN_PROJECTS_FILE
@@ -1711,8 +1717,8 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         output_files = {
             "crop_blocks": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
             "gemma_enrichment": "gemma_enrichment_summary.json",
-            "text_analysis": "01_text_analysis.json",
-            "block_analysis": "02_blocks_analysis.json",
+            "text_analysis": TEXT_ANALYSIS_FILENAME,
+            "block_analysis": BLOCKS_ANALYSIS_FILENAME,
             "findings_merge": "03_findings.json",
             "findings_critic": "03_findings_review.json",
             "findings_corrector": "03_findings.json",
@@ -1724,7 +1730,7 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
             "decision_carryover": "decision_carryover_report.json",
             # Legacy aliases
             "prepare": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
-            "tile_audit": "02_blocks_analysis.json",
+            "tile_audit": BLOCKS_ANALYSIS_FILENAME,
             "main_audit": "03_findings.json",
         }
         for log_key, field in mapping.items():
@@ -1754,9 +1760,9 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
                 # Кросс-валидация: если "error" но выходной файл существует → "done"
                 if s == "error":
                     out_file = output_files.get(log_key)
-                    if out_file and (output_dir / out_file).exists():
-                        fsize = (output_dir / out_file).stat().st_size
-                        if fsize > 100:
+                    if out_file:
+                        resolved = resolve_existing(output_dir, out_file)
+                        if resolved.exists() and resolved.stat().st_size > 100:
                             s = "done"
                 setattr(status, field, s)
         return status
@@ -1773,10 +1779,10 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
     elif gemma_state.get("status") not in {"missing_blocks", "missing_md", "missing"}:
         status.gemma_enrichment = "error"
 
-    if (output_dir / "01_text_analysis.json").exists():
+    if resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists():
         status.text_analysis = "done"
 
-    if (output_dir / "02_blocks_analysis.json").exists():
+    if resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
         status.blocks_analysis = "done"
     elif list(output_dir.glob("block_batch_*.json")):
         status.blocks_analysis = "partial"
@@ -2096,8 +2102,8 @@ _PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
 # статус этапа можно поднять до done.
 _PIPELINE_STAGE_ARTIFACTS: dict[str, tuple[str, ...]] = {
     "crop_blocks": (f"{GEMMA_BLOCKS_DIRNAME}/index.json",),
-    "text_analysis": ("01_text_analysis.json",),
-    "block_analysis": ("02_blocks_analysis.json",),
+    "text_analysis": (TEXT_ANALYSIS_FILENAME,),
+    "block_analysis": (BLOCKS_ANALYSIS_FILENAME,),
     "findings_merge": ("03_findings.json",),
     "findings_critic": ("03_findings_review.json",),
     # corrector обновляет тот же 03_findings.json + оставляет pre_review бэкап
@@ -2175,7 +2181,7 @@ def _has_legacy_marker(stages: dict) -> bool:
 
 def _artifact_exists(output_dir: Path, rel: str) -> bool:
     """Проверить, что артефакт существует и не пустой."""
-    p = output_dir / rel
+    p = resolve_existing(output_dir, rel)
     try:
         if not p.exists():
             return False

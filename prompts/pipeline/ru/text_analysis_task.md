@@ -101,11 +101,11 @@
 
 ## Выходной файл
 
-ЗАПИСАТЬ через Write: `{OUTPUT_PATH}/01_text_analysis.json`
+ЗАПИСАТЬ через Write: `{OUTPUT_PATH}/02_text_analysis.json`
 
 ```json
 {
-  "stage": "01_text_analysis",
+  "stage": "02_text_analysis",
   "project_id": "{PROJECT_ID}",
   "text_source": "md",
   "timestamp": "<ISO datetime>",

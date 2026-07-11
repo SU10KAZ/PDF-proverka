@@ -4,13 +4,15 @@
 однолинейки — делаем структурированные вектографом; в дальнейшем — свой
 структурированный профиль для каждого типа графического блока».
 
-Развилка на блок (3 ветки):
+Развилка на блок (4 ветки):
   1) однолинейная расчётная схема И гейт Вектографа пройден → ПОЛНЫЙ структурированный
      рендер (`render_graph_etalon_markdown`): связи QF↔код↔кабель↔потребитель привязаны
      геометрией колонок (мис-привязки соседства нет);
-  2) есть содержательный вектор-слой (иначе) → СЫРОЙ вектор-текст блока (полигон-клип):
+  2) известная схема ALIA И профильный гейт пройден → структурированный дисциплинарный
+     Markdown: контейнеры, узлы, сети и честное состояние доказательности связей;
+  3) есть содержательный вектор-слой (иначе) → СЫРОЙ вектор-текст блока (полигон-клип):
      100% полнота, 0 галлюцинаций OCR; связи домысливает LLM по соседству;
-  3) вектор-слоя нет (скан/растр — клип тоньше порога) → None → Gemma-описание +
+  4) вектор-слоя нет (скан/растр — клип тоньше порога) → None → Gemma-описание +
      изображение остаются как есть. Это ОБЯЗАТЕЛЬНЫЙ fallback: на сканах вектор-текста
      физически нет, «выбросить Gemma везде» без него = пустое описание блока.
 
@@ -163,8 +165,9 @@ def resolve_block_source(
 ) -> Tuple[Optional[str], str]:
     """user_text для Stage 02 из вектор-слоя, либо None (оставить Gemma+изображение).
 
-    Возвращает (text_or_None, source_kind). source_kind:
-      structured_singleline | raw_vector | gemma_fallback | no_sources | block_not_found | error.
+Возвращает (text_or_None, source_kind). source_kind:
+      structured_singleline | structured_alia_scheme | raw_vector | gemma_fallback |
+      no_sources | block_not_found | error.
     fail-soft: при любой проблеме → (None, kind) и прод-путь (Gemma) сохраняется.
     """
     try:
@@ -194,7 +197,26 @@ def resolve_block_source(
             if etalon and len(etalon) > 200:
                 return head + etalon + "\n\n" + _TASK, "structured_singleline"
 
-        # (2) иначе → сырой вектор-текст блока (полный, без потерь)
+        # (2) профили графических схем ALIA → дисциплинарная структура вместо сырого текста
+        try:
+            from .alia_scheme_geometry import (
+                build_alia_scheme_graph_from_source,
+                evaluate_alia_scheme_gate,
+                render_alia_scheme_markdown,
+            )
+
+            alia_graph = build_alia_scheme_graph_from_source(
+                pdf, page_index=page_pdf - 1, bbox_norm=bbox,
+                polygon_norm=poly, block_id=str(block_id),
+            )
+        except Exception:
+            alia_graph = None
+        if alia_graph and evaluate_alia_scheme_gate(alia_graph).get("use"):
+            structured = render_alia_scheme_markdown(alia_graph)
+            if structured and len(structured) > 200:
+                return head + structured + "\n\n" + _TASK, "structured_alia_scheme"
+
+        # (3) иначе → сырой вектор-текст блока (полный, без потерь)
         body = (
             "## Точный текст блока из вектор-слоя PDF (встроенный текст чертежа, без ошибок OCR):\n"
             f"```\n{block_text}\n```\n"

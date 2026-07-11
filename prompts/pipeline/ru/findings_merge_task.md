@@ -6,12 +6,12 @@
 
 ## Входные данные
 
-1. **Текстовый анализ**: `{OUTPUT_PATH}/01_text_analysis.json`
+1. **Текстовый анализ**: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
    - `items_verified_from_blocks` (опц.) — если текст шёл ПОСЛЕ блоков, здесь его сверка своих
      T-замечаний с блоками Stage 02.
 
-2. **Анализ блоков**: `{OUTPUT_PATH}/02_blocks_analysis.json`
+2. **Анализ блоков**: `{OUTPUT_PATH}/01_blocks_analysis.json`
    - `block_analyses` (замечания G-001... внутри каждого блока)
    - `items_verified_from_stage_01` (опц., legacy) — если блоки шли ПОСЛЕ текста, здесь их сверка.
    - Если есть `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks` или у блока
@@ -47,7 +47,7 @@
 
 ### Coverage warning sections (ОБЯЗАТЕЛЬНО)
 
-Если в `02_blocks_analysis.json` есть непокрытые/упавшие блоки, добавь в `meta.analysis_coverage.sections`
+Если в `01_blocks_analysis.json` есть непокрытые/упавшие блоки, добавь в `meta.analysis_coverage.sections`
 три раздела:
 - `Непокрытые блоки Gemma enrichment`
 - `Ошибки single-block анализа`
@@ -59,8 +59,8 @@
 ### Обработка верификации текст↔блоки (ОБЯЗАТЕЛЬНО)
 
 Возьми массив верификации из того файла, где он есть (порядок этапов мог быть любым):
-- `items_verified_from_blocks` из `01_text_analysis.json` (порядок block→text — основной), ИЛИ
-- `items_verified_from_stage_01` из `02_blocks_analysis.json` (legacy порядок text→block).
+- `items_verified_from_blocks` из `02_text_analysis.json` (порядок block→text — основной), ИЛИ
+- `items_verified_from_stage_01` из `01_blocks_analysis.json` (legacy порядок text→block).
 
 Оба описывают одно: текстовое замечание T-NNN, сверенное с чертежом. Пройди по записям:
 
@@ -80,7 +80,7 @@
 2. **Повышение severity**: текстовое замечание подтверждено чертежом с конкретным evidence → severity повышается (см. раздел верификации выше)
 3. **Понижение severity**: подозрение из текста НЕ подтвердилось на чертеже → понизить или убрать
 4. **Перенумерация**: финальные ID: F-001, F-002...
-5. **Привязка к блокам**: для каждого F-NNN заполни `related_block_ids` — список block_id из `02_blocks_analysis.json`, которые являются источником замечания. Для замечаний из G-NNN — `block_id` блока. Для T-NNN — block_id блоков, подтвердивших текстовое замечание (из массива верификации). Для межблочных — все block_id участвующих блоков.
+5. **Привязка к блокам**: для каждого F-NNN заполни `related_block_ids` — список block_id из `01_blocks_analysis.json`, которые являются источником замечания. Для замечаний из G-NNN — `block_id` блока. Для T-NNN — block_id блоков, подтвердивших текстовое замечание (из массива верификации). Для межблочных — все block_id участвующих блоков.
 6. **Трассировка исходных замечаний**: для каждого F-NNN заполни `source_finding_ids` точными ID исходных T-NNN/G-NNN, которые вошли в итоговое замечание. Если одно замечание независимо найдено несколькими детекторами Stage 02, перечисли все соответствующие G-NNN. Для полностью нового вывода межблочной сверки используй пустой массив. Не придумывай ID.
 
 ### Поля замечания
@@ -94,9 +94,9 @@
 - `source_block_ids`: список block_id, ГДЕ замечание реально ОБНАРУЖЕНО (source-of-truth). Это block_id блоков, на которых LLM увидела проблему. Отличается от `related_block_ids`: source = "где нашли", related = "к чему относится".
 - `source_finding_ids`: точные ID исходных замечаний T-NNN/G-NNN, использованных для этого F-NNN. Поле `provenance` из Stage 02 не переписывай и не интерпретируй: backend перенесёт его детерминированно по этим ID.
 - `related_block_ids`: список block_id, К КОТОРЫМ замечание ОТНОСИТСЯ. Может включать блоки, где проблема не видна напрямую, но которые связаны (спецификация, каталожный лист и т.д.)
-- `evidence_text_refs`: детальная трассировка text↔finding. Перенеси из `02_blocks_analysis.json` и дедуплицируй.
+- `evidence_text_refs`: детальная трассировка text↔finding. Перенеси из `01_blocks_analysis.json` и дедуплицируй.
 - `evidence`: массив источников данных. `{type: "image"|"text", block_id: "...", page: N}`. type=image для графических блоков, type=text для текстовых блоков.
-- `highlight_regions`: массив визуальных областей на блоке, где обнаружена проблема. Переноси из G-замечаний `02_blocks_analysis.json` → `findings[].highlight_regions`. Формат: `[{block_id: "...", x: 0.35, y: 0.40, w: 0.20, h: 0.15, label: "..."}]`. При объединении G-замечаний — собери все regions. Добавь `block_id` в каждый region чтобы знать к какому блоку относится область.
+- `highlight_regions`: массив визуальных областей на блоке, где обнаружена проблема. Переноси из G-замечаний `01_blocks_analysis.json` → `findings[].highlight_regions`. Формат: `[{block_id: "...", x: 0.35, y: 0.40, w: 0.20, h: 0.15, label: "..."}]`. При объединении G-замечаний — собери все regions. Добавь `block_id` в каждый region чтобы знать к какому блоку относится область.
 
 ## Выходной файл
 
@@ -154,7 +154,7 @@
 - `page` — номер страницы (целое число). Если замечание охватывает несколько страниц — массив `[12, 13]`.
 - Лист из штампа и страница НЕ совпадают: Лист 1 может быть на стр. 5.
 
-**ЖЁСТКОЕ ПРАВИЛО:** Используй номера листов из `02_blocks_analysis.json` (поле `sheet` в блоках). Если у блока `sheet: "Лист 7"` — используй это значение. Если sheet недоступен — поставь `"sheet": null` и НЕ угадывай.
+**ЖЁСТКОЕ ПРАВИЛО:** Используй номера листов из `01_blocks_analysis.json` (поле `sheet` в блоках). Если у блока `sheet: "Лист 7"` — используй это значение. Если sheet недоступен — поставь `"sheet": null` и НЕ угадывай.
 
 ## Нормативная точность (norm_quote)
 
@@ -191,7 +191,7 @@
 - Если T-замечание подтверждено блоком (есть в массиве верификации — `items_verified_from_blocks` или legacy `items_verified_from_stage_01` — с `confirmed: true` и конкретным evidence) — добавь И image evidence: `{"type": "image", "block_id": "...", "page": N}`
 
 **Для замечаний из G-источника (блоки):**
-- Переноси evidence из `02_blocks_analysis.json` → `block_analyses[].findings[].block_evidence`
+- Переноси evidence из `01_blocks_analysis.json` → `block_analyses[].findings[].block_evidence`
 - Добавь `{"type": "image", "block_id": "<block_id блока>", "page": N}`
 
 **Для межблочных/межстраничных замечаний (новых):**

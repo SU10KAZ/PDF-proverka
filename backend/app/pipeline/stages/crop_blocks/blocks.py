@@ -22,6 +22,11 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_ANALYSIS_STAGE,
+    resolve_existing,
+)
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BASE_BLOCKS_DIRNAME,
     GEMMA_BLOCKS_DIRNAME,
@@ -1874,7 +1879,7 @@ def _backfill_locality_from_graph(output_dir: Path, block_analyses: list[dict]):
 
 
 def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
-    """Слить все block_batch_NNN.json в один 02_blocks_analysis.json."""
+    """Слить все block_batch_NNN.json в один 01_blocks_analysis.json."""
     output_dir = gemma_output_root(project_dir)
 
     batch_files = sorted(output_dir.glob("block_batch_*.json"))
@@ -1971,7 +1976,7 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
     _backfill_locality_from_graph(output_dir, all_block_analyses)
 
     result = {
-        "stage": "02_blocks_analysis",
+        "stage": BLOCKS_ANALYSIS_STAGE,
         "meta": {
             "blocks_reviewed": total_blocks_reviewed,
             "total_blocks_expected": expected_blocks,
@@ -1993,7 +1998,7 @@ def merge_block_results(project_dir: str, cleanup: bool = False) -> dict:
         "block_analyses": all_block_analyses,
     }
 
-    out_path = output_dir / "02_blocks_analysis.json"
+    out_path = output_dir / BLOCKS_ANALYSIS_FILENAME
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
@@ -2085,12 +2090,12 @@ MAX_RECROP_ITERATIONS = 3  # Макс итераций (1500→3000→6000→с�
 
 
 def find_unreadable_blocks(project_dir: str) -> list[dict]:
-    """Найти блоки с unreadable_text=true в batch-файлах или 02_blocks_analysis.json."""
+    """Найти блоки с unreadable_text=true в batch-файлах или 01_blocks_analysis.json."""
     output_dir = gemma_output_root(project_dir)
     unreadable = []
 
-    # Сначала проверить 02_blocks_analysis.json (результат merge)
-    merged = output_dir / "02_blocks_analysis.json"
+    # Сначала проверить анализ блоков (результат merge)
+    merged = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     if merged.exists():
         try:
             with open(merged, "r", encoding="utf-8") as f:
@@ -2444,7 +2449,7 @@ def main():
                          help="По 1 блоку в пакете (для retry нечитаемых — фокус модели)")
 
     # merge
-    p_merge = subparsers.add_parser("merge", help="Слить block_batch_*.json в 02_blocks_analysis.json")
+    p_merge = subparsers.add_parser("merge", help="Слить block_batch_*.json в 01_blocks_analysis.json")
     p_merge.add_argument("project_dir", help="Путь к папке проекта")
     p_merge.add_argument("--cleanup", action="store_true",
                          help="Удалить промежуточные файлы после слияния")

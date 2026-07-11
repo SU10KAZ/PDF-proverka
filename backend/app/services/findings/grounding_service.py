@@ -202,7 +202,7 @@ def run_grounding(
 ) -> dict:
     """Запустить grounding для проекта.
 
-    Читает 03_findings.json и 02_blocks_analysis.json,
+    Читает 03_findings.json и 01_blocks_analysis.json,
     обогащает findings полями grounding_candidates.
     Записывает результат обратно в findings_path (in-place).
 

@@ -51,7 +51,7 @@ _DEFAULT_PROJECTS_ROOT = _PROJECT_ROOT / "projects"
 _ARTIFACTS = [
     "03_findings.json",
     "expert_review.json",
-    "02_blocks_analysis.json",
+    "01_blocks_analysis.json",
     "document_graph.json",
 ]
 
@@ -257,7 +257,7 @@ def build_manifest_record(project_dir: Path) -> Optional[dict]:
     detailed = _load_human_decisions_detailed(review_path, findings_ids)
 
     # Check optional artifacts
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = output_dir / "01_blocks_analysis.json"
     graph_path = output_dir / "document_graph.json"
     has_blocks = blocks_path.exists()
     has_graph = graph_path.exists()

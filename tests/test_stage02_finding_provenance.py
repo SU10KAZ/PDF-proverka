@@ -90,7 +90,7 @@ def test_stage02_model_restrictions_allow_codex_and_dual():
 
 def test_backfill_credits_only_explicit_source_finding_ids(tmp_path):
     _write(
-        tmp_path / "02_blocks_analysis.json",
+        tmp_path / "01_blocks_analysis.json",
         {
             "timestamp": "2026-07-11T10:00:00+00:00",
             "stage02_meta": {"model": "openai/gpt-5.4", "run_id": "mixed-run"},

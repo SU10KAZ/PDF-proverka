@@ -289,7 +289,7 @@ def build_signal(object_dir: Path, discipline: str, project_path: Path,
     has_output = output_dir.is_dir()
     has_analysis = has_output and (
         (output_dir / "03_findings.json").exists()
-        or (output_dir / "01_text_analysis.json").exists()
+        or (output_dir / "02_text_analysis.json").exists()
     )
 
     # multiple-file / messy / .pdf-name проверяем по ВСЕМ версиям

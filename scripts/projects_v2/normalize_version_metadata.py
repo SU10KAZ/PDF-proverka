@@ -10,8 +10,8 @@ projects_v2 после финальной миграции.
 
 Что инструмент ДЕЛАЕТ:
   * проходит по всем `version.json` в projects_v2;
-  * вычисляет `analysis_status` из наличия 01_text_analysis.json /
-    02_blocks_analysis.json / 03_findings.json в 03_analysis/latest;
+  * вычисляет `analysis_status` из наличия 02_text_analysis.json /
+    01_blocks_analysis.json / 03_findings.json в 03_analysis/latest;
   * в `--execute` ЗАПОЛНЯЕТ отсутствующий `analysis_status` (+ `missing_analysis_files`)
     в самом version.json.
 
@@ -24,7 +24,7 @@ projects_v2 после финальной миграции.
     (напр. legacy_partial у документа с KB-findings, но без файлов в latest).
 
 Правила классификации (по файлам в 03_analysis/latest):
-  has = {01_text_analysis.json, 02_blocks_analysis.json, 03_findings.json}
+  has = {02_text_analysis.json, 01_blocks_analysis.json, 03_findings.json}
   is_legacy = migration_kind == "legacy_findings_preserve"
               ИЛИ "legacy" в preserve_reason
   - is_legacy + есть analysis-файлы   -> legacy_partial
@@ -50,7 +50,7 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import v2lib  # noqa: E402
 
-CRITICAL = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+CRITICAL = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
 
 
 def is_legacy_preserve(vd: dict) -> bool:

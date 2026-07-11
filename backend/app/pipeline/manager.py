@@ -46,6 +46,15 @@ from backend.app.services.llm.lmstudio_lifecycle_service import (
 from backend.app.pipeline.resume_detector import detect_resume_stage as _detect_resume_stage
 import backend.app.services.common.audit_logger as audit_logger
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_ALL_NAMES,
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_FOR_TEXT_ALL_NAMES,
+    BLOCKS_FOR_TEXT_FILENAME,
+    TEXT_ANALYSIS_ALL_NAMES,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
     GEMMA_STAGE_LABEL,
     evaluate_gemma_enrichment,
@@ -1661,7 +1670,7 @@ class PipelineManager:
         job.batch_started_at = None
 
     def _backfill_highlight_regions(self, project_id: str):
-        """Восстановить highlight_regions в 03_findings.json из 02_blocks_analysis.json.
+        """Восстановить highlight_regions в 03_findings.json из 01_blocks_analysis.json.
 
         При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
         Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
@@ -2225,7 +2234,7 @@ class PipelineManager:
         self._promote_v2_analysis_artifacts(
             job,
             (
-                "02_blocks_analysis.json",
+                BLOCKS_ANALYSIS_FILENAME,
                 "block_analysis_summary.json",
                 RUNTIME_BATCHES_FILE,
                 "block_batches.json",
@@ -2904,9 +2913,9 @@ class PipelineManager:
         needs_text = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"}
         if not blocks_before_text:
             needs_text = needs_text | {"block_analysis"}
-        if normalized in needs_text and not (output_dir / "01_text_analysis.json").exists():
+        if normalized in needs_text and not resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists():
             raise RuntimeError(
-                f"Нельзя запускать {normalized}: 01_text_analysis.json отсутствует. "
+                f"Нельзя запускать {normalized}: 02_text_analysis.json отсутствует. "
                 "Сначала выполните text_analysis."
             )
 
@@ -2914,9 +2923,9 @@ class PipelineManager:
         needs_blocks = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"}
         if blocks_before_text:
             needs_blocks = needs_blocks | {"text_analysis"}
-        if normalized in needs_blocks and not (output_dir / "02_blocks_analysis.json").exists():
+        if normalized in needs_blocks and not resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
             raise RuntimeError(
-                f"Нельзя запускать {normalized}: 02_blocks_analysis.json отсутствует. "
+                f"Нельзя запускать {normalized}: 01_blocks_analysis.json отсутствует. "
                 "Сначала выполните block_analysis."
             )
 
@@ -2968,7 +2977,7 @@ class PipelineManager:
 
         need_gemma_index = not (output_dir / GEMMA_BLOCKS_DIRNAME / "index.json").is_file()
         need_summary = not (output_dir / "gemma_enrichment_summary.json").is_file()
-        need_stage02 = not (output_dir / "02_blocks_analysis.json").is_file()
+        need_stage02 = not resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).is_file()
         if not (need_gemma_index or need_summary or need_stage02):
             return 0
 
@@ -2991,8 +3000,8 @@ class PipelineManager:
             "gemma_enrichment_summary.json",
             "block_grounding_summary.json",
             "document_graph.json",
-            "02_blocks_analysis.json",
-            "02_blocks_for_text.json",
+            *BLOCKS_ANALYSIS_ALL_NAMES,
+            *BLOCKS_FOR_TEXT_ALL_NAMES,
             "block_analysis_summary.json",
             RUNTIME_BATCHES_FILE,
             "block_batches.json",
@@ -3131,18 +3140,18 @@ class PipelineManager:
 
     @staticmethod
     def _assert_text_analysis_exists(output_dir: Path, target_stage: str) -> None:
-        if not (output_dir / "01_text_analysis.json").exists():
+        if not resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists():
             raise RuntimeError(
-                f"Нельзя запускать {target_stage}: 01_text_analysis.json отсутствует. "
+                f"Нельзя запускать {target_stage}: 02_text_analysis.json отсутствует. "
                 "Сначала выполните text_analysis."
             )
 
     @staticmethod
     def _assert_block_analysis_exists(output_dir: Path, target_stage: str) -> None:
         """Симметрично _assert_text_analysis_exists — для порядка block→text."""
-        if not (output_dir / "02_blocks_analysis.json").exists():
+        if not resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
             raise RuntimeError(
-                f"Нельзя запускать {target_stage}: 02_blocks_analysis.json отсутствует. "
+                f"Нельзя запускать {target_stage}: 01_blocks_analysis.json отсутствует. "
                 "Сначала выполните block_analysis."
             )
 
@@ -3325,9 +3334,9 @@ class PipelineManager:
             if start_idx >= 4:
                 await self._assert_gemma_ready_for_stage(job, project_info, normalized)
                 self._assert_text_analysis_exists(output_dir, normalized)
-                if not (output_dir / "02_blocks_analysis.json").exists():
+                if not resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
                     raise RuntimeError(
-                        f"Нельзя запускать {normalized}: 02_blocks_analysis.json отсутствует. "
+                        f"Нельзя запускать {normalized}: 01_blocks_analysis.json отсутствует. "
                         "Сначала выполните block_analysis."
                     )
             if start_idx >= 5 and not (output_dir / "03_findings.json").exists():
@@ -3342,7 +3351,7 @@ class PipelineManager:
                 self._backup_findings_before_restart(pid)
                 # Очистить все промежуточные файлы
                 self._clean_stage_files(pid, [
-                    "01_text_analysis.json", "02_blocks_analysis.json",
+                    *TEXT_ANALYSIS_ALL_NAMES, *BLOCKS_ANALYSIS_ALL_NAMES,
                     "03_findings.json", "block_batch_*.json", "block_batches.json",
                     RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                 ])
@@ -3378,7 +3387,7 @@ class PipelineManager:
                     # Перезапуск Gemma меняет входной MD для всех downstream-этапов.
                     self._backup_findings_before_restart(pid)
                     self._clean_stage_files(pid, [
-                        "01_text_analysis.json", "02_blocks_analysis.json",
+                        *TEXT_ANALYSIS_ALL_NAMES, *BLOCKS_ANALYSIS_ALL_NAMES,
                         "03_findings.json", "block_batch_*.json", "block_batches.json",
                         RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                     ])
@@ -3400,11 +3409,11 @@ class PipelineManager:
                         self._assert_block_analysis_exists(output_dir, "text_analysis")
                     self._backup_findings_before_restart(pid)
                     if blocks_before_text:
-                        # Не трогаем 02 (посчитан на block-этапе выше).
-                        clean = ["01_text_analysis.json", "03_findings.json"]
+                        # Не трогаем блоки (посчитаны на block-этапе выше).
+                        clean = [*TEXT_ANALYSIS_ALL_NAMES, "03_findings.json"]
                     else:
                         clean = [
-                            "01_text_analysis.json", "02_blocks_analysis.json",
+                            *TEXT_ANALYSIS_ALL_NAMES, *BLOCKS_ANALYSIS_ALL_NAMES,
                             "03_findings.json", "block_batch_*.json", "block_batches.json",
                             RUNTIME_BATCHES_FILE, "block_analysis_summary.json",
                         ]
@@ -3425,7 +3434,7 @@ class PipelineManager:
                 if not _ta_result.success:
                     raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
                 self._promote_v2_analysis_artifacts(
-                    job, ("01_text_analysis.json", "pipeline_log.json")
+                    job, (TEXT_ANALYSIS_FILENAME, "pipeline_log.json")
                 )
                 return job.status != JobStatus.CANCELLED
 
@@ -3439,7 +3448,7 @@ class PipelineManager:
                         # Resume прямо с блоков (новый порядок) — почистить 02/03, но не 01.
                         self._backup_findings_before_restart(pid)
                         self._clean_stage_files(pid, [
-                            "02_blocks_analysis.json", "block_analysis_summary.json",
+                            *BLOCKS_ANALYSIS_ALL_NAMES, "block_analysis_summary.json",
                             RUNTIME_BATCHES_FILE, "03_findings.json",
                         ])
                     # Полноценный блок-этап (findings_only + retry + promote 02 + компакт для текста).
@@ -3481,9 +3490,9 @@ class PipelineManager:
                 if start_idx == 4:
                     await self._assert_gemma_ready_for_stage(job, project_info, "findings_merge")
                     self._assert_text_analysis_exists(output_dir, "findings_merge")
-                    if not (output_dir / "02_blocks_analysis.json").exists():
+                    if not resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
                         raise RuntimeError(
-                            "Нельзя запускать findings_merge: 02_blocks_analysis.json отсутствует. "
+                            "Нельзя запускать findings_merge: 01_blocks_analysis.json отсутствует. "
                             "Сначала выполните block_analysis."
                         )
                 # Retry merge перенумерует F-ID — бэкап findings + слепок вердиктов.
@@ -4425,6 +4434,9 @@ class PipelineManager:
                 "norm_checks.json",
                 "norm_checks_llm.json",
                 "optimization.json",
+                "optimization_claude.json",
+                "optimization_codex.json",
+                "optimization_merge_report.json",
                 "optimization_review.json",
                 "optimization_pre_review.json",
                 "pipeline_log.json",
@@ -4564,11 +4576,11 @@ class PipelineManager:
     ) -> None:
         """Перекроп нечитаемых блоков с увеличенным разрешением и повторный анализ.
 
-        Собирает все блоки с unreadable_text=true из 02_blocks_analysis.json,
+        Собирает все блоки с unreadable_text=true из 01_blocks_analysis.json,
         перекропает их (до MAX_RECROP_ITERATIONS раз, ×2 на итерации),
         создаёт мини-батч только для них и повторно прогоняет через блок-анализ
         (Gemini через OpenRouter). Результаты merge'атся поверх существующего
-        02_blocks_analysis.json — перезаписываются только затронутые block_id.
+        01_blocks_analysis.json — перезаписываются только затронутые block_id.
 
         При ошибке скриптов/CLI логируем warn и продолжаем: unreadable=true
         сохраняется, пайплайн идёт дальше на findings_merge.
@@ -4637,7 +4649,7 @@ class PipelineManager:
             exit_code, _, _ = await self._run_script_for_job(
                 job, str(BLOCKS_SCRIPT),
                 # --solo: 1 блок = 1 пакет, модель фокусируется на одной картинке
-                # (retry именно по ней и шёл, контекст других блоков уже есть в 02_blocks_analysis.json)
+                # (retry именно по ней и шёл, контекст других блоков уже есть в 01_blocks_analysis.json)
                 ["batches", proj_path, "--block-ids", ",".join(block_ids), "--solo"],
                 on_output=lambda msg: self._log(job, msg),
             )
@@ -4729,7 +4741,7 @@ class PipelineManager:
         return bool(getattr(cfg, "PIPELINE_NORMS_AFTER_MERGE_ENABLED", False))
 
     def _write_blocks_for_text_compact(self, output_dir: Path) -> None:
-        """Записать компактный view 02 (02_blocks_for_text.json) для текстового этапа. Fail-soft."""
+        """Записать компактный view 02 (01_blocks_for_text.json) для текстового этапа. Fail-soft."""
         try:
             from backend.app.pipeline.stages.block_analysis.blocks_for_text import (
                 write_blocks_for_text_compact,
@@ -4744,12 +4756,12 @@ class PipelineManager:
         """Stage 02: анализ блоков (findings_only) + block_retry + promote 02.
 
         При PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED дополнительно пишет компактный view
-        02_blocks_for_text.json (после retry — уже финальный 02) для текстового этапа.
+        01_blocks_for_text.json (после retry — уже финальный 02) для текстового этапа.
         Единый источник для обоих порядков (block→text и text→block).
         """
         if get_stage_batch_mode("block_batch") == "findings_only_gemma_pair":
             # findings_only_gemma_pair: single-block GPT-5.4 + gemma-enrichment.
-            # Пишет 02_blocks_analysis.json напрямую, без block_batches.json.
+            # Пишет 01_blocks_analysis.json напрямую, без block_batches.json.
             await self._run_block_analysis_findings_only(job)
             if job.status == JobStatus.CANCELLED:
                 return
@@ -4775,15 +4787,15 @@ class PipelineManager:
         await self._run_block_retry(job, pid, project_info, output_dir)
 
         promote = [
-            "02_blocks_analysis.json",
+            BLOCKS_ANALYSIS_FILENAME,
             "block_analysis_summary.json",
             RUNTIME_BATCHES_FILE,
             "pipeline_log.json",
         ]
-        # Порядок block→text: компактный view финального 02 для текстового этапа.
+        # Порядок block→text: компактный view финальных блоков для текстового этапа.
         if self._blocks_before_text_enabled():
             self._write_blocks_for_text_compact(output_dir)
-            promote.append("02_blocks_for_text.json")
+            promote.append(BLOCKS_FOR_TEXT_FILENAME)
         self._promote_v2_analysis_artifacts(job, tuple(promote))
 
     async def _run_ocr_pipeline(self, job: AuditJob, include_optimization: bool = True):
@@ -4793,9 +4805,9 @@ class PipelineManager:
         Этапы:
         1. blocks.py crop → _output/blocks_gemma_100/
         2. Gemma base 100 DPI + optional targeted high-detail 300 DPI
-        3. Claude: text_analysis → 01_text_analysis.json
+        3. Claude: text_analysis → 02_text_analysis.json
         4. Stage 02 crop → _output/blocks_stage02_100/
-        5. findings_only_gemma_pair → 02_blocks_analysis.json
+        5. findings_only_gemma_pair → 01_blocks_analysis.json
         6. Claude: findings_merge → 03_findings.json
         7. norm_verify
         8. Excel
@@ -4893,14 +4905,14 @@ class PipelineManager:
 
             # ═══ ЭТАП 2: Текстовый анализ MD (Claude) ═══
             files_to_clean = [
-                "01_text_analysis.json",
+                *TEXT_ANALYSIS_ALL_NAMES,
                 "03_findings.json", "03_findings_review.json", "03_findings_pre_review.json",
             ]
             if not blocks_before_text:
                 # Старый порядок: текст первый — чистим и блочные артефакты (пересоберутся ниже).
                 files_to_clean += [
                     "block_batch_*.json", "block_batches.json", RUNTIME_BATCHES_FILE,
-                    "block_analysis_summary.json", "02_blocks_analysis.json",
+                    "block_analysis_summary.json", *BLOCKS_ANALYSIS_ALL_NAMES,
                 ]
             # Полный аудит перенумерует F-ID — бэкап findings + слепок вердиктов.
             self._backup_findings_before_restart(pid)
@@ -4937,7 +4949,7 @@ class PipelineManager:
                 raise RuntimeError(_ta_result.error or "Текстовый анализ: ошибка")
 
             self._promote_v2_analysis_artifacts(
-                job, ("01_text_analysis.json", "pipeline_log.json")
+                job, (TEXT_ANALYSIS_FILENAME, "pipeline_log.json")
             )
             print(f"[{pid}] ЭТАП 2 OK")
 
@@ -5876,7 +5888,7 @@ class PipelineManager:
         if not item.retry_stage:
             if action == "main_audit":
                 self._clean_stage_files(pid, [
-                    "00_init.json", "01_text_analysis.json", "03_findings.json",
+                    "00_init.json", *TEXT_ANALYSIS_ALL_NAMES, "03_findings.json",
                 ])
                 job.stage = AuditStage.MAIN_AUDIT
             elif action == "norm_verify":
@@ -6569,7 +6581,14 @@ class PipelineManager:
             elif result.success:
                 job.status = JobStatus.COMPLETED
                 self._promote_v2_analysis_artifacts(
-                    job, ("optimization.json", "pipeline_log.json")
+                    job,
+                    (
+                        "optimization.json",
+                        "optimization_claude.json",
+                        "optimization_codex.json",
+                        "optimization_merge_report.json",
+                        "pipeline_log.json",
+                    ),
                 )
             else:
                 job.status = JobStatus.FAILED
@@ -6615,6 +6634,9 @@ class PipelineManager:
                     job,
                     (
                         "optimization.json",
+                        "optimization_claude.json",
+                        "optimization_codex.json",
+                        "optimization_merge_report.json",
                         "optimization_review.json",
                         "optimization_pre_review.json",
                         "pipeline_log.json",

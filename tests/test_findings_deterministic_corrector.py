@@ -202,7 +202,7 @@ def test_critic_then_corrector_roundtrip(tmp_path):
          "evidence": [{"type": "image", "block_id": "GHOST-ZZZZ-WWW", "page": 4}]},  # phantom
     ]}
     (tmp_path / "03_findings.json").write_text(json.dumps(findings), encoding="utf-8")
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_blocks(("B1-AAAA-BBB", 4, "Л4", "x"))), encoding="utf-8")
     (tmp_path / "document_graph.json").write_text(
         json.dumps(_graph((4, "Л4", "txt"))), encoding="utf-8")

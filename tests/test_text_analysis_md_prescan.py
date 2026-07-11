@@ -58,11 +58,11 @@ def test_augment_text_analysis_file_adds_missing_and_backfills_existing(tmp_path
 """,
         encoding="utf-8",
     )
-    output_path = tmp_path / "01_text_analysis.json"
+    output_path = tmp_path / "02_text_analysis.json"
     output_path.write_text(
         json.dumps(
             {
-                "stage": "01_text_analysis",
+                "stage": "02_text_analysis",
                 "project_id": "P",
                 "text_source": "md",
                 "timestamp": "2026-07-10T00:00:00+03:00",

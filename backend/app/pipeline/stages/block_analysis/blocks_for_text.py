@@ -2,7 +2,7 @@
 
 Когда конвейер идёт в порядке block→text (флаг PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED),
 текстовый этап (Opus) читает результат блоков и сверяет с ним свои T-замечания. Подавать
-в Opus сырой 02_blocks_analysis.json нельзя — он большой (многоабзацные findings), это лишние
+в Opus сырой 01_blocks_analysis.json нельзя — он большой (многоабзацные findings), это лишние
 токены/внимание/стоимость. Здесь собирается компактная проекция ровно из тех полей, что нужны
 для верификации: block_id/page/sheet/coverage_status + findings (id/severity/category/finding/
 value_found/block_evidence/highlight_regions).
@@ -19,8 +19,14 @@ import json
 from pathlib import Path
 from typing import Any, Optional
 
-BLOCKS_FOR_TEXT_FILENAME = "02_blocks_for_text.json"
-_SOURCE_FILENAME = "02_blocks_analysis.json"
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_FOR_TEXT_FILENAME,
+    BLOCKS_FOR_TEXT_STAGE,
+    resolve_existing,
+)
+
+_SOURCE_FILENAME = BLOCKS_ANALYSIS_FILENAME
 
 # Лимиты компактизации
 _MAX_FINDING_CHARS = 700
@@ -58,7 +64,7 @@ def _compact_finding(finding: dict) -> dict:
 
 
 def build_compact_view(data: dict) -> dict:
-    """Собрать компактную проекцию из содержимого 02_blocks_analysis.json."""
+    """Собрать компактную проекцию из содержимого 01_blocks_analysis.json."""
     block_analyses = data.get("block_analyses")
     if not isinstance(block_analyses, list):
         block_analyses = []
@@ -98,7 +104,7 @@ def build_compact_view(data: dict) -> dict:
         )
 
     return {
-        "stage": "02_blocks_for_text",
+        "stage": BLOCKS_FOR_TEXT_STAGE,
         "source": _SOURCE_FILENAME,
         "meta": {
             "total_blocks": total_blocks,
@@ -112,13 +118,13 @@ def build_compact_view(data: dict) -> dict:
 
 
 def write_blocks_for_text_compact(output_dir: Path) -> Optional[Path]:
-    """Прочитать 02_blocks_analysis.json из output_dir, записать 02_blocks_for_text.json.
+    """Прочитать 01_blocks_analysis.json из output_dir, записать 01_blocks_for_text.json.
 
     Возвращает путь к записанному файлу, либо None если исходник отсутствует/битый
     (fail-soft: текстовый этап штатно работает и без блочного контекста).
     """
     output_dir = Path(output_dir)
-    src = output_dir / _SOURCE_FILENAME
+    src = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     if not src.is_file():
         return None
     try:

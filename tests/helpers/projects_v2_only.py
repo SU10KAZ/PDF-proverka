@@ -98,9 +98,9 @@ def add_v2_document(
     (latest / "03_findings.json").write_text(
         json.dumps({"findings": findings}), encoding="utf-8")
     if with_blocks:
-        (latest / "02_blocks_analysis.json").write_text(
+        (latest / "01_blocks_analysis.json").write_text(
             json.dumps({"blocks": [{"block_id": "b1"}, {"block_id": "b2"}]}), encoding="utf-8")
-        (latest / "01_text_analysis.json").write_text(
+        (latest / "02_text_analysis.json").write_text(
             json.dumps({"normative_refs_found": []}), encoding="utf-8")
     if with_optimization:
         (latest / "optimization.json").write_text(

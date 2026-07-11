@@ -208,7 +208,7 @@ async def test_text_analysis_runner_uses_v2_version_dir_and_output(monkeypatch, 
         messages = prompt_builder.build_text_analysis_messages(project_info_arg, project_id)
         captured["prompt"] = json.dumps(messages, ensure_ascii=False)
         output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "01_text_analysis.json").write_text(
+        (output_dir / "02_text_analysis.json").write_text(
             json.dumps({"text_findings": [], "page_triage": []}, ensure_ascii=False),
             encoding="utf-8",
         )
@@ -250,6 +250,6 @@ async def test_text_analysis_runner_uses_v2_version_dir_and_output(monkeypatch, 
     assert captured["version_dir_env"] == version_dir
     assert captured["md_path"] == version_dir / "02_work" / "document.md"
     assert "v2 md" in captured["prompt"]
-    assert (output_dir / "01_text_analysis.json").exists()
+    assert (output_dir / "02_text_analysis.json").exists()
     assert __import__("os").environ.get("AUDIT_OUTPUT_DIR") is None
     assert __import__("os").environ.get("AUDIT_VERSION_DIR") is None

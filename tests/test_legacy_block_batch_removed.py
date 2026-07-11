@@ -2,7 +2,7 @@
 
 Production-режим block_batch ЗАЛОЧЕН на единственный выбор
 `findings_only_gemma_pair` (single-block GPT-5.4 + gemma-enrichment), пишущий
-02_blocks_analysis.json напрямую. Поэтому legacy-ветки batch-конвейера
+01_blocks_analysis.json напрямую. Поэтому legacy-ветки batch-конвейера
 (generate batches → run batches → merge → _retry_batch_split) были провабельно
 недостижимы и удалены из manager.py.
 

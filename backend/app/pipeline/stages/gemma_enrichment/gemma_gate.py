@@ -3,6 +3,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from typing import Any
 
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
@@ -133,8 +139,8 @@ def detect_gemma_migration_state(
     if gemma_state is None:
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
-    has_01_text = (output_dir / "01_text_analysis.json").exists()
-    has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
+    has_01_text = resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists()
+    has_02_blocks = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists()
     has_03_findings = (output_dir / "03_findings.json").exists()
     has_norm_checks = (output_dir / "norm_checks.json").exists()
     has_03a = (output_dir / "03a_norms_verified.json").exists()

@@ -43,7 +43,7 @@ def _make_project(tmp_path: Path, name: str, findings: list[dict],
         json.dumps({"findings": findings}, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # Optional 02_blocks_analysis.json
+    # Optional 01_blocks_analysis.json
     if with_blocks:
         block_ids = list({
             b.get("block_id") or b
@@ -51,7 +51,7 @@ def _make_project(tmp_path: Path, name: str, findings: list[dict],
             for b in f.get("evidence", [])
             if isinstance(b, dict) and b.get("block_id")
         })
-        (output_dir / "02_blocks_analysis.json").write_text(
+        (output_dir / "01_blocks_analysis.json").write_text(
             json.dumps({
                 "block_analyses": [{"block_id": bid} for bid in block_ids],
             }, ensure_ascii=False), encoding="utf-8"

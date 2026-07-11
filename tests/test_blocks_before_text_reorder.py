@@ -22,7 +22,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 def _sample_02():
     return {
-        "stage": "02_blocks_analysis",
+        "stage": "01_blocks_analysis",
         "block_analyses": [
             {  # чистый блок — без находок и coverage ok → отбрасывается
                 "block_id": "CLEAN-1", "page": 1, "sheet": "Лист 1",
@@ -78,12 +78,12 @@ def test_compact_view_findings_budget():
 
 
 def test_write_compact_roundtrip(tmp_path):
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_sample_02(), ensure_ascii=False), encoding="utf-8")
     dst = write_blocks_for_text_compact(tmp_path)
     assert dst is not None and dst.name == BLOCKS_FOR_TEXT_FILENAME
     data = json.loads(dst.read_text(encoding="utf-8"))
-    assert data["stage"] == "02_blocks_for_text"
+    assert data["stage"] == "01_blocks_for_text"
 
 
 def test_write_compact_missing_source(tmp_path):
@@ -157,4 +157,4 @@ def test_text_task_substitutes_blocks_path():
         md_file_path="/tmp/doc.md",
     )
     assert "{BLOCKS_ANALYSIS_PATH}" not in prompt
-    assert "02_blocks_for_text.json" in prompt
+    assert "01_blocks_for_text.json" in prompt

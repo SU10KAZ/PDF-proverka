@@ -14,8 +14,8 @@ You are an experienced design engineer (Chief Project Engineer / cost engineerin
 READ via Read tool:
 
 - **MD file (project text)** — `{MD_FILE_PATH}` — primary working file. Contains exact text: numbers, tables, specifications, designations.
-- **Text analysis (project params, norms)** — `{OUTPUT_PATH}/01_text_analysis.json` — from stage 01.
-- **Block analysis results (if available)** — `{OUTPUT_PATH}/02_blocks_analysis.json` — completed drawing analysis from stage 02.
+- **Text analysis (project params, norms)** — `{OUTPUT_PATH}/02_text_analysis.json` — from stage 01.
+- **Block analysis results (if available)** — `{OUTPUT_PATH}/01_blocks_analysis.json` — completed drawing analysis from stage 02.
 - **Audit findings (if available)** — `{OUTPUT_PATH}/03_findings.json` — from stage 03. DO NOT contradict identified violations.
 
 ### Keep findings separate from optimization

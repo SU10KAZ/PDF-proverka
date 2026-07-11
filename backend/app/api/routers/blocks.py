@@ -4,6 +4,11 @@ REST API для OCR-блоков чертежей.
 import json
 import re
 from pathlib import Path
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -560,8 +565,8 @@ async def get_blocks(
 
 
 def _lookup_block_page(output_dir: Path, block_id: str) -> Optional[int]:
-    """Найти страницу блока: 02_blocks_analysis.json (v2+legacy) → gemma index."""
-    ba = output_dir / "02_blocks_analysis.json"
+    """Найти страницу блока: 01_blocks_analysis.json (v2+legacy) → gemma index."""
+    ba = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     if ba.exists():
         try:
             d = json.loads(ba.read_text(encoding="utf-8"))
@@ -671,7 +676,7 @@ async def get_block_llm_text(
     output_dir: Path = ctx["output_dir"]
     version_dir: Path = ctx.get("version_dir") or output_dir.parent
 
-    # 1) Страница блока: с клиента (query) или из 02_blocks_analysis.json / gemma index
+    # 1) Страница блока: с клиента (query) или из 01_blocks_analysis.json / gemma index
     if page is None:
         page = _lookup_block_page(output_dir, block_id)
     if page is None:
@@ -917,7 +922,7 @@ async def get_blocks_analysis(
     request: Request,
     version_id: Optional[str] = Query(None),
 ):
-    """Агрегированные данные анализа блоков из 02_blocks_analysis.json
+    """Агрегированные данные анализа блоков из 01_blocks_analysis.json
     (текущий production-pipeline) с fallback на legacy block_batch_*.json /
     typed_facts_batch_*.json (v4).
 
@@ -931,12 +936,12 @@ async def get_blocks_analysis(
 
     blocks_map = {}
 
-    # Primary: 02_blocks_analysis.json — единый merged-результат Stage 02 текущего
+    # Primary: 01_blocks_analysis.json — единый merged-результат Stage 02 текущего
     # production-режима (findings_only_gemma_pair / single_block). Он использует
     # тот же ключ block_analyses, что и legacy-парсер ниже. Без этого источника
     # все блоки уходили в "skipped" (Без значимого содержимого), даже когда аудит
     # завершён, потому что новый режим не пишет per-batch block_batch_*.json.
-    merged_path = output_dir / "02_blocks_analysis.json"
+    merged_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     if merged_path.exists():
         try:
             data = json.loads(merged_path.read_text(encoding="utf-8"))

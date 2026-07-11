@@ -340,7 +340,7 @@ projects_v2 должно быть доказуемо чистым (validate PASS
 **Что это.** legacy получил НОВЫЕ файлы после миграции, которых нет ни в snapshot,
 ни в `old_to_new_map.json`. Частный случай — V2-документ был мигрирован без
 анализа (`analysis_status=none`), а затем живой backend-аудит дописал в legacy
-`_output/` `01_text_analysis.json` / `02_blocks_analysis.json` / `03_findings.json`
+`_output/` `02_text_analysis.json` / `01_blocks_analysis.json` / `03_findings.json`
 и др. Тогда validate падает на `CRITICAL artifact lost` (файл есть в legacy, нет
 в v2).
 
@@ -353,7 +353,7 @@ projects_v2 должно быть доказуемо чистым (validate PASS
 whitelist-файлы в legacy, которых нет в карте → `legacy_new_file_not_in_map`.
 
 **Whitelist новых файлов** (только они добавляются автоматически):
-`01_text_analysis.json`, `02_blocks_analysis.json`, `03_findings.json`,
+`02_text_analysis.json`, `01_blocks_analysis.json`, `03_findings.json`,
 `03_findings_review.json`, `norm_checks.json`, `03a_norms_verified.json`,
 `optimization.json`, `optimization_review.json`, `pipeline_log.json`,
 `audit_log.jsonl` (все в `_output/`). НЕ добавляются: backup-папки

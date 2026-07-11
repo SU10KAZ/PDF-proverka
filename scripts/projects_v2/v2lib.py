@@ -61,8 +61,8 @@ WORK_NORMALIZED = {
 
 # Ключевые артефакты анализа, которые обязаны попасть в 03_analysis/latest
 LATEST_ANALYSIS_FILES = (
-    "01_text_analysis.json",
-    "02_blocks_analysis.json",
+    "02_text_analysis.json",
+    "01_blocks_analysis.json",
     "03_findings.json",
     "document_graph.json",
     "norm_checks.json",
@@ -72,8 +72,8 @@ LATEST_ANALYSIS_FILES = (
 
 # Артефакты, которые нельзя потерять (validate проверяет их явно).
 CRITICAL_ANALYSIS_FILES = (
-    "01_text_analysis.json",
-    "02_blocks_analysis.json",
+    "02_text_analysis.json",
+    "01_blocks_analysis.json",
     "03_findings.json",
 )
 
@@ -389,8 +389,8 @@ def inventory_one_project(object_dir: Path, discipline: str, project_path: Path,
         "has_result_json": quad["result_json"] is not None,
         "has_project_info": (vdir / "project_info.json").exists(),
         "has_output": output_dir.is_dir(),
-        "has_01_text_analysis": (output_dir / "01_text_analysis.json").exists(),
-        "has_02_blocks_analysis": (output_dir / "02_blocks_analysis.json").exists(),
+        "has_01_text_analysis": (output_dir / "02_text_analysis.json").exists(),
+        "has_02_blocks_analysis": (output_dir / "01_blocks_analysis.json").exists(),
         "has_03_findings": (output_dir / "03_findings.json").exists(),
         "has_pipeline_log": (output_dir / "pipeline_log.json").exists(),
         "has_blocks": _has_blocks(output_dir),
@@ -683,7 +683,7 @@ def _copytree_tracked(src_dir: Path, dst_dir: Path, role: str) -> list[dict]:
     return files
 
 
-_CRITICAL_ANALYSIS_NAMES = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+_CRITICAL_ANALYSIS_NAMES = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
 
 
 def migrate_version(version: VersionRec, doc_dir: Path, *,

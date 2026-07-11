@@ -79,7 +79,7 @@ def _build(tmp_path, *, v2_findings: bool, legacy_findings: bool,
     _wj(doc / "versions" / "v001" / "version.json",
         {"version_id": "v001", "version_no": 1, "analysis_status": "complete"})
     # v2 всегда имеет ранние артефакты (как снимок, замерший на block_analysis)
-    _wj(latest / "02_blocks_analysis.json", {"block_analyses": []})
+    _wj(latest / "01_blocks_analysis.json", {"block_analyses": []})
     if v2_findings:
         _wj(latest / "03_findings.json",
             {"findings": [{"id": f"V2-{i}", "severity": "Критическое"} for i in range(3)]})
@@ -230,8 +230,8 @@ def _make_legacy_project(tmp_path, *, with_late: bool):
     _wj(proj / "project_info.json",
         {"project_id": f"{DISC}/DOCX", "name": "DOCX", "section": DISC,
          "object_id": "objhashX"})
-    _wj(out / "01_text_analysis.json", {"x": 1})
-    _wj(out / "02_blocks_analysis.json", {"block_analyses": []})
+    _wj(out / "02_text_analysis.json", {"x": 1})
+    _wj(out / "01_blocks_analysis.json", {"block_analyses": []})
     stages = {"block_analysis": {"status": "done"}}
     if with_late:
         _wj(out / "03_findings.json",

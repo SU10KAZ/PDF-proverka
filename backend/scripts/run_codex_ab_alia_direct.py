@@ -3,7 +3,7 @@
 
 This runner deliberately avoids mutating project ``03_analysis/latest``:
 it copies baseline artifacts into ``comparison/classic_codex_ab`` and asks
-Codex exec to write fresh ``01_text_analysis.json`` and ``03_findings.json``
+Codex exec to write fresh ``02_text_analysis.json`` and ``03_findings.json``
 only inside the comparison run directory.
 """
 from __future__ import annotations
@@ -146,8 +146,8 @@ def copy_inputs(candidate: Candidate, input_dir: Path) -> dict[str, str]:
     paths = {
         "project_info": find_project_info(version_dir),
         "document_md": find_input_md(version_dir),
-        "baseline_01_text_analysis": latest_dir / "01_text_analysis.json",
-        "baseline_02_blocks_analysis": latest_dir / "02_blocks_analysis.json",
+        "baseline_01_text_analysis": latest_dir / "02_text_analysis.json",
+        "baseline_02_blocks_analysis": latest_dir / "01_blocks_analysis.json",
         "baseline_document_graph": latest_dir / "document_graph.json",
         "baseline_03_findings": latest_dir / "03_findings.json",
         "expert_review": candidate.review_path,
@@ -158,8 +158,8 @@ def copy_inputs(candidate: Candidate, input_dir: Path) -> dict[str, str]:
         target = input_dir / {
             "project_info": "project_info.json",
             "document_md": "document.md",
-            "baseline_01_text_analysis": "baseline_01_text_analysis.json",
-            "baseline_02_blocks_analysis": "02_blocks_analysis.json",
+            "baseline_01_text_analysis": "baseline_02_text_analysis.json",
+            "baseline_02_blocks_analysis": "01_blocks_analysis.json",
             "baseline_document_graph": "document_graph.json",
             "baseline_03_findings": "baseline_03_findings.json",
             "expert_review": "expert_review.json",
@@ -196,7 +196,7 @@ def prepare_production_json_layout(input_dir: Path, output_dir: Path, version_di
 
     shutil.copy2(input_dir / "project_info.json", version_dir / "01_input" / "project_info.json")
     shutil.copy2(input_dir / "document.md", version_dir / "02_work" / "document.md")
-    shutil.copy2(input_dir / "02_blocks_analysis.json", output_dir / "02_blocks_analysis.json")
+    shutil.copy2(input_dir / "01_blocks_analysis.json", output_dir / "01_blocks_analysis.json")
     shutil.copy2(input_dir / "document_graph.json", output_dir / "document_graph.json")
 
     return {
@@ -221,7 +221,7 @@ def build_text_prompt(candidate: Candidate, input_dir: Path, output_path: Path) 
 Рабочие файлы:
 - project_info: {input_dir / "project_info.json"}
 - markdown документа: {input_dir / "document.md"}
-- baseline Claude 01 только для понимания ожидаемой структуры, не копировать слепо: {input_dir / "baseline_01_text_analysis.json"}
+- baseline Claude 01 только для понимания ожидаемой структуры, не копировать слепо: {input_dir / "baseline_02_text_analysis.json"}
 
 Задача:
 1. Прочитай markdown и project_info.
@@ -232,7 +232,7 @@ def build_text_prompt(candidate: Candidate, input_dir: Path, output_path: Path) 
 
 Формат JSON:
 {{
-  "stage": "01_text_analysis",
+  "stage": "02_text_analysis",
   "project_id": "{candidate.document}",
   "text_source": "md",
   "findings": [
@@ -265,8 +265,8 @@ def build_merge_prompt(candidate: Candidate, input_dir: Path, codex_dir: Path, o
 Источники:
 - project_info: {input_dir / "project_info.json"}
 - markdown документа: {input_dir / "document.md"}
-- Codex Stage 01: {codex_dir / "01_text_analysis.json"}
-- Stage 02 blocks/GPT baseline: {input_dir / "02_blocks_analysis.json"}
+- Codex Stage 01: {codex_dir / "02_text_analysis.json"}
+- Stage 02 blocks/GPT baseline: {input_dir / "01_blocks_analysis.json"}
 - document_graph: {input_dir / "document_graph.json"}
 - baseline Claude 03 только для понимания структуры JSON, не копировать слепо: {input_dir / "baseline_03_findings.json"}
 
@@ -949,7 +949,7 @@ async def run_one(
 
     baseline_hashes = {
         rel: stable_hash(candidate.latest_dir / rel)
-        for rel in ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json", "document_graph.json")
+        for rel in ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json", "document_graph.json")
         if (candidate.latest_dir / rel).is_file()
     }
 
@@ -980,7 +980,7 @@ async def run_one(
         codex_dir = item_dir / "codex_production_json"
         sandbox_version_dir = item_dir / "production_json_version"
         layout = prepare_production_json_layout(input_dir, codex_dir, sandbox_version_dir)
-        text_out = codex_dir / "01_text_analysis.json"
+        text_out = codex_dir / "02_text_analysis.json"
         merge_out = codex_dir / "03_findings.json"
         project_info = json.loads((input_dir / "project_info.json").read_text(encoding="utf-8"))
 
@@ -1087,7 +1087,7 @@ async def run_one(
                 codex_count = combine_findings_with_targeted(merge_out, targeted_paths, combined_out)
                 merge_out = combined_out
     else:
-        text_out = codex_dir / "01_text_analysis.json"
+        text_out = codex_dir / "02_text_analysis.json"
         merge_out = codex_dir / "03_findings.json"
 
         text_exit, text_output, text_cli = await run_codex_exec(

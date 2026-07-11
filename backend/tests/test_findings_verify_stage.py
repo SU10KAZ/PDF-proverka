@@ -51,7 +51,7 @@ def _write_findings(output_dir, findings):
 
 
 def _write_blocks(output_dir, block_analyses):
-    (output_dir / "02_blocks_analysis.json").write_text(
+    (output_dir / "01_blocks_analysis.json").write_text(
         json.dumps({"block_analyses": block_analyses}, ensure_ascii=False),
         encoding="utf-8",
     )

@@ -413,6 +413,11 @@ LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
 CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
 CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
 STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
+OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
+OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-4-7").strip()
+    or "claude-opus-4-7"
+)
 # Диспетчеризация стадий идёт строго по префиксу "codex/" (is_codex_model). Значение
 # без префикса (перепутали с AUDIT_CODEX_MODEL) попадало в AVAILABLE_MODELS как
 # «Codex exec», но в рантайме молча уходило в OpenRouter-ветку с несуществующим id.
@@ -425,6 +430,7 @@ AVAILABLE_MODELS = [
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
     {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex exec",             "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
+    {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
     {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
 ]
@@ -434,6 +440,15 @@ STAGE_MODEL_RESTRICTIONS = {
         "openai/gpt-5.4",
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
+    ],
+    "optimization": [
+        "claude-opus-4-7",
+        "claude-sonnet-4-6",
+        "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        OPTIMIZATION_DUAL_MODEL_ID,
+        "google/gemini-3.1-pro-preview",
+        CHANDRA_GEMMA_MODEL,
     ],
 }
 
@@ -489,7 +504,7 @@ STAGE_MODEL_HINTS: dict[str, str] = {
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
     "norm_verify": "Opus CLI обязателен: MCP norms — единственный источник. WebSearch запрещён.",
     "norm_fix": "Opus CLI обязателен: MCP norms для поиска замены. WebSearch запрещён.",
-    "optimization": "Opus CLI или GPT-5.4. Gemini находит мало предложений.",
+    "optimization": "Opus CLI, Codex exec или параллельный Claude + Codex с объединением и дедупликацией.",
     "optimization_critic": "GPT-5.4 или Sonnet CLI.",
     "optimization_corrector": "GPT-5.4 или Sonnet CLI.",
 }
@@ -510,6 +525,11 @@ def is_claude_stage(stage: str) -> bool:
 def is_codex_model(model: str | None) -> bool:
     """True для модели classic pipeline, запускаемой через `codex exec`."""
     return bool((model or "").strip().startswith("codex/"))
+
+
+def is_optimization_ensemble_model(model: str | None) -> bool:
+    """True для параллельного Claude + Codex режима этапа OPT."""
+    return (model or "").strip() == OPTIMIZATION_DUAL_MODEL_ID
 
 
 def resolve_codex_model(model: str | None) -> str:
@@ -760,12 +780,14 @@ VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED = _env_bool("VECTOGRAF_POLYGON_TEXT_ONLY_ENA
 NEIGHBOR_TEXT_BLOCKS_ENABLED = _env_bool("NEIGHBOR_TEXT_BLOCKS_ENABLED", True)
 # Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
 BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
-# Разворот порядка конвейера: блоки (Stage 02, GPT) идут ПЕРЕД текстом (Stage 01, Opus).
+# Разворот порядка конвейера: блоки (Stage 01, GPT) идут ПЕРЕД текстом (Stage 02, Opus).
 # Новый порядок: gemma → block_analysis → block_retry → text_analysis → findings_merge.
-# Текст становится финальным синтезатором: читает компактный view 02 (02_blocks_for_text.json)
+# Текст становится финальным синтезатором: читает компактный view блоков (01_blocks_for_text.json)
 # и сверяет свои T-замечания с блоками (items_verified_from_blocks) вместо обратной сверки.
-# OFF по умолчанию — прод (порядок text→block) не меняется. Выкатка через A/B на реальном проекте.
-PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False)
+# ДЕФОЛТ True: нумерация артефактов (блоки=01, текст=02) отражает именно этот порядок.
+# Флаг оставлен как временный escape-hatch; при False (старый порядок text→block) нумерация
+# 01/02 становится несогласованной с фактическим порядком (legacy-режим).
+PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", True)
 # «Страж отсутствия» (absence guard): анти-ложное правило для замечаний вида
 # «нет / не указано / отсутствует». Исследование браков (03.07) показало, что ~32%
 # отклонений эксперта — это «данные ЕСТЬ, ИИ не увидел» (на другом листе/в тексте).

@@ -5,7 +5,7 @@ Main entry point for assembling FindingContextPackage for each finding.
 
 Reads from:
   - document_graph.json (block text, page layout)
-  - 02_blocks_analysis.json (enriched block labels, optional)
+  - 01_blocks_analysis.json (enriched block labels, optional)
   - 03_findings.json (all findings, for related-finding lookup)
 
 Does NOT write to production artifacts.
@@ -23,6 +23,10 @@ Usage:
 from __future__ import annotations
 
 import json
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -102,7 +106,7 @@ class ContextCollector:
             document_graph = json.loads(graph_path.read_text(encoding="utf-8"))
 
         blocks_analysis: Optional[dict] = None
-        blocks_path = output_dir / "02_blocks_analysis.json"
+        blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
         if blocks_path.exists():
             try:
                 blocks_analysis = json.loads(blocks_path.read_text(encoding="utf-8"))

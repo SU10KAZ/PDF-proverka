@@ -14,6 +14,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 try:
     import fitz  # type: ignore
 except ImportError:  # pragma: no cover - optional outside the audit runtime
@@ -256,7 +261,7 @@ def _load_image_indexes(
 
 
 def _block_records(output_dir: Path) -> list[dict[str, Any]]:
-    analysis = _read_json(output_dir / "02_blocks_analysis.json")
+    analysis = _read_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME))
     if isinstance(analysis, dict):
         for key in ("block_analyses", "blocks"):
             records = analysis.get(key)

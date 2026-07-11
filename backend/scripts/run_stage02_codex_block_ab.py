@@ -2,7 +2,7 @@
 """Compare Stage 02 OpenRouter GPT block findings with Codex exec.
 
 The runner is read-only with respect to project artifacts. It selects existing
-``02_blocks_analysis.json`` block records where GPT/OpenRouter produced
+``01_blocks_analysis.json`` block records where GPT/OpenRouter produced
 findings, reconstructs the same Stage 02 text context + PNG image, and asks
 Codex exec to produce the same ``{"findings": [...]}`` schema in an isolated
 comparison directory.
@@ -315,7 +315,7 @@ def collect_candidates() -> list[BlockCandidate]:
             continue
         object_slug, discipline, document, version = parsed_parts
         version_dir = latest_dir.parents[1]
-        blocks_analysis_path = latest_dir / "02_blocks_analysis.json"
+        blocks_analysis_path = latest_dir / "01_blocks_analysis.json"
         graph_path = latest_dir / "document_graph.json"
         index_paths = [
             latest_dir / dirname / "index.json"

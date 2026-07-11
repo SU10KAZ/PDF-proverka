@@ -478,7 +478,7 @@ class StorageWriteFacade:
         run_id: Optional[str] = None,
         legacy_write: Optional[Callable[[], Any]] = None,
     ) -> WriteResult:
-        """Записать analysis-артефакт (03_findings.json, 02_blocks_analysis.json, …).
+        """Записать analysis-артефакт (03_findings.json, 01_blocks_analysis.json, …).
 
         Пишется в `03_analysis/latest/<artifact_name>`. Если задан run_id —
         дополнительно в `03_analysis/runs/<run_id>/<artifact_name>` (история).

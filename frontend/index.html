@@ -1160,18 +1160,23 @@
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'findings_only' }"
                             @click="applyPreset('findings_only')"
-                            title="Production: Markdown → Gemma OCR enrichment → Stage 02 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
+                            title="Production: Markdown → Gemma OCR enrichment → Stage 01 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
-                            title="Codex exec для всех поддерживаемых этапов, включая Stage 02 Блоки.">Codex exec</button>
+                            title="Codex exec для всех поддерживаемых этапов, включая Stage 01 Блоки.">Codex exec</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'dual_detection' }"
                             @click="applyPreset('dual_detection')"
-                            title="Stage 02 независимо проверяет каждый блок через GPT-5.4 и Codex.">GPT + Codex</button>
+                            title="Stage 01 независимо проверяет каждый блок через GPT-5.4 и Codex.">GPT + Codex</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'optimization_ensemble' }"
+                            @click="applyPreset('optimization_ensemble')"
+                            title="OPT независимо запускается через Claude и Codex, затем результаты объединяются.">OPT Claude + Codex</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
                 <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
+                <div class="model-config-table-wrap">
                 <table class="model-config-table">
                     <thead>
                         <tr>
@@ -1196,6 +1201,7 @@
                         </template>
                     </tbody>
                 </table>
+                </div>
                 <div class="model-config-actions">
                     <button class="btn" @click="showModelConfig = false">Отмена</button>
                     <button class="btn btn-accent" @click="saveAndStartAudit()">Запустить аудит</button>
@@ -1504,13 +1510,13 @@
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
-                             Бейджи 01/02 — канонические ID стадий (текст=01, блоки=02), не порядок исполнения. -->
+                             Бейджи 01/02 отражают порядок исполнения: блоки=01, текст=02. -->
                         <div class="pipeline-stage"
                              :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
                              @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
-                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (02_blocks_analysis.json)'"
+                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (01_blocks_analysis.json)'"
                         >
-                            <div class="stage-num">02</div>
+                            <div class="stage-num">01</div>
                             <div class="stage-label">Блоки</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
@@ -1522,7 +1528,7 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
                              @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
                              :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
-                            <div class="stage-num">01</div>
+                            <div class="stage-num">02</div>
                             <div class="stage-label">Текст</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
@@ -2133,6 +2139,12 @@
                                         @click="toggleOptBlocks(item.id)"
                                         :style="{ cursor: (optBlockMap[item.id] && optBlockMap[item.id].length) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ item.id }}</span>
+                                        <span v-if="findingDetectorBadge(item)"
+                                              class="finding-detector-badge finding-detector-badge--inline"
+                                              :class="'finding-detector-badge--' + findingDetectorBadge(item).tone"
+                                              :title="findingDetectorBadge(item).title">
+                                            {{ findingDetectorBadge(item).text }}
+                                        </span>
                                         <span v-if="optBlockMap[item.id] && optBlockMap[item.id].length"
                                               class="finding-blocks-count"
                                               :title="optBlockMap[item.id].length + ' блоков'">
@@ -2905,7 +2917,7 @@
                                     <!-- Блок 2 (что уходит в GPT текстом) — только для НЕ-схемных блоков -->
                                     <template v-if="!blockLlmText.singleline_graph">
                                         <div class="block-llm-text__meta">
-                                            Что уходит в нейронку (Stage 02) ·
+                                            Что уходит в нейронку (Stage 01) ·
                                             enrichment: <b>{{ blockLlmText.enrichment_source }}</b>
                                             <span v-if="!blockLlmText.has_enrichment" style="color:var(--accent-orange,#e08a3c)">
                                                 (описание блока пустое — нет enrichment)</span>
@@ -3225,11 +3237,11 @@
                                          class="tile-status-pill tile-status-pill--skipped">
                                         Без значимого содержимого
                                     </div>
-                                    <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 02), в стиле бейджа -->
+                                    <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 01), в стиле бейджа -->
                                     <button class="tile-status-pill tile-status-pill--txt"
                                             :class="{'is-active': showBlockLlmText}"
                                             @click.stop="toggleBlockLlmText()"
-                                            title="Показать текст/граф, реально уходящий в нейронку (Stage 02)">
+                                            title="Показать текст/граф, реально уходящий в нейронку (Stage 01)">
                                         {{ showBlockLlmText ? '✓ txt' : 'txt' }}
                                     </button>
                                     <!-- Тоггл областей: полупрозрачные прямоугольники колонок линий поверх блока -->
@@ -3270,7 +3282,7 @@
                                 </div>
 
                                 <!-- Замечания: только финальный список (03_findings), прошедший критика. -->
-                                <!-- Сырые Stage 02 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
+                                <!-- Сырые Stage 01 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
                                 <!-- — критик мог их отфильтровать; источник истины = финальные замечания проекта. -->
                                 <div class="tile-analysis-section tile-analysis-section--findings">
                                     <div class="tile-analysis-section__header"

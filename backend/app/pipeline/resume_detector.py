@@ -16,6 +16,11 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import gemma_blocks_dir
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 
 
 def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) -> dict:
@@ -71,10 +76,11 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     runtime_batches_path = output_dir / "block_batches.runtime.json"
     legacy_batches_path = output_dir / "block_batches.json"
     has_block_batches = runtime_batches_path.exists() or legacy_batches_path.exists()
-    has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
-    has_01_text = (output_dir / "01_text_analysis.json").exists()
+    # Fallback-резолв: новые имена в приоритете, legacy читается для немигрированных данных.
+    has_02_blocks = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists()
+    has_01_text = resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists()
 
-    # Порядок этапов: по флагу блоки (02) могут идти ПЕРЕД текстом (01).
+    # Порядок этапов: по флагу блоки (01) могут идти ПЕРЕД текстом (02).
     from backend.app.core import config as _cfg
     blocks_before_text = bool(getattr(_cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False))
 
@@ -125,7 +131,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             )
         if blocks_before_text and has_blocks and not has_02_blocks:
             # Новый порядок: текст идёт после блоков и требует 02.
-            return _block_resume("02_blocks_analysis.json отсутствует; text_analysis требует блоки")
+            return _block_resume("01_blocks_analysis.json отсутствует; text_analysis требует блоки")
         return {
             "stage": "text_analysis",
             "stage_label": "Анализ текста",
@@ -141,7 +147,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             return {
                 "stage": "text_analysis",
                 "stage_label": "Анализ текста",
-                "detail": "01_text_analysis.json отсутствует; resume на block_analysis запрещён",
+                "detail": "02_text_analysis.json отсутствует; resume на block_analysis запрещён",
                 "can_resume": True,
             }
 
@@ -165,19 +171,19 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         # Порядок отсутствующих предпосылок зависит от порядка этапов.
         if blocks_before_text:
             if has_blocks and not has_02_blocks:
-                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+                return _block_resume("01_blocks_analysis.json отсутствует; findings_merge невозможен")
             if has_blocks and not has_01_text:
-                return _text_resume("01_text_analysis.json отсутствует; findings_merge невозможен")
+                return _text_resume("02_text_analysis.json отсутствует; findings_merge невозможен")
         else:
             if has_blocks and not has_01_text:
                 return {
                     "stage": "text_analysis",
                     "stage_label": "Анализ текста",
-                    "detail": "01_text_analysis.json отсутствует; findings_merge невозможен",
+                    "detail": "02_text_analysis.json отсутствует; findings_merge невозможен",
                     "can_resume": True,
                 }
             if has_blocks and not has_02_blocks:
-                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+                return _block_resume("01_blocks_analysis.json отсутствует; findings_merge невозможен")
         return {
             "stage": "findings_merge",
             "stage_label": "Свод замечаний",
@@ -282,10 +288,10 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                             "can_resume": True,
                         }
                     if log_key == "text_analysis" and not has_01_text:
-                        return _text_resume("01_text_analysis.json не создан")
+                        return _text_resume("02_text_analysis.json не создан")
                     if log_key in ("block_analysis", "tile_audit") and not has_02:
                         return _block_resume(
-                            "02_blocks_analysis.json не создан",
+                            "01_blocks_analysis.json не создан",
                             legacy_tile=(log_key == "tile_audit"),
                         )
                     if log_key == "norm_verify":
@@ -359,7 +365,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
 
     def _need_text() -> Optional[dict]:
         if has_blocks and not has_01_text:
-            return _text_resume("01_text_analysis.json не создан")
+            return _text_resume("02_text_analysis.json не создан")
         return None
 
     def _need_blocks() -> Optional[dict]:
@@ -371,7 +377,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                     legacy_tile=has_tile_batches and not has_blocks,
                 )
             return _block_resume(
-                "02_blocks_analysis.json не создан",
+                "01_blocks_analysis.json не создан",
                 legacy_tile=has_tile_batches and not has_blocks,
             )
         return None

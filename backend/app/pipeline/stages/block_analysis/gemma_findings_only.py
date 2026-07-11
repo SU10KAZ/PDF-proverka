@@ -23,7 +23,7 @@ Per-block flow:
   → {"findings": [...]}
   → адаптируется под production block_analyses[] формат stage 03.
 
-Перезапись _output/02_blocks_analysis.json опциональна (write_target=True).
+Перезапись _output/01_blocks_analysis.json опциональна (write_target=True).
 """
 from __future__ import annotations
 
@@ -41,6 +41,10 @@ from typing import Any, Callable, Optional
 
 import httpx
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_META_KEY,
+)
 from backend.app.pipeline.stages.crop_blocks.block_markdown import ENRICHED_LINE_RE, extract_block_sections
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BASE_PROFILE,
@@ -1098,7 +1102,7 @@ async def run_findings_only_for_project(
     """Прогнать stage 02 findings-only для проекта.
 
     Возвращает dict:
-      {"output_doc": <02_blocks_analysis.json content>,
+      {"output_doc": <01_blocks_analysis.json content>,
        "summary": <metrics dict>,
        "plan": <per-block plan list>,
        "run_dir": Path | None}
@@ -1126,7 +1130,7 @@ async def run_findings_only_for_project(
     gemma_index_path = gemma_blocks_index_path(project_dir)
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
     graph_path = output_dir / "document_graph.json"
-    target_path = output_dir / "02_blocks_analysis.json"
+    target_path = output_dir / BLOCKS_ANALYSIS_FILENAME
 
     if not index_path.exists():
         raise FindingsOnlyError(f"no _output/{STAGE02_BLOCKS_DIRNAME}/index.json — сначала: blocks.py crop --output-dir {STAGE02_BLOCKS_DIRNAME}")
@@ -1458,7 +1462,7 @@ async def run_findings_only_for_project(
 
     cancelled = cancel_event is not None and cancel_event.is_set()
 
-    # Build production-format 02_blocks_analysis.json
+    # Build production-format 01_blocks_analysis.json
     finding_id_counter = [0]
     block_analyses = []
     for p in plan:
@@ -1545,7 +1549,7 @@ async def run_findings_only_for_project(
         "project_id": project_info.get("project_id", project_dir.name),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "stage02_mode": "findings_only_gemma_pair",
-        "stage02_meta": {
+        BLOCKS_META_KEY: {
             "model": model,
             "run_id": run_id,
             "detection_mode": detection_mode,

@@ -943,6 +943,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .finding-detector-badge--inline { display: inline-block; margin: 0 0 0 4px; }
 .finding-detector-badge--gpt { color: #166534; background: #dcfce7; border-color: #86efac; }
 .finding-detector-badge--codex { color: #1e40af; background: #dbeafe; border-color: #93c5fd; }
+.finding-detector-badge--claude { color: #7c2d12; background: #ffedd5; border-color: #fdba74; }
 .finding-detector-badge--both { color: #6b21a8; background: #f3e8ff; border-color: #d8b4fe; }
 .finding-blocks-count { font-size: 9px; font-weight: 700; background: var(--teal-light); color: var(--teal); border-radius: 3px; padding: 1px 4px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
 .finding-group-badge { font-size: 9px; font-weight: 700; background: #fef3c7; color: #d97706; border-radius: 3px; padding: 1px 5px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
@@ -1826,7 +1827,7 @@ th.cv2-sort-active {
 .pause-modal__option div { display: flex; flex-direction: column; gap: 2px; }
 .pause-modal__option strong { font-size: 13px; }
 .pause-modal__option span { font-size: 11px; opacity: 0.7; }
-.model-config-modal { max-width: 760px; padding: 16px 18px; }
+.model-config-modal { width: calc(100vw - 32px); max-width: 980px; padding: 16px 18px; }
 .model-config-modal h3 { font-size: 14px; margin-bottom: 4px; }
 .model-config-desc { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
 .pipeline-version-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -1837,12 +1838,13 @@ th.cv2-sort-active {
 .btn-pipeline-ver:last-child { border-radius: 0 4px 4px 0; border-left: none; }
 .btn-pipeline-ver.active { background: var(--teal, #15aabb); color: #fff; border-color: var(--teal, #15aabb); }
 .btn-pipeline-ver:not(.active):hover { background: var(--bg3); }
-.model-preset-buttons { display: flex; gap: 6px; margin-bottom: 6px; }
+.model-preset-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
 .model-preset-buttons .btn-preset { padding: 4px 10px; font-size: 11px; }
 .model-preset-hint { margin: 0 0 8px 0; font-size: 11px; color: var(--text3); line-height: 1.4; padding: 5px 8px; background: var(--card2-bg); border-radius: 6px; border-left: 3px solid var(--teal); }
 .model-config-error { margin: 0 0 8px 0; font-size: 11px; line-height: 1.4; padding: 6px 8px; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; }
-.model-config-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-.model-config-table th { padding: 4px 6px; font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); text-align: center; }
+.model-config-table-wrap { max-width: 100%; overflow-x: auto; margin-bottom: 10px; }
+.model-config-table { width: 100%; min-width: 820px; border-collapse: collapse; }
+.model-config-table th { padding: 4px 6px; font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0; border-bottom: 1px solid var(--border); text-align: center; }
 .model-config-stage-col { text-align: left !important; width: 110px; }
 .model-config-stage-name { font-size: 11px; font-weight: 600; color: var(--text); padding: 3px 6px; }
 .model-config-radio-cell { text-align: center; padding: 3px 6px; }

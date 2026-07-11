@@ -72,13 +72,13 @@ def v1_v2_with_artefacts(tmp_path, monkeypatch):
             {"id": "F-V1-001", "page": 4, "source_block_ids": ["block_v1_a"]},
         ],
     })
-    _write_json(pdir / "_output" / "02_blocks_analysis.json", {
+    _write_json(pdir / "_output" / "01_blocks_analysis.json", {
         "version_marker": "V1",
         "block_analyses": [
             {"block_id": "block_v1_a", "highlight_regions": [{"x": 1, "y": 1}]},
         ],
     })
-    _write_json(pdir / "_output" / "01_text_analysis.json", {
+    _write_json(pdir / "_output" / "02_text_analysis.json", {
         "version_marker": "V1",
         "project_params": {"src": "v1"},
         "text_findings": [{"id": "T-V1"}],
@@ -119,13 +119,13 @@ def v1_v2_with_artefacts(tmp_path, monkeypatch):
             {"id": "F-V2-001", "page": 5, "source_block_ids": ["block_v2_a"]},
         ],
     })
-    _write_json(v2_dir / "_output" / "02_blocks_analysis.json", {
+    _write_json(v2_dir / "_output" / "01_blocks_analysis.json", {
         "version_marker": "V2",
         "block_analyses": [
             {"block_id": "block_v2_a", "highlight_regions": [{"x": 9, "y": 9}]},
         ],
     })
-    _write_json(v2_dir / "_output" / "01_text_analysis.json", {
+    _write_json(v2_dir / "_output" / "02_text_analysis.json", {
         "version_marker": "V2",
         "project_params": {"src": "v2"},
         "text_findings": [{"id": "T-V2"}],
@@ -239,7 +239,7 @@ def test_attach_stage02_coverage_to_findings_uses_v2_via_bind(v1_v2_with_artefac
 
 def test_prompt_builder_reads_v2_text_analysis(v1_v2_with_artefacts):
     """prompt_builder._read_text_analysis_for_blocks должен под bind_version('v2')
-    вернуть содержимое V2 01_text_analysis.json."""
+    вернуть содержимое V2 02_text_analysis.json."""
     _projects_dir, _pdir, _v2 = v1_v2_with_artefacts
     from backend.app.services.common import version_service
     from backend.app.pipeline.stages.prepare.prompt_builder import (

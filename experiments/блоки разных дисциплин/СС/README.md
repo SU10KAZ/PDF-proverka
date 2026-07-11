@@ -26,6 +26,47 @@
 цветные paths и `page.get_drawings()`. Для блоков типа `polygon` к содержимому PDF
 применён исходный clipping path, пересчитанный из `polygon_points` result.json.
 
+Отдельные целевые структуры результата и гейты описаны в `STRUCTURAL_PROFILES.md`:
+`sov_structural_tower_pair`, `sov_structural_multitower` и `skud_structural_site`.
+
+Реализация находится в
+`backend/app/pipeline/stages/block_grounding/structural_access_geometry.py`.
+Воспроизведение всех трёх результатов:
+
+```bash
+python "experiments/блоки разных дисциплин/СС/run_structural_access.py"
+```
+
+Полные JSON и человекочитаемые Markdown сохраняются в `structural_out/`.
+
+## Корпус типов схем ALIA
+
+В корень этой папки извлечены 14 PDF с префиксом `ALIA —`: девять вариантов
+структурных схем и пять смежных графических грамматик (коммутация и компоновка
+шкафа, функциональная схема, внешние подключения, организация ниш).
+
+Это векторные crop-файлы исходных страниц, а не PNG: сохранены текстовый слой и
+CAD paths. Для блоков `polygon` применён настоящий clipping path; страницы с
+PDF-поворотом также сохраняют правильную ориентацию. Точные источники, страницы,
+типы формы и контрольные счётчики находятся в `ALIA_SCHEME_CORPUS.json`.
+
+Повторное извлечение:
+
+```bash
+python "experiments/блоки разных дисциплин/СС/extract_alia_scheme_corpus.py"
+```
+
+Для всех 14 PDF реализованы отдельные логические профили. Их контракты, метрики и
+границы доказательности описаны в `ALIA_SCHEME_PROFILES.md`. Построить все структуры:
+
+```bash
+python "experiments/блоки разных дисциплин/СС/run_alia_scheme_corpus.py"
+```
+
+Результаты находятся в `alia_scheme_out/`; полный корпус проходит 14/14 профильных
+гейтов. Реализация —
+`backend/app/pipeline/stages/block_grounding/alia_scheme_geometry.py`.
+
 ## Фиксация Вектографа АПС на корпусе
 
 Профиль проверен не только на пилоте, а на всех найденных локальных SS-блоках:

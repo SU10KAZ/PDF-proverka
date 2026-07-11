@@ -428,7 +428,7 @@ async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monk
         ),
         encoding="utf-8",
     )
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(
             {
                 "block_analyses": [

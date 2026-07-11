@@ -98,8 +98,8 @@ def test_v2_primary_output_artifacts_go_to_v2(monkeypatch, tmp_path):
     _doc, _vdir, output_dir = _resolve_via_manager(_job())
     # fake stage write
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "01_text_analysis.json").write_text("{}", encoding="utf-8")
-    assert (output_dir / "01_text_analysis.json").is_file()
+    (output_dir / "02_text_analysis.json").write_text("{}", encoding="utf-8")
+    assert (output_dir / "02_text_analysis.json").is_file()
     assert output_dir.resolve().is_relative_to(v2.resolve())
     # legacy отсутствует
     assert not (tmp_path / "projects").exists()

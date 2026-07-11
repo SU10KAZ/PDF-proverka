@@ -8,6 +8,10 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from backend.app.models.findings import FindingsResponse, FindingsSummary
 from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
@@ -1190,7 +1194,7 @@ def _load_blocks_data(project_id: str, version_id: Optional[str] = None) -> tupl
     block_info: dict[str, dict] = {}
 
     output_dir = _get_version_output_dir(project_id, version_id)
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     blocks_data = _load_json(blocks_path)
     if blocks_data:
         block_list = blocks_data.get("blocks") or blocks_data.get("block_analyses") or []

@@ -12,6 +12,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_META_KEY,
+    BLOCKS_META_KEY_LEGACY,
+    resolve_existing,
+)
+
 
 STAGE02_PROMPT_VERSION = "stage02-findings-v1"
 
@@ -176,7 +183,7 @@ def backfill_final_findings_provenance(
     incorrectly credit every detector that happened to inspect the block.
     """
     output_dir = Path(output_dir)
-    stage02_path = output_dir / "02_blocks_analysis.json"
+    stage02_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     findings_path = output_dir / findings_filename
     if not stage02_path.is_file() or not findings_path.is_file():
         return {"updated": 0, "reason": "artifact_missing"}
@@ -187,7 +194,7 @@ def backfill_final_findings_provenance(
     except (OSError, json.JSONDecodeError) as exc:
         return {"updated": 0, "reason": f"read_failed: {exc}"}
 
-    stage02_meta = stage02.get("stage02_meta") or {}
+    stage02_meta = stage02.get(BLOCKS_META_KEY) or stage02.get(BLOCKS_META_KEY_LEGACY) or {}
     legacy_model = str(stage02_meta.get("model") or "")
     legacy_run_id = str(stage02_meta.get("run_id") or stage02.get("timestamp") or "legacy-stage02")
     raw_index: dict[str, dict] = {}

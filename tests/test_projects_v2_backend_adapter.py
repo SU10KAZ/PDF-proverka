@@ -70,13 +70,13 @@ def _build(tmp_path) -> Path:
     # complete
     d = _mkdoc(v2, "AI", "doc-complete")
     _mkversion(d, "v001", analysis_status="complete",
-               latest=["01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json",
+               latest=["02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json",
                        "03a_norms_verified.json"],
                findings=[{"severity": "Критическое"}, {"severity": "Рекомендательное"}])
     # partial
     d = _mkdoc(v2, "AI", "doc-partial")
     _mkversion(d, "v001", analysis_status="partial",
-               latest=["01_text_analysis.json", "03_findings.json"],
+               latest=["02_text_analysis.json", "03_findings.json"],
                findings=[{"severity": "Критическое"}])
     # none
     d = _mkdoc(v2, "OV", "doc-none")
@@ -90,7 +90,7 @@ def _build(tmp_path) -> Path:
     # legacy_partial (legacy preserve, pipeline_log in latest)
     d = _mkdoc(v2, "EOM", "doc-legacy", migration_kind="legacy_findings_preserve")
     _mkversion(d, "v001", analysis_status="legacy_partial",
-               latest=["01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json"],
+               latest=["02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json"],
                pipeline_log_in="latest", migration_kind="legacy_findings_preserve",
                preserve_reason="king_sons_legacy_findings_preserve",
                findings=[{"severity": "Экономическое"}] * 3)
@@ -101,7 +101,7 @@ def _build(tmp_path) -> Path:
     _mkversion(d, "v001", analysis_status="partial", latest=["03_findings.json"],
                pipeline_log_in=None, findings=[{"severity": "x"}] * 5)
     _mkversion(d, "v002", analysis_status="complete",
-               latest=["01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json"],
+               latest=["02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json"],
                findings=[{"severity": "x"}] * 9)
     return v2
 

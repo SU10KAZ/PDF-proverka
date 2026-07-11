@@ -313,7 +313,7 @@ def _load_findings_for_critic(path: Path) -> tuple[list[dict], list[str]]:
 
 
 def _load_blocks_index(blocks_path: Optional[Path]) -> Optional[set]:
-    """Load block_ids set from 02_blocks_analysis.json. Returns None if not provided."""
+    """Load block_ids set from 01_blocks_analysis.json. Returns None if not provided."""
     if blocks_path is None or not blocks_path.exists():
         return None
     try:
@@ -590,7 +590,7 @@ Examples:
     parser.add_argument(
         "--blocks-index", type=Path, dest="blocks_index",
         help=(
-            "Path to 02_blocks_analysis.json for phantom block detection. "
+            "Path to 01_blocks_analysis.json for phantom block detection. "
             "When provided, enables verification of evidence block_ids. "
             "Without it, refs are treated as weak/partial evidence."
         ),

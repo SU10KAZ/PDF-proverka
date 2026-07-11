@@ -152,8 +152,8 @@ def load_findings_for_project(project_dir: Path) -> list[dict]:
 
 
 def load_blocks_index(project_dir: Path) -> Optional[set[str]]:
-    """Extract block_ids from 02_blocks_analysis.json if present."""
-    path = project_dir / "_output" / "02_blocks_analysis.json"
+    """Extract block_ids from 01_blocks_analysis.json if present."""
+    path = project_dir / "_output" / "01_blocks_analysis.json"
     if not path.exists():
         return None
     try:
@@ -1580,7 +1580,7 @@ Examples:
     )
     parser.add_argument(
         "--with-blocks", action="store_true",
-        help="Load 02_blocks_analysis.json per project for phantom block detection.",
+        help="Load 01_blocks_analysis.json per project for phantom block detection.",
     )
     parser.add_argument(
         "--llm-gate", action="store_true",
@@ -1618,7 +1618,7 @@ Examples:
         "--context-enrichment", action="store_true",
         help=(
             "Enable offline context enrichment before LLM gate. "
-            "Loads document_graph.json and 02_blocks_analysis.json for each project "
+            "Loads document_graph.json and 01_blocks_analysis.json for each project "
             "to provide LLM with neighbor blocks, common notes, cross-references. "
             "Requires --llm-gate. Does NOT modify production artifacts."
         ),

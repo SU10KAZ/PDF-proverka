@@ -25,8 +25,8 @@ projects/<КОД>/<имя>/
   _output/
     blocks/               ← кропнутые image-блоки (PNG) + index.json
     document_graph.json   ← структура страниц (knowledge graph)
-    01_text_analysis.json
-    02_blocks_analysis.json
+    02_text_analysis.json
+    01_blocks_analysis.json
     03_findings.json              ← МАСТЕР замечаний
     03_findings_review.json       ← вердикты critic
     norm_checks.json              ← верификация норм
@@ -121,8 +121,8 @@ python scripts/ci_regression_gate.py --record   # пересоздать baselin
 
 ```
 [00] Подготовка                  → document_graph.json
-[01] Анализ текста (MD)          → 01_text_analysis.json
-[02] Кропинг + анализ блоков     → 02_blocks_analysis.json
+[01] Анализ текста (MD)          → 02_text_analysis.json
+[02] Кропинг + анализ блоков     → 01_blocks_analysis.json
 [03] Свод замечаний (T+G→F)      → 03_findings.json
 [03b] Critic → Corrector (cond.) → 03_findings_review.json
 [04] Верификация норм            → norm_checks.json
@@ -135,8 +135,8 @@ python scripts/ci_regression_gate.py --record   # пересоздать baselin
 | Вопрос | Источник |
 |--------|----------|
 | Замечание по ID/категории | `03_findings.json` |
-| Что видели на чертеже | `02_blocks_analysis.json` |
-| Нормативные ссылки | `01_text_analysis.json` → `normative_refs_found` |
+| Что видели на чертеже | `01_blocks_analysis.json` |
+| Нормативные ссылки | `02_text_analysis.json` → `normative_refs_found` |
 | Структура документа, текст/блоки по страницам | `document_graph.json` |
 | Вердикты проверки замечаний | `03_findings_review.json` |
 | Статус нормативных документов | `norm_checks.json` |

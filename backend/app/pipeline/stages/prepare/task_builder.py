@@ -9,6 +9,10 @@ Dual-language templates:
 """
 import hashlib
 import json
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_FOR_TEXT_FILENAME,
+    resolve_existing,
+)
 import logging
 import os
 import re
@@ -517,7 +521,7 @@ def prepare_text_analysis_task(
 
     # Компактный view анализа блоков (порядок block→text). Файла может не быть (порядок
     # text→block или standalone-прогон) — тогда шаблон работает без блочного контекста.
-    blocks_analysis_path = str(Path(output_path) / "02_blocks_for_text.json")
+    blocks_analysis_path = str(resolve_existing(Path(output_path), BLOCKS_FOR_TEXT_FILENAME))
 
     task = (
         template
@@ -581,7 +585,7 @@ def build_text_analysis_prompt(
         .replace("{PROJECT_ID}", project_id)
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
-        .replace("{BLOCKS_ANALYSIS_PATH}", str(Path(output_path) / "02_blocks_for_text.json"))
+        .replace("{BLOCKS_ANALYSIS_PATH}", str(resolve_existing(Path(output_path), BLOCKS_FOR_TEXT_FILENAME)))
         .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
     try:

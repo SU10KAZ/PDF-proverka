@@ -29,6 +29,12 @@ from backend.app.core.config import (
     STAGE02_DUAL_MODEL_ID,
     get_stage_model,
 )
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_META_KEY,
+    BLOCKS_META_KEY_LEGACY,
+    resolve_existing,
+)
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.project_service import resolve_project_dir
 
@@ -224,7 +230,7 @@ def attach_stage02_coverage_to_findings(
             except (version_service.VersionNotFoundError, FileNotFoundError):
                 output_dir = resolve_project_dir(project_id) / "_output"
     findings_path = output_dir / "03_findings.json"
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
     block_summary_path = output_dir / "block_analysis_summary.json"
 
@@ -256,7 +262,7 @@ def attach_stage02_coverage_to_findings(
         return {}
 
     data02 = _load(blocks_path)
-    meta02 = data02.get("stage02_meta") or data02.get("meta") or {}
+    meta02 = data02.get(BLOCKS_META_KEY) or data02.get(BLOCKS_META_KEY_LEGACY) or data02.get("meta") or {}
     block_analyses = data02.get("block_analyses") or []
 
     gemma_summary = _load(gemma_summary_path)
@@ -497,7 +503,7 @@ async def run_block_analysis_findings_only(
 
     Single-block: GPT-5.4, Codex или их независимый двойной проход +
     gemma-enrichment + extended categories на каждый блок.
-    Пишет финальный _output/02_blocks_analysis.json напрямую.
+    Пишет финальный _output/01_blocks_analysis.json напрямую.
     Поддерживает cancel через cancel_event и progress через ctx.progress_sync.
 
     Не управляет:

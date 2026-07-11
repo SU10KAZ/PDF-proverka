@@ -26,7 +26,21 @@
           "additionalProperties": false
         },
         "estimated_savings_pct": { "type": "number", "minimum": 0 },
-        "top3_summary": { "type": "string" }
+        "top3_summary": { "type": "string" },
+        "ensemble": {
+          "type": "object",
+          "properties": {
+            "mode": { "type": "string" },
+            "status": { "type": "string", "enum": ["ok", "degraded"] },
+            "run_id": { "type": "string" },
+            "source_counts": {
+              "type": "object",
+              "additionalProperties": { "type": "integer", "minimum": 0 }
+            },
+            "duplicates_merged": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": false
     },
@@ -66,7 +80,41 @@
           "timeline_impact": { "type": "string" },
           "risks": { "type": "string" },
           "status": { "type": "string" },
-          "norm": { "type": "string" }
+          "norm": { "type": "string" },
+          "detector_summary": {
+            "type": "string",
+            "enum": ["claude", "codex", "claude_codex"]
+          },
+          "provenance": {
+            "type": "object",
+            "required": ["found_by", "detector_summary", "detections"],
+            "properties": {
+              "found_by": {
+                "type": "array",
+                "items": { "type": "string", "enum": ["claude", "codex"] },
+                "uniqueItems": true
+              },
+              "detector_summary": {
+                "type": "string",
+                "enum": ["claude", "codex", "claude_codex"]
+              },
+              "detections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["provider", "model", "raw_optimization_id", "run_id"],
+                  "properties": {
+                    "provider": { "type": "string", "enum": ["claude", "codex"] },
+                    "model": { "type": "string" },
+                    "raw_optimization_id": { "type": "string" },
+                    "run_id": { "type": "string" }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
         },
         "additionalProperties": false
       }

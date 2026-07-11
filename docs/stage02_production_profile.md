@@ -25,7 +25,7 @@ Markdown PDF representation
 | Gemma base crops | `_output/blocks_gemma_100/`, 100 DPI, `min_long_side=800` |
 | Gemma high-detail crops | `_output/blocks_gemma_300/`, 300 DPI, only for selected safe candidates |
 | Stage 02 crops | `_output/blocks_stage02_100/`, 100 DPI, `min_long_side=800` |
-| Required before Stage 02 | Markdown, valid `gemma_enrichment_summary.json`, `01_text_analysis.json` |
+| Required before Stage 02 | Markdown, valid `gemma_enrichment_summary.json`, `02_text_analysis.json` |
 
 ## Validation Rules
 
@@ -35,7 +35,7 @@ Markdown PDF representation
 - Missing Gemma enrichment must become
   `coverage_status = "missing_gemma_enrichment"`, never “замечаний нет”.
 - Partial Gemma coverage is allowed only when it is explicitly reflected in
-  `gemma_enrichment_summary.json`, `02_blocks_analysis.json` and final coverage
+  `gemma_enrichment_summary.json`, `01_blocks_analysis.json` and final coverage
   sections.
 - Stage 02 image input comes from `_output/blocks_stage02_100/`; it must not
   read, overwrite or validate against generic `_output/blocks/`.

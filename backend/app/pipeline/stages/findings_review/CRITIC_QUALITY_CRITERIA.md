@@ -71,7 +71,7 @@ Critic проверяет каждое замечание в **два слоя**
 ### 3. Битые block_id (phantom blocks)
 
 Признаки:
-- block_id из `evidence` не существует в `02_blocks_analysis.json`
+- block_id из `evidence` не существует в `01_blocks_analysis.json`
 
 Если есть валидные block_id — `narrow_evidence`.
 Если все block_id битые — `phantom_block` + `remove`.

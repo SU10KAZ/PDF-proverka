@@ -5,7 +5,7 @@ patterns that are common blind spots for LLM-only text analysis, and it never
 tries to replace engineering judgement. Its output is used in two ways:
 
 * prompt hints before the LLM run;
-* optional post-processing of ``01_text_analysis.json`` to add missed
+* optional post-processing of ``02_text_analysis.json`` to add missed
   high-confidence text findings and backfill text-block evidence.
 """
 from __future__ import annotations

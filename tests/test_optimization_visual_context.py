@@ -19,7 +19,7 @@ def _write_block_fixture(tmp_path, records):
     (image_dir / "index.json").write_text(
         json.dumps({"blocks": index_blocks}), encoding="utf-8"
     )
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps({"block_analyses": records}), encoding="utf-8"
     )
 

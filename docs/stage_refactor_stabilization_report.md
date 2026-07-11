@@ -101,8 +101,8 @@ stages/
 
 | Файл | Статус | Детали |
 |------|--------|--------|
-| `01_text_analysis.json` | OK | keys: stage, text_source, text_findings, normative_refs_found |
-| `02_blocks_analysis.json` | OK | block_analyses: 49 |
+| `02_text_analysis.json` | OK | keys: stage, text_source, text_findings, normative_refs_found |
+| `01_blocks_analysis.json` | OK | block_analyses: 49 |
 | `03_findings.json` | OK | findings: 15 |
 | `03_findings_review.json` | OK | reviews: 15 |
 | `norm_checks.json` | OK | checks: 10 |

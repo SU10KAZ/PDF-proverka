@@ -47,8 +47,8 @@ def make_legacy_plain(disc_dir: Path, base: str, *, with_output: bool = True) ->
     _write(proj / "project_info.json", json.dumps({"project_id": base, "section": disc_dir.name}))
     if with_output:
         out = proj / "_output"
-        _write(out / "01_text_analysis.json", json.dumps({"t": base}))
-        _write(out / "02_blocks_analysis.json", json.dumps({"b": base}))
+        _write(out / "02_text_analysis.json", json.dumps({"t": base}))
+        _write(out / "01_blocks_analysis.json", json.dumps({"b": base}))
         _write(out / "03_findings.json", json.dumps({"findings": [base]}))
         _write(out / "03_findings_review.json", json.dumps({"verdicts": []}))
         _write(out / "pipeline_log.json", json.dumps({"stages": []}))
@@ -72,8 +72,8 @@ def make_legacy_container(disc_dir: Path, base: str) -> Path:
         _write(vdir / f"{base} ({tag})_result.json", json.dumps({"v": tag}))
         _write(vdir / "project_info.json", json.dumps({"project_id": base}))
         _write(vdir / "_output" / "03_findings.json", json.dumps({"v": tag}))
-        _write(vdir / "_output" / "01_text_analysis.json", json.dumps({"v": tag}))
-        _write(vdir / "_output" / "02_blocks_analysis.json", json.dumps({"v": tag}))
+        _write(vdir / "_output" / "02_text_analysis.json", json.dumps({"v": tag}))
+        _write(vdir / "_output" / "01_blocks_analysis.json", json.dumps({"v": tag}))
     _write(container / "version_group.json", json.dumps({
         "schema_version": 1,
         "logical_project_id": base,

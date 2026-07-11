@@ -176,8 +176,8 @@ def optimization_review_info(version_dir: Path) -> tuple[str, int]:
 
 def required_baseline_files(latest_dir: Path) -> list[Path]:
     return [
-        latest_dir / "01_text_analysis.json",
-        latest_dir / "02_blocks_analysis.json",
+        latest_dir / "02_text_analysis.json",
+        latest_dir / "01_blocks_analysis.json",
         latest_dir / "03_findings.json",
         latest_dir / "optimization.json",
     ]
@@ -496,7 +496,7 @@ def prepare_isolated_layout(
     copy_file(project_info_src, version_dir / "01_input" / "project_info.json")
     copy_file(document_md_src, version_dir / "02_work" / "document.md")
 
-    for name in ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json"):
+    for name in ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json"):
         copy_file(candidate.latest_dir / name, output_dir / name)
         copy_file(candidate.latest_dir / name, input_dir / name)
     if (candidate.latest_dir / "document_graph.json").is_file():

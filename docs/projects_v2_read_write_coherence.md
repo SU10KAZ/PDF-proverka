@@ -12,7 +12,7 @@
 | `v2_version_files` | `versions/<vid>/01_input/**` only | `{project_id, version_id, file_count, files, storage_backend, canary}` | Fixed on fix: public listing now follows `01_input` originals; `02_work` remains internal canonical source. |
 | `v2_findings` | priority latest/runs: `03a_norms_verified.json`, `03_findings.json`, `03_findings_pre_merge.json` | top-level findings list/count/severity | OK: analysis artifacts write latest + run when `run_id` exists. |
 | `v2_finding_by_id` | same findings source as `v2_findings` | finding fields at top level + `storage_backend/canary` | OK. |
-| `v2_blocks_analysis` | `03_analysis/latest/02_blocks_analysis.json`, fallback runs; `blocks/index.json` and batches where available | legacy block-analysis summary + canary fields | OK for JSON artifact; blocks image/index bridge fixed below. |
+| `v2_blocks_analysis` | `03_analysis/latest/01_blocks_analysis.json`, fallback runs; `blocks/index.json` and batches where available | legacy block-analysis summary + canary fields | OK for JSON artifact; blocks image/index bridge fixed below. |
 | `v2_blocks` | `03_analysis/latest/blocks/index.json`, fallback newest `runs/*/blocks/index.json` | `{project_id, document_code, version_id, total_blocks, pages, ...}` | Fixed on fix: v2 crop writes read-compatible `blocks/` alias next to `blocks_gemma_100`. |
 | `v2_block_image` | same `blocks/` directory; `file` from index or `block_<id>.png` | `FileResponse` | Fixed by the same `blocks/` alias. |
 | `v2_block_map` | findings helpers + `02_blocks_analysis`, `blocks/index.json`, document graph, OCR index | `{block_map, block_info, text_evidence, storage_backend, canary}` | OK after blocks alias; document graph remains in latest/runs artifact path. |
@@ -28,7 +28,7 @@
 | Project metadata | `versions/<vid>/01_input/project_info.json`, `version.json.project_info` | source resolver, status/details, audit start gates. |
 | Version/document scaffold | `document.json`, `current_version.txt`, `versions/<vid>/version.json`, standard subdirs | projects list/details/versions. |
 | Findings | `03_analysis/latest/03_findings.json` and `03_analysis/runs/<run>/03_findings.json` | `v2_findings`, `v2_finding_by_id`; latest has priority, per-file runs fallback covers partial latest. |
-| Blocks analysis | `03_analysis/latest/02_blocks_analysis.json` and runs fallback | `v2_blocks_analysis`, block map. |
+| Blocks analysis | `03_analysis/latest/01_blocks_analysis.json` and runs fallback | `v2_blocks_analysis`, block map. |
 | Document graph | `03_analysis/latest/document_graph.json` and runs fallback | `v2_block_map`, document page helpers. |
 | Optimization | `03_analysis/latest/optimization.json` and runs fallback | optimization/status/export readers. |
 | Crop images/index | producer: `03_analysis/{latest|runs}/blocks_gemma_100`; compatibility alias: `03_analysis/{latest|runs}/blocks` | `v2_blocks`, `v2_block_image`, block map. |
@@ -38,7 +38,7 @@
 
 1. `v2_version_files` is a read-canary-owned public contract: show original `01_input` names. Fix branch aligned `version_service._source_file_records()` and stale tests to this shape. Internal audit source remains `02_work` via `resolve_version_source_files()`.
 2. `blocks/` is a deploy read-canary path contract. Fix branch did not change deploy code; instead it now materializes a v2-only `blocks/` alias after Gemma crop success/partial success/recrop and manager direct crop paths. Legacy `_output` is not modified by the helper.
-3. latest→runs fallback is coherent for per-file artifacts: tests remove latest `02_blocks_analysis.json` and verify the read-contract helper sees `runs/<run>/02_blocks_analysis.json`.
+3. latest→runs fallback is coherent for per-file artifacts: tests remove latest `01_blocks_analysis.json` and verify the read-contract helper sees `runs/<run>/01_blocks_analysis.json`.
 4. Destructive clean under v2-primary is coherent with read: backup + confirmation are required, `03_analysis` is removed, `latest` is recreated empty, and read-contract helpers return no findings/blocks while `01_input` survives.
 
 ## Tests

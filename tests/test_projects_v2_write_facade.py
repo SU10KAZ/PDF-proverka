@@ -149,14 +149,14 @@ def test_save_analysis_artifact_writes_latest_and_run(monkeypatch, tmp_path, tar
     monkeypatch.setenv(ENV, WRITE_MODE_DUAL_SHADOW)
     facade = StorageWriteFacade(v2_root=tmp_path)
     res = facade.save_analysis_artifact(
-        target, "02_blocks_analysis.json", {"blocks": []},
+        target, "01_blocks_analysis.json", {"blocks": []},
         run_id="run_20260616", legacy_write=lambda: None,
     )
     assert res.v2_ok is True
-    assert _latest(tmp_path, target, "02_blocks_analysis.json").exists()
+    assert _latest(tmp_path, target, "01_blocks_analysis.json").exists()
     run = (tmp_path / "objects" / target.object_folder / "disciplines" / target.discipline
            / "documents" / target.document_code / "versions" / "v001"
-           / "03_analysis" / "runs" / "run_20260616" / "02_blocks_analysis.json")
+           / "03_analysis" / "runs" / "run_20260616" / "01_blocks_analysis.json")
     assert run.exists()
 
 

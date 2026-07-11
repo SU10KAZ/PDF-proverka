@@ -51,7 +51,7 @@ def _matched_doc(v2, legacy, migs, disc, code, *, status, findings):
     # для complete пишем 01/02/03 в ОБЕ стороны, чтобы legacy-derived статус
     # совпал с v2 (иначе legacy=partial vs v2=complete → ложный mismatch)
     if status == "complete":
-        for n in ("01_text_analysis.json", "02_blocks_analysis.json"):
+        for n in ("02_text_analysis.json", "01_blocks_analysis.json"):
             _wj(latest / n, {"x": 1})
             _wj(out / n, {"x": 1})
     if findings is not None:

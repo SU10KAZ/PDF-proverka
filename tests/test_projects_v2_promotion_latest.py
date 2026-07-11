@@ -79,13 +79,13 @@ def test_v2_promote_per_stage(monkeypatch, tmp_path):
     job = _job()
     _doc_dir, version_dir, output_dir = manager._resolve_job_paths(job)
     payload = {"stage": "text"}
-    _write_json(output_dir / "01_text_analysis.json", payload)
+    _write_json(output_dir / "02_text_analysis.json", payload)
 
-    results = manager._promote_v2_analysis_artifacts(job, ("01_text_analysis.json",))
+    results = manager._promote_v2_analysis_artifacts(job, ("02_text_analysis.json",))
 
-    assert set(results) == {"01_text_analysis.json"}
-    latest = version_dir / "03_analysis" / "latest" / "01_text_analysis.json"
-    run_file = version_dir / "03_analysis" / "runs" / job.job_id / "01_text_analysis.json"
+    assert set(results) == {"02_text_analysis.json"}
+    latest = version_dir / "03_analysis" / "latest" / "02_text_analysis.json"
+    run_file = version_dir / "03_analysis" / "runs" / job.job_id / "02_text_analysis.json"
     assert json.loads(latest.read_text(encoding="utf-8")) == payload
     assert json.loads(run_file.read_text(encoding="utf-8")) == payload
     assert latest.read_bytes() == run_file.read_bytes()
@@ -128,7 +128,7 @@ def test_v2_promotion_noop_legacy(monkeypatch, tmp_path):
     monkeypatch.setenv(_V2DIR, str(tmp_path / "projects_v2"))
 
     manager = _manager()
-    assert manager._promote_v2_analysis_artifacts(_job(), ("01_text_analysis.json",)) == {}
+    assert manager._promote_v2_analysis_artifacts(_job(), ("02_text_analysis.json",)) == {}
     assert not (tmp_path / "projects_v2").exists()
 
 
@@ -138,8 +138,8 @@ def test_v2_adapter_fallback_read_from_runs_when_latest_empty(tmp_path):
     v2 = tmp_path / "projects_v2"
     doc = _make_v2_doc(v2)
     run_dir = doc / "versions" / "v001" / "03_analysis" / "runs" / "job_b2_run"
-    _write_json(run_dir / "01_text_analysis.json", {"source": "run"})
-    _write_json(run_dir / "02_blocks_analysis.json", {"blocks": [1]})
+    _write_json(run_dir / "02_text_analysis.json", {"source": "run"})
+    _write_json(run_dir / "01_blocks_analysis.json", {"blocks": [1]})
     _write_json(run_dir / "03_findings.json", {"findings": [{"severity": "high"}]})
     _write_json(run_dir / "pipeline_log.json", {"stages": {"done": True}})
 
@@ -162,9 +162,9 @@ def test_v2_adapter_falls_back_per_file_when_latest_partial(tmp_path):
     doc = _make_v2_doc(v2)
     latest = doc / "versions" / "v001" / "03_analysis" / "latest"
     run_dir = doc / "versions" / "v001" / "03_analysis" / "runs" / "job_b2_run"
-    _write_json(latest / "01_text_analysis.json", {"source": "latest"})
-    _write_json(run_dir / "01_text_analysis.json", {"source": "run"})
-    _write_json(run_dir / "02_blocks_analysis.json", {"blocks": [1]})
+    _write_json(latest / "02_text_analysis.json", {"source": "latest"})
+    _write_json(run_dir / "02_text_analysis.json", {"source": "run"})
+    _write_json(run_dir / "01_blocks_analysis.json", {"blocks": [1]})
     _write_json(run_dir / "03_findings.json", {"findings": [{"severity": "high"}]})
 
     adapter = ProjectsV2Adapter(v2)
@@ -173,9 +173,11 @@ def test_v2_adapter_falls_back_per_file_when_latest_partial(tmp_path):
     assert adapter.read_text_analysis(doc, "v001") == {"source": "latest"}
     assert adapter.read_blocks_analysis(doc, "v001") == {"blocks": [1]}
     assert adapter.read_findings(doc, "v001") == {"findings": [{"severity": "high"}]}
+    # present отсортирован лексикографически: после свапа префиксов
+    # 01_blocks_analysis идёт раньше 02_text_analysis.
     assert analysis["present"] == [
-        "01_text_analysis.json",
-        "02_blocks_analysis.json",
+        "01_blocks_analysis.json",
+        "02_text_analysis.json",
         "03_findings.json",
     ]
     assert analysis["has_01_text_analysis"] is True

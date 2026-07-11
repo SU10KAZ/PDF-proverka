@@ -31,8 +31,8 @@ def _mk(proj: Path, base: str, *, ocr=True, analysis=False, project_info=True):
         (proj / "project_info.json").write_text("{}", encoding="utf-8")
     out = proj / "_output"; out.mkdir()
     if analysis:
-        (out / "01_text_analysis.json").write_text("{}", encoding="utf-8")
-        (out / "02_blocks_analysis.json").write_text("{}", encoding="utf-8")
+        (out / "02_text_analysis.json").write_text("{}", encoding="utf-8")
+        (out / "01_blocks_analysis.json").write_text("{}", encoding="utf-8")
         (out / "03_findings.json").write_text("{}", encoding="utf-8")
 
 

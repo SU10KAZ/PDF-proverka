@@ -703,7 +703,7 @@ def _classify_blocks_analysis(project_id, blocks_analysis, index_data,
     Чистая функция (без ФС). Пустые источники → {blocks:{}, counts: нули,
     total_analyzed:0} — фронтенд делает Object.entries(data.blocks), пустой dict
     не падает. legacy-only fallback'и (block_batch_*.json / typed_facts) тут не
-    нужны: v2 всегда имеет 02_blocks_analysis.json.
+    нужны: v2 всегда имеет 01_blocks_analysis.json.
     """
     try:
         from backend.app.api.routers.blocks import _normalize_block_info
@@ -1003,7 +1003,7 @@ def v2_blocks_analysis(request, project_id: str) -> dict:
 
     Frontend делает Object.entries(data.blocks) и читает an.status /
     an.parent_block_id — поэтому нужен КЛАССИФИЦИРОВАННЫЙ dict `blocks`
-    (как legacy get_blocks_analysis), а не сырой 02_blocks_analysis.json.
+    (как legacy get_blocks_analysis), а не сырой 01_blocks_analysis.json.
     Источники классификации (02 + block_batches + 03_findings + blocks index)
     читаются из адаптера. Нет данных → blocks:{}, counts: нули (не падает).
     """

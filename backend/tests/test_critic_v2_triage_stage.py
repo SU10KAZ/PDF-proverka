@@ -5,7 +5,7 @@ Tests for the new `critic_v2_triage` post-processing stage runner.
     * Runner НЕ модифицирует 03_findings.json / 03_findings_review.json /
       expert_review.json / production artifacts.
     * Runner пишет ТОЛЬКО в <project>/_output/<output_subdir>/.
-    * Runner gracefully работает без 02_blocks_analysis.json и без
+    * Runner gracefully работает без 01_blocks_analysis.json и без
       document_graph.json.
     * Runner не запускает LLM ни при каких условиях в этой версии.
     * Default config flag CRITIC_V2_ENABLED=False — production pipeline
@@ -94,7 +94,7 @@ def project_dir(tmp_path: Path) -> Path:
         json.dumps({"findings": _SAMPLE_FINDINGS}, ensure_ascii=False),
         encoding="utf-8",
     )
-    (out / "02_blocks_analysis.json").write_text(
+    (out / "01_blocks_analysis.json").write_text(
         json.dumps(_SAMPLE_BLOCKS, ensure_ascii=False),
         encoding="utf-8",
     )
@@ -121,7 +121,7 @@ def test_runner_creates_all_artifacts(project_dir: Path):
 
 def test_runner_does_not_modify_production_artifacts(project_dir: Path):
     findings_path = project_dir / "_output" / "03_findings.json"
-    blocks_path = project_dir / "_output" / "02_blocks_analysis.json"
+    blocks_path = project_dir / "_output" / "01_blocks_analysis.json"
     before_f = findings_path.stat().st_mtime_ns
     before_b = blocks_path.stat().st_mtime_ns
     before_content_f = findings_path.read_bytes()
@@ -160,7 +160,7 @@ def test_runner_writes_only_in_output_subdir(project_dir: Path):
 
 
 def test_runner_works_without_blocks_analysis(tmp_path: Path):
-    """02_blocks_analysis.json отсутствует → должно работать (без evidence_quality boost)."""
+    """01_blocks_analysis.json отсутствует → должно работать (без evidence_quality boost)."""
     p = tmp_path / "no-blocks-project"
     (p / "_output").mkdir(parents=True)
     (p / "_output" / "03_findings.json").write_text(

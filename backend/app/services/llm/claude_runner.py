@@ -32,6 +32,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Callable, Awaitable, Sequence, Union
 
+from backend.app.services.storage.stage_artifacts import (
+    TEXT_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_STAGE,
+)
+
 from backend.app.core.config import (
     CLAUDE_CLI,
     get_claude_cli,
@@ -541,7 +546,7 @@ async def run_text_analysis(
     version_dir: str | Path | None = None,
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
-    """Запустить анализ текста MD-файла -> 01_text_analysis.json (динамический выбор провайдера)."""
+    """Запустить анализ текста MD-файла -> 02_text_analysis.json (динамический выбор провайдера)."""
     model = get_stage_model("text_analysis")
 
     if is_codex_model(model):
@@ -555,8 +560,8 @@ async def run_text_analysis(
         return await _run_codex_json_stage(
             stage="text_analysis", messages=messages, model=model,
             timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
-            on_output=on_output, output_filename="01_text_analysis.json",
-            audit_stage="01_text_analysis", output_dir=output_dir,
+            on_output=on_output, output_filename=TEXT_ANALYSIS_FILENAME,
+            audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
         )
 
     if is_claude_stage("text_analysis"):
@@ -573,7 +578,7 @@ async def run_text_analysis(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
         ):
-            _save_audit_trail(project_id, "01_text_analysis", model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
+            _save_audit_trail(project_id, TEXT_ANALYSIS_STAGE, model, cli_result.input_tokens, cli_result.output_tokens, cli_result.duration_ms, cli_result.result_text)
         return exit_code, combined, cli_result
 
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
@@ -588,7 +593,7 @@ async def run_text_analysis(
     result = await llm_runner.run_llm(stage="text_analysis", messages=messages, timeout=1800)
 
     if result.json_data and not result.is_error:
-        output_path = resolved_output_dir / "01_text_analysis.json"
+        output_path = resolved_output_dir / TEXT_ANALYSIS_FILENAME
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(
             json.dumps(result.json_data, ensure_ascii=False, indent=2), encoding="utf-8",
@@ -602,7 +607,7 @@ async def run_text_analysis(
         project_id=project_id, version_id=version_id,
     ):
         _save_audit_trail(
-            project_id, "01_text_analysis", result.model,
+            project_id, TEXT_ANALYSIS_STAGE, result.model,
             result.input_tokens, result.output_tokens,
             result.duration_ms, _build_llm_audit_payload(result),
         )
@@ -943,9 +948,11 @@ async def run_optimization(
     output_dir: str | Path | None = None,
     version_dir: str | Path | None = None,
     version_id: str | None = None,
+    model_override: str | None = None,
+    visual_output_dir: str | Path | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
-    model = get_stage_model("optimization")
+    model = model_override or get_stage_model("optimization")
 
     if is_codex_model(model):
         from backend.app.pipeline.stages.optimization.visual_context import (
@@ -961,7 +968,10 @@ async def run_optimization(
         image_paths: list[Path] = []
         visual_prompt = ""
         if _codex_optimization_images_enabled():
-            resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+            resolved_output_dir = _resolve_output_dir(
+                project_id,
+                output_dir=visual_output_dir if visual_output_dir is not None else output_dir,
+            )
             visual_context = collect_optimization_visual_context(
                 resolved_output_dir,
                 discipline=str((project_info or {}).get("section") or ""),
@@ -995,7 +1005,7 @@ async def run_optimization(
 
         return exit_code, combined, cli_result
 
-    if is_claude_stage("optimization"):
+    if model.startswith("claude-"):
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
@@ -1081,7 +1091,7 @@ async def run_block_batch(
         )
 
         _save_audit_trail(
-            project_id, f"02_block_batch_{batch_id:03d}", model,
+            project_id, f"01_block_batch_{batch_id:03d}", model,
             0, 0, cli_result.duration_ms, cli_result.result_text,
             output_dir=output_dir,
         )
@@ -1110,7 +1120,7 @@ async def run_block_batch(
             )
 
         _save_audit_trail(
-            project_id, f"02_block_batch_{batch_id:03d}", gd_result.model_id,
+            project_id, f"01_block_batch_{batch_id:03d}", gd_result.model_id,
             gd_result.prompt_tokens, gd_result.output_tokens,
             gd_result.duration_ms, gd_result.parsed_data,
         )
@@ -1158,7 +1168,7 @@ async def run_block_batch(
     await _send_status_llm(on_output, result)
 
     _save_audit_trail(
-        project_id, f"02_block_batch_{batch_id:03d}", result.model,
+        project_id, f"01_block_batch_{batch_id:03d}", result.model,
         result.input_tokens, result.output_tokens,
         result.duration_ms, result.json_data,
         output_dir=output_dir,

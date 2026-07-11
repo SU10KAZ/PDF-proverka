@@ -104,7 +104,7 @@ pair/gemini-2.5-flash+gemini-3.1-pro
 После сохранения обычный запуск аудита использует этот профиль только для
 этапа `02 Блоки`: стандартная multi-block упаковка пропускается, запускается
 Flash -> Pro triage, затем pipeline продолжает следующие этапы от
-`_output/02_blocks_analysis.json`.
+`_output/01_blocks_analysis.json`.
 
 Также оставлен отдельный служебный endpoint для ручного stage-02 запуска:
 
@@ -118,7 +118,7 @@ Direct Gemini API варианты скрыты из UI, пока доступ �
 UI-режим записывает итог в:
 
 ```text
-_output/02_blocks_analysis.json
+_output/01_blocks_analysis.json
 ```
 
 Если файл уже был, runner сохраняет backup-копию:

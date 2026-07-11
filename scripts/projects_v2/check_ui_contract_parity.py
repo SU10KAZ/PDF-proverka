@@ -290,7 +290,7 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list,
     legacy_status = _derive_status(legacy_out)
     status_expected = v2_status in _LEGACY_PRESERVE_STATUSES  # v2-специфичные статусы
 
-    crit = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+    crit = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
     v2_has = {n: (v2_latest / n).is_file() for n in crit}
     legacy_has = {n: _legacy_has(legacy_out, n) for n in crit}
 
@@ -403,7 +403,7 @@ def _derive_status(legacy_out: Optional[Path]) -> Optional[str]:
     """Legacy-эквивалент analysis_status из наличия 01/02/03 в _output."""
     if legacy_out is None:
         return "none"
-    crit = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+    crit = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
     n = sum(1 for c in crit if (Path(legacy_out) / c).is_file())
     if n == 3:
         return "complete"

@@ -66,7 +66,7 @@ def _make_project(root: Path, name: str = "p1", with_blocks: bool = True) -> Pat
         json.dumps({"findings": _FINDINGS}, ensure_ascii=False), encoding="utf-8",
     )
     if with_blocks:
-        (out / "02_blocks_analysis.json").write_text(
+        (out / "01_blocks_analysis.json").write_text(
             json.dumps(_BLOCKS, ensure_ascii=False), encoding="utf-8",
         )
     return p
@@ -113,7 +113,7 @@ def test_writes_artifacts_under_output_subdir_only(tmp_path: Path):
 def test_production_artifacts_unchanged(tmp_path: Path):
     p = _make_project(tmp_path)
     findings = p / "_output" / "03_findings.json"
-    blocks = p / "_output" / "02_blocks_analysis.json"
+    blocks = p / "_output" / "01_blocks_analysis.json"
     findings_b = findings.read_bytes()
     blocks_b = blocks.read_bytes()
 

@@ -9,12 +9,12 @@
 
 ## Input Data
 
-1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/01_text_analysis.json`
+1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
    - `items_verified_from_blocks` (optional) — present if text ran AFTER blocks: its cross-check
      of its own T-findings against Stage 02 blocks.
 
-2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/02_blocks_analysis.json`
+2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/01_blocks_analysis.json`
    - `block_analyses` (findings G-001... within each block)
    - `items_verified_from_stage_01` (optional, legacy) — present if blocks ran AFTER text.
    - If `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks`, or block-level
@@ -50,7 +50,7 @@ Merge findings from both stages (01 text + 02 blocks).
 
 ### Coverage Warning Sections (MANDATORY)
 
-If `02_blocks_analysis.json` contains uncovered/failed blocks, add three sections under
+If `01_blocks_analysis.json` contains uncovered/failed blocks, add three sections under
 `meta.analysis_coverage.sections`:
 - `Непокрытые блоки Gemma enrichment`
 - `Ошибки single-block анализа`
@@ -62,8 +62,8 @@ findings for them, but preserve their block ids and reasons in meta.
 ### Processing text↔block verification (MANDATORY)
 
 Take the verification array from whichever file has it (stage order may be either):
-- `items_verified_from_blocks` from `01_text_analysis.json` (block→text order — primary), OR
-- `items_verified_from_stage_01` from `02_blocks_analysis.json` (legacy text→block order).
+- `items_verified_from_blocks` from `02_text_analysis.json` (block→text order — primary), OR
+- `items_verified_from_stage_01` from `01_blocks_analysis.json` (legacy text→block order).
 
 Both describe the same thing: a text finding T-NNN cross-checked against a drawing. Process each record:
 

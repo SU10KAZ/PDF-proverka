@@ -47,8 +47,8 @@ def _make_v2_export_doc(v2: Path, *, with_findings: bool = True) -> Path:
     (vdir / "02_work").mkdir(parents=True, exist_ok=True)
     (vdir / "02_work" / "document.md").write_text("# normalized md", encoding="utf-8")
     latest = vdir / "03_analysis" / "latest"
-    _write_json(latest / "01_text_analysis.json", {"text": True})
-    _write_json(latest / "02_blocks_analysis.json", {"blocks": []})
+    _write_json(latest / "02_text_analysis.json", {"text": True})
+    _write_json(latest / "01_blocks_analysis.json", {"blocks": []})
     if with_findings:
         _write_json(latest / "03_findings.json", {"findings": [{"id": "F-1", "severity": "КРИТ"}]})
     _write_json(latest / "norm_checks.json", {"checks": []})
@@ -91,8 +91,8 @@ async def test_export_v2_primary_contains_pdf_latest_readme_and_excel(monkeypatc
         assert "document.md" in names
         assert "DOC-EXP_document.md" in names
         assert "03_findings.json" in names
-        assert "01_text_analysis.json" in names
-        assert "02_blocks_analysis.json" in names
+        assert "02_text_analysis.json" in names
+        assert "01_blocks_analysis.json" in names
         assert "norm_checks.json" in names
         assert "optimization.json" in names
         assert "document_graph.json" in names
