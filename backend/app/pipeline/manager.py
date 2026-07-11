@@ -1756,6 +1756,26 @@ class PipelineManager:
                     f"{graph['total_image_blocks']} граф."
                     + (f", debug: {debug_path.name}" if debug_path else ""),
                 )
+            elif result_json_paths:
+                # Текст-слой (*_result.json) НАЙДЕН — граф ОЖИДАЛСЯ, но не
+                # построился. Это НЕ чистый скан: без document_graph роутер
+                # источника блока / Gemma дадут 0 covered, и весь лист уедет в
+                # placeholder ПРИ status=ok — тихий провал вектор-покрытия
+                # (residual «0 из вектор-слоя»). Фиксируем как деградацию стадии,
+                # чтобы аномалия всплыла в финальной сводке _log_stage_degradations,
+                # а не тонула в мягком warn. Без hard-fail: провал может быть
+                # транзиентным (resume/retry достроит граф), а жёсткий останов
+                # рисковал бы ложными фейлами.
+                self._update_pipeline_log(
+                    pid, "document_graph", "partial",
+                    message="Граф не построен, хотя *_result.json найден — вектор-покрытие будет 0",
+                )
+                await self._log(
+                    job,
+                    "document_graph v2 НЕ построен, хотя *_result.json найден — "
+                    "вектор-покрытие будет 0 (аномалия сборки графа, НЕ чистый скан)",
+                    "error",
+                )
             else:
                 await self._log(
                     job,
