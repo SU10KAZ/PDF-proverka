@@ -92,8 +92,7 @@ def find_project_markdown(
 # reserc.md #17: мёртвый partial-гейт удалён. Функция partial_gemma_allowed
 # вычисляла флаг allow_partial / partial_mode, но РЕЗУЛЬТАТ нигде не использовался
 # — gate всегда отдавал ready=True на status='partial'. Контракт зафиксирован
-# явно: partial-покрытие Gemma — first-class ready (см. docs/gemma_enrichment.md
-# «Ready status may still be partial …»). Config-ключи allow_partial/partial_mode
+# явно: partial-покрытие — first-class ready. Config-ключи allow_partial/partial_mode
 # были no-op и убраны вместе с функцией.
 
 

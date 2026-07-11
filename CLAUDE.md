@@ -299,7 +299,6 @@ resume/skip больше не считаются валидными. Нужно 
 Эти файлы **не** загружаются в контекст автоматически. Читай нужный через Read,
 когда задача касается этой подсистемы — однострочники ниже подскажут, что где.
 
-- docs/gemma_enrichment.md — обязательный Gemma OCR enrichment, crop policy и summary validation
 - docs/resume_retry.md — правила resume/retry и запрет обхода обязательных этапов
 - docs/blocks_and_stage02.md — Stage 02 single-block runtime plan, legacy A/B заметки, production profile
 - docs/critic_corrector.md — findings и optimization critic/corrector, evidence-трассировка
