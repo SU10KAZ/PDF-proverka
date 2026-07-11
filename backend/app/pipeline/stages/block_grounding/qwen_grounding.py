@@ -5,7 +5,7 @@
 рендер региона из PDF (fitz) → qwen по тайлам/кропу → объединение значений.
 
 Дорого и ngrok-bound → вызывается только под флагом BLOCK_VALUE_GROUNDING_QWEN_ENABLED,
-ТОЛЬКО для крупных no-vector блоков, с жёстким cap, сериализованно (prepare_state lock).
+ТОЛЬКО для крупных no-vector блоков, с жёстким cap и отдельной сериализацией.
 """
 from __future__ import annotations
 

@@ -15,7 +15,8 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
 )
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import gemma_blocks_dir
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import STAGE02_BLOCKS_DIRNAME
+from backend.app.pipeline.stages.block_context.contract import validate_block_context_summary
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
     TEXT_ANALYSIS_FILENAME,
@@ -60,9 +61,15 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         # Legacy V1 / проект без manifest — прежнее поведение.
         output_dir = project_dir / "_output"
     tiles_dir = output_dir / "tiles"
-    gemma_state = evaluate_gemma_enrichment(project_dir)
-    gemma_ready = bool(gemma_state.get("ready"))
-    migration_state = detect_gemma_migration_state(project_dir, gemma_state=gemma_state)
+    context_state = validate_block_context_summary(output_dir)
+    if context_state.get("valid"):
+        gemma_state = {"ready": True, "status": "ok", "detail": "Контекст блоков готов"}
+        gemma_ready = True
+        migration_state = {"migration_required": False}
+    else:
+        gemma_state = evaluate_gemma_enrichment(project_dir)
+        gemma_ready = bool(gemma_state.get("ready"))
+        migration_state = detect_gemma_migration_state(project_dir, gemma_state=gemma_state)
 
     # Проверяем наличие ключевых файлов
     has_tiles = tiles_dir.is_dir() and any(tiles_dir.glob("page_*/*.png"))
@@ -71,7 +78,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     has_03a = (output_dir / "03a_norms_verified.json").exists()
 
     # OCR-пайплайн (блоки)
-    blocks_dir = gemma_blocks_dir(project_dir)
+    blocks_dir = output_dir / STAGE02_BLOCKS_DIRNAME
     has_blocks = blocks_dir.is_dir() and (blocks_dir / "index.json").exists()
     runtime_batches_path = output_dir / "block_batches.runtime.json"
     legacy_batches_path = output_dir / "block_batches.json"
@@ -102,19 +109,19 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         if migration_state.get("migration_required"):
             return _migration_resume()
         if gemma_state.get("status") == "missing_blocks":
-            return _prepare_resume("Блоки не созданы; Gemma enrichment требует prepare/crop")
+            return _prepare_resume("Блоки не созданы; требуется подготовка Stage 01 crop")
         return {
-            "stage": "gemma_enrichment",
-            "stage_label": GEMMA_STAGE_LABEL,
-            "detail": detail or gemma_state.get("detail", "Gemma enrichment не готов"),
+            "stage": "block_context",
+            "stage_label": "Подготовка контекста блоков",
+            "detail": detail or gemma_state.get("detail", "Контекст блоков не готов"),
             "can_resume": True,
         }
 
     def _migration_resume() -> dict:
-        stage = str(migration_state.get("stage") or "gemma_enrichment")
+        stage = str(migration_state.get("stage") or "block_context")
         return {
             "stage": stage,
-            "stage_label": "Подготовка" if stage == "prepare" else GEMMA_STAGE_LABEL,
+            "stage_label": "Подготовка" if stage == "prepare" else "Подготовка контекста блоков",
             "detail": migration_state.get("detail") or gemma_state.get("detail") or "Требуется миграция Gemma schema v2",
             "can_resume": True,
             "migration_required": True,

@@ -9,6 +9,7 @@ from backend.app.pipeline.stages.block_analysis.provenance import (
     detector_for_model,
 )
 from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+    build_effective_block_context,
     combine_detector_results,
 )
 
@@ -44,6 +45,38 @@ def test_traceability_merges_independent_gpt_and_codex_detections():
     assert merged["detector_summary"] == "gpt_codex"
 
 
+def test_provenance_records_context_source_per_detection():
+    provenance = build_finding_provenance(
+        model="openai/gpt-5.4",
+        run_id="stage01-run",
+        raw_finding_id="G-001",
+        context_source="structured_singleline",
+    )
+
+    assert provenance["context_source"] == "structured_singleline"
+    assert provenance["detections"][0]["context_source"] == "structured_singleline"
+
+
+def test_stage01_context_router_is_unconditional(tmp_path, monkeypatch):
+    from backend.app.pipeline.stages.block_grounding import block_source_router
+
+    monkeypatch.setattr(
+        block_source_router,
+        "resolve_block_source",
+        lambda *_args, **_kwargs: ("VECTOR CONTEXT", "raw_vector"),
+    )
+    block = {"block_id": "B-1", "page": 1}
+    text, source = build_effective_block_context(
+        block,
+        {"_gemma_skipped": "stage_disabled"},
+        "page text",
+        output_dir=tmp_path,
+    )
+
+    assert text == "VECTOR CONTEXT"
+    assert source == "raw_vector"
+
+
 def test_dual_result_keeps_raw_outputs_separate_and_paid_tokens_gpt_only():
     combined = combine_detector_results(
         [
@@ -55,6 +88,7 @@ def test_dual_result_keeps_raw_outputs_separate_and_paid_tokens_gpt_only():
                     "input_tokens": 100,
                     "output_tokens": 20,
                     "elapsed_ms": 10,
+                    "context_source": "raw_vector",
                 },
             ),
             (
@@ -65,6 +99,7 @@ def test_dual_result_keeps_raw_outputs_separate_and_paid_tokens_gpt_only():
                     "input_tokens": 0,
                     "output_tokens": 500,
                     "elapsed_ms": 30,
+                    "context_source": "raw_vector",
                 },
             ),
         ],
@@ -79,6 +114,7 @@ def test_dual_result_keeps_raw_outputs_separate_and_paid_tokens_gpt_only():
     assert combined["detectors_complete"] is True
     assert combined["paid_input_tokens"] == 100
     assert combined["paid_output_tokens"] == 20
+    assert combined["context_source"] == "raw_vector"
 
 
 def test_stage02_model_restrictions_allow_codex_and_dual():
@@ -163,3 +199,6 @@ def test_ui_contains_detector_badge_next_to_finding_number():
     assert "finding-detector-badge" in html
     assert "GPT + Codex" in js
     assert "findingDetectorBadge" in js
+    assert "Production Gemma" not in html
+    assert "Gemma OCR" not in html
+    assert "Production Gemma" not in js

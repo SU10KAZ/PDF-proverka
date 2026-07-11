@@ -1,8 +1,7 @@
 """
 prepare_service.py
 ------------------
-Фоновое выполнение «Подготовить данные» = crop PNG + Gemma enrichment.
-ОДИН проект за раз (asyncio.Lock) — Gemma 3.6 35B не тянет параллель.
+Фоновое выполнение «Подготовить данные» = crop PNG + локальная сборка контекста блоков.
 
 Глобальная очередь (PrepareQueueStatus) хранит per-project прогресс:
   blocks_total, blocks_done, blocks_failed, started_at, elapsed, eta_sec.
@@ -12,7 +11,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import re
 import time
 import traceback
 from pathlib import Path
@@ -20,38 +18,27 @@ from typing import Optional
 
 from backend.app.models.audit import PrepareQueueItem, PrepareQueueStatus
 from backend.app.models.websocket import WSMessage
-from backend.app.core.config import BLOCKS_SCRIPT, GEMMA_ENRICH_SCRIPT, PREPARE_QUEUE_FILE
+from backend.app.core.config import BLOCKS_SCRIPT, PREPARE_QUEUE_FILE
 from backend.app.services.common.project_service import resolve_project_dir, resolve_active_project_dir
 from backend.app.services.common import version_service
 from backend.app.services.common.audit_logger import persist_log, update_pipeline_log
 from backend.app.services.storage.storage_write_facade import v2_is_primary
 from backend.app.services.storage.v2_primary_wiring import resolve_v2_prepare_paths
-from backend.app.services.storage.projects_v2_source_resolver import load_version_project_info
-from backend.app.services.llm.lmstudio_lifecycle_service import (
-    note_activity as _lmstudio_note_activity,
-    register_idle_probe as _register_lmstudio_idle_probe,
-    schedule_post_queue_cleanup as _schedule_lmstudio_post_queue_cleanup,
-)
 from backend.app.services.common.process_runner import run_script, kill_all_processes
-from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import find_project_markdown, load_project_info
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
-    ENRICHMENT_MARKER_RE,
-    GEMMA_BLOCKS_DIRNAME,
     crop_index_matches_policy,
-    gemma_blocks_dir,
-    gemma_blocks_index_path,
-    gemma_enrichment_crop_policy,
-    validate_gemma_summary,
+    STAGE02_BLOCKS_DIRNAME,
+    stage02_crop_policy,
+)
+from backend.app.pipeline.stages.block_context.builder import build_block_context
+from backend.app.pipeline.stages.block_context.contract import (
+    validate_block_context_summary,
 )
 from backend.app.ws.manager import ws_manager
 
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import (
-    retry_failed_blocks,
-    DEFAULT_MODEL,
-    DEFAULT_PARALLELISM,
-    DEFAULT_TIMEOUT_S,
-)
-from backend.app.pipeline.stages.crop_blocks.blocks import _backup_output_for_reenrichment
+DEFAULT_MODEL = "local-block-context"
+DEFAULT_PARALLELISM = 1
+DEFAULT_TIMEOUT_S = 60
 
 # PREPARE_QUEUE_FILE imported from backend.app.core.config
 
@@ -62,21 +49,13 @@ class _PrepareState:
     def __init__(self) -> None:
         self.tasks: dict[str, asyncio.Task] = {}
         self.last_status: dict[str, dict] = {}
-        self._global_lock: asyncio.Lock | None = None
         self._pause_event: asyncio.Event | None = None
         self._cancel_event: asyncio.Event | None = None
         self.queue_status: PrepareQueueStatus = PrepareQueueStatus()
-        # Crop-таски храним отдельно, но запускаем строго внутри Gemma-лока:
-        # один проект целиком crop -> Gemma, потом следующий. Это медленнее
-        # фонового pre-crop, зато не смешивает тяжёлый crop с Gemma 35B.
+        # Crop-таски храним отдельно от локальной сборки контекста.
         self.crop_tasks: dict[str, asyncio.Task] = {}
         self.crop_results: dict[str, dict] = {}  # cached crop_blocks() return
         self._crop_semaphore: asyncio.Semaphore | None = None
-
-    def get_lock(self) -> asyncio.Lock:
-        if self._global_lock is None:
-            self._global_lock = asyncio.Lock()
-        return self._global_lock
 
     def get_crop_semaphore(self) -> asyncio.Semaphore:
         # Ограничиваем одновременные crop'ы — чтоб не утопить сеть/диск.
@@ -115,7 +94,6 @@ def _prepare_queue_idle() -> bool:
     )
 
 
-_register_lmstudio_idle_probe("prepare_queue", _prepare_queue_idle)
 
 
 def _find_item(project_id: str, version_id: Optional[str] = None) -> Optional[PrepareQueueItem]:
@@ -350,15 +328,6 @@ class _CropStdoutForwarder:
 
 # ─── Core ─────────────────────────────────────────────────────────────────
 
-def _resolve_overrides(project_dir: Path) -> dict:
-    try:
-        info = load_version_project_info(project_dir)
-        enrichment = info.get("enrichment") or {} if isinstance(info, dict) else {}
-        return enrichment if isinstance(enrichment, dict) else {}
-    except Exception:
-        return {}
-
-
 def _build_crop_args(
     project_dir: Path,
     *,
@@ -366,7 +335,7 @@ def _build_crop_args(
     policy: dict,
     output_dir: Optional[Path] = None,
 ) -> list[str]:
-    output_arg = str(output_dir) if output_dir is not None else GEMMA_BLOCKS_DIRNAME
+    output_arg = str(output_dir) if output_dir is not None else STAGE02_BLOCKS_DIRNAME
     args = ["crop", str(project_dir), "--output-dir", output_arg]
     if policy.get("compact"):
         args.append("--compact")
@@ -396,8 +365,7 @@ def _parse_crop_stdout(stdout: str) -> dict | None:
 async def _crop_for_project(project_id: str) -> None:
     """Скачать PNG-блоки для prepare-data.
 
-    Вызывается из _run_prepare под глобальным Gemma-локом, поэтому crop и Gemma
-    не идут параллельно на разных проектах.
+    Вызывается из _run_prepare; тяжёлые crop-задачи ограничены семафором.
     """
     item = _find_item(project_id)
     if item is None:
@@ -418,9 +386,9 @@ async def _crop_for_project(project_id: str) -> None:
         await _ws_log(project_id, "Скачивание блоков по crop_url...")
         update_pipeline_log(project_id, "crop_blocks", "running")
         try:
-            policy = gemma_enrichment_crop_policy()
-            index_path = gemma_blocks_index_path(project_dir)
-            blocks_dir = gemma_blocks_dir(project_dir)
+            policy = stage02_crop_policy()
+            blocks_dir = out_dir / STAGE02_BLOCKS_DIRNAME
+            index_path = blocks_dir / "index.json"
             force_crop = (
                 (index_path.exists() and not crop_index_matches_policy(index_path, policy))
                 or (not index_path.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
@@ -495,134 +463,6 @@ def _ensure_crop_started(project_id: str) -> None:
         )
 
 
-_GEMMA_START_RE = re.compile(r"^\[start\]\s+(\d+)\s+blocks\b")
-_GEMMA_BLOCK_RE = re.compile(
-    r"^\s*\[\s*(\d+)/(\d+)\]\s+(OK|FAIL)\s+([A-Z0-9-]+)\s+p=(\S+)\s+t=([\d.]+)s(?:\s+—\s+(.*))?$"
-)
-
-
-def _build_gemma_args(
-    project_dir: Path,
-    *,
-    force: bool,
-    model: str,
-    parallelism: int,
-    timeout: int,
-) -> list[str]:
-    args = [
-        str(project_dir),
-        "--model", model,
-        "--parallelism", str(int(parallelism)),
-        "--timeout", str(int(timeout)),
-    ]
-    if force:
-        args.append("--force")
-    return args
-
-
-async def _run_gemma_enrichment_subprocess(
-    project_id: str,
-    project_dir: Path,
-    *,
-    item: PrepareQueueItem,
-    force: bool,
-    model: str,
-    parallelism: int,
-    timeout: int,
-) -> dict:
-    """Run gemma_enrich.py outside uvicorn and return its summary JSON."""
-    seen_failed: set[str] = set()
-
-    async def _on_gemma_output(line: str) -> None:
-        if not line:
-            return
-        level = "error" if line.startswith("[ERR]") or "Traceback" in line else "info"
-        start_match = _GEMMA_START_RE.match(line)
-        if start_match:
-            total = int(start_match.group(1))
-            item.blocks_total = total
-            item.blocks_done = 0
-            item.blocks_failed = 0
-            item.blocks_truncated = 0
-            await _broadcast_queue()
-            await _ws_log(project_id, f"Обработка {total} image-блоков...")
-            return
-
-        block_match = _GEMMA_BLOCK_RE.match(line)
-        if block_match:
-            completed = int(block_match.group(1))
-            total = int(block_match.group(2))
-            ok = block_match.group(3) == "OK"
-            block_id = block_match.group(4)
-            page = block_match.group(5)
-            elapsed_s = float(block_match.group(6))
-            err = block_match.group(7) or ""
-            item.blocks_done = completed
-            item.blocks_total = total
-            if not ok:
-                seen_failed.add(block_id)
-            item.blocks_failed = len(seen_failed)
-            elapsed = time.time() - (item.started_at or time.time())
-            item.elapsed_sec = round(elapsed, 1)
-            done = max(1, completed)
-            item.eta_sec = round((elapsed / done) * max(0, total - completed), 0)
-            await _broadcast_queue()
-            mark = "✓" if ok else "✗"
-            await _ws_log(
-                project_id,
-                f"[{completed:>3}/{total}] {mark} {block_id} p={page} t={elapsed_s:.1f}s"
-                + (f" — {err[:80]}" if err else ""),
-                "info" if ok else "warn",
-            )
-            return
-
-        await _ws_log(project_id, line, level)
-
-    exit_code, stdout, stderr = await run_script(
-        str(GEMMA_ENRICH_SCRIPT),
-        _build_gemma_args(
-            project_dir,
-            force=force,
-            model=model,
-            parallelism=parallelism,
-            timeout=timeout,
-        ),
-        on_output=_on_gemma_output,
-        env_overrides={
-            "AUDIT_PROJECT_ID": project_id,
-            "AUDIT_VERSION_ID": getattr(item, "version_id", None) or "",
-            "AUDIT_OBJECT_ID": getattr(item, "object_id", None) or "",
-        },
-        project_id=f"prepare_gemma:{project_id}",
-    )
-
-    _project_dir, output_dir = _resolve_prepare_paths(project_id, getattr(item, "version_id", None), getattr(item, "object_id", None))
-    summary_path = output_dir / "gemma_enrichment_summary.json"
-    summary: dict = {}
-    if summary_path.exists():
-        try:
-            summary = json.loads(summary_path.read_text(encoding="utf-8"))
-        except Exception as e:
-            summary = {"status": "failed", "error": f"summary read failed: {e}"}
-
-    if exit_code not in (0, 1):
-        tail = "\n".join((stderr or stdout or "").splitlines()[-10:])
-        if not summary:
-            summary = {"status": "failed"}
-        summary["status"] = "failed"
-        summary["error"] = (
-            f"gemma_enrich subprocess failed: exit code {exit_code}"
-            + (f": {tail}" if tail else "")
-        )
-    elif not summary:
-        summary = {
-            "status": "failed",
-            "error": "gemma_enrich завершился без gemma_enrichment_summary.json",
-        }
-
-    return summary
-
-
 async def _run_prepare(
     project_id: str,
     force: bool,
@@ -637,8 +477,7 @@ async def _run_prepare(
     item.started_at = time.time()
     await _broadcast_queue()
 
-    # Crop запускаем только сейчас, уже под глобальным lock'ом. Так Gemma 35B
-    # не конкурирует за память/диск с crop'ом следующих проектов.
+    # Crop запускаем только когда проект дошёл до подготовки контекста.
     _ensure_crop_started(project_id)
     crop_result = await _await_crop(project_id)
     if crop_result.get("error"):
@@ -648,327 +487,53 @@ async def _run_prepare(
         await _ws_log(project_id, f"Crop не выполнен: {crop_result['error']}", "error")
         return {"status": "error", "stage": "crop", "error": crop_result["error"]}
 
-    loop = asyncio.get_event_loop()
-
-    project_info = load_project_info(project_dir)
-    md_path = find_project_markdown(project_dir, project_info)
-    if md_path is None:
-        item.status = "failed"
-        item.error = "MD-файл не найден"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "error",
-            error="MD-файл не найден"
-        )
-        await _broadcast_queue()
-        return {"status": "error", "error": "MD-файл не найден"}
-    existing = ENRICHMENT_MARKER_RE.search(md_path.read_text(encoding="utf-8", errors="ignore")[:4096])
-    summary_validation = validate_gemma_summary(project_dir, md_path=md_path)
-
-    if summary_validation.get("valid") and not force:
-        summary_existing = summary_validation.get("summary") or {}
-        msg = (
-            f"Gemma enrichment уже готов: {summary_existing.get('model')} "
-            f"({summary_existing.get('blocks_ok')}/{summary_existing.get('blocks_total')}). "
-            f"Force re-enrich для перезапуска."
-        )
-        await _ws_log(project_id, msg, "warn")
+    validation = validate_block_context_summary(out_dir, canonical_only=True)
+    if validation.get("valid") and not force:
+        summary_existing = validation.get("summary") or {}
         item.status = "skipped"
-        item.blocks_total = summary_existing.get("blocks_total")
-        item.blocks_done = summary_existing.get("blocks_ok") or 0
+        item.blocks_total = int(summary_existing.get("blocks_total") or 0)
+        item.blocks_done = int(summary_existing.get("blocks_ready") or 0)
         await _broadcast_queue()
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "done",
-            message=(
-                f"Gemma summary валиден "
-                f"({summary_existing.get('blocks_ok', '?')}/{summary_existing.get('blocks_total', '?')}, "
-                f"{summary_existing.get('model', '?')})"
-            )
-        )
-        result = {"status": "skipped", "existing": summary_existing, "crop": crop_result}
-        return result
+        await _ws_log(project_id, "Контекст блоков уже готов", "info")
+        return {"status": "skipped", "existing": summary_existing, "crop": crop_result}
 
-    if existing and not force:
-        await _ws_log(
-            project_id,
-            "Старый ENRICHMENT marker найден, но summary/hash/policy невалидны "
-            f"({summary_validation.get('reason')}) — запускаю Gemma заново",
-            "warn",
-        )
-
-    if force and existing:
-        await _ws_log(project_id, "Force re-enrich: backup _output/ ...", "warn")
-        await loop.run_in_executor(None, lambda: _backup_output_for_reenrichment(out_dir))
-
-    overrides = _resolve_overrides(project_dir)
-    final_model = model or overrides.get("model") or DEFAULT_MODEL
-    final_parallelism = parallelism or overrides.get("parallelism") or DEFAULT_PARALLELISM
-    final_timeout = timeout or overrides.get("timeout") or DEFAULT_TIMEOUT_S
-
-    await _ws_log(
-        project_id,
-        f"Запуск Gemma enrichment: model={final_model}, parallelism={final_parallelism}",
-    )
-    update_pipeline_log(project_id, "gemma_enrichment", "running")
-
-    async def _on_event(event: dict) -> None:
-        t = event.get("type")
-        if t == "started":
-            item.blocks_total = event["total"]
+    async def _on_context_event(event: dict) -> None:
+        if event.get("type") == "started":
+            item.blocks_total = int(event.get("total") or 0)
             item.blocks_done = 0
             item.blocks_failed = 0
-            await _broadcast_queue()
-            await _ws_log(project_id, f"Обработка {event['total']} image-блоков...")
-        elif t == "block_done":
-            item.blocks_done = event["completed"]
+        elif event.get("type") == "block_done":
+            item.blocks_done = int(event.get("completed") or 0)
             if not event.get("ok"):
                 item.blocks_failed += 1
-            if event.get("truncated"):
-                item.blocks_truncated += 1
-            out_tok = event.get("output_tokens") or 0
-            if out_tok > item.max_output_tokens_seen:
-                item.max_output_tokens_seen = out_tok
-            elapsed = time.time() - (item.started_at or time.time())
-            item.elapsed_sec = round(elapsed, 1)
-            done = max(1, event["completed"])
-            avg_per_block = elapsed / done
-            remaining = max(0, event["total"] - event["completed"])
-            item.eta_sec = round(avg_per_block * remaining, 0)
-            await _broadcast_queue()
-            mark = "✓" if event["ok"] else "✗"
-            err = f" — {event['error'][:80]}" if event.get("error") else ""
-            level = "info" if event["ok"] else "warn"
-            await _ws_log(
-                project_id,
-                f"[{event['completed']:>3}/{event['total']}] {mark} {event['block_id']} "
-                f"p={event['page']} t={event['elapsed_ms']/1000:.1f}s{err}",
-                level,
-            )
-            if event.get("truncated"):
-                # Сигнал в лог — output обрезан max_output_tokens
-                from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import DEFAULT_MAX_OUTPUT_TOKENS
-                await _ws_log(
-                    project_id,
-                    f"⚠️ Output обрезан лимитом {DEFAULT_MAX_OUTPUT_TOKENS} tokens "
-                    f"(блок {event['block_id']}, output_tokens={out_tok}). "
-                    f"Если повторяется — увеличьте DEFAULT_MAX_OUTPUT_TOKENS в gemma_enrich.py.",
-                    "warn",
-                )
-        elif t == "high_detail_candidates":
-            await _ws_log(
-                project_id,
-                f"High-detail кандидаты: {event.get('candidates', 0)} из {event.get('total', 0)} блоков",
-                "info",
-            )
-        elif t == "high_detail_prefilter":
-            await _ws_log(
-                project_id,
-                f"High-detail prefilter: safe={event.get('safe_candidates', 0)}, "
-                f"skipped_large={len(event.get('skipped_large_ids') or [])}",
-                "warn" if event.get("skipped_large_ids") else "info",
-            )
-        elif t == "high_detail_block_done":
-            mark = "✓" if event.get("ok") else "✗"
-            level = "info" if event.get("ok") else "warn"
-            err = f" — {event['error'][:80]}" if event.get("error") else ""
-            await _ws_log(
-                project_id,
-                f"[HD {event['completed']:>3}/{event['total']}] {mark} {event['block_id']} "
-                f"p={event['page']} t={event['elapsed_ms']/1000:.1f}s{err}",
-                level,
-            )
-        elif t == "high_detail_retry_pass_started":
-            await _ws_log(
-                project_id,
-                f"↻ High-detail retry-pass {event['attempt']}/{event['max_attempts']}: "
-                f"повтор {event['to_retry']} блок(ов)",
-                "warn",
-            )
-        elif t == "high_detail_retry_pass_done":
-            await _ws_log(
-                project_id,
-                f"↻ High-detail retry-pass {event['attempt']}/{event['max_attempts']} завершён: "
-                f"восстановлено {event['recovered']}, осталось {event['still_failed']}",
-                "info" if event.get("recovered") else "warn",
-            )
-        elif t == "block_retry":
-            # Auto-retry: предыдущая попытка обрезана, повторяем с увеличенным лимитом
-            prev_tok = event.get("previous_output_tokens")
-            await _ws_log(
-                project_id,
-                f"  ↻ Повтор {event['block_id']} с max_output_tokens={event['max_tokens']} "
-                f"(прошлая попытка: {prev_tok} токенов, обрезано)",
-                "warn",
-            )
-        elif t == "block_split":
-            # Все токенные тиры truncated → блок «вытянутый» или плотный квадратный, режем.
-            strategy = event.get("strategy", "")
-            await _ws_log(
-                project_id,
-                f"  ✂ Split {event['block_id']} (aspect={event['aspect']:.2f}, "
-                f"{strategy}, parts={event['parts']}) — режем и обрабатываем по частям",
-                "warn",
-            )
-        elif t == "block_split_failed":
-            await _ws_log(
-                project_id,
-                f"  ✂✗ Split {event['block_id']} упал: {event.get('error', '')}",
-                "warn",
-            )
-        elif t == "retry_pass_started":
-            # Project-level retry pass — добиваем упавшие блоки
-            await _ws_log(
-                project_id,
-                f"↻ Retry-pass {event['attempt']}/{event['max_attempts']}: "
-                f"повтор {event['to_retry']} упавших блок(ов)",
-                "warn",
-            )
-        elif t == "retry_block_done":
-            # Результат одного блока в retry-pass. blocks_done не трогаем (он
-            # считал общий прогон), но blocks_failed корректируем по факту.
-            mark = "✓" if event["ok"] else "✗"
-            err = f" — {event['error'][:80]}" if event.get("error") else ""
-            level = "info" if event["ok"] else "warn"
-            if event["ok"]:
-                # Блок восстановлен — снимаем его из failed.
-                if item.blocks_failed > 0:
-                    item.blocks_failed -= 1
-                await _broadcast_queue()
-            await _ws_log(
-                project_id,
-                f"  [retry {event['attempt']}/{event['max_attempts']}] {mark} {event['block_id']} "
-                f"p={event['page']} t={event['elapsed_ms']/1000:.1f}s{err}",
-                level,
-            )
-        elif t == "retry_pass_done":
-            await _ws_log(
-                project_id,
-                f"↻ Retry-pass {event['attempt']}/{event['max_attempts']} завершён: "
-                f"восстановлено {event['recovered']}, осталось упавших {event['still_failed']}",
-                "info" if event["recovered"] else "warn",
-            )
-        elif t == "no_blocks":
-            await _ws_log(project_id, "Нет image-блоков", "warn")
+        await _broadcast_queue()
 
-    summary = await _run_gemma_enrichment_subprocess(
-        project_id,
+    await _ws_log(project_id, "Подготовка контекста PDF/Vectograph...", "info")
+    update_pipeline_log(project_id, "block_context", "running")
+    summary = await build_block_context(
         project_dir,
-        item=item,
-        force=force,
-        model=final_model,
-        parallelism=final_parallelism,
-        timeout=final_timeout,
+        output_dir=out_dir,
+        blocks_index_path=out_dir / STAGE02_BLOCKS_DIRNAME / "index.json",
+        progress_cb=_on_context_event,
     )
-
-    summary["crop"] = crop_result
-
-    s_status = summary.get("status")
-    s_ok = summary.get("blocks_ok", 0) or 0
-    s_total = summary.get("blocks_total", 0) or 0
-    s_failed = summary.get("blocks_failed", 0) or 0
-    s_wall = summary.get("wall_clock_s", 0) or 0
-
-    # Stdout-watcher парсит только base-проход и не видит retry_block_done,
-    # поэтому seen_failed может остаться завышенным даже когда runner всё
-    # восстановил. Источник истины — summary.
-    if s_total:
-        item.blocks_total = s_total
-    item.blocks_done = s_ok + s_failed
-    item.blocks_failed = s_failed
-
-    if s_status == "ok":
-        item.status = "completed"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "done",
-            message=f"OK ({s_ok}/{s_total} блоков, {s_wall:.0f}s)"
-        )
-    elif s_status == "partial":
-        msg = f"partial: OK ({s_ok}/{s_total} блоков, {s_wall:.0f}s) — {s_failed} упали"
-        item.status = "completed"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "partial",
-            message=f"{msg}; partial mode допущен, непокрытые блоки попадут в отчёт",
-            detail={
-                "partial_allowed": True,
-                "blocks_ok": s_ok,
-                "blocks_total": s_total,
-                "blocks_failed": s_failed,
-                "uncovered_block_ids": summary.get("uncovered_block_ids", []),
-                "uncovered_blocks": summary.get("uncovered_blocks", []),
-            },
-        )
-    elif s_status == "failed":
-        item.status = "failed"
-        item.error = summary.get("error") or summary.get("reason") or "all blocks failed"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "error",
-            error=str(item.error)[:300]
-        )
-    elif s_status == "skipped":
-        item.status = "skipped"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "skipped",
-            message=summary.get("reason") or "skipped"
-        )
-    elif s_status == "no_blocks":
-        item.status = "completed"
-        summary_path = out_dir / "gemma_enrichment_summary.json"
-        summary_path.write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "done",
-            message="image-блоков 0"
-        )
-    else:
-        item.status = "failed"
-        item.error = summary.get("error") or "unknown"
-        update_pipeline_log(
-            project_id, "gemma_enrichment", "error",
-            error=str(item.error)[:300]
-        )
-
+    item.status = "completed" if summary.get("status") == "ok" else "partial"
     item.elapsed_sec = round(time.time() - (item.started_at or time.time()), 1)
-    item.eta_sec = 0
     await _broadcast_queue()
-
-    final_msg = (
-        f"Готово: {summary.get('blocks_ok', 0)}/{summary.get('blocks_total', 0)} OK "
-        f"за {summary.get('wall_clock_s', 0)}s"
+    message = (
+        f"Контекст готов: {summary.get('blocks_ready', 0)}/"
+        f"{summary.get('blocks_total', 0)}; {summary.get('source_counts') or {}}"
     )
-    await _ws_log(project_id, final_msg)
-
-    # Финальные сигналы по truncation
-    truncated_count = summary.get("blocks_truncated", 0) or 0
-    max_seen = summary.get("max_output_tokens_seen", 0) or 0
-    from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import DEFAULT_MAX_OUTPUT_TOKENS
-    if truncated_count > 0:
-        await _ws_log(
-            project_id,
-            f"⚠️ {truncated_count} блок(ов) остались truncated после всех ретраев (до 8192 tokens) и split-fallback. "
-            f"Это очень плотные/большие блоки — enrichment частичный, но pipeline продолжится.",
-            "warn",
-        )
-    elif max_seen > 0 and max_seen >= int(DEFAULT_MAX_OUTPUT_TOKENS * 0.8):
-        usage_pct = int(max_seen / DEFAULT_MAX_OUTPUT_TOKENS * 100)
-        await _ws_log(
-            project_id,
-            f"ℹ️ Макс. реально использовано {max_seen} токенов ({usage_pct}% от лимита {DEFAULT_MAX_OUTPUT_TOKENS}). "
-            f"Близко к лимиту — может потребоваться повысить.",
-            "warn",
-        )
+    update_pipeline_log(project_id, "block_context", item.status, message=message)
+    update_pipeline_log(project_id, "gemma_enrichment", item.status, message=message)
+    await _ws_log(project_id, message, "info")
+    summary["crop"] = crop_result
     return summary
-
 
 # ─── Public API ───────────────────────────────────────────────────────────
 
 async def start_retry_failed(project_id: str, *, version_id: Optional[str] = None) -> dict:
-    """Перепрогнать ТОЛЬКО упавшие блоки прошлого enrichment'а (без force/full re-run).
-
-    Использует тот же Gemma-лок, чтобы не конфликтовать с обычным prepare.
-    Не создаёт элемент в очереди (легковесная операция, обычно <минуту на блок).
-    """
-    # Защита: не лезем в Gemma если проект в активном batch (см. _check_not_in_active_batch).
+    """Локально пересобрать контекст блоков без полного prepare."""
+    # Не меняем контекст проекта, пока он участвует в активном batch.
     _check_not_in_active_batch(project_id)
 
     existing_task = prepare_state.tasks.get(project_id)
@@ -976,12 +541,10 @@ async def start_retry_failed(project_id: str, *, version_id: Optional[str] = Non
         return {"status": "already_running"}
 
     project_dir, out_dir = _resolve_prepare_paths(project_id, version_id)
-    summary_path = out_dir / "gemma_enrichment_summary.json"
-    if not summary_path.exists():
+    if not validate_block_context_summary(out_dir).get("valid"):
         return {"status": "error", "error": "summary не найден — сначала надо сделать обычный prepare-data"}
 
     reset_cancel()
-    _lmstudio_note_activity(f"prepare retry started for {project_id}")
 
     async def _on_event(event: dict) -> None:
         t = event.get("type")
@@ -1034,14 +597,13 @@ async def start_retry_failed(project_id: str, *, version_id: Optional[str] = Non
 
     async def _wrapped() -> None:
         try:
-            async with prepare_state.get_lock():
-                result = await retry_failed_blocks(
-                    project_dir,
-                    progress_cb=_on_event,
-                    pause_event=prepare_state.get_pause_event(),
-                    cancel_event=prepare_state.get_cancel_event(),
-                )
-                prepare_state.last_status[project_id] = result
+            result = await build_block_context(
+                project_dir,
+                output_dir=out_dir,
+                blocks_index_path=out_dir / STAGE02_BLOCKS_DIRNAME / "index.json",
+                progress_cb=_on_event,
+            )
+            prepare_state.last_status[project_id] = result
         except Exception as e:
             err = {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
             prepare_state.last_status[project_id] = err
@@ -1050,7 +612,7 @@ async def start_retry_failed(project_id: str, *, version_id: Optional[str] = Non
             except Exception:
                 pass
         finally:
-            _schedule_lmstudio_post_queue_cleanup("prepare retry queue drained")
+            pass
 
     task = asyncio.create_task(_wrapped())
     prepare_state.tasks[project_id] = task
@@ -1087,7 +649,6 @@ async def start_prepare_data(
 
     # Сбрасываем cancel-event если был установлен предыдущей отменой
     reset_cancel()
-    _lmstudio_note_activity(f"prepare queue activity for {project_id}")
     # Если paused — оставим как есть, юзер сам resume'нёт
 
     effective_version_id = None
@@ -1121,9 +682,8 @@ async def start_prepare_data(
 
     async def _wrapped() -> None:
         try:
-            async with prepare_state.get_lock():
-                result = await _run_prepare(project_id, force, parallelism, model, timeout)
-                prepare_state.last_status[project_id] = result
+            result = await _run_prepare(project_id, force, parallelism, model, timeout)
+            prepare_state.last_status[project_id] = result
         except Exception as e:
             err = {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
             prepare_state.last_status[project_id] = err
@@ -1140,7 +700,6 @@ async def start_prepare_data(
             # Удаляем кеш crop'а — больше не понадобится.
             prepare_state.crop_results.pop(project_id, None)
             prepare_state.crop_tasks.pop(project_id, None)
-            _schedule_lmstudio_post_queue_cleanup("prepare queue drained")
 
     task = asyncio.create_task(_wrapped())
     prepare_state.tasks[project_id] = task
@@ -1253,11 +812,6 @@ async def cancel_queue() -> dict:
             # Убиваем crop subprocess (blocks.py, ключ project_id)
             try:
                 killed_procs += await kill_all_processes(pid)
-            except Exception:
-                pass
-            # Убиваем gemma_enrich subprocess (ключ prepare_gemma:project_id)
-            try:
-                killed_procs += await kill_all_processes(f"prepare_gemma:{pid}")
             except Exception:
                 pass
             # Cancel'аем asyncio tasks — run_script поймает CancelledError

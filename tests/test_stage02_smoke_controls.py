@@ -186,7 +186,7 @@ def _patch_run_findings_only(monkeypatch, capture_dict, *, summary_overrides=Non
         "blocks_total": 5,
         "blocks_ok": 5,
         "blocks_failed": 0,
-        "blocks_skipped_no_enrichment": 0,
+        "blocks_skipped_no_context": 0,
         "wall_clock_s": 10.0,
         "cancelled": False,
         "uncovered_blocks": [],
@@ -209,8 +209,8 @@ def _patch_run_findings_only(monkeypatch, capture_dict, *, summary_overrides=Non
             "run_dir": None,
         }
 
-    def _fake_prereq(project_dir):
-        return {"ok": True, "reasons": [], "blocks_total": 5, "with_enrichment": 5, "uncovered_blocks": []}
+    def _fake_prereq(project_dir, **kwargs):
+        return {"ok": True, "reasons": [], "blocks_total": 5, "with_context": 5, "uncovered_blocks": []}
 
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
     monkeypatch.setattr(gfo, "run_findings_only_for_project", _fake_run)

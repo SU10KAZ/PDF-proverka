@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 TEXT_ANALYSIS_FILENAME = "02_text_analysis.json"
 BLOCKS_ANALYSIS_FILENAME = "01_blocks_analysis.json"
 BLOCKS_FOR_TEXT_FILENAME = "01_blocks_for_text.json"
+BLOCK_CONTEXT_SUMMARY_FILENAME = "block_context_summary.json"
 
 # ── Канонические значения поля `stage` внутри JSON ──────────────────────────
 TEXT_ANALYSIS_STAGE = "02_text_analysis"
@@ -43,6 +44,7 @@ LEGACY_ALIASES = {
     TEXT_ANALYSIS_FILENAME: "01_text_analysis.json",
     BLOCKS_ANALYSIS_FILENAME: "02_blocks_analysis.json",
     BLOCKS_FOR_TEXT_FILENAME: "02_blocks_for_text.json",
+    BLOCK_CONTEXT_SUMMARY_FILENAME: "gemma_enrichment_summary.json",
 }
 
 # legacy stage-value -> canonical (для нормализации при чтении поля `stage`)
@@ -57,6 +59,10 @@ STAGE_VALUE_ALIASES = {
 TEXT_ANALYSIS_ALL_NAMES = (TEXT_ANALYSIS_FILENAME, "01_text_analysis.json")
 BLOCKS_ANALYSIS_ALL_NAMES = (BLOCKS_ANALYSIS_FILENAME, "02_blocks_analysis.json")
 BLOCKS_FOR_TEXT_ALL_NAMES = (BLOCKS_FOR_TEXT_FILENAME, "02_blocks_for_text.json")
+BLOCK_CONTEXT_SUMMARY_ALL_NAMES = (
+    BLOCK_CONTEXT_SUMMARY_FILENAME,
+    "gemma_enrichment_summary.json",
+)
 
 
 def resolve_existing(dir_path, name: str) -> Path:

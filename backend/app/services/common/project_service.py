@@ -23,7 +23,11 @@ from backend.app.services.storage.stage_artifacts import (
 )
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import BLOCK_HEADER_RE
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import GEMMA_BLOCKS_DIRNAME, gemma_blocks_index_path
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+    GEMMA_BLOCKS_DIRNAME,
+    STAGE02_BLOCKS_DIRNAME,
+)
+from backend.app.pipeline.stages.block_context.contract import resolve_blocks_index
 from backend.app.core.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG, HIDDEN_PROJECTS_FILE
 from backend.app.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
@@ -1166,12 +1170,7 @@ def get_project_status(
     block_count = 0
     block_errors = 0
     block_expected = 0
-    blocks_index = gemma_blocks_index_path(version_dir)
-    if not blocks_index.exists():
-        # Fallback на legacy-папку для немигрированных проектов
-        legacy_index = output_dir / "blocks" / "index.json"
-        if legacy_index.exists():
-            blocks_index = legacy_index
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         bi = _load_json(blocks_index)
         if bi:
@@ -1693,7 +1692,8 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         # Маппинг: ключ в pipeline_log → поле PipelineStatus
         mapping = {
             "crop_blocks": "crop_blocks",
-            "gemma_enrichment": "gemma_enrichment",
+            "gemma_enrichment": "block_context",
+            "block_context": "block_context",
             "text_analysis": "text_analysis",
             "block_analysis": "blocks_analysis",
             "block_retry": "block_retry",
@@ -1715,8 +1715,9 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         valid_statuses = ("done", "error", "partial", "running", "skipped", "interrupted")
         # Маппинг: ключ pipeline_log → файл-индикатор завершения
         output_files = {
-            "crop_blocks": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
-            "gemma_enrichment": "gemma_enrichment_summary.json",
+            "crop_blocks": f"{STAGE02_BLOCKS_DIRNAME}/index.json",
+            "gemma_enrichment": "block_context_summary.json",
+            "block_context": "block_context_summary.json",
             "text_analysis": TEXT_ANALYSIS_FILENAME,
             "block_analysis": BLOCKS_ANALYSIS_FILENAME,
             "findings_merge": "03_findings.json",
@@ -1768,7 +1769,7 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         return status
 
     # 2. Fallback: логика по файлам (для проектов без pipeline_log.json)
-    blocks_index = gemma_blocks_index_path(output_dir.parent)
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         status.crop_blocks = "done"
 
@@ -1804,6 +1805,9 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
     if (output_dir / "decision_carryover_report.json").exists():
         status.decision_carryover = "done"
 
+    if status.block_context == "pending" and status.gemma_enrichment != "pending":
+        status.block_context = status.gemma_enrichment
+    status.gemma_enrichment = status.block_context
     return status
 
 
@@ -1815,7 +1819,7 @@ def _load_pipeline_log(output_dir: Path) -> Optional[dict]:
 # Порядок и человеко-понятные названия этапов конвейера
 _PIPELINE_STAGE_ORDER = [
     ("crop_blocks", "Кроп блоков"),
-    ("gemma_enrichment", GEMMA_STAGE_LABEL),
+    ("block_context", "Подготовка контекста блоков"),
     ("text_analysis", "Анализ текста"),
     ("block_analysis", "Анализ блоков"),
     ("block_retry", "Retry нечитаемых блоков"),
@@ -1913,7 +1917,7 @@ def _normalize_crop_blocks_status(
     Источники истины (по убыванию приоритета):
       1) pipeline_log.crop_blocks.status == "done" → done
       2) legacy pipeline_log.prepare.status == "done" → done
-      3) существующий _output/blocks_gemma_100/index.json → done
+      3) существующий canonical/legacy blocks index → done
       4) raw status из лога (running/error/partial/...) или pending
     """
     info = stages.get("crop_blocks") or {}
@@ -1926,7 +1930,7 @@ def _normalize_crop_blocks_status(
     if legacy.get("status") == "done":
         return "done", message
 
-    blocks_index = gemma_blocks_index_path(output_dir.parent)
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         try:
             if blocks_index.stat().st_size > 10:
@@ -2009,10 +2013,24 @@ def _normalize_gemma_enrichment_status(
       - log status=partial и detail.blocks_failed > 0 → partial
       - в остальном — raw status из лога (или pending)
     """
-    info = stages.get("gemma_enrichment") or {}
+    from backend.app.pipeline.stages.block_context.contract import (
+        validate_block_context_summary,
+    )
+
+    info = stages.get("block_context") or stages.get("gemma_enrichment") or {}
     raw_status = info.get("status") or ""
     raw_message = info.get("message", "")
     detail = info.get("detail") or {}
+
+    context_validation = validate_block_context_summary(output_dir)
+    if context_validation.get("valid"):
+        summary = context_validation.get("summary") or {}
+        failed = int(summary.get("blocks_failed") or 0)
+        total = int(summary.get("blocks_total") or 0)
+        ready = int(summary.get("blocks_ready") or 0)
+        status = "done" if failed == 0 else "partial"
+        message = f"Контекст блоков: {ready}/{total}"
+        return status, raw_message or message, message
 
     gemma_state = evaluate_gemma_enrichment(output_dir.parent)
     gemma_migration = detect_gemma_migration_state(output_dir.parent, gemma_state=gemma_state)
@@ -2093,6 +2111,7 @@ def _normalize_gemma_enrichment_status(
 # но есть один из alias — берём его статус/message.
 _PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
     "crop_blocks": ("prepare",),
+    "block_context": ("gemma_enrichment",),
     "block_analysis": ("v4_extraction", "tile_audit"),
     "findings_merge": ("v4_formatter", "main_audit"),
 }
@@ -2101,7 +2120,8 @@ _PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
 # Путь относительно `_output/`. Если файл/папка существует и не пустой —
 # статус этапа можно поднять до done.
 _PIPELINE_STAGE_ARTIFACTS: dict[str, tuple[str, ...]] = {
-    "crop_blocks": (f"{GEMMA_BLOCKS_DIRNAME}/index.json",),
+    "crop_blocks": (f"{STAGE02_BLOCKS_DIRNAME}/index.json",),
+    "block_context": ("block_context_summary.json",),
     "text_analysis": (TEXT_ANALYSIS_FILENAME,),
     "block_analysis": (BLOCKS_ANALYSIS_FILENAME,),
     "findings_merge": ("03_findings.json",),
@@ -2136,7 +2156,7 @@ _DOWNSTREAM_DEPENDENCY: dict[str, tuple[str, ...]] = {
     "optimization": ("optimization_critic", "optimization_corrector"),
     # gemma_enrichment — legacy: если block_analysis/findings уже done без
     # Gemma, значит проект использовал старый Qwen-конвейер.
-    "gemma_enrichment": ("block_analysis", "findings_merge"),
+    "block_context": ("block_analysis", "findings_merge"),
 }
 
 # Fallback message по терминальному статусу, если в логе message пустой.
@@ -2272,7 +2292,7 @@ def _normalize_pipeline_stage_status(
     if key == "crop_blocks":
         status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
         return status, normalized_message or "", None, None
-    if key == "gemma_enrichment":
+    if key in {"block_context", "gemma_enrichment"}:
         status, user_message, raw_message = _normalize_gemma_enrichment_status(
             output_dir, stages,
         )
@@ -2285,13 +2305,13 @@ def _normalize_pipeline_stage_status(
         # v4_extraction / v4_formatter / main_audit / qwen_enrichment.
         if status == "pending" and (
             _has_legacy_marker(stages)
-            or _downstream_done(stages, "gemma_enrichment", inferred_status)
+            or _downstream_done(stages, "block_context", inferred_status)
         ):
             status = "skipped"
             if not user_message:
                 user_message = (
                     "Пропущено: legacy-аудит выполнен до внедрения "
-                    "Gemma OCR enrichment."
+                    "подготовки контекста блоков."
                 )
         return status, user_message, raw_message, None
 
@@ -2440,6 +2460,16 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
             entry["error"] = info["error"]
 
         result.append(entry)
+
+    # Read-only compatibility alias for clients that still expect the old key.
+    block_context_entry = next((item for item in result if item.get("key") == "block_context"), None)
+    if block_context_entry is not None:
+        legacy_entry = dict(block_context_entry)
+        legacy_entry["key"] = "gemma_enrichment"
+        legacy_entry["label"] = "Подготовка контекста блоков"
+        legacy_entry["canonical_key"] = "block_context"
+        insert_at = result.index(block_context_entry) + 1
+        result.insert(insert_at, legacy_entry)
     return result
 
 

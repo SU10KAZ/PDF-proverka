@@ -359,18 +359,6 @@ def process(project_dir, force=False):
     save_project_info(project_dir, info)
     print(f"  [OK] MD — первичный источник текста")
 
-    # ── Detect Gemma enrichment marker (informational only) ──
-    md_path_full = os.path.join(project_dir, info["md_file"])
-    try:
-        from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import get_enrichment_meta
-        from pathlib import Path as _Path
-        enr_meta = get_enrichment_meta(_Path(md_path_full))
-        if enr_meta:
-            print(f"  [ENRICHED] MD уже обогащён: {enr_meta['model']} @ {enr_meta['timestamp']} "
-                  f"({enr_meta['blocks_ok']}/{enr_meta['blocks_total']} blocks)")
-    except Exception:
-        enr_meta = None
-
     # ── Step 1: Build Document Knowledge Graph (v2, из *_result.json) ──
     graph_kwargs = {}
     if v2_sources is not None and v2_sources.result_json_path is not None:
@@ -381,23 +369,6 @@ def process(project_dir, force=False):
         if debug_path:
             print(f"  [GRAPH v2] Debug: {debug_path.name}")
 
-        # Восстановить meta.enrichment в свежепостроенном графе (если MD enriched)
-        if enr_meta:
-            try:
-                from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import inject_enrichment_meta_into_graph
-                from pathlib import Path as _Path
-                inject_enrichment_meta_into_graph(
-                    _Path(out_dir) / "document_graph.json",
-                    {
-                        "source": enr_meta["model"],
-                        "timestamp": enr_meta["timestamp"],
-                        "blocks_ok": enr_meta["blocks_ok"],
-                        "blocks_total": enr_meta["blocks_total"],
-                    },
-                )
-                print(f"  [GRAPH v2] meta.enrichment восстановлено из MD-маркера")
-            except Exception as e:
-                print(f"  [WARN] не удалось дописать meta.enrichment: {e}")
     else:
         project_id = info.get("project_id", os.path.basename(project_dir))
         print(f"  [ERROR] [{project_id}] *_result.json не найден — document_graph не построен")

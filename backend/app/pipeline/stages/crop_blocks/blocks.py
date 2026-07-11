@@ -39,7 +39,6 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     gemma_high_detail_crop_policy,
     gemma_output_root,
     stage02_crop_policy,
-    validate_gemma_summary,
 )
 from backend.app.services.storage.projects_v2_source_resolver import (
     VersionSourceFiles,
@@ -2272,147 +2271,6 @@ def recrop_blocks(
 # PREPARE-DATA — crop + Gemma enrichment в одной команде
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def _backup_output_for_reenrichment(out_dir: Path) -> Path:
-    """Перенести pipeline-артефакты в _output/_pre_enrichment_<ts>/.
-
-    Сохраняет: blocks/ (PNG), audit_log.jsonl, audit_trail/, _pre_enrichment_*/
-    Двигает: все остальные .json файлы и поддиректории.
-
-    Возвращает путь к созданному backup.
-    """
-    import shutil
-    from datetime import datetime, timezone
-
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
-    backup_dir = out_dir / f"_pre_enrichment_{ts}"
-    backup_dir.mkdir(parents=True, exist_ok=True)
-
-    KEEP_FILES = {"audit_log.jsonl"}
-    KEEP_DIRS = {"blocks", "audit_trail", "blocks_gemma_100", "blocks_gemma_300", "blocks_stage02_100"}
-
-    moved: list[str] = []
-    for entry in out_dir.iterdir():
-        if entry == backup_dir:
-            continue
-        if entry.name.startswith("_pre_enrichment_"):
-            continue
-        if entry.is_file() and entry.name in KEEP_FILES:
-            continue
-        if entry.is_dir() and entry.name in KEEP_DIRS:
-            continue
-        target = backup_dir / entry.name
-        shutil.move(str(entry), str(target))
-        moved.append(entry.name)
-
-    if not moved:
-        # Ничего не перенесли — удалим пустой backup
-        backup_dir.rmdir()
-        return out_dir  # signal: nothing was backed up
-    print(f"  [BACKUP] Перенесено {len(moved)} элементов в {backup_dir.name}/")
-    return backup_dir
-
-
-def prepare_data(project_dir: str, *, force: bool = False, parallelism: int = None,
-                 model: str = None, timeout: int = None) -> dict:
-    """Подготовка данных проекта: crop PNG + Gemma enrichment в MD.
-
-    Шаги:
-      1. crop_blocks() — скачать PNG с Chandra по crop_url.
-      2. Если уже enriched и force=False — skip Gemma.
-      3. Если force=True — backup _output/ в _pre_enrichment_<ts>/.
-      4. gemma_enrich.enrich_project() — Gemma обогащает MD + дописывает meta в граф.
-    """
-    import asyncio
-    from backend.app.pipeline.stages.gemma_enrichment.gemma_enrich import enrich_project, DEFAULT_MODEL, DEFAULT_PARALLELISM, DEFAULT_TIMEOUT_S
-    from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import ENRICHMENT_MARKER_RE
-
-    project_dir_p = Path(project_dir).resolve()
-    out_dir = gemma_output_root(project_dir_p)
-
-    # ── Step 1: crop ──
-    print(f"\n[1/2] CROP — скачивание блоков по crop_url ...")
-    gemma_policy = gemma_enrichment_crop_policy()
-    index_path = gemma_blocks_index_path(project_dir_p)
-    blocks_dir = gemma_blocks_dir(project_dir_p)
-    force_crop = (
-        (index_path.exists() and not crop_index_matches_policy(index_path, gemma_policy))
-        or (not index_path.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
-    )
-    crop_result = crop_blocks(
-        str(project_dir_p),
-        force=force_crop,
-        compact=gemma_policy["compact"],
-        dpi=gemma_policy["dpi"],
-        skip_small=gemma_policy["skip_small"],
-        output_dir_name=GEMMA_BLOCKS_DIRNAME,
-    )
-    if crop_result.get("error"):
-        return {"error": crop_result["error"]}
-    print(f"  OK: {crop_result.get('cropped',0)} cropped, "
-          f"{crop_result.get('skipped',0)} skipped, {crop_result.get('errors',0)} errors")
-
-    # ── Step 2: enrichment ──
-    project_info = _load_project_info(project_dir_p)
-    sources = _source_files(project_dir_p, project_info)
-    md_path = sources.md_path
-    if md_path is None:
-        return {"error": "MD-файл не найден"}
-
-    existing_marker = ENRICHMENT_MARKER_RE.search(md_path.read_text(encoding="utf-8", errors="ignore")[:4096])
-    summary_validation = validate_gemma_summary(project_dir_p, md_path=md_path)
-    if summary_validation.get("valid") and not force:
-        existing_summary = summary_validation.get("summary") or {}
-        print(f"\n[2/2] ENRICH — пропущено (summary валиден: {existing_summary.get('model')} @ "
-              f"{existing_summary.get('created_at')}, "
-              f"{existing_summary.get('blocks_ok')}/{existing_summary.get('blocks_total')} blocks). "
-              f"Используйте --force чтобы перезапустить.")
-        return {"crop": crop_result, "enrich": {"status": "skipped", "existing": existing_summary}}
-
-    if existing_marker and not force:
-        print(f"\n[2/2] ENRICH — старый marker найден, но summary/hash/policy невалидны "
-              f"({summary_validation.get('reason')}); запускаем заново.")
-
-    if force and existing_marker:
-        print(f"\n[2/2] FORCE re-enrich — backup _output/ ...")
-        backup = _backup_output_for_reenrichment(out_dir)
-        print(f"  Backup: {backup.name if backup != out_dir else '(nothing to backup)'}")
-    else:
-        print(f"\n[2/2] ENRICH — Gemma multimodal на image-блоках ...")
-
-    # Параметры через project_info.json overrides → CLI args → defaults
-    enrichment_cfg = project_info.get("enrichment") or {}
-    if not isinstance(enrichment_cfg, dict):
-        enrichment_cfg = {}
-
-    final_model = model or enrichment_cfg.get("model") or DEFAULT_MODEL
-    final_parallelism = parallelism or enrichment_cfg.get("parallelism") or DEFAULT_PARALLELISM
-    final_timeout = timeout or enrichment_cfg.get("timeout") or DEFAULT_TIMEOUT_S
-
-    def _print_progress(event: dict) -> None:
-        t = event.get("type")
-        if t == "started":
-            print(f"  [start] {event['total']} blocks, model={event['model']}, parallelism={event['parallelism']}")
-        elif t == "block_done":
-            mark = "OK " if event["ok"] else "FAIL"
-            err = f" — {event['error'][:80]}" if event.get("error") else ""
-            print(f"    [{event['completed']:>3}/{event['total']}] {mark} {event['block_id']} "
-                  f"p={event['page']} t={event['elapsed_ms']/1000:.1f}s{err}")
-        elif t == "completed":
-            s = event["summary"]
-            print(f"  [done] {s['blocks_ok']}/{s['blocks_total']} OK in {s['wall_clock_s']}s")
-
-    enrich_result = asyncio.run(enrich_project(
-        project_dir_p,
-        force=force,
-        model=final_model,
-        parallelism=final_parallelism,
-        timeout=final_timeout,
-        progress_cb=_print_progress,
-    ))
-
-    return {"crop": crop_result, "enrich": enrich_result}
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Блоковый конвейер: скачивание, группировка, слияние"
@@ -2466,19 +2324,6 @@ def main():
         help="Подменить compact→full для нечитаемых блоков (без повторного скачивания)")
     p_promote.add_argument("project_dir", help="Путь к папке проекта")
     p_promote.add_argument("--block-ids", help="Список block_id через запятую (иначе — авто из unreadable_text)")
-
-    # prepare-data: crop + Gemma enrichment
-    p_prep = subparsers.add_parser("prepare-data",
-        help="Полная подготовка: crop PNG + Gemma enrichment в MD")
-    p_prep.add_argument("project_dir", help="Путь к папке проекта")
-    p_prep.add_argument("--force", action="store_true",
-                        help="Force re-enrich: перезапустить Gemma + backup _output/")
-    p_prep.add_argument("--parallelism", type=int, default=None,
-                        help="Кол-во параллельных Gemma-запросов (default из project_info или 2)")
-    p_prep.add_argument("--model", default=None,
-                        help="Gemma модель (default google/gemma-4-26b-a4b)")
-    p_prep.add_argument("--timeout", type=int, default=None,
-                        help="Таймаут per-request, сек (default 300)")
 
     args = parser.parse_args()
 
@@ -2561,22 +2406,6 @@ def main():
         if result.get("error"):
             sys.exit(1)
         print(json.dumps(result, ensure_ascii=False))
-
-    elif args.command == "prepare-data":
-        result = prepare_data(
-            args.project_dir,
-            force=getattr(args, "force", False),
-            parallelism=getattr(args, "parallelism", None),
-            model=getattr(args, "model", None),
-            timeout=getattr(args, "timeout", None),
-        )
-        if result.get("error"):
-            print(f"[ERROR] {result['error']}")
-            sys.exit(1)
-        enrich = result.get("enrich") or {}
-        if enrich.get("status") == "partial":
-            sys.exit(2)
-
 
 if __name__ == "__main__":
     main()

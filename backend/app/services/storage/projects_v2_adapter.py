@@ -368,19 +368,15 @@ class ProjectsV2Adapter:
         p = self._latest_file(doc_dir, version_id, BLOCKS_ANALYSIS_FILENAME)
         return _read_json(p) if p else None
 
-    # Имена папок кропов в приоритете чтения. `blocks_gemma_100` — production
-    # Gemma-пайплайн (GEMMA_BASE_BLOCKS_DIRNAME из gemma_enrichment_contract),
-    # `blocks` — legacy-имя старых прогонов. Если искать только `blocks`, у
-    # любой версии с новым Gemma-аудитом index.json не находится → /blocks
-    # отдаёт 404 и UI показывает «Блоки не найдены».
-    _BLOCKS_DIRNAMES = ("blocks_gemma_100", "blocks")
+    # Канонический Stage 01 crop, затем read-only fallback старых проектов.
+    _BLOCKS_DIRNAMES = ("blocks_stage02_100", "blocks_gemma_100", "blocks")
 
     def blocks_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Папка кропнутых блоков версии (read-only).
 
         В projects_v2 кропы лежат под `03_analysis/latest/<blocks-dir>/` либо
         (чаще) под последним `03_analysis/runs/<run>/<blocks-dir>/`, где
-        `<blocks-dir>` = `blocks_gemma_100` (production) или legacy `blocks`.
+        `<blocks-dir>` = `blocks_stage02_100` или одно из legacy-имён.
         Возвращает первую папку, где есть `index.json`, иначе None.
         """
         vdir = self.version_dir(doc_dir, version_id)

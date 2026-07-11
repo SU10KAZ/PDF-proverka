@@ -44,21 +44,21 @@ import httpx
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
     BLOCKS_META_KEY,
+    BLOCK_CONTEXT_SUMMARY_FILENAME,
+)
+from backend.app.pipeline.stages.block_context.contract import (
+    load_block_context_summary,
+    validate_block_context_summary,
 )
 from backend.app.pipeline.stages.crop_blocks.block_markdown import ENRICHED_LINE_RE, extract_block_sections
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
-    GEMMA_BASE_PROFILE,
-    GEMMA_HIGH_DETAIL_PROFILE,
     GEMMA_BLOCKS_DIRNAME,
     STAGE02_BLOCKS_DIRNAME,
     crop_index_matches_policy,
-    load_json,
-    gemma_blocks_index_path,
     gemma_output_root,
     stage02_blocks_dir,
     stage02_blocks_index_path,
     stage02_crop_policy,
-    validate_gemma_summary,
 )
 
 from backend.app.core.config import (
@@ -72,7 +72,7 @@ from backend.app.services.storage.projects_v2_source_resolver import (
     resolve_version_source_files,
 )
 from backend.app.pipeline.stages.block_analysis.provenance import (
-    STAGE02_PROMPT_VERSION,
+    STAGE01_PROMPT_VERSION,
     build_finding_provenance,
     detector_for_model,
 )
@@ -93,7 +93,7 @@ CLAUDE_CLI_BIN = os.environ.get("CLAUDE_CLI_BIN", str(Path.home() / ".local" / "
 
 # clean_cwd: запуск `claude -p` из чистой папки + урезанным env, чтобы не подгружать
 # CLAUDE.md проекта, .claude/settings.json, hooks, project memory, skills manifest.
-# Эмпирически даёт −44% input/блок и −52% cli_cost для stage 02 (см. ideas.md, Идея 6).
+# Эмпирически даёт −44% input/блок и −52% cli_cost для Stage 01.
 _CLEAN_CWD_PATH = "/tmp/sonnet_clean"
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
@@ -278,48 +278,6 @@ def parse_enrichment_from_md(md_text: str, block_id: str) -> Optional[dict]:
     return out or None
 
 
-def load_gemma_summary(project_dir: Path) -> dict[str, Any]:
-    return load_json(gemma_output_root(project_dir) / "gemma_enrichment_summary.json")
-
-
-def gemma_summary_block_map(summary: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    blocks = summary.get("blocks")
-    if not isinstance(blocks, list):
-        return {}
-    return {
-        str(block.get("block_id") or ""): block
-        for block in blocks
-        if isinstance(block, dict) and block.get("block_id")
-    }
-
-
-def gemma_summary_coverage_metrics(summary: dict[str, Any]) -> dict[str, Any]:
-    blocks = summary.get("blocks") or []
-    base_only = sorted(
-        str(block.get("block_id") or "")
-        for block in blocks
-        if isinstance(block, dict) and str(block.get("final_profile") or "") == GEMMA_BASE_PROFILE
-    )
-    upgraded = sorted(
-        str(block.get("block_id") or "")
-        for block in blocks
-        if isinstance(block, dict) and str(block.get("final_profile") or "") == GEMMA_HIGH_DETAIL_PROFILE
-    )
-    return {
-        "base_gemma_coverage": {
-            "blocks_ok": int(summary.get("base_blocks_ok") or 0),
-            "blocks_total": int(summary.get("blocks_total") or 0),
-            "coverage_ratio": float(summary.get("coverage_ratio") or 0.0),
-        },
-        "high_detail_candidates": int(summary.get("high_detail_candidates") or 0),
-        "high_detail_successful": int(summary.get("high_detail_ok") or 0),
-        "high_detail_skipped_large": int(summary.get("high_detail_skipped_large") or 0),
-        "uncovered_blocks": list(summary.get("uncovered_blocks") or []),
-        "blocks_analyzed_only_with_100_dpi_base": summary.get("blocks_analyzed_only_with_base_100") or base_only,
-        "blocks_upgraded_to_300": summary.get("blocks_upgraded_to_300") or upgraded,
-    }
-
-
 def _resolve_md_path(project_dir: Path, project_info: dict) -> Optional[Path]:
     try:
         document_code = project_info.get("document_code") or project_info.get("project_id") or project_dir.name
@@ -372,7 +330,7 @@ def write_single_block_runtime_plan(
     blocks_dir: Path | None = None,
     source: str = "gemma_findings_only_blocks_index",
 ) -> dict:
-    """Persist the actual single-block Stage 02 execution plan."""
+    """Persist the actual single-block Stage 01 execution plan."""
     batches = []
     for idx, block in enumerate(blocks, start=1):
         block_copy = dict(block)
@@ -422,7 +380,7 @@ def load_page_text(graph: dict, page: int) -> str:
 
 
 def build_block_user_text(block_id: str, page, enrichment: Optional[dict], page_text: str) -> str:
-    """Текст блока, уходящий в LLM на Stage 02 (без изображения).
+    """Текст блока, уходящий в LLM на Stage 01 (без изображения).
 
     ЕДИНЫЙ источник: эту же функцию вызывает реальный анализ блока (call_gpt_for_block)
     и UI-endpoint предпросмотра «что отправляем в нейронку», чтобы они не разъезжались.
@@ -455,35 +413,46 @@ def png_to_data_url(path: Path) -> str:
     return f"data:image/png;base64,{base64.b64encode(path.read_bytes()).decode()}"
 
 
-def build_effective_block_user_text(
+def _context_source_from_enrichment(enrichment: dict) -> str:
+    canonical = str((enrichment or {}).get("_block_context_source") or "")
+    if canonical:
+        return canonical
+    marker = str((enrichment or {}).get("_gemma_skipped") or "")
+    if marker == "vector_layer":
+        return "raw_vector"
+    if marker == "stage_disabled":
+        return "image_only"
+    return "legacy_enrichment"
+
+
+def build_effective_block_context(
     block: dict,
     enrichment: dict,
     page_text: str,
     *,
     output_dir: Optional[Path] = None,
-) -> str:
-    """Build the identical Stage 02 text context for every detector."""
+) -> tuple[str, str]:
+    """Build the Stage 01 prompt text and its normalized context source."""
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
+    context_source = _context_source_from_enrichment(enrichment)
 
-    # ─── РОУТЕР ИСТОЧНИКА БЛОКА: «вместо Gemma — точный текст чертежа» ──────────
-    # Решение Андрея 2026-07-07: везде сырой вектор-текст, однолинейки — структурированный
-    # рендер Вектографа, скан/растр без слоя — Gemma остаётся (fallback). Единая развилка,
-    # ЗАМЕНЯЕТ user_text (не аддитивно). Когда ON — становится единым авторитетом и отключает
-    # две ad-hoc инъекции ниже. Меняет user_text ДО cache_key. fail-soft. Флаг default OFF.
+    # The source router is the canonical Stage 01 path. A block without vector text keeps
+    # the image-only placeholder text and is still analyzed from its attached PNG.
     _router_applied = False
-    try:
-        from backend.app.core import config as _rcfg
-        if getattr(_rcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False) and output_dir is not None:
+    if output_dir is not None:
+        try:
             from backend.app.pipeline.stages.block_grounding.block_source_router import (
                 resolve_block_source as _resolve_block_source,
             )
             _rtext, _rkind = _resolve_block_source(
                 output_dir, block.get("block_id", ""), block.get("page"))
+            context_source = "image_only" if _rkind == "gemma_fallback" else _rkind
             if _rtext:
                 user_text = _rtext
-                _router_applied = True
-    except Exception:
-        pass
+            _router_applied = True
+        except Exception:
+            context_source = "error"
+            _router_applied = True
 
     # ─── SINGLELINE граф-энричмент: для СХЕМНЫХ блоков — курируемый ГИБРИД ─────
     # Вместо скудного enrichment+page_text подаём render_graph_for_prompt (гибрид: ввод+ТТ
@@ -525,7 +494,20 @@ def build_effective_block_user_text(
     except Exception:
         pass
 
-    return user_text
+    return user_text, context_source
+
+
+def build_effective_block_user_text(
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    *,
+    output_dir: Optional[Path] = None,
+) -> str:
+    """Compatibility wrapper for callers that only need the Stage 01 text."""
+    return build_effective_block_context(
+        block, enrichment, page_text, output_dir=output_dir
+    )[0]
 
 
 # ─── OpenRouter call ────────────────────────────────────────────────────────
@@ -552,7 +534,7 @@ async def call_gpt_for_block(
     if not png_path.exists():
         return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
 
-    user_text = build_effective_block_user_text(
+    user_text, context_source = build_effective_block_context(
         block,
         enrichment,
         page_text,
@@ -580,6 +562,7 @@ async def call_gpt_for_block(
             )
             cached = stage02_paid_cache.try_load_cached(output_dir, cache_key)
             if cached is not None:
+                cached.setdefault("context_source", context_source)
                 return cached
         except OSError:
             # disk error при чтении PNG — пусть дальше упадёт на той же ошибке
@@ -634,7 +617,7 @@ async def call_gpt_for_block(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://localhost",
-        "X-Title": "stage02-findings-only",
+        "X-Title": "stage01-findings-only",
     }
 
     # Последняя защитная стена: без api_key не пускаем в сеть, даже если guard
@@ -699,6 +682,7 @@ async def call_gpt_for_block(
         "raw_content": raw,
         "parsed": parsed,
         "from_cache": False,
+        "context_source": context_source,
     }
 
     # ─── Сохранить в cache СРАЗУ после успешного 2xx ────────────────
@@ -748,7 +732,7 @@ async def call_codex_for_block(
 
     from backend.app.services.llm.codex_runner import run_codex_json_messages
 
-    user_text = build_effective_block_user_text(
+    user_text, context_source = build_effective_block_context(
         block,
         enrichment,
         page_text,
@@ -781,6 +765,7 @@ async def call_codex_for_block(
         "raw_content": result.text,
         "parsed": parsed if ok else None,
         "model": result.model or model,
+        "context_source": context_source,
     }
 
 
@@ -799,14 +784,14 @@ def _build_claude_cli_task_text(
 ) -> str:
     """Промпт-текст для `claude -p` (Claude CLI сам читает PNG через Read tool и пишет findings через Write tool)."""
     enrichment_section = (
-        "## Описание блока (Gemma enrichment, считай контекст верным):\n"
+        "## Подготовленный контекст блока:\n"
         f"```json\n{json.dumps(enrichment, ensure_ascii=False, indent=2)}\n```\n"
     )
     page_text_section = f"## Текст страницы:\n{page_text or '(недоступен)'}\n"
     block_header = f"# Блок {block_id} | страница PDF {page} | лист {sheet_no or '(не определён)'}\n\n"
     steps_block = (
         f"1. Прочитай изображение блока через Read tool: `{png_path}`\n"
-        "2. Используй приведённое ниже описание блока (Gemma enrichment) и текст страницы как контекст.\n"
+        "2. Используй приведённый ниже контекст блока и текст страницы.\n"
         "3. Найди проблемы согласно правилам выше.\n"
         f"4. Запиши результат через Write tool в файл: `{output_path}`\n"
     )
@@ -958,6 +943,7 @@ async def call_claude_cli_for_block(
         "raw_content": json.dumps(parsed, ensure_ascii=False) if parsed else "",
         "parsed": parsed,
         "exit_code": exit_code,
+        "context_source": _context_source_from_enrichment(enrichment),
     }
 
 
@@ -969,9 +955,10 @@ def adapt_findings_to_production(
     finding_id_counter: list[int],
     *,
     model: str = DEFAULT_MODEL,
-    run_id: str = "stage02",
+    run_id: str = "stage01",
     detection_mode: str = "independent",
     detected_at: str | None = None,
+    context_source: str | None = None,
 ) -> list[dict]:
     """Адаптируем findings из findings-only schema под формат stage 03."""
     out = []
@@ -998,6 +985,7 @@ def adapt_findings_to_production(
                 raw_finding_id=raw_finding_id,
                 mode=detection_mode,
                 detected_at=detected_at,
+                context_source=context_source,
             ),
         })
     return out
@@ -1051,6 +1039,16 @@ def combine_detector_results(
         for model, result in detector_results
         if not result.get("ok")
     ]
+    context_sources = [
+        str(result.get("context_source") or "")
+        for _, result in detector_results
+        if result.get("context_source")
+    ]
+    context_source = (
+        context_sources[0]
+        if context_sources and len(set(context_sources)) == 1
+        else ("mixed" if context_sources else None)
+    )
     return {
         "ok": ok,
         "partial": ok and bool(failed_models),
@@ -1071,6 +1069,7 @@ def combine_detector_results(
         "paid_output_tokens": paid_output_tokens,
         "paid_cached_input_tokens": paid_cached_input_tokens,
         "paid_cached_output_tokens": paid_cached_output_tokens,
+        "context_source": context_source,
         "parsed": {"findings": combined_findings} if ok else None,
     }
 
@@ -1078,6 +1077,7 @@ def combine_detector_results(
 async def run_findings_only_for_project(
     project_dir: Path,
     *,
+    output_dir_override: Optional[Path] = None,
     model: str = DEFAULT_MODEL,
     reasoning_effort: str = DEFAULT_EFFORT,
     extended_prompt: bool = True,
@@ -1099,7 +1099,7 @@ async def run_findings_only_for_project(
     job_id: str = "",
     detection_mode: str = "independent",
 ) -> dict:
-    """Прогнать stage 02 findings-only для проекта.
+    """Прогнать Stage 01 findings-only для проекта.
 
     Возвращает dict:
       {"output_doc": <01_blocks_analysis.json content>,
@@ -1117,78 +1117,52 @@ async def run_findings_only_for_project(
 
     cancel_event — webapp может set() для прерывания между блоками.
     """
-    output_dir = gemma_output_root(project_dir)
+    output_dir = Path(output_dir_override) if output_dir_override is not None else gemma_output_root(project_dir)
     run_started_at = datetime.now(timezone.utc).isoformat()
     run_id = (
-        "stage02-"
+        "stage01-"
         + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         + "-"
         + re.sub(r"[^a-zA-Z0-9_-]+", "_", model).strip("_")
     )
-    blocks_dir = stage02_blocks_dir(project_dir)
-    index_path = stage02_blocks_index_path(project_dir)
-    gemma_index_path = gemma_blocks_index_path(project_dir)
-    gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
+    blocks_dir = output_dir / STAGE02_BLOCKS_DIRNAME
+    index_path = blocks_dir / "index.json"
+    context_summary_path = output_dir / BLOCK_CONTEXT_SUMMARY_FILENAME
     graph_path = output_dir / "document_graph.json"
     target_path = output_dir / BLOCKS_ANALYSIS_FILENAME
 
     if not index_path.exists():
         raise FindingsOnlyError(f"no _output/{STAGE02_BLOCKS_DIRNAME}/index.json — сначала: blocks.py crop --output-dir {STAGE02_BLOCKS_DIRNAME}")
     if not crop_index_matches_policy(index_path, stage02_crop_policy()):
-        raise FindingsOnlyError(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 02 crop policy {stage02_crop_policy()}")
+        raise FindingsOnlyError(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 01 crop policy {stage02_crop_policy()}")
     if not graph_path.exists():
         raise FindingsOnlyError("no _output/document_graph.json — сначала: process_project.py")
-    if not gemma_summary_path.exists():
-        raise FindingsOnlyError("no _output/gemma_enrichment_summary.json — сначала выполните gemma_enrichment")
+    context_validation = validate_block_context_summary(output_dir)
+    if not context_validation.get("valid"):
+        raise FindingsOnlyError(
+            f"block context summary invalid: {context_validation.get('reason')}"
+        )
 
     project_info = load_version_project_info(project_dir)
     section = (project_info.get("section") or "_generic").strip() or "_generic"
     index = json.loads(index_path.read_text(encoding="utf-8"))
     graph = json.loads(graph_path.read_text(encoding="utf-8"))
-    gemma_index = {}
-    if gemma_index_path.exists():
-        try:
-            gemma_index = json.loads(gemma_index_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            gemma_index = {}
-    gemma_summary = load_gemma_summary(project_dir)
-    md_path = _resolve_md_path(project_dir, project_info)
-    if md_path is None:
-        raise FindingsOnlyError("Markdown PDF representation is required before Stage 02")
-    gemma_validation = validate_gemma_summary(project_dir, md_path=md_path, summary=gemma_summary, min_coverage=0.0)
-    if not gemma_validation.get("valid"):
-        raise FindingsOnlyError(
-            f"Gemma enrichment summary invalid: {gemma_validation.get('reason') or gemma_validation.get('reason_code')}"
-        )
-    gemma_summary_blocks = gemma_summary_block_map(gemma_summary)
-    gemma_coverage = gemma_summary_coverage_metrics(gemma_summary)
+    context_summary = load_block_context_summary(output_dir)
+    context_blocks = {
+        str(item.get("block_id")): item
+        for item in context_summary.get("blocks") or []
+        if isinstance(item, dict) and item.get("block_id")
+    }
 
     by_id = {b["block_id"]: b for b in index.get("blocks", [])}
-    gemma_by_id = {
-        b["block_id"]: b
-        for b in gemma_index.get("blocks", [])
-        if isinstance(b, dict) and b.get("block_id")
-    }
-    stage02_ids = set(by_id)
-    gemma_ids = set(gemma_by_id)
-    gemma_without_stage02 = sorted(gemma_ids - stage02_ids)
-    stage02_without_gemma_index = sorted(stage02_ids - gemma_ids) if gemma_ids else sorted(stage02_ids)
     crop_index_warnings = {
-        "gemma_blocks_without_stage02_crop": [
+        "context_blocks_without_stage01_crop": [
             {
                 "block_id": bid,
-                "page": gemma_by_id.get(bid, {}).get("page"),
-                "reason": "missing_stage02_crop",
+                "page": context_blocks.get(bid, {}).get("page"),
+                "reason": "missing_stage01_crop",
             }
-            for bid in gemma_without_stage02
-        ],
-        "stage02_blocks_without_gemma_index": [
-            {
-                "block_id": bid,
-                "page": by_id.get(bid, {}).get("page"),
-                "reason": "missing_gemma_index",
-            }
-            for bid in stage02_without_gemma_index
+            for bid in sorted(set(context_blocks) - set(by_id))
         ],
     }
     if blocks_filter:
@@ -1225,43 +1199,40 @@ async def run_findings_only_for_project(
     system_prompt = build_system_prompt(section, extended=extended_prompt)
     cats_loaded = bool(load_categories_for_section(section)) and extended_prompt
 
-    md_cache: dict = {}
-    enr_sources = {"experiments": 0, "md": 0, "none": 0}
+    enr_sources: dict[str, int] = {}
     plan: list[dict] = []
     for bid in wanted:
         block = by_id[bid]
-        gemma_block = gemma_summary_blocks.get(bid) or {}
-        final_profile = str(gemma_block.get("final_profile") or "none")
-        coverage_status = str(gemma_block.get("coverage_status") or "missing_gemma_enrichment")
-        warnings = list(gemma_block.get("warnings") or [])
-        missing_reason = None
-        if final_profile == "none":
-            enr, src = None, "none"
-            missing_reason = coverage_status or "missing_gemma_enrichment"
-        else:
-            enr, src = get_enrichment(project_dir, md_cache, project_info, bid)
-            if enr is None:
-                missing_reason = "summary_enrichment_missing"
-        enr_sources[src] += 1
+        context = context_blocks.get(bid) or {}
+        source = str(context.get("source_kind") or "missing")
+        coverage_status = str(context.get("coverage_status") or "error")
+        warnings = list(context.get("warnings") or [])
+        missing_reason = "missing_block_context" if coverage_status == "error" else None
+        enrichment = {
+            "block_type": "image",
+            "subject": "Контекст блока подготовлен из PDF/Vectograph или изображения",
+            "notes": "Stage 01 использует точный векторный контекст либо приложенный PNG.",
+            "_block_context_source": source,
+        }
+        enr_sources[source] = enr_sources.get(source, 0) + 1
         plan.append({
             "block_id": bid,
             "page": block["page"],
-            "enrichment": enr,
-            "src": src,
-            "final_profile": final_profile,
+            "enrichment": enrichment,
+            "src": source,
             "coverage_status": coverage_status,
             "warnings": warnings,
             "missing_reason": missing_reason,
         })
 
-    skip_no_enrich = [p for p in plan if p["enrichment"] is None]
+    skip_no_enrich: list[dict] = []
     uncovered_blocks = [
-        {"block_id": p["block_id"], "page": p["page"], "reason": p.get("missing_reason") or "missing_gemma_enrichment"}
-        for p in skip_no_enrich
+        {"block_id": p["block_id"], "page": p["page"], "reason": p.get("missing_reason")}
+        for p in plan if p.get("missing_reason")
     ]
-    stage02_crop_missing_blocks = crop_index_warnings["gemma_blocks_without_stage02_crop"]
+    stage02_crop_missing_blocks = crop_index_warnings["context_blocks_without_stage01_crop"]
     coverage_uncovered_blocks_by_id: dict[str, dict[str, Any]] = {}
-    for item in gemma_coverage["uncovered_blocks"] or uncovered_blocks:
+    for item in uncovered_blocks:
         if not isinstance(item, dict) or not item.get("block_id"):
             continue
         block_id = str(item["block_id"])
@@ -1289,7 +1260,7 @@ async def run_findings_only_for_project(
             "uncovered_blocks": coverage_uncovered_blocks,
             "stage02_crop_missing_blocks": stage02_crop_missing_blocks,
             "crop_index_warnings": crop_index_warnings,
-            "gemma_coverage": gemma_coverage,
+            "context_coverage": context_summary,
             "runtime_plan_path": str(output_dir / "block_batches.runtime.json"),
         })
 
@@ -1297,7 +1268,7 @@ async def run_findings_only_for_project(
     if write_run_log:
         model_tag = model.replace("/", "_").replace(":", "_")
         ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        run_dir = output_dir / "_stage02_findings_only_runs" / f"{ts}__{model_tag}_{reasoning_effort or 'none'}"
+        run_dir = output_dir / "_stage01_findings_only_runs" / f"{ts}__{model_tag}_{reasoning_effort or 'none'}"
         run_dir.mkdir(parents=True, exist_ok=True)
 
     sem = asyncio.Semaphore(parallelism)
@@ -1379,6 +1350,7 @@ async def run_findings_only_for_project(
                 "page": block["page"],
                 "size_kb": block.get("size_kb"),
                 "enrichment_source": item["src"],
+                "context_source": res.get("context_source") or _context_source_from_enrichment(item["enrichment"]),
                 "result": res,
             }
             if run_dir is not None:
@@ -1476,13 +1448,13 @@ async def run_findings_only_for_project(
             status = (p.get("coverage_status") or "missing_gemma_enrichment") if missing_gemma else "cancelled"
             missing_reason = p.get("missing_reason") or "no_enrichment"
             details = (
-                "Блок не анализировался полноценно: отсутствует Gemma enrichment "
-                "(запустите gemma_enrichment/retry)."
+                "Блок не анализировался полноценно: отсутствует подготовленный контекст "
+                "(запустите подготовку контекста повторно)."
                 if missing_gemma else "Прерывание/отмена"
             )
             if missing_reason == "missing_gemma_index":
                 details = (
-                    "Блок есть в Stage 02 100 DPI index, но отсутствует в Gemma base index; "
+                    "Блок есть в Stage 01 100 DPI index, но отсутствует в compatibility index; "
                     "он не анализировался как полноценно обогащённый."
                 )
             block_analyses.append({
@@ -1491,9 +1463,9 @@ async def run_findings_only_for_project(
                 "unreadable_text": True,
                 "unreadable_details": details,
                 "not_enriched": missing_gemma,
-                "final_profile": p.get("final_profile") or "none",
                 "coverage_status": status,
                 "analysis_status": "not_analyzed",
+                "context_source": _context_source_from_enrichment(p.get("enrichment") or {}),
                 "summary": "", "key_values_read": [], "evidence_text_refs": [],
                 "findings": [],
                 "_skip_reason": missing_reason if missing_gemma else "cancelled",
@@ -1509,9 +1481,9 @@ async def run_findings_only_for_project(
                 "unreadable_text": True,
                 "unreadable_details": f"Single-block analysis failed: {err_text}",
                 "not_enriched": False,
-                "final_profile": p.get("final_profile") or "none",
                 "coverage_status": "single_block_analysis_failed",
                 "analysis_status": "failed",
+                "context_source": res.get("context_source") or _context_source_from_enrichment(p.get("enrichment") or {}),
                 "summary": "", "key_values_read": [], "evidence_text_refs": [],
                 "findings": [],
                 "_error": err_text,
@@ -1527,9 +1499,9 @@ async def run_findings_only_for_project(
             "label": block.get("ocr_label", ""), "sheet_type": None,
             "unreadable_text": False, "unreadable_details": None,
             "not_enriched": False,
-            "final_profile": p.get("final_profile") or GEMMA_BASE_PROFILE,
             "coverage_status": coverage_status,
             "analysis_status": "partial" if res.get("partial") else "analyzed",
+            "context_source": res.get("context_source") or _context_source_from_enrichment(p.get("enrichment") or {}),
             "detectors_ok": res.get("detectors_ok") or detector_models,
             "detectors_failed": res.get("detectors_failed") or [],
             "summary": "", "key_values_read": [], "evidence_text_refs": [],
@@ -1541,46 +1513,53 @@ async def run_findings_only_for_project(
                 run_id=run_id,
                 detection_mode=detection_mode,
                 detected_at=run_started_at,
+                context_source=res.get("context_source") or _context_source_from_enrichment(p.get("enrichment") or {}),
             ),
         })
+
+    context_source_counts: dict[str, int] = {}
+    for analysis in block_analyses:
+        source = str(analysis.get("context_source") or "unknown")
+        context_source_counts[source] = context_source_counts.get(source, 0) + 1
 
     output_doc = {
         "batch_id": 0,
         "project_id": project_info.get("project_id", project_dir.name),
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "stage02_mode": "findings_only_gemma_pair",
+        "stage01_mode": "findings_only_block_context",
         BLOCKS_META_KEY: {
             "model": model,
             "run_id": run_id,
             "detection_mode": detection_mode,
-            "prompt_version": STAGE02_PROMPT_VERSION,
+            "prompt_version": STAGE01_PROMPT_VERSION,
             "detectors": [
                 {
                     "detector": detector_for_model(detector_model),
                     "model": detector_model,
                     "mode": detection_mode,
                     "run_id": f"{run_id}:{detector_for_model(detector_model)}",
-                    "prompt_version": STAGE02_PROMPT_VERSION,
+                    "prompt_version": STAGE01_PROMPT_VERSION,
                 }
                 for detector_model in detector_models
             ],
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
             "section": section,
-            "base_gemma_coverage": gemma_coverage["base_gemma_coverage"],
-            "high_detail_candidates": gemma_coverage["high_detail_candidates"],
-            "high_detail_successful": gemma_coverage["high_detail_successful"],
-            "high_detail_skipped_large": gemma_coverage["high_detail_skipped_large"],
+            "context_source_counts": context_source_counts,
+            "context_coverage": {
+                "blocks_total": context_summary.get("blocks_total", 0),
+                "blocks_ready": context_summary.get("blocks_ready", 0),
+                "blocks_failed": context_summary.get("blocks_failed", 0),
+                "source_counts": context_summary.get("source_counts", {}),
+            },
             "blocks_total": len(wanted),
             "blocks_ok": sum(1 for r in results if r["result"].get("ok")),
             "blocks_failed": sum(1 for r in results if not r["result"].get("ok")),
             "blocks_partial": sum(1 for r in results if r["result"].get("partial")),
-            "blocks_skipped_no_enrichment": len(skip_no_enrich),
+            "blocks_skipped_no_context": len(skip_no_enrich),
             "uncovered_blocks": coverage_uncovered_blocks,
             "stage02_crop_missing_blocks": stage02_crop_missing_blocks,
             "crop_index_warnings": crop_index_warnings,
-            "blocks_analyzed_only_with_100_dpi_base": gemma_coverage["blocks_analyzed_only_with_100_dpi_base"],
-            "blocks_upgraded_to_300": gemma_coverage["blocks_upgraded_to_300"],
             "failed_blocks": [
                 {
                     "block_id": r["block_id"],
@@ -1604,8 +1583,7 @@ async def run_findings_only_for_project(
             ],
             "task_exceptions": task_exceptions,
             "runtime_plan_path": str(output_dir / "block_batches.runtime.json"),
-            "stage02_blocks_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
-            "gemma_blocks_dir": f"_output/{GEMMA_BLOCKS_DIRNAME}",
+            "blocks_crop_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
             "wall_clock_s": wall_clock_s,
             "cancelled": cancelled,
         },
@@ -1671,20 +1649,20 @@ async def run_findings_only_for_project(
         "reasoning_effort": reasoning_effort,
         "extended_prompt": cats_loaded,
         "blocks_total": len(wanted),
-        "blocks_with_enrichment": sum(1 for p in plan if p["enrichment"] is not None),
+        "blocks_with_context": sum(1 for p in plan if p["enrichment"] is not None),
         "blocks_ok": len(ok),
         "blocks_failed": len(fail),
         "blocks_partial": sum(1 for r in results if r["result"].get("partial")),
-        "blocks_skipped_no_enrichment": len(skip_no_enrich),
-        "base_gemma_coverage": gemma_coverage["base_gemma_coverage"],
-        "high_detail_candidates": gemma_coverage["high_detail_candidates"],
-        "high_detail_successful": gemma_coverage["high_detail_successful"],
-        "high_detail_skipped_large": gemma_coverage["high_detail_skipped_large"],
+        "blocks_skipped_no_context": len(skip_no_enrich),
+        "context_coverage": {
+            "blocks_total": context_summary.get("blocks_total", 0),
+            "blocks_ready": context_summary.get("blocks_ready", 0),
+            "blocks_failed": context_summary.get("blocks_failed", 0),
+            "source_counts": context_summary.get("source_counts", {}),
+        },
         "uncovered_blocks": coverage_uncovered_blocks,
         "stage02_crop_missing_blocks": stage02_crop_missing_blocks,
         "crop_index_warnings": crop_index_warnings,
-        "blocks_analyzed_only_with_100_dpi_base": gemma_coverage["blocks_analyzed_only_with_100_dpi_base"],
-        "blocks_upgraded_to_300": gemma_coverage["blocks_upgraded_to_300"],
         "failed_blocks": [
             {
                 "block_id": r["block_id"],
@@ -1696,8 +1674,7 @@ async def run_findings_only_for_project(
         ],
         "task_exceptions": task_exceptions,
         "runtime_plan_path": str(output_dir / "block_batches.runtime.json"),
-        "stage02_blocks_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
-        "gemma_blocks_dir": f"_output/{GEMMA_BLOCKS_DIRNAME}",
+        "blocks_crop_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
         "wall_clock_s": wall_clock_s,
         "cancelled": cancelled,
         "totals": {
@@ -1715,7 +1692,7 @@ async def run_findings_only_for_project(
             "billable_input_tokens": billable_in,
             "billable_output_tokens": billable_out,
         },
-        "enrichment_sources": enr_sources,
+        "context_sources": enr_sources,
     }
 
     if run_dir is not None:
@@ -1734,26 +1711,23 @@ async def run_findings_only_for_project(
     }
 
 
-def check_prerequisites(project_dir: Path) -> dict:
-    """Проверить готовность проекта к findings_only_gemma_pair.
+def check_prerequisites(project_dir: Path, *, output_dir_override: Optional[Path] = None) -> dict:
+    """Проверить готовность проекта к findings_only_block_context.
 
-    Возвращает dict {"ok": bool, "reasons": [...], "blocks_total": N, "with_enrichment": M}.
+    Возвращает dict {"ok": bool, "reasons": [...], "blocks_total": N, "with_context": M}.
     """
-    output_dir = gemma_output_root(project_dir)
-    index_path = stage02_blocks_index_path(project_dir)
-    gemma_index_path = gemma_blocks_index_path(project_dir)
-    gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
+    output_dir = Path(output_dir_override) if output_dir_override is not None else gemma_output_root(project_dir)
+    index_path = output_dir / STAGE02_BLOCKS_DIRNAME / "index.json"
     graph_path = output_dir / "document_graph.json"
 
     reasons: list[str] = []
     if not index_path.exists():
-        reasons.append(f"Нет _output/{STAGE02_BLOCKS_DIRNAME}/index.json (запустите Stage 02 crop)")
+        reasons.append(f"Нет _output/{STAGE02_BLOCKS_DIRNAME}/index.json (запустите Stage 01 crop)")
     elif not crop_index_matches_policy(index_path, stage02_crop_policy()):
-        reasons.append(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 02 crop policy")
-    if not gemma_index_path.exists():
-        reasons.append(f"Нет _output/{GEMMA_BLOCKS_DIRNAME}/index.json (Gemma crop source of truth)")
-    if not gemma_summary_path.exists():
-        reasons.append("Нет _output/gemma_enrichment_summary.json (Gemma final decisions)")
+        reasons.append(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 01 crop policy")
+    context_validation = validate_block_context_summary(output_dir)
+    if not context_validation.get("valid"):
+        reasons.append(f"Контекст блоков не готов: {context_validation.get('reason')}")
     if not graph_path.exists():
         reasons.append("Нет _output/document_graph.json")
 
@@ -1762,74 +1736,40 @@ def check_prerequisites(project_dir: Path) -> dict:
             "ok": False,
             "reasons": reasons,
             "blocks_total": 0,
-            "with_enrichment": 0,
+            "with_context": 0,
             "uncovered_blocks": [],
         }
 
-    project_info = load_version_project_info(project_dir)
-    md_path = _resolve_md_path(project_dir, project_info)
-    if md_path is None:
-        return {
-            "ok": False,
-            "reasons": ["Нет *_document.md (Markdown required before Stage 02)"],
-            "blocks_total": 0,
-            "with_enrichment": 0,
-            "uncovered_blocks": [],
-        }
-    gemma_summary = load_gemma_summary(project_dir)
-    gemma_validation = validate_gemma_summary(project_dir, md_path=md_path, summary=gemma_summary, min_coverage=0.0)
-    if not gemma_validation.get("valid"):
-        return {
-            "ok": False,
-            "reasons": [f"Gemma summary невалиден: {gemma_validation.get('reason') or gemma_validation.get('reason_code')}"],
-            "blocks_total": 0,
-            "with_enrichment": 0,
-            "uncovered_blocks": [],
-        }
     index = json.loads(index_path.read_text(encoding="utf-8"))
-    gemma_index = json.loads(gemma_index_path.read_text(encoding="utf-8")) if gemma_index_path.exists() else {}
-    gemma_ids = {
-        b.get("block_id")
-        for b in gemma_index.get("blocks", [])
-        if isinstance(b, dict) and b.get("block_id")
+    context_summary = load_block_context_summary(output_dir)
+    context_by_id = {
+        str(item.get("block_id")): item
+        for item in context_summary.get("blocks") or []
+        if isinstance(item, dict) and item.get("block_id")
     }
-    gemma_summary_blocks = gemma_summary_block_map(gemma_summary)
-
-    md_cache: dict = {}
     blocks = index.get("blocks", [])
-    with_enr = 0
+    with_context = 0
     uncovered_blocks: list[dict[str, Any]] = []
     for b in blocks:
-        summary_block = gemma_summary_blocks.get(b["block_id"]) or {}
-        final_profile = str(summary_block.get("final_profile") or "none")
-        coverage_status = str(summary_block.get("coverage_status") or "missing_gemma_enrichment")
-        if b["block_id"] not in gemma_ids:
-            enr = None
-            reason = "missing_gemma_index"
-        elif final_profile == "none":
-            enr = None
-            reason = coverage_status or "missing_gemma_enrichment"
-        else:
-            enr, _src = get_enrichment(project_dir, md_cache, project_info, b["block_id"])
-            reason = "summary_enrichment_missing"
-        if enr is not None:
-            with_enr += 1
+        summary_block = context_by_id.get(str(b.get("block_id"))) or {}
+        if summary_block.get("coverage_status") != "error":
+            with_context += 1
         else:
             uncovered_blocks.append({
                 "block_id": b.get("block_id"),
                 "page": b.get("page"),
-                "reason": reason,
+                "reason": "missing_block_context",
             })
 
-    if with_enr == 0:
-        reasons.append("Ни у одного блока нет gemma-обогащения (запустите 'Подготовить данные' с Gemma)")
-    elif with_enr < len(blocks):
-        reasons.append(f"Только {with_enr}/{len(blocks)} блоков имеют gemma-обогащение — остальные будут пропущены")
+    if blocks and with_context == 0:
+        reasons.append("Ни у одного блока нет подготовленного контекста")
+    elif with_context < len(blocks):
+        reasons.append(f"Контекст готов для {with_context}/{len(blocks)} блоков")
 
     return {
-        "ok": with_enr > 0,
+        "ok": not blocks or with_context > 0,
         "reasons": reasons,
         "blocks_total": len(blocks),
-        "with_enrichment": with_enr,
+        "with_context": with_context,
         "uncovered_blocks": uncovered_blocks,
     }

@@ -1,7 +1,7 @@
 """reserc.md #15 / #3 / #12 — удаление мёртвого legacy block-batch конвейера.
 
 Production-режим block_batch ЗАЛОЧЕН на единственный выбор
-`findings_only_gemma_pair` (single-block GPT-5.4 + gemma-enrichment), пишущий
+`findings_only_block_context` (single-block GPT-5.4 + PDF/Vectograph context), пишущий
 01_blocks_analysis.json напрямую. Поэтому legacy-ветки batch-конвейера
 (generate batches → run batches → merge → _retry_batch_split) были провабельно
 недостижимы и удалены из manager.py.
@@ -18,11 +18,17 @@ from backend.app.pipeline import manager as mgr
 
 
 def test_block_batch_mode_locked_to_findings_only():
-    """Единственный допустимый режim — findings_only_gemma_pair.
+    """Единственный допустимый режим — findings_only_block_context.
     Если кто-то добавит сюда второй режим, ему придётся осознанно вернуть и
     legacy-обработку (этот тест упадёт и заставит подумать)."""
-    assert config.STAGE_BATCH_MODE_CHOICES["block_batch"] == ["findings_only_gemma_pair"]
-    assert config.get_stage_batch_mode("block_batch") == "findings_only_gemma_pair"
+    assert config.STAGE_BATCH_MODE_CHOICES["block_batch"] == ["findings_only_block_context"]
+    assert config.get_stage_batch_mode("block_batch") == "findings_only_block_context"
+
+
+def test_legacy_block_batch_mode_normalizes_to_canonical():
+    assert config.normalize_stage_batch_mode(
+        "block_batch", "findings_only_gemma_pair"
+    ) == "findings_only_block_context"
 
 
 def test_legacy_batch_methods_removed():

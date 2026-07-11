@@ -697,7 +697,7 @@
             <div class="batch-action-bar__actions">
                 <button class="btn btn-outline" :disabled="batchCropLoading"
                         @click="cropBatchBlocks"
-                        title="Полная подготовка данных: crop PNG-блоков + Gemma-enrichment MD (готовит проект к аудиту)">
+                        title="Полная подготовка данных: PNG-блоки + контекст PDF/Vectograph">
                     <span v-if="batchCropLoading">&#129534; Готовлю... ({{ batchCropProgress }})</span>
                     <span v-else>&#129534; Подготовить данные</span>
                 </button>
@@ -1160,7 +1160,7 @@
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'findings_only' }"
                             @click="applyPreset('findings_only')"
-                            title="Production: Markdown → Gemma OCR enrichment → Stage 01 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
+                            title="Контекст PDF/Vectograph → Stage 01 Блоки (GPT-5.4) → Stage 02 Текст.">Production Vector+GPT5.4</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
@@ -1224,10 +1224,10 @@
                     </div>
                 </div>
 
-                <!-- ═══ Prepare-data queue (Gemma enrichment) ═══ -->
+                <!-- ═══ Prepare-data queue (block context) ═══ -->
                 <div v-if="prepareQueue && prepareQueue.items && prepareQueue.items.length > 0" class="prepare-queue">
                     <div class="prepare-queue__header">
-                        <h3 style="margin: 0;">&#129534; Подготовка данных (Gemma enrichment)</h3>
+                        <h3 style="margin: 0;">&#129534; Подготовка контекста блоков</h3>
                         <button class="btn btn-outline btn-sm" @click="clearPrepareQueue">
                             Очистить завершённые
                         </button>
@@ -1419,17 +1419,6 @@
                         </select>
                         <span v-else class="queue-item__action-label">{{ batchActionLabel(item.action) }}</span>
 
-                        <!-- Pre-Gemma badge: показывает что Gemma OCR готов заранее (или идёт фоном) -->
-                        <span v-if="item.gemma_prefetched && (item.gemma_prefetch_status === 'done' || item.gemma_prefetch_status === 'skipped')"
-                              class="prefetch-badge prefetch-done"
-                              title="Gemma OCR готов заранее — этап будет пропущен">⚡</span>
-                        <span v-else-if="item.gemma_prefetch_status === 'running'"
-                              class="prefetch-badge prefetch-running"
-                              title="Pre-Gemma выполняется">↻</span>
-                        <span v-else-if="item.gemma_prefetch_status === 'failed'"
-                              class="prefetch-badge prefetch-failed"
-                              :title="'Pre-Gemma не удался — Gemma запустится штатно: ' + (item.gemma_prefetch_error || '')">⚠</span>
-
                         <!-- Статус -->
                         <span class="queue-item__status">
                             <template v-if="item.status === 'pending'">Ожидает</template>
@@ -1502,11 +1491,11 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline-detail">
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('gemma_enrichment')}]"
-                             @click="canStartFrom('gemma_enrichment') && startFromStage(currentProject.project_id, 'gemma_enrichment')"
-                             :title="canStartFrom('gemma_enrichment') ? 'Клик: запустить с Gemma enrichment' : 'Gemma OCR enrichment / предварительное распознавание чертежей'">
-                            <div class="stage-num">GEMMA</div>
-                            <div class="stage-label">Gemma OCR</div>
+                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
+                             @click="canStartFrom('block_context') && startFromStage(currentProject.project_id, 'block_context')"
+                             :title="canStartFrom('block_context') ? 'Клик: подготовить контекст блоков' : 'Подготовка контекста PDF/Vectograph'">
+                            <div class="stage-num">CTX</div>
+                            <div class="stage-label">Контекст блоков</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
@@ -5122,7 +5111,7 @@
                                     <li>Будет запущен <b>backend Pipeline V2</b> (offline dry-run). Это <b>не read-only</b> операция.</li>
                                     <li>Операция может занять время; артефакты пишутся в
                                         <code>comparison/sessions/&lt;sid&gt;/pairs/{{ scPv2RunModal.pair_id }}/pipeline_v2/</code>.</li>
-                                    <li>По умолчанию модели (Qwen/Gemma/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
+                                    <li>По умолчанию модели (Qwen/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
                                     <li v-if="scPv2RunModal.is_rerun" style="color:#b45309">
                                         ⚠ Существующие артефакты будут сохранены в
                                         <code>pipeline_v2_backup_before_ui_run_&lt;TS&gt;</code> перед перезаписью.</li>

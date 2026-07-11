@@ -19,7 +19,8 @@ class AuditStage(str, Enum):
     OPTIMIZATION = "optimization"
     # OCR-пайплайн
     CROP_BLOCKS = "crop_blocks"
-    GEMMA_ENRICHMENT = "gemma_enrichment"  # Stage 00: Gemma-обогащение MD (после crop, до text_analysis)
+    BLOCK_CONTEXT = "block_context"
+    GEMMA_ENRICHMENT = "gemma_enrichment"  # legacy API/resume alias
     TEXT_ANALYSIS = "text_analysis"
     BLOCK_ANALYSIS = "block_analysis"
     FINDINGS_MERGE = "findings_merge"
@@ -121,14 +122,6 @@ class BatchQueueItem(BaseModel):
     extra_params: dict = {}
     # job_id, который вернётся клиенту при enqueue — используется для трассировки
     job_id: Optional[str] = None
-    # Pre-Gemma OCR prefetch — фоновый прогон gemma_enrichment для следующего
-    # pending-проекта пока главный воркер на других этапах. None | pending |
-    # running | done | failed | skipped.
-    gemma_prefetched: bool = False
-    gemma_prefetch_status: Optional[str] = None
-    gemma_prefetch_error: Optional[str] = None
-    gemma_prefetch_started_at: Optional[str] = None
-    gemma_prefetch_finished_at: Optional[str] = None
 
 
 class BatchQueueStatus(BaseModel):

@@ -188,9 +188,10 @@ def _configured_max_images(max_images: int | None) -> int:
 
 
 def _preferred_dirs() -> list[str]:
-    configured = os.environ.get(_IMAGE_DIR_ENV, "blocks_gemma_100").strip()
+    configured = os.environ.get(_IMAGE_DIR_ENV, "blocks_stage02_100").strip()
     order = [
         configured,
+        "blocks_stage02_100",
         "blocks_gemma_100",
         "blocks",
         "blocks_gemma_300",

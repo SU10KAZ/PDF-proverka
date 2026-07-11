@@ -12,15 +12,14 @@
      Markdown: контейнеры, узлы, сети и честное состояние доказательности связей;
   3) есть содержательный вектор-слой (иначе) → СЫРОЙ вектор-текст блока (полигон-клип):
      100% полнота, 0 галлюцинаций OCR; связи домысливает LLM по соседству;
-  4) вектор-слоя нет (скан/растр — клип тоньше порога) → None → Gemma-описание +
-     изображение остаются как есть. Это ОБЯЗАТЕЛЬНЫЙ fallback: на сканах вектор-текста
-     физически нет, «выбросить Gemma везде» без него = пустое описание блока.
+  4) вектор-слоя нет (скан/растр — клип тоньше порога) → image-only: Stage 01
+     анализирует приложенный PNG без OCR-описания.
 
 Источник вектор-текста — полигон-клип из PDF по `document_graph.json` (НЕ `pdfplumber_text`
 из result.json, который у многих проектов пуст — см. память проекта).
 
-Всё за флагом `BLOCK_SOURCE_ROUTER_ENABLED` (default OFF), fail-soft: любая ошибка/нехватка
-данных → (None, <kind>) → прод-поведение (Gemma) не меняется.
+Роутер является штатным источником Stage 01. Ошибка извлечения деградирует в image-only,
+если PNG блока доступен.
 
 Будущее (роадмап graphic_block_extraction): для ВК/ОВ/СС/планов — свои структурированные
 профили уровня Вектографа; сейчас структурируется только однолинейка (пилот).
@@ -163,10 +162,10 @@ def vector_covered_block_ids(output_dir) -> dict:
 def resolve_block_source(
     output_dir, block_id: str, page, *, panel_hint: str = "ВРУ"
 ) -> Tuple[Optional[str], str]:
-    """user_text для Stage 02 из вектор-слоя, либо None (оставить Gemma+изображение).
+    """User text для Stage 01 из вектор-слоя либо image-only fallback.
 
 Возвращает (text_or_None, source_kind). source_kind:
-      structured_singleline | structured_alia_scheme | raw_vector | gemma_fallback |
+      structured_singleline | structured_alia_scheme | raw_vector | image_only |
       no_sources | block_not_found | error.
     fail-soft: при любой проблеме → (None, kind) и прод-путь (Gemma) сохраняется.
     """
@@ -180,7 +179,7 @@ def resolve_block_source(
             return None, "block_not_found"
         page_text, block_text, bbox, poly, page_pdf = ex
         if len((block_text or "").strip()) < _MIN_VECTOR_CHARS:
-            return None, "gemma_fallback"  # скан/растр — вектор-слоя нет
+            return None, "image_only"  # скан/растр: Stage 01 анализирует PNG
 
         head = f"# Блок {block_id} | страница PDF {page or page_pdf}\n\n"
 

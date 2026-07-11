@@ -19,7 +19,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 
 
-GEMMA_STAGE_LABEL = "Gemma OCR enrichment / предварительное распознавание чертежей"
+GEMMA_STAGE_LABEL = "Подготовка контекста блоков"
 GEMMA_MIGRATION_STATUS_DETAIL = "legacy_gemma_migration_required"
 
 _MIGRATION_REQUIRED_GEMMA_STATUSES = {

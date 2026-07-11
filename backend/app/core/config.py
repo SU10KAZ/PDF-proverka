@@ -86,7 +86,6 @@ OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_ta
 # Скрипты — ссылаются на wrapper-файлы в корне (для subprocess-запуска)
 PROCESS_PROJECT_SCRIPT = ROOT_DIR / "process_project.py"
 BLOCKS_SCRIPT = ROOT_DIR / "blocks.py"          # субкоманды: crop, batches, merge
-GEMMA_ENRICH_SCRIPT = ROOT_DIR / "gemma_enrich.py"
 NORMS_SCRIPT = ROOT_DIR / "norms" / "_core.py"    # субкоманды: verify, update
 GENERATE_EXCEL_SCRIPT = ROOT_DIR / "generate_excel_report.py"
 # Legacy aliases (для обратной совместимости)
@@ -348,15 +347,25 @@ def _save_stage_model_config():
 
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
+BLOCK_BATCH_MODE_FINDINGS_ONLY = "findings_only_block_context"
+_LEGACY_STAGE_BATCH_MODES = {
+    "block_batch": {"findings_only_gemma_pair": BLOCK_BATCH_MODE_FINDINGS_ONLY},
+}
+
 _STAGE_BATCH_MODE_DEFAULTS: dict[str, str] = {
-    "block_batch": "findings_only_gemma_pair",
+    "block_batch": BLOCK_BATCH_MODE_FINDINGS_ONLY,
 }
 
 STAGE_BATCH_MODE_CHOICES: dict[str, list[str]] = {
-    "block_batch": ["findings_only_gemma_pair"],
+    "block_batch": [BLOCK_BATCH_MODE_FINDINGS_ONLY],
 }
 
 _STAGE_BATCH_MODES_FILE = STAGE_BATCH_MODES_FILE_PATH
+
+
+def normalize_stage_batch_mode(stage: str, mode: str) -> str:
+    """Map persisted legacy mode IDs to the canonical runtime ID."""
+    return _LEGACY_STAGE_BATCH_MODES.get(stage, {}).get(mode, mode)
 
 
 def _load_stage_batch_modes() -> dict[str, str]:
@@ -366,8 +375,9 @@ def _load_stage_batch_modes() -> dict[str, str]:
             with open(_STAGE_BATCH_MODES_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
             for stage, mode in saved.items():
-                if stage in config and mode in STAGE_BATCH_MODE_CHOICES.get(stage, []):
-                    config[stage] = mode
+                normalized = normalize_stage_batch_mode(stage, mode)
+                if stage in config and normalized in STAGE_BATCH_MODE_CHOICES.get(stage, []):
+                    config[stage] = normalized
             print(f"[config] Stage batch modes loaded from {_STAGE_BATCH_MODES_FILE.name}")
         except Exception as e:
             print(f"[config] Failed to load stage_batch_modes.json: {e}")
@@ -387,13 +397,17 @@ STAGE_BATCH_MODES: dict[str, str] = _load_stage_batch_modes()
 
 
 def get_stage_batch_mode(stage: str) -> str:
-    return STAGE_BATCH_MODES.get(stage, _STAGE_BATCH_MODE_DEFAULTS.get(stage, "findings_only_gemma_pair"))
+    return STAGE_BATCH_MODES.get(
+        stage,
+        _STAGE_BATCH_MODE_DEFAULTS.get(stage, BLOCK_BATCH_MODE_FINDINGS_ONLY),
+    )
 
 
 def set_stage_batch_mode(stage: str, mode: str) -> bool:
     """Возвращает True если режим установлен (валиден), иначе False."""
     if stage not in STAGE_BATCH_MODE_CHOICES:
         return False
+    mode = normalize_stage_batch_mode(stage, mode)
     if mode not in STAGE_BATCH_MODE_CHOICES[stage]:
         return False
     STAGE_BATCH_MODES[stage] = mode
@@ -401,12 +415,8 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
     return True
 
 
-# Локальная модель enrichment/анализа. Раньше был хардкод; теперь env-управляемо
-# (дефолт = прежнее значение), чтобы при миграции на новый LM Studio задать id новой
-# модели (напр. chandra-ocr-2 / qwen36-27b-mtp) без правки кода. LOCAL_LLM_MODELS и
-# AVAILABLE_MODELS ниже привязаны к переменной → is_local_llm_model() подхватит новый id.
-CHANDRA_GEMMA_MODEL = os.environ.get("CHANDRA_GEMMA_MODEL", "google/gemma-4-26b-a4b")
-LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
+# Stage-модели больше не маршрутизируются в локальный OCR runtime.
+LOCAL_LLM_MODELS: set[str] = set()
 
 # Codex exec transport for classic agent stages. Stage model IDs use the
 # `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
@@ -431,8 +441,6 @@ AVAILABLE_MODELS = [
     {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex exec",             "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
-    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
-    {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
 ]
 
 STAGE_MODEL_RESTRICTIONS = {
@@ -447,8 +455,6 @@ STAGE_MODEL_RESTRICTIONS = {
         "openai/gpt-5.4",
         CODEX_STAGE_MODEL_ID,
         OPTIMIZATION_DUAL_MODEL_ID,
-        "google/gemini-3.1-pro-preview",
-        CHANDRA_GEMMA_MODEL,
     ],
 }
 
@@ -498,7 +504,7 @@ def validate_current_stage_model_config(
 
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Single-block Stage 02: GPT-5.4, Codex или независимый двойной проход GPT + Codex. Gemma выполняется отдельным обязательным этапом enrichment.",
+    "block_batch": "Stage 01: GPT-5.4, Codex или независимый двойной проход GPT + Codex с единым контекстом PDF/Vectograph.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -676,7 +682,6 @@ CHANDRA_BEARER_TOKEN = os.environ.get("CHANDRA_BEARER_TOKEN") or os.environ.get(
 CHANDRA_CHAT_TRANSPORT = os.environ.get("CHANDRA_CHAT_TRANSPORT", "native").strip().lower()
 
 LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
-GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)
 # Value Grounding (усиление предобработки графики): сверка значений gemma с векторным
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
@@ -720,37 +725,6 @@ MIRROR_OCR_ENABLED = _env_bool("MIRROR_OCR_ENABLED", False)
 # Нормализатор гасит стиль (кир/лат, ,/., ², пробел) → подсвечиваем только реальное. МД-файл
 # НЕ редактируем (аддитивно в промпт). OFF по умолчанию — прод не меняется. fail-soft.
 MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
-# Роутер источника блока для Stage 02 (решение Андрея 2026-07-07 «вместо Gemma везде сырые
-# данные, однолинейки — вектографом»). Единая развилка на блок, ЗАМЕНЯЕТ Gemma-описание в
-# промпте (не аддитивно): (1) однолинейка + гейт Вектографа → полный структурированный рендер;
-# (2) есть вектор-слой → сырой вектор-текст блока (полигон-клип); (3) скан/растр без слоя → None
-# → Gemma+изображение остаются (обязательный fallback). Источник — полигон-клип по
-# document_graph (не пустой pdfplumber_text). Когда ON — заменяет ad-hoc инъекции
-# SINGLELINE_RICH_PROMPT_ENABLED/MIRROR_OCR_ENABLED (единый авторитет). Влияет на
-# call_gpt_for_block и превью /blocks/llm-text. OFF по умолчанию — прод не меняется. fail-soft.
-BLOCK_SOURCE_ROUTER_ENABLED = _env_bool("BLOCK_SOURCE_ROUTER_ENABLED", False)
-# Пропуск СТАДИИ Gemma для блоков с годным вектор-слоем (оптимизация к роутеру выше). Такие
-# блоки роутер и так отдаёт из вектор-слоя на Stage 02 → гонять по ним Gemma незачем (экономит
-# токены/часы). Пропущенным блокам ставится синтетический ok-результат с ЧИСТЫМ вектор-текстом в
-# enrichment (coverage остаётся "ok", summary валиден, MD получает вектор-текст вместо Gemma-OCR).
-# ИНВАРИАНТ БЕЗОПАСНОСТИ: пропуск действует ТОЛЬКО когда BLOCK_SOURCE_ROUTER_ENABLED тоже ON —
-# иначе Stage 02 не подаст вектор-текст и блок останется слепым. Общий предикат
-# vector_covered_block_ids (тот же порог/клип, что у роутера). Скан/растр без слоя → Gemma как
-# обычно. OFF по умолчанию. fail-soft.
-GEMMA_SKIP_VECTOR_BLOCKS_ENABLED = _env_bool("GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)
-# ПОЛНОЕ отключение OCR-прогона стадии Gemma (решение Андрея 2026-07-10: «описание блоков —
-# из текст-слоя PDF, Gemma выключить»). Расширяет пропуск выше со «только блоки с годным
-# вектор-слоем» на ВСЕ image-блоки: covered-блоки получают синтетический enrichment с чистым
-# вектор-текстом (как при GEMMA_SKIP_VECTOR_BLOCKS_ENABLED), сканы/растры без слоя —
-# placeholder «OCR отключён, анализируй изображение» (Stage 02 анализирует их по PNG, а не
-# скипает как enrichment=None). Стадия становится «сухой»: НИ ОДНОГО обращения к LM Studio
-# (ни adaptive reload, ни preflight; CHANDRA_BASE_URL не требуется) — полная независимость
-# аудита от ngrok/локальной модели. Кропы 100 DPI и summary (schema v2) пишутся как обычно →
-# все гейты/resume/Stage 02 проходят без правок. ИНВАРИАНТ БЕЗОПАСНОСТИ: как и пропуск выше,
-# действует ТОЛЬКО при BLOCK_SOURCE_ROUTER_ENABLED=true (иначе Stage 02 не подаст covered-блокам
-# вектор-текст). Приоритетнее GEMMA_SKIP_VECTOR_BLOCKS_ENABLED (тот можно не выставлять).
-# OFF по умолчанию — прод не меняется.
-GEMMA_STAGE_DISABLED = _env_bool("GEMMA_STAGE_DISABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о
@@ -827,32 +801,6 @@ BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS = int(os.environ.get("BLOCK_VALUE_GROUNDIN
 BLOCK_VALUE_GROUNDING_QWEN_MODEL = os.environ.get(
     "BLOCK_VALUE_GROUNDING_QWEN_MODEL",
     os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "qwen/qwen3.6-35b-a3b"))
-# 8192 — практический минимум для 100 DPI image-блока с page_text:
-# на 4096 в проде стабильно падают блоки 800×500 с "Context size has been exceeded".
-GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "8192"))
-GEMMA_HIGH_DETAIL_CONTEXT_LENGTH = int(os.environ.get("GEMMA_HIGH_DETAIL_CONTEXT_LENGTH", "16000"))
-# #16: параллелизм base 100 DPI прохода Gemma. Default 1 (= прежний хардкод,
-# gemma3.6-35b не тянет параллель), но конфигурируемо для будущих моделей/железа.
-# High-detail 300 DPI всегда остаётся 1.
-GEMMA_BASE_PARALLELISM = max(1, int(os.environ.get("GEMMA_BASE_PARALLELISM", "1") or "1"))
-LMSTUDIO_UNLOAD_AFTER_QUEUE = _env_bool("LMSTUDIO_UNLOAD_AFTER_QUEUE", True)
-LMSTUDIO_UNLOAD_GRACE_SECONDS = int(os.environ.get("LMSTUDIO_UNLOAD_GRACE_SECONDS", "60"))
-LMSTUDIO_UNLOAD_MODEL_ALLOWLIST = _env_csv(
-    "LMSTUDIO_UNLOAD_MODEL_ALLOWLIST",
-    [
-        "gemma/gemma3.5-35b-a3b",
-        "gemma/gemma3.6-35b-a3b",
-        "google/gemma-4-26b-a4b",
-    ],
-)
-LMSTUDIO_UNLOAD_MODEL_DENYLIST = _env_csv(
-    "LMSTUDIO_UNLOAD_MODEL_DENYLIST",
-    [
-        "chandra-ocr-2",
-    ],
-)
-
-GEMINI_MODEL = "google/gemini-3.1-pro-preview"
 GPT_MODEL = "openai/gpt-5.4"
 LOCAL_GEMMA_CONTEXT_LENGTH = int(os.environ.get("LOCAL_GEMMA_CONTEXT_LENGTH", "98304"))
 LOCAL_GEMMA_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_GEMMA_MAX_OUTPUT_TOKENS", "8192"))
@@ -879,13 +827,13 @@ GEMINI_DIRECT_MAX_OUTPUT_TOKENS: int = 65536
 
 STAGE_MODELS_OPENROUTER: dict[str, str] = {
     "text_analysis":          GPT_MODEL,
-    "block_batch":            GEMINI_MODEL,
+    "block_batch":            GPT_MODEL,
     "findings_merge":         GPT_MODEL,
     "findings_critic":        GPT_MODEL,
     "findings_corrector":     GPT_MODEL,
     "norm_verify":            GPT_MODEL,
     "norm_fix":               GPT_MODEL,
-    "optimization":           GEMINI_MODEL,
+    "optimization":           GPT_MODEL,
     "optimization_critic":    GPT_MODEL,
     "optimization_corrector": GPT_MODEL,
 }

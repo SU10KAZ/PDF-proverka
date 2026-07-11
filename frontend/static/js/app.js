@@ -1833,7 +1833,7 @@ const app = createApp({
 
         // Старые usageCounters оставляем для совместимости с webapp-трекингом
         const usageCounters = ref({});
-        const GEMMA_STAGE_UI_LABEL = 'Gemma OCR enrichment / предварительное распознавание чертежей';
+        const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Подготовка контекста блоков';
 
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
@@ -1977,7 +1977,7 @@ const app = createApp({
             return hr + 'ч' + (remMin > 0 ? ' ' + remMin + 'м' : '');
         }
 
-        // ─── Prepare-data queue (Gemma enrichment) ───────────────────────
+        // ─── Prepare-data queue (block context) ──────────────────────────
         async function fetchPrepareQueue() {
             try {
                 const r = await fetch('/api/audit/prepare-data/queue');
@@ -2280,7 +2280,7 @@ const app = createApp({
             const labels = {
                 'queued': 'В очереди',
                 'crop_blocks': 'Кроп блоков',
-                'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+                'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков',
                 'findings_merge': 'Свод замечаний',
@@ -2747,7 +2747,7 @@ const app = createApp({
         const selectAllChecked = ref(false);
         const batchRunning = ref(false);
         const batchQueue = ref(null);
-        const prepareQueue = ref(null);  // Gemma enrichment queue (см. prepare_service.py)
+        const prepareQueue = ref(null);  // block-context queue (см. prepare_service.py)
         // ─── LM Studio remote management ───
         const lmsLoaded = ref([]);       // загруженные сейчас instance'ы
         const lmsAll = ref([]);          // все скачанные модели
@@ -3104,8 +3104,8 @@ const app = createApp({
         const CODEX_PRESET_MODEL = "__codex_exec__";
         const modelPresets = {
             findings_only: {
-                label: "Production Gemma+GPT5.4",
-                hint: "Production: Markdown → Gemma OCR enrichment → Stage 01 (блоки, findings-only single-block на GPT-5.4) → Stage 02 (текст).",
+                label: "Production Vector+GPT5.4",
+                hint: "Контекст PDF/Vectograph → Stage 01 Блоки (GPT-5.4) → Stage 02 Текст.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "openai/gpt-5.4",
@@ -3119,7 +3119,7 @@ const app = createApp({
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
-                batchModes: { block_batch: "findings_only_gemma_pair" },
+                batchModes: { block_batch: "findings_only_block_context" },
             },
             codex_exec: {
                 label: "Codex exec",
@@ -3137,7 +3137,7 @@ const app = createApp({
                     optimization_critic:    CODEX_PRESET_MODEL,
                     optimization_corrector: CODEX_PRESET_MODEL,
                 },
-                batchModes: { block_batch: "findings_only_gemma_pair" },
+                batchModes: { block_batch: "findings_only_block_context" },
             },
             dual_detection: {
                 label: "GPT + Codex",
@@ -3155,7 +3155,7 @@ const app = createApp({
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
-                batchModes: { block_batch: "findings_only_gemma_pair" },
+                batchModes: { block_batch: "findings_only_block_context" },
             },
             optimization_ensemble: {
                 label: "OPT Claude + Codex",
@@ -3173,7 +3173,7 @@ const app = createApp({
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
                 },
-                batchModes: { block_batch: "findings_only_gemma_pair" },
+                batchModes: { block_batch: "findings_only_block_context" },
             },
         };
         const activePreset = ref(null);
@@ -3181,7 +3181,7 @@ const app = createApp({
             const key = activePreset.value;
             return key ? (modelPresets[key]?.hint || '') : '';
         });
-        const stageBatchModes = ref({});  // { block_batch: "findings_only_gemma_pair" }
+        const stageBatchModes = ref({});  // { block_batch: "findings_only_block_context" }
         const stageBatchModeChoices = ref({});
 
         // Stage 01 supports one independent detector or the explicit dual ensemble.
@@ -3191,7 +3191,7 @@ const app = createApp({
         ];
 
         function isFindingsOnlyMode() {
-            return stageBatchModes.value?.block_batch === 'findings_only_gemma_pair';
+            return stageBatchModes.value?.block_batch === 'findings_only_block_context';
         }
 
         function normalizeAvailableModels(models) {
@@ -3224,7 +3224,7 @@ const app = createApp({
                 const cfgMatch = Object.entries(resolvedConfig).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
                 if (!cfgMatch) return false;
                 const presetModes = preset.batchModes || {};
-                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_gemma_pair') === mode);
+                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_block_context') === mode);
             })?.[0] || null;
         }
 
@@ -3232,14 +3232,14 @@ const app = createApp({
             const preset = modelPresets[presetKey];
             if (!preset) return;
             stageModelConfig.value = { ...stageModelConfig.value, ...resolvePresetConfig(preset) };
-            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_gemma_pair' }) };
+            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_block_context' }) };
             activePreset.value = presetKey;
         }
 
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
             if (r && !r.includes(modelId)) return false;
-            // findings_only_gemma_pair: production block_batch is GPT-5.4 only.
+            // findings_only_block_context: production block_batch is GPT-5.4 only.
             if (stageKey === 'block_batch' && isFindingsOnlyMode()) {
                 return findingsOnlyCompatibleBlockModels.includes(modelId) || String(modelId || '').startsWith('codex/');
             }
@@ -3270,13 +3270,13 @@ const app = createApp({
                 if (data.config_errors && Object.keys(data.config_errors).length > 0) {
                     stageModelSaveError.value = `Текущая конфигурация моделей невалидна: ${formatRejected(data.config_errors)}`;
                 }
-                // Параллельно подгружаем batch-modes (production: findings_only_gemma_pair)
+                // Параллельно подгружаем batch-modes (production block-context mode)
                 try {
                     const bm = await api('/audit/model/batch-modes');
-                    stageBatchModes.value = bm.modes || { block_batch: 'findings_only_gemma_pair' };
+                    stageBatchModes.value = bm.modes || { block_batch: 'findings_only_block_context' };
                     stageBatchModeChoices.value = bm.choices || {};
                 } catch (_) {
-                    stageBatchModes.value = { block_batch: 'findings_only_gemma_pair' };
+                    stageBatchModes.value = { block_batch: 'findings_only_block_context' };
                     stageBatchModeChoices.value = {};
                 }
                 activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
@@ -3897,6 +3897,7 @@ const app = createApp({
         // Маппинг pipeline key → API stage name
         const pipelineToStage = {
             'crop_blocks': 'prepare',
+            'block_context': 'block_context',
             'gemma_enrichment': 'gemma_enrichment',
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
@@ -3913,7 +3914,8 @@ const app = createApp({
 
         const stageLabelMap = {
             'prepare': 'Кроп блоков',
-            'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+            'block_context': BLOCK_CONTEXT_STAGE_UI_LABEL,
+            'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
             'text_analysis': 'Анализ текста',
             'block_analysis': 'Анализ блоков',
             'findings_merge': 'Свод замечаний',
@@ -3937,11 +3939,11 @@ const app = createApp({
 
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            const gemmaReady = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            const gemmaReady = () => ready('block_context') || ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
             // Старые/частично упавшие V2-прогоны могут иметь готовые 02-блоки,
-            // но не иметь статуса Gemma в latest. Backend восстановит лёгкие prereq-файлы.
+            // но не иметь статуса подготовки контекста в latest. Backend восстановит prereq-файлы.
             const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
-            if (pipelineKey === 'gemma_enrichment') {
+            if (pipelineKey === 'block_context' || pipelineKey === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (pipelineKey === 'blocks_analysis') {
@@ -3965,9 +3967,9 @@ const app = createApp({
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            const gemmaReady = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            const gemmaReady = () => ready('block_context') || ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
             const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
-            if (stage === 'gemma_enrichment') {
+            if (stage === 'block_context' || stage === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (stage === 'block_analysis') {
@@ -4092,7 +4094,8 @@ const app = createApp({
 
         function retryStage(projectId, stage) {
             const labels = {
-                'crop_blocks': 'Кроп блоков', 'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+                'crop_blocks': 'Кроп блоков', 'block_context': BLOCK_CONTEXT_STAGE_UI_LABEL,
+                'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
                 'findings_critic': 'Верификатор', 'findings_review': 'Верификатор',
@@ -7687,7 +7690,7 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
-            // ↓ Кнопка «Подготовить данные»: crop PNG + Gemma enrichment в MD
+            // ↓ Кнопка «Подготовить данные»: PNG + контекст PDF/Vectograph
             const ids = Array.from(selectedProjects.value);
             if (!ids.length) return;
             // Фильтр: только проекты без аудита (findings_count == 0)
@@ -7702,7 +7705,7 @@ const app = createApp({
                 return;
             }
             const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n` +
-                               `Будут выполнены: crop PNG + Gemma enrichment MD.\n` +
+                               `Будут выполнены: crop PNG + подготовка контекста PDF/Vectograph.\n` +
                                `Время: ~30-60 сек на блок (зависит от размера проекта).` +
                                (skipped > 0 ? `\n(пропущено ${skipped} с уже выполненным аудитом)` : '');
             if (!confirm(confirmMsg)) return;

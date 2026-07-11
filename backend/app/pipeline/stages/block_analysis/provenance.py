@@ -1,4 +1,4 @@
-"""Provenance helpers for Stage 02 graphic findings.
+"""Provenance helpers for Stage 01 graphic findings.
 
 Raw detector output stays attributable after Stage 03 renumbers and merges
 findings.  The helpers are deliberately deterministic: they only assign
@@ -20,7 +20,9 @@ from backend.app.services.storage.stage_artifacts import (
 )
 
 
-STAGE02_PROMPT_VERSION = "stage02-findings-v1"
+STAGE01_PROMPT_VERSION = "stage01-findings-v1"
+# Compatibility alias for older imports; new writers use the Stage 01 value.
+STAGE02_PROMPT_VERSION = STAGE01_PROMPT_VERSION
 
 
 def detector_for_model(model: str | None) -> str:
@@ -60,24 +62,29 @@ def build_finding_provenance(
     raw_finding_id: str,
     mode: str = "independent",
     detected_at: str | None = None,
+    context_source: str | None = None,
 ) -> dict[str, Any]:
     detector = detector_for_model(model)
     found_by = [detector]
-    return {
+    detection = {
+        "detector": detector,
+        "model": model,
+        "prompt_version": STAGE01_PROMPT_VERSION,
+        "run_id": run_id,
+        "raw_finding_id": raw_finding_id,
+        "mode": mode,
+        "detected_at": detected_at or datetime.now(timezone.utc).isoformat(),
+    }
+    if context_source:
+        detection["context_source"] = context_source
+    result = {
         "found_by": found_by,
         "detector_summary": detector_summary(found_by),
-        "detections": [
-            {
-                "detector": detector,
-                "model": model,
-                "prompt_version": STAGE02_PROMPT_VERSION,
-                "run_id": run_id,
-                "raw_finding_id": raw_finding_id,
-                "mode": mode,
-                "detected_at": detected_at or datetime.now(timezone.utc).isoformat(),
-            }
-        ],
+        "detections": [detection],
     }
+    if context_source:
+        result["context_source"] = context_source
+    return result
 
 
 def _detection_key(item: dict) -> tuple[str, str, str, str, str]:
@@ -176,9 +183,9 @@ def backfill_final_findings_provenance(
     output_dir: Path,
     findings_filename: str = "03_findings.json",
 ) -> dict[str, Any]:
-    """Transfer explicit Stage 02 detector credit into a final findings file.
+    """Transfer explicit Stage 01 detector credit into a final findings file.
 
-    Legacy Stage 02 files are supported when they have a single model in
+    Legacy block-analysis files are supported when they have a single model in
     ``stage02_meta.model``.  No block/page fallback is used because it would
     incorrectly credit every detector that happened to inspect the block.
     """

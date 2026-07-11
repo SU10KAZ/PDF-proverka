@@ -16,9 +16,9 @@ from fastapi.responses import FileResponse, Response
 
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
-    gemma_blocks_dir,
-    gemma_blocks_index_path,
+from backend.app.pipeline.stages.block_context.contract import (
+    resolve_blocks_dir,
+    resolve_blocks_index,
 )
 
 router = APIRouter(prefix="/api/tiles", tags=["blocks"])
@@ -525,14 +525,9 @@ async def get_blocks(
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
         return read_canary.v2_blocks(request, project_id)
     output_dir = _version_output(project_id, version_id)
-    index_path = gemma_blocks_index_path(output_dir.parent)
+    index_path = resolve_blocks_index(output_dir)
     if not index_path.exists():
-        # Fallback на legacy-папку для немигрированных проектов
-        legacy_index = output_dir / "blocks" / "index.json"
-        if legacy_index.exists():
-            index_path = legacy_index
-        else:
-            raise HTTPException(404, f"Блоки не найдены для '{project_id}'")
+        raise HTTPException(404, f"Блоки не найдены для '{project_id}'")
 
     with open(index_path, "r", encoding="utf-8") as f:
         index_data = json.load(f)
@@ -575,10 +570,7 @@ def _lookup_block_page(output_dir: Path, block_id: str) -> Optional[int]:
                     return b.get("page")
         except (OSError, json.JSONDecodeError):
             pass
-    idx_path = gemma_blocks_index_path(output_dir.parent)
-    if not idx_path.exists():
-        legacy = output_dir / "blocks" / "index.json"
-        idx_path = legacy if legacy.exists() else idx_path
+    idx_path = resolve_blocks_index(output_dir)
     if idx_path.exists():
         try:
             idx = json.loads(idx_path.read_text(encoding="utf-8"))
@@ -794,22 +786,18 @@ async def get_block_llm_text(
     singleline_graph_markdown = None
     stage02_prompt_mode = "base"
 
-    # РОУТЕР ИСТОЧНИКА БЛОКА (флаг BLOCK_SOURCE_ROUTER_ENABLED, default OFF): единый авторитет
-    # user_text — структурированный рендер для однолинеек / сырой вектор-текст / Gemma-fallback.
-    # Когда ON — отключает ad-hoc singleline_rich и mirror ниже, чтобы превью совпадало с
-    # реальным call_gpt_for_block. singleline_graph_markdown для UI отдаётся независимо. fail-soft.
+    # Канонический роутер Stage 01: structured graph / raw vector / image-only.
+    # Он безусловно совпадает с реальным payload анализа блоков.
     _router_applied = False
     try:
-        from backend.app.core import config as _rcfg
-        if getattr(_rcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False):
-            from backend.app.pipeline.stages.block_grounding.block_source_router import (
-                resolve_block_source as _resolve_block_source,
-            )
-            _rtext, _rkind = _resolve_block_source(output_dir, block_id, page)
-            if _rtext:
-                user_text = _rtext
-                _router_applied = True
-                stage02_prompt_mode = _rkind
+        from backend.app.pipeline.stages.block_grounding.block_source_router import (
+            resolve_block_source as _resolve_block_source,
+        )
+        _rtext, _rkind = _resolve_block_source(output_dir, block_id, page)
+        stage02_prompt_mode = "image_only" if _rkind == "gemma_fallback" else _rkind
+        if _rtext:
+            user_text = _rtext
+        _router_applied = True
     except Exception:
         pass
 
@@ -897,6 +885,7 @@ async def get_block_llm_text(
         "system_prompt": system_prompt,
         "user_text": user_text,
         # режим промпта Stage 02: "base" (enrichment+page_text) | "singleline_rich" (флаг ON)
+        "stage01_prompt_mode": stage02_prompt_mode,
         "stage02_prompt_mode": stage02_prompt_mode,
         # доступное сырьё блока (НЕ в промпте сейчас)
         "gemma_ocr_text": gemma_ocr_text,
@@ -937,7 +926,7 @@ async def get_blocks_analysis(
     blocks_map = {}
 
     # Primary: 01_blocks_analysis.json — единый merged-результат Stage 02 текущего
-    # production-режима (findings_only_gemma_pair / single_block). Он использует
+    # production-режима (findings_only_block_context / single_block). Он использует
     # тот же ключ block_analyses, что и legacy-парсер ниже. Без этого источника
     # все блоки уходили в "skipped" (Без значимого содержимого), даже когда аудит
     # завершён, потому что новый режим не пишет per-batch block_batch_*.json.
@@ -1081,11 +1070,7 @@ async def get_blocks_analysis(
             block["status"] = "no_findings"
 
     # Добавляем B (merged) и C (skipped) из index.json
-    index_path = gemma_blocks_index_path(output_dir.parent)
-    if not index_path.exists():
-        legacy_index = output_dir / "blocks" / "index.json"
-        if legacy_index.exists():
-            index_path = legacy_index
+    index_path = resolve_blocks_index(output_dir)
     if index_path.exists():
         try:
             index_data = json.loads(index_path.read_text(encoding="utf-8"))
@@ -1161,13 +1146,9 @@ async def get_block_image(
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
         return read_canary.v2_block_image(request, project_id, block_id)
     output_dir = _version_output(project_id, version_id)
-    block_path = gemma_blocks_dir(output_dir.parent) / f"block_{block_id}.png"
+    block_path = resolve_blocks_dir(output_dir) / f"block_{block_id}.png"
     if not block_path.exists():
-        legacy_path = output_dir / "blocks" / f"block_{block_id}.png"
-        if legacy_path.exists():
-            block_path = legacy_path
-        else:
-            raise HTTPException(404, f"Блок {block_id} не найден")
+        raise HTTPException(404, f"Блок {block_id} не найден")
     return FileResponse(str(block_path), media_type="image/png")
 
 
