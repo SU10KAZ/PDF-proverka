@@ -83,6 +83,8 @@ def test_adapt_findings_g_numbering_and_recommendation_merge():
     assert [f["id"] for f in out] == ["G-001", "G-002"]     # сквозная G-нумерация
     assert out[0]["block_evidence"] == "block_007_1"
     assert "Рекомендация: Добавить PE" in out[0]["finding"]  # recommendation вмёржена
+    assert out[0]["provenance"]["found_by"] == ["gpt_openrouter"]
+    assert out[0]["provenance"]["detections"][0]["raw_finding_id"] == "G-001"
     assert counter[0] == 2                                   # счётчик продвинут
 
 

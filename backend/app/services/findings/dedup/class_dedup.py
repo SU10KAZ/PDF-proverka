@@ -303,6 +303,10 @@ def collapse_to_canonical(
     canonical_list: list[dict] = []
     for cluster in clusters:
         canon = dict(cluster.canonical)
+        from backend.app.pipeline.stages.block_analysis.provenance import (
+            aggregate_traceability,
+        )
+        canon.update(aggregate_traceability([canon, *cluster.duplicates]))
         source_agents: set[str] = {
             canon.get("source_agent") or canon.get("source", "") or ""
         }

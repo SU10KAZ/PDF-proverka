@@ -408,6 +408,7 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
                     "problem": it.get("problem") or it.get("description") or "",
                     "sheet": it.get("sheet", ""),
                     "page": it.get("page"),
+                    "source_finding_ids": it.get("source_finding_ids") or [],
                 }
                 for it in group_items
             ]
@@ -595,6 +596,19 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
                 )
             else:
                 await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
+
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        backfill_final_findings_provenance,
+    )
+    provenance_report = backfill_final_findings_provenance(ctx.output_dir)
+    if provenance_report.get("updated"):
+        counts = provenance_report.get("counts") or {}
+        await ctx.log(
+            "Источники замечаний: "
+            f"GPT={counts.get('gpt', 0)}, Codex={counts.get('codex', 0)}, "
+            f"GPT+Codex={counts.get('gpt_codex', 0)}, "
+            f"без трассировки={counts.get('unattributed', 0)}"
+        )
 
     refresh_finding_quality(pid, output_dir=ctx.output_dir)
 

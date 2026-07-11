@@ -1420,6 +1420,12 @@ def aggregate_merged_fields(group_items: list[dict], leader: dict) -> dict:
                 if it.get(_qf):
                     fields[_qf] = it[_qf]
                     break
+    # Detector credit must survive UI grouping and the persistent merge pass.
+    # Import locally to keep this service usable without loading stage runners.
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        aggregate_traceability,
+    )
+    fields.update(aggregate_traceability(group_items))
     return fields
 
 

@@ -3,11 +3,15 @@ gemma_findings_only.py
 ---------------------
 Production-модуль stage 02 в режиме findings-only + Gemma-enrichment.
 
-Поддерживает два transport'а:
+Поддерживает transport'ы:
   - OpenRouter (GPT-5.4, Gemini Flash/Pro)  — HTTP + json_schema
   - Claude CLI (Sonnet/Opus через subscription) — subprocess `claude -p`
+  - Codex CLI (subscription) — `codex exec --image`, JSON-only
 
-Выбирается по model id: "claude-*" → Claude CLI, иначе → OpenRouter.
+Режим `ensemble/gpt-codex` запускает GPT и Codex независимо на одинаковом
+single-block payload и сохраняет оба набора findings до Stage 03.
+
+Выбирается по model id: `claude-*`, `codex/*`, `ensemble/gpt-codex` или OpenRouter.
 
 Используется и из CLI-скрипта (scripts/run_stage02_findings_only_gpt54.py),
 и из webapp pipeline_service (вместо batched stage 02). Оба пути делятся
@@ -53,10 +57,20 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     validate_gemma_summary,
 )
 
-from backend.app.core.config import PROMPTS_DIR as _PROMPTS_DIR
+from backend.app.core.config import (
+    CODEX_STAGE_MODEL_ID,
+    PROMPTS_DIR as _PROMPTS_DIR,
+    STAGE02_DUAL_MODEL_ID,
+    is_codex_model,
+)
 from backend.app.services.storage.projects_v2_source_resolver import (
     load_version_project_info,
     resolve_version_source_files,
+)
+from backend.app.pipeline.stages.block_analysis.provenance import (
+    STAGE02_PROMPT_VERSION,
+    build_finding_provenance,
+    detector_for_model,
 )
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -437,30 +451,14 @@ def png_to_data_url(path: Path) -> str:
     return f"data:image/png;base64,{base64.b64encode(path.read_bytes()).decode()}"
 
 
-# ─── OpenRouter call ────────────────────────────────────────────────────────
-
-async def call_gpt_for_block(
-    client: httpx.AsyncClient,
+def build_effective_block_user_text(
     block: dict,
     enrichment: dict,
     page_text: str,
-    blocks_dir: Path,
     *,
-    api_key: str,
-    model: str,
-    reasoning_effort: str,
-    max_tokens: int,
-    system_prompt: str,
-    timeout: int,
-    project_id: str = "",
-    version_id: str = "",
-    job_id: str = "",
     output_dir: Optional[Path] = None,
-) -> dict:
-    png_path = blocks_dir / block["file"]
-    if not png_path.exists():
-        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
-
+) -> str:
+    """Build the identical Stage 02 text context for every detector."""
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
 
     # ─── РОУТЕР ИСТОЧНИКА БЛОКА: «вместо Gemma — точный текст чертежа» ──────────
@@ -522,6 +520,40 @@ async def call_gpt_for_block(
                 user_text = _inject_mirror(user_text, _vtext)
     except Exception:
         pass
+
+    return user_text
+
+
+# ─── OpenRouter call ────────────────────────────────────────────────────────
+
+async def call_gpt_for_block(
+    client: httpx.AsyncClient,
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    blocks_dir: Path,
+    *,
+    api_key: str,
+    model: str,
+    reasoning_effort: str,
+    max_tokens: int,
+    system_prompt: str,
+    timeout: int,
+    project_id: str = "",
+    version_id: str = "",
+    job_id: str = "",
+    output_dir: Optional[Path] = None,
+) -> dict:
+    png_path = blocks_dir / block["file"]
+    if not png_path.exists():
+        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
+
+    user_text = build_effective_block_user_text(
+        block,
+        enrichment,
+        page_text,
+        output_dir=output_dir,
+    )
 
     # ─── Paid response cache check (до guard и до сети) ────────────
     # Если этот блок с этим model/prompt/image уже отвечал — берём из
@@ -689,6 +721,63 @@ async def call_gpt_for_block(
             )
 
     return response_dict
+
+
+# ─── Codex CLI transport (subscription) ────────────────────────────────────
+
+async def call_codex_for_block(
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    blocks_dir: Path,
+    *,
+    model: str,
+    system_prompt: str,
+    timeout: int,
+    project_id: str = "",
+    output_dir: Optional[Path] = None,
+) -> dict:
+    """Run the same single-block payload through a Codex subscription session."""
+    png_path = blocks_dir / block["file"]
+    if not png_path.exists():
+        return {"ok": False, "error": f"PNG missing: {png_path.name}", "elapsed_ms": 0}
+
+    from backend.app.services.llm.codex_runner import run_codex_json_messages
+
+    user_text = build_effective_block_user_text(
+        block,
+        enrichment,
+        page_text,
+        output_dir=output_dir,
+    )
+    result = await run_codex_json_messages(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_text},
+        ],
+        timeout=timeout,
+        stage="block_analysis",
+        project_id=project_id,
+        model=model,
+        image_paths=[png_path],
+    )
+    parsed = result.json_data if isinstance(result.json_data, dict) else None
+    findings = parsed.get("findings") if parsed else None
+    ok = not result.is_error and isinstance(findings, list)
+    return {
+        "ok": ok,
+        "error": result.error_message or (None if ok else "codex_findings_missing"),
+        "parse_error": None if ok else "codex_findings_missing",
+        "elapsed_ms": result.duration_ms,
+        "input_tokens": result.input_tokens,
+        "output_tokens": result.output_tokens,
+        "reasoning_tokens": None,
+        "cost_usd": 0.0,
+        "cost_source": "subscription",
+        "raw_content": result.text,
+        "parsed": parsed if ok else None,
+        "model": result.model or model,
+    }
 
 
 # ─── Claude CLI transport (subscription) ────────────────────────────────────
@@ -874,6 +963,11 @@ def adapt_findings_to_production(
     raw_findings: list[dict],
     block_id: str,
     finding_id_counter: list[int],
+    *,
+    model: str = DEFAULT_MODEL,
+    run_id: str = "stage02",
+    detection_mode: str = "independent",
+    detected_at: str | None = None,
 ) -> list[dict]:
     """Адаптируем findings из findings-only schema под формат stage 03."""
     out = []
@@ -883,8 +977,9 @@ def adapt_findings_to_production(
         finding_text = (f.get("finding") or "").strip()
         if recommendation and recommendation.lower() not in finding_text.lower():
             finding_text = f"{finding_text}\n\nРекомендация: {recommendation}"
+        raw_finding_id = f"G-{finding_id_counter[0]:03d}"
         out.append({
-            "id": f"G-{finding_id_counter[0]:03d}",
+            "id": raw_finding_id,
             "severity": f.get("severity") or "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
             "category": f.get("category") or "uncategorized",
             "finding": finding_text,
@@ -893,6 +988,13 @@ def adapt_findings_to_production(
             "block_evidence": block_id,
             "value_found": f.get("value_found") or "",
             "highlight_regions": [],
+            "provenance": build_finding_provenance(
+                model=str(f.get("_detector_model") or model),
+                run_id=str(f.get("_detector_run_id") or run_id),
+                raw_finding_id=raw_finding_id,
+                mode=detection_mode,
+                detected_at=detected_at,
+            ),
         })
     return out
 
@@ -901,6 +1003,72 @@ def adapt_findings_to_production(
 
 class FindingsOnlyError(Exception):
     """Прерывание прогона (отсутствие prerequisites, отмена и т.п.)."""
+
+
+def combine_detector_results(
+    detector_results: list[tuple[str, dict]],
+    *,
+    run_id: str,
+) -> dict:
+    """Combine independent detector payloads without deduplicating findings."""
+    combined_findings: list[dict] = []
+    ok_models: list[str] = []
+    failed_models: list[str] = []
+    paid_input_tokens = 0
+    paid_output_tokens = 0
+    paid_cached_input_tokens = 0
+    paid_cached_output_tokens = 0
+
+    for detector_model, result in detector_results:
+        if result.get("ok"):
+            ok_models.append(detector_model)
+            for raw in (result.get("parsed") or {}).get("findings") or []:
+                if not isinstance(raw, dict):
+                    continue
+                tagged = dict(raw)
+                tagged["_detector_model"] = detector_model
+                tagged["_detector_run_id"] = f"{run_id}:{detector_for_model(detector_model)}"
+                combined_findings.append(tagged)
+        else:
+            failed_models.append(detector_model)
+
+        if detector_for_model(detector_model) == "gpt_openrouter":
+            in_tokens = int(result.get("input_tokens") or 0)
+            out_tokens = int(result.get("output_tokens") or 0)
+            paid_input_tokens += in_tokens
+            paid_output_tokens += out_tokens
+            if result.get("from_cache"):
+                paid_cached_input_tokens += in_tokens
+                paid_cached_output_tokens += out_tokens
+
+    ok = bool(ok_models)
+    errors = [
+        f"{model}: {result.get('error') or result.get('parse_error') or 'failed'}"
+        for model, result in detector_results
+        if not result.get("ok")
+    ]
+    return {
+        "ok": ok,
+        "partial": ok and bool(failed_models),
+        "detectors_complete": len(ok_models) == len(detector_results),
+        "detectors_ok": ok_models,
+        "detectors_failed": failed_models,
+        "detector_results": [
+            {"model": model, "result": result}
+            for model, result in detector_results
+        ],
+        "error": "; ".join(errors) if errors else None,
+        "parse_error": None if ok else "; ".join(errors),
+        "elapsed_ms": max((int(result.get("elapsed_ms") or 0) for _, result in detector_results), default=0),
+        "input_tokens": sum(int(result.get("input_tokens") or 0) for _, result in detector_results),
+        "output_tokens": sum(int(result.get("output_tokens") or 0) for _, result in detector_results),
+        "reasoning_tokens": sum(int(result.get("reasoning_tokens") or 0) for _, result in detector_results),
+        "paid_input_tokens": paid_input_tokens,
+        "paid_output_tokens": paid_output_tokens,
+        "paid_cached_input_tokens": paid_cached_input_tokens,
+        "paid_cached_output_tokens": paid_cached_output_tokens,
+        "parsed": {"findings": combined_findings} if ok else None,
+    }
 
 
 async def run_findings_only_for_project(
@@ -925,6 +1093,7 @@ async def run_findings_only_for_project(
     project_id: str = "",
     version_id: str = "",
     job_id: str = "",
+    detection_mode: str = "independent",
 ) -> dict:
     """Прогнать stage 02 findings-only для проекта.
 
@@ -945,6 +1114,13 @@ async def run_findings_only_for_project(
     cancel_event — webapp может set() для прерывания между блоками.
     """
     output_dir = gemma_output_root(project_dir)
+    run_started_at = datetime.now(timezone.utc).isoformat()
+    run_id = (
+        "stage02-"
+        + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        + "-"
+        + re.sub(r"[^a-zA-Z0-9_-]+", "_", model).strip("_")
+    )
     blocks_dir = stage02_blocks_dir(project_dir)
     index_path = stage02_blocks_index_path(project_dir)
     gemma_index_path = gemma_blocks_index_path(project_dir)
@@ -1029,7 +1205,14 @@ async def run_findings_only_for_project(
     ]
 
     use_claude_cli = is_claude_cli_model(model)
-    if not use_claude_cli:
+    use_codex_cli = is_codex_model(model)
+    use_dual = model == STAGE02_DUAL_MODEL_ID
+    detector_models = (
+        [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
+        if use_dual
+        else [model]
+    )
+    if not use_claude_cli and not use_codex_cli:
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
@@ -1138,7 +1321,36 @@ async def run_findings_only_for_project(
                 return None
             block = by_id[item["block_id"]]
             page_text = load_page_text(graph, block["page"])
-            if use_claude_cli:
+            if use_dual:
+                assert client is not None
+                gpt_result, codex_result = await asyncio.gather(
+                    call_gpt_for_block(
+                        client, block, item["enrichment"], page_text, blocks_dir,
+                        api_key=api_key or "", model=DEFAULT_MODEL,
+                        reasoning_effort=reasoning_effort,
+                        max_tokens=max_tokens, system_prompt=system_prompt,
+                        timeout=timeout_s, project_id=project_id,
+                        version_id=version_id, job_id=job_id,
+                        output_dir=output_dir,
+                    ),
+                    call_codex_for_block(
+                        block, item["enrichment"], page_text, blocks_dir,
+                        model=CODEX_STAGE_MODEL_ID,
+                        system_prompt=system_prompt, timeout=timeout_s,
+                        project_id=project_id, output_dir=output_dir,
+                    ),
+                )
+                res = combine_detector_results(
+                    [(DEFAULT_MODEL, gpt_result), (CODEX_STAGE_MODEL_ID, codex_result)],
+                    run_id=run_id,
+                )
+            elif use_codex_cli:
+                res = await call_codex_for_block(
+                    block, item["enrichment"], page_text, blocks_dir,
+                    model=model, system_prompt=system_prompt, timeout=timeout_s,
+                    project_id=project_id, output_dir=output_dir,
+                )
+            elif use_claude_cli:
                 sheet = sheet_for_page(graph, block["page"]) or ""
                 res = await call_claude_cli_for_block(
                     block, item["enrichment"], page_text, blocks_dir, sheet,
@@ -1183,6 +1395,9 @@ async def run_findings_only_for_project(
                     "output_tokens": res.get("output_tokens"),
                     "reasoning_tokens": res.get("reasoning_tokens"),
                     "elapsed_ms": res.get("elapsed_ms"),
+                    "partial": bool(res.get("partial")),
+                    "detectors_ok": res.get("detectors_ok") or [],
+                    "detectors_failed": res.get("detectors_failed") or [],
                     "completed": cur,
                     "total": len(wanted),
                     "error": res.get("error") or res.get("parse_error") if not res.get("ok") else None,
@@ -1190,8 +1405,8 @@ async def run_findings_only_for_project(
             return record
 
     started_at = time.monotonic()
-    if use_claude_cli:
-        # Claude CLI работает через subprocess — httpx-клиент не нужен.
+    if use_claude_cli or use_codex_cli:
+        # Subscription CLI transports work through subprocess; no HTTP client.
         gathered = await asyncio.gather(
             *(_one(p, None) for p in plan),
             return_exceptions=True,
@@ -1300,15 +1515,29 @@ async def run_findings_only_for_project(
             continue
 
         raw_findings = (res.get("parsed") or {}).get("findings", [])
+        coverage_status = p.get("coverage_status") or "ok"
+        if res.get("partial"):
+            coverage_status = "partial_detector_failure"
         block_analyses.append({
             "block_id": bid, "page": block["page"], "sheet": sheet,
             "label": block.get("ocr_label", ""), "sheet_type": None,
             "unreadable_text": False, "unreadable_details": None,
             "not_enriched": False,
             "final_profile": p.get("final_profile") or GEMMA_BASE_PROFILE,
-            "coverage_status": p.get("coverage_status") or "ok",
+            "coverage_status": coverage_status,
+            "analysis_status": "partial" if res.get("partial") else "analyzed",
+            "detectors_ok": res.get("detectors_ok") or detector_models,
+            "detectors_failed": res.get("detectors_failed") or [],
             "summary": "", "key_values_read": [], "evidence_text_refs": [],
-            "findings": adapt_findings_to_production(raw_findings, bid, finding_id_counter),
+            "findings": adapt_findings_to_production(
+                raw_findings,
+                bid,
+                finding_id_counter,
+                model=model,
+                run_id=run_id,
+                detection_mode=detection_mode,
+                detected_at=run_started_at,
+            ),
         })
 
     output_doc = {
@@ -1318,6 +1547,19 @@ async def run_findings_only_for_project(
         "stage02_mode": "findings_only_gemma_pair",
         "stage02_meta": {
             "model": model,
+            "run_id": run_id,
+            "detection_mode": detection_mode,
+            "prompt_version": STAGE02_PROMPT_VERSION,
+            "detectors": [
+                {
+                    "detector": detector_for_model(detector_model),
+                    "model": detector_model,
+                    "mode": detection_mode,
+                    "run_id": f"{run_id}:{detector_for_model(detector_model)}",
+                    "prompt_version": STAGE02_PROMPT_VERSION,
+                }
+                for detector_model in detector_models
+            ],
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
             "section": section,
@@ -1328,6 +1570,7 @@ async def run_findings_only_for_project(
             "blocks_total": len(wanted),
             "blocks_ok": sum(1 for r in results if r["result"].get("ok")),
             "blocks_failed": sum(1 for r in results if not r["result"].get("ok")),
+            "blocks_partial": sum(1 for r in results if r["result"].get("partial")),
             "blocks_skipped_no_enrichment": len(skip_no_enrich),
             "uncovered_blocks": coverage_uncovered_blocks,
             "stage02_crop_missing_blocks": stage02_crop_missing_blocks,
@@ -1343,6 +1586,17 @@ async def run_findings_only_for_project(
                 }
                 for r in results
                 if not r["result"].get("ok")
+            ],
+            "partial_detector_blocks": [
+                {
+                    "block_id": r["block_id"],
+                    "page": r.get("page"),
+                    "detectors_ok": r["result"].get("detectors_ok") or [],
+                    "detectors_failed": r["result"].get("detectors_failed") or [],
+                    "error": r["result"].get("error"),
+                }
+                for r in results
+                if r["result"].get("partial")
             ],
             "task_exceptions": task_exceptions,
             "runtime_plan_path": str(output_dir / "block_batches.runtime.json"),
@@ -1372,18 +1626,36 @@ async def run_findings_only_for_project(
     total_out = sum((r["result"].get("output_tokens") or 0) for r in results)
     total_reason = sum((r["result"].get("reasoning_tokens") or 0) for r in results)
     total_findings = sum(len(b["findings"]) for b in block_analyses)
-    # Cache hits: токены отображаем (для UI/billing audit), но cost не платим.
-    cache_hits = [r for r in results if r["result"].get("from_cache")]
-    cached_in = sum((r["result"].get("input_tokens") or 0) for r in cache_hits)
-    cached_out = sum((r["result"].get("output_tokens") or 0) for r in cache_hits)
-    billable_in = max(0, total_in - cached_in)
-    billable_out = max(0, total_out - cached_out)
+    # Paid-token accounting excludes Codex/Claude subscription tokens in dual
+    # mode. Cache hits remain visible in total tokens but are not billed.
+    paid_in = sum(
+        int(r["result"].get("paid_input_tokens", r["result"].get("input_tokens") or 0))
+        for r in results
+    ) if not (use_claude_cli or use_codex_cli) else 0
+    paid_out = sum(
+        int(r["result"].get("paid_output_tokens", r["result"].get("output_tokens") or 0))
+        for r in results
+    ) if not (use_claude_cli or use_codex_cli) else 0
+    cached_in = sum(
+        int(r["result"].get("paid_cached_input_tokens", r["result"].get("input_tokens") or 0))
+        for r in results if r["result"].get("from_cache") or r["result"].get("paid_cached_input_tokens")
+    )
+    cached_out = sum(
+        int(r["result"].get("paid_cached_output_tokens", r["result"].get("output_tokens") or 0))
+        for r in results if r["result"].get("from_cache") or r["result"].get("paid_cached_output_tokens")
+    )
+    billable_in = max(0, paid_in - cached_in)
+    billable_out = max(0, paid_out - cached_out)
     if use_claude_cli:
         # Claude CLI subscription: суммируем cost_usd, отчитанный самим CLI.
         # CLI не кешируется здесь, так что cached_* = 0.
         cost_total = sum((r["result"].get("cli_reported_cost_usd") or 0.0) for r in results)
         cost_in = 0.0
         cost_out = 0.0
+    elif use_codex_cli:
+        cost_in = 0.0
+        cost_out = 0.0
+        cost_total = 0.0
     else:
         cost_in = billable_in * PRICE_IN / 1_000_000
         cost_out = billable_out * PRICE_OUT / 1_000_000
@@ -1398,6 +1670,7 @@ async def run_findings_only_for_project(
         "blocks_with_enrichment": sum(1 for p in plan if p["enrichment"] is not None),
         "blocks_ok": len(ok),
         "blocks_failed": len(fail),
+        "blocks_partial": sum(1 for r in results if r["result"].get("partial")),
         "blocks_skipped_no_enrichment": len(skip_no_enrich),
         "base_gemma_coverage": gemma_coverage["base_gemma_coverage"],
         "high_detail_candidates": gemma_coverage["high_detail_candidates"],

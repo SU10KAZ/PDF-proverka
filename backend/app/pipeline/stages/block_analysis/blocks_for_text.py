@@ -41,6 +41,7 @@ def _trim(value: Any, limit: int) -> Any:
 
 
 def _compact_finding(finding: dict) -> dict:
+    provenance = finding.get("provenance") or {}
     return {
         "id": finding.get("id"),
         "severity": finding.get("severity"),
@@ -49,6 +50,10 @@ def _compact_finding(finding: dict) -> dict:
         "value_found": _trim(finding.get("value_found"), _MAX_VALUE_CHARS),
         "block_evidence": _trim(finding.get("block_evidence"), _MAX_EVIDENCE_CHARS),
         "highlight_regions": finding.get("highlight_regions") or [],
+        "provenance": {
+            "found_by": provenance.get("found_by") or [],
+            "detector_summary": provenance.get("detector_summary") or "unattributed",
+        },
     }
 
 

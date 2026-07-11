@@ -735,6 +735,13 @@ async def run_norm_verification(
         ctx.refresh_finding_quality()
 
     if verified_path.exists():
+        from backend.app.pipeline.stages.block_analysis.provenance import (
+            backfill_final_findings_provenance,
+        )
+        backfill_final_findings_provenance(
+            output_dir,
+            findings_filename="03a_norms_verified.json",
+        )
         from backend.app.pipeline.stages.findings_merge.runner import (
             refresh_finding_quality as _rfq,
         )

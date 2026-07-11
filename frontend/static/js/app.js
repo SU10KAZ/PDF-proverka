@@ -3101,6 +3101,7 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
+        const CODEX_PRESET_MODEL = "__codex_exec__";
         const modelPresets = {
             findings_only: {
                 label: "Production Gemma+GPT5.4",
@@ -3113,6 +3114,43 @@ const app = createApp({
                     findings_corrector:     "claude-sonnet-4-6",
                     norm_verify:            "claude-sonnet-4-6",
                     norm_fix:               "claude-sonnet-4-6",
+                    norm_requote:           "claude-sonnet-4-6",
+                    optimization:           "claude-opus-4-7",
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+                batchModes: { block_batch: "findings_only_gemma_pair" },
+            },
+            codex_exec: {
+                label: "Codex exec",
+                hint: "Экспериментально: все поддерживаемые этапы, включая Stage 02 Блоки, идут через Codex exec. Перед запуском backend делает snapshot текущих JSON-результатов в comparison/classic_codex_ab/backups/.",
+                config: {
+                    text_analysis:          CODEX_PRESET_MODEL,
+                    block_batch:            CODEX_PRESET_MODEL,
+                    findings_merge:         CODEX_PRESET_MODEL,
+                    findings_critic:        CODEX_PRESET_MODEL,
+                    findings_corrector:     CODEX_PRESET_MODEL,
+                    norm_verify:            CODEX_PRESET_MODEL,
+                    norm_fix:               CODEX_PRESET_MODEL,
+                    norm_requote:           CODEX_PRESET_MODEL,
+                    optimization:           CODEX_PRESET_MODEL,
+                    optimization_critic:    CODEX_PRESET_MODEL,
+                    optimization_corrector: CODEX_PRESET_MODEL,
+                },
+                batchModes: { block_batch: "findings_only_gemma_pair" },
+            },
+            dual_detection: {
+                label: "GPT + Codex",
+                hint: "Stage 02 проверяет каждый блок независимо через GPT-5.4 и Codex; свод объединяет результаты и сохраняет авторство каждого замечания.",
+                config: {
+                    text_analysis:          "claude-opus-4-7",
+                    block_batch:            "ensemble/gpt-codex",
+                    findings_merge:         "claude-opus-4-7",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
+                    norm_requote:           "claude-sonnet-4-6",
                     optimization:           "claude-opus-4-7",
                     optimization_critic:    "claude-sonnet-4-6",
                     optimization_corrector: "claude-sonnet-4-6",
@@ -3128,18 +3166,44 @@ const app = createApp({
         const stageBatchModes = ref({});  // { block_batch: "findings_only_gemma_pair" }
         const stageBatchModeChoices = ref({});
 
-        // Production Stage 02: Gemma enrichment is separate; block analysis uses GPT-5.4.
+        // Stage 02 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
             'openai/gpt-5.4',
+            'ensemble/gpt-codex',
         ];
 
         function isFindingsOnlyMode() {
             return stageBatchModes.value?.block_batch === 'findings_only_gemma_pair';
         }
 
+        function normalizeAvailableModels(models) {
+            const list = Array.isArray(models) ? [...models] : [];
+            const hasCodex = list.some(m => m?.provider === 'codex_cli' || String(m?.id || '').startsWith('codex/'));
+            if (!hasCodex) {
+                const insertAt = Math.min(3, list.length);
+                list.splice(insertAt, 0, { id: 'codex/gpt-5.4', label: 'Codex exec', provider: 'codex_cli', uiFallback: true });
+            }
+            return list;
+        }
+
+        function codexModelId() {
+            return availableModels.value.find(m => m.provider === 'codex_cli')?.id || 'codex/gpt-5.4';
+        }
+
+        function resolvePresetModelId(modelId) {
+            return modelId === CODEX_PRESET_MODEL ? codexModelId() : modelId;
+        }
+
+        function resolvePresetConfig(preset) {
+            return Object.fromEntries(
+                Object.entries(preset?.config || {}).map(([stageKey, modelId]) => [stageKey, resolvePresetModelId(modelId)])
+            );
+        }
+
         function getMatchingPresetKey(config, batchModes) {
             return Object.entries(modelPresets).find(([, preset]) => {
-                const cfgMatch = Object.entries(preset.config).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
+                const resolvedConfig = resolvePresetConfig(preset);
+                const cfgMatch = Object.entries(resolvedConfig).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
                 if (!cfgMatch) return false;
                 const presetModes = preset.batchModes || {};
                 return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_gemma_pair') === mode);
@@ -3149,7 +3213,7 @@ const app = createApp({
         function applyPreset(presetKey) {
             const preset = modelPresets[presetKey];
             if (!preset) return;
-            stageModelConfig.value = { ...preset.config };
+            stageModelConfig.value = { ...stageModelConfig.value, ...resolvePresetConfig(preset) };
             stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_gemma_pair' }) };
             activePreset.value = presetKey;
         }
@@ -3159,7 +3223,7 @@ const app = createApp({
             if (r && !r.includes(modelId)) return false;
             // findings_only_gemma_pair: production block_batch is GPT-5.4 only.
             if (stageKey === 'block_batch' && isFindingsOnlyMode()) {
-                return findingsOnlyCompatibleBlockModels.includes(modelId);
+                return findingsOnlyCompatibleBlockModels.includes(modelId) || String(modelId || '').startsWith('codex/');
             }
             return true;
         }
@@ -3174,6 +3238,7 @@ const app = createApp({
 
         function selectStageModel(stageKey, modelId, event) {
             stageModelConfig.value[stageKey] = modelId;
+            activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
         }
 
         async function loadStageModels() {
@@ -3181,7 +3246,7 @@ const app = createApp({
                 stageModelSaveError.value = '';
                 const data = await api('/audit/model/stages');
                 stageModelConfig.value = data.stages || {};
-                availableModels.value = data.available_models || [];
+                availableModels.value = normalizeAvailableModels(data.available_models || []);
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
                 if (data.config_errors && Object.keys(data.config_errors).length > 0) {
@@ -8149,6 +8214,30 @@ const app = createApp({
             if (s.includes('РЕКОМЕНД')) return 'recommended';
             if (s.includes('ПРОВЕР')) return 'check';
             return 'check';
+        }
+
+        function findingDetectorBadge(finding) {
+            if (!finding) return null;
+            const provenance = finding.provenance || {};
+            const foundBy = Array.isArray(provenance.found_by) ? provenance.found_by : [];
+            let summary = finding.detector_summary || provenance.detector_summary || '';
+            if (!summary) {
+                const hasGpt = foundBy.includes('gpt_openrouter');
+                const hasCodex = foundBy.includes('codex');
+                summary = hasGpt && hasCodex ? 'gpt_codex' : (hasGpt ? 'gpt' : (hasCodex ? 'codex' : ''));
+            }
+            const meta = {
+                gpt: { text: 'GPT', tone: 'gpt', title: 'Найдено GPT через OpenRouter' },
+                codex: { text: 'Codex', tone: 'codex', title: 'Найдено независимым проходом Codex' },
+                gpt_codex: { text: 'GPT + Codex', tone: 'both', title: 'Независимо найдено GPT и Codex' },
+            }[summary];
+            if (!meta) return null;
+            const detections = Array.isArray(provenance.detections) ? provenance.detections : [];
+            const models = [...new Set(detections.map(d => d && d.model).filter(Boolean))];
+            return {
+                ...meta,
+                title: models.length ? `${meta.title}: ${models.join(', ')}` : meta.title,
+            };
         }
 
         function sevIcon(severity) {
@@ -17193,7 +17282,7 @@ const app = createApp({
             secondsSinceHeartbeat, isHeartbeatStale, getHeartbeatInfo,
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
-            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon,
+            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon, findingDetectorBadge,
             debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,

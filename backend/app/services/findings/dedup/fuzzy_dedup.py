@@ -179,9 +179,15 @@ def fuzzy_dedup(
                 continue
 
             # Standard collapse: prefer the higher canonical_score.
+            from backend.app.pipeline.stages.block_analysis.provenance import (
+                aggregate_traceability,
+            )
+            traceability = aggregate_traceability([existing, f])
             if _canonical_score(f) > _canonical_score(existing):
-                kept[best_idx] = f
+                kept[best_idx] = {**f, **traceability}
                 kept_sigs[best_idx] = sig
+            elif traceability:
+                kept[best_idx] = {**existing, **traceability}
             report.same_class_drops += 1
             key = sig[:60] or "<empty-sig>"
             report.same_class_drops_by_key[key] = (

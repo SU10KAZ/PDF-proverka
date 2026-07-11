@@ -1161,6 +1161,14 @@
                             :class="{ active: activePreset === 'findings_only' }"
                             @click="applyPreset('findings_only')"
                             title="Production: Markdown → Gemma OCR enrichment → Stage 02 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'codex_exec' }"
+                            @click="applyPreset('codex_exec')"
+                            title="Codex exec для всех поддерживаемых этапов, включая Stage 02 Блоки.">Codex exec</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'dual_detection' }"
+                            @click="applyPreset('dual_detection')"
+                            title="Stage 02 независимо проверяет каждый блок через GPT-5.4 и Codex.">GPT + Codex</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
                 <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
@@ -1883,6 +1891,12 @@
                                         @click="toggleFindingBlocks(f.id)"
                                         :style="{ cursor: ((findingBlockMap[f.id] && findingBlockMap[f.id].length) || (findingTextEvidence[f.id] && findingTextEvidence[f.id].length)) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ f.id }}</span>
+                                        <span v-if="findingDetectorBadge(f)"
+                                              class="finding-detector-badge"
+                                              :class="'finding-detector-badge--' + findingDetectorBadge(f).tone"
+                                              :title="findingDetectorBadge(f).title">
+                                            {{ findingDetectorBadge(f).text }}
+                                        </span>
                                         <span v-if="f.sub_findings" class="finding-group-badge" :title="f.sub_findings.length + ' объединённых замечаний'">
                                             ×{{ f.sub_findings.length }}
                                         </span>
@@ -3290,6 +3304,12 @@
                                                 {{ f.severity || 'N/A' }}
                                             </span>
                                             <span class="tile-finding-card__id">{{ f.id }}</span>
+                                            <span v-if="findingDetectorBadge(f)"
+                                                  class="finding-detector-badge finding-detector-badge--inline"
+                                                  :class="'finding-detector-badge--' + findingDetectorBadge(f).tone"
+                                                  :title="findingDetectorBadge(f).title">
+                                                {{ findingDetectorBadge(f).text }}
+                                            </span>
                                             <span v-if="f.highlight_regions && f.highlight_regions.length"
                                                   class="tile-finding-card__locate"
                                                   title="Показать на чертеже">&#9678;</span>

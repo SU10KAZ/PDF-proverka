@@ -25,6 +25,8 @@ from typing import TYPE_CHECKING
 
 from backend.app.core.config import (
     CLAUDE_BLOCK_BATCH_CLEAN_CWD,
+    CODEX_STAGE_MODEL_ID,
+    STAGE02_DUAL_MODEL_ID,
     get_stage_model,
 )
 from backend.app.pipeline.stage_result import StageResult
@@ -493,7 +495,8 @@ async def run_block_analysis_findings_only(
 ) -> StageResult:
     """ЭТАП 02 в режиме findings_only_gemma_pair.
 
-    Single-block: GPT-5.4 + gemma-enrichment + extended categories на каждый блок.
+    Single-block: GPT-5.4, Codex или их независимый двойной проход +
+    gemma-enrichment + extended categories на каждый блок.
     Пишет финальный _output/02_blocks_analysis.json напрямую.
     Поддерживает cancel через cancel_event и progress через ctx.progress_sync.
 
@@ -534,7 +537,11 @@ async def run_block_analysis_findings_only(
         )
 
     ui_model = get_stage_model("block_batch")
-    findings_only_compatible = {"openai/gpt-5.4"}
+    findings_only_compatible = {
+        "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        STAGE02_DUAL_MODEL_ID,
+    }
     if ui_model in findings_only_compatible:
         model = ui_model
     else:
@@ -548,7 +555,11 @@ async def run_block_analysis_findings_only(
 
     # ── Smoke-limits via env (опционально, не активны в production) ──
     smoke = _read_stage02_smoke_env()
-    parallelism = smoke.get("max_parallel", DEFAULT_PARALLELISM)
+    detector_default_parallelism = (
+        1 if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
+        else DEFAULT_PARALLELISM
+    )
+    parallelism = smoke.get("max_parallel", detector_default_parallelism)
     blocks_filter: list[str] | None = None
     if smoke.get("max_blocks"):
         # blocks_filter = первые N block_id из stage02 index. План остаётся
@@ -574,10 +585,10 @@ async def run_block_analysis_findings_only(
                 "warn",
             )
 
-    if parallelism != DEFAULT_PARALLELISM:
+    if parallelism != detector_default_parallelism:
         await ctx.log(
             f"  · SMOKE-LIMIT: AUDIT_STAGE02_MAX_PARALLEL_BATCHES={parallelism} "
-            f"(default={DEFAULT_PARALLELISM})",
+            f"(default={detector_default_parallelism})",
             "warn",
         )
 
@@ -622,7 +633,10 @@ async def run_block_analysis_findings_only(
                     f"out={event.get('output_tokens')} "
                     f"reason={event.get('reasoning_tokens')}"
                 )
-                asyncio.run_coroutine_threadsafe(ctx.log(msg), loop)
+                level = "warn" if event.get("partial") else "info"
+                if event.get("partial"):
+                    msg += f" partial_failed={event.get('detectors_failed') or []}"
+                asyncio.run_coroutine_threadsafe(ctx.log(msg, level), loop)
             else:
                 err = (event.get("error") or "")[:80]
                 asyncio.run_coroutine_threadsafe(

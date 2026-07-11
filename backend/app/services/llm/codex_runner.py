@@ -14,7 +14,7 @@ import shutil
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any, Awaitable, Callable, Optional, Sequence
 
 from backend.app.core.config import ROOT_DIR, resolve_codex_model
 from backend.app.models.usage import CLIResult, LLMResult
@@ -78,7 +78,47 @@ def _json_sandbox_mode() -> str:
     return raw if raw in _ALLOWED_SANDBOXES else _DEFAULT_JSON_SANDBOX
 
 
-def _build_prompt(task_text: str, *, stage: str, project_id: str) -> str:
+def _normalize_image_paths(image_paths: Sequence[str | Path] | None) -> list[Path]:
+    if not image_paths:
+        return []
+
+    allowed_suffixes = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+    normalized: list[Path] = []
+    seen: set[Path] = set()
+    for raw_path in image_paths:
+        try:
+            path = Path(raw_path).expanduser().resolve(strict=True)
+        except (OSError, RuntimeError):
+            continue
+        if not path.is_file() or path.suffix.lower() not in allowed_suffixes:
+            continue
+        if path in seen:
+            continue
+        seen.add(path)
+        normalized.append(path)
+    return normalized
+
+
+def _build_prompt(
+    task_text: str,
+    *,
+    stage: str,
+    project_id: str,
+    image_paths: Sequence[str | Path] | None = None,
+) -> str:
+    images = _normalize_image_paths(image_paths)
+    image_section = ""
+    if images:
+        image_lines = "\n".join(f"- {path}" for path in images)
+        image_section = (
+            "\nAttached image files are available to this Codex exec run through "
+            "`--image`. Use them only for this stage and cite their block/page "
+            "labels from the task when they support an output item.\n"
+            "<ATTACHED_IMAGES>\n"
+            f"{image_lines}\n"
+            "</ATTACHED_IMAGES>\n\n"
+        )
+
     return (
         "You are running as OpenAI Codex exec inside the Audit Manager classic "
         "pipeline. You are replacing a Claude Code CLI agent for this single "
@@ -91,6 +131,7 @@ def _build_prompt(task_text: str, *, stage: str, project_id: str) -> str:
         "task. Do not modify unrelated files. Do not print JSON instead of "
         "writing it when the task asks for an output file. Finish with one short "
         "status line.\n\n"
+        f"{image_section}"
         "<PIPELINE_TASK>\n"
         f"{task_text or ''}\n"
         "</PIPELINE_TASK>\n"
@@ -128,17 +169,27 @@ def _content_to_text(content: Any) -> str:
     return json.dumps(content, ensure_ascii=False) if isinstance(content, (dict, list)) else str(content)
 
 
-def _build_json_prompt(messages: list[dict], *, stage: str, project_id: str) -> str:
+def _build_json_prompt(
+    messages: list[dict],
+    *,
+    stage: str,
+    project_id: str,
+    image_paths: Sequence[str | Path] | None = None,
+) -> str:
+    images = _normalize_image_paths(image_paths)
     parts = [
         "You are OpenAI Codex exec used as a JSON-only model inside the Audit Manager classic pipeline.",
         f"Stage: {stage or 'unknown'}",
         f"Project: {project_id or 'unknown'}",
         "",
-        "All source data needed for this stage is included in the messages below. "
-        "Do not read files, do not write files, do not call shell commands, do not use web search, "
+        "All source data needed for this stage is included in the messages and attached images below. "
+        "Inspect every attached image. Do not read files through tools, do not write files, "
+        "do not call shell commands, do not use web search, "
         "and do not try to patch the workspace. Return exactly one valid JSON value for this stage. "
         "No Markdown fences, no prose, no status line.",
     ]
+    if images:
+        parts.extend(["", "<ATTACHED_IMAGES>", *(str(path) for path in images), "</ATTACHED_IMAGES>"])
     for idx, message in enumerate(messages, start=1):
         role = str(message.get("role") or "user").upper()
         parts.extend([
@@ -169,6 +220,7 @@ async def run_codex_exec(
     stage: str = "",
     project_id: str = "",
     model: str | None = None,
+    image_paths: Sequence[str | Path] | None = None,
 ) -> tuple[int, str, CLIResult]:
     """Run Codex exec and return the classic `(exit_code, output, CLIResult)` tuple."""
     cli = find_codex_cli()
@@ -180,7 +232,11 @@ async def run_codex_exec(
     fd, out_name = tempfile.mkstemp(prefix=f"codex_{stage or 'audit'}_", suffix=".md")
     os.close(fd)
     out_file = Path(out_name)
-    prompt = _build_prompt(task_text, stage=stage, project_id=project_id)
+    images = _normalize_image_paths(image_paths)
+    image_args: list[str] = []
+    for image_path in images:
+        image_args.extend(["--image", str(image_path)])
+    prompt = _build_prompt(task_text, stage=stage, project_id=project_id, image_paths=images)
     cmd = [
         cli,
         "exec",
@@ -192,6 +248,7 @@ async def run_codex_exec(
         _sandbox_mode(),
         "--model",
         resolved_model,
+        *image_args,
         "-C",
         str(ROOT_DIR),
         "-o",
@@ -242,6 +299,7 @@ async def run_codex_json_messages(
     stage: str = "",
     project_id: str = "",
     model: str | None = None,
+    image_paths: Sequence[str | Path] | None = None,
 ) -> LLMResult:
     """Run Codex exec as a JSON-only text model.
 
@@ -258,7 +316,16 @@ async def run_codex_json_messages(
     fd, out_name = tempfile.mkstemp(prefix=f"codex_{stage or 'json'}_", suffix=".json")
     os.close(fd)
     out_file = Path(out_name)
-    prompt = _build_json_prompt(messages, stage=stage, project_id=project_id)
+    images = _normalize_image_paths(image_paths)
+    prompt = _build_json_prompt(
+        messages,
+        stage=stage,
+        project_id=project_id,
+        image_paths=images,
+    )
+    image_args: list[str] = []
+    for image_path in images:
+        image_args.extend(["--image", str(image_path)])
     cmd = [
         cli,
         "exec",
@@ -270,6 +337,7 @@ async def run_codex_json_messages(
         _json_sandbox_mode(),
         "--model",
         resolved_model,
+        *image_args,
         "-C",
         str(ROOT_DIR),
         "-o",

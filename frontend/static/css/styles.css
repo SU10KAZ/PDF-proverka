@@ -927,6 +927,23 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .id-cell { white-space: normal; word-break: break-word; text-align: center; vertical-align: middle; }
 .finding-id-link { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; color: var(--blue); cursor: pointer; }
 .finding-id-link:hover { text-decoration: underline; }
+.finding-detector-badge {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin: 4px auto 0;
+    padding: 2px 5px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.finding-detector-badge--inline { display: inline-block; margin: 0 0 0 4px; }
+.finding-detector-badge--gpt { color: #166534; background: #dcfce7; border-color: #86efac; }
+.finding-detector-badge--codex { color: #1e40af; background: #dbeafe; border-color: #93c5fd; }
+.finding-detector-badge--both { color: #6b21a8; background: #f3e8ff; border-color: #d8b4fe; }
 .finding-blocks-count { font-size: 9px; font-weight: 700; background: var(--teal-light); color: var(--teal); border-radius: 3px; padding: 1px 4px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
 .finding-group-badge { font-size: 9px; font-weight: 700; background: #fef3c7; color: #d97706; border-radius: 3px; padding: 1px 5px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
 tr.row-group { background: rgba(217, 119, 6, 0.04); }

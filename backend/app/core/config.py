@@ -412,6 +412,7 @@ LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
 # `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
 CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
 CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
+STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
 # Диспетчеризация стадий идёт строго по префиксу "codex/" (is_codex_model). Значение
 # без префикса (перепутали с AUDIT_CODEX_MODEL) попадало в AVAILABLE_MODELS как
 # «Codex exec», но в рантайме молча уходило в OpenRouter-ветку с несуществующим id.
@@ -423,6 +424,7 @@ AVAILABLE_MODELS = [
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
     {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex exec",             "provider": "codex_cli"},
+    {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
     {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
 ]
@@ -430,6 +432,8 @@ AVAILABLE_MODELS = [
 STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        STAGE02_DUAL_MODEL_ID,
     ],
 }
 
@@ -479,7 +483,7 @@ def validate_current_stage_model_config(
 
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Production: GPT-5.4 (OpenRouter), findings_only_gemma_pair, single-block. Gemma выполняется отдельным обязательным этапом enrichment.",
+    "block_batch": "Single-block Stage 02: GPT-5.4, Codex или независимый двойной проход GPT + Codex. Gemma выполняется отдельным обязательным этапом enrichment.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
@@ -587,6 +591,8 @@ def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = 
             except ValueError:
                 pass
         return max(1, value)
+    if model == STAGE02_DUAL_MODEL_ID or is_codex_model(model):
+        return 1
     return MAX_PARALLEL_BATCHES
 
 RATE_LIMIT_THRESHOLD_PCT = 90

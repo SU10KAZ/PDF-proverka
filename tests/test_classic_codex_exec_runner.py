@@ -149,6 +149,51 @@ async def test_codex_runner_builds_exec_command_and_reads_output_file(monkeypatc
     assert "WRITE THE REQUESTED JSON FILE" in captured["input_text"]
     assert not captured["out_file"].exists()
 
+
+@pytest.mark.asyncio
+async def test_codex_runner_attaches_images_to_exec_command(monkeypatch, tmp_path):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    captured = {}
+    png_path = tmp_path / "block_A.png"
+    jpg_path = tmp_path / "block_B.jpg"
+    ignored_txt = tmp_path / "notes.txt"
+    png_path.write_bytes(b"png")
+    jpg_path.write_bytes(b"jpg")
+    ignored_txt.write_text("not an image", encoding="utf-8")
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+
+    async def fake_run_command(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured.update(kwargs)
+        out_file = Path(cmd[cmd.index("-o") + 1])
+        captured["out_file"] = out_file
+        out_file.write_text("FINAL STATUS", encoding="utf-8")
+        return 0, "", ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    exit_code, _, _ = await codex_runner.run_codex_exec(
+        "USE DRAWINGS",
+        timeout=42,
+        stage="optimization",
+        project_id="DOC-IMG",
+        model="codex/gpt-5.4",
+        image_paths=[png_path, jpg_path, ignored_txt, tmp_path / "missing.png"],
+    )
+
+    cmd = captured["cmd"]
+    assert exit_code == 0
+    image_args = [cmd[index + 1] for index, item in enumerate(cmd) if item == "--image"]
+    assert image_args == [str(png_path.resolve()), str(jpg_path.resolve())]
+    assert str(ignored_txt.resolve()) not in cmd
+    assert cmd[-1] == "-"
+    assert "<ATTACHED_IMAGES>" in captured["input_text"]
+    assert str(png_path.resolve()) in captured["input_text"]
+    assert "USE DRAWINGS" in captured["input_text"]
+
+
 @pytest.mark.asyncio
 async def test_codex_json_runner_uses_inline_context_and_parses_final_json(monkeypatch):
     import backend.app.services.llm.codex_runner as codex_runner
@@ -194,6 +239,37 @@ async def test_codex_json_runner_uses_inline_context_and_parses_final_json(monke
     assert "INLINE PROJECT CONTEXT" in captured["input_text"]
     assert "image attachment(s) omitted" in captured["input_text"]
     assert not captured["out_file"].exists()
+
+
+@pytest.mark.asyncio
+async def test_codex_json_runner_attaches_local_images(monkeypatch, tmp_path):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    captured = {}
+    image = tmp_path / "block.png"
+    image.write_bytes(b"png")
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+
+    async def fake_run_command(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured.update(kwargs)
+        Path(cmd[cmd.index("-o") + 1]).write_text('{"findings": []}', encoding="utf-8")
+        return 0, "", ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Inspect the attached block."}],
+        timeout=77,
+        stage="block_analysis",
+        project_id="DOC-IMG-JSON",
+        model="codex/gpt-5.4",
+        image_paths=[image],
+    )
+
+    assert result.is_error is False
+    assert captured["cmd"][captured["cmd"].index("--image") + 1] == str(image.resolve())
+    assert str(image.resolve()) in captured["input_text"]
 
 
 @pytest.mark.asyncio
