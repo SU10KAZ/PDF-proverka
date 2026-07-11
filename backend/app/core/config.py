@@ -389,6 +389,7 @@ def _save_stage_batch_modes() -> None:
         _STAGE_BATCH_MODES_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(_STAGE_BATCH_MODES_FILE, "w", encoding="utf-8") as f:
             json.dump(STAGE_BATCH_MODES, f, ensure_ascii=False, indent=2)
+            f.write("\n")
     except Exception as e:
         print(f"[config] Failed to save stage_batch_modes.json: {e}")
 
