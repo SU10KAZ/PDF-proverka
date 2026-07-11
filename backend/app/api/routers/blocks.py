@@ -690,12 +690,20 @@ async def get_block_llm_text(
     # 3) enrichment — ТОТ ЖЕ источник, что у Stage 02 (MD [ENRICHED] → gemma experiments)
     enrichment, enr_source = get_enrichment(version_dir, {}, project_info, block_id)
 
-    # 4) текст страницы из document_graph.json
+    # 4) текст страницы + 0-based page_index блока из document_graph.json (авторитетный источник
+    #    страницы для fitz-рендера: result.json.page_index бывает +1 → рендерит не ту страницу).
     page_text = ""
+    dg_page_index = None
     graph_path = output_dir / "document_graph.json"
     if graph_path.exists():
         try:
-            page_text = load_page_text(json.loads(graph_path.read_text(encoding="utf-8")), page)
+            _dg = json.loads(graph_path.read_text(encoding="utf-8"))
+            page_text = load_page_text(_dg, page)
+            for _p in _dg.get("pages", []):
+                if any(str(_b.get("id") or _b.get("block_id")) == str(block_id)
+                       for _b in _p.get("image_blocks", [])):
+                    dg_page_index = _p.get("page_index", _p.get("page"))
+                    break
         except (OSError, json.JSONDecodeError):
             page_text = ""
 
@@ -754,6 +762,25 @@ async def get_block_llm_text(
                     polygon_norm=rblock.get("polygon_points_norm"))
     except Exception:
         singleline_graph = None
+
+    # 7b) Пространственные группы текста блока (для оверлея «области»): чисто геометрия вектор-слоя,
+    #     bbox нормирован к coords_norm → совпадает с рендером /blocks/region-image. Работает на
+    #     ЛЮБОМ блоке с вектор-слоем (не только однолинейки). См. block_text_clustering. fail-soft.
+    text_groups: list = []
+    try:
+        from backend.app.pipeline.stages.block_grounding.block_text_clustering import (
+            compute_text_groups,
+        )
+        pdf_tg = version_dir / "02_work" / "document.pdf"
+        if not pdf_tg.exists() and (version_dir / "document.pdf").exists():
+            pdf_tg = version_dir / "document.pdf"
+        text_groups = compute_text_groups(
+            pdf_tg, rblock.get("coords_norm"), vector_text,
+            rblock.get("polygon_points_norm"),
+            page_index=dg_page_index,
+            page_index_fallback=int(rblock.get("page_index") or 0))
+    except Exception:
+        text_groups = []
 
     # user_text превью = РЕАЛЬНЫЙ user_text Stage 02 (правдиво):
     #  - SINGLELINE_RICH_PROMPT ON  → полная rich-разметка графа (совпадает с call_gpt_for_block);
@@ -877,6 +904,8 @@ async def get_block_llm_text(
         "singleline_graph": singleline_graph,
         # полный Markdown графа в формате эталона (8 разделов) — None, если блок не схема
         "singleline_graph_markdown": singleline_graph_markdown,
+        # пространственные группы текста блока (оверлей «области»): bbox в [0,1] региона блока
+        "text_groups": text_groups,
         # соседние text-блоки страницы: send=уникальные (слать), dropped=дубли текст-слоя (не слать)
         "neighbor_text_blocks": neighbor_text_blocks,
     }

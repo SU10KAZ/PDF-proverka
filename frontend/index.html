@@ -3152,12 +3152,33 @@
                                           class="block-region-label">{{ r.qf }}</text>
                                 </template>
                             </svg>
+                            <!-- SVG overlay: ПРОСТРАНСТВЕННЫЕ ГРУППЫ ТЕКСТА (кнопка «области», любой блок -->
+                            <!-- с вектор-слоем). Показываем, когда нет областей линий однолинейки. -->
+                            <svg v-if="showBlockRegions && blockTextGroupRects.length && !blockRegionRects.length"
+                                 class="block-highlight-svg block-region-svg"
+                                 :style="blockImageStyle"
+                                 :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
+                                <template v-for="(g, gi) in blockTextGroupRects" :key="'tg'+gi">
+                                    <polygon :points="g.poly.map(p => (p[0]*blockNatW)+','+(p[1]*blockNatH)).join(' ')"
+                                             class="block-tgroup-rect"
+                                             :class="{'block-tgroup-rect--single': g.single}"
+                                             :style="{ stroke: g.color, fill: g.color }">
+                                        <title>Группа {{ g.n }} ({{ g.natoms }} стр.)&#10;{{ g.text }}</title>
+                                    </polygon>
+                                    <text :x="g.labelX * blockNatW + 3" :y="g.labelY * blockNatH + 13"
+                                          class="block-tgroup-label" :style="{ fill: g.color }">{{ g.n }}</text>
+                                </template>
+                            </svg>
                             <p class="tile-split-image__label">
                                 {{ selectedBlock.block_id }}
                                 <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
                                 <span v-if="showBlockRegions && blockRegionRects.length"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
                                     &#9632; {{ blockRegionRects.length }} областей линий
+                                </span>
+                                <span v-if="showBlockRegions && blockTextGroupRects.length && !blockRegionRects.length"
+                                      style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
+                                    &#9632; {{ blockTextGroupRects.length }} групп текста
                                 </span>
                                 <span v-if="currentBlockHighlights.length > 0"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">

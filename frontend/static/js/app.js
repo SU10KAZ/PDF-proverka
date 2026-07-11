@@ -6862,6 +6862,29 @@ const app = createApp({
             }
             return out;
         });
+        // Пространственные группы текста блока (кнопка «области») — чисто геометрия вектор-слоя,
+        // bbox нормирован к региону блока (совпадает с region-image). Работает на ЛЮБОМ блоке с
+        // вектор-слоем. Цвет группы — золотой угол по номеру (различимые оттенки для десятков групп).
+        const blockTextGroupRects = computed(() => {
+            const tg = blockLlmText.value && blockLlmText.value.text_groups;
+            if (!tg || !tg.length) return [];
+            const cl = v => Math.max(0, Math.min(1, v));
+            return tg.map(g => {
+                const b = g.bbox || [0, 0, 0, 0];
+                const x0 = cl(b[0]), y0 = cl(b[1]), x1 = cl(b[2]), y1 = cl(b[3]);
+                const hue = (g.n * 137.508) % 360;
+                return {
+                    n: g.n,
+                    poly: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]],
+                    color: `hsl(${hue} 72% 45%)`,
+                    single: (g.natoms || 1) < 2,
+                    text: (g.text || []).join('\n'),
+                    natoms: g.natoms || 1,
+                    labelX: x0, labelY: y0,
+                };
+            });
+        });
+
         function toggleBlockRegions() {
             showBlockRegions.value = !showBlockRegions.value;
             if (showBlockRegions.value) {
@@ -6881,12 +6904,15 @@ const app = createApp({
             return vid ? base + '?version_id=' + encodeURIComponent(vid) : base;
         }
 
-        // База картинки блока: в режиме областей — рендер из fitz (совпадает с геометрией bbox),
-        // иначе обычный кроп Chandra. Иначе SVG-области сдвинуты на колонку (разная нормировка страниц).
+        // База картинки блока: region-image (рендер из fitz) — ТОЛЬКО для областей ЛИНИЙ однолинейки
+        // (их bbox из геометрии fitz-страницы, совпадает только с fitz-рендером). Для групп ТЕКСТА
+        // и обычного вида — штатный кроп Chandra: группы текста нормированы к coords_norm блока и
+        // ложатся на обычную картинку (аспект совпадает), поэтому подменять её НЕ нужно — иначе блок
+        // «меняется» на region-image (который к тому же мог рендерить не ту страницу).
         const blockImageSrc = computed(() => {
             const b = selectedBlock.value;
             if (!b) return '';
-            const kind = showBlockRegions.value ? 'region-image' : 'image';
+            const kind = (showBlockRegions.value && blockRegionRects.value.length) ? 'region-image' : 'image';
             return blockImgUrl(blocksProjectId.value, b.block_id, kind);
         });
 
@@ -17153,7 +17179,7 @@ const app = createApp({
             allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
-            showBlockRegions, blockRegionRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
+            showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,
