@@ -63,6 +63,8 @@ For EACH proposal in `items[]`, check 5 criteria:
 - Does `type` match the proposal's substance? (cheaper_analog for replacement, not for design simplification)
 - If proposal is too generic ("consider the possibility...") without specifics → `verdict: "too_vague"`
 - If technical error (incompatible parameters, norm violation) → `verdict: "technical_issue"`, describe
+- Check that the item is an independent optimization rather than a restatement of an existing F/T finding. If `proposed` only corrects a dimension, marking, code reference, sheet contents, or mandatory normative requirement and has no separate cost, schedule, unification, installation or lifecycle effect → `verdict: "too_vague"`; explain that it repeats a finding and contains no independent optimization.
+- A finding reference alone is not evidence of economic value. A `pass` item must retain an independent optimization object: an analog, fewer types/operations, a factory module, a changed installation method, or a measurable lifecycle effect.
 
 ## Final Verdict per Proposal
 
