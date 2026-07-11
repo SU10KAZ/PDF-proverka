@@ -235,10 +235,28 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                 ("main_audit", "main_audit", "Основной аудит"),
                 ("findings_merge", "findings_merge", "Свод замечаний"),
                 ("norm_verify", "norm_verify", "Верификация норм"),
+                ("optimization", "optimization", "Оптимизация"),
+                ("optimization_critic", "optimization_review", "Проверка оптимизации"),
+                ("optimization_corrector", "optimization_review", "Исправление оптимизаций"),
             ]
+
+            def _interrupted_detail(label: str, info: dict) -> str:
+                status = info.get("status") or "error"
+                if status == "interrupted":
+                    return f"Этап {label} был прерван"
+                return f"Ошибка на этапе {label}"
+
+            # ВНИМАНИЕ: статус "running" сюда НЕ включаем. Зависший после
+            # watchdog-рестарта running переводится в "interrupted" ещё на
+            # старте бэкенда (manager._recover_one_log) и попадёт в эту ветку
+            # как "interrupted". А "running", доживший до detect_resume,
+            # означает РЕАЛЬНО активный прогон (recovery пропускает active_pids)
+            # — считать его возобновляемым нельзя: это двойной запуск / гонка
+            # (класс «живой RUNNING → resume убивает аудит»).
             for log_key, resume_stage, label in stage_order:
                 info = stages_log.get(log_key, {})
                 if info.get("status") in ("error", "interrupted"):
+                    detail = _interrupted_detail(label, info)
                     if log_key == "gemma_enrichment" and not gemma_ready:
                         return _gemma_resume(f"Ошибка на этапе {GEMMA_STAGE_LABEL}")
                     if log_key in ("tile_audit", "block_analysis") and total_batches > 0 and completed_batches < total_batches:
@@ -253,7 +271,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                         return {
                             "stage": resume_stage,
                             "stage_label": label,
-                            "detail": f"Ошибка на этапе {label}",
+                            "detail": detail,
                             "can_resume": True,
                         }
                     if log_key == "crop_blocks" and not has_blocks:
@@ -270,6 +288,41 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                             "02_blocks_analysis.json не создан",
                             legacy_tile=(log_key == "tile_audit"),
                         )
+                    if log_key == "norm_verify":
+                        return {
+                            "stage": "norm_verify",
+                            "stage_label": "Верификация норм",
+                            "detail": detail,
+                            "can_resume": True,
+                        }
+                    if log_key == "optimization":
+                        if (output_dir / "optimization.json").exists():
+                            return {
+                                "stage": "optimization_review",
+                                "stage_label": "Проверка оптимизации",
+                                "detail": "optimization.json создан; требуется повторить проверку оптимизации",
+                                "can_resume": True,
+                            }
+                        return {
+                            "stage": "optimization",
+                            "stage_label": "Оптимизация",
+                            "detail": detail,
+                            "can_resume": True,
+                        }
+                    if log_key in ("optimization_critic", "optimization_corrector"):
+                        if (output_dir / "optimization.json").exists():
+                            return {
+                                "stage": "optimization_review",
+                                "stage_label": "Проверка оптимизации",
+                                "detail": detail,
+                                "can_resume": True,
+                            }
+                        return {
+                            "stage": "optimization",
+                            "stage_label": "Оптимизация",
+                            "detail": "optimization.json не создан",
+                            "can_resume": True,
+                        }
 
             # Если финальный этап уже завершён, проект нельзя "продолжать",
             # даже если отсутствует вспомогательный снапшот 03a_norms_verified.json.

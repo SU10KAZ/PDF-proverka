@@ -296,6 +296,44 @@ class PipelineManager:
         return object_id if object_id is not None else _current_object_id_or_none()
 
     @staticmethod
+    def _resolve_object_id_for_project(
+        object_id: Optional[str],
+        project_id: Optional[str],
+        version_id: Optional[str] = None,
+    ) -> Optional[str]:
+        """Resolve job object by the actual v2 document before falling back to current_id."""
+        if object_id is not None:
+            return object_id
+        if project_id:
+            try:
+                from backend.app.services.storage.storage_write_facade import (
+                    StorageWriteFacade,
+                    v2_is_primary,
+                )
+
+                if v2_is_primary():
+                    v2_root = StorageWriteFacade().v2_root()
+                    if v2_root is not None:
+                        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+
+                        doc = ProjectsV2Adapter(v2_root).find_document_by_project_id(project_id)
+                        if doc and doc.get("object_id"):
+                            return str(doc["object_id"])
+            except Exception:
+                pass
+        return _current_object_id_or_none()
+
+    @staticmethod
+    def _v2_object_id_from_doc_dir(doc_dir: Path) -> Optional[str]:
+        try:
+            object_json = Path(doc_dir).parents[3] / "object.json"
+            data = json.loads(object_json.read_text(encoding="utf-8"))
+            value = data.get("object_id") if isinstance(data, dict) else None
+            return str(value) if value else None
+        except Exception:
+            return None
+
+    @staticmethod
     def _create_bound_task(coro, job: AuditJob) -> asyncio.Task:
         """Запустить coroutine с биндингом object_id из job.
 
@@ -1204,6 +1242,40 @@ class PipelineManager:
                 if _recover_one_log(vdir / "_output" / "pipeline_log.json", vdir.name):
                     recovered += 1
 
+        # projects_v2-primary хранит live-снимок не в legacy `_output`, а в
+        # `versions/<vid>/03_analysis/latest`. Старый recovery его не видел:
+        # после watchdog-restart UI оставался с вечными running-этапами, а
+        # resume-detector мог принять старые latest-артефакты за завершённый run.
+        try:
+            from backend.app.services.storage.storage_write_facade import StorageWriteFacade
+
+            v2_root = StorageWriteFacade().v2_root()
+        except Exception:
+            v2_root = None
+        if v2_root is not None:
+            try:
+                v2_logs = sorted(
+                    Path(v2_root).glob(
+                        "objects/*/disciplines/*/documents/*/versions/*/"
+                        "03_analysis/latest/pipeline_log.json"
+                    )
+                )
+            except OSError:
+                v2_logs = []
+            for log_path in v2_logs:
+                try:
+                    doc_code = log_path.parents[4].name
+                except IndexError:
+                    doc_code = ""
+                if doc_code and doc_code in active_pids:
+                    continue
+                try:
+                    label = str(log_path.relative_to(v2_root))
+                except ValueError:
+                    label = str(log_path)
+                if _recover_one_log(log_path, label):
+                    recovered += 1
+
         if recovered:
             print(f"[Recovery] Восстановлено {recovered} проектов с зависшими этапами")
 
@@ -1365,12 +1437,24 @@ class PipelineManager:
                 _legacy_root = resolve_project_dir(job.project_id)
             except Exception:
                 _legacy_root = None  # legacy может отсутствовать в v2-primary мире
+            _object_id = getattr(job, "object_id", None)
             _paths = resolve_v2_job_paths(
                 job.project_id, job.version_id,
                 run_id=getattr(job, "job_id", None),
-                object_id=getattr(job, "object_id", None),
+                object_id=_object_id,
                 legacy_project_dir=_legacy_root,
             )
+            if _paths is None and _object_id:
+                _paths = resolve_v2_job_paths(
+                    job.project_id, job.version_id,
+                    run_id=getattr(job, "job_id", None),
+                    object_id=None,
+                    legacy_project_dir=_legacy_root,
+                )
+                if _paths is not None:
+                    _resolved_object_id = self._v2_object_id_from_doc_dir(_paths[0])
+                    if _resolved_object_id:
+                        job.object_id = _resolved_object_id
             if _paths is None:
                 raise RuntimeError(
                     f"v2-primary: не удалось разрешить v2-пути для "
@@ -1710,13 +1794,26 @@ class PipelineManager:
                 legacy_root = None
             from backend.app.services.storage.v2_primary_wiring import resolve_v2_target_by_id
 
+            _object_id = getattr(job, "object_id", None)
             target = resolve_v2_target_by_id(
                 job.project_id,
                 getattr(job, "version_id", None) or "v001",
                 v2_root=v2_root,
-                object_id=getattr(job, "object_id", None),
+                object_id=_object_id,
                 legacy_project_dir=legacy_root,
             )
+            if target is None and _object_id:
+                target = resolve_v2_target_by_id(
+                    job.project_id,
+                    getattr(job, "version_id", None) or "v001",
+                    v2_root=v2_root,
+                    object_id=None,
+                    legacy_project_dir=legacy_root,
+                )
+                if target is not None:
+                    resolved_id = self._v2_object_id_from_doc_dir(target.doc_dir(v2_root))
+                    if resolved_id:
+                        job.object_id = resolved_id
             if target is None:
                 return None
             return facade, target, output_dir
@@ -2312,6 +2409,88 @@ class PipelineManager:
             except Exception:
                 pass
 
+    @staticmethod
+    def _codex_models_enabled() -> bool:
+        """True когда текущий stage model config содержит Codex exec."""
+        try:
+            from backend.app.core.config import STAGE_MODEL_CONFIG, is_codex_model
+            return any(is_codex_model(model) for model in STAGE_MODEL_CONFIG.values())
+        except Exception:
+            return False
+
+    @staticmethod
+    def _safe_backup_name(value: str) -> str:
+        safe = []
+        for ch in value:
+            if ch.isalnum() or ch in ("-", "_", "."):
+                safe.append(ch)
+            else:
+                safe.append("_")
+        return "".join(safe).strip("_")[:120] or "project"
+
+    def _snapshot_output_before_codex_run(self, job: AuditJob, action: str) -> Path | None:
+        """Copy current result artifacts before a Codex experiment can overwrite them.
+
+        This intentionally snapshots JSON/JSONL/MD/XLSX top-level artifacts and
+        audit_trail only, not cropped block PNG folders, to keep backups compact
+        while preserving Claude analysis results for restore/comparison.
+        """
+        if not self._codex_models_enabled():
+            return None
+        try:
+            _root, _version_dir, _run_output = self._resolve_job_paths(job)
+        except Exception:
+            _version_dir = None
+            _run_output = self._output_dir_for_project(job.project_id)
+        # На projects_v2 живые результаты (findings / expert_review / *.xlsx)
+        # лежат в 03_analysis/latest, а output_dir из _resolve_job_paths — это
+        # per-run 03_analysis/runs/<run_id>, который на dispatch ещё ПУСТОЙ:
+        # снимок молча бэкапил пустоту и не защищал данные. Для снимка берём
+        # latest, если он существует (v2), иначе per-run / legacy _output.
+        output_dir = _run_output
+        if _version_dir is not None:
+            _latest = _version_dir / "03_analysis" / "latest"
+            if _latest.is_dir():
+                output_dir = _latest
+        if not output_dir.exists():
+            return None
+
+        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+        version_id = getattr(job, "version_id", None) or "v1"
+        project_key = self._safe_backup_name(job.project_id)
+        backup_dir = (
+            BASE_DIR / "comparison" / "classic_codex_ab" / "backups" /
+            project_key / f"{version_id}_{action}_{timestamp}"
+        )
+        backup_dir.mkdir(parents=True, exist_ok=True)
+
+        copied = []
+        suffixes = {".json", ".jsonl", ".md", ".xlsx"}
+        for src in sorted(output_dir.iterdir()):
+            if src.is_file() and src.suffix.lower() in suffixes:
+                shutil.copy2(src, backup_dir / src.name)
+                copied.append(src.name)
+        audit_trail = output_dir / "audit_trail"
+        if audit_trail.is_dir():
+            shutil.copytree(audit_trail, backup_dir / "audit_trail", dirs_exist_ok=True)
+            copied.append("audit_trail/")
+
+        marker = {
+            "type": "pre_codex_snapshot",
+            "project_id": job.project_id,
+            "version_id": version_id,
+            "action": action,
+            "source_output_dir": str(output_dir),
+            "created_at": datetime.now().isoformat(),
+            "copied": copied,
+            "restore_note": "To restore Claude results, copy the needed files from this backup directory back to source_output_dir.",
+        }
+        (backup_dir / "_snapshot_meta.json").write_text(
+            json.dumps(marker, ensure_ascii=False, indent=2), encoding="utf-8",
+        )
+        print(f"[{job.project_id}:codex] Snapshot текущих результатов → {backup_dir}")
+        return backup_dir
+
     # ─── Валидация JSON после записи LLM ───
 
     @staticmethod
@@ -2673,6 +2852,7 @@ class PipelineManager:
             project_dir = resolve_project_dir(project_id)
             output_dir = project_dir / "_output"
         project_info = self._load_project_info_for_paths(project_id, project_dir, project_dir)
+        self._seed_latest_gemma_artifacts_from_recent_run(project_dir, output_dir, project_info)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
         if normalized == "gemma_enrichment":
@@ -2728,6 +2908,130 @@ class PipelineManager:
                 )
 
         return normalized
+
+    @staticmethod
+    def _gemma_state_for_output_root(
+        project_dir: Path,
+        project_info: dict,
+        output_dir: Path,
+    ) -> dict:
+        from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+            bind_output_root,
+            unbind_output_root,
+        )
+
+        token = bind_output_root(output_dir)
+        try:
+            return evaluate_gemma_enrichment(project_dir, project_info)
+        finally:
+            unbind_output_root(token)
+
+    def _seed_latest_gemma_artifacts_from_recent_run(
+        self,
+        project_dir: Path,
+        output_dir: Path,
+        project_info: dict,
+    ) -> int:
+        """Recover light Gemma prereq files in latest from the newest valid run.
+
+        Failed v2-primary retries can leave `03_analysis/latest` with Stage 02
+        JSONs but without Gemma index/summary, while the actual run directory
+        already has them. Manual start-from-stage validates against latest, so
+        copy only missing lightweight JSON/index files from a run that still
+        passes the Gemma gate for the current MD.
+        """
+        project_dir = Path(project_dir)
+        output_dir = Path(output_dir)
+        runs_dir = project_dir / "03_analysis" / "runs"
+        if not runs_dir.is_dir():
+            return 0
+
+        need_gemma_index = not (output_dir / GEMMA_BLOCKS_DIRNAME / "index.json").is_file()
+        need_summary = not (output_dir / "gemma_enrichment_summary.json").is_file()
+        need_stage02 = not (output_dir / "02_blocks_analysis.json").is_file()
+        if not (need_gemma_index or need_summary or need_stage02):
+            return 0
+
+        try:
+            candidates = sorted(
+                [p for p in runs_dir.iterdir() if p.is_dir()],
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
+            )
+        except OSError:
+            return 0
+
+        output_resolved = None
+        try:
+            output_resolved = output_dir.resolve()
+        except OSError:
+            pass
+
+        top_level_names = (
+            "gemma_enrichment_summary.json",
+            "block_grounding_summary.json",
+            "document_graph.json",
+            "02_blocks_analysis.json",
+            "02_blocks_for_text.json",
+            "block_analysis_summary.json",
+            RUNTIME_BATCHES_FILE,
+            "block_batches.json",
+            "step1_locality_debug.json",
+        )
+        index_dirs = (
+            GEMMA_BLOCKS_DIRNAME,
+            "blocks",
+            "blocks_gemma_300",
+            STAGE02_BLOCKS_DIRNAME,
+        )
+
+        for candidate in candidates:
+            try:
+                if output_resolved is not None and candidate.resolve() == output_resolved:
+                    continue
+            except OSError:
+                pass
+            if not (candidate / GEMMA_BLOCKS_DIRNAME / "index.json").is_file():
+                continue
+            if not (candidate / "gemma_enrichment_summary.json").is_file():
+                continue
+
+            try:
+                state = self._gemma_state_for_output_root(project_dir, project_info, candidate)
+            except Exception:
+                continue
+            if not state.get("ready"):
+                continue
+
+            copied = 0
+            output_dir.mkdir(parents=True, exist_ok=True)
+            for name in top_level_names:
+                src = candidate / name
+                dst = output_dir / name
+                if src.is_file() and not dst.exists():
+                    try:
+                        shutil.copy2(src, dst)
+                        copied += 1
+                    except OSError:
+                        pass
+            for dirname in index_dirs:
+                src = candidate / dirname / "index.json"
+                dst = output_dir / dirname / "index.json"
+                if src.is_file() and not dst.exists():
+                    try:
+                        dst.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(src, dst)
+                        copied += 1
+                    except OSError:
+                        pass
+            if copied:
+                print(
+                    f"[resume] Восстановлены prereq-артефакты Gemma: "
+                    f"{copied} файлов из {candidate} -> {output_dir}"
+                )
+            return copied
+
+        return 0
 
     @staticmethod
     def _assert_stage_model_config_ready() -> None:
@@ -2851,6 +3155,14 @@ class PipelineManager:
         resume_info = self.detect_resume_stage(project_id, version_id=version_id)
         if not resume_info.get("can_resume"):
             raise RuntimeError("Все этапы уже завершены — нечего возобновлять")
+        resume_stage = str(resume_info.get("stage") or "")
+        if resume_stage in {"optimization", "optimization_review"}:
+            return await self._enqueue_single(
+                project_id,
+                action="retry_stage",
+                retry_stage=resume_stage,
+                version_id=version_id,
+            )
         return await self._enqueue_single(
             project_id, action="resume", version_id=version_id,
         )
@@ -2907,13 +3219,23 @@ class PipelineManager:
             _root_dir, project_dir, output_dir = self._resolve_job_paths(job)
             project_info = self._load_project_info_for_paths(pid, _root_dir, project_dir)
 
+            _latest_dir = project_dir / "03_analysis" / "latest"
+            _recovered_latest = self._seed_latest_gemma_artifacts_from_recent_run(
+                project_dir, _latest_dir, project_info,
+            )
+            if _recovered_latest:
+                await self._log(
+                    job,
+                    f"Resume: latest восстановлен {_recovered_latest} prereq-артефактами Gemma",
+                    "info",
+                )
+
             # Баг B1 аудита пайплайна: retry/resume на v2-primary исполняется
             # в СВЕЖЕМ ПУСТОМ runs/<новый job_id>, а валидатор проверял
             # артефакты в 03_analysis/latest — retry поздних стадий либо
             # падал на prereq-проверках ниже, либо шёл без входов. Сидируем
             # run dir JSON-артефактами из latest (только отсутствующие;
             # тяжёлые PNG-каталоги не копируем — их пересоздаёт pre-crop).
-            _latest_dir = project_dir / "03_analysis" / "latest"
             if (
                 _latest_dir.is_dir()
                 and output_dir != _latest_dir
@@ -5339,10 +5661,16 @@ class PipelineManager:
                 # bind_version, увидят правильную версию.
                 from backend.app.services.common import version_service
                 version_token = version_service.bind_version(item.version_id)
+                object_token = None
                 try:
+                    item_object_id = self._resolve_object_id_for_project(
+                        None, pid, item.version_id,
+                    )
+                    if item_object_id:
+                        object_token = bind_object(item_object_id)
                     job = AuditJob(
                         job_id=item.job_id or str(uuid4()),
-                        object_id=self._resolve_object_id(None),
+                        object_id=item_object_id,
                         project_id=pid,
                         version_id=item.version_id,
                         stage=AuditStage.PREPARE,
@@ -5408,7 +5736,12 @@ class PipelineManager:
                     # и kill бэкенда в окне терял completed/failed-статусы.
                     self._persist_queue()
                     await self._broadcast_batch_progress(queue)
-                    # Снимаем bind_version, выставленный перед dispatch
+                    # Снимаем bind_object/bind_version, выставленные перед dispatch
+                    try:
+                        if object_token is not None:
+                            unbind_object(object_token)
+                    except Exception:
+                        pass
                     try:
                         version_service.unbind_version(version_token)
                     except Exception:
@@ -5514,6 +5847,10 @@ class PipelineManager:
                 audit_logger.reset_audit_log(pid)
             except Exception:
                 pass
+
+        snapshot_actions = fresh_actions | {"optimization", "optimization_review", "norm_verify"}
+        if not item.retry_stage and action in snapshot_actions:
+            self._snapshot_output_before_codex_run(job, action)
 
         # Per-action cleanup stage-файлов (миррор старых start_* helpers)
         if not item.retry_stage:
@@ -5846,7 +6183,9 @@ class PipelineManager:
 
             placeholder = AuditJob(
                 job_id=job_id,
-                object_id=self._resolve_object_id(None),
+                object_id=self._resolve_object_id_for_project(
+                    None, project_id, effective_vid,
+                ),
                 project_id=project_id,
                 version_id=effective_vid,
                 stage=AuditStage.PREPARE,
