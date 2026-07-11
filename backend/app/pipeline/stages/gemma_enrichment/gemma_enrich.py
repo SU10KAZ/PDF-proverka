@@ -2134,47 +2134,34 @@ async def enrich_project(
     # Gemma); GEMMA_STAGE_DISABLED — пропуск ВСЕХ image-блоков (сканы получают placeholder
     # «OCR отключён» и анализируются на Stage 02 по изображению; стадия «сухая» — ни одного
     # обращения к LM Studio). fail-soft: ошибка → {} → полный прогон Gemma как обычно.
+    # Gemma OCR удалена из алгоритма: стадия всегда «сухая». Блоки с вектор-слоем PDF
+    # получают текст из вектора, сканы/растры без слоя — placeholder «анализ по изображению
+    # на Stage 02». Ни одного обращения к модели/LM Studio. Заполнение placeholder'ом идёт
+    # ВНЕ try (даже если резолв вектор-слоя упал), чтобы каждый image-блок гарантированно попал
+    # в skip_enrichments → stage_dry=True → сетевой путь недостижим.
     skip_enrichments: dict[str, dict] = {}
-    stage_disabled = False
+    stage_disabled = True
+    _image_ids = {b["block_id"] for b in image_blocks}
     try:
-        from backend.app.core import config as _gcfg
-        _router_on = bool(getattr(_gcfg, "BLOCK_SOURCE_ROUTER_ENABLED", False))
-        stage_disabled = bool(getattr(_gcfg, "GEMMA_STAGE_DISABLED", False)) and _router_on
-        _skip_vector = bool(getattr(_gcfg, "GEMMA_SKIP_VECTOR_BLOCKS_ENABLED", False)) and _router_on
-        if stage_disabled or _skip_vector:
-            from backend.app.pipeline.stages.block_grounding.block_source_router import (
-                vector_covered_block_ids as _vector_covered,
-            )
-            _image_ids = {b["block_id"] for b in image_blocks}
-            try:
-                _covered = _vector_covered(out_dir)  # сам fail-soft → {}
-            except Exception:
-                _covered = {}
-            skip_enrichments = {
-                bid: _vector_skip_enrichment(vtext)
-                for bid, vtext in _covered.items() if bid in _image_ids
-            }
-            _vector_count = len(skip_enrichments)
-            if stage_disabled:
-                # ПОЛНОЕ отключение: сканы/растры без вектор-слоя тоже не гоняем через Gemma.
-                for _bid in sorted(_image_ids - set(skip_enrichments)):
-                    skip_enrichments[_bid] = _ocr_disabled_enrichment()
-                await _emit(progress_cb, {
-                    "type": "gemma_stage_disabled",
-                    "total": total,
-                    "vector_blocks": _vector_count,
-                    "image_only_blocks": len(skip_enrichments) - _vector_count,
-                })
-            elif skip_enrichments:
-                await _emit(progress_cb, {
-                    "type": "gemma_skip_vector_blocks",
-                    "skipped": len(skip_enrichments),
-                    "total": total,
-                    "block_ids": sorted(skip_enrichments),
-                })
+        from backend.app.pipeline.stages.block_grounding.block_source_router import (
+            vector_covered_block_ids as _vector_covered,
+        )
+        _covered = _vector_covered(out_dir)  # сам fail-soft → {}
+        skip_enrichments = {
+            bid: _vector_skip_enrichment(vtext)
+            for bid, vtext in _covered.items() if bid in _image_ids
+        }
     except Exception:
         skip_enrichments = {}
-        stage_disabled = False
+    _vector_count = len(skip_enrichments)
+    for _bid in sorted(_image_ids - set(skip_enrichments)):
+        skip_enrichments[_bid] = _ocr_disabled_enrichment()
+    await _emit(progress_cb, {
+        "type": "gemma_stage_disabled",
+        "total": total,
+        "vector_blocks": _vector_count,
+        "image_only_blocks": len(skip_enrichments) - _vector_count,
+    })
 
     if total == 0:
         summary = build_gemma_summary(

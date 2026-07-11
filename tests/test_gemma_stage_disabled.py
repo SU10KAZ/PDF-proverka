@@ -1,7 +1,8 @@
 """
 test_gemma_stage_disabled.py
 ----------------------------
-GEMMA_STAGE_DISABLED: полное отключение OCR-прогона стадии Gemma.
+Стадия подготовки источника блока всегда «сухая»: Gemma OCR удалена из
+алгоритма, ни одного обращения к модели/LM Studio.
 
 Контракт:
 - ВСЕ image-блоки получают синтетический enrichment: с вектор-слоем → чистый
@@ -9,9 +10,7 @@ GEMMA_STAGE_DISABLED: полное отключение OCR-прогона ст�
   Stage 02 пропустит блок вместо анализа по изображению);
 - стадия «сухая»: ни adaptive reload, ни preflight, ни CHANDRA_BASE_URL
   не требуются (полная независимость от LM Studio/ngrok);
-- summary валиден (schema v2), coverage ok → все downstream-гейты проходят;
-- ИНВАРИАНТ: без BLOCK_SOURCE_ROUTER_ENABLED флаг не действует (иначе
-  covered-блоки остались бы слепыми на Stage 02).
+- summary валиден (schema v2), coverage ok → все downstream-гейты проходят.
 """
 from __future__ import annotations
 
@@ -143,36 +142,6 @@ async def test_no_image_blocks_needs_no_lm_studio(tmp_path, monkeypatch):
 
     assert summary["status"] == "no_blocks"
     assert summary["blocks_total"] == 0
-
-
-@pytest.mark.asyncio
-async def test_stage_disabled_requires_router(tmp_path, monkeypatch):
-    """ИНВАРИАНТ: без роутера флаг игнорируется → стадия идёт обычным путём
-    (здесь это видно по hard error на отсутствующем CHANDRA_BASE_URL)."""
-    proj = _make_project(tmp_path, block_ids=["b1"])
-    _set_flags(monkeypatch, disabled=True, router=False)
-    monkeypatch.delenv("CHANDRA_BASE_URL", raising=False)
-    monkeypatch.delenv("LMSTUDIO_BASE_URL", raising=False)
-
-    with pytest.raises(RuntimeError, match="CHANDRA_BASE_URL"):
-        await gemma_enrich_mod.enrich_project(proj)
-
-
-@pytest.mark.asyncio
-async def test_vector_skip_partial_still_needs_lm_studio(tmp_path, monkeypatch):
-    """Регресс старого поведения: только GEMMA_SKIP_VECTOR_BLOCKS_ENABLED и есть
-    скан без вектор-слоя → стадия НЕ сухая, CHANDRA_BASE_URL обязателен."""
-    proj = _make_project(tmp_path, block_ids=["b_vec", "b_scan"])
-    _set_flags(monkeypatch, disabled=False, router=True, skip_vector=True)
-    monkeypatch.delenv("CHANDRA_BASE_URL", raising=False)
-    monkeypatch.delenv("LMSTUDIO_BASE_URL", raising=False)
-    monkeypatch.setattr(
-        router_mod, "vector_covered_block_ids",
-        lambda output_dir: {"b_vec": "QF1 ВА47-29 C16 — длинный вектор-текст блока"},
-    )
-
-    with pytest.raises(RuntimeError, match="CHANDRA_BASE_URL"):
-        await gemma_enrich_mod.enrich_project(proj)
 
 
 @pytest.mark.asyncio
