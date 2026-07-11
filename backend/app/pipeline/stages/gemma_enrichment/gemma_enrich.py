@@ -257,9 +257,11 @@ def _is_invalid_image_error(data: dict | None, raw: str) -> bool:
 
 
 def _is_context_exceeded_error(data: dict | None, raw: str) -> bool:
-    """Сервер gemma-VL отклонил запрос: input не лезет в n_ctx (типично 4096).
-    Сообщение вида: 'request (4570 tokens) exceeds the available context size (4096 tokens)'.
-    Лечится только уменьшением картинки (page_text уже capped до 4000 chars)."""
+    """Сервер gemma-VL отклонил запрос: input не лезет в ЗАГРУЖЕННЫЙ context_length.
+    Сообщение вида: 'request (4570 tokens) exceeds the available context size (N tokens)'.
+    Возникает только если модель загружена с маленьким context_length; сама
+    gemma-4-26b-a4b держит до 262144 (замер: сервер грузит полные 256K без зажатия).
+    Смягчается уменьшением картинки (page_text и так capped до 800 chars, см. _load_page_text)."""
     msg = ""
     if isinstance(data, dict):
         err = data.get("error")

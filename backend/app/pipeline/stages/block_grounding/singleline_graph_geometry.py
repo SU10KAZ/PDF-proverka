@@ -520,6 +520,7 @@ def _fnum(v):
 # Голые ЦЕЛЫЕ числа (счёт квартир, этаж, категория) НЕ исключаем; десятичные — да (Кс/cos/%).
 _CONSUMER_KNOWN_RE = re.compile(
     r"^К\d+\.\d"                                                  # код цепи
+    r"|^\d*(?:В?РП)\d+(?:-\d+)+$"                                # отдельный код 2РП4-2 / 2ВРП1-6
     r"|кВт|^[\d.]+[АAaа]$|^\d+%$|^\d+[.,]\d+$|cos"                # формула (P/I/cos/Кс-десятичные)
     r"|ППГ|^\dх[\d.]|Iкз|^[\d.]+кА|FRHF|HF$"                       # кабель
     r"|ВА-|Icn|^\d+Р$"                                             # автомат
@@ -1041,11 +1042,17 @@ def _extract_hierarchy(page_text: str, power: dict, panels: list) -> dict:
         for r in f:
             edges.append({"from": vp, "to": r, "type": "распределение", "label": ""})
         lines.append(f"{grsh} -> {vp} -> " + " / ".join(f) if f else f"{grsh} -> {vp}")
-    # РП4 (АВР) → свои QF4.*
+    # Панель с QF4.*: имя берём из уже распознанных панелей, а не хардкодим «АВР».
+    # На ЭО2-ПА это РП4 (ПЭСПЗ), и старый хардкод искажал само дерево графа.
     qf4 = sorted({q for q in re.findall(r"QF4\.\d+", txt)},
                  key=lambda s: [int(x) for x in s[2:].split(".")])
     if qf4:
-        lines.append(f"РП4 (АВР) -> {qf4[0]}..{qf4[-1]}: отходящие линии АВР-зоны")
+        qf4_panel = next(
+            (p.get("name") or p.get("id") for p in panels
+             if str(p.get("name") or p.get("id") or "").startswith("РП4")),
+            "РП4",
+        )
+        lines.append(f"{qf4_panel} -> {qf4[0]}..{qf4[-1]}: отходящие линии панели")
     return {"nodes": nodes, "edges": edges, "tree_lines": lines, "feeds": feeds}
 
 
@@ -1064,15 +1071,20 @@ def _extract_title_source(page_text: str, pdf_path: Path, page_index, panel_hint
         title = tm.group(1) if tm else (panel_hint or "схема")
     # Раздел: код «NNАВ-РД-…» из ШТАМПА, а не из ссылок «см. том …» в примечаниях.
     # Берём самый частый код, НЕ предварённый «см» (ссылки на смежные тома).
-    section = None
-    cand = collections.Counter()
-    for sm in re.finditer(r"(\d{2}АВ-РД-[А-Яа-яA-Za-z0-9.\-]+)", txt):
-        prefix = txt[max(0, sm.start() - 8):sm.start()].lower()
-        if "см" in prefix or "том" in prefix:
-            continue
-        cand[sm.group(1).rstrip(".")] += 1
-    if cand:
-        section = cand.most_common(1)[0][0]
+    # Имя исходного PDF надёжнее плоского текста блока: в нём встречаются десятки ссылок
+    # «учтено в 13АВ-РД-ТХ/АК/ВК…», которые могут оказаться чаще собственного кода штампа.
+    filename = Path(pdf_path).name if pdf_path else ""
+    fm = re.search(r"(\d{2}АВ-РД-[А-Яа-яA-Za-z0-9.\-]+)", filename)
+    section = fm.group(1).rstrip(".") if fm else None
+    if not section:
+        cand = collections.Counter()
+        for sm in re.finditer(r"(\d{2}АВ-РД-[А-Яа-яA-Za-z0-9.\-]+)", txt):
+            prefix = txt[max(0, sm.start() - 8):sm.start()].lower()
+            if "см" in prefix or "том" in prefix:
+                continue
+            cand[sm.group(1).rstrip(".")] += 1
+        if cand:
+            section = cand.most_common(1)[0][0]
     obj = None
     om = re.search(r"(Внутреннее электроснабжение\s*\.?\s*Корпус\s*\d+)", txt)
     if om:
@@ -1482,6 +1494,9 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     qf_out = sorted([q for q in qf_all if q[1] <= y_split])
     qf_incomers = sorted([q for q in qf_all if q[1] > y_split])
     n_incomers = len(qf_incomers)
+    qf_out_occurrences = len(qf_out)
+    qf_label_occurrences = collections.Counter(q[2] for q in qf_out)
+    duplicate_qf_labels = sorted(q for q, n in qf_label_occurrences.items() if n > 1)
     # Дедуп повторных QF-меток среди отходящих: одна метка может встретиться дважды (повтор ниже
     # по листу / фрагмент). Дубль, попавший в X-колонку соседа, ВОРУЕТ его код (двухсекц. шина
     # ЭМ-К3: дубль QF2.1 крал К3.1.2С2 у QF2.2). Оставляем ВЕРХНЮЮ метку (min Y — ближе к ряду
@@ -1502,6 +1517,19 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     BA = coll(r"^ВА")
     KA = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+кА", w[4])]
     AMP = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"\d+А", w[4])]
+    # В части ЭО/ЭОМ-листов CAD экспортирует номинал тремя словами ``C 16 А``.
+    # Восстанавливаем только пару «число + А» на одной строке и рядом по X; голые
+    # числа не добавляем, чтобы расчётные значения выше QF не стали номиналами.
+    for w in words:
+        if not re.fullmatch(r"\d+(?:[.,]\d+)?", w[4]):
+            continue
+        a_word = next(
+            (a for a in words
+             if a[4] in ("А", "A") and abs(a[1] - w[1]) < 3 and 0 < a[0] - w[2] < 18),
+            None,
+        )
+        if a_word:
+            AMP.append((w[0], w[1], f"{w[4]}А"))
     POLE = [(w[0], w[1], w[4]) for w in words if re.fullmatch(r"[123]Р", w[4])]
     RES = [(w[0], w[1]) for w in words if "езерв" in w[4]]
     PS = [(w[0], w[1]) for w in words if re.fullmatch(r"ПС", w[4])]
@@ -1538,7 +1566,10 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     secondary_circuits = []      # вторичные цепи «ад»/«ан» отдельным слоем (не primary feeder code)
     panel_keys = sorted(set(pref(q[2]) for q in qf_out))
     panel_name_map = {pk: _panel_name(pk, page_full_text) for pk in panel_keys}
-    dup = collections.Counter(q[2] for q in qf_out)
+    # Сохраняем счётчики ДО технического схлопывания одинаковых подписей. Повтор может
+    # быть как дублем CAD-текста, так и реальной ошибкой маркировки двух физических линий;
+    # в обоих случаях молча считать его уникальным нельзя.
+    dup = qf_label_occurrences
     for p in panel_keys:
         pq = sorted([q for q in qf_out if pref(q[2]) == p])
         xs = [q[0] for q in pq]
@@ -1626,11 +1657,19 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         consumer_geo = _extract_consumer_geo(
             qx, qy, nx, words,
             [(p or {}).get("P_inst_kw"), (p or {}).get("Kc"), (p or {}).get("cosphi"),
-             (p or {}).get("P_calc_kw"), (p or {}).get("I_a")])
+             (p or {}).get("P_calc_kw"), (p or {}).get("I_a"), (p or {}).get("length_m"),
+             (p or {}).get("voltage_drop_pct")])
         if consumer_geo == "Резерв":
             consumer_geo = "Резерв (свободная ячейка)"
-        consumer = consumer_geo or (p.get("consumer") if p else None) \
-            or ("Резерв (свободная ячейка)" if g["reserve"] else None)
+        # В разнесённом диалекте consumer лежит отдельной цельной строкой прямо перед
+        # формулой: текстовый структурер сохраняет её полнее, чем узкая X-полоса геометрии
+        # (та может обрезать хвост «в осях …»). Для объединённого диалекта оставляем
+        # геометрический extractor первым — он лучше собирает многострочные подписи.
+        if p and p.get("source_layout") == "separate":
+            consumer = p.get("consumer") or consumer_geo
+        else:
+            consumer = consumer_geo or (p.get("consumer") if p else None)
+        consumer = consumer or ("Резерв (свободная ячейка)" if g["reserve"] else None)
         # Дожать привязку недобитой колонки (секционные «С2» / код в подписи щита) — строго из params.
         if code is None and not g["reserve"]:
             fb = _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned_codes)
@@ -1779,6 +1818,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "length_m": (p or {}).get("length_m"), "voltage_drop_pct": (p or {}).get("voltage_drop_pct"),
             "Ikz_ka": (p or {}).get("Ikz_ka"), "routing": (p or {}).get("routing"),
             "phase": (p or {}).get("phase"), "control": g["control"],
+            "source_layout": (p or {}).get("source_layout"),
             "additional_devices": additional_devices,
             "binding_method": bind_method.get(qn), "status": status, "review": review,
             "bus_section": _bs_map.get(qn),
@@ -1886,7 +1926,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         warnings.append(f"{geometry_conflicts} геометрических конфликтов привязки QF↔код")
     dups = [q for q, c in dup.items() if c > 1]
     if dups:
-        warnings.append("повтор обозначений QF: " + ", ".join(sorted(dups)))
+        warnings.append("повтор обозначений QF (одинаковые подписи схлопнуты в один узел): "
+                        + ", ".join(sorted(dups)))
     for tr in tt_check:
         if tr.get("review"):
             warnings.append(f"ТТ: {tr['panel']} — расхождение обозначения, см. комментарий")
@@ -1931,7 +1972,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                         f"{codes_total_occurrences} primary-кодов")
 
     confidence = round(codes_linked / max(len(param_occ), 1), 3)
-    status = "ok" if not (ambiguous or geometry_conflicts or coverage_gap
+    status = "ok" if not (ambiguous or geometry_conflicts or coverage_gap or duplicate_qf_labels
                           or missing_panel_warnings or duplicate_param_codes
                           or duplicate_bindings) else "needs_review"
 
@@ -1976,6 +2017,10 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
             "duplicate_param_codes": duplicate_param_codes,
             "duplicate_bindings": duplicate_bindings,
             "secondary_codes_total": len(secondary_circuits),
+            "qf_total_occurrences": qf_out_occurrences,
+            "qf_total_unique": len(qf_label_occurrences),
+            "duplicate_qf_labels": duplicate_qf_labels,
+            "qf_occurrences_collapsed": qf_out_occurrences - len(qf_label_occurrences),
             "panels_detected": [p["name"] for p in panels],
             "missing_panel_warnings": missing_panel_warnings,
         },
@@ -2304,6 +2349,10 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append(f"- duplicate_param_codes (дубль в ПД): {', '.join(v['duplicate_param_codes'])}")
     if v.get("duplicate_bindings"):
         L.append(f"- duplicate_bindings (один код на >1 QF): {', '.join(v['duplicate_bindings'])}")
+    if v.get("duplicate_qf_labels"):
+        L.append(f"- duplicate_qf_labels (одинаковые подписи схлопнуты): "
+                 f"{', '.join(v['duplicate_qf_labels'])}; occurrences "
+                 f"{v.get('qf_total_occurrences')}, unique {v.get('qf_total_unique')}")
     if v.get("missing_panel_warnings"):
         L.append(f"- missing_panel_warnings: {'; '.join(v['missing_panel_warnings'])}")
     L.append(f"- secondary_codes_total: {v.get('secondary_codes_total')}")

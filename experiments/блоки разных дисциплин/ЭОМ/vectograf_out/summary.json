@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "profile": "electrical_singleline",
+  "pdf_total": 6,
+  "graphs_built": 6,
+  "gate_passed": 6,
+  "records": [
+    {
+      "file": "01_13АВ-РД-ЭМ-К2_V1__466U-6UCY-6FY.pdf",
+      "block_id": "466U-6UCY-6FY",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 68,
+      "qf_occurrences": 69,
+      "qf_unique": 68,
+      "duplicate_qf_labels": [
+        "QF2.3"
+      ],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3 (ОДН)",
+        "РП4 (АВР)"
+      ],
+      "active": 52,
+      "reserve": 6,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 52,
+      "codes_total_occurrences": 53,
+      "power_rate": 1.0,
+      "current_rate": 1.0,
+      "geometry_conflicts": 0,
+      "status": "needs_review",
+      "warnings": [
+        "повтор обозначений QF (одинаковые подписи схлопнуты в один узел): QF2.3",
+        "покрытие неполное: привязано 52 из 53 primary-кодов"
+      ],
+      "elapsed_seconds": 0.176
+    },
+    {
+      "file": "02_13АВ-РД-ЭМ-К1__7HYD-CUDD-FPU.pdf",
+      "block_id": "7HYD-CUDD-FPU",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 68,
+      "qf_occurrences": 69,
+      "qf_unique": 68,
+      "duplicate_qf_labels": [
+        "QF2.3"
+      ],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3 (ОДН)",
+        "РП4 (АВР)"
+      ],
+      "active": 59,
+      "reserve": 5,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 59,
+      "codes_total_occurrences": 59,
+      "power_rate": 1.0,
+      "current_rate": 1.0,
+      "geometry_conflicts": 0,
+      "status": "needs_review",
+      "warnings": [
+        "повтор обозначений QF (одинаковые подписи схлопнуты в один узел): QF2.3"
+      ],
+      "elapsed_seconds": 0.196
+    },
+    {
+      "file": "03_13АВ-РД-ЭМ-К2_V1__9CAF-FCQN-U6G.pdf",
+      "block_id": "9CAF-FCQN-U6G",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 62,
+      "qf_occurrences": 62,
+      "qf_unique": 62,
+      "duplicate_qf_labels": [],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3 (ОДН)",
+        "РП4 (АВР)"
+      ],
+      "active": 58,
+      "reserve": 2,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 58,
+      "codes_total_occurrences": 58,
+      "power_rate": 1.0,
+      "current_rate": 1.0,
+      "geometry_conflicts": 0,
+      "status": "ok",
+      "warnings": [
+        "ТТ: РП4 (ОДН) — расхождение обозначения, см. комментарий"
+      ],
+      "elapsed_seconds": 0.165
+    },
+    {
+      "file": "04_13АВ-РД-ЭМ-К1__9VCW-VLFL-G4F.pdf",
+      "block_id": "9VCW-VLFL-G4F",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 60,
+      "qf_occurrences": 60,
+      "qf_unique": 60,
+      "duplicate_qf_labels": [],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3 (ОДН)",
+        "РП4 (АВР)"
+      ],
+      "active": 52,
+      "reserve": 4,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 52,
+      "codes_total_occurrences": 52,
+      "power_rate": 1.0,
+      "current_rate": 1.0,
+      "geometry_conflicts": 0,
+      "status": "ok",
+      "warnings": [
+        "ТТ: РП4 (ОДН) — расхождение обозначения, см. комментарий"
+      ],
+      "elapsed_seconds": 0.136
+    },
+    {
+      "file": "05_13АВ-РД-ЭО2-ПА_V1__4LQJ-LYHX-M3T.pdf",
+      "block_id": "4LQJ-LYHX-M3T",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 50,
+      "qf_occurrences": 51,
+      "qf_unique": 50,
+      "duplicate_qf_labels": [
+        "QF4.13"
+      ],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3",
+        "РП4 (ПЭСПЗ)"
+      ],
+      "active": 44,
+      "reserve": 6,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 44,
+      "codes_total_occurrences": 45,
+      "power_rate": 1.0,
+      "current_rate": 0.956,
+      "geometry_conflicts": 0,
+      "status": "needs_review",
+      "warnings": [
+        "повтор обозначений QF (одинаковые подписи схлопнуты в один узел): QF4.13",
+        "дубль кода в ПД (не исправлено молча): 2РП4-14",
+        "покрытие неполное: привязано 44 из 45 primary-кодов"
+      ],
+      "elapsed_seconds": 0.088
+    },
+    {
+      "file": "06_13АВ-РД-ЭМ-К5__4PAG-Y4EV-HDR.pdf",
+      "block_id": "4PAG-Y4EV-HDR",
+      "graph_built": true,
+      "gate_use": true,
+      "gate_reasons": [],
+      "feeders": 84,
+      "qf_occurrences": 86,
+      "qf_unique": 84,
+      "duplicate_qf_labels": [
+        "QF1.1",
+        "QF2.1"
+      ],
+      "panels": [
+        "РП1",
+        "РП2",
+        "РП3 (ОДН)",
+        "РП4 (АВР)",
+        "РП5 (ПЭСПЗ)"
+      ],
+      "active": 67,
+      "reserve": 17,
+      "ambiguous": 0,
+      "codes_linked_occurrences": 67,
+      "codes_total_occurrences": 71,
+      "power_rate": 1.0,
+      "current_rate": 1.0,
+      "geometry_conflicts": 0,
+      "status": "needs_review",
+      "warnings": [
+        "повтор обозначений QF (одинаковые подписи схлопнуты в один узел): QF1.1, QF2.1",
+        "покрытие неполное: привязано 67 из 71 primary-кодов"
+      ],
+      "elapsed_seconds": 0.185
+    }
+  ]
+}

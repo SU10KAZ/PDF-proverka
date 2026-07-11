@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "profile": "low_voltage_scheme",
+  "pdf_total": 3,
+  "recognized_total": 3,
+  "hierarchy_ready": 1,
+  "address_inventory_ready": 0,
+  "inventory_ready": 1,
+  "confirmed_connections_ready": 1,
+  "diagnostic_only": 0,
+  "records": [
+    {
+      "file": "01_13АВ-РД-СОВ-К3-6__79PP-NE7C-VDH.pdf",
+      "block_id": "79PP-NE7C-VDH",
+      "recognized": true,
+      "subtype": "terminal_wiring",
+      "status": "partial_topology",
+      "gate_use": true,
+      "gate_mode": "confirmed_connections_only",
+      "gate_reasons": [],
+      "warnings": [
+        "кабельная марка ещё не назначена path-сетям; подтверждённые пары можно использовать без марки",
+        "многоклеммные сети сохранены для проверки и не превращены в попарные рёбра"
+      ],
+      "validation": {
+        "components_total": 14,
+        "cable_types_total": 4,
+        "interfaces_total": 7,
+        "topology_state": "partial_confirmed",
+        "required_next_layer": "cable-label binding + multi-terminal network disambiguation",
+        "terminal_half_shapes": 222,
+        "terminal_anchors": 111,
+        "terminals_parent_bound": 107,
+        "terminals_label_bound": 88,
+        "wire_segments_raw": 1057,
+        "wire_segments": 577,
+        "terminals_attached": 54,
+        "terminal_networks": 17,
+        "terminals_in_networks": 42,
+        "cross_component_networks": 5,
+        "confirmed_pair_connections": 3,
+        "multi_terminal_networks": 2,
+        "cross_endpoint_parent_rate": 1.0,
+        "cross_endpoint_label_rate": 1.0,
+        "path_state": "semantic_partial"
+      }
+    },
+    {
+      "file": "02_13АВ-РД-АПЗ.АПС-К3_V1__6W3K-9C4Y-VPY.pdf",
+      "block_id": "6W3K-9C4Y-VPY",
+      "recognized": true,
+      "subtype": "aps_structural",
+      "status": "needs_review",
+      "gate_use": true,
+      "gate_mode": "hierarchy",
+      "gate_reasons": [],
+      "warnings": [
+        "повтор адресов: 9A2.181",
+        "АЛС9.1: разрывы адресного диапазона [181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196] (граница фрагмента возможна; не считать дефектом без кросс-листовой проверки)"
+      ],
+      "validation": {
+        "address_points_total": 240,
+        "address_labels_unique": 239,
+        "address_slots_total": 305,
+        "devices_type_bound": 240,
+        "devices_floor_bound": 240,
+        "loops_total": 3,
+        "floors_total": 6,
+        "duplicate_address_labels": [
+          "9A2.181"
+        ],
+        "hierarchy_complete": true,
+        "physical_loop_path_state": "visual_unverified"
+      }
+    },
+    {
+      "file": "06_13АВ-РД-КК-К2__4KGV-FMLW-7V9.pdf",
+      "block_id": "4KGV-FMLW-7V9",
+      "recognized": true,
+      "subtype": "tray_axonometry",
+      "status": "inventory_only",
+      "gate_use": true,
+      "gate_mode": "inventory_only",
+      "gate_reasons": [],
+      "warnings": [
+        "связность цветных сегментов требует трассировки vector paths; инвентарь точный"
+      ],
+      "validation": {
+        "elements_total": 10,
+        "trays_total": 8,
+        "sleeve_callouts_total": 2,
+        "inventory_state": "present",
+        "topology_state": "visual_unverified",
+        "callouts_total": 10,
+        "leader_targets_total": 16,
+        "leader_targets_linked": 16,
+        "elements_geometry_linked": 10,
+        "callout_link_rate": 1.0
+      }
+    }
+  ]
+}

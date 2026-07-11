@@ -30,7 +30,7 @@ import os
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional, Callable, Awaitable, Union
+from typing import Optional, Callable, Awaitable, Sequence, Union
 
 from backend.app.core.config import (
     CLAUDE_CLI,
@@ -229,6 +229,7 @@ async def _run_cli(
     project_id: str = "",
     model: str | None = None,
     clean_cwd: bool = False,
+    image_paths: Sequence[str | Path] | None = None,
 ) -> tuple[int, str, CLIResult]:
     """Запустить agent CLI с задачей через stdin, вернуть (exit_code, output, CLIResult).
 
@@ -247,6 +248,7 @@ async def _run_cli(
             stage=stage,
             project_id=project_id,
             model=model,
+            image_paths=image_paths,
         )
 
     from backend.app.services.common.process_runner import run_command
@@ -400,6 +402,11 @@ async def _run_codex_json_stage(
 
 def _codex_targeted_findings_enabled() -> bool:
     raw = os.environ.get("AUDIT_CODEX_TARGETED_FINDINGS", "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+def _codex_optimization_images_enabled() -> bool:
+    raw = os.environ.get("AUDIT_CODEX_OPTIMIZATION_IMAGES", "1").strip().lower()
     return raw not in {"0", "false", "no", "off"}
 
 
@@ -941,19 +948,52 @@ async def run_optimization(
     model = get_stage_model("optimization")
 
     if is_codex_model(model):
-        import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+        from backend.app.pipeline.stages.optimization.visual_context import (
+            collect_optimization_visual_context,
+        )
 
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
         ):
-            messages = prompt_builder.build_optimization_messages(project_info, project_id)
-        return await _run_codex_json_stage(
-            stage="optimization", messages=messages, model=model,
-            timeout=CLAUDE_OPTIMIZATION_TIMEOUT, project_id=project_id,
-            on_output=on_output, output_filename="optimization.json",
-            audit_stage="05_optimization", output_dir=output_dir,
+            task_text = prepare_optimization_task(project_info, project_id)
+
+        image_paths: list[Path] = []
+        visual_prompt = ""
+        if _codex_optimization_images_enabled():
+            resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+            visual_context = collect_optimization_visual_context(
+                resolved_output_dir,
+                discipline=str((project_info or {}).get("section") or ""),
+            )
+            image_paths = visual_context.image_paths
+            visual_prompt = visual_context.prompt_section
+            if image_paths:
+                await send_output(
+                    on_output,
+                    f"Codex optimization vision: attached {len(image_paths)} drawing block image(s)",
+                )
+        if visual_prompt:
+            task_text = task_text.rstrip() + "\n\n" + visual_prompt
+
+        exit_code, combined, cli_result = await _run_cli(
+            task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
+            on_output, stage="optimization", project_id=project_id,
+            model=model, image_paths=image_paths,
         )
+
+        _save_audit_trail(
+            project_id, "05_optimization", model,
+            0, 0, cli_result.duration_ms,
+            {
+                "result_text": cli_result.result_text,
+                "codex_exec_agentic": True,
+                "attached_images": [str(path) for path in image_paths],
+            },
+            output_dir=output_dir,
+        )
+
+        return exit_code, combined, cli_result
 
     if is_claude_stage("optimization"):
         with _scoped_audit_paths(

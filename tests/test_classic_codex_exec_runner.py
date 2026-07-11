@@ -401,3 +401,100 @@ async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp
     assert final_data["meta"]["total_findings"] == 2
     assert final_data["meta"]["codex_targeted_added"] == 1
     assert final_data["meta"]["codex_targeted_stages"] == ["alia_ss_lowcurrent_audit"]
+
+
+@pytest.mark.asyncio
+async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monkeypatch, tmp_path):
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+    import backend.app.services.llm.claude_runner as claude_runner
+
+    captured = {}
+    image_dir = tmp_path / "blocks_gemma_100"
+    image_dir.mkdir()
+    image_path = image_dir / "block_B1.png"
+    image_path.write_bytes(b"png")
+    (image_dir / "index.json").write_text(
+        json.dumps(
+            {
+                "blocks": [
+                    {
+                        "block_id": "B1",
+                        "file": "block_B1.png",
+                        "page": 7,
+                    }
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "02_blocks_analysis.json").write_text(
+        json.dumps(
+            {
+                "block_analyses": [
+                    {
+                        "block_id": "B1",
+                        "page": 7,
+                        "sheet": "План системы отопления. Этаж 02",
+                        "label": "Схема разводки трубопроводов с коллекторными узлами",
+                    }
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    def fail_json_builder(*args, **kwargs):
+        raise AssertionError("optimization must not use JSON-only Codex builder")
+
+    async def fake_run_cli(
+        task_text,
+        tools,
+        timeout,
+        on_output=None,
+        stage="",
+        project_id="",
+        model=None,
+        clean_cwd=False,
+        image_paths=None,
+    ):
+        captured["run_cli"] = {
+            "task_text": task_text,
+            "stage": stage,
+            "project_id": project_id,
+            "model": model,
+            "image_paths": image_paths,
+        }
+        return 0, "codex optimization ok", CLIResult(result_text="done", duration_ms=15, num_turns=1)
+
+    def fake_save_audit_trail(*args, **kwargs):
+        captured["audit"] = {"args": args, "kwargs": kwargs}
+
+    monkeypatch.setenv("AUDIT_CODEX_OPTIMIZATION_IMAGES", "1")
+    monkeypatch.setattr(claude_runner, "get_stage_model", lambda stage: "codex/gpt-5.4")
+    monkeypatch.setattr(prompt_builder, "build_optimization_messages", fail_json_builder)
+    monkeypatch.setattr(claude_runner, "prepare_optimization_task", lambda project_info, project_id: "OPT TASK")
+    monkeypatch.setattr(claude_runner, "_run_cli", fake_run_cli)
+    monkeypatch.setattr(claude_runner, "_save_audit_trail", fake_save_audit_trail)
+
+    exit_code, output, result = await claude_runner.run_optimization(
+        {"section": "OV"},
+        "DOC-OV",
+        output_dir=tmp_path,
+        version_dir=tmp_path.parent,
+        version_id="v001",
+    )
+
+    assert exit_code == 0
+    assert output == "codex optimization ok"
+    assert result.result_text == "done"
+    assert captured["run_cli"]["stage"] == "optimization"
+    assert captured["run_cli"]["project_id"] == "DOC-OV"
+    assert captured["run_cli"]["model"] == "codex/gpt-5.4"
+    assert captured["run_cli"]["image_paths"] == [image_path]
+    assert "OPT TASK" in captured["run_cli"]["task_text"]
+    assert "Графический контекст" in captured["run_cli"]["task_text"]
+    assert "block_id=B1" in captured["run_cli"]["task_text"]
+    assert captured["audit"]["args"][1] == "05_optimization"
+    assert captured["audit"]["args"][6]["codex_exec_agentic"] is True

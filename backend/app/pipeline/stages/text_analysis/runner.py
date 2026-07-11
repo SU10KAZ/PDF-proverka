@@ -263,6 +263,27 @@ async def run_text_analysis(
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 
+    try:
+        from backend.app.pipeline.stages.prepare.task_builder import _get_md_file_path
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            augment_text_analysis_file,
+        )
+
+        md_file_path = _get_md_file_path(project_info, pid)
+        prescan_summary = await asyncio.to_thread(
+            augment_text_analysis_file, output_path, md_file_path
+        )
+        if prescan_summary.get("changed"):
+            await ctx.log(
+                "Text pre-scan: "
+                f"+{prescan_summary.get('added', 0)} findings, "
+                f"{prescan_summary.get('backfilled', 0)} evidence backfilled "
+                f"({prescan_summary.get('prescan_total', 0)} candidates)",
+                "info",
+            )
+    except Exception as exc:
+        await ctx.log(f"Text pre-scan skipped: {exc}", "warn")
+
     # Страж отсутствия вынесен в ОТДЕЛЬНЫЙ этап «Верификатор» (findings_verify),
     # работающий на слитом 03_findings.json (один прогон на финальном списке вместо
     # хвостов Stage 01/02). Здесь остаётся только ПРАВИЛО в промпте ({ABSENCE_GUARD}) —

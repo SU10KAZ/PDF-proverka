@@ -1,0 +1,4245 @@
+{
+ "schema_version": "vk_fire_piping_graph_v0.2",
+ "source_file": "03_13АВ-РД-ВК2-К6_V1__4VEF-CC3P-P7K.pdf",
+ "drawing": {
+  "complect": "13АВ-РД-ВК2-К6",
+  "complect_title": "Противопожарный водопровод. АПТ. Корпус 6",
+  "stage_version": "V1",
+  "sheet_no": 7,
+  "sheet_name": "Схема с системами пожаротушения (В2.2, В2.3, В21.5, В21.6)",
+  "source_document_pdf": "13АВ-РД-ВК2-К6 V1.pdf",
+  "source_document_page_index": 12,
+  "block_id": "4VEF-CC3P-P7K",
+  "metadata_origin": "sheet_no/sheet_name/complect_title/page_index — из штампа ПОЛНОГО документа (13АВ-РД-ВК2-К6 V1_document.md, лист 7); штамп вне кропа блока и токенами кроп-PDF не подтверждается",
+  "crop_note": "кроп блока покрывает левую часть листа: схемы В2.2/В2.3, Узлы 1–2, примечания; схемы В21.5/В21.6 — вне кропа (см. UNR-OFFCROP)",
+  "scale": "1:100",
+  "building": "корпус 6"
+ },
+ "extraction_diagnostics": {
+  "method": "deterministic_vector_text_geometry_v0.2",
+  "page_rect_pt": [
+   1161.7,
+   1651.0
+  ],
+  "elevation_regression_per_bundle": {
+   "BND-S1-A": {
+    "quality": 0.889,
+    "n_points": 18
+   },
+   "BND-S1-B": {
+    "quality": 1.0,
+    "n_points": 13
+   },
+   "BND-S2-A": {
+    "quality": 0.929,
+    "n_points": 14
+   },
+   "BND-S2-B": {
+    "quality": 1.0,
+    "n_points": 12
+   }
+  },
+  "cabinet_label_offset_correction_m": {
+   "BND-S1-A": -0.908,
+   "BND-S1-B": -1.022,
+   "BND-S2-A": -0.131,
+   "BND-S2-B": -1.211
+  },
+  "level_elevation_conflicts": null,
+  "geometry_sources_used": [
+   "get_text('words') + дедуп double-draw",
+   "склейка строк по Y/X",
+   "per-bundle линрегрессия y→отметка",
+   "X-окна связок/зон"
+  ],
+  "geometry_sources_NOT_used": [
+   "page.get_drawings() трассировка труб/выносок (v0.3)",
+   "OCR/LLM — не применялись, только вектор-текст"
+  ],
+  "v01_revision_note": "интерпретация v0.1 (лесенки=стояки) пересмотрена, см. requires_review"
+ },
+ "sheet_summary": {
+  "sheet_purpose": "развёртки стояков внутреннего противопожарного водопровода корпуса 6: В2.2 (1 зона, этажи 1–16) и В2.3 (2 зона, этажи 16–28, транзит через 1 зону); справа за кропом — схемы АПТ В21.5/В21.6, от них в кроп попали Узлы 1, 2",
+  "schemes": [
+   {
+    "id": "SCH-1",
+    "title": "Схема системы В2.2 (1 зона), В2.3 (2 зона) (1:100)"
+   },
+   {
+    "id": "SCH-2",
+    "title": "Схема системы В2.3 (2 зона) (1:100)"
+   }
+  ],
+  "systems": [
+   "В2.2",
+   "В2.3",
+   "В21.5",
+   "В21.6"
+  ],
+  "risers": [
+   "RSR-В2.2-1",
+   "RSR-В2.2-2",
+   "RSR-В2.2-3",
+   "RSR-В2.2-4",
+   "RSR-В2.3-1",
+   "RSR-В2.3-2",
+   "RSR-В2.3-3",
+   "RSR-В2.3-4"
+  ],
+  "risers_total": 8,
+  "floors": {
+   "range": [
+    1,
+    28
+   ],
+   "elevations_m": [
+    0.0,
+    87.45
+   ],
+   "typical_step_m": 3.15
+  },
+  "fire_cabinets": {
+   "floor_mounted_ШПК-320-21_НЗ": 54,
+   "named_ground_level": [
+    "ШП-К-О-Пульс-320-12НЗК 1(6)",
+    "ШП-К-О-Пульс-320-12НЗК 3(6)",
+    "ШП-К-О-Пульс-320-12НЗК 4(6)",
+    "ШПК-320-21 НЗ 2(6)"
+   ]
+  },
+  "supports": {
+   "count": 6,
+   "models": [
+    "Неподвижная опора \"Энергия-Термо\" Ду65",
+    "Неподвижная опора \"Энергия-Термо\" Ду80"
+   ]
+  },
+  "continuation": "вниз — комплект 13АВ-РД-АПТ1-ПА (7 ссылок); узлы крепления — лист 8",
+  "notes_on_sheet": [
+   "1.Отметки трубопроводов и оборудования даны относительно ноля здания.",
+   "2.Отметки трубопроводов пожаротушения даны по осям труб.",
+   "3.Подключение оборудования выполнить в соответствии с паспортом на изделии.",
+   "4.Данный лист смотреть совместно с планами.",
+   "5.Далее смотреть комплект 13АВ-РД-АПТ1-ПА."
+  ]
+ },
+ "graph": {
+  "entities": [
+   {
+    "id": "SCH-1",
+    "type": "scheme",
+    "title": "Схема системы В2.2 (1 зона), В2.3 (2 зона) (1:100)",
+    "zone": "1 зона (этажи 1–16)",
+    "scale": "1:100",
+    "bbox": [
+     215.5,
+     13.7,
+     590.6,
+     32.7
+    ]
+   },
+   {
+    "id": "SCH-2",
+    "type": "scheme",
+    "title": "Схема системы В2.3 (2 зона) (1:100)",
+    "zone": "2 зона (этажи 16–28)",
+    "scale": "1:100",
+    "bbox": [
+     736.5,
+     13.7,
+     1007.2,
+     32.7
+    ]
+   },
+   {
+    "id": "SYS-В2.2",
+    "type": "system",
+    "code": "В2.2",
+    "kind": "внутренний противопожарный водопровод (ВПВ)",
+    "zone": "1 зона, этажи 1–16",
+    "scheme": "SCH-1",
+    "on_sheet": "full"
+   },
+   {
+    "id": "SYS-В2.3",
+    "type": "system",
+    "code": "В2.3",
+    "kind": "внутренний противопожарный водопровод (ВПВ)",
+    "zone": "2 зона, этажи 16–28 (транзит через 1 зону)",
+    "scheme": "SCH-2",
+    "on_sheet": "full"
+   },
+   {
+    "id": "SYS-В21.5",
+    "type": "system",
+    "code": "В21.5",
+    "kind": "АПТ (по составу листа); схема вне кропа",
+    "zone": "1 зона",
+    "scheme": null,
+    "on_sheet": "detail_only"
+   },
+   {
+    "id": "SYS-В21.6",
+    "type": "system",
+    "code": "В21.6",
+    "kind": "АПТ (по составу листа); схема вне кропа",
+    "zone": "2 зона",
+    "scheme": null,
+    "on_sheet": "detail_only"
+   },
+   {
+    "id": "LVL-01",
+    "type": "level",
+    "floor": 1,
+    "elevation_m": 0.0,
+    "occurrences": [
+     {
+      "x": 219.3,
+      "y": 1241.2,
+      "zone": "S1"
+     },
+     {
+      "x": 336.9,
+      "y": 1308.1,
+      "zone": "bottom_feed"
+     }
+    ]
+   },
+   {
+    "id": "LVL-02",
+    "type": "level",
+    "floor": 2,
+    "elevation_m": 5.25,
+    "occurrences": [
+     {
+      "x": 223.6,
+      "y": 1129.5,
+      "zone": "S1"
+     },
+     {
+      "x": 433.6,
+      "y": 1205.4,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-03",
+    "type": "level",
+    "floor": 3,
+    "elevation_m": 8.4,
+    "occurrences": [
+     {
+      "x": 304.6,
+      "y": 1038.8,
+      "zone": "S1"
+     },
+     {
+      "x": 340.4,
+      "y": 1085.4,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-04",
+    "type": "level",
+    "floor": 4,
+    "elevation_m": 11.55,
+    "occurrences": [
+     {
+      "x": 226.9,
+      "y": 974.0,
+      "zone": "S1"
+     },
+     {
+      "x": 428.6,
+      "y": 1037.4,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-05",
+    "type": "level",
+    "floor": 5,
+    "elevation_m": 14.7,
+    "occurrences": [
+     {
+      "x": 230.8,
+      "y": 901.3,
+      "zone": "S1"
+     },
+     {
+      "x": 443.6,
+      "y": 958.2,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-06",
+    "type": "level",
+    "floor": 6,
+    "elevation_m": 17.85,
+    "occurrences": [
+     {
+      "x": 231.7,
+      "y": 828.8,
+      "zone": "S1"
+     },
+     {
+      "x": 443.6,
+      "y": 882.6,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-07",
+    "type": "level",
+    "floor": 7,
+    "elevation_m": 21.0,
+    "occurrences": [
+     {
+      "x": 236.8,
+      "y": 756.4,
+      "zone": "S1"
+     },
+     {
+      "x": 443.6,
+      "y": 793.5,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-08",
+    "type": "level",
+    "floor": 8,
+    "elevation_m": 24.15,
+    "occurrences": [
+     {
+      "x": 237.2,
+      "y": 683.4,
+      "zone": "S1"
+     },
+     {
+      "x": 443.6,
+      "y": 736.2,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-09",
+    "type": "level",
+    "floor": 9,
+    "elevation_m": 27.3,
+    "occurrences": [
+     {
+      "x": 227.2,
+      "y": 610.0,
+      "zone": "S1"
+     },
+     {
+      "x": 443.6,
+      "y": 662.5,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-10",
+    "type": "level",
+    "floor": 10,
+    "elevation_m": 30.45,
+    "occurrences": [
+     {
+      "x": 233.1,
+      "y": 538.2,
+      "zone": "S1"
+     },
+     {
+      "x": 445.1,
+      "y": 591.0,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-11",
+    "type": "level",
+    "floor": 11,
+    "elevation_m": 33.6,
+    "occurrences": [
+     {
+      "x": 231.2,
+      "y": 464.5,
+      "zone": "S1"
+     },
+     {
+      "x": 444.5,
+      "y": 518.0,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-12",
+    "type": "level",
+    "floor": 12,
+    "elevation_m": 36.75,
+    "occurrences": [
+     {
+      "x": 228.7,
+      "y": 387.2,
+      "zone": "S1"
+     },
+     {
+      "x": 445.1,
+      "y": 445.1,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-13",
+    "type": "level",
+    "floor": 13,
+    "elevation_m": 39.9,
+    "occurrences": [
+     {
+      "x": 228.7,
+      "y": 317.1,
+      "zone": "S1"
+     },
+     {
+      "x": 445.1,
+      "y": 372.1,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-14",
+    "type": "level",
+    "floor": 14,
+    "elevation_m": 43.05,
+    "occurrences": [
+     {
+      "x": 229.1,
+      "y": 245.2,
+      "zone": "S1"
+     },
+     {
+      "x": 445.5,
+      "y": 299.1,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-15",
+    "type": "level",
+    "floor": 15,
+    "elevation_m": 46.2,
+    "occurrences": [
+     {
+      "x": 200.2,
+      "y": 176.0,
+      "zone": "S1"
+     },
+     {
+      "x": 346.5,
+      "y": 250.7,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "LVL-16",
+    "type": "level",
+    "floor": 16,
+    "elevation_m": 49.35,
+    "occurrences": [
+     {
+      "x": 225.3,
+      "y": 90.3,
+      "zone": "S1"
+     },
+     {
+      "x": 457.0,
+      "y": 149.6,
+      "zone": "S1"
+     },
+     {
+      "x": 786.7,
+      "y": 1071.5,
+      "zone": "S2"
+     },
+     {
+      "x": 911.5,
+      "y": 1141.1,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-17",
+    "type": "level",
+    "floor": 17,
+    "elevation_m": 52.5,
+    "occurrences": [
+     {
+      "x": 721.9,
+      "y": 995.9,
+      "zone": "S2"
+     },
+     {
+      "x": 919.0,
+      "y": 1046.3,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-18",
+    "type": "level",
+    "floor": 18,
+    "elevation_m": 55.65,
+    "occurrences": [
+     {
+      "x": 721.9,
+      "y": 922.9,
+      "zone": "S2"
+     },
+     {
+      "x": 919.0,
+      "y": 973.3,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-19",
+    "type": "level",
+    "floor": 19,
+    "elevation_m": 58.8,
+    "occurrences": [
+     {
+      "x": 715.1,
+      "y": 849.0,
+      "zone": "S2"
+     },
+     {
+      "x": 919.0,
+      "y": 900.4,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-20",
+    "type": "level",
+    "floor": 20,
+    "elevation_m": 61.95,
+    "occurrences": [
+     {
+      "x": 719.0,
+      "y": 776.0,
+      "zone": "S2"
+     },
+     {
+      "x": 919.6,
+      "y": 827.4,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-21",
+    "type": "level",
+    "floor": 21,
+    "elevation_m": 65.1,
+    "occurrences": [
+     {
+      "x": 718.3,
+      "y": 703.8,
+      "zone": "S2"
+     },
+     {
+      "x": 919.0,
+      "y": 754.7,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-22",
+    "type": "level",
+    "floor": 22,
+    "elevation_m": 68.25,
+    "occurrences": [
+     {
+      "x": 719.0,
+      "y": 633.7,
+      "zone": "S2"
+     },
+     {
+      "x": 917.0,
+      "y": 701.1,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-23",
+    "type": "level",
+    "floor": 23,
+    "elevation_m": 71.4,
+    "occurrences": [
+     {
+      "x": 715.8,
+      "y": 557.9,
+      "zone": "S2"
+     },
+     {
+      "x": 919.6,
+      "y": 608.8,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-24",
+    "type": "level",
+    "floor": 24,
+    "elevation_m": 74.55,
+    "occurrences": [
+     {
+      "x": 719.3,
+      "y": 489.2,
+      "zone": "S2"
+     },
+     {
+      "x": 919.9,
+      "y": 535.8,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-25",
+    "type": "level",
+    "floor": 25,
+    "elevation_m": 77.7,
+    "occurrences": [
+     {
+      "x": 715.8,
+      "y": 408.8,
+      "zone": "S2"
+     },
+     {
+      "x": 919.6,
+      "y": 462.8,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-26",
+    "type": "level",
+    "floor": 26,
+    "elevation_m": 80.85,
+    "occurrences": [
+     {
+      "x": 719.0,
+      "y": 341.1,
+      "zone": "S2"
+     },
+     {
+      "x": 919.6,
+      "y": 390.1,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-27",
+    "type": "level",
+    "floor": 27,
+    "elevation_m": 84.0,
+    "occurrences": [
+     {
+      "x": 725.7,
+      "y": 267.7,
+      "zone": "S2"
+     },
+     {
+      "x": 919.6,
+      "y": 317.1,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "LVL-28",
+    "type": "level",
+    "floor": 28,
+    "elevation_m": 87.45,
+    "occurrences": [
+     {
+      "x": 794.3,
+      "y": 185.8,
+      "zone": "S2"
+     },
+     {
+      "x": 830.1,
+      "y": 273.7,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "BND-S1-A",
+    "type": "riser_bundle",
+    "scheme": "SCH-1",
+    "cabinet_column_x": 306,
+    "note": "ось связки = колонка подписей ШПК; точная геометрия линий труб не разбиралась"
+   },
+   {
+    "id": "BND-S1-B",
+    "type": "riser_bundle",
+    "scheme": "SCH-1",
+    "cabinet_column_x": 428,
+    "note": "ось связки = колонка подписей ШПК; точная геометрия линий труб не разбиралась"
+   },
+   {
+    "id": "BND-S2-A",
+    "type": "riser_bundle",
+    "scheme": "SCH-2",
+    "cabinet_column_x": 790,
+    "note": "ось связки = колонка подписей ШПК; точная геометрия линий труб не разбиралась"
+   },
+   {
+    "id": "BND-S2-B",
+    "type": "riser_bundle",
+    "scheme": "SCH-2",
+    "cabinet_column_x": 911,
+    "note": "ось связки = колонка подписей ШПК; точная геометрия линий труб не разбиралась"
+   },
+   {
+    "id": "RSR-В2.3-1",
+    "type": "riser",
+    "system": "В2.3",
+    "number": 1,
+    "building": "6",
+    "diameter_mm": 89,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.3-1(6)ø89х3,5",
+    "label_occurrences": [
+     {
+      "x": 775.7,
+      "y": 309.0,
+      "zone": "S2"
+     },
+     {
+      "x": 777.6,
+      "y": 614.8,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.3-2",
+    "type": "riser",
+    "system": "В2.3",
+    "number": 2,
+    "building": "6",
+    "diameter_mm": 89,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.3-2(6)ø89х3,5",
+    "label_occurrences": [
+     {
+      "x": 786.7,
+      "y": 343.6,
+      "zone": "S2"
+     },
+     {
+      "x": 156.9,
+      "y": 515.9,
+      "zone": "S1"
+     },
+     {
+      "x": 783.3,
+      "y": 670.7,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.3-4",
+    "type": "riser",
+    "system": "В2.3",
+    "number": 4,
+    "building": "6",
+    "diameter_mm": 89,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.3-4(6)ø89х3,5",
+    "label_occurrences": [
+     {
+      "x": 786.7,
+      "y": 356.5,
+      "zone": "S2"
+     },
+     {
+      "x": 775.9,
+      "y": 691.1,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.3-3",
+    "type": "riser",
+    "system": "В2.3",
+    "number": 3,
+    "building": "6",
+    "diameter_mm": 89,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.3-3(6)ø89х3,5",
+    "label_occurrences": [
+     {
+      "x": 786.7,
+      "y": 367.1,
+      "zone": "S2"
+     },
+     {
+      "x": 775.9,
+      "y": 702.6,
+      "zone": "S2"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.2-1",
+    "type": "riser",
+    "system": "В2.2",
+    "number": 1,
+    "building": "6",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.2-1(6)ø76х3,5",
+    "label_occurrences": [
+     {
+      "x": 158.4,
+      "y": 1167.5,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.2-2",
+    "type": "riser",
+    "system": "В2.2",
+    "number": 2,
+    "building": "6",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.2-2(6)ø76х3,5",
+    "label_occurrences": [
+     {
+      "x": 156.9,
+      "y": 1192.9,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.2-3",
+    "type": "riser",
+    "system": "В2.2",
+    "number": 3,
+    "building": "6",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.2-3(6)ø76х3,5",
+    "label_occurrences": [
+     {
+      "x": 292.1,
+      "y": 1195.8,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "RSR-В2.2-4",
+    "type": "riser",
+    "system": "В2.2",
+    "number": 4,
+    "building": "6",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "label": "Ст. В2.2-4(6)ø76х3,5",
+    "label_occurrences": [
+     {
+      "x": 296.4,
+      "y": 1212.6,
+      "zone": "S1"
+     }
+    ]
+   },
+   {
+    "id": "CAB-N1",
+    "type": "fire_cabinet",
+    "model": "ШП-К-О-Пульс-320-12НЗК",
+    "name": "1(6)",
+    "placement": "нижний уровень (зона подводок от В2.2)",
+    "x": 636.4,
+    "y": 1422.1,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "CAB-N3",
+    "type": "fire_cabinet",
+    "model": "ШП-К-О-Пульс-320-12НЗК",
+    "name": "3(6)",
+    "placement": "нижний уровень (зона подводок от В2.2)",
+    "x": 144.6,
+    "y": 1492.9,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "CAB-N2",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "name": "2(6)",
+    "placement": "нижний уровень (зона подводок от В2.2)",
+    "x": 517.1,
+    "y": 1498.2,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "CAB-N4",
+    "type": "fire_cabinet",
+    "model": "ШП-К-О-Пульс-320-12НЗК",
+    "name": "4(6)",
+    "placement": "нижний уровень (зона подводок от В2.2)",
+    "x": 114.7,
+    "y": 1518.3,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "CAB-005",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.4,
+    "y": 130.2,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-006",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 816.4,
+    "y": 145.3,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-007",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 451.6,
+    "y": 187.6,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-008",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 816.4,
+    "y": 196.9,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-009",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 330.9,
+    "y": 203.8,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-010",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 938.0,
+    "y": 200.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-011",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 456.1,
+    "y": 264.4,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-012",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 332.8,
+    "y": 273.9,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-013",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 935.2,
+    "y": 272.2,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-014",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 822.1,
+    "y": 292.9,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-015",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 454.7,
+    "y": 335.4,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-016",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 330.9,
+    "y": 349.3,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-017",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 946.7,
+    "y": 348.8,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-018",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 827.0,
+    "y": 381.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-019",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 461.9,
+    "y": 402.6,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-020",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 818.0,
+    "y": 414.8,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-021",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 334.5,
+    "y": 420.6,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-022",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 941.2,
+    "y": 424.2,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-023",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 458.8,
+    "y": 479.6,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-024",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 815.4,
+    "y": 487.8,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-025",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 330.6,
+    "y": 494.2,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-026",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 941.2,
+    "y": 496.9,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-027",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.6,
+    "y": 542.2,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-028",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 456.1,
+    "y": 548.5,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-029",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 935.6,
+    "y": 564.6,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-030",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 823.4,
+    "y": 585.2,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-031",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 452.8,
+    "y": 625.8,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-032",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 815.2,
+    "y": 632.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-033",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.6,
+    "y": 641.4,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-034",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 941.0,
+    "y": 641.4,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-035",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 462.1,
+    "y": 698.5,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-036",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 973.8,
+    "y": 706.6,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-037",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.6,
+    "y": 726.4,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-038",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 814.7,
+    "y": 732.4,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-039",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.6,
+    "y": 758.8,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-040",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 460.2,
+    "y": 763.8,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-041",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 823.1,
+    "y": 782.2,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-042",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 939.2,
+    "y": 786.8,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-043",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 341.2,
+    "y": 831.0,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-044",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 458.3,
+    "y": 843.7,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-045",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 823.1,
+    "y": 853.8,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-046",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 939.2,
+    "y": 859.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-047",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 335.2,
+    "y": 904.6,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-048",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 461.2,
+    "y": 909.7,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-049",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 814.0,
+    "y": 924.1,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-050",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 945.2,
+    "y": 931.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-051",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 461.2,
+    "y": 994.0,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-052",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 822.4,
+    "y": 995.4,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-053",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 337.6,
+    "y": 1004.5,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-054",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 940.5,
+    "y": 1006.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-055",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 454.7,
+    "y": 1058.0,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-056",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 935.9,
+    "y": 1083.0,
+    "zone": "S2"
+   },
+   {
+    "id": "CAB-057",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 339.2,
+    "y": 1096.4,
+    "zone": "S1"
+   },
+   {
+    "id": "CAB-058",
+    "type": "fire_cabinet",
+    "model": "ШПК-320-21 НЗ",
+    "x": 454.7,
+    "y": 1113.5,
+    "zone": "S1"
+   },
+   {
+    "id": "SUP-01",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду80",
+    "du": 80,
+    "x": 152.7,
+    "y": 48.8,
+    "zone": "S1",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SUP-02",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду80",
+    "du": 80,
+    "x": 516.5,
+    "y": 97.3,
+    "zone": "S1",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SUP-03",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду65",
+    "du": 65,
+    "x": 106.3,
+    "y": 756.6,
+    "zone": "S1",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SUP-04",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду65",
+    "du": 65,
+    "x": 496.1,
+    "y": 803.9,
+    "zone": "S1",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SUP-05",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду80",
+    "du": 80,
+    "x": 651.1,
+    "y": 1058.8,
+    "zone": "S1",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SUP-06",
+    "type": "support",
+    "model": "Неподвижная опора \"Энергия-Термо\" Ду80",
+    "du": 80,
+    "x": 758.9,
+    "y": 1143.7,
+    "zone": "S2",
+    "note": "связка не определялась: длинная полка-выноска (нужна трассировка линий)"
+   },
+   {
+    "id": "SEG-01",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 315.4,
+    "y": 300.6,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-02",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 315.4,
+    "y": 315.2,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-03",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 339.6,
+    "y": 336.6,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-04",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 341.8,
+    "y": 671.4,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-05",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 341.8,
+    "y": 680.8,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-06",
+    "type": "pipe_segment",
+    "system": "В2.3",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 709.7,
+    "y": 1014.1,
+    "zone": "S2",
+    "label": "В2.3 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-07",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 339.4,
+    "y": 1040.0,
+    "zone": "S1",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-08",
+    "type": "pipe_segment",
+    "system": "В2.3",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 833.6,
+    "y": 1070.8,
+    "zone": "S2",
+    "label": "В2.3 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-09",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 230.2,
+    "y": 1072.7,
+    "zone": "S1",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-10",
+    "type": "pipe_segment",
+    "system": "В2.3",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 824.5,
+    "y": 1085.9,
+    "zone": "S2",
+    "label": "В2.3 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-11",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 463.5,
+    "y": 1166.3,
+    "zone": "S1",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-12",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 76,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "riser_segment",
+    "x": 437.8,
+    "y": 1218.6,
+    "zone": "S1",
+    "label": "В2.2 ⌀76x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-13",
+    "type": "pipe_segment",
+    "system": "В21.5",
+    "diameter_mm": 89,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "unclassified",
+    "x": 961.5,
+    "y": 1366.4,
+    "zone": "detail_U1",
+    "label": "В21.5 ⌀89x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-14",
+    "type": "pipe_segment",
+    "system": "В21.6",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "unclassified",
+    "x": 1030.4,
+    "y": 1371.7,
+    "zone": "detail_U2",
+    "label": "В21.6 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-15",
+    "type": "pipe_segment",
+    "system": "В21.6",
+    "diameter_mm": 89,
+    "wall_mm": null,
+    "truncated_at_crop_edge": true,
+    "role": "unclassified",
+    "x": 1134.5,
+    "y": 1375.5,
+    "zone": "detail_U2",
+    "label": "В21.6 ⌀89x …(стенка обрезана кромкой кропа)",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-16",
+    "type": "pipe_segment",
+    "system": "В21.5",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "unclassified",
+    "x": 844.2,
+    "y": 1380.6,
+    "zone": "detail_U1",
+    "label": "В21.5 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-17",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 761.1,
+    "y": 1481.6,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-18",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 657.2,
+    "y": 1494.3,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-19",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 247.2,
+    "y": 1525.5,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-20",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 247.2,
+    "y": 1566.6,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-21",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 646.9,
+    "y": 1570.2,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-22",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 548.5,
+    "y": 1583.4,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-23",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 107.6,
+    "y": 1594.9,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "SEG-24",
+    "type": "pipe_segment",
+    "system": "В2.2",
+    "diameter_mm": 57,
+    "wall_mm": 3.5,
+    "truncated_at_crop_edge": false,
+    "role": "branch_or_feed",
+    "x": 107.6,
+    "y": 1605.5,
+    "zone": "bottom_feed",
+    "label": "В2.2 ⌀57x 3,5",
+    "occurrences": 1
+   },
+   {
+    "id": "REF-APT-01",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 562.0,
+    "y": 1130.9,
+    "zone": "S1"
+   },
+   {
+    "id": "REF-APT-02",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 180.0,
+    "y": 1252.6,
+    "zone": "S1"
+   },
+   {
+    "id": "REF-APT-03",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 495.8,
+    "y": 1358.2,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "REF-APT-04",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 800.6,
+    "y": 1503.3,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "REF-APT-05",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 343.4,
+    "y": 1538.7,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "REF-APT-06",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 687.6,
+    "y": 1594.3,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "REF-APT-07",
+    "type": "reference",
+    "target_document": "13АВ-РД-АПТ1-ПА",
+    "kind": "continuation",
+    "x": 131.8,
+    "y": 1623.7,
+    "zone": "bottom_feed"
+   },
+   {
+    "id": "REF-SHEET8",
+    "type": "reference",
+    "kind": "detail_reference",
+    "text": "Узел креплений стояка из стали — см. лист 8",
+    "x": 507.1,
+    "y": 1238.4,
+    "zone": "S1"
+   },
+   {
+    "id": "NOTES",
+    "type": "notes_block",
+    "items": [
+     "1.Отметки трубопроводов и оборудования даны относительно ноля здания.",
+     "2.Отметки трубопроводов пожаротушения даны по осям труб.",
+     "3.Подключение оборудования выполнить в соответствии с паспортом на изделии.",
+     "4.Данный лист смотреть совместно с планами.",
+     "5.Далее смотреть комплект 13АВ-РД-АПТ1-ПА."
+    ]
+   },
+   {
+    "id": "DET-U1",
+    "type": "detail",
+    "title": "Узел 1",
+    "related_system": "В21.5",
+    "dimensions_mm": [
+     365,
+     325,
+     200,
+     160
+    ],
+    "position_callouts": [
+     9,
+     10,
+     11
+    ],
+    "pipe_segments": [
+     "SEG-13",
+     "SEG-16"
+    ],
+    "note": "узел обвязки/крепления стояка; позиции — по спецификации вне кропа"
+   },
+   {
+    "id": "DET-U2",
+    "type": "detail",
+    "title": "Узел 2",
+    "related_system": "В21.6",
+    "dimensions_mm": [
+     400,
+     300,
+     200,
+     155
+    ],
+    "position_callouts": [
+     11,
+     12,
+     13
+    ],
+    "pipe_segments": [
+     "SEG-14",
+     "SEG-15"
+    ],
+    "note": "узел обвязки/крепления стояка; позиции — по спецификации вне кропа"
+   },
+   {
+    "id": "POS-CALLOUTS",
+    "type": "position_callout_group",
+    "items": [
+     {
+      "value": 1,
+      "x": 260.3,
+      "y": 119.2,
+      "bundle_estimate": "BND-S1-A"
+     },
+     {
+      "value": 3,
+      "x": 263.6,
+      "y": 108.5,
+      "bundle_estimate": "BND-S1-A"
+     },
+     {
+      "value": 1,
+      "x": 363.7,
+      "y": 185.4,
+      "bundle_estimate": "BND-S1-B"
+     },
+     {
+      "value": 3,
+      "x": 363.9,
+      "y": 169.6,
+      "bundle_estimate": "BND-S1-B"
+     },
+     {
+      "value": 7,
+      "x": 742.4,
+      "y": 121.0,
+      "bundle_estimate": "BND-S2-A"
+     },
+     {
+      "value": 5,
+      "x": 742.4,
+      "y": 132.1,
+      "bundle_estimate": "BND-S2-A"
+     },
+     {
+      "value": 5,
+      "x": 851.1,
+      "y": 201.4,
+      "bundle_estimate": "BND-S2-B"
+     },
+     {
+      "value": 7,
+      "x": 859.3,
+      "y": 183.9,
+      "bundle_estimate": "BND-S2-B"
+     }
+    ],
+    "axis_x_estimates": {
+     "BND-S1-A": 261,
+     "BND-S1-B": 383,
+     "BND-S2-A": 745,
+     "BND-S2-B": 866
+    },
+    "note": "позиции у верха связок (арматура верха стояка?) — спецификация вне листа/кропа; bundle_estimate = связка с ближайшей ОЦЕНОЧНОЙ осью из axis_x_estimates (колонка подписей ШПК − 45 pt), не трассировка выноски и не близость к колонке подписей"
+   }
+  ],
+  "edges": [
+   {
+    "id": "E-001",
+    "type": "level_above",
+    "from": "LVL-01",
+    "to": "LVL-02",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 5.25
+   },
+   {
+    "id": "E-002",
+    "type": "level_above",
+    "from": "LVL-02",
+    "to": "LVL-03",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-003",
+    "type": "level_above",
+    "from": "LVL-03",
+    "to": "LVL-04",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-004",
+    "type": "level_above",
+    "from": "LVL-04",
+    "to": "LVL-05",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-005",
+    "type": "level_above",
+    "from": "LVL-05",
+    "to": "LVL-06",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-006",
+    "type": "level_above",
+    "from": "LVL-06",
+    "to": "LVL-07",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-007",
+    "type": "level_above",
+    "from": "LVL-07",
+    "to": "LVL-08",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-008",
+    "type": "level_above",
+    "from": "LVL-08",
+    "to": "LVL-09",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-009",
+    "type": "level_above",
+    "from": "LVL-09",
+    "to": "LVL-10",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-010",
+    "type": "level_above",
+    "from": "LVL-10",
+    "to": "LVL-11",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-011",
+    "type": "level_above",
+    "from": "LVL-11",
+    "to": "LVL-12",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-012",
+    "type": "level_above",
+    "from": "LVL-12",
+    "to": "LVL-13",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-013",
+    "type": "level_above",
+    "from": "LVL-13",
+    "to": "LVL-14",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-014",
+    "type": "level_above",
+    "from": "LVL-14",
+    "to": "LVL-15",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-015",
+    "type": "level_above",
+    "from": "LVL-15",
+    "to": "LVL-16",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-016",
+    "type": "level_above",
+    "from": "LVL-16",
+    "to": "LVL-17",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-017",
+    "type": "level_above",
+    "from": "LVL-17",
+    "to": "LVL-18",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-018",
+    "type": "level_above",
+    "from": "LVL-18",
+    "to": "LVL-19",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-019",
+    "type": "level_above",
+    "from": "LVL-19",
+    "to": "LVL-20",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-020",
+    "type": "level_above",
+    "from": "LVL-20",
+    "to": "LVL-21",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-021",
+    "type": "level_above",
+    "from": "LVL-21",
+    "to": "LVL-22",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-022",
+    "type": "level_above",
+    "from": "LVL-22",
+    "to": "LVL-23",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-023",
+    "type": "level_above",
+    "from": "LVL-23",
+    "to": "LVL-24",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-024",
+    "type": "level_above",
+    "from": "LVL-24",
+    "to": "LVL-25",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-025",
+    "type": "level_above",
+    "from": "LVL-25",
+    "to": "LVL-26",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-026",
+    "type": "level_above",
+    "from": "LVL-26",
+    "to": "LVL-27",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.15
+   },
+   {
+    "id": "E-027",
+    "type": "level_above",
+    "from": "LVL-27",
+    "to": "LVL-28",
+    "basis": "elevation_table",
+    "confidence": 0.98,
+    "step_m": 3.45
+   },
+   {
+    "id": "E-028",
+    "type": "bundle_in_scheme",
+    "from": "BND-S1-A",
+    "to": "SCH-1",
+    "basis": "x_window",
+    "confidence": 0.95
+   },
+   {
+    "id": "E-029",
+    "type": "bundle_in_scheme",
+    "from": "BND-S1-B",
+    "to": "SCH-1",
+    "basis": "x_window",
+    "confidence": 0.95
+   },
+   {
+    "id": "E-030",
+    "type": "bundle_in_scheme",
+    "from": "BND-S2-A",
+    "to": "SCH-2",
+    "basis": "x_window",
+    "confidence": 0.95
+   },
+   {
+    "id": "E-031",
+    "type": "bundle_in_scheme",
+    "from": "BND-S2-B",
+    "to": "SCH-2",
+    "basis": "x_window",
+    "confidence": 0.95
+   },
+   {
+    "id": "E-032",
+    "type": "riser_of_system",
+    "from": "RSR-В2.3-1",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-033",
+    "type": "riser_of_system",
+    "from": "RSR-В2.3-2",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-034",
+    "type": "riser_of_system",
+    "from": "RSR-В2.3-4",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-035",
+    "type": "riser_of_system",
+    "from": "RSR-В2.3-3",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-036",
+    "type": "riser_of_system",
+    "from": "RSR-В2.2-1",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-037",
+    "type": "riser_of_system",
+    "from": "RSR-В2.2-2",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-038",
+    "type": "riser_of_system",
+    "from": "RSR-В2.2-3",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-039",
+    "type": "riser_of_system",
+    "from": "RSR-В2.2-4",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-040",
+    "type": "riser_on_bundle",
+    "from": "RSR-В2.2-2",
+    "to": "BND-S1-A",
+    "basis": "label_pack_x_order_and_visual_leader_check",
+    "confidence": 0.7,
+    "note": "две пачки подписей по 2 у оснований связок; принадлежность выносок проверена визуально по рендеру, вектор-трассировка линий не выполнялась (v0.3)"
+   },
+   {
+    "id": "E-041",
+    "type": "riser_on_bundle",
+    "from": "RSR-В2.2-1",
+    "to": "BND-S1-A",
+    "basis": "label_pack_x_order_and_visual_leader_check",
+    "confidence": 0.7,
+    "note": "две пачки подписей по 2 у оснований связок; принадлежность выносок проверена визуально по рендеру, вектор-трассировка линий не выполнялась (v0.3)"
+   },
+   {
+    "id": "E-042",
+    "type": "riser_on_bundle",
+    "from": "RSR-В2.2-3",
+    "to": "BND-S1-B",
+    "basis": "label_pack_x_order_and_visual_leader_check",
+    "confidence": 0.7,
+    "note": "две пачки подписей по 2 у оснований связок; принадлежность выносок проверена визуально по рендеру, вектор-трассировка линий не выполнялась (v0.3)"
+   },
+   {
+    "id": "E-043",
+    "type": "riser_on_bundle",
+    "from": "RSR-В2.2-4",
+    "to": "BND-S1-B",
+    "basis": "label_pack_x_order_and_visual_leader_check",
+    "confidence": 0.7,
+    "note": "две пачки подписей по 2 у оснований связок; принадлежность выносок проверена визуально по рендеру, вектор-трассировка линий не выполнялась (v0.3)"
+   },
+   {
+    "id": "E-044",
+    "type": "riser_transit_through",
+    "from": "RSR-В2.3-2",
+    "to": "BND-S1-A",
+    "basis": "transit_label_in_zone1_leader",
+    "confidence": 0.6,
+    "note": "подпись транзита в 1 зоне (x≈157, эт.10–11); связка по X-окну, выноска не трассировалась"
+   },
+   {
+    "id": "E-045",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-005",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-046",
+    "type": "cabinet_at_level",
+    "from": "CAB-005",
+    "to": "LVL-16",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.06
+   },
+   {
+    "id": "E-047",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-006",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-048",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-007",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-049",
+    "type": "cabinet_at_level",
+    "from": "CAB-007",
+    "to": "LVL-16",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.76
+   },
+   {
+    "id": "E-050",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-008",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-051",
+    "type": "cabinet_at_level",
+    "from": "CAB-008",
+    "to": "LVL-28",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.43
+   },
+   {
+    "id": "E-052",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-009",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-053",
+    "type": "cabinet_at_level",
+    "from": "CAB-009",
+    "to": "LVL-15",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.11
+   },
+   {
+    "id": "E-054",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-010",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-055",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-011",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-056",
+    "type": "cabinet_at_level",
+    "from": "CAB-011",
+    "to": "LVL-15",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 0.87
+   },
+   {
+    "id": "E-057",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-012",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-058",
+    "type": "cabinet_at_level",
+    "from": "CAB-012",
+    "to": "LVL-14",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.0
+   },
+   {
+    "id": "E-059",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-013",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-060",
+    "type": "cabinet_at_level",
+    "from": "CAB-013",
+    "to": "LVL-28",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.37
+   },
+   {
+    "id": "E-061",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-014",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-062",
+    "type": "cabinet_at_level",
+    "from": "CAB-014",
+    "to": "LVL-27",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.38
+   },
+   {
+    "id": "E-063",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-015",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-064",
+    "type": "cabinet_at_level",
+    "from": "CAB-015",
+    "to": "LVL-14",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.73
+   },
+   {
+    "id": "E-065",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-016",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-066",
+    "type": "cabinet_at_level",
+    "from": "CAB-016",
+    "to": "LVL-13",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.12
+   },
+   {
+    "id": "E-067",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-017",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-068",
+    "type": "cabinet_at_level",
+    "from": "CAB-017",
+    "to": "LVL-27",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.19
+   },
+   {
+    "id": "E-069",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-018",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-070",
+    "type": "cabinet_at_level",
+    "from": "CAB-018",
+    "to": "LVL-26",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 1.13
+   },
+   {
+    "id": "E-071",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-019",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-072",
+    "type": "cabinet_at_level",
+    "from": "CAB-019",
+    "to": "LVL-13",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.43
+   },
+   {
+    "id": "E-073",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-020",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-074",
+    "type": "cabinet_at_level",
+    "from": "CAB-020",
+    "to": "LVL-25",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.52
+   },
+   {
+    "id": "E-075",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-021",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-076",
+    "type": "cabinet_at_level",
+    "from": "CAB-021",
+    "to": "LVL-12",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.06
+   },
+   {
+    "id": "E-077",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-022",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-078",
+    "type": "cabinet_at_level",
+    "from": "CAB-022",
+    "to": "LVL-26",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.26
+   },
+   {
+    "id": "E-079",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-023",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-080",
+    "type": "cabinet_at_level",
+    "from": "CAB-023",
+    "to": "LVL-12",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.55
+   },
+   {
+    "id": "E-081",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-024",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-082",
+    "type": "cabinet_at_level",
+    "from": "CAB-024",
+    "to": "LVL-24",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.44
+   },
+   {
+    "id": "E-083",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-025",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-084",
+    "type": "cabinet_at_level",
+    "from": "CAB-025",
+    "to": "LVL-11",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.11
+   },
+   {
+    "id": "E-085",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-026",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-086",
+    "type": "cabinet_at_level",
+    "from": "CAB-026",
+    "to": "LVL-25",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.22
+   },
+   {
+    "id": "E-087",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-027",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-088",
+    "type": "cabinet_at_level",
+    "from": "CAB-027",
+    "to": "LVL-10",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 0.96
+   },
+   {
+    "id": "E-089",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-028",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-090",
+    "type": "cabinet_at_level",
+    "from": "CAB-028",
+    "to": "LVL-11",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.32
+   },
+   {
+    "id": "E-091",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-029",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-092",
+    "type": "cabinet_at_level",
+    "from": "CAB-029",
+    "to": "LVL-24",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.04
+   },
+   {
+    "id": "E-093",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-030",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-094",
+    "type": "cabinet_at_level",
+    "from": "CAB-030",
+    "to": "LVL-23",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.73
+   },
+   {
+    "id": "E-095",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-031",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-096",
+    "type": "cabinet_at_level",
+    "from": "CAB-031",
+    "to": "LVL-10",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.45
+   },
+   {
+    "id": "E-097",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-032",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-098",
+    "type": "cabinet_at_level",
+    "from": "CAB-032",
+    "to": "LVL-22",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.35
+   },
+   {
+    "id": "E-099",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-033",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-100",
+    "type": "cabinet_at_level",
+    "from": "CAB-033",
+    "to": "LVL-09",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.19
+   },
+   {
+    "id": "E-101",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-034",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-102",
+    "type": "cabinet_at_level",
+    "from": "CAB-034",
+    "to": "LVL-23",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.09
+   },
+   {
+    "id": "E-103",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-035",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-104",
+    "type": "cabinet_at_level",
+    "from": "CAB-035",
+    "to": "LVL-09",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.38
+   },
+   {
+    "id": "E-105",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-036",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-106",
+    "type": "cabinet_at_level",
+    "from": "CAB-036",
+    "to": "LVL-22",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.27
+   },
+   {
+    "id": "E-107",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-037",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-108",
+    "type": "cabinet_at_level",
+    "from": "CAB-037",
+    "to": "LVL-08",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.73
+   },
+   {
+    "id": "E-109",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-038",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-110",
+    "type": "cabinet_at_level",
+    "from": "CAB-038",
+    "to": "LVL-21",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 0.95
+   },
+   {
+    "id": "E-111",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-039",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-112",
+    "type": "cabinet_at_level",
+    "from": "CAB-039",
+    "to": "LVL-07",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 1.02
+   },
+   {
+    "id": "E-113",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-040",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-114",
+    "type": "cabinet_at_level",
+    "from": "CAB-040",
+    "to": "LVL-08",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.0
+   },
+   {
+    "id": "E-115",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-041",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-116",
+    "type": "cabinet_at_level",
+    "from": "CAB-041",
+    "to": "LVL-20",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.01
+   },
+   {
+    "id": "E-117",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-042",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-118",
+    "type": "cabinet_at_level",
+    "from": "CAB-042",
+    "to": "LVL-21",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.0
+   },
+   {
+    "id": "E-119",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-043",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-120",
+    "type": "cabinet_at_level",
+    "from": "CAB-043",
+    "to": "LVL-06",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 1.03
+   },
+   {
+    "id": "E-121",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-044",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-122",
+    "type": "cabinet_at_level",
+    "from": "CAB-044",
+    "to": "LVL-07",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.24
+   },
+   {
+    "id": "E-123",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-045",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-124",
+    "type": "cabinet_at_level",
+    "from": "CAB-045",
+    "to": "LVL-19",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.03
+   },
+   {
+    "id": "E-125",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-046",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-126",
+    "type": "cabinet_at_level",
+    "from": "CAB-046",
+    "to": "LVL-20",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.06
+   },
+   {
+    "id": "E-127",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-047",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-128",
+    "type": "cabinet_at_level",
+    "from": "CAB-047",
+    "to": "LVL-05",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 0.99
+   },
+   {
+    "id": "E-129",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-048",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-130",
+    "type": "cabinet_at_level",
+    "from": "CAB-048",
+    "to": "LVL-06",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.11
+   },
+   {
+    "id": "E-131",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-049",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-132",
+    "type": "cabinet_at_level",
+    "from": "CAB-049",
+    "to": "LVL-18",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.01
+   },
+   {
+    "id": "E-133",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-050",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-134",
+    "type": "cabinet_at_level",
+    "from": "CAB-050",
+    "to": "LVL-19",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.14
+   },
+   {
+    "id": "E-135",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-051",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-136",
+    "type": "cabinet_at_level",
+    "from": "CAB-051",
+    "to": "LVL-05",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.31
+   },
+   {
+    "id": "E-137",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-052",
+    "to": "BND-S2-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-138",
+    "type": "cabinet_at_level",
+    "from": "CAB-052",
+    "to": "LVL-17",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.0
+   },
+   {
+    "id": "E-139",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-053",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-140",
+    "type": "cabinet_at_level",
+    "from": "CAB-053",
+    "to": "LVL-04",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.2
+   },
+   {
+    "id": "E-141",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-054",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-142",
+    "type": "cabinet_at_level",
+    "from": "CAB-054",
+    "to": "LVL-18",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.09
+   },
+   {
+    "id": "E-143",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-055",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-144",
+    "type": "cabinet_at_level",
+    "from": "CAB-055",
+    "to": "LVL-04",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.12
+   },
+   {
+    "id": "E-145",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-056",
+    "to": "BND-S2-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-146",
+    "type": "cabinet_at_level",
+    "from": "CAB-056",
+    "to": "LVL-17",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.93,
+    "delta_m": 0.05
+   },
+   {
+    "id": "E-147",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-057",
+    "to": "BND-S1-A",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-148",
+    "type": "cabinet_at_level",
+    "from": "CAB-057",
+    "to": "LVL-03",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 1.03
+   },
+   {
+    "id": "E-149",
+    "type": "cabinet_on_bundle",
+    "from": "CAB-058",
+    "to": "BND-S1-B",
+    "basis": "x_column",
+    "confidence": 0.9
+   },
+   {
+    "id": "E-150",
+    "type": "cabinet_at_level",
+    "from": "CAB-058",
+    "to": "LVL-03",
+    "basis": "y_elevation_regression_offset_corrected",
+    "confidence": 0.6,
+    "delta_m": 0.92
+   },
+   {
+    "id": "E-151",
+    "type": "support_at_level",
+    "from": "SUP-01",
+    "to": "LVL-16",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.7,
+    "dist_pt": 26.0
+   },
+   {
+    "id": "E-152",
+    "type": "support_of_system",
+    "from": "SUP-01",
+    "to": "SYS-В2.3",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду80 соответствует трубе ø89х3,5 — стояки В2.3"
+   },
+   {
+    "id": "E-153",
+    "type": "support_at_level",
+    "from": "SUP-02",
+    "to": "LVL-16",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.5,
+    "dist_pt": 36.7,
+    "note": "подпись опоры заметно смещена от подписи уровня — опора у верха связки (граница зоны), уровень ориентировочный"
+   },
+   {
+    "id": "E-154",
+    "type": "support_of_system",
+    "from": "SUP-02",
+    "to": "SYS-В2.3",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду80 соответствует трубе ø89х3,5 — стояки В2.3"
+   },
+   {
+    "id": "E-155",
+    "type": "support_at_level",
+    "from": "SUP-03",
+    "to": "LVL-07",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.7,
+    "dist_pt": 31.4
+   },
+   {
+    "id": "E-156",
+    "type": "support_of_system",
+    "from": "SUP-03",
+    "to": "SYS-В2.2",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду65 соответствует трубе ø76х3,5 — стояки В2.2"
+   },
+   {
+    "id": "E-157",
+    "type": "support_at_level",
+    "from": "SUP-04",
+    "to": "LVL-07",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.7,
+    "dist_pt": 10.4
+   },
+   {
+    "id": "E-158",
+    "type": "support_of_system",
+    "from": "SUP-04",
+    "to": "SYS-В2.2",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду65 соответствует трубе ø76х3,5 — стояки В2.2"
+   },
+   {
+    "id": "E-159",
+    "type": "support_at_level",
+    "from": "SUP-05",
+    "to": "LVL-16",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.5,
+    "dist_pt": 37.6,
+    "note": "подпись опоры заметно смещена от подписи уровня — опора у верха связки (граница зоны), уровень ориентировочный"
+   },
+   {
+    "id": "E-160",
+    "type": "support_of_system",
+    "from": "SUP-05",
+    "to": "SYS-В2.3",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду80 соответствует трубе ø89х3,5 — стояки В2.3"
+   },
+   {
+    "id": "E-161",
+    "type": "support_at_level",
+    "from": "SUP-06",
+    "to": "LVL-16",
+    "basis": "adjacent_level_label_xy",
+    "confidence": 0.5,
+    "dist_pt": 54.4,
+    "note": "подпись опоры заметно смещена от подписи уровня — опора у верха связки (граница зоны), уровень ориентировочный"
+   },
+   {
+    "id": "E-162",
+    "type": "support_of_system",
+    "from": "SUP-06",
+    "to": "SYS-В2.3",
+    "basis": "du_to_pipe_diameter_match",
+    "confidence": 0.7,
+    "note": "условный проход Ду80 соответствует трубе ø89х3,5 — стояки В2.3"
+   },
+   {
+    "id": "E-163",
+    "type": "segment_of_system",
+    "from": "SEG-01",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-164",
+    "type": "segment_near_bundle",
+    "from": "SEG-01",
+    "to": "BND-S1-A",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 54.4
+   },
+   {
+    "id": "E-165",
+    "type": "segment_at_level",
+    "from": "SEG-01",
+    "to": "LVL-13",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 1.09
+   },
+   {
+    "id": "E-166",
+    "type": "segment_of_system",
+    "from": "SEG-02",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-167",
+    "type": "segment_near_bundle",
+    "from": "SEG-02",
+    "to": "BND-S1-A",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 54.4
+   },
+   {
+    "id": "E-168",
+    "type": "segment_at_level",
+    "from": "SEG-02",
+    "to": "LVL-13",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.45
+   },
+   {
+    "id": "E-169",
+    "type": "segment_of_system",
+    "from": "SEG-03",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-170",
+    "type": "segment_near_bundle",
+    "from": "SEG-03",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 43.4
+   },
+   {
+    "id": "E-171",
+    "type": "segment_at_level",
+    "from": "SEG-03",
+    "to": "LVL-13",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 1.35
+   },
+   {
+    "id": "E-172",
+    "type": "segment_of_system",
+    "from": "SEG-04",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-173",
+    "type": "segment_near_bundle",
+    "from": "SEG-04",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 41.2
+   },
+   {
+    "id": "E-174",
+    "type": "segment_at_level",
+    "from": "SEG-04",
+    "to": "LVL-09",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.25
+   },
+   {
+    "id": "E-175",
+    "type": "segment_of_system",
+    "from": "SEG-05",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-176",
+    "type": "segment_near_bundle",
+    "from": "SEG-05",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 41.2
+   },
+   {
+    "id": "E-177",
+    "type": "segment_at_level",
+    "from": "SEG-05",
+    "to": "LVL-09",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.65
+   },
+   {
+    "id": "E-178",
+    "type": "segment_of_system",
+    "from": "SEG-06",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-179",
+    "type": "segment_near_bundle",
+    "from": "SEG-06",
+    "to": "BND-S2-A",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 35.3
+   },
+   {
+    "id": "E-180",
+    "type": "segment_at_level",
+    "from": "SEG-06",
+    "to": "LVL-17",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.96
+   },
+   {
+    "id": "E-181",
+    "type": "segment_of_system",
+    "from": "SEG-07",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-182",
+    "type": "segment_near_bundle",
+    "from": "SEG-07",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 43.6
+   },
+   {
+    "id": "E-183",
+    "type": "segment_at_level",
+    "from": "SEG-07",
+    "to": "LVL-04",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.14
+   },
+   {
+    "id": "E-184",
+    "type": "segment_of_system",
+    "from": "SEG-08",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-185",
+    "type": "segment_near_bundle",
+    "from": "SEG-08",
+    "to": "BND-S2-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 32.4
+   },
+   {
+    "id": "E-186",
+    "type": "segment_at_level",
+    "from": "SEG-08",
+    "to": "LVL-17",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.74
+   },
+   {
+    "id": "E-187",
+    "type": "segment_of_system",
+    "from": "SEG-09",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-188",
+    "type": "segment_near_bundle",
+    "from": "SEG-09",
+    "to": "BND-S1-A",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 30.8
+   },
+   {
+    "id": "E-189",
+    "type": "segment_at_level",
+    "from": "SEG-09",
+    "to": "LVL-03",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.91
+   },
+   {
+    "id": "E-190",
+    "type": "segment_of_system",
+    "from": "SEG-10",
+    "to": "SYS-В2.3",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-191",
+    "type": "segment_near_bundle",
+    "from": "SEG-10",
+    "to": "BND-S2-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 41.5
+   },
+   {
+    "id": "E-192",
+    "type": "segment_at_level",
+    "from": "SEG-10",
+    "to": "LVL-17",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 1.39
+   },
+   {
+    "id": "E-193",
+    "type": "segment_of_system",
+    "from": "SEG-11",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-194",
+    "type": "segment_near_bundle",
+    "from": "SEG-11",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 80.5
+   },
+   {
+    "id": "E-195",
+    "type": "segment_at_level",
+    "from": "SEG-11",
+    "to": "LVL-02",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 0.81
+   },
+   {
+    "id": "E-196",
+    "type": "segment_of_system",
+    "from": "SEG-12",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-197",
+    "type": "segment_near_bundle",
+    "from": "SEG-12",
+    "to": "BND-S1-B",
+    "basis": "nearest_axis_estimate",
+    "confidence": 0.6,
+    "axis_dist_pt": 54.8
+   },
+   {
+    "id": "E-198",
+    "type": "segment_at_level",
+    "from": "SEG-12",
+    "to": "LVL-02",
+    "basis": "y_elevation_regression",
+    "confidence": 0.7,
+    "delta_m": 1.41
+   },
+   {
+    "id": "E-199",
+    "type": "segment_of_system",
+    "from": "SEG-13",
+    "to": "SYS-В21.5",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-200",
+    "type": "segment_of_system",
+    "from": "SEG-14",
+    "to": "SYS-В21.6",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-201",
+    "type": "segment_of_system",
+    "from": "SEG-15",
+    "to": "SYS-В21.6",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-202",
+    "type": "segment_of_system",
+    "from": "SEG-16",
+    "to": "SYS-В21.5",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-203",
+    "type": "segment_of_system",
+    "from": "SEG-17",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-204",
+    "type": "segment_of_system",
+    "from": "SEG-18",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-205",
+    "type": "segment_of_system",
+    "from": "SEG-19",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-206",
+    "type": "segment_of_system",
+    "from": "SEG-20",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-207",
+    "type": "segment_of_system",
+    "from": "SEG-21",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-208",
+    "type": "segment_of_system",
+    "from": "SEG-22",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-209",
+    "type": "segment_of_system",
+    "from": "SEG-23",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-210",
+    "type": "segment_of_system",
+    "from": "SEG-24",
+    "to": "SYS-В2.2",
+    "basis": "label_parse",
+    "confidence": 0.99
+   },
+   {
+    "id": "E-211",
+    "type": "reference_unanchored",
+    "from": "REF-SHEET8",
+    "to": "SHEET",
+    "basis": "position_only",
+    "confidence": 0.4,
+    "note": "выноска у оснований связок 1 зоны; конкретная точка крепления не трассировалась"
+   },
+   {
+    "id": "E-212",
+    "type": "reference_unanchored",
+    "from": "REF-APT-01",
+    "to": "SHEET",
+    "basis": "position_only",
+    "confidence": 0.4,
+    "note": "точка привязки ссылки к конкретной трубе не трассировалась"
+   },
+   {
+    "id": "E-213",
+    "type": "bundle_continues_to",
+    "from": "BND-S1-A",
+    "to": "REF-APT-02",
+    "basis": "reference_near_bundle_base",
+    "confidence": 0.75,
+    "note": "стояки уходят вниз (насосная/источник в комплекте АПТ)"
+   },
+   {
+    "id": "E-214",
+    "type": "bundle_continues_to",
+    "from": "BND-S1-B",
+    "to": "REF-APT-03",
+    "basis": "reference_near_bundle_base",
+    "confidence": 0.75,
+    "note": "стояки уходят вниз (насосная/источник в комплекте АПТ)"
+   },
+   {
+    "id": "E-215",
+    "type": "segment_continues_to",
+    "from": "SEG-17",
+    "to": "REF-APT-04",
+    "basis": "label_adjacency",
+    "confidence": 0.6,
+    "note": "подпись трубы и ссылка на АПТ рядом (выноска одной подводки); линия не трассировалась"
+   },
+   {
+    "id": "E-216",
+    "type": "segment_continues_to",
+    "from": "SEG-19",
+    "to": "REF-APT-05",
+    "basis": "label_adjacency",
+    "confidence": 0.6,
+    "note": "подпись трубы и ссылка на АПТ рядом (выноска одной подводки); линия не трассировалась"
+   },
+   {
+    "id": "E-217",
+    "type": "segment_continues_to",
+    "from": "SEG-21",
+    "to": "REF-APT-06",
+    "basis": "label_adjacency",
+    "confidence": 0.6,
+    "note": "подпись трубы и ссылка на АПТ рядом (выноска одной подводки); линия не трассировалась"
+   },
+   {
+    "id": "E-218",
+    "type": "segment_continues_to",
+    "from": "SEG-24",
+    "to": "REF-APT-07",
+    "basis": "label_adjacency",
+    "confidence": 0.6,
+    "note": "подпись трубы и ссылка на АПТ рядом (выноска одной подводки); линия не трассировалась"
+   },
+   {
+    "id": "E-219",
+    "type": "cabinet_fed_by_system",
+    "from": "CAB-N1",
+    "to": "SYS-В2.2",
+    "basis": "adjacent_feed_labels_B2.2_d57",
+    "confidence": 0.7,
+    "note": "рядом подписи «В2.2 ⌀57x 3,5» и «Далее см. комплект АПТ1-ПА»; трасса не трассировалась"
+   },
+   {
+    "id": "E-220",
+    "type": "cabinet_fed_by_system",
+    "from": "CAB-N3",
+    "to": "SYS-В2.2",
+    "basis": "adjacent_feed_labels_B2.2_d57",
+    "confidence": 0.7,
+    "note": "рядом подписи «В2.2 ⌀57x 3,5» и «Далее см. комплект АПТ1-ПА»; трасса не трассировалась"
+   },
+   {
+    "id": "E-221",
+    "type": "cabinet_fed_by_system",
+    "from": "CAB-N2",
+    "to": "SYS-В2.2",
+    "basis": "adjacent_feed_labels_B2.2_d57",
+    "confidence": 0.7,
+    "note": "рядом подписи «В2.2 ⌀57x 3,5» и «Далее см. комплект АПТ1-ПА»; трасса не трассировалась"
+   },
+   {
+    "id": "E-222",
+    "type": "cabinet_fed_by_system",
+    "from": "CAB-N4",
+    "to": "SYS-В2.2",
+    "basis": "adjacent_feed_labels_B2.2_d57",
+    "confidence": 0.7,
+    "note": "рядом подписи «В2.2 ⌀57x 3,5» и «Далее см. комплект АПТ1-ПА»; трасса не трассировалась"
+   },
+   {
+    "id": "E-223",
+    "type": "transit_through_zone",
+    "from": "SYS-В2.3",
+    "to": "SCH-1",
+    "basis": "dashed_line_visual_and_transit_label",
+    "confidence": 0.6,
+    "note": "стояки В2.3 проходят транзитом через 1 зону (подпись Ст. В2.3-2(6) в поле схемы 1 + пунктир между схемами); подтверждено визуально, не вектор-трассировкой"
+   },
+   {
+    "id": "E-224",
+    "type": "detail_of_system",
+    "from": "DET-U1",
+    "to": "SYS-В21.5",
+    "basis": "segment_labels_in_detail",
+    "confidence": 0.85
+   },
+   {
+    "id": "E-225",
+    "type": "detail_of_system",
+    "from": "DET-U2",
+    "to": "SYS-В21.6",
+    "basis": "segment_labels_in_detail",
+    "confidence": 0.85
+   }
+  ],
+  "branch_templates": [
+   {
+    "id": "TPL-BND-S1-A",
+    "template": "поэтажный отвод: стояк → отвод ⌀57х3,5 → пожарный шкаф ШПК-320-21 НЗ",
+    "bundle": "BND-S1-A",
+    "cabinet_model": "ШПК-320-21 НЗ",
+    "floors_with_cabinet": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "floors_range": [
+     3,
+     16
+    ],
+    "floors_missing_cabinet_label": [],
+    "branch_diameter_evidence_floors": [
+     3
+    ],
+    "feed_evidence_floors_outside_range": [],
+    "branch_diameter_assumed_floors": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "note": "⌀57х3,5 подписан выборочно (типовая деталь); на остальных этажах диаметр отвода — допущение по шаблону, не факт; feed_evidence_* — подписи ⌀57 у связки вне этажей со шкафами (подводка до первого шкафа)"
+   },
+   {
+    "id": "TPL-BND-S1-B",
+    "template": "поэтажный отвод: стояк → отвод ⌀57х3,5 → пожарный шкаф ШПК-320-21 НЗ",
+    "bundle": "BND-S1-B",
+    "cabinet_model": "ШПК-320-21 НЗ",
+    "floors_with_cabinet": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "floors_range": [
+     3,
+     16
+    ],
+    "floors_missing_cabinet_label": [],
+    "branch_diameter_evidence_floors": [
+     4
+    ],
+    "feed_evidence_floors_outside_range": [
+     2
+    ],
+    "branch_diameter_assumed_floors": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16
+    ],
+    "note": "⌀57х3,5 подписан выборочно (типовая деталь); на остальных этажах диаметр отвода — допущение по шаблону, не факт; feed_evidence_* — подписи ⌀57 у связки вне этажей со шкафами (подводка до первого шкафа)"
+   },
+   {
+    "id": "TPL-BND-S2-A",
+    "template": "поэтажный отвод: стояк → отвод ⌀57х3,5 → пожарный шкаф ШПК-320-21 НЗ",
+    "bundle": "BND-S2-A",
+    "cabinet_model": "ШПК-320-21 НЗ",
+    "floors_with_cabinet": [
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28
+    ],
+    "floors_range": [
+     17,
+     28
+    ],
+    "floors_missing_cabinet_label": [],
+    "branch_diameter_evidence_floors": [
+     17
+    ],
+    "feed_evidence_floors_outside_range": [],
+    "branch_diameter_assumed_floors": [
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28
+    ],
+    "note": "⌀57х3,5 подписан выборочно (типовая деталь); на остальных этажах диаметр отвода — допущение по шаблону, не факт; feed_evidence_* — подписи ⌀57 у связки вне этажей со шкафами (подводка до первого шкафа)"
+   },
+   {
+    "id": "TPL-BND-S2-B",
+    "template": "поэтажный отвод: стояк → отвод ⌀57х3,5 → пожарный шкаф ШПК-320-21 НЗ",
+    "bundle": "BND-S2-B",
+    "cabinet_model": "ШПК-320-21 НЗ",
+    "floors_with_cabinet": [
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28
+    ],
+    "floors_range": [
+     17,
+     28
+    ],
+    "floors_missing_cabinet_label": [],
+    "branch_diameter_evidence_floors": [
+     17
+    ],
+    "feed_evidence_floors_outside_range": [],
+    "branch_diameter_assumed_floors": [
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28
+    ],
+    "note": "⌀57х3,5 подписан выборочно (типовая деталь); на остальных этажах диаметр отвода — допущение по шаблону, не факт; feed_evidence_* — подписи ⌀57 у связки вне этажей со шкафами (подводка до первого шкафа)"
+   }
+  ],
+  "unresolved_groups": [
+   {
+    "id": "UNR-V23-BUNDLES",
+    "kind": "riser_to_bundle_mapping",
+    "risers": [
+     "RSR-В2.3-1",
+     "RSR-В2.3-2",
+     "RSR-В2.3-3",
+     "RSR-В2.3-4"
+    ],
+    "candidate_bundles": [
+     "BND-S2-A",
+     "BND-S2-B"
+    ],
+    "reason": "подписи «Ст. В2.3-x(6)» стоят пачками между связками, выноски веером; без трассировки линий выносок распределение 4 стояков по 2 связкам не выводимо"
+   },
+   {
+    "id": "UNR-CAB-TO-RISER",
+    "kind": "cabinet_to_exact_riser",
+    "reason": "в каждой связке ≥2 стояка; какой из пары питает конкретный ШПК — не выводимо из подписей, нужна трассировка линий (get_drawings) или план этажа (лист 2/4/5)"
+   },
+   {
+    "id": "UNR-OFFCROP",
+    "kind": "cropped_out_content",
+    "tokens": [
+     {
+      "text": "Неподвижн",
+      "x": 1119.3,
+      "y": 905.5
+     },
+     {
+      "text": "В21.5",
+      "x": 1144.8,
+      "y": 1165.9
+     }
+    ],
+    "reason": "схемы В21.5 (1 зона)/В21.6 (2 зона) — правее границы кропа блока; в кроп попали обрезки"
+   },
+   {
+    "id": "UNR-LEFTOVER-TOKENS",
+    "kind": "unassigned_text",
+    "tokens": [],
+    "reason": "строки вектор-слоя, не привязанные ни к одной сущности (полный список — для честного покрытия)"
+   }
+  ]
+ },
+ "coverage_counters": {
+  "raw_words": 557,
+  "words_after_dedup": 527,
+  "dedup_removed_double_draw": 30,
+  "label_lines_total": 262,
+  "label_lines_assigned": 262,
+  "label_lines_unassigned": 0,
+  "entities_total": 146,
+  "edges_total": 225,
+  "by_entity_type": {
+   "scheme": 2,
+   "system": 4,
+   "level": 28,
+   "riser_bundle": 4,
+   "riser": 8,
+   "fire_cabinet": 58,
+   "support": 6,
+   "pipe_segment": 24,
+   "reference": 8,
+   "notes_block": 1,
+   "detail": 2,
+   "position_callout_group": 1
+  },
+  "cabinets_floor_bound": 52,
+  "levels_detected": "28/28 (этажи 1–28)",
+  "vector_drawing_primitives_not_parsed": {
+   "paths": 912,
+   "line_items": 62551,
+   "rect_items": 373,
+   "note": "трассировка линий труб — кандидат на v0.3"
+  }
+ },
+ "requires_review": [
+  {
+   "kind": "нетиповой шаг отметок",
+   "detail": "этаж 1→2: шаг 5.25 м при типовом 3.15 м — сверить с АР",
+   "severity": "info"
+  },
+  {
+   "kind": "нетиповой шаг отметок",
+   "detail": "этаж 27→28: шаг 3.45 м при типовом 3.15 м — сверить с АР",
+   "severity": "info"
+  },
+  {
+   "kind": "шкаф вне сетки уровней",
+   "severity": "check",
+   "detail": "CAB-006 (816.4,145.3): подпись ШПК не легла на уровень даже с поправкой (Δ=2.71 м) — кровля/техэтаж или сбой привязки"
+  },
+  {
+   "kind": "шкаф вне сетки уровней",
+   "severity": "check",
+   "detail": "CAB-010 (938.0,200.0): подпись ШПК не легла на уровень даже с поправкой (Δ=2.71 м) — кровля/техэтаж или сбой привязки"
+  },
+  {
+   "kind": "токен обрезан кропом",
+   "severity": "check",
+   "detail": "SEG-15 (В21.6 ⌀89): токен стенки упирается в правую кромку страницы — видимое «3» почти наверняка начало «3,5»; wall_mm не заполнен, значение брать с полного листа"
+  },
+  {
+   "kind": "ревизия v0.1",
+   "severity": "info",
+   "detail": "в v0.1 (.graph.md) лесенки отметок были приняты за стояки R1–R5, а пропуски подписей этажей 3/15 в шкалах — за «разрыв стояка»; в v0.2 стояки = 8 подписанных Ст.-сущностей, флаги «разрыв стояка» и «немонотонность ⌀ [57,57,76]» сняты как ошибка интерпретации (⌀57 — отводы к ШПК, ⌀76/⌀89 — стояки)"
+  },
+  {
+   "kind": "транзит В2.3 в 1 зоне",
+   "severity": "check",
+   "detail": "в 1 зоне подписан только транзит Ст. В2.3-2(6); транзит В2.3-1/3/4 на схеме не подписан — сверить с планами (листы 2, 4, 5)"
+  },
+  {
+   "kind": "распределение В2.3 по связкам",
+   "severity": "check",
+   "detail": "какие 2 из 4 стояков В2.3 в какой связке 2-й зоны — см. UNR-V23-BUNDLES"
+  },
+  {
+   "kind": "позиции 1/3/5/7 у верха связок",
+   "severity": "check",
+   "detail": "позиционные выноски на элементы верха стояков не расшифрованы на листе (спецификация вне кропа)"
+  },
+  {
+   "kind": "нумерация нижних шкафов",
+   "severity": "hypothesis",
+   "detail": "шкафы 1(6)–4(6) внизу (ШПК-320-21 НЗ 2(6), ШП-К-О-Пульс-320-12НЗК 1/3/4(6)) возможно соответствуют стоякам В2.2-1..4 — проверить по плану 1 этажа (лист 2); тип «Пульс» у 1/3/4 отличается от поэтажных ШПК-320-21 — сверить со спецификацией"
+  },
+  {
+   "kind": "источник/насосная",
+   "severity": "check",
+   "detail": "все стояки уходят вниз с «Далее см. комплект 13АВ-РД-АПТ1-ПА» — источник, насосы и вводы в комплекте АПТ1-ПА (кросс-комплектная проверка)"
+  },
+  {
+   "kind": "отметка кровли вне вектор-текста",
+   "severity": "info",
+   "detail": "Gemma OCR упоминала +90.480 — вероятная отметка кровли: согласуется с кровельными ШПК CAB-006/CAB-010 (Δ≈+2.7 м над эт. 28 = ~+90.2); в вектор-тексте кропа такой отметки нет, уровень «кровля» в граф не включён"
+  },
+  {
+   "kind": "привязка В2.2 к связкам — визуальная",
+   "severity": "check",
+   "detail": "распределение В2.2-1/2 → связка A, В2.2-3/4 → связка B принято по порядку пачек подписей и визуальному осмотру выносок рендера — подтвердить вектор-трассировкой линий (v0.3) или планами"
+  },
+  {
+   "kind": "опоры Ду80 наверху 1 зоны — транзитные В2.3",
+   "severity": "info",
+   "detail": "Ду65 соответствует трубе ø76х3,5 (В2.2), Ду80 — ø89х3,5 (В2.3); опоры Ду80 у +49.350 в 1 зоне стоят на транзитных стояках В2.3, а не на В2.2 (В2.2 выше эт. 16 не идёт) — согласуется с транзитом (см. рёбра support_of_system)"
+  },
+  {
+   "kind": "подписи опор ≠ физические опоры",
+   "severity": "info",
+   "detail": "4 подписи Ду80 у отметки +49.350 (верх схемы 1 зоны и низ схемы 2 зоны) могут описывать одни и те же физические опоры на границе зон — счётчик считает ПОДПИСИ, не изделия"
+  },
+  {
+   "kind": "этажи 1–2 без поэтажных ШПК",
+   "severity": "check",
+   "detail": "поэтажные ШПК-320-21 НЗ на связках 1 зоны начинаются с этажа 3; внизу листа 4 именованных шкафа (ШП-К-О-Пульс-320-12НЗК 1/3/4(6), ШПК-320-21 НЗ 2(6)) — вероятно покрытие этажей 1–2; сверить с планом 1 этажа (лист 2)"
+  }
+ ],
+ "warnings": [],
+ "status": "needs_review",
+ "confidence": {
+  "levels_and_elevations": 0.97,
+  "riser_identity_and_attrs": 0.95,
+  "cabinet_floor_binding": 0.9,
+  "riser_to_bundle_B2.2": 0.7,
+  "riser_to_bundle_B2.3": 0.0,
+  "cabinet_to_exact_riser": 0.0,
+  "pipe_topology_edges": 0.0,
+  "overall": 0.75,
+  "note": "0.0 = сознательно не извлекалось (нужна трассировка линий) — см. unresolved_groups; для В2.3 кандидаты сужены до 2 связок (UNR-V23-BUNDLES), но распределение не извлечено; 0.7 у В2.2 — визуальная проверка выносок, не вектор-трассировка"
+ }
+}

@@ -3550,7 +3550,10 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch/remove', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId }),
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        version_id: activeVersionId.value || null,
+                    }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -3827,7 +3830,10 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch/add-resume', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId }),
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        version_id: activeVersionId.value || null,
+                    }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -3913,14 +3919,18 @@ const app = createApp({
 
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            // Для downstream-этапов Gemma считается ОК если: done/partial, migration_required,
-            // или blocks_analysis уже done (старые проекты без Gemma-прогона)
-            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
+            const gemmaReady = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            // Старые/частично упавшие V2-прогоны могут иметь готовые 02-блоки,
+            // но не иметь статуса Gemma в latest. Backend восстановит лёгкие prereq-файлы.
+            const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
             if (pipelineKey === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (pipelineKey === 'blocks_analysis') {
-                return ready('gemma_enrichment') && ready('text_analysis');
+                return ready('crop_blocks') || gemmaOk();
+            }
+            if (pipelineKey === 'text_analysis') {
+                return gemmaOk() && ready('blocks_analysis');
             }
             if ([
                 'findings', 'findings_critic', 'findings_corrector',
@@ -3937,12 +3947,16 @@ const app = createApp({
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
+            const gemmaReady = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
             if (stage === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (stage === 'block_analysis') {
-                return ready('gemma_enrichment') && ready('text_analysis');
+                return ready('crop_blocks') || gemmaOk();
+            }
+            if (stage === 'text_analysis') {
+                return gemmaOk() && ready('blocks_analysis');
             }
             if ([
                 'findings_merge', 'findings_critic', 'findings_review',
@@ -4108,10 +4122,14 @@ const app = createApp({
                     resp = await fetch(`/api/audit/batch/add-retry`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ project_id: projectId, stage: stage }),
+                        body: JSON.stringify({
+                            project_id: projectId,
+                            stage: stage,
+                            version_id: activeVersionId.value || null,
+                        }),
                     });
                 } else {
-                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
+                    resp = await fetch(_apiUrl(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                     });
@@ -9458,7 +9476,7 @@ const app = createApp({
             const d = subSpendData.value;
             if (!d || !d.week_start_date) return '';
             const [y, m, day] = d.week_start_date.split('-');
-            return `с пятницы ${day}.${m} ${d.week_start_time || '16:00'} (сброс лимитов)`;
+            return `с пятницы ${day}.${m} ${d.week_start_time || '19:00'} (сброс лимитов)`;
         });
         async function subSpendLoad() {
             subSpendLoading.value = true;
@@ -9782,6 +9800,9 @@ const app = createApp({
                 total: vals.filter(d => d.decision).length,
                 accepted: vals.filter(d => d.decision === 'accepted').length,
                 rejected: vals.filter(d => d.decision === 'rejected').length,
+                // Перенесённые из прошлой версии без вердикта — «возможные повторы»
+                // (те, что помечены «↩ Возможный повтор из … — проверьте»).
+                possibleRepeats: vals.filter(d => d.carried_over && !d.decision).length,
             };
         }
 

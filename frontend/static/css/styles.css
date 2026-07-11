@@ -1826,7 +1826,7 @@ th.cv2-sort-active {
 .pause-modal__option div { display: flex; flex-direction: column; gap: 2px; }
 .pause-modal__option strong { font-size: 13px; }
 .pause-modal__option span { font-size: 11px; opacity: 0.7; }
-.model-config-modal { max-width: 640px; padding: 16px 18px; }
+.model-config-modal { max-width: 760px; padding: 16px 18px; }
 .model-config-modal h3 { font-size: 14px; margin-bottom: 4px; }
 .model-config-desc { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
 .pipeline-version-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }

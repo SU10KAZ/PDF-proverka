@@ -34,6 +34,9 @@ from backend.app.pipeline.stages.prepare.task_builder import (
     _load_vendor_list_for_discipline,
     _extract_page_to_sheet_map,
 )
+from backend.app.pipeline.stages.optimization.prescan import (
+    build_optimization_prescan_section_from_text,
+)
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.llm.llm_runner import build_interleaved_content, make_image_content
 
@@ -487,6 +490,17 @@ def build_text_analysis_messages(
             "At this stage, extract only norms explicitly present in the provided source text."
         )
 
+    try:
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            build_prescan_prompt_section,
+        )
+        md_file_path = _get_md_file_path(project_info, project_id)
+        prescan_section = build_prescan_prompt_section(md_file_path)
+        if prescan_section:
+            system_prompt += "\n\n" + prescan_section
+    except Exception:
+        pass
+
     return [
         {"role": "system", "content": system_prompt},
         {
@@ -716,6 +730,12 @@ def build_optimization_messages(
     md_text = _read_md_file(project_info, project_id)
     text_analysis = _read_json_file(project_id, "01_text_analysis.json")
     findings = _read_json_file(project_id, "03_findings.json")
+    prescan_section = build_optimization_prescan_section_from_text(
+        md_text,
+        section=section,
+        vendor_list_text=vendor_list,
+        findings_data=findings,
+    )
 
     # Multimodal: включить PNG планов/схем
     plan_images = _get_plan_images(project_id)
@@ -729,6 +749,7 @@ def build_optimization_messages(
                     f"## Project MD file:\n\n{md_text}\n\n"
                     f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
                     f"## 03_findings.json:\n\n{findings}\n\n"
+                    f"{prescan_section}\n\n"
                     f"## Drawings (plans and schematics):\n"
                     f"Below are {len(plan_images)} drawing images for reference."
                 ),
@@ -745,7 +766,8 @@ def build_optimization_messages(
         user_content = (
             f"## Project MD file:\n\n{md_text}\n\n"
             f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
-            f"## 03_findings.json:\n\n{findings}"
+            f"## 03_findings.json:\n\n{findings}\n\n"
+            f"{prescan_section}"
         )
 
     return [

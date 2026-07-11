@@ -40,10 +40,10 @@ WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 
 # Момент еженедельного сброса лимитов подписки Claude.
-# Пятница 16:00 MSK = 13:00 UTC. Единый источник истины для окна недели
+# Пятница 19:00 MSK = 16:00 UTC. Единый источник истины для окна недели
 # и суточных бакетов панели «Расход подписки по инженерам».
 WEEKLY_RESET_WEEKDAY = 4   # пятница (0=пн … 6=вс)
-WEEKLY_RESET_HOUR_UTC = 13  # 13:00 UTC = 16:00 MSK
+WEEKLY_RESET_HOUR_UTC = 16  # 16:00 UTC = 19:00 MSK
 
 # Москва (UTC+3, без перехода на летнее время). Столбцы панели «Расход
 # подписки» считаются по календарным суткам именно в этой зоне, независимо
@@ -595,10 +595,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию пятница 16:00 MSK = 13:00 UTC)
+        # Настройки сброса (по умолчанию пятница 19:00 MSK = 16:00 UTC)
         # Можно менять через set_weekly_reset()
         self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # пятница
-        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 13:00 UTC = 16:00 MSK
+        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 16:00 UTC = 19:00 MSK
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
@@ -1298,8 +1298,8 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     """Расход подписки Claude по инженерам за ТЕКУЩУЮ недельную квоту.
 
     Окно = от последнего еженедельного сброса лимитов (по умолчанию пятница
-    06:00 UTC = 09:00 MSK) до сейчас. Дни-колонки — это 24-часовые бакеты,
-    отсчитанные от момента сброса (день 0 = пятница с 09:00 MSK), поэтому
+    16:00 UTC = 19:00 MSK) до сейчас. Дни-колонки — это 24-часовые бакеты,
+    отсчитанные от момента сброса (день 0 = пятница с 19:00 MSK), поэтому
     таблица всегда начинается с пятницы.
 
     Токены считаются точно (из поля usage), стоимость — оценка по прайсу
@@ -1317,7 +1317,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     # с момента сброса; сумма столбцов = недельному «Итого».
     start_local_date = week_start.astimezone(MSK_TZ).date()
     today_local = now_utc.astimezone(MSK_TZ).date()
-    # До 8 календарных дат: окно пт 16:00 → пт 16:00 может задевать 8 суток.
+    # До 8 календарных дат: окно пт 19:00 → пт 19:00 может задевать 8 суток.
     n_days = max(1, min((today_local - start_local_date).days + 1, 8))
     day_keys = [(start_local_date + timedelta(days=i)).isoformat() for i in range(n_days)]
     day_key_set = set(day_keys)

@@ -1836,6 +1836,9 @@
                             <span class="expert-review-counter">
                                 Принято: <b style="color:#22c55e">{{ expertReviewSummary('finding').accepted }}</b>
                                 Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('finding').rejected }}</b>
+                                <template v-if="expertReviewSummary('finding').possibleRepeats">
+                                    Возможные повторы: <b style="color:#7c3aed">{{ expertReviewSummary('finding').possibleRepeats }}</b>
+                                </template>
                             </span>
                         </template>
                         <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
@@ -2084,6 +2087,9 @@
                                 <span class="expert-review-counter">
                                     Принято: <b style="color:#22c55e">{{ expertReviewSummary('optimization').accepted }}</b>
                                     Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('optimization').rejected }}</b>
+                                    <template v-if="expertReviewSummary('optimization').possibleRepeats">
+                                        Возможные повторы: <b style="color:#7c3aed">{{ expertReviewSummary('optimization').possibleRepeats }}</b>
+                                    </template>
                                 </span>
                             </template>
                             <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">

@@ -24,10 +24,20 @@ from pathlib import Path
 from typing import Any
 
 from backend.app.pipeline.stages.optimization.visual_context import (
+    add_page_overviews,
     collect_optimization_visual_context,
 )
+from backend.app.pipeline.stages.optimization.deterministic_critic import (
+    run_deterministic_critic_augment,
+)
+from backend.app.pipeline.stages.optimization.deterministic_corrector import (
+    run_deterministic_corrector,
+)
 from backend.app.pipeline.stages.optimization.prescan import scan_optimization_opportunities
-from backend.app.pipeline.stages.prepare.task_builder import prepare_optimization_task
+from backend.app.pipeline.stages.prepare.task_builder import (
+    prepare_optimization_critic_task,
+    prepare_optimization_task,
+)
 from backend.app.services.llm.codex_runner import find_codex_cli, run_codex_exec
 
 
@@ -48,6 +58,8 @@ class Candidate:
     baseline_items: int
     prescan_items: int
     optimization_model: str
+    review_path: str
+    reviewed_pass_items: int
 
     @property
     def project_id(self) -> str:
@@ -63,6 +75,14 @@ def safe_name(candidate: Candidate, index: int) -> str:
     ascii_part = re.sub(r"[^A-Za-z0-9_.-]+", "_", raw).strip("_")[:90]
     digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
     return f"{index:02d}_{ascii_part}_{digest}"
+
+
+def candidate_dict(candidate: Candidate) -> dict[str, Any]:
+    return {
+        **asdict(candidate),
+        "version_dir": str(candidate.version_dir),
+        "latest_dir": str(candidate.latest_dir),
+    }
 
 
 def load_json(path: Path) -> Any:
@@ -103,6 +123,17 @@ def find_document_md(version_dir: Path) -> Path:
     raise FileNotFoundError(f"document.md not found under {version_dir}")
 
 
+def find_document_pdf(version_dir: Path) -> Path | None:
+    for candidate in (
+        version_dir / "02_work" / "document.pdf",
+        *sorted((version_dir / "01_input").glob("*.pdf")),
+        *sorted((version_dir / "02_work").glob("*.pdf")),
+    ):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def optimization_items_count(path: Path) -> int:
     try:
         data = load_json(path)
@@ -121,6 +152,26 @@ def optimization_model(latest_dir: Path) -> str:
         return str((((data.get("stages") or {}).get("optimization") or {}).get("model") or ""))
     except Exception:
         return ""
+
+
+def optimization_review_info(version_dir: Path) -> tuple[str, int]:
+    review_path = version_dir / "04_review" / "optimization_review.json"
+    if not review_path.is_file():
+        return "", 0
+    try:
+        data = load_json(review_path)
+    except Exception:
+        return "", 0
+    reviews = data.get("reviews") if isinstance(data, dict) else None
+    if not isinstance(reviews, list):
+        return str(review_path), 0
+    passed = sum(
+        1
+        for review in reviews
+        if isinstance(review, dict)
+        and str(review.get("verdict") or "").lower() == "pass"
+    )
+    return str(review_path), passed
 
 
 def required_baseline_files(latest_dir: Path) -> list[Path]:
@@ -165,6 +216,7 @@ def candidate_from_version_dir(version_dir: Path, *, require_claude_baseline: bo
         prescan_items = len(scan_optimization_opportunities(md_text, section=discipline, max_candidates=16))
     except Exception:
         prescan_items = 0
+    review_path, reviewed_pass_items = optimization_review_info(version_dir)
 
     return Candidate(
         object_slug=object_slug,
@@ -176,6 +228,8 @@ def candidate_from_version_dir(version_dir: Path, *, require_claude_baseline: bo
         baseline_items=baseline_items,
         prescan_items=prescan_items,
         optimization_model=model,
+        review_path=review_path,
+        reviewed_pass_items=reviewed_pass_items,
     )
 
 
@@ -193,7 +247,12 @@ def collect_candidates(*, require_claude_baseline: bool = False) -> list[Candida
     return candidates
 
 
-def select_candidates(candidates: list[Candidate], *, per_discipline: int) -> list[Candidate]:
+def select_candidates(
+    candidates: list[Candidate],
+    *,
+    per_discipline: int,
+    skip_per_discipline: int = 0,
+) -> list[Candidate]:
     by_discipline: dict[str, list[Candidate]] = defaultdict(list)
     for candidate in candidates:
         by_discipline[candidate.discipline].append(candidate)
@@ -204,14 +263,17 @@ def select_candidates(candidates: list[Candidate], *, per_discipline: int) -> li
         ranked = sorted(
             bucket,
             key=lambda c: (
+                c.reviewed_pass_items > 0,
                 c.prescan_items > 0,
                 c.baseline_items,
+                c.reviewed_pass_items,
                 c.prescan_items,
                 c.document,
             ),
             reverse=True,
         )
-        selected.extend(ranked[:per_discipline])
+        start = max(0, skip_per_discipline)
+        selected.extend(ranked[start:start + per_discipline])
     return selected
 
 
@@ -225,6 +287,7 @@ def filter_candidates_with_images(
         visual_context = collect_optimization_visual_context(
             candidate.latest_dir,
             max_images=max_images,
+            discipline=candidate.discipline,
         )
         if visual_context.image_paths:
             filtered.append(candidate)
@@ -300,15 +363,41 @@ def load_optimization_items(path: Path) -> list[dict[str, Any]]:
     return [item for item in (items or []) if isinstance(item, dict)]
 
 
+def passed_review_ids(path: Path | None) -> set[str]:
+    if path is None or not path.is_file():
+        return set()
+    try:
+        data = load_json(path)
+    except Exception:
+        return set()
+    reviews = data.get("reviews") if isinstance(data, dict) else None
+    if not isinstance(reviews, list):
+        return set()
+    return {
+        str(review.get("item_id") or review.get("id"))
+        for review in reviews
+        if isinstance(review, dict)
+        and str(review.get("verdict") or "").lower() == "pass"
+        and (review.get("item_id") or review.get("id"))
+    }
+
+
 def compare_optimization(
     baseline_path: Path,
     codex_path: Path,
     out_dir: Path,
     *,
     threshold: float,
+    baseline_allowed_ids: set[str] | None = None,
+    codex_allowed_ids: set[str] | None = None,
+    filename_prefix: str = "",
 ) -> dict[str, Any]:
     baseline = load_optimization_items(baseline_path)
     codex = load_optimization_items(codex_path)
+    if baseline_allowed_ids is not None:
+        baseline = [item for item in baseline if str(item.get("id")) in baseline_allowed_ids]
+    if codex_allowed_ids is not None:
+        codex = [item for item in codex if str(item.get("id")) in codex_allowed_ids]
     pairs: list[tuple[float, int, int]] = []
     for b_idx, b_item in enumerate(baseline):
         for c_idx, c_item in enumerate(codex):
@@ -359,10 +448,11 @@ def compare_optimization(
         "unmatched_codex": [codex[idx] for idx in range(len(codex)) if idx not in used_codex],
         "matches": matches,
     }
-    write_json(out_dir / "optimization_comparison.json", report)
-    write_json(out_dir / "matches.json", matches)
-    write_json(out_dir / "unmatched_baseline.json", report["unmatched_baseline"])
-    write_json(out_dir / "unmatched_codex.json", report["unmatched_codex"])
+    prefix = f"{filename_prefix}_" if filename_prefix else ""
+    write_json(out_dir / f"{prefix}optimization_comparison.json", report)
+    write_json(out_dir / f"{prefix}matches.json", matches)
+    write_json(out_dir / f"{prefix}unmatched_baseline.json", report["unmatched_baseline"])
+    write_json(out_dir / f"{prefix}unmatched_codex.json", report["unmatched_codex"])
     return report
 
 
@@ -413,10 +503,22 @@ def prepare_isolated_layout(
         copy_file(candidate.latest_dir / "document_graph.json", output_dir / "document_graph.json")
         copy_file(candidate.latest_dir / "document_graph.json", input_dir / "document_graph.json")
     if copy_images:
+        image_sources = [candidate.latest_dir]
+        probe_context = collect_optimization_visual_context(
+            candidate.latest_dir,
+            max_images=1,
+            discipline=candidate.discipline,
+        )
+        if probe_context.image_paths:
+            archived_source = probe_context.image_paths[0].parent.parent
+            if archived_source not in image_sources:
+                image_sources.append(archived_source)
         for dirname in ("blocks", "blocks_gemma_100", "blocks_gemma_300"):
-            src_dir = candidate.latest_dir / dirname
-            if src_dir.is_dir():
-                shutil.copytree(src_dir, output_dir / dirname, dirs_exist_ok=True)
+            for source in image_sources:
+                src_dir = source / dirname
+                if src_dir.is_dir():
+                    shutil.copytree(src_dir, output_dir / dirname, dirs_exist_ok=True)
+                    break
 
     project_info = load_json(project_info_src)
     return version_dir, output_dir, project_info
@@ -432,23 +534,24 @@ async def run_candidate(
     dry_run: bool,
     with_images: bool,
     max_images: int,
+    with_overviews: bool,
+    max_overviews: int,
+    two_pass: bool,
 ) -> dict[str, Any]:
     version_dir, output_dir, project_info = prepare_isolated_layout(
         candidate,
         item_dir,
-        copy_images=with_images,
+        copy_images=with_images or with_overviews,
     )
     summary: dict[str, Any] = {
         "status": "dry_run" if dry_run else "running",
-        "candidate": {
-            **asdict(candidate),
-            "version_dir": str(candidate.version_dir),
-            "latest_dir": str(candidate.latest_dir),
-        },
+        "candidate": candidate_dict(candidate),
         "item_dir": str(item_dir),
         "baseline_optimization": str(candidate.latest_dir / "optimization.json"),
         "codex_optimization": str(output_dir / "optimization.json"),
         "with_images": with_images,
+        "with_overviews": with_overviews,
+        "two_pass": two_pass,
     }
     write_json(item_dir / "candidate_summary.json", summary)
     if dry_run:
@@ -461,11 +564,23 @@ async def run_candidate(
     }):
         task = prepare_optimization_task(project_info, candidate.project_id)
         image_paths: list[Path] = []
-        if with_images:
+        visual_context = None
+        if with_images or with_overviews:
             visual_context = collect_optimization_visual_context(
                 output_dir,
                 max_images=max_images,
+                discipline=candidate.discipline,
             )
+            if with_overviews:
+                source_pdf = find_document_pdf(candidate.version_dir)
+                if source_pdf is not None:
+                    visual_context = add_page_overviews(
+                        visual_context,
+                        pdf_path=source_pdf,
+                        render_dir=output_dir / "page_overviews",
+                        max_overviews=max_overviews,
+                        discipline=candidate.discipline,
+                    )
             image_paths = visual_context.image_paths
             write_json(item_dir / "visual_context.json", visual_context.to_dict())
             if visual_context.prompt_section:
@@ -485,7 +600,7 @@ async def run_candidate(
         "exit_code": exit_code,
         "duration_ms": cli_result.duration_ms,
         "codex_exec_error": cli_result.is_error,
-        "attached_images": len(image_paths) if with_images else 0,
+        "attached_images": len(image_paths),
     })
 
     codex_path = output_dir / "optimization.json"
@@ -498,12 +613,60 @@ async def run_candidate(
         write_json(item_dir / "candidate_summary.json", summary)
         return summary
 
+    raw_codex_path = codex_path
+    if two_pass:
+        with temporary_env({
+            "AUDIT_VERSION_DIR": str(version_dir),
+            "AUDIT_OUTPUT_DIR": str(output_dir),
+            "AUDIT_CODEX_SANDBOX": os.environ.get("AUDIT_CODEX_SANDBOX", "danger-full-access"),
+        }):
+            critic_task = prepare_optimization_critic_task(project_info, candidate.project_id)
+            if visual_context and visual_context.prompt_section:
+                critic_task = critic_task.rstrip() + "\n\n" + visual_context.prompt_section
+            (item_dir / "optimization_critic_task.md").write_text(critic_task, encoding="utf-8")
+            critic_exit, critic_output, critic_result = await run_codex_exec(
+                critic_task,
+                timeout=timeout_sec,
+                stage="optimization_critic",
+                project_id=candidate.project_id,
+                model=model,
+                image_paths=image_paths,
+            )
+        (item_dir / "codex_critic_output.txt").write_text(critic_output or "", encoding="utf-8")
+        deterministic_critic = await run_deterministic_critic_augment(
+            output_dir,
+            project_id=candidate.project_id,
+        )
+        deterministic_corrector = await run_deterministic_corrector(output_dir)
+        if (output_dir / "optimization_pre_review.json").is_file():
+            raw_codex_path = output_dir / "optimization_pre_review.json"
+        summary.update({
+            "critic_exit_code": critic_exit,
+            "critic_duration_ms": critic_result.duration_ms,
+            "critic_error": critic_result.is_error,
+            "critic_coverage_added": deterministic_critic.coverage_added,
+            "corrected_items": deterministic_corrector.corrected,
+        })
+
     comparison = compare_optimization(
         candidate.latest_dir / "optimization.json",
-        codex_path,
+        raw_codex_path,
         item_dir,
         threshold=threshold,
     )
+    baseline_pass_ids = passed_review_ids(Path(candidate.review_path)) if candidate.review_path else set()
+    codex_pass_ids = passed_review_ids(output_dir / "optimization_review.json") if two_pass else set()
+    reviewed_comparison = None
+    if baseline_pass_ids:
+        reviewed_comparison = compare_optimization(
+            candidate.latest_dir / "optimization.json",
+            raw_codex_path,
+            item_dir,
+            threshold=threshold,
+            baseline_allowed_ids=baseline_pass_ids,
+            codex_allowed_ids=codex_pass_ids if two_pass else None,
+            filename_prefix="reviewed",
+        )
     summary.update({
         "status": "done",
         "baseline_items": comparison["baseline_items"],
@@ -513,6 +676,11 @@ async def run_candidate(
         "precision": comparison["codex_precision_vs_baseline"],
         "type_match_rate": comparison["type_match_rate_on_matched"],
         "avg_match_score": comparison["avg_match_score"],
+        "reviewed_baseline_items": reviewed_comparison["baseline_items"] if reviewed_comparison else 0,
+        "qualified_codex_items": reviewed_comparison["codex_items"] if reviewed_comparison else 0,
+        "reviewed_matched": reviewed_comparison["matched"] if reviewed_comparison else 0,
+        "reviewed_recall": reviewed_comparison["codex_recall_vs_baseline"] if reviewed_comparison else 0,
+        "reviewed_precision": reviewed_comparison["codex_precision_vs_baseline"] if reviewed_comparison else 0,
     })
     write_json(item_dir / "candidate_summary.json", summary)
     return summary
@@ -533,6 +701,10 @@ def compact_summary(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "recall": item.get("recall"),
             "precision": item.get("precision"),
             "attached_images": item.get("attached_images"),
+            "qualified_codex": item.get("qualified_codex_items"),
+            "reviewed_matched": item.get("reviewed_matched"),
+            "reviewed_recall": item.get("reviewed_recall"),
+            "reviewed_precision": item.get("reviewed_precision"),
             "error": item.get("error"),
         })
     return result
@@ -541,6 +713,12 @@ def compact_summary(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 async def amain() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--per-discipline", type=int, default=2)
+    parser.add_argument(
+        "--skip-per-discipline",
+        type=int,
+        default=0,
+        help="skip this many top-ranked candidates in each discipline",
+    )
     parser.add_argument("--timeout-sec", type=int, default=1200)
     parser.add_argument("--threshold", type=float, default=0.30)
     parser.add_argument("--model", default=os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4"))
@@ -549,6 +727,22 @@ async def amain() -> int:
     parser.add_argument("--require-claude-baseline", action="store_true")
     parser.add_argument("--with-images", action="store_true")
     parser.add_argument("--max-images", type=int, default=12)
+    parser.add_argument(
+        "--with-overviews",
+        action="store_true",
+        help="attach full-page overviews for the pages represented by selected crops",
+    )
+    parser.add_argument("--max-overviews", type=int, default=3)
+    parser.add_argument(
+        "--two-pass",
+        action="store_true",
+        help="run Codex critic and deterministic review/correction after generation",
+    )
+    parser.add_argument(
+        "--require-reviewed-baseline",
+        action="store_true",
+        help="select only documents with pass verdicts in 04_review/optimization_review.json",
+    )
     parser.add_argument(
         "--require-images",
         action="store_true",
@@ -567,6 +761,8 @@ async def amain() -> int:
     args = parser.parse_args()
 
     candidates = collect_candidates(require_claude_baseline=args.require_claude_baseline)
+    if args.require_reviewed_baseline:
+        candidates = [item for item in candidates if item.reviewed_pass_items > 0]
     if args.require_images:
         candidates = filter_candidates_with_images(candidates, max_images=args.max_images)
     if args.disciplines.strip():
@@ -582,21 +778,24 @@ async def amain() -> int:
     if args.document_contains.strip():
         needle = args.document_contains.casefold().strip()
         candidates = [item for item in candidates if needle in item.document.casefold()]
-    selected = select_candidates(candidates, per_discipline=max(1, args.per_discipline))
+    selected = select_candidates(
+        candidates,
+        per_discipline=max(1, args.per_discipline),
+        skip_per_discipline=max(0, args.skip_per_discipline),
+    )
     if args.max_total > 0:
         selected = selected[: args.max_total]
 
     run_dir = OUT_ROOT / f"{'dry_run' if args.dry_run else 'run'}_{utc_stamp()}"
     run_dir.mkdir(parents=True, exist_ok=True)
-    write_json(run_dir / "selection.json", [asdict(item) | {
-        "version_dir": str(item.version_dir),
-        "latest_dir": str(item.latest_dir),
-    } for item in selected])
+    write_json(run_dir / "selection.json", [candidate_dict(item) for item in selected])
 
     print(json.dumps({
         "run_dir": str(run_dir),
         "dry_run": args.dry_run,
         "with_images": args.with_images,
+        "with_overviews": args.with_overviews,
+        "two_pass": args.two_pass,
         "max_images": args.max_images,
         "codex_cli": find_codex_cli(),
         "selected": [
@@ -606,6 +805,8 @@ async def amain() -> int:
                 "version": item.version,
                 "baseline_items": item.baseline_items,
                 "prescan_items": item.prescan_items,
+                "reviewed_pass_items": item.reviewed_pass_items,
+                "review_path": item.review_path,
                 "model": item.optimization_model,
                 "version_dir": str(item.version_dir),
             }
@@ -627,16 +828,15 @@ async def amain() -> int:
                 dry_run=args.dry_run,
                 with_images=args.with_images,
                 max_images=args.max_images,
+                with_overviews=args.with_overviews,
+                max_overviews=args.max_overviews,
+                two_pass=args.two_pass,
             )
         except Exception as exc:
             summary = {
                 "status": "error",
                 "error": f"{type(exc).__name__}: {exc}",
-                "candidate": {
-                    **asdict(candidate),
-                    "version_dir": str(candidate.version_dir),
-                    "latest_dir": str(candidate.latest_dir),
-                },
+                "candidate": candidate_dict(candidate),
                 "item_dir": str(item_dir),
             }
             write_json(item_dir / "candidate_summary.json", summary)

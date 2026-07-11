@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import parse_block_header
+from backend.app.pipeline.stages.optimization.prescan import build_optimization_prescan_section
 
 logger = logging.getLogger(__name__)
 
@@ -1369,6 +1370,14 @@ def prepare_optimization_task(
         .replace("{MD_FILE_PATH}", md_file_path)
         .replace("{VENDOR_LIST}", vendor_list_text)
     )
+    prescan_section = build_optimization_prescan_section(
+        md_file_path,
+        section=section,
+        vendor_list_text=vendor_list_text,
+        findings_path=Path(output_path) / "03_findings.json",
+    )
+    if prescan_section:
+        task = task.rstrip() + "\n\n" + prescan_section
     return task
 
 
