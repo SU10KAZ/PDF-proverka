@@ -1686,7 +1686,7 @@ async def run_findings_only_for_project(
             "estimated_cost_usd_out": round(cost_out, 4),
             "estimated_cost_usd_total": round(cost_total, 4),
             "estimated_cost_per_block_usd": round(cost_total / max(1, len(ok)), 4),
-            "cache_hits": len(cache_hits),
+            "cache_hits": sum(1 for r in results if r["result"].get("from_cache")),
             "cached_input_tokens": cached_in,
             "cached_output_tokens": cached_out,
             "billable_input_tokens": billable_in,
