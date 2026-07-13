@@ -83,6 +83,16 @@ DEFAULT_EFFORT = "low"
 DEFAULT_MAX_TOKENS = 16000
 DEFAULT_PARALLELISM = 3
 DEFAULT_TIMEOUT_S = 200
+# Жёсткий потолок на ОДИН блок (backstop поверх per-transport timeout). Нужен,
+# т.к. httpx read-timeout меряет паузу между чтениями, а не общее время: при
+# «капающем» keepalive от провайдера (OpenRouter во время долгого reasoning)
+# read-timeout может не сработать и блок повиснет на часы, заморозив весь батч
+# (cleanup_zombies не снимает «формально живой» asyncio-таск). Потолок берётся с
+# запасом над timeout_s, чтобы легитимные (даже долгие) ответы успевали, а реально
+# залипший блок падал с ошибкой и стадия шла дальше. Настройка — через env.
+BLOCK_HARD_TIMEOUT_BUFFER_S = int(
+    os.environ.get("STAGE02_BLOCK_HARD_TIMEOUT_BUFFER_S", "300") or "300"
+)
 RUNTIME_PLAN_SCHEMA_VERSION = 1
 
 PRICE_IN = 2.50
@@ -1272,6 +1282,10 @@ async def run_findings_only_for_project(
         run_dir.mkdir(parents=True, exist_ok=True)
 
     sem = asyncio.Semaphore(parallelism)
+    # Backstop-потолок на блок: гарантирует завершение даже если транспортный
+    # timeout обойдён (trickle keepalive). При превышении блок помечается
+    # неудачным, семафор освобождается, стадия продолжается.
+    block_hard_timeout_s = timeout_s + BLOCK_HARD_TIMEOUT_BUFFER_S
     completed_count = 0
     completed_lock = asyncio.Lock()
     results: list[dict] = []
@@ -1296,44 +1310,45 @@ async def run_findings_only_for_project(
                 return None
             block = by_id[item["block_id"]]
             page_text = load_page_text(graph, block["page"])
-            if use_dual:
-                assert client is not None
-                gpt_result, codex_result = await asyncio.gather(
-                    call_gpt_for_block(
-                        client, block, item["enrichment"], page_text, blocks_dir,
-                        api_key=api_key or "", model=DEFAULT_MODEL,
-                        reasoning_effort=reasoning_effort,
-                        max_tokens=max_tokens, system_prompt=system_prompt,
-                        timeout=timeout_s, project_id=project_id,
-                        version_id=version_id, job_id=job_id,
-                        output_dir=output_dir,
-                    ),
-                    call_codex_for_block(
+            async def _dispatch() -> dict:
+                """Один вызов на блок по выбранному транспорту (без backstop)."""
+                if use_dual:
+                    assert client is not None
+                    gpt_result, codex_result = await asyncio.gather(
+                        call_gpt_for_block(
+                            client, block, item["enrichment"], page_text, blocks_dir,
+                            api_key=api_key or "", model=DEFAULT_MODEL,
+                            reasoning_effort=reasoning_effort,
+                            max_tokens=max_tokens, system_prompt=system_prompt,
+                            timeout=timeout_s, project_id=project_id,
+                            version_id=version_id, job_id=job_id,
+                            output_dir=output_dir,
+                        ),
+                        call_codex_for_block(
+                            block, item["enrichment"], page_text, blocks_dir,
+                            model=CODEX_STAGE_MODEL_ID,
+                            system_prompt=system_prompt, timeout=timeout_s,
+                            project_id=project_id, output_dir=output_dir,
+                        ),
+                    )
+                    return combine_detector_results(
+                        [(DEFAULT_MODEL, gpt_result), (CODEX_STAGE_MODEL_ID, codex_result)],
+                        run_id=run_id,
+                    )
+                if use_codex_cli:
+                    return await call_codex_for_block(
                         block, item["enrichment"], page_text, blocks_dir,
-                        model=CODEX_STAGE_MODEL_ID,
-                        system_prompt=system_prompt, timeout=timeout_s,
+                        model=model, system_prompt=system_prompt, timeout=timeout_s,
                         project_id=project_id, output_dir=output_dir,
-                    ),
-                )
-                res = combine_detector_results(
-                    [(DEFAULT_MODEL, gpt_result), (CODEX_STAGE_MODEL_ID, codex_result)],
-                    run_id=run_id,
-                )
-            elif use_codex_cli:
-                res = await call_codex_for_block(
-                    block, item["enrichment"], page_text, blocks_dir,
-                    model=model, system_prompt=system_prompt, timeout=timeout_s,
-                    project_id=project_id, output_dir=output_dir,
-                )
-            elif use_claude_cli:
-                sheet = sheet_for_page(graph, block["page"]) or ""
-                res = await call_claude_cli_for_block(
-                    block, item["enrichment"], page_text, blocks_dir, sheet,
-                    model=model, system_prompt=system_prompt, timeout=timeout_s,
-                    clean_cwd=claude_clean_cwd,
-                )
-            else:
-                res = await call_gpt_for_block(
+                    )
+                if use_claude_cli:
+                    sheet = sheet_for_page(graph, block["page"]) or ""
+                    return await call_claude_cli_for_block(
+                        block, item["enrichment"], page_text, blocks_dir, sheet,
+                        model=model, system_prompt=system_prompt, timeout=timeout_s,
+                        clean_cwd=claude_clean_cwd,
+                    )
+                return await call_gpt_for_block(
                     client, block, item["enrichment"], page_text, blocks_dir,
                     api_key=api_key, model=model,
                     reasoning_effort=reasoning_effort,
@@ -1344,6 +1359,20 @@ async def run_findings_only_for_project(
                     job_id=job_id,
                     output_dir=output_dir,
                 )
+
+            try:
+                res = await asyncio.wait_for(_dispatch(), timeout=block_hard_timeout_s)
+            except asyncio.TimeoutError:
+                # Backstop сработал: транспортный timeout обойдён (напр. trickle
+                # keepalive), блок реально завис. wait_for уже отменил вложенный
+                # вызов (httpx-запрос/subprocess убит через CancelledError).
+                # Помечаем блок неудачным и продолжаем стадию, а не морозим батч.
+                res = {
+                    "ok": False,
+                    "error": f"block_hard_timeout_{block_hard_timeout_s}s",
+                    "parse_error": "block_hard_timeout",
+                    "elapsed_ms": block_hard_timeout_s * 1000,
+                }
             n = len((res.get("parsed") or {}).get("findings", [])) if res.get("ok") else 0
             record = {
                 "block_id": item["block_id"],
