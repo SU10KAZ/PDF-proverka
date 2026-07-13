@@ -129,10 +129,70 @@ def merge_provenance(values: Iterable[dict | None]) -> dict[str, Any]:
     }
 
 
+def merge_detector_comparisons(values: Iterable[dict | None]) -> dict[str, Any]:
+    """Aggregate Stage 01 relation labels without re-running semantic matching."""
+    records: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, tuple[str, ...], str]] = set()
+    for value in values:
+        if not isinstance(value, dict):
+            continue
+        nested = value.get("relations") if isinstance(value.get("relations"), list) else [value]
+        for raw in nested:
+            if not isinstance(raw, dict):
+                continue
+            relation = str(raw.get("relation") or raw.get("primary_relation") or "").strip()
+            if relation not in {"match", "extension", "new", "disputed"}:
+                continue
+            counterpart_refs = tuple(sorted(
+                str(item).strip()
+                for item in (raw.get("counterpart_refs") or [])
+                if str(item).strip()
+            ))
+            origin = str(raw.get("origin") or "dual_comparison").strip()
+            role = str(raw.get("role") or "").strip()
+            key = (relation, role, counterpart_refs, origin)
+            if key in seen:
+                continue
+            seen.add(key)
+            records.append({
+                "relation": relation,
+                "role": role,
+                "counterpart_refs": list(counterpart_refs),
+                "confidence": raw.get("confidence"),
+                "reason": raw.get("reason"),
+                "reviewer_model": raw.get("reviewer_model"),
+                "origin": origin,
+            })
+
+    if not records:
+        return {}
+    priority = {"disputed": 4, "extension": 3, "match": 2, "new": 1}
+    primary = max(records, key=lambda item: priority[item["relation"]])["relation"]
+    return {
+        "schema_version": 1,
+        "primary_relation": primary,
+        "relations": records,
+        "gap_search": any(item.get("origin") == "gap_search" for item in records),
+    }
+
+
+def is_disputed_comparison(value: Any) -> bool:
+    """Return True when a finding carries an unresolved detector conflict."""
+    if not isinstance(value, dict):
+        return False
+    if str(value.get("primary_relation") or value.get("relation") or "").strip() == "disputed":
+        return True
+    return any(
+        isinstance(item, dict) and str(item.get("relation") or "").strip() == "disputed"
+        for item in (value.get("relations") or [])
+    )
+
+
 def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
     """Collect source IDs and provenance while findings are deduplicated."""
     source_ids: list[str] = []
     provenance_values: list[dict] = []
+    comparison_values: list[dict] = []
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -143,6 +203,9 @@ def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
         provenance = item.get("provenance")
         if isinstance(provenance, dict):
             provenance_values.append(provenance)
+        comparison = item.get("detector_comparison")
+        if isinstance(comparison, dict):
+            comparison_values.append(comparison)
 
     fields: dict[str, Any] = {}
     if source_ids:
@@ -151,6 +214,9 @@ def aggregate_traceability(items: Iterable[dict]) -> dict[str, Any]:
         merged = merge_provenance(provenance_values)
         fields["provenance"] = merged
         fields["detector_summary"] = merged["detector_summary"]
+    merged_comparison = merge_detector_comparisons(comparison_values)
+    if merged_comparison:
+        fields["detector_comparison"] = merged_comparison
     return fields
 
 
@@ -205,6 +271,7 @@ def backfill_final_findings_provenance(
     legacy_model = str(stage02_meta.get("model") or "")
     legacy_run_id = str(stage02_meta.get("run_id") or stage02.get("timestamp") or "legacy-stage02")
     raw_index: dict[str, dict] = {}
+    raw_comparison_index: dict[str, dict] = {}
     for block in stage02.get("block_analyses") or []:
         if not isinstance(block, dict):
             continue
@@ -224,10 +291,14 @@ def backfill_final_findings_provenance(
                 )
             if isinstance(provenance, dict):
                 raw_index[raw_id] = provenance
+            comparison = raw.get("detector_comparison")
+            if isinstance(comparison, dict):
+                raw_comparison_index[raw_id] = comparison
 
     items = final_doc.get("findings") or final_doc.get("items") or []
     updated = 0
     counts = {"gpt": 0, "codex": 0, "gpt_codex": 0, "other": 0, "unattributed": 0}
+    comparison_counts = {"match": 0, "extension": 0, "new": 0, "disputed": 0, "unclassified": 0}
     for finding in items:
         if not isinstance(finding, dict):
             continue
@@ -245,10 +316,26 @@ def backfill_final_findings_provenance(
             finding["provenance"] = merged
             finding["detector_summary"] = summary
             updated += 1
+        comparison_values = [
+            raw_comparison_index[source_id]
+            for source_id in source_ids
+            if source_id in raw_comparison_index
+        ]
+        existing_comparison = finding.get("detector_comparison")
+        if isinstance(existing_comparison, dict):
+            comparison_values.insert(0, existing_comparison)
+        merged_comparison = merge_detector_comparisons(comparison_values)
+        if merged_comparison:
+            finding["detector_comparison"] = merged_comparison
+            comparison_counts[merged_comparison["primary_relation"]] += 1
+        else:
+            comparison_counts["unclassified"] += 1
 
     meta = final_doc.setdefault("meta", {})
     meta["finding_source_counts"] = counts
     meta["finding_source_schema_version"] = 1
+    meta["finding_comparison_counts"] = comparison_counts
+    meta["finding_comparison_schema_version"] = 1
 
     tmp = findings_path.with_suffix(findings_path.suffix + ".tmp")
     tmp.write_text(json.dumps(final_doc, ensure_ascii=False, indent=2), encoding="utf-8")

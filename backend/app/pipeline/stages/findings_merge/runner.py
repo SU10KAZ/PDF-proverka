@@ -349,6 +349,9 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
         _normalize_problem_pattern,
         aggregate_merged_fields,
     )
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        is_disputed_comparison,
+    )
     from collections import OrderedDict
     import re as _re
     import shutil
@@ -368,12 +371,17 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
         return None
 
     groups: OrderedDict[str, list[dict]] = OrderedDict()
-    for f in items:
+    for index, f in enumerate(items):
         problem = f.get("problem") or f.get("description") or f.get("finding") or ""
         severity = f.get("severity", "")
         category = f.get("category", "")
         pattern = _normalize_problem_pattern(problem)
-        key = f"{severity}||{category}||{pattern}"
+        if is_disputed_comparison(f.get("detector_comparison")):
+            # A detector conflict is evidence to verify, not an ordinary
+            # duplicate. Keep each disputed candidate until verification.
+            key = f"__disputed__||{f.get('id') or index}"
+        else:
+            key = f"{severity}||{category}||{pattern}"
         if key not in groups:
             groups[key] = []
         groups[key].append(f)
@@ -566,6 +574,13 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     # 03_findings.json, которую последующий promote run→latest затирал.
     # Подтверждено эмпирически: у v2-прогонов 0 замечаний с finding_quality/
     # text_evidence/highlight_regions против 100% в legacy.
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        backfill_final_findings_provenance,
+    )
+
+    # Attach explicit Stage 01 comparison labels before any deterministic
+    # collapse. This lets dedup protect unresolved GPT/Codex conflicts.
+    backfill_final_findings_provenance(ctx.output_dir)
     backfill_text_evidence_in_findings(pid, output_dir=ctx.output_dir)
 
     merge_result = merge_similar_findings(pid, output_dir=ctx.output_dir)
@@ -601,9 +616,7 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             else:
                 await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
 
-    from backend.app.pipeline.stages.block_analysis.provenance import (
-        backfill_final_findings_provenance,
-    )
+    # Recalculate counts and aggregate labels after all merge/dedup passes.
     provenance_report = backfill_final_findings_provenance(ctx.output_dir)
     if provenance_report.get("updated"):
         counts = provenance_report.get("counts") or {}

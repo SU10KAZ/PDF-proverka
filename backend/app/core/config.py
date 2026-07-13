@@ -435,11 +435,25 @@ OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
 if not CODEX_STAGE_MODEL_ID.startswith("codex/"):
     CODEX_STAGE_MODEL_ID = f"codex/{CODEX_STAGE_MODEL_ID}"
 
+# Post-review for the explicit Stage 01 dual detector. The reviewer compares
+# both independent finding sets and can inspect the block once more for issues
+# missed by both detectors. These switches never affect single-model modes.
+STAGE01_DUAL_REVIEW_ENABLED = _env_bool("STAGE01_DUAL_REVIEW_ENABLED", True)
+STAGE01_DUAL_GAP_SEARCH_ENABLED = _env_bool(
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED", True
+)
+STAGE01_DUAL_REVIEW_MODEL = (
+    os.environ.get("STAGE01_DUAL_REVIEW_MODEL", CODEX_STAGE_MODEL_ID).strip()
+    or CODEX_STAGE_MODEL_ID
+)
+if not STAGE01_DUAL_REVIEW_MODEL.startswith("codex/"):
+    STAGE01_DUAL_REVIEW_MODEL = CODEX_STAGE_MODEL_ID
+
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
-    {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex exec",             "provider": "codex_cli"},
+    {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex",                  "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
     {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
 ]

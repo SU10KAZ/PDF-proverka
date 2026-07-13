@@ -9,7 +9,9 @@ Production-модуль stage 02 в режиме findings-only + Gemma-enrichmen
   - Codex CLI (subscription) — `codex exec --image`, JSON-only
 
 Режим `ensemble/gpt-codex` запускает GPT и Codex независимо на одинаковом
-single-block payload и сохраняет оба набора findings до Stage 03.
+single-block payload, затем Codex-review классифицирует смысловые отношения
+(match/extension/new/disputed) и опционально ищет проблемы, пропущенные обоими.
+Исходные наборы и авторство каждой детекции сохраняются до Stage 03.
 
 Выбирается по model id: `claude-*`, `codex/*`, `ensemble/gpt-codex` или OpenRouter.
 
@@ -64,6 +66,9 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 from backend.app.core.config import (
     CODEX_STAGE_MODEL_ID,
     PROMPTS_DIR as _PROMPTS_DIR,
+    STAGE01_DUAL_GAP_SEARCH_ENABLED,
+    STAGE01_DUAL_REVIEW_ENABLED,
+    STAGE01_DUAL_REVIEW_MODEL,
     STAGE02_DUAL_MODEL_ID,
     is_codex_model,
 )
@@ -979,7 +984,7 @@ def adapt_findings_to_production(
         if recommendation and recommendation.lower() not in finding_text.lower():
             finding_text = f"{finding_text}\n\nРекомендация: {recommendation}"
         raw_finding_id = f"G-{finding_id_counter[0]:03d}"
-        out.append({
+        item = {
             "id": raw_finding_id,
             "severity": f.get("severity") or "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
             "category": f.get("category") or "uncategorized",
@@ -993,11 +998,18 @@ def adapt_findings_to_production(
                 model=str(f.get("_detector_model") or model),
                 run_id=str(f.get("_detector_run_id") or run_id),
                 raw_finding_id=raw_finding_id,
-                mode=detection_mode,
+                mode=str(f.get("_detection_mode") or detection_mode),
                 detected_at=detected_at,
                 context_source=context_source,
             ),
-        })
+        }
+        detector_ref = str(f.get("_detector_ref") or "").strip()
+        if detector_ref:
+            item["comparison_ref"] = detector_ref
+        comparison = f.get("_comparison")
+        if isinstance(comparison, dict):
+            item["detector_comparison"] = dict(comparison)
+        out.append(item)
     return out
 
 
@@ -1012,7 +1024,7 @@ def combine_detector_results(
     *,
     run_id: str,
 ) -> dict:
-    """Combine independent detector payloads without deduplicating findings."""
+    """Combine independent payloads without deduplication and assign stable refs."""
     combined_findings: list[dict] = []
     ok_models: list[str] = []
     failed_models: list[str] = []
@@ -1024,12 +1036,17 @@ def combine_detector_results(
     for detector_model, result in detector_results:
         if result.get("ok"):
             ok_models.append(detector_model)
-            for raw in (result.get("parsed") or {}).get("findings") or []:
+            for raw_index, raw in enumerate(
+                (result.get("parsed") or {}).get("findings") or [], start=1
+            ):
                 if not isinstance(raw, dict):
                     continue
                 tagged = dict(raw)
                 tagged["_detector_model"] = detector_model
                 tagged["_detector_run_id"] = f"{run_id}:{detector_for_model(detector_model)}"
+                tagged["_detector_ref"] = (
+                    f"{detector_for_model(detector_model)}:{raw_index:03d}"
+                )
                 combined_findings.append(tagged)
         else:
             failed_models.append(detector_model)
@@ -1331,10 +1348,88 @@ async def run_findings_only_for_project(
                             project_id=project_id, output_dir=output_dir,
                         ),
                     )
-                    return combine_detector_results(
+                    combined = combine_detector_results(
                         [(DEFAULT_MODEL, gpt_result), (CODEX_STAGE_MODEL_ID, codex_result)],
                         run_id=run_id,
                     )
+                    if not combined.get("detectors_complete"):
+                        combined["dual_review"] = {
+                            "schema_version": 1,
+                            "status": "skipped",
+                            "reason": "partial_detector_failure",
+                            "counts": {
+                                "matches": 0, "extensions": 0, "new": 0,
+                                "disputed": 0, "gap_findings": 0,
+                            },
+                            "gap_search": {
+                                "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                                "performed": False,
+                                "status": "skipped",
+                                "findings_added": 0,
+                            },
+                        }
+                        return combined
+                    if not STAGE01_DUAL_REVIEW_ENABLED:
+                        combined["dual_review"] = {
+                            "schema_version": 1,
+                            "status": "disabled",
+                            "reviewer_model": STAGE01_DUAL_REVIEW_MODEL,
+                            "counts": {
+                                "matches": 0, "extensions": 0,
+                                "new": len((combined.get("parsed") or {}).get("findings") or []),
+                                "disputed": 0, "gap_findings": 0,
+                            },
+                            "gap_search": {
+                                "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                                "performed": False,
+                                "status": "disabled",
+                                "findings_added": 0,
+                            },
+                        }
+                        return combined
+
+                    from backend.app.pipeline.stages.block_analysis.dual_review import (
+                        fallback_dual_review,
+                        review_dual_findings,
+                    )
+
+                    review_context, _ = build_effective_block_context(
+                        block,
+                        item["enrichment"],
+                        page_text,
+                        output_dir=output_dir,
+                    )
+                    try:
+                        review = await review_dual_findings(
+                            (combined.get("parsed") or {}).get("findings") or [],
+                            block_id=str(block.get("block_id") or ""),
+                            page=int(block.get("page") or 0),
+                            block_context=review_context,
+                            image_path=blocks_dir / block["file"],
+                            reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
+                            run_id=run_id,
+                            project_id=project_id,
+                            timeout=timeout_s,
+                            gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                        )
+                    except Exception as exc:  # fail-soft: raw detections survive
+                        review = fallback_dual_review(
+                            (combined.get("parsed") or {}).get("findings") or [],
+                            reviewer_model=STAGE01_DUAL_REVIEW_MODEL,
+                            run_id=run_id,
+                            gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                            error=f"{type(exc).__name__}: {exc}",
+                        )
+                    combined["parsed"] = {"findings": review["findings"]}
+                    combined["dual_review"] = review["report"]
+                    combined["dual_review_raw_content"] = review.get("raw_content") or ""
+                    combined["dual_review_calls"] = 1
+                    combined["dual_review_input_tokens"] = int(review.get("input_tokens") or 0)
+                    combined["dual_review_output_tokens"] = int(review.get("output_tokens") or 0)
+                    combined["input_tokens"] += int(review.get("input_tokens") or 0)
+                    combined["output_tokens"] += int(review.get("output_tokens") or 0)
+                    combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
+                    return combined
                 if use_codex_cli:
                     return await call_codex_for_block(
                         block, item["enrichment"], page_text, blocks_dir,
@@ -1403,6 +1498,11 @@ async def run_findings_only_for_project(
                     "partial": bool(res.get("partial")),
                     "detectors_ok": res.get("detectors_ok") or [],
                     "detectors_failed": res.get("detectors_failed") or [],
+                    "dual_review_status": (res.get("dual_review") or {}).get("status"),
+                    "dual_review_counts": (res.get("dual_review") or {}).get("counts") or {},
+                    "gap_findings": int(
+                        ((res.get("dual_review") or {}).get("counts") or {}).get("gap_findings") or 0
+                    ),
                     "completed": cur,
                     "total": len(wanted),
                     "error": res.get("error") or res.get("parse_error") if not res.get("ok") else None,
@@ -1523,7 +1623,7 @@ async def run_findings_only_for_project(
         coverage_status = p.get("coverage_status") or "ok"
         if res.get("partial"):
             coverage_status = "partial_detector_failure"
-        block_analyses.append({
+        analysis = {
             "block_id": bid, "page": block["page"], "sheet": sheet,
             "label": block.get("ocr_label", ""), "sheet_type": None,
             "unreadable_text": False, "unreadable_details": None,
@@ -1544,12 +1644,47 @@ async def run_findings_only_for_project(
                 detected_at=run_started_at,
                 context_source=res.get("context_source") or _context_source_from_enrichment(p.get("enrichment") or {}),
             ),
-        })
+        }
+        if use_dual and isinstance(res.get("dual_review"), dict):
+            analysis["dual_review"] = res["dual_review"]
+        block_analyses.append(analysis)
 
     context_source_counts: dict[str, int] = {}
     for analysis in block_analyses:
         source = str(analysis.get("context_source") or "unknown")
         context_source_counts[source] = context_source_counts.get(source, 0) + 1
+
+    dual_review_meta: dict[str, Any] | None = None
+    if use_dual:
+        reports = [
+            r["result"].get("dual_review")
+            for r in results
+            if isinstance(r.get("result", {}).get("dual_review"), dict)
+        ]
+        aggregate_counts = {
+            "matches": 0,
+            "extensions": 0,
+            "new": 0,
+            "disputed": 0,
+            "gap_findings": 0,
+        }
+        for report in reports:
+            for key in aggregate_counts:
+                aggregate_counts[key] += int((report.get("counts") or {}).get(key) or 0)
+        dual_review_meta = {
+            "schema_version": 1,
+            "enabled": bool(STAGE01_DUAL_REVIEW_ENABLED),
+            "reviewer_model": STAGE01_DUAL_REVIEW_MODEL,
+            "gap_search_enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+            "blocks_reviewed": sum(1 for report in reports if report.get("status") == "ok"),
+            "blocks_fallback": sum(1 for report in reports if report.get("status") == "fallback"),
+            "blocks_skipped": sum(1 for report in reports if report.get("status") == "skipped"),
+            "review_calls": sum(int(r["result"].get("dual_review_calls") or 0) for r in results),
+            "gap_search_blocks": sum(
+                1 for report in reports if (report.get("gap_search") or {}).get("performed")
+            ),
+            "counts": aggregate_counts,
+        }
 
     output_doc = {
         "batch_id": 0,
@@ -1571,6 +1706,7 @@ async def run_findings_only_for_project(
                 }
                 for detector_model in detector_models
             ],
+            **({"dual_review": dual_review_meta} if dual_review_meta is not None else {}),
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
             "section": section,
@@ -1706,6 +1842,19 @@ async def run_findings_only_for_project(
         "blocks_crop_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
         "wall_clock_s": wall_clock_s,
         "cancelled": cancelled,
+        "detector_calls": sum(
+            len(r["result"].get("detector_results") or []) or 1
+            for r in results
+        ),
+        "dual_review_calls": sum(
+            int(r["result"].get("dual_review_calls") or 0) for r in results
+        ),
+        "api_calls_total": sum(
+            (len(r["result"].get("detector_results") or []) or 1)
+            + int(r["result"].get("dual_review_calls") or 0)
+            for r in results
+        ),
+        **({"dual_review": dual_review_meta} if dual_review_meta is not None else {}),
         "totals": {
             "input_tokens": total_in,
             "output_tokens": total_out,

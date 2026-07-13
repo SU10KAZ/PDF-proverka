@@ -3102,10 +3102,12 @@ const app = createApp({
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
         const CODEX_PRESET_MODEL = "__codex_exec__";
+        const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
+        const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
         const modelPresets = {
             findings_only: {
-                label: "Production Vector+GPT5.4",
-                hint: "Контекст PDF/Vectograph → Stage 01 Блоки (GPT-5.4) → Stage 02 Текст.",
+                label: "Claude+GPT",
+                hint: "Claude: текст, свод и оптимизация · GPT-5.4: блоки Stage 01.",
                 config: {
                     text_analysis:          "claude-opus-4-7",
                     block_batch:            "openai/gpt-5.4",
@@ -3121,9 +3123,27 @@ const app = createApp({
                 },
                 batchModes: { block_batch: "findings_only_block_context" },
             },
+            plus_codex: {
+                label: "+Codex",
+                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex.",
+                config: {
+                    text_analysis:          "claude-opus-4-7",
+                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
+                    findings_merge:         "claude-opus-4-7",
+                    findings_critic:        "claude-sonnet-4-6",
+                    findings_corrector:     "claude-sonnet-4-6",
+                    norm_verify:            "claude-sonnet-4-6",
+                    norm_fix:               "claude-sonnet-4-6",
+                    norm_requote:           "claude-sonnet-4-6",
+                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
+                    optimization_critic:    "claude-sonnet-4-6",
+                    optimization_corrector: "claude-sonnet-4-6",
+                },
+                batchModes: { block_batch: "findings_only_block_context" },
+            },
             codex_exec: {
-                label: "Codex exec",
-                hint: "Экспериментально: все поддерживаемые этапы, включая Stage 01 Блоки, идут через Codex exec. Перед запуском backend делает snapshot текущих JSON-результатов в comparison/classic_codex_ab/backups/.",
+                label: "Full Codex",
+                hint: "Все поддерживаемые этапы выполняет Codex; перед запуском сохраняется snapshot.",
                 config: {
                     text_analysis:          CODEX_PRESET_MODEL,
                     block_batch:            CODEX_PRESET_MODEL,
@@ -3139,42 +3159,6 @@ const app = createApp({
                 },
                 batchModes: { block_batch: "findings_only_block_context" },
             },
-            dual_detection: {
-                label: "GPT + Codex",
-                hint: "Stage 01 проверяет каждый блок независимо через GPT-5.4 и Codex; свод объединяет результаты и сохраняет авторство каждого замечания.",
-                config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "ensemble/gpt-codex",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    norm_requote:           "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-                batchModes: { block_batch: "findings_only_block_context" },
-            },
-            optimization_ensemble: {
-                label: "OPT Claude + Codex",
-                hint: "Этап 05 запускает Opus и Codex exec параллельно, сохраняет оба исходных результата и объединяет только уверенные дубли перед общим Critic/Corrector.",
-                config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "openai/gpt-5.4",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    norm_requote:           "claude-sonnet-4-6",
-                    optimization:           "ensemble/claude-codex-opt",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-                batchModes: { block_batch: "findings_only_block_context" },
-            },
         };
         const activePreset = ref(null);
         const activePresetHint = computed(() => {
@@ -3183,6 +3167,14 @@ const app = createApp({
         });
         const stageBatchModes = ref({});  // { block_batch: "findings_only_block_context" }
         const stageBatchModeChoices = ref({});
+
+        // Ensemble IDs are an execution detail. The table shows the base
+        // model and one additive Codex flag instead of three internal columns.
+        const visibleStageModels = computed(() => availableModels.value.filter(model => (
+            model?.provider !== 'codex_cli'
+            && model?.provider !== 'ensemble'
+            && model?.provider !== 'optimization_ensemble'
+        )));
 
         // Stage 01 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
@@ -3199,7 +3191,7 @@ const app = createApp({
             const hasCodex = list.some(m => m?.provider === 'codex_cli' || String(m?.id || '').startsWith('codex/'));
             if (!hasCodex) {
                 const insertAt = Math.min(3, list.length);
-                list.splice(insertAt, 0, { id: 'codex/gpt-5.4', label: 'Codex exec', provider: 'codex_cli', uiFallback: true });
+                list.splice(insertAt, 0, { id: 'codex/gpt-5.4', label: 'Codex', provider: 'codex_cli', uiFallback: true });
             }
             return list;
         }
@@ -3246,16 +3238,63 @@ const app = createApp({
             return true;
         }
 
-        function modelInputType(stageKey, modelId) {
-            return 'radio';
+        function isBaseStageModelChecked(stageKey, modelId) {
+            const effectiveModel = stageModelConfig.value[stageKey];
+            if (effectiveModel === BLOCK_CODEX_ENSEMBLE_MODEL) {
+                return stageKey === 'block_batch' && modelId === 'openai/gpt-5.4';
+            }
+            if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
+                return stageKey === 'optimization' && modelId === 'claude-opus-4-7';
+            }
+            return effectiveModel === modelId;
         }
 
-        function isStageModelChecked(stageKey, modelId) {
-            return stageModelConfig.value[stageKey] === modelId;
+        function isCodexStageChecked(stageKey) {
+            const modelId = String(stageModelConfig.value[stageKey] || '');
+            return modelId.startsWith('codex/')
+                || modelId === BLOCK_CODEX_ENSEMBLE_MODEL
+                || modelId === OPT_CODEX_ENSEMBLE_MODEL;
         }
 
-        function selectStageModel(stageKey, modelId, event) {
-            stageModelConfig.value[stageKey] = modelId;
+        function isCodexStageAllowed(stageKey) {
+            const allowed = stageModelRestrictions.value[stageKey];
+            if (!allowed) return true;
+            return allowed.includes(codexModelId())
+                || (stageKey === 'block_batch' && allowed.includes(BLOCK_CODEX_ENSEMBLE_MODEL))
+                || (stageKey === 'optimization' && allowed.includes(OPT_CODEX_ENSEMBLE_MODEL));
+        }
+
+        function selectBaseStageModel(stageKey, modelId) {
+            const codexWasChecked = isCodexStageChecked(stageKey);
+            if (codexWasChecked && stageKey === 'block_batch' && modelId === 'openai/gpt-5.4') {
+                stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
+            } else if (codexWasChecked && stageKey === 'optimization' && modelId === 'claude-opus-4-7') {
+                stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
+            } else {
+                stageModelConfig.value[stageKey] = modelId;
+            }
+            activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
+        }
+
+        function toggleStageCodex(stageKey, event) {
+            const enabled = Boolean(event?.target?.checked);
+            const effectiveModel = stageModelConfig.value[stageKey];
+            if (enabled) {
+                if (stageKey === 'block_batch' && effectiveModel === 'openai/gpt-5.4') {
+                    stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
+                } else if (stageKey === 'optimization' && effectiveModel === 'claude-opus-4-7') {
+                    stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
+                } else {
+                    stageModelConfig.value[stageKey] = codexModelId();
+                }
+            } else if (effectiveModel === BLOCK_CODEX_ENSEMBLE_MODEL) {
+                stageModelConfig.value[stageKey] = 'openai/gpt-5.4';
+            } else if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
+                stageModelConfig.value[stageKey] = 'claude-opus-4-7';
+            } else if (String(effectiveModel || '').startsWith('codex/')) {
+                stageModelConfig.value[stageKey] = resolvePresetConfig(modelPresets.findings_only)[stageKey]
+                    || 'claude-sonnet-4-6';
+            }
             activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
         }
 
@@ -17402,10 +17441,11 @@ const app = createApp({
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
             // Model config
-            showModelConfig, stageModelConfig, availableModels, stageLabels,
+            showModelConfig, stageModelConfig, availableModels, visibleStageModels, stageLabels,
             stageModelSaveError,
             stageModelRestrictions, stageModelHints, isModelAllowed,
-            modelInputType, isStageModelChecked, selectStageModel,
+            isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
+            selectBaseStageModel, toggleStageCodex,
             modelPresets, activePreset, activePresetHint, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,

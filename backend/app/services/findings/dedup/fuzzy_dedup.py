@@ -83,6 +83,14 @@ def _is_critical(f: dict) -> bool:
     return _severity_weight(f.get("severity")) >= SEVERITY_WEIGHT["КРИТИЧЕСКОЕ"]
 
 
+def _is_disputed(f: dict) -> bool:
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        is_disputed_comparison,
+    )
+
+    return is_disputed_comparison(f.get("detector_comparison"))
+
+
 def _canonical_score(f: dict) -> tuple[int, float, int, int, int]:
     """Same ordering as in class_dedup.py — see dedup_thresholds.md."""
     desc_len = len(f.get("description") or f.get("finding") or "")
@@ -124,6 +132,7 @@ class DedupReport:
     same_class_drops: int = 0
     same_class_drops_by_key: dict[str, int] = field(default_factory=dict)
     critical_collapsed_count: int = 0
+    disputed_protected_count: int = 0
     sim_threshold: float = DEFAULT_SIM_THRESHOLD
     methods_seen: list[str] = field(default_factory=list)
 
@@ -167,6 +176,12 @@ def fuzzy_dedup(
             existing = kept[best_idx]
             new_is_crit = _is_critical(f)
             old_is_crit = _is_critical(existing)
+
+            if _is_disputed(f) or _is_disputed(existing):
+                report.disputed_protected_count += 1
+                kept.append(f)
+                kept_sigs.append(sig)
+                continue
 
             # Critical-protect: never collapse a КРИТИЧЕСКОЕ into anything,
             # and never collapse anything into a КРИТИЧЕСКОЕ if the new one

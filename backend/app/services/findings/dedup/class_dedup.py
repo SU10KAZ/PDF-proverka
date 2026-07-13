@@ -87,6 +87,14 @@ def _is_critical(f: dict) -> bool:
     return _severity_weight(f.get("severity")) >= SEVERITY_WEIGHT["КРИТИЧЕСКОЕ"]
 
 
+def _is_disputed(f: dict) -> bool:
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        is_disputed_comparison,
+    )
+
+    return is_disputed_comparison(f.get("detector_comparison"))
+
+
 @dataclass
 class ClassKey:
     problem_class: str
@@ -124,6 +132,8 @@ class DedupReport:
     # collapse it would otherwise have suffered. Zero is the expected value
     # when problem_class semantics are correct.
     critical_collapsed_count: int = 0
+    # Unresolved detector conflicts retained as separate candidates.
+    disputed_protected_count: int = 0
     # Methods/agents represented in the input (for merge_across_methods).
     methods_seen: list[str] = field(default_factory=list)
 
@@ -246,7 +256,19 @@ def cluster_findings(
 
     clusters: list[ClusterEntry] = []
     for ks, members in bucket.items():
-        critical, non_critical = _split_critical_protected(members)
+        disputed = [f for f in members if _is_disputed(f)]
+        mergeable_members = [f for f in members if not _is_disputed(f)]
+        critical, non_critical = _split_critical_protected(mergeable_members)
+
+        for disputed_f in disputed:
+            clusters.append(
+                ClusterEntry(
+                    canonical=disputed_f,
+                    class_key=derive_class_key(disputed_f),
+                )
+            )
+            if len(members) > 1:
+                report.disputed_protected_count += 1
 
         # Each КРИТИЧЕСКОЕ becomes its own cluster (disambiguated key suffix
         # only if there's more than one).
@@ -409,7 +431,19 @@ def merge_across_methods(
 
     out: list[dict] = []
     for ks, members in bucket.items():
-        critical, non_critical = _split_critical_protected(members)
+        disputed = [f for f in members if _is_disputed(f)]
+        mergeable_members = [f for f in members if not _is_disputed(f)]
+        critical, non_critical = _split_critical_protected(mergeable_members)
+        for disputed_f in disputed:
+            canon = dict(disputed_f)
+            canon["source_agents"] = sorted({canon.get("_method") or ""} - {""})
+            canon["class_key"] = derive_class_key(disputed_f).to_str()
+            canon["duplicate_count_in_cluster"] = 0
+            canon["is_canonical"] = True
+            canon.pop("_method", None)
+            out.append(canon)
+            if len(members) > 1:
+                report.disputed_protected_count += 1
         for idx, crit_f in enumerate(critical):
             canon = dict(crit_f)
             canon["source_agents"] = sorted({canon.get("_method") or ""} - {""})

@@ -2129,7 +2129,11 @@ class PipelineManager:
         cost = float(totals.get("estimated_cost_usd_total", 0.0) or 0.0)
         input_tokens = int(totals.get("input_tokens", 0) or 0)
         output_tokens = int(totals.get("output_tokens", 0) or 0)
-        api_calls = int(summary.get("blocks_ok", 0) or 0) or 1
+        api_calls = int(
+            summary.get("api_calls_total")
+            or summary.get("blocks_ok", 0)
+            or 1
+        )
         duration_ms = int(float(summary.get("wall_clock_s", 0.0) or 0.0) * 1000)
 
         if input_tokens <= 0 and output_tokens <= 0 and cost <= 0:

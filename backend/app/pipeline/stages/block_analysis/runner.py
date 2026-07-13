@@ -643,6 +643,16 @@ async def run_block_analysis_findings_only(
                 level = "warn" if event.get("partial") else "info"
                 if event.get("partial"):
                     msg += f" partial_failed={event.get('detectors_failed') or []}"
+                if event.get("dual_review_status"):
+                    counts = event.get("dual_review_counts") or {}
+                    msg += (
+                        f" review={event.get('dual_review_status')}"
+                        f" match={counts.get('matches', 0)}"
+                        f" ext={counts.get('extensions', 0)}"
+                        f" new={counts.get('new', 0)}"
+                        f" disputed={counts.get('disputed', 0)}"
+                        f" gaps={event.get('gap_findings', 0)}"
+                    )
                 asyncio.run_coroutine_threadsafe(ctx.log(msg, level), loop)
             else:
                 err = (event.get("error") or "")[:80]

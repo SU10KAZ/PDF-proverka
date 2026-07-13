@@ -483,6 +483,28 @@
                 <span class="version-pdf-btn__icon">📄</span>
                 <span>Просмотр PDF</span>
             </button>
+
+            <!-- Навигация по проектам раздела: перенесена в верхнюю панель версии, справа -->
+            <div class="audit-actions-col audit-actions-col--topbar">
+                <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
+                    <button class="btn btn-outline btn-sm"
+                            :disabled="!prevProject"
+                            @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
+                            :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
+                        &#8592; Предыдущий
+                    </button>
+                    <span class="project-nav-pos">
+                        {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
+                        / {{ currentSectionProjectsList.length }}
+                    </span>
+                    <button class="btn btn-outline btn-sm"
+                            :disabled="!nextProject"
+                            @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
+                            :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
+                        Следующий &#8594;
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- ═══ PDF версии — выезжающая снизу панель (родной просмотрщик браузера) ═══ -->
@@ -1165,25 +1187,23 @@
         <div v-if="showModelConfig" class="modal-overlay" @click.self="showModelConfig = false">
             <div class="modal-content model-config-modal" @click.stop>
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
-                <h3>Конфигурация моделей</h3>
-                <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <div class="model-config-heading">
+                    <h3>Конфигурация моделей</h3>
+                    <p class="model-config-desc">Модели по этапам аудита</p>
+                </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'findings_only' }"
                             @click="applyPreset('findings_only')"
-                            title="Контекст PDF/Vectograph → Stage 01 Блоки (GPT-5.4) → Stage 02 Текст.">Production Vector+GPT5.4</button>
+                            title="Claude выполняет основные этапы, GPT-5.4 анализирует графические блоки Stage 01.">Claude+GPT</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'plus_codex' }"
+                            @click="applyPreset('plus_codex')"
+                            title="Добавляет Codex к Stage 01 Блоки и Stage 05 Оптимизация.">+Codex</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
-                            title="Codex exec для всех поддерживаемых этапов, включая Stage 01 Блоки.">Codex exec</button>
-                    <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'dual_detection' }"
-                            @click="applyPreset('dual_detection')"
-                            title="Stage 01 независимо проверяет каждый блок через GPT-5.4 и Codex.">GPT + Codex</button>
-                    <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'optimization_ensemble' }"
-                            @click="applyPreset('optimization_ensemble')"
-                            title="OPT независимо запускается через Claude и Codex, затем результаты объединяются.">OPT Claude + Codex</button>
+                            title="Все поддерживаемые этапы выполняются через Codex exec.">Full Codex</button>
                 </div>
                 <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
                 <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
@@ -1192,21 +1212,30 @@
                     <thead>
                         <tr>
                             <th class="model-config-stage-col">Этап</th>
-                            <th v-for="m in availableModels" :key="m.id">{{ m.label }}</th>
+                            <th v-for="m in visibleStageModels" :key="m.id">{{ m.label }}</th>
+                            <th>Codex</th>
                         </tr>
                     </thead>
                     <tbody>
                         <template v-for="(label, key) in stageLabels" :key="key">
                             <tr>
                                 <td class="model-config-stage-name">{{ label }}</td>
-                                <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
-                                    <input :type="modelInputType(key, m.id)"
+                                <td v-for="m in visibleStageModels" :key="m.id" class="model-config-radio-cell">
+                                    <input type="radio"
                                            :name="'model-' + key"
                                            :value="m.id"
-                                           :checked="isStageModelChecked(key, m.id)"
-                                           @change="selectStageModel(key, m.id, $event)"
+                                           :checked="isBaseStageModelChecked(key, m.id)"
+                                           @change="selectBaseStageModel(key, m.id)"
                                            :disabled="!isModelAllowed(key, m.id)"
                                            class="model-config-radio">
+                                </td>
+                                <td class="model-config-radio-cell">
+                                    <input type="checkbox"
+                                           :checked="isCodexStageChecked(key)"
+                                           @change="toggleStageCodex(key, $event)"
+                                           :disabled="!isCodexStageAllowed(key)"
+                                           :aria-label="'Codex для этапа ' + label"
+                                           class="model-config-radio model-config-codex-flag">
                                 </td>
                             </tr>
                         </template>
@@ -1505,6 +1534,10 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
                              @click="canStartFrom('block_context') && startFromStage(currentProject.project_id, 'block_context')"
                              :title="canStartFrom('block_context') ? 'Клик: подготовить контекст блоков' : 'Подготовка контекста PDF/Vectograph'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('block_context')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм подготовки контекста">&#8942;</button>
                             <div class="stage-num">CTX</div>
                             <div class="stage-label">Контекст блоков</div>
                         </div>
@@ -1516,6 +1549,10 @@
                              @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
                              :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (01_blocks_analysis.json)'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('blocks_analysis')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм анализа блоков">&#8942;</button>
                             <div class="stage-num">01</div>
                             <div class="stage-label">Блоки</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
@@ -1528,6 +1565,10 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
                              @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
                              :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('text_analysis')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм анализа текста">&#8942;</button>
                             <div class="stage-num">02</div>
                             <div class="stage-label">Текст</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
@@ -1542,6 +1583,10 @@
                              @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
                              :title="canStartFrom('findings') ? 'Клик: запустить с этого этапа' : 'Свод замечаний (03_findings.json)'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('findings')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм свода замечаний">&#8942;</button>
                             <div class="stage-num">03</div>
                             <div class="stage-label">Свод</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings')">
@@ -1556,6 +1601,10 @@
                              @click="canStartFrom('findings_critic') && startFromStage(currentProject.project_id, 'findings_critic')"
                              :title="canStartFrom('findings_critic') ? 'Клик: перезапустить Верификатор' : 'Верификатор замечаний: детерминированные проверки (фантом-блоки, лист/страница, no-evidence) + страж отсутствия'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('findings_critic')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм верификатора">&#8942;</button>
                             <div class="stage-num">ВФ</div>
                             <div class="stage-label">Верифик.</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic') || stageTokensFormatted('findings_corrector')">
@@ -1567,6 +1616,10 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
                              @click="canStartFrom('norms_verified') && startFromStage(currentProject.project_id, 'norms_verified')"
                              :title="canStartFrom('norms_verified') ? 'Клик: запустить с этого этапа' : 'Верификация норм'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('norms_verified')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм верификации норм">&#8942;</button>
                             <div class="stage-num">04</div>
                             <div class="stage-label">Нормы</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('norms_verified')">
@@ -1579,6 +1632,10 @@
                         <div class="pipeline-stage pipeline-stage--opt" :class="[stepClass(currentProject.pipeline.optimization), {'pipeline-stage--clickable': canStartFrom('optimization')}]"
                              @click="canStartFrom('optimization') && startFromStage(currentProject.project_id, 'optimization')"
                              :title="canStartFrom('optimization') ? 'Клик: запустить с этого этапа' : 'Оптимизация'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('optimization')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм оптимизации">&#8942;</button>
                             <div class="stage-num">OPT</div>
                             <div class="stage-label">Оптим.</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('optimization')">
@@ -1593,6 +1650,10 @@
                              @click="canStartFrom('optimization_critic') && startFromStage(currentProject.project_id, 'optimization_critic')"
                              :title="canStartFrom('optimization_critic') ? 'Клик: перезапустить Critic оптимизации' : 'Critic + Fix оптимизации'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('optimization_critic')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм Critic и Fix оптимизации">&#8942;</button>
                             <div class="stage-num">CF</div>
                             <div class="stage-label">Crit/Fix</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic') || stageTokensFormatted('optimization_corrector')">
@@ -1606,6 +1667,10 @@
                              @click="canStartFrom('debt_control') && startFromStage(currentProject.project_id, 'debt_control')"
                              :title="canStartFrom('debt_control') ? 'Клик: перезапустить контроль долгов' : 'Контроль долгов: согласованные замечания прошлой версии не теряются при новом аудите'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('debt_control')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм контроля долгов">&#8942;</button>
                             <div class="stage-num">КД</div>
                             <div class="stage-label">Долги</div>
                         </div>
@@ -1615,6 +1680,10 @@
                              @click="canStartFrom('decision_carryover') && startFromStage(currentProject.project_id, 'decision_carryover')"
                              :title="canStartFrom('decision_carryover') ? 'Клик: перезапустить перенос вердиктов' : 'Перенос вердиктов эксперта из предыдущей версии'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('decision_carryover')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм переноса вердиктов">&#8942;</button>
                             <div class="stage-num">ПВ</div>
                             <div class="stage-label">Перенос</div>
                         </div>
@@ -1626,46 +1695,65 @@
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
                             Версия и файлы сохранены. Полноценный аудит V2 будет доступен после переключения production на version-aware backend.
                         </div>
-                        <!-- Audit actions + навигация: колонка справа внутри белой карточки пайплайна -->
+                        <!-- Audit actions: колонка справа внутри белой карточки пайплайна -->
                         <div class="audit-actions-col">
-                        <div class="audit-buttons-inline">
-                            <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
-                                    :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
-                                    :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
-                                &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
-                            </button>
-                            <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
-                                    v-if="isProjectRunning(currentProject.project_id)">
-                                Отменить
-                            </button>
-                            <button class="btn btn-maroon" @click="cleanProject(currentProject.project_id)"
-                                    :disabled="isProjectRunning(currentProject.project_id)"
-                                    title="Удалить все результаты аудита">
-                                Очистить
-                            </button>
+                            <div class="audit-buttons-inline">
+                                <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
+                                        :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
+                                        :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
+                                    &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
+                                </button>
+                                <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
+                                        v-if="isProjectRunning(currentProject.project_id)">
+                                    Отменить
+                                </button>
+                                <button class="btn btn-maroon" @click="cleanProject(currentProject.project_id)"
+                                        :disabled="isProjectRunning(currentProject.project_id)"
+                                        title="Удалить все результаты аудита">
+                                    Очистить
+                                </button>
+                            </div>
                         </div>
+                    </div>
 
-                        <!-- Навигация по проектам раздела (внутри карточки, под аудит-кнопками) -->
-                        <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
-                            <button class="btn btn-outline btn-sm"
-                                    :disabled="!prevProject"
-                                    @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
-                                    :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
-                                &#8592; Предыдущий
-                            </button>
-                            <span class="project-nav-pos">
-                                {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
-                                / {{ currentSectionProjectsList.length }}
-                            </span>
-                            <button class="btn btn-outline btn-sm"
-                                    :disabled="!nextProject"
-                                    @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
-                                    :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
-                                Следующий &#8594;
-                            </button>
-                        </div>
-                        </div>
+                    <div v-if="activeStageAlgorithm" class="modal-overlay stage-algorithm-overlay"
+                         @click.self="closeStageAlgorithm">
+                        <section class="modal-content stage-algorithm-modal"
+                                 role="dialog" aria-modal="true"
+                                 aria-labelledby="stage-algorithm-title">
+                            <button type="button" class="modal-close stage-algorithm-close"
+                                    @click="closeStageAlgorithm" title="Закрыть"
+                                    aria-label="Закрыть памятку">&#215;</button>
+                            <div class="stage-algorithm-eyebrow">Алгоритм этапа</div>
+                            <h3 id="stage-algorithm-title">{{ activeStageAlgorithm.title }}</h3>
+                            <p class="stage-algorithm-subtitle">{{ activeStageAlgorithm.subtitle }}</p>
 
+                            <div class="stage-algorithm-flow">
+                                <template v-for="(step, index) in activeStageAlgorithm.steps"
+                                          :key="activeStageAlgorithmKey + '-' + index">
+                                    <div v-if="step.type === 'split'" class="stage-algorithm-split">
+                                        <div v-for="branch in step.branches" :key="branch.label"
+                                             class="stage-algorithm-branch">
+                                            <span class="stage-algorithm-badge"
+                                                  :class="'stage-algorithm-badge--' + branch.label.toLowerCase()">
+                                                {{ branch.label }}
+                                            </span>
+                                            <span>{{ branch.text }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="stage-algorithm-step"
+                                         :class="{'stage-algorithm-step--result': step.tone === 'result'}">
+                                        {{ step.text }}
+                                    </div>
+                                    <div v-if="index < activeStageAlgorithm.steps.length - 1"
+                                         class="stage-algorithm-arrow" aria-hidden="true">&#8595;</div>
+                                </template>
+                            </div>
+
+                            <p v-if="activeStageAlgorithm.note" class="stage-algorithm-note">
+                                {{ activeStageAlgorithm.note }}
+                            </p>
+                        </section>
                     </div>
 
                     <!-- Usage (сразу под пайплайном) -->
@@ -2815,6 +2903,9 @@
                                     <span class="block-label__id">{{ block.block_id }}</span>
                                     <span class="block-label__desc">{{ block.ocr_label }}</span>
                                 </div>
+                                <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                                    Векторный граф блока отсутствует
+                                </span>
                                 <span class="tile-analyzed-dot" title="Проверен, замечаний нет"></span>
                             </div>
                         </div>
@@ -2836,6 +2927,9 @@
                                     <span class="block-label__id">{{ block.block_id }}</span>
                                     <span class="block-label__desc">{{ block.ocr_label }}</span>
                                 </div>
+                                <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                                    Векторный граф блока отсутствует
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -2860,6 +2954,9 @@
                             <span class="block-label__id">{{ block.block_id }}</span>
                             <span class="block-label__desc">{{ block.ocr_label }}</span>
                         </div>
+                        <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                            Векторный граф блока отсутствует
+                        </span>
                         <!-- Badge: количество замечаний -->
                         <span v-if="blockFindingsCount(block.block_id) > 0"
                               class="tile-badge" :class="'tile-badge--' + sevClass(blockMaxSeverity(block.block_id))">
@@ -2881,7 +2978,9 @@
 
                 <!-- Split-view overlay for block -->
                 <div v-if="selectedBlock" class="tile-split-overlay" @click="selectedBlock = null">
-                    <div class="tile-split-container" @click.stop>
+                    <div class="tile-split-container"
+                         :class="{'tile-split-container--navigable': currentBlocksList.length > 1}"
+                         @click.stop>
                         <button v-if="blockBackRoute" class="block-back-btn" @click="goBackFromBlock()" title="Назад к замечаниям">&larr; Назад</button>
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
                         <!-- Prev/Next navigation (в рамках текущей страницы или виртуальной 'Без сущностей') -->
@@ -2910,15 +3009,106 @@
                                  draggable="false"
                                  @load="onBlockImageLoad">
                             <!-- Текст, реально уходящий в нейронку для этого блока (поверх картинки) -->
-                            <div v-if="showBlockLlmText" class="block-llm-text"
+                            <div v-if="showBlockLlmText && !blockHasNoVectorGraph(selectedBlock)" class="block-llm-text"
                                  @click.stop @wheel.stop @mousedown.stop @dblclick.stop>
                                 <div v-if="blockLlmTextLoading" class="block-llm-text__msg">Загрузка…</div>
                                 <template v-else-if="blockLlmText && blockLlmText.user_text">
-                                    <!-- Блок 2 (что уходит в GPT текстом) — только для НЕ-схемных блоков -->
-                                    <template v-if="!blockLlmText.singleline_graph">
+                                    <!-- Универсальный профильный граф: ОВ, ВК, ЭОМ, СС, ГП, АР, КЖ, КМ, ТХ. -->
+                                    <template v-if="blockLlmText.block_graph_package && blockLlmText.profiled_graph && blockLlmText.profiled_graph_display && blockLlmText.block_graph_package.source_kind !== 'structured_singleline'">
+                                        <section class="pvg-card">
+                                            <header class="pvg-head">
+                                                <div>
+                                                    <div class="pvg-eyebrow">Векторный граф блока</div>
+                                                    <div class="pvg-title">{{ blockLlmText.block_graph_package.discipline_title }}</div>
+                                                </div>
+                                                <span class="pvg-ready" :class="{'pvg-ready--partial': blockLlmText.block_graph_package.readiness && blockLlmText.block_graph_package.readiness.complete === false}">
+                                                    {{ blockLlmText.block_graph_package.readiness && blockLlmText.block_graph_package.readiness.complete === false ? 'частичный' : 'готов' }}
+                                                </span>
+                                            </header>
+                                            <div class="pvg-chips">
+                                                <span><b>Профиль</b> {{ blockLlmText.profiled_graph_display.profile_title }}</span>
+                                                <span v-if="blockLlmText.profiled_graph_display.block_title"
+                                                      :title="blockLlmText.profiled_graph_display.block_title">
+                                                    <b>Блок</b> {{ blockLlmText.profiled_graph_display.block_title }}
+                                                </span>
+                                                <span><b>Источник</b> {{ blockLlmText.profiled_graph_display.source_title }}</span>
+                                                <span v-if="blockLlmText.block_graph_package.reference">
+                                                    <b>Эталон</b> {{ blockLlmText.block_graph_package.reference.block_id || 'встроенная грамматика профиля' }}
+                                                </span>
+                                            </div>
+                                            <div class="pvg-stats">
+                                                <div><b>{{ (blockLlmText.profiled_graph.containers || []).length }}</b><span>контейнеров</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.nodes || []).length }}</b><span>узлов</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.networks || []).length }}</b><span>сетей</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.edges || []).length }}</b><span>рёбер</span></div>
+                                            </div>
+
+                                            <div v-if="(blockLlmText.profiled_graph_display.containers || []).length" class="sld-section">
+                                                <div class="sld-section__head">▦ Контейнеры и физические группы</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Группа</th><th>Тип</th><th>Элементы</th></tr></thead>
+                                                    <tbody><tr v-for="(c,ci) in blockLlmText.profiled_graph_display.containers.slice(0,40)" :key="'pvgc'+ci">
+                                                        <td><b>{{ c.label }}</b></td><td>{{ c.type_title }}</td>
+                                                        <td>{{ c.members_total }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.nodes || []).length" class="sld-section">
+                                                <div class="sld-section__head pvg-section-head">
+                                                    <span>◆ Узлы графа</span>
+                                                    <span v-if="blockLlmText.profiled_graph_display.nodes_review_total"
+                                                          class="pvg-node-review-summary">
+                                                        ⚠ требуют проверки: {{ blockLlmText.profiled_graph_display.nodes_review_total }}
+                                                    </span>
+                                                </div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Обозначение</th><th>Тип</th></tr></thead>
+                                                    <tbody><tr v-for="(n,ni) in blockLlmText.profiled_graph_display.nodes.slice(0,120)"
+                                                               :key="'pvgn'+ni"
+                                                               :class="{'pvg-node-row--review': n.needs_review}">
+                                                        <td><b>{{ n.label }}</b></td>
+                                                        <td>
+                                                            {{ n.type_title }}
+                                                            <span v-if="n.needs_review" class="pvg-node-review"
+                                                                  :title="n.state_title">⚠ проверить</span>
+                                                        </td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.networks || []).length" class="sld-section">
+                                                <div class="sld-section__head">⌁ Сети и трассы</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Сеть</th><th>Тип</th><th>Подтверждение</th><th>Узлы</th></tr></thead>
+                                                    <tbody><tr v-for="(n,ni) in blockLlmText.profiled_graph_display.networks.slice(0,80)" :key="'pvgnet'+ni">
+                                                        <td><b>{{ n.label }}</b></td>
+                                                        <td>{{ n.type_title }}</td><td>{{ n.state_title }}</td>
+                                                        <td>{{ n.members_total }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.edges || []).length" class="sld-section">
+                                                <div class="sld-section__head">→ Подтверждённые связи</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Откуда</th><th>Куда</th><th>Связь</th><th>Подтверждение</th></tr></thead>
+                                                    <tbody><tr v-for="(e,ei) in blockLlmText.profiled_graph_display.edges.slice(0,120)" :key="'pvge'+ei">
+                                                        <td>{{ e.from_label }}</td><td>{{ e.to_label }}</td>
+                                                        <td>{{ e.type_title }}</td><td>{{ e.state_title }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="blockLlmText.block_graph_package.readiness && (blockLlmText.block_graph_package.readiness.reasons || []).length" class="sld-review">
+                                                ⚑ Ограничения полноты:
+                                                <span v-for="(reason,ri) in blockLlmText.block_graph_package.readiness.reasons" :key="'pvgr'+ri" class="sld-review__item">{{ reason }}</span>
+                                            </div>
+                                            <details class="pvg-markdown">
+                                                <summary>Полное русскоязычное описание, уходящее в ChatGPT</summary>
+                                                <pre class="block-llm-text__body">{{ blockLlmText.block_graph_package.markdown }}</pre>
+                                            </details>
+                                        </section>
+                                    </template>
+
+                                    <!-- Непрофильный векторный текст / обычный блок. -->
+                                    <template v-else-if="!blockLlmText.singleline_graph || (blockLlmText.block_graph_package && blockLlmText.block_graph_package.source_kind !== 'structured_singleline')">
                                         <div class="block-llm-text__meta">
                                             Что уходит в нейронку (Stage 01) ·
-                                            enrichment: <b>{{ blockLlmText.enrichment_source }}</b>
+                                            Источник описания:
+                                            <b>{{ blockLlmText.profiled_graph_display ? blockLlmText.profiled_graph_display.source_title : blockLlmText.enrichment_source }}</b>
                                             <span v-if="!blockLlmText.has_enrichment" style="color:var(--accent-orange,#e08a3c)">
                                                 (описание блока пустое — нет enrichment)</span>
                                         </div>
@@ -2926,7 +3116,7 @@
                                     </template>
 
                                     <!-- ГРАФ СХЕМЫ: для схем это И ЕСТЬ то, что уходит в нейронку -->
-                                    <template v-if="blockLlmText.singleline_graph">
+                                    <template v-if="blockLlmText.singleline_graph && (!blockLlmText.block_graph_package || blockLlmText.block_graph_package.source_kind === 'structured_singleline')">
                                         <!-- «Граф схемы» убран: единый вид ниже («Полная разметка»). Отходящие линии +
                                              питание = ровно то, что уходит в нейронку (render_graph_for_prompt); остальные
                                              разделы (расчёты/ТТ/примечания) — для просмотра. -->
@@ -2945,7 +3135,7 @@
                                                 <div class="sld-section__head">📄 Лист — {{ blockLlmText.singleline_graph.feeders_total }} линий
                                                     <span style="opacity:.6">(PDF стр.{{ blockLlmText.singleline_graph.source_page_index }})</span>
                                                     <span class="block-llm-text__ok">физика {{ Math.round((blockLlmText.singleline_graph.validation.power_rate||0)*100) }}% / {{ Math.round((blockLlmText.singleline_graph.validation.current_rate||0)*100) }}%</span>
-                                                    <span class="block-llm-text__muted">актив {{ blockLlmText.singleline_graph.validation.active }} · резерв {{ blockLlmText.singleline_graph.validation.reserve }} · review {{ blockLlmText.singleline_graph.validation.ambiguous }} · автомат {{ blockLlmText.singleline_graph.validation.breaker_bound }} · конфл {{ blockLlmText.singleline_graph.validation.geometry_conflicts }} · status {{ blockLlmText.singleline_graph.status }}</span>
+                                                    <span class="block-llm-text__muted">активных {{ blockLlmText.singleline_graph.validation.active }} · резервных {{ blockLlmText.singleline_graph.validation.reserve }} · требуют проверки {{ blockLlmText.singleline_graph.validation.ambiguous }} · автоматов {{ blockLlmText.singleline_graph.validation.breaker_bound }} · конфликтов {{ blockLlmText.singleline_graph.validation.geometry_conflicts }} · состояние {{ blockLlmText.singleline_graph.status === 'needs_review' ? 'требует проверки' : 'готово' }}</span>
                                                 </div>
                                                 <div style="padding:4px 8px; font-size:12px; line-height:1.6">
                                                     <div v-if="blockLlmText.singleline_graph.source.sheet_name"><b>{{ blockLlmText.singleline_graph.source.sheet_name }}</b></div>
@@ -3027,7 +3217,7 @@
                                                     <thead><tr><th>Откуда</th><th>Куда</th><th>Тип</th><th>Аппарат / примечание</th></tr></thead>
                                                     <tbody>
                                                         <tr v-for="(e,ei) in blockLlmText.singleline_graph.edges" :key="'e'+ei" class="sld-st-active">
-                                                            <td>{{ e.from }}</td><td>{{ e.to }}</td><td>{{ e.type }}</td><td>{{ e.label || '—' }}</td>
+                                                            <td>{{ e.from }}</td><td>{{ e.to }}</td><td>{{ e.type === 'power' ? 'питание' : (e.type === 'distribution' ? 'распределение' : e.type) }}</td><td>{{ e.label || '—' }}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -3053,7 +3243,7 @@
                                                                 <td style="white-space:normal; max-width:300px"><template v-if="fd.cable || fd.length_m != null"><span v-if="fd.length_m != null">L={{ fd.length_m }}м; </span><span v-if="fd.voltage_drop_pct != null">ΔU={{ fd.voltage_drop_pct }}%; </span><span v-if="fd.cable">{{ fd.cable }}; </span><span v-if="fd.Ikz_ka != null">Iкз(1)={{ fd.Ikz_ka }}кА; </span><span v-if="fd.routing">{{ fd.routing }}</span></template><span v-else>—</span></td>
                                                                 <td style="white-space:normal; max-width:220px">{{ (fd.additional_devices||[]).join('; ') || '—' }}</td>
                                                                 <td>{{ (fd.control||[]).join(', ') || '—' }}</td>
-                                                                <td>{{ fd.status }}</td>
+                                                                <td>{{ fd.status === 'active' ? 'действующая' : (fd.status === 'reserve' ? 'резервная' : (fd.status === 'ambiguous' ? 'проверить' : (fd.status === 'no_code' ? 'без кода' : (fd.status === 'structural' ? 'вводная/секционная' : fd.status)))) }}</td>
                                                                 <td style="white-space:normal; max-width:220px; color:var(--accent-orange,#c2691c)">{{ (fd.review||[]).join('; ') || '—' }}</td>
                                                             </tr>
                                                         </tbody>
@@ -3144,27 +3334,21 @@
                                 </template>
                                 <div v-else class="block-llm-text__msg">{{ blockLlmTextError || 'Нет данных' }}</div>
                             </div>
-                            <!-- SVG overlay для подсветки замечаний -->
-                            <svg v-if="currentBlockHighlights.length > 0"
-                                 class="block-highlight-svg"
+                            <!-- Observe-only overlay: рамки из textlayer_highlights_shadow.json. -->
+                            <svg v-if="showTextlayerHighlightsShadow && currentBlockTextlayerHighlights.length > 0"
+                                 class="block-highlight-svg block-textlayer-shadow-svg"
                                  :style="blockImageStyle"
                                  :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
-                                <template v-for="(r, ri) in currentBlockHighlights" :key="ri">
+                                <template v-for="(r, ri) in currentBlockTextlayerHighlights" :key="'tls-' + ri">
                                     <rect :x="r.x * blockNatW" :y="r.y * blockNatH"
                                           :width="r.w * blockNatW" :height="r.h * blockNatH"
-                                          :fill="severityColor(r.severity)"
-                                          :stroke="severityStroke(r.severity)"
-                                          :stroke-width="highlightedFindingId === r.finding_id ? 3 : 1.5"
-                                          :opacity="highlightedFindingId && highlightedFindingId !== r.finding_id ? 0.3 : 1"
-                                          rx="4" ry="4"
-                                          class="block-highlight-rect"
-                                          :class="{'block-highlight-rect--active': highlightedFindingId === r.finding_id}"
-                                          @click.stop="highlightFinding(r.finding_id)" />
-                                    <text v-if="r.label && (!highlightedFindingId || highlightedFindingId === r.finding_id)"
-                                          :x="r.x * blockNatW + 4" :y="r.y * blockNatH - 4"
-                                          class="block-highlight-label"
-                                          :fill="severityStroke(r.severity)">
-                                        {{ r.label }}
+                                          rx="3" ry="3"
+                                          class="block-textlayer-shadow-rect">
+                                        <title>{{ r.finding_id }} · {{ r.label || 'text-layer' }}</title>
+                                    </rect>
+                                    <text :x="r.x * blockNatW + 3" :y="r.y * blockNatH + 13"
+                                          class="block-textlayer-shadow-label">
+                                        {{ r.finding_id }} · {{ r.label || 'text-layer' }}
                                     </text>
                                 </template>
                             </svg>
@@ -3204,6 +3388,10 @@
                             <p class="tile-split-image__label">
                                 {{ selectedBlock.block_id }}
                                 <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
+                                <span v-if="blockHasNoVectorGraph(selectedBlock)"
+                                      class="tile-split-image__no-vector">
+                                    Векторный граф блока отсутствует
+                                </span>
                                 <span v-if="showBlockRegions && blockRegionRects.length"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
                                     &#9632; {{ blockRegionRects.length }} областей линий
@@ -3212,9 +3400,9 @@
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
                                     &#9632; {{ blockTextGroupRects.length }} групп текста
                                 </span>
-                                <span v-if="currentBlockHighlights.length > 0"
-                                      style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
-                                    &#9679; {{ currentBlockHighlights.length }} подсветок
+                                <span v-if="showTextlayerHighlightsShadow && currentBlockTextlayerHighlights.length > 0"
+                                      class="tile-split-image__textlayer-count">
+                                    &#9670; {{ currentBlockTextlayerHighlights.length }} text-layer
                                 </span>
                             </p>
                         </div>
@@ -3238,18 +3426,32 @@
                                         Без значимого содержимого
                                     </div>
                                     <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 01), в стиле бейджа -->
-                                    <button class="tile-status-pill tile-status-pill--txt"
+                                    <span v-if="blockHasNoVectorGraph(selectedBlock)"
+                                          class="tile-status-pill tile-status-pill--no-vector">
+                                        Векторный граф блока отсутствует
+                                    </span>
+                                    <button v-else class="tile-status-pill tile-status-pill--txt"
                                             :class="{'is-active': showBlockLlmText}"
                                             @click.stop="toggleBlockLlmText()"
                                             title="Показать текст/граф, реально уходящий в нейронку (Stage 01)">
                                         {{ showBlockLlmText ? '✓ txt' : 'txt' }}
                                     </button>
                                     <!-- Тоггл областей: полупрозрачные прямоугольники колонок линий поверх блока -->
-                                    <button class="tile-status-pill tile-status-pill--regions"
+                                    <button v-if="!blockHasNoVectorGraph(selectedBlock)"
+                                            class="tile-status-pill tile-status-pill--regions"
                                             :class="{'is-active': showBlockRegions}"
                                             @click.stop="toggleBlockRegions()"
                                             title="Показать области линий поверх блока для визуальной проверки связи данных">
                                         {{ showBlockRegions ? '✓ области' : 'области' }}
+                                    </button>
+                                    <!-- Диагностический overlay не меняет итоговые подсветки замечаний. -->
+                                    <button v-if="currentBlockTextlayerHighlights.length > 0"
+                                            class="tile-status-pill tile-status-pill--textlayer-shadow"
+                                            :class="{'is-active': showTextlayerHighlightsShadow}"
+                                            @click.stop="toggleTextlayerHighlightsShadow()"
+                                            title="Показать точные рамки из text-layer shadow для сравнения с LLM-подсветками">
+                                        {{ showTextlayerHighlightsShadow ? '✓ замечания' : 'замечания' }}
+                                        · {{ currentBlockTextlayerHighlights.length }}
                                     </button>
                                 </div>
 
@@ -3288,36 +3490,11 @@
                                     <div class="tile-analysis-section__header"
                                          v-if="getBlockFindings(selectedBlock.block_id).length > 0">
                                         <h4>Замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
-                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
-                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <template v-if="allHighlightsVisible">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                    <circle cx="12" cy="12" r="3"/>
-                                                </template>
-                                                <template v-else>
-                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
-                                                    <line x1="1" y1="1" x2="23" y2="23"/>
-                                                </template>
-                                            </svg>
-                                        </button>
                                     </div>
                                     <div v-for="(f, i) in getBlockFindings(selectedBlock.block_id)" :key="'f-' + i"
                                          class="tile-finding-card"
-                                         :class="['tile-finding-card--' + sevClass(f.severity),
-                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
-                                                    'tile-finding-card--dimmed': !isFindingHighlightVisible(f.id),
-                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
-                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
-                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
+                                         :class="'tile-finding-card--' + sevClass(f.severity)">
                                         <div class="tile-finding-card__header">
-                                            <label v-if="f.highlight_regions && f.highlight_regions.length"
-                                                   class="finding-visibility-toggle" @click.stop
-                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
-                                                <input type="checkbox"
-                                                       :checked="isFindingHighlightVisible(f.id)"
-                                                       @change="toggleFindingHighlight(f.id)">
-                                            </label>
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
