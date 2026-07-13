@@ -1594,19 +1594,36 @@ class PipelineManager:
         """Восстановить highlight_regions в 03_findings.json из 01_blocks_analysis.json.
 
         При findings_merge LLM иногда теряет highlight_regions из G-замечаний.
-        Этот метод подтягивает координаты обратно по source_block_ids/related_block_ids.
+        Этот метод сначала подтягивает координаты обратно по
+        source_block_ids/related_block_ids, затем (под отдельным флагом)
+        запускает детерминированный grounding по текстовому слою PDF.
 
-        Version-aware: использует `_output_dir_for_project`, parent которого =
-        version_dir; для V2 это `<root>/_versions/v{N}`. Иначе backfill_project
-        ушёл бы на V1 root и переписал V1 03_findings.json.
+        Version-aware: output берётся из `_output_dir_for_project`, а source-
+        директория активной job — из `_resolve_job_paths`. Иначе V2-primary run
+        мог бы прочитать PDF/result.json не той версии.
         """
         from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
-        # backfill_project работает с `project_dir / _output`, поэтому передаём
-        # parent от version-aware output_dir.
-        project_dir = self._output_dir_for_project(project_id).parent
-        result = backfill_project(project_dir)
+        from backend.app.pipeline.stages.findings_merge.ground_highlights_textlayer import (
+            backfill_textlayer_highlights,
+        )
+
+        output_dir = self._output_dir_for_project(project_id)
+        job = self.active_jobs.get(project_id)
+        if job is not None:
+            _root, project_dir, _resolved_output = self._resolve_job_paths(job)
+        else:
+            project_dir = output_dir.parent
+        result = backfill_project(project_dir, output_dir=output_dir)
         if result["fixed"] > 0:
             print(f"[{project_id}] highlight_regions restored: {result['fixed']}")
+        textlayer = backfill_textlayer_highlights(project_dir, output_dir=output_dir)
+        if textlayer.get("enabled"):
+            mode = "shadow" if textlayer.get("shadow") else "live"
+            print(
+                f"[{project_id}] text-layer highlights ({mode}): "
+                f"grounded={textlayer.get('grounded', 0)}/{textlayer.get('checked', 0)}, "
+                f"written={textlayer.get('fixed', 0)}"
+            )
 
     @staticmethod
     def _attach_stage02_coverage_to_findings(

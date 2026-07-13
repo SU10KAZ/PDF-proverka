@@ -19,6 +19,9 @@ from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
+TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME = "textlayer_highlights_shadow.json"
+
+
 def _get_version_output_dir(project_id: str, version_id: Optional[str] = None) -> Path:
     """Папка `_output/` нужной версии проекта (V1 = корень)."""
     return version_service.resolve_version_output_dir(project_id, version_id)
@@ -40,6 +43,38 @@ def _get_findings_path(project_id: str, version_id: Optional[str] = None) -> Pat
     if main.exists():
         return main
     return output_dir / "03_findings_pre_merge.json"
+
+
+def get_textlayer_highlights_shadow(
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
+    """Прочитать диагностические подсветки из text-layer shadow-артефакта.
+
+    Ручка намеренно только читает отдельный файл и не меняет финальные
+    ``highlight_regions`` в ``03_findings.json``.
+    """
+    output_dir = _get_version_output_dir(project_id, version_id)
+    data = _load_json(output_dir / TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME)
+    if isinstance(data, dict):
+        return data
+
+    # У мигрированной V1 артефакт пилота мог появиться уже после снимка в
+    # projects_v2. Берём его из legacy_folder_path только для этой конкретной
+    # версии; для v2+ без такой привязки никакого межверсионного fallback нет.
+    try:
+        context = version_service.resolve_project_version_context(project_id, version_id)
+        version_meta = _load_json(Path(context["version_dir"]) / "version.json")
+        legacy_folder_path = version_meta.get("legacy_folder_path") if isinstance(version_meta, dict) else None
+        if legacy_folder_path:
+            legacy_path = Path(legacy_folder_path) / "_output" / TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME
+            data = _load_json(legacy_path)
+            if isinstance(data, dict):
+                return data
+    except (KeyError, OSError, TypeError, ValueError):
+        pass
+    return None
 
 
 def _practicality_score(finding: dict) -> int:

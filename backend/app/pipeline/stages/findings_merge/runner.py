@@ -632,6 +632,21 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
     backfill_project(ctx.project_dir, output_dir=ctx.output_dir)
 
+    # После восстановления LLM-регионов: text-layer grounding не трогает уже
+    # заполненные highlights, а в default shadow-режиме только пишет coverage/IoU.
+    from backend.app.pipeline.stages.findings_merge.ground_highlights_textlayer import (
+        backfill_textlayer_highlights,
+    )
+    textlayer = backfill_textlayer_highlights(ctx.project_dir, output_dir=ctx.output_dir)
+    if textlayer.get("enabled"):
+        mode = "shadow" if textlayer.get("shadow") else "live"
+        await ctx.log(
+            f"Text-layer highlights ({mode}): grounded "
+            f"{textlayer.get('grounded', 0)}/{textlayer.get('checked', 0)}, "
+            f"coverage={textlayer.get('coverage', 0):.1%}, "
+            f"written={textlayer.get('fixed', 0)}"
+        )
+
     from backend.app.pipeline.stages.block_analysis.runner import attach_stage02_coverage_to_findings
     coverage = attach_stage02_coverage_to_findings(pid, output_dir=ctx.output_dir)
     excluded_count = (coverage.get("summary") or {}).get("excluded_from_full_analysis_count", 0)

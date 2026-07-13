@@ -1480,9 +1480,8 @@ const app = createApp({
         const blockNatW = ref(0);       // natural width of loaded image
         const blockNatH = ref(0);       // natural height of loaded image
         const blockBaseScale = ref(1);  // scale to fit image into container
-        const highlightedFindingId = ref(null);  // ID замечания для подсветки на блоке
-        const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
-        const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
+        const textlayerHighlightsShadow = ref(null);      // observe-only артефакт, не 03_findings
+        const showTextlayerHighlightsShadow = ref(false); // диагностический overlay
 
         // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 01)
         const showBlockLlmText = ref(false);
@@ -6974,9 +6973,6 @@ const app = createApp({
 
         function openBlock(block) {
             selectedBlock.value = block;
-            highlightedFindingId.value = null;
-            allHighlightsVisible.value = true;
-            hiddenHighlightFindings.value = new Set();
             // txt-режим переживает навигацию: при открытии нового блока подгружаем его текст
             blockLlmText.value = null;
             blockLlmTextError.value = '';
@@ -7238,10 +7234,12 @@ const app = createApp({
 
         async function loadBlockToFindingsMap(id) {
             try {
-                // Загрузить block-map и findings параллельно
-                const [mapData, findingsResp] = await Promise.all([
+                // Загрузить block-map, findings и необязательный shadow параллельно.
+                // Отсутствие shadow-файла (обычный prod default) не ломает блоки.
+                const [mapData, findingsResp, shadowResp] = await Promise.all([
                     api(`/findings/${id}/block-map`),
                     api(`/findings/${id}`),
+                    api(`/findings/${id}/textlayer-highlights-shadow`).catch(() => null),
                 ]);
                 const bmap = mapData.block_map || {};
                 const findings = findingsResp.findings || [];
@@ -7257,16 +7255,18 @@ const app = createApp({
                             problem: f.problem || f.finding || f.description || '',
                             norm: f.norm || '',
                             solution: f.solution || f.recommendation || '',
-                            highlight_regions: (f.highlight_regions || []).filter(r => {
-                                const rb = (r.block_id || '').replace(/^block_/, '');
-                                return rb === bid || !r.block_id;
-                            }),
                         });
                     }
                 }
                 blockToFindings.value = reverse;
+                textlayerHighlightsShadow.value = shadowResp && Array.isArray(shadowResp.records)
+                    ? shadowResp
+                    : null;
+                showTextlayerHighlightsShadow.value = false;
             } catch (e) {
                 blockToFindings.value = {};
+                textlayerHighlightsShadow.value = null;
+                showTextlayerHighlightsShadow.value = false;
             }
         }
 
@@ -7274,81 +7274,28 @@ const app = createApp({
             return blockToFindings.value[blockId] || [];
         }
 
-        // ─── Highlight regions для текущего блока ───
-        const currentBlockHighlights = computed(() => {
-            if (!selectedBlock.value) return [];
-            const bid = selectedBlock.value.block_id;
-            const hidden = hiddenHighlightFindings.value;
-            // Подсветки строим ТОЛЬКО по финальным замечаниям (03_findings),
-            // связанным с блоком. Сырые Stage 01 findings не показываем — критик
-            // мог их отфильтровать, и их подсветка вводила бы в заблуждение.
-            const findings = getBlockFindings(bid);
+        // Единственный пользовательский слой рамок: точные совпадения из
+        // text-layer shadow. Старые LLM highlight_regions здесь не рендерятся.
+        const currentBlockTextlayerHighlights = computed(() => {
+            if (!selectedBlock.value || !textlayerHighlightsShadow.value) return [];
+            const bid = String(selectedBlock.value.block_id || '').replace(/^block_/, '');
+            const records = textlayerHighlightsShadow.value.records || [];
             const regions = [];
-            for (const f of findings) {
-                if (!f.highlight_regions || !f.highlight_regions.length) continue;
-                if (hidden.has(f.id)) continue;
-                for (const r of f.highlight_regions) {
+            for (const record of records) {
+                for (const region of (record.computed_highlight_regions || [])) {
+                    const regionBlockId = String(region.block_id || '').replace(/^block_/, '');
+                    if (regionBlockId !== bid) continue;
                     regions.push({
-                        ...r,
-                        finding_id: f.id,
-                        severity: f.severity,
+                        ...region,
+                        finding_id: record.finding_id || '',
                     });
                 }
             }
             return regions;
         });
 
-        function highlightFinding(findingId) {
-            highlightedFindingId.value = highlightedFindingId.value === findingId ? null : findingId;
-        }
-
-        function toggleFindingHighlight(findingId) {
-            const s = new Set(hiddenHighlightFindings.value);
-            if (s.has(findingId)) s.delete(findingId); else s.add(findingId);
-            hiddenHighlightFindings.value = s;
-            // Обновить глобальный флаг
-            allHighlightsVisible.value = s.size === 0;
-        }
-
-        function isFindingHighlightVisible(findingId) {
-            return !hiddenHighlightFindings.value.has(findingId);
-        }
-
-        function toggleAllHighlights() {
-            if (allHighlightsVisible.value) {
-                // Выключить все — собрать все finding_id с регионами
-                const allIds = new Set();
-                if (selectedBlock.value) {
-                    const bid = selectedBlock.value.block_id;
-                    for (const f of getBlockFindings(bid)) {
-                        if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
-                    }
-                }
-                hiddenHighlightFindings.value = allIds;
-                allHighlightsVisible.value = false;
-            } else {
-                // Включить все
-                hiddenHighlightFindings.value = new Set();
-                allHighlightsVisible.value = true;
-            }
-        }
-
-        function severityColor(severity) {
-            const s = (severity || '').toUpperCase();
-            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.25)';
-            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.25)';
-            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.25)';
-            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.25)';
-            return 'rgba(150, 150, 200, 0.25)';
-        }
-
-        function severityStroke(severity) {
-            const s = (severity || '').toUpperCase();
-            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.8)';
-            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.8)';
-            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.8)';
-            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.8)';
-            return 'rgba(150, 150, 200, 0.8)';
+        function toggleTextlayerHighlightsShadow() {
+            showTextlayerHighlightsShadow.value = !showTextlayerHighlightsShadow.value;
         }
 
         // ─── Optimization ───
@@ -17389,8 +17336,9 @@ const app = createApp({
             blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
-            blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
-            allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
+            blockNatW, blockNatH,
+            textlayerHighlightsShadow, showTextlayerHighlightsShadow, currentBlockTextlayerHighlights,
+            toggleTextlayerHighlightsShadow,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
             showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,

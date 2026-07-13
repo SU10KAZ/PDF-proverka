@@ -746,6 +746,20 @@ MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
 # реальной замене. Дёшево: не-схемы отсеиваются структурером за мс (PDF не открывается),
 # однолинейка ~1.2 с. ON по умолчанию (observe-only), env — kill-switch.
 VECTOGRAF_SHADOW_ENABLED = _env_bool("VECTOGRAF_SHADOW_ENABLED", True)
+# Детерминированная подсветка цитируемых обозначений по fitz text layer.
+# Главный switch OFF: прод не меняется. При первом включении остаётся shadow —
+# считаются coverage/IoU и пишется textlayer_highlights_shadow.json, но
+# 03_findings.json не меняется. Live заполняет только пустые highlight_regions;
+# перезапись LLM-регионов требует отдельного явного switch.
+PIPELINE_TEXTLAYER_HIGHLIGHTS_ENABLED = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_ENABLED", False
+)
+PIPELINE_TEXTLAYER_HIGHLIGHTS_SHADOW = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_SHADOW", True
+)
+PIPELINE_TEXTLAYER_HIGHLIGHTS_OVERRIDE_EXISTING = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_OVERRIDE_EXISTING", False
+)
 # «Вектограф» bbox-клип: геометрия строит топологию ТОЛЬКО по словам внутри области выделения
 # блока (coords_norm из result.json), а не по ВСЕМ словам листа. Раньше build_singleline_graph
 # читал get_text("words") со всей страницы → на листе с двумя схемами/таблицей чужие QF/коды/
