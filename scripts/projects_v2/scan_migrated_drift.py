@@ -49,10 +49,18 @@ REC_MANUAL_REVIEW = "manual_review"
 
 
 def classify_file(f: dict) -> Optional[dict]:
-    """Возвращает drift-запись или None если файл не дрейфнул / не tracked."""
-    recorded = f.get("sha256")
-    if recorded is None:
+    """Возвращает drift-запись или None если файл не дрейфнул / не tracked.
+
+    Новые записи ledger могут хранить две независимые базовые суммы:
+    ``sha256`` для canonical v2 и ``legacy_sha256`` для legacy. Это позволяет
+    считать зафиксированное post-cutover расхождение штатным состоянием, но
+    продолжать ловить последующие изменения каждой стороны. Старые записи без
+    ``legacy_sha256`` сохраняют прежнюю семантику (общая базовая сумма).
+    """
+    v2_recorded = f.get("sha256")
+    if v2_recorded is None:
         return None  # validate такие не проверяет
+    legacy_recorded = f.get("legacy_sha256") or v2_recorded
     old_path = Path(f["old_path"])
     new_path = Path(f["new_path"])
 
@@ -61,27 +69,20 @@ def classify_file(f: dict) -> Optional[dict]:
         return {"drift_type": "missing_legacy", "current_legacy_sha": None,
                 "current_v2_sha": cur_v2}
 
-    cur_legacy = v2lib.sha256_file(old_path)
-    if cur_legacy == recorded:
-        # legacy не менялся — проверим копию v2
-        if not new_path.exists():
-            return {"drift_type": "missing_v2", "current_legacy_sha": cur_legacy,
-                    "current_v2_sha": None}
-        cur_v2 = v2lib.sha256_file(new_path)
-        if cur_v2 != recorded:
-            return {"drift_type": "v2_changed", "current_legacy_sha": cur_legacy,
-                    "current_v2_sha": cur_v2}
-        return None  # всё совпадает
-
-    # legacy изменился
     if not new_path.exists():
+        cur_legacy = v2lib.sha256_file(old_path)
         return {"drift_type": "missing_v2", "current_legacy_sha": cur_legacy,
                 "current_v2_sha": None}
+    cur_legacy = v2lib.sha256_file(old_path)
     cur_v2 = v2lib.sha256_file(new_path)
-    if cur_v2 == recorded:
+    legacy_unchanged = cur_legacy == legacy_recorded
+    v2_unchanged = cur_v2 == v2_recorded
+    if legacy_unchanged and v2_unchanged:
+        return None
+    if not legacy_unchanged and v2_unchanged:
         return {"drift_type": "legacy_changed_v2_old", "current_legacy_sha": cur_legacy,
                 "current_v2_sha": cur_v2}
-    # и legacy, и v2 разошлись с recorded -> ручной разбор
+    # v2 изменился (сам или одновременно с legacy) -> ручной разбор
     return {"drift_type": "v2_changed", "current_legacy_sha": cur_legacy,
             "current_v2_sha": cur_v2}
 

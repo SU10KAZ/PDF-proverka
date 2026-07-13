@@ -67,10 +67,19 @@ def _isolate_batch_queue_file(tmp_path, monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def _isolate_storage_cutover_env(monkeypatch):
-    """Every test starts from legacy storage unless it opts into v2 explicitly."""
+def _isolate_storage_cutover_env(tmp_path, monkeypatch):
+    """Keep every test away from the live ``projects_v2`` store.
+
+    The suite intentionally starts in ``dual_write_shadow`` so a number of
+    integration tests exercise the mirror hooks.  Without an explicit v2 root
+    those hooks resolve ``config.DATA_DIR / projects_v2`` and write synthetic
+    pytest objects plus ledger entries into production.  Each test therefore
+    gets a private v2 root by default; tests that need another root can still
+    override or delete the environment variable with ``monkeypatch``.
+    """
     for name, value in _DEFAULT_STORAGE_ENV.items():
         monkeypatch.setenv(name, value)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "projects_v2"))
 
 
 @pytest.fixture(autouse=True)

@@ -43,6 +43,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -55,6 +56,7 @@ CATEGORIES = (
     "container_moved_needs_map_repair",
     "experiment_sandbox_junk",
     "orphan_pdf_named_folder",
+    "archived_intentional_exclusion",
     "missing_v2_real_backlog",
 )
 
@@ -71,12 +73,52 @@ def _read_json(path: Path) -> Optional[dict]:
         return None
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _verified_exclusions(v2_root: Path) -> tuple[set[str], list[dict]]:
+    """Return exclusions only when their durable archive proof is valid."""
+    path = v2_root / "_system" / "legacy_deletion_exclusions.json"
+    data = _read_json(path) or {}
+    valid: set[str] = set()
+    checks: list[dict] = []
+    for entry in data.get("exclusions", []) or []:
+        rel = str(entry.get("legacy_relative_path") or "").strip().strip("/")
+        archive = Path(str(entry.get("archive_path") or "")).expanduser()
+        expected = str(entry.get("archive_sha256") or "").lower()
+        ok = bool(rel and archive.is_file() and expected)
+        actual = None
+        if ok:
+            try:
+                actual = _sha256(archive)
+                ok = actual == expected
+            except OSError:
+                ok = False
+        checks.append({
+            "legacy_relative_path": rel,
+            "archive_path": str(archive),
+            "expected_sha256": expected,
+            "actual_sha256": actual,
+            "verified": ok,
+        })
+        if ok:
+            valid.add(rel)
+    return valid, checks
+
+
 def _is_sandbox_path(rel: str) -> bool:
     """True, если в относительном пути есть `_`-сегмент (как iter_project_dirs:
     `_experiments`, `_output`, `_smoke*` и пр. исключаются из реальных проектов)."""
     parts = Path(rel).parts
-    # последний сегмент — это сама папка проекта; junk = `_`-сегмент ВЫШЕ по пути
-    return any(p.startswith("_") for p in parts[:-1])
+    # `_smoke_*` и аналогичные synthetic-проекты сами начинаются с `_`, поэтому
+    # учитываем и последний сегмент. Это совпадает с iter_project_dirs, который
+    # не показывает такие каталоги как реальные проекты.
+    return any(p.startswith("_") for p in parts)
 
 
 def _legacy_findings_size(legacy_dir: Path) -> int:
@@ -87,19 +129,64 @@ def _legacy_findings_size(legacy_dir: Path) -> int:
         return -1
 
 
-def _v2_doc_dir(v2_root: Path, discipline: str, doc_code: str) -> Optional[Path]:
-    """Найти v2-документную папку по (discipline, document_code) глобом по объектам.
+def _document_code_candidates(doc_code: str) -> list[str]:
+    """Legacy ``project_info`` variants that may name one v2 document.
 
-    Не зависит от формата object_id: ищем
-    objects/*/disciplines/<disc>/documents/<doc_code>/document.json.
+    Historical metadata contains three known path/name artefacts: a trailing
+    ``.pdf``, a trailing unseparated ``pdf``, and a discipline prefix such as
+    ``EOM/_smoke_*``.  The v2 layout stores the canonical basename without
+    these artefacts.  Candidates are ordered from exact to progressively more
+    permissive forms and are only accepted when the filesystem match is
+    unique.
+    """
+    raw = str(doc_code or "").strip().replace("\\", "/")
+    out: list[str] = []
+
+    def add(value: str) -> None:
+        value = value.strip()
+        if value and value not in out:
+            out.append(value)
+
+    add(raw)
+    add(raw.rsplit("/", 1)[-1])
+    for value in tuple(out):
+        if value.lower().endswith(".pdf"):
+            add(value[:-4])
+        elif value.lower().endswith("pdf"):
+            add(value[:-3])
+    return out
+
+
+def _v2_doc_dir(v2_root: Path, discipline: str, doc_code: str) -> Optional[Path]:
+    """Find one canonical v2 document despite stale legacy metadata.
+
+    ``project_info.section`` is also historically wrong for several projects,
+    so an exact discipline lookup is preferred but all disciplines are used as
+    a guarded fallback.  Ambiguous matches are rejected instead of guessed.
     """
     base = v2_root / "objects"
     if not base.is_dir():
         return None
+    candidates = _document_code_candidates(doc_code)
+    matches: list[Path] = []
     for obj in base.iterdir():
-        cand = obj / "disciplines" / discipline / "documents" / doc_code
-        if (cand / "document.json").is_file():
-            return cand
+        if not obj.is_dir() or obj.name.startswith(("test_", "pytest_")):
+            continue
+        disc_root = obj / "disciplines"
+        preferred = disc_root / discipline if discipline else None
+        discs = []
+        if preferred is not None and preferred.is_dir():
+            discs.append(preferred)
+        if disc_root.is_dir():
+            discs.extend(d for d in disc_root.iterdir() if d.is_dir() and d not in discs)
+        for disc in discs:
+            docs = disc / "documents"
+            for code in candidates:
+                cand = docs / code
+                if (cand / "document.json").is_file() and cand not in matches:
+                    matches.append(cand)
+    if len(matches) == 1:
+        return matches[0]
     return None
 
 
@@ -141,6 +228,7 @@ def classify_coverage(legacy_root: Path, v2_root: Path, map_file: Path) -> dict:
 
     buckets = {c: [] for c in CATEGORIES}
     drift = []
+    exclusions, exclusion_checks = _verified_exclusions(v2_root)
 
     for dp, dns, fns in os.walk(legacy_root):
         if "project_info.json" not in fns:
@@ -148,6 +236,9 @@ def classify_coverage(legacy_root: Path, v2_root: Path, map_file: Path) -> dict:
         folder = Path(dp)
         rel = os.path.relpath(dp, legacy_root)
 
+        if rel in exclusions:
+            buckets["archived_intentional_exclusion"].append(rel)
+            continue
         if _is_sandbox_path(rel):
             buckets["experiment_sandbox_junk"].append(rel)
             continue
@@ -201,6 +292,7 @@ def classify_coverage(legacy_root: Path, v2_root: Path, map_file: Path) -> dict:
         "legacy_real_projects": real_projects,
         "counts": counts,
         "snapshot_drift_candidates": drift,
+        "exclusion_checks": exclusion_checks,
         "categories": buckets,
         "real_backlog": counts["missing_v2_real_backlog"] > 0,
     }
@@ -219,6 +311,7 @@ def _print_summary(report: dict) -> None:
     print(f"  missing_v2_real_backlog            : {c['missing_v2_real_backlog']}")
     print(f"excluded experiment_sandbox_junk     : {c['experiment_sandbox_junk']}")
     print(f"orphan_pdf_named_folder              : {c['orphan_pdf_named_folder']}")
+    print(f"archived intentional exclusions      : {c['archived_intentional_exclusion']}")
     print(f"snapshot_drift_candidates (warning)  : {len(report['snapshot_drift_candidates'])}")
     if c["missing_v2_real_backlog"]:
         print("\n[BACKLOG] реальные проекты без v2-документа:")
