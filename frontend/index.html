@@ -563,6 +563,17 @@
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>
+                    <template v-if="sectionUnreviewedCount > 0">
+                        <span class="dashboard-header__count dashboard-header__count--unreviewed"
+                              title="Проекты, у которых последняя загруженная версия не доведена экспертом до конца">
+                            Не проверено ({{ sectionUnreviewedCount }})
+                        </span>
+                        <label class="section-select-all" @click.stop
+                               title="Выделить все не проверенные проекты раздела">
+                            <input type="checkbox" :checked="isSectionUnreviewedSelected(sidebarFilterSection)"
+                                   @change="toggleSectionUnreviewedSelection(sidebarFilterSection)">
+                        </label>
+                    </template>
                     <button v-if="sectionHasUnanalyzed" class="btn btn-sm btn-outline"
                             style="margin-left:10px; vertical-align:middle;"
                             @click.stop="selectUnanalyzedInSection(sidebarFilterSection)"

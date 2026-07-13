@@ -3411,6 +3411,40 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
+        // Проект «не проверен» (по последней загруженной версии), если у него
+        // есть аудит (замечания или оптимизации), но эксперт НЕ довёл оценку
+        // до конца — статус != 'complete' (нет отметок ИЛИ частично).
+        // Проекты без аудита не считаются — для них есть «Выделить необработанные».
+        function isProjectUnreviewed(p) {
+            const hasAudit = (p.findings_count || 0) > 0 || (p.optimization_count || 0) > 0;
+            return hasAudit && p.expert_review_status !== 'complete';
+        }
+
+        function sectionUnreviewedPids(sectionCode) {
+            return projects.value
+                .filter(p => (p.section || 'OTHER') === sectionCode && isProjectUnreviewed(p))
+                .map(p => p.project_id);
+        }
+
+        // Все ли «не проверенные» проекты раздела уже выделены (состояние флажка).
+        function isSectionUnreviewedSelected(sectionCode) {
+            const pids = sectionUnreviewedPids(sectionCode);
+            return pids.length > 0 && pids.every(id => selectedProjects.value.has(id));
+        }
+
+        // Флажок «Не проверено»: выделить/снять все не проверенные проекты раздела.
+        function toggleSectionUnreviewedSelection(sectionCode) {
+            const pids = sectionUnreviewedPids(sectionCode);
+            if (!pids.length) return;
+            const s = new Set(selectedProjects.value);
+            const allSelected = pids.every(id => s.has(id));
+            for (const id of pids) {
+                if (allSelected) s.delete(id); else s.add(id);
+            }
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
         const selectedCount = computed(() => selectedProjects.value.size);
 
         function openBatchModal() {
@@ -4367,6 +4401,14 @@ const app = createApp({
             return projects.value.some(
                 p => (p.section || 'OTHER') === sec && !(p.findings_count > 0)
             );
+        });
+
+        // Число «не проверенных» проектов текущего раздела — для надписи
+        // «Не проверено (N)» и её скрытия, когда все проекты проверены.
+        const sectionUnreviewedCount = computed(() => {
+            const sec = sidebarFilterSection.value;
+            if (!sec || sec === '__all__') return 0;
+            return sectionUnreviewedPids(sec).length;
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
@@ -17371,6 +17413,7 @@ const app = createApp({
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
+            sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
             batchActionLabel,
