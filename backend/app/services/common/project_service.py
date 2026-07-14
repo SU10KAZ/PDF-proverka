@@ -2436,7 +2436,11 @@ def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
             mds.append((safe, data))
         elif ext == ".json" and low.endswith("_result.json"):
             results.append((safe, data))
-        elif ext in (".html", ".htm") and low.endswith("_ocr.html"):
+        elif ext in (".html", ".htm") and low.endswith(("_ocr.html", "_results.html", "_results.htm")):
+            # _results.html — новый 3-файловый комплект портала (2026-07);
+            # _ocr.html — старый 4-файловый метод, приём удалить после 2026-08-14
+            # (раздел ВК распознаётся по-старому до этой даты; чтение уже
+            # загруженных проектов не трогать никогда).
             ocrs.append((safe, data))
         else:
             ignored.append(safe)
@@ -2643,7 +2647,8 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
         "ignored_files": cls["ignored"],
         "status": status, "blocks": blocks, "warnings": warnings,
-        "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"])),
+        "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"]),
+                                                   new_format=_is_new_format_bundle(cls)),
     }
 
 
@@ -2848,7 +2853,9 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
 
     md_names = [n for n, _ in mds]
     md_doc = next((n for n in md_names if n.lower().endswith("_document.md")), None)
-    md_primary = md_doc or (md_names[0] if md_names else None)
+    # _results.md — новый 3-файловый комплект; приоритет между _document.md и «первый попавшийся»
+    md_results = next((n for n in md_names if n.lower().endswith("_results.md")), None)
+    md_primary = md_doc or md_results or (md_names[0] if md_names else None)
 
     info: dict = {
         "project_id": project_id,
@@ -2908,21 +2915,40 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         "has_md": bool(md_names),
         "has_result": bool(results),
         "has_ocr": bool(ocrs),
-        "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs)),
+        "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs),
+                                            new_format=_is_new_format_bundle(cls)),
         "project_info": info,
     }
 
 
-def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool) -> list[str]:
-    """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах."""
+def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool,
+                            new_format: bool = False) -> list[str]:
+    """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах.
+
+    new_format=True — комплект нового 3-файлового формата портала
+    (*_results.md + *_results.html, без result.json): отсутствие result.json
+    для него норма, но геометрия блоков недоступна до этапа конвертера.
+    """
     warns: list[str] = []
     if not has_md:
         warns.append("Не найден *_document.md — текстовый анализ потребует OCR/Chandra.")
     if not has_result:
-        warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
+        if new_format:
+            warns.append(
+                "Новый 3-файловый комплект (без *_result.json): геометрия блоков "
+                "и кроп будут доступны после этапа конвертации нового формата."
+            )
+        else:
+            warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
     if not has_ocr:
         warns.append("Не найден *_ocr.html — text_evidence будет ограничен.")
     return warns
+
+
+def _is_new_format_bundle(cls: dict) -> bool:
+    """Комплект нового 3-файлового формата: есть *_results.md или *_results.html."""
+    names = [n for n, _ in cls.get("mds", [])] + [n for n, _ in cls.get("ocrs", [])]
+    return any(n.lower().endswith(("_results.md", "_results.html", "_results.htm")) for n in names)
 
 
 def register_external_project(source_path: str, pdf_file: str,
@@ -2974,6 +3000,10 @@ def register_external_project(source_path: str, pdf_file: str,
     # распознаёт _ocr.html и кладёт в 01_input/02_work).
     for oh in source.glob("*_ocr.html"):
         shutil.copy2(str(oh), str(dest / oh.name))
+
+    # Копируем *_results.html (новый 3-файловый комплект портала, 2026-07)
+    for rh in source.glob("*_results.htm*"):
+        shutil.copy2(str(rh), str(dest / rh.name))
 
     # Создаём project_info.json
     project_id = folder_name
@@ -3423,7 +3453,7 @@ def clean_project_data(project_id: str, *, version_id: Optional[str] = None, _co
             return True
         if name.endswith("_annotation.json"):
             return True
-        if name.endswith("_ocr.html"):
+        if name.endswith(("_ocr.html", "_results.html", "_results.htm")):
             return True
         return False
 

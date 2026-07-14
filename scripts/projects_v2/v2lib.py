@@ -51,6 +51,19 @@ INPUT_QUAD = {
     "result_json": "_result.json",
 }
 
+# Суффиксы-синонимы по ролям, в порядке приоритета. С 2026-07 портал отдаёт
+# 3-файловый комплект: <имя>.pdf + <имя>_results.md + <имя>_results.html
+# (без result.json). Старый 4-файловый метод (_document.md/_ocr.html/_result.json)
+# принимаем до ~2026-08-14 (раздел ВК ещё распознаётся по-старому), после чего
+# приём старых суффиксов можно удалить; ЧТЕНИЕ уже мигрированных версий от
+# этого не зависит (в 02_work лежат нормализованные имена).
+INPUT_SUFFIXES: dict[str, tuple[str, ...]] = {
+    "pdf": (".pdf",),
+    "document_md": ("_document.md", "_results.md"),
+    "ocr_html": ("_ocr.html", "_results.html", "_results.htm"),
+    "result_json": ("_result.json",),
+}
+
 # Нормализованные имена в 02_work (рабочая копия для backend).
 WORK_NORMALIZED = {
     "pdf": "document.pdf",
@@ -267,12 +280,15 @@ def find_input_quad(version_dir: Path) -> dict[str, Optional[Path]]:
     if not version_dir.is_dir():
         return found
     entries = sorted(version_dir.iterdir(), key=lambda p: p.name)
-    # сначала специфичные суффиксы (_document.md / _ocr.html / _result.json)
+    # сначала специфичные суффиксы; для каждой роли перебираем синонимы
+    # в порядке приоритета (старый суффикс выигрывает у нового при обоих в папке)
     for key in ("document_md", "ocr_html", "result_json"):
-        suffix = INPUT_QUAD[key]
-        for e in entries:
-            if e.is_file() and e.name.endswith(suffix):
-                found[key] = e
+        for suffix in INPUT_SUFFIXES[key]:
+            for e in entries:
+                if e.is_file() and e.name.lower().endswith(suffix):
+                    found[key] = e
+                    break
+            if found[key] is not None:
                 break
     # .pdf — только файлы
     for e in entries:

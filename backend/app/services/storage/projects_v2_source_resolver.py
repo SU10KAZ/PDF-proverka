@@ -14,6 +14,12 @@ from pathlib import Path
 from typing import NamedTuple, Optional
 
 _DOC_SUFFIX = "_document.md"
+# _results.md/_results.html — новый 3-файловый комплект портала (2026-07).
+# Старые суффиксы в приоритете и остаются навсегда (чтение уже загруженных
+# проектов); удалить после 2026-08-14 можно только ПРИЁМ старого формата
+# (upload/миграция), не эти паттерны чтения.
+_DOC_SUFFIXES = ("_document.md", "_results.md")
+_OCR_HTML_SUFFIXES = ("_ocr.html", "_results.html", "_results.htm")
 _EXCLUDE_PREFIXES = ("audit_", "readme", "claude", "_combined")
 
 
@@ -51,13 +57,15 @@ def _document_code_stem(document_code: str | None) -> str:
 
 def _is_doc_md(path: Path) -> bool:
     low = path.name.lower()
-    return low.endswith(_DOC_SUFFIX) and not low.startswith(_EXCLUDE_PREFIXES)
+    return low.endswith(_DOC_SUFFIXES) and not low.startswith(_EXCLUDE_PREFIXES)
 
 
-def _stem_without_suffix(path: Path, suffix: str) -> str:
+def _stem_without_suffix(path: Path, suffix: "str | tuple[str, ...]") -> str:
     name = path.name
-    if name.lower().endswith(suffix):
-        return name[: -len(suffix)]
+    suffixes = (suffix,) if isinstance(suffix, str) else suffix
+    for s in suffixes:
+        if name.lower().endswith(s):
+            return name[: -len(s)]
     return path.stem
 
 
@@ -67,7 +75,15 @@ def _files(root: Path, pattern: str) -> list[Path]:
     return sorted(p for p in root.rglob(pattern) if p.is_file())
 
 
-def _select_candidate(paths: list[Path], document_code: str | None, *, suffix: str | None = None) -> Optional[Path]:
+def _doc_md_files(root: Path) -> list[Path]:
+    """Кандидаты «главного MD» в приоритете суффиксов: _document.md → _results.md."""
+    out: list[Path] = []
+    for suffix in _DOC_SUFFIXES:
+        out.extend(p for p in _files(root, f"*{suffix}") if _is_doc_md(p) and p not in out)
+    return out
+
+
+def _select_candidate(paths: list[Path], document_code: str | None, *, suffix: "str | tuple[str, ...] | None" = None) -> Optional[Path]:
     if not paths:
         return None
     code_norm = _norm(_document_code_stem(document_code))
@@ -96,9 +112,15 @@ def _resolve_md(version_dir: Path, document_code: str | None) -> Optional[Path]:
     normalized = work / "document.md"
     if normalized.is_file():
         return normalized
-    candidates = [p for p in _files(work, f"*{_DOC_SUFFIX}") if _is_doc_md(p)]
-    candidates.extend(p for p in _files(inp, f"*{_DOC_SUFFIX}") if _is_doc_md(p))
-    return _select_candidate(candidates, document_code, suffix=_DOC_SUFFIX)
+    # По группам суффиксов в порядке приоритета: сперва только *_document.md,
+    # затем только *_results.md — оба рядом не «неоднозначность», а старший метод.
+    for suffix in _DOC_SUFFIXES:
+        candidates = [p for p in _files(work, f"*{suffix}") if _is_doc_md(p)]
+        candidates.extend(p for p in _files(inp, f"*{suffix}") if _is_doc_md(p))
+        selected = _select_candidate(candidates, document_code, suffix=suffix)
+        if selected is not None:
+            return selected
+    return None
 
 
 def _resolve_pdf(version_dir: Path, document_code: str | None) -> Optional[Path]:
@@ -162,9 +184,10 @@ def _unique(paths) -> tuple[Path, ...]:
 
 
 def _legacy_doc_mds(root: Path) -> list[Path]:
-    candidates = [p for p in root.glob(f"*{_DOC_SUFFIX}") if p.is_file() and _is_doc_md(p)]
-    if candidates:
-        return sorted(candidates)
+    for suffix in _DOC_SUFFIXES:
+        candidates = [p for p in root.glob(f"*{suffix}") if p.is_file() and _is_doc_md(p)]
+        if candidates:
+            return sorted(candidates)
     exclude_names = {"CLAUDE.md", "README.md"}
     return sorted(
         p for p in root.glob("*.md")
@@ -260,9 +283,13 @@ def resolve_version_source_files(
         work = version_dir / "02_work"
         inp = version_dir / "01_input"
         pdf_paths = _unique([work / "document.pdf", *_files(work, "*.pdf"), *_files(inp, "*.pdf")])
-        md_paths = _unique([work / "document.md", *[p for p in _files(work, f"*{_DOC_SUFFIX}") if _is_doc_md(p)], *[p for p in _files(inp, f"*{_DOC_SUFFIX}") if _is_doc_md(p)]])
+        md_paths = _unique([work / "document.md", *_doc_md_files(work), *_doc_md_files(inp)])
         result_json_paths = _unique([work / "result.json", *_files(work, "*_result.json"), *_files(inp, "*_result.json")])
-        ocr_html_paths = _unique([work / "ocr.html", *_files(work, "*_ocr.html"), *_files(inp, "*_ocr.html")])
+        ocr_html_paths = _unique([
+            work / "ocr.html",
+            *[p for s in _OCR_HTML_SUFFIXES for p in _files(work, f"*{s}")],
+            *[p for s in _OCR_HTML_SUFFIXES for p in _files(inp, f"*{s}")],
+        ])
         return VersionSourceFiles(
             md_path=v2.md_path or (md_paths[0] if len(md_paths) == 1 else None),
             pdf_path=v2.pdf_path or (pdf_paths[0] if len(pdf_paths) == 1 else None),
@@ -279,7 +306,10 @@ def resolve_version_source_files(
     pdf_paths = _unique(version_dir.glob("*.pdf"))
     md_paths = _unique(_legacy_doc_mds(version_dir))
     result_json_paths = _unique([*version_dir.glob("*_result.json"), version_dir / "result.json"])
-    ocr_html_paths = _unique([*version_dir.glob("*_ocr.html"), version_dir / "ocr.html"])
+    ocr_html_paths = _unique([
+        *[p for s in _OCR_HTML_SUFFIXES for p in version_dir.glob(f"*{s}")],
+        version_dir / "ocr.html",
+    ])
     return VersionSourceFiles(
         md_path=_select_with_info(version_dir, md_paths, document_code, info, "md_file"),
         pdf_path=_select_with_info(version_dir, pdf_paths, document_code, info, "pdf_file"),

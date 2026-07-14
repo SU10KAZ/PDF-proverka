@@ -1367,10 +1367,17 @@ def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
     if result_candidates:
         _copy_if_exists(result_candidates[0], work / "result.json")
 
+    # _results.html — новый 3-файловый комплект портала (2026-07); при обоих
+    # вариантах в 01_input старый _ocr.html выигрывает. Приём старого метода
+    # удалить после 2026-08-14 (раздел ВК пока распознаётся по-старому).
     ocr_candidates = sorted(
         p for p in inp.rglob("*.html")
-        if p.is_file() and (p.name == "ocr.html" or p.name.endswith("_ocr.html"))
+        if p.is_file() and (
+            p.name == "ocr.html"
+            or p.name.lower().endswith(("_ocr.html", "_results.html"))
+        )
     ) if inp.is_dir() else []
+    ocr_candidates.sort(key=lambda p: p.name.lower().endswith("_results.html"))
     if ocr_candidates:
         _copy_if_exists(ocr_candidates[0], work / "ocr.html")
 
