@@ -247,14 +247,14 @@ _stage_models: dict[str, str | None] = {
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "text_analysis":          "claude-opus-4-7",
-    "block_batch":            "openai/gpt-5.4",
+    "block_batch":            "ensemble/gpt-codex",
     "findings_merge":         "claude-opus-4-7",
     "findings_critic":        "claude-opus-4-7",
     "findings_corrector":     "claude-opus-4-7",
     "norm_verify":            "claude-opus-4-7",
     "norm_fix":               "claude-opus-4-7",
     "norm_requote":           "claude-sonnet-4-6",
-    "optimization":           "claude-opus-4-7",
+    "optimization":           "ensemble/claude-codex-opt",
     "optimization_critic":    "claude-sonnet-4-6",
     "optimization_corrector": "claude-sonnet-4-6",
 }
@@ -428,6 +428,16 @@ OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
 OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
     os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-4-7").strip()
     or "claude-opus-4-7"
+)
+OPTIMIZATION_ENSEMBLE_CODEX_MODEL = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CODEX_MODEL", "codex/gpt-5.6-sol").strip()
+    or "codex/gpt-5.6-sol"
+)
+if not OPTIMIZATION_ENSEMBLE_CODEX_MODEL.startswith("codex/"):
+    OPTIMIZATION_ENSEMBLE_CODEX_MODEL = f"codex/{OPTIMIZATION_ENSEMBLE_CODEX_MODEL}"
+OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT", "xhigh").strip().lower()
+    or "xhigh"
 )
 # Диспетчеризация стадий идёт строго по префиксу "codex/" (is_codex_model). Значение
 # без префикса (перепутали с AUDIT_CODEX_MODEL) попадало в AVAILABLE_MODELS как

@@ -91,11 +91,13 @@ def test_single_provider_result_is_degraded_but_not_lost():
 
 def test_runner_starts_providers_concurrently_and_keeps_raw_outputs(tmp_path, monkeypatch):
     started: list[str] = []
+    efforts: dict[str, str | None] = {}
     both_started = asyncio.Event()
 
     async def fake_run_optimization(project_info, project_id, **kwargs):
         model = kwargs["model_override"]
         started.append(model)
+        efforts[model] = kwargs.get("reasoning_effort_override")
         if len(started) == 2:
             both_started.set()
         await asyncio.wait_for(both_started.wait(), timeout=1)
@@ -128,6 +130,8 @@ def test_runner_starts_providers_concurrently_and_keeps_raw_outputs(tmp_path, mo
     assert result.success is True
     assert result.status == "ok"
     assert len(started) == 2
+    assert ensemble.OPTIMIZATION_ENSEMBLE_CODEX_MODEL in started
+    assert efforts[ensemble.OPTIMIZATION_ENSEMBLE_CODEX_MODEL] == "xhigh"
     assert (tmp_path / "optimization_claude.json").is_file()
     assert (tmp_path / "optimization_codex.json").is_file()
     assert (tmp_path / "optimization_merge_report.json").is_file()

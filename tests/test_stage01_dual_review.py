@@ -260,6 +260,7 @@ async def test_stage01_dual_runner_persists_review_contract(monkeypatch, tmp_pat
     from backend.app.core.config import STAGE02_DUAL_MODEL_ID
     from backend.app.pipeline.stages.block_analysis import dual_review
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
+    from backend.app.pipeline.stages.block_context.contract import SCHEMA_VERSION
     from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
         stage02_crop_policy,
     )
@@ -280,8 +281,12 @@ async def test_stage01_dual_runner_persists_review_contract(monkeypatch, tmp_pat
     )
     (output_dir / "block_context_summary.json").write_text(
         json.dumps({
-            "schema_version": 1,
+            "schema_version": SCHEMA_VERSION,
             "stage": "block_context",
+            "reference_catalog": {
+                "runtime_source": "pipeline_stage_embedded_catalog",
+                "records_total": 1,
+            },
             "status": "ok",
             "blocks_total": 1,
             "blocks_ready": 1,

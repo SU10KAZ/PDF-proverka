@@ -104,12 +104,37 @@ async def get_stage_model_config():
 
     Возвращает текущий маппинг этап → модель (Claude CLI + OpenRouter).
     """
-    from backend.app.core.config import STAGE_MODEL_RESTRICTIONS, STAGE_MODEL_HINTS
+    from backend.app.core.config import (
+        CODEX_STAGE_MODEL_ID,
+        OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+        OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+        OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
+        STAGE01_DUAL_REVIEW_MODEL,
+        STAGE_MODEL_HINTS,
+        STAGE_MODEL_RESTRICTIONS,
+    )
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
         "restrictions": STAGE_MODEL_RESTRICTIONS,
         "hints": STAGE_MODEL_HINTS,
+        "ensemble_details": {
+            "block_batch": {
+                "parallel_models": [GPT_MODEL, CODEX_STAGE_MODEL_ID],
+                "judge_model": STAGE01_DUAL_REVIEW_MODEL,
+                "final_verifier_model": STAGE_MODEL_CONFIG.get("findings_critic"),
+            },
+            "optimization": {
+                "parallel_models": [
+                    OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+                    OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+                ],
+                "codex_reasoning_effort": OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
+                "merge_method": "deterministic_deduplication",
+                "judge_model": STAGE_MODEL_CONFIG.get("optimization_critic"),
+                "fix_model": STAGE_MODEL_CONFIG.get("optimization_corrector"),
+            },
+        },
         "config_errors": validate_current_stage_model_config(),
     }
 

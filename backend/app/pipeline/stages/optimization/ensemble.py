@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable
 
 from backend.app.core.config import (
-    CODEX_STAGE_MODEL_ID,
+    OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+    OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
     OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
 )
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
@@ -290,7 +291,7 @@ def merge_optimization_documents(
     *,
     run_id: str,
     claude_model: str = OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
-    codex_model: str = CODEX_STAGE_MODEL_ID,
+    codex_model: str = OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Merge independent provider outputs, collapsing only strong duplicates."""
     claude_items = [
@@ -420,6 +421,7 @@ async def _run_provider(
     *, provider: str, model: str, project_info: dict[str, Any], project_id: str,
     provider_dir: Path, source_output_dir: Path, version_dir: Path,
     version_id: str | None, log: Callable[..., Awaitable[None]],
+    reasoning_effort: str | None = None,
 ) -> ProviderRun:
     result = ProviderRun(provider=provider, model=model, output_dir=provider_dir)
     try:
@@ -432,6 +434,7 @@ async def _run_provider(
             version_id=version_id,
             model_override=model,
             visual_output_dir=source_output_dir,
+            reasoning_effort_override=reasoning_effort,
         )
         result.exit_code = exit_code
         result.output = output or ""
@@ -484,10 +487,11 @@ async def run_optimization_ensemble(
             version_id=version_id, log=log,
         ),
         _run_provider(
-            provider="codex", model=CODEX_STAGE_MODEL_ID,
+            provider="codex", model=OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
             project_info=project_info, project_id=project_id, provider_dir=codex_dir,
             source_output_dir=output_dir, version_dir=version_dir,
             version_id=version_id, log=log,
+            reasoning_effort=OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
         ),
     )
 

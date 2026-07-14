@@ -30,6 +30,7 @@ _CODEX_JSON_SANDBOX_ENV = "AUDIT_CODEX_JSON_SANDBOX"
 _DEFAULT_SANDBOX = "workspace-write"
 _DEFAULT_JSON_SANDBOX = "read-only"
 _ALLOWED_SANDBOXES = {"read-only", "workspace-write", "danger-full-access"}
+_ALLOWED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh"}
 
 
 def find_codex_cli() -> str | None:
@@ -76,6 +77,13 @@ def _sandbox_mode() -> str:
 def _json_sandbox_mode() -> str:
     raw = (os.environ.get(_CODEX_JSON_SANDBOX_ENV) or _DEFAULT_JSON_SANDBOX).strip()
     return raw if raw in _ALLOWED_SANDBOXES else _DEFAULT_JSON_SANDBOX
+
+
+def _reasoning_effort_args(reasoning_effort: str | None) -> list[str]:
+    effort = str(reasoning_effort or "").strip().lower()
+    if effort not in _ALLOWED_REASONING_EFFORTS:
+        return []
+    return ["-c", f'model_reasoning_effort="{effort}"']
 
 
 def _normalize_image_paths(image_paths: Sequence[str | Path] | None) -> list[Path]:
@@ -221,6 +229,7 @@ async def run_codex_exec(
     project_id: str = "",
     model: str | None = None,
     image_paths: Sequence[str | Path] | None = None,
+    reasoning_effort: str | None = None,
 ) -> tuple[int, str, CLIResult]:
     """Run Codex exec and return the classic `(exit_code, output, CLIResult)` tuple."""
     cli = find_codex_cli()
@@ -248,6 +257,7 @@ async def run_codex_exec(
         _sandbox_mode(),
         "--model",
         resolved_model,
+        *_reasoning_effort_args(reasoning_effort),
         *image_args,
         "-C",
         str(ROOT_DIR),

@@ -25,6 +25,15 @@ const app = createApp({
         const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
         const currentProjectId = ref(null);
         const currentProject = ref(null);
+        const visiblePipelineSummary = computed(() => {
+            const rows = currentProject.value?.pipeline_summary;
+            if (!Array.isArray(rows)) return [];
+            const presentKeys = new Set(rows.map(row => String(row?.key || '')).filter(Boolean));
+            return rows.filter(row => {
+                const canonicalKey = String(row?.canonical_key || '');
+                return !canonicalKey || !presentKeys.has(canonicalKey);
+            });
+        });
         const projectLoading = ref(false);   // идёт ли сейчас загрузка карточки проекта
         const projects = ref([]);
         const loading = ref(false);
@@ -1933,6 +1942,8 @@ const app = createApp({
             if (!s || !s.model) return '';
             // Краткое имя модели: google/gemini-3.1-pro-preview → Gemini, openai/gpt-5.4 → GPT
             const m = s.model;
+            if (m.includes('ensemble/gpt-codex')) return 'GPT+Codex';
+            if (m.includes('codex')) return 'Codex';
             if (m.includes('gemini')) return 'Gemini';
             if (m.includes('gpt')) return 'GPT';
             if (m.includes('opus')) return 'Opus';
@@ -3100,43 +3111,31 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
+        const stageEnsembleDetails = ref({});
         const CODEX_PRESET_MODEL = "__codex_exec__";
         const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
+        const BASE_STAGE_MODEL_CONFIG = {
+            text_analysis:          "claude-opus-4-7",
+            block_batch:            "openai/gpt-5.4",
+            findings_merge:         "claude-opus-4-7",
+            findings_critic:        "claude-sonnet-4-6",
+            findings_corrector:     "claude-sonnet-4-6",
+            norm_verify:            "claude-sonnet-4-6",
+            norm_fix:               "claude-sonnet-4-6",
+            norm_requote:           "claude-sonnet-4-6",
+            optimization:           "claude-opus-4-7",
+            optimization_critic:    "claude-sonnet-4-6",
+            optimization_corrector: "claude-sonnet-4-6",
+        };
         const modelPresets = {
-            findings_only: {
-                label: "Claude+GPT",
-                hint: "Claude: текст, свод и оптимизация · GPT-5.4: блоки Stage 01.",
-                config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "openai/gpt-5.4",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    norm_requote:           "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
-                },
-                batchModes: { block_batch: "findings_only_block_context" },
-            },
-            plus_codex: {
-                label: "+Codex",
+            claude_gpt_codex: {
+                label: "Claude+GPT +Codex",
                 hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex.",
                 config: {
-                    text_analysis:          "claude-opus-4-7",
+                    ...BASE_STAGE_MODEL_CONFIG,
                     block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    norm_requote:           "claude-sonnet-4-6",
                     optimization:           OPT_CODEX_ENSEMBLE_MODEL,
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
                 },
                 batchModes: { block_batch: "findings_only_block_context" },
             },
@@ -3291,7 +3290,7 @@ const app = createApp({
             } else if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
                 stageModelConfig.value[stageKey] = 'claude-opus-4-7';
             } else if (String(effectiveModel || '').startsWith('codex/')) {
-                stageModelConfig.value[stageKey] = resolvePresetConfig(modelPresets.findings_only)[stageKey]
+                stageModelConfig.value[stageKey] = BASE_STAGE_MODEL_CONFIG[stageKey]
                     || 'claude-sonnet-4-6';
             }
             activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
@@ -3305,6 +3304,7 @@ const app = createApp({
                 availableModels.value = normalizeAvailableModels(data.available_models || []);
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
+                stageEnsembleDetails.value = data.ensemble_details || {};
                 if (data.config_errors && Object.keys(data.config_errors).length > 0) {
                     stageModelSaveError.value = `Текущая конфигурация моделей невалидна: ${formatRejected(data.config_errors)}`;
                 }
@@ -4001,6 +4001,223 @@ const app = createApp({
             'debt_control': 'Контроль долгов',
             'decision_carryover': 'Перенос вердиктов',
         };
+
+        // Короткие памятки по фактическому алгоритму карточек пайплайна.
+        const activeStageAlgorithmKey = ref(null);
+        const STAGE_ALGORITHMS = Object.freeze({
+            block_context: {
+                title: 'Векторные графы блоков',
+                subtitle: 'Подготавливает точный вход для Stage 01.',
+                steps: [
+                    { text: 'PDF-вектор · Vectograph · PNG' },
+                    { text: 'Роутер выбирает лучший источник' },
+                    { text: 'Собирает текст, связи и геометрию' },
+                    { text: 'Единый контекст + метка источника', tone: 'result' },
+                ],
+            },
+            text_analysis: {
+                title: '02 Анализ текста',
+                subtitle: 'Ищет ошибки в текстовой части проекта.',
+                steps: [
+                    { text: 'Markdown + векторный текст PDF' },
+                    { text: 'Чек-лист для раздела проекта' },
+                    { text: 'Выбранная модель ищет несоответствия' },
+                    { text: 'Текстовые замечания', tone: 'result' },
+                ],
+            },
+            findings: {
+                title: '03 Свод замечаний',
+                subtitle: 'Собирает общий список без потери авторства.',
+                steps: [
+                    { text: '01 Блоки + 02 Текст' },
+                    { text: 'Смысловое сопоставление' },
+                    { text: 'Похожие замечания объединяются' },
+                    { text: 'Итоговый список + бейджи источников', tone: 'result' },
+                ],
+            },
+            findings_critic: {
+                title: 'Верификатор',
+                subtitle: 'Отсеивает фантомы и правит слабые формулировки.',
+                steps: [
+                    { text: 'Итоговые замечания' },
+                    { text: 'Проверка блоков, листов и доказательств' },
+                    { text: 'Сомнительное уточняется или отклоняется' },
+                    { text: 'Проверенные замечания', tone: 'result' },
+                ],
+            },
+            norms_verified: {
+                title: '04 Верификация норм',
+                subtitle: 'Проверяет нормативные ссылки и цитаты.',
+                steps: [
+                    { text: 'Замечание + ссылка на норму' },
+                    { text: 'Поиск пункта в базе норм' },
+                    { text: 'Сверка смысла и точной цитаты' },
+                    { text: 'Подтверждённая или исправленная ссылка', tone: 'result' },
+                ],
+            },
+            optimization_critic: {
+                title: 'Critic / Fix',
+                subtitle: 'Проверяет качество идей оптимизации.',
+                steps: [
+                    { text: 'Предложения по оптимизации' },
+                    { text: 'Critic ищет слабые и рискованные идеи' },
+                    { text: 'Fix уточняет расчёт и формулировку' },
+                    { text: 'Проверенные варианты', tone: 'result' },
+                ],
+            },
+            debt_control: {
+                title: 'Контроль долгов',
+                subtitle: 'Не даёт потерять ранее согласованные замечания.',
+                steps: [
+                    { text: 'Согласованные замечания прошлой версии' },
+                    { text: 'Сопоставление с новым аудитом' },
+                    { text: 'Поиск пропавших позиций' },
+                    { text: 'Список незакрытых долгов', tone: 'result' },
+                ],
+            },
+            decision_carryover: {
+                title: 'Перенос вердиктов',
+                subtitle: 'Восстанавливает решения эксперта в новой версии.',
+                steps: [
+                    { text: 'Вердикты эксперта из прошлой версии' },
+                    { text: 'Точное и смысловое сопоставление' },
+                    { text: 'Неоднозначное остаётся на проверку' },
+                    { text: 'Решения перенесены без подмены', tone: 'result' },
+                ],
+            },
+        });
+
+        function stageModelDisplayName(modelId) {
+            const id = String(modelId || '');
+            if (id === 'codex/gpt-5.6-sol') return 'Codex GPT-5.6 Sol';
+            if (id.startsWith('codex/')) return `Codex ${id.slice(6).toUpperCase()}`;
+            if (id === 'openai/gpt-5.4') return 'GPT-5.4 (OpenRouter)';
+            if (id === 'claude-opus-4-7') return 'Claude Opus 4.7';
+            if (id === 'claude-sonnet-4-6') return 'Claude Sonnet 4.6';
+            const available = availableModels.value.find(model => model.id === id);
+            if (available?.label && available.provider !== 'codex_cli') {
+                return available.label.replace(' (CLI)', '');
+            }
+            return id || 'не задан';
+        }
+
+        function blockAnalysisAlgorithm() {
+            const usageModel = String(stageTokens('blocks_analysis')?.model || '');
+            const configuredModel = String(stageModelConfig.value?.block_batch || '');
+            const model = configuredModel || usageModel || 'openai/gpt-5.4';
+            const base = {
+                title: '01 Анализ блоков',
+                subtitle: 'Каждая модель получает одинаковые изображение и контекст.',
+            };
+            if (model.includes('ensemble/gpt-codex')) {
+                const details = stageEnsembleDetails.value?.block_batch || {};
+                const parallelModels = details.parallel_models || ['openai/gpt-5.4', 'codex/gpt-5.4'];
+                const judge = stageModelDisplayName(details.judge_model || 'codex/gpt-5.4');
+                const verifier = stageModelDisplayName(
+                    details.final_verifier_model || stageModelConfig.value?.findings_critic
+                );
+                return {
+                    ...base,
+                    note: `GPT и Codex не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
+                    steps: [
+                        { text: 'Изображение + контекст блока' },
+                        { type: 'split', branches: [
+                            { label: 'GPT', text: `${stageModelDisplayName(parallelModels[0])}: независимые замечания` },
+                            { label: 'Codex', text: `${stageModelDisplayName(parallelModels[1])}: независимые замечания` },
+                        ] },
+                        { text: `Судья: ${judge} сравнивает результаты`, tone: 'judge' },
+                        { text: 'Совпадения · расширения · новые · спорные' },
+                        { text: `${judge}: gap-search пропущенных проблем` },
+                        { text: 'Замечания + бейджи GPT / Codex', tone: 'result' },
+                    ],
+                };
+            }
+            let detector = 'GPT-5.4';
+            let badge = 'GPT';
+            if (model.includes('codex')) {
+                detector = 'Codex';
+                badge = 'Codex';
+            } else if (model.includes('claude') || model.includes('opus') || model.includes('sonnet')) {
+                detector = 'Claude';
+                badge = 'Claude';
+            }
+            return {
+                ...base,
+                steps: [
+                    { text: 'Изображение + контекст блока' },
+                    { text: `${detector} ищет замечания по чек-листу` },
+                    { text: `Каждое замечание получает бейдж ${badge}` },
+                    { text: 'Далее 03 Свод: объединение с текстом', tone: 'result' },
+                ],
+            };
+        }
+
+        function optimizationAlgorithm() {
+            const configuredModel = String(stageModelConfig.value?.optimization || '');
+            if (configuredModel.includes('ensemble/claude-codex-opt')) {
+                const details = stageEnsembleDetails.value?.optimization || {};
+                const parallelModels = details.parallel_models || [
+                    'claude-opus-4-7', 'codex/gpt-5.6-sol',
+                ];
+                const judge = stageModelDisplayName(
+                    details.judge_model || stageModelConfig.value?.optimization_critic
+                );
+                const fixer = stageModelDisplayName(
+                    details.fix_model || stageModelConfig.value?.optimization_corrector
+                );
+                const effort = details.codex_reasoning_effort
+                    ? ` / ${details.codex_reasoning_effort}`
+                    : '';
+                return {
+                    title: '05 Оптимизация',
+                    subtitle: 'Два независимых анализа запускаются параллельно.',
+                    note: 'На этапе объединения модель не голосует: сильные смысловые дубли удаляются детерминированно. Решение о качестве принимает следующий Critic.',
+                    steps: [
+                        { text: 'Один снимок проекта + графические блоки' },
+                        { type: 'split', branches: [
+                            { label: 'Claude', text: `${stageModelDisplayName(parallelModels[0])}: полный контекст` },
+                            { label: 'Codex', text: `${stageModelDisplayName(parallelModels[1])}${effort}: визуальный анализ` },
+                        ] },
+                        { text: 'Объединение + удаление сильных дублей' },
+                        { text: `Судья C OPT Critic: ${judge}`, tone: 'judge' },
+                        { text: `Исправление F OPT Fix: ${fixer}` },
+                        { text: 'Проверенные предложения по оптимизации', tone: 'result' },
+                    ],
+                };
+            }
+            return {
+                title: '05 Оптимизация',
+                subtitle: 'Ищет варианты удешевления и упрощения.',
+                steps: [
+                    { text: 'Проект + найденные замечания' },
+                    { text: 'Выбранная модель ищет оптимизации' },
+                    { text: 'C OPT Critic проверяет эффект и риск', tone: 'judge' },
+                    { text: 'Проверенные предложения по оптимизации', tone: 'result' },
+                ],
+            };
+        }
+
+        const activeStageAlgorithm = computed(() => {
+            if (activeStageAlgorithmKey.value === 'blocks_analysis') {
+                return blockAnalysisAlgorithm();
+            }
+            if (activeStageAlgorithmKey.value === 'optimization') {
+                return optimizationAlgorithm();
+            }
+            return STAGE_ALGORITHMS[activeStageAlgorithmKey.value] || null;
+        });
+
+        function openStageAlgorithm(stageKey) {
+            activeStageAlgorithmKey.value = stageKey;
+            if (['blocks_analysis', 'optimization'].includes(stageKey)
+                && Object.keys(stageModelConfig.value || {}).length === 0) {
+                loadStageModels();
+            }
+        }
+
+        function closeStageAlgorithm() {
+            activeStageAlgorithmKey.value = null;
+        }
 
         function canStartFrom(pipelineKey) {
             if (!currentProject.value) return false;
@@ -8339,9 +8556,27 @@ const app = createApp({
             if (!meta) return null;
             const detections = Array.isArray(provenance.detections) ? provenance.detections : [];
             const models = [...new Set(detections.map(d => d && d.model).filter(Boolean))];
+            const isGapSearch = detections.some(d => d && d.mode === 'gap_search');
+            const baseTitle = summary === 'codex' && isGapSearch
+                ? 'Найдено дополнительным gap-search Codex'
+                : meta.title;
+            const comparison = finding.detector_comparison || {};
+            const relation = comparison.primary_relation || comparison.relation || '';
+            const relationLabel = {
+                match: 'совпадение GPT/Codex',
+                extension: 'расширение другого замечания',
+                new: comparison.gap_search || comparison.origin === 'gap_search'
+                    ? 'новое: найдено gap-search'
+                    : 'новое: найдено одним детектором',
+                disputed: 'спорное: детекторы расходятся',
+            }[relation];
+            const titleParts = [
+                models.length ? `${baseTitle}: ${models.join(', ')}` : baseTitle,
+                relationLabel,
+            ].filter(Boolean);
             return {
                 ...meta,
-                title: models.length ? `${meta.title}: ${models.join(', ')}` : meta.title,
+                title: titleParts.join(' · '),
             };
         }
 
@@ -10133,6 +10368,7 @@ const app = createApp({
         // Client-side фильтрация — без перезапроса с сервера
         watch(filterSeverity, () => _applyFindingsFilter());
         watch(filterSearch, () => _applyFindingsFilter());
+        watch(currentView, () => closeStageAlgorithm());
         // Inline Critic v2 toggles
         watch(cv2ShowHidden, () => { findingsPage.value = 1; _applyFindingsFilter(); });
         watch(cv2DisplayFilter, () => { findingsPage.value = 1; _applyFindingsFilter(); });
@@ -10148,9 +10384,15 @@ const app = createApp({
             // ВНЕ popover'а.
             scCloseInlineMatch();
         }
+        function _stageAlgorithmKeydown(ev) {
+            if (ev.key === 'Escape' && activeStageAlgorithmKey.value) {
+                closeStageAlgorithm();
+            }
+        }
         onMounted(() => {
             window.addEventListener('hashchange', handleRoute);
             window.addEventListener('click', _scInlineMatchOutsideClick);
+            window.addEventListener('keydown', _stageAlgorithmKeydown);
             // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
             window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
             // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
@@ -10185,6 +10427,7 @@ const app = createApp({
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
             window.removeEventListener('click', _scInlineMatchOutsideClick);
+            window.removeEventListener('keydown', _stageAlgorithmKeydown);
             window.removeEventListener('click', closeHeaderPopovers);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
@@ -17348,7 +17591,8 @@ const app = createApp({
             subSpendOpen, subSpendLoading, subSpendData, subSpendWeekText,
             subSpendLoad, subSpendColor, subSpendInitials, subSpendDayLabel, subSpendTok,
             // State
-            currentView, currentProject, currentProjectId, projectLoading, projects, loading, isProjectView,
+            currentView, currentProject, currentProjectId, visiblePipelineSummary,
+            projectLoading, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
             // KB-Validation
             kbValidationAvailable, kbValidationLoading, findingKbDecision, findingKbLabel, findingKbClass, findingKbTooltip,
@@ -17406,6 +17650,8 @@ const app = createApp({
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
+            activeStageAlgorithmKey, activeStageAlgorithm,
+            openStageAlgorithm, closeStageAlgorithm,
             retryStage, retryDialog, retryStageToQueue,
             canRetryStage,
             skipStage, cleanProject,

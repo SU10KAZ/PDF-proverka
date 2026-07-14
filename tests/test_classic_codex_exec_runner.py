@@ -133,6 +133,7 @@ async def test_codex_runner_builds_exec_command_and_reads_output_file(monkeypatc
         stage="optimization",
         project_id="DOC-2",
         model="codex/gpt-5.4",
+        reasoning_effort="xhigh",
     )
 
     cmd = captured["cmd"]
@@ -143,6 +144,7 @@ async def test_codex_runner_builds_exec_command_and_reads_output_file(monkeypatc
     assert cmd[:2] == ["/usr/bin/codex", "exec"]
     assert cmd[cmd.index("--sandbox") + 1] == "danger-full-access"
     assert cmd[cmd.index("--model") + 1] == "gpt-5.4"
+    assert cmd[cmd.index("-c") + 1] == 'model_reasoning_effort="xhigh"'
     assert cmd[-1] == "-"
     assert captured["timeout"] == 42
     assert "filesystem access" in captured["input_text"]

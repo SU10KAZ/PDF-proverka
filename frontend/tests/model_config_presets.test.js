@@ -10,17 +10,18 @@ const appJs = fs.readFileSync(path.join(frontendRoot, 'static/js/app.js'), 'utf8
 const css = fs.readFileSync(path.join(frontendRoot, 'static/css/styles.css'), 'utf8');
 
 describe('compact model configuration presets', () => {
-  it('renders the three presets in order', () => {
-    const claudeGpt = html.indexOf('>Claude+GPT</button>');
-    const plusCodex = html.indexOf('>+Codex</button>');
+  it('renders the combined production preset before Full Codex', () => {
+    const combined = html.indexOf('>Claude+GPT +Codex</button>');
     const fullCodex = html.indexOf('>Full Codex</button>');
-    expect(claudeGpt).toBeGreaterThan(-1);
-    expect(plusCodex).toBeGreaterThan(claudeGpt);
-    expect(fullCodex).toBeGreaterThan(plusCodex);
+    expect(combined).toBeGreaterThan(-1);
+    expect(fullCodex).toBeGreaterThan(combined);
+    expect(html).not.toContain('>Claude+GPT</button>');
+    expect(html).not.toContain('>+Codex</button>');
   });
 
-  it('maps +Codex to both supported ensembles', () => {
-    const preset = appJs.match(/plus_codex:\s*\{[\s\S]*?\n\s*codex_exec:/)?.[0] || '';
+  it('maps Claude+GPT +Codex to both supported ensembles', () => {
+    const preset = appJs.match(/claude_gpt_codex:\s*\{[\s\S]*?\n\s*codex_exec:/)?.[0] || '';
+    expect(preset).toContain('label: "Claude+GPT +Codex"');
     expect(preset).toContain('block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL');
     expect(preset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
   });

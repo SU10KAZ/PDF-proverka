@@ -840,6 +840,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
    ══════════════════════════════════════════════════════════════ */
 .pipeline-detail { display: flex; align-items: center; gap: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 16px; margin-bottom: 10px; overflow-x: auto; min-height: 0; }
 .pipeline-stage { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 80px; min-height: 78px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--card2-bg); transition: all 0.13s; flex-shrink: 0; gap: 3px; }
+.pipeline-stage--ctx { justify-content: center; }
 .pipeline-stage--clickable { cursor: pointer; }
 .pipeline-stage--clickable:hover { border-color: var(--teal-border); background: var(--teal-light); }
 .pipeline-stage--sm { min-width: 60px; padding: 8px 10px; }
@@ -852,6 +853,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .pipeline-stage.step-partial { border-color: rgba(196,115,0,0.35); background: var(--amber-light); }
 .pipeline-stage.step-partial .stage-num { color: var(--amber); }
 .stage-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); }
+.stage-label--ctx { display: flex; flex-direction: column; align-items: center; line-height: 1.25; text-align: center; }
 .pipeline-stage.step-done .stage-label { color: var(--green); }
 .pipeline-stage.step-running .stage-label { color: var(--blue); }
 .pipeline-stage.step-partial .stage-label { color: var(--amber); }
@@ -1802,6 +1804,7 @@ th.cv2-sort-active {
 .stage-algorithm-flow { display: flex; flex-direction: column; align-items: stretch; }
 .stage-algorithm-step { min-height: 38px; display: flex; align-items: center; justify-content: center; padding: 7px 12px; border: 1px solid var(--border2); border-radius: 6px; background: var(--card2-bg); color: var(--text); font-size: 12px; font-weight: 650; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
 .stage-algorithm-step--result { border-color: var(--teal-border); background: var(--teal-light); color: var(--teal); }
+.stage-algorithm-step--judge { border-color: rgba(196,115,0,0.35); background: var(--amber-light); color: var(--amber); }
 .stage-algorithm-arrow { height: 16px; display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 14px; line-height: 1; }
 .stage-algorithm-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
 .stage-algorithm-branch { min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 8px; border-left: 2px solid var(--border3); background: var(--card2-bg); color: var(--text2); font-size: 11px; line-height: 1.35; text-align: center; overflow-wrap: anywhere; }
@@ -1810,6 +1813,7 @@ th.cv2-sort-active {
 .stage-algorithm-badge { display: inline-flex; min-width: 44px; height: 20px; align-items: center; justify-content: center; padding: 0 7px; border-radius: 5px; font-size: 10px; font-weight: 800; letter-spacing: 0; }
 .stage-algorithm-badge--gpt { background: var(--blue-light); color: var(--blue); }
 .stage-algorithm-badge--codex { background: var(--green-light); color: var(--green); }
+.stage-algorithm-badge--claude { background: var(--purple-light); color: var(--purple); }
 .stage-algorithm-note { margin: 14px 0 0; padding-top: 10px; border-top: 1px solid var(--border); color: var(--text2); font-size: 11px; line-height: 1.45; text-align: center; }
 
 @media (max-width: 460px) {

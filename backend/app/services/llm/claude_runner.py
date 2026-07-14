@@ -235,6 +235,7 @@ async def _run_cli(
     model: str | None = None,
     clean_cwd: bool = False,
     image_paths: Sequence[str | Path] | None = None,
+    reasoning_effort: str | None = None,
 ) -> tuple[int, str, CLIResult]:
     """Запустить agent CLI с задачей через stdin, вернуть (exit_code, output, CLIResult).
 
@@ -254,6 +255,7 @@ async def _run_cli(
             project_id=project_id,
             model=model,
             image_paths=image_paths,
+            reasoning_effort=reasoning_effort,
         )
 
     from backend.app.services.common.process_runner import run_command
@@ -950,6 +952,7 @@ async def run_optimization(
     version_id: str | None = None,
     model_override: str | None = None,
     visual_output_dir: str | Path | None = None,
+    reasoning_effort_override: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
     model = model_override or get_stage_model("optimization")
@@ -986,10 +989,17 @@ async def run_optimization(
         if visual_prompt:
             task_text = task_text.rstrip() + "\n\n" + visual_prompt
 
+        cli_kwargs: dict[str, Any] = {
+            "stage": "optimization",
+            "project_id": project_id,
+            "model": model,
+            "image_paths": image_paths,
+        }
+        if reasoning_effort_override:
+            cli_kwargs["reasoning_effort"] = reasoning_effort_override
         exit_code, combined, cli_result = await _run_cli(
             task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
-            on_output, stage="optimization", project_id=project_id,
-            model=model, image_paths=image_paths,
+            on_output, **cli_kwargs,
         )
 
         _save_audit_trail(
@@ -998,6 +1008,7 @@ async def run_optimization(
             {
                 "result_text": cli_result.result_text,
                 "codex_exec_agentic": True,
+                "reasoning_effort": reasoning_effort_override or "default",
                 "attached_images": [str(path) for path in image_paths],
             },
             output_dir=output_dir,

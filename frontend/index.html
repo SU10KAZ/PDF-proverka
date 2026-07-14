@@ -1193,13 +1193,9 @@
                 </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'findings_only' }"
-                            @click="applyPreset('findings_only')"
-                            title="Claude выполняет основные этапы, GPT-5.4 анализирует графические блоки Stage 01.">Claude+GPT</button>
-                    <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'plus_codex' }"
-                            @click="applyPreset('plus_codex')"
-                            title="Добавляет Codex к Stage 01 Блоки и Stage 05 Оптимизация.">+Codex</button>
+                            :class="{ active: activePreset === 'claude_gpt_codex' }"
+                            @click="applyPreset('claude_gpt_codex')"
+                            title="Claude выполняет основные этапы; GPT-5.4 и Codex параллельно анализируют блоки, Claude и Codex — оптимизацию.">Claude+GPT +Codex</button>
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
@@ -1531,7 +1527,7 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline-detail">
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
+                        <div class="pipeline-stage pipeline-stage--ctx" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
                              @click="canStartFrom('block_context') && startFromStage(currentProject.project_id, 'block_context')"
                              :title="canStartFrom('block_context') ? 'Клик: построить векторные графы блоков' : 'Построение векторных графов блоков'">
                             <button type="button" class="stage-algorithm-button"
@@ -1539,7 +1535,11 @@
                                     title="Как устроен этап"
                                     aria-label="Алгоритм подготовки контекста">&#8942;</button>
                             <div class="stage-num">CTX</div>
-                            <div class="stage-label">Векторные графы блоков</div>
+                            <div class="stage-label stage-label--ctx">
+                                <span>Векторные</span>
+                                <span>графы</span>
+                                <span>блоков</span>
+                            </div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
@@ -1742,7 +1742,10 @@
                                         </div>
                                     </div>
                                     <div v-else class="stage-algorithm-step"
-                                         :class="{'stage-algorithm-step--result': step.tone === 'result'}">
+                                         :class="{
+                                             'stage-algorithm-step--result': step.tone === 'result',
+                                             'stage-algorithm-step--judge': step.tone === 'judge'
+                                         }">
                                         {{ step.text }}
                                     </div>
                                     <div v-if="index < activeStageAlgorithm.steps.length - 1"
@@ -1864,10 +1867,10 @@
                     </div>
 
                     <!-- Pipeline Summary (детальный статус этапов) -->
-                    <div v-if="currentProject.pipeline_summary && currentProject.pipeline_summary.length > 0" class="pipeline-summary">
+                    <div v-if="visiblePipelineSummary.length > 0" class="pipeline-summary">
                         <div class="pipeline-summary__title">Статус конвейера</div>
                         <div class="pipeline-summary__list">
-                            <div v-for="s in currentProject.pipeline_summary" :key="s.key"
+                            <div v-for="s in visiblePipelineSummary" :key="s.key"
                                  class="pipeline-summary__item" :class="'ps-' + s.status">
                                 <span class="ps-icon">
                                     <template v-if="s.status === 'done'">✓</template>
