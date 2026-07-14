@@ -37,6 +37,9 @@ def main() -> int:
             "status": graph.get("status") if graph else "not_extracted",
             "gate_use": gate["use"], "gate_mode": gate["mode"],
             "gate_reasons": gate.get("reasons") or [],
+            "complete": gate.get("complete", False),
+            "readiness": gate.get("readiness"),
+            "complete_reasons": gate.get("complete_reasons") or [],
             "validation": (graph or {}).get("validation") or {},
         }
         records.append(record)
@@ -55,6 +58,7 @@ def main() -> int:
     summary = {
         "schema_version": 1, "profiles_total": len(records),
         "gate_passed": sum(1 for record in records if record["gate_use"]),
+        "complete_total": sum(1 for record in records if record["complete"]),
         "records": records,
     }
     (OUT / "summary.json").write_text(

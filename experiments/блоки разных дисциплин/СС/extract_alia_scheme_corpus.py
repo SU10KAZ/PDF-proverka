@@ -49,8 +49,8 @@ def _source_pdf(result_path: Path) -> Path:
     return pdfs[0]
 
 
-def _find_blocks() -> dict[str, dict]:
-    wanted = {block_id for block_id, _ in CORPUS}
+def _find_blocks(corpus=CORPUS) -> dict[str, dict]:
+    wanted = {block_id for block_id, _ in corpus}
     found: dict[str, dict] = {}
     for result_path in ALIA_SS.rglob("*_result.json"):
         data = json.loads(result_path.read_text(encoding="utf-8"))
@@ -173,20 +173,25 @@ def _extract(entry: dict, output_path: Path) -> dict:
         }
 
 
-def main() -> None:
-    found = _find_blocks()
+def extract_corpus(corpus, manifest_name: str) -> list[dict]:
+    found = _find_blocks(corpus)
     manifest = []
-    for block_id, name in CORPUS:
+    for block_id, name in corpus:
         output_path = OUTPUT / f"{name} — {block_id}.pdf"
         manifest.append(_extract(found[block_id], output_path))
         print(f"{block_id}: {output_path.name}")
 
-    manifest_path = OUTPUT / "ALIA_SCHEME_CORPUS.json"
+    manifest_path = OUTPUT / manifest_name
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     print(f"manifest: {manifest_path}")
+    return manifest
+
+
+def main() -> None:
+    extract_corpus(CORPUS, "ALIA_SCHEME_CORPUS.json")
 
 
 if __name__ == "__main__":
