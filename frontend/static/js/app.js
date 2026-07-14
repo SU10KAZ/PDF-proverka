@@ -5026,9 +5026,15 @@ const app = createApp({
         // один кандидат из набора файлов (label = подпапка или basename PDF)
         function _buildUploadCandidate(label, files) {
             const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
-            const md = files.find(f => /_document\.md$/i.test(f.name)) || files.find(f => /\.md$/i.test(f.name)) || null;
+            // _results.md/_results.html — новый 3-файловый комплект портала (2026-07);
+            // старые суффиксы (_document.md/_ocr.html) в приоритете, их приём
+            // удалить после 2026-08-14 (раздел ВК пока грузится по-старому).
+            const md = files.find(f => /_document\.md$/i.test(f.name))
+                || files.find(f => /_results\.md$/i.test(f.name))
+                || files.find(f => /\.md$/i.test(f.name)) || null;
             const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
-            const ocr = files.find(f => /_ocr\.html?$/i.test(f.name)) || null;
+            const ocr = files.find(f => /_ocr\.html?$/i.test(f.name))
+                || files.find(f => /_results\.html?$/i.test(f.name)) || null;
             const pdf = pdfs.length === 1 ? pdfs[0] : null;
             return {
                 folder: label, files, pdf,
@@ -5072,7 +5078,7 @@ const app = createApp({
             for (const pdf of flatPdfs) {
                 const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
                 const sidecars = flat.filter(f => f !== pdf
-                    && /(_document\.md|\.md|_result\.json|_ocr\.html?)$/i.test(f.name)
+                    && /(_document\.md|\.md|_result\.json|_ocr\.html?|_results\.html?)$/i.test(f.name)
                     && f.name.toLowerCase().startsWith(stem));
                 cands.push(_buildUploadCandidate(pdf.name.replace(/\.pdf$/i, ''), [pdf, ...sidecars]));
             }
@@ -5270,6 +5276,7 @@ const app = createApp({
             s = s.replace(/\.pdf$/, '');
             s = s.replace(/\.md$/, '');
             s = s.replace(/_document$/, '');
+            s = s.replace(/_results$/, '');
             s = s.replace(/\s*\(\d+\)\s*$/g, '');
             s = s.replace(/[\s_\-]*изм\.?\s*\d+/g, '');
             s = s.replace(/[\s_\-]+/g, ' ');
