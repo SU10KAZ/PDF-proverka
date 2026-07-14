@@ -42,6 +42,10 @@ logger = logging.getLogger(__name__)
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 
+from backend.app.pipeline.stages.block_context.contract import (
+    decorate_blocks_vector_state,
+)
+
 _CANARY_FLAG = "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED"
 _DEFAULT_FLAG = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
 _TRUE = {"1", "true", "yes", "on"}
@@ -1037,6 +1041,27 @@ def v2_blocks(request, project_id: str) -> dict:
             detail=(f"projects_v2 canary: blocks index not found for "
                     f"'{doc['document_code']}' (no silent legacy fallback)"),
         )
+    context_summary = a.read_block_context_summary(doc_dir, ver)
+    if not context_summary:
+        # У двух старых legacy-preserve снимков нет ни block_context, ни рабочего
+        # PDF в 02_work. Роутер Stage 01 для них закономерно вернёт no_sources:
+        # фиксируем это сразу в списке, чтобы UI не показывал ложную кнопку TXT.
+        version_dir = a.version_dir(doc_dir, ver)
+        work_dir = version_dir / "02_work"
+        has_router_pdf = (
+            (work_dir / "document.pdf").is_file()
+            or (version_dir / "document.pdf").is_file()
+            or (work_dir.is_dir() and any(work_dir.glob("*.pdf")))
+        )
+        if not has_router_pdf:
+            context_summary = {
+                "blocks": [
+                    {"block_id": block.get("block_id"), "source_kind": "no_sources"}
+                    for block in idx.get("blocks") or []
+                    if isinstance(block, dict) and block.get("block_id")
+                ]
+            }
+    decorate_blocks_vector_state(idx.get("blocks") or [], context_summary)
     pages_map: dict = {}
     for block in idx.get("blocks", []):
         pages_map.setdefault(block.get("page", 0), []).append(block)

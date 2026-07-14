@@ -1905,7 +1905,7 @@ def check_prerequisites(project_dir: Path, *, output_dir_override: Optional[Path
         reasons.append(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 01 crop policy")
     context_validation = validate_block_context_summary(output_dir)
     if not context_validation.get("valid"):
-        reasons.append(f"Контекст блоков не готов: {context_validation.get('reason')}")
+        reasons.append(f"Векторные графы блоков не готовы: {context_validation.get('reason')}")
     if not graph_path.exists():
         reasons.append("Нет _output/document_graph.json")
 

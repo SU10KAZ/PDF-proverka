@@ -16,6 +16,8 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from .profiled_graph_localization import ru_network_type, ru_profile, ru_state
+
 
 PROFILE_TOWER_PAIR = "sov_structural_tower_pair"
 PROFILE_MULTITOWER = "sov_structural_multitower"
@@ -775,9 +777,9 @@ def render_structural_access_markdown(graph: dict) -> str:
         return ""
     v = graph.get("validation") or {}
     lines = [
-        f"# Структурная схема: {graph.get('profile_id')}", "",
-        f"Источник: `{(graph.get('source') or {}).get('pdf_file')}`", "",
-        f"Статус: `{graph.get('status')}`.", "",
+        f"# Структурная схема: {ru_profile(graph.get('profile_id'))}", "",
+        f"**Источник:** {(graph.get('source') or {}).get('pdf_file')}", "",
+        f"**Состояние:** {ru_state(graph.get('status'))}.", "",
     ]
     if graph.get("profile_id") in (PROFILE_TOWER_PAIR, PROFILE_MULTITOWER):
         node_by_id = {item["id"]: item for item in graph.get("nodes") or []}
@@ -795,7 +797,7 @@ def render_structural_access_markdown(graph: dict) -> str:
                 floor = floors[floor_id]
                 equipment = [node_by_id[item]["label"] for item in floor["equipment_ids"]]
                 room_names = [rooms[item]["name"] for item in floor["room_ids"]]
-                suffix = "shown_empty" if floor["display_state"] == "shown_empty" else ", ".join(equipment) or "—"
+                suffix = "оборудование не показано" if floor["display_state"] == "shown_empty" else ", ".join(equipment) or "—"
                 lines.append(
                     f"- **{floor['scope']['label']}**: {suffix}; помещения: "
                     f"{', '.join(room_names) or '—'}"
@@ -805,13 +807,13 @@ def render_structural_access_markdown(graph: dict) -> str:
         for edge in graph.get("edges") or []:
             network = next(item for item in graph["networks"] if item["id"] == edge["network_id"])
             lines.append(
-                f"- `{network['network_type']}`: {node_by_id[edge['from']]['label']} → "
+                f"- **{ru_network_type(network['network_type'])}**: {node_by_id[edge['from']]['label']} → "
                 f"{node_by_id[edge['to']]['label']}"
             )
     else:
         lines += [
             f"Сооружений: {v.get('structures_total')}; этажных полос: {v.get('floor_bands_total')}; "
-            f"locations: {v.get('locations_total')}; точек доступа: {v.get('access_points_total')}.",
+            f"мест установки: {v.get('locations_total')}; точек доступа: {v.get('access_points_total')}.",
             "", "## Сооружения", "",
         ]
         lines += [f"- {item['name']}" for item in graph.get("structures") or []]

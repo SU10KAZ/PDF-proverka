@@ -1847,7 +1847,7 @@ class PipelineManager:
         if not result.success:
             job.status = JobStatus.FAILED
             job.error_message = result.error
-            raise RuntimeError(result.error or "Подготовка контекста блоков: ошибка")
+            raise RuntimeError(result.error or f"{GEMMA_STAGE_LABEL}: ошибка")
 
     async def _run_block_grounding_stage(self, job: AuditJob) -> None:
         """Усиление предобработки: Value Grounding (вектор-сверка значений gemma).
@@ -3207,7 +3207,7 @@ class PipelineManager:
                 if job.status == JobStatus.CANCELLED:
                     return
 
-            # ═══ Подготовка контекста блоков (локально, без OCR-модели) ═══
+            # ═══ Векторные графы блоков (локально, без OCR-модели) ═══
             if start_idx <= 1:
                 if start_idx == 1:
                     # Перезапуск контекста меняет вход Stage 01 и downstream-этапов.

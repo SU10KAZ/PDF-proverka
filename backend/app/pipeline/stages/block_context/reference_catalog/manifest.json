@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "catalog_version": "2026.07.13-1",
+  "generated_on": "2026-07-13",
+  "records_total": 1133,
+  "profiles_total": 105,
+  "source_digest_sha256": "c3463c8118ae8b754d66cae3764f1179185133e0be8d728bdd37eca4a727a48a",
+  "runtime_dependency_on_experiments": false,
+  "disciplines": {
+    "АР": {
+      "file": "disciplines/AR.json",
+      "profile_document": "profiles/AR.md",
+      "records": 247,
+      "profiles": 21,
+      "structure_examples": 247
+    },
+    "ВК": {
+      "file": "disciplines/VK.json",
+      "profile_document": "profiles/VK.md",
+      "records": 168,
+      "profiles": 11,
+      "structure_examples": 168
+    },
+    "ГП": {
+      "file": "disciplines/GP.json",
+      "profile_document": "profiles/GP.md",
+      "records": 47,
+      "profiles": 13,
+      "structure_examples": 47
+    },
+    "КЖ": {
+      "file": "disciplines/KJ.json",
+      "profile_document": "profiles/KJ.md",
+      "records": 110,
+      "profiles": 6,
+      "structure_examples": 110
+    },
+    "КМ": {
+      "file": "disciplines/KM.json",
+      "profile_document": "profiles/KM.md",
+      "records": 71,
+      "profiles": 7,
+      "structure_examples": 71
+    },
+    "ОВ": {
+      "file": "disciplines/HVAC.json",
+      "profile_document": "profiles/HVAC.md",
+      "records": 154,
+      "profiles": 9,
+      "structure_examples": 153
+    },
+    "СС": {
+      "file": "disciplines/SS.json",
+      "profile_document": "profiles/SS.md",
+      "records": 144,
+      "profiles": 19,
+      "structure_examples": 144
+    },
+    "ТХ": {
+      "file": "disciplines/TX.json",
+      "profile_document": "profiles/TX.md",
+      "records": 35,
+      "profiles": 7,
+      "structure_examples": 35
+    },
+    "ЭОМ": {
+      "file": "disciplines/EOM.json",
+      "profile_document": "profiles/EOM.md",
+      "records": 157,
+      "profiles": 12,
+      "structure_examples": 157
+    }
+  }
+}

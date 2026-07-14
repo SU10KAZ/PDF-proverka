@@ -74,10 +74,12 @@ def _default_v2_root() -> Path:
 
 
 from backend.app.services.storage.stage_artifacts import (
+    BLOCK_CONTEXT_SUMMARY_FILENAME,
     BLOCKS_ANALYSIS_FILENAME,
     LEGACY_ALIASES,
     TEXT_ANALYSIS_FILENAME,
 )
+from backend.app.pipeline.stages.block_context.contract import adapt_legacy_summary
 
 # приоритет файла замечаний (как в findings_service._get_findings_path)
 _FINDINGS_PRIORITY = ("03a_norms_verified.json", "03_findings.json",
@@ -404,6 +406,29 @@ class ProjectsV2Adapter:
     def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         bd = self.blocks_dir(doc_dir, version_id)
         return _read_json(bd / "index.json") if bd else None
+
+    def read_block_context_summary(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """Сводка источников блоков: canonical либо адаптированный legacy Gemma."""
+        p = self._latest_file(doc_dir, version_id, BLOCK_CONTEXT_SUMMARY_FILENAME)
+        if p is None:
+            # legacy_findings_preserve хранит артефакты внутри сохранённого output.
+            legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+            if legacy_out.is_dir():
+                names = (BLOCK_CONTEXT_SUMMARY_FILENAME,
+                         LEGACY_ALIASES.get(BLOCK_CONTEXT_SUMMARY_FILENAME))
+                for name in names:
+                    if not name:
+                        continue
+                    hits = sorted(legacy_out.glob(f"*/_output/{name}"))
+                    if hits:
+                        p = hits[-1]
+                        break
+        payload = _read_json(p) if p else None
+        if not isinstance(payload, dict):
+            return None
+        if p and p.name != BLOCK_CONTEXT_SUMMARY_FILENAME:
+            return adapt_legacy_summary(payload)
+        return payload
 
     def read_document_graph(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         """document_graph.json версии (read-only): latest, иначе King&Sons-бандл."""

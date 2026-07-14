@@ -126,7 +126,7 @@ def test_real_terminal_wiring_builds_only_confirmed_cross_component_paths():
     assert gate["metrics"]["topology_complete"] is False
     markdown = render_low_voltage_graph_markdown(graph)
     assert "Подтверждённых пар: 3" in markdown
-    assert "multi_terminal_review" in markdown
+    assert "многоклеммная сеть требует проверки" in markdown
 
 
 @pytest.mark.skipif(not K5_RESULT.exists(), reason="локальный проектный корпус АПС отсутствует")

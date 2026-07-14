@@ -12,6 +12,15 @@ BLOCK_HEADER_RE = re.compile(
 )
 PAGE_HEADER_RE = re.compile(r"^## СТРАНИЦА\s+\d+\s*$", re.MULTILINE)
 ENRICHED_LINE_RE = re.compile(r"^\*\*\[ENRICHED [^\]]+\]\*\*\s*$", re.MULTILINE)
+CHANDRA_TYPE_RE = re.compile(
+    r"^\*\*\[(?:ИЗОБРАЖЕНИЕ|ТЕКСТ)\]\*\*\s*\|\s*Тип:\s*(?P<value>[^\r\n]+?)\s*$",
+    re.MULTILINE | re.IGNORECASE,
+)
+CHANDRA_FIELD_RE = re.compile(
+    r"^\*\*(?P<label>Краткое описание|Описание):\*\*\s*(?P<value>.*?)"
+    r"(?=^\*\*[^\r\n]+:\*\*|^\*\*\[ENRICHED |\Z)",
+    re.MULTILINE | re.DOTALL | re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -34,6 +43,32 @@ class BlockSection:
     header: str
     text: str
     body: str
+
+
+@dataclass(frozen=True)
+class ChandraBlockDescription:
+    """Исходное смысловое описание одного блока из Markdown Chandra.
+
+    Поля ``Текст на чертеже`` и ``Сущности`` намеренно отсутствуют в контракте:
+    они не должны участвовать ни в выборе профиля, ни в построении графа.
+    """
+
+    block_id: str
+    block_type: Optional[str]
+    short_description: Optional[str]
+    description: Optional[str]
+
+    @property
+    def classification_text(self) -> str:
+        """Только разрешённые поля для семантической классификации блока."""
+        parts = []
+        if self.block_type:
+            parts.append(f"Тип блока: {self.block_type}")
+        if self.short_description:
+            parts.append(f"Краткое описание: {self.short_description}")
+        if self.description:
+            parts.append(f"Описание: {self.description}")
+        return "\n".join(parts)
 
 
 def parse_block_header(line: str) -> Optional[BlockHeader]:
@@ -95,6 +130,45 @@ def strip_enrichment_in_block(block_text: str) -> str:
     if not match:
         return block_text
     return block_text[:match.start()].rstrip() + "\n\n"
+
+
+def _clean_field(value: Optional[str]) -> Optional[str]:
+    clean = re.sub(r"\s+", " ", str(value or "")).strip()
+    return clean or None
+
+
+def extract_chandra_block_description(
+    markdown_text: str, block_id: str
+) -> Optional[ChandraBlockDescription]:
+    """Вернуть исходное описание Chandra для точного ``block_id``.
+
+    Разрешены только ``Тип``, ``Краткое описание`` и ``Описание``. Секция
+    предварительно обрезается перед ``[ENRICHED ...]``; извлечённый Chandra
+    ``Текст на чертеже`` и список ``Сущности`` игнорируются по контракту.
+    """
+    image_sections = [section for section in extract_block_sections(markdown_text)
+                      if section.type == "IMAGE"]
+    target = next((section for section in image_sections if section.id == block_id), None)
+    if target is None:
+        folded = [section for section in image_sections
+                  if section.id.casefold() == str(block_id).casefold()]
+        if len(folded) == 1:
+            target = folded[0]
+    if target is None:
+        return None
+
+    source = strip_enrichment_in_block(target.body)
+    type_match = CHANDRA_TYPE_RE.search(source)
+    fields: dict[str, str] = {}
+    for match in CHANDRA_FIELD_RE.finditer(source):
+        fields[match.group("label").casefold()] = match.group("value")
+    result = ChandraBlockDescription(
+        block_id=target.id,
+        block_type=_clean_field(type_match.group("value") if type_match else None),
+        short_description=_clean_field(fields.get("краткое описание")),
+        description=_clean_field(fields.get("описание")),
+    )
+    return result if result.classification_text else None
 
 
 def strip_gemma_enrichment_sections(markdown_text: str) -> str:

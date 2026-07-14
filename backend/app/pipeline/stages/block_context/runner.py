@@ -7,7 +7,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 
 from .builder import build_block_context
-from .contract import validate_block_context_summary
+from .contract import STAGE_TITLE, validate_block_context_summary
 
 
 async def run_block_context_stage(ctx, *, force: bool = False) -> StageResult:
@@ -28,7 +28,7 @@ async def run_block_context_stage(ctx, *, force: bool = False) -> StageResult:
         )
     except Exception as exc:
         ctx.update_pipeline_log("block_context", "error", error=str(exc))
-        return StageResult.fail(f"Подготовка контекста блоков: {exc}")
+        return StageResult.fail(f"{STAGE_TITLE}: {exc}")
 
     validation = validate_block_context_summary(ctx.output_dir, canonical_only=True)
     if not validation.get("valid"):
@@ -39,7 +39,12 @@ async def run_block_context_stage(ctx, *, force: bool = False) -> StageResult:
     failed = int(summary.get("blocks_failed") or 0)
     total = int(summary.get("blocks_total") or 0)
     status = "partial" if failed else "done"
-    message = f"Контекст готов: {total - failed}/{total}; {summary.get('source_counts') or {}}"
+    catalog = summary.get("reference_catalog") or {}
+    message = (
+        f"{STAGE_TITLE}: {total - failed}/{total}; "
+        f"каталог {catalog.get('catalog_version') or '?'}; "
+        f"{summary.get('source_counts') or {}}"
+    )
     ctx.update_pipeline_log("block_context", status, message=message)
     # Compatibility status key for old UI/API clients during the transition.
     ctx.update_pipeline_log("gemma_enrichment", status, message=message)

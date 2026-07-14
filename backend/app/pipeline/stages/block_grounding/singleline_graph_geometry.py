@@ -27,6 +27,9 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.pipeline.stages.block_grounding.singleline_structurer import structure_singleline_text
+from backend.app.pipeline.stages.block_grounding.profiled_graph_localization import (
+    ru_edge_type, ru_node_type, ru_state,
+)
 
 _PANEL = {"1": "РП1", "2": "РП2", "3": "РП3", "4": "РП4 (АВР)", "5": "РП5"}
 _FLOOR_RE = re.compile(
@@ -107,23 +110,41 @@ def _filter_text_lines_to_region(text, region_words, *, thr=0.6):
     return result if result.strip() else text
 
 
-def _clip_words_to_bbox(words, bbox_norm, page_w, page_h, *, margin=0.01):
+@functools.lru_cache(maxsize=1)
+def _catalog_clip_margin() -> float:
+    try:
+        from backend.app.pipeline.stages.block_context.reference_catalog import (
+            load_reference_rules,
+        )
+        scope = load_reference_rules().get("text_scope") or {}
+        return max(0.0, float(scope.get("outside_margin", 0.0)))
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return 0.0
+
+
+def _clip_words_to_bbox(words, bbox_norm, page_w, page_h, *, margin=None):
     """Оставить только слова, чей ЦЕНТР попадает в область выделения блока (coords_norm,
     page-normalized [x0,y0,x1,y1]). Защищает геометрию Вектографа от чужого текста листа
     (соседняя схема / таблица / штамп), который ``get_text("words")`` отдаёт со ВСЕЙ страницы.
 
-    fail-soft: bbox нет/битый, страница без размеров, или клип оставил <3 слов при многословном
-    листе (bbox в чужой системе координат / слишком тесный) → возвращаем ВСЕ слова (как раньше).
+    Граница строгая по умолчанию: внешний запас нельзя применять к смысловому тексту,
+    иначе подпись соседнего блока начинает считаться частью текущего. При отсутствующей
+    или повреждённой области возвращается пустой список — безопаснее честно признать,
+    что текст блока не определён, чем передать модели весь текст страницы.
     """
     if not bbox_norm or len(bbox_norm) < 4 or not page_w or not page_h:
-        return words
+        return []
     try:
         x0, y0, x1, y1 = (float(bbox_norm[0]), float(bbox_norm[1]),
                           float(bbox_norm[2]), float(bbox_norm[3]))
     except (TypeError, ValueError):
-        return words
+        return []
     if not (x1 > x0 and y1 > y0):
-        return words
+        return []
+    try:
+        margin = _catalog_clip_margin() if margin is None else max(0.0, float(margin or 0.0))
+    except (TypeError, ValueError):
+        return []
     x0 -= margin; y0 -= margin; x1 += margin; y1 += margin
     kept = []
     for w in words:
@@ -131,11 +152,9 @@ def _clip_words_to_bbox(words, bbox_norm, page_w, page_h, *, margin=0.01):
             cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
             cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
         except (TypeError, ValueError, ZeroDivisionError):
-            return words
+            continue
         if x0 <= cx <= x1 and y0 <= cy <= y1:
             kept.append(w)
-    if len(kept) < 3 and len(words) >= 10:
-        return words
     return kept
 
 
@@ -159,28 +178,26 @@ def _clip_words_to_polygon(words, polygon_norm, page_w, page_h):
     осевой bbox захватывает чужой контент в «вырезах» контура — полигон его отсекает
     (замер ВРУ-2.1: −550 слов таблицы ТТ вне контура при сохранении всех 70 QF схемы).
 
-    fail-soft: полигон битый (<3 вершин), страница без размеров, или клип оставил <3 слов при
-    многословном листе → возвращаем ВСЕ слова (как без клипа).
+    Как и прямоугольный клип, работает fail-closed: битый полигон или отсутствие
+    попаданий дают пустой список, а не текст всей страницы.
     """
     if not polygon_norm or len(polygon_norm) < 3 or not page_w or not page_h:
-        return words
+        return []
     try:
         poly = [(float(p[0]), float(p[1])) for p in polygon_norm if len(p) >= 2]
     except (TypeError, ValueError, IndexError):
-        return words
+        return []
     if len(poly) < 3:
-        return words
+        return []
     kept = []
     for w in words:
         try:
             cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
             cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
         except (TypeError, ValueError, ZeroDivisionError):
-            return words
+            continue
         if _point_in_polygon(cx, cy, poly):
             kept.append(w)
-    if len(kept) < 3 and len(words) >= 10:
-        return words
     return kept
 
 
@@ -413,7 +430,7 @@ def render_graph_for_prompt(graph: dict) -> str:
                          f"в спецификации (не ошибка)")
                 continue
             if f["status"] == "ambiguous" or f.get("P_calc_kw") is None:
-                L.append(f"  {f['qf']}: ‼ requires_review — автомат {br}; потребитель/код не сопоставлены")
+                L.append(f"  {f['qf']}: ‼ требуется проверка — автомат {br}; потребитель/код не сопоставлены")
                 continue
             ctrl = (" | упр:" + ",".join(f.get("control"))) if f.get("control") else ""
             dev = (" | доп:" + "; ".join(f.get("additional_devices"))) if f.get("additional_devices") else ""
@@ -683,11 +700,11 @@ def _bind_codes_columnwise(pq, pc):
         assign[n] = code
         if d2 - d1 < 10:   # код почти равноудалён от двух колонок — спорно
             conflicts.setdefault(n, []).append(
-                f"GEOMETRY_CONFLICT: код {code} у границы колонки (Δ={d2 - d1:.0f}px) — требует проверки")
+                f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: код {code} у границы колонки (Δ={d2 - d1:.0f}px) — требует проверки")
         for _d1, _d2, code2 in lst[1:]:
             if code2 != code:   # 2 РАЗНЫХ кода в одну колонку — реальная коллизия
                 conflicts.setdefault(n, []).append(
-                    f"GEOMETRY_CONFLICT: в колонку {n} попадает 2 кода ({code}, {code2})")
+                    f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: в колонку {n} попадает 2 кода ({code}, {code2})")
     return assign, conflicts
 
 
@@ -1409,6 +1426,41 @@ def _fallback_bind_code(qn, qx, qy, consumer, words, params, qf_out, assigned):
     return found.pop() if len(found) == 1 else None
 
 
+def _singleline_semantic_facts(words, page_w:float, page_h:float)->list[dict]:
+    """Полный координатный реестр значимых подписей, включая непривязанные к фидеру.
+
+    Основной граф остаётся строгим: реестр не создаёт рёбер и не подменяет
+    колоночную привязку. Он не даёт потерять щит, аппарат, кабель или параметр,
+    расположенный в примечании, вводной зоне либо соседней расчётной таблице.
+    """
+    patterns=(
+      ("щит или шкаф",re.compile(r"\b(?:ВРУ|ГРЩ|ЩР|ЩО|ЩАО|ЩЭ|УЭРВ|ШР|ШУ|ЯУО|ГЗШ|ШДУ|ЩК|ЩМ)[A-ZА-Яа-я0-9._/\-]*",re.I)),
+      ("защитный или коммутационный аппарат",re.compile(r"\b(?:QF|QS|QD|QFA|FU|KM|SF)\s*[A-ZА-Яа-я0-9._/\-]*|\b(?:АВ|КМ)\s*[-]?\s*\d[A-ZА-Яа-я0-9._/\-]*",re.I)),
+      ("цепь или группа",re.compile(r"(?:\bГр\.?\s*\d+(?:\.\d+)*|\b(?:К|K)\d+(?:\.\d+){1,3}(?:-\d+)?|\bЛиния\s*\d+)",re.I)),
+      ("марка кабеля",re.compile(r"\b(?:ВВГ|ППГ|ПВ|ПВС|КГ|NYM|N2XH|КПС|КВВГ)[A-ZА-Яа-я0-9()\-]*",re.I)),
+      ("сечение или размер",re.compile(r"(?:\b\d{1,4}\s*[xх×]\s*\d{1,4}(?:\s*[xх×]\s*\d{1,4})?\b|\b\d+(?:[,.]\d+)?\s*мм[²2]?\b)",re.I)),
+      ("электрический параметр",re.compile(r"\b\d+(?:[,.]\d+)?\s*(?:кВт|Вт|кВА|А|В|лк)\b",re.I)),
+      ("высотная отметка",re.compile(r"(?<!\d)[+\-]\d{1,3}[,.]\d{3}(?!\d)")),
+      ("электроприёмник или изделие",re.compile(r"\b(?:светильник\w*|розетк\w*|выключател\w*|электровывод\w*|сч[её]тчик\w*|насос\w*|вентилятор\w*|клапан\w*)\b",re.I)),
+    )
+    grouped=collections.defaultdict(list)
+    for word in words:
+        grouped[(word[5],word[6])].append(word)
+    facts=[];seen=set()
+    for line_words in grouped.values():
+        line_words=sorted(line_words,key=lambda word:word[7]);text=" ".join(str(word[4]) for word in line_words)
+        bbox=[min(w[0] for w in line_words),min(w[1] for w in line_words),max(w[2] for w in line_words),max(w[3] for w in line_words)]
+        for fact_type,pattern in patterns:
+            for match in pattern.finditer(text):
+                label=re.sub(r"\s+"," ",match.group()).strip(" ;,.")
+                key=(fact_type,label.casefold(),tuple(round(x,1) for x in bbox))
+                if not label or key in seen:continue
+                seen.add(key);facts.append({"id":f"fact-{len(facts)+1}","fact_type":fact_type,"label":label,
+                  "bbox_page":[round(bbox[0]/page_w,5),round(bbox[1]/page_h,5),round(bbox[2]/page_w,5),round(bbox[3]/page_h,5)],
+                  "evidence_state":"подтверждено текстом PDF с координатами","topology_state":"не создаёт ребро без колоночной или CAD-привязки"})
+    return facts
+
+
 def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
                            bbox_norm: Optional[list] = None,
                            polygon_norm: Optional[list] = None) -> Optional[dict]:
@@ -1439,8 +1491,8 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         # Геометрию (words с координатами) режем по области выделения блока (bbox_norm), чтобы
         # чужой текст листа — соседняя схема / таблица / штамп — НЕ протекал в топологию. Раньше
         # брали слова со ВСЕЙ страницы (координат в vector_text нет). Полигон точнее прямоугольника
-        # (отсекает чужой контент в «вырезах» контура). fail-soft: без области или при подозрительном
-        # клипе — весь лист (прежнее поведение).
+        # (отсекает чужой контент в «вырезах» контура). Клип fail-closed: повреждённая
+        # область не должна превращаться в полный текст листа.
         page_full_text = vector_text
         if _bbox_clip_enabled():
             _pw, _ph = float(pg.rect.width), float(pg.rect.height)
@@ -1704,7 +1756,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                 status = "ambiguous"
         review = []
         if status == "ambiguous":
-            review.append("колонка без сопоставленного кода — requires_review "
+            review.append("колонка без сопоставленного кода — требуется проверка "
                           "(визуально отдельный аппарат, отходящий код не привязан)")
         elif status == "no_code":
             review.append("линия без построчного кода в спецификации (потребитель/кабель "
@@ -1915,13 +1967,14 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     service_elements = _safe(_extract_service_elements, page_full_text, default=[])
     hierarchy = _safe(_extract_hierarchy, page_full_text, power, panels, default={}) or {}
     source = _safe(_extract_title_source, page_full_text, pdf_path, pidx, panel_hint, default={}) or {}
+    semantic_facts=_singleline_semantic_facts(words,page_w,page_h)
 
     geometry_conflicts = sum(
         1 for f in feeders
-        for n in (f.get("review") or []) if "GEOMETRY_CONFLICT" in n)
+        for n in (f.get("review") or []) if "ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ" in n)
     warnings = []
     if ambiguous:
-        warnings.append(f"{len(ambiguous)} QF без сопоставленного кода (requires_review)")
+        warnings.append(f"{len(ambiguous)} QF без сопоставленного кода (требуется проверка)")
     if geometry_conflicts:
         warnings.append(f"{geometry_conflicts} геометрических конфликтов привязки QF↔код")
     dups = [q for q, c in dup.items() if c > 1]
@@ -1969,7 +2022,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
     coverage_gap = codes_linked_occurrences < codes_total_occurrences
     if coverage_gap:
         warnings.append(f"покрытие неполное: привязано {codes_linked_occurrences} из "
-                        f"{codes_total_occurrences} primary-кодов")
+                        f"{codes_total_occurrences} основных кодов")
 
     confidence = round(codes_linked / max(len(param_occ), 1), 3)
     status = "ok" if not (ambiguous or geometry_conflicts or coverage_gap or duplicate_qf_labels
@@ -1999,6 +2052,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "sub_panels": sub_panels,
         "tt_check_table": tt_check,
         "service_elements": service_elements,
+        "semantic_facts": semantic_facts,
         "secondary_circuits": secondary_circuits,
         "notes": notes,
         "validation": {
@@ -2122,8 +2176,8 @@ def render_graph_etalon_markdown(graph: dict) -> str:
     pi = graph.get("source_page_index")
     pdf_file = src.get("pdf_file") or "?"
     page_disp = f"стр. PDF {pi + 1}" if isinstance(pi, int) else "стр. ?"
-    L.append(f"**Источник:** {pdf_file}, {page_disp} (source_page_index={pi})")
-    L.append("**Тип схемы:** однолинейная расчётная (детерминированно из вектор-слоя PDF, без OCR/LLM)")
+    L.append(f"**Источник:** {pdf_file}, {page_disp} (индекс страницы в PDF: {pi})")
+    L.append("**Тип схемы:** однолинейная расчётная (детерминированно из векторного слоя PDF, без оптического распознавания и языковой модели)")
     meta = []
     if src.get("section"):
         meta.append(f"раздел {src['section']}")
@@ -2134,14 +2188,17 @@ def render_graph_etalon_markdown(graph: dict) -> str:
     L.append(
         f"**Сводка валидации:** линий {graph.get('feeders_total')}, привязано кодов "
         f"{v.get('codes_linked_occurrences')}/{v.get('codes_total_occurrences')} "
-        f"(uniq {v.get('codes_linked_unique')}/{v.get('codes_total_unique')}), актив {v.get('active')}, "
+        f"(уникальных {v.get('codes_linked_unique')}/{v.get('codes_total_unique')}), активных {v.get('active')}, "
         f"резерв {v.get('reserve')}, неоднозначных {v.get('ambiguous')}, без кода {v.get('no_code', 0)}, "
         f"структурных {v.get('structural', 0)}, геом.конфликтов "
         f"{v.get('geometry_conflicts')}, вторичных {v.get('secondary_codes_total')}, физика P/I "
-        f"{v.get('power_rate')}/{v.get('current_rate')}, confidence {graph.get('confidence')}, "
-        f"status `{graph.get('status')}`")
+        f"{v.get('power_rate')}/{v.get('current_rate')}, достоверность {graph.get('confidence')}, "
+        f"состояние: {ru_state(graph.get('status'))}")
     for w in graph.get("warnings", []):
-        L.append(f"  - ⚠ {w}")
+        visible_warning = str(w).replace("primary-кодов", "основных кодов")
+        visible_warning = visible_warning.replace("requires_review", "требуется проверка")
+        visible_warning = visible_warning.replace("status=needs_review", "состояние: требуется проверка")
+        L.append(f"  - ⚠ {visible_warning}")
 
     # 1. Дерево питания
     L.append("\n## 1. Текстовое дерево питания\n")
@@ -2186,7 +2243,7 @@ def render_graph_etalon_markdown(graph: dict) -> str:
     L.append("| Откуда | Куда | Тип | Аппарат/кабель/примечание |")
     L.append("| --- | --- | --- | --- |")
     for e in graph.get("edges", []):
-        L.append(f"| {_md_cell(e.get('from'))} | {_md_cell(e.get('to'))} | {_md_cell(e.get('type'))} "
+        L.append(f"| {_md_cell(e.get('from'))} | {_md_cell(e.get('to'))} | {_md_cell(ru_edge_type(e.get('type')))} "
                  f"| {_md_cell(e.get('label'))} |")
     if not graph.get("edges"):
         L.append("| — | — | — | — |")
@@ -2243,16 +2300,17 @@ def render_graph_etalon_markdown(graph: dict) -> str:
         L.append(f"\n### {pan['name']} — {pan['feeder_count']} линий "
                  f"(актив {pan['active']}, резерв {pan['reserve']})\n")
         L.append("| QF | Автомат (тип; Icn; In) | Потребитель | Код | "
-                 "Ру/Кс/Cosφ/Рр/Ip | L/ΔU/кабель/Iкз(1)/трасса | Доп. аппараты | Управление | status | review |")
+                 "Ру/Кс/Cosφ/Рр/Ip | L/ΔU/кабель/Iкз(1)/трасса | Доп. аппараты | Управление | Состояние | Проверка |")
         L.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
         for f in pan.get("feeders", []):
             ctrl = ", ".join(f.get("control") or []) or "—"
             devs = "; ".join(f.get("additional_devices") or []) or "—"
             rev = "; ".join(f.get("review") or []) or "—"
+            rev = rev.replace("GEOMETRY_CONFLICT", "ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ")
             L.append(
                 f"| {_md_cell(f.get('qf'))} | {_md_cell(_fmt_breaker(f))} | {_md_cell(f.get('consumer'))} "
                 f"| {_md_cell(f.get('circuit_code'))} | {_md_cell(_fmt_load(f))} | {_md_cell(_fmt_cable(f))} "
-                f"| {_md_cell(devs)} | {_md_cell(ctrl)} | {_md_cell(f.get('status'))} | {_md_cell(rev)} |")
+                f"| {_md_cell(devs)} | {_md_cell(ctrl)} | {_md_cell(ru_state(f.get('status')))} | {_md_cell(rev)} |")
 
     # 5. Реестр служебных элементов
     L.append("\n## 5. Реестр служебных элементов\n")
@@ -2337,36 +2395,48 @@ def render_graph_etalon_markdown(graph: dict) -> str:
     else:
         L.append("_Примечания не извлечены._")
 
-    # 8. Validation / requires_review
-    L.append("\n## 8. Validation / requires_review\n")
-    L.append(f"- panels_detected: {', '.join(v.get('panels_detected') or []) or '—'}")
-    L.append(f"- codes (occurrences): linked {v.get('codes_linked_occurrences')}/"
-             f"{v.get('codes_total_occurrences')}; (unique): {v.get('codes_linked_unique')}/"
+    facts=graph.get("semantic_facts") or []
+    if facts:
+        counts=collections.Counter(fact.get("fact_type") for fact in facts)
+        L.append("\n### 7.1 Полный координатный реестр инженерных подписей\n")
+        L.append("Реестр сохраняет также подписи вне колонки фидера. Они не создают рёбер без геометрического подтверждения.")
+        for kind,count in counts.most_common():
+            labels=list(dict.fromkeys(fact.get("label") for fact in facts if fact.get("fact_type")==kind))
+            L.append(f"- **{ru_node_type(kind)} — {count}:** {', '.join(labels[:24])}{' …' if len(labels)>24 else ''}")
+
+    # 8. Валидация и ручная проверка
+    L.append("\n## 8. Проверка полноты и неоднозначностей\n")
+    L.append(f"- Обнаруженные панели: {', '.join(v.get('panels_detected') or []) or '—'}")
+    L.append(f"- Коды по всем вхождениям: привязано {v.get('codes_linked_occurrences')}/"
+             f"{v.get('codes_total_occurrences')}; по уникальным кодам: {v.get('codes_linked_unique')}/"
              f"{v.get('codes_total_unique')}")
     if v.get("unbound_param_codes"):
-        L.append(f"- unbound_param_codes: {', '.join(v['unbound_param_codes'])}")
+        L.append(f"- Непривязанные коды параметров: {', '.join(v['unbound_param_codes'])}")
     if v.get("duplicate_param_codes"):
-        L.append(f"- duplicate_param_codes (дубль в ПД): {', '.join(v['duplicate_param_codes'])}")
+        L.append(f"- Повторяющиеся коды параметров в проекте: {', '.join(v['duplicate_param_codes'])}")
     if v.get("duplicate_bindings"):
-        L.append(f"- duplicate_bindings (один код на >1 QF): {', '.join(v['duplicate_bindings'])}")
+        L.append(f"- Один код привязан более чем к одному QF: {', '.join(v['duplicate_bindings'])}")
     if v.get("duplicate_qf_labels"):
-        L.append(f"- duplicate_qf_labels (одинаковые подписи схлопнуты): "
-                 f"{', '.join(v['duplicate_qf_labels'])}; occurrences "
-                 f"{v.get('qf_total_occurrences')}, unique {v.get('qf_total_unique')}")
+        L.append(f"- Повторяющиеся обозначения QF: "
+                 f"{', '.join(v['duplicate_qf_labels'])}; всего вхождений "
+                 f"{v.get('qf_total_occurrences')}, уникальных {v.get('qf_total_unique')}")
     if v.get("missing_panel_warnings"):
-        L.append(f"- missing_panel_warnings: {'; '.join(v['missing_panel_warnings'])}")
-    L.append(f"- secondary_codes_total: {v.get('secondary_codes_total')}")
-    L.append(f"- active: {v.get('active')}; reserve: {v.get('reserve')}; "
-             f"ambiguous: {v.get('ambiguous')}")
-    L.append(f"- breaker_bound: {v.get('breaker_bound')}; geometry_conflicts: "
+        L.append(f"- Предупреждения о панелях: {'; '.join(v['missing_panel_warnings'])}")
+    L.append(f"- Вторичных кодов: {v.get('secondary_codes_total')}")
+    L.append(f"- Действующих линий: {v.get('active')}; резервных: {v.get('reserve')}; "
+             f"неоднозначных: {v.get('ambiguous')}")
+    L.append(f"- Линий, привязанных к автомату: {v.get('breaker_bound')}; геометрических конфликтов: "
              f"{v.get('geometry_conflicts')}")
-    L.append(f"- power_rate: {v.get('power_rate')}; current_rate: {v.get('current_rate')}; "
-             f"confidence: {graph.get('confidence')}; status: {graph.get('status')}")
+    L.append(f"- Полнота мощности: {v.get('power_rate')}; полнота тока: {v.get('current_rate')}; "
+             f"достоверность: {graph.get('confidence')}; состояние: {ru_state(graph.get('status'))}")
     rev = graph.get("review") or []
     if rev:
         L.append("\n**Строки, требующие ручной проверки:**")
         for r in rev:
-            L.append(f"- {r['qf']} ({r.get('code') or 'без кода'}): {'; '.join(r.get('notes') or [])}")
+            notes = "; ".join(r.get("notes") or [])
+            notes = notes.replace("GEOMETRY_CONFLICT", "ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ")
+            notes = notes.replace("requires_review", "требуется проверка")
+            L.append(f"- {r['qf']} ({r.get('code') or 'без кода'}): {notes}")
     else:
         L.append("\n_Строк, требующих ручной проверки, не выявлено._")
 
@@ -2467,7 +2537,7 @@ def evaluate_vectograf_gate(graph: Optional[dict]) -> dict:
     if cov < 0.6:
         warnings.append(f"низкое покрытие кодов {cov:.0%} (дубли токенов/чужие панели?)")
     if graph.get("status") == "needs_review":
-        warnings.append("status=needs_review")
+        warnings.append("состояние: требуется проверка")
     return {"use": not reasons, "reasons": reasons, "warnings": warnings, "metrics": metrics}
 
 

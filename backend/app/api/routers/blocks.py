@@ -17,8 +17,12 @@ from fastapi.responses import FileResponse, Response
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.block_context.contract import (
+    VECTOR_GRAPH_MISSING_MESSAGE,
+    decorate_blocks_vector_state,
+    load_block_context_summary,
     resolve_blocks_dir,
     resolve_blocks_index,
+    source_has_vector_text,
 )
 
 router = APIRouter(prefix="/api/tiles", tags=["blocks"])
@@ -532,6 +536,11 @@ async def get_blocks(
     with open(index_path, "r", encoding="utf-8") as f:
         index_data = json.load(f)
 
+    # Этот загрузчик также переводит старый Gemma-summary в единый контракт:
+    # OCR/vision-описание не ошибочно считается векторным текстом.
+    context_summary = load_block_context_summary(output_dir)
+    decorate_blocks_vector_state(index_data.get("blocks") or [], context_summary)
+
     # Группируем по страницам
     pages_map: dict[int, list] = {}
     for block in index_data.get("blocks", []):
@@ -785,17 +794,31 @@ async def get_block_llm_text(
     # singleline_graph_markdown отдаётся ВСЕГДА (для UI-отображения, независимо от флага).
     singleline_graph_markdown = None
     stage02_prompt_mode = "base"
+    block_graph_package = None
+    profiled_graph_display = None
+    vector_text_available = None
 
     # Канонический роутер Stage 01: structured graph / raw vector / image-only.
     # Он безусловно совпадает с реальным payload анализа блоков.
     _router_applied = False
     try:
         from backend.app.pipeline.stages.block_grounding.block_source_router import (
-            resolve_block_source as _resolve_block_source,
+            resolve_block_package as _resolve_block_package,
         )
-        _rtext, _rkind = _resolve_block_source(output_dir, block_id, page)
+        block_graph_package = _resolve_block_package(output_dir, block_id, page)
+        from backend.app.pipeline.stages.block_grounding.profiled_graph_localization import (
+            package_display,
+        )
+        profiled_graph_display = package_display(block_graph_package)
+        _rtext = block_graph_package.get("user_text")
+        _rkind = str(block_graph_package.get("source_kind") or "error")
+        vector_text_available = source_has_vector_text(_rkind)
         stage02_prompt_mode = "image_only" if _rkind == "gemma_fallback" else _rkind
-        if _rtext:
+        if not vector_text_available:
+            # У image-only блока нет TXT-представления. Не протаскиваем сюда
+            # legacy enrichment/page_text, подготовленный до вызова роутера.
+            user_text = None
+        elif _rtext:
             user_text = _rtext
         _router_applied = True
     except Exception:
@@ -898,6 +921,17 @@ async def get_block_llm_text(
         "singleline_graph": singleline_graph,
         # полный Markdown графа в формате эталона (8 разделов) — None, если блок не схема
         "singleline_graph_markdown": singleline_graph_markdown,
+        # Единый пакет любого профильного графа: тот же сохранённый артефакт читает
+        # Stage 01 при формировании фактического запроса к модели.
+        "block_graph_package": block_graph_package,
+        "profiled_graph": (block_graph_package or {}).get("graph"),
+        # Человекочитаемая русская проекция. Машинные profile_id/node_type/
+        # edge_state остаются неизменными в profiled_graph для алгоритмов.
+        "profiled_graph_display": profiled_graph_display,
+        "vector_text_available": vector_text_available,
+        "vector_graph_message": (
+            VECTOR_GRAPH_MISSING_MESSAGE if vector_text_available is False else None
+        ),
         # пространственные группы текста блока (оверлей «области»): bbox в [0,1] региона блока
         "text_groups": text_groups,
         # соседние text-блоки страницы: send=уникальные (слать), dropped=дубли текст-слоя (не слать)

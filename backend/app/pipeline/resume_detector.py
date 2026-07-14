@@ -63,7 +63,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     tiles_dir = output_dir / "tiles"
     context_state = validate_block_context_summary(output_dir)
     if context_state.get("valid"):
-        gemma_state = {"ready": True, "status": "ok", "detail": "Контекст блоков готов"}
+        gemma_state = {"ready": True, "status": "ok", "detail": f"{GEMMA_STAGE_LABEL}: готово"}
         gemma_ready = True
         migration_state = {"migration_required": False}
     else:
@@ -112,8 +112,8 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             return _prepare_resume("Блоки не созданы; требуется подготовка Stage 01 crop")
         return {
             "stage": "block_context",
-            "stage_label": "Подготовка контекста блоков",
-            "detail": detail or gemma_state.get("detail", "Контекст блоков не готов"),
+            "stage_label": GEMMA_STAGE_LABEL,
+            "detail": detail or gemma_state.get("detail", f"{GEMMA_STAGE_LABEL}: не готово"),
             "can_resume": True,
         }
 
@@ -121,7 +121,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         stage = str(migration_state.get("stage") or "block_context")
         return {
             "stage": stage,
-            "stage_label": "Подготовка" if stage == "prepare" else "Подготовка контекста блоков",
+            "stage_label": "Подготовка" if stage == "prepare" else GEMMA_STAGE_LABEL,
             "detail": migration_state.get("detail") or gemma_state.get("detail") or "Требуется миграция Gemma schema v2",
             "can_resume": True,
             "migration_required": True,

@@ -1819,7 +1819,7 @@ def _load_pipeline_log(output_dir: Path) -> Optional[dict]:
 # Порядок и человеко-понятные названия этапов конвейера
 _PIPELINE_STAGE_ORDER = [
     ("crop_blocks", "Кроп блоков"),
-    ("block_context", "Подготовка контекста блоков"),
+    ("block_context", "Векторные графы блоков"),
     ("text_analysis", "Анализ текста"),
     ("block_analysis", "Анализ блоков"),
     ("block_retry", "Retry нечитаемых блоков"),
@@ -2029,7 +2029,7 @@ def _normalize_gemma_enrichment_status(
         total = int(summary.get("blocks_total") or 0)
         ready = int(summary.get("blocks_ready") or 0)
         status = "done" if failed == 0 else "partial"
-        message = f"Контекст блоков: {ready}/{total}"
+        message = f"Векторные графы блоков: {ready}/{total}"
         return status, raw_message or message, message
 
     gemma_state = evaluate_gemma_enrichment(output_dir.parent)
@@ -2466,7 +2466,7 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
     if block_context_entry is not None:
         legacy_entry = dict(block_context_entry)
         legacy_entry["key"] = "gemma_enrichment"
-        legacy_entry["label"] = "Подготовка контекста блоков"
+        legacy_entry["label"] = "Векторные графы блоков"
         legacy_entry["canonical_key"] = "block_context"
         insert_at = result.index(block_context_entry) + 1
         result.insert(insert_at, legacy_entry)

@@ -32,6 +32,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 from backend.app.pipeline.stages.block_context.builder import build_block_context
 from backend.app.pipeline.stages.block_context.contract import (
+    STAGE_TITLE,
     validate_block_context_summary,
 )
 from backend.app.ws.manager import ws_manager
@@ -494,7 +495,7 @@ async def _run_prepare(
         item.blocks_total = int(summary_existing.get("blocks_total") or 0)
         item.blocks_done = int(summary_existing.get("blocks_ready") or 0)
         await _broadcast_queue()
-        await _ws_log(project_id, "Контекст блоков уже готов", "info")
+        await _ws_log(project_id, f"{STAGE_TITLE}: результат уже готов", "info")
         return {"status": "skipped", "existing": summary_existing, "crop": crop_result}
 
     async def _on_context_event(event: dict) -> None:
@@ -508,7 +509,7 @@ async def _run_prepare(
                 item.blocks_failed += 1
         await _broadcast_queue()
 
-    await _ws_log(project_id, "Подготовка контекста PDF/Vectograph...", "info")
+    await _ws_log(project_id, f"{STAGE_TITLE}: построение...", "info")
     update_pipeline_log(project_id, "block_context", "running")
     summary = await build_block_context(
         project_dir,
@@ -520,8 +521,10 @@ async def _run_prepare(
     item.elapsed_sec = round(time.time() - (item.started_at or time.time()), 1)
     await _broadcast_queue()
     message = (
-        f"Контекст готов: {summary.get('blocks_ready', 0)}/"
-        f"{summary.get('blocks_total', 0)}; {summary.get('source_counts') or {}}"
+        f"{STAGE_TITLE}: {summary.get('blocks_ready', 0)}/"
+        f"{summary.get('blocks_total', 0)}; каталог "
+        f"{(summary.get('reference_catalog') or {}).get('catalog_version') or '?'}; "
+        f"{summary.get('source_counts') or {}}"
     )
     update_pipeline_log(project_id, "block_context", item.status, message=message)
     update_pipeline_log(project_id, "gemma_enrichment", item.status, message=message)

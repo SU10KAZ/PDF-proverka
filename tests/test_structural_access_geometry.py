@@ -60,7 +60,7 @@ def test_tower_pair_preserves_empty_floor_bands_and_confirmed_edges():
     gate = evaluate_structural_access_gate(graph)
     assert gate["use"] is True and gate["mode"] == "hierarchy_and_confirmed_edges"
     markdown = render_structural_access_markdown(graph)
-    assert "shown_empty" in markdown and "К1.1.-1.1 → STR1.1.1.12" in markdown
+    assert "оборудование не показано" in markdown and "К1.1.-1.1 → STR1.1.1.12" in markdown
 
 
 @pytest.mark.skipif(not MULTI_PDF.exists(), reason="векторный crop К3–К6 отсутствует")

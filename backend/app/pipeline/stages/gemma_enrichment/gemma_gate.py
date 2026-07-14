@@ -17,9 +17,10 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     gemma_output_root,
     validate_gemma_summary,
 )
+from backend.app.pipeline.stages.block_context.contract import STAGE_TITLE
 
 
-GEMMA_STAGE_LABEL = "Подготовка контекста блоков"
+GEMMA_STAGE_LABEL = STAGE_TITLE
 GEMMA_MIGRATION_STATUS_DETAIL = "legacy_gemma_migration_required"
 
 _MIGRATION_REQUIRED_GEMMA_STATUSES = {

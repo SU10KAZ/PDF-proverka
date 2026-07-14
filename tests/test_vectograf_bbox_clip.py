@@ -47,31 +47,40 @@ def test_center_rule_not_overlap():
     assert kept == []
 
 
+def test_default_boundary_does_not_include_neighbour_text():
+    """Текст в прежнем внешнем запасе 1% не принадлежит блоку."""
+    near = [_w(505, 100, 515, 120, "NEIGHBOUR")]
+    kept = _clip_words_to_bbox(
+        near, [0.0, 0.0, 0.5, 1.0], PAGE_W, PAGE_H
+    )
+    assert kept == []
+
+
 def test_margin_tolerance():
-    """margin ~1% страницы прощает слово, чей центр чуть за границей bbox."""
+    """Явный технический margin остаётся доступен, но не используется по умолчанию."""
     near = [_w(505, 100, 515, 120, "NEAR")]  # центр 510 → norm 0.51, в пределах +0.01
     kept = _clip_words_to_bbox(near, [0.0, 0.0, 0.5, 1.0], PAGE_W, PAGE_H, margin=0.01)
     assert _texts(kept) == {"NEAR"}
 
 
-def test_failsoft_none_bbox_returns_all():
-    assert _clip_words_to_bbox(ALL, None, PAGE_W, PAGE_H) == ALL
+def test_missing_bbox_returns_no_page_text():
+    assert _clip_words_to_bbox(ALL, None, PAGE_W, PAGE_H) == []
 
 
-def test_failsoft_malformed_bbox_returns_all():
-    assert _clip_words_to_bbox(ALL, [1, 2, 3], PAGE_W, PAGE_H) == ALL
-    assert _clip_words_to_bbox(ALL, [0.5, 0.5, 0.1, 0.1], PAGE_W, PAGE_H) == ALL  # x1<x0
+def test_malformed_bbox_returns_no_page_text():
+    assert _clip_words_to_bbox(ALL, [1, 2, 3], PAGE_W, PAGE_H) == []
+    assert _clip_words_to_bbox(ALL, [0.5, 0.5, 0.1, 0.1], PAGE_W, PAGE_H) == []  # x1<x0
 
 
-def test_failsoft_empty_clip_on_busy_page_returns_all():
-    """Вырожденный/чужой bbox выкинул почти всё при многословном листе → откат на весь лист."""
+def test_empty_clip_on_busy_page_does_not_leak_full_page():
+    """Пустой клип не должен подменяться текстом всего листа."""
     many = ALL * 3  # 15 слов
     tiny = [0.4, 0.4, 0.4001, 0.4001]  # внутри 0 слов
-    assert _clip_words_to_bbox(many, tiny, PAGE_W, PAGE_H) == many
+    assert _clip_words_to_bbox(many, tiny, PAGE_W, PAGE_H) == []
 
 
-def test_failsoft_zero_page_dims_returns_all():
-    assert _clip_words_to_bbox(ALL, [0.0, 0.0, 0.5, 1.0], 0, 0) == ALL
+def test_zero_page_dims_return_no_page_text():
+    assert _clip_words_to_bbox(ALL, [0.0, 0.0, 0.5, 1.0], 0, 0) == []
 
 
 def test_small_result_kept_when_page_is_small():
@@ -102,20 +111,20 @@ def test_polygon_excludes_notch_that_bbox_would_keep():
     assert {"QF1.1", "К1.1.1", "ВА-47"} <= _texts(kept)  # свои слова остались
 
 
-def test_polygon_failsoft_too_few_vertices():
-    assert _clip_words_to_polygon(ALL, [[0.0, 0.0], [1.0, 1.0]], PAGE_W, PAGE_H) == ALL
-    assert _clip_words_to_polygon(ALL, None, PAGE_W, PAGE_H) == ALL
+def test_polygon_too_few_vertices_returns_no_page_text():
+    assert _clip_words_to_polygon(ALL, [[0.0, 0.0], [1.0, 1.0]], PAGE_W, PAGE_H) == []
+    assert _clip_words_to_polygon(ALL, None, PAGE_W, PAGE_H) == []
 
 
-def test_polygon_failsoft_empty_clip_on_busy_page():
-    """Полигон в чужих координатах выкинул почти всё при многословном листе → откат на весь лист."""
+def test_polygon_empty_clip_on_busy_page_does_not_leak_full_page():
+    """Полигон в чужих координатах не должен возвращать текст всего листа."""
     many = ALL * 3
     far = [[9.0, 9.0], [9.1, 9.0], [9.1, 9.1], [9.0, 9.1]]
-    assert _clip_words_to_polygon(many, far, PAGE_W, PAGE_H) == many
+    assert _clip_words_to_polygon(many, far, PAGE_W, PAGE_H) == []
 
 
-def test_polygon_failsoft_zero_page_dims():
-    assert _clip_words_to_polygon(ALL, L_SHAPE, 0, 0) == ALL
+def test_polygon_zero_page_dims_return_no_page_text():
+    assert _clip_words_to_polygon(ALL, L_SHAPE, 0, 0) == []
 
 
 # ── Фильтр текст-строк по области (правило «вектограф = только текст полигона») ────

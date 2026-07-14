@@ -14,10 +14,18 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     STAGE02_BLOCKS_DIRNAME,
 )
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 STAGE = "block_context"
+STAGE_TITLE = "Векторные графы блоков"
 SOURCE_KINDS = {
     "structured_singleline",
+    "structured_electrical",
+    "structured_general_plan",
+    "structured_architecture",
+    "structured_structure",
+    "structured_technology",
+    "structured_hvac",
+    "structured_water",
     "structured_alia_scheme",
     "raw_vector",
     "image_only",
@@ -27,6 +35,52 @@ SOURCE_KINDS = {
     "error",
     "legacy_enrichment",
 }
+
+# Эти источники не содержат встроенного векторного текста PDF. В частности,
+# legacy_enrichment — старое OCR/vision-описание PNG, а не векторный слой.
+NO_VECTOR_TEXT_SOURCE_KINDS = {
+    "image_only",
+    "gemma_fallback",
+    "legacy_enrichment",
+    "missing",
+    "no_sources",
+    "block_not_found",
+    "error",
+}
+VECTOR_GRAPH_MISSING_MESSAGE = "Векторный граф блока отсутствует"
+
+
+def source_has_vector_text(source_kind: Any) -> bool:
+    """Есть ли у источника блока пригодный векторный текст PDF."""
+    return str(source_kind or "error") not in NO_VECTOR_TEXT_SOURCE_KINDS
+
+
+def block_context_sources(summary: Any) -> dict[str, str]:
+    """Источник графа по block_id из результата стадии block_context."""
+    if not isinstance(summary, dict):
+        return {}
+    return {
+        str(item.get("block_id")): str(item.get("source_kind") or "")
+        for item in summary.get("blocks") or []
+        if isinstance(item, dict) and item.get("block_id") and item.get("source_kind")
+    }
+
+
+def decorate_blocks_vector_state(blocks: Any, summary: Any) -> None:
+    """Добавить UI-признак наличия векторного текста, не меняя JSON на диске."""
+    sources = block_context_sources(summary)
+    for block in blocks or []:
+        if not isinstance(block, dict):
+            continue
+        source = sources.get(str(block.get("block_id") or ""))
+        if not source:
+            continue
+        available = source_has_vector_text(source)
+        block["vector_text_available"] = available
+        block["vector_graph_source_kind"] = source
+        block["vector_graph_message"] = (
+            None if available else VECTOR_GRAPH_MISSING_MESSAGE
+        )
 
 
 def resolve_blocks_dir(output_dir: Path) -> Path:
@@ -82,6 +136,8 @@ def adapt_legacy_summary(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
         "stage": STAGE,
+        "pipeline_block": "block_vector_graph",
+        "pipeline_block_title": STAGE_TITLE,
         "status": "ok" if blocks else str(payload.get("status") or "no_blocks"),
         "blocks_total": total,
         "blocks_ready": ready,
@@ -118,6 +174,12 @@ def validate_block_context_summary(output_dir: Path, *, canonical_only: bool = F
         return {"valid": False, "reason": "legacy summary не содержит block entries"}
     if summary.get("schema_version") != SCHEMA_VERSION or summary.get("stage") != STAGE:
         return {"valid": False, "reason": "schema/stage mismatch"}
+    if path.name == BLOCK_CONTEXT_SUMMARY_FILENAME:
+        catalog = summary.get("reference_catalog")
+        if not isinstance(catalog, dict) or catalog.get("runtime_source") != "pipeline_stage_embedded_catalog":
+            return {"valid": False, "reason": "встроенный каталог эталонов не указан"}
+        if int(catalog.get("records_total") or 0) <= 0:
+            return {"valid": False, "reason": "встроенный каталог эталонов пуст"}
     blocks = summary.get("blocks")
     if not isinstance(blocks, list):
         return {"valid": False, "reason": "blocks должен быть списком"}

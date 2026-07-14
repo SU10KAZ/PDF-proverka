@@ -48,7 +48,13 @@ async def test_builder_writes_canonical_vector_and_image_context(tmp_path, monke
     )
 
     assert summary["source_counts"] == {"structured_singleline": 1, "image_only": 1}
+    assert summary["pipeline_block"] == "block_vector_graph"
+    assert summary["pipeline_block_title"] == "Векторные графы блоков"
+    assert summary["reference_catalog"]["records_total"] == 1133
+    assert summary["reference_catalog"]["runtime_source"] == "pipeline_stage_embedded_catalog"
     assert (tmp_path / "block_context_summary.json").is_file()
+    assert (tmp_path / "block_vector_graphs" / "B-1.json").is_file()
+    assert summary["blocks"][0]["graph_artifact"] == "block_vector_graphs/B-1.json"
     assert not (tmp_path / "gemma_enrichment_summary.json").exists()
     assert validate_block_context_summary(tmp_path, canonical_only=True)["valid"] is True
 

@@ -16,6 +16,8 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from .profiled_graph_localization import ru_state, ru_subtype
+
 
 PROFILE_ID = "low_voltage_scheme"
 
@@ -741,14 +743,15 @@ def render_low_voltage_graph_markdown(graph: dict) -> str:
         return ""
     subtype = graph.get("subtype")
     source = graph.get("source") or {}
-    lines = [f"# СС: {subtype}", "", f"Источник: `{source.get('pdf_file')}`", ""]
+    lines = [f"# Эталонная текстовая разметка СС: {ru_subtype(subtype)}", "",
+             f"**Источник:** {source.get('pdf_file')}", ""]
     if subtype in ("aps_structural", "aps_fragment"):
         v = graph.get("validation") or {}
         lines += [
             f"Корень: **{graph.get('root') or 'не извлечён'}**",
-            f"Режим: **{subtype}**. Адресных точек: {v.get('address_points_total')}; "
+            f"Тип схемы: **{ru_subtype(subtype)}**. Адресных точек: {v.get('address_points_total')}; "
             f"шлейфов: {v.get('loops_total')}; "
-            f"этажей: {v.get('floors_total')}; статус: `{graph.get('status')}`.",
+            f"этажей: {v.get('floors_total')}; состояние: **{ru_state(graph.get('status'))}**.",
             "", "## Иерархия", "",
         ]
         for loop in graph.get("loops") or []:
@@ -767,9 +770,9 @@ def render_low_voltage_graph_markdown(graph: dict) -> str:
             )
     elif subtype == "tray_axonometry":
         validation = graph.get("validation") or {}
-        lines += [f"Статус: `{graph.get('status')}` — инвентарь точный, связность пока не извлечена.",
+        lines += [f"Состояние: **{ru_state(graph.get('status'))}** — инвентарь точный, связность пока не извлечена.",
                   f"Выноски → цветная геометрия: {validation.get('leader_targets_linked')}/"
-                  f"{validation.get('leader_targets_total')} (rate={validation.get('callout_link_rate')}).", "",
+                  f"{validation.get('leader_targets_total')} (доля привязки {validation.get('callout_link_rate')}).", "",
                   "| ID | Элемент | Система | Размер/количество | Длина |",
                   "| --- | --- | --- | --- | --- |"]
         for item in graph.get("elements") or []:
@@ -786,10 +789,10 @@ def render_low_voltage_graph_markdown(graph: dict) -> str:
             lines.append(f"| {item['id']} | {name} | {system} | {size} | {length} |")
     else:
         validation = graph.get("validation") or {}
-        lines += [f"Статус: `{graph.get('status')}`.", "",
+        lines += [f"Состояние: **{ru_state(graph.get('status'))}**.", "",
                   "Компоненты: " + ", ".join(item["name"] for item in graph.get("components") or []),
                   "", "Кабели: " + ", ".join(graph.get("cables") or []), "",
-                  f"Vector paths: физических клемм {validation.get('terminal_anchors')} "
+                  f"Векторные трассы: физических клемм {validation.get('terminal_anchors')} "
                   f"(полуформ CAD: {validation.get('terminal_half_shapes')}), внешних сегментов "
                   f"{validation.get('wire_segments')}, сетей {validation.get('terminal_networks')}, "
                   f"межкомпонентных сетей {validation.get('cross_component_networks')}.", "",
@@ -802,7 +805,7 @@ def render_low_voltage_graph_markdown(graph: dict) -> str:
                 for item in connection.get("endpoints") or []
             )
             lines.append(
-                f"- `{connection.get('topology_state')}`: {endpoints}; кабель: "
+                f"- {ru_state(connection.get('topology_state'))}: {endpoints}; кабель: "
                 f"{connection.get('cable_type') or 'не назначен'}"
             )
     if graph.get("warnings"):
