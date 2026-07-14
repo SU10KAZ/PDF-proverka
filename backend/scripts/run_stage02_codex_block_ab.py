@@ -44,7 +44,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 V2_OBJECTS_ROOT = REPO_ROOT / "projects_v2" / "objects"
 OUT_ROOT = REPO_ROOT / "comparison" / "stage02_codex_block_ab"
 DISCIPLINE_ORDER = ("AR", "AI", "KM", "KJ", "OV", "VK", "EOM", "SS", "TX", "GP", "PT")
-TOKEN_USED_RE = re.compile(r"tokens used\s*\n\s*([0-9][0-9\s\u00a0,._]*)", re.I)
+TOKEN_USED_RE = re.compile(
+    r"tokens used[ \t]*\r?\n[ \t]*([0-9][0-9 \t\u00a0,._]*)",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
