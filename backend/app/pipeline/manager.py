@@ -7,6 +7,7 @@ import json
 import os
 import random
 import shutil
+import time
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
@@ -5113,6 +5114,10 @@ class PipelineManager:
                 queue.current_index = idx
                 meta_job.progress_current = idx
                 item.status = "running"
+                # Тайминги item'а: при повторном запуске (resume interrupted)
+                # перезаписываем — показываем фактический последний прогон.
+                item.started_at = time.time()
+                item.finished_at = None
 
                 pid = item.project_id
                 print(f"[BATCH] ▶ Проект {idx + 1}/{queue.total}: {pid} ({queue.action})")
@@ -5124,6 +5129,7 @@ class PipelineManager:
                 # Пропуск уже запущенных
                 if self.is_running(pid):
                     item.status = "skipped"
+                    item.finished_at = time.time()
                     item.error = "Уже выполняется"
                     await ws_manager.broadcast_global(
                         WSMessage.log("__BATCH__", f"  ⏭ Пропуск {pid}: уже выполняется", "warn")
@@ -5204,6 +5210,9 @@ class PipelineManager:
                             WSMessage.log("__BATCH__", f"  ✗ {pid}: исключение: {e}", "error")
                         )
                 finally:
+                    # Фиксируем время окончания для любого терминального статуса
+                    if item.status in ("completed", "failed", "cancelled", "skipped"):
+                        item.finished_at = time.time()
                     self._stop_heartbeat(pid)
                     self.active_jobs.pop(pid, None)
                     self._tasks.pop(pid, None)

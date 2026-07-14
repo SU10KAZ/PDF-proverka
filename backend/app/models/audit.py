@@ -122,6 +122,9 @@ class BatchQueueItem(BaseModel):
     extra_params: dict = {}
     # job_id, который вернётся клиенту при enqueue — используется для трассировки
     job_id: Optional[str] = None
+    # Тайминги обработки item'а (epoch seconds, как у PrepareQueueItem)
+    started_at: Optional[float] = None
+    finished_at: Optional[float] = None
 
 
 class BatchQueueStatus(BaseModel):

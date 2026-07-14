@@ -1455,6 +1455,9 @@
                         </select>
                         <span v-else class="queue-item__action-label">{{ batchActionLabel(item.action) }}</span>
 
+                        <!-- Тайминги: запуск → окончание · общее время -->
+                        <span v-if="queueItemTiming(item)" class="queue-item__timing" title="Запуск → окончание · общее время">{{ queueItemTiming(item) }}</span>
+
                         <!-- Статус -->
                         <span class="queue-item__status">
                             <template v-if="item.status === 'pending'">Ожидает</template>

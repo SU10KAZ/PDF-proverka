@@ -3561,6 +3561,32 @@ const app = createApp({
             return labels[action] || action;
         }
 
+        // ЧЧ:ММ из epoch-секунд; если не сегодня — с датой "ДД.ММ ЧЧ:ММ"
+        function formatQueueClock(ts) {
+            if (!ts) return '';
+            const d = new Date(ts * 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const hhmm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+            const now = new Date();
+            const sameDay = d.getFullYear() === now.getFullYear()
+                && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+            return sameDay ? hhmm : pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + ' ' + hhmm;
+        }
+
+        // Тайминги элемента очереди: "10:42 → 11:15 · 33м" (обновляется при polling'е)
+        function queueItemTiming(item) {
+            if (!item || !item.started_at) return '';
+            const start = formatQueueClock(item.started_at);
+            if (item.status === 'running') {
+                const elapsed = Math.max(0, Date.now() / 1000 - item.started_at);
+                return start + ' → … · ' + formatEta(elapsed);
+            }
+            if (!item.finished_at) return start;
+            const end = formatQueueClock(item.finished_at);
+            const dur = formatEta(Math.max(0, item.finished_at - item.started_at));
+            return start + ' → ' + end + ' · ' + dur;
+        }
+
         async function cancelBatch() {
             if (!confirm('Отменить групповое действие?\n\nТекущий проект будет прерван.')) return;
             try {
@@ -17686,7 +17712,7 @@ const app = createApp({
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
-            batchActionLabel,
+            batchActionLabel, queueItemTiming,
             // Queue management
             queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
             refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,

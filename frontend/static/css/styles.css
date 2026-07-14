@@ -2054,6 +2054,7 @@ th.cv2-sort-active {
 .queue-item__name:hover { color: var(--teal); }
 .queue-item__action-select { padding: 4px 8px; border-radius: 5px; font-size: 11px; font-family: inherit; border: 1px solid var(--border2); background: var(--card-bg); color: var(--text); outline: none; }
 .queue-item__action-label { font-size: 11px; color: var(--text2); min-width: 60px; }
+.queue-item__timing { font-size: 12px; font-weight: 600; color: var(--teal); background: var(--teal-light); border: 1px solid var(--teal-border); border-radius: 5px; padding: 2px 8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .queue-item__status { font-size: 12px; color: var(--text2); min-width: 80px; text-align: right; }
 .queue-item__spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--border2); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 4px; }
 .queue-item__remove { border: none; background: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 0 4px; transition: color 0.13s; }
