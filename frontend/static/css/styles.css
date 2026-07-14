@@ -838,9 +838,9 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 /* ══════════════════════════════════════════════════════════════
    PROJECT DETAIL
    ══════════════════════════════════════════════════════════════ */
-.pipeline-detail { display: flex; align-items: center; gap: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 16px; margin-bottom: 10px; overflow-x: auto; min-height: 0; }
-.pipeline-stage { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 80px; min-height: 78px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--card2-bg); transition: all 0.13s; flex-shrink: 0; gap: 3px; }
-.pipeline-stage--ctx { justify-content: center; }
+/* align-items: stretch — все карточки этапов одной высоты (по самой высокой) */
+.pipeline-detail { display: flex; align-items: stretch; gap: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 16px; margin-bottom: 10px; overflow-x: auto; min-height: 0; }
+.pipeline-stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 80px; min-height: 78px; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--card2-bg); transition: all 0.13s; flex-shrink: 0; gap: 3px; }
 .pipeline-stage--clickable { cursor: pointer; }
 .pipeline-stage--clickable:hover { border-color: var(--teal-border); background: var(--teal-light); }
 .pipeline-stage--sm { min-width: 60px; padding: 8px 10px; }
@@ -867,7 +867,7 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .pipeline-stage.step-disabled .stage-num,
 .pipeline-stage.step-disabled .stage-label { color: var(--text3); }
 .stage-off-badge { font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 800; letter-spacing: 0.1em; color: #fff; background: var(--text3); border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
-.pipeline-arrow { flex-shrink: 0; color: var(--text3); padding: 0 6px; font-size: 14px; }
+.pipeline-arrow { flex-shrink: 0; align-self: center; color: var(--text3); padding: 0 6px; font-size: 14px; }
 .pipeline-arrow--sm { padding: 0 3px; font-size: 12px; }
 .audit-actions-col { margin-left: auto; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; align-self: flex-end; }
 /* Вариант в верхней панели версии: прижат вправо, вертикально по центру, компактнее */
@@ -3436,6 +3436,7 @@ tr.row-rejected td.sc-cell-goto {
 
 /* ─── Legacy runner warning: V2 audit временно недоступен ─── */
 .runner-warning {
+    align-self: center; /* внутри flex .pipeline-detail не растягивать по высоте карточек */
     margin: 10px 0;
     padding: 10px 14px;
     border-left: 3px solid #ca8a04;
