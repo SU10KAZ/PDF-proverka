@@ -2536,10 +2536,6 @@
                         <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
                     </div>
                     <div class="kb-header-actions sched-actions">
-                        <div class="sched-modeswitch">
-                            <button class="btn btn-sm" :class="schedMode==='week' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('week')">Неделя</button>
-                            <button class="btn btn-sm" :class="schedMode==='month' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('month')">Месяц</button>
-                        </div>
                         <div class="sched-navgroup">
                             <button class="btn btn-sm btn-outline sched-arrow" @click="schedPrev" title="Предыдущий период">&#8249;</button>
                             <span class="sched-period">{{ schedPeriodLabel }}</span>
@@ -2659,7 +2655,7 @@
                         <div class="sched-kpi__body">
                             <div class="sched-kpi__label">Инженеров в работе</div>
                             <div class="sched-kpi__value">{{ schedTotals.engineers }}</div>
-                            <div class="sched-kpi__sub">Активны на {{ schedMode==='week' ? 'неделе' : 'месяце' }}</div>
+                            <div class="sched-kpi__sub">Активны в этом месяце</div>
                         </div>
                     </div>
                     <div class="sched-kpi">
@@ -2669,7 +2665,7 @@
                             </svg>
                         </div>
                         <div class="sched-kpi__body">
-                            <div class="sched-kpi__label">Отчётов за {{ schedMode==='week' ? 'неделю' : 'месяц' }}</div>
+                            <div class="sched-kpi__label">Отчётов за месяц</div>
                             <div class="sched-kpi__value">{{ schedTotals.fact }}</div>
                             <div class="sched-kpi__sub">Фактически</div>
                         </div>
@@ -2774,7 +2770,7 @@
                 <!-- ПЛАН + СТАТИСТИКА за период (под основной таблицей) -->
                 <div class="sched-stats">
                     <div class="sched-stats__head">
-                        План и статистика по инженерам — {{ schedMode==='week' ? 'неделя' : 'месяц' }}
+                        План и статистика по инженерам — месяц
                         <span v-if="schedPlanEdit" class="sched-plan__edithint">правка плана</span>
                     </div>
                     <div class="sched-stats__tablewrap">

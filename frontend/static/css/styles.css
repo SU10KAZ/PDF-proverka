@@ -4215,7 +4215,6 @@ tr.row-rejected td.sc-cell-goto {
 .sched-title { font-size: 22px; line-height: 1.2; }
 .sched-subtitle { margin: 0; font-size: 13px; color: var(--text-muted); }
 .sched-actions { flex-wrap: wrap; gap: 8px; align-items: center; }
-.sched-modeswitch { display: inline-flex; gap: 4px; }
 .sched-navgroup { display: inline-flex; align-items: center; gap: 2px; }
 .sched-arrow { font-size: 16px; line-height: 1; padding: 4px 8px; }
 .sched-period { font-weight: 600; font-size: 13px; color: var(--text); min-width: 120px; text-align: center; }
