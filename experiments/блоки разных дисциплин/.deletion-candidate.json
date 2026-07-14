@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "candidate_hold",
+  "automatic_deletion_allowed": false,
+  "manual_approval_required": true,
+  "marked_on": "2026-07-13",
+  "scope": "experiments/блоки разных дисциплин",
+  "size_at_marking": "2.0G",
+  "files_at_marking": 3700,
+  "reason": "Рабочие правила, профили и компактные эталонные примеры перенесены в самостоятельный этап пайплайна.",
+  "replacement": {
+    "path": "backend/app/pipeline/stages/block_context/reference_catalog",
+    "catalog_version": "2026.07.13-1",
+    "records_total": 1133,
+    "profiles_total": 105,
+    "disciplines_total": 9,
+    "source_digest_sha256": "c3463c8118ae8b754d66cae3764f1179185133e0be8d728bdd37eca4a727a48a"
+  },
+  "deletion_conditions": [
+    "Полные прогоны проектов по всем дисциплинам подтверждены",
+    "Runtime-ссылки на архив отсутствуют",
+    "Исходные PDF больше не нужны для настройки профилей или сохранены отдельно",
+    "Тесты встроенного каталога и профильных графов проходят"
+  ],
+  "notes": "Маркер не разрешает автоматическое удаление. Требуется отдельное подтверждение пользователя."
+}
