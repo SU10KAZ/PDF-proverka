@@ -2079,17 +2079,36 @@ def _normalize_gemma_enrichment_status(
         blocks_ok = detail.get("blocks_ok")
         blocks_total = detail.get("blocks_total")
         blocks_failed = detail.get("blocks_failed")
+        uncovered = list(detail.get("uncovered_block_ids") or [])
+        high_detail_skipped_large = 0
+        # Старые pipeline_log писали detail без blocks_failed/uncovered
+        # (например {partial_allowed, blocks_ok, blocks_total}) — добираем
+        # недостающее из gemma_enrichment_summary.json. Иначе полностью
+        # покрытый проект навсегда остаётся ⚠ partial только потому, что
+        # high-detail 300 DPI пропустил большие блоки (fail-soft by design).
+        summary_path = output_dir / "gemma_enrichment_summary.json"
+        if summary_path.exists():
+            try:
+                with open(summary_path, "r", encoding="utf-8") as f:
+                    sdata = json.load(f)
+                if not isinstance(blocks_failed, int):
+                    blocks_failed = int(sdata.get("blocks_failed") or 0)
+                if not uncovered:
+                    uncovered = list(sdata.get("uncovered_block_ids") or [])
+                high_detail_skipped_large = int(sdata.get("high_detail_skipped_large") or 0)
+            except (OSError, json.JSONDecodeError, ValueError, TypeError):
+                pass
         if (
             isinstance(blocks_ok, int)
             and isinstance(blocks_total, int)
             and isinstance(blocks_failed, int)
         ):
-            if blocks_ok == blocks_total and blocks_failed == 0:
+            if blocks_ok == blocks_total and blocks_failed == 0 and not uncovered:
                 user_message = _build_gemma_done_message(
                     blocks_ok=blocks_ok,
                     blocks_total=blocks_total,
                     blocks_failed=0,
-                    high_detail_skipped_large=0,
+                    high_detail_skipped_large=high_detail_skipped_large,
                 )
                 return "done", user_message, raw_message
             if blocks_failed > 0:
@@ -2097,7 +2116,7 @@ def _normalize_gemma_enrichment_status(
                     blocks_ok=blocks_ok,
                     blocks_total=blocks_total,
                     blocks_failed=blocks_failed,
-                    uncovered_block_ids=list(detail.get("uncovered_block_ids") or []),
+                    uncovered_block_ids=uncovered,
                 )
                 return "partial", user_message, raw_message
 

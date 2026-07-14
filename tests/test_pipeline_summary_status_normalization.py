@@ -406,6 +406,93 @@ def test_gemma_partial_with_skipped_large_block_normalized_to_done(tmp_path, mon
     assert entry.get("raw_message") and "partial mode допущен" in entry["raw_message"]
 
 
+# ─── 9b. V2: detail без blocks_failed → добор из summary → done ────────────
+
+
+def test_gemma_partial_v2_detail_without_failed_backfilled_from_summary_done(tmp_path, monkeypatch):
+    """Реальный кейс V2-проекта 13АВ-РД-АР0.1-ПА: pipeline_log detail содержит
+    только {partial_allowed, blocks_ok, blocks_total} (без blocks_failed), а
+    gemma_state не ready (в V2-раскладке evaluate_gemma_enrichment получает
+    не тот каталог). Раньше это навсегда оставляло ⚠ partial при полном
+    покрытии. Теперь blocks_failed/uncovered добираются из
+    gemma_enrichment_summary.json → done с пометкой про high-detail skip.
+    """
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "gemma_enrichment": {
+            "status": "partial",
+            "message": (
+                "Gemma enrichment готов с предупреждениями (29/29); "
+                "непокрытых блоков: 0, high-detail skipped_large: 1"
+            ),
+            "detail": {"partial_allowed": True, "blocks_ok": 29, "blocks_total": 29},
+        },
+    })
+    # V2-путь: gemma_state сломан (missing_md), миграция не требуется.
+    _patch_gemma_state(
+        monkeypatch,
+        ready=False, status="missing_md",
+        blocks_ok=0, blocks_total=0,
+    )
+    (output_dir / "gemma_enrichment_summary.json").write_text(
+        json.dumps({
+            "blocks_failed": 0,
+            "high_detail_skipped_large": 1,
+            "uncovered_block_ids": [],
+        }),
+        encoding="utf-8",
+    )
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    entry = summary["gemma_enrichment"]
+    assert entry["status"] == "done", (
+        f"Ожидали done, получили {entry['status']}: {entry}"
+    )
+    user_message = entry.get("message") or ""
+    assert "29/29" in user_message
+    assert "0 упали" in user_message
+    assert "gemma_100_base" in user_message
+
+
+def test_gemma_partial_v2_uncovered_in_summary_stays_partial(tmp_path, monkeypatch):
+    """Тот же V2-кейс, но summary сообщает о реально непокрытых блоках —
+    статус должен ОСТАТЬСЯ partial (⚠), добор из summary не маскирует
+    настоящие пропуски."""
+    project_dir = tmp_path / "proj"
+    output_dir = project_dir / "_output"
+    _write_pipeline_log(output_dir, {
+        "crop_blocks": {"status": "done"},
+        "gemma_enrichment": {
+            "status": "partial",
+            "message": "Gemma enrichment готов с предупреждениями (28/29)",
+            "detail": {"partial_allowed": True, "blocks_ok": 29, "blocks_total": 29},
+        },
+    })
+    _patch_gemma_state(
+        monkeypatch,
+        ready=False, status="missing_md",
+        blocks_ok=0, blocks_total=0,
+    )
+    (output_dir / "gemma_enrichment_summary.json").write_text(
+        json.dumps({
+            "blocks_failed": 0,
+            "high_detail_skipped_large": 0,
+            "uncovered_block_ids": ["b7"],
+        }),
+        encoding="utf-8",
+    )
+
+    from backend.app.services.common.project_service import _build_pipeline_summary
+    summary = _summary_by_key(_build_pipeline_summary(output_dir))
+    entry = summary["gemma_enrichment"]
+    assert entry["status"] == "partial", (
+        f"Ожидали partial, получили {entry['status']}: {entry}"
+    )
+
+
 # ─── 10. crop_blocks done по валидному blocks_gemma_100/index.json ─────────
 
 

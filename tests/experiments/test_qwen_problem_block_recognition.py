@@ -15,6 +15,12 @@ from pathlib import Path
 import pytest
 
 EXP_DIR = Path(__file__).resolve().parents[2] / "experiments" / "qwen_problem_block_recognition"
+if not EXP_DIR.exists():
+    pytest.skip(
+        "experiments/qwen_problem_block_recognition удалён (cb764e1b) — "
+        "исходники эксперимента недоступны",
+        allow_module_level=True,
+    )
 if str(EXP_DIR) not in sys.path:
     sys.path.insert(0, str(EXP_DIR))
 
