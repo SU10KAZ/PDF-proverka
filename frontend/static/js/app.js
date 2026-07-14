@@ -1832,7 +1832,7 @@ const app = createApp({
 
         // Старые usageCounters оставляем для совместимости с webapp-трекингом
         const usageCounters = ref({});
-        const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Подготовка контекста блоков';
+        const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Векторные графы блоков';
 
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
@@ -6833,6 +6833,10 @@ const app = createApp({
         async function loadBlocks(id) {
             blocksProjectId.value = id;
             selectedBlock.value = null;
+            // Каждый обычный вход в раздел начинается с полного корпуса блоков.
+            // Переход к конкретному блоку из замечания ниже штатно переопределит
+            // этот выбор после загрузки данных.
+            selectedBlockPage.value = 'all';
             blockCropErrors.value = 0;
             blockTotalExpected.value = 0;
             try {
@@ -6844,9 +6848,6 @@ const app = createApp({
                 blockPages.value = blocksData.pages || [];
                 blockCropErrors.value = blocksData.errors || 0;
                 blockTotalExpected.value = blocksData.total_expected || 0;
-                if (blockPages.value.length > 0 && !selectedBlockPage.value) {
-                    selectedBlockPage.value = blockPages.value[0].page_num;
-                }
             } catch (e) {
                 console.error('Failed to load blocks:', e);
                 blockPages.value = [];
@@ -6929,6 +6930,9 @@ const app = createApp({
             const an = blockAnalysis.value[blockId];
             return (an && an.status) || null;
         }
+        function blockHasNoVectorGraph(block) {
+            return !!block && block.vector_text_available === false;
+        }
         function blockParentId(blockId) {
             const an = blockAnalysis.value[blockId];
             return (an && an.parent_block_id) || null;
@@ -6976,7 +6980,14 @@ const app = createApp({
             // txt-режим переживает навигацию: при открытии нового блока подгружаем его текст
             blockLlmText.value = null;
             blockLlmTextError.value = '';
-            if (showBlockLlmText.value || showBlockRegions.value) loadBlockLlmText();
+            if (blockHasNoVectorGraph(block)) {
+                // Для растрового блока TXT/области не имеют содержимого и не
+                // должны переживать переход с предыдущего векторного блока.
+                showBlockLlmText.value = false;
+                showBlockRegions.value = false;
+            } else if (showBlockLlmText.value || showBlockRegions.value) {
+                loadBlockLlmText();
+            }
             resetBlockZoom();
         }
 
@@ -6984,6 +6995,12 @@ const app = createApp({
         async function loadBlockLlmText() {
             const block = selectedBlock.value;
             if (!block) return;
+            if (blockHasNoVectorGraph(block)) {
+                showBlockLlmText.value = false;
+                blockLlmText.value = null;
+                blockLlmTextError.value = '';
+                return;
+            }
             blockLlmTextLoading.value = true;
             blockLlmTextError.value = '';
             try {
@@ -6999,7 +7016,21 @@ const app = createApp({
                           + (qs ? '?' + qs : '');
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                blockLlmText.value = await resp.json();
+                const payload = await resp.json();
+                if (payload.vector_text_available === false) {
+                    // Защита для старого списка блоков без заранее рассчитанного
+                    // признака: endpoint является окончательным источником истины.
+                    block.vector_text_available = false;
+                    block.vector_graph_source_kind = payload.block_graph_package
+                        ? payload.block_graph_package.source_kind : null;
+                    block.vector_graph_message = payload.vector_graph_message
+                        || 'Векторный граф блока отсутствует';
+                    showBlockLlmText.value = false;
+                    showBlockRegions.value = false;
+                    blockLlmText.value = null;
+                    return;
+                }
+                blockLlmText.value = payload;
             } catch (e) {
                 blockLlmText.value = null;
                 blockLlmTextError.value = 'Не удалось загрузить текст блока: ' + (e.message || e);
@@ -7009,6 +7040,11 @@ const app = createApp({
         }
 
         function toggleBlockLlmText() {
+            if (blockHasNoVectorGraph(selectedBlock.value)) {
+                showBlockLlmText.value = false;
+                blockLlmText.value = null;
+                return;
+            }
             showBlockLlmText.value = !showBlockLlmText.value;
             if (showBlockLlmText.value) {
                 showBlockRegions.value = false; // txt и области взаимоисключающие
@@ -17331,7 +17367,7 @@ const app = createApp({
             selectedBlockPage, selectedBlock,
             blockAnalysis, selectedBlockAnalysis, currentPageBlocks, allBlocksList,
             emptyBlocksList, noFindingsBlocksList, skippedBlocksList,
-            blockStatus, blockParentId, blockMergedBadge, blockOriginalLabel,
+            blockStatus, blockHasNoVectorGraph, blockParentId, blockMergedBadge, blockOriginalLabel,
             currentBlocksList, currentBlockIndex, navigateBlock,
             blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
             openBlock, loadBlocks, blockToFindings, getBlockFindings,

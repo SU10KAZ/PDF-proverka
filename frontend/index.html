@@ -1267,7 +1267,7 @@
                 <!-- ═══ Prepare-data queue (block context) ═══ -->
                 <div v-if="prepareQueue && prepareQueue.items && prepareQueue.items.length > 0" class="prepare-queue">
                     <div class="prepare-queue__header">
-                        <h3 style="margin: 0;">&#129534; Подготовка контекста блоков</h3>
+                        <h3 style="margin: 0;">&#129534; Векторные графы блоков</h3>
                         <button class="btn btn-outline btn-sm" @click="clearPrepareQueue">
                             Очистить завершённые
                         </button>
@@ -1533,13 +1533,13 @@
                     <div class="pipeline-detail">
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
                              @click="canStartFrom('block_context') && startFromStage(currentProject.project_id, 'block_context')"
-                             :title="canStartFrom('block_context') ? 'Клик: подготовить контекст блоков' : 'Подготовка контекста PDF/Vectograph'">
+                             :title="canStartFrom('block_context') ? 'Клик: построить векторные графы блоков' : 'Построение векторных графов блоков'">
                             <button type="button" class="stage-algorithm-button"
                                     @click.stop="openStageAlgorithm('block_context')"
                                     title="Как устроен этап"
                                     aria-label="Алгоритм подготовки контекста">&#8942;</button>
                             <div class="stage-num">CTX</div>
-                            <div class="stage-label">Контекст блоков</div>
+                            <div class="stage-label">Векторные графы блоков</div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
@@ -3032,8 +3032,15 @@
                                                     <b>Блок</b> {{ blockLlmText.profiled_graph_display.block_title }}
                                                 </span>
                                                 <span><b>Источник</b> {{ blockLlmText.profiled_graph_display.source_title }}</span>
-                                                <span v-if="blockLlmText.block_graph_package.reference">
+                                                <span v-if="blockLlmText.block_graph_package.reference"
+                                                      :title="blockLlmText.block_graph_package.reference.explanation || blockLlmText.block_graph_package.reference.selection || ''">
                                                     <b>Эталон</b> {{ blockLlmText.block_graph_package.reference.block_id || 'встроенная грамматика профиля' }}
+                                                    <small v-if="blockLlmText.block_graph_package.reference.match_score !== null && blockLlmText.block_graph_package.reference.match_score !== undefined">
+                                                        · сходство {{ Math.round(blockLlmText.block_graph_package.reference.match_score * 100) }}%
+                                                    </small>
+                                                </span>
+                                                <span v-if="blockLlmText.block_graph_package.reference_catalog">
+                                                    <b>Каталог</b> {{ blockLlmText.block_graph_package.reference_catalog.catalog_version }}
                                                 </span>
                                             </div>
                                             <div class="pvg-stats">
