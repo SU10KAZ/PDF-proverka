@@ -26,6 +26,32 @@ describe('compact model configuration presets', () => {
     expect(preset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
   });
 
+  it('runs blocks and optimization through their ensembles in Full Codex', () => {
+    const preset = appJs.match(/codex_exec:\s*\{[\s\S]*?\n\s*\};/)?.[0] || '';
+    expect(preset).toContain('label: "Full Codex"');
+    // Блоки — ансамбль GPT+Codex (судья + gap-search), оптимизация — Claude+Codex:
+    // обе модели находят РАЗНОЕ, поодиночке теряется часть предложений.
+    expect(preset).toContain('block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL');
+    expect(preset).toContain('optimization:           OPT_CODEX_ENSEMBLE_MODEL');
+    // Остальные этапы остаются чистым Codex.
+    expect(preset).toContain('text_analysis:          CODEX_PRESET_MODEL');
+    expect(preset).toContain('findings_merge:         CODEX_PRESET_MODEL');
+    expect(preset).not.toContain('block_batch:            CODEX_PRESET_MODEL');
+    expect(preset).not.toContain('optimization:           CODEX_PRESET_MODEL');
+  });
+
+  it('labels a config that matches no preset instead of showing nothing', () => {
+    // Осиротевший конфиг (ручная раскладка или пресет поменяли после сохранения)
+    // раньше открывал окно пустым: ни подсветки, ни подсказки.
+    expect(appJs).toContain('const isCustomStageConfig = computed');
+    expect(appJs).toContain("Своя раскладка — не совпадает ни с одним пресетом");
+    // Метка только когда конфиг УЖЕ загружен — иначе мигала бы на старте.
+    expect(appJs).toContain('Object.keys(stageModelConfig.value || {}).length > 0 && !activePreset.value');
+    expect(appJs).toContain('isCustomStageConfig, applyPreset');
+    expect(html).toContain("'model-preset-hint--custom': isCustomStageConfig");
+    expect(css).toContain('.model-preset-hint--custom');
+  });
+
   it('shows one additive Codex column', () => {
     expect(html).toContain('<th>Codex</th>');
     expect(html).toContain('v-for="m in visibleStageModels"');

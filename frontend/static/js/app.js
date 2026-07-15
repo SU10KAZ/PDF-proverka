@@ -3141,17 +3141,17 @@ const app = createApp({
             },
             codex_exec: {
                 label: "Full Codex",
-                hint: "Все поддерживаемые этапы выполняет Codex; перед запуском сохраняется snapshot.",
+                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex · остальные этапы выполняет Codex; перед запуском сохраняется snapshot.",
                 config: {
                     text_analysis:          CODEX_PRESET_MODEL,
-                    block_batch:            CODEX_PRESET_MODEL,
+                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
                     findings_merge:         CODEX_PRESET_MODEL,
                     findings_critic:        CODEX_PRESET_MODEL,
                     findings_corrector:     CODEX_PRESET_MODEL,
                     norm_verify:            CODEX_PRESET_MODEL,
                     norm_fix:               CODEX_PRESET_MODEL,
                     norm_requote:           CODEX_PRESET_MODEL,
-                    optimization:           CODEX_PRESET_MODEL,
+                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
                     optimization_critic:    CODEX_PRESET_MODEL,
                     optimization_corrector: CODEX_PRESET_MODEL,
                 },
@@ -3159,9 +3159,20 @@ const app = createApp({
             },
         };
         const activePreset = ref(null);
+        // Сохранённый конфиг может не совпасть ни с одним пресетом: раскладку задали
+        // вручную или пресет поменяли уже после сохранения (тогда конфиг «осиротел»).
+        // Подсветки в этом случае нет — и окно открывалось пустым, без единого намёка,
+        // на чём пойдёт запуск. Метку показываем только когда конфиг УЖЕ загружен,
+        // иначе она мигала бы на старте, пока /audit/model/stages в пути.
+        const isCustomStageConfig = computed(() => (
+            Object.keys(stageModelConfig.value || {}).length > 0 && !activePreset.value
+        ));
         const activePresetHint = computed(() => {
             const key = activePreset.value;
-            return key ? (modelPresets[key]?.hint || '') : '';
+            if (key) return modelPresets[key]?.hint || '';
+            return isCustomStageConfig.value
+                ? 'Своя раскладка — не совпадает ни с одним пресетом. Модели заданы вручную в таблице ниже.'
+                : '';
         });
         const stageBatchModes = ref({});  // { block_batch: "findings_only_block_context" }
         const stageBatchModeChoices = ref({});
@@ -17702,7 +17713,7 @@ const app = createApp({
             stageModelRestrictions, stageModelHints, isModelAllowed,
             isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
             selectBaseStageModel, toggleStageCodex,
-            modelPresets, activePreset, activePresetHint, applyPreset,
+            modelPresets, activePreset, activePresetHint, isCustomStageConfig, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,

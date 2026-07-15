@@ -1931,6 +1931,9 @@ th.cv2-sort-active {
 .model-preset-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
 .model-preset-buttons .btn-preset { min-height: 25px; padding: 3px 9px; font-size: 10px; }
 .model-preset-hint { margin: 0 0 5px; padding: 4px 7px; overflow: hidden; border-left: 2px solid var(--teal); border-radius: 4px; background: var(--card2-bg); color: var(--text3); font-size: 10px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+/* Конфиг не совпал ни с одним пресетом — метка «Своя раскладка». Не бирюза
+   пресета, а янтарь: состояние не штатное, но и не ошибка. Полный текст в title. */
+.model-preset-hint--custom { border-left-color: var(--amber); background: var(--amber-light); color: var(--amber); }
 .model-config-error { margin: 0 0 8px 0; font-size: 11px; line-height: 1.4; padding: 6px 8px; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; }
 .model-config-table-wrap { max-width: 100%; overflow-x: auto; margin-bottom: 6px; }
 .model-config-table { width: 100%; min-width: 590px; table-layout: fixed; border-collapse: collapse; }

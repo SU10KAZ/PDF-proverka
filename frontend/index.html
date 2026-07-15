@@ -1199,9 +1199,10 @@
                     <button class="btn btn-preset"
                             :class="{ active: activePreset === 'codex_exec' }"
                             @click="applyPreset('codex_exec')"
-                            title="Все поддерживаемые этапы выполняются через Codex exec.">Full Codex</button>
+                            title="Блоки анализируют GPT-5.4 и Codex параллельно (сравнение и gap-search); оптимизацию — Claude Opus и Codex; остальные этапы выполняются через Codex exec.">Full Codex</button>
                 </div>
-                <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
+                <p v-if="activePresetHint" class="model-preset-hint" :title="activePresetHint"
+                   :class="{ 'model-preset-hint--custom': isCustomStageConfig }">{{ activePresetHint }}</p>
                 <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
                 <div class="model-config-table-wrap">
                 <table class="model-config-table">
