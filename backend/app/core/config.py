@@ -463,6 +463,17 @@ STAGE01_DUAL_REVIEW_MODEL = (
 if not STAGE01_DUAL_REVIEW_MODEL.startswith("codex/"):
     STAGE01_DUAL_REVIEW_MODEL = CODEX_STAGE_MODEL_ID
 
+# Блоки в codex/ensemble режимах идут строго по одному. Блоки независимы, поэтому
+# ограничение не смысловое, а страховка от лимитов подписки Codex: один блок в
+# ensemble = три вызова (GPT + Codex + review). Дефолт 1 сохраняет прежнее
+# поведение; значение >1 включает параллельную обработку блоков.
+try:
+    STAGE01_CODEX_PARALLELISM = max(
+        1, int(os.environ.get("AUDIT_STAGE02_CODEX_PARALLELISM", "1") or "1")
+    )
+except ValueError:
+    STAGE01_CODEX_PARALLELISM = 1
+
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},

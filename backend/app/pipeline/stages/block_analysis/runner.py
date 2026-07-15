@@ -27,6 +27,7 @@ from backend.app.core.config import (
     BLOCK_BATCH_MODE_FINDINGS_ONLY,
     CLAUDE_BLOCK_BATCH_CLEAN_CWD,
     CODEX_STAGE_MODEL_ID,
+    STAGE01_CODEX_PARALLELISM,
     STAGE02_DUAL_MODEL_ID,
     get_stage_model,
 )
@@ -563,7 +564,8 @@ async def run_block_analysis_findings_only(
     # ── Smoke-limits via env (опционально, не активны в production) ──
     smoke = _read_stage02_smoke_env()
     detector_default_parallelism = (
-        1 if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
+        STAGE01_CODEX_PARALLELISM
+        if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
         else DEFAULT_PARALLELISM
     )
     parallelism = smoke.get("max_parallel", detector_default_parallelism)

@@ -527,3 +527,51 @@ def test_record_findings_only_usage_empty_summary_noop(monkeypatch):
     )
     pm._record_findings_only_usage(job, {"model": "openai/gpt-5.4", "totals": {}})
     assert captured_records == []
+
+
+# ─── 4. Параллельность блоков в codex/ensemble режимах ────────────────────
+
+
+async def _parallelism_for_ensemble(tmp_path, monkeypatch) -> int:
+    """Прогнать Stage 02 на ensemble-модели и вернуть переданный parallelism."""
+    import importlib
+    import backend.app.core.config as cfg
+    importlib.reload(cfg)
+    import backend.app.pipeline.stages.block_analysis.runner as runner_mod
+    importlib.reload(runner_mod)
+
+    monkeypatch.setattr(runner_mod, "get_stage_model", lambda key: "ensemble/gpt-codex")
+    monkeypatch.delenv("AUDIT_STAGE02_MAX_PARALLEL_BATCHES", raising=False)
+    monkeypatch.delenv("AUDIT_STAGE02_MAX_BLOCKS", raising=False)
+
+    project_dir = _make_stage02_project(tmp_path)
+    capture = {}
+    _patch_run_findings_only(monkeypatch, capture)
+    ctx, _captured = _make_ctx(project_dir)
+    result = await runner_mod.run_block_analysis_findings_only(ctx)
+    assert result.success
+    return capture["call_kwargs"].get("parallelism")
+
+
+@pytest.mark.asyncio
+async def test_ensemble_parallelism_defaults_to_one(tmp_path, monkeypatch):
+    """Без env ensemble идёт по одному блоку — прежнее поведение не меняется."""
+    monkeypatch.delenv("AUDIT_STAGE02_CODEX_PARALLELISM", raising=False)
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 1
+
+
+@pytest.mark.asyncio
+async def test_ensemble_parallelism_env_override(tmp_path, monkeypatch):
+    """AUDIT_STAGE02_CODEX_PARALLELISM=3 → три блока одновременно."""
+    monkeypatch.setenv("AUDIT_STAGE02_CODEX_PARALLELISM", "3")
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 3
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", ["garbage", "0", "-2", ""])
+async def test_ensemble_parallelism_invalid_env_falls_back_to_one(
+    tmp_path, monkeypatch, raw,
+):
+    """Невалидное значение не должно ломать production — откат на 1."""
+    monkeypatch.setenv("AUDIT_STAGE02_CODEX_PARALLELISM", raw)
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 1
