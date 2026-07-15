@@ -30,6 +30,73 @@ from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited, is_timeout
 
 
+def enrich_optimization_norm_status(output_dir: Path) -> int:
+    """Проставить предложениям статус нормы по norm_checks.json (чистый Python).
+
+    Без этого шага «✓ норма проверена» не появлялась бы НИКОГДА: поля писал
+    только этап пересмотра (3c), а он запускается лишь когда норма плохая. На
+    живом прогоне 13АВ-РД-ВК1-К1 V1 все 18 норм оказались действующими →
+    пересмотр не потребовался → 24 предложения остались вообще без признака,
+    хотя нормы у них проверены и лежат в norm_checks.json.
+
+    Не трогает то, что уже выставил пересмотр (norm_status revised/warning):
+    его вердикт содержательнее — он видел текст нормы через MCP.
+
+    Returns: количество обогащённых предложений.
+    """
+    optimization_path = output_dir / "optimization.json"
+    norm_checks_path = output_dir / "norm_checks.json"
+    if not optimization_path.exists() or not norm_checks_path.exists():
+        return 0
+
+    try:
+        od = json.loads(optimization_path.read_text(encoding="utf-8"))
+        nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return 0
+
+    items = od.get("items") or []
+    if not items:
+        return 0
+
+    # OPT-ID → его проверки норм
+    by_opt: dict[str, list[dict]] = {}
+    for check in nc.get("checks") or []:
+        for oid in check.get("affected_optimizations") or []:
+            by_opt.setdefault(str(oid), []).append(check)
+
+    enriched = 0
+    for item in items:
+        oid = str(item.get("id") or "")
+        checks = by_opt.get(oid) or []
+        if not checks:
+            # У предложения нет распознанных норм — проверять нечего. Молчим:
+            # «не проверено» и «проверено и всё хорошо» — разные вещи.
+            continue
+        if item.get("norm_status") in ("revised", "warning"):
+            continue  # вердикт пересмотра сильнее — не перебиваем
+
+        bad = [c for c in checks if c.get("status") != "active"]
+        item["norm_verified"] = True
+        if bad:
+            reasons = "; ".join(
+                f"{c.get('norm_as_cited', '?')}: {c.get('status', '?')}" for c in bad[:3]
+            )
+            item["norm_status"] = "warning"
+            item.setdefault("norm_revision", {})["revision_reason"] = (
+                f"Норма не подтверждена в Norms-main — {reasons}"
+            )
+        else:
+            item["norm_status"] = "ok"
+        enriched += 1
+
+    if enriched:
+        optimization_path.write_text(
+            json.dumps(od, ensure_ascii=False, indent=2), encoding="utf-8",
+        )
+    return enriched
+
+
 def enrich_norm_quotes_from_checks(output_dir: Path) -> int:
     """Обогатить findings из norm_checks.json (полный norm contract).
 
@@ -749,6 +816,14 @@ async def run_norm_verification(
     enriched = enrich_norm_quotes_from_checks(output_dir)
     if enriched > 0:
         await ctx.log(f"norm_quote обогащён из paragraph_checks: {enriched} замечаний")
+
+    # ── Шаг 5b: Статус нормы предложениям (детерминированно, без LLM) ──
+    # Иначе «✓ норма проверена» не появится никогда: поля пишет только шаг 3c,
+    # а он идёт лишь при плохой норме. Штатный случай (все нормы действуют)
+    # оставался бы в UI немым, хотя проверка прошла.
+    opt_enriched = enrich_optimization_norm_status(output_dir)
+    if opt_enriched > 0:
+        await ctx.log(f"Статус нормы проставлен предложениям: {opt_enriched}")
 
     # ── Шаг 6: Авто-исправление неверных номеров пунктов ──
     fixed_paras = fix_paragraph_refs(output_dir)
