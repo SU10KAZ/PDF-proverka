@@ -16,6 +16,34 @@ _SUBPROCESS_FLAGS: dict = {}
 if platform.system() == "Windows":
     _SUBPROCESS_FLAGS["creationflags"] = 0x08000000  # CREATE_NO_WINDOW
 
+# Лимит строки для asyncio StreamReader. Дефолт — 64 КиБ, и одна длинная строка
+# от CLI роняла ВЕСЬ этап: readline() бросает ValueError «Separator is found, but
+# chunk is longer than limit». Живой случай 15.07.2026: 13АВ-РД-ВК1-К1 V1,
+# findings_merge на ансамбле GPT+Codex — агент выплюнул JSON одной строкой.
+# LLM-агенты законно печатают гигантские однострочные JSON, так что лимит должен
+# быть щедрым; 64 МБ — потолок на случай взбесившегося процесса.
+_STREAM_LIMIT = 64 * 1024 * 1024
+
+
+async def _readline_tolerant(stream):
+    """readline(), который не роняет этап на сверхдлинной строке.
+
+    При превышении limit StreamReader.readline() чистит буфер и бросает
+    ValueError. Раньше исключение всплывало наружу и убивало весь этап
+    (13АВ-РД-ВК1-К1 V1, findings_merge). Строку в такой ситуации спасти уже
+    нельзя — она отброшена внутри readline(), — но чтение можно продолжить:
+    потерять одну реплику лога лучше, чем весь прогон. Возвращает b"" только
+    на реальном EOF, поэтому цикл чтения не оборвётся преждевременно.
+    """
+    while True:
+        try:
+            return await stream.readline()
+        except ValueError:
+            # Строка длиннее _STREAM_LIMIT. Буфер уже сброшен — читаем дальше.
+            continue
+        except asyncio.LimitOverrunError:
+            continue
+
 
 def _normalize_command_for_windows(cmd: list[str]) -> list[str]:
     """Wrap .cmd/.bat launchers for asyncio on Windows.
@@ -163,6 +191,7 @@ async def run_script(
         stderr=asyncio.subprocess.PIPE,
         cwd=work_dir,
         env=env,
+        limit=_STREAM_LIMIT,
         **_SUBPROCESS_FLAGS,
     )
     if project_id:
@@ -173,7 +202,7 @@ async def run_script(
 
     async def read_stream(stream, lines, is_stderr=False):
         while True:
-            line = await stream.readline()
+            line = await _readline_tolerant(stream)
             if not line:
                 break
             text = line.decode("utf-8", errors="replace").rstrip()
@@ -262,6 +291,7 @@ async def run_command(
             stderr=asyncio.subprocess.PIPE,
             cwd=work_dir,
             env=env,
+            limit=_STREAM_LIMIT,
             **_SUBPROCESS_FLAGS,
         )
     except PermissionError:
@@ -288,7 +318,7 @@ async def run_command(
         # классифицировался как обычная ошибка (hard fail вместо ожидания).
         async def _read_stdin_stream(stream, lines):
             while True:
-                line = await stream.readline()
+                line = await _readline_tolerant(stream)
                 if not line:
                     break
                 text = line.decode("utf-8", errors="replace").rstrip()
@@ -349,7 +379,7 @@ async def run_command(
         # Без stdin — стриминг stdout
         async def read_stream(stream, lines, is_stderr=False):
             while True:
-                line = await stream.readline()
+                line = await _readline_tolerant(stream)
                 if not line:
                     break
                 text = line.decode("utf-8", errors="replace").rstrip()
