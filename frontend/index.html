@@ -2271,7 +2271,12 @@
                                         </div>
                                     </td>
                                     <td class="opt-risks">{{ item.risks }}</td>
-                                    <td class="opt-norm">{{ item.norm || '—' }}</td>
+                                    <td class="opt-norm">
+                                        {{ item.norm || '—' }}
+                                        <div v-if="optNormBadge(item)" class="opt-norm-badge"
+                                             :class="'opt-norm-badge--' + optNormBadge(item).tone"
+                                             :title="optNormBadge(item).title">{{ optNormBadge(item).text }}</div>
+                                    </td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
                                             <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(item.id) === 'accepted' }"

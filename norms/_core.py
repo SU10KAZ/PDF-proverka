@@ -125,6 +125,105 @@ def extract_norms_from_findings(findings_path: Path) -> dict:
     }
 
 
+def extract_norms_from_optimization(optimization_path: Path) -> dict:
+    """Прочитать optimization.json, извлечь нормативные ссылки предложений.
+
+    Зеркало extract_norms_from_findings, но ключ принадлежности — OPT-ID
+    (`affected_optimizations`), а не F-ID. Промпт оптимизации требует поле `norm`
+    и соответствие ДЕЙСТВУЮЩИМ нормам, но справочника модели не даёт, а этап 04
+    исторически читал только 03_findings.json — ссылки предложений не проверял
+    никто. Отсюда и самодеятельный web-поиск внутри стадии оптимизации.
+    """
+    with open(optimization_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    items = data.get("items", [])
+    norms_map: dict = {}
+
+    for item in items:
+        oid = item.get("id", "?")
+        norm_field = item.get("norm") or ""
+        # `proposed` — суть замены, `current` — что есть сейчас, `risks` — оговорки.
+        # Нормы встречаются во всех трёх, как и у findings в problem/recommendation.
+        proposed = item.get("proposed") or ""
+        current = item.get("current") or ""
+        risks = item.get("risks") or ""
+
+        found_norms = extract_norms_from_text(norm_field)
+        found_norms += extract_norms_from_text(proposed)
+        found_norms += extract_norms_from_text(current)
+        found_norms += extract_norms_from_text(risks)
+
+        for norm in found_norms:
+            key = re.sub(r'\s+', ' ', norm).strip()
+
+            if key not in norms_map:
+                norms_map[key] = {
+                    "cited_as": [],
+                    "affected_findings": [],
+                    "affected_optimizations": [],
+                    "contexts": [],
+                    "finding_norms": {},
+                    "optimization_norms": {},
+                }
+
+            if norm_field and norm_field not in norms_map[key]["cited_as"]:
+                norms_map[key]["cited_as"].append(norm_field)
+            if oid not in norms_map[key]["affected_optimizations"]:
+                norms_map[key]["affected_optimizations"].append(oid)
+            if norm_field and oid not in norms_map[key].get("optimization_norms", {}):
+                norms_map[key].setdefault("optimization_norms", {})[oid] = norm_field
+
+            ctx = proposed[:200] if proposed else ""
+            if ctx and ctx not in norms_map[key]["contexts"]:
+                norms_map[key]["contexts"].append(ctx)
+
+    return {
+        "norms": norms_map,
+        "total_optimizations": len(items),
+        "total_unique_norms": len(norms_map),
+    }
+
+
+def merge_norms_maps(*norms_datas: dict) -> dict:
+    """Слить карты норм из нескольких источников (findings + optimization).
+
+    Одна и та же норма может цитироваться и в замечании, и в предложении —
+    тогда статус резолвится ОДИН раз, а принадлежность копится в обоих списках.
+    Порядок аргументов задаёт приоритет только для порядка ключей.
+    """
+    merged: dict = {}
+    totals = {"total_findings": 0, "total_optimizations": 0}
+
+    for data in norms_datas:
+        if not isinstance(data, dict):
+            continue
+        for k in totals:
+            totals[k] += int(data.get(k) or 0)
+        for key, info in (data.get("norms") or {}).items():
+            slot = merged.setdefault(key, {
+                "cited_as": [],
+                "affected_findings": [],
+                "affected_optimizations": [],
+                "contexts": [],
+                "finding_norms": {},
+                "optimization_norms": {},
+            })
+            for list_field in ("cited_as", "affected_findings", "affected_optimizations", "contexts"):
+                for v in info.get(list_field) or []:
+                    if v not in slot[list_field]:
+                        slot[list_field].append(v)
+            for dict_field in ("finding_norms", "optimization_norms"):
+                slot.setdefault(dict_field, {}).update(info.get(dict_field) or {})
+
+    return {
+        "norms": merged,
+        "total_findings": totals["total_findings"],
+        "total_optimizations": totals["total_optimizations"],
+        "total_unique_norms": len(merged),
+    }
+
+
 def format_norms_for_template(norms_data: dict) -> str:
     """Форматировать список норм для подстановки в шаблон Claude.
 
@@ -234,6 +333,65 @@ def format_findings_to_fix(norm_checks_path: Path, findings_path: Path) -> str:
     return "\n".join(lines)
 
 
+def format_optimizations_to_fix(norm_checks_path: Path, optimization_path: Path) -> str:
+    """Определить, какие ОПТИМИЗАЦИИ нужно пересмотреть после верификации норм.
+
+    Зеркало format_findings_to_fix для optimization.json. Предложение уходит на
+    пересмотр автору, если норма заменена/отменена/устарела по редакции либо её
+    цитата не подтвердилась. Решение о судьбе предложения принимает автор: сама
+    идея замены может быть здравой при неверно приписанной норме.
+    """
+    with open(norm_checks_path, "r", encoding="utf-8") as f:
+        checks = json.load(f)
+    with open(optimization_path, "r", encoding="utf-8") as f:
+        opt_data = json.load(f)
+
+    opt_map = {o["id"]: o for o in opt_data.get("items", []) if o.get("id")}
+    lines = []
+    revision_oids = set()
+
+    for check in checks.get("checks", []):
+        if not check.get("needs_revision", False):
+            continue
+        for oid in check.get("affected_optimizations", []):
+            item = opt_map.get(oid)
+            if not item or oid in revision_oids:
+                continue
+            revision_oids.add(oid)
+            lines.append(
+                f"### {oid}\n"
+                f"- **Текущая норма:** `{item.get('norm', '?')}`\n"
+                f"- **Предложение:** {(item.get('proposed') or '')[:200]}\n"
+                f"- **Проблема:** {check.get('status', '?')} — {check.get('details', '')}\n"
+                f"- **Актуальный документ:** `{check.get('current_version', '?')}`\n"
+                f"- **Замена:** `{check.get('replacement_doc') or 'нет'}`\n"
+            )
+
+    # Цитата пункта не подтвердилась — норма может быть актуальна, но сослались не туда.
+    for pc in checks.get("paragraph_checks", []):
+        if pc.get("paragraph_verified", True):
+            continue
+        oid = pc.get("optimization_id", "")
+        if not oid or oid in revision_oids:
+            continue
+        item = opt_map.get(oid)
+        if not item:
+            continue
+        revision_oids.add(oid)
+        lines.append(
+            f"### {oid}\n"
+            f"- **Текущая норма:** `{item.get('norm', '?')}`\n"
+            f"- **Предложение:** {(item.get('proposed') or '')[:200]}\n"
+            f"- **Проблема:** Цитата пункта не подтверждена\n"
+            f"- **Заявленная цитата:** `{pc.get('claimed_quote', '?')}`\n"
+            f"- **Реальный текст:** `{pc.get('actual_quote') or 'не найден'}`\n"
+        )
+
+    if not lines:
+        return "Все нормы в оптимизациях актуальны. Пересмотр не требуется."
+    return "\n".join(lines)
+
+
 def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dict:
     """Детерминированная проверка статусов норм через Norms-main.
 
@@ -294,6 +452,7 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
         norm_key = normalize_doc_number(norm_raw)
         cited_as = info["cited_as"][0] if info.get("cited_as") else norm_raw
         affected = info.get("affected_findings", [])
+        affected_opts = info.get("affected_optimizations", [])
 
         resolved = resolve_norm_status(norm_raw)
         check_entry = _build_check_from_resolved(
@@ -301,6 +460,7 @@ def generate_deterministic_checks(norms_data: dict, project_id: str = "") -> dic
             cited_as=cited_as,
             affected=affected,
             resolved=resolved,
+            affected_optimizations=affected_opts,
         )
         checks.append(check_entry)
         status = check_entry["status"]
@@ -469,8 +629,14 @@ def _build_check_from_resolved(
     cited_as: str,
     affected: list[str],
     resolved: dict,
+    affected_optimizations: list[str] | None = None,
 ) -> dict:
-    """Собрать запись check из результата resolve_norm_status()."""
+    """Собрать запись check из результата resolve_norm_status().
+
+    affected_optimizations — OPT-ID предложений, цитирующих эту норму. Отдельный
+    список, а не подмешивание в affected_findings: то поле читают как F-ID
+    (missing_norms_service, format_findings_to_fix), и мешанина сломала бы их.
+    """
     status = _status_from_resolved(resolved)
     via = _verified_via_from_resolved(resolved)
 
@@ -516,6 +682,7 @@ def _build_check_from_resolved(
         "source_url": resolved.get("source_url"),
         "details": details,
         "affected_findings": affected,
+        "affected_optimizations": list(affected_optimizations or []),
         "needs_revision": needs_revision,
         "verified_via": via,
         "authoritative": bool(resolved.get("authoritative")),

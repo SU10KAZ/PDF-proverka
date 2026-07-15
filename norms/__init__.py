@@ -15,8 +15,11 @@ from norms._core import (  # noqa: F401
     # Извлечение норм
     extract_norms_from_text,
     extract_norms_from_findings,
+    extract_norms_from_optimization,
+    merge_norms_maps,
     format_norms_for_template,
     format_findings_to_fix,
+    format_optimizations_to_fix,
     # Детерминированная проверка
     generate_deterministic_checks,
     # Очередь пропусков

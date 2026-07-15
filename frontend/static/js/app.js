@@ -7796,6 +7796,36 @@ const app = createApp({
             return map[type] || '';
         }
 
+        // Статус нормы предложения. Поля пишет этап 04 (пересмотр оптимизаций):
+        // norm_status = ok | revised | warning, norm_outcome = still_valid | revised | obsolete.
+        // Пока этап не отработал, полей нет — тогда молчим, а не рисуем «не проверена»:
+        // отсутствие проверки и провал проверки — разные вещи.
+        const OPT_NORM_OUTCOME_LABEL = {
+            still_valid: 'норма обновлена, предложение в силе',
+            revised: 'предложение пересмотрено под новую норму',
+            obsolete: 'новая норма обесценила предложение',
+        };
+        function optNormBadge(item) {
+            if (!item || !item.norm_verified) return null;
+            const status = String(item.norm_status || '');
+            if (status === 'ok') return { text: '✓ норма проверена', tone: 'ok' };
+            const reason = (item.norm_revision && item.norm_revision.revision_reason) || '';
+            if (status === 'warning') {
+                return { text: '⚠ норма не подтверждена', tone: 'warn', title: reason };
+            }
+            if (status === 'revised') {
+                const outcome = String(item.norm_outcome || '');
+                const label = OPT_NORM_OUTCOME_LABEL[outcome] || 'норма пересмотрена';
+                const was = (item.norm_revision && item.norm_revision.original_norm) || '';
+                return {
+                    text: outcome === 'obsolete' ? '⚠ ' + label : '↻ ' + label,
+                    tone: outcome === 'obsolete' ? 'warn' : 'revised',
+                    title: [was ? 'Было: ' + was : '', reason].filter(Boolean).join('\n'),
+                };
+            }
+            return null;
+        }
+
         // Цветной кружок для бейджа оптимизации — по аналогии с sevIcon (замечания),
         // чтобы карточки-счётчики выглядели одинаково.
         function optIcon(type) {
@@ -17805,7 +17835,7 @@ const app = createApp({
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, optTypeClass, optIcon, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, loadOptimization,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

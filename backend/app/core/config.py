@@ -73,6 +73,10 @@ DISCIPLINES_DIR = PROMPTS_DIR / "disciplines"
 _PIPELINE_RU = PROMPTS_DIR / "pipeline" / "ru"
 NORM_VERIFY_TASK_TEMPLATE = _PIPELINE_RU / "norm_verify_task.md"
 NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "norm_fix_task.md"
+# Пересмотр ОПТИМИЗАЦИЙ после верификации норм. Отдельный шаблон, а не общий с
+# norm_fix: у предложения другой исход — не «поправить ссылку», а переосмыслить
+# саму замену под актуальную норму (still_valid / revised / obsolete).
+OPTIMIZATION_NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "optimization_norm_fix_task.md"
 NORM_REQUOTE_TASK_TEMPLATE = _PIPELINE_RU / "norm_requote_task.md"
 OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
 TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"

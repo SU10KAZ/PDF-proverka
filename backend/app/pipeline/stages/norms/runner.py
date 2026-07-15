@@ -178,6 +178,24 @@ def fix_paragraph_refs(output_dir: Path) -> int:
     return fixed
 
 
+def _optimization_intact(optimization_path: Path, backup_path: Path) -> bool:
+    """True, если пересмотр не потерял предложения (инвариант «ничего не удаляем»).
+
+    Агентный корректор оптимизаций уже ловили на тихой потере данных (замер 07-07:
+    ЭО1 14 → 7, удалено 41 предложение). Здесь та же защита на входе: файл обязан
+    остаться валидным JSON, а КАЖДЫЙ исходный id — на месте. Иначе откат к бэкапу.
+    """
+    try:
+        new = json.loads(optimization_path.read_text(encoding="utf-8"))
+        old = json.loads(backup_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+    old_ids = {i.get("id") for i in old.get("items") or [] if i.get("id")}
+    new_ids = {i.get("id") for i in new.get("items") or [] if i.get("id")}
+    return old_ids.issubset(new_ids)
+
+
 def _norm_fix_left_findings_untouched(findings_path: Path, backup_path: Path) -> bool:
     """True, если norm_fix завершился, НЕ изменив 03_findings.json (байт-в-байт = бэкап).
 
@@ -247,7 +265,10 @@ async def run_norm_verification(
 
     from norms import (
         extract_norms_from_findings,
+        extract_norms_from_optimization,
+        merge_norms_maps,
         generate_deterministic_checks,
+        format_optimizations_to_fix,
         format_llm_work_for_template,
         merge_llm_norm_results,
         merge_chunked_llm_results,
@@ -268,6 +289,31 @@ async def run_norm_verification(
     # ── Шаг 1: Извлечение норм ──
     await ctx.log("Шаг 1: Извлечение нормативных ссылок из замечаний...")
     norms_data = extract_norms_from_findings(findings_path)
+
+    # Нормы ПРЕДЛОЖЕНИЙ по оптимизации — в тот же контур. Промпт оптимизации
+    # требует поле `norm` и соответствие ДЕЙСТВУЮЩИМ нормам, но справочника не
+    # даёт, а этап 04 читал только findings → ссылки предложений не проверял
+    # никто (отсюда и самодеятельный web-поиск внутри стадии оптимизации).
+    # optimization.json появляется здесь только при PIPELINE_NORMS_AFTER_MERGE_ENABLED
+    # (нормы после параллельного блока). В легаси-порядке файла ещё нет — тогда
+    # ведём себя ровно как раньше, без ошибки.
+    optimization_path = output_dir / "optimization.json"
+    if optimization_path.exists():
+        try:
+            opt_norms = extract_norms_from_optimization(optimization_path)
+            if opt_norms["total_unique_norms"]:
+                before = norms_data["total_unique_norms"]
+                norms_data = merge_norms_maps(norms_data, opt_norms)
+                added = norms_data["total_unique_norms"] - before
+                await ctx.log(
+                    f"Нормы предложений по оптимизации: {opt_norms['total_unique_norms']} "
+                    f"из {opt_norms['total_optimizations']} предложений, "
+                    f"новых для проверки: {added}",
+                )
+        except (OSError, json.JSONDecodeError, KeyError) as e:
+            # fail-soft: битый optimization.json не должен ронять верификацию норм
+            await ctx.log(f"Нормы предложений пропущены: {e}", "warn")
+
     total_norms = norms_data["total_unique_norms"]
 
     if total_norms == 0:
@@ -649,6 +695,49 @@ async def run_norm_verification(
                 await ctx.log("Восстановлен 03_findings.json из бэкапа", "warn")
     else:
         await ctx.log("Все нормы актуальны — пересмотр не требуется", "info")
+
+    # ── Шаг 3c: Пересмотр ОПТИМИЗАЦИЙ с изменившимися нормами ──
+    # Предложение возвращается автору вместе с вердиктом по норме: замена могла
+    # потерять смысл (obsolete) или измениться по сути (revised), а не только
+    # сослаться не туда. Удалять запрещено — решает эксперт.
+    if optimization_path.exists():
+        opts_to_fix_text = format_optimizations_to_fix(norm_checks_path, optimization_path)
+        if "Пересмотр не требуется" in opts_to_fix_text:
+            await ctx.log("Нормы в оптимизациях актуальны — пересмотр не требуется", "info")
+        else:
+            n_opts = opts_to_fix_text.count("\n### ") + opts_to_fix_text.startswith("### ")
+            await ctx.log(
+                f"Шаг 3c: Пересмотр {n_opts} предложений с изменившимися нормами...",
+            )
+            import shutil as _shutil
+            pre_opt_norm_path = output_dir / "optimization_pre_norm.json"
+            _shutil.copy2(optimization_path, pre_opt_norm_path)
+            try:
+                exit_code, output, cli_result = await claude_runner.run_optimization_norm_fix(
+                    opts_to_fix_text, pid,
+                    on_output=ctx.log,
+                    project_info=project_info,
+                    output_dir=output_dir,
+                    version_dir=ctx.project_dir,
+                    version_id=ctx.version_id,
+                )
+                ctx.record_cli_usage(cli_result, "optimization_norm_fix")
+            except Exception as exc:
+                exit_code, output = 1, str(exc)
+                await ctx.log(f"Пересмотр оптимизаций: исключение ({exc})", "warn")
+
+            # fail-soft: этап 04 существует ради findings. Провал пересмотра
+            # предложений не должен ронять верификацию норм — откатываем файл
+            # и идём дальше, оставив след в логе.
+            if exit_code != 0 or not _optimization_intact(optimization_path, pre_opt_norm_path):
+                _shutil.copy2(pre_opt_norm_path, optimization_path)
+                await ctx.log(
+                    f"Пересмотр оптимизаций не применён (код {exit_code}) — "
+                    f"optimization.json восстановлен из бэкапа",
+                    "warn",
+                )
+            else:
+                await ctx.log("Оптимизации пересмотрены с учётом актуальных норм", "info")
 
     # ── Шаг 4: No-op (norms_db.json больше не authoritative) ──
     await ctx.log(

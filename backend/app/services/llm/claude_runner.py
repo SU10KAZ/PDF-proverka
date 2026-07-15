@@ -64,6 +64,7 @@ from backend.app.services.common.cli_utils import (
 from backend.app.pipeline.stages.prepare.task_builder import (
     prepare_norm_verify_task,
     prepare_norm_fix_task,
+    prepare_optimization_norm_fix_task,
     prepare_norm_requote_task,
     prepare_optimization_task,
     prepare_text_analysis_task,
@@ -899,6 +900,97 @@ async def run_norm_fix(
 
     exit_code = 0 if not result.is_error else 1
     return exit_code, result.text, result
+
+
+# ─── Пересмотр ОПТИМИЗАЦИЙ после верификации норм ────────────────────
+
+async def run_optimization_norm_fix(
+    optimizations_to_fix_text: str,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]] = None,
+    project_info: Optional[dict] = None,
+    *,
+    output_dir: str | Path | None = None,
+    version_dir: str | Path | None = None,
+    version_id: str | None = None,
+) -> tuple[int, str, AnyResult]:
+    """Вернуть предложения автору с вердиктом по норме — пусть переосмыслит.
+
+    Зеркало run_norm_fix, но артефакт — optimization.json, а исход шире, чем
+    «поправить ссылку»: still_valid / revised / obsolete. Модель берём из
+    `norm_fix`: это тот же норм-driven пересмотр, только над другим файлом, —
+    отдельная строка в конфиге моделей не нужна.
+    """
+    model = get_stage_model("norm_fix")
+
+    def _task() -> str:
+        with _scoped_audit_paths(
+            output_dir=output_dir, version_dir=version_dir,
+            project_id=project_id, version_id=version_id,
+        ):
+            return prepare_optimization_norm_fix_task(
+                optimizations_to_fix_text, project_id,
+                project_info=project_info,
+            )
+
+    if is_codex_model(model):
+        task_text = (
+            "## Codex exec mode override\n\n"
+            "This task template may mention Claude Read/Write tools and MCP `norms` tools. "
+            "In this Codex exec run, use direct filesystem access instead of Read/Write tools, "
+            "do not call MCP or web tools, and treat `norm_checks.json` as the authoritative "
+            "norm status source already produced by Python. Use `replacement_doc`, "
+            "`current_version`, `status`, `paragraph_checks`, and `affected_optimizations` from "
+            "`norm_checks.json`; if exact clause text is unavailable, mark the item with "
+            "`norm_status: warning` or preserve the wording while adding `norm_revision`. "
+            "Never delete items. Do not refuse only because MCP tools are unavailable.\n\n"
+            + _task()
+        )
+        exit_code, combined, cli_result = await _run_cli(
+            task_text, NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT,
+            on_output, stage="norm_fix", project_id=project_id,
+            model=model,
+        )
+        _save_audit_trail(
+            project_id, "05b_optimization_norm_fix", model,
+            0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
+        )
+        return exit_code, combined, cli_result
+
+    if is_claude_stage("norm_fix"):
+        exit_code, combined, cli_result = await _run_cli(
+            _task(), NORM_VERIFY_TOOLS, CLAUDE_NORM_FIX_TIMEOUT,
+            on_output, stage="norm_fix", project_id=project_id,
+            model=model,
+        )
+        _save_audit_trail(
+            project_id, "05b_optimization_norm_fix", model,
+            0, 0, cli_result.duration_ms, cli_result.result_text,
+            output_dir=output_dir,
+        )
+        return exit_code, combined, cli_result
+
+    # OpenRouter: агентного доступа к файлам нет — модель возвращает JSON, пишем сами.
+    import backend.app.services.llm.llm_runner as llm_runner
+
+    result = await llm_runner.run_llm(
+        stage="norm_fix",
+        messages=[{"role": "user", "content": _task()}],
+        timeout=CLAUDE_NORM_FIX_TIMEOUT,
+    )
+    if result.json_data and not result.is_error:
+        target = _resolve_output_dir(project_id, output_dir=output_dir) / "optimization.json"
+        _write_json(target, result.json_data)
+
+    await _send_status_llm(on_output, result)
+    _save_audit_trail(
+        project_id, "05b_optimization_norm_fix", result.model,
+        result.input_tokens, result.output_tokens,
+        result.duration_ms, _build_llm_audit_payload(result),
+        output_dir=output_dir,
+    )
+    return (0 if not result.is_error else 1), result.text, result
 
 
 # ─── Уточнение цитат норм через MCP (Claude CLI, Sonnet) ─────────────
