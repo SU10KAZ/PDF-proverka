@@ -2227,6 +2227,99 @@ def merge_project_as_version(
     }
 
 
+def _delete_projects_v2_version(project_id: str, version_id: str) -> Optional[dict[str, Any]]:
+    """Удалить версию projects_v2-документа: запись в document.json + папка версии.
+
+    Возвращает None, если v2-контекст недоступен (флаги OFF / документ не
+    найден) — тогда вызывающий идёт по legacy-пути. На v2-primary legacy-ветка
+    delete_version бесполезна: legacy-манифеста нет, `_read_versions_and_base`
+    отдаёт синтетический одноверсионный fallback и любая попытка удаления
+    падает «Нельзя удалить единственную версию» (живой инцидент 133-23-ГК-АИ1
+    16.07.2026 при реальных v001+v002 в v2).
+
+    Папка версии не стирается безвозвратно, а переносится в
+    `projects_v2/_trash/` — восстановление возможно вручную.
+    """
+    if not _projects_v2_context_enabled():
+        return None
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return None
+        doc = adapter.find_document_by_project_id(project_id)
+    except Exception:
+        return None
+    if doc is None:
+        return None
+
+    import shutil
+
+    doc_dir = Path(doc["doc_dir"])
+    document_json = adapter.read_document_json(doc_dir) or {}
+    versions = [
+        v for v in (document_json.get("versions") or [])
+        if isinstance(v, dict) and v.get("version_id")
+    ]
+
+    if len(versions) <= 1:
+        raise VersionFileError("Нельзя удалить единственную версию проекта.")
+
+    vid = adapter.resolve_version_id(doc, version_id)
+    known_ids = {str(v["version_id"]) for v in versions}
+    if not vid or vid not in known_ids:
+        raise VersionNotFoundError(
+            f"Версия '{version_id}' не найдена в проекте '{project_id}'"
+        )
+
+    version_path = adapter.version_dir(doc_dir, vid)
+    trashed_to: Optional[str] = None
+    if version_path.exists():
+        trash_dir = adapter.v2_root / "_trash"
+        stamp = _now_iso().replace(":", "-")
+        trash_name = "__".join(filter(None, (
+            str(doc.get("object_folder") or ""),
+            str(doc.get("discipline") or ""),
+            doc_dir.name,
+            f"{vid}_{stamp}",
+        )))
+        try:
+            trash_dir.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(version_path), str(trash_dir / trash_name))
+            trashed_to = str(trash_dir / trash_name)
+        except OSError as e:
+            # Манифест ещё не тронут — состояние консистентно, ничего не потеряно.
+            raise VersionFileError(
+                f"Не удалось переместить папку версии в _trash: {e}"
+            )
+
+    remaining = sorted(
+        (v for v in versions if str(v.get("version_id")) != vid),
+        key=lambda v: int(v.get("version_no") or _version_no_from_id(str(v.get("version_id")), 0)),
+    )
+    remaining_ids = [str(v["version_id"]) for v in remaining]
+    # current_version в v2 — пользовательский указатель: не трогаем, если
+    # удалили не его; иначе переключаем на старшую оставшуюся.
+    current = adapter.current_version_id(doc_dir, document_json)
+    new_current = current if current in remaining_ids else remaining_ids[-1]
+
+    document_json["versions"] = remaining
+    document_json["version_ids"] = remaining_ids
+    document_json["current_version"] = new_current
+    _write_json_file(doc_dir / "document.json", document_json)
+    (doc_dir / "current_version.txt").write_text(new_current, encoding="utf-8")
+    _invalidate_project_cache()
+
+    result: dict[str, Any] = {
+        "deleted_version_id": vid,
+        "new_latest_version_id": new_current,
+        "versions_summary": get_versions_summary(doc_dir, project_id),
+    }
+    if trashed_to:
+        result["trashed_to"] = trashed_to
+    return result
+
+
 def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[str, Any]:
     """Удалить версию проекта: папку с диска + запись из манифеста.
 
@@ -2235,9 +2328,16 @@ def delete_version(project_dir: Path, project_id: str, version_id: str) -> dict[
     - Нельзя удалить V1 если проект НЕ в контейнере (папка проекта = папка V1).
     - После удаления latest_version_id перемещается на предыдущую версию.
 
+    v2-primary: версия удаляется из projects_v2-документа (папка версии
+    переезжает в `projects_v2/_trash/`), legacy-ветка не используется.
+
     Возвращает {"deleted_version_id", "new_latest_version_id", "versions_summary"}.
     """
     import shutil
+
+    v2_result = _delete_projects_v2_version(project_id, version_id)
+    if v2_result is not None:
+        return v2_result
 
     manifest, base = _read_versions_and_base(project_dir, project_id)
     versions = manifest.get("versions", [])

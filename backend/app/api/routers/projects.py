@@ -575,8 +575,9 @@ async def delete_project_version(project_id: str, version_id: str):
     на предыдущую. Записи decisions_log, ссылающиеся на удалённые findings,
     станут orphan-записями (очищаются через KB-утилиты).
 
-    Операция работает на legacy-сторе (источник истины при
-    READ_DEFAULT_ENABLED=false). projects_v2-shadow остаётся теневой копией.
+    v2-primary: версия удаляется из projects_v2-документа, папка версии
+    переезжает в `projects_v2/_trash/`. Иначе — legacy-стор (источник истины
+    при READ_DEFAULT_ENABLED=false), projects_v2-shadow остаётся теневой копией.
     """
     from backend.app.services.common import version_service
     proj_dir = _resolve_project_dir_for_version_api(project_id)
