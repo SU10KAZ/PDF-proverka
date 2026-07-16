@@ -1409,6 +1409,29 @@ def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
     if blocks_candidates:
         _copy_if_exists(blocks_candidates[0], work / "blocks.json")
 
+    # Новый комплект без result.json: синтезируем 02_work/result.json из
+    # blocks.json (+ тексты из document.md) — пайплайн (crop_blocks, prepare,
+    # вектограф и пр.) получает канонический вход. Настоящий *_result.json
+    # портала синтезатор никогда не перезаписывает; fail-soft.
+    if (work / "blocks.json").is_file() and not result_candidates:
+        try:
+            from backend.app.services.common.blocks_json import synthesize_result_json_file
+            synthesize_result_json_file(
+                work / "blocks.json",
+                work / "result.json",
+                work / "document.md",
+                pdf_name=(info.get("pdf_file") or None),
+            )
+        except Exception:
+            pass
+        # кропы качаем сразу при загрузке (crop-токены живут per-generation) —
+        # в фоне, идемпотентно, fail-soft; кэш в 01_input/crops/
+        try:
+            from backend.app.services.common.crop_cache import ensure_crops_for_version
+            ensure_crops_for_version(version_dir)
+        except Exception:
+            pass
+
 
 def _update_version_project_info(
     version_dir: Path,
