@@ -652,3 +652,143 @@ def test_resolve_active_output_dir_single_resolver(legacy_project_dir, monkeypat
     import backend.app.services.common.project_service as ps
     monkeypatch.setattr(ps, "resolve_project_dir", lambda pid: Path("/tmp/root"))
     assert vs.resolve_active_output_dir("P") == Path("/tmp/root/_output")
+
+
+# ─── delete_version на projects_v2-primary ───────────────────────────────────
+# Инцидент 16.07.2026 (133-23-ГК-АИ1): на v2-primary legacy-манифеста нет,
+# _read_versions_and_base отдавал синтетический одноверсионный fallback и
+# удаление ЛЮБОЙ версии падало «Нельзя удалить единственную версию проекта»
+# при реальных v001+v002 в projects_v2.
+
+
+@pytest.fixture
+def v2_doc(tmp_path, monkeypatch):
+    """projects_v2-primary документ с тремя версиями (v001..v003, current=v003).
+
+    Legacy-папки проекта НЕ существует — как на проде после retirement
+    projects/. Возвращает (doc_dir, v2_root, missing_legacy_dir).
+    """
+    v2_root = tmp_path / "projects_v2"
+    doc_dir = (v2_root / "objects" / "OBJ" / "disciplines" / "AI"
+               / "documents" / "DOC-AI1")
+    versions = []
+    for no in (1, 2, 3):
+        vid = f"v{no:03d}"
+        vdir = doc_dir / "versions" / vid
+        (vdir / "01_input").mkdir(parents=True)
+        (vdir / "01_input" / "document.pdf").write_text("%PDF", encoding="utf-8")
+        (vdir / "version.json").write_text(json.dumps({
+            "schema_version": 1, "version_id": vid,
+            "version_no": no, "label": f"V{no}",
+        }), encoding="utf-8")
+        versions.append({"version_id": vid, "version_no": no, "label": f"V{no}"})
+    (doc_dir / "document.json").write_text(json.dumps({
+        "schema_version": 1,
+        "document_code": "DOC-AI1",
+        "object_id": "obj-1",
+        "discipline": "AI",
+        "versions": versions,
+        "version_ids": [v["version_id"] for v in versions],
+        "current_version": "v003",
+    }, ensure_ascii=False), encoding="utf-8")
+    (doc_dir / "current_version.txt").write_text("v003", encoding="utf-8")
+
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "projects_v2_primary")
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2_root))
+    return doc_dir, v2_root, tmp_path / "missing-legacy" / "DOC-AI1"
+
+
+def _doc_json(doc_dir):
+    return json.loads((doc_dir / "document.json").read_text(encoding="utf-8"))
+
+
+def test_delete_version_v2_primary_removes_noncurrent(v2_doc):
+    """Удаление НЕ текущей версии: манифест обновлён, current не тронут,
+    папка версии уехала в _trash (не стёрта безвозвратно)."""
+    doc_dir, v2_root, missing_legacy = v2_doc
+
+    result = delete_version(missing_legacy, "DOC-AI1", "v002")
+
+    assert result["deleted_version_id"] == "v002"
+    assert result["new_latest_version_id"] == "v003"
+    dj = _doc_json(doc_dir)
+    assert dj["version_ids"] == ["v001", "v003"]
+    assert dj["current_version"] == "v003"
+    assert (doc_dir / "current_version.txt").read_text(encoding="utf-8") == "v003"
+    # физически: versions/v002 нет, копия в _trash есть
+    assert not (doc_dir / "versions" / "v002").exists()
+    trashed = list((v2_root / "_trash").iterdir())
+    assert len(trashed) == 1 and "v002" in trashed[0].name
+    assert (trashed[0] / "01_input" / "document.pdf").exists()
+    assert result["trashed_to"] == str(trashed[0])
+    # соседние версии целы
+    assert (doc_dir / "versions" / "v001").is_dir()
+    assert (doc_dir / "versions" / "v003").is_dir()
+    # summary — v2-раскладка
+    summary = result["versions_summary"]
+    assert summary["version_count"] == 2
+    assert {v["version_id"] for v in summary["versions"]} == {"v001", "v003"}
+
+
+def test_delete_version_v2_primary_current_switches_to_latest_remaining(v2_doc):
+    """Удаление ТЕКУЩЕЙ версии переключает current на старшую оставшуюся."""
+    doc_dir, _v2_root, missing_legacy = v2_doc
+
+    result = delete_version(missing_legacy, "DOC-AI1", "v003")
+
+    assert result["new_latest_version_id"] == "v002"
+    dj = _doc_json(doc_dir)
+    assert dj["current_version"] == "v002"
+    assert (doc_dir / "current_version.txt").read_text(encoding="utf-8") == "v002"
+    assert dj["version_ids"] == ["v001", "v002"]
+
+
+def test_delete_version_v2_primary_accepts_logical_id(v2_doc):
+    """Логический id 'v2' резолвится в физический 'v002' (UI шлёт оба вида)."""
+    doc_dir, _v2_root, missing_legacy = v2_doc
+
+    result = delete_version(missing_legacy, "DOC-AI1", "v2")
+
+    assert result["deleted_version_id"] == "v002"
+    assert not (doc_dir / "versions" / "v002").exists()
+
+
+def test_delete_version_v2_primary_only_version_forbidden(v2_doc):
+    """Единственную версию v2-документа удалить нельзя; данные не тронуты."""
+    doc_dir, _v2_root, missing_legacy = v2_doc
+    dj = _doc_json(doc_dir)
+    dj["versions"] = [dj["versions"][0]]
+    dj["version_ids"] = ["v001"]
+    dj["current_version"] = "v001"
+    (doc_dir / "document.json").write_text(
+        json.dumps(dj, ensure_ascii=False), encoding="utf-8")
+    (doc_dir / "current_version.txt").write_text("v001", encoding="utf-8")
+
+    with pytest.raises(VersionFileError):
+        delete_version(missing_legacy, "DOC-AI1", "v001")
+    assert (doc_dir / "versions" / "v001").is_dir()
+
+
+def test_delete_version_v2_primary_unknown_version_raises(v2_doc):
+    """Несуществующий version_id → VersionNotFoundError, ничего не удалено."""
+    doc_dir, _v2_root, missing_legacy = v2_doc
+
+    with pytest.raises(VersionNotFoundError):
+        delete_version(missing_legacy, "DOC-AI1", "v099")
+    assert _doc_json(doc_dir)["version_ids"] == ["v001", "v002", "v003"]
+    for vid in ("v001", "v002", "v003"):
+        assert (doc_dir / "versions" / vid).is_dir()
+
+
+def test_delete_version_legacy_flags_off_untouched_by_v2_branch(
+        legacy_project_dir, monkeypatch):
+    """Флаги OFF → v2-ветка не вмешивается, legacy-семантика байт-в-байт."""
+    monkeypatch.delenv("AUDIT_PROJECTS_V2_WRITE_MODE", raising=False)
+    monkeypatch.delenv("AUDIT_STORAGE_BACKEND", raising=False)
+    container, primary = _build_container_v1_v2_v3(legacy_project_dir)
+
+    result = delete_version(primary, "M31A", "v2")
+
+    assert result["deleted_version_id"] == "v2"
+    assert "trashed_to" not in result
+    assert not (container / "M31A V2").exists()
