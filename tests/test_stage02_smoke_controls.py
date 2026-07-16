@@ -535,6 +535,12 @@ def test_record_findings_only_usage_empty_summary_noop(monkeypatch):
 async def _parallelism_for_ensemble(tmp_path, monkeypatch) -> int:
     """Прогнать Stage 02 на ensemble-модели и вернуть переданный parallelism."""
     import importlib
+
+    # Гасим load_dotenv: config вызывает его при импорте, и на боевой машине из
+    # .env приезжает реальное значение AUDIT_STAGE02_CODEX_PARALLELISM. Без
+    # заглушки тест проверял бы .env сервера, а не поведение кода.
+    monkeypatch.setattr("dotenv.load_dotenv", lambda *a, **kw: None)
+
     import backend.app.core.config as cfg
     importlib.reload(cfg)
     import backend.app.pipeline.stages.block_analysis.runner as runner_mod

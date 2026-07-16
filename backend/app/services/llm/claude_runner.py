@@ -27,6 +27,7 @@ CLIResult и LLMResult имеют property-совместимость (result_te
 import json
 import logging
 import os
+import re
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
@@ -292,6 +293,47 @@ async def _run_cli(
 # OpenRouter — вспомогательные функции
 # ═══════════════════════════════════════════════════════════════════════════
 
+_CODEX_USAGE_LIMIT_RE = re.compile(r"usage\s+limit", re.IGNORECASE)
+
+
+def _codex_json_attempts() -> int:
+    """Сколько раз пытаться получить разбираемый JSON от codex (1 = без повторов)."""
+    try:
+        return max(1, int(os.environ.get("AUDIT_CODEX_JSON_ATTEMPTS", "3") or "3"))
+    except ValueError:
+        return 3
+
+
+_CODEX_JSON_ATTEMPTS = _codex_json_attempts()
+
+
+def _codex_json_broken(result: LLMResult) -> bool:
+    """Ответ не разобрался — и это именно порча JSON, а не сбой доступа.
+
+    Ретраить можно ТОЛЬКО порчу разбора. Исчерпание лимита приходит в том же
+    виде (codex_json_not_found: тело ошибки API codex печатает в stderr, а его
+    мы намеренно не парсим), но повторять его здесь нельзя — этим занимается
+    стадия, у неё есть ожидание сброса лимита.
+
+    is_rate_limited() своей формулировки codex не знает: в списке есть
+    «rate limit» и «hit your limit», а codex пишет «usage limit reached» —
+    поэтому проверяем её дополнительно. Список в cli_utils не трогаем: он
+    общий для всего конвейера, правка там имеет куда более широкий радиус.
+    """
+    if result.json_data is not None and not result.is_error:
+        return False
+    # Только чистый ``codex_json_not_found`` означает: CLI завершился успешно,
+    # но финальный ответ модели оказался оборванным/невалидным. При ненулевом
+    # exit runner добавляет ``codex_exec_exit_*`` — это уже транспортный сбой,
+    # который нельзя маскировать несколькими немедленными повторами.
+    if (result.error_message or "").strip() != "codex_json_not_found":
+        return False
+    text = result.text or ""
+    if is_rate_limited(1, text, ""):
+        return False
+    return not _CODEX_USAGE_LIMIT_RE.search(text)
+
+
 async def _send_status_llm(on_output, result: LLMResult):
     """Отправить статус OpenRouter вызова в live-log."""
     if result.is_error:
@@ -382,14 +424,30 @@ async def _run_codex_json_stage(
     """Run Codex exec in JSON-only mode and let backend write the artifact."""
     from backend.app.services.llm.codex_runner import run_codex_json_messages
 
-    result = await run_codex_json_messages(
-        messages,
-        timeout=timeout,
-        on_output=on_output,
-        stage=stage,
-        project_id=project_id,
-        model=model,
-    )
+    for attempt in range(1, _CODEX_JSON_ATTEMPTS + 1):
+        result = await run_codex_json_messages(
+            messages,
+            timeout=timeout,
+            on_output=on_output,
+            stage=stage,
+            project_id=project_id,
+            model=model,
+        )
+        if not _codex_json_broken(result):
+            break
+        if attempt >= _CODEX_JSON_ATTEMPTS:
+            break
+        # Модель печатает JSON без output-schema и на больших ответах изредка
+        # рвёт структуру (16.07: 13АВ-РД-ВК2.2-ПА V1 и 13АВ-РД-ДК-К1 V1 — свод на
+        # ~18K токенов выхода, не хватало закрывающей скобки → готовый аудит с 34
+        # находками выбрасывался). Поломка не детерминирована: повтор того же
+        # запроса даёт валидный JSON. Ретраим ТОЛЬКО разбор ответа — rate limit и
+        # прочие сбои уходят наверх нетронутыми, их обрабатывает стадия.
+        await send_output(
+            on_output,
+            f"[RETRY] {stage}: ответ модели не разобрался "
+            f"({result.error_message or 'json'}), повтор {attempt + 1}/{_CODEX_JSON_ATTEMPTS}",
+        )
 
     if result.json_data is not None and not result.is_error:
         output_path = _resolve_output_dir(project_id, output_dir=output_dir) / output_filename

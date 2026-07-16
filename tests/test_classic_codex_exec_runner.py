@@ -500,3 +500,85 @@ async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monk
     assert "block_id=B1" in captured["run_cli"]["task_text"]
     assert captured["audit"]["args"][1] == "05_optimization"
     assert captured["audit"]["args"][6]["codex_exec_agentic"] is True
+
+
+# ─── Повтор при неразобранном JSON ───────────────────────────────────────
+# Живой случай 16.07.2026: 13АВ-РД-ВК2.2-ПА V1 и 13АВ-РД-ДК-К1 V1 упали на своде
+# замечаний. Модель печатает JSON без output-schema, и на больших ответах
+# (~18K токенов выхода) изредка рвёт структуру — не хватало закрывающей скобки.
+# Готовый аудит с 34 находками выбрасывался. Поломка не детерминирована: повтор
+# того же запроса дал валидный JSON (проверено на живом проекте, 1 из 2).
+
+
+def _llm_broken():
+    from backend.app.models.usage import LLMResult
+    return LLMResult(text='{"meta":', is_error=True, error_message="codex_json_not_found")
+
+
+def _llm_good():
+    from backend.app.models.usage import LLMResult
+    return LLMResult(text='{"ok":1}', json_data={"ok": 1})
+
+
+def _patch_codex_json(monkeypatch, responses: list):
+    """Подменить codex-вызов очередью ответов. Возвращает счётчик вызовов."""
+    import backend.app.services.llm.codex_runner as codex_mod
+
+    calls = {"n": 0}
+
+    async def fake(messages, **kwargs):
+        index = min(calls["n"], len(responses) - 1)
+        calls["n"] += 1
+        return responses[index]
+
+    monkeypatch.setattr(codex_mod, "run_codex_json_messages", fake)
+    return calls
+
+
+@pytest.mark.asyncio
+async def test_codex_json_stage_gives_up_after_attempts(tmp_path, monkeypatch):
+    """Всегда битый → попытки исчерпаны, артефакт не пишется, стадия падает."""
+    from backend.app.services.llm import claude_runner
+
+    calls = _patch_codex_json(monkeypatch, [_llm_broken()])
+    monkeypatch.setattr(claude_runner, "_CODEX_JSON_ATTEMPTS", 3)
+
+    exit_code, _text, _result = await claude_runner._run_codex_json_stage(
+        stage="findings_merge",
+        messages=[{"role": "user", "content": "x"}],
+        model="codex/gpt-5.4",
+        timeout=10,
+        project_id="DOC-VK",
+        on_output=None,
+        output_filename="03_findings.json",
+        audit_stage="03_findings_merge",
+        output_dir=tmp_path,
+    )
+
+    assert calls["n"] == 3
+    assert exit_code == 1
+    assert not (tmp_path / "03_findings.json").exists()
+
+
+@pytest.mark.asyncio
+async def test_codex_json_stage_valid_json_runs_once(tmp_path, monkeypatch):
+    """Здоровый ответ — ровно один вызов, повторов нет."""
+    from backend.app.services.llm import claude_runner
+
+    calls = _patch_codex_json(monkeypatch, [_llm_good()])
+    monkeypatch.setattr(claude_runner, "_CODEX_JSON_ATTEMPTS", 3)
+
+    exit_code, _text, _result = await claude_runner._run_codex_json_stage(
+        stage="findings_merge",
+        messages=[{"role": "user", "content": "x"}],
+        model="codex/gpt-5.4",
+        timeout=10,
+        project_id="DOC-VK",
+        on_output=None,
+        output_filename="03_findings.json",
+        audit_stage="03_findings_merge",
+        output_dir=tmp_path,
+    )
+
+    assert calls["n"] == 1
+    assert exit_code == 0
