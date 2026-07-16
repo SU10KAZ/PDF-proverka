@@ -208,8 +208,27 @@ async def test_codex_json_runner_uses_inline_context_and_parses_final_json(monke
         captured.update(kwargs)
         out_file = Path(cmd[cmd.index("-o") + 1])
         captured["out_file"] = out_file
+        schema_file = Path(cmd[cmd.index("--output-schema") + 1])
+        captured["schema_file"] = schema_file
+        captured["schema"] = json.loads(schema_file.read_text(encoding="utf-8"))
         out_file.write_text('{"items": []}', encoding="utf-8")
-        return 0, "tokens used\n1 234", ""
+        stdout = "\n".join([
+            json.dumps({"type": "thread.started", "thread_id": "thread-123"}),
+            json.dumps({
+                "type": "item.completed",
+                "item": {"type": "agent_message", "text": '{"items": []}'},
+            }),
+            json.dumps({
+                "type": "turn.completed",
+                "usage": {
+                    "input_tokens": 2345,
+                    "cached_input_tokens": 2000,
+                    "output_tokens": 345,
+                    "reasoning_output_tokens": 123,
+                },
+            }),
+        ])
+        return 0, stdout, ""
 
     monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
 
@@ -228,19 +247,39 @@ async def test_codex_json_runner_uses_inline_context_and_parses_final_json(monke
         stage="optimization",
         project_id="DOC-3",
         model="codex/gpt-5.4",
+        reasoning_effort="low",
+        output_schema={
+            "type": "object",
+            "properties": {"items": {"type": "array"}},
+            "required": ["items"],
+            "additionalProperties": False,
+        },
     )
 
     cmd = captured["cmd"]
     assert result.is_error is False
     assert result.json_data == {"items": []}
-    assert result.output_tokens == 1234
+    assert result.input_tokens == 2345
+    assert result.cached_tokens == 2000
+    assert result.output_tokens == 345
+    assert result.reasoning_tokens == 123
+    assert result.response_id == "thread-123"
     assert result.cost_usd == 0.0
     assert cmd[cmd.index("--sandbox") + 1] == "read-only"
     assert cmd[cmd.index("--model") + 1] == "gpt-5.4"
+    assert cmd[cmd.index("-c") + 1] == 'model_reasoning_effort="low"'
+    assert "--json" in cmd
+    assert captured["schema"] == {
+        "type": "object",
+        "properties": {"items": {"type": "array"}},
+        "required": ["items"],
+        "additionalProperties": False,
+    }
     assert "Do not read files" in captured["input_text"]
     assert "INLINE PROJECT CONTEXT" in captured["input_text"]
     assert "image attachment(s) omitted" in captured["input_text"]
     assert not captured["out_file"].exists()
+    assert not captured["schema_file"].exists()
 
 
 @pytest.mark.asyncio
@@ -275,6 +314,65 @@ async def test_codex_json_runner_attaches_local_images(monkeypatch, tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_stage01_codex_block_keeps_full_context_image_schema_and_effort(monkeypatch, tmp_path):
+    from backend.app.models.usage import LLMResult
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only as findings_only
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    image = tmp_path / "block_FULL.png"
+    image.write_bytes(b"png")
+    captured = {}
+
+    async def fake_run_codex_json_messages(messages, **kwargs):
+        captured["messages"] = messages
+        captured.update(kwargs)
+        return LLMResult(
+            text='{"findings": []}',
+            json_data={"findings": []},
+            input_tokens=4321,
+            cached_tokens=3210,
+            output_tokens=123,
+            reasoning_tokens=45,
+            model="codex/gpt-5.4",
+            cost_source="subscription",
+        )
+
+    monkeypatch.setattr(codex_runner, "run_codex_json_messages", fake_run_codex_json_messages)
+    full_context = "CONTEXT_START\n" + ("точный контекст блока\n" * 500) + "CONTEXT_END"
+    monkeypatch.setattr(
+        findings_only,
+        "build_effective_block_context",
+        lambda *_args, **_kwargs: (full_context, "structured_water"),
+    )
+
+    result = await findings_only.call_codex_for_block(
+        {"block_id": "FULL", "page": 1, "file": image.name},
+        {"block_type": "scheme"},
+        "FULL PAGE TEXT",
+        tmp_path,
+        model="codex/gpt-5.4",
+        system_prompt="FULL SYSTEM PROMPT",
+        timeout=60,
+        reasoning_effort="low",
+        project_id="DOC-FULL",
+        output_dir=tmp_path,
+    )
+
+    assert captured["messages"] == [
+        {"role": "system", "content": "FULL SYSTEM PROMPT"},
+        {"role": "user", "content": full_context},
+    ]
+    assert captured["image_paths"] == [image]
+    assert captured["reasoning_effort"] == "low"
+    assert captured["output_schema"] == findings_only.RESPONSE_SCHEMA["schema"]
+    assert result["ok"] is True
+    assert result["input_tokens"] == 4321
+    assert result["cached_input_tokens"] == 3210
+    assert result["output_tokens"] == 123
+    assert result["reasoning_tokens"] == 45
+
+
+@pytest.mark.asyncio
 async def test_codex_json_runner_accepts_valid_json_despite_nonzero_cli_exit(monkeypatch):
     import backend.app.services.llm.codex_runner as codex_runner
 
@@ -298,6 +396,83 @@ async def test_codex_json_runner_accepts_valid_json_despite_nonzero_cli_exit(mon
     assert result.is_error is False
     assert result.json_data == {"ok": True}
     assert result.error_message == "codex_exec_exit_9_ignored_after_valid_json"
+
+
+@pytest.mark.asyncio
+async def test_codex_json_stage_retries_only_broken_successful_response(monkeypatch, tmp_path):
+    import backend.app.services.llm.claude_runner as claude_runner
+    import backend.app.services.llm.codex_runner as codex_runner
+    from backend.app.models.usage import LLMResult
+
+    calls = []
+    output = []
+    responses = [
+        LLMResult(
+            text='{"items": [',
+            json_data=None,
+            model="codex/gpt-5.4",
+            is_error=True,
+            error_message="codex_json_not_found",
+        ),
+        LLMResult(
+            text='{"items": []}',
+            json_data={"items": []},
+            model="codex/gpt-5.4",
+            is_error=False,
+        ),
+    ]
+
+    async def fake_run_codex_json_messages(messages, **kwargs):
+        calls.append((messages, kwargs))
+        return responses.pop(0)
+
+    async def capture_output(line):
+        output.append(line)
+
+    monkeypatch.setattr(codex_runner, "run_codex_json_messages", fake_run_codex_json_messages)
+    monkeypatch.setattr(claude_runner, "_CODEX_JSON_ATTEMPTS", 3)
+    monkeypatch.setattr(claude_runner, "_save_audit_trail", lambda *args, **kwargs: None)
+
+    exit_code, _text, result = await claude_runner._run_codex_json_stage(
+        stage="findings_merge",
+        messages=[{"role": "user", "content": "Return JSON"}],
+        model="codex/gpt-5.4",
+        timeout=60,
+        project_id="DOC-RETRY",
+        on_output=capture_output,
+        output_filename="03_findings.json",
+        audit_stage="03_findings",
+        output_dir=tmp_path,
+    )
+
+    assert exit_code == 0
+    assert result.json_data == {"items": []}
+    assert len(calls) == 2
+    assert any("[RETRY] findings_merge" in line and "повтор 2/3" in line for line in output)
+    assert json.loads((tmp_path / "03_findings.json").read_text(encoding="utf-8")) == {"items": []}
+
+
+@pytest.mark.parametrize(
+    ("text", "error_message"),
+    [
+        ("connection refused", "codex_exec_exit_1; codex_json_not_found"),
+        ('{"error":{"message":"usage limit reached"}}', "codex_json_not_found"),
+        ("rate limit exceeded", "codex_json_not_found"),
+    ],
+)
+def test_codex_json_retry_rejects_transport_and_limit_errors(text, error_message):
+    import backend.app.services.llm.claude_runner as claude_runner
+    from backend.app.models.usage import LLMResult
+
+    result = LLMResult(
+        text=text,
+        json_data=None,
+        model="codex/gpt-5.4",
+        is_error=True,
+        error_message=error_message,
+    )
+
+    assert claude_runner._codex_json_broken(result) is False
 
 
 @pytest.mark.asyncio

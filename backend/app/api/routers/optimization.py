@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from backend.app.pipeline.manager import pipeline_manager
 import backend.app.services.common.project_service as project_service
@@ -13,6 +15,11 @@ from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 
 router = APIRouter(prefix="/api/optimization", tags=["optimization"])
+
+
+class SectionReplicationStartRequest(BaseModel):
+    signal_id: str = Field(min_length=1, max_length=80)
+    target_project_ids: Optional[list[str]] = None
 
 
 
@@ -60,6 +67,210 @@ async def get_all_optimization_summaries():
     from backend.app.services.findings.findings_service import get_all_optimization_summaries as _get_all
     summaries = _get_all()
     return {"summaries": summaries}
+
+
+def _section_code_or_400(section_code: str) -> str:
+    code = (section_code or "").strip().upper()
+    if not code or len(code) > 32 or not all(ch.isalnum() or ch in "_-" for ch in code):
+        raise HTTPException(400, "Недопустимый код раздела")
+    return code
+
+
+@router.post("/section/{section_code}/pipeline/run")
+async def start_section_optimization_pipeline(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Запустить реальные этапы «Сбор — Нормализация — Синтез» в фоне."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_pipeline_service import (
+        SectionPipelineConflict,
+        start_pipeline,
+    )
+    try:
+        return {"status": "started", "pipeline": start_pipeline(code, object_id=object_id)}
+    except SectionPipelineConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/section/{section_code}/pipeline/status")
+async def get_section_optimization_pipeline_status(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Вернуть сохраняемый статус этапов section-level pipeline."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_pipeline_service import get_pipeline_state
+    try:
+        return get_pipeline_state(code, object_id=object_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/pipeline/graphics-plan")
+async def create_section_optimization_graphics_plan(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Точечно подготовить план проверки графики, без автозапуска vision/LLM."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_pipeline_service import (
+        SectionPipelineConflict,
+        SectionPipelineNotFound,
+        request_graphics_plan,
+    )
+    try:
+        return {"status": "ready", "pipeline": request_graphics_plan(code, object_id=object_id)}
+    except SectionPipelineNotFound as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionPipelineConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/replications/start")
+async def start_section_replication(
+    section_code: str,
+    payload: SectionReplicationStartRequest,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Зафиксировать кандидат и запустить подготовку досье тиражирования."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict,
+        SectionReplicationNotFound,
+        start_replication,
+    )
+    try:
+        return {
+            "status": "started",
+            "replication": start_replication(
+                code,
+                payload.signal_id,
+                object_id=object_id,
+                target_project_ids=payload.target_project_ids,
+            ),
+        }
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/section/{section_code}/replications/start-all")
+async def start_all_section_replications(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Одной командой запустить все ещё не подготовленные тиражирования раздела."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationNotFound,
+        start_all_replications,
+    )
+    try:
+        result = start_all_replications(code, object_id=object_id)
+        return {
+            "status": "started" if result["started_count"] else "nothing_to_start",
+            **result,
+        }
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/section/{section_code}/replications")
+async def get_section_replications(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Список сохраняемых процессов тиражирования раздела."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import list_replications
+    try:
+        return {"replications": list_replications(code, object_id=object_id)}
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/section/{section_code}/replications/{replication_id}")
+async def get_section_replication(
+    section_code: str,
+    replication_id: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+    include_dossier: bool = Query(False),
+):
+    """Статус процесса; полное досье отдаётся только по явному запросу."""
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationNotFound,
+        get_replication,
+    )
+    try:
+        return get_replication(
+            code,
+            replication_id,
+            object_id=object_id,
+            include_dossier=include_dossier,
+        )
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/section/{section_code:path}")
+async def get_section_optimization(
+    section_code: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Общая спецификация и принятые оптимизации всех проектов раздела.
+
+    Эндпоинт read-only. Тяжёлое чтение Markdown выполняется вне event loop,
+    чтобы открытие сводной карточки не задерживало остальные запросы портала.
+    """
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_service import build_section_optimization
+    from backend.app.services.section_optimization_pipeline_service import (
+        get_latest_snapshot,
+        get_pipeline_state,
+        store_latest_snapshot,
+    )
+    from backend.app.services.section_optimization_replication_service import list_replications
+
+    try:
+        pipeline = get_pipeline_state(code, object_id=object_id)
+        snapshot = get_latest_snapshot(code, object_id=object_id)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    data = snapshot
+    if data is None:
+        data = await run_in_threadpool(build_section_optimization, code, object_id=object_id)
+        store_latest_snapshot(code, data, object_id=object_id)
+        pipeline = get_pipeline_state(code, object_id=object_id)
+    if data["meta"]["project_count"] == 0:
+        raise HTTPException(404, f"В разделе '{code}' нет проектов")
+    stages = list(data.get("analysis_stages") or [])
+    if not any(stage.get("key") == "agent" for stage in stages):
+        insert_at = next(
+            (index for index, stage in enumerate(stages) if stage.get("key") == "graphics"),
+            len(stages),
+        )
+        stages.insert(insert_at, {
+            "key": "agent",
+            "title": "Умный агент",
+            "description": "Инженерная оценка применимости решения отдельно для каждого целевого проекта.",
+        })
+        data["analysis_stages"] = stages
+    data["pipeline"] = pipeline
+    data["replications"] = list_replications(code, object_id=object_id)
+    return data
 
 
 @router.post("/{project_id:path}/run")

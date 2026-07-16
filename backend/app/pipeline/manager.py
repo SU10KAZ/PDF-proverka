@@ -2755,6 +2755,22 @@ class PipelineManager:
         self._seed_latest_gemma_artifacts_from_recent_run(project_dir, output_dir, project_info)
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
+        # evaluate_gemma_enrichment смотрит на legacy-индекс blocks_gemma_100/index.json.
+        # Вектор-конвейер (block_context) его не создаёт — контекст блоков собирается из
+        # вектор-слоя в канонический block_context_summary.json, а Gemma OCR идёт «всухую».
+        # Поэтому у полностью готового вектор-проекта gemma_state=missing_blocks, хотя
+        # блоки на месте. Рантайм-путь (_assert_gemma_ready_for_stage, resume) уже гейтит
+        # по block_context_summary.json — здесь зеркалим ТОТ ЖЕ контракт, чтобы ручной
+        # start-from-stage / add-retry не расходились с resume. Полный аудит (/batch) этот
+        # валидатор не вызывает и строит контекст сам, так что его защита не ослабляется;
+        # ниже остаются файловые проверки 02_text/01_blocks/03_findings.
+        from backend.app.pipeline.stages.block_context.contract import (
+            validate_block_context_summary,
+        )
+        block_context_ready = bool(
+            validate_block_context_summary(output_dir).get("valid")
+        )
+
         if normalized == "gemma_enrichment":
             if gemma_state.get("status") in {"missing_md", "missing_blocks"}:
                 raise RuntimeError(gemma_gate_error(gemma_state, "gemma_enrichment"))
@@ -2766,7 +2782,7 @@ class PipelineManager:
         }:
             if gemma_state.get("status") == "missing_md":
                 raise RuntimeError(gemma_gate_error(gemma_state, normalized))
-            if gemma_state.get("status") == "missing_blocks":
+            if gemma_state.get("status") == "missing_blocks" and not block_context_ready:
                 raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
         # Первый LLM-этап может встать в очередь при неполной Gemma: _run_resumed_pipeline()
@@ -2777,7 +2793,7 @@ class PipelineManager:
         strict_gemma = {"findings_merge", "findings_review", "norm_verify", "debt_control", "decision_carryover", "excel"} | (
             {"text_analysis", "block_analysis"} - {_first_llm_stage}
         )
-        if normalized in strict_gemma and not gemma_state.get("ready"):
+        if normalized in strict_gemma and not gemma_state.get("ready") and not block_context_ready:
             raise RuntimeError(gemma_gate_error(gemma_state, normalized))
 
         # Требование 01 (текст) — у этапов ниже текста по потоку.

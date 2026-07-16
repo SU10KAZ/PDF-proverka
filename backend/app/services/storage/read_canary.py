@@ -352,7 +352,7 @@ def _file_type(name: str) -> str:
     return "other"
 
 
-def _current_object_folder(a):
+def _current_object_folder(a, object_id: Optional[str] = None):
     """(folder_name | None, object_name) текущего активного объекта в projects_v2.
 
     Сопоставляет get_current_object().id с object_id адаптера, чтобы
@@ -368,8 +368,11 @@ def _current_object_folder(a):
       * совсем пусто → (None, None).
     """
     try:
-        from backend.app.services.common.object_service import get_current_object
-        cur = get_current_object()
+        from backend.app.services.common.object_service import (
+            get_current_object,
+            get_object_by_id,
+        )
+        cur = get_object_by_id(object_id) if object_id else get_current_object()
     except Exception:
         cur = None
     objs = a.list_objects()
@@ -830,7 +833,7 @@ def _v2_doc_hidden(doc: dict, hidden_set: set) -> bool:
     return False
 
 
-def v2_projects_list() -> dict:
+def v2_projects_list(object_id: Optional[str] = None) -> dict:
     """Список проектов из projects_v2 в LEGACY-форме для GET /api/projects.
 
     Возвращает {projects, object_name} — shape-совместимо с legacy (frontend
@@ -846,7 +849,7 @@ def v2_projects_list() -> dict:
     if not a.is_available():
         raise HTTPException(status_code=404,
                             detail="projects_v2 storage not available")
-    folder, object_name = _current_object_folder(a)
+    folder, object_name = _current_object_folder(a, object_id=object_id)
     # STRICT scope: текущий объект не найден в v2 → пустой список (а НЕ документы
     # всех объектов под именем текущего — это был баг кросс-объектной свалки).
     docs = a.list_documents(object_folder=folder) if folder else []
@@ -1278,3 +1281,33 @@ def v2_document_page(request, project_id: str, page_num: int) -> dict:
         status_code=404,
         detail=(f"projects_v2 canary: page {page_num} not found for "
                 f"'{doc['document_code']}' (no silent legacy fallback)"))
+
+
+def v2_document_pdf(request, project_id: str) -> FileResponse:
+    """Исходный PDF выбранной версии из projects_v2 для встроенного просмотра."""
+    from backend.app.services.storage.projects_v2_source_resolver import (
+        resolve_version_source_files,
+    )
+
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    version_dir = a.version_dir(doc_dir, ver)
+    sources = resolve_version_source_files(version_dir, doc["document_code"])
+    pdf_path = sources.pdf_path
+    if not pdf_path or not Path(pdf_path).is_file():
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: PDF not found for "
+                    f"'{doc['document_code']}' version '{ver}' "
+                    "(no silent legacy fallback)"),
+        )
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        filename=Path(pdf_path).name,
+        content_disposition_type="inline",
+        headers={
+            "X-Storage-Backend": BACKEND_V2,
+            "X-Audit-Version-Id": ver,
+        },
+    )

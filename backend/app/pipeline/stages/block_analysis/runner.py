@@ -638,9 +638,13 @@ async def run_block_analysis_findings_only(
             if ok:
                 msg = (
                     f"  [{completed:>3}/{total}] OK {bid} p={pg} t={ms/1000:.1f}s "
-                    f"findings={n} in={event.get('input_tokens')} "
-                    f"out={event.get('output_tokens')} "
-                    f"reason={event.get('reasoning_tokens')}"
+                    f"findings={n} in={event.get('input_tokens')}"
+                )
+                if event.get("cached_input_tokens") is not None:
+                    msg += f" cached={event.get('cached_input_tokens')}"
+                msg += (
+                    f" out={event.get('output_tokens')}"
+                    f" reason={event.get('reasoning_tokens')}"
                 )
                 level = "warn" if event.get("partial") else "info"
                 if event.get("partial"):

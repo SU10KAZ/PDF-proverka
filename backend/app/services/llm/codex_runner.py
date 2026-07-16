@@ -210,7 +210,7 @@ def _build_json_prompt(
 
 
 def _extract_token_count(text: str) -> int:
-    """Best-effort parse of `tokens used` emitted by Codex CLI."""
+    """Legacy fallback for Codex CLI versions without JSONL usage events."""
     import re
 
     match = re.search(r"tokens used\s*\n\s*([0-9][0-9\s\u00a0,._]*)", text or "", re.IGNORECASE)
@@ -218,6 +218,49 @@ def _extract_token_count(text: str) -> int:
         return 0
     digits = re.sub(r"\D", "", match.group(1))
     return int(digits or 0)
+
+
+def _parse_codex_jsonl(text: str) -> tuple[dict[str, int], str, str]:
+    """Extract exact usage, final agent text, and thread id from ``codex exec --json``."""
+    usage: dict[str, int] = {}
+    final_message = ""
+    thread_id = ""
+
+    for raw_line in (text or "").splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(event, dict):
+            continue
+
+        event_type = str(event.get("type") or "")
+        if event_type == "thread.started":
+            thread_id = str(event.get("thread_id") or thread_id)
+        elif event_type == "item.completed":
+            item = event.get("item")
+            if isinstance(item, dict) and item.get("type") == "agent_message":
+                message_text = item.get("text")
+                if isinstance(message_text, str):
+                    final_message = message_text
+        elif event_type == "turn.completed":
+            raw_usage = event.get("usage")
+            if isinstance(raw_usage, dict):
+                for key in (
+                    "input_tokens",
+                    "cached_input_tokens",
+                    "output_tokens",
+                    "reasoning_output_tokens",
+                ):
+                    try:
+                        usage[key] = int(raw_usage.get(key) or 0)
+                    except (TypeError, ValueError):
+                        usage[key] = 0
+
+    return usage, final_message, thread_id
 
 
 async def run_codex_exec(
@@ -310,6 +353,8 @@ async def run_codex_json_messages(
     project_id: str = "",
     model: str | None = None,
     image_paths: Sequence[str | Path] | None = None,
+    reasoning_effort: str | None = None,
+    output_schema: dict[str, Any] | None = None,
 ) -> LLMResult:
     """Run Codex exec as a JSON-only text model.
 
@@ -326,6 +371,7 @@ async def run_codex_json_messages(
     fd, out_name = tempfile.mkstemp(prefix=f"codex_{stage or 'json'}_", suffix=".json")
     os.close(fd)
     out_file = Path(out_name)
+    schema_file: Path | None = None
     images = _normalize_image_paths(image_paths)
     prompt = _build_json_prompt(
         messages,
@@ -336,6 +382,19 @@ async def run_codex_json_messages(
     image_args: list[str] = []
     for image_path in images:
         image_args.extend(["--image", str(image_path)])
+    schema_args: list[str] = []
+    if output_schema is not None:
+        schema_fd, schema_name = tempfile.mkstemp(
+            prefix=f"codex_{stage or 'json'}_schema_",
+            suffix=".json",
+        )
+        os.close(schema_fd)
+        schema_file = Path(schema_name)
+        schema_file.write_text(
+            json.dumps(output_schema, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        schema_args = ["--output-schema", str(schema_file)]
     cmd = [
         cli,
         "exec",
@@ -347,6 +406,9 @@ async def run_codex_json_messages(
         _json_sandbox_mode(),
         "--model",
         resolved_model,
+        *_reasoning_effort_args(reasoning_effort),
+        "--json",
+        *schema_args,
         *image_args,
         "-C",
         str(ROOT_DIR),
@@ -374,10 +436,12 @@ async def run_codex_json_messages(
             final_text = ""
         combined_parts = [part for part in (stdout, stderr, final_text) if part]
         combined = "\n".join(combined_parts)
+        usage, jsonl_final_message, thread_id = _parse_codex_jsonl(stdout)
+        response_text = final_text or jsonl_final_message
         json_data = _try_parse_json_content(final_text)
         json_from_out_file = json_data is not None
         if json_data is None:
-            json_data = _try_parse_json_content(stdout)
+            json_data = _try_parse_json_content(jsonl_final_message)
         # stderr НЕ парсим: при сбое codex печатает туда JSON-тело ошибки API
         # ({"error":{"message":"usage limit reached"}}), и жадный fallback-парсер
         # принимал его за ответ стадии → артефакт-ошибка уходил в пайплайн как успех.
@@ -397,16 +461,23 @@ async def run_codex_json_messages(
                 json_data = None
                 error = f"codex_exec_exit_{exit_code}; json_from_stdout_untrusted"
         return LLMResult(
-            text=final_text or stdout or stderr or "",
+            text=response_text or stdout or stderr or "",
             json_data=json_data,
-            input_tokens=0,
-            output_tokens=_extract_token_count(combined),
+            input_tokens=int(usage.get("input_tokens") or 0),
+            output_tokens=(
+                int(usage.get("output_tokens") or 0)
+                if usage
+                else _extract_token_count(combined)
+            ),
             cost_usd=0.0,
             duration_ms=duration_ms,
             model=f"codex/{resolved_model}",
             is_error=is_error,
             error_message=error,
+            cached_tokens=int(usage.get("cached_input_tokens") or 0),
+            reasoning_tokens=int(usage.get("reasoning_output_tokens") or 0),
             cost_source="subscription",
+            response_id=thread_id,
             finish_reason="stop" if not is_error else "error",
         )
     finally:
@@ -414,6 +485,11 @@ async def run_codex_json_messages(
             out_file.unlink()
         except OSError:
             pass
+        if schema_file is not None:
+            try:
+                schema_file.unlink()
+            except OSError:
+                pass
 
 
 __all__ = [

@@ -737,6 +737,7 @@ async def call_codex_for_block(
     model: str,
     system_prompt: str,
     timeout: int,
+    reasoning_effort: str = "",
     project_id: str = "",
     output_dir: Optional[Path] = None,
 ) -> dict:
@@ -763,6 +764,8 @@ async def call_codex_for_block(
         project_id=project_id,
         model=model,
         image_paths=[png_path],
+        reasoning_effort=reasoning_effort,
+        output_schema=RESPONSE_SCHEMA["schema"],
     )
     parsed = result.json_data if isinstance(result.json_data, dict) else None
     findings = parsed.get("findings") if parsed else None
@@ -773,8 +776,9 @@ async def call_codex_for_block(
         "parse_error": None if ok else "codex_findings_missing",
         "elapsed_ms": result.duration_ms,
         "input_tokens": result.input_tokens,
+        "cached_input_tokens": result.cached_tokens,
         "output_tokens": result.output_tokens,
-        "reasoning_tokens": None,
+        "reasoning_tokens": result.reasoning_tokens,
         "cost_usd": 0.0,
         "cost_source": "subscription",
         "raw_content": result.text,
@@ -1345,6 +1349,7 @@ async def run_findings_only_for_project(
                             block, item["enrichment"], page_text, blocks_dir,
                             model=CODEX_STAGE_MODEL_ID,
                             system_prompt=system_prompt, timeout=timeout_s,
+                            reasoning_effort=reasoning_effort,
                             project_id=project_id, output_dir=output_dir,
                         ),
                     )
@@ -1434,6 +1439,7 @@ async def run_findings_only_for_project(
                     return await call_codex_for_block(
                         block, item["enrichment"], page_text, blocks_dir,
                         model=model, system_prompt=system_prompt, timeout=timeout_s,
+                        reasoning_effort=reasoning_effort,
                         project_id=project_id, output_dir=output_dir,
                     )
                 if use_claude_cli:
@@ -1492,6 +1498,7 @@ async def run_findings_only_for_project(
                     "ok": res.get("ok"),
                     "findings": n,
                     "input_tokens": res.get("input_tokens"),
+                    "cached_input_tokens": res.get("cached_input_tokens"),
                     "output_tokens": res.get("output_tokens"),
                     "reasoning_tokens": res.get("reasoning_tokens"),
                     "elapsed_ms": res.get("elapsed_ms"),

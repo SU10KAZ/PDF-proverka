@@ -100,6 +100,10 @@ async def get_document_pdf(
     from backend.app.services.storage.projects_v2_source_resolver import (
         resolve_version_source_files,
     )
+    from backend.app.services.storage import read_canary
+
+    if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
+        return read_canary.v2_document_pdf(request, project_id)
 
     _validate_version(project_id, version_id)
     try:

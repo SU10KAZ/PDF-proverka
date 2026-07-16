@@ -69,7 +69,7 @@
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
                          @click="navigate('/section/' + encodeURIComponent(code))"
-                         :class="{active: currentView === 'dashboard' && sidebarFilterSection === code}">
+                         :class="{active: (currentView === 'dashboard' || currentView === 'section-optimization') && sidebarFilterSection === code}">
                         <div class="nav-sub-dot" :style="{background: getDisciplineColor(code), opacity: 1}"></div>
                         {{ code }}
                         <span class="nav-sub-badge">{{ items.length }}</span>
@@ -574,8 +574,8 @@
         </div>
 
         <!-- ═══ Section View (конкретный раздел) ═══ -->
-        <div v-if="currentView === 'dashboard' && sidebarFilterSection && sidebarFilterSection !== '__all__'" class="container">
-            <div class="dashboard-header">
+        <div v-if="(currentView === 'dashboard' || currentView === 'section-optimization') && sidebarFilterSection && sidebarFilterSection !== '__all__'" class="container">
+            <div v-if="currentView === 'dashboard'" class="dashboard-header">
                 <h2>
                     <a href="#" @click.prevent="sidebarFilterSection = '__all__'" class="dash-back-link">&larr;</a>
                     <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
@@ -615,7 +615,7 @@
             </div>
 
             <!-- Создание группы -->
-            <div v-if="showCreateGroup" class="group-create-row">
+            <div v-if="currentView === 'dashboard' && showCreateGroup" class="group-create-row">
                 <input v-model="newGroupName" class="input" placeholder="Название группы..."
                        @keyup.enter="createGroup(sidebarFilterSection, newGroupName); newGroupName=''; showCreateGroup=false"
                        ref="groupNameInput">
@@ -624,8 +624,473 @@
                 <button class="btn btn-sm btn-outline" @click="showCreateGroup=false; newGroupName=''">Отмена</button>
             </div>
 
+            <div v-if="currentView === 'section-optimization'" class="section-optimization-page__header">
+                <button class="section-optimization-page__back"
+                        @click="navigate('/section/' + encodeURIComponent(sidebarFilterSection))"
+                        title="Вернуться к проектам раздела">←</button>
+                <span class="section-optimization-card__sigma">Σ</span>
+                <div>
+                    <div class="section-optimization-page__eyebrow">
+                        <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
+                        Уровень раздела
+                    </div>
+                    <h2>Оптимизация раздела</h2>
+                    <p>{{ disciplineLabel(sidebarFilterSection) }} · все корпуса и части как один проект</p>
+                </div>
+            </div>
+
+            <section v-if="currentView === 'section-optimization'" class="section-optimization-panel section-optimization-panel--page">
+                <div v-if="sectionOptimizationLoading" class="section-optimization-state">
+                    <div class="spinner-lg"></div>
+                    <div>
+                        <strong>Открываю сохранённую оптимизацию {{ sidebarFilterSection }}</strong>
+                        <span>Загружаю последний готовый снимок раздела без повторного расчёта.</span>
+                    </div>
+                </div>
+
+                <div v-else-if="sectionOptimizationError" class="section-optimization-state section-optimization-state--error">
+                    <div>
+                        <strong>Не удалось собрать раздел</strong>
+                        <span>{{ sectionOptimizationError }}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline"
+                            @click="loadSectionOptimization(sidebarFilterSection, sectionOptimizationTab, true)">Повторить</button>
+                </div>
+
+                <template v-else-if="sectionOptimizationData">
+                    <div class="section-optimization-pipeline-actions">
+                        <div>
+                            <b>Pipeline раздела</b>
+                            <span>{{ sectionOptimizationPipelineStatusLabel(sectionOptimizationPipeline.status) }}</span>
+                        </div>
+                        <button class="btn btn-sm btn-primary"
+                                :disabled="sectionOptimizationPipelineRunning || sectionOptimizationPipelineActionLoading"
+                                @click="runSectionOptimizationPipeline">
+                            {{ sectionOptimizationPipelineRunning ? 'Выполняется…' : (sectionOptimizationPipeline.status === 'ready_for_review' ? 'Пересчитать раздел' : 'Запустить pipeline') }}
+                        </button>
+                    </div>
+                    <div v-if="sectionOptimizationPipelineActionError" class="section-optimization-pipeline-error">
+                        {{ sectionOptimizationPipelineActionError }}
+                    </div>
+                    <div class="section-optimization-flow section-optimization-flow--pipeline" aria-label="Pipeline оптимизации раздела">
+                        <template v-for="(stage, index) in sectionOptimizationData.analysis_stages" :key="stage.key">
+                            <button v-if="stage.key === 'graphics'"
+                                    type="button"
+                                    class="section-optimization-flow__stage section-optimization-flow__stage--button"
+                                    :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
+                                    :disabled="sectionOptimizationPipelineRunning || !sectionOptimizationPipeline.snapshot_generated_at"
+                                    :title="sectionOptimizationPipelineStage(stage.key).message || stage.description"
+                                    @click="requestSectionOptimizationGraphicsPlan">
+                                <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
+                                <b>{{ stage.title }}</b>
+                                <small>{{ sectionOptimizationPipelineStage(stage.key).message }}</small>
+                            </button>
+                            <div v-else class="section-optimization-flow__stage"
+                                 :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
+                                 :title="sectionOptimizationPipelineStage(stage.key).message || stage.description">
+                                <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
+                                <b>{{ stage.title }}</b>
+                                <small>{{ sectionOptimizationPipelineStage(stage.key).message }}</small>
+                            </div>
+                            <span v-if="index < sectionOptimizationData.analysis_stages.length - 1"
+                                  class="section-optimization-flow__arrow">→</span>
+                        </template>
+                    </div>
+
+                    <div v-if="sectionOptimizationTab === 'signals'"
+                         class="section-optimization-replication-bulk">
+                        <button class="btn btn-sm btn-primary"
+                                :disabled="sectionOptimizationReplicationActionLoading
+                                    || !sectionOptimizationAgentAvailable
+                                    || !sectionOptimizationReplicationPendingCount"
+                                @click="startAllSectionOptimizationReplications">
+                            {{ sectionOptimizationReplicationActionLoading
+                                ? 'Запускаю все тиражирования…'
+                                : (!sectionOptimizationAgentAvailable
+                                    ? 'Умный агент подключается…'
+                                    : 'Запустить умного агента для всех кандидатов') }}
+                        </button>
+                        <span>{{ sectionOptimizationAgentAvailable
+                            ? sectionOptimizationReplicationProgressLabel
+                            : 'Текущий аудит завершится — агент включится без потери данных' }}</span>
+                    </div>
+
+                    <div class="section-optimization-toolbar">
+                        <div class="section-optimization-tabs">
+                            <button :class="{'active': sectionOptimizationTab === 'specifications'}"
+                                    @click="setSectionOptimizationTab('specifications')">
+                                Форма 7 · Спецификация <span>{{ sectionOptimizationMeta.specification_rows }}</span>
+                            </button>
+                            <button :class="{'active': sectionOptimizationTab === 'accepted'}"
+                                    @click="setSectionOptimizationTab('accepted')">
+                                Принято <span>{{ sectionOptimizationMeta.accepted_optimizations }}</span>
+                            </button>
+                            <button :class="{'active': sectionOptimizationTab === 'signals'}"
+                                    @click="setSectionOptimizationTab('signals')">
+                                Кандидаты <span>{{ sectionOptimizationMeta.signals }}</span>
+                            </button>
+                        </div>
+                        <select v-model="sectionOptimizationProjectFilter" class="input section-optimization-project-filter">
+                            <option value="">Все проекты раздела</option>
+                            <option v-for="project in sectionOptimizationProjectOptions"
+                                    :key="project.project_id" :value="project.project_id">
+                                {{ project.project_name }} · {{ project.version_id }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div v-if="sectionOptimizationTab === 'specifications'" class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationSpecificationGroups.length"
+                               class="section-optimization-table section-optimization-table--form7">
+                            <colgroup>
+                                <col class="form7-col--position">
+                                <col class="form7-col--name">
+                                <col class="form7-col--type-mark">
+                                <col class="form7-col--code">
+                                <col class="form7-col--manufacturer">
+                                <col class="form7-col--unit">
+                                <col class="form7-col--quantity">
+                                <col class="form7-col--mass">
+                                <col class="form7-col--note">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span class="section-optimization-form7__position-heading">
+                                            <span>Позиция</span>
+                                            <span class="section-optimization-form7__all-toggle-actions" aria-label="Управление всеми проектами">
+                                                <button type="button" title="Развернуть все проекты" aria-label="Развернуть все проекты"
+                                                        @click="expandAllSectionOptimizationProjects">+</button>
+                                                <button type="button" title="Свернуть все проекты" aria-label="Свернуть все проекты"
+                                                        @click="collapseAllSectionOptimizationProjects">−</button>
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th>Наименование и техническая характеристика</th>
+                                    <th>Тип, марка, обозначение документа, опросного листа</th>
+                                    <th>Код оборудования, изделия, материала</th>
+                                    <th>Завод-изготовитель</th>
+                                    <th>Единица измерения</th>
+                                    <th>Количество</th>
+                                    <th>Масса единицы, кг</th>
+                                    <th>Примечание</th>
+                                </tr>
+                                <tr class="section-optimization-form7__column-numbers" aria-hidden="true">
+                                    <th v-for="number in 9" :key="number">{{ number }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="group in sectionOptimizationSpecificationGroups" :key="group.project.project_id">
+                                    <tr class="section-optimization-form7__project-row">
+                                        <td colspan="9">
+                                            <button class="section-optimization-form7__project-toggle"
+                                                    @click="toggleSectionOptimizationProject(group.project.project_id)"
+                                                    :aria-expanded="!isSectionOptimizationProjectCollapsed(group.project.project_id)">
+                                                <span class="section-optimization-form7__project-caret"
+                                                      aria-hidden="true">{{ isSectionOptimizationProjectCollapsed(group.project.project_id) ? '›' : '⌄' }}</span>
+                                                <span :class="{ 'section-optimization-form7__project-name--missing': !group.hasSpecification }">
+                                                    {{ group.project.project_name || group.project.project_id }}
+                                                </span>
+                                                <span class="section-optimization-form7__project-meta">· {{ group.project.version_id }}</span>
+                                                <span v-if="group.hasSpecification" class="section-optimization-form7__project-meta">· {{ group.project.specification_rows }} строк</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <template v-if="!isSectionOptimizationProjectCollapsed(group.project.project_id)">
+                                        <tr v-if="!group.hasSpecification" class="section-optimization-form7__missing-row">
+                                            <td></td>
+                                            <td colspan="8">Спецификация отсутствует</td>
+                                        </tr>
+                                        <tr v-else-if="!group.rows.length" class="section-optimization-form7__missing-row">
+                                            <td></td>
+                                            <td colspan="8">По текущему поиску строки спецификации не найдены</td>
+                                        </tr>
+                                        <template v-for="(row, rowIndex) in group.rows" :key="row.row_id">
+                                            <tr v-if="rowIndex > 0 && sectionOptimizationSpecificationSectionKey(row) !== sectionOptimizationSpecificationSectionKey(group.rows[rowIndex - 1])"
+                                                :key="row.row_id + '-category'" class="section-optimization-form7__category-row">
+                                        <td></td>
+                                        <td colspan="8"><span>{{ sectionOptimizationSpecificationSectionTitle(row) }}</span></td>
+                                    </tr>
+                                    <tr :key="row.row_id + '-item'">
+                                        <td class="section-optimization-form7__center">{{ row.position || '—' }}</td>
+                                        <td class="section-optimization-table__name">
+                                            <div>{{ row.name }}</div>
+                                        </td>
+                                        <td>{{ sectionOptimizationSpecificationTypeMark(row) || '—' }}</td>
+                                        <td>{{ row.code || '—' }}</td>
+                                        <td>{{ row.manufacturer || '—' }}</td>
+                                        <td class="section-optimization-form7__center">{{ row.unit || '—' }}</td>
+                                        <td class="section-optimization-form7__center">{{ formatSectionOptimizationQuantity(row.quantity) }}</td>
+                                        <td class="section-optimization-form7__center">{{ row.mass || '—' }}</td>
+                                        <td>{{ row.note || '—' }}</td>
+                                    </tr>
+                                        </template>
+                                    </template>
+                                </template>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">Строки спецификаций не найдены по выбранному фильтру.</div>
+                    </div>
+
+                    <div v-else-if="sectionOptimizationTab === 'accepted'" class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationFilteredAccepted.length" class="section-optimization-table section-optimization-table--accepted">
+                            <thead>
+                                <tr>
+                                    <th>Проект / источник</th>
+                                    <th>Позиции</th>
+                                    <th>Текущее решение</th>
+                                    <th>Принятое предложение</th>
+                                    <th>Эффект</th>
+                                    <th>Ограничения</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in sectionOptimizationFilteredAccepted" :key="item.source_ref">
+                                    <td>
+                                        <button class="section-optimization-source"
+                                                @click="navigate('/project/' + item.project_id + '/optimization')">{{ item.project_name }}</button>
+                                        <small>{{ item.version_id }} · {{ item.id }} · л. {{ item.sheet || '—' }}</small>
+                                    </td>
+                                    <td>{{ (item.spec_items || []).join('; ') || '—' }}</td>
+                                    <td>{{ item.current || '—' }}</td>
+                                    <td class="section-optimization-table__name">{{ item.proposed || '—' }}</td>
+                                    <td>
+                                        <span class="opt-type-badge" :style="{background: optTypeColor(item.type)}">{{ optTypeLabel(item.type) }}</span>
+                                        <small v-if="item.savings_pct">Оценка: {{ item.savings_pct }}%</small>
+                                    </td>
+                                    <td>{{ item.risks || item.norm || '—' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">
+                            Нет принятых экспертом оптимизаций по выбранному фильтру. Непроверенные предложения сюда намеренно не включаются.
+                        </div>
+                    </div>
+
+                    <div v-else class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationFilteredSignals.length" class="section-optimization-table section-optimization-table--signals">
+                            <thead>
+                                <tr>
+                                    <th>Тип</th>
+                                    <th>Кандидат</th>
+                                    <th>Проекты</th>
+                                    <th>Основание / источники</th>
+                                    <th>Графика</th>
+                                    <th>Следующий шаг</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="signal in sectionOptimizationFilteredSignals" :key="signal.signal_id">
+                                    <tr>
+                                        <td>
+                                            <span class="section-optimization-signal-type"
+                                                  :class="'section-optimization-signal-type--' + signal.kind">
+                                                {{ sectionOptimizationSignalTypeLabel(signal) }}
+                                            </span>
+                                            <small v-if="signal.match_score">Сходство {{ Math.round(signal.match_score * 100) }}%</small>
+                                        </td>
+                                        <td class="section-optimization-table__name">
+                                            <div>{{ signal.title }}</div>
+                                            <small>{{ signal.reason }}</small>
+                                        </td>
+                                        <td>
+                                            <template v-if="signal.kind === 'replicate_accepted_optimization'">
+                                                <div class="section-optimization-signal-project-group">
+                                                    <small>Решение принято</small>
+                                                    <div class="section-optimization-signal-projects">
+                                                        <button v-for="projectId in signal.source_project_ids" :key="'source-' + projectId"
+                                                                @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                                    </div>
+                                                </div>
+                                                <div class="section-optimization-signal-project-group section-optimization-signal-project-group--target">
+                                                    <small>Тиражировать</small>
+                                                    <div class="section-optimization-signal-projects">
+                                                        <button v-for="projectId in signal.target_project_ids" :key="'target-' + projectId"
+                                                                @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div v-else class="section-optimization-signal-projects">
+                                                <button v-for="projectId in signal.project_ids" :key="projectId"
+                                                        @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button v-if="sectionOptimizationSignalHasAcceptedSources(signal)"
+                                                    class="section-optimization-source-table-toggle"
+                                                    :aria-expanded="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                                    @click="toggleSectionOptimizationSignal(signal.signal_id)">
+                                                <span>{{ isSectionOptimizationSignalExpanded(signal.signal_id) ? '▾' : '▸' }}</span>
+                                                <span>
+                                                    Принятые решения: {{ sectionOptimizationSignalAcceptedItems(signal).length }}
+                                                    <small v-if="signal.kind === 'replicate_accepted_optimization'">
+                                                        Целевые позиции: {{ sectionOptimizationSignalSpecificationItems(signal).length }}
+                                                    </small>
+                                                </span>
+                                            </button>
+                                            <button v-else
+                                                    class="section-optimization-source-table-toggle"
+                                                    :aria-expanded="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                                    @click="toggleSectionOptimizationSignal(signal.signal_id)">
+                                                <span>{{ isSectionOptimizationSignalExpanded(signal.signal_id) ? '▾' : '▸' }}</span>
+                                                Исходные позиции спецификации: {{ sectionOptimizationSignalSpecificationItems(signal).length }}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <span class="section-optimization-signal-graphics"
+                                                  :class="{'section-optimization-signal-graphics--requested': signal.graphics_recommended}">
+                                                {{ sectionOptimizationSignalGraphicsLabel(signal) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>{{ signal.next_step }}</div>
+                                            <div class="section-optimization-replication-action">
+                                                    <span v-if="sectionOptimizationReplicationFor(signal.signal_id)"
+                                                      class="section-optimization-replication-status"
+                                                      :class="'section-optimization-replication-status--' + sectionOptimizationReplicationFor(signal.signal_id).status">
+                                                    {{ sectionOptimizationReplicationStatusLabel(sectionOptimizationReplicationFor(signal.signal_id)) }}
+                                                </span>
+                                                <span v-else class="section-optimization-replication-status section-optimization-replication-status--not-started">
+                                                    Ожидает запуска умного агента
+                                                </span>
+                                                <small v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_summary"
+                                                       class="section-optimization-agent-summary">
+                                                    {{ sectionOptimizationReplicationFor(signal.signal_id).agent_summary }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                        class="section-optimization-source-decisions-row">
+                                        <td colspan="6">
+                                            <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_assessments?.length"
+                                                 class="section-optimization-agent-review">
+                                                <div class="section-optimization-agent-review__title">
+                                                    <b>Заключение умного агента</b>
+                                                    <span>{{ sectionOptimizationReplicationFor(signal.signal_id).agent_model }}</span>
+                                                </div>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Целевой проект</th>
+                                                            <th>Вердикт</th>
+                                                            <th>Уверенность</th>
+                                                            <th>Основание и условия</th>
+                                                            <th>Графика</th>
+                                                            <th>Действие эксперта</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="assessment in sectionOptimizationReplicationFor(signal.signal_id).agent_assessments"
+                                                            :key="'agent-' + assessment.project_id">
+                                                            <td>{{ assessment.project_name || sectionOptimizationProjectLabel(assessment.project_id) }}</td>
+                                                            <td>
+                                                                <span class="section-optimization-agent-verdict"
+                                                                      :class="'section-optimization-agent-verdict--' + assessment.verdict">
+                                                                    {{ sectionOptimizationAgentVerdictLabel(assessment.verdict) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>{{ Math.round((assessment.confidence || 0) * 100) }}%</td>
+                                                            <td>
+                                                                <b>{{ assessment.reason || '—' }}</b>
+                                                                <small v-if="assessment.conditions?.length">
+                                                                    Условия: {{ assessment.conditions.join('; ') }}
+                                                                </small>
+                                                                <small v-if="assessment.missing_data?.length">
+                                                                    Не хватает: {{ assessment.missing_data.join('; ') }}
+                                                                </small>
+                                                            </td>
+                                                            <td>
+                                                                <template v-if="assessment.graphics_required">
+                                                                    {{ assessment.graphics_reason || 'Требуется проверка' }}
+                                                                    <small v-if="assessment.suggested_pages?.length">
+                                                                        Стр.: {{ assessment.suggested_pages.join(', ') }}
+                                                                    </small>
+                                                                </template>
+                                                                <span v-else>Не требуется</span>
+                                                            </td>
+                                                            <td>{{ assessment.expert_action || 'Проверить заключение' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <table v-if="sectionOptimizationSignalHasAcceptedSources(signal)" class="section-optimization-source-decisions">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Проект</th>
+                                                        <th>№ решения</th>
+                                                        <th>Текущее решение</th>
+                                                        <th>Принятое предложение</th>
+                                                        <th>Ограничения / эффект</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in sectionOptimizationSignalAcceptedItems(signal)" :key="item.source_ref">
+                                                        <td>
+                                                            <button @click="navigate('/project/' + item.project_id + '/optimization')">
+                                                                {{ item.project_name }}
+                                                            </button>
+                                                            <small>{{ item.version_id }}</small>
+                                                        </td>
+                                                        <td>{{ item.id || '—' }}</td>
+                                                        <td>{{ item.current || '—' }}</td>
+                                                        <td class="section-optimization-table__name">{{ item.proposed || '—' }}</td>
+                                                        <td>{{ item.risks || item.norm || (item.savings_pct ? ('Оценка: ' + item.savings_pct + '%') : '—') }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table v-if="signal.kind === 'replicate_accepted_optimization' || signal.kind === 'consolidated_procurement'"
+                                                   class="section-optimization-source-specifications">
+                                                <caption v-if="signal.kind === 'replicate_accepted_optimization'">Проекты для тиражирования решения</caption>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Проект</th>
+                                                        <th>Поз.</th>
+                                                        <th>Наименование и характеристика</th>
+                                                        <th>Обозначение / тип, марка</th>
+                                                        <th>Ед.</th>
+                                                        <th>Количество</th>
+                                                        <th>Примечание</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in sectionOptimizationSignalSpecificationItems(signal)" :key="item.row_id">
+                                                        <td>
+                                                            <button @click="navigate('/project/' + item.project_id)">
+                                                                {{ item.project_name }}
+                                                            </button>
+                                                            <small>{{ item.version_id }}</small>
+                                                        </td>
+                                                        <td>{{ item.position || '—' }}</td>
+                                                        <td class="section-optimization-table__name">{{ item.name || '—' }}</td>
+                                                        <td>{{ item.designation || item.type_mark || item.code || '—' }}</td>
+                                                        <td>{{ item.unit || '—' }}</td>
+                                                        <td>{{ formatSectionOptimizationQuantity(item.quantity) }}</td>
+                                                        <td>{{ item.note || '—' }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">
+                            Надёжные межпроектные совпадения пока не найдены. Это не означает отсутствие потенциала — нужен смысловой этап анализа.
+                        </div>
+                    </div>
+
+                    <details v-if="sectionOptimizationData.warnings && sectionOptimizationData.warnings.length"
+                             class="section-optimization-warnings">
+                        <summary>Неполные источники: {{ sectionOptimizationData.warnings.length }}</summary>
+                        <ul><li v-for="warning in sectionOptimizationData.warnings" :key="warning">{{ warning }}</li></ul>
+                    </details>
+                </template>
+            </section>
+
             <!-- Группированный вывод проектов -->
-            <div v-for="group in groupedSectionProjects" :key="group.id"
+            <div v-for="(group, groupIndex) in groupedSectionProjects" :key="group.id"
+                 v-show="currentView === 'dashboard'"
                  class="project-group" :class="{'project-group--drag-over': dragOverGroupId === group.id, 'project-group--virtual': group.isVirtual && !group.noHeader}"
                  @dragover.prevent="onGroupDragOver($event, group.id)"
                  @dragleave="onGroupDragLeave($event, group.id)"
@@ -655,6 +1120,51 @@
 
                 <!-- Проекты -->
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
+                    <!-- Первая карточка каждого раздела: сводка всех его проектов. -->
+                    <div v-if="groupIndex === 0"
+                         class="project-card section-optimization-card"
+                         role="button" tabindex="0"
+                         @click="navigateToSectionOptimization(sidebarFilterSection)"
+                         @keyup.enter="navigateToSectionOptimization(sidebarFilterSection)">
+                        <div class="project-card__header">
+                            <h3 class="project-card__name" title="Общая оптимизация всех проектов раздела">
+                                <span class="section-optimization-card__sigma">Σ</span>
+                                <span class="project-card__name-text">Оптимизация раздела</span>
+                            </h3>
+                            <div class="project-card__icons">
+                                <span class="section-optimization-card__badge">СВОДНАЯ</span>
+                            </div>
+                        </div>
+                        <div class="section-optimization-card__caption">Все корпуса и части как один проект</div>
+                        <div class="project-card__badges-row section-optimization-card__row">
+                            <div class="severity-badges">
+                                <span class="sev-badge sev-opt-lifecycle">
+                                    {{ sectionOptimizationMeta.project_count ?? filteredSectionProjects.length }}
+                                </span>
+                                <span class="sev-badge sev-check">
+                                    {{ sectionOptimizationMeta.specification_rows ?? '…' }}
+                                </span>
+                                <span class="findings-total">проектов / строк</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'specifications')">Спецификация</button>
+                            <span class="section-optimization-card__arrow">→</span>
+                        </div>
+                        <div class="project-card__badges-row section-optimization-card__row">
+                            <div class="severity-badges">
+                                <span class="sev-badge sev-opt-cheaper">
+                                    {{ sectionOptimizationMeta.accepted_optimizations ?? '…' }}
+                                </span>
+                                <span class="sev-badge sev-opt-lifecycle">
+                                    {{ sectionOptimizationMeta.accepted_merge_candidates ?? '…' }}
+                                </span>
+                                <span class="findings-total">принято / групп</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'signals')">Кандидаты</button>
+                            <span class="section-optimization-card__arrow">→</span>
+                        </div>
+                    </div>
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" draggable="true"
                          :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"

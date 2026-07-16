@@ -2603,6 +2603,7 @@ const app = createApp({
             // Отделяем query от path (хранится `?version_id=v2`).
             const qIdx = rawHash.indexOf('?');
             const hash = qIdx >= 0 ? rawHash.slice(0, qIdx) : rawHash;
+            const routeQuery = new URLSearchParams(qIdx >= 0 ? rawHash.slice(qIdx + 1) : '');
 
             // Версия из URL — если она задана, она перебивает activeVersionId.
             // Если её нет — оставляем активной то, что уже выбрано пользователем,
@@ -2675,6 +2676,18 @@ const app = createApp({
                 sidebarFilterSection.value = null;
                 connectGlobalWS();  // Вернуться на global WS
                 refreshProjects();
+            } else if (hash.match(/^\/section\/([^/]+)\/optimization$/)) {
+                const code = decodeURIComponent(hash.match(/^\/section\/([^/]+)\/optimization$/)[1]);
+                const requestedTab = routeQuery.get('tab');
+                const initialTab = ['specifications', 'accepted', 'signals'].includes(requestedTab)
+                    ? requestedTab
+                    : 'specifications';
+                currentView.value = 'section-optimization';
+                sidebarFilterSection.value = code;
+                sidebarSectionsOpen.value = true;
+                connectGlobalWS();
+                refreshProjects();
+                loadSectionOptimization(code, initialTab);
             } else if (hash.match(/^\/section\/(.+)$/)) {
                 const code = decodeURIComponent(hash.match(/^\/section\/(.+)$/)[1]);
                 currentView.value = 'dashboard';
@@ -3097,8 +3110,8 @@ const app = createApp({
         const modelConfigPendingProjectId = ref(null);
         const stageModelSaveError = ref('');
         const stageLabels = {
-            text_analysis: "02 Текст",
             block_batch: "01 Блоки",
+            text_analysis: "02 Текст",
             findings_merge: "03 Свод",
             findings_critic: "Верификатор",
             findings_corrector: "Верификатор (фикс)",
@@ -5038,6 +5051,634 @@ const app = createApp({
             }
 
             return result;
+        });
+
+        // ─── Сводная оптимизация раздела ───────────────────────────────
+        // Read-only слой над актуальными версиями всех проектов раздела:
+        // спецификации, принятые оптимизации и доказательные межпроектные
+        // сигналы. Данные загружаются при открытии отдельной страницы раздела.
+        const sectionOptimizationLoading = ref(false);
+        const sectionOptimizationError = ref('');
+        const sectionOptimizationData = ref(null);
+        const sectionOptimizationLoadedKey = ref('');
+        const sectionOptimizationTab = ref('specifications');
+        const sectionOptimizationSearch = ref('');
+        const sectionOptimizationProjectFilter = ref('');
+        const sectionOptimizationCollapsedProjects = ref({});
+        const sectionOptimizationExpandedSignals = ref({});
+        const sectionOptimizationPipelineActionLoading = ref(false);
+        const sectionOptimizationPipelineActionError = ref('');
+        const sectionOptimizationReplicationActionLoading = ref(false);
+        let _sectionOptimizationLoadSeq = 0;
+        let _sectionOptimizationPipelinePollSeq = 0;
+        const _sectionOptimizationReplicationPollTokens = new Map();
+        const _sectionOptimizationMemoryCache = new Map();
+
+        const sectionOptimizationMeta = computed(() => sectionOptimizationData.value?.meta || {});
+        const sectionOptimizationProjectOptions = computed(() => sectionOptimizationData.value?.projects || []);
+        const sectionOptimizationPipeline = computed(() => sectionOptimizationData.value?.pipeline || {
+            status: 'not_started', stages: [], snapshot_generated_at: null,
+        });
+        const sectionOptimizationPipelineRunning = computed(() => (
+            ['queued', 'running'].includes(sectionOptimizationPipeline.value.status)
+        ));
+        const sectionOptimizationReplications = computed(() => sectionOptimizationData.value?.replications || []);
+        const sectionOptimizationAgentAvailable = computed(() => (
+            (sectionOptimizationData.value?.analysis_stages || []).some(stage => stage.key === 'agent')
+        ));
+        const sectionOptimizationReplicationCandidates = computed(() => (
+            (sectionOptimizationData.value?.signals || [])
+                .filter(signal => signal.kind === 'replicate_accepted_optimization')
+        ));
+        const sectionOptimizationReplicationPendingCount = computed(() => (
+            sectionOptimizationReplicationCandidates.value
+                .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id)).length
+        ));
+        const sectionOptimizationReplicationProgressLabel = computed(() => {
+            const total = sectionOptimizationReplicationCandidates.value.length;
+            const processes = sectionOptimizationReplicationCandidates.value
+                .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
+                .filter(Boolean);
+            const running = processes.filter(item => ['queued', 'running'].includes(item.status)).length;
+            const prepared = processes.filter(item => item.agent_status === 'complete').length;
+            if (!total) return 'Нет кандидатов на тиражирование';
+            if (running) return `Готовится: ${running} · подготовлено: ${prepared} из ${total}`;
+            if (!sectionOptimizationReplicationPendingCount.value) return `Все ${total} кандидатов подготовлены`;
+            return `Подготовлено: ${prepared} из ${total}`;
+        });
+
+        const sectionOptimizationFilteredSpecifications = computed(() => {
+            let rows = sectionOptimizationData.value?.specification_rows || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) rows = rows.filter(row => row.project_id === projectId);
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                rows = rows.filter(row => [
+                    row.project_name, row.project_id, row.sheet, row.sheet_name,
+                    row.category, row.position, row.name, row.designation,
+                    row.type_mark, row.code, row.manufacturer, row.unit,
+                    row.quantity, row.mass, row.note,
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return rows;
+        });
+
+        const sectionOptimizationSpecificationGroups = computed(() => {
+            const rowsByProject = new Map();
+            for (const row of sectionOptimizationFilteredSpecifications.value) {
+                const projectId = row?.project_id || '';
+                if (!rowsByProject.has(projectId)) rowsByProject.set(projectId, []);
+                rowsByProject.get(projectId).push(row);
+            }
+            const projectId = sectionOptimizationProjectFilter.value;
+            const queryActive = Boolean(sectionOptimizationSearch.value.trim());
+            return sectionOptimizationProjectOptions.value
+                .filter(project => !projectId || project.project_id === projectId)
+                .map(project => {
+                    const rows = rowsByProject.get(project.project_id) || [];
+                    return {
+                        project,
+                        rows,
+                        hasSpecification: Number(project.specification_rows || 0) > 0,
+                    };
+                })
+                .filter(group => !queryActive || group.rows.length || !group.hasSpecification);
+        });
+
+        const sectionOptimizationFilteredAccepted = computed(() => {
+            let items = sectionOptimizationData.value?.accepted_optimizations || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) items = items.filter(item => item.project_id === projectId);
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                items = items.filter(item => [
+                    item.project_name, item.project_id, item.id, item.section,
+                    item.current, item.proposed, item.type, item.norm,
+                    ...(item.spec_items || []),
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return items;
+        });
+
+        const sectionOptimizationFilteredSignals = computed(() => {
+            let signals = sectionOptimizationData.value?.signals || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) signals = signals.filter(signal => (signal.project_ids || []).includes(projectId));
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                signals = signals.filter(signal => [
+                    signal.title, signal.reason, signal.next_step,
+                    signal.match_basis, signal.representative_proposal,
+                    ...(signal.project_ids || []),
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return signals;
+        });
+
+        function sectionOptimizationPipelineStage(stageKey) {
+            const storedStage = (sectionOptimizationPipeline.value.stages || []).find(stage => stage.key === stageKey) || {
+                key: stageKey,
+                status: 'pending',
+                message: 'Ожидает запуска',
+            };
+            if (stageKey !== 'agent') return storedStage;
+
+            const total = sectionOptimizationReplicationCandidates.value.length;
+            if (!total) return storedStage;
+            const processes = sectionOptimizationReplicationCandidates.value
+                .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
+                .filter(Boolean);
+            const active = processes.filter(process => ['queued', 'running'].includes(process.status)).length;
+            const completed = processes.filter(process => process.agent_status === 'complete').length;
+            const failed = processes.filter(process => process.agent_status === 'failed').length;
+            if (active) {
+                return {
+                    ...storedStage,
+                    status: 'running',
+                    message: `Анализирует кандидатов: готово ${completed} из ${total}`,
+                };
+            }
+            if (completed === total) {
+                return {
+                    ...storedStage,
+                    status: 'done',
+                    message: `Заключения готовы: ${completed} из ${total}`,
+                };
+            }
+            if (failed) {
+                return {
+                    ...storedStage,
+                    status: 'waiting',
+                    message: `Готово ${completed} из ${total}; с ошибкой: ${failed}. Можно повторить запуск`,
+                };
+            }
+            if (completed) {
+                return {
+                    ...storedStage,
+                    status: 'waiting',
+                    message: `Готово ${completed} из ${total}; остальные ожидают запуска`,
+                };
+            }
+            return storedStage;
+        }
+
+        function sectionOptimizationPipelineStatusLabel(status) {
+            const labels = {
+                not_started: 'Не запускался',
+                queued: 'В очереди',
+                running: 'Выполняется',
+                ready_for_review: 'Кандидаты готовы к запуску умного агента',
+                failed: 'Завершился с ошибкой',
+                interrupted: 'Прерван',
+            };
+            return labels[status] || 'Неизвестный статус';
+        }
+
+        function sectionOptimizationPipelineStageMarker(stageKey, index) {
+            const status = sectionOptimizationPipelineStage(stageKey).status;
+            if (status === 'done') return '✓';
+            if (status === 'running') return '…';
+            if (status === 'failed' || status === 'interrupted') return '!';
+            if (status === 'waiting') return '•';
+            return index + 1;
+        }
+
+        function sectionOptimizationPipelineUrl(sectionCode, suffix = '') {
+            const objectId = currentObjectId.value || '';
+            const query = objectId ? '?object_id=' + encodeURIComponent(objectId) : '';
+            return '/optimization/section/' + encodeURIComponent(sectionCode) + '/pipeline' + suffix + query;
+        }
+
+        function sectionOptimizationReplicationsUrl(sectionCode, suffix = '') {
+            const objectId = currentObjectId.value || '';
+            const query = objectId ? '?object_id=' + encodeURIComponent(objectId) : '';
+            return '/optimization/section/' + encodeURIComponent(sectionCode) + '/replications' + suffix + query;
+        }
+
+        function sectionOptimizationReplicationFor(signalId) {
+            return sectionOptimizationReplications.value.find(item => item.signal_id === signalId) || null;
+        }
+
+        function sectionOptimizationReplicationNeedsAgent(signalId) {
+            const process = sectionOptimizationReplicationFor(signalId);
+            if (!process) return true;
+            if (['queued', 'running'].includes(process.status)) return false;
+            if (['failed', 'interrupted'].includes(process.status)) return true;
+            return process.agent_status !== 'complete';
+        }
+
+        function sectionOptimizationReplicationStatusLabel(process) {
+            if (!process) return 'Ожидает запуска умного агента';
+            if (process.agent_status !== 'complete'
+                && ['awaiting_graphics', 'awaiting_expert'].includes(process.status)) {
+                return 'Требуется запуск умного агента';
+            }
+            const labels = {
+                queued: 'В очереди умного агента',
+                running: process.agent_status === 'running'
+                    ? 'Умный агент анализирует…'
+                    : (process.agent_status === 'queued' ? 'В очереди умного агента' : 'Готовится досье…'),
+                awaiting_graphics: 'Агент запросил графическую проверку',
+                awaiting_expert: 'Агент завершил · ожидает эксперта',
+                approved: 'Тиражирование принято',
+                rejected: 'Тиражирование отклонено',
+                failed: process.agent_status === 'failed' ? 'Ошибка умного агента' : 'Ошибка подготовки',
+                interrupted: 'Процесс прерван',
+            };
+            return labels[process.status] || 'Статус не определён';
+        }
+
+        function sectionOptimizationAgentVerdictLabel(verdict) {
+            const labels = {
+                applicable: 'Можно тиражировать',
+                applicable_with_conditions: 'Можно с условиями',
+                needs_graphics: 'Нужна графика',
+                needs_data: 'Недостаточно данных',
+                reject: 'Не тиражировать',
+            };
+            return labels[verdict] || 'Требует проверки';
+        }
+
+        function upsertSectionOptimizationReplication(replication) {
+            if (!sectionOptimizationData.value || !replication?.replication_id) return;
+            const items = [...sectionOptimizationReplications.value];
+            const index = items.findIndex(item => item.replication_id === replication.replication_id);
+            if (index >= 0) items[index] = replication;
+            else items.unshift(replication);
+            sectionOptimizationData.value = {
+                ...sectionOptimizationData.value,
+                replications: items,
+            };
+        }
+
+        async function pollSectionOptimizationReplication(sectionCode, objectId, replicationId) {
+            const token = Symbol(replicationId);
+            _sectionOptimizationReplicationPollTokens.set(replicationId, token);
+            while (_sectionOptimizationReplicationPollTokens.get(replicationId) === token
+                && currentView.value === 'section-optimization'
+                && sidebarFilterSection.value === sectionCode
+                && (currentObjectId.value || '') === objectId) {
+                try {
+                    const replication = await api(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/' + encodeURIComponent(replicationId)),
+                        { withVersion: false, timeoutMs: 25000, retries: 0 },
+                    );
+                    if (_sectionOptimizationReplicationPollTokens.get(replicationId) !== token) return;
+                    upsertSectionOptimizationReplication(replication);
+                    if (!['queued', 'running'].includes(replication.status)) {
+                        _sectionOptimizationReplicationPollTokens.delete(replicationId);
+                        return;
+                    }
+                } catch (error) {
+                    if (_sectionOptimizationReplicationPollTokens.get(replicationId) === token) {
+                        sectionOptimizationPipelineActionError.value = error?.message || String(error);
+                        _sectionOptimizationReplicationPollTokens.delete(replicationId);
+                    }
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 700));
+            }
+        }
+
+        async function startAllSectionOptimizationReplications() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationReplicationActionLoading.value
+                || !sectionOptimizationAgentAvailable.value
+                || !sectionOptimizationReplicationPendingCount.value) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                let response;
+                try {
+                    response = await apiPost(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/start-all'),
+                        undefined,
+                        { withVersion: false },
+                    );
+                } catch (bulkError) {
+                    // Совместимость на время безопасного обновления backend:
+                    // одна кнопка всё равно запускает все строки через уже
+                    // существующий одиночный endpoint.
+                    if (!/404|not found/i.test(bulkError?.message || '')) throw bulkError;
+                    const pendingSignals = sectionOptimizationReplicationCandidates.value
+                        .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id));
+                    const results = await Promise.allSettled(pendingSignals.map(signal => apiPost(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/start'),
+                        {
+                            signal_id: signal.signal_id,
+                            target_project_ids: signal.target_project_ids || [],
+                        },
+                        { withVersion: false },
+                    )));
+                    response = {
+                        replications: results
+                            .filter(item => item.status === 'fulfilled' && item.value?.replication)
+                            .map(item => item.value.replication),
+                        failed_count: results.filter(item => item.status === 'rejected').length,
+                    };
+                }
+                for (const replication of (response?.replications || [])) {
+                    upsertSectionOptimizationReplication(replication);
+                    void pollSectionOptimizationReplication(
+                        sectionCode,
+                        currentObjectId.value || '',
+                        replication.replication_id,
+                    );
+                }
+                if (response?.failed_count) {
+                    sectionOptimizationPipelineActionError.value =
+                        `Не удалось запустить кандидатов: ${response.failed_count}`;
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        async function pollSectionOptimizationPipeline(sectionCode, objectId) {
+            const pollSeq = ++_sectionOptimizationPipelinePollSeq;
+            while (pollSeq === _sectionOptimizationPipelinePollSeq
+                && currentView.value === 'section-optimization'
+                && sidebarFilterSection.value === sectionCode
+                && (currentObjectId.value || '') === objectId) {
+                try {
+                    const pipeline = await api(
+                        sectionOptimizationPipelineUrl(sectionCode, '/status'),
+                        { withVersion: false, timeoutMs: 25000, retries: 0 },
+                    );
+                    if (pollSeq !== _sectionOptimizationPipelinePollSeq) return;
+                    if (sectionOptimizationData.value) {
+                        sectionOptimizationData.value = {
+                            ...sectionOptimizationData.value,
+                            pipeline,
+                        };
+                    }
+                    if (!['queued', 'running'].includes(pipeline.status)) {
+                        if (pipeline.status === 'ready_for_review') {
+                            await loadSectionOptimization(sectionCode, sectionOptimizationTab.value, true);
+                        }
+                        return;
+                    }
+                } catch (error) {
+                    if (pollSeq === _sectionOptimizationPipelinePollSeq) {
+                        sectionOptimizationPipelineActionError.value = error?.message || String(error);
+                    }
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        async function runSectionOptimizationPipeline() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationPipelineActionLoading.value) return;
+            sectionOptimizationPipelineActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationPipelineUrl(sectionCode, '/run'),
+                    undefined,
+                    { withVersion: false },
+                );
+                if (sectionOptimizationData.value && response?.pipeline) {
+                    sectionOptimizationData.value = {
+                        ...sectionOptimizationData.value,
+                        pipeline: response.pipeline,
+                    };
+                }
+                void pollSectionOptimizationPipeline(sectionCode, currentObjectId.value || '');
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationPipelineActionLoading.value = false;
+            }
+        }
+
+        async function requestSectionOptimizationGraphicsPlan() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationPipelineActionLoading.value) return;
+            sectionOptimizationPipelineActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationPipelineUrl(sectionCode, '/graphics-plan'),
+                    undefined,
+                    { withVersion: false },
+                );
+                if (sectionOptimizationData.value && response?.pipeline) {
+                    sectionOptimizationData.value = {
+                        ...sectionOptimizationData.value,
+                        pipeline: response.pipeline,
+                    };
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationPipelineActionLoading.value = false;
+            }
+        }
+
+        async function loadSectionOptimization(sectionCode, initialTab = 'specifications', force = false) {
+            sectionOptimizationError.value = '';
+            sectionOptimizationTab.value = initialTab;
+            sectionOptimizationSearch.value = '';
+            sectionOptimizationProjectFilter.value = '';
+            const objectId = currentObjectId.value || '';
+            const cacheKey = `${objectId}|${sectionCode}`;
+
+            const seq = ++_sectionOptimizationLoadSeq;
+            const cached = !force ? _sectionOptimizationMemoryCache.get(cacheKey) : null;
+            const visibleData = cached || (sectionOptimizationLoadedKey.value === cacheKey
+                ? sectionOptimizationData.value
+                : null);
+            if (visibleData) {
+                sectionOptimizationData.value = visibleData;
+                sectionOptimizationLoadedKey.value = cacheKey;
+                sectionOptimizationLoading.value = false;
+            } else {
+                sectionOptimizationLoading.value = true;
+                sectionOptimizationData.value = null;
+                sectionOptimizationCollapsedProjects.value = {};
+                sectionOptimizationExpandedSignals.value = {};
+            }
+            try {
+                const query = objectId
+                    ? '?object_id=' + encodeURIComponent(objectId)
+                    : '';
+                const data = await api(
+                    '/optimization/section/' + encodeURIComponent(sectionCode) + query,
+                    { withVersion: false },
+                );
+                if (seq !== _sectionOptimizationLoadSeq
+                    || sidebarFilterSection.value !== sectionCode
+                    || (currentObjectId.value || '') !== objectId) return;
+                if (!data?.meta || !Array.isArray(data.specification_rows)
+                    || !Array.isArray(data.accepted_optimizations) || !Array.isArray(data.signals)) {
+                    throw new Error('Backend ещё не обновлён: получен устаревший формат сводки раздела.');
+                }
+                sectionOptimizationData.value = data;
+                sectionOptimizationLoadedKey.value = cacheKey;
+                _sectionOptimizationMemoryCache.delete(cacheKey);
+                _sectionOptimizationMemoryCache.set(cacheKey, data);
+                while (_sectionOptimizationMemoryCache.size > 20) {
+                    _sectionOptimizationMemoryCache.delete(_sectionOptimizationMemoryCache.keys().next().value);
+                }
+                if (['queued', 'running'].includes(data?.pipeline?.status)) {
+                    void pollSectionOptimizationPipeline(sectionCode, objectId);
+                }
+                for (const replication of (data.replications || [])) {
+                    if (['queued', 'running'].includes(replication.status)) {
+                        void pollSectionOptimizationReplication(sectionCode, objectId, replication.replication_id);
+                    }
+                }
+            } catch (error) {
+                if (seq !== _sectionOptimizationLoadSeq) return;
+                sectionOptimizationError.value = error?.message || String(error);
+            } finally {
+                if (seq === _sectionOptimizationLoadSeq) sectionOptimizationLoading.value = false;
+            }
+        }
+
+        function setSectionOptimizationTab(tab) {
+            sectionOptimizationTab.value = tab;
+        }
+
+        function navigateToSectionOptimization(sectionCode, tab = 'specifications') {
+            navigate('/section/' + encodeURIComponent(sectionCode) + '/optimization?tab=' + encodeURIComponent(tab));
+        }
+
+        function sectionOptimizationProjectLabel(projectId) {
+            const project = sectionOptimizationProjectOptions.value.find(item => item.project_id === projectId);
+            return project?.project_name || projectId;
+        }
+
+        function sectionOptimizationSpecificationTypeMark(row) {
+            const values = [row?.type_mark, row?.designation]
+                .map(value => String(value || '').trim())
+                .filter(Boolean);
+            return [...new Set(values)].join(' · ');
+        }
+
+        function sectionOptimizationSpecificationSectionTitle(row) {
+            return row?.category || row?.sheet_name || 'Спецификация';
+        }
+
+        function sectionOptimizationSpecificationSectionKey(row) {
+            if (!row) return '';
+            return `${row.project_id || ''}|${sectionOptimizationSpecificationSectionTitle(row)}`;
+        }
+
+        function sectionOptimizationSpecificationProjectKey(row) {
+            return row?.project_id || '';
+        }
+
+        function isSectionOptimizationProjectCollapsed(projectId) {
+            return Boolean(sectionOptimizationCollapsedProjects.value[projectId]);
+        }
+
+        function toggleSectionOptimizationProject(projectId) {
+            sectionOptimizationCollapsedProjects.value = {
+                ...sectionOptimizationCollapsedProjects.value,
+                [projectId]: !isSectionOptimizationProjectCollapsed(projectId),
+            };
+        }
+
+        function expandAllSectionOptimizationProjects() {
+            sectionOptimizationCollapsedProjects.value = {};
+        }
+
+        function collapseAllSectionOptimizationProjects() {
+            const collapsed = {};
+            for (const project of sectionOptimizationProjectOptions.value) {
+                if (project?.project_id) collapsed[project.project_id] = true;
+            }
+            sectionOptimizationCollapsedProjects.value = collapsed;
+        }
+
+        function sectionOptimizationSignalAcceptedItems(signal) {
+            if (!sectionOptimizationSignalHasAcceptedSources(signal)) return [];
+            const evidenceRefs = new Set(signal.evidence_refs || []);
+            return (sectionOptimizationData.value?.accepted_optimizations || [])
+                .filter(item => evidenceRefs.has(item.source_ref));
+        }
+
+        function sectionOptimizationSignalSpecificationItems(signal) {
+            const evidenceRefs = new Set(signal?.target_row_ids || signal?.evidence_refs || []);
+            return (sectionOptimizationData.value?.specification_rows || [])
+                .filter(item => evidenceRefs.has(item.row_id));
+        }
+
+        function sectionOptimizationSignalHasAcceptedSources(signal) {
+            return ['merge_accepted_optimizations', 'replicate_accepted_optimization'].includes(signal?.kind);
+        }
+
+        function isSectionOptimizationSignalExpanded(signalId) {
+            return Boolean(sectionOptimizationExpandedSignals.value[signalId]);
+        }
+
+        function toggleSectionOptimizationSignal(signalId) {
+            sectionOptimizationExpandedSignals.value = {
+                ...sectionOptimizationExpandedSignals.value,
+                [signalId]: !isSectionOptimizationSignalExpanded(signalId),
+            };
+        }
+
+        function sectionOptimizationSignalTypeLabel(signal) {
+            const labels = {
+                merge_accepted_optimizations: 'Объединение принятых решений',
+                replicate_accepted_optimization: 'Тиражирование решения',
+                technical_variance: 'Техническое расхождение',
+                consolidated_procurement: 'Общая закупка',
+            };
+            return labels[signal?.kind] || 'Кандидат';
+        }
+
+        function sectionOptimizationSignalGraphicsLabel(signal) {
+            if (!signal?.graphics_recommended) return 'Не требуется';
+            const plannedSignals = sectionOptimizationPipeline.value.graphics_plan?.signal_ids || [];
+            return plannedSignals.includes(signal.signal_id) ? 'План готов' : 'По запросу';
+        }
+
+        function formatSectionOptimizationQuantity(value) {
+            if (value === null || value === undefined || value === '') return '—';
+            return String(value);
+        }
+
+        watch(currentObjectId, (next, previous) => {
+            if (next === previous) return;
+            _sectionOptimizationLoadSeq++;
+            _sectionOptimizationPipelinePollSeq++;
+            sectionOptimizationLoading.value = false;
+            sectionOptimizationError.value = '';
+            sectionOptimizationPipelineActionError.value = '';
+            sectionOptimizationData.value = null;
+            sectionOptimizationLoadedKey.value = '';
+            sectionOptimizationCollapsedProjects.value = {};
+            sectionOptimizationExpandedSignals.value = {};
+            sectionOptimizationReplicationActionLoading.value = false;
+            _sectionOptimizationReplicationPollTokens.clear();
+            if (currentView.value === 'section-optimization'
+                && sidebarFilterSection.value
+                && sidebarFilterSection.value !== '__all__') {
+                loadSectionOptimization(
+                    sidebarFilterSection.value,
+                    sectionOptimizationTab.value,
+                    true,
+                );
+            }
+        });
+        watch(sidebarFilterSection, (next, previous) => {
+            if (next === previous) return;
+            if (currentView.value === 'section-optimization') return;
+            _sectionOptimizationLoadSeq++;
+            sectionOptimizationLoading.value = false;
+            sectionOptimizationError.value = '';
+            const expectedKey = `${currentObjectId.value || ''}|${next || ''}`;
+            if (expectedKey !== sectionOptimizationLoadedKey.value) {
+                sectionOptimizationData.value = null;
+                sectionOptimizationLoadedKey.value = '';
+            }
         });
 
         // Навигация по проектам внутри раздела (Пред. / След.)
@@ -17804,6 +18445,34 @@ const app = createApp({
             onSectionDragStart, onSectionDragOver, onSectionDragEnd,
             // Project groups
             projectGroups, groupedSectionProjects,
+            // Сводная оптимизация раздела
+            sectionOptimizationLoading, sectionOptimizationError,
+            sectionOptimizationData, sectionOptimizationLoadedKey, sectionOptimizationMeta,
+            sectionOptimizationTab, sectionOptimizationSearch, sectionOptimizationProjectFilter,
+            sectionOptimizationCollapsedProjects, sectionOptimizationExpandedSignals, sectionOptimizationProjectOptions,
+            sectionOptimizationPipeline, sectionOptimizationPipelineRunning,
+            sectionOptimizationPipelineActionLoading, sectionOptimizationPipelineActionError,
+            sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
+            sectionOptimizationAgentAvailable,
+            sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
+            sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
+            sectionOptimizationFilteredAccepted,
+            sectionOptimizationFilteredSignals, loadSectionOptimization,
+            sectionOptimizationPipelineStage, sectionOptimizationPipelineStatusLabel,
+            sectionOptimizationPipelineStageMarker,
+            runSectionOptimizationPipeline, requestSectionOptimizationGraphicsPlan,
+            startAllSectionOptimizationReplications, sectionOptimizationReplicationFor,
+            sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
+            setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
+            sectionOptimizationSpecificationTypeMark,
+            sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,
+            sectionOptimizationSpecificationProjectKey,
+            isSectionOptimizationProjectCollapsed, toggleSectionOptimizationProject,
+            expandAllSectionOptimizationProjects, collapseAllSectionOptimizationProjects,
+            sectionOptimizationSignalAcceptedItems, sectionOptimizationSignalSpecificationItems,
+            sectionOptimizationSignalHasAcceptedSources, sectionOptimizationSignalTypeLabel,
+            sectionOptimizationSignalGraphicsLabel, isSectionOptimizationSignalExpanded,
+            toggleSectionOptimizationSignal, formatSectionOptimizationQuantity,
             currentSectionProjectsList, prevProject, nextProject,
             showCreateGroup, newGroupName, editingGroupId, editingGroupName,
             createGroup, renameGroup, startRenameGroup, deleteProjectGroup,

@@ -86,6 +86,12 @@ PROFILES: dict[str, dict[str, Any]] = {
 PROFILE_ORDER = ["old_ngrok", "new_vibe"]
 _SECRET_HINT = re.compile(r"(TOKEN|KEY|PASS|SECRET)", re.I)
 
+# Бэкап .env при переключении = механизм ОТКАТА, поэтому храним N последних, а не один.
+# Чистим строго СВОЁ семейство (before-profile-switch-*): ручные бэкапы
+# (.env.backup.rollback-to-ngrok-*, .env.bak.*, before-codex-sandbox-*) не наши.
+_BACKUP_PREFIX = ".env.backup.before-profile-switch-"
+_BACKUP_KEEP = int(os.environ.get("SERVER_PROFILE_BACKUP_KEEP", "10"))
+
 
 def _redact(key: str, val: str) -> str:
     return "***" if _SECRET_HINT.search(key) else val
@@ -126,6 +132,31 @@ def list_profiles() -> dict[str, Any]:
     }
 
 
+def _prune_profile_backups(keep_last: int | None = None) -> list[str]:
+    """Удалить бэкапы профиля сверх ``keep_last`` последних. Возвращает удалённые имена.
+
+    ``keep_last=None`` → берётся текущее ``_BACKUP_KEEP`` (значение читается при вызове,
+    а не замораживается в дефолте аргумента).
+
+    Сортировка по ИМЕНИ, а не по mtime: ``shutil.copy2`` копирует mtime исходного
+    ``.env``, поэтому время файла = время правки .env, а не создания бэкапа. Внутри
+    одного префикса метка ``%Y%m%d-%H%M%S`` лексикографически = хронологически.
+    Fail-soft: уборка не имеет права уронить переключение профиля.
+    """
+    if keep_last is None:
+        keep_last = _BACKUP_KEEP
+    backups = sorted(ENV_PATH.parent.glob(f"{_BACKUP_PREFIX}*"))
+    excess = max(0, len(backups) - max(1, keep_last))  # max(1,…): свежий бэкап неприкосновенен
+    removed: list[str] = []
+    for path in backups[:excess]:
+        try:
+            path.unlink()
+            removed.append(path.name)
+        except OSError:
+            pass
+    return removed
+
+
 def _rewrite_env(target_env: dict[str, str]) -> list[dict[str, str]]:
     """Построчно переписать ключи в .env (backup + add-if-missing). Возвращает diff."""
     text = ENV_PATH.read_text()
@@ -155,6 +186,7 @@ def _rewrite_env(target_env: dict[str, str]) -> list[dict[str, str]]:
     )
     shutil.copy2(ENV_PATH, backup)
     ENV_PATH.write_text("".join(out))
+    _prune_profile_backups()  # свежий бэкап уже создан и входит в keep-N
     return diff
 
 

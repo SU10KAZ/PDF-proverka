@@ -59,7 +59,8 @@ def _wj(p: Path, data):
     p.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
 
-def _full_doc(v2, disc, code, *, run="run_x", with_md=True, with_graph=True, with_blocks=True):
+def _full_doc(v2, disc, code, *, run="run_x", with_md=True, with_graph=True,
+              with_blocks=True, with_pdf=True):
     doc = v2 / "objects" / OBJF / "disciplines" / disc / "documents" / code
     _wj(doc / "document.json", {"document_code": code, "object_id": "0b540226",
         "discipline": disc, "kind": "plain",
@@ -93,6 +94,10 @@ def _full_doc(v2, disc, code, *, run="run_x", with_md=True, with_graph=True, wit
             '<div class="block"><div class="block-header">TXT-AAAA-001</div>'
             '<div class="block-content"><p>BLOCK: TXT-AAAA-001</p><p>OCR HTML текст</p></div></div>',
             encoding="utf-8")
+    if with_pdf:
+        work = doc / "versions" / "v001" / "02_work"
+        work.mkdir(parents=True, exist_ok=True)
+        (work / "document.pdf").write_bytes(b"%PDF-1.4\n% test PDF\n")
     return doc
 
 
@@ -103,7 +108,8 @@ def v2tree(tmp_path, monkeypatch):
         {"object_id": "0b540226", "display_name": "213", "folder_name": OBJF})
     _full_doc(v2, "AI", "doc-complete")
     # source_only: без MD, без graph, без блоков (block-map пустой, pages 404)
-    d = _full_doc(v2, "ITP", "doc-source", with_md=False, with_graph=False, with_blocks=False)
+    d = _full_doc(v2, "ITP", "doc-source", with_md=False, with_graph=False,
+                  with_blocks=False, with_pdf=False)
     monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2))
     return v2
 
@@ -199,6 +205,24 @@ def test_document_pages_force_legacy(monkeypatch, v2tree):
     assert r.json().get("storage_backend") != "projects_v2" if r.status_code == 200 else True
 
 
+def test_document_pdf_default_on_v2(monkeypatch, v2tree):
+    _on(monkeypatch)
+    r = client.get("/api/document/doc-complete/pdf?version_id=v001")
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "application/pdf"
+    assert r.headers["content-disposition"].startswith("inline;")
+    assert r.headers["x-storage-backend"] == "projects_v2"
+    assert r.headers["x-audit-version-id"] == "v001"
+    assert r.content.startswith(b"%PDF-1.4")
+
+
+def test_document_pdf_missing_404(monkeypatch, v2tree):
+    _on(monkeypatch)
+    r = client.get("/api/document/doc-source/pdf")
+    assert r.status_code == 404
+    assert "projects_v2 canary" in r.json()["detail"]
+
+
 # === read-only ==============================================================
 
 def test_ui_read_completion_read_only(monkeypatch, v2tree):
@@ -207,5 +231,6 @@ def test_ui_read_completion_read_only(monkeypatch, v2tree):
     client.get("/api/findings/doc-complete/block-map")
     client.get("/api/document/doc-complete/pages")
     client.get("/api/document/doc-complete/page/1")
+    client.get("/api/document/doc-complete/pdf")
     client.get("/api/findings/doc-source/block-map")
     assert _tree_hash(v2tree) == before
