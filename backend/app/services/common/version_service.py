@@ -1323,6 +1323,7 @@ def _load_layout_project_info(version_dir: Path) -> dict[str, Any]:
 
 
 def _v2_input_names(version_dir: Path) -> list[str]:
+    from backend.app.services.common.crop_cache import CROPS_DIRNAME, MANIFEST_NAME
     inp = version_dir / "01_input"
     if not inp.is_dir():
         return []
@@ -1332,6 +1333,14 @@ def _v2_input_names(version_dir: Path) -> list[str]:
             continue
         rel = str(p.relative_to(inp))
         if rel == "project_info.json" or Path(rel).name.startswith("."):
+            continue
+        rel_parts = Path(rel).parts
+        # кэш кропов (01_input/crops/ + манифест) — наш derived-артефакт,
+        # не пользовательский исходник: сотни blk_*.pdf иначе попадают в
+        # pdf_files и могут стать «основным» PDF при повторной догрузке
+        if rel_parts and rel_parts[0] == CROPS_DIRNAME:
+            continue
+        if rel == MANIFEST_NAME:
             continue
         result.append(rel)
     return sorted(result)
