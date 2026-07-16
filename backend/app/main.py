@@ -34,6 +34,7 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from backend.app.core.config import APP_HOST, APP_PORT
 from backend.app.core import portal_auth
+from backend.app.core import current_object as current_object_mw
 from backend.app.core import action_log as action_log_core
 from backend.app.api.routers import (
     projects,
@@ -98,6 +99,14 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# ─── Per-request «текущий объект» ───────────────────────────
+# Добавлен ПЕРВЫМ → innermost: напрямую оборачивает роутер (между ним и
+# обработчиком нет BaseHTTPMiddleware), поэтому ContextVar, который он ставит из
+# заголовка X-Object-Id, гарантированно виден в эндпоинте. Делает выбор объекта
+# per-request вместо глобального current_id (иначе переключение объекта одним
+# инженером «прячет» проекты у остальных). Fail-soft, тело не трогает.
+app.add_middleware(current_object_mw.CurrentObjectMiddleware)
 
 # ─── Сжатие ответов (gzip) ──────────────────────────────────
 # Фронт-бандл app.js ~920 КБ; без сжатия каждый некэшированный заход (hard

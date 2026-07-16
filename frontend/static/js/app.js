@@ -4613,11 +4613,67 @@ const app = createApp({
         // Model Switcher удалён — модели per-stage настроены в config.py → _stage_models
 
         // ─── Objects (строительные объекты) ───
+        const OBJECT_STORAGE_KEY = 'currentObjectId';
+        function readStoredObjectId() {
+            // sessionStorage изолирован по вкладкам и переживает reload. Старое
+            // значение из localStorage читаем один раз для бесшовного перехода
+            // с версии, где выбор ошибочно был общим для всех вкладок origin.
+            try {
+                const scoped = sessionStorage.getItem(OBJECT_STORAGE_KEY);
+                if (scoped) return scoped;
+            } catch (e) {}
+            try { return localStorage.getItem(OBJECT_STORAGE_KEY) || null; } catch (e) { return null; }
+        }
+        function storeObjectId(id) {
+            try {
+                sessionStorage.setItem(OBJECT_STORAGE_KEY, id);
+                // Миграционный ключ больше не должен связывать новые вкладки.
+                try { localStorage.removeItem(OBJECT_STORAGE_KEY); } catch (e) {}
+                return;
+            } catch (e) {}
+            // Редкий fallback для браузеров, где sessionStorage запрещён.
+            try { localStorage.setItem(OBJECT_STORAGE_KEY, id); } catch (e) {}
+        }
         const objectsList = ref([]);
-        const currentObjectId = ref(null);
+        // Инициализируем из хранилища СИНХРОННО — чтобы уже самый первый
+        // запрос (handleRoute до завершения loadObjects) нёс свой per-tab объект,
+        // а не глобальный. loadObjects потом сверит id со списком с сервера и
+        // откатит на current_id, если сохранённый объект больше не существует.
+        const currentObjectId = ref(readStoredObjectId());
         const showObjectPicker = ref(false);
         const showAddObjectModal = ref(false);
         const newObjectName = ref('');
+
+        // ─── Per-tab «текущий объект»: X-Object-Id на каждый /api/-запрос ───
+        // «Текущий объект» на сервере больше НЕ глобальный на всех пользователей:
+        // фронт сообщает выбранный объект заголовком, и бэкенд резолвит СВОЙ
+        // объект per-request (CurrentObjectMiddleware). Один глобальный
+        // перехватчик fetch покрывает и обёртки api()/apiPost(), и точечные
+        // fetch (удаление версии, отмена аудита и т.д.) — иначе они резолвили бы
+        // проект в ЧУЖОМ (глобальном) объекте, если сосед переключил объект.
+        // Только same-origin `/api/`-запросы; кропы/LLM — абсолютные URL чужих
+        // хостов — не трогаем. Fail-open: любая ошибка не ломает запрос.
+        if (!window.__objHeaderPatched) {
+            window.__objHeaderPatched = true;
+            const _origFetch = window.fetch.bind(window);
+            window.fetch = function (input, init) {
+                try {
+                    const oid = currentObjectId.value;
+                    const url = typeof input === 'string'
+                        ? input : (input && input.url) || '';
+                    if (oid && url.startsWith('/api/')) {
+                        init = init || {};
+                        const h = new Headers(
+                            init.headers
+                            || (typeof input !== 'string' && input.headers)
+                            || {});
+                        if (!h.has('X-Object-Id')) h.set('X-Object-Id', oid);
+                        init.headers = h;
+                    }
+                } catch (e) { /* fail-open */ }
+                return _origFetch(input, init);
+            };
+        }
 
         // ─── Панели шапки (объект / расходы API / аккаунт LLM) ───
         // Одновременно открыта максимум одна: открытие любой закрывает остальные,
@@ -4645,7 +4701,15 @@ const app = createApp({
             try {
                 const data = await api('/objects');
                 objectsList.value = data.objects || [];
-                currentObjectId.value = data.current_id;
+                // Выбор объекта — per-tab, а не глобальный: при загрузке
+                // предпочитаем СВОЙ последний объект из sessionStorage (если он
+                // ещё существует), а не глобальный current_id с сервера, который
+                // мог переключить другой инженер. Свежая вкладка без сохранённого
+                // выбора берёт серверный current_id как дефолт.
+                const saved = readStoredObjectId();
+                const savedValid = saved && objectsList.value.some(o => o.id === saved);
+                currentObjectId.value = savedValid ? saved : data.current_id;
+                if (currentObjectId.value) storeObjectId(currentObjectId.value);
                 // Показать имя выбранного объекта в шапке (не «Объект»-плейсхолдер).
                 const cur = objectsList.value.find(o => o.id === currentObjectId.value);
                 if (cur) objectName.value = cur.name;
@@ -4656,8 +4720,13 @@ const app = createApp({
 
         async function switchObject(id) {
             try {
-                await apiPost('/objects/switch', { id });
+                // Запоминаем выбор per-tab (sessionStorage) — переживёт reload и не
+                // будет перебит глобальным current_id соседа. /objects/switch
+                // по-прежнему зовём: он обновляет серверный дефолт для свежих
+                // сессий, но per-tab корректность обеспечивает заголовок.
                 currentObjectId.value = id;
+                storeObjectId(id);
+                await apiPost('/objects/switch', { id });
                 const obj = objectsList.value.find(o => o.id === id);
                 if (obj) objectName.value = obj.name;
                 showObjectPicker.value = false;

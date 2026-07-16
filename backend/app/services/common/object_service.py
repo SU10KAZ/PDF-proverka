@@ -53,15 +53,37 @@ def list_objects() -> list[dict]:
     return data["objects"]
 
 
+def _bound_object_id_safe() -> Optional[str]:
+    """object_id, привязанный к ContextVar (per-request заголовок X-Object-Id
+    через CurrentObjectMiddleware либо per-job binding конвейера). None, если
+    привязки нет. Fail-soft — при любой ошибке импорта возвращает None."""
+    try:
+        from backend.app.services.common.project_service import _get_bound_object_id
+        return _get_bound_object_id()
+    except Exception:
+        return None
+
+
 def get_current_object() -> Optional[dict]:
-    """Текущий активный объект."""
+    """Текущий активный объект.
+
+    Приоритет: объект, привязанный через ContextVar (per-request `X-Object-Id`
+    или per-job binding), → глобальный `current_id` из objects.json. Привязка
+    учитывается только если резолвится в известный объект — иначе падаем на
+    глобальный дефолт (кривой override не должен прятать все проекты)."""
     data = _ensure_default_object(_load_objects())
-    if not data["current_id"]:
-        return data["objects"][0] if data["objects"] else None
-    for obj in data["objects"]:
-        if obj["id"] == data["current_id"]:
-            return obj
-    return data["objects"][0] if data["objects"] else None
+    objects = data["objects"]
+    bound = _bound_object_id_safe()
+    target_id = None
+    if bound and any(o["id"] == bound for o in objects):
+        target_id = bound
+    elif data["current_id"]:
+        target_id = data["current_id"]
+    if target_id:
+        for obj in objects:
+            if obj["id"] == target_id:
+                return obj
+    return objects[0] if objects else None
 
 
 def get_current_id() -> Optional[str]:
