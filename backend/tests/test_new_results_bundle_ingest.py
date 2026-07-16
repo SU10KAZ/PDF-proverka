@@ -20,7 +20,6 @@ from pathlib import Path
 import pytest
 
 from backend.app.services.common.project_service import (
-    UploadFolderError,
     _classify_upload_files,
     _compute_upload_fingerprint,
     _is_new_format_bundle,
@@ -178,16 +177,21 @@ class TestZipExpansion:
         assert cls["ignored"] == ["inner.zip"]
 
     def test_bad_zip_raises_upload_error(self):
-        with pytest.raises(UploadFolderError, match="распаковать"):
-            _classify_upload_files([("broken.zip", b"not a zip at all")])
+        # класс исключения и функцию берём из ЖИВОГО модуля: соседние тесты
+        # делают importlib.reload(project_service), и импортированный при
+        # коллекции UploadFolderError перестаёт совпадать по идентичности
+        from backend.app.services.common import project_service as ps
+        with pytest.raises(ps.UploadFolderError, match="распаковать"):
+            ps._classify_upload_files([("broken.zip", b"not a zip at all")])
 
     def test_zip_bomb_member_count_guard(self):
+        from backend.app.services.common import project_service as ps
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w") as zf:
             for i in range(501):
                 zf.writestr(f"f{i}.md", b"x")
-        with pytest.raises(UploadFolderError, match="слишком много файлов"):
-            _classify_upload_files([("bomb.zip", buf.getvalue())])
+        with pytest.raises(ps.UploadFolderError, match="слишком много файлов"):
+            ps._classify_upload_files([("bomb.zip", buf.getvalue())])
 
 
 # ─── мигратор v2lib.find_input_quad ──────────────────────────────────────────
