@@ -42,6 +42,7 @@ import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.services.common.usage_service import usage_tracker, global_scanner, paid_cost_tracker
 from backend.app.pipeline.resume_detector import detect_resume_stage as _detect_resume_stage
 import backend.app.services.common.audit_logger as audit_logger
+from backend.app.services.common.log_humanizer import humanize_log_line, split_known_prefix
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_ALL_NAMES,
@@ -2425,9 +2426,15 @@ class PipelineManager:
         Перехватывает финальный JSON-ответ Claude CLI ({"type":"result",...})
         и превращает его в красивую cli_summary карточку вместо сырого JSON-мусора.
         Промежуточные stream-json сообщения (type=assistant/user/system) подавляются.
+        Остальной технический мусор (события Codex CLI, построчные JSON/diff-
+        фрагменты записываемых артефактов, баннер codex exec) гуманизируется
+        или подавляется в log_humanizer — в лог для человека он не попадает.
         """
-        # Быстрый фильтр — обычные строки идут как есть
-        stripped = (message or "").lstrip()
+        # Быстрый фильтр — обычные строки идут как есть. Префикс провайдера
+        # ('[OPT claude] ' из ансамбля) срываем ДО проверки: иначе финальный
+        # {"type":"result",...} Claude-ноги не превращался в cli_summary.
+        _, body = split_known_prefix((message or "").lstrip())
+        stripped = body.lstrip()
         if stripped.startswith('{"type":"'):
             try:
                 payload = json.loads(stripped)
@@ -2442,7 +2449,11 @@ class PipelineManager:
                 if msg_type in ("assistant", "user", "system", "tool_use", "tool_result"):
                     return
 
-        await audit_logger.log_to_project(job, message, level)
+        humanized = humanize_log_line(message, level)
+        if humanized.text is None:
+            return
+
+        await audit_logger.log_to_project(job, humanized.text, humanized.level)
 
     async def _emit_cli_summary(self, job: AuditJob, payload: dict):
         """
@@ -5334,6 +5345,13 @@ class PipelineManager:
         pid = job.project_id
         action = item.action or default_action or "full"
         extra = item.extra_params or {}
+
+        # Новый action = секции live-лога ещё не освежались: первая запись
+        # каждой секции перепишет её с нуля («сброс при первой записи»).
+        try:
+            audit_logger.begin_log_run(pid)
+        except Exception:
+            pass
 
         # Pre-action cleanup — убить зомби от прошлых запусков того же проекта
         try:

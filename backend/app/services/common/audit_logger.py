@@ -113,6 +113,122 @@ _PARALLEL_TO_FINDINGS_REVIEW = {
     "norm_verify", "optimization", "optimization_critic", "optimization_corrector",
 }
 
+# ─── Per-stage сброс audit_log.jsonl («сброс при первой записи») ───
+# Требование UX: новый прогон → лог с нуля (reset_audit_log при fresh-action);
+# перезапуск отдельного этапа → переписывается ТОЛЬКО его секция.
+#
+# Секция = значение stage записей (job.stage): crop_blocks, block_context,
+# text_analysis, block_analysis, findings_merge, findings_review, norm_verify,
+# optimization, debt_control, decision_carryover, excel, prepare.
+#
+# Механика: старая версия чистила секцию по хуку update_pipeline_log(running),
+# но оркестратор пишет заголовок этапа («═══ ЭТАП N …») ДО того, как runner
+# вызовет running — хук стирал строки уже НАЧАВШЕГОСЯ прогона. Поэтому чистим
+# «при первой записи»: begin_log_run() (вызывается в _dispatch_action на старте
+# любого action) сбрасывает множество «уже освежённых» секций; первый persist
+# записи с данным stage в рамках action переписывает файл без старых записей
+# секции и шлёт WS log_stage_reset. Все последующие записи идут как обычно.
+#
+# block_context/gemma_enrichment — одна секция (gemma_enrichment — legacy alias
+# для retry старых прогонов), поэтому чистятся парой.
+_LOG_STAGE_ALIAS_GROUPS: dict[str, tuple[str, ...]] = {
+    "block_context": ("block_context", "gemma_enrichment"),
+    "gemma_enrichment": ("block_context", "gemma_enrichment"),
+}
+
+# Секции, уже освежённые в рамках текущего action: {project_id: {stage, ...}}.
+_FRESH_LOG_STAGES: dict[str, set] = {}
+
+
+def _log_stage_targets(stage: str) -> tuple[str, ...]:
+    return _LOG_STAGE_ALIAS_GROUPS.get(stage, (stage,))
+
+
+def begin_log_run(project_id: str) -> None:
+    """Начало нового action (full/retry/resume/…): секции ещё не освежались.
+
+    Вызывается из manager._dispatch_action перед запуском любого действия.
+    """
+    _FRESH_LOG_STAGES[project_id] = set()
+
+
+def _ensure_log_section_fresh(project_id: str, stage: str) -> tuple[str, ...] | None:
+    """Первая запись секции в рамках action → переписать файл без её старых
+    записей. Возвращает кортеж очищенных stage (для WS log_stage_reset) или
+    None, если секция уже свежая / stage пустой / служебный лог (__BATCH__).
+
+    ВАЖНО: сигнал «секция начата заново» нужен фронту даже когда в файле
+    нечего удалять (файл заархивирован, но в памяти вкладки остались записи) —
+    поэтому возвращаем targets независимо от количества удалённых строк.
+
+    Чистка активна ТОЛЬКО после begin_log_run (т.е. внутри action, прошедшего
+    через _dispatch_action). Записи вне action-контекста (prepare-очередь со
+    stage=prepare_data пишет без bind_version — файл может принадлежать другой
+    версии) просто дописываются, как раньше — «не удалять, если не уверены».
+    """
+    if not stage or project_id in _V2_SYSTEM_LOG_DIRS:
+        return None
+    fresh = _FRESH_LOG_STAGES.get(project_id)
+    if fresh is None or stage in fresh:
+        return None
+    targets = _log_stage_targets(stage)
+    fresh.update(targets)
+    try:
+        clear_stage_log_entries(project_id, targets)
+    except Exception:
+        pass  # сбой чистки не должен блокировать запись лога
+    return targets
+
+
+def clear_stage_log_entries(project_id: str, log_stages: tuple[str, ...]) -> int:
+    """Удалить из audit_log.jsonl записи перечисленных log-stage.
+
+    Вызывается при перезапуске этапа: его секция лога переписывается с нуля,
+    остальные секции не трогаем. Возвращает число удалённых записей.
+    Функция синхронная (без await) — в одном event loop переписывание
+    атомарно относительно параллельных persist_log.
+    """
+    try:
+        log_path = _project_output_dir(project_id) / "audit_log.jsonl"
+    except (version_service.VersionNotFoundError, FileNotFoundError):
+        return 0
+    if not log_path.exists():
+        return 0
+
+    targets = set(log_stages)
+    kept: list[str] = []
+    removed = 0
+    try:
+        with open(log_path, "r", encoding="utf-8") as f:
+            for line in f:
+                raw = line.strip()
+                if not raw:
+                    continue
+                try:
+                    entry = json.loads(raw)
+                except json.JSONDecodeError:
+                    kept.append(raw)
+                    continue
+                if isinstance(entry, dict) and entry.get("stage") in targets:
+                    removed += 1
+                else:
+                    kept.append(raw)
+    except OSError:
+        return 0
+
+    if not removed:
+        return 0
+
+    tmp_path = log_path.with_suffix(log_path.suffix + ".tmp")
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            for raw in kept:
+                f.write(raw + "\n")
+        os.replace(tmp_path, log_path)
+    except OSError:
+        return 0
+    return removed
+
 
 def _pop_stage_duration(project_id: str, stage_key: str) -> int:
     """Чистое время работы этапа (сек) от засечки running в ЭТОМ процессе.
@@ -275,6 +391,14 @@ def reset_audit_log(project_id: str) -> None:
     Resume / retry / optimization / prepare-data не архивируют — продолжают
     писать в тот же файл (это «дозапуски» текущего прогона).
     """
+    # Фронт держит live-копию лога в памяти — сообщаем, что прогон начат
+    # с нуля (даже если файла ещё нет: в памяти могли остаться WS-записи).
+    try:
+        ws_manager.schedule_broadcast_to_project(
+            project_id, WSMessage.log_reset(project_id),
+        )
+    except Exception:
+        pass
     try:
         log_path = _project_output_dir(project_id) / "audit_log.jsonl"
         if not log_path.exists():
@@ -323,7 +447,20 @@ def persist_log(project_id: str, message: str, level: str, stage: str,
     extras: опциональные доп. поля (kind, result_md, duration_sec и т.п.) —
     используются для структурированных записей типа cli_summary, которые
     нужно восстанавливать после refresh браузера.
+
+    Первая запись секции (stage) в рамках action переписывает файл без её
+    старых записей — см. «сброс при первой записи» выше. Обычно freshness уже
+    обеспечен в log_to_project (с упорядоченным WS-событием); здесь — страховка
+    для прямых вызовов (cli_summary и т.п.).
     """
+    targets = _ensure_log_section_fresh(project_id, stage)
+    if targets:
+        try:
+            ws_manager.schedule_broadcast_to_project(
+                project_id, WSMessage.log_stage_reset(project_id, list(targets)),
+            )
+        except Exception:
+            pass
     try:
         output_dir = _project_output_dir(project_id)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -347,6 +484,18 @@ async def log_to_project(job: AuditJob, message: str, level: str = "info"):
     tag = f"[{job.project_id}:{job.stage.value}]"
     if level in ("error", "warn"):
         print(f"{tag} [{level.upper()}] {message}")
+    # Freshness секции обеспечиваем ДО записи строки, причём WS-событие сброса
+    # уходит прямым await РАНЬШЕ кадра с самой строкой — иначе отложенный
+    # broadcast мог обогнать и стереть на фронте первую строку нового прогона.
+    targets = _ensure_log_section_fresh(job.project_id, job.stage.value)
+    if targets:
+        try:
+            await ws_manager.broadcast_to_project(
+                job.project_id,
+                WSMessage.log_stage_reset(job.project_id, list(targets)),
+            )
+        except Exception:
+            pass
     persist_log(job.project_id, message, level, job.stage.value)
     await ws_manager.broadcast_to_project(
         job.project_id,

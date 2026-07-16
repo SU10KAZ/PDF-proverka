@@ -4173,7 +4173,15 @@
                     <div v-if="logLoading" class="empty-state">
                         Загрузка истории логов...
                     </div>
-                    <template v-for="(entry, i) in logEntries" :key="i">
+                    <!-- Секции по этапам конвейера -->
+                    <div v-for="section in logSections" :key="section.key" class="log-section">
+                        <div class="log-section__header" @click="toggleLogSection(section)">
+                            <span class="log-section__chevron">{{ isLogSectionCollapsed(section) ? '▸' : '▾' }}</span>
+                            <span class="log-section__title">{{ section.title }}</span>
+                            <span class="log-section__count">{{ section.entries.length }}</span>
+                        </div>
+                        <div v-show="!isLogSectionCollapsed(section)" class="log-section__body">
+                        <template v-for="(entry, i) in section.entries" :key="section.key + '-' + i">
                         <!-- Сводка Claude CLI — красивая карточка вместо сырого JSON -->
                         <div v-if="entry.kind === 'cli_summary'"
                              class="cli-summary" :class="{'cli-summary--error': entry.is_error}">
@@ -4232,7 +4240,9 @@
                                 {{ entry.rejectReason }}
                             </div>
                         </div>
-                    </template>
+                        </template>
+                        </div>
+                    </div>
                     <div v-if="!logLoading && logEntries.length === 0" class="empty-state">
                         Лог пуст. Запустите аудит для получения событий.
                     </div>

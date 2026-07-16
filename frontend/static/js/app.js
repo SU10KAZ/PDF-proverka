@@ -1582,6 +1582,64 @@ const app = createApp({
             return pid ? (projectLogs.value[pid] || []) : [];
         });
 
+        // ─── Секции лога по этапам конвейера ───
+        // Каждая запись лога несёт stage (job.stage бэкенда); секции идут в
+        // каноническом порядке конвейера (блоки → текст → свод → параллельная
+        // группа → долги → перенос → Excel). Неизвестные stage — в «Прочее».
+        const LOG_STAGE_SECTIONS = [
+            { key: 'prepare',            title: 'Подготовка',                stages: ['prepare'] },
+            { key: 'crop_blocks',        title: 'Кроп блоков',               stages: ['crop_blocks'] },
+            { key: 'block_context',      title: 'Обогащение блоков (Gemma)', stages: ['block_context', 'gemma_enrichment'] },
+            { key: 'block_analysis',     title: 'Анализ блоков',             stages: ['block_analysis'] },
+            { key: 'text_analysis',      title: 'Анализ текста',             stages: ['text_analysis'] },
+            { key: 'findings_merge',     title: 'Свод замечаний',            stages: ['findings_merge', 'merge'] },
+            { key: 'findings_review',    title: 'Верификатор',               stages: ['findings_review'] },
+            { key: 'norm_verify',        title: 'Проверка норм',             stages: ['norm_verify', 'norm_fix'] },
+            { key: 'optimization',       title: 'Оптимизация',               stages: ['optimization'] },
+            { key: 'debt_control',       title: 'Контроль долгов',           stages: ['debt_control'] },
+            { key: 'decision_carryover', title: 'Перенос вердиктов',         stages: ['decision_carryover'] },
+            { key: 'excel',              title: 'Excel-отчёт',               stages: ['excel'] },
+            { key: 'other',              title: 'Прочее',                    stages: [] },
+        ];
+        const LOG_STAGE_TO_SECTION = {};
+        LOG_STAGE_SECTIONS.forEach(s => s.stages.forEach(st => { LOG_STAGE_TO_SECTION[st] = s.key; }));
+
+        // Свёрнутость секций: {sectionKey: bool}; выбор пользователя переживает
+        // приход новых записей. По умолчанию все секции раскрыты: этапы
+        // конвейера работают и параллельно (верификатор ∥ нормы ∥ оптимизация),
+        // поэтому «раскрывать только активную» прятало бы живой вывод.
+        // Сбрасывается при смене проекта.
+        const logSectionCollapsed = ref({});
+
+        const logSections = computed(() => {
+            const buckets = {};
+            for (const e of logEntries.value) {
+                const key = LOG_STAGE_TO_SECTION[e.stage || ''] || 'other';
+                (buckets[key] = buckets[key] || []).push(e);
+            }
+            const sections = [];
+            for (const s of LOG_STAGE_SECTIONS) {
+                const list = buckets[s.key];
+                if (list && list.length) {
+                    sections.push({ key: s.key, title: s.title, entries: list });
+                }
+            }
+            return sections;
+        });
+
+        function isLogSectionCollapsed(section) {
+            return logSectionCollapsed.value[section.key] === true;
+        }
+
+        function toggleLogSection(section) {
+            logSectionCollapsed.value = {
+                ...logSectionCollapsed.value,
+                [section.key]: !isLogSectionCollapsed(section),
+            };
+        }
+
+        watch(logProjectId, () => { logSectionCollapsed.value = {}; });
+
         // Текущая фаза для отображаемого проекта
         const currentFindingStage = computed(() => {
             const pid = logProjectId.value;
@@ -2762,10 +2820,10 @@ const app = createApp({
                 currentProjectId.value = id;
                 logProjectId.value = id;
                 loadProject(id);
-                // Загружаем историю логов из файла (если ещё не загружена)
-                if (!projectLogs.value[id] || projectLogs.value[id].length === 0) {
-                    loadProjectLog(id);
-                }
+                // Историю логов перечитываем из файла ВСЕГДА: WS-события сброса
+                // (log_reset/log_stage_reset) могли прийти, пока вкладка была
+                // закрыта — память без ресинка показывала бы удалённые записи.
+                loadProjectLog(id);
                 connectProjectWS(id);  // Project WS только для лога
             } else if (hash.match(/^\/project\/(.+)$/)) {
                 const id = decodeURIComponent(hash.match(/^\/project\/(.+)$/)[1]);
@@ -9471,9 +9529,12 @@ const app = createApp({
         }
 
         function copyLog(event) {
-            const entries = logEntries.value;
-            if (!entries.length) return;
-            const text = entries.map(serializeLogEntry).filter(Boolean).join('\n');
+            const sections = logSections.value;
+            if (!sections.length) return;
+            const text = sections.map(section => {
+                const body = section.entries.map(serializeLogEntry).filter(Boolean).join('\n');
+                return `═══ ${section.title} ═══\n${body}`;
+            }).join('\n\n');
             const btn = event?.target;
             const done = () => {
                 if (btn) { btn.textContent = 'Скопировано!'; setTimeout(() => btn.textContent = 'Скопировать', 1500); }
@@ -9830,6 +9891,7 @@ const app = createApp({
                             time: time,
                             level: e.level || 'info',
                             message: e.message || '',
+                            stage: e.stage || '',
                         };
                     });
                     projectLogs.value[projectId] = entries;
@@ -9862,6 +9924,7 @@ const app = createApp({
                     const card = {
                         kind: 'finding',
                         time: pseudoTime,
+                        stage: 'findings_merge',
                         finding_id: f.id || '',
                         severity: f.severity || '',
                         category: f.category || '',
@@ -9930,10 +9993,14 @@ const app = createApp({
                 const wasReconnect = wsProjectReconnects > 0;
                 wsProjectReconnects = 0;
                 // После обрыва пропущенные WS-события никто не дошлёт —
-                // ресинхронизируемся явно: live-статус + карточка проекта.
+                // ресинхронизируемся явно: live-статус + карточка проекта +
+                // лог из файла (мог прийти log_reset/log_stage_reset).
                 if (wasReconnect) {
                     pollLiveStatus();
                     refreshProjectCardSilently(projectId);
+                    if (logProjectId.value === projectId) {
+                        loadProjectLog(projectId);
+                    }
                 }
             };
             wsProject.onclose = () => {
@@ -10053,7 +10120,26 @@ const app = createApp({
                     time: time,
                     level: msg.data.level || 'info',
                     message: msg.data.message || '',
+                    stage: msg.data.stage || '',
                 });
+            } else if (msg.type === 'log_reset') {
+                // Свежий прогон: лог начат с нуля — очищаем вкладку целиком
+                projectLogs.value[pid] = [];
+                findingIndex.value[pid] = {};
+                findingStage.value = { ...findingStage.value, [pid]: '' };
+                if (logProjectId.value === pid) logSectionCollapsed.value = {};
+            } else if (msg.type === 'log_stage_reset') {
+                // Перезапуск этапа: удаляем только записи его секции
+                const stages = new Set(msg.data.stages || []);
+                const list = projectLogs.value[pid];
+                if (list && stages.size) {
+                    projectLogs.value[pid] = list.filter(e => !stages.has(e.stage || ''));
+                    // Карточки замечаний живут в секции свода — при её сбросе
+                    // индекс finding_id → карточка больше не актуален
+                    if (stages.has('findings_merge')) {
+                        findingIndex.value[pid] = {};
+                    }
+                }
             } else if (msg.type === 'progress') {
                 // Update current project if viewing it
                 if (currentProject.value && currentProject.value.project_id === pid) {
@@ -10077,6 +10163,7 @@ const app = createApp({
                 pushToProjectLog(pid, {
                     time: time,
                     level: 'success',
+                    stage: 'excel',
                     message: `Аудит завершён. Замечаний: ${msg.data.total_findings}. Время: ${msg.data.duration_minutes} мин.` + (msg.data.pause_minutes > 1 ? ` (паузы: ${msg.data.pause_minutes} мин)` : ''),
                 });
                 auditRunning.value = false;
@@ -10109,6 +10196,7 @@ const app = createApp({
                 pushToProjectLog(pid, {
                     time: time,
                     level: 'error',
+                    stage: msg.data.stage || '',
                     message: msg.data.message || 'Неизвестная ошибка',
                 });
             } else if (msg.type === 'batch_progress') {
@@ -10139,6 +10227,7 @@ const app = createApp({
                 pushFindingCard(pid, {
                     kind: 'finding',
                     time: time,
+                    stage: 'findings_merge',
                     finding_id: msg.data.finding_id,
                     severity: msg.data.severity || '',
                     category: msg.data.category || '',
@@ -18432,6 +18521,7 @@ const app = createApp({
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
             showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
+            logSections, isLogSectionCollapsed, toggleLogSection,
             currentFindingStage,
             wsConnected,
             // Live status
