@@ -34,6 +34,9 @@ STATUS_AMBIGUOUS = "ambiguous_md_candidates"
 STATUS_NOT_FOUND = "md_not_found"
 
 _DOC_SUFFIX = "_document.md"
+# _results.md — новый 3-файловый комплект портала (2026-07). Старый суффикс
+# в приоритете; паттерны чтения остаются навсегда (уже загруженные проекты).
+_DOC_SUFFIXES = ("_document.md", "_results.md")
 # Служебные .md, которые не являются исходным текстом проекта.
 _EXCLUDE_PREFIXES = ("audit_", "readme", "claude", "_combined")
 
@@ -88,7 +91,7 @@ def _norm(s: str) -> str:
 
 def _is_doc_md(name: str) -> bool:
     low = name.lower()
-    if not low.endswith(_DOC_SUFFIX):
+    if not low.endswith(_DOC_SUFFIXES):
         return False
     if low.startswith(_EXCLUDE_PREFIXES):
         return False
@@ -106,9 +109,11 @@ def _list_doc_md(d: Path) -> list[str]:
 
 
 def _stem_no_doc(name: str) -> str:
-    """Имя MD без хвоста `_document.md`."""
-    if name.lower().endswith(_DOC_SUFFIX):
-        return name[: -len(_DOC_SUFFIX)]
+    """Имя MD без хвоста `_document.md` / `_results.md`."""
+    low = name.lower()
+    for suffix in _DOC_SUFFIXES:
+        if low.endswith(suffix):
+            return name[: -len(suffix)]
     return name
 
 
