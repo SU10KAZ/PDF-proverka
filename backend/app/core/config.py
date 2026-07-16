@@ -1042,5 +1042,35 @@ PORTAL_SESSION_TTL_HOURS   = _env_int("PORTAL_SESSION_TTL_HOURS", 24)
 PORTAL_COOKIE_SECURE       = (os.environ.get("PORTAL_COOKIE_SECURE", "auto").strip().lower() or "auto")
 PORTAL_SESSION_COOKIE_NAME = os.environ.get("PORTAL_SESSION_COOKIE_NAME", "portal_session").strip() or "portal_session"
 
+# ─── Журнал действий (action log) ────────────────────────────────────────────
+# Сквозной журнал всех действий в системе для последующего анализа ошибок:
+#   * HTTP-запросы портала (кто из инженеров что сделал, статус, длительность);
+#   * переходы этапов конвейера (запущен/завершён/упал/прерван);
+#   * WARNING/ERROR из стандартного logging всех модулей backend.
+# Пишется в суточные append-only JSONL-файлы ACTION_LOG_DIR/actions-YYYY-MM-DD.jsonl.
+# Чтение: GET /api/action-log и scripts/analyze_action_log.py.
+# Default ON: журнал fail-soft, ошибки записи не ломают основной поток.
+ACTION_LOG_ENABLED          = _env_bool("ACTION_LOG_ENABLED", True)
+# Куда писать: default — logs/actions в DATA_DIR (в prod-deploy данные прибиты
+# к MAIN через AUDIT_DATA_DIR, журнал — тоже данные, не код).
+ACTION_LOG_DIR = Path(os.environ["AUDIT_ACTION_LOG_DIR"]).resolve() if os.environ.get("AUDIT_ACTION_LOG_DIR") else DATA_DIR / "logs" / "actions"
+# Сколько дней хранить суточные файлы (старше — удаляются при смене дня).
+ACTION_LOG_RETENTION_DAYS   = _env_int("ACTION_LOG_RETENTION_DAYS", 180)
+# Kill-switch на каждый источник событий отдельно.
+ACTION_LOG_HTTP_ENABLED     = _env_bool("ACTION_LOG_HTTP_ENABLED", True)
+ACTION_LOG_PIPELINE_ENABLED = _env_bool("ACTION_LOG_PIPELINE_ENABLED", True)
+ACTION_LOG_APPLOG_ENABLED   = _env_bool("ACTION_LOG_APPLOG_ENABLED", True)
+# Потолок объёма суточного файла (байт): при превышении события дропаются до
+# следующего дня (пишется одно маркер-событие day_cap_reached). Защита диска
+# от штормов (например, поллинг с протухшей сессией = 401 каждую секунду).
+ACTION_LOG_MAX_DAY_BYTES    = _env_int("ACTION_LOG_MAX_DAY_BYTES", 256 * 1024 * 1024)
+# Потолок событий app_log (мост logging) в минуту: сверх — дроп, по закрытии
+# окна пишется одно агрегированное событие о числе подавленных. Защита от
+# логгера, заголосившего WARNING в цикле.
+ACTION_LOG_APPLOG_MAX_PER_MIN = _env_int("ACTION_LOG_APPLOG_MAX_PER_MIN", 600)
+# Дополнительные шумовые пути (CSV из regex) — исключаются из HTTP-журнала
+# в дополнение к встроенному списку поллинговых GET (см. action_log.py).
+ACTION_LOG_NOISE_EXTRA      = _env_csv("ACTION_LOG_NOISE_EXTRA", [])
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR

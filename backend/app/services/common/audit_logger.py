@@ -224,6 +224,23 @@ def update_pipeline_log(
         json.dump(log_data, f, ensure_ascii=False, indent=2)
     os.replace(tmp_path, log_path)
 
+    # Сквозной журнал действий: каждый переход этапа (running/done/error/…)
+    # фиксируется в logs/actions/*.jsonl — по нему потом разбираются сбои.
+    # update_pipeline_log — единая воронка stage-статусов (manager, stage
+    # runner'ы через ctx, prepare_service), поэтому хук именно здесь. Fail-soft.
+    try:
+        from backend.app.core import action_log
+        action_log.log_pipeline_event(
+            project_id,
+            stage_key,
+            status,
+            message=message,
+            error=error,
+            duration_sec=stage_info.get("duration_sec"),
+        )
+    except Exception:
+        pass  # журнал не должен ломать основной процесс
+
     # WS-broadcast для реактивного обновления UI
     try:
         from backend.app.services.common.project_service import (

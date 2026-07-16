@@ -25,6 +25,10 @@ _STORAGE_SANDBOX = tempfile.TemporaryDirectory(prefix="pdf-proverka-pytest-stora
 _STORAGE_SANDBOX_ROOT = Path(_STORAGE_SANDBOX.name)
 os.environ["AUDIT_PROJECTS_DIR"] = str(_STORAGE_SANDBOX_ROOT / "projects")
 os.environ["AUDIT_OBJECTS_FILE"] = str(_STORAGE_SANDBOX_ROOT / "objects.json")
+# Журнал действий — тоже в песочницу процесса: мост logging живёт на root до
+# конца pytest, а per-test monkeypatch откатывается на БАЗОВОЕ значение
+# config.ACTION_LOG_DIR — оно не должно быть прод-директорией logs/actions.
+os.environ["AUDIT_ACTION_LOG_DIR"] = str(_STORAGE_SANDBOX_ROOT / "actions_log")
 
 # Storage cutover flags are production-controlled and may be v2-primary in the
 # developer shell. Tests must start from a deterministic legacy baseline and
@@ -92,6 +96,23 @@ def _isolate_storage_cutover_env(tmp_path, monkeypatch):
     for name, value in _DEFAULT_STORAGE_ENV.items():
         monkeypatch.setenv(name, value)
     monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "projects_v2"))
+
+
+@pytest.fixture(autouse=True)
+def _isolate_action_log(tmp_path, monkeypatch):
+    """НИ ОДИН тест не должен писать в реальный logs/actions/.
+
+    ActionLogMiddleware активен в полном app: любой TestClient-запрос без
+    изоляции дописывал бы события в живой журнал действий. Перенаправляем
+    config.ACTION_LOG_DIR в per-test tmp; тест журнала может переопределить
+    повторным monkeypatch.setattr (LIFO)."""
+    try:
+        from backend.app.core import config as _cfg
+    except Exception:
+        return
+    monkeypatch.setattr(
+        _cfg, "ACTION_LOG_DIR", tmp_path / "actions_log", raising=False
+    )
 
 
 @pytest.fixture(autouse=True)

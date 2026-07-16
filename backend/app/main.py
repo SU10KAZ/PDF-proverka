@@ -34,6 +34,7 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
 from backend.app.core.config import APP_HOST, APP_PORT
 from backend.app.core import portal_auth
+from backend.app.core import action_log as action_log_core
 from backend.app.api.routers import (
     projects,
     findings,
@@ -57,6 +58,7 @@ from backend.app.api.routers import (
     auth,
     projects_v2_shadow,
     schedule,
+    action_log,
 )
 from backend.app.ws.manager import ws_manager
 
@@ -79,7 +81,15 @@ async def lifespan(app: FastAPI):
     _auto_resume_task = _asyncio.create_task(
         pipeline_manager.auto_resume_interrupted_batch()
     )
+    # Журнал действий: мост logging (WARNING+ всех модулей → журнал) и метка
+    # старта сервера — по ним в анализе видны рестарты/падения.
+    action_log_core.install_logging_bridge()
+    action_log_core.log_event("system", event="startup")
     yield
+    action_log_core.log_event("system", event="shutdown")
+    # Снять мост с process-global root: в проде безвредно, а в тестах
+    # `with TestClient(app)` хендлер не переживает выход из контекста.
+    action_log_core.uninstall_logging_bridge()
 
 
 app = FastAPI(
@@ -101,6 +111,14 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # Простая защита портала логином/паролем. Включается через PORTAL_AUTH_ENABLED.
 # При выключенном auth middleware — no-op (поведение портала не меняется).
 app.add_middleware(portal_auth.PortalAuthMiddleware)
+
+# ─── Журнал действий ────────────────────────────────────────
+# Сквозной журнал: каждый HTTP-запрос (кроме шумового поллинга) пишется в
+# logs/actions/actions-YYYY-MM-DD.jsonl — кто, что, когда, статус, длительность,
+# ошибки с трейсбеком. Добавлен ПОСЛЕДНИМ → внешний: видит и 401 от PortalAuth
+# (неавторизованные попытки — тоже действия). Fail-soft, тело запроса/ответа
+# не читает (безопасен для стриминга и загрузок). Kill-switch: ACTION_LOG_ENABLED.
+app.add_middleware(action_log_core.ActionLogMiddleware)
 
 # ─── REST Routers ───────────────────────────────────────────
 # migrated_findings регистрируется ДО projects.router, потому что в projects
@@ -132,6 +150,8 @@ app.include_router(auth.router)
 # AUDIT_PROJECTS_V2_SHADOW_API_ENABLED (default false → 404). При выключенном
 # флаге роутер инертен, production/UI не меняется.
 app.include_router(projects_v2_shadow.router)
+# Чтение журнала действий (сам журнал пишет ActionLogMiddleware + хуки).
+app.include_router(action_log.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
 
 # ─── WebSocket Endpoints ────────────────────────────────────
