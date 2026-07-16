@@ -1332,7 +1332,14 @@ def get_optimization_block_map(
         matched_blocks: list[str] = []
         seen: set[str] = set()
 
-        # 1. Явные block_id в текстовых полях
+        # 0. Структурное поле source_block_ids (новый контракт: промпт запрещает
+        #    block_id в видимых current/proposed/risks — привязка живёт здесь)
+        for bid in item.get("source_block_ids") or []:
+            if isinstance(bid, str) and bid in all_block_ids and bid not in seen:
+                matched_blocks.append(bid)
+                seen.add(bid)
+
+        # 1. Явные block_id в текстовых полях (legacy-данные до запрета)
         for field in ("current", "proposed", "risks"):
             text = item.get(field, "")
             for m in block_id_re.finditer(text):
@@ -1381,11 +1388,39 @@ def get_optimization_block_map(
     }
 
 
+_CAPTION_DIGIT_TR = str.maketrans("0123456789", "abcdefghij")
+# Подпись блока из block_captions: «Название» (лист X[, стр. PDF Y]) или
+# компактная форма (лист X, стр. PDF Y).
+# номер листа бывает с вложенными скобками: «лист 1 (из 2)»
+_CAPTION_RE = re.compile(
+    r'(?:«(?P<name>[^»]{1,120})»\s*)?'
+    r'\(лист\s*(?P<sheet>[^,()]{1,40}(?:\([^()]{1,20}\)[^,()]{0,10})?)'
+    r'(?:,\s*стр\.\s*PDF\s*(?P<page>\d+))?\)',
+)
+
+
+def _caption_pattern_token(m: "re.Match") -> str:
+    """Подпись блока → стабильный различимый токен.
+
+    Без этого общие правила ниже (кавычки → _MAT_, скобки → (...)) схлопнули бы
+    ЛЮБЫЕ подписи разных блоков в один паттерн, и замечания по разным блокам
+    группировались бы как дубли. Цифры транслитерируются в буквы, чтобы их не
+    съело правило `\\d+ → _N_`.
+    """
+    name_key = re.sub(r'[^а-яёa-z]', '', (m.group('name') or '').lower())[:24]
+    loc = ((m.group('sheet') or '') + (m.group('page') or '')).translate(_CAPTION_DIGIT_TR)
+    loc_key = re.sub(r'[^а-яёa-z]', '', loc.lower())[:16]
+    return f'_CAP_{name_key}_{loc_key}_'
+
+
 def _normalize_problem_pattern(text: str) -> str:
     """Нормализует текст замечания для группировки: убирает конкретные числа, марки, номера."""
     if not text:
         return ""
     s = text.strip()
+    # Подписи блоков («Название» (лист N, стр. PDF M)) — В ПЕРВУЮ ОЧЕРЕДЬ,
+    # до правил кавычек/скобок, иначе разные блоки дают одинаковый паттерн
+    s = _CAPTION_RE.sub(_caption_pattern_token, s)
     # Марки элементов (В4-13, А4-14, ДВ12-5П, ОГ-8, К6.2 и т.д.)
     s = re.sub(r'[А-ЯA-Z]{1,4}\d[\w.*-]*', '_MARK_', s)
     # Названия материалов в кавычках

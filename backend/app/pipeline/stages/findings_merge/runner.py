@@ -656,6 +656,30 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             "warn",
         )
 
+    # Гуманизация ссылок на блоки: внутренние block_id в текстах → подписи
+    # «Название» (лист N, стр. PDF M). СТРОГО ПОСЛЕДНЕЙ из post-merge операций:
+    # merge_similar_findings/дедуп группируют по _normalize_problem_pattern
+    # сырых текстов (подписи схлопнули бы разные блоки в один паттерн), а
+    # extract_anchors текст-слоя ищет якоря тоже по сырым формулировкам.
+    # Fail-soft: ошибка не роняет merge.
+    from backend.app.core.config import FINDINGS_BLOCK_CAPTIONS_ENABLED
+    if FINDINGS_BLOCK_CAPTIONS_ENABLED:
+        try:
+            from backend.app.services.findings.block_captions import (
+                humanize_findings_file,
+            )
+            caption_stats = await _asyncio.to_thread(
+                humanize_findings_file, ctx.output_dir
+            )
+            if caption_stats and caption_stats.get("ids_replaced"):
+                await ctx.log(
+                    "Ссылки на блоки в текстах заменены подписями: "
+                    f"{caption_stats['ids_replaced']} ID "
+                    f"в {caption_stats['findings_changed']} замечаниях",
+                )
+        except Exception as exc:  # noqa: BLE001 — гуманизация не должна ронять merge
+            await ctx.log(f"Гуманизация ссылок на блоки: пропущена ({exc})", "warn")
+
     try:
         findings_count = len(
             json.loads(findings_path.read_text(encoding="utf-8")).get("findings", [])

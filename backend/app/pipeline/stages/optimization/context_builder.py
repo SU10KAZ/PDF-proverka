@@ -293,7 +293,13 @@ def build_optimization_candidates(*, project_id: str, output_dir: Path) -> Build
                 'candidate_id': f'OPT-CAND-{next_id:03d}',
                 'lens': 'analog_vendor',
                 'type': 'cheaper_analog',
-                'title': f'Проверить альтернативу для блока {block.get("block_id")}',
+                # Без block_id в title: заголовок копируется LLM в видимые
+                # тексты, а внутренний ID стороннему эксперту ничего не говорит.
+                'title': (
+                    f'Проверить альтернативу: {_truncate(_clean_text(block.get("summary")), 60)}'
+                    if _clean_text(block.get('summary'))
+                    else f'Проверить альтернативу для фрагмента на стр. PDF {page}'
+                ),
                 'hypothesis': 'В блоке есть конкретные параметры или оборудование, что делает проверку допустимого аналога осмысленной.',
                 'evidence': evidence,
                 'related_pages': [page] if page else [],

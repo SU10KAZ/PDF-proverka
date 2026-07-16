@@ -672,7 +672,10 @@ async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monk
     assert captured["run_cli"]["image_paths"] == [image_path]
     assert "OPT TASK" in captured["run_cli"]["task_text"]
     assert "Графический контекст" in captured["run_cli"]["task_text"]
+    # block_id остаётся в листинге для структурного поля source_block_ids,
+    # но промпт явно запрещает копировать его в видимые current/proposed/risks
     assert "block_id=B1" in captured["run_cli"]["task_text"]
+    assert "source_block_ids" in captured["run_cli"]["task_text"]
     assert captured["audit"]["args"][1] == "05_optimization"
     assert captured["audit"]["args"][6]["codex_exec_agentic"] is True
 

@@ -740,6 +740,13 @@ VERDICT_PRESERVATION_ENABLED = _env_bool("VERDICT_PRESERVATION_ENABLED", True)
 # полные, но ЗАПИСЬ вердиктов в expert_review/decisions_log выключена.
 # Для наблюдения за качеством матчинга без влияния на живую разметку.
 VERDICT_PRESERVATION_SHADOW = _env_bool("VERDICT_PRESERVATION_SHADOW", False)
+# Гуманизация ссылок на блоки в текстах замечаний: после findings_merge
+# внутренние block_id («6L97-3VTH-XTC») в problem/description/solution/risk
+# заменяются подписями «Название» (лист N, стр. PDF M) из 01_blocks_analysis /
+# document_graph; найденные в тексте ID переносятся в related_block_ids.
+# Детерминированно, офлайн, идемпотентно, fail-soft. ON по умолчанию —
+# сторонний эксперт не должен видеть внутренние идентификаторы.
+FINDINGS_BLOCK_CAPTIONS_ENABLED = _env_bool("FINDINGS_BLOCK_CAPTIONS_ENABLED", True)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает

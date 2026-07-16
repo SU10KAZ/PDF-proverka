@@ -127,6 +127,7 @@
       "page": 12,
       "sheet": "Лист 7",
       "spec_items": ["Поз. 5 — Кабель ВВГнг(А)-FRLS 5x10", "Поз. 12 — Автомат ВА47-29"],
+      "source_block_ids": [],
       "current": "",
       "proposed": "",
       "type": "cheaper_analog",
@@ -152,6 +153,7 @@
 | `page` | number/array | Номер страницы PDF (или массив `[12, 13]`). Для привязки к чертежам |
 | `sheet` | string | Номер листа из штампа: `"Лист 7"`. НЕ путать с page! |
 | `spec_items` | array | Конкретные позиции спецификации: `["Поз. 5 — Кабель ВВГнг(А)-FRLS 5x10"]`. Пустой массив `[]` если нет привязки |
+| `source_block_ids` | array | block_id изображений-источников из графического контекста (если был). ТОЛЬКО сюда: в текстах `current`/`proposed`/`risks` внутренние block_id и метки IMG-NN упоминать ЗАПРЕЩЕНО — их читают сторонние эксперты. `[]` если привязки нет |
 | `current` | string | Что есть сейчас (макс 200 символов) |
 | `proposed` | string | Что предлагается (макс 200 символов) |
 | `type` | string | `cheaper_analog` / `faster_install` / `simpler_design` / `lifecycle` |

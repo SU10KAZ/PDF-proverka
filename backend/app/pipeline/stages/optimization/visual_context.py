@@ -502,7 +502,7 @@ def _build_prompt_section(
         "",
         f"К этому запуску Codex приложены {len(attachments)} PNG-фрагментов чертежей через `--image`.",
         "Проверь их не как источник замечаний по нормам, а как источник инженерных оптимизаций: сокращение трасс, укрупнение/упрощение узлов, дублирующие коллекторы/щиты/лотки, лишние обходы и повороты, чрезмерная фрагментация систем, более простая компоновка при сохранении функции.",
-        "Если оптимизация подтверждается только графикой, включай её только при достаточной уверенности и обязательно привязывай к block_id/page/sheet в `spec_items`, `current` или `risks`. Не придумывай размеры и объёмы, которых не видно в MD/JSON/изображении.",
+        "Если оптимизация подтверждается только графикой, включай её только при достаточной уверенности и обязательно указывай `page`/`sheet`, позиции спецификации в `spec_items` (формат \"Поз. N — Наименование\") и block_id задействованных изображений в структурном поле `source_block_ids` (массив строк). В человекочитаемых полях `current`/`risks`/`proposed` НЕ упоминай внутренние block_id и метки IMG-NN — эти тексты читают сторонние эксперты; ссылайся на лист и название фрагмента словами. Не придумывай размеры и объёмы, которых не видно в MD/JSON/изображении.",
         "",
         "Приложенные изображения:",
     ]
@@ -517,14 +517,20 @@ def _build_prompt_section(
     hint = discipline_hints.get(discipline.upper())
     if hint:
         lines.insert(3, hint)
+    # block_id в листинге нужен для структурного поля source_block_ids
+    # (привязка item → кроп в UI, get_optimization_block_map). Инструкция выше
+    # явно запрещает копировать его в видимые current/proposed/risks.
     for index, attachment in enumerate(attachments, start=1):
-        page = f", page={attachment.page}" if attachment.page is not None else ""
-        sheet = f", sheet={attachment.sheet}" if attachment.sheet else ""
-        label = f", label={attachment.label}" if attachment.label else ""
-        lines.append(
-            f"{index}. IMG-{index:02d}: block_id={attachment.block_id}{page}{sheet}{label}, "
-            f"source={attachment.source_dir}, path={attachment.image_path}"
-        )
+        parts = [f"block_id={attachment.block_id}"]
+        if attachment.page is not None:
+            parts.append(f"page={attachment.page}")
+        if attachment.sheet:
+            parts.append(f"sheet={attachment.sheet}")
+        if attachment.label:
+            parts.append(f"label={attachment.label}")
+        parts.append(f"source={attachment.source_dir}")
+        parts.append(f"path={attachment.image_path}")
+        lines.append(f"{index}. IMG-{index:02d}: " + ", ".join(parts))
     return "\n".join(lines)
 
 

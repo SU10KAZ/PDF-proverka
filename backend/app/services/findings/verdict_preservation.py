@@ -92,6 +92,31 @@ def is_shadow() -> bool:
 # Фингерпринт замечания / оптимизации
 # ═══════════════════════════════════════════════════════════════════════════
 
+# Ссылки на блоки нестабильны между прогонами: старый текст содержит сырые
+# block_id («6L97-3VTH-XTC»), новый — подписи block_captions («Название»
+# (лист N, стр. PDF M)) и слово «фрагмент*» вместо «блок*». Для фингерпринта
+# обе формы канонизируются симметрично, иначе разметка эксперта не переносится
+# через первый пере-аудит после включения гуманизации.
+_PORTAL_ID_RE = re.compile(r"\b[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{2,4}\b")
+# номер листа бывает с вложенными скобками: «лист 1 (из 2)»
+_CAPTION_REF_RE = re.compile(
+    r'(?:«[^»]{1,120}»\s*)?'
+    r'\(лист\s*[^,()]{1,40}(?:\([^()]{1,20}\)[^,()]{0,10})?'
+    r'(?:,\s*стр\.\s*PDF\s*\d+)?\)'
+)
+_BLOCK_WORD_ANY_RE = re.compile(
+    r"\b(?:[Бб]лок(?:ами|ах|ам|ов|ом|а|у|е|и)?|[Фф]рагмент(?:ами|ах|ам|ов|ом|а|у|е|ы)?)\b"
+)
+
+
+def _strip_block_refs(text: str) -> str:
+    """Канонизация ссылок на блоки: сырые ID и подписи → эквивалентная форма."""
+    s = _PORTAL_ID_RE.sub(" ", text or "")
+    s = _CAPTION_REF_RE.sub(" ", s)
+    s = _BLOCK_WORD_ANY_RE.sub(" _BLK_ ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
 def _salient_numbers(text: str) -> list[str]:
     """Значимые числа из текста (сечения, токи, длины) — порядко-независимо."""
     return sorted({m.group(0).replace(",", ".") for m in _NUM_RE.finditer(text or "")})
@@ -132,6 +157,9 @@ def build_fingerprint(item: dict, item_type: str) -> dict:
     else:
         kind = str(item.get("category") or "")
         head = str(item.get("problem") or "")
+    # симметрично для старой (сырые block_id) и новой (подписи) редакций текста
+    core = _strip_block_refs(core)
+    head = _strip_block_refs(head)
     return {
         "sheet": _normalize_sheet(item.get("sheet")),
         "kind": kind.strip().lower(),

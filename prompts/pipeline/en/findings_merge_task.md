@@ -102,6 +102,22 @@ Both describe the same thing: a text finding T-NNN cross-checked against a drawi
 5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from block analysis that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from the verification array). For cross-block → all participating block_ids.
 6. **Source tracing**: fill `source_finding_ids` with the exact T-NNN/G-NNN ids used by each F-finding. Do not rewrite `provenance` or `detector_comparison`; the backend restores them deterministically from these ids.
 
+### No internal identifiers in human-readable text (MANDATORY)
+
+The fields `problem`, `description`, `solution`, `risk` are read by external
+experts who do NOT know what a block_id or T-/G-number is. NEVER mention
+internal identifiers there: block_id (like `RUXD-WP4R-6C3`), hypothesis ids
+T-NNN/G-NNN, or other findings' F-NNN numbers.
+
+- Block linkage belongs ONLY in structured fields: `source_block_ids`,
+  `related_block_ids`, `evidence`, `highlight_regions`.
+- In text, refer to the source in words: fragment type + short name + sheet.
+  - BAD: «Текстовое замечание подтверждено блоками RUXD-WP4R-6C3 и 3C6E-3QEP-D39.»
+  - GOOD: «Текстовое замечание подтверждено схемой систем К2 (лист 18) и
+    таблицей «Перечень отклонений» (лист 1).»
+- Take the name and sheet from `01_blocks_analysis.json` (`label`, `sheet`)
+  or from the page context in `document_graph.json`.
+
 ### Finding Fields
 
 - `severity`: КРИТИЧЕСКОЕ / ЭКОНОМИЧЕСКОЕ / ЭКСПЛУАТАЦИОННОЕ / РЕКОМЕНДАТЕЛЬНОЕ / ПРОВЕРИТЬ ПО СМЕЖНЫМ
