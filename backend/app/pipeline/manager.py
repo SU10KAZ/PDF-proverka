@@ -128,7 +128,20 @@ def _has_ocr_result_json(project_dir: Path) -> bool:
         document_code = info.get("document_code") or info.get("project_id") or Path(project_dir).name
         sources = resolve_version_source_files(project_dir, document_code, project_info=info)
         if sources.layout == "projects_v2":
-            return bool(sources.result_json_paths)
+            if sources.result_json_paths:
+                return True
+            # Новый комплект портала: result.json синтезируется из blocks.json.
+            # Ленивое самолечение версий, загруженных до подключения синтеза
+            # в их контур приёма (идемпотентно, fail-soft); кропы — фоном.
+            from backend.app.services.common.blocks_json import ensure_result_json_for_version
+            if ensure_result_json_for_version(project_dir):
+                try:
+                    from backend.app.services.common.crop_cache import ensure_crops_for_version
+                    ensure_crops_for_version(project_dir)
+                except Exception:
+                    pass
+                return True
+            return False
     except Exception:
         pass
     return bool(list(Path(project_dir).glob("*_result.json")))

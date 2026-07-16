@@ -758,6 +758,23 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
                                  role=f"work:{key}")
         files.append(rec)
 
+    # Новый комплект портала (есть blocks.json, нет result.json): синтезируем
+    # 02_work/result.json из геометрии — иначе загрузка путём «новый проект»
+    # даёт версию, которую пайплайн отклоняет («нет result.json»). Fail-soft:
+    # миграция не должна падать из-за брака геометрии; import ленивый, чтобы
+    # CLI-скрипты без backend-зависимостей продолжали работать.
+    if quad.get("blocks_json") is not None and quad.get("result_json") is None:
+        try:
+            from backend.app.services.common.blocks_json import synthesize_result_json_file
+            synthesize_result_json_file(
+                vroot / "02_work" / "blocks.json",
+                vroot / "02_work" / "result.json",
+                vroot / "02_work" / "document.md",
+                pdf_name=(quad["pdf"].name if quad.get("pdf") else None),
+            )
+        except Exception:
+            pass
+
     # --- 03_analysis: verbatim run-копия + классифицированные копии ---
     output_dir = legacy_dir / "_output"
     rid = run_id or _run_id_for(output_dir)

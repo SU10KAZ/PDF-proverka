@@ -200,6 +200,53 @@ class TestSynthesizeFile:
         assert not (tmp_path / "r.json").exists()
 
 
+# ─── ensure_result_json_for_version: самолечение любого контура загрузки ────
+
+class TestEnsureResultJsonForVersion:
+    def _vdir(self, tmp_path, *, work_blocks=True, input_blocks=False, work_md=True):
+        from backend.app.services.common.blocks_json import ensure_result_json_for_version  # noqa: F401
+        v = tmp_path / "versions" / "v001"
+        (v / "01_input").mkdir(parents=True)
+        (v / "02_work").mkdir(parents=True)
+        if work_blocks:
+            (v / "02_work" / "blocks.json").write_text(
+                json.dumps(BLOCKS_DATA, ensure_ascii=False), encoding="utf-8")
+        if input_blocks:
+            (v / "01_input" / "X_V1_blocks.json").write_text(
+                json.dumps(BLOCKS_DATA, ensure_ascii=False), encoding="utf-8")
+        if work_md:
+            (v / "02_work" / "document.md").write_text(MD_SAMPLE, encoding="utf-8")
+        return v
+
+    def test_synthesizes_from_work_blocks(self, tmp_path):
+        from backend.app.services.common.blocks_json import ensure_result_json_for_version
+        v = self._vdir(tmp_path)
+        assert ensure_result_json_for_version(v) is True
+        data = json.loads((v / "02_work" / "result.json").read_text(encoding="utf-8"))
+        assert data["source"] == SYNTH_SOURCE
+        # тексты подтянуты из document.md
+        assert data["pages"][0]["blocks"][0]["ocr_text"] == "Текст первого блока."
+
+    def test_falls_back_to_input_blocks_and_md(self, tmp_path):
+        from backend.app.services.common.blocks_json import ensure_result_json_for_version
+        v = self._vdir(tmp_path, work_blocks=False, input_blocks=True, work_md=False)
+        (v / "01_input" / "X_V1_results.md").write_text(MD_SAMPLE, encoding="utf-8")
+        assert ensure_result_json_for_version(v) is True
+        assert (v / "02_work" / "result.json").is_file()
+
+    def test_true_when_already_present(self, tmp_path):
+        from backend.app.services.common.blocks_json import ensure_result_json_for_version
+        v = self._vdir(tmp_path, work_blocks=False)
+        (v / "02_work" / "result.json").write_text('{"pages": []}', encoding="utf-8")
+        assert ensure_result_json_for_version(v) is True
+
+    def test_false_without_geometry(self, tmp_path):
+        from backend.app.services.common.blocks_json import ensure_result_json_for_version
+        v = self._vdir(tmp_path, work_blocks=False)
+        assert ensure_result_json_for_version(v) is False
+        assert not (v / "02_work" / "result.json").exists()
+
+
 # ─── Интеграция: _sync_v2_work_copies синтезирует 02_work/result.json ───────
 
 class TestSyncV2WorkCopies:

@@ -198,6 +198,35 @@ def build_result_json(
     }
 
 
+def ensure_result_json_for_version(version_dir) -> bool:
+    """У версии есть 02_work/result.json — или он синтезирован из blocks.json.
+
+    Единая точка «самолечения» для версий, загруженных любым путём (новый
+    проект / новая версия / миграция) до подключения синтеза в их контур.
+    True — result.json есть (был или создан). Fail-soft, идемпотентно.
+    """
+    try:
+        version_dir = Path(version_dir)
+        work = version_dir / "02_work"
+        dst = work / "result.json"
+        if dst.is_file():
+            return True
+        inp = version_dir / "01_input"
+        bj = work / "blocks.json"
+        if not bj.is_file():
+            cands = sorted(inp.glob("*_blocks.json")) if inp.is_dir() else []
+            if not cands:
+                return False
+            bj = cands[0]
+        md = work / "document.md"
+        if not md.is_file():
+            mds = sorted(inp.glob("*_results.md")) if inp.is_dir() else []
+            md = mds[0] if mds else None
+        return synthesize_result_json_file(bj, dst, md)
+    except Exception:
+        return False
+
+
 def synthesize_result_json_file(
     blocks_json_path,
     result_json_path,
