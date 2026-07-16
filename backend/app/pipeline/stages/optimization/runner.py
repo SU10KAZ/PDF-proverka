@@ -23,7 +23,12 @@ import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stages.block_analysis.runner import validate_and_repair_json
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
-from backend.app.core.config import get_stage_model, is_optimization_ensemble_model
+from backend.app.services.common.codex_stream_filter import wrap_codex_on_output
+from backend.app.core.config import (
+    get_stage_model,
+    is_codex_model,
+    is_optimization_ensemble_model,
+)
 
 
 # ─── Result types ────────────────────────────────────────────────────────────
@@ -195,9 +200,16 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
         )
         return OptimizationResult(success=True)
 
+    # Codex-модель стримит в on_output весь plain-транскрипт (эхо промпта,
+    # дампы читаемых файлов) — глушим белым списком, как в ансамбле.
+    direct_on_output = (
+        wrap_codex_on_output(ctx.log)
+        if is_codex_model(get_stage_model("optimization"))
+        else ctx.log
+    )
     exit_code, output, cli_result = await claude_runner.run_optimization(
         project_info, pid,
-        on_output=ctx.log,
+        on_output=direct_on_output,
         output_dir=ctx.output_dir,
         version_dir=ctx.project_dir,
         version_id=ctx.version_id,
@@ -251,7 +263,11 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
 
         exit_code, output, cli_result = await claude_runner.run_optimization(
             project_info, pid,
-            on_output=ctx.log,
+            on_output=(
+                wrap_codex_on_output(ctx.log)
+                if is_codex_model(get_stage_model("optimization"))
+                else ctx.log
+            ),
             output_dir=ctx.output_dir,
             version_dir=ctx.project_dir,
             version_id=ctx.version_id,

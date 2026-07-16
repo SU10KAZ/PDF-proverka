@@ -19,6 +19,7 @@ from backend.app.core.config import (
     OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
 )
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
+from backend.app.services.common.codex_stream_filter import wrap_codex_on_output
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
@@ -417,6 +418,25 @@ async def _provider_log(
     await callback(f"[OPT {provider}] {message}")
 
 
+def _make_provider_on_output(
+    log: Callable[..., Awaitable[None]], provider: str,
+) -> Callable[[str], Awaitable[None]]:
+    """on_output для ноги ансамбля.
+
+    Claude стримит stream-json — его разбирает manager._log (result →
+    cli_summary, прочее подавляется). Codex exec в plain-режиме стримит весь
+    транскрипт (эхо промпта, вывод команд, дампы файлов) — без фильтра это
+    ~2500 строк мусора на прогон, поэтому пропускаем через белый список
+    CodexExecStreamFilter.
+    """
+    async def _prefixed(message: str) -> None:
+        await _provider_log(log, provider, message)
+
+    if provider != "codex":
+        return _prefixed
+    return wrap_codex_on_output(_prefixed)
+
+
 async def _run_provider(
     *, provider: str, model: str, project_info: dict[str, Any], project_id: str,
     provider_dir: Path, source_output_dir: Path, version_dir: Path,
@@ -428,7 +448,7 @@ async def _run_provider(
         exit_code, output, cli_result = await claude_runner.run_optimization(
             project_info,
             project_id,
-            on_output=lambda message: _provider_log(log, provider, message),
+            on_output=_make_provider_on_output(log, provider),
             output_dir=provider_dir,
             version_dir=version_dir,
             version_id=version_id,

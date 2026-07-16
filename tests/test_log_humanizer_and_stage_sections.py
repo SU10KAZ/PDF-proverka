@@ -1,15 +1,14 @@
-"""Тесты переработки вкладки «Лог»: гуманизация строк + per-stage сброс.
+"""Тесты вкладки «Лог»: гуманизация строк + жизненный цикл audit_log.jsonl.
 
 Покрывают:
   1. log_humanizer.humanize_log_line — подавление сырого JSON/diff-мусора,
      очеловечивание событий Codex CLI и JSON-тел ошибок API, сохранение
      легитимных строк (включая начинающиеся с кавычки);
-  2. «сброс при первой записи»: begin_log_run + persist_log/log_to_project —
-     первая запись секции в рамках action переписывает файл без её старых
-     записей и шлёт WS log_stage_reset, дальнейшие записи дописываются;
-  3. заголовок этапа, записанный оркестратором ДО running, не теряется;
-  4. reset_audit_log — WS log_reset при свежем прогоне;
-  5. WSMessage.log_reset / log_stage_reset — форма сообщений.
+  2. лог переписывается ТОЛЬКО при полном перезапуске пайплайна
+     (reset_audit_log архивирует файл); retry/resume этапов ДОПИСЫВАЮТ —
+     ни чужие секции, ни собственная история ошибок этапа не удаляются;
+  3. reset_audit_log — архив файла + WS log_reset;
+  4. WSMessage.log_reset — форма сообщения.
 """
 import asyncio
 import json
@@ -132,7 +131,7 @@ def test_split_known_prefix():
     assert split_known_prefix("обычная строка") == ("", "обычная строка")
 
 
-# ─── 2-4. «Сброс при первой записи» ─────────────────────────────────
+# ─── 2. Retry дописывает, ничего не удаляя ──────────────────────────
 
 
 def _seed_log(tmp_path, entries):
@@ -154,11 +153,10 @@ def _stages_and_messages(log_path):
 
 @pytest.fixture
 def project_log_dir(tmp_path, monkeypatch):
-    """audit_logger пишет в tmp_path; freshness-состояние изолировано."""
+    """audit_logger пишет в tmp_path."""
     monkeypatch.setattr(
         audit_logger, "_project_output_dir", lambda project_id: tmp_path,
     )
-    monkeypatch.setattr(audit_logger, "_FRESH_LOG_STAGES", {})
     return tmp_path
 
 
@@ -182,123 +180,49 @@ def ws_broadcasts(monkeypatch):
     return calls
 
 
-def test_first_write_of_section_rewrites_it(project_log_dir, ws_broadcasts):
-    """Retry этапа: первая запись секции удаляет её записи прошлого прогона,
-    чужие секции не тронуты."""
+def test_stage_retry_appends_and_keeps_history(project_log_dir, ws_broadcasts):
+    """Перезапуск этапа: старые записи — и чужих секций, и СВОЕЙ (включая
+    ошибки прошлых попыток) — остаются; новые дописываются в конец.
+    Лог переписывается только при полном перезапуске пайплайна."""
     log_path = _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "optimization", "message": "старый прогон"},
-        {"timestamp": "t2", "level": "info", "stage": "excel", "message": "оставить"},
+        {"timestamp": "t1", "level": "info", "stage": "crop_blocks", "message": "кроп прошлого прогона"},
+        {"timestamp": "t2", "level": "error", "stage": "optimization", "message": "прошлая попытка упала"},
     ])
-    audit_logger.begin_log_run("P1")
     audit_logger.persist_log("P1", "▶ новая оптимизация", "info", "optimization")
     audit_logger.persist_log("P1", "шаг 2", "info", "optimization")
 
     assert _stages_and_messages(log_path) == [
-        ("excel", "оставить"),
+        ("crop_blocks", "кроп прошлого прогона"),
+        ("optimization", "прошлая попытка упала"),
         ("optimization", "▶ новая оптимизация"),
         ("optimization", "шаг 2"),
     ]
-    reset_events = [m for _, m in ws_broadcasts if m.type == "log_stage_reset"]
-    assert len(reset_events) == 1  # только на ПЕРВОЙ записи секции
-    assert reset_events[0].data["stages"] == ["optimization"]
-
-
-def test_header_written_before_running_survives(project_log_dir, ws_broadcasts):
-    """Оркестратор пишет заголовок этапа ДО update_pipeline_log(running) —
-    заголовок принадлежит новому прогону и не должен стираться."""
-    log_path = _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "text_analysis", "message": "старая строка"},
-    ])
-    audit_logger.begin_log_run("P1")
-    # 1. manager._log: заголовок этапа (job.stage уже text_analysis)
-    audit_logger.persist_log("P1", "═══ ЭТАП 2: Текстовый анализ ═══", "info", "text_analysis")
-    # 2. runner вызывает running — раньше здесь стоял деструктивный хук
-    audit_logger.update_pipeline_log("P1", "text_analysis", "running")
-    # 3. рабочие строки этапа
-    audit_logger.persist_log("P1", "анализ идёт", "info", "text_analysis")
-
-    assert _stages_and_messages(log_path) == [
-        ("text_analysis", "═══ ЭТАП 2: Текстовый анализ ═══"),
-        ("text_analysis", "анализ идёт"),
-    ]
-
-
-def test_alias_group_block_context_clears_gemma_legacy(project_log_dir, ws_broadcasts):
-    log_path = _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "gemma_enrichment", "message": "legacy"},
-        {"timestamp": "t2", "level": "info", "stage": "block_context", "message": "старая"},
-        {"timestamp": "t3", "level": "info", "stage": "excel", "message": "оставить"},
-    ])
-    audit_logger.begin_log_run("P1")
-    audit_logger.persist_log("P1", "обогащение", "info", "block_context")
-
-    assert _stages_and_messages(log_path) == [
-        ("excel", "оставить"),
-        ("block_context", "обогащение"),
-    ]
-
-
-def test_no_clearing_without_begin_log_run(project_log_dir, ws_broadcasts):
-    """Записи вне action-контекста (prepare-очередь) просто дописываются."""
-    log_path = _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "prepare_data", "message": "старая"},
-    ])
-    audit_logger.persist_log("P1", "новая", "info", "prepare_data")
-
-    assert _stages_and_messages(log_path) == [
-        ("prepare_data", "старая"),
-        ("prepare_data", "новая"),
-    ]
+    # Посекционных сбросов больше не существует
     assert not [m for _, m in ws_broadcasts if m.type == "log_stage_reset"]
 
 
-def test_reset_broadcast_sent_even_when_file_empty(project_log_dir, ws_broadcasts):
-    """Файл пуст (заархивирован), но в памяти вкладки могли остаться записи —
-    сигнал «секция начата заново» обязателен и при removed=0."""
-    audit_logger.begin_log_run("P1")
-    audit_logger.persist_log("P1", "первая строка", "info", "findings_merge")
-
-    reset_events = [m for _, m in ws_broadcasts if m.type == "log_stage_reset"]
-    assert len(reset_events) == 1
-    assert reset_events[0].data["stages"] == ["findings_merge"]
-
-
-def test_batch_system_log_is_not_cleared(project_log_dir, ws_broadcasts):
-    audit_logger.begin_log_run("__BATCH__")
-    _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "prepare", "message": "история"},
-    ])
-    audit_logger.persist_log("__BATCH__", "pause requested", "warn", "prepare")
-    log_path = project_log_dir / "audit_log.jsonl"
-    assert len(_stages_and_messages(log_path)) == 2  # ничего не удалено
-
-
-def test_log_to_project_orders_reset_before_line(project_log_dir, ws_broadcasts):
-    """WS: кадр log_stage_reset обязан уйти РАНЬШЕ кадра с первой строкой —
-    иначе фронт стёр бы только что показанную строку нового прогона."""
-    _seed_log(project_log_dir, [
+def test_log_to_project_appends_and_broadcasts_only_log(project_log_dir, ws_broadcasts):
+    log_path = _seed_log(project_log_dir, [
         {"timestamp": "t1", "level": "info", "stage": "findings_merge", "message": "старая"},
     ])
-    audit_logger.begin_log_run("P1")
     job = AuditJob(job_id="j1", project_id="P1", stage=AuditStage.FINDINGS_MERGE)
     asyncio.run(audit_logger.log_to_project(job, "═══ Свод замечаний ═══"))
 
+    assert _stages_and_messages(log_path) == [
+        ("findings_merge", "старая"),
+        ("findings_merge", "═══ Свод замечаний ═══"),
+    ]
     types = [m.type for _, m in ws_broadcasts]
-    assert types == ["log_stage_reset", "log"]
-    log_msg = ws_broadcasts[1][1]
-    assert log_msg.data["message"] == "═══ Свод замечаний ═══"
-    assert log_msg.data["stage"] == "findings_merge"
+    assert types == ["log"]
+    assert ws_broadcasts[0][1].data["stage"] == "findings_merge"
 
 
 def test_stage_override_wins_over_racing_job_stage(project_log_dir, ws_broadcasts):
     """Параллельная группа: norm_verify мутирует ОБЩИЙ job.stage, но строки
-    верификатора с явным stage_override остаются в своей секции — и freshness
-    чистит именно её, а не чужую."""
+    верификатора с явным stage_override атрибуцируются своей секции."""
     log_path = _seed_log(project_log_dir, [
-        {"timestamp": "t1", "level": "info", "stage": "findings_review", "message": "старый вердикт"},
-        {"timestamp": "t2", "level": "info", "stage": "norm_verify", "message": "старые нормы"},
+        {"timestamp": "t1", "level": "info", "stage": "norm_verify", "message": "старые нормы"},
     ])
-    audit_logger.begin_log_run("P1")
     job = AuditJob(job_id="j1", project_id="P1", stage=AuditStage.FINDINGS_REVIEW)
     # Гонка: параллельная задача норм переставила stage на общем job
     job.stage = AuditStage.NORM_VERIFY
@@ -307,37 +231,21 @@ def test_stage_override_wins_over_racing_job_stage(project_log_dir, ws_broadcast
     ))
 
     assert _stages_and_messages(log_path) == [
-        ("norm_verify", "старые нормы"),          # чужая секция не тронута
+        ("norm_verify", "старые нормы"),
         ("findings_review", "структурные проверки: ок"),
     ]
     log_msg = [m for _, m in ws_broadcasts if m.type == "log"][0]
     assert log_msg.data["stage"] == "findings_review"
-    reset = [m for _, m in ws_broadcasts if m.type == "log_stage_reset"][0]
-    assert reset.data["stages"] == ["findings_review"]
 
 
 def test_update_pipeline_log_running_does_not_touch_audit_log(project_log_dir, ws_broadcasts):
-    """running больше НЕ чистит секцию (старый хук удалён): заголовки, уже
-    записанные оркестратором, не теряются."""
+    """running не трогает audit_log.jsonl: заголовки, уже записанные
+    оркестратором, и история прошлых попыток не теряются."""
     log_path = _seed_log(project_log_dir, [
         {"timestamp": "t1", "level": "info", "stage": "optimization", "message": "строка"},
     ])
-    audit_logger.begin_log_run("P1")
     audit_logger.update_pipeline_log("P1", "optimization", "running")
     assert _stages_and_messages(log_path) == [("optimization", "строка")]
-    assert not [m for _, m in ws_broadcasts if m.type == "log_stage_reset"]
-
-
-def test_clear_stage_log_entries_keeps_corrupted_lines(project_log_dir):
-    log_path = project_log_dir / "audit_log.jsonl"
-    log_path.write_text(
-        '{"stage": "excel", "message": "x"}\n'
-        "НЕ JSON — обрывок после kill\n",
-        encoding="utf-8",
-    )
-    removed = audit_logger.clear_stage_log_entries("P1", ("excel",))
-    assert removed == 1
-    assert log_path.read_text(encoding="utf-8").strip() == "НЕ JSON — обрывок после kill"
 
 
 def test_reset_audit_log_broadcasts_log_reset(project_log_dir, ws_broadcasts):
@@ -350,7 +258,7 @@ def test_reset_audit_log_broadcasts_log_reset(project_log_dir, ws_broadcasts):
     assert [m.type for _, m in ws_broadcasts] == ["log_reset"]
 
 
-# ─── 5. WSMessage-фабрики ───────────────────────────────────────────
+# ─── 4. WSMessage-фабрика ───────────────────────────────────────────
 
 
 def test_ws_log_reset_shape():
@@ -358,9 +266,3 @@ def test_ws_log_reset_shape():
     assert msg.type == "log_reset"
     assert msg.project == "P1"
     assert msg.data == {}
-
-
-def test_ws_log_stage_reset_shape():
-    msg = WSMessage.log_stage_reset("P1", ["block_context", "gemma_enrichment"])
-    assert msg.type == "log_stage_reset"
-    assert msg.data["stages"] == ["block_context", "gemma_enrichment"]

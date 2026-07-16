@@ -5380,13 +5380,6 @@ class PipelineManager:
         action = item.action or default_action or "full"
         extra = item.extra_params or {}
 
-        # Новый action = секции live-лога ещё не освежались: первая запись
-        # каждой секции перепишет её с нуля («сброс при первой записи»).
-        try:
-            audit_logger.begin_log_run(pid)
-        except Exception:
-            pass
-
         # Pre-action cleanup — убить зомби от прошлых запусков того же проекта
         try:
             killed = await kill_all_processes(pid)

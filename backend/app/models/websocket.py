@@ -22,17 +22,6 @@ class WSMessage(BaseModel):
         )
 
     @classmethod
-    def log_stage_reset(cls, project: str, stages: list):
-        """Перезапуск этапа: записи перечисленных log-stage удалены из файла —
-        фронт убирает их из своей секции, не трогая остальные."""
-        return cls(
-            type="log_stage_reset",
-            project=project,
-            timestamp=datetime.now().isoformat(),
-            data={"stages": list(stages)},
-        )
-
-    @classmethod
     def log(cls, project: str, message: str, level: str = "info", stage: str = ""):
         return cls(
             type="log",
