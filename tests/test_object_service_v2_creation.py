@@ -74,3 +74,45 @@ def test_add_object_keeps_legacy_creation_outside_v2_primary(tmp_path, monkeypat
     obj = object_service.add_object("Legacy object")
 
     assert Path(obj["projects_dir"]).is_dir()
+
+
+def test_v2_primary_upload_keeps_object_id_after_display_name_rename(tmp_path, monkeypatch):
+    """A temp staging basename must not create a hash-id orphan object."""
+    objects_file = tmp_path / "backend" / "app" / "data" / "objects.json"
+    projects_root = tmp_path / "projects"
+    v2_root = tmp_path / "projects_v2"
+    obj = {
+        "id": "37022bfb",
+        "name": "314. Событие 6.1 (Донстрой)",
+        # The logical legacy path intentionally retains the pre-rename name.
+        "projects_dir": str(projects_root / "Событие 6.1 (Донстрой)"),
+        "created_at": "2026-07-13T17:48:51+00:00",
+    }
+    objects_file.parent.mkdir(parents=True, exist_ok=True)
+    objects_file.write_text(
+        json.dumps({"objects": [obj], "current_id": obj["id"]}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(object_service, "OBJECTS_FILE", objects_file)
+    monkeypatch.setattr("backend.app.core.config.PROJECTS_DIR", projects_root)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "projects_v2_primary")
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(v2_root))
+
+    expected_object_dir = object_service._create_v2_object_scaffold(obj)
+    result = project_service.save_uploaded_project_folder(
+        object_id=obj["id"],
+        discipline="OV",
+        project_name="ПД-TEST_V1",
+        files=[("ПД-TEST_V1.pdf", b"%PDF-1.4\n")],
+    )
+
+    assert result["project_id"] == "OV/ПД-TEST_V1"
+    document_json = (
+        expected_object_dir / "disciplines" / "OV" / "documents"
+        / "ПД-TEST_V1" / "document.json"
+    )
+    metadata = json.loads(document_json.read_text(encoding="utf-8"))
+    assert metadata["object_id"] == obj["id"]
+    assert not (v2_root / "objects" / "Sobytie_6_1_Donstroy").exists()
+    assert not Path(obj["projects_dir"]).exists()

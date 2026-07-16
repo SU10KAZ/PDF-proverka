@@ -105,8 +105,11 @@ def test_v2_primary_upload_stages_to_temp_and_skips_legacy(env, monkeypatch):
 
     mirrored = {"done": False}
 
-    def fake_shadow(p):
+    mirror_identity = {}
+
+    def fake_shadow(p, **identity):
         shadow_calls.append(str(p))
+        mirror_identity.update(identity)
         mirrored["done"] = True
 
     monkeypatch.setattr(swf, "shadow_mirror_project_path_safe", fake_shadow)
@@ -126,6 +129,10 @@ def test_v2_primary_upload_stages_to_temp_and_skips_legacy(env, monkeypatch):
     assert not staged.exists()  # staging вычищен после миграции
     # basename папки объекта сохранён в staging-пути (object_id_for by_name)
     assert staged.parent.parent.name == projects_dir.name
+    assert mirror_identity == {
+        "object_id": "obj-1",
+        "display_name": "Объект 1",
+    }
     assert res["project_id"] == "EOM/PRJ-V2"
     assert res["dest"] == "EOM/PRJ-V2"
 

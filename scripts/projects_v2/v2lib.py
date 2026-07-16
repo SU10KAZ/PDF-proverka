@@ -832,7 +832,9 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
 def migrate_project(project_path: Path, v2_root: Path, *,
                     objects_map: Optional[dict] = None,
                     run_id: Optional[str] = None,
-                    policy: Optional[dict] = None) -> dict:
+                    policy: Optional[dict] = None,
+                    object_id: Optional[str] = None,
+                    display_name: Optional[str] = None) -> dict:
     """Мигрирует один legacy-проект или контейнер `(main)` в projects_v2.
 
     Read-only по отношению к `projects/`. Идемпотентно перезаписывает копии
@@ -843,9 +845,14 @@ def migrate_project(project_path: Path, v2_root: Path, *,
     discipline = project_path.parent.name
     object_dir = project_path.parent.parent
     objects_map = objects_map if objects_map is not None else load_objects_map()
-    object_id = object_id_for(object_dir, objects_map)
+    # Temporary staging paths (notably v2-primary browser uploads) do not have
+    # a stable legacy path and their basename may differ from the current
+    # object display name after a rename.  Callers that already know the
+    # object identity must be able to provide it explicitly instead of falling
+    # back to a hash of the staging-directory name.
+    object_id = str(object_id or "").strip() or object_id_for(object_dir, objects_map)
     document_code = document_code_for(project_path)
-    display_name = object_dir.name
+    display_name = str(display_name or "").strip() or object_dir.name
 
     # читаемая папка объекта (obj_<hash> не используется как имя)
     obj_root = allocate_object_folder(v2_root, object_id, display_name)

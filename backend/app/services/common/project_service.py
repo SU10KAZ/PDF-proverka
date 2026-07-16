@@ -3168,7 +3168,18 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     # распознаёт _ocr.html. try/except гарантирует fail-soft.
     try:
         from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_path_safe(write_dest)
+        if v2_first:
+            # Staging lives under /tmp, so neither its absolute path nor its
+            # object-directory basename is a reliable identity after an object
+            # rename.  Pass the registry identity explicitly; otherwise v2lib
+            # falls back to a hash and creates an orphan object.
+            _swf.shadow_mirror_project_path_safe(
+                write_dest,
+                object_id=object_id,
+                display_name=str(obj.get("name") or obj_projects_dir.name),
+            )
+        else:
+            _swf.shadow_mirror_project_path_safe(write_dest)
     except Exception:
         pass
 
