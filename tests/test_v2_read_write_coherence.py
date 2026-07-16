@@ -169,7 +169,7 @@ def test_v2_analysis_write_is_visible_through_read_canary_latest_and_runs(monkey
     )
     facade.save_analysis_artifact(
         target,
-        "02_blocks_analysis.json",
+        "01_blocks_analysis.json",
         {"blocks": [{"block_id": "B-1"}]},
         run_id="run-1",
     )
@@ -188,13 +188,13 @@ def test_v2_analysis_write_is_visible_through_read_canary_latest_and_runs(monkey
 
     vdir = target.version_dir(v2_root)
     assert _read_canary_findings(vdir)[0]["id"] == "F-1"
-    assert json.loads(_read_canary_artifact(vdir, "02_blocks_analysis.json").read_text(encoding="utf-8"))["blocks"][0]["block_id"] == "B-1"
+    assert json.loads(_read_canary_artifact(vdir, "01_blocks_analysis.json").read_text(encoding="utf-8"))["blocks"][0]["block_id"] == "B-1"
     assert json.loads(_read_canary_artifact(vdir, "document_graph.json").read_text(encoding="utf-8"))["pages"][0]["page"] == 1
     assert json.loads(_read_canary_artifact(vdir, "optimization.json").read_text(encoding="utf-8"))["items"][0]["id"] == "O-1"
 
-    (vdir / "03_analysis" / "latest" / "02_blocks_analysis.json").unlink()
-    fallback = _read_canary_artifact(vdir, "02_blocks_analysis.json")
-    assert fallback == vdir / "03_analysis" / "runs" / "run-1" / "02_blocks_analysis.json"
+    (vdir / "03_analysis" / "latest" / "01_blocks_analysis.json").unlink()
+    fallback = _read_canary_artifact(vdir, "01_blocks_analysis.json")
+    assert fallback == vdir / "03_analysis" / "runs" / "run-1" / "01_blocks_analysis.json"
 
 
 def test_v2_crop_blocks_alias_matches_read_canary_blocks_contract(tmp_path):

@@ -73,6 +73,10 @@ DISCIPLINES_DIR = PROMPTS_DIR / "disciplines"
 _PIPELINE_RU = PROMPTS_DIR / "pipeline" / "ru"
 NORM_VERIFY_TASK_TEMPLATE = _PIPELINE_RU / "norm_verify_task.md"
 NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "norm_fix_task.md"
+# Пересмотр ОПТИМИЗАЦИЙ после верификации норм. Отдельный шаблон, а не общий с
+# norm_fix: у предложения другой исход — не «поправить ссылку», а переосмыслить
+# саму замену под актуальную норму (still_valid / revised / obsolete).
+OPTIMIZATION_NORM_FIX_TASK_TEMPLATE = _PIPELINE_RU / "optimization_norm_fix_task.md"
 NORM_REQUOTE_TASK_TEMPLATE = _PIPELINE_RU / "norm_requote_task.md"
 OPTIMIZATION_TASK_TEMPLATE = _PIPELINE_RU / "optimization_task.md"
 TEXT_ANALYSIS_TASK_TEMPLATE = _PIPELINE_RU / "text_analysis_task.md"
@@ -86,7 +90,6 @@ OPTIMIZATION_CORRECTOR_TASK_TEMPLATE = _PIPELINE_RU / "optimization_corrector_ta
 # Скрипты — ссылаются на wrapper-файлы в корне (для subprocess-запуска)
 PROCESS_PROJECT_SCRIPT = ROOT_DIR / "process_project.py"
 BLOCKS_SCRIPT = ROOT_DIR / "blocks.py"          # субкоманды: crop, batches, merge
-GEMMA_ENRICH_SCRIPT = ROOT_DIR / "gemma_enrich.py"
 NORMS_SCRIPT = ROOT_DIR / "norms" / "_core.py"    # субкоманды: verify, update
 GENERATE_EXCEL_SCRIPT = ROOT_DIR / "generate_excel_report.py"
 # Legacy aliases (для обратной совместимости)
@@ -248,14 +251,14 @@ _stage_models: dict[str, str | None] = {
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "text_analysis":          "claude-opus-4-7",
-    "block_batch":            "openai/gpt-5.4",
+    "block_batch":            "ensemble/gpt-codex",
     "findings_merge":         "claude-opus-4-7",
     "findings_critic":        "claude-opus-4-7",
     "findings_corrector":     "claude-opus-4-7",
     "norm_verify":            "claude-opus-4-7",
     "norm_fix":               "claude-opus-4-7",
     "norm_requote":           "claude-sonnet-4-6",
-    "optimization":           "claude-opus-4-7",
+    "optimization":           "ensemble/claude-codex-opt",
     "optimization_critic":    "claude-sonnet-4-6",
     "optimization_corrector": "claude-sonnet-4-6",
 }
@@ -278,7 +281,11 @@ _BACKEND_DATA_DIR = APP_DATA_DIR
 BATCH_QUEUE_FILE             = APP_DATA_DIR / "batch_queue.json"
 PREPARE_QUEUE_FILE           = APP_DATA_DIR / "prepare_queue.json"
 MISSING_NORMS_VAULT_FILE     = APP_DATA_DIR / "missing_norms_vault.json"
-OBJECTS_FILE_PATH            = APP_DATA_DIR / "objects.json"
+OBJECTS_FILE_PATH            = (
+    Path(os.environ["AUDIT_OBJECTS_FILE"]).resolve()
+    if os.environ.get("AUDIT_OBJECTS_FILE")
+    else APP_DATA_DIR / "objects.json"
+)
 USERS_FILE_PATH              = APP_DATA_DIR / "users.json"
 PROJECT_GROUPS_FILE          = APP_DATA_DIR / "project_groups.json"
 USAGE_DATA_FILE              = APP_DATA_DIR / "usage_data.json"
@@ -348,15 +355,25 @@ def _save_stage_model_config():
 
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
+BLOCK_BATCH_MODE_FINDINGS_ONLY = "findings_only_block_context"
+_LEGACY_STAGE_BATCH_MODES = {
+    "block_batch": {"findings_only_gemma_pair": BLOCK_BATCH_MODE_FINDINGS_ONLY},
+}
+
 _STAGE_BATCH_MODE_DEFAULTS: dict[str, str] = {
-    "block_batch": "findings_only_gemma_pair",
+    "block_batch": BLOCK_BATCH_MODE_FINDINGS_ONLY,
 }
 
 STAGE_BATCH_MODE_CHOICES: dict[str, list[str]] = {
-    "block_batch": ["findings_only_gemma_pair"],
+    "block_batch": [BLOCK_BATCH_MODE_FINDINGS_ONLY],
 }
 
 _STAGE_BATCH_MODES_FILE = STAGE_BATCH_MODES_FILE_PATH
+
+
+def normalize_stage_batch_mode(stage: str, mode: str) -> str:
+    """Map persisted legacy mode IDs to the canonical runtime ID."""
+    return _LEGACY_STAGE_BATCH_MODES.get(stage, {}).get(mode, mode)
 
 
 def _load_stage_batch_modes() -> dict[str, str]:
@@ -366,8 +383,9 @@ def _load_stage_batch_modes() -> dict[str, str]:
             with open(_STAGE_BATCH_MODES_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
             for stage, mode in saved.items():
-                if stage in config and mode in STAGE_BATCH_MODE_CHOICES.get(stage, []):
-                    config[stage] = mode
+                normalized = normalize_stage_batch_mode(stage, mode)
+                if stage in config and normalized in STAGE_BATCH_MODE_CHOICES.get(stage, []):
+                    config[stage] = normalized
             print(f"[config] Stage batch modes loaded from {_STAGE_BATCH_MODES_FILE.name}")
         except Exception as e:
             print(f"[config] Failed to load stage_batch_modes.json: {e}")
@@ -379,6 +397,7 @@ def _save_stage_batch_modes() -> None:
         _STAGE_BATCH_MODES_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(_STAGE_BATCH_MODES_FILE, "w", encoding="utf-8") as f:
             json.dump(STAGE_BATCH_MODES, f, ensure_ascii=False, indent=2)
+            f.write("\n")
     except Exception as e:
         print(f"[config] Failed to save stage_batch_modes.json: {e}")
 
@@ -387,13 +406,17 @@ STAGE_BATCH_MODES: dict[str, str] = _load_stage_batch_modes()
 
 
 def get_stage_batch_mode(stage: str) -> str:
-    return STAGE_BATCH_MODES.get(stage, _STAGE_BATCH_MODE_DEFAULTS.get(stage, "findings_only_gemma_pair"))
+    return STAGE_BATCH_MODES.get(
+        stage,
+        _STAGE_BATCH_MODE_DEFAULTS.get(stage, BLOCK_BATCH_MODE_FINDINGS_ONLY),
+    )
 
 
 def set_stage_batch_mode(stage: str, mode: str) -> bool:
     """Возвращает True если режим установлен (валиден), иначе False."""
     if stage not in STAGE_BATCH_MODE_CHOICES:
         return False
+    mode = normalize_stage_batch_mode(stage, mode)
     if mode not in STAGE_BATCH_MODE_CHOICES[stage]:
         return False
     STAGE_BATCH_MODES[stage] = mode
@@ -401,24 +424,81 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
     return True
 
 
-# Локальная модель enrichment/анализа. Раньше был хардкод; теперь env-управляемо
-# (дефолт = прежнее значение), чтобы при миграции на новый LM Studio задать id новой
-# модели (напр. chandra-ocr-2 / qwen36-27b-mtp) без правки кода. LOCAL_LLM_MODELS и
-# AVAILABLE_MODELS ниже привязаны к переменной → is_local_llm_model() подхватит новый id.
-CHANDRA_GEMMA_MODEL = os.environ.get("CHANDRA_GEMMA_MODEL", "google/gemma-4-26b-a4b")
-LOCAL_LLM_MODELS = {CHANDRA_GEMMA_MODEL}
+# Stage-модели больше не маршрутизируются в локальный OCR runtime.
+LOCAL_LLM_MODELS: set[str] = set()
+
+# Codex exec transport for classic agent stages. Stage model IDs use the
+# `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
+CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
+CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_MODEL_DEFAULT}").strip() or f"codex/{CODEX_MODEL_DEFAULT}"
+STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
+OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
+OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-4-7").strip()
+    or "claude-opus-4-7"
+)
+OPTIMIZATION_ENSEMBLE_CODEX_MODEL = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CODEX_MODEL", "codex/gpt-5.6-sol").strip()
+    or "codex/gpt-5.6-sol"
+)
+if not OPTIMIZATION_ENSEMBLE_CODEX_MODEL.startswith("codex/"):
+    OPTIMIZATION_ENSEMBLE_CODEX_MODEL = f"codex/{OPTIMIZATION_ENSEMBLE_CODEX_MODEL}"
+OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT = (
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT", "xhigh").strip().lower()
+    or "xhigh"
+)
+# Диспетчеризация стадий идёт строго по префиксу "codex/" (is_codex_model). Значение
+# без префикса (перепутали с AUDIT_CODEX_MODEL) попадало в AVAILABLE_MODELS как
+# «Codex exec», но в рантайме молча уходило в OpenRouter-ветку с несуществующим id.
+if not CODEX_STAGE_MODEL_ID.startswith("codex/"):
+    CODEX_STAGE_MODEL_ID = f"codex/{CODEX_STAGE_MODEL_ID}"
+
+# Post-review for the explicit Stage 01 dual detector. The reviewer compares
+# both independent finding sets and can inspect the block once more for issues
+# missed by both detectors. These switches never affect single-model modes.
+STAGE01_DUAL_REVIEW_ENABLED = _env_bool("STAGE01_DUAL_REVIEW_ENABLED", True)
+STAGE01_DUAL_GAP_SEARCH_ENABLED = _env_bool(
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED", True
+)
+STAGE01_DUAL_REVIEW_MODEL = (
+    os.environ.get("STAGE01_DUAL_REVIEW_MODEL", CODEX_STAGE_MODEL_ID).strip()
+    or CODEX_STAGE_MODEL_ID
+)
+if not STAGE01_DUAL_REVIEW_MODEL.startswith("codex/"):
+    STAGE01_DUAL_REVIEW_MODEL = CODEX_STAGE_MODEL_ID
+
+# Блоки в codex/ensemble режимах идут строго по одному. Блоки независимы, поэтому
+# ограничение не смысловое, а страховка от лимитов подписки Codex: один блок в
+# ensemble = три вызова (GPT + Codex + review). Дефолт 1 сохраняет прежнее
+# поведение; значение >1 включает параллельную обработку блоков.
+try:
+    STAGE01_CODEX_PARALLELISM = max(
+        1, int(os.environ.get("AUDIT_STAGE02_CODEX_PARALLELISM", "1") or "1")
+    )
+except ValueError:
+    STAGE01_CODEX_PARALLELISM = 1
 
 AVAILABLE_MODELS = [
     {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
     {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
-    {"id": "google/gemini-3.1-pro-preview", "label": "Gemini 3.1 Pro",      "provider": "openrouter"},
-    {"id": CHANDRA_GEMMA_MODEL,           "label": "Gemma 3.6 35B (local)",   "provider": "chandra_local"},
+    {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex",                  "provider": "codex_cli"},
+    {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
+    {"id": OPTIMIZATION_DUAL_MODEL_ID,     "label": "Claude + Codex (OPT)",   "provider": "optimization_ensemble"},
 ]
 
 STAGE_MODEL_RESTRICTIONS = {
     "block_batch": [
         "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        STAGE02_DUAL_MODEL_ID,
+    ],
+    "optimization": [
+        "claude-opus-4-7",
+        "claude-sonnet-4-6",
+        "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        OPTIMIZATION_DUAL_MODEL_ID,
     ],
 }
 
@@ -468,13 +548,13 @@ def validate_current_stage_model_config(
 
 STAGE_MODEL_HINTS: dict[str, str] = {
     "text_analysis": "Opus CLI рекомендуется. Sonnet допустим.",
-    "block_batch": "Production: GPT-5.4 (OpenRouter), findings_only_gemma_pair, single-block. Gemma выполняется отдельным обязательным этапом enrichment.",
+    "block_batch": "Stage 01: GPT-5.4, Codex или независимый двойной проход GPT + Codex с единым контекстом PDF/Vectograph.",
     "findings_merge": "Минимум Opus CLI — межблочная сверка требует сильной модели.",
     "findings_critic": "GPT-5.4 оптимален: быстро и дёшево.",
     "findings_corrector": "Минимум Opus CLI. Sonnet не успевает (таймаут). GPT-5.4 — альтернатива.",
     "norm_verify": "Opus CLI обязателен: MCP norms — единственный источник. WebSearch запрещён.",
     "norm_fix": "Opus CLI обязателен: MCP norms для поиска замены. WebSearch запрещён.",
-    "optimization": "Opus CLI или GPT-5.4. Gemini находит мало предложений.",
+    "optimization": "Opus CLI, Codex exec или параллельный Claude + Codex с объединением и дедупликацией.",
     "optimization_critic": "GPT-5.4 или Sonnet CLI.",
     "optimization_corrector": "GPT-5.4 или Sonnet CLI.",
 }
@@ -490,6 +570,29 @@ def is_claude_stage(stage: str) -> bool:
     """Проверить, должен ли этап выполняться через Claude CLI."""
     model = get_stage_model(stage)
     return model.startswith("claude-")
+
+
+def is_codex_model(model: str | None) -> bool:
+    """True для модели classic pipeline, запускаемой через `codex exec`."""
+    return bool((model or "").strip().startswith("codex/"))
+
+
+def is_optimization_ensemble_model(model: str | None) -> bool:
+    """True для параллельного Claude + Codex режима этапа OPT."""
+    return (model or "").strip() == OPTIMIZATION_DUAL_MODEL_ID
+
+
+def resolve_codex_model(model: str | None) -> str:
+    """Преобразовать stage model id `codex/<model>` в реальный model id Codex CLI."""
+    raw = (model or "").strip()
+    if raw.startswith("codex/"):
+        raw = raw.split("/", 1)[1]
+    return raw or CODEX_MODEL_DEFAULT
+
+
+def is_codex_stage(stage: str) -> bool:
+    """Проверить, должен ли этап выполняться через Codex exec."""
+    return is_codex_model(get_stage_model(stage))
 
 
 def is_local_llm_model(model: str) -> bool:
@@ -558,6 +661,8 @@ def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = 
             except ValueError:
                 pass
         return max(1, value)
+    if model == STAGE02_DUAL_MODEL_ID or is_codex_model(model):
+        return 1
     return MAX_PARALLEL_BATCHES
 
 RATE_LIMIT_THRESHOLD_PCT = 90
@@ -571,7 +676,7 @@ WEEKLY_TOKEN_LIMIT = 17_000_000
 CLAUDE_SESSIONS_DIR = Path.home() / ".claude" / "projects"
 
 WEEKLY_RESET_WEEKDAY = 4    # пятница
-WEEKLY_RESET_HOUR_UTC = 13  # 13:00 UTC = 16:00 MSK
+WEEKLY_RESET_HOUR_UTC = 16  # 16:00 UTC = 19:00 MSK
 
 SEVERITY_CONFIG = {
     "КРИТИЧЕСКОЕ":        {"color": "#e74c3c", "bg": "#fdecea", "icon": "\U0001f534", "order": 1},
@@ -621,11 +726,27 @@ CHANDRA_BEARER_TOKEN = os.environ.get("CHANDRA_BEARER_TOKEN") or os.environ.get(
 CHANDRA_CHAT_TRANSPORT = os.environ.get("CHANDRA_CHAT_TRANSPORT", "native").strip().lower()
 
 LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
-GEMMA_ADAPTIVE_RELOAD_ENABLED = _env_bool("GEMMA_ADAPTIVE_RELOAD_ENABLED", False)
 # Value Grounding (усиление предобработки графики): сверка значений gemma с векторным
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
 BLOCK_VALUE_GROUNDING_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_ENABLED", False)
+# Сохранение экспертных вердиктов при переаудите ТОЙ ЖЕ версии: снапшот решённых
+# перед удалением 03_findings.json + детерминированная перепривязка на новые F-ID
+# после findings_merge (exact fingerprint → fuzzy; carried_over=True, только пустые
+# слоты). Fail-soft: любая ошибка не влияет на пайплайн. ON по умолчанию —
+# требование: разметка эксперта не должна теряться из-за перенумерации F-NNN.
+VERDICT_PRESERVATION_ENABLED = _env_bool("VERDICT_PRESERVATION_ENABLED", True)
+# Shadow-режим: снапшот, матчинг и отчёт verdict_preservation_report.json —
+# полные, но ЗАПИСЬ вердиктов в expert_review/decisions_log выключена.
+# Для наблюдения за качеством матчинга без влияния на живую разметку.
+VERDICT_PRESERVATION_SHADOW = _env_bool("VERDICT_PRESERVATION_SHADOW", False)
+# Гуманизация ссылок на блоки в текстах замечаний: после findings_merge
+# внутренние block_id («6L97-3VTH-XTC») в problem/description/solution/risk
+# заменяются подписями «Название» (лист N, стр. PDF M) из 01_blocks_analysis /
+# document_graph; найденные в тексте ID переносятся в related_block_ids.
+# Детерминированно, офлайн, идемпотентно, fail-soft. ON по умолчанию —
+# сторонний эксперт не должен видеть внутренние идентификаторы.
+FINDINGS_BLOCK_CAPTIONS_ENABLED = _env_bool("FINDINGS_BLOCK_CAPTIONS_ENABLED", True)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает
@@ -655,21 +776,26 @@ MIRROR_OCR_ENABLED = _env_bool("MIRROR_OCR_ENABLED", False)
 # Нормализатор гасит стиль (кир/лат, ,/., ², пробел) → подсвечиваем только реальное. МД-файл
 # НЕ редактируем (аддитивно в промпт). OFF по умолчанию — прод не меняется. fail-soft.
 MD_MIRROR_RECONCILE_ENABLED = _env_bool("MD_MIRROR_RECONCILE_ENABLED", False)
-# Роутер источника блока для Stage 02 (решение Андрея 2026-07-07 «вместо Gemma везде сырые
-# данные, однолинейки — вектографом»). Единая развилка на блок, ЗАМЕНЯЕТ Gemma-описание в
-# промпте (не аддитивно): (1) однолинейка + гейт Вектографа → полный структурированный рендер;
-# (2) есть вектор-слой → сырой вектор-текст блока (полигон-клип); (3) скан/растр без слоя → None
-# → Gemma+изображение остаются (обязательный fallback). Источник — полигон-клип по
-# document_graph (не пустой pdfplumber_text). Когда ON — заменяет ad-hoc инъекции
-# SINGLELINE_RICH_PROMPT_ENABLED/MIRROR_OCR_ENABLED (единый авторитет). Влияет на
-# call_gpt_for_block и превью /blocks/llm-text. OFF по умолчанию — прод не меняется. fail-soft.
-BLOCK_SOURCE_ROUTER_ENABLED = _env_bool("BLOCK_SOURCE_ROUTER_ENABLED", False)
 # «Вектограф» shadow-режим (observe-only): на стадии gemma_enrichment прогоняет гейт качества
 # по image-блокам и пишет _output/vectograf_shadow.json — «какие блоки Вектограф взял бы вместо
 # Gemma-описания» + метрики/причины. Поведение пайплайна НЕ меняет; телеметрия для решения о
 # реальной замене. Дёшево: не-схемы отсеиваются структурером за мс (PDF не открывается),
 # однолинейка ~1.2 с. ON по умолчанию (observe-only), env — kill-switch.
 VECTOGRAF_SHADOW_ENABLED = _env_bool("VECTOGRAF_SHADOW_ENABLED", True)
+# Детерминированная подсветка цитируемых обозначений по fitz text layer.
+# Главный switch OFF: прод не меняется. При первом включении остаётся shadow —
+# считаются coverage/IoU и пишется textlayer_highlights_shadow.json, но
+# 03_findings.json не меняется. Live заполняет только пустые highlight_regions;
+# перезапись LLM-регионов требует отдельного явного switch.
+PIPELINE_TEXTLAYER_HIGHLIGHTS_ENABLED = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_ENABLED", False
+)
+PIPELINE_TEXTLAYER_HIGHLIGHTS_SHADOW = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_SHADOW", True
+)
+PIPELINE_TEXTLAYER_HIGHLIGHTS_OVERRIDE_EXISTING = _env_bool(
+    "PIPELINE_TEXTLAYER_HIGHLIGHTS_OVERRIDE_EXISTING", False
+)
 # «Вектограф» bbox-клип: геометрия строит топологию ТОЛЬКО по словам внутри области выделения
 # блока (coords_norm из result.json), а не по ВСЕМ словам листа. Раньше build_singleline_graph
 # читал get_text("words") со всей страницы → на листе с двумя схемами/таблицей чужие QF/коды/
@@ -693,12 +819,14 @@ VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED = _env_bool("VECTOGRAF_POLYGON_TEXT_ONLY_ENA
 NEIGHBOR_TEXT_BLOCKS_ENABLED = _env_bool("NEIGHBOR_TEXT_BLOCKS_ENABLED", True)
 # Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
 BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
-# Разворот порядка конвейера: блоки (Stage 02, GPT) идут ПЕРЕД текстом (Stage 01, Opus).
+# Разворот порядка конвейера: блоки (Stage 01, GPT) идут ПЕРЕД текстом (Stage 02, Opus).
 # Новый порядок: gemma → block_analysis → block_retry → text_analysis → findings_merge.
-# Текст становится финальным синтезатором: читает компактный view 02 (02_blocks_for_text.json)
+# Текст становится финальным синтезатором: читает компактный view блоков (01_blocks_for_text.json)
 # и сверяет свои T-замечания с блоками (items_verified_from_blocks) вместо обратной сверки.
-# OFF по умолчанию — прод (порядок text→block) не меняется. Выкатка через A/B на реальном проекте.
-PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False)
+# ДЕФОЛТ True: нумерация артефактов (блоки=01, текст=02) отражает именно этот порядок.
+# Флаг оставлен как временный escape-hatch; при False (старый порядок text→block) нумерация
+# 01/02 становится несогласованной с фактическим порядком (legacy-режим).
+PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED = _env_bool("PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", True)
 # «Страж отсутствия» (absence guard): анти-ложное правило для замечаний вида
 # «нет / не указано / отсутствует». Исследование браков (03.07) показало, что ~32%
 # отклонений эксперта — это «данные ЕСТЬ, ИИ не увидел» (на другом листе/в тексте).
@@ -738,32 +866,6 @@ BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS = int(os.environ.get("BLOCK_VALUE_GROUNDIN
 BLOCK_VALUE_GROUNDING_QWEN_MODEL = os.environ.get(
     "BLOCK_VALUE_GROUNDING_QWEN_MODEL",
     os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "qwen/qwen3.6-35b-a3b"))
-# 8192 — практический минимум для 100 DPI image-блока с page_text:
-# на 4096 в проде стабильно падают блоки 800×500 с "Context size has been exceeded".
-GEMMA_BASE_CONTEXT_LENGTH = int(os.environ.get("GEMMA_BASE_CONTEXT_LENGTH", "8192"))
-GEMMA_HIGH_DETAIL_CONTEXT_LENGTH = int(os.environ.get("GEMMA_HIGH_DETAIL_CONTEXT_LENGTH", "16000"))
-# #16: параллелизм base 100 DPI прохода Gemma. Default 1 (= прежний хардкод,
-# gemma3.6-35b не тянет параллель), но конфигурируемо для будущих моделей/железа.
-# High-detail 300 DPI всегда остаётся 1.
-GEMMA_BASE_PARALLELISM = max(1, int(os.environ.get("GEMMA_BASE_PARALLELISM", "1") or "1"))
-LMSTUDIO_UNLOAD_AFTER_QUEUE = _env_bool("LMSTUDIO_UNLOAD_AFTER_QUEUE", True)
-LMSTUDIO_UNLOAD_GRACE_SECONDS = int(os.environ.get("LMSTUDIO_UNLOAD_GRACE_SECONDS", "60"))
-LMSTUDIO_UNLOAD_MODEL_ALLOWLIST = _env_csv(
-    "LMSTUDIO_UNLOAD_MODEL_ALLOWLIST",
-    [
-        "gemma/gemma3.5-35b-a3b",
-        "gemma/gemma3.6-35b-a3b",
-        "google/gemma-4-26b-a4b",
-    ],
-)
-LMSTUDIO_UNLOAD_MODEL_DENYLIST = _env_csv(
-    "LMSTUDIO_UNLOAD_MODEL_DENYLIST",
-    [
-        "chandra-ocr-2",
-    ],
-)
-
-GEMINI_MODEL = "google/gemini-3.1-pro-preview"
 GPT_MODEL = "openai/gpt-5.4"
 LOCAL_GEMMA_CONTEXT_LENGTH = int(os.environ.get("LOCAL_GEMMA_CONTEXT_LENGTH", "98304"))
 LOCAL_GEMMA_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_GEMMA_MAX_OUTPUT_TOKENS", "8192"))
@@ -790,13 +892,13 @@ GEMINI_DIRECT_MAX_OUTPUT_TOKENS: int = 65536
 
 STAGE_MODELS_OPENROUTER: dict[str, str] = {
     "text_analysis":          GPT_MODEL,
-    "block_batch":            GEMINI_MODEL,
+    "block_batch":            GPT_MODEL,
     "findings_merge":         GPT_MODEL,
     "findings_critic":        GPT_MODEL,
     "findings_corrector":     GPT_MODEL,
     "norm_verify":            GPT_MODEL,
     "norm_fix":               GPT_MODEL,
-    "optimization":           GEMINI_MODEL,
+    "optimization":           GPT_MODEL,
     "optimization_critic":    GPT_MODEL,
     "optimization_corrector": GPT_MODEL,
 }

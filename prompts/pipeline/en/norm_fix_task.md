@@ -29,8 +29,8 @@ Work AUTONOMOUSLY. Do not ask questions.
 
 READ via Read tool:
 
-1. **Current Findings** — `{PROJECT_PATH}/_output/03_findings.json`
-2. **Norm Verification Results** — `{PROJECT_PATH}/_output/norm_checks.json`
+1. **Current Findings** — `{OUTPUT_PATH}/03_findings.json`
+2. **Norm Verification Results** — `{OUTPUT_PATH}/norm_checks.json`
 3. **Normative Reference (discipline)** — provided in system context
 
 ## Findings to Revise
@@ -100,7 +100,7 @@ The result must be a **complete copy** of findings with the following additions 
 
 ## Output
 
-WRITE via Write tool: `{PROJECT_PATH}/_output/03_findings.json`
+WRITE via Write tool: `{OUTPUT_PATH}/03_findings.json`
 
 ## Rules
 

@@ -54,7 +54,7 @@ def _statuses(pipelog):
 
 def test_exit2_with_index_is_partial_success(tmp_path):
     ctx, _logs, pipelog = _fake_ctx(tmp_path, exit_code=2)
-    _write_index(tmp_path, runner.GEMMA_BLOCKS_DIRNAME)
+    _write_index(tmp_path, runner.STAGE02_BLOCKS_DIRNAME)
     res = asyncio.run(runner.run_crop_blocks(ctx, project_rel_path="projects/x"))
     assert res.success is True
     assert (res.data or {}).get("partial") is True
@@ -80,7 +80,7 @@ def test_exit0_is_full_success(tmp_path):
 
 def test_exit1_is_hard_fail(tmp_path):
     ctx, _logs, pipelog = _fake_ctx(tmp_path, exit_code=1)
-    _write_index(tmp_path, runner.GEMMA_BLOCKS_DIRNAME)  # даже с index → exit!=2 = фейл
+    _write_index(tmp_path, runner.STAGE02_BLOCKS_DIRNAME)  # даже с index → exit!=2 = фейл
     res = asyncio.run(runner.run_crop_blocks(ctx, project_rel_path="projects/x"))
     assert res.success is False
     assert "error" in _statuses(pipelog)
@@ -88,7 +88,7 @@ def test_exit1_is_hard_fail(tmp_path):
 
 def test_recrop_exit2_with_index_is_partial(tmp_path):
     ctx, _logs, pipelog = _fake_ctx(tmp_path, exit_code=2)
-    _write_index(tmp_path, runner.GEMMA_BLOCKS_DIRNAME)
+    _write_index(tmp_path, runner.STAGE02_BLOCKS_DIRNAME)
     res = asyncio.run(runner.run_policy_recrop(ctx, project_rel_path="projects/x"))
     assert res.success is True
     assert (res.data or {}).get("partial") is True

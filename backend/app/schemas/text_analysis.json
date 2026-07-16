@@ -1,14 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "TextAnalysis",
-  "description": "Stage 01: Text analysis of project MD file",
+  "description": "Stage 02: Text analysis of project MD file (после анализа блоков)",
   "type": "object",
   "required": ["stage", "project_id", "text_source", "timestamp", "project_params", "normative_refs_found", "text_findings"],
   "additionalProperties": false,
   "properties": {
     "stage": {
       "type": "string",
-      "const": "01_text_analysis"
+      "const": "02_text_analysis"
     },
     "project_id": {
       "type": "string"

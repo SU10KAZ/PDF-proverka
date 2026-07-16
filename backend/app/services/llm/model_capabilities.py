@@ -109,8 +109,6 @@ def _headers(token: str, mode: str) -> dict[str, str]:
 def _pipeline_usage() -> dict[str, str]:
     """Какие модели использует пайплайн (id -> роль)."""
     usage: dict[str, str] = {}
-    gemma = os.environ.get("CHANDRA_GEMMA_MODEL", "google/gemma-4-26b-a4b")
-    usage[gemma] = "enrichment"
     g_model = os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "").strip()
     g_fb = os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_FALLBACK_MODEL", "").strip()
     if g_model:

@@ -127,7 +127,7 @@ def _find_block_png(output_dir: Path, block_id: str) -> Optional[Path]:
 
 
 def _blocks_analysis_text(blocks_analysis: dict) -> dict:
-    """{normalized_block_id -> текст блока} из 02_blocks_analysis.json.
+    """{normalized_block_id -> текст блока} из 01_blocks_analysis.json.
 
     КЛЮЧЕВОЙ источник контекста для верификатора (диагностика 2026-06-27: per-block
     gemma JSON в v2-раскладке пуст, а здесь label заполнен у ~100% блоков). Без него
@@ -176,7 +176,7 @@ def _find_md_source(output_dir: Path) -> Optional[Path]:
         candidates.extend(sorted(input_dir.glob("*.md")))
         candidates.append(input_dir / "source.md")
         candidates.append(input_dir / "document.md")
-    candidates.append(output_dir / "01_text_analysis.json")
+    candidates.append(output_dir / "02_text_analysis.json")
     for c in candidates:
         if c.is_file():
             return c
@@ -233,7 +233,7 @@ def load_context_from_dir(
 def _build_context(
     output_dir: Path, project_id: str, finding: dict, *, section: str = "", max_blocks: int = 3,
 ) -> Context:
-    blocks_analysis = _load_json(output_dir / "02_blocks_analysis.json") or {}
+    blocks_analysis = _load_json(output_dir / "01_blocks_analysis.json") or {}
     graph = _load_json(output_dir / "document_graph.json") or {}
     if not graph.get("pages"):
         # поискать document_graph в runs/

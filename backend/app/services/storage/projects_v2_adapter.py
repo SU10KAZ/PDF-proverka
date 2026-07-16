@@ -73,10 +73,18 @@ def _default_v2_root() -> Path:
         return Path(__file__).resolve().parents[4] / "projects_v2"
 
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCK_CONTEXT_SUMMARY_FILENAME,
+    BLOCKS_ANALYSIS_FILENAME,
+    LEGACY_ALIASES,
+    TEXT_ANALYSIS_FILENAME,
+)
+from backend.app.pipeline.stages.block_context.contract import adapt_legacy_summary
+
 # приоритет файла замечаний (как в findings_service._get_findings_path)
 _FINDINGS_PRIORITY = ("03a_norms_verified.json", "03_findings.json",
                       "03_findings_pre_merge.json")
-_CRITICAL = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+_CRITICAL = (TEXT_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME, "03_findings.json")
 # где может лежать pipeline_log в v2 (обычные миграции vs legacy-снимки)
 _PIPELINE_LOG_REL = ("03_analysis/latest/pipeline_log.json",
                      "99_service/pipeline_log.json")
@@ -300,11 +308,13 @@ class ProjectsV2Adapter:
             present.update(p.name for p in run_dir.iterdir() if p.is_file())
         return {
             "present": sorted(present),
+            # Ключи has_* намеренно НЕ переименовываются (самосогласованы);
+            # проверяемый файл теперь канонический (fallback на legacy — в _latest_file).
             "has_01_text_analysis": self._latest_file(
-                doc_dir, version_id, "01_text_analysis.json"
+                doc_dir, version_id, TEXT_ANALYSIS_FILENAME
             ) is not None,
             "has_02_blocks_analysis": self._latest_file(
-                doc_dir, version_id, "02_blocks_analysis.json"
+                doc_dir, version_id, BLOCKS_ANALYSIS_FILENAME
             ) is not None,
             "has_03_findings": self.findings_path(doc_dir, version_id) is not None,
         }
@@ -334,32 +344,41 @@ class ProjectsV2Adapter:
         return max(hits, key=lambda p: (p.stat().st_mtime_ns, p.parent.name))
 
     def _latest_file(self, doc_dir: Path, version_id: str, name: str) -> Optional[Path]:
-        p = self.latest_dir(doc_dir, version_id) / name
-        if p.is_file():
-            return p
-        return self._runs_file(doc_dir, version_id, name)
+        # Приоритет: каноническое имя в latest → legacy в latest → каноническое в
+        # runs → legacy в runs. Даёт fallback для ещё не мигрированных данных, при
+        # этом latest всегда важнее runs, а каноническое — важнее legacy в одном тире.
+        candidates = [name]
+        legacy = LEGACY_ALIASES.get(name)
+        if legacy:
+            candidates.append(legacy)
+        latest = self.latest_dir(doc_dir, version_id)
+        for cand in candidates:
+            p = latest / cand
+            if p.is_file():
+                return p
+        for cand in candidates:
+            rf = self._runs_file(doc_dir, version_id, cand)
+            if rf is not None:
+                return rf
+        return None
 
     def read_text_analysis(self, doc_dir: Path, version_id: str) -> Optional[dict]:
-        p = self._latest_file(doc_dir, version_id, "01_text_analysis.json")
+        p = self._latest_file(doc_dir, version_id, TEXT_ANALYSIS_FILENAME)
         return _read_json(p) if p else None
 
     def read_blocks_analysis(self, doc_dir: Path, version_id: str) -> Optional[dict]:
-        p = self._latest_file(doc_dir, version_id, "02_blocks_analysis.json")
+        p = self._latest_file(doc_dir, version_id, BLOCKS_ANALYSIS_FILENAME)
         return _read_json(p) if p else None
 
-    # Имена папок кропов в приоритете чтения. `blocks_gemma_100` — production
-    # Gemma-пайплайн (GEMMA_BASE_BLOCKS_DIRNAME из gemma_enrichment_contract),
-    # `blocks` — legacy-имя старых прогонов. Если искать только `blocks`, у
-    # любой версии с новым Gemma-аудитом index.json не находится → /blocks
-    # отдаёт 404 и UI показывает «Блоки не найдены».
-    _BLOCKS_DIRNAMES = ("blocks_gemma_100", "blocks")
+    # Канонический Stage 01 crop, затем read-only fallback старых проектов.
+    _BLOCKS_DIRNAMES = ("blocks_stage02_100", "blocks_gemma_100", "blocks")
 
     def blocks_dir(self, doc_dir: Path, version_id: str) -> Optional[Path]:
         """Папка кропнутых блоков версии (read-only).
 
         В projects_v2 кропы лежат под `03_analysis/latest/<blocks-dir>/` либо
         (чаще) под последним `03_analysis/runs/<run>/<blocks-dir>/`, где
-        `<blocks-dir>` = `blocks_gemma_100` (production) или legacy `blocks`.
+        `<blocks-dir>` = `blocks_stage02_100` или одно из legacy-имён.
         Возвращает первую папку, где есть `index.json`, иначе None.
         """
         vdir = self.version_dir(doc_dir, version_id)
@@ -387,6 +406,29 @@ class ProjectsV2Adapter:
     def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         bd = self.blocks_dir(doc_dir, version_id)
         return _read_json(bd / "index.json") if bd else None
+
+    def read_block_context_summary(self, doc_dir: Path, version_id: str) -> Optional[dict]:
+        """Сводка источников блоков: canonical либо адаптированный legacy Gemma."""
+        p = self._latest_file(doc_dir, version_id, BLOCK_CONTEXT_SUMMARY_FILENAME)
+        if p is None:
+            # legacy_findings_preserve хранит артефакты внутри сохранённого output.
+            legacy_out = self.version_dir(doc_dir, version_id) / "99_service" / "legacy_output"
+            if legacy_out.is_dir():
+                names = (BLOCK_CONTEXT_SUMMARY_FILENAME,
+                         LEGACY_ALIASES.get(BLOCK_CONTEXT_SUMMARY_FILENAME))
+                for name in names:
+                    if not name:
+                        continue
+                    hits = sorted(legacy_out.glob(f"*/_output/{name}"))
+                    if hits:
+                        p = hits[-1]
+                        break
+        payload = _read_json(p) if p else None
+        if not isinstance(payload, dict):
+            return None
+        if p and p.name != BLOCK_CONTEXT_SUMMARY_FILENAME:
+            return adapt_legacy_summary(payload)
+        return payload
 
     def read_document_graph(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         """document_graph.json версии (read-only): latest, иначе King&Sons-бандл."""

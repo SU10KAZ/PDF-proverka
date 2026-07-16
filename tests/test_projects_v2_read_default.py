@@ -73,7 +73,7 @@ def _doc(v2, disc, code, *, kind="plain", versions=None, current=None,
                 {"findings": [{"id": f"F-{i+1:03d}", "severity": "Критическое"} for i in range(fc)]})
         bc = blocks.get(vid)
         if bc is not None:
-            _wj(latest / "02_blocks_analysis.json",
+            _wj(latest / "01_blocks_analysis.json",
                 {"block_analyses": [{"block_id": f"block_{i}"} for i in range(bc)]})
     return doc
 

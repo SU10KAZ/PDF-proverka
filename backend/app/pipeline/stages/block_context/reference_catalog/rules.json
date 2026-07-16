@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "rules_version": "2026.07.13-1",
+  "selection": {
+    "scope": ["discipline", "profile_id"],
+    "exclude_current_block": true,
+    "prefer_complete_candidates": true,
+    "strongest_match_min": 0.08,
+    "top_alternatives": 3,
+    "weights": {
+      "semantic": 0.35,
+      "subtype": 0.4,
+      "structure": 0.15,
+      "quality": 0.1
+    },
+    "quality_weights": {
+      "complete": 0.5,
+      "covered_facts": 0.3,
+      "evidence": 0.2
+    },
+    "confidence": {
+      "high_min": 0.55,
+      "medium_min": 0.35
+    }
+  },
+  "classification": {
+    "primary_source": "chandra_description",
+    "ignored_chandra_fields": ["Текст на чертеже", "Сущности", "ENRICHED"],
+    "fallback_source": "strict_pdf_vector_region"
+  },
+  "text_scope": {
+    "mode": "strict_polygon_or_rectangle",
+    "outside_margin": 0.0,
+    "invalid_region": "empty",
+    "empty_region": "image_only"
+  },
+  "generic_subtypes": [
+    "", "floor", "floor_plan", "axonometry", "installation", "assembly", "section",
+    "equipment_drawing", "architectural_block", "construction_block", "device",
+    "графический_блок_эом", "архитектурный_блок", "конструктивный_блок",
+    "технологический_блок", "металлическая_конструкция"
+  ],
+  "semantic_stop_words": [
+    "блок", "тип", "описание", "краткое", "чертеж", "чертёж", "чертеже",
+    "схема", "схемы", "план", "планы", "фрагмент", "представлен", "представлена",
+    "представлены", "показан", "показана", "показаны", "изображен", "изображена",
+    "изображены", "указан", "указана", "указаны", "содержит", "раздел", "рабочей",
+    "документации", "система", "системы", "узел", "узла", "вид", "виды", "этаж",
+    "этажа", "здания", "сооружения", "вероятно", "относится", "элемент", "элементы",
+    "для", "или", "при", "над", "под", "между", "через", "вдоль", "внутри", "рядом",
+    "также", "дополнительно", "который", "которая", "которые", "этот", "этой", "дана",
+    "дано", "двух", "один", "одна", "несколько", "with", "from", "into", "block",
+    "plan", "scheme", "drawing", "detail", "floor", "graph", "profile"
+  ]
+}

@@ -49,10 +49,12 @@ INPUT_QUAD = {
     "document_md": "_document.md",
     "ocr_html": "_ocr.html",
     "result_json": "_result.json",
+    "blocks_json": "_blocks.json",
 }
 
 # Суффиксы-синонимы по ролям, в порядке приоритета. С 2026-07 портал отдаёт
-# 3-файловый комплект: <имя>.pdf + <имя>_results.md + <имя>_results.html
+# новый комплект: <имя>.pdf + <имя>_results.md + <имя>_results.html
+# [+ <имя>_blocks.json — геометрия блоков, ОПЦИОНАЛЕН, появился 2026-07-16]
 # (без result.json). Старый 4-файловый метод (_document.md/_ocr.html/_result.json)
 # принимаем до ~2026-08-14 (раздел ВК ещё распознаётся по-старому), после чего
 # приём старых суффиксов можно удалить; ЧТЕНИЕ уже мигрированных версий от
@@ -62,6 +64,7 @@ INPUT_SUFFIXES: dict[str, tuple[str, ...]] = {
     "document_md": ("_document.md", "_results.md"),
     "ocr_html": ("_ocr.html", "_results.html", "_results.htm"),
     "result_json": ("_result.json",),
+    "blocks_json": ("_blocks.json",),
 }
 
 # Нормализованные имена в 02_work (рабочая копия для backend).
@@ -70,12 +73,13 @@ WORK_NORMALIZED = {
     "document_md": "document.md",
     "ocr_html": "ocr.html",
     "result_json": "result.json",
+    "blocks_json": "blocks.json",
 }
 
 # Ключевые артефакты анализа, которые обязаны попасть в 03_analysis/latest
 LATEST_ANALYSIS_FILES = (
-    "01_text_analysis.json",
-    "02_blocks_analysis.json",
+    "02_text_analysis.json",
+    "01_blocks_analysis.json",
     "03_findings.json",
     "document_graph.json",
     "norm_checks.json",
@@ -85,8 +89,8 @@ LATEST_ANALYSIS_FILES = (
 
 # Артефакты, которые нельзя потерять (validate проверяет их явно).
 CRITICAL_ANALYSIS_FILES = (
-    "01_text_analysis.json",
-    "02_blocks_analysis.json",
+    "02_text_analysis.json",
+    "01_blocks_analysis.json",
     "03_findings.json",
 )
 
@@ -273,7 +277,7 @@ def enumerate_versions(path: Path) -> list[VersionRec]:
 def find_input_quad(version_dir: Path) -> dict[str, Optional[Path]]:
     """Ищет входной комплект в папке версии по суффиксам имени.
 
-    Возвращает {pdf, document_md, ocr_html, result_json} -> Path | None.
+    Возвращает {pdf, document_md, ocr_html, result_json, blocks_json} -> Path | None.
     `.pdf` ищем как файл (исключая директории с .pdf в имени).
     """
     found: dict[str, Optional[Path]] = {k: None for k in INPUT_QUAD}
@@ -282,7 +286,7 @@ def find_input_quad(version_dir: Path) -> dict[str, Optional[Path]]:
     entries = sorted(version_dir.iterdir(), key=lambda p: p.name)
     # сначала специфичные суффиксы; для каждой роли перебираем синонимы
     # в порядке приоритета (старый суффикс выигрывает у нового при обоих в папке)
-    for key in ("document_md", "ocr_html", "result_json"):
+    for key in ("document_md", "ocr_html", "result_json", "blocks_json"):
         for suffix in INPUT_SUFFIXES[key]:
             for e in entries:
                 if e.is_file() and e.name.lower().endswith(suffix):
@@ -405,8 +409,8 @@ def inventory_one_project(object_dir: Path, discipline: str, project_path: Path,
         "has_result_json": quad["result_json"] is not None,
         "has_project_info": (vdir / "project_info.json").exists(),
         "has_output": output_dir.is_dir(),
-        "has_01_text_analysis": (output_dir / "01_text_analysis.json").exists(),
-        "has_02_blocks_analysis": (output_dir / "02_blocks_analysis.json").exists(),
+        "has_01_text_analysis": (output_dir / "02_text_analysis.json").exists(),
+        "has_02_blocks_analysis": (output_dir / "01_blocks_analysis.json").exists(),
         "has_03_findings": (output_dir / "03_findings.json").exists(),
         "has_pipeline_log": (output_dir / "pipeline_log.json").exists(),
         "has_blocks": _has_blocks(output_dir),
@@ -699,7 +703,7 @@ def _copytree_tracked(src_dir: Path, dst_dir: Path, role: str) -> list[dict]:
     return files
 
 
-_CRITICAL_ANALYSIS_NAMES = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+_CRITICAL_ANALYSIS_NAMES = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
 
 
 def migrate_version(version: VersionRec, doc_dir: Path, *,
@@ -753,6 +757,23 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
         rec = _copy_file_tracked(src, vroot / "02_work" / WORK_NORMALIZED[key],
                                  role=f"work:{key}")
         files.append(rec)
+
+    # Новый комплект портала (есть blocks.json, нет result.json): синтезируем
+    # 02_work/result.json из геометрии — иначе загрузка путём «новый проект»
+    # даёт версию, которую пайплайн отклоняет («нет result.json»). Fail-soft:
+    # миграция не должна падать из-за брака геометрии; import ленивый, чтобы
+    # CLI-скрипты без backend-зависимостей продолжали работать.
+    if quad.get("blocks_json") is not None and quad.get("result_json") is None:
+        try:
+            from backend.app.services.common.blocks_json import synthesize_result_json_file
+            synthesize_result_json_file(
+                vroot / "02_work" / "blocks.json",
+                vroot / "02_work" / "result.json",
+                vroot / "02_work" / "document.md",
+                pdf_name=(quad["pdf"].name if quad.get("pdf") else None),
+            )
+        except Exception:
+            pass
 
     # --- 03_analysis: verbatim run-копия + классифицированные копии ---
     output_dir = legacy_dir / "_output"
@@ -828,7 +849,9 @@ def migrate_version(version: VersionRec, doc_dir: Path, *,
 def migrate_project(project_path: Path, v2_root: Path, *,
                     objects_map: Optional[dict] = None,
                     run_id: Optional[str] = None,
-                    policy: Optional[dict] = None) -> dict:
+                    policy: Optional[dict] = None,
+                    object_id: Optional[str] = None,
+                    display_name: Optional[str] = None) -> dict:
     """Мигрирует один legacy-проект или контейнер `(main)` в projects_v2.
 
     Read-only по отношению к `projects/`. Идемпотентно перезаписывает копии
@@ -839,9 +862,14 @@ def migrate_project(project_path: Path, v2_root: Path, *,
     discipline = project_path.parent.name
     object_dir = project_path.parent.parent
     objects_map = objects_map if objects_map is not None else load_objects_map()
-    object_id = object_id_for(object_dir, objects_map)
+    # Temporary staging paths (notably v2-primary browser uploads) do not have
+    # a stable legacy path and their basename may differ from the current
+    # object display name after a rename.  Callers that already know the
+    # object identity must be able to provide it explicitly instead of falling
+    # back to a hash of the staging-directory name.
+    object_id = str(object_id or "").strip() or object_id_for(object_dir, objects_map)
     document_code = document_code_for(project_path)
-    display_name = object_dir.name
+    display_name = str(display_name or "").strip() or object_dir.name
 
     # читаемая папка объекта (obj_<hash> не используется как имя)
     obj_root = allocate_object_folder(v2_root, object_id, display_name)

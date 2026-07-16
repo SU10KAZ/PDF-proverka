@@ -1,0 +1,4755 @@
+{
+  "schema_version": 1,
+  "catalog_version": "2026.07.13-1",
+  "discipline": "СС",
+  "records": [
+    {
+      "block_id": "4MAR-NTAU-X47",
+      "discipline": "СС",
+      "profile_id": "access_point_assembly",
+      "subtype": "access_point",
+      "title": "",
+      "description": "Схема установки оборудования на калитке с двух сторон. На чертеже представлены два вида калитки: вид со стороны входа и вид со стороны выхода. На виде со стороны входа показана вызывная панель с размером установки 1200-1500 мм от уровня земли. На виде со стороны выхода показаны замок, доводчик и стойка с кнопкой выхода, расположенная на расстоянии 800-850 мм от калитки. Элементы пронумерованы от 1 до 5. Вид со стороны входа Вид со стороны выхода 1 2 3 4 5 1200-1500мм 800-850мм",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "callout": 5,
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "views_total": 2,
+          "callouts_total": 5,
+          "dimensions_total": 2,
+          "coordinate_text_records_total": 10,
+          "coordinate_text_characters_total": 68
+        }
+      }
+    },
+    {
+      "block_id": "7KUU-4A7Y-LQ6",
+      "discipline": "СС",
+      "profile_id": "access_point_assembly",
+      "subtype": "mortise_lock",
+      "title": "",
+      "description": "Типовая схема расположения оборудования системы контроля доступа на дверном проеме. На схеме представлены два вида дверного проема: со стороны коридора (улицы) и со стороны защищаемого помещения. Показаны места установки считывателя, кнопки выхода, кнопки аварийной разблокировки, электромагнитного замка, доводчика и контроллера доступа. Указаны монтажные высоты для элементов управления в диапазоне 1080-1500 мм от уровня пола и отступы 150 мм. Общая высота проема обозначена как 2500 мм. Вид со ст",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "callout": 6,
+          "dimension": 3
+        },
+        "counts": {
+          "nodes_total": 9,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "views_total": 2,
+          "callouts_total": 6,
+          "dimensions_total": 3
+        }
+      }
+    },
+    {
+      "block_id": "9CGA-EMPC-RHP",
+      "discipline": "СС",
+      "profile_id": "access_point_assembly",
+      "subtype": "gate",
+      "title": "",
+      "description": "На чертеже представлены два вида калитки с элементами системы контроля доступа. Изображены два вида калитки: со стороны входа и со стороны выхода. На виде со стороны входа показана кодовая панель на стойке с указанием высоты установки 1200-1500 мм. На виде со стороны выхода отображены замок, доводчик и считыватель на отдельной стойке. Считыватель расположен на высоте, а расстояние от стойки до калитки составляет 800-850 мм. Элементы пронумерованы от 1 до 5. Вид со стороны входа Вид со стороны вы",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "callout": 5,
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "views_total": 2,
+          "callouts_total": 5,
+          "dimensions_total": 2
+        }
+      }
+    },
+    {
+      "block_id": "4PUT-A7K6-9XE",
+      "discipline": "СС",
+      "profile_id": "automation_control_hierarchy",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Структурная схема автоматизации инженерных систем корпуса 5 с указанием щитов управления, установок и связей с диспетчеризацией. Схема представляет собой иерархическую структуру, разделенную по уровням: кровля, 15 этаж, 1 этаж и -1 этаж. На схеме показаны щиты автоматики (ШАУВ-1-К5, ШАУВ-2-К5, ШАУВ-3-К5, ШАУВ-4-К5), связанные с приточными и вытяжными установками, а также кондиционерами. Линии связи обозначены сплошными линиями, ведущими к системе диспетчеризации. В нижней части расположены блоки",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "automation_cabinet": 4,
+          "engineering_system": 11,
+          "local_panel": 2
+        },
+        "counts": {
+          "nodes_total": 17,
+          "containers_total": 10,
+          "networks_total": 8,
+          "edges_total": 8,
+          "buildings_total": 6,
+          "floor_bands_total": 4,
+          "connected_nodes_total": 11,
+          "coordinate_text_records_total": 118,
+          "coordinate_text_characters_total": 1579
+        }
+      }
+    },
+    {
+      "block_id": "66AQ-KA4R-KFF",
+      "discipline": "СС",
+      "profile_id": "automation_control_hierarchy",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"Не определены\", \"zone_name\": \"Схема\" }, \"content_summary\": \"Схема автоматизации инженерных систем для различных корпусов здания.\", \"detailed_description\": \"На чертеже представлены структурные схемы автоматизации инженерных систем (ШАУВ) для корпусов 1-7. Схемы включают блоки управления, датчики, насосные станции и вентиляционные камеры с указанием помещений. Элементы соединены линиями связи, ведущими к системам диспетчеризации. Присутствуют ссылки на соответствующи",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        85,
+        85
+      ],
+      "covered_facts": 85,
+      "structure_signature": {
+        "node_types": {
+          "automation_cabinet": 68,
+          "engineering_system": 106,
+          "local_panel": 23
+        },
+        "counts": {
+          "nodes_total": 197,
+          "containers_total": 29,
+          "networks_total": 128,
+          "edges_total": 128,
+          "buildings_total": 7,
+          "floor_bands_total": 22,
+          "connected_nodes_total": 149
+        }
+      }
+    },
+    {
+      "block_id": "A3VL-P6CN-9J9",
+      "discipline": "СС",
+      "profile_id": "automation_control_hierarchy",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема автоматизации инженерных систем корпуса 4 с распределением по этажам. Схема разделена по уровням: кровля, 18 этаж, 1 этаж и -1 этаж. На каждом уровне показаны блоки оборудования (Вкр4.1, Вж4.1, Пл4.1, Вк4.1, Всу4.1, ШАУВ-1-К4, ШАУВ-2-К4, У1, У2) с указанием помещений. Линии связи соединяют оборудование с узлами управления и шкафами автоматизации. Присутствуют выноски с указанием разделов проектной документации для каждого корпуса. Корпус 4 Кровля Вкр4.1 Вж4.1 18 этаж ШАУВ-1-К4 ШАУВ-1-К4ПЧ",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "automation_cabinet": 3,
+          "engineering_system": 7,
+          "local_panel": 2
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 11,
+          "networks_total": 2,
+          "edges_total": 2,
+          "buildings_total": 7,
+          "floor_bands_total": 4,
+          "connected_nodes_total": 4,
+          "coordinate_text_records_total": 108,
+          "coordinate_text_characters_total": 1369
+        }
+      }
+    },
+    {
+      "block_id": "4W4C-L97P-PU7",
+      "discipline": "СС",
+      "profile_id": "cabinet_commutation_graph",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Схема коммутации оборудования системы оповещения и управления эвакуацией (СОУЭ) в шкафу ШСОУЭ0.1. На схеме представлены блоки оборудования SONAR, включая модули питания, управления и распределения, соединенные линиями связи и питания. Изображены клеммные колодки с маркировкой входов и выходов, а также предохранители и разъемы для подключения ВОЛС. Линии разного типа (сплошные, цветные) обозначают различные типы соединений: питание 220В, 24В, линии оповещения, Ethernet и ВОЛС. В нижней части расп",
+      "source_page": 23,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 9
+        },
+        "counts": {
+          "nodes_total": 9,
+          "containers_total": 1,
+          "networks_total": 19,
+          "edges_total": 17,
+          "rack_devices_total": 9
+        }
+      }
+    },
+    {
+      "block_id": "6MTW-9YEV-MQG",
+      "discipline": "СС",
+      "profile_id": "cabinet_commutation_graph",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Принципиальная схема коммутации оборудования системы оповещения и управления эвакуацией (СОУЭ) в шкафу ШСОУЭ0.2. Схема отображает электрические соединения между блоками SONAR, включая модули SNSO-0208, SNCA-8002, SPM-C20085-AR, RDIP-050A, RD-8, SBC-3250 и SBB-2425/2450. Линии связи обозначены сплошными линиями разного цвета, соединяющими клеммные колодки и разъемы оборудования. В нижней части расположены блоки питания и коммутации с указанием входных и выходных цепей 24В. В правом нижнем углу на",
+      "source_page": 24,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 9
+        },
+        "counts": {
+          "nodes_total": 9,
+          "containers_total": 1,
+          "networks_total": 18,
+          "edges_total": 16,
+          "rack_devices_total": 9,
+          "coordinate_text_records_total": 389,
+          "coordinate_text_characters_total": 2268
+        }
+      }
+    },
+    {
+      "block_id": "9MM7-69DW-UGG",
+      "discipline": "СС",
+      "profile_id": "cabinet_commutation_graph",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема коммутации оборудования системы оповещения и управления эвакуацией (СОУЭ) с указанием подключений блоков SONAR. На схеме представлены модули SONAR, включая SNCA-8002, SPM-C20050-AR, RDIP-050A, RD-8 (pwc), SBC-3250 и блоки питания SBB-2425/2450. Устройства соединены линиями питания 220В, 24В, линиями оповещения, DAP-интерфейса и Ethernet. Приведены клеммные колодки с нумерацией выходов и обозначениями полярности. В нижней части расположены текстовые примечания и ссылки на разделы проектной",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 12
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 1,
+          "networks_total": 17,
+          "edges_total": 10,
+          "rack_devices_total": 12,
+          "coordinate_text_records_total": 351,
+          "coordinate_text_characters_total": 1723
+        }
+      }
+    },
+    {
+      "block_id": "A4MU-DL6U-EHW",
+      "discipline": "СС",
+      "profile_id": "cabinet_commutation_graph",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема коммутации оборудования в шкафу СОУЭ с указанием модулей SONAR и линий связи. На схеме представлены модули SONAR (SNCA-8002, SPM-C20050-AR, RDIP-050A, RD-8, SBC-3250, SBB-2425, SBB-2450), расположенные вертикально в шкафу. Красные линии обозначают электрические соединения между модулями, включая линии питания 24В, оповещения и интерфейсы. Справа приведена легенда типов линий (питание 220В, 24В, оповещение, DAP, Ethernet, ВОЛС, АЛС). В нижней части расположены клеммные блоки для подключения",
+      "source_page": 37,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 12
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 1,
+          "networks_total": 17,
+          "edges_total": 10,
+          "rack_devices_total": 12,
+          "coordinate_text_records_total": 354,
+          "coordinate_text_characters_total": 1739
+        }
+      }
+    },
+    {
+      "block_id": "4JGG-PA6Y-9NX",
+      "discipline": "СС",
+      "profile_id": "cabinet_rack_layout",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Схема расположения оборудования в телекоммуникационном шкафу ШСОУЭ0.1. На схеме представлен вертикальный разрез телекоммуникационного шкафа с установленными модулями Sonar. Оборудование размещено в 16 позициях, пронумерованных слева. Внутри шкафа расположены блоки питания, аккумуляторные батареи, коммутаторы и панели управления. Справа от каждого модуля указаны выносные линии с номерами позиций, соответствующие спецификации. Телекоммуникационный шкаф ШСОУЭ0.1 SONAR SBB-2450 SONAR SBB-2450 SONAR",
+      "source_page": 25,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 10
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "rack_devices_total": 10
+        }
+      }
+    },
+    {
+      "block_id": "4TGH-VYR9-EGG",
+      "discipline": "СС",
+      "profile_id": "cabinet_rack_layout",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема расположения оборудования в телекоммуникационном шкафу ШСОУЭ4.1 с нумерацией позиций. На чертеже представлен фронтальный вид телекоммуникационного шкафа с установленным оборудованием, пронумерованным от 1 до 22. Оборудование размещено на вертикальных направляющих, обозначенных с обеих сторон шкафа. Справа от шкафа вынесены выносные линии с номерами позиций, указывающими на конкретные блоки, такие как вентиляторная панель, оптические коммутаторы, приборы управления оповещением и блоки АКБ.",
+      "source_page": 38,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 13
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "rack_devices_total": 13,
+          "coordinate_text_records_total": 187,
+          "coordinate_text_characters_total": 746
+        }
+      }
+    },
+    {
+      "block_id": "6FG9-E6JR-LQX",
+      "discipline": "СС",
+      "profile_id": "cabinet_rack_layout",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема расположения оборудования в телекоммуникационном шкафу ШСОУЭ0.1. На чертеже представлен вид спереди телекоммуникационного шкафа с установленным оборудованием, пронумерованным от 1 до 16 по вертикали. Оборудование включает блоки питания, коммутаторы, зарядные устройства и аккумуляторные батареи, размещенные в стандартных юнитах. Слева от шкафа расположена вертикальная шкала нумерации позиций, справа — выноски с номерами компонентов. Внутри шкафа видны контуры устройств с текстовыми обозначе",
+      "source_page": 26,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 10
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "rack_devices_total": 10,
+          "coordinate_text_records_total": 92,
+          "coordinate_text_characters_total": 564
+        }
+      }
+    },
+    {
+      "block_id": "QA6L-V43L-X69",
+      "discipline": "СС",
+      "profile_id": "cabinet_rack_layout",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Представлена схема расположения оборудования в телекоммуникационном шкафу ШСОУЭ4.1. На схеме изображен вертикальный прямоугольный контур шкафа с пронумерованными позициями оборудования от 1 до 27. Внутри шкафа размещены блоки питания, аккумуляторные батареи, приборы управления оповещением (SPM-C20085-AR, SPM-C20025-AR), оптические коммутаторы и фальшпанели. Слева от шкафа расположены выноски с указанием, что оборудование учтено разделом 13АВ-РД-СОУЭ-К3-К6. Справа от шкафа приведена нумерация поз",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "rack_device": 15
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "rack_devices_total": 15,
+          "coordinate_text_records_total": 289,
+          "coordinate_text_characters_total": 1157
+        }
+      }
+    },
+    {
+      "block_id": "6GV3-N4FE-NU7",
+      "discipline": "СС",
+      "profile_id": "cctv_floor_network",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Фрагмент плана 1-го этажа корпуса 5 с экспликацией помещений и схемой расположения оборудования системы охранного телевидения. На чертеже представлен план помещений 1-го этажа с нанесенными осями, перегородками и дверными проемами. В помещениях указаны их номера (например, 5.Д.1, 5.МОП.3) и площади в квадратных метрах. Синими линиями обозначены трассы прокладки кабелей, а кружками с маркировкой ВК (например, ВК5.1.1.8) отмечены точки установки камер видеонаблюдения. Присутствуют отметки чистого",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        19,
+        19
+      ],
+      "covered_facts": 19,
+      "structure_signature": {
+        "node_types": {
+          "camera": 9,
+          "ospd_cabinet": 1,
+          "power_supply": 1,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "buildings_total": 0,
+          "floor_bands_total": 0,
+          "coordinate_text_records_total": 209,
+          "coordinate_text_characters_total": 1006
+        }
+      }
+    },
+    {
+      "block_id": "97DE-EFTQ-YWW",
+      "discipline": "СС",
+      "profile_id": "cctv_floor_network",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "План размещения оборудования и прокладки кабельных трасс системы охранного телевидения (СОТ) на 1 этаже пристроек К3-К4 и К4-К5. На чертеже представлен план этажа с сеткой осей, на котором отображены помещения, дверные проемы и трассы прокладки кабелей, выделенные синими пунктирными линиями. Вдоль стен и в коридорах расположены условные обозначения видеокамер и точек подключения оборудования. Присутствуют выноски с маркировкой кабельных трасс, таких как ОСПД4.1-ВК4.1.1.12 и аналогичных. В правой",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        16,
+        16
+      ],
+      "covered_facts": 16,
+      "structure_signature": {
+        "node_types": {
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "buildings_total": 0,
+          "floor_bands_total": 0,
+          "coordinate_text_records_total": 213,
+          "coordinate_text_characters_total": 1515
+        }
+      }
+    },
+    {
+      "block_id": "9P7Y-Q3H3-36Q",
+      "discipline": "СС",
+      "profile_id": "cctv_floor_network",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Схема расположения оборудования системы охранного телевидения (СОТ) для корпусов 3, 4, 5 и 6. На схеме представлены структурные связи между шкафами ОСПД, лифтовым оборудованием (ШУЛ) и камерами видеонаблюдения (ВК). Линии связи обозначены сплошными синими и оранжевыми линиями, соединяющими узлы в различных помещениях и на этажах. Каждое устройство имеет буквенно-цифровую маркировку, указывающую на корпус, этаж и порядковый номер. В нижней части расположены примечания и легенда обозначений для ма",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        79,
+        79
+      ],
+      "covered_facts": 79,
+      "structure_signature": {
+        "node_types": {
+          "camera": 48,
+          "lift_camera_cabinet": 12,
+          "ospd_cabinet": 10,
+          "power_supply": 1,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 72,
+          "containers_total": 17,
+          "networks_total": 60,
+          "edges_total": 60,
+          "buildings_total": 4,
+          "floor_bands_total": 13
+        }
+      }
+    },
+    {
+      "block_id": "6LCH-PCEN-6HU",
+      "discipline": "СС",
+      "profile_id": "control_circuit_graph",
+      "subtype": "asud_panel",
+      "title": "",
+      "description": "Электрическая принципиальная схема подключения оборудования ЩАСУД-6.1. Схема отображает подключение ИБП 1200 ВА/720 Вт (А1) к двум концентраторам 7.2 (А2, А3) и блоку питания G1. Питание поступает через ввод X0, защищенный автоматическими выключателями QF1, QF2, QF3. Концентраторы А2 и А3 соединены с телекоммуникационными шкафами через кабели U/UTP Cat5e и жгуты ЛНГС.465213.270.060. Предусмотрены линии питания для переговорных устройств зон МГН и технических помещений. ИБП 1200 ВА/720 Вт A1 Inpu",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        10,
+        10
+      ],
+      "covered_facts": 10,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 15,
+          "apparatus_port": 38,
+          "terminal_port": 33
+        },
+        "counts": {
+          "nodes_total": 86,
+          "containers_total": 6,
+          "networks_total": 19,
+          "edges_total": 15,
+          "apparatus_total": 15,
+          "ports_total": 71,
+          "wire_segments_total": 387,
+          "circuit_components_total": 101
+        }
+      }
+    },
+    {
+      "block_id": "9WRW-TQYG-JG6",
+      "discipline": "СС",
+      "profile_id": "control_circuit_graph",
+      "subtype": "metering_panel",
+      "title": "",
+      "description": "Принципиальная электрическая схема питания оборудования АСКУВ и АСКУТ через блоки питания и автоматические выключатели. Схема отображает ввод питания через клеммник X0 и ИБП (XS1), распределяемый через автоматические выключатели QF1-QF5. Четыре блока питания (три БП120Б-Д9-24С и один БП30Б-Д3-24) преобразуют входное напряжение в выходное 24В постоянного тока. Выходы блоков питания подключены к клеммным колодкам X1, распределяющим питание на линии АСКУВ-4.1–5.3 и АСКУТ-4.1–5.2. Линии связи и пита",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 16,
+          "apparatus_port": 27,
+          "terminal_port": 48
+        },
+        "counts": {
+          "nodes_total": 91,
+          "containers_total": 5,
+          "networks_total": 22,
+          "edges_total": 19,
+          "apparatus_total": 16,
+          "ports_total": 75,
+          "wire_segments_total": 749,
+          "circuit_components_total": 140
+        }
+      }
+    },
+    {
+      "block_id": "9X3U-V6QC-R66",
+      "discipline": "СС",
+      "profile_id": "control_circuit_graph",
+      "subtype": "control_panel",
+      "title": "",
+      "description": "Электрическая принципиальная схема подключения оборудования щита ЩАСУД-6.2. Схема отображает соединения между источником бесперебойного питания А1, концентратором А2, блоком питания G1 и клеммными колодками. Линии связи включают силовые цепи, Ethernet-кабель U/UTP Cat5e и жгут ЛНГС.465213.270.060. Автоматические выключатели QF1, QF2 и QF3 защищают цепи питания. Указаны параметры входного и выходного напряжения для блоков питания и ИБП. ИБП 1200 ВА/720 Вт A1 Input Output1 Output2 Output3 QF2 6A Q",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 12,
+          "apparatus_port": 25,
+          "terminal_port": 29
+        },
+        "counts": {
+          "nodes_total": 66,
+          "containers_total": 4,
+          "networks_total": 14,
+          "edges_total": 10,
+          "apparatus_total": 12,
+          "ports_total": 54,
+          "wire_segments_total": 360,
+          "circuit_components_total": 96,
+          "coordinate_text_records_total": 135,
+          "coordinate_text_characters_total": 874
+        }
+      }
+    },
+    {
+      "block_id": "44WT-XTMY-YRW",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена схема электрических подключений оборудования системы СОВ V типа организации доступа. На схеме изображены функциональные блоки: устройство дистанционного пуска SA1, адресный релейный модуль, электромагнитный замок, считыватели Wiegand, контроллеры STR-1AP-M и STR20-1AP-IP-M. Компоненты соединены линиями, обозначающими кабельные трассы с указанием марок кабелей, таких как КСПВПнг(А)-HF и U/UTP Cat5e. Присутствуют монтажные коробки, резистор 4,7к и клеммные соединения. Указаны ссылки н",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 1,
+          "cable": 10
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 11,
+          "wire_segments_total": 1303,
+          "wire_components_total": 263,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 184,
+          "coordinate_text_characters_total": 1145
+        }
+      }
+    },
+    {
+      "block_id": "497C-LUMM-4WY",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема подключения устройства защиты БГЗ в составе узла КР. На схеме представлен прямоугольный блок БГЗ с портами IN и OUT, заземленный снизу. К порту IN подходит линия с маркировкой кабеля U/UTP Cat5e ZH нг(А)-HF 4х2х0,52, идущая от ОСПД3.1/ОСПД6.3. От порта OUT идет линия к блоку ВК с разъемом RJ-45 (PoE), также использующая кабель U/UTP Cat5e ZH нг(А)-HF 4х2х0,52. Весь узел БГЗ находится внутри контура КР. U/UTP Cat5e ZH нг(А)-HF 4х2х0,52 КР БГЗ IN OUT ВК к ОСПД3.1/ОСПД6.3 RJ-45 (PoE)",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 2,
+          "cable": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 4,
+          "wire_segments_total": 316,
+          "wire_components_total": 108,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 11,
+          "coordinate_text_characters_total": 119
+        }
+      }
+    },
+    {
+      "block_id": "4KFA-GQMH-9PA",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема электрических подключений согласователя работы кондиционеров YCJ-RS002 к двум адаптерам и внутренним блокам. На схеме представлен блок K-3 (YCJ-RS002) с двумя клеммными колодками X1 и X2. От клеммной колодки X1 отходят линии к двум адаптерам (Адаптер1 и Адаптер2), каждый из которых соединен с соответствующим внутренним блоком (К3.1 и К3.2). Линии маркированы цветовыми обозначениями (Жл, Ср, Зл, Кр). Соединения между блоками выполнены сплошными линиями, указывающими на прокладку кабелей. K-",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 0,
+          "wire_segments_total": 161,
+          "wire_components_total": 105,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 87,
+          "coordinate_text_characters_total": 218
+        }
+      }
+    },
+    {
+      "block_id": "4WDQ-JXWF-KAK",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема подключения IP-камеры через модуль грозозащиты. На схеме изображен прямоугольный блок КР, внутри которого расположен модуль грозозащиты БГЗ с портами IN и OUT. Справа от БГЗ находится блок ВК с разъемом RJ-45 (PoE). Линии связи обозначены как U/UTP Cat5e ZH нг(А)-HF 4х2х0,52. Входящая линия слева подписана как «к ОСПД3.1/ОСПД6.3». КР БГЗ IN OUT ВК RJ-45 (PoE) U/UTP Cat5e ZH нг(А)-HF 4х2х0,52 U/UTP Cat5e ZH нг(А)-HF 4х2х0,52 к ОСПД3.1/ОСПД6.3",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 2,
+          "cable": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 4,
+          "wire_segments_total": 132,
+          "wire_components_total": 90,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 9,
+          "coordinate_text_characters_total": 104
+        }
+      }
+    },
+    {
+      "block_id": "64GR-P9KK-43E",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема электрических подключений согласователя работы кондиционеров YCJ-RS002 к внутренним блокам сплит-систем через адаптеры. На схеме представлен блок K6.1-A (YCJ-RS002) с двумя разъемами X1 и X2, соединенный с двумя адаптерами (Адаптер1 и Адаптер2). Каждый адаптер имеет разъемы X1 и X2 и подключен к соответствующему внутреннему блоку (К6.1 и К6.2). Линии связи обозначены цветами проводов (Жл, Ср, Зл, Кр) и маркировкой контактов (1-4 для адаптеров и внутренних блоков, 1-8 для разъема X1 блока K",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 0,
+          "wire_segments_total": 199,
+          "wire_components_total": 124,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 85,
+          "coordinate_text_characters_total": 262
+        }
+      }
+    },
+    {
+      "block_id": "6FTW-WUQ7-MUY",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "aps",
+      "title": "",
+      "description": "Принципиальная электрическая схема подключения оборудования системы пожарной сигнализации и управления «Рубеж». На схеме представлены блоки управления, такие как R3-Рубеж-2ОП, ИВЭПР, МДУ-1C-R3, РМ-1-R3, РМ-4-R3 и АМП-4-R3, соединенные линиями связи АЛС. Показаны подключения исполнительных механизмов, включая электромеханические приводы с возвратной пружиной и реверсивные приводы. Присутствуют обозначения кабелей типа КПСЭнг(А)-FRHF и ППГнг(А)-FRHF, а также клеммные соединения для внешних цепей 2",
+      "source_page": 27,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        22,
+        22
+      ],
+      "covered_facts": 22,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 10,
+          "terminal": 101
+        },
+        "counts": {
+          "nodes_total": 111,
+          "containers_total": 0,
+          "networks_total": 20,
+          "edges_total": 15,
+          "terminals_total": 101,
+          "components_total": 10,
+          "wire_segments_total": 5976,
+          "wire_components_total": 546,
+          "terminal_networks_total": 20
+        }
+      }
+    },
+    {
+      "block_id": "79PP-NE7C-VDH",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема электрических подключений оборудования системы СОВ II типа организации доступа. На схеме представлены блоки управления STR-1AP-M и STR20-1AP-IP-M, соединенные с периферийными устройствами: вызывной панелью AA-07BD SILVER, электромагнитным замком, кнопкой выхода и датчиками. Линии связи обозначены кабелями марок КСПВПнг(А)-HF, U/UTP Cat5e ZH нг(А)-HF. Присутствуют монтажные коробки, реле, адресный релейный модуль и устройство дистанционного пуска. Указаны номиналы резисторов 4,7к и типы под",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 2,
+          "cable": 14
+        },
+        "counts": {
+          "nodes_total": 16,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 16,
+          "wire_segments_total": 1358,
+          "wire_components_total": 335,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 199,
+          "coordinate_text_characters_total": 1330
+        }
+      }
+    },
+    {
+      "block_id": "7DRF-EWWE-VHD",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Принципиальная электрическая схема подключений клеммника X1 для систем АСУД. Схема представляет собой ряд вертикальных линий, соединяющих клеммные блоки (65-92) с исполнительными устройствами через кабели типа КСПВПГнг(А)-HF 2х2х0,75. В нижней части расположены функциональные блоки ВРУ-К3.2, ВРУ-К3.2 (РП4АВР) и ВРУ-К3.2 (РП3ОДН) с указанием типов сигналов и состояний (Наличие напряжения, Контроль положения, Световое ограждение, Обогрев воронок). Линии связи обозначены маркировками ВРУ.К3.2-1 по",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 8,
+          "cable": 7,
+          "terminal": 1
+        },
+        "counts": {
+          "nodes_total": 16,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 1,
+          "components_total": 15,
+          "wire_segments_total": 237,
+          "wire_components_total": 163,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 197,
+          "coordinate_text_characters_total": 1175
+        }
+      }
+    },
+    {
+      "block_id": "7E7X-3EKL-U4R",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема электрических подключений согласователя работы кондиционеров YCJ-RS002 к внутренним блокам сплит-систем К4.1 и К4.2 через адаптеры. На схеме изображен блок YCJ-RS002 с разъемами X1 и X2, соединенный с двумя адаптерами (Адаптер1 и Адаптер2). Каждый адаптер подключен к соответствующему внутреннему блоку (К4.1 и К4.2) через разъемы X1 и X2. Линии связи обозначены цветовыми кодами проводов (Жл, Ср, Зл, Кр). Присутствует текстовая выноска 'Кабель в комплекте адаптером', указывающая на тип соеди",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 0,
+          "wire_segments_total": 199,
+          "wire_components_total": 125,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 80,
+          "coordinate_text_characters_total": 196
+        }
+      }
+    },
+    {
+      "block_id": "7NPF-J76P-4L6",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Принципиальная электрическая схема подключений ВРУ-К6.1 с перечнем кабелей и контролируемых параметров. Схема представляет собой разветвленную структуру с шиной X1, от которой отходят линии к различным устройствам ВРУ-К6.1. Каждая линия снабжена маркировкой кабеля (например, КСПВПГнг(А)-HF 2х2х0,75) и обозначением конкретного узла подключения. В нижней части расположены блоки с текстовыми описаниями контролируемых функций, таких как освещение, указатели «ВЫХОД» и положения коммутационных аппарат",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 9,
+          "cable": 17,
+          "terminal": 1
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 1,
+          "components_total": 26,
+          "wire_segments_total": 409,
+          "wire_components_total": 287,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 379,
+          "coordinate_text_characters_total": 2137
+        }
+      }
+    },
+    {
+      "block_id": "7YGP-T3UA-WN6",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "access",
+      "title": "",
+      "description": "Схема электрических подключений оборудования системы СОВ II типа организации доступа. На схеме представлены контроллеры STR-1AP-M и STR20-1AP-IP-M, соединенные с периферийными устройствами: вызывной панелью AA-07BD SILVER, электромагнитным замком, кнопкой выхода, датчиком СМК и адресным релейным модулем. Устройства соединены линиями связи с указанием типов кабелей, таких как КСПВПнг(А)-HF и U/UTP Cat5e. Присутствуют монтажные коробки, резисторы 4,7к и клеммные соединения для питания 12В и 220В.",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 4,
+          "cable": 15,
+          "terminal": 55
+        },
+        "counts": {
+          "nodes_total": 74,
+          "containers_total": 0,
+          "networks_total": 7,
+          "edges_total": 4,
+          "terminals_total": 55,
+          "components_total": 19,
+          "wire_segments_total": 1483,
+          "wire_components_total": 312,
+          "terminal_networks_total": 7
+        }
+      }
+    },
+    {
+      "block_id": "944C-M9YU-YAR",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена электрическая схема подключений датчиков температуры, перепада давления и исполнительных механизмов системы автоматизации. Схема содержит таблицу с перечнем параметров, позиций и типов исполнительных механизмов. Ниже расположены графические обозначения клеммных соединений, электродвигателей и приводов клапанов с указанием маркировки кабелей. Линии связи соединяют датчики и приводы с клеммными колодками (XT1-XT5) и вводными рубильниками Q1, Q2. Указаны типы кабелей, такие как КСПВПГн",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 7,
+          "cable": 15
+        },
+        "counts": {
+          "nodes_total": 22,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 22,
+          "wire_segments_total": 811,
+          "wire_components_total": 377,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 512,
+          "coordinate_text_characters_total": 2438
+        }
+      }
+    },
+    {
+      "block_id": "96M9-PPF4-PWW",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена электрическая схема подключений к щиту ЩД-АСУД.И.3.1. Схема отображает подключения различных устройств к клеммнику X1 щита ЩД-АСУД.И.3.1 через пронумерованные контакты. В нижней части расположены блоки ARK1, согласователь работы кондиционеров YCJ-RS002 и мультиметры ВРУ-К3.1/ВРУ-К3.2. Соединения выполнены кабелями различных марок, таких как КСПВПГнг(А)-HF, КСПЭВПГнг(А)-HF и КИС-Пнг(А)-HF. Справа показано подключение Ethernet через разъем RJ-45 кабелем ParLan F/UTP Cat5e. ЩД-АСУД.И.3",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "cable": 5,
+          "terminal": 3
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 3,
+          "components_total": 5,
+          "wire_segments_total": 374,
+          "wire_components_total": 214,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 117,
+          "coordinate_text_characters_total": 672
+        }
+      }
+    },
+    {
+      "block_id": "9DUU-WMJM-L9E",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "Представлена схема подключения светового оповещения с использованием блока ИВЭПР, модуля РМ-4К-R3 и световых оповещателей Маяк-24-СТ/24В. Схема включает блок питания ИВЭПР 24/2,5 RS-R3, соединенный с модулем РМ-4К-R3. От модуля РМ-4К-R3 отходят линии к двум последовательно подключенным световым оповещателям Маяк-24-СТ/24В и конечному устройству УПН. Используются кабели марок КПСнг(А)-FRHF 1х2х0,5 и 1х2х0,75. На схеме присутствуют выноски с указанием разделов проектной документации, к которым отн",
+      "source_page": 29,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 3,
+          "terminal": 15
+        },
+        "counts": {
+          "nodes_total": 18,
+          "containers_total": 0,
+          "networks_total": 5,
+          "edges_total": 2,
+          "terminals_total": 15,
+          "components_total": 3,
+          "wire_segments_total": 1455,
+          "wire_components_total": 380,
+          "terminal_networks_total": 5
+        }
+      }
+    },
+    {
+      "block_id": "9HAV-4CNX-H63",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "camera",
+      "title": "",
+      "description": "Схема подключения оборудования ВК с использованием кабеля U/UTP Cat5e. На схеме изображена линия связи, идущая от точки «к ОСПД3.1/ШС6.3» к разъему RJ-45 (PoE). Линия снабжена выноской с указанием типа кабеля U/UTP Cat5e ZH нг(А)-HF 4х2х0,52. Справа расположен прямоугольный блок с маркировкой ВК, соединенный с разъемом RJ-45. Линия связи имеет стрелку-указатель направления. U/UTP Cat5e ZH нг(А)-HF 4х2х0,52 к ОСПД3.1/ШС6.3 RJ-45 (PoE) ВК",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 1,
+          "cable": 1,
+          "terminal": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 1,
+          "terminals_total": 2,
+          "components_total": 2,
+          "wire_segments_total": 115,
+          "wire_components_total": 75,
+          "terminal_networks_total": 1
+        }
+      }
+    },
+    {
+      "block_id": "9TRJ-DAR3-EYR",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена электрическая принципиальная схема подключений ВРУ-К6.1 с указанием кабельных линий и контролируемых параметров. Схема содержит верхнюю шину X1 с пронумерованными выводами от 5 до 66. От шины отходят вертикальные линии к блокам ВРУ-К6.1, обозначенным как ВРУ.К6.1-1, ВРУ.К6.1-2 и далее. Каждый блок включает маркировку кабелей типа КСПВПГнг(А)-HF с указанием сечения, например 2х2х0,75. В нижней части расположены текстовые блоки с описанием контролируемых цепей, таких как освещение МОП",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 9,
+          "cable": 17,
+          "terminal": 1
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 1,
+          "components_total": 26,
+          "wire_segments_total": 409,
+          "wire_components_total": 280,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 379,
+          "coordinate_text_characters_total": 2137
+        }
+      }
+    },
+    {
+      "block_id": "ACQJ-3M6P-WMY",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена принципиальная схема подключений оборудования автоматической пожарной сигнализации и автоматизации пожарной защиты. Схема содержит множество блоков контроллеров, модулей управления (МДУ-1C-R3, АМ-4-R3, РМ-1-R3, РМ-4-R3) и исполнительных устройств, соединенных линиями связи АЛС. Показаны подключения приводов клапанов, датчиков (ИП212-64-R3, ИПР513-11ИКЗ-А-R3) и блоков питания ИВЭПР. Присутствуют спецификации кабелей (КПСЭнг(А)-FRHF, ППГЭнг(А)-FRHF) и схемы обжима интерфейса R3-Link.",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        22,
+        22
+      ],
+      "covered_facts": 22,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 10
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 10,
+          "wire_segments_total": 5881,
+          "wire_components_total": 551,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 403,
+          "coordinate_text_characters_total": 2510
+        }
+      }
+    },
+    {
+      "block_id": "FM6P-FX9L-NCQ",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "metering",
+      "title": "",
+      "description": "Схема подключения квартирных узлов учета ГВС и ХВС с использованием разветвителей интерфейса ПР-4. На схеме представлены три идентичных узла, каждый из которых включает разветвитель интерфейса ПР-4, подключенный к счетчикам ГВС и ХВС. Линии связи обозначают кабели МКШнг(А)-HF 2х1,5 для питания 24В и КИС-Пнг(А)-HF 1х2х0,78 для RS-485. Разветвители ПР-4 имеют клеммные блоки Х1, Х2, Х3, Х4 с обозначениями контактов для питания и интерфейса. Узлы учета расположены в запотолочном пространстве и соеди",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 5,
+          "cable": 4,
+          "terminal": 108
+        },
+        "counts": {
+          "nodes_total": 117,
+          "containers_total": 0,
+          "networks_total": 24,
+          "edges_total": 21,
+          "terminals_total": 108,
+          "components_total": 9,
+          "wire_segments_total": 249,
+          "wire_components_total": 160,
+          "terminal_networks_total": 24
+        }
+      }
+    },
+    {
+      "block_id": "KCTA-T346-MX6",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема внешних подключений оборудования переговорной связи щита ЩАСУД-4.1. На чертеже представлена структурная схема подключений переговорных устройств, адаптеров ламп индикаторных, ретрансляторов шины CAN и кнопок. Элементы сгруппированы по этажам и помещениям, включая жилые этажи, лифтовые холлы и технические помещения подвального этажа. Соединения показаны линиями, связывающими клеммные блоки (XP1, XP2, XP3, XP4) с соответствующими устройствами. Каждое устройство имеет буквенно-цифровое обозна",
+      "source_page": 26,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 0,
+          "wire_segments_total": 1022,
+          "wire_components_total": 681,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 913,
+          "coordinate_text_characters_total": 4416
+        }
+      }
+    },
+    {
+      "block_id": "LH7D-JNJJ-FHU",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Представлена принципиальная схема подключений оборудования системы автоматической пожарной сигнализации (АПС) и автоматизации пожарной защиты (АППЗ). Схема содержит множество функциональных блоков, соединенных линиями связи, обозначающими интерфейсы R3-Link и линии АЛС. В верхней части расположены блоки питания и контроллеры, такие как R3-Рубеж-2ОП и ИВЭПР. В нижней части представлены модули управления клапанами (МДУ-1C-R3), приводы насосов/вентиляторов и модули контроля шлейфов (АМП-4-R3). Лини",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        22,
+        22
+      ],
+      "covered_facts": 22,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 10
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 10,
+          "wire_segments_total": 5968,
+          "wire_components_total": 547,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 411,
+          "coordinate_text_characters_total": 2544
+        }
+      }
+    },
+    {
+      "block_id": "VRJF-AA3V-NA7",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Схема электрических подключений согласователя работы кондиционеров YCJ-RS002 к двум внутренним блокам через адаптеры. На схеме изображен блок K-3 (YCJ-RS002) с двумя клеммными колодками X1 и X2. От колодки X1 отходят линии к двум адаптерам (Адаптер1 и Адаптер2), каждый из которых соединен с соответствующим внутренним блоком (К3.1 и К3.2). Соединения обозначены цветовыми кодами проводов (Жл, Ср, Зл, Кр). Линии связи между блоками представлены сплошными горизонтальными и вертикальными линиями с то",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 0,
+          "components_total": 0,
+          "wire_segments_total": 161,
+          "wire_components_total": 104,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 85,
+          "coordinate_text_characters_total": 218
+        }
+      }
+    },
+    {
+      "block_id": "X4DM-LC6C-WFK",
+      "discipline": "СС",
+      "profile_id": "device_terminal_wiring",
+      "subtype": "device",
+      "title": "",
+      "description": "Электрическая принципиальная схема подключений щита ЩД-АСУД.И.6.1. На схеме представлены однолинейные подключения различных модулей ВРУ-К6.2, ВВ.К6-1, ВВ.К6-2, ВВ.К6-3 и ВРУ.К6-RS. Линии связи обозначены вертикальными проводниками с указанием типов кабелей, таких как КСПВПГнг(А)-HF 2х2х0,75 и КИС-Пнг(А)-HF 2х2х0,60. В нижней части расположены блоки мультиметров и датчиков, соединенные с соответствующими клеммными группами. В верхней части показана шина X1 с нумерацией контактов от 67 до 122 и по",
+      "source_page": 35,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "apparatus": 12,
+          "cable": 15,
+          "terminal": 1
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "terminals_total": 1,
+          "components_total": 27,
+          "wire_segments_total": 577,
+          "wire_components_total": 374,
+          "terminal_networks_total": 0,
+          "coordinate_text_records_total": 365,
+          "coordinate_text_characters_total": 2118
+        }
+      }
+    },
+    {
+      "block_id": "463E-VXRP-MQL",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на кровле здания. На чертеже представлен план кровли с сеткой осей от 2.1 до 2.16 и от 2.А до 2.Ж. В центральной части расположены технические помещения (2.Т.1, 2.Т.2, 2.Т.3, 2.Т.4) с указанием отметок уровней +146,005 и +147,325. Схематично показаны кабельные трассы, проходящие через помещения, с выносками к шкафам управления и узлам прохода кабелей. Узел Б детализирует проход кабеля в гильзе через строительную конструкцию с использованием огнест",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 12,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 16,
+          "route_components_total": 12,
+          "route_branches_total": 2,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 111,
+          "coordinate_text_characters_total": 593
+        }
+      }
+    },
+    {
+      "block_id": "4CVL-CHL7-YKH",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на кровле здания. На чертеже представлен план кровли с нанесенными осями и размерами. В центральной части расположены прямоугольные контуры оборудования, соединенные кабельными трассами, обозначенными синими линиями. Указаны узлы прохода кабелей через конструкции (Узел А, Узел В) с соответствующими выносками. Присутствуют таблицы с перечнем кабелей (Вж5.1, Вкр5.1) и их маркировкой. Размеры между осями и общие габариты проставлены вдоль границ план",
+      "source_page": 24,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 6,
+          "edges_total": 0,
+          "axes_total": 2,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 12,
+          "route_components_total": 6,
+          "route_branches_total": 2,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 73,
+          "coordinate_text_characters_total": 395
+        }
+      }
+    },
+    {
+      "block_id": "4EVJ-MYPD-7P7",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cctv",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"2.4-2.8, 1.1-1.17, П.4-П.17, П.А-П.ПП\", \"zone_name\": \"План этажа\" }, \"content_summary\": \"Фрагмент плана этажа с разметкой парковочных мест и контурами помещений.\", \"detailed_description\": \"На чертеже представлены контуры зданий с внутренними перегородками и сетка парковочных мест на прилегающей территории. Присутствуют обозначения доступности для маломобильных групп населения в виде пиктограмм инвалидных колясок. Нанесены размерные линии с указанием расстояний межд",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "cabinet": 1,
+          "camera": 2
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 27,
+          "edges_total": 2,
+          "axes_total": 19,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 3,
+          "route_segments_total": 69,
+          "route_components_total": 27,
+          "route_branches_total": 6,
+          "spatial_cells_total": 42
+        }
+      }
+    },
+    {
+      "block_id": "4NJJ-PN4F-CYM",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на кровле с указанием шкафов управления и спецификаций кабелей. На чертеже представлен план кровли с сеткой осей от 3.1 до 3.7 и от 3.А до 3.Л. В центральной части расположены технические помещения, к которым подведены кабельные трассы, обозначенные линиями с выносками. Шкафы управления ШАУВ-1-К3 и ШАУВ-2-К3 размещены в зоне осей 3.2-3.3. Имеются выносные таблицы с перечнями кабелей (Вкр3.1, Вж3.1, Вж3.2, Вж3.3, Вж3.4) и указанием согласователя YC",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 4,
+          "edges_total": 0,
+          "axes_total": 7,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 13,
+          "route_components_total": 4,
+          "route_branches_total": 6,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 125,
+          "coordinate_text_characters_total": 721
+        }
+      }
+    },
+    {
+      "block_id": "4UV7-PMH9-NUW",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на 1 этаже корпуса 6. На чертеже представлен план этажа с сеткой осей от 6.1 до 6.7 и от 6.А до 6.М. Показаны внутренние перегородки, дверные проемы и экспликация помещений с указанием площадей. Розовая линия обозначает кабельную трассу, проходящую через помещения 6.МОП.10 и 6.МОП.9, с выносками к оборудованию. Присутствуют размерные цепочки между осями и отметки уровней. 6.1 6.А 6.7 6.М 6.3 6.5 6.Г 6.Ж 6.К 6.2 6.6 6.Б 6.Д 6.Л 6.4 6.Е 6.В 6.И 6.Б.",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 2,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 76,
+          "route_components_total": 2,
+          "route_branches_total": 26,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 121,
+          "coordinate_text_characters_total": 867
+        }
+      }
+    },
+    {
+      "block_id": "63UF-VWTX-PKU",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cable_tray",
+      "title": "",
+      "description": "План расположения оборудования системы автоматической пожарной сигнализации (АПС) на этаже. На чертеже представлен план этажа с сеткой осей от 3.1 до 3.7 и от 3.А до 3.Л. Показаны контуры помещений, коридоров и тамбура с нанесенными на них условными обозначениями оборудования АПС, соединенными линиями кабельных трасс. Присутствуют маркировки оборудования (например, 1BTH1.7, 1A1.1) и выноски с номерами помещений в кружках. Размеры проставлены по периметру и между осями, общая ширина здания состав",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "tray_callout": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 78,
+          "edges_total": 0,
+          "axes_total": 7,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 1,
+          "route_segments_total": 249,
+          "route_components_total": 78,
+          "route_branches_total": 54,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 143,
+          "coordinate_text_characters_total": 1219
+        }
+      }
+    },
+    {
+      "block_id": "67G9-YTLC-CM4",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "На схеме представлен план расположения помещений и зон подземной автостоянки с указанием этажности отдельных секций. Схема отображает контуры помещений К1, К2, К3, К4, К5, К6, К7 и Лобби, сгруппированных в две зоны подземной автостоянки (П.1-П.24 и П.25-П.48). Вокруг периметра расположены выносные круговые маркеры с буквенно-цифровыми обозначениями (например, 2.1, 2.8, 3.1, 3.7, 4.1, 4.11, 5.1, 5.5). Внутри помещений указана их этажность (15эт., 18эт., 30эт., 48эт., 42эт., 28эт.). Линии контуров",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 6,
+          "edges_total": 0,
+          "axes_total": 2,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 10,
+          "route_components_total": 6,
+          "route_branches_total": 2,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 50,
+          "coordinate_text_characters_total": 222
+        }
+      }
+    },
+    {
+      "block_id": "69NV-A33P-LWD",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "Схема расположения подземной автостоянки, павильонов и надстроек с указанием зон парковочных мест. На схеме представлен план подземной автостоянки, разделенный на зоны П.1-П.48. В левой части расположены зоны К1, К2, Лобби и Павильон, в центральной и правой частях — зоны К3, К4, К5, К6 и надстройки. Зоны автостоянки обозначены прямоугольными контурами с соответствующими диапазонами номеров мест. Сетка осей представлена круговыми выносками с буквенно-цифровыми обозначениями по периметру. К2 Лобби",
+      "source_page": 112,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 0,
+          "route_components_total": 0,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 50,
+          "coordinate_text_characters_total": 266
+        }
+      }
+    },
+    {
+      "block_id": "6AUR-4Y7A-7F4",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cable_tray",
+      "title": "",
+      "description": "H{ \"location\": { \"grid_lines\": \"1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.18, 1.19, 1.А, 1.Б, 1.В, 1.Г, 1.Д, 1.Е, 1.Ж, 1.И, 1.К, 1.Л, 1.М, 1.Т, 1.У\", \"zone_name\": \"План этажа\" }, \"content_summary\": \"План расположения кабеленесущих конструкций на кровле с указанием типов лотков и их геометрических параметров.\", \"detailed_description\": \"На чертеже представлен план кровли с сеткой координационных осей и контурами помещений. В центральной части здания п",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "tray_callout": 27
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 1,
+          "networks_total": 130,
+          "edges_total": 1,
+          "axes_total": 8,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 27,
+          "route_segments_total": 394,
+          "route_components_total": 130,
+          "route_branches_total": 102,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 146,
+          "coordinate_text_characters_total": 938
+        }
+      }
+    },
+    {
+      "block_id": "6JNV-9JAV-PAF",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения инженерного оборудования и кабельных трасс на первом этаже корпуса 6. На чертеже представлен план этажа с сеткой осей от 6.1 до 6.7 и от 6.А до 6.М. Показаны внутренние перегородки помещений, дверные проемы и экспликация площадей. Кабельные трассы обозначены линиями с узлами прохода (Узел Б, Узел В) через строительные конструкции. Присутствуют выноски с указанием типов помещений, их площадей и привязок к осям. 6.1 6.А 6.7 6.М 6.3 6.5 6.Г 6.Ж 6.К 6.2 6.6 6.Б 6.Д 6.Л 6.4 6.Е 6.В",
+      "source_page": 37,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 2,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 76,
+          "route_components_total": 2,
+          "route_branches_total": 27,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 143,
+          "coordinate_text_characters_total": 735
+        }
+      }
+    },
+    {
+      "block_id": "6TRC-JGKJ-NT6",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cctv",
+      "title": "",
+      "description": "Схема расположения подземной автостоянки с указанием высотности зданий и зон парковки. На схеме представлен план подземной автостоянки, разделенный на две основные зоны с маркировкой П.1-П.24 и П.25-П.48. В левой части выделена заштрихованная область, обозначенная как «Лобби». Внутри контура расположены блоки зданий с маркировками К1-К7 и указанием их этажности (15эт., 18эт., 28эт., 30эт., 42эт., 48эт.). По периметру плана расположены круговые выноски с буквенно-цифровыми обозначениями осей. 5.5",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 74,
+          "edges_total": 0,
+          "axes_total": 2,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 727,
+          "route_components_total": 74,
+          "route_branches_total": 202,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 50,
+          "coordinate_text_characters_total": 200
+        }
+      }
+    },
+    {
+      "block_id": "7E4F-NVUY-4UM",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования системы оповещения и управления эвакуацией (СОУЭ) в помещениях трансформаторной подстанции. На чертеже представлен план помещений с обозначением технических зон (4.Т.1–4.Т.9) и отметок чистого пола +0,400. В помещениях размещены устройства оповещения, отмеченные зелеными крестами с кодами BIAL (например, BIAL4.2.3.1.1). Стены и перегородки показаны двойными линиями, указаны размеры проемов и привязки к осям. Присутствуют выноски с кодами кабельных трасс SC4.2.1-1..",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 0,
+          "route_components_total": 0,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 64,
+          "coordinate_text_characters_total": 396
+        }
+      }
+    },
+    {
+      "block_id": "7JWR-J3RE-QWP",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на -1 этаже в осях 5.А-5.М и 5.1-5.5. На чертеже представлен план помещений -1 этажа с нанесенными кабельными трассами, обозначенными сплошными линиями. В помещениях расположены технические зоны, кладовые и зоны охраны, пронумерованные индексами (например, 5.Т.6, 5.К.1). Кабельные трассы проходят вдоль стен и коридоров, соединяя различные щиты управления и шкафы автоматики. Видны выноски с маркировкой оборудования, такого как ВРУ-К5 и ШАУВ, а такж",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 0,
+          "route_components_total": 0,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 246,
+          "coordinate_text_characters_total": 1427
+        }
+      }
+    },
+    {
+      "block_id": "7MW7-WNCH-VAW",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения кабельных трасс и оборудования на этаже с указанием отметок и спецификацией. На чертеже представлен план помещений с нанесенными кабельными трассами, обозначенными линиями разного типа. Присутствуют выноски с кодами оборудования и кабелей, а также отметки уровня -5,850. В нижней части листа расположена таблица с перечнем обозначений, наименований и примечаний, а также спецификация кабельных линий. Геометрия помещений задана сеткой осей и размерными линиями. 4.1 4.2 4.3 4.4 4.5",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 0,
+          "route_components_total": 0,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 235,
+          "coordinate_text_characters_total": 1195
+        }
+      }
+    },
+    {
+      "block_id": "7TL3-TQYG-CLG",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cable_tray",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на отметке -5,850. На чертеже представлен план этажа с сеткой осей, включающий различные технические и вспомогательные помещения. Кабельные трассы обозначены линиями, проходящими через помещения, с выносками к таблицам спецификаций. В нижней части расположены узлы крепления кабельных лотков и труб, а также экспликация помещений с указанием площадей и категорий. Геометрия помещений ограничена несущими стенами и перегородками, нанесены отметки уровн",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 53,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 190,
+          "route_components_total": 53,
+          "route_branches_total": 33,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 250,
+          "coordinate_text_characters_total": 1502
+        }
+      }
+    },
+    {
+      "block_id": "7WT6-KWGN-CGX",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс для 15-го этажа корпуса 3. На чертеже представлен план этажа с сеткой осей, включающий жилые помещения, коридоры, лифтовые холлы и лестничные клетки. Оборудование и кабельные трассы обозначены линиями, соединяющими узлы прохода через стены (Узел А) и точки установки ретрансляторов шины CAN. Синие стрелки указывают направления прокладки кабелей, а выноски содержат информацию о приходе и уходе кабелей на смежные этажи. Размеры помещений и маркировка",
+      "source_page": 35,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 3,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 6,
+          "route_components_total": 3,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 213,
+          "coordinate_text_characters_total": 1524
+        }
+      }
+    },
+    {
+      "block_id": "9DR9-7WDY-L4K",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на кровле с указанием шкафов управления и узлов прохода кабелей. На чертеже представлен план кровли с сеткой осей от 3.1 до 3.7 и от 3.А до 3.Л. В центральной части расположены технические помещения с обозначениями 4203, 4227 и 1130. Показаны трассы кабелей, идущие к шкафам управления ШАУВ-1-К3 и ШАУВ-2-К3, а также к согласователю YCJ-RS002. Указаны размеры прокладки кабелей (1500 мм) и выноски с перечнями кабельных линий (Вкр3.1, Вж3.1, Вж3.2, Вж",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 9,
+          "edges_total": 0,
+          "axes_total": 7,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 19,
+          "route_components_total": 9,
+          "route_branches_total": 6,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 125,
+          "coordinate_text_characters_total": 721
+        }
+      }
+    },
+    {
+      "block_id": "9JXX-FJTM-NDA",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cctv",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс АСКУВТ на этажах 16-20 корпуса 1. На чертеже представлен план этажа с сеткой осей и экспликацией помещений. В центральной части расположены лифтовые холлы, лестничные клетки и технические помещения с маркировкой 1.МОП. Вокруг центрального ядра размещены жилые квартиры с обозначениями помещений (кухни-ниши, жилые комнаты, санузлы, холлы). Нанесены кабельные трассы, точки подключения счетчиков ХВС/ГВС и теплосчетчиков с соответствующей маркировкой А",
+      "source_page": 107,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 117,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 410,
+          "route_components_total": 117,
+          "route_branches_total": 71,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 295,
+          "coordinate_text_characters_total": 1357
+        }
+      }
+    },
+    {
+      "block_id": "9KLR-W3LY-EAA",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"П.1, П.2, П.2.1, П.2.2, П.2.3, П.2.4, П.2.5, П.2.6, П.2.7, П.2.8, П.2.9, П.1.8, П.1.9, П.1.10, П.1.11, П.УУ, П.3, П.Ш, П.Ч, П.Ж, П.Е, П.Д, П.Ц, П.Х, П.Ф, П.У, П.Т, П.П, П.Н, П.М, П.К\", \"zone_name\": \"План этажа\" }, \"content_summary\": \"Фрагмент плана подземного этажа с парковочными местами, приямками и инженерными коммуникациями.\", \"detailed_description\": \"На чертеже представлен план подземного уровня с сеткой осей, включающий парковочные места, пронумерованные помещ",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "cabinet": 5
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 1,
+          "networks_total": 156,
+          "edges_total": 3,
+          "axes_total": 9,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 5,
+          "route_segments_total": 328,
+          "route_components_total": 156,
+          "route_branches_total": 5,
+          "spatial_cells_total": 10
+        }
+      }
+    },
+    {
+      "block_id": "9XPY-CWMH-UEC",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cable_tray",
+      "title": "",
+      "description": "На чертеже представлен план размещения кабельных трасс, лотков и инженерных коммуникаций в помещениях МОП. На плане показаны два помещения, обозначенные как 2.МОП.7 и 2.МОП.6, с проходящими через них кабельными лотками и трубопроводами. В верхней части расположены выноски с техническими характеристиками кабелей (ParLan U/UTP Cat5e) и количеством труб ВГП Ду=50мм. В нижней части указаны зоны обслуживания ЭОМ-СПЗ, ЭОМ/АК-КВ+ОДН и ЭОМ/СС-КВ+ОДН с привязкой к этажам. Присутствуют размеры 3000 мм меж",
+      "source_page": 31,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "conduit_group": 7,
+          "discipline_allocation": 14,
+          "fire_rating": 11,
+          "room": 2
+        },
+        "counts": {
+          "nodes_total": 34,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "discipline_allocations_total": 14,
+          "conduit_groups_total": 7,
+          "niche_zones_total": 2
+        }
+      }
+    },
+    {
+      "block_id": "ACGR-HCNY-TTC",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на 1 этаже корпуса 6. На чертеже представлен план этажа с экспликацией помещений, сеткой осей и обозначениями инженерного оборудования. Показаны трассы кабелей, проходящие через помещения, с указанием узлов прохода через строительные конструкции (Узел А, Узел Б). Оборудование включает тепловые завесы, пульты управления, концевые выключатели и смесительные узлы. Присутствуют выноски с маркировкой кабелей и спецификацией элементов. План расположения",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 40,
+          "edges_total": 0,
+          "axes_total": 1,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 289,
+          "route_components_total": 40,
+          "route_branches_total": 80,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 203,
+          "coordinate_text_characters_total": 1335
+        }
+      }
+    },
+    {
+      "block_id": "FJ97-AMAM-NUU",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на 2 этаже с экспликацией помещений и узлом прохода кабеля. На чертеже представлен план этажа с сеткой осей и экспликацией помещений, пронумерованных кодами 2.1061-2.1065 и 2.МОП. В центральной части показаны лестничные клетки и тамбур-шлюзы. В правой части чертежа расположен «Узел Б», детализирующий проход кабеля через строительную конструкцию с использованием огнестойкой пены и закладной гильзы. Также присутствуют выноски с обозначениями шкафов",
+      "source_page": 27,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 0,
+          "route_components_total": 0,
+          "route_branches_total": 0,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 121,
+          "coordinate_text_characters_total": 739
+        }
+      }
+    },
+    {
+      "block_id": "LTEF-KQXR-UYH",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "План расположения оборудования и кабельных трасс на 1 этаже корпуса 6. На чертеже представлен план этажа с сеткой осей от 6.1 до 6.7 и от 6.А до 6.М. Отображены внутренние помещения с экспликацией, включая тамбуры, вестибюль, торговые залы и технические помещения. Кабельные трассы показаны линиями с узлами прохода (Узел Б, Узел В) через строительные конструкции. Присутствуют выноски с указанием типов помещений, их площадей и привязок к осям. 6.1 6.А 6.7 6.М 6.3 6.5 6.Г 6.Ж 6.К 6.2 6.6 6.Б 6.Д 6.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 2,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 76,
+          "route_components_total": 2,
+          "route_branches_total": 27,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 140,
+          "coordinate_text_characters_total": 724
+        }
+      }
+    },
+    {
+      "block_id": "MQJG-DRYU-WMF",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "voice_alarm",
+      "title": "",
+      "description": "Фрагмент плана подземной автостоянки с указанием трассировки инженерных систем и узлов. На чертеже представлен план подземной автостоянки с сеткой осей П.41-П.48 и П.А-П.Р. Красными линиями обозначены трассы инженерных коммуникаций, проходящие через помещения и коридоры. Присутствуют выноски с маркировкой узлов (Узел 1, 2, 3, 4, 13) и обозначениями систем (АЛС, МДУ, РМ, 2SC). Стены и перегородки показаны сплошными толстыми линиями, дверные проемы и лестничные клетки отображены стандартными услов",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 42,
+          "edges_total": 0,
+          "axes_total": 0,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 0,
+          "route_segments_total": 435,
+          "route_components_total": 42,
+          "route_branches_total": 103,
+          "spatial_cells_total": 0,
+          "coordinate_text_records_total": 118,
+          "coordinate_text_characters_total": 830
+        }
+      }
+    },
+    {
+      "block_id": "TQVW-YHVA-NDM",
+      "discipline": "СС",
+      "profile_id": "discipline_floor_plan",
+      "subtype": "cable_tray",
+      "title": "",
+      "description": "План этажа с указанием расположения кабельных трасс, лотков и гильз в перекрытиях. На чертеже представлен план этажа сложной конфигурации с сеткой осей. В центральной части показаны трассы инженерных коммуникаций, обозначенные линиями с выносками к спецификациям лотков и гильз. Указаны типы лотков: листовые СПЗ с перегородкой (200х100, 300х100) и лестничные лотки СБ (200х100, 300х100). Также отмечено расположение гильз в перекрытии диаметром 50 мм и длиной 550 мм, а также узел 1. Гильзы в перекр",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "tray_callout": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 138,
+          "edges_total": 0,
+          "axes_total": 8,
+          "rooms_total": 0,
+          "room_polygons_total": 0,
+          "devices_total": 4,
+          "route_segments_total": 235,
+          "route_components_total": 138,
+          "route_branches_total": 40,
+          "spatial_cells_total": 0
+        }
+      }
+    },
+    {
+      "block_id": "6MAT-GNEX-VRM",
+      "discipline": "СС",
+      "profile_id": "dispatch_integration_backbone",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема распределения инженерных коммуникаций и оборудования по этажам Корпуса 5. На схеме представлены уровни от -1 до 15 этажа с указанием расположения шкафов автоматики (ШАУВ-1-К5, ШАУВ-2-К5, ШАУВ-3-К5, ШАУВ-4-К5) и электрощитового оборудования (ВРУ-К5, ЩД-АСУД.И.5.1, ШТК). Оборудование соединено линиями связи, проходящими через серверную (пом. 5.Д.3) и помещения ревизии инженерных коммуникаций. Предусмотрены выноски с указанием разделов проектной документации для смежных корпусов и пристроек.",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "automation_cabinet": 4,
+          "distribution_panel": 2,
+          "gateway": 1,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 11,
+          "networks_total": 1,
+          "edges_total": 1,
+          "buildings_total": 7,
+          "floor_bands_total": 4,
+          "connected_nodes_total": 2,
+          "coordinate_text_records_total": 101,
+          "coordinate_text_characters_total": 1284
+        }
+      }
+    },
+    {
+      "block_id": "QVKG-FHLJ-ALJ",
+      "discipline": "СС",
+      "profile_id": "dispatch_integration_backbone",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Схема расположения оборудования автоматизации и диспетчеризации по корпусам 1-6. На схеме представлены структурные блоки для корпусов 1, 2, 3, 4, 5 и 6 с указанием этажности и размещения оборудования. Внутри блоков показаны прямоугольные элементы, обозначающие шкафы автоматизации (ШАУВ), электрощитовые (ВРУ) и помещения слаботочных систем (СС). Линии связи соединяют оборудование между собой, а также с дренажными приямками и узлами управления. Присутствуют текстовые выноски с указанием номеров по",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        33,
+        33
+      ],
+      "covered_facts": 33,
+      "structure_signature": {
+        "node_types": {
+          "automation_cabinet": 26,
+          "distribution_panel": 14,
+          "field_controller": 39,
+          "gateway": 4,
+          "ospd_cabinet": 9,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 93,
+          "containers_total": 27,
+          "networks_total": 1,
+          "edges_total": 87,
+          "buildings_total": 6,
+          "floor_bands_total": 21,
+          "connected_nodes_total": 91
+        }
+      }
+    },
+    {
+      "block_id": "4CVJ-6XDP-KXQ",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема внешних подключений шкафа автоматики ШАУВ-3-К6 с перечнем кабелей и исполнительных механизмов. На схеме представлены блоки исполнительных механизмов, датчиков температуры и перепада давления, подключенные к шкафу автоматики ШАУВ-3-К6. Изображены клеммные соединения (XT1-XT4), типы кабелей (КСПВПГнг(А)-HF, ППГнг(А)-HF) и их характеристики. Указаны параметры питания (24В, 0-10В, ~220В) и обозначения позиций (TE1-TE3, PDS1-PDS5, M1-M4, Y1-Y4). Линии связи соединяют датчики и приводы с клеммни",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 1,
+          "field_device": 17,
+          "power_input": 2,
+          "terminal_strip": 4
+        },
+        "counts": {
+          "nodes_total": 24,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 21,
+          "field_devices_total": 17,
+          "terminal_strips_total": 4,
+          "connections_total": 17,
+          "cable_types_total": 1,
+          "field_edges_total": 17,
+          "coordinate_text_records_total": 457,
+          "coordinate_text_characters_total": 2211
+        }
+      }
+    },
+    {
+      "block_id": "4CYT-7XUU-P3J",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема внешних подключений шкафа автоматики и управления ШАУВ-Вж2.1. На схеме представлены подключения датчика перепада давления PDS1, электродвигателей вентиляторов M1 и M1.1, а также привода клапана Y1 к шкафу ШАУВ-Вж2.1. Изображены клеммные соединения, маркировка кабелей (например, ППГнг(А)-HF 4x2,5) и их трассировка к соответствующим элементам. В нижней части показан вводной рубильник Q1 и клеммная колодка X1. Присутствуют линии связи с пожарной сигнализацией и шиной CAN, а также примечания п",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 7,
+          "field_device": 3,
+          "power_input": 1,
+          "terminal_strip": 1
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 4,
+          "field_devices_total": 3,
+          "terminal_strips_total": 1,
+          "connections_total": 3,
+          "cable_types_total": 0,
+          "field_edges_total": 3,
+          "coordinate_text_records_total": 165,
+          "coordinate_text_characters_total": 1201
+        }
+      }
+    },
+    {
+      "block_id": "6K7V-GUMJ-TV3",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Принципиальная электрическая схема подключения датчиков, исполнительных механизмов и вводов питания для системы автоматизации Пл2.1/Всу2.1/Вк2.1. Схема представляет собой таблицу с перечнем параметров, исполнительных механизмов и их позиционных обозначений, соединенных с соответствующими клеммными блоками и кабельными линиями. В нижней части расположены графические символы электродвигателей, приводов клапанов и рубильников с указанием маркировки кабелей, таких как КСПЭВПГнг(А)-HF и ППГнг(А)-HF.",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 2,
+          "field_device": 17,
+          "power_input": 2,
+          "terminal_strip": 4
+        },
+        "counts": {
+          "nodes_total": 25,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 21,
+          "field_devices_total": 17,
+          "terminal_strips_total": 4,
+          "connections_total": 17,
+          "cable_types_total": 1,
+          "field_edges_total": 17
+        }
+      }
+    },
+    {
+      "block_id": "6KKT-97K7-R33",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Электрическая схема подключения исполнительных механизмов и датчиков перепада давления к шкафу ШАУВ-1-К3. Схема представляет собой таблицу с перечнем исполнительных механизмов (вентиляторы, приводы клапанов) и датчиков перепада давления (PDS1-PDS3). В нижней части показаны клеммные соединения шкафа ШАУВ-1-К3 с маркировкой контактов и типы кабелей (КСПВПГнг(А)-HF, ППГнг(А)-HF). Изображены условные обозначения электродвигателей с клеммными колодками и приводов клапанов с клеммниками XT1-XT3. Указа",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 2,
+          "field_device": 12,
+          "power_input": 1,
+          "terminal_strip": 3
+        },
+        "counts": {
+          "nodes_total": 18,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 15,
+          "field_devices_total": 12,
+          "terminal_strips_total": 3,
+          "connections_total": 12,
+          "cable_types_total": 0,
+          "field_edges_total": 12,
+          "coordinate_text_records_total": 379,
+          "coordinate_text_characters_total": 1841
+        }
+      }
+    },
+    {
+      "block_id": "7KTE-NE4A-V6X",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема внешних подключений шкафа автоматики и управления ШАУВ-2-К6 для систем вентиляции Вж6.3 и Вж6.4. Схема представляет собой однолинейное изображение подключений электродвигателей вентиляторов, приводов клапанов и датчиков перепада давления к шкафу ШАУВ-2-К6. В верхней части расположены наименования исполнительных механизмов, соединенные вертикальными линиями с клеммными блоками шкафа в нижней части. Указаны типы кабелей (ППГнг(А)-HF, КСПВПГнг(А)-HF), их сечения и длины для каждой линии. Прис",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 2,
+          "field_device": 8,
+          "power_input": 1,
+          "terminal_strip": 2
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 10,
+          "field_devices_total": 8,
+          "terminal_strips_total": 2,
+          "connections_total": 8,
+          "cable_types_total": 0,
+          "field_edges_total": 8,
+          "coordinate_text_records_total": 267,
+          "coordinate_text_characters_total": 1335
+        }
+      }
+    },
+    {
+      "block_id": "A9MK-QMCV-T6T",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Схема внешних подключений шкафа автоматики и управления ШАУВ-1-К4 для вентиляционных систем. На схеме представлены подключения датчиков перепада давления (PDS1, PDS2) и исполнительных механизмов (электродвигатели вентиляторов М1-М4, приводы клапанов Y1, Y2) к шкафу ШАУВ-1-К4. Использованы условные обозначения двигателей, клеммных колодок (Х1, Х2, ХТ1, ХТ2) и кабельных линий с указанием марок кабелей (ППГнг(А)-HF, КСПВПГнг(А)-HF) и их длин (35 м). Линии связи соединяют клеммы шкафа с соответствую",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 1,
+          "field_device": 8,
+          "power_input": 1,
+          "terminal_strip": 2
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 10,
+          "field_devices_total": 8,
+          "terminal_strips_total": 2,
+          "connections_total": 8,
+          "cable_types_total": 0,
+          "field_edges_total": 8,
+          "coordinate_text_records_total": 264,
+          "coordinate_text_characters_total": 1282
+        }
+      }
+    },
+    {
+      "block_id": "HVK6-7GEF-3RW",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Электрическая схема подключений исполнительных механизмов и датчиков перепада давления к шкафу управления ШАУВ-2-К3. Схема представляет собой таблицу с перечнем оборудования (PDS1, PDS2, M1-M4, Y1, Y2) и соответствующие им электрические цепи. Изображены клеммные колодки, двигатели с обозначениями фаз (U, V, W, PE) и приводы клапанов с контактами (L, N, S1, S2, S3). Кабели обозначены марками (КСПВПГнг(А)-HF, ППГнг(А)-HF) с указанием сечения и длины L=20м. В нижней части показаны подключения к шка",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 2,
+          "field_device": 8,
+          "power_input": 1,
+          "terminal_strip": 2
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 10,
+          "field_devices_total": 8,
+          "terminal_strips_total": 2,
+          "connections_total": 8,
+          "cable_types_total": 0,
+          "field_edges_total": 8,
+          "coordinate_text_records_total": 266,
+          "coordinate_text_characters_total": 1344
+        }
+      }
+    },
+    {
+      "block_id": "KXUN-JU6V-4T3",
+      "discipline": "СС",
+      "profile_id": "external_terminal_wiring",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Принципиальная электрическая схема подключения исполнительных механизмов и датчиков перепада давления к шкафу управления ШАУВ-1-К5. Схема представляет собой однолинейное изображение подключений датчиков PDS1, PDS2, электродвигателей M1-M4 и приводов клапанов Y1, Y2 к клеммным блокам шкафа ШАУВ-1-К5. Использованы условные обозначения двигателей с клеммами U, V, W, PE и приводов с клеммами L, N, S1, S2, S3. Кабельные линии обозначены марками кабелей (например, ППГнг(А)-HF 4x2,5) и номерами жил. В",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "control_cabinet": 1,
+          "field_device": 8,
+          "power_input": 1,
+          "terminal_strip": 2
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 10,
+          "field_devices_total": 8,
+          "terminal_strips_total": 2,
+          "connections_total": 8,
+          "cable_types_total": 0,
+          "field_edges_total": 8,
+          "coordinate_text_records_total": 255,
+          "coordinate_text_characters_total": 1298
+        }
+      }
+    },
+    {
+      "block_id": "T3P6-ET3J-4Y7",
+      "discipline": "СС",
+      "profile_id": "fiber_ring_backbone",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Представлена структурная схема системы оповещения и управления эвакуацией (СОУЭ) для помещений подземной автостоянки. На схеме изображены прямоугольные блоки, обозначающие помещения СС с установленными в них шкафами ШСОУЭ и ШСПА. Помещения соединены между собой и с верхним блоком (пом. 5.Т.1) линиями связи, обозначенными индексами L1-L9. Линии связи имеют узловые точки и разветвления, соединяющие шкафы управления с общей магистралью. В верхней части схемы расположен отдельный блок для помещения",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "fiber_cabinet": 9,
+          "fiber_segment_label": 9,
+          "location": 5
+        },
+        "counts": {
+          "nodes_total": 23,
+          "containers_total": 0,
+          "networks_total": 1,
+          "edges_total": 0,
+          "cabinets_total": 9,
+          "fiber_segments_total": 9
+        }
+      }
+    },
+    {
+      "block_id": "7MPY-GD9Y-6LG",
+      "discipline": "СС",
+      "profile_id": "functional_process_io",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Функциональная схема автоматизации приточной системы П2.Б2 для помещения салона красоты. На схеме изображена приточная вентиляционная система с указанием датчиков давления (PDS1, PDS2, PDS3), температуры (TE1, TE2, TE3) и термостата (TS1). В состав системы входят воздушная заслонка с приводом Y1, водяной нагреватель с регулирующим клапаном Y2 и циркуляционным насосом M2, а также основной вентилятор с двигателем M1. Линии связи соединяют компоненты с узлами управления, обозначенными цифрами. Указ",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "actuator": 2,
+          "airflow": 1,
+          "motor": 4,
+          "pressure_sensor": 3,
+          "process_station": 6,
+          "process_system": 2,
+          "served_space": 1,
+          "temperature_sensor": 4
+        },
+        "counts": {
+          "nodes_total": 23,
+          "containers_total": 2,
+          "networks_total": 1,
+          "edges_total": 20,
+          "process_nodes_total": 14,
+          "process_stations_total": 6
+        }
+      }
+    },
+    {
+      "block_id": "449P-96V7-6H7",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Инструкция по монтажу пульта HL10, включающая пошаговое руководство и рекомендации по размещению. Изображение содержит четыре графических этапа монтажа пульта HL10, представленных в виде линейных чертежей. На первом этапе показано использование отвертки для разделения панелей, на втором и третьем — крепление задней части винтами и подключение проводов к клеммной колодке, на четвертом — сборка корпуса. Под графикой расположен текстовый блок с пошаговой инструкцией и правилами эксплуатации устройс",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 23
+        },
+        "counts": {
+          "nodes_total": 23,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 23,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 26,
+          "coordinate_text_characters_total": 884
+        }
+      }
+    },
+    {
+      "block_id": "47M4-GP96-4T6",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков к перекрытию и стене. Верхний узел показывает горизонтальное крепление перфорированного лотка на резьбовых шпильках с П-образным профилем, закрепленных анкерами в перекрытии. Нижний узел демонстрирует вертикальное крепление лотка к стене с помощью скоб и забивных анкеров. На чертеже указаны размеры 300 мм, 100 мм и 50 мм, а также спецификация крепежных элементов (болты, гайки, шайбы М8). Приведены примечания по шагу крепления лотков",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 23,
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 23,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 30,
+          "coordinate_text_characters_total": 601
+        }
+      }
+    },
+    {
+      "block_id": "47TR-EULT-6YF",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема узла ввода кабелей в квартиру с указанием типов гильз и заполнения проема. На чертеже представлен разрез узла ввода кабелей через стену, заполненную бетонным раствором и огнестойкой пеной. Показаны пять кабельных гильз разного диаметра, расположенных горизонтально в ряд. Указаны размеры 20, 132, 20 по горизонтали и 20, 32, 20, 100** по вертикали. Кабели промаркированы как СОУЭ, АПС, АК*, СОВ+РФ и Интернет. Узел ввода в квартиру Бетонный раствор Огнестойкая пена Кабель СОУЭ АПС АК* СОВ+РФ И",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 14,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 14,
+          "dimensions_total": 1,
+          "coordinate_text_records_total": 21,
+          "coordinate_text_characters_total": 259
+        }
+      }
+    },
+    {
+      "block_id": "4CPV-F44C-HTN",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков и трасс в гофрированных трубах. Изображены узлы крепления кабельных лотков горизонтально на шпильках к перекрытию и вертикально к стене. Приведены схемы крепления горизонтальных кабельных трасс в гофрированных ПВХ трубах, включая места изгибов. Узлы детализированы с указанием анкеров, шпилек, профилей, болтов и шайб типоразмера М8. Имеются текстовые примечания по шагу крепления лотков. Типовой узел крепления кабельных лотков горизон",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 133,
+          "dimension": 8
+        },
+        "counts": {
+          "nodes_total": 141,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 133,
+          "dimensions_total": 8,
+          "coordinate_text_records_total": 144,
+          "coordinate_text_characters_total": 1627
+        }
+      }
+    },
+    {
+      "block_id": "4DF6-9AJQ-C6V",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков к перекрытию с использованием шпилек и П-образного профиля. На чертеже представлен вид спереди узла крепления двух кабельных лотков к бетонному перекрытию. Крепление осуществляется через забивные анкеры М8 и резьбовые шпильки М8, удерживающие горизонтальный П-образный профиль. Лотки (перфорированные СПЗ и СС) установлены на профиль. Указаны габаритные размеры лотков (300 мм и 400 мм) и расстояния между элементами крепления. Типовой узел крепления кабельных",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 7,
+          "dimension": 7
+        },
+        "counts": {
+          "nodes_total": 14,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 7,
+          "dimensions_total": 7,
+          "coordinate_text_records_total": 14,
+          "coordinate_text_characters_total": 227
+        }
+      }
+    },
+    {
+      "block_id": "4KLT-LGFG-KCJ",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "firestop",
+      "title": "",
+      "description": "Схема устройства универсальной кабельной проходки TEHSTRONG FIREWALL PP с гильзой круглого сечения. На чертеже представлены вид сбоку и два поперечных разреза (1-1 и 2-2) кабельной проходки. Вид сбоку показывает гильзу, установленную в строительной конструкции, с заполнением огнестойкой пеной и герметиком FIREFIX вокруг кабеля. Разрезы 1-1 и 2-2 демонстрируют внутреннюю структуру проходки, включая расположение кабеля, гильзы и слоев огнестойких материалов. Указаны параметры длины L и выноса кабе",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 23,
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 25,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 23,
+          "dimensions_total": 2
+        }
+      }
+    },
+    {
+      "block_id": "4LKU-DHMW-4XL",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схемы крепления цилиндрической камеры к монтажной коробке и монтажной коробки к стене. На верхнем эскизе показано соединение цилиндрической камеры с монтажной коробкой при помощи четырех винтов. На нижнем эскизе изображено крепление монтажной коробки к стене с использованием дюбелей и винтов. Схематично обозначена поверхность стены с заштрихованными элементами крепления. Указано количество крепежных элементов 'х4' для обоих узлов. Крепление цилиндрической камеры к монтажной коробке (эскиз) х4 Кр",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 5
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 5,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 5,
+          "coordinate_text_characters_total": 117
+        }
+      }
+    },
+    {
+      "block_id": "4P7E-6EVT-7JQ",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема универсальной кабельной проходки TEHSTRONG FIREWALL PP с гильзой круглого сечения в горизонтальном исполнении. На чертеже представлено горизонтальное сечение проходки через бетонную стену, а также два поперечных разреза 1-1 и 2-2. В центре горизонтального разреза показана гильза, заполненная огнестойкой пеной FIREFIX, через которую проходит кабель. Поперечные разрезы демонстрируют концентрическое расположение кабеля, герметика, пены и гильзы внутри бетонного массива. Все элементы снабжены",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 24
+        },
+        "counts": {
+          "nodes_total": 24,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 24,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 29,
+          "coordinate_text_characters_total": 400
+        }
+      }
+    },
+    {
+      "block_id": "4Q3D-9KVX-HHY",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков горизонтально на шпильках к перекрытию. На чертеже представлены вид спереди и вид сбоку узла крепления кабельного лотка к перекрытию. Конструкция включает анкеры забивные М8, резьбовые шпильки М8, П-образный профиль, перфорированный лоток, шайбы М8 и гайки М8. Вид спереди показывает крепление лотка на двух шпильках с указанием габаритных размеров 100 мм и 300 мм. Вид сбоку детализирует соединение шпильки с П-образным профилем через шайбы и гайку, а также в",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 10,
+          "dimension": 3
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 10,
+          "dimensions_total": 3,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "4UCA-DWPX-3RK",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема устройства универсальной кабельной проходки TEHSTRONG FIREWALL PP с гильзой круглого сечения. На чертеже представлено горизонтальное исполнение проходки в разрезе, а также два поперечных сечения 1-1 и 2-2. В строительной конструкции установлена гильза, внутри которой проходит кабель, зафиксированный огнестойкой пеной и герметиком FIREFIX. Разрез 1-1 показывает центральное расположение кабеля в гильзе, заполненной пеной. Разрез 2-2 демонстрирует аналогичную конструкцию с указанием слоев гер",
+      "source_page": 33,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 22
+        },
+        "counts": {
+          "nodes_total": 22,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 22,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 27,
+          "coordinate_text_characters_total": 426
+        }
+      }
+    },
+    {
+      "block_id": "4VGU-P3Q6-KV6",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема крепления гофрированных ПВХ труб в месте изгиба кабельной трассы. На чертеже изображен фрагмент кабельной трассы в гофрированной трубе, имеющей изгиб под углом 90 градусов. В местах прямолинейных участков до изгиба установлены два крепежных элемента, обозначенных черными прямоугольниками. Нанесены два размерных указателя по 50 мм, определяющие расстояние от оси изгиба до точек крепления. Линии размеров выполнены тонкими с выносными линиями. Крепление кабельных трасс в месте изгиба, проклад",
+      "source_page": 39,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 2,
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 2,
+          "dimensions_total": 2,
+          "coordinate_text_records_total": 4,
+          "coordinate_text_characters_total": 90
+        }
+      }
+    },
+    {
+      "block_id": "4XTD-DEUK-WW4",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков к перекрытиям и стенам. Чертеж содержит два типовых узла: горизонтальное крепление лотка на шпильках к перекрытию и вертикальное крепление лотка к стене. Для горизонтального узла показаны вид спереди и сбоку с указанием П-образного профиля, шпилек М8 и анкеров. Вертикальный узел включает вид сверху и сбоку, демонстрируя крепление лотка скобами, болтами М8 и анкерами М8. Приведены размеры 300мм, 100мм и 50мм, а также примечания по ша",
+      "source_page": 36,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 24,
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 24,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 32,
+          "coordinate_text_characters_total": 695
+        }
+      }
+    },
+    {
+      "block_id": "4YDV-4XHV-FEN",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема узла ввода кабелей в квартиру с указанием типов гильз и заполнения проема. На чертеже представлен разрез узла ввода кабелей через стену. Показаны пять труб-гильз, установленных в проеме, заполненном огнестойкой пеной и бетонным раствором. Четыре гильзы имеют диаметр 25х1,2 мм, одна гильза имеет диаметр 32х2,8 мм. Указаны габаритные размеры проема и привязки гильз. Обозначены типы прокладываемых кабелей: СОУЭ, АПС, АК*, СОВ+РФ, Интернет. Узел ввода в квартиру Бетонный раствор Огнестойкая пе",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 14,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 14,
+          "dimensions_total": 1,
+          "coordinate_text_records_total": 21,
+          "coordinate_text_characters_total": 259
+        }
+      }
+    },
+    {
+      "block_id": "6DAH-MHQ9-U3G",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены схемы крепления кабельных трасс в гофрированных ПВХ трубах и схема установки переговорного устройства в зонах безопасности МГН. Схемы крепления показывают вертикальные, горизонтальные и изогнутые участки кабельных трасс с использованием крепежных элементов. Схема установки переговорного устройства (ПГУ) отображает вертикальный разрез стены с указанием высотной отметки 1000 мм от уровня пола. Показаны элементы: штроба в стене, подвесной потолок и кабель, проходящий через н",
+      "source_page": 33,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 12,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 12,
+          "dimensions_total": 1,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 331
+        }
+      }
+    },
+    {
+      "block_id": "6FEC-3LVL-WVQ",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "cable_entry",
+      "title": "",
+      "description": "Схема узла ввода кабелей в квартиру через стену с использованием стальной гильзы. На чертеже представлен разрез узла ввода кабелей в квартиру. Показана стальная гильза (труба 32х2,8 ГОСТ 3262-75), проходящая сквозь стену, заполненную бетонным раствором и огнестойкой пеной. Внутри гильзы расположены пять кабелей с маркировками СОУЭ, АПС, АК*, СОВ+РФ и Интернет. Указаны габаритные размеры проема и расстояния между элементами. Узел ввода в квартиру Бетонный раствор Огнестойкая пена Кабель Гильза, и",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 12,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 12,
+          "dimensions_total": 1
+        }
+      }
+    },
+    {
+      "block_id": "6RAR-YHC4-G6E",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На схеме представлены способы крепления кабельных трасс в гофрированных ПВХ трубах и пример маркировки кабеля. Схема содержит три узла крепления: вертикальный, горизонтальный и в месте изгиба, с указанием шага крепления 350 мм и 50 мм соответственно. Вертикальные и горизонтальные трассы показаны с использованием условных обозначений креплений на трубах. В нижней части расположен графический пример маркировки кабеля с использованием нейлоновой стяжки. Указаны типы кабелей, количество пар и сечени",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 14,
+          "dimension": 6
+        },
+        "counts": {
+          "nodes_total": 20,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 14,
+          "dimensions_total": 6,
+          "coordinate_text_records_total": 20,
+          "coordinate_text_characters_total": 405
+        }
+      }
+    },
+    {
+      "block_id": "76HY-7V3K-47A",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков к перекрытию и стене. Верхний узел показывает горизонтальное крепление перфорированного лотка к перекрытию с помощью шпилек М8, П-образного профиля и анкеров. Нижний узел демонстрирует вертикальное крепление лотка к стене с использованием скоб, болтов М8 и анкеров. На схемах указаны габаритные размеры лотков (100 мм, 300 мм) и расстояния от стены (50 мм). Приведены примечания по шагу крепления лотков в зависимости от их ориентации.",
+      "source_page": 26,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 23,
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 23,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 30,
+          "coordinate_text_characters_total": 601
+        }
+      }
+    },
+    {
+      "block_id": "7GQ7-WCXX-DNX",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Типовой узел крепления кабельного лотка вертикально к стене с указанием монтажных элементов. На чертеже представлены два вида узла крепления: вид сверху и вид сбоку. Вид сверху показывает перфорированный лоток, закрепленный к стене с помощью скоб, болтов М8, шайб М8 и забивных анкеров М8. Вид сбоку демонстрирует крепление листового лотка к стене с отступом 50 мм, фиксируемое скобой и забивным анкером М8. Приведены примечания по шагу крепления лотков в зависимости от их ориентации. Примечание: 1.",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 15,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 16,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 15,
+          "dimensions_total": 1,
+          "coordinate_text_records_total": 19,
+          "coordinate_text_characters_total": 470
+        }
+      }
+    },
+    {
+      "block_id": "7H6K-G6E7-3PD",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Список из 12 примечаний к монтажным работам по системам автоматизации. Текст представлен в виде нумерованного списка от 1 до 12. Содержание включает требования к нормативной документации, правилам прокладки кабелей, защите проходов через стены и заземлению оборудования. Текст набран черным шрифтом на белом фоне. В нижней части блока присутствуют отдельные числовые значения высотных отметок. Примечания 1. Монтажные работы выполнять по СП 77.13330.2016 \"Системы автоматизации. Актуализированная ред",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 34
+        },
+        "counts": {
+          "nodes_total": 34,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 34,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 43,
+          "coordinate_text_characters_total": 1771
+        }
+      }
+    },
+    {
+      "block_id": "7P66-RYYD-VYK",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема крепления вызывной панели и кабельных трасс в гофрированных ПВХ трубах. На чертеже представлены четыре узла крепления: вызывная панель к стене, вертикальная кабельная трасса, горизонтальная кабельная трасса и крепление трассы в месте изгиба. Вызывная панель показана в виде фронтального вида и бокового разреза с указанием точек крепления (х2). Кабельные трассы изображены с указанием шага креплений 500 мм для вертикальных участков и 350 мм для горизонтальных. Для углового соединения кабельно",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 15,
+          "dimension": 6
+        },
+        "counts": {
+          "nodes_total": 21,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 15,
+          "dimensions_total": 6,
+          "coordinate_text_records_total": 23,
+          "coordinate_text_characters_total": 374
+        }
+      }
+    },
+    {
+      "block_id": "7TNR-HRN3-3CV",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Техническая документация по способам крепления огнестойкой кабельной линии (ОКЛ) Спецкаблайн-ХД к различным типам поверхностей. Документ содержит три схемы узлов крепления кабельного короба к бетонной стене и сэндвич-панели. Каждая схема сопровождается выносками с нумерацией элементов, таких как кабель-канал, лента из стекловолокна, крепежные элементы (саморезы, дюбели, гвозди) и кабели систем СПЗ. Изображения показывают поперечное сечение короба, закрепленного на поверхности, с указанием распол",
+      "source_page": 37,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 23
+        },
+        "counts": {
+          "nodes_total": 23,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 23,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 23,
+          "coordinate_text_characters_total": 811
+        }
+      }
+    },
+    {
+      "block_id": "7ULP-DH7M-KDU",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Фрагмент плана этажа с парковочными местами, инженерными коммуникациями и спецификацией электрооборудования. На чертеже представлен план подземного паркинга с размеченными машиноместами, проездами и инженерными сетями. В левой части расположены помещения с маркировками (например, 6.К.1, 6.МОП.1) и указанием пределов огнестойкости (EI 60, EIS 60). В правой части изображена сетка парковочных мест с уклонами (0,5%, 0,6%, 0,7%). В нижней части чертежа размещена подробная таблица-спецификация электро",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 251,
+          "dimension": 61
+        },
+        "counts": {
+          "nodes_total": 312,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 251,
+          "dimensions_total": 61,
+          "coordinate_text_records_total": 326,
+          "coordinate_text_characters_total": 1816
+        }
+      }
+    },
+    {
+      "block_id": "7WXA-AQFE-PRY",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "equipment_mount",
+      "title": "",
+      "description": "Схема крепления ручного пожарного извещателя на стену с прокладкой гофрированной трубы. На чертеже показан фрагмент стены с дверным проемом и установленным на высоте 1,5 м ручным пожарным извещателем. Гофрированная труба проложена вдоль потолка с креплением однолапковыми скобами и опускается вертикально вниз к извещателю, будучи скрытой в штрабе. Указаны основные элементы: потолок, гофрированная труба, скоба и извещатель. Вертикальный размер 1,5 м обозначен выносными линиями от уровня пола до це",
+      "source_page": 28,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 11
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 11,
+          "dimensions_total": 0
+        }
+      }
+    },
+    {
+      "block_id": "94U9-9H4A-YEN",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Эскиз крепления купольной IP-видеокамеры к подвесному потолку. На чертеже изображен узел монтажа купольной IP-видеокамеры, закрепленной на поверхности подвесного потолка. Кабель питания и передачи данных подводится к камере через гофрированную трубу, проходящую над плоскостью потолка. Камера имеет купольный корпус, частично утопленный или закрепленный на основании, интегрированном в потолочную конструкцию. Линии чертежа выполнены в тонком контурном стиле, указывая на способ фиксации оборудования",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 5
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 5,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 5,
+          "coordinate_text_characters_total": 94
+        }
+      }
+    },
+    {
+      "block_id": "97LJ-H3QN-3R7",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Таблица условно-графических обозначений оборудования пожарной сигнализации и автоматики. Таблица состоит из трех столбцов: УГО, Позиционное обозначение и Наименование оборудования. В первом столбце представлены графические символы (квадраты, круги, прямоугольники) с буквенными обозначениями внутри. Второй столбец содержит буквенно-цифровые коды позиционных обозначений. Третий столбец содержит текстовое описание типов оборудования, включая извещатели, модули управления, приборы и клапаны. Таблица",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 55
+        },
+        "counts": {
+          "nodes_total": 55,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 55,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 61,
+          "coordinate_text_characters_total": 1383
+        }
+      }
+    },
+    {
+      "block_id": "9DDA-TDMH-X3X",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема узла прохода кабеля через строительную конструкцию с использованием огнестойких материалов. На схеме изображен фрагмент строительной конструкции в виде серой плиты с текстурой бетона. Через отверстие в плите проходит кабель, окруженный желтым слоем огнестойкой пены и металлической гильзой. Указан размер 200, относящийся к диаметру гильзы. Выноски указывают на компоненты: строительную конструкцию, огнестойкую пену, огнестойкий герметик, кабель контроля и управления, а также закладную металл",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 14,
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 14,
+          "dimensions_total": 1,
+          "coordinate_text_records_total": 16,
+          "coordinate_text_characters_total": 262
+        }
+      }
+    },
+    {
+      "block_id": "9RRD-F3VQ-TNV",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены три узла прохода кабелей и кабельных лотков через строительные конструкции с использованием огнестойких материалов FIREFIX. Изображены три изометрических узла: А (проход лотка через стену), Б (проход кабеля в гильзе через стену) и В (проход кабеля в гильзе через перекрытие). В каждом узле показаны строительная конструкция, огнестойкая пена и герметик FIREFIX, а также металлические гильзы или лотки. Указан размер 200 мм для глубины или зоны заполнения огнестойким составом",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 29,
+          "dimension": 3
+        },
+        "counts": {
+          "nodes_total": 32,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 29,
+          "dimensions_total": 3,
+          "coordinate_text_records_total": 32,
+          "coordinate_text_characters_total": 669
+        }
+      }
+    },
+    {
+      "block_id": "9RT4-FMCR-MWK",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Чертеж содержит типовые узлы крепления кабельных лотков к перекрытию и стене. На чертеже представлены два узла: горизонтальное крепление лотка на шпильках к перекрытию и вертикальное крепление лотка к стене. Горизонтальный узел включает П-образный профиль, подвешенный на резьбовых шпильках с анкерами, с указанием размеров 100 мм и 300 мм. Вертикальный узел показывает крепление лотка к стене через скобу и анкеры с указанием отступа 50 мм. Приведены примечания по шагу крепления лотков и ссылочная",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 24,
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 24,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 32,
+          "coordinate_text_characters_total": 695
+        }
+      }
+    },
+    {
+      "block_id": "9TDC-YE7F-9YA",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схема монтажа капиллярного термостата для защиты калорифера от замораживания. На чертеже представлен общий вид калорифера с установленным реле температуры и два сечения (А и Б). Сечение А показывает крепление корпуса реле к стенке калорифера с помощью двух винтов. Сечение Б демонстрирует фиксацию капиллярной трубки на трубах теплообменника с помощью монтажной скобы и самореза. Указан минимальный радиус изгиба капиллярной трубки >R20. Приведены текстовые примечания по правилам прокладки трубки и",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 18
+        },
+        "counts": {
+          "nodes_total": 18,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 18,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 22,
+          "coordinate_text_characters_total": 639
+        }
+      }
+    },
+    {
+      "block_id": "9TN4-X74P-E7F",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены два узла прохода кабеля через строительные конструкции с использованием огнестойких материалов. Узел А показывает проход кабеля через вертикальную строительную конструкцию, а Узел Б — через горизонтальную. Оба узла включают металлическую закладную гильзу, заполненную огнестойкой пеной и герметиком 'FIREFIX'. Кабель контроля и управления проходит сквозь гильзу, при этом указан размер 200 мм для глубины или длины элемента. Изображения выполнены в изометрической проекции с в",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 18,
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 20,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 18,
+          "dimensions_total": 2,
+          "coordinate_text_records_total": 20,
+          "coordinate_text_characters_total": 463
+        }
+      }
+    },
+    {
+      "block_id": "9VEH-Y73D-6DA",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Таблица условно-графических обозначений пожарного оборудования с указанием позиционных обозначений и наименований. Таблица состоит из трех столбцов: УГО, Позиционное обозначение и Наименование оборудования. В первом столбце представлены графические символы (иконки) для каждого типа оборудования. Второй столбец содержит буквенно-цифровые коды позиционных обозначений. Третий столбец содержит текстовое описание оборудования, включая ссылки на другие разделы проекта для некоторых позиций. Таблица ус",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 60
+        },
+        "counts": {
+          "nodes_total": 60,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 60,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 67,
+          "coordinate_text_characters_total": 1473
+        }
+      }
+    },
+    {
+      "block_id": "9VUX-QRFW-G6N",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены эскизы крепления элементов системы контроля доступа к стене. Изображены четыре узла крепления: контроллера СКУД, накладного электромагнитного замка, бесконтактного считывателя и кнопки выхода. Каждый узел сопровождается выносками с указанием количества крепежных элементов (саморезов с дюбелями). Показаны сечения стен с установленными дюбелями и способы фиксации устройств. Линии чертежа тонкие, сплошные, с использованием штриховки для обозначения материала стены. Крепление",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 5
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 5,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 261
+        }
+      }
+    },
+    {
+      "block_id": "9WDQ-734W-4K7",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Техническая схема универсальной кабельной проходки «TEHSTRONG FIREWALL PP» с гильзопакетом из стальных гильз круглого сечения. На чертеже представлен вид сбоку и два поперечных разреза (1-1 и 2-2) кабельной проходки в строительной конструкции. Показаны кабели, проходящие через гильзопакет, заделанный огнестойкой пеной и герметиком «FIREFIX», а также цементно-песчаным раствором. Справа приведена таблица с техническими характеристиками (предел огнестойкости, толщина заполнения, параметры нанесения",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 62
+        },
+        "counts": {
+          "nodes_total": 62,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 62,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 74,
+          "coordinate_text_characters_total": 1027
+        }
+      }
+    },
+    {
+      "block_id": "A7XE-WNW3-XMW",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Технические требования к монтажу ОКЛ и спецификация элементов крепления. На странице представлена таблица с перечнем кабелей и временем, а также текстовые указания по монтажу ОКЛ на различные поверхности. Приведен графический узел крепления трубы к швеллеру с использованием струбцины, шпильки, гайки и держателя. Ниже расположена спецификация элементов крепления с позициями от 1 до 5. Текстовый блок содержит требования к расстояниям между точками крепления и типам используемых соединительных муфт",
+      "source_page": 85,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 43
+        },
+        "counts": {
+          "nodes_total": 43,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 43,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 62,
+          "coordinate_text_characters_total": 1689
+        }
+      }
+    },
+    {
+      "block_id": "EMVG-MYUP-7EE",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков к перекрытию и стене. Изображены два типа узлов: горизонтальное крепление лотка на шпильках к перекрытию и вертикальное крепление лотка к стене. Горизонтальный узел включает П-образный профиль, резьбовые шпильки М8, анкеры и гайки с шайбами. Вертикальный узел показывает крепление лотка к стене с помощью скоб, болтов М8 и анкеров. Приведены размеры 100 мм, 300 мм и 50 мм для элементов конструкций. В нижней части расположены примечани",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 24,
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 24,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 32,
+          "coordinate_text_characters_total": 695
+        }
+      }
+    },
+    {
+      "block_id": "UD63-F7G6-6J3",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Изометрическая схема типового узла прохода кабельного лотка через строительную стену. На чертеже представлена изометрическая проекция кабельного лотка, проходящего сквозь прямоугольное отверстие в стене. Стены показаны с текстурой бетона, а область прохода заполнена сетчатой штриховкой, обозначающей огнестойкую пену. Кабельный лоток с уложенными внутри кабелями проходит через центр отверстия. Указаны основные элементы конструкции: стена, контур отверстия, кабельный лоток, кабели и огнестойкая пе",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 6
+        },
+        "counts": {
+          "nodes_total": 6,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 6,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 6,
+          "coordinate_text_characters_total": 104
+        }
+      }
+    },
+    {
+      "block_id": "UNNN-3KUM-LQV",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "assembly",
+      "title": "",
+      "description": "Схемы крепления кабельных трасс в гофрированных ПВХ трубах и пример маркировки кабеля. На чертеже представлены три схемы крепления кабельных трасс: вертикальная, горизонтальная и в месте изгиба. Для вертикального и горизонтального крепления указан шаг установки крепежных элементов 350 мм. Для изгиба трубы указаны расстояния 50 мм от точки сгиба до крепежных элементов. В нижней части приведена изометрическая схема маркировки кабеля с использованием нейлоновой стяжки и бирки, на которой указаны ти",
+      "source_page": 27,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 14,
+          "dimension": 6
+        },
+        "counts": {
+          "nodes_total": 20,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 14,
+          "dimensions_total": 6,
+          "coordinate_text_records_total": 20,
+          "coordinate_text_characters_total": 405
+        }
+      }
+    },
+    {
+      "block_id": "UYXQ-YMYF-CKF",
+      "discipline": "СС",
+      "profile_id": "installation_assembly",
+      "subtype": "sensor",
+      "title": "",
+      "description": "Представлены монтажные схемы концевого выключателя ВП15К21 и емкостного датчика уровня. Верхняя часть содержит схему установки концевого выключателя ВП15К21 на стеновом кронштейне с использованием анкера, болтов и гаек. Нижняя часть показывает схему монтажа емкостного датчика уровня, установленного на закладной конструкции над баком с гликолем. На схеме датчика обозначены габаритные размеры H, A, L1, угол α и толщина закладной детали 35 мм. Уровень жидкости в баке показан штриховкой. Монтажная с",
+      "source_page": 24,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "assembly_part": 32,
+          "dimension": 6
+        },
+        "counts": {
+          "nodes_total": 38,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "parts_total": 32,
+          "dimensions_total": 6
+        }
+      }
+    },
+    {
+      "block_id": "43AF-KGTU-4RY",
+      "discipline": "СС",
+      "profile_id": "lift_dispatch_floor_topology",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Структурная схема диспетчеризации лифтового оборудования с указанием этажности и расположения устройств переговорной связи. На схеме представлена вертикальная таблица этажей от -1 до 25, соединенная линиями связи с четырьмя вертикальными каналами лифтов. В нижней части каждого канала обозначен 'Приямок лифта' с устройством 'УП7'. На первом этаже расположен блок 'ПУЭП-Н' с 'Ключ ППП', соединенный линиями с остальными уровнями. В верхней части каждого лифтового канала размещены блоки 'Пост приказо",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "intercom": 7,
+          "lift_block": 5,
+          "lift_shaft": 4,
+          "lift_station": 4,
+          "ospd_cabinet": 1,
+          "sensor": 4,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 26,
+          "containers_total": 36,
+          "networks_total": 1,
+          "edges_total": 26,
+          "buildings_total": 2,
+          "floor_bands_total": 30,
+          "shafts_total": 4,
+          "connected_nodes_total": 24
+        }
+      }
+    },
+    {
+      "block_id": "6LJA-WMVK-6DK",
+      "discipline": "СС",
+      "profile_id": "metering_floor_bus_heat",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Схема организации системы сбора данных АСКУЭ для Корпуса 4 и Корпуса 5. На схеме представлены иерархические структуры подключения приборов учета (РИ) и датчиков (FE) по этажам в нишах ОВ и АК. Линии связи соединяют коллекторные узлы и помещения с центральным шкафом ЩД-АСКУВТ.5.1. В нижней части показаны блоки питания, серверная с АРМ АСКУЭР и оборудование связи. Все элементы соединены логическими линиями передачи данных, сгруппированными по каналам. Корпус 5 Корпус 4 Ниша ОВ Ниша АК 15 этаж 13-1",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 1,
+          "data_collector": 1,
+          "interface_splitter": 39,
+          "meter_branch": 4,
+          "network_cabinet": 1,
+          "network_interface": 2,
+          "power_supply": 2,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 51,
+          "containers_total": 11,
+          "networks_total": 6,
+          "edges_total": 37,
+          "buildings_total": 2,
+          "floor_bands_total": 9,
+          "branches_total": 4,
+          "declared_meters_total": 295,
+          "core_nodes_total": 4
+        }
+      }
+    },
+    {
+      "block_id": "6LLD-C4PA-LHY",
+      "discipline": "СС",
+      "profile_id": "metering_floor_bus_heat",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"Не определены\", \"zone_name\": \"Схема\" }, \"content_summary\": \"Схема автоматизированной системы коммерческого учета потребления воды и тепла (АСКУВТ) для Корпуса 1 и Корпуса 2.\", \"detailed_description\": \"На схеме представлены вертикальные структурные диаграммы подключения помещений ревизии инженерных коммуникаций для Корпуса 1 и Корпуса 2. Вертикальные линии обозначают каналы связи, соединяющие этажные помещения с центральным узлом (УСПД «Пульсар» мод.2). В каждом пом",
+      "source_page": 90,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 2,
+          "data_collector": 2,
+          "interface_splitter": 114,
+          "meter_branch": 10,
+          "network_interface": 4,
+          "power_supply": 4,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 137,
+          "containers_total": 36,
+          "networks_total": 13,
+          "edges_total": 109,
+          "buildings_total": 3,
+          "floor_bands_total": 33,
+          "branches_total": 10,
+          "declared_meters_total": 551,
+          "core_nodes_total": 5,
+          "coordinate_text_records_total": 693,
+          "coordinate_text_characters_total": 4363
+        }
+      }
+    },
+    {
+      "block_id": "4QKV-36MX-PK7",
+      "discipline": "СС",
+      "profile_id": "metering_floor_bus_water",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"Не определены\", \"zone_name\": \"Схема\" }, \"content_summary\": \"Схема автоматизированной системы коммерческого учета потребления воды и тепла (АСКУВТ) для Корпуса 1 и Корпуса 2.\", \"detailed_description\": \"На чертеже представлены две вертикальные структурные схемы для Корпуса 1 и Корпуса 2, отображающие распределение приборов учета по этажам. Каждая схема включает узлы сбора данных (УСПД 'Пульсар' мод.2), блоки питания БП120Б-Д9-24С и линии связи, соединяющие квартиры и",
+      "source_page": 89,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 2,
+          "data_collector": 2,
+          "interface_splitter": 259,
+          "meter_branch": 14,
+          "network_interface": 4,
+          "power_supply": 4,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 286,
+          "containers_total": 42,
+          "networks_total": 17,
+          "edges_total": 241,
+          "buildings_total": 3,
+          "floor_bands_total": 39,
+          "branches_total": 14,
+          "declared_meters_total": 1126,
+          "core_nodes_total": 5,
+          "coordinate_text_records_total": 876,
+          "coordinate_text_characters_total": 5006
+        }
+      }
+    },
+    {
+      "block_id": "4R7T-AVPA-L9G",
+      "discipline": "СС",
+      "profile_id": "metering_floor_bus_water",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "{ \"location\": { \"grid_lines\": \"Не определены\", \"zone_name\": \"Схема\" }, \"content_summary\": \"Структурная схема АСКУВ для корпусов 4 и 5 с указанием этажности, расположения приборов учета и узлов связи.\", \"detailed_description\": \"Схема представляет собой иерархическую структуру, разделенную на два основных блока: Корпус 4 и Корпус 5. В каждом корпусе вертикальные линии обозначают этажи, на которых расположены точки учета (РИ) с подключением HW и CW. В нижней части схемы показаны узлы сбора данных,",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 1,
+          "data_collector": 1,
+          "interface_splitter": 115,
+          "meter_branch": 6,
+          "network_cabinet": 1,
+          "network_interface": 2,
+          "power_supply": 2,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 129,
+          "containers_total": 15,
+          "networks_total": 7,
+          "edges_total": 103,
+          "buildings_total": 2,
+          "floor_bands_total": 13,
+          "branches_total": 6,
+          "declared_meters_total": 606,
+          "core_nodes_total": 4
+        }
+      }
+    },
+    {
+      "block_id": "4DN7-KLWV-UAF",
+      "discipline": "СС",
+      "profile_id": "mgn_intercom_floor_bus",
+      "subtype": "эталонный вариант",
+      "title": "",
+      "description": "Структурная схема переговорной связи зон МГН и технических помещений для корпуса 6. Схема представляет собой вертикальную структуру, отображающую этажи от -1 до 23. На каждом этаже показаны блоки АПУ-2Н, лифтовые холлы и межквартирные коридоры, соединенные линиями связи. В нижней части схемы (этаж -1) расположены технические помещения, такие как венткамеры, электрощитовые, мусорокамеры и помещения СС, с указанием их номеров. Также присутствуют блоки оборудования: щит ЩАСУД-6.1, концентратор 7.2",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 3,
+          "call_unit": 42,
+          "can_repeater": 4,
+          "ospd_cabinet": 2,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 52,
+          "containers_total": 32,
+          "networks_total": 1,
+          "edges_total": 51,
+          "buildings_total": 2,
+          "floor_bands_total": 30,
+          "shafts_total": 0,
+          "connected_nodes_total": 52
+        }
+      }
+    },
+    {
+      "block_id": "9HUC-YY4U-GHY",
+      "discipline": "СС",
+      "profile_id": "mgn_intercom_floor_bus",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Структурная схема переговорной связи зон МГН и технических помещений для корпуса 3. Схема представляет собой вертикальную структуру, разделенную на этажи от 1-го до 28-го, с отображением межквартирных коридоров и лифтовых холлов. На каждом этаже показаны устройства АПУ-2Н, соединенные линиями связи. В нижней части схемы расположены технические помещения (-1 этаж) с указанием оборудования: щиты ЩАСУД-3.1, концентраторы 7.2 и телекоммуникационные шкафы ОСПД3.1. Линии связи обозначены как кабельные",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "automation_panel": 3,
+          "call_unit": 37,
+          "can_repeater": 4,
+          "ospd_cabinet": 2,
+          "workstation": 1
+        },
+        "counts": {
+          "nodes_total": 47,
+          "containers_total": 34,
+          "networks_total": 1,
+          "edges_total": 46,
+          "buildings_total": 2,
+          "floor_bands_total": 32,
+          "shafts_total": 0,
+          "connected_nodes_total": 47,
+          "coordinate_text_records_total": 320,
+          "coordinate_text_characters_total": 3072
+        }
+      }
+    },
+    {
+      "block_id": "4UPC-DE3V-9UU",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков горизонтально к перекрытию на резьбовых шпильках. На чертеже представлены вид спереди и вид сбоку узла крепления кабельных лотков к бетонному перекрытию. Конструкция включает забивные анкеры М8, резьбовые шпильки М8, П-образный профиль и неперфорированные лотки типов СПЗ и СБ. Детали фиксируются с помощью шайб М8 и гаек М8. Указаны габаритные размеры 400 мм для ширины лотков с внутренними интервалами 200 мм и отступами по 50 мм. Типовой узел крепления кабе",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 27,
+          "coordinate_text_characters_total": 309
+        }
+      }
+    },
+    {
+      "block_id": "4UVU-GKUA-GEL",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "На чертеже представлены типовые узлы крепления кабельных лотков к перекрытию и стене. Слева показан узел горизонтального крепления лотка на шпильках к перекрытию с указанием профиля П-образного и анкеров М8. Справа представлен узел вертикального крепления лотка к стене с использованием скоб и анкеров М8. На чертеже присутствуют выносные линии с размерами 300 мм, 100 мм и 50 мм. Элементы крепления, такие как болты, гайки и шайбы М8, обозначены соответствующими выносками. Типовой узел крепления ка",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 25,
+          "coordinate_text_characters_total": 409
+        }
+      }
+    },
+    {
+      "block_id": "6G6T-WWA9-HEN",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков к перекрытию с использованием П-образного профиля и резьбовых шпилек. На чертеже представлен вид спереди узла крепления двух кабельных лотков к потолочному перекрытию. Конструкция включает два забивных анкера М8, установленных в перекрытие, к которым крепятся резьбовые шпильки М8. Шпильки удерживают горизонтальный П-образный профиль, на котором размещены два неперфорированных лотка (СПЗ и СБ). Указаны размеры между точками крепления и общая ширина профиля",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 18,
+          "coordinate_text_characters_total": 245
+        }
+      }
+    },
+    {
+      "block_id": "6J7L-3KHH-LXJ",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "На чертеже представлены разрез установки шкафа автоматики и типовой узел крепления кабельного лотка к перекрытию. Слева показан разрез 1-1 с установкой шкафа ШАУВ-3-К3, где указаны высотные отметки 1000, 1800, 2000 и 3050 мм, а также габариты шкафа 600x800 мм. Справа изображен типовой узел крепления лотка к перекрытию в двух проекциях: вид спереди и вид сбоку. Конструкция включает анкер забивной М8, резьбовую шпильку М8, П-образный профиль, перфорированный лоток, шайбы М8 и гайки М8. Указаны раз",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 6
+        },
+        "counts": {
+          "nodes_total": 6,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 6,
+          "coordinate_text_records_total": 23,
+          "coordinate_text_characters_total": 294
+        }
+      }
+    },
+    {
+      "block_id": "6PMU-GER6-N6E",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления перфорированного кабельного лотка к перекрытию с использованием резьбовых шпилек и П-образного профиля. На чертеже представлены вид спереди и вид сбоку узла крепления кабельного лотка. Конструкция включает забивные анкеры М8 в перекрытии, резьбовые шпильки М8, П-образный профиль и систему крепления лотка с помощью шайб и гаек М8. Вид спереди показывает общую ширину профиля 300 мм и расстояние между точками крепления 100 мм. Вид сбоку демонстрирует высоту лотка 100 мм и дет",
+      "source_page": 23,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "7CGA-7KRN-WWF",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "asud_panel",
+      "title": "",
+      "description": "Представлен внешний вид щита ЩАСУД-6.1 с расположением оборудования на DIN-рейках. На чертеже изображен прямоугольный корпус щита с габаритными размерами 800 мм по высоте и 650 мм по ширине. Внутри корпуса расположены три горизонтальные DIN-рейки с установленными компонентами: автоматическими выключателями (QF1, QF2, QF3), розетками (XS1, XS2), клеммными зажимами (X0, X1), концентраторами (A2, A3), блоком питания (G1) и источником бесперебойного питания (A1). По бокам корпуса показаны вертикальн",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 7,
+          "panel_component": 6
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 6,
+          "dimensions_total": 7
+        }
+      }
+    },
+    {
+      "block_id": "7G7N-PU4Q-HJV",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Представлен эскиз внутреннего наполнения шкафа ППКОПУ РУБЕЖ-МК1 М-57-66 (МК3.1) с перечнем оборудования и узлом заземления. На чертеже изображен фронтальный вид шкафа с установленными модулями, пронумерованными от 1 до 7. Справа расположена спецификация оборудования с указанием позиций, наименований и примечаний. В нижней части представлен выносной узел крепления провода заземления к корпусу шкафа с детализацией крепежных элементов: болта М6х30, шайб и гаек. Все элементы шкафа соединены выносным",
+      "source_page": 29,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "panel_component": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 3,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 37,
+          "coordinate_text_characters_total": 453
+        }
+      }
+    },
+    {
+      "block_id": "7RQN-UQA9-3WU",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Схема установки щита автоматики и управления с указанием монтажных размеров. На чертеже представлен вид спереди на щит автоматики и управления, установленный на стене между двумя горизонтальными конструкциями (перекрытиями). Щит имеет прямоугольную форму с габаритными размерами 500 мм по ширине и 700 мм по высоте. Указана высота установки щита от уровня пола до его нижней грани, составляющая 1100 мм, и общая высота до верхней грани, составляющая 1800 мм. Внутри контура щита изображены условные о",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 7,
+          "coordinate_text_characters_total": 64
+        }
+      }
+    },
+    {
+      "block_id": "7T3V-XE4Q-QQX",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "aps_cabinet",
+      "title": "",
+      "description": "Представлен эскиз наполнения шкафа ППКОПУ РУБЕЖ-МК1 и спецификация его компонентов. На чертеже изображен фронтальный вид шкафа с установленным оборудованием, пронумерованным от 1 до 7. Справа расположена таблица спецификации с перечнем позиций, наименований и примечаний. В нижней части чертежа приведена выносная деталь узла заземления с указанием крепежных элементов: болта М6х30, шайб и гаек. Линии-выноски соединяют элементы на схеме шкафа с соответствующими номерами позиций. Эскиз наполнения шк",
+      "source_page": 29,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "panel_component": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 3,
+          "dimensions_total": 0
+        }
+      }
+    },
+    {
+      "block_id": "7UY6-RPQ7-9MY",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Эскиз наполнения шкафа ППКОПУ РУБЕЖ-МК1 М-61-56 с детализацией узла заземления. На чертеже представлен вид спереди на внутреннее наполнение шкафа с установленными приборами и клеммными колодками. В нижней части расположен выносной элемент (узел), показывающий конструкцию крепления провода заземления к корпусу шкафа. Узел включает болт М6х30, контактную шайбу, три обычные шайбы, две гайки М6 и одну пружинную шайбу. Основное изображение шкафа пронумеровано выносками от 1 до 7, указывающими на комп",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "panel_component": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 2,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 17,
+          "coordinate_text_characters_total": 161
+        }
+      }
+    },
+    {
+      "block_id": "93XF-ML4D-VL3",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "metering_panel",
+      "title": "",
+      "description": "Эскизный чертеж общего вида щита ЩД-АСКУВТ.5.1 с монтажной панелью и внешним видом шкафа. На чертеже представлены два вида: монтажная панель с установленным оборудованием и внешний вид шкафа с габаритными размерами 800х1200 мм. Монтажная панель содержит DIN-рейки, блоки питания, автоматические выключатели, клеммные колодки и перфорированные короба 60х80. Слева указаны вертикальные размеры расположения компонентов, справа — габариты шкафа. В верхней части шкафа показаны выводы для антенн. Монтажн",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 22,
+          "panel_component": 6
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 6,
+          "dimensions_total": 22
+        }
+      }
+    },
+    {
+      "block_id": "974F-PNYV-RUF",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления перфорированного кабельного лотка горизонтально к перекрытию на резьбовых шпильках. На чертеже представлены вид спереди и вид сбоку узла крепления кабельного лотка. Конструкция включает анкер забивной М8, резьбовую шпильку М8, П-образный профиль, шайбы М8 и гайку М8. Указаны габаритные размеры лотка (300 мм) и расстояние между точками крепления (100 мм). Приведены примечания по шагу крепления лотков при горизонтальном и вертикальном расположении. Типовой узел крепления каб",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 18,
+          "coordinate_text_characters_total": 405
+        }
+      }
+    },
+    {
+      "block_id": "9FNQ-V9EH-LCX",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления горизонтального перфорированного кабельного лотка к перекрытию с помощью шпилек. На чертеже представлены вид спереди и вид сбоку узла крепления кабельного лотка. Конструкция включает забивной анкер М8, резьбовую шпильку М8, П-образный профиль и перфорированный лоток, зафиксированный гайками и шайбами М8. Вид спереди показывает ширину лотка 300 мм, а вид сбоку указывает высоту профиля 100 мм. Элементы соединены вертикально, где шпилька крепится к перекрытию через анкер. Тип",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 18,
+          "coordinate_text_characters_total": 405
+        }
+      }
+    },
+    {
+      "block_id": "9LV4-WXRM-Q3E",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления горизонтального перфорированного кабельного лотка к перекрытию с помощью резьбовых шпилек. На чертеже представлены вид спереди и вид сбоку узла крепления. Конструкция включает забивной анкер М8, установленный в перекрытие, резьбовую шпильку М8, П-образный профиль и перфорированный лоток. Соединение фиксируется гайками и шайбами М8. Указаны габаритные размеры лотка (300 мм) и расстояние между точками крепления (100 мм). Типовой узел крепления кабельных лотков горизонтально",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "9QCH-X77L-ARA",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков к перекрытию с использованием резьбовых шпилек и П-образного профиля. На чертеже представлены вид спереди и вид сбоку узла крепления кабельного лотка. Конструкция включает забивные анкеры М8 в перекрытии, резьбовые шпильки М8, П-образный профиль и перфорированный лоток. Вид спереди показывает общую ширину профиля 300 мм и расстояние между точками крепления лотка 100 мм. Вид сбоку детализирует соединение шпильки с профилем через шайбы М8 и гайку М8, а также",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "A46T-GWHY-RXV",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Схема расположения оборудования в телекоммуникационном шкафу 19 дюймов. На схеме представлен вид спереди 19-дюймового шкафа с установленными модулями, пронумерованными от 1 до 12. Слева от шкафа расположены выносные линии с цифрами, указывающими на соответствующие уровни оборудования. Внутри шкафа изображены прямоугольные блоки, представляющие различные устройства, такие как оптические коммутаторы, блоки питания, розетки и зарядные устройства. Справа от шкафа расположены выносные линии с номерам",
+      "source_page": 40,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 4,
+          "coordinate_text_records_total": 72,
+          "coordinate_text_characters_total": 343
+        }
+      }
+    },
+    {
+      "block_id": "AA39-EHQJ-HPP",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Схема компоновки оборудования в телекоммуникационном шкафу ШСОУ1.1. На чертеже представлен вид спереди телекоммуникационного шкафа с установленными модулями SONAR и LPA-EVA-CC. Оборудование размещено в вертикальной стойке с пронумерованными позициями от 1 до 27 по левому краю. Каждый модуль снабжен выносными линиями-выносками с порядковыми номерами компонентов. Внутри шкафа показаны блоки питания, усилители и контроллеры с соответствующими маркировками портов и разъемов. Телекоммуникационный шка",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 34
+        },
+        "counts": {
+          "nodes_total": 34,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 34,
+          "coordinate_text_records_total": 289,
+          "coordinate_text_characters_total": 1041
+        }
+      }
+    },
+    {
+      "block_id": "LF63-XUKN-UYR",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков к перекрытию с использованием шпилек и П-образного профиля. На чертеже представлен вид спереди узла крепления кабельного лотка к бетонному перекрытию. Конструкция включает два забивных анкера М8, установленных в перекрытие, к которым крепятся резьбовые шпильки М8. Шпильки удерживают горизонтальный П-образный профиль, на котором размещается перфорированный лоток СБ. Указаны габаритные размеры профиля 500 мм, расстояние между точками крепления 300 мм и отсту",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 10,
+          "coordinate_text_characters_total": 188
+        }
+      }
+    },
+    {
+      "block_id": "WY4Q-E7C7-F9J",
+      "discipline": "СС",
+      "profile_id": "physical_panel_layout",
+      "subtype": "cabinet",
+      "title": "",
+      "description": "Типовой узел крепления кабельных лотков горизонтально на шпильках к перекрытию. На чертеже представлены два вида узла: вид спереди и вид сбоку. Конструкция включает забивные анкеры М8, закрепленные в перекрытии, к которым присоединены резьбовые шпильки М8. Шпильки удерживают П-образный профиль, на котором размещен перфорированный лоток. Соединения фиксируются с помощью шайб М8 и гаек М8, а на виде сбоку указана высота лотка 100 мм и общая ширина 300 мм. Типовой узел крепления кабельных лотков го",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "components_total": 0,
+          "dimensions_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "6GYN-H7Q7-GLT",
+      "discipline": "СС",
+      "profile_id": "voice_alarm_line_topology",
+      "subtype": "структурная схема",
+      "title": "",
+      "description": "Структурная схема системы оповещения и управления эвакуацией (СОУЭ) для подземной автостоянки. Схема состоит из двух идентичных блоков, представляющих собой иерархическую структуру подключения оповещателей к стойкам ШСОУЭ 0.1 и ШСОУЭ 0.2. Каждый блок включает горизонтальные линии трансляционных шлейфов (V1-V14) с указанием мощности (Вт) и длины (м), а также адресные линии (LSO1, LSO2) с подключенными световыми оповещателями BIAL. В нижней части расположены блоки релейных модулей РМ-4К и источник",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        17,
+        17
+      ],
+      "covered_facts": 17,
+      "structure_signature": {
+        "node_types": {
+          "line_terminator": 14,
+          "served_room": 166,
+          "speaker_circuit": 14,
+          "voice_alarm_cabinet": 2
+        },
+        "counts": {
+          "nodes_total": 196,
+          "containers_total": 14,
+          "networks_total": 14,
+          "edges_total": 178,
+          "cabinets_total": 2,
+          "circuits_total": 14,
+          "rooms_total": 166,
+          "terminators_total": 14
+        }
+      }
+    }
+  ]
+}

@@ -123,7 +123,6 @@ def test_heartbeat_stops_cleanly_when_job_not_running(monkeypatch):
 
 
 def test_cleanup_batch_worker_removes_own_registration(monkeypatch):
-    monkeypatch.setattr(mgr_mod, "_schedule_lmstudio_post_queue_cleanup", lambda *a, **k: None)
     mgr = _mgr()
 
     async def _run():
@@ -141,7 +140,6 @@ def test_cleanup_batch_worker_removes_own_registration(monkeypatch):
 def test_cleanup_batch_worker_preserves_new_worker(monkeypatch):
     """Гонка close+enqueue: пока старый worker в finally, enqueue поднял новый
     под тем же ключом __BATCH__. Старый НЕ должен снести регистрацию нового."""
-    monkeypatch.setattr(mgr_mod, "_schedule_lmstudio_post_queue_cleanup", lambda *a, **k: None)
     mgr = _mgr()
 
     async def _run():
@@ -243,66 +241,8 @@ class _ExistsPath:
         return self._e
 
 
-def test_prefetch_failure_does_not_skip_main_item(monkeypatch, tmp_path):
-    """Если pre-Gemma enrichment упал — основной item остаётся pending; меняется
-    только gemma_prefetch_status='failed' (отдельное поле), item.status НЕ skipped."""
-    from backend.app.pipeline.stages.gemma_enrichment import (
-        gemma_enrichment_contract as gec,
-    )
-    from backend.app.services.common import version_service
-    from backend.app.pipeline.stages.prepare.prepare_service import prepare_state
+def test_batch_items_no_longer_publish_prefetch_state():
+    item = BatchQueueItem(project_id="target", status="pending")
 
-    mgr = _mgr()
-    monkeypatch.setattr(mgr_mod.ws_manager, "broadcast_global", _anoop)
-    monkeypatch.setattr(mgr, "_log", _anoop)
-    monkeypatch.setattr(mgr_mod, "resolve_project_dir", lambda pid: tmp_path / pid)
-    monkeypatch.setattr(version_service, "get_version_dir",
-                        lambda root, pid, vid=None: root)
-    # target "tgt" имеет crops, но enrichment не валиден → реальный кандидат.
-    monkeypatch.setattr(gec, "gemma_blocks_index_path",
-                        lambda pd: _ExistsPath(Path(pd).name == "tgt"))
-    monkeypatch.setattr(gec, "gemma_outputs_are_valid", lambda pd: (False, "pending"))
-    # Контекст-стаб (без чтения project_info с диска).
-    monkeypatch.setattr(
-        mgr, "_make_stage_context",
-        lambda job: SimpleNamespace(version_id=job.version_id, output_dir=tmp_path),
-    )
-
-    async def boom_fn(ctx, force=False):
-        raise RuntimeError("gemma exploded")
-
-    monkeypatch.setattr(mgr_mod, "_run_gemma_enrichment_stage_fn", boom_fn)
-
-    q = BatchQueueStatus(
-        queue_id="q", action="full", status="running", total=2, current_index=0,
-        items=[
-            BatchQueueItem(project_id="cur", action="full", status="running", job_id="jc"),
-            BatchQueueItem(project_id="tgt", action="full", status="pending", job_id="jt"),
-        ],
-    )
-    mgr._batch_queue = q
-    mgr._mark_gemma_stage_done("cur")  # gate открыт
-    prepare_state._global_lock = None
-    pause = asyncio.Event(); pause.set()
-
-    async def _run():
-        task = asyncio.create_task(mgr._run_gemma_prefetch_loop(q, pause))
-        # Подождать, пока prefetch попробует tgt и упадёт.
-        for _ in range(40):
-            await asyncio.sleep(0.05)
-            if q.items[1].gemma_prefetch_status == "failed":
-                break
-        q.status = "done"
-        task.cancel()
-        try:
-            await task
-        except asyncio.CancelledError:
-            pass
-
-    asyncio.run(_run())
-
-    tgt = q.items[1]
-    assert tgt.gemma_prefetch_status == "failed", "prefetch-ошибка пишется в своё поле"
-    assert tgt.gemma_prefetched is False
-    # КЛЮЧЕВОЙ инвариант: основной item НЕ деградирован.
-    assert tgt.status == "pending", "prefetch failure не должен трогать item.status"
+    assert "gemma_prefetch_status" not in item.model_dump()
+    assert item.status == "pending"

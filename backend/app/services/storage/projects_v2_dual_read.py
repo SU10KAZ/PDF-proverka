@@ -36,9 +36,20 @@ EXPECTED = "expected_difference"
 MISMATCH = "mismatch"
 MISSING_LEGACY = "missing_legacy"
 MISSING_V2 = "missing_v2"
+# v2-only документ (создан живым backend после cutover) — legacy-снимка нет,
+# сравнивать не с чем. Не потеря: findings/версии живут в v2.
+V2_ONLY = "v2_only"
 _RANK = {MATCH: 0, EXPECTED: 1, MISSING_LEGACY: 2, MISSING_V2: 3, MISMATCH: 4}
 
-_CRIT = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
+# Канонические имена; presence-проверки идут через resolve_existing, поэтому
+# legacy-хранилище (всегда старые имена) и v2 (новые/старые) сравниваются корректно.
+_CRIT = (TEXT_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME, "03_findings.json")
 _LEGACY_PRESERVE_STATUSES = {"legacy_partial", "source_only"}
 
 
@@ -93,7 +104,7 @@ def _legacy_output_with_findings(folder: Path) -> Optional[Path]:
 def _derive_legacy_status(legacy_out: Optional[Path]) -> str:
     if legacy_out is None:
         return "none"
-    n = sum(1 for c in _CRIT if (Path(legacy_out) / c).is_file())
+    n = sum(1 for c in _CRIT if resolve_existing(legacy_out, c).is_file())
     return "complete" if n == 3 else ("partial" if n else "none")
 
 
@@ -166,6 +177,11 @@ class DualReadService:
         return out
 
     def _doc_type(self, snap: dict) -> str:
+        # v2-only документы (созданы живым backend после cutover) не имеют
+        # legacy-снимка — snap=None. Дуал-read не рассчитан на них: graceful
+        # "unknown" вместо AttributeError.
+        if not snap:
+            return "unknown"
         if snap.get("migration_kind") == "legacy_findings_preserve":
             return "king_sons_legacy_preserve"
         if snap.get("version_count", 0) > 1:
@@ -187,6 +203,12 @@ class DualReadService:
         doc_dir = Path(doc["doc_dir"])
         snap = self.adapter.document_snapshot(doc["object_folder"], doc["discipline"],
                                               doc["document_code"])
+        if snap is None:
+            # v2-only документ (создан после cutover) — legacy-снимка нет,
+            # сравнивать не с чем. Не потеря данных.
+            return {"document_code": document_code, "status": V2_ONLY,
+                    "fields": [], "note": "v2-only document (no legacy snapshot)",
+                    "findings_loss": False, "version_loss": False}
         dtype = self._doc_type(snap)
         dj = self.adapter.read_document_json(doc_dir) or {}
         is_kingsons = snap.get("migration_kind") == "legacy_findings_preserve"
@@ -218,8 +240,8 @@ class DualReadService:
         legacy_status = _derive_legacy_status(legacy_out)
         status_expected = v2_status in _LEGACY_PRESERVE_STATUSES
 
-        v2_has = {n: (v2_latest / n).is_file() for n in _CRIT}
-        legacy_has = {n: bool(legacy_out) and (Path(legacy_out) / n).is_file() for n in _CRIT}
+        v2_has = {n: resolve_existing(v2_latest, n).is_file() for n in _CRIT}
+        legacy_has = {n: bool(legacy_out) and resolve_existing(legacy_out, n).is_file() for n in _CRIT}
 
         v2_fc = _findings_count_in_dir(v2_latest)
         legacy_fc = _findings_count_in_dir(legacy_out)

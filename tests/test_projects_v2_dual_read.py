@@ -34,9 +34,9 @@ def _legacy_out(legacy_dir: Path, *, has01, has02, findings, pipeline=True):
     out = legacy_dir / "_output"
     out.mkdir(parents=True, exist_ok=True)
     if has01:
-        _wj(out / "01_text_analysis.json", {"x": 1})
+        _wj(out / "02_text_analysis.json", {"x": 1})
     if has02:
-        _wj(out / "02_blocks_analysis.json", {"blocks": []})
+        _wj(out / "01_blocks_analysis.json", {"blocks": []})
     if findings is not None:
         _wj(out / "03_findings.json", {"findings": [{"severity": "Критическое"}] * findings})
     if pipeline and findings is not None:
@@ -73,9 +73,9 @@ def _build(tmp_path):
         (d / "versions/v001/01_input/a.pdf").write_text("x", encoding="utf-8")
         latest = d / "versions/v001/03_analysis/latest"
         if has01:
-            _wj(latest / "01_text_analysis.json", {"x": 1})
+            _wj(latest / "02_text_analysis.json", {"x": 1})
         if has02:
-            _wj(latest / "02_blocks_analysis.json", {"blocks": []})
+            _wj(latest / "01_blocks_analysis.json", {"blocks": []})
         if findings is not None:
             _wj(latest / "03_findings.json", {"findings": [{"severity": "Критическое"}] * findings})
             if pipeline_in == "99_service":

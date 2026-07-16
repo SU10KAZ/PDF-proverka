@@ -72,6 +72,17 @@ def test_two_critical_never_collapse():
     assert ids == {"T-001", "T-002"}
 
 
+def test_disputed_detector_finding_never_collapses():
+    disputed = _f(
+        id="T-001",
+        detector_comparison={"primary_relation": "disputed"},
+    )
+    ordinary = _f(id="T-002")
+    kept, report = collapse_to_canonical([disputed, ordinary])
+    assert {item["id"] for item in kept} == {"T-001", "T-002"}
+    assert report.disputed_protected_count == 1
+
+
 def test_critical_protects_against_non_critical_collapse():
     crit = _f(id="T-001", severity="КРИТИЧЕСКОЕ", description="crit")
     rec = _f(id="T-002", severity="РЕКОМЕНДАТЕЛЬНОЕ", description="rec")

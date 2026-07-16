@@ -24,8 +24,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from backend.app.core.config import (
+    BLOCK_BATCH_MODE_FINDINGS_ONLY,
     CLAUDE_BLOCK_BATCH_CLEAN_CWD,
+    CODEX_STAGE_MODEL_ID,
+    STAGE01_CODEX_PARALLELISM,
+    STAGE02_DUAL_MODEL_ID,
     get_stage_model,
+)
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_META_KEY,
+    BLOCKS_META_KEY_LEGACY,
+    resolve_existing,
 )
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.project_service import resolve_project_dir
@@ -37,9 +47,9 @@ RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
 
 
 def _read_stage02_smoke_env() -> dict:
-    """Прочитать optional smoke-limits для Stage 02 из env.
+    """Прочитать legacy-named smoke-limits для Stage 01 из env.
 
-    Если env-переменные не заданы — возвращается пустой dict, и Stage 02
+    Если env-переменные не заданы — возвращается пустой dict, и Stage 01
     работает с production defaults (DEFAULT_PARALLELISM, без blocks_filter).
 
     Поддерживаемые env:
@@ -112,7 +122,7 @@ def build_single_block_runtime_plan(
     *,
     source: str = "expanded_from_blocks_py_batches",
 ) -> dict:
-    """Build the persisted Stage 02 runtime plan used by progress/resume/retry."""
+    """Build the persisted Stage 01 runtime plan used by progress/resume/retry."""
     batches, _ = expand_block_batches_for_single_block_mode(source_batches)
     return {
         "schema_version": 1,
@@ -130,7 +140,7 @@ def write_single_block_runtime_plan(
     *,
     source: str = "expanded_from_blocks_py_batches",
 ) -> dict:
-    """Build and persist Stage 02 runtime plan to disk."""
+    """Build and persist Stage 01 runtime plan to disk."""
     plan = build_single_block_runtime_plan(source_batches, source=source)
     (output_dir / RUNTIME_BATCHES_FILE).write_text(
         json.dumps(plan, ensure_ascii=False, indent=2),
@@ -145,7 +155,7 @@ def load_or_create_single_block_runtime_plan(
     *,
     force_rebuild: bool = False,
 ) -> dict:
-    """Load existing Stage 02 runtime plan or build a fresh one."""
+    """Load existing Stage 01 runtime plan or build a fresh one."""
     runtime_path = output_dir / RUNTIME_BATCHES_FILE
     if runtime_path.exists() and not force_rebuild:
         try:
@@ -203,7 +213,7 @@ def write_block_analysis_runtime_summary(
 def attach_stage02_coverage_to_findings(
     project_id: str, output_dir: Path | None = None
 ) -> dict:
-    """Attach deterministic Stage 02 coverage warnings to final findings.
+    """Attach deterministic Stage 01 coverage warnings to final findings.
 
     output_dir: явная папка артефактов (run dir стадии) — обязательна при
     вызове из живого прогона v2-primary, иначе резолв уйдёт в latest (не ту
@@ -222,7 +232,7 @@ def attach_stage02_coverage_to_findings(
             except (version_service.VersionNotFoundError, FileNotFoundError):
                 output_dir = resolve_project_dir(project_id) / "_output"
     findings_path = output_dir / "03_findings.json"
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     gemma_summary_path = output_dir / "gemma_enrichment_summary.json"
     block_summary_path = output_dir / "block_analysis_summary.json"
 
@@ -254,7 +264,7 @@ def attach_stage02_coverage_to_findings(
         return {}
 
     data02 = _load(blocks_path)
-    meta02 = data02.get("stage02_meta") or data02.get("meta") or {}
+    meta02 = data02.get(BLOCKS_META_KEY) or data02.get(BLOCKS_META_KEY_LEGACY) or data02.get("meta") or {}
     block_analyses = data02.get("block_analyses") or []
 
     gemma_summary = _load(gemma_summary_path)
@@ -299,7 +309,7 @@ def attach_stage02_coverage_to_findings(
             "block_id": b.get("block_id"),
             "page": b.get("page"),
             "reason": b.get("reason") or "missing_stage02_crop",
-            "details": b.get("error") or "Gemma base index contains this block, but Stage 02 100 DPI crop is missing",
+            "details": b.get("error") or "Context index contains this block, but Stage 01 100 DPI crop is missing",
         }
         for b in stage02_crop_missing
     ])
@@ -349,7 +359,7 @@ def attach_stage02_coverage_to_findings(
         "excluded_blocks_from_full_analysis": excluded,
         "sections": [
             {
-                "title": "Непокрытые блоки Gemma enrichment",
+                "title": "Блоки без подготовленного контекста",
                 "blocks": gemma_uncovered,
             },
             {
@@ -491,10 +501,11 @@ async def run_block_analysis_findings_only(
     force: bool = False,
     mode: str | None = None,
 ) -> StageResult:
-    """ЭТАП 02 в режиме findings_only_gemma_pair.
+    """ЭТАП 01 в режиме findings_only_block_context.
 
-    Single-block: GPT-5.4 + gemma-enrichment + extended categories на каждый блок.
-    Пишет финальный _output/02_blocks_analysis.json напрямую.
+    Single-block: GPT-5.4, Codex или их независимый двойной проход +
+    PDF/Vectograph context + extended categories на каждый блок.
+    Пишет финальный _output/01_blocks_analysis.json напрямую.
     Поддерживает cancel через cancel_event и progress через ctx.progress_sync.
 
     Не управляет:
@@ -522,19 +533,23 @@ async def run_block_analysis_findings_only(
         )
         return StageResult.fail(f"gemma_findings_only модуль не найден: {exc}")
 
-    check = check_prerequisites(project_dir)
+    check = check_prerequisites(project_dir, output_dir_override=output_dir)
     for r in check.get("reasons", []):
         await ctx.log(f"  · {r}", "warn" if not check["ok"] else "info")
     if not check["ok"]:
-        error = "findings_only_gemma_pair: prerequisites failed (нужен Gemma-enrichment)"
+        error = f"{BLOCK_BATCH_MODE_FINDINGS_ONLY}: prerequisites failed (нужен контекст блоков)"
         ctx.update_pipeline_log("block_analysis", "error", error=error)
         return StageResult.fail(
-            "Stage 02 (findings_only_gemma_pair): нет Gemma-обогащения. "
-            "Запустите 'Подготовить данные' с Gemma-enrichment."
+            "Stage 01 (findings_only_block_context): контекст блоков не готов. "
+            "Запустите подготовку контекста блоков."
         )
 
     ui_model = get_stage_model("block_batch")
-    findings_only_compatible = {"openai/gpt-5.4"}
+    findings_only_compatible = {
+        "openai/gpt-5.4",
+        CODEX_STAGE_MODEL_ID,
+        STAGE02_DUAL_MODEL_ID,
+    }
     if ui_model in findings_only_compatible:
         model = ui_model
     else:
@@ -548,11 +563,16 @@ async def run_block_analysis_findings_only(
 
     # ── Smoke-limits via env (опционально, не активны в production) ──
     smoke = _read_stage02_smoke_env()
-    parallelism = smoke.get("max_parallel", DEFAULT_PARALLELISM)
+    detector_default_parallelism = (
+        STAGE01_CODEX_PARALLELISM
+        if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
+        else DEFAULT_PARALLELISM
+    )
+    parallelism = smoke.get("max_parallel", detector_default_parallelism)
     blocks_filter: list[str] | None = None
     if smoke.get("max_blocks"):
         # blocks_filter = первые N block_id из stage02 index. План остаётся
-        # детерминированным: Stage 02 обработает ровно N первых блоков, потом
+        # детерминированным: Stage 01 обработает ровно N первых блоков, потом
         # завершится `done` (без cancel-флага).
         try:
             from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
@@ -574,17 +594,17 @@ async def run_block_analysis_findings_only(
                 "warn",
             )
 
-    if parallelism != DEFAULT_PARALLELISM:
+    if parallelism != detector_default_parallelism:
         await ctx.log(
             f"  · SMOKE-LIMIT: AUDIT_STAGE02_MAX_PARALLEL_BATCHES={parallelism} "
-            f"(default={DEFAULT_PARALLELISM})",
+            f"(default={detector_default_parallelism})",
             "warn",
         )
 
     ctx.update_pipeline_log("block_analysis", "running")
     await ctx.log(
-        f"═══ ЭТАП 02 (findings_only_gemma_pair): "
-        f"{check['with_enrichment']}/{check['blocks_total']} "
+        f"═══ ЭТАП 01 ({BLOCK_BATCH_MODE_FINDINGS_ONLY}): "
+        f"{check['with_context']}/{check['blocks_total']} "
         f"блоков, model={model}, effort={effort}, parallelism={parallelism} ═══"
     )
 
@@ -593,7 +613,7 @@ async def run_block_analysis_findings_only(
 
     def _on_progress(event: dict) -> None:
         # Связать cancel_event с реальной отменой пайплайна: оркестратор не
-        # выставляет cancel_event напрямую (раньше он был мёртвым → Stage 02 не
+        # выставляет cancel_event напрямую (раньше он был мёртвым → Stage 01 не
         # отменялся). Проверяем ctx.is_cancelled на каждом событии прогресса и
         # ставим event → _one прервётся перед следующим блоком (reserc.md #24).
         if getattr(ctx, "is_cancelled", None) and ctx.is_cancelled():
@@ -602,7 +622,7 @@ async def run_block_analysis_findings_only(
         if t == "started":
             asyncio.run_coroutine_threadsafe(
                 ctx.log(
-                    f"  Источники enrichment: {event.get('enrichment_sources')}, "
+                    f"  Источники контекста: {event.get('enrichment_sources')}, "
                     f"extended={event.get('extended_prompt')}, section={event.get('section')}"
                 ),
                 loop,
@@ -618,11 +638,28 @@ async def run_block_analysis_findings_only(
             if ok:
                 msg = (
                     f"  [{completed:>3}/{total}] OK {bid} p={pg} t={ms/1000:.1f}s "
-                    f"findings={n} in={event.get('input_tokens')} "
-                    f"out={event.get('output_tokens')} "
-                    f"reason={event.get('reasoning_tokens')}"
+                    f"findings={n} in={event.get('input_tokens')}"
                 )
-                asyncio.run_coroutine_threadsafe(ctx.log(msg), loop)
+                if event.get("cached_input_tokens") is not None:
+                    msg += f" cached={event.get('cached_input_tokens')}"
+                msg += (
+                    f" out={event.get('output_tokens')}"
+                    f" reason={event.get('reasoning_tokens')}"
+                )
+                level = "warn" if event.get("partial") else "info"
+                if event.get("partial"):
+                    msg += f" partial_failed={event.get('detectors_failed') or []}"
+                if event.get("dual_review_status"):
+                    counts = event.get("dual_review_counts") or {}
+                    msg += (
+                        f" review={event.get('dual_review_status')}"
+                        f" match={counts.get('matches', 0)}"
+                        f" ext={counts.get('extensions', 0)}"
+                        f" new={counts.get('new', 0)}"
+                        f" disputed={counts.get('disputed', 0)}"
+                        f" gaps={event.get('gap_findings', 0)}"
+                    )
+                asyncio.run_coroutine_threadsafe(ctx.log(msg, level), loop)
             else:
                 err = (event.get("error") or "")[:80]
                 asyncio.run_coroutine_threadsafe(
@@ -648,6 +685,7 @@ async def run_block_analysis_findings_only(
     try:
         result = await run_findings_only_for_project(
             project_dir,
+            output_dir_override=output_dir,
             model=model,
             reasoning_effort=effort,
             parallelism=parallelism,
@@ -662,9 +700,9 @@ async def run_block_analysis_findings_only(
     except FindingsOnlyError as e:
         ctx.update_pipeline_log(
             "block_analysis", "error",
-            error=f"findings_only_gemma_pair: {e}",
+            error=f"{BLOCK_BATCH_MODE_FINDINGS_ONLY}: {e}",
         )
-        return StageResult.fail(f"Stage 02 (findings_only_gemma_pair): {e}")
+        return StageResult.fail(f"Stage 01 ({BLOCK_BATCH_MODE_FINDINGS_ONLY}): {e}")
 
     summary = result["summary"]
     totals = summary["totals"]
@@ -676,7 +714,7 @@ async def run_block_analysis_findings_only(
         partial_ok = int(summary.get("blocks_ok", 0) or 0)
         partial_cost = float(totals.get("estimated_cost_usd_total", 0.0) or 0.0)
         await ctx.log(
-            f"  Stage 02 cancelled: обработано {partial_ok} блоков, "
+            f"  Stage 01 cancelled: обработано {partial_ok} блоков, "
             f"~${partial_cost:.4f} списано до отмены",
             "warn",
         )
@@ -685,19 +723,19 @@ async def run_block_analysis_findings_only(
                 ctx.record_block_analysis_usage(summary)
             except Exception as exc:
                 await ctx.log(
-                    f"  Stage 02 cancel: failed to record partial usage: {exc}",
+                    f"  Stage 01 cancel: failed to record partial usage: {exc}",
                     "warn",
                 )
         ctx.update_pipeline_log(
             "block_analysis", "error",
-            error="findings_only_gemma_pair: отменено пользователем",
+            error=f"{BLOCK_BATCH_MODE_FINDINGS_ONLY}: отменено пользователем",
         )
         return StageResult.cancel()
 
     if summary["blocks_failed"] > 0 and summary["blocks_ok"] == 0:
         error = f"Все {summary['blocks_failed']} блоков упали"
         ctx.update_pipeline_log("block_analysis", "error", error=error)
-        return StageResult.fail(f"Stage 02 (findings_only_gemma_pair): все блоки упали")
+        return StageResult.fail(f"Stage 01 ({BLOCK_BATCH_MODE_FINDINGS_ONLY}): все блоки упали")
 
     msg = (
         f"OK ({summary['blocks_ok']}/{summary['blocks_total']} блоков, "
@@ -711,10 +749,10 @@ async def run_block_analysis_findings_only(
         "task_exceptions": summary.get("task_exceptions", []),
     }
 
-    if summary.get("blocks_skipped_no_enrichment", 0) > 0:
-        msg += f" — {summary['blocks_skipped_no_enrichment']} блоков без Gemma enrichment"
+    if summary.get("blocks_skipped_no_context", 0) > 0:
+        msg += f" — {summary['blocks_skipped_no_context']} блоков без контекста"
         await ctx.log(
-            "  ⚠ Непокрытые Gemma enrichment блоки: "
+            "  ⚠ Блоки без подготовленного контекста: "
             + ", ".join(
                 b.get("block_id", "?") for b in summary.get("uncovered_blocks", [])[:20]
             ),
@@ -722,7 +760,7 @@ async def run_block_analysis_findings_only(
         )
 
     # Страж отсутствия вынесен в отдельный этап «Верификатор» (findings_verify),
-    # работающий на слитом 03_findings.json. Хвост Stage 02 снят (дублирование).
+    # работающий на слитом 03_findings.json. Хвост Stage 01 снят (дублирование).
 
     if summary["blocks_failed"] > 0:
         msg += f" — {summary['blocks_failed']} блоков упали"

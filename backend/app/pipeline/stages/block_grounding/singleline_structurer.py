@@ -41,6 +41,23 @@ PARAM_RE = re.compile(
     r"(?P<pcalc>[\d.,]+)\s*кВт\s*-\s*"
     r"(?P<ia>[\d.,]+)\s*А\s*$"
 )
+# Второй распространённый диалект расчётной строки (ЭО/ЭОМ): код линии вынесен
+# отдельной строкой, а затем без единиц записано
+#   Ру - Кс - Рр - cosφ - Iр - L - ΔU
+# Например: ``2РП4-2`` ... ``3 - 1 - 3 - 0,85 - 5,36 - 180 - 1,89``.
+# Требование отдельного кода в ближайших строках защищает от захвата произвольных
+# семичленных таблиц и координатных подписей.
+SEPARATE_PARAM_RE = re.compile(
+    r"^(?P<pinst>[\d.,]+)\s*-\s*"
+    r"(?P<kc>[\d.,]+)\s*-\s*"
+    r"(?P<pcalc>[\d.,]+)\s*-\s*"
+    r"(?P<cos>[\d.,]+)\s*-\s*"
+    r"(?P<ia>[\d.,]+)\s*-\s*"
+    r"(?P<len>[\d.,]+)\s*-\s*"
+    r"(?P<du>[\d.,]+)\s*$"
+)
+SEPARATE_CODE_RE = re.compile(r"^\d*(?:В?РП)\d+(?:-\d+)+$", re.IGNORECASE)
+CABLE_LINE_RE = re.compile(r"(?:ППГ|ВВГ|NYM|КПС)", re.IGNORECASE)
 PHYS_RE = re.compile(
     r"^(?P<len>[\d.,]+)\s*м\s*-\s*"
     r"(?P<du>[\d.,]+)\s*%\s*-\s*"
@@ -57,6 +74,7 @@ NOISE_PREFIX = (
     "L1,L2,L3", "PEN", "QF", "QS", "Wh", "TA", "HL", "ВП", "ВА-", "ВА", "ВР-",
     "к системе", "АСУД", "(откл", "УЗО", "КМ ", "нет ", "Резерв", "ЯТП",
     "ЩМкв", "...", "Iкз", "Iу", "Ру=", "Кс", "Cos", "Рр", "Sр", "Ip",
+    "ППГ", "ВВГ", "NYM", "КПС",
 )
 
 
@@ -70,6 +88,8 @@ def _is_noise(s: str) -> bool:
     if KA_RE.search(s):
         return True
     if ROUTE_RE.match(s):
+        return True
+    if SEPARATE_CODE_RE.fullmatch(s):
         return True
     return False
 
@@ -88,7 +108,28 @@ def structure_singleline_text(vector_text: str, *, panel: str = "схема") ->
     lines = vector_text.split("\n")
     n = len(lines)
 
-    anchors = [i for i, l in enumerate(lines) if PARAM_RE.match(l.strip())]
+    # Нормализованный набор якорей обоих диалектов. Для разнесённого варианта код
+    # обязан находиться не дальше шести строк вверх: QF/автомат → код → кабель →
+    # потребитель → расчётная строка. Без кода голая последовательность чисел не якорь.
+    anchor_data = {}
+    for i, line in enumerate(lines):
+        s = line.strip()
+        joined = PARAM_RE.match(s)
+        if joined:
+            anchor_data[i] = {**joined.groupdict(), "layout": "joined"}
+            continue
+        separate = SEPARATE_PARAM_RE.match(s)
+        if not separate:
+            continue
+        code = next(
+            (lines[j].strip() for j in range(i - 1, max(-1, i - 7), -1)
+             if SEPARATE_CODE_RE.fullmatch(lines[j].strip())),
+            None,
+        )
+        if code:
+            anchor_data[i] = {**separate.groupdict(), "code": code, "layout": "separate"}
+
+    anchors = sorted(anchor_data)
     if len(anchors) < 2:
         return None  # не однолинейная feeder-схема
     anchor_set = set(anchors)
@@ -103,20 +144,31 @@ def structure_singleline_text(vector_text: str, *, panel: str = "схема") ->
 
     feeders = []
     for ai, i in enumerate(anchors):
-        gd = PARAM_RE.match(lines[i].strip()).groupdict()
+        gd = anchor_data[i]
         code = gd["code"]
         prev_anchor = anchors[ai - 1] if ai > 0 else -1
 
         # физическая строка (длина/ΔU/кабель/Iкз)
-        cable = ikz = length_m = du = None
+        cable = ikz = None
+        length_m = _f(gd.get("len")) if gd["layout"] == "separate" else None
+        du = _f(gd.get("du")) if gd["layout"] == "separate" else None
         phys_idx = i + 1
-        for j in range(i + 1, min(n, i + 4)):
-            pm = PHYS_RE.match(lines[j].strip())
-            if pm:
-                length_m, du = _f(pm.group("len")), _f(pm.group("du"))
-                cable, ikz = pm.group("cable").strip(), _f(pm.group("ikz"))
-                phys_idx = j
-                break
+        if gd["layout"] == "joined":
+            for j in range(i + 1, min(n, i + 4)):
+                pm = PHYS_RE.match(lines[j].strip())
+                if pm:
+                    length_m, du = _f(pm.group("len")), _f(pm.group("du"))
+                    cable, ikz = pm.group("cable").strip(), _f(pm.group("ikz"))
+                    phys_idx = j
+                    break
+        else:
+            # В разнесённом диалекте кабель находится между кодом и потребителем,
+            # то есть перед расчётной строкой; L и ΔU уже взяты из самой формулы.
+            for j in range(i - 1, max(prev_anchor, i - 7), -1):
+                s = lines[j].strip()
+                if CABLE_LINE_RE.search(s):
+                    cable = s
+                    break
 
         # трасса
         routing = None
@@ -212,6 +264,7 @@ def structure_singleline_text(vector_text: str, *, panel: str = "схема") ->
             "Ikz_ka": ikz,
             "routing": routing,
             "phase": "1ph" if is_1ph else "3ph",
+            "source_layout": gd["layout"],
             "binding_confidence": binding_conf,
             "_bus_section": section_of(i),
         })

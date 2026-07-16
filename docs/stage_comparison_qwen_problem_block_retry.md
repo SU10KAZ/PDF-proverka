@@ -194,5 +194,7 @@ prompt_version, model. Повторный запуск с теми же пара
 - [backend/app/services/stage_comparison/problem_block_retry.py](../backend/app/services/stage_comparison/problem_block_retry.py)
 - [backend/app/services/stage_comparison/md_image_enrichment.py](../backend/app/services/stage_comparison/md_image_enrichment.py) — хук в `enrich_side`
 - [tests/test_stage_comparison_qwen_problem_block_retry.py](../tests/test_stage_comparison_qwen_problem_block_retry.py)
-- Эксперимент-обоснование: [experiments/qwen_problem_block_recognition/reports/final_report.md](../experiments/qwen_problem_block_recognition/reports/final_report.md)
-- Acceptance smoke: [experiments/qwen_problem_block_recognition/reports/production_patch_smoke.md](../experiments/qwen_problem_block_recognition/reports/production_patch_smoke.md)
+- Эксперимент-обоснование: архив `experiments/qwen_problem_block_recognition/` удалён 2026-07-14
+  (эксперимент завершён, фича перенесена в прод); отчёты `reports/final_report.md` и
+  `reports/production_patch_smoke.md` доступны в git-истории:
+  `git log --diff-filter=D -- 'experiments/qwen_problem_block_recognition/*'`

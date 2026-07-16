@@ -53,7 +53,7 @@ def make_plain(disc_dir: Path, base: str, *, quad=("pdf", "md", "ocr", "result")
         _write(proj / "project_info.json", json.dumps({"project_id": base}))
     if analysis:
         _write(proj / "_output" / "03_findings.json", "{}")
-        _write(proj / "_output" / "01_text_analysis.json", "{}")
+        _write(proj / "_output" / "02_text_analysis.json", "{}")
     return proj
 
 

@@ -1,0 +1,2843 @@
+{
+  "schema_version": 1,
+  "catalog_version": "2026.07.13-1",
+  "discipline": "КМ",
+  "records": [
+    {
+      "block_id": "6UMT-JJNU-MKW",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 6. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "description": "Чертеж конструкции опорной рамы Рм-1 с указанием размеров и маркировкой элементов. На чертеже представлена фронтальная проекция опорной рамы Рм-1, состоящей из вертикальных стоек (Ст 1) и горизонтальных балок (Б 1, Б 2). Указаны габаритные размеры, расстояния между элементами и привязки балок к стойкам. Присутствуют выносные линии с размерными числами, обозначающими высотные отметки и ширину пролетов. Элементы рамы соединены сварными или болтовыми соединениями, обозначенными соответствующими выносками. Корпус 6. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "source_page": 5,
+      "source_layer_state": "no_pdf_text_layer",
+      "quality": [
+        0,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 0,
+          "coordinate_text_characters_total": 0
+        }
+      }
+    },
+    {
+      "block_id": "7NC9-69EK-9HF",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Монтажная схема кронштейнов и вертикальных направляющих по фрагменту фасада корпуса 4.",
+      "description": "Монтажная схема кронштейнов и вертикальных направляющих для фрагмента фасада корпуса 4 с узлами крепления. На чертеже представлены виды фасада, разрезы 1-1, 2-2, 3-3, 4-4, 5-5, 6-6 и выносные узлы крепления. Вертикальные направляющие и кронштейны обозначены условными знаками с привязкой к осям 1-6 и А. Разрезы содержат высотные отметки, включая уровень 0,000, и линейные размеры элементов. В нижней части расположена таблица условных обозначений типов кронштейнов HILTI и NordFox, а также профилей. Монтажная схема кронштейнов и вертикальных направляющих по фрагменту фасада корпуса 4.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "steel_profile": 2,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 17,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 23,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 17,
+          "coordinate_text_records_total": 460,
+          "coordinate_text_characters_total": 2662
+        }
+      }
+    },
+    {
+      "block_id": "9AVF-MCKM-HQE",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий +5.150...+49.250",
+      "description": "На чертеже представлены узлы крепления металлических конструкций с указанием марок стали, размеров и типов соединений. Чертеж содержит серию узлов (А, Б, В, Г, Д, Е) и сечений (а-а, 8-8, 9-9, б-б) в масштабе 1:10. Элементы включают стальные профили, пластины (t6, t10) и болтовые соединения БСР М10х100. Нанесены размерные линии с указанием габаритов конструкций, расстояний между осями отверстий и привязок элементов. Присутствуют обозначения марок стали С245 и ссылки на отметки (Отм. Б, В, Г). Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий +5.150...+49.250",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 171,
+          "coordinate_text_characters_total": 566
+        }
+      }
+    },
+    {
+      "block_id": "9ML6-P9YY-639",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "description": "Представлен разрез 3-3 металлической конструкции с указанием габаритных размеров и маркировкой элементов. На чертеже изображен разрез 3-3, состоящий из вертикальных стоек (Ст1) и горизонтальных балок (Б1, Б2). Указаны общие габаритные размеры 2440 мм по горизонтали и 600 мм по вертикали. Элементы соединены в каркасную структуру с детализацией межосевых расстояний и привязок. Присутствуют выносные линии с размерами 240*, 130*, 190* и другие, а также обозначение узла 2. Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 5,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 45,
+          "coordinate_text_characters_total": 122
+        }
+      }
+    },
+    {
+      "block_id": "9QUH-UFLJ-CQX",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "description": "Чертеж конструкции опорной рамы Рм-1 с видами и сечениями. На чертеже представлены фронтальный вид рамы, а также сечения 1-1 и 2-2. Конструкция состоит из вертикальных стоек Ст1 и горизонтальных балок Б1 и Б2. Указаны габаритные размеры, высотные отметки и привязки элементов. Детали соединены сварными швами, обозначенными штриховкой. Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 6,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 6,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 2,
+          "coordinate_text_records_total": 149,
+          "coordinate_text_characters_total": 388
+        }
+      }
+    },
+    {
+      "block_id": "A6HT-CKAC-NDU",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 5. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-4",
+      "description": "Схема расположения металлических конструкций лоджий Лжд-4 на 14 этаже. На чертеже представлен вертикальный разрез металлоконструкций лоджии с указанием привязок к осям 5.И и 5.К. Вертикальный размер конструкции составляет 3200 мм, с детализацией отдельных сегментов 620, 605, 825, 390 и 470 мм. Обозначены элементы Тр-1 и Тр-3, а также узел Ш-1. Присутствуют отметки уровня +42,950 и толщины t=200, а также ссылки на листы и типы креплений. Корпус 5. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-4",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 37,
+          "coordinate_text_characters_total": 182
+        }
+      }
+    },
+    {
+      "block_id": "LPFM-DGAJ-HRF",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "Корпус 6. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "description": "На чертеже представлены узлы 1, 2, 3 и сечение 5-5 металлоконструкций. Узел 1 показывает соединение элемента Б2 с вертикальным элементом через заглушку t3 и болтовое соединение М10. Узел 2 демонстрирует сварное соединение элемента Б1 с вертикальным элементом Ст1 с использованием сварки по ГОСТ 5264-80-Т1-Δ5. Узел 3 отображает крепление элемента Ст1 к пластине t8 размером 155х60 мм. Сечение 5-5 показывает пластину t8 с двумя отверстиями диаметром 19 мм и центральным квадратным сечением элемента Ст1. Корпус 6. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 3,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 6,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 3,
+          "coordinate_text_records_total": 136,
+          "coordinate_text_characters_total": 403
+        }
+      }
+    },
+    {
+      "block_id": "PTKX-YJL3-UFH",
+      "discipline": "КМ",
+      "profile_id": "km_connection_detail",
+      "subtype": "steel_connection",
+      "title": "",
+      "description": "Схема расположения корпусов и пристроек с указанием этажности и зон подземной автостоянки. На схеме представлены контуры зданий (К1-К7) и пристроек, расположенных на территории. Указана этажность для каждого корпуса: 15эт., 18эт., 30эт., 48эт., 42эт., 28эт. Обозначены зоны подземной автостоянки с диапазонами парковочных мест (П.1-П.24 и П.25-П.48). Здания и пристройки соединены линиями, образующими общий план застройки.",
+      "source_page": 5,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 57,
+          "coordinate_text_characters_total": 316
+        }
+      }
+    },
+    {
+      "block_id": "4QFX-WWYR-JGE",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Монтажная схема кронштейнов и вертикальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "description": "Монтажная схема кронштейнов и вертикальных направляющих для фасадов корпусов 3 и 6. На чертеже представлены планы и разрезы (1-1, 2-2, 3-3, 4-4, 5-5) узлов крепления фасадных систем. Изображены вертикальные направляющие и кронштейны с указанием их типов и размеров. Приведены выносные элементы (узлы 1, 2, 4, 5, 6, 7) с детализацией монтажных соединений. В нижней части расположена таблица условных обозначений типов кронштейнов HILTI и NordFox, а также профилей. Монтажная схема кронштейнов и вертикальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 2,
+          "steel_profile": 2,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 10,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 15,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 10,
+          "coordinate_text_records_total": 455,
+          "coordinate_text_characters_total": 2247
+        }
+      }
+    },
+    {
+      "block_id": "6NEP-Y4FW-W96",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Узел 9",
+      "description": "Чертеж узла крепления фасадной системы с облицовкой плиткой и металлическим откосом. На чертеже представлен узел крепления фасадной системы, включающий кронштейны, профили и облицовочную плитку. Показаны вертикальные размеры 125, 50, 100 и 275 мм, а также горизонтальные размеры 8, 10, 232 и 240 мм. Элементы системы включают кронштейны NordFox/HILTI, профили L-образного сечения, термомост и заклепочные соединения. В нижней части узла расположен металлический откос с указанием цвета RAL 7021. Узел 9",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 1,
+          "steel_profile": 3,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 61,
+          "coordinate_text_characters_total": 1061
+        }
+      }
+    },
+    {
+      "block_id": "6PEF-AEGQ-YPH",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Узел 28",
+      "description": "Узел 28: горизонтальный разрез узла примыкания навесной фасадной системы к углу здания. На чертеже представлен горизонтальный разрез узла примыкания фасадной системы к углу монолитной стены. Показаны слои теплоизоляции плотностью 37 кг/м³ и 90 кг/м³, закрепленные фасадными анкерами Daxmer FF. Внешний контур включает бетонную плитку, опорные кронштейны Г 75/200, профили ПРК-у-01 и Г-образные профили 50/40/1.6. Предусмотрены противопожарные отсечки ПО-1, откосы БО-2, аквилоны и уплотнительная лента ПСУЛ. Устройство навесной фасадной системы \"Альт-фасад\". Узел 28",
+      "source_page": 48,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        10,
+        10
+      ],
+      "covered_facts": 10,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 11,
+          "structural_mark": 10
+        },
+        "counts": {
+          "nodes_total": 21,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 10,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 11,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 88,
+          "coordinate_text_characters_total": 1123
+        }
+      }
+    },
+    {
+      "block_id": "6PXX-4ELD-RDD",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Устройство навесной фасадной системы \"KRVF-02\". Узел 11",
+      "description": "Горизонтальный разрез узла примыкания навесной фасадной системы к оконному блоку. На чертеже представлен горизонтальный разрез узла примыкания фасадной системы к оконному блоку. Показаны слои минераловатного утеплителя (50 мм и 100 мм), вертикальные направляющие профили (VF-0101, VF-0111) и кронштейны. Указаны элементы обрамления откосов, включая аквилон, противопожарные отсечки и герметики. Приведены размеры элементов, типы крепежа (заклепки 4,0х10, дюбель-гвозди 6х60) и маркировка комплектующих. Устройство навесной фасадной системы \"KRVF-02\". Узел 11",
+      "source_page": 27,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 9,
+          "spacing": 1,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 1,
+          "elevations_total": 0,
+          "dimensions_total": 9,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 101,
+          "coordinate_text_characters_total": 1287
+        }
+      }
+    },
+    {
+      "block_id": "77VU-N9TE-RHA",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_insulation_detail",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Схема крепления двуслойного утеплителя",
+      "description": "Схема расположения теплоизоляционных плит вокруг прямоугольного проема. На чертеже представлена прямоугольная область, состоящая из сетки теплоизоляционных плит, окружающих центральный проем. Каждая плита отмечена красным кругом с перекрестием в центре, обозначающим точку крепления. Плиты уложены в шахматном порядке, формируя контур вокруг проема. Справа от проема виден разрыв линии, указывающий на продолжение конструкции. Устройство навесной фасадной системы \"Альт-фасад\". Схема крепления двуслойного утеплителя",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 1,
+          "coordinate_text_characters_total": 34
+        }
+      }
+    },
+    {
+      "block_id": "7FNA-3UXF-FAM",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 4.",
+      "description": "Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 4 с узлами крепления. На чертеже представлена фасадная схема с вертикальными и горизонтальными направляющими, обозначенными линиями разной толщины и цвета. Приведены сечения 1-1, 2-2, 3-3, 4-4, 5-5, 6-6, детализирующие узлы крепления кронштейнов и профилей. В правой части расположены выносные элементы узлов 1-10 с соответствующими индексами. В нижней части находится таблица условных обозначений элементов HILTI и NordFox. Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 4.",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 5,
+          "structural_mark": 5
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 17,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 5,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 5,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 17,
+          "coordinate_text_records_total": 404,
+          "coordinate_text_characters_total": 2216
+        }
+      }
+    },
+    {
+      "block_id": "7MCX-449E-GGL",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_insulation_detail",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Схема установки двухслойного утепления",
+      "description": "Схема установки двухслойного утепления с указанием расположения тарельчатых дюбелей. На чертеже представлена схема двухслойного утепления с разбивкой на прямоугольные плиты. Изображение разделено диагональной линией, показывающей нижний и верхний слои утеплителя. Точками обозначены места установки тарельчатых дюбелей ТД. В нижней части присутствует контур проема. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Схема установки двухслойного утепления",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 8,
+          "coordinate_text_characters_total": 102
+        }
+      }
+    },
+    {
+      "block_id": "9A39-XPKM-97D",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "",
+      "description": "Чертеж узла 14 крепления фасадных панелей и откоса на подсистеме. На чертеже представлен узел крепления фиброцементных панелей Nordas к несущему профилю L40x62x1,8 с использованием кронштейна MacFOX 120 и термомоста. Показан узел примыкания откоса из оцинкованной стали толщиной 0,7 мм с покрытием RAL 7021 к основной конструкции. Присутствуют выносные линии с указанием крепежных элементов, таких как заклепки 5х12 А/А2, 4,0х8 и винты самонарезающие 4,8х38 А2. Геометрия включает размеры 50, 75, 100, 125, 150, 225, 240, 275 мм, а также указания на аграфы NordFox и HILTI.",
+      "source_page": 24,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        10,
+        10
+      ],
+      "covered_facts": 10,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 1,
+          "embedded": 1,
+          "steel_profile": 3,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 0,
+          "views_total": 2,
+          "coordinate_text_records_total": 69,
+          "coordinate_text_characters_total": 1320
+        }
+      }
+    },
+    {
+      "block_id": "9LYU-7QRG-G4R",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Узел 10",
+      "description": "Чертеж узла крепления фасадной системы с использованием кронштейнов HILTI. На чертеже представлен узел крепления фасадной плитки на подсистеме с использованием кронштейнов HILTI MFT-MF 240 M и удлинителей MFT-DF M. Показаны слои утеплителя, термомост, а также элементы фиксации, включая заклепки 5х12 и 4,0х8. Указаны вертикальные размеры 375 мм, 225 мм, 100 мм, 50 мм и горизонтальные размеры 240 мм, 120 мм, 7 мм. Приведены примечания по составу комплекта М10. Узел 10",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 2,
+          "structural_mark": 5
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 5,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 2,
+          "coordinate_text_records_total": 52,
+          "coordinate_text_characters_total": 915
+        }
+      }
+    },
+    {
+      "block_id": "A7F6-UTKY-T9N",
+      "discipline": "КМ",
+      "profile_id": "km_facade_detail",
+      "subtype": "facade_connection_detail",
+      "title": "Узел 13",
+      "description": "Чертеж узла крепления фасадной системы с использованием кронштейнов HILTI и облицовочной плитки. На чертеже представлен узел крепления фасадной подсистемы к несущей конструкции с помощью кронштейнов HILTI MFT-MF 240 M и удлинителей MFT-DF M. Показаны слои утеплителя, термомост, а также элементы крепления облицовочной плитки, включая кляммер-шину HILTI MFT-CDM и аграфы. Указаны вертикальные размеры 225 мм, 375 мм, 50 мм, 100 мм и горизонтальный размер 247 мм. В нижней части узла обозначен откос из оцинкованной стали с покрытием RAL 7021. Узел 13",
+      "source_page": 23,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 1,
+          "embedded": 1,
+          "steel_profile": 1,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 2,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 0,
+          "views_total": 2,
+          "coordinate_text_records_total": 64,
+          "coordinate_text_characters_total": 1225
+        }
+      }
+    },
+    {
+      "block_id": "47DW-ELXE-G6X",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Схема крепления двуслойного утеплителя",
+      "description": "Схема крепления двуслойного утеплителя с указанием слоев и опорного ряда. На чертеже представлена схема раскладки прямоугольных плит утеплителя в два слоя с перевязкой швов. Слева показаны плиты наружного слоя, справа — внутреннего слоя, разделенные криволинейной границей. Красные точки обозначают места установки тарельчатых дюбелей на плитах. Выносные линии с подписями указывают на наружный слой (НГ, 50 мм), внутренний слой (НГ, 100 мм) и опорный ряд. Устройство навесной фасадной системы \"Альт-фасад\". Схема крепления двуслойного утеплителя",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 6,
+          "coordinate_text_characters_total": 122
+        }
+      }
+    },
+    {
+      "block_id": "47YF-WD4C-WJE",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_guide_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема направляющих НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "description": "На чертеже представлены два фасадных вида здания в осях 5.5-4.1 и 4.А-4.И с указанием высотных отметок. Чертеж содержит два вертикальных разреза фасадов многоэтажного здания с регулярным шагом оконных проемов. Слева и справа от каждого фасада нанесены выносные линии с высотными отметками от -0,200 до +61,300. В нижней части фасадов показаны фундаментные элементы и отметки уровня земли. Линии фасадов выполнены сплошными, с детализацией межэтажных перекрытий и оконных конструкций. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема направляющих НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        24,
+        24
+      ],
+      "covered_facts": 24,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 52
+        },
+        "counts": {
+          "nodes_total": 52,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 14,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 52,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 471,
+          "coordinate_text_characters_total": 2427
+        }
+      }
+    },
+    {
+      "block_id": "4WPY-YQ6Q-YMU",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Схема установки кронштейнов",
+      "description": "Схема установки кронштейнов навесной фасадной системы на фасаде здания. На чертеже представлен фасад здания с сеткой установки кронштейнов, обозначенных красными маркерами. Слева расположены два вертикальных разреза (Вид 1 и Вид 2) с указанием конструктивных элементов. Поле чертежа заполнено многочисленными размерными линиями, указывающими расстояния между кронштейнами. В нижней части находится таблица условных обозначений типов кронштейнов и примечания по их монтажу. Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Схема установки кронштейнов",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 6
+        },
+        "counts": {
+          "nodes_total": 6,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 20,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 6,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 2639,
+          "coordinate_text_characters_total": 8399
+        }
+      }
+    },
+    {
+      "block_id": "6EKW-FHCY-RTL",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\" Фасады 5.5-5.1, 5.1-5.5 Раскладка облицовки",
+      "description": "На чертеже представлены два вертикальных разреза фасада здания с указанием высотных отметок и раскладки облицовочных материалов. Чертеж содержит два симметричных или зеркальных вида фасада, разделенных вертикальными осями 5.1-5.5. На фасадах отображены оконные проемы, корзины для кондиционеров и различные типы облицовочных панелей, обозначенные штриховкой. Слева и справа от каждого фасада нанесены многочисленные высотные отметки, указывающие уровни перекрытий и элементов фасада. В нижней части присутствуют выносные линии с указанием размеров и текстовые пояснения к условным обозначениям материалов. Устройство навесной фасадной системы \"Альт-фасад\" Фасады 5.5-5.1, 5.1-5.5 Раскладка облицовки",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        65,
+        65
+      ],
+      "covered_facts": 65,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 134
+        },
+        "counts": {
+          "nodes_total": 134,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 134,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 177,
+          "coordinate_text_characters_total": 1064
+        }
+      }
+    },
+    {
+      "block_id": "6EYU-KCLE-RGE",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Фасады 5.5-5.1, 5.1-5.5 Схема установки кронштейнов",
+      "description": "Схема установки кронштейнов навесной фасадной системы на фасаде здания. На чертеже представлен вертикальный фасад здания с сеткой осей 5.1-5.5. Изображены многочисленные кронштейны, распределенные по всей поверхности стены, с указанием размеров и привязок. Присутствуют вертикальные ряды оконных проемов и обозначения уровней, включая отметку +0,460. В нижней части расположена легенда с перечнем типов кронштейнов и примечание по монтажу. Фасады 5.5-5.1, 5.1-5.5 Схема установки кронштейнов",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 16,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 897,
+          "coordinate_text_characters_total": 2923
+        }
+      }
+    },
+    {
+      "block_id": "6F7R-GQX7-GDF",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема облицовки НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "description": "На чертеже представлены два фасада здания с указанием высотных отметок и видов. Чертеж содержит два вертикальных разреза фасадов в осях 4.1-4.12 и 4.И-4.А. Слева и справа от каждого фасада нанесены высотные отметки уровней от +0,150 до +61,300. Между фасадами расположены два узких вертикальных вида (Вид В и Вид С). Фасады имеют сетчатую структуру с регулярным расположением оконных проемов и межэтажных перекрытий. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема облицовки НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        20,
+        20
+      ],
+      "covered_facts": 20,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 60
+        },
+        "counts": {
+          "nodes_total": 60,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 60,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 113,
+          "coordinate_text_characters_total": 715
+        }
+      }
+    },
+    {
+      "block_id": "6RNF-AXCL-PK4",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.Т-5.А Раскладка облицовки",
+      "description": "Чертеж фасада здания с раскладкой облицовочных материалов и отметками высот. На чертеже представлен фасад здания с сеткой осей от 5.А до 5.Т. Фасад разделен на две секции с различной отделкой: темная плитка слева и светлая плитка справа. По вертикали нанесены многочисленные отметки уровней, включая обозначения деформационных швов (д.ш.). В нижней части расположены проемы, обозначенные как Вид 3, Вид 4, Вид 5, Вид 6 и Вид 7. Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.Т-5.А Раскладка облицовки",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        65,
+        65
+      ],
+      "covered_facts": 65,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 97
+        },
+        "counts": {
+          "nodes_total": 97,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 97,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 142,
+          "coordinate_text_characters_total": 824
+        }
+      }
+    },
+    {
+      "block_id": "6RRJ-L9HP-TXV",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема облицовки НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "description": "На чертеже представлены два фасадных вида многоэтажного здания в осях 5.5-4.1 и 4.А-4.И. Чертеж содержит два вертикальных разреза фасадов с сеткой осей в нижней части. Здания имеют регулярную структуру с повторяющимися оконными проемами и вертикальными элементами отделки. На фасадах нанесены высотные отметки уровней этажей, начинающиеся от уровня земли. В нижней части каждого фасада указаны отметки планировки и привязки к осям. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема облицовки НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        24,
+        24
+      ],
+      "covered_facts": 24,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 52
+        },
+        "counts": {
+          "nodes_total": 52,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 52,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 108,
+          "coordinate_text_characters_total": 700
+        }
+      }
+    },
+    {
+      "block_id": "6TNQ-646G-RXC",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Последовательность монтажа бетонной плитки.",
+      "description": "На схеме показан третий этап монтажа бетонной плитки на фасадную систему. Схема состоит из двух фрагментов, пронумерованных 1 и 2, иллюстрирующих процесс установки плиты. На первом фрагменте показано исходное положение бетонной плиты перед установкой на профиль ПРК-у-01. На втором фрагменте стрелкой показано движение плиты в рабочее положение с фиксацией на профиле. Изображены сечения профилей: Г-образный, ПРК-у-01, ПСК и опорный кронштейн. Устройство навесной фасадной системы \"Альт-фасад\". Последовательность монтажа бетонной плитки.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 1,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 15,
+          "coordinate_text_characters_total": 244
+        }
+      }
+    },
+    {
+      "block_id": "773T-G4TE-KHU",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_guide_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасады 5.5-5.1, 5.1-5.5. Схема установки направляющих",
+      "description": "{ \"location\": { \"grid_lines\": \"5.1, 5.2, 5.3, 5.4, 5.5\", \"zone_name\": \"Фасад\" }, \"content_summary\": \"Фрагмент фасадной системы здания с сеткой осей и маркировкой элементов.\", \"detailed_description\": \"На чертеже представлен вертикальный разрез фасадной конструкции с регулярной сеткой направляющих и узловых точек. Видны многочисленные выносные линии с цифровыми обозначениями размеров и кодами элементов, начинающимися с буквы 'Г'. В нижней части расположены оси 5.1–5.5 и детальные привязки размеров для цокольной зоны. Конструкция включает повторяющиеся элементы крепления и вертикальные профили, распределенные по всей высоте фасада.\", \"clean_ocr_text\": \"5.1 5.2 5.3 5.4 5.5 100 350 500 500 500 500 200 550 550 250 575 550 575 260 370 420 250 575 550 575 290 600 260 400 400 250 575 550 575 250 550 550 250 550 550 550 350 100 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 570 570 570 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 Г120 Г69 Г25 Г25 Г25 Г25 Г25 570 570 570 Г69 Г69 Г69 Г69 570 570 570 Г69 Г69 Г69 Г69 570 570 570 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г92 Г9 Устройство навесной фасадной системы \"Альт-фасад\". Фасады 5.5-5.1, 5.1-5.5. Схема установки направляющих",
+      "source_page": 24,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 942,
+          "coordinate_text_characters_total": 3008
+        }
+      }
+    },
+    {
+      "block_id": "79WT-VAD9-GH4",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Плита для вентилируемого фасада. Плита для вентилируемого фасада.",
+      "description": "На чертеже представлена схема усиления внешнего угла строительной конструкции с использованием металлических профилей. Изображена аксонометрическая проекция внешнего угла стены, усиленного вертикальными и диагональными металлическими элементами. Вертикальные Г-образные профили закреплены на плоскостях стен с помощью кронштейнов. Внутренний угол конструкции усилен ферменной структурой из металлических полос с диагональными связями. Все элементы соединены между собой с помощью болтовых или заклепочных соединений, обозначенных точками. Устройство навесной фасадной системы \"Альт-фасад\". Плита для вентилируемого фасада. Плита для вентилируемого фасада.",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 4,
+          "coordinate_text_characters_total": 73
+        }
+      }
+    },
+    {
+      "block_id": "7NK6-W9W9-GQQ",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_cladding_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Раскладка облицовки",
+      "description": "Фасад многоэтажного здания с двумя типами отделки и маркировкой высотных отметок. На чертеже представлен фасад здания, разделенный на две секции с разной облицовкой: темной и светлой кирпичной кладкой. Слева расположены два узких вертикальных разреза (Вид 1 и Вид 2) с указанием высотных отметок от -0,124 до +51,950. По всей высоте фасада нанесены многочисленные высотные отметки, привязанные к оконным проемам и межэтажным перекрытиям. В нижней части фасада обозначены входы и приямки с отметками уровня земли. Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Раскладка облицовки",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        72,
+        72
+      ],
+      "covered_facts": 72,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 98
+        },
+        "counts": {
+          "nodes_total": 98,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 98,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 178,
+          "coordinate_text_characters_total": 947
+        }
+      }
+    },
+    {
+      "block_id": "7V7Q-JW63-AJC",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема кронштейнов НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "description": "На чертеже представлены фасады здания в осях 4.1-4.12 и 4.И-4.А с указанием высотных отметок. Чертеж содержит два вертикальных разреза фасадов с сеткой осей и высотными отметками от +0,150 до +61,300. Фасады имеют регулярную структуру с повторяющимися оконными проемами и вертикальными элементами. Слева и справа от каждого фасада вынесены выносные линии с отметками уровней. В нижней части присутствуют обозначения осей 4.1, 4.12, 4.И, 4.А и 5.Т. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема кронштейнов НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        21,
+        21
+      ],
+      "covered_facts": 21,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 60
+        },
+        "counts": {
+          "nodes_total": 61,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 14,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 60,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 1096,
+          "coordinate_text_characters_total": 4291
+        }
+      }
+    },
+    {
+      "block_id": "9HJC-9YPY-37H",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Схема установки крепежных элементов противопожарного короба, схема крепления профиля к кронштейнам.",
+      "description": "Схема установки крепежных элементов противопожарного короба на оконный проем. На чертеже представлена аксонометрическая проекция оконного проема с установленными противопожарными коробами, откосами и отливом. Указаны шаги крепления: max400 для верхнего откоса и max600 для боковых коробов. Приведены выносные линии с размерами 150 мм для отступов креплений. Элементы соединены вытяжными заклепками А2/А2, окрашенными в цвет RAL7021. Устройство навесной фасадной системы \"Альт-фасад\". Схема установки крепежных элементов противопожарного короба, схема крепления профиля к кронштейнам.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 15,
+          "coordinate_text_characters_total": 226
+        }
+      }
+    },
+    {
+      "block_id": "AC3G-WC3Y-WJG",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_guide_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.Т-5.А Схема установки направляющих",
+      "description": "Фасад здания с сеткой осей и отметками высот. На чертеже представлен фасад здания с регулярной сеткой осей от 5.А до 5.Т. Вертикальные элементы фасада пронумерованы и снабжены многочисленными буквенно-цифровыми маркировками (например, Г25, Г92, Г120). Справа указаны высотные отметки уровней от +4,516 до +47,105 с пометкой 'д.ш.'. В нижней части расположены обозначения видов (Вид 3, Вид 4, Вид 5, Вид 6, Вид 7) и горизонтальные размерные линии. Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.Т-5.А Схема установки направляющих",
+      "source_page": 23,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        15,
+        15
+      ],
+      "covered_facts": 15,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 15
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 15,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 1141,
+          "coordinate_text_characters_total": 3748
+        }
+      }
+    },
+    {
+      "block_id": "GF3U-6H64-9GL",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Схема установки направляющих",
+      "description": "Схема установки направляющих навесной фасадной системы «Альт-фасад» для фасада 5.А-5.Т. На чертеже представлена фасадная схема с сеткой осей от 5.А до 5.Т. Вертикальные и горизонтальные направляющие обозначены линиями с повторяющимися кодами кронштейнов (Г92, Г25, Г120, Г69). Слева расположены два вертикальных разреза (Вид 1 и Вид 2) с указанием высотных отметок от +2,053 до +47,105. В нижней части чертежа приведена легенда условных обозначений для различных типов кронштейнов и направляющих. Устройство навесной фасадной системы \"Альт-фасад\". Фасад 5.А-5.Т Схема установки направляющих",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        16,
+        16
+      ],
+      "covered_facts": 16,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 16
+        },
+        "counts": {
+          "nodes_total": 16,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 16,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 2731,
+          "coordinate_text_characters_total": 8713
+        }
+      }
+    },
+    {
+      "block_id": "GGX7-KRLA-T74",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_bracket_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема кронштейнов НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "description": "На чертеже представлены два фасадных вида здания в осях 5.5-4.1 и 4.А-4.И с указанием высотных отметок. Чертеж содержит два идентичных по структуре фасадных вида многоэтажного здания с сетчатым заполнением оконных проемов. Слева и справа от каждого фасада нанесены вертикальные размерные цепочки с отметками уровней от -0,200 до +61,300. В нижней части фасадов показаны цокольные уровни с отметками -0,100 и -0,200. Вдоль нижней границы чертежа расположены оси 5.5, 5.1, 4.12, 4.1 для первого фасада и 4.А, 4.И для второго. Устройство навесного вентилируемого фасада. Система \"KRVF-02\". Монтажная схема кронштейнов НВФ. Фасад в осях 5.5-4.1, 4.А-4.И",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        25,
+        25
+      ],
+      "covered_facts": 25,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 52
+        },
+        "counts": {
+          "nodes_total": 53,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 21,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 52,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 1130,
+          "coordinate_text_characters_total": 4421
+        }
+      }
+    },
+    {
+      "block_id": "KMCV-UXCC-FJL",
+      "discipline": "КМ",
+      "profile_id": "km_facade_layout",
+      "subtype": "facade_guide_layout",
+      "title": "Устройство навесного вентилируемого фасада. Система “KRVF-02”. Монтажная схема направляющих НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "description": "На чертеже представлены два фасада здания в осях 4.1-4.12 и 4.И-4.А с указанием высотных отметок и конструктивных элементов. Чертеж содержит два вертикальных вида фасадов с регулярной сеткой остекления и вертикальных стоек. Слева и справа от каждого фасада нанесены высотные отметки от +5,700 до +61,300 с шагом около 3,15 м. В нижней части фасадов показаны привязки к нулевой отметке +0,150 и +0,300. Между фасадами расположены два узких сечения, обозначенных как 'Вид В' и 'Вид С'. Устройство навесного вентилируемого фасада. Система “KRVF-02”. Монтажная схема направляющих НВФ. Фасад в осях 4.1-4.12, 4.И-5.Т, фрагменты А, В, С",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        20,
+        20
+      ],
+      "covered_facts": 20,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 60
+        },
+        "counts": {
+          "nodes_total": 60,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 60,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 288,
+          "coordinate_text_characters_total": 1852
+        }
+      }
+    },
+    {
+      "block_id": "44GJ-L6VK-WYW",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Корпус 4. Конструкции металлические. Схема расположения стремянки СМ-1 в осях 4.5/4.6, 4.Ж. на отм. +56,830. Разрезы, узлы.",
+      "description": "Чертеж металлической стремянки СМ-1 с указанием основных размеров и узлов крепления. На чертеже представлен вид стремянки спереди и сбоку. Конструкция состоит из двух вертикальных стоек и десяти перекладин с шагом 300 мм. Указаны габаритные размеры: ширина 750 мм (25+700+25) и высота 3300 мм. Обозначены узлы крепления буквами Д, Г, К и позиции элементов 2, 3, 5, 6. Корпус 4. Конструкции металлические. Схема расположения стремянки СМ-1 в осях 4.5/4.6, 4.Ж. на отм. +56,830. Разрезы, узлы.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 27,
+          "coordinate_text_characters_total": 76
+        }
+      }
+    },
+    {
+      "block_id": "4DUF-KE3U-6FF",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Корпус 4. Конструкции металлические. Схема расположения стремянки СМ-1 в осях 4.5/4.6, 4.Ж. на отм. +56,830. Разрезы, узлы.",
+      "description": "На чертеже представлены разрезы 1-1 и 2-2 стремянки СМ-1 с указанием высотных отметок и привязок к строительным конструкциям. Разрез 1-1 показывает боковой вид стремянки СМ-1, закрепленной у стены, с указанием высотных отметок от +56,670 до +59,500. Разрез 2-2 демонстрирует фронтальный вид стремянки шириной 700 мм с общим габаритом 800 мм, установленной между стенами. На обоих разрезах показаны ступени с шагом 300 мм (10х300=3000) и узлы крепления к стене, обозначенные буквами А, Б, В. Присутствуют выносные линии с размерами и отметками уровня чистого пола (ур. ч. п.). Корпус 4. Конструкции металлические. Схема расположения стремянки СМ-1 в осях 4.5/4.6, 4.Ж. на отм. +56,830. Разрезы, узлы.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 2,
+          "elevation": 10,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 10,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 56,
+          "coordinate_text_characters_total": 279
+        }
+      }
+    },
+    {
+      "block_id": "4GEY-XQKD-69J",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Корпус 5. Конструкции металлические. Стремянка Ст-1, Ст2",
+      "description": "Представлен разрез 2-2 металлической конструкции в кирпичной стене с утеплителем. На разрезе показана вертикальная металлическая конструкция, состоящая из горизонтальных элементов (Ш1, Ш2) и вертикальных стоек (С 245, t8). Конструкция установлена внутри проема между кирпичной стеной и утеплителем. Указаны высотные отметки +51,950, +51,000, +47,050 и +46,550. Приведены размеры шага горизонтальных элементов по 300 мм и общая высота 3350 мм. Корпус 5. Конструкции металлические. Стремянка Ст-1, Ст2",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 4,
+          "spacing": 1,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 1,
+          "elevations_total": 4,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 49,
+          "coordinate_text_characters_total": 216
+        }
+      }
+    },
+    {
+      "block_id": "4HWY-HYYT-H3L",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ2.2 К2",
+      "description": "На чертеже представлен разрез 1-1 стремянки СМ2.2, установленной между строительными конструкциями. На разрезе 1-1 показана вертикальная стремянка СМ2.2, закрепленная между двумя вертикальными конструкциями. Стремянка состоит из двух вертикальных стоек (поз. 1), поперечных перекладин (поз. 2) и опорных пластин (поз. 3). Указаны высотные отметки и привязки элементов стремянки, а также расстояния между осями 2.2, 2.3 и 2.4. Конструкция включает элементы 1.1 и 1.2, расположенные в верхней части стремянки. Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ2.2 К2",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 28,
+          "coordinate_text_characters_total": 100
+        }
+      }
+    },
+    {
+      "block_id": "66D6-T4DQ-DGC",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ6.2 К6",
+      "description": "На чертеже представлен разрез 1-1 с изображением стремянки СМ6.2, установленной между строительными конструкциями. Разрез 1-1 показывает вертикальную стремянку, закрепленную к стене с помощью кронштейнов (позиция 3). Конструкция включает вертикальные элементы (позиции 1, 2) и горизонтальные перекладины. Указаны высотные отметки -1,600 и -5,850, а также размеры между узлами крепления и элементами лестницы. Слева от стремянки показана вертикальная колонна или стена, привязанная к осям 6.В и 6.Г. Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ6.2 К6",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 21,
+          "coordinate_text_characters_total": 84
+        }
+      }
+    },
+    {
+      "block_id": "6WTD-GG69-3CE",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ1.1 К1",
+      "description": "Схема расположения стремянки СМ1.1 на плане строительных конструкций. На чертеже представлен фрагмент плана с обозначением стремянки СМ1.1, расположенной между осями 1.6 и 1.7. Стремянка привязана к строительным конструкциям с указанием размеров 1000 мм и 200 мм. На плане присутствуют осевые линии 1.В, 1.Г, 1.Д, 1.6 и 1.7. Также показаны разрезы 1-1, проходящие через конструкцию. Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ1.1 К1",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 18,
+          "coordinate_text_characters_total": 100
+        }
+      }
+    },
+    {
+      "block_id": "7HXX-C36U-KMM",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ2.1 К2",
+      "description": "Разрез 1-1 с изображением металлической стремянки СМ2.1 в строительной конструкции. На чертеже представлен разрез 1-1 в масштабе 1:20, показывающий вертикальную металлическую стремянку СМ2.1, установленную между строительными конструкциями. Указаны высотные отметки -2,220 и -5,850, а также габаритные размеры элементов конструкции. Стремянка состоит из вертикальных стоек и перекладин, обозначенных позициями 1, 1.1, 1.2, 2 и 3. Справа и слева от стремянки показаны сечения стен с различной штриховкой. Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ2.1 К2",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 33,
+          "coordinate_text_characters_total": 122
+        }
+      }
+    },
+    {
+      "block_id": "9VGU-VRE4-7LT",
+      "discipline": "КМ",
+      "profile_id": "km_ladder_drawing",
+      "subtype": "ladder_drawing",
+      "title": "Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ6.1 К6",
+      "description": "На чертеже представлен разрез 1-1 металлической стремянки СМ6.1 в осях 6.4-6.5. Чертеж показывает вертикальный разрез конструкции стремянки, закрепленной у стены. Указаны высотные отметки -1,600 и -5,850, а также общая высота конструкции 4200 мм. Стремянка состоит из вертикальных элементов, обозначенных позициями 1, 1.1, 1.2, 2 и 3. Размеры элементов включают шаги между ступенями 300 мм и общие габариты по ширине 2000 мм. Подземная автостоянка. Металлические конструкции подземной автостоянки. Стремянка СМ6.1 К6",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 28,
+          "coordinate_text_characters_total": 108
+        }
+      }
+    },
+    {
+      "block_id": "6N7X-XKUA-9JC",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лжд-5. В осях 3.И-3.К/3.7",
+      "description": "Схема расположения металлических конструкций лоджий Лжд-5 в осях 3.И-3.К/3.7. На чертеже представлены три сечения (1-1, 2-2, 3-3) в масштабе 1:25, отображающие вертикальные металлические элементы лоджии. Основные элементы включают вертикальные стойки (позиции 45 и 49) с привязкой к осям 3.Ж, 3.И, 3.К и 3.7. Указаны высотные отметки +93,650 и +97,050, а также габаритные размеры стоек 3340 мм и 3400 мм. Горизонтальные размеры между осями и элементами варьируются от 160 мм до 2700 мм. Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лжд-5. В осях 3.И-3.К/3.7",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 6,
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 6,
+          "dimensions_total": 1,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 91,
+          "coordinate_text_characters_total": 706
+        }
+      }
+    },
+    {
+      "block_id": "6WV7-PJVK-GMF",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "",
+      "description": "Схема расположения металлических конструкций под пожарную вентиляцию СВ-К2-04. Чертеж содержит план и разрез 1-1 металлических конструкций стеллажа СВ-К2-03. На плане показаны оси 2.4 и 2.5 с общим размером 5600 мм. Разрез 1-1 отображает вертикальные отметки +11,750, +8,550 и +8,450, а также конструктивные элементы с маркировкой 1, 1.1, 2, 4.1, 5 и 6. Применены выносные линии с размерами 1300, 4300, 1050 мм и детализация шага опор.",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 85,
+          "coordinate_text_characters_total": 323
+        }
+      }
+    },
+    {
+      "block_id": "7LTK-KDWU-G44",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий на отм. +55,850",
+      "description": "На листе представлены схемы расположения металлических конструкций лоджий Лдж-1, Лдж-2 и Лдж-5 на отметке +55.850. Чертеж содержит четыре плана расположения металлических конструкций лоджий с указанием осей, размеров и марок элементов. Элементы включают профили Тр-1, Тр-3, Ш-1 и узлы У-2. На планах проставлены привязки к осям, габаритные размеры и отметки уровня +55.850. В нижней части листа приведена выносная деталь узла с отметками +56.400 и элементами У-1, Тр-3, Тр-4. Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий на отм. +55,850",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 17
+        },
+        "counts": {
+          "nodes_total": 17,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 17,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 270,
+          "coordinate_text_characters_total": 1241
+        }
+      }
+    },
+    {
+      "block_id": "7UAF-H4RK-9JE",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лжд-5. В осях 3.И-3.К/3.7",
+      "description": "Чертеж разреза 1-1 и 3-3 с указанием вертикальных элементов и размеров. На чертеже представлены вертикальные элементы, обозначенные позициями 45 и 49. Указаны высотные отметки +97,050 и +93,650, а также общая высота 3400. Присутствуют выносные линии с размерными цепочками, включающими значения 2080, 185, 255, 295, 285, 250, 2080 и 160. В нижней части расположены оси 3.Ж, 3.И и 3.К, а также линии сечений 2-2 и 3-3. Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лжд-5. В осях 3.И-3.К/3.7",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 32,
+          "coordinate_text_characters_total": 110
+        }
+      }
+    },
+    {
+      "block_id": "7WP9-94DW-9RM",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 5. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-5",
+      "description": "Чертеж разреза 1-1 металлической конструкции с указанием отметок и маркировкой элементов. На чертеже представлен разрез 1-1 металлической рамы с вертикальными стойками (Тр-3) и горизонтальными элементами (Тр-1, Тр-2, Тр-4). Указаны высотные отметки А, Б, В, Г и общая высота 3400 мм. Горизонтальные размеры между осями стоек составляют 200, 500, 620, 520 и 450 мм. В нижней части конструкции показаны элементы Уг-1 и привязки к осям 5.2 и 5.3. Корпус 5. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-5",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 66,
+          "coordinate_text_characters_total": 261
+        }
+      }
+    },
+    {
+      "block_id": "9ERR-XQXG-VWP",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 1. Конструкции металлические. Схема расположения металлических конструкций под пожарную вентиляцию",
+      "description": "Представлены две схемы расположения металлических конструкций под пожарную вентиляцию СВ-К1-04 и СВ-К1-03 в масштабе 1:50. На чертеже изображены два плана расположения металлических конструкций с указанием осевых линий 1.4, 1.5, 1.6, 1.И и П.КК. Конструкции включают в себя прямоугольные каркасные элементы с маркировкой позиций 1, 2, 3, 5, 6, 7, 1.1, 4 и 4.1. Нанесены размерные линии с указанием расстояний между осями и габаритов конструкций, а также высотные отметки. Элементы конструкций представлены сплошными линиями, места опирания на строительные конструкции заштрихованы. Корпус 1. Конструкции металлические. Схема расположения металлических конструкций под пожарную вентиляцию",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 95,
+          "coordinate_text_characters_total": 388
+        }
+      }
+    },
+    {
+      "block_id": "9KFH-GC37-9H4",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-5...Лжд-7. В осях 6.Г-6.Д/6.7.",
+      "description": "Схема расположения металлических конструкций лоджии Лдж-7 на отметке +87,350. На чертеже представлены сечения 4-4, 7-7, 8-8 и 9-9 для лоджии Лдж-7. Видны металлические элементы, закрепленные на монолитных конструкциях с использованием опорных пластин толщиной 225 мм. Указаны высотные отметки +87,350 и +90,750, а также горизонтальные размеры 1270, 2075, 415, 40 и 250 мм. Присутствуют выносные линии с обозначениями осей 6.В, 6.Г, 6.7 и 6.Д. Корпус 3. Конструкции металлические. Схема расположения металлических конструкций лоджий Лдж-5...Лжд-7. В осях 6.Г-6.Д/6.7.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 10,
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 10,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 91,
+          "coordinate_text_characters_total": 658
+        }
+      }
+    },
+    {
+      "block_id": "9RPF-NKVP-KAF",
+      "discipline": "КМ",
+      "profile_id": "km_layout_plan",
+      "subtype": "balcony_or_frame_layout",
+      "title": "Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий на отм. +52,400",
+      "description": "Разрез 5-5, показывающий конструкцию лоджии с металлическими элементами на отметках от +52,400 до +55,650. На разрезе 5-5 представлены металлические элементы конструкций лоджии, включая стойки (Тр-3), горизонтальные балки (Тр-1, Тр-2, Тр-4) и уголки (У-2). Вертикальные размеры между перекрытиями составляют 3250 мм, с указанием высотных отметок +52,400, +52,950, +55,500 и +55,650. Элементы привязаны к осям 4.11 и 4.12. В верхней части показаны узлы крепления к монолитному перекрытию, а в нижней — опирание на конструкцию этажа. Корпус 4. Конструкции металлические. Схема расположения металлических конструкций лоджий на отм. +52,400",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 4,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 59,
+          "coordinate_text_characters_total": 216
+        }
+      }
+    },
+    {
+      "block_id": "49HG-KVWP-WXQ",
+      "discipline": "КМ",
+      "profile_id": "km_member_drawing",
+      "subtype": "support_or_equipment_frame",
+      "title": "Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "description": "Чертеж конструкции опорной рамы Рм-1 с указанием размеров элементов. На чертеже представлена металлическая опорная рама, состоящая из вертикальных стоек (Ст1) и горизонтальных балок (Б1, Б2). Конструкция имеет два основных пролета с различными высотными отметками и габаритными размерами. Указаны размеры сечений, расстояния между элементами и привязки балок к стойкам. Присутствуют выносные линии с размерными числами и обозначения сечений 1-1, 2-2, 3-3, 4-4. Корпус 3. Конструкции металлические. Конструкция опорной рамы Рм-1",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 85,
+          "coordinate_text_characters_total": 236
+        }
+      }
+    },
+    {
+      "block_id": "6T6U-XCJF-QJG",
+      "discipline": "КМ",
+      "profile_id": "km_member_drawing",
+      "subtype": "support_or_equipment_frame",
+      "title": "Корпус 6. Конструкции металлические. Схемы расположения металлических конструкций технической лоджии на отм. +8,300...87,350.",
+      "description": "Разрез 4-4 металлоконструкций рам Рм-1. На чертеже представлен разрез 4-4, отображающий две симметричные секции рам Рм-1. Конструкции установлены на отметке уровня чистого пола (Ур.ч.п.) с указанием монтажных зазоров 40 мм и 20 мм. Вертикальные размеры включают общую высоту 1890 мм и высоту 1410 мм для боковых элементов. Горизонтальные размеры между осями 6.3 и 6.5 составляют 385, 1200, 1200, 640, 1200, 1120 и 335 мм. Корпус 6. Конструкции металлические. Схемы расположения металлических конструкций технической лоджии на отм. +8,300...87,350.",
+      "source_page": 4,
+      "source_layer_state": "no_pdf_text_layer",
+      "quality": [
+        0,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 0,
+          "coordinate_text_characters_total": 0
+        }
+      }
+    },
+    {
+      "block_id": "9DRD-4GFM-T4U",
+      "discipline": "КМ",
+      "profile_id": "km_member_drawing",
+      "subtype": "support_or_equipment_frame",
+      "title": "",
+      "description": "На чертеже представлен разрез 4-4, отображающий конструкцию рам Рм-1 и их привязку к осям. На чертеже изображен разрез 4-4, показывающий две секции рам Рм-1 с различными высотными отметками. Секции установлены на элементы Б1, при этом указаны высоты 1880 мм и 1500 мм для разных уровней рам. Присутствуют выносные линии с размерами 385, 1200, 1120, 970, 40, 1200, 1200 и 280 мм, а также отметки уровня чистого пола (Ур.ч.п.). Элементы конструкции снабжены маркировкой и ссылками на лист 3.",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 1,
+          "coordinate_text_records_total": 42,
+          "coordinate_text_characters_total": 134
+        }
+      }
+    },
+    {
+      "block_id": "4AEA-GLNK-T7D",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №4 Окно Ок-5",
+      "description": "Чертеж окна Ок-5 с видами снаружи, разрезами и спецификацией стеклопакетов. На чертеже представлен вид окна Ок-5 снаружи с габаритными размерами 1750x2195 мм. Приведены разрезы 1-1, 2-2 и 3-3, детализирующие конструкцию профиля ПВХ VEKA Softline 82 и расположение фурнитуры. Указаны высотные отметки установки ручки (400 мм от низа створки, 1650 мм от ур.ч.п.). В нижней части приведены технические характеристики двух типов стеклопакетов СПД 52 мм. Устройство Mockup №4 Окно Ок-5",
+      "source_page": 25,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        13,
+        13
+      ],
+      "covered_facts": 13,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 11,
+          "position": 4,
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 21,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 6,
+          "rebar_total": 0,
+          "positions_total": 4,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 11,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 79,
+          "coordinate_text_characters_total": 1083
+        }
+      }
+    },
+    {
+      "block_id": "4LWE-7PGD-ARP",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup. Схема раскладки облицовочного материала по фрагментам фасадов корпусов 3 и 6.",
+      "description": "Схема раскладки облицовочного материала по фрагментам фасадов корпусов 3 и 6 с узлами и разрезами. На чертеже представлены фрагменты фасадов корпусов 3 и 6 с указанием типов облицовки, включая бетонную плитку под кирпич, фиброцементные панели и алюминиевые кассеты. Приведены разрезы 1-1, 2-2, 3-3, 4-4, 5-5 и 2.1-2.1, детализирующие узлы крепления и конструкцию подсистемы. Указаны высотные отметки 0,000, размеры швов, расстояния между осями и маркировка узлов (1, 2, 4, 5, 6, 7). Геометрия включает вертикальные и горизонтальные сечения с привязкой к осям 1-6 и А. Устройство Mockup. Схема раскладки облицовочного материала по фрагментам фасадов корпусов 3 и 6.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 9,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 9,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 183,
+          "coordinate_text_characters_total": 1533
+        }
+      }
+    },
+    {
+      "block_id": "4NDJ-PWMF-V3T",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №4",
+      "description": "Узел 6 представляет собой конструктивное решение крепления фасадной системы с корзиной для кондиционера. На чертеже представлен узел крепления фасадной подсистемы с использованием кронштейнов NordFox и HILTI. Видны вертикальные и горизонтальные профили, закрепленные через термомосты к несущей конструкции. Справа расположена корзина для кондиционера из перфорированного алюминиевого листа, закрепленная на кронштейнах. Узел включает детализацию примыканий, отливов, нащельников и шумоизоляционных лент TONLOS TAPE. Устройство Mockup №4",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 2,
+          "structural_mark": 8
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 8,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 141,
+          "coordinate_text_characters_total": 2137
+        }
+      }
+    },
+    {
+      "block_id": "4NHT-JTC7-HX3",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №4. Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 5.",
+      "description": "Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 5 с указанием узлов крепления. На схеме представлен фасад с вертикальными и горизонтальными направляющими, обозначенными осями 1-6. Приведены разрезы 1-1, 2-2, 3-3, 4-4, 5-5, 6-6, 7-7, 8-8 и виды А и Б. Узлы крепления (1-14) пронумерованы и привязаны к соответствующим элементам конструкции. Указаны отметки уровня 0,000 и размеры между осями. Устройство Mockup №4. Монтажная схема горизонтальных направляющих по фрагменту фасада корпуса 5.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "elevation": 3,
+          "structural_mark": 5
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 5,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 417,
+          "coordinate_text_characters_total": 2418
+        }
+      }
+    },
+    {
+      "block_id": "4Q7U-4EMJ-4VC",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №4. Монтажная схема кронштейнов и вертикальных направляющих по фрагменту фасада корпуса 5.",
+      "description": "Монтажная схема кронштейнов и вертикальных направляющих для фрагмента фасада корпуса 5. На чертеже представлен фасадный вид с сеткой осей 1-6 и разрезы 1-1, 2-2, 3-3, 4-4, 5-5, 6-6, 7-7, 8-8. Изображены узлы крепления (1-14) с указанием типов кронштейнов и профилей. Приведены высотные отметки 0,000, +0,150, +0,290, +0,300. В нижней части расположена легенда с условными обозначениями типов кронштейнов HILTI и NordFox. Устройство Mockup №4. Монтажная схема кронштейнов и вертикальных направляющих по фрагменту фасада корпуса 5.",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "steel_profile": 2,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 17,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 806,
+          "coordinate_text_characters_total": 3887
+        }
+      }
+    },
+    {
+      "block_id": "69GC-V34X-PP4",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup. Монтажная схема горизонтальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "description": "Монтажная схема горизонтальных направляющих для фасадов корпусов 3 и 6 с узлами крепления. На чертеже представлены фасадные фрагменты корпусов 3 и 6 с сеткой горизонтальных направляющих. Справа и снизу расположены сечения 1-1, 2-2, 3-3, 4-4, 5-5 и 2.1-2.1, детализирующие узлы крепления (1, 2, 4, 5, 6, 7). Указаны высотные отметки, включая 0,000, и линейные размеры проемов и шага направляющих. Приведена таблица условных обозначений для элементов HILTI и NordFox. Устройство Mockup. Монтажная схема горизонтальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 2,
+          "structural_mark": 5
+        },
+        "counts": {
+          "nodes_total": 7,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 5,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 177,
+          "coordinate_text_characters_total": 1428
+        }
+      }
+    },
+    {
+      "block_id": "6NNN-HX4X-CGC",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №4. Схема раскладки облицовочного материала по фрагменту фасада корпуса 54.",
+      "description": "Схема раскладки облицовочного материала по фрагменту фасада корпуса 5 с узлами примыканий. На чертеже представлен фасад здания с оконными проемами и витражами, а также серия горизонтальных и вертикальных сечений (узлов) с детализацией слоев облицовки. Приведены высотные отметки, включая уровень чистого пола (+0,300, +0,290) и уровень бетона (+0,150). В нижней части расположена легенда с описанием типов фасадных материалов, включая бетонную плитку под кирпич, фиброцементные панели и алюминиевые элементы. Узлы пронумерованы от 1 до 14 и содержат детальные размеры конструктивных элементов. Устройство Mockup №4. Схема раскладки облицовочного материала по фрагменту фасада корпуса 54.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 15,
+          "elevation": 3,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 21,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 11,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 15,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 498,
+          "coordinate_text_characters_total": 2803
+        }
+      }
+    },
+    {
+      "block_id": "73CH-JCMA-CC3",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №2 Окно Ок-1",
+      "description": "Чертеж окна Ок-1 с разрезами и спецификацией стеклопакетов. На чертеже представлен вид окна Ок-1 снаружи, а также горизонтальный разрез 1-1 и вертикальные разрезы 2-2 и 3-3. Указаны габаритные размеры 1950x2200 мм, высота подоконной части 695 мм и расположение ручки на высоте 1650 мм от уровня чистого пола. В нижней части приведены примечания по профилю Rehau INTELIO и составу стеклопакетов СПД 48 мм. Элементы конструкции включают подставочный профиль и детализированные размеры створок. Устройство Mockup №2 Окно Ок-1",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 3,
+          "position": 2,
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 6,
+          "rebar_total": 0,
+          "positions_total": 2,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 3,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 71,
+          "coordinate_text_characters_total": 957
+        }
+      }
+    },
+    {
+      "block_id": "76RQ-N6YL-UHP",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №2 Монтажная схема кронштейнов и вертикальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "description": "Монтажная схема кронштейнов и вертикальных направляющих по фрагментам фасадов корпусов 3 и 6. На чертеже представлена фасадная схема с указанием расположения кронштейнов и направляющих. Приведены сечения 1-1, 2-2, 3-3, 4-4, 5-5, 7-7 и вид Б, детализирующие узлы крепления. Геометрия включает вертикальные и горизонтальные оси, размеры проемов окон (Ок-1, Ок-2) и витража (В-1). Узлы крепления обозначены выносками с номерами, соответствующими спецификации. Устройство Mockup №2 Монтажная схема кронштейнов и вертикальных направляющих по фрагментам фасадов корпусов 3 и 6.",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "steel_profile": 2,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 22,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 790,
+          "coordinate_text_characters_total": 3797
+        }
+      }
+    },
+    {
+      "block_id": "77NN-NQDU-VXL",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №5",
+      "description": "Узел крепления фасадной системы с использованием кронштейнов и профилей NordFox или HILTI. На чертеже представлен узел крепления фасадной плитки на подсистеме с указанием размеров 100, 50, 125, 275, 75, 225, 50, 25, 8 и 5 мм. Изображены вертикальные профили, кронштейны, термомосты и элементы крепления (заклепки). В нижней части показан откос из оцинкованной стали с указанием цвета RAL 7021. Присутствуют выноски с наименованиями комплектующих и примечание о составе комплекта М10. Устройство Mockup №5",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        10,
+        10
+      ],
+      "covered_facts": 10,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 1,
+          "embedded": 1,
+          "steel_profile": 3,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 64,
+          "coordinate_text_characters_total": 1292
+        }
+      }
+    },
+    {
+      "block_id": "7JRL-XXJW-4XT",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство металлических конструкций для мокапа. Корпус 1. Фрагменты фасадов_1. Схемы расположения конструкцций. Разрезы",
+      "description": "Схемы расположения металлических конструкций для мокапа с разрезами и маркировкой элементов. На чертеже представлены виды и разрезы металлических конструкций с указанием высотных отметок от -0.030 до +9.550. Вертикальные элементы обозначены маркой К1, горизонтальные и связевые элементы имеют маркировки 51, 52, 53, 61, 62, 63. Указаны осевые размеры между осями 1-2, 2-3, 3-5, 5-6, а также габаритные размеры пролетов 3050 мм и 2850 мм. Разрезы 1-1, 2-2 и 3-3 детализируют узлы сопряжения элементов и их взаимное расположение. Устройство металлических конструкций для мокапа. Корпус 1. Фрагменты фасадов_1. Схемы расположения конструкцций. Разрезы",
+      "source_page": 2,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 31,
+          "coordinate_text_characters_total": 418
+        }
+      }
+    },
+    {
+      "block_id": "7L7M-3MGL-V3J",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №4 Окно Ок-6",
+      "description": "Чертеж окна Ок-6 с габаритными размерами, разрезами и спецификацией стеклопакетов. На чертеже представлен фасад окна Ок-6, его горизонтальный разрез 1-1 и вертикальные разрезы 2-2 и 3-3. Указаны габаритные размеры 1950x2195 мм, а также высотные отметки расположения ручки створки. Приведены спецификации двух типов стеклопакетов толщиной 52 мм с указанием состава слоев. В нижней части расположены примечания по материалам профиля, цвету пленки и фурнитуры. Устройство Mockup №4 Окно Ок-6",
+      "source_page": 26,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        13,
+        13
+      ],
+      "covered_facts": 13,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 11,
+          "position": 4,
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 21,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 6,
+          "rebar_total": 0,
+          "positions_total": 4,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 11,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 78,
+          "coordinate_text_characters_total": 1077
+        }
+      }
+    },
+    {
+      "block_id": "7VF9-F7KH-VJ6",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №5 Окно Ок-4",
+      "description": "Чертеж окна Ок-4 с указанием габаритных размеров, сечений и спецификации стеклопакетов. На чертеже представлен вид окна Ок-4 снаружи с указанием общих габаритов 1750x2195 мм. Приведены сечения 1-1, 2-2 и 3-3, детализирующие конструкцию профиля и стеклопакетов. Указано расположение ручки на высоте 1650 мм от уровня чистого пола и 400 мм от низа створки. В правой части расположена таблица с характеристиками трех типов стеклопакетов (СПД 51,52 мм и 50 мм). В нижней части приведены примечания по материалам профиля, цвету пленки и фурнитуры. Устройство Mockup №5 Окно Ок-4",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "position": 3,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 3,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 98,
+          "coordinate_text_characters_total": 1320
+        }
+      }
+    },
+    {
+      "block_id": "9KW9-YNFR-FWP",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство Mockup №4. Узел 8",
+      "description": "Узел 8 крепления фасадной системы с бетонной плиткой на подсистеме NordFox или HILTI. На чертеже представлен узел крепления фасадной бетонной плитки к несущей конструкции через кронштейны и профили. Показаны слои утеплителя с термомостом, закрепленные на кронштейнах NordFox MacFOX M210 или HILTI MFT-MF 220 M. Указаны размеры 240 мм, 125 мм, 100 мм, 50 мм, 275 мм и 7 мм для элементов подсистемы. Приведены спецификации крепежных элементов, включая заклепки 5х12 А/А2 и комплект М10. Устройство Mockup №4. Узел 8",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "bolt": 1,
+          "dimension": 1,
+          "steel_profile": 2,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 49,
+          "coordinate_text_characters_total": 998
+        }
+      }
+    },
+    {
+      "block_id": "V6Q7-FEKF-CVX",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_layout",
+      "title": "Устройство Mockup №5 Окно Ок-3",
+      "description": "Чертеж окна Ок-3 с указанием габаритных размеров, сечений и спецификации стеклопакетов. На чертеже представлен фасад окна Ок-3, его горизонтальное сечение 1-1 и вертикальные сечения 2-2 и 3-3. Указаны габаритные размеры 1950 мм по ширине и 2195 мм по высоте, включая подставочный профиль. На сечениях показаны детали примыкания профиля ПВХ DECEUNINCK и расположение ручки на высоте 1650 мм от уровня чистого пола. Справа приведена спецификация трех типов стеклопакетов с указанием толщины стекол и состава камер. Устройство Mockup №5 Окно Ок-3",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "position": 3,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 3,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 97,
+          "coordinate_text_characters_total": 1319
+        }
+      }
+    },
+    {
+      "block_id": "V9UQ-ELYF-PXV",
+      "discipline": "КМ",
+      "profile_id": "km_mockup",
+      "subtype": "mockup_detail",
+      "title": "Устройство металлических конструкций для мокапа. Корпус 1. Фрагменты фасадов_1. Лестница",
+      "description": "Чертеж узла крепления металлической стойки с анкерными болтами. На чертеже представлен вид сбоку и сечение А-А узла крепления колонны. Стойка опирается на квадратную опорную плиту с четырьмя анкерными болтами по углам. Указаны размеры 60, 100, 100, 60 мм для расположения анкеров и 50, 20 мм для привязки элементов. Присутствуют обозначения сварных швов и маркировка элементов Л1, С1, а также толщины пластин 12 мм, 8 мм и 5 мм. Устройство металлических конструкций для мокапа. Корпус 1. Фрагменты фасадов_1. Лестница",
+      "source_page": 4,
+      "source_layer_state": "no_pdf_text_layer",
+      "quality": [
+        0,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "vector_geometry_region": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 0,
+          "views_total": 0,
+          "coordinate_text_records_total": 0,
+          "coordinate_text_characters_total": 0
+        }
+      }
+    }
+  ]
+}

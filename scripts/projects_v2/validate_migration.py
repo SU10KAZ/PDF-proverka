@@ -6,8 +6,8 @@ validate_migration.py — проверка корректности миграц
   1. весь входной комплект перенесён в 01_input;
   2. checksum копии совпадает с записанным и с ТЕКУЩИМ legacy-файлом
      (значит legacy не изменился и копия идентична);
-  3. критичные артефакты (03_findings.json, 02_blocks_analysis.json,
-     01_text_analysis.json) присутствуют в новой структуре;
+  3. критичные артефакты (03_findings.json, 01_blocks_analysis.json,
+     02_text_analysis.json) присутствуют в новой структуре;
   4. версии получили строгие индексы v001, v002, ...;
   5. старая структура (legacy-файлы) на месте и не модифицирована;
   6. в projects_v2/_system/old_to_new_map.json есть карта соответствий.
@@ -99,11 +99,16 @@ def validate_map(map_obj: dict, document_filter: str | None = None) -> tuple[lis
                 actual_new = v2lib.sha256_file(new_path)
                 if actual_new != expected_sha:
                     errors.append(f"{vtag} checksum drift (new copy): {new_path}")
-                # (5) legacy не изменился: legacy-файл существует и совпадает по sha
+                # После cutover v2 и legacy могли легитимно разойтись. Новая
+                # карта хранит независимый baseline legacy_sha256; старые карты
+                # по-прежнему требуют равенства исходному sha256.
                 if old_path.exists():
                     actual_old = v2lib.sha256_file(old_path)
-                    if actual_old != expected_sha:
+                    expected_old = f.get("legacy_sha256", expected_sha)
+                    if actual_old != expected_old:
                         errors.append(f"{vtag} LEGACY CHANGED since migration: {old_path}")
+                    elif expected_old != expected_sha:
+                        notes.append(f"{vtag} post-cutover divergence recorded: {old_path.name}")
                 else:
                     # legacy-файл пропал — мог быть удалён вне нашего процесса
                     notes.append(f"{vtag} legacy source no longer present: {old_path}")

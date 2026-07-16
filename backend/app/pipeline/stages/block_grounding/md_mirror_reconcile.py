@@ -12,6 +12,10 @@
 Вектор-текст блока = полигон-клип из PDF по document_graph (как «зеркало») — НЕ pdfplumber_text
 (он у многих проектов пуст в result.json). Порт безопасной логики из
 experiments/vector_pipeline/md_mirror_reconcile.py; прод-модуль самодостаточен, fail-soft.
+
+Форматы MD: старый Chandra ('### BLOCK [TEXT]: id') — прежний разбор; новый формат
+портала (*_results.md, '### BLOCK #N [TEXT]: blk_…') — через нативный парсер
+services/common/results_md.py (ветвление в _parse_md_text_blocks, IMAGE-блоки не сверяются).
 """
 from __future__ import annotations
 
@@ -19,6 +23,12 @@ import json
 import re
 from pathlib import Path
 from typing import Optional
+
+from backend.app.services.common.results_md import (
+    is_results_md_name,
+    is_results_md_text,
+    parse_results_md,
+)
 
 from .singleline_graph_geometry import _clip_words_to_bbox, _clip_words_to_polygon
 
@@ -129,8 +139,35 @@ def _block_text(words) -> str:
 
 
 def _parse_md_text_blocks(md_path: Path) -> dict:
+    """{block_id: текст} ТЕКСТ-блоков MD-зеркала — точка ветвления по формату.
+
+    Новый формат портала (*_results.md, заголовки '### BLOCK #N [TEXT]: blk_…')
+    разбирается нативным парсером results_md; старый Chandra-формат
+    ('### BLOCK [TEXT]: id' / '## СТРАНИЦА N') — прежним кодом без изменений.
+    """
+    text = md_path.read_text(encoding='utf-8', errors='ignore')
+    if is_results_md_name(md_path.name) or is_results_md_text(text):
+        return _results_md_text_blocks(text)
+    return _parse_chandra_text_blocks(text)
+
+
+def _results_md_text_blocks(text: str) -> dict:
+    """{block_id: тело} TEXT-блоков нового формата (*_results.md).
+
+    Паритет со старым путём, где парсились только '### BLOCK [TEXT]:':
+    IMAGE-блоки не участвуют в сверке — их тело не транскрипция текста
+    чертежа, а структурное описание ('**[IMAGE]** | Type: …' + секции
+    Summary/Description/Entities/Verification); в document_graph они лежат
+    в image_blocks, и вектор-текст для них здесь не строится.
+    """
+    doc = parse_results_md(text)
+    return {b.block_id: b.body for b in doc.blocks if b.is_text}
+
+
+def _parse_chandra_text_blocks(text: str) -> dict:
+    """Старый Chandra-формат: прежний разбор '### BLOCK [TEXT]:' (без изменений)."""
     out, cur, buf = {}, None, []
-    for line in md_path.read_text(encoding='utf-8', errors='ignore').splitlines():
+    for line in text.splitlines():
         m = _MD_BLOCK.match(line)
         if m:
             if cur:

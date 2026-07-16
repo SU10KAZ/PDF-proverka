@@ -1,5 +1,13 @@
 # projects_v2 — legacy deletion-readiness checklist
 
+> Обновление 2026-07-13: production уже работает в
+> `projects_v2` / `projects_v2_primary`; coverage backlog и drift равны нулю,
+> ledger validation и 558 профильных тестов зелёные. Для явно выбранного
+> ускоренного сценария после побайтово проверенного внешнего бэкапа подготовлен
+> защищённый workflow:
+> `docs/projects_v2_legacy_retirement_after_backup.md`. Он не отменяет риски
+> literal parity и требует их отдельного явного подтверждения.
+
 **Дата:** 2026-06-18
 **Статус:** КРИТЕРИИ. Это финальный gate, после которого вообще можно удалять
 legacy. На момент написания — **НЕ выполнен** (write-cutover ещё не делался).

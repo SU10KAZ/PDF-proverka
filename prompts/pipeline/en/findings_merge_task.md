@@ -9,16 +9,16 @@
 
 ## Input Data
 
-1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/01_text_analysis.json`
+1. **Text analysis** — READ via Read tool: `{OUTPUT_PATH}/02_text_analysis.json`
    - `text_findings` (T-001...), `normative_refs_found`, `project_params`
    - `items_verified_from_blocks` (optional) — present if text ran AFTER blocks: its cross-check
-     of its own T-findings against Stage 02 blocks.
+     of its own T-findings against Stage 01 blocks.
 
-2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/02_blocks_analysis.json`
+2. **Block analysis** — READ via Read tool: `{OUTPUT_PATH}/01_blocks_analysis.json`
    - `block_analyses` (findings G-001... within each block)
    - `items_verified_from_stage_01` (optional, legacy) — present if blocks ran AFTER text.
-   - If `stage02_meta.uncovered_blocks`, `stage02_meta.failed_blocks`, or block-level
-     `coverage_status: "missing_gemma_enrichment" | "single_block_analysis_failed"` is present,
+   - If `stage01_meta.uncovered_blocks`, `stage01_meta.failed_blocks`, or block-level
+     `coverage_status: "missing_block_context" | "single_block_analysis_failed"` is present,
      DO NOT treat those blocks as “no findings”. They were not fully analyzed.
 
 3. **MD file** (for context) — READ via Read tool: `{MD_FILE_PATH}`
@@ -46,13 +46,29 @@ Any discrepancy found → add as a new finding (F-NNN).
 
 ### Step 2: Merge Findings
 
-Merge findings from both stages (01 text + 02 blocks).
+Merge findings from both stages (01 blocks + 02 text).
+
+### GPT+Codex comparison handling (MANDATORY when present)
+
+A Stage 01 G-item may contain `detector_comparison`. This is the completed semantic
+comparison of the independent detectors. Do not recalculate or ignore it:
+
+- `match`: produce one F-finding and include both G-ids in `source_finding_ids`;
+- `extension`: produce one richer F-finding, preserving details and both G-ids;
+- `new`: retain it as an independent finding; `origin: "gap_search"` means the
+  post-comparison pass found it;
+- `disputed`: do not choose one detector and do not collapse the pair as an ordinary
+  duplicate. Produce an explicit verification finding containing both conflicting
+  claims and both G-ids. If the image cannot resolve it confidently, use severity
+  `ПРОВЕРИТЬ ПО СМЕЖНЫМ`.
+
+The backend restores exact detector attribution from `source_finding_ids`; never invent G-ids.
 
 ### Coverage Warning Sections (MANDATORY)
 
-If `02_blocks_analysis.json` contains uncovered/failed blocks, add three sections under
+If `01_blocks_analysis.json` contains uncovered/failed blocks, add three sections under
 `meta.analysis_coverage.sections`:
-- `Непокрытые блоки Gemma enrichment`
+- `Блоки без подготовленного контекста`
 - `Ошибки single-block анализа`
 - `Блоки, исключённые из полноценного анализа`
 
@@ -62,8 +78,8 @@ findings for them, but preserve their block ids and reasons in meta.
 ### Processing text↔block verification (MANDATORY)
 
 Take the verification array from whichever file has it (stage order may be either):
-- `items_verified_from_blocks` from `01_text_analysis.json` (block→text order — primary), OR
-- `items_verified_from_stage_01` from `02_blocks_analysis.json` (legacy text→block order).
+- `items_verified_from_blocks` from `02_text_analysis.json` (block→text order — primary), OR
+- `items_verified_from_stage_01` from `01_blocks_analysis.json` (legacy text→block order).
 
 Both describe the same thing: a text finding T-NNN cross-checked against a drawing. Process each record:
 
@@ -79,11 +95,28 @@ Both describe the same thing: a text finding T-NNN cross-checked against a drawi
 
 ### Merge Rules
 
-1. **Deduplication**: same finding in both text and drawing → single entry with more complete description
+1. **Deduplication**: same finding in both text and drawing → single entry with more complete description. Never collapse Stage 01 `disputed` pairs as ordinary duplicates
 2. **Severity elevation**: text finding confirmed by drawing with concrete evidence → severity increases (see verification section above)
 3. **Severity reduction**: text suspicion NOT confirmed by drawing → downgrade or remove
 4. **Renumbering**: final IDs: F-001, F-002...
 5. **Block linkage**: for each F-NNN fill `related_block_ids` — list of block_id from block analysis that are the source. For G-NNN → block's block_id. For T-NNN → block_ids that confirmed the text finding (from the verification array). For cross-block → all participating block_ids.
+6. **Source tracing**: fill `source_finding_ids` with the exact T-NNN/G-NNN ids used by each F-finding. Do not rewrite `provenance` or `detector_comparison`; the backend restores them deterministically from these ids.
+
+### No internal identifiers in human-readable text (MANDATORY)
+
+The fields `problem`, `description`, `solution`, `risk` are read by external
+experts who do NOT know what a block_id or T-/G-number is. NEVER mention
+internal identifiers there: block_id (like `RUXD-WP4R-6C3`), hypothesis ids
+T-NNN/G-NNN, or other findings' F-NNN numbers.
+
+- Block linkage belongs ONLY in structured fields: `source_block_ids`,
+  `related_block_ids`, `evidence`, `highlight_regions`.
+- In text, refer to the source in words: fragment type + short name + sheet.
+  - BAD: «Текстовое замечание подтверждено блоками RUXD-WP4R-6C3 и 3C6E-3QEP-D39.»
+  - GOOD: «Текстовое замечание подтверждено схемой систем К2 (лист 18) и
+    таблицей «Перечень отклонений» (лист 1).»
+- Take the name and sheet from `01_blocks_analysis.json` (`label`, `sheet`)
+  or from the page context in `document_graph.json`.
 
 ### Finding Fields
 
@@ -94,6 +127,7 @@ Both describe the same thing: a text finding T-NNN cross-checked against a drawi
 - `solution`: specific corrective action
 - `risk`: consequences if not fixed
 - `source_block_ids`: block_ids WHERE the finding was actually DETECTED (source-of-truth). Differs from `related_block_ids`: source = "where found", related = "what it relates to".
+- `source_finding_ids`: exact source T-NNN/G-NNN ids used for this finding.
 - `related_block_ids`: block_ids the finding RELATES TO. May include blocks where the problem is not directly visible but are connected.
 - `evidence_text_refs`: detailed text↔finding traceability. Transfer from block analysis and deduplicate.
 - `evidence`: array of data sources. `{type: "image"|"text", block_id: "...", page: N}`.
@@ -129,6 +163,7 @@ Both describe the same thing: a text finding T-NNN cross-checked against a drawi
       "norm_quote": "Точная цитата из пункта нормы (1-2 предложения) или null",
       "solution": "Действие по исправлению",
       "risk": "Чем грозит",
+      "source_finding_ids": ["G-001", "T-003"],
       "source_block_ids": ["IMG-001"],
       "related_block_ids": ["IMG-001", "IMG-008"],
       "evidence_text_refs": [

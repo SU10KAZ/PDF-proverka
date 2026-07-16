@@ -25,6 +25,15 @@ const app = createApp({
         const usersLoggedInMatched = ref(false);   // сопоставлен ли логин с сотрудником
         const currentProjectId = ref(null);
         const currentProject = ref(null);
+        const visiblePipelineSummary = computed(() => {
+            const rows = currentProject.value?.pipeline_summary;
+            if (!Array.isArray(rows)) return [];
+            const presentKeys = new Set(rows.map(row => String(row?.key || '')).filter(Boolean));
+            return rows.filter(row => {
+                const canonicalKey = String(row?.canonical_key || '');
+                return !canonicalKey || !presentKeys.has(canonicalKey);
+            });
+        });
         const projectLoading = ref(false);   // идёт ли сейчас загрузка карточки проекта
         const projects = ref([]);
         const loading = ref(false);
@@ -1480,11 +1489,10 @@ const app = createApp({
         const blockNatW = ref(0);       // natural width of loaded image
         const blockNatH = ref(0);       // natural height of loaded image
         const blockBaseScale = ref(1);  // scale to fit image into container
-        const highlightedFindingId = ref(null);  // ID замечания для подсветки на блоке
-        const allHighlightsVisible = ref(true);           // глобальный вкл/выкл подсветок
-        const hiddenHighlightFindings = ref(new Set());   // finding_id с выключенной подсветкой
+        const textlayerHighlightsShadow = ref(null);      // observe-only артефакт, не 03_findings
+        const showTextlayerHighlightsShadow = ref(false); // диагностический overlay
 
-        // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 02)
+        // «txt»-режим: текст блока, реально уходящий в нейронку (Stage 01)
         const showBlockLlmText = ref(false);
         const blockLlmText = ref(null);
         const blockLlmTextLoading = ref(false);
@@ -1600,6 +1608,9 @@ const app = createApp({
         const elapsedTick = ref(0); // реактивный тик для обновления таймера
         let pollTimer = null;
         let tickTimer = null;
+        // Последний увиденный poll'ом этап по проекту: {pid: stage|null}.
+        // По смене этапа pollLiveStatus тихо перезагружает карточку проекта.
+        const _lastPolledStage = {};
 
         // ─── Heartbeat ───
         const heartbeatData = ref({});       // {projectId: {stage, elapsed_sec, process_alive, eta_sec, ...}}
@@ -1833,7 +1844,7 @@ const app = createApp({
 
         // Старые usageCounters оставляем для совместимости с webapp-трекингом
         const usageCounters = ref({});
-        const GEMMA_STAGE_UI_LABEL = 'Gemma OCR enrichment / предварительное распознавание чертежей';
+        const BLOCK_CONTEXT_STAGE_UI_LABEL = 'Векторные графы блоков';
 
         // ─── Per-project usage (токены по проектам/этапам) ───
         const projectUsage = ref({});  // {project_id: {total_tokens, total_cost_usd, total_calls, stages_summary}}
@@ -1934,6 +1945,8 @@ const app = createApp({
             if (!s || !s.model) return '';
             // Краткое имя модели: google/gemini-3.1-pro-preview → Gemini, openai/gpt-5.4 → GPT
             const m = s.model;
+            if (m.includes('ensemble/gpt-codex')) return 'GPT+Codex';
+            if (m.includes('codex')) return 'Codex';
             if (m.includes('gemini')) return 'Gemini';
             if (m.includes('gpt')) return 'GPT';
             if (m.includes('opus')) return 'Opus';
@@ -1977,7 +1990,7 @@ const app = createApp({
             return hr + 'ч' + (remMin > 0 ? ' ' + remMin + 'м' : '');
         }
 
-        // ─── Prepare-data queue (Gemma enrichment) ───────────────────────
+        // ─── Prepare-data queue (block context) ──────────────────────────
         async function fetchPrepareQueue() {
             try {
                 const r = await fetch('/api/audit/prepare-data/queue');
@@ -2227,6 +2240,14 @@ const app = createApp({
                             currentProject.value.completed_batches = data.batches[pid].completed;
                             currentProject.value.total_batches = data.batches[pid].total;
                         }
+                        // Смена этапа (или завершение аудита) → тихо перезагрузить
+                        // карточку. Страховка на случай потерянных WS-сообщений:
+                        // без неё «Статус конвейера» замирает до конца аудита.
+                        const liveStage = data.running[pid] ? data.running[pid].stage : null;
+                        if (pid in _lastPolledStage && _lastPolledStage[pid] !== liveStage) {
+                            refreshProjectCardSilently(pid);
+                        }
+                        _lastPolledStage[pid] = liveStage;
                     }
                 }
             } catch (e) {
@@ -2280,7 +2301,7 @@ const app = createApp({
             const labels = {
                 'queued': 'В очереди',
                 'crop_blocks': 'Кроп блоков',
-                'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+                'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков',
                 'findings_merge': 'Свод замечаний',
@@ -2593,6 +2614,7 @@ const app = createApp({
             // Отделяем query от path (хранится `?version_id=v2`).
             const qIdx = rawHash.indexOf('?');
             const hash = qIdx >= 0 ? rawHash.slice(0, qIdx) : rawHash;
+            const routeQuery = new URLSearchParams(qIdx >= 0 ? rawHash.slice(qIdx + 1) : '');
 
             // Версия из URL — если она задана, она перебивает activeVersionId.
             // Если её нет — оставляем активной то, что уже выбрано пользователем,
@@ -2665,6 +2687,18 @@ const app = createApp({
                 sidebarFilterSection.value = null;
                 connectGlobalWS();  // Вернуться на global WS
                 refreshProjects();
+            } else if (hash.match(/^\/section\/([^/]+)\/optimization$/)) {
+                const code = decodeURIComponent(hash.match(/^\/section\/([^/]+)\/optimization$/)[1]);
+                const requestedTab = routeQuery.get('tab');
+                const initialTab = ['specifications', 'accepted', 'signals'].includes(requestedTab)
+                    ? requestedTab
+                    : 'specifications';
+                currentView.value = 'section-optimization';
+                sidebarFilterSection.value = code;
+                sidebarSectionsOpen.value = true;
+                connectGlobalWS();
+                refreshProjects();
+                loadSectionOptimization(code, initialTab);
             } else if (hash.match(/^\/section\/(.+)$/)) {
                 const code = decodeURIComponent(hash.match(/^\/section\/(.+)$/)[1]);
                 currentView.value = 'dashboard';
@@ -2747,7 +2781,7 @@ const app = createApp({
         const selectAllChecked = ref(false);
         const batchRunning = ref(false);
         const batchQueue = ref(null);
-        const prepareQueue = ref(null);  // Gemma enrichment queue (см. prepare_service.py)
+        const prepareQueue = ref(null);  // block-context queue (см. prepare_service.py)
         // ─── LM Studio remote management ───
         const lmsLoaded = ref([]);       // загруженные сейчас instance'ы
         const lmsAll = ref([]);          // все скачанные модели
@@ -3087,8 +3121,8 @@ const app = createApp({
         const modelConfigPendingProjectId = ref(null);
         const stageModelSaveError = ref('');
         const stageLabels = {
-            text_analysis: "01 Текст",
-            block_batch: "02 Блоки",
+            block_batch: "01 Блоки",
+            text_analysis: "02 Текст",
             findings_merge: "03 Свод",
             findings_critic: "Верификатор",
             findings_corrector: "Верификатор (фикс)",
@@ -3101,79 +3135,200 @@ const app = createApp({
 
         const stageModelRestrictions = ref({});
         const stageModelHints = ref({});
+        const stageEnsembleDetails = ref({});
+        const CODEX_PRESET_MODEL = "__codex_exec__";
+        const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
+        const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
+        const BASE_STAGE_MODEL_CONFIG = {
+            text_analysis:          "claude-opus-4-7",
+            block_batch:            "openai/gpt-5.4",
+            findings_merge:         "claude-opus-4-7",
+            findings_critic:        "claude-sonnet-4-6",
+            findings_corrector:     "claude-sonnet-4-6",
+            norm_verify:            "claude-sonnet-4-6",
+            norm_fix:               "claude-sonnet-4-6",
+            norm_requote:           "claude-sonnet-4-6",
+            optimization:           "claude-opus-4-7",
+            optimization_critic:    "claude-sonnet-4-6",
+            optimization_corrector: "claude-sonnet-4-6",
+        };
         const modelPresets = {
-            findings_only: {
-                label: "Production Gemma+GPT5.4",
-                hint: "Production: Markdown → Gemma OCR enrichment → Stage 01 → Stage 02 findings-only single-block на GPT-5.4.",
+            claude_gpt_codex: {
+                label: "Claude+GPT +Codex",
+                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex.",
                 config: {
-                    text_analysis:          "claude-opus-4-7",
-                    block_batch:            "openai/gpt-5.4",
-                    findings_merge:         "claude-opus-4-7",
-                    findings_critic:        "claude-sonnet-4-6",
-                    findings_corrector:     "claude-sonnet-4-6",
-                    norm_verify:            "claude-sonnet-4-6",
-                    norm_fix:               "claude-sonnet-4-6",
-                    optimization:           "claude-opus-4-7",
-                    optimization_critic:    "claude-sonnet-4-6",
-                    optimization_corrector: "claude-sonnet-4-6",
+                    ...BASE_STAGE_MODEL_CONFIG,
+                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
+                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
                 },
-                batchModes: { block_batch: "findings_only_gemma_pair" },
+                batchModes: { block_batch: "findings_only_block_context" },
+            },
+            codex_exec: {
+                label: "Full Codex",
+                hint: "01 Блоки: GPT+Codex, сравнение и gap-search · 05 Оптимизация: Claude+Codex · остальные этапы выполняет Codex; перед запуском сохраняется snapshot.",
+                config: {
+                    text_analysis:          CODEX_PRESET_MODEL,
+                    block_batch:            BLOCK_CODEX_ENSEMBLE_MODEL,
+                    findings_merge:         CODEX_PRESET_MODEL,
+                    findings_critic:        CODEX_PRESET_MODEL,
+                    findings_corrector:     CODEX_PRESET_MODEL,
+                    norm_verify:            CODEX_PRESET_MODEL,
+                    norm_fix:               CODEX_PRESET_MODEL,
+                    norm_requote:           CODEX_PRESET_MODEL,
+                    optimization:           OPT_CODEX_ENSEMBLE_MODEL,
+                    optimization_critic:    CODEX_PRESET_MODEL,
+                    optimization_corrector: CODEX_PRESET_MODEL,
+                },
+                batchModes: { block_batch: "findings_only_block_context" },
             },
         };
         const activePreset = ref(null);
+        // Сохранённый конфиг может не совпасть ни с одним пресетом: раскладку задали
+        // вручную или пресет поменяли уже после сохранения (тогда конфиг «осиротел»).
+        // Подсветки в этом случае нет — и окно открывалось пустым, без единого намёка,
+        // на чём пойдёт запуск. Метку показываем только когда конфиг УЖЕ загружен,
+        // иначе она мигала бы на старте, пока /audit/model/stages в пути.
+        const isCustomStageConfig = computed(() => (
+            Object.keys(stageModelConfig.value || {}).length > 0 && !activePreset.value
+        ));
         const activePresetHint = computed(() => {
             const key = activePreset.value;
-            return key ? (modelPresets[key]?.hint || '') : '';
+            if (key) return modelPresets[key]?.hint || '';
+            return isCustomStageConfig.value
+                ? 'Своя раскладка — не совпадает ни с одним пресетом. Модели заданы вручную в таблице ниже.'
+                : '';
         });
-        const stageBatchModes = ref({});  // { block_batch: "findings_only_gemma_pair" }
+        const stageBatchModes = ref({});  // { block_batch: "findings_only_block_context" }
         const stageBatchModeChoices = ref({});
 
-        // Production Stage 02: Gemma enrichment is separate; block analysis uses GPT-5.4.
+        // Ensemble IDs are an execution detail. The table shows the base
+        // model and one additive Codex flag instead of three internal columns.
+        const visibleStageModels = computed(() => availableModels.value.filter(model => (
+            model?.provider !== 'codex_cli'
+            && model?.provider !== 'ensemble'
+            && model?.provider !== 'optimization_ensemble'
+        )));
+
+        // Stage 01 supports one independent detector or the explicit dual ensemble.
         const findingsOnlyCompatibleBlockModels = [
             'openai/gpt-5.4',
+            'ensemble/gpt-codex',
         ];
 
         function isFindingsOnlyMode() {
-            return stageBatchModes.value?.block_batch === 'findings_only_gemma_pair';
+            return stageBatchModes.value?.block_batch === 'findings_only_block_context';
+        }
+
+        function normalizeAvailableModels(models) {
+            const list = Array.isArray(models) ? [...models] : [];
+            const hasCodex = list.some(m => m?.provider === 'codex_cli' || String(m?.id || '').startsWith('codex/'));
+            if (!hasCodex) {
+                const insertAt = Math.min(3, list.length);
+                list.splice(insertAt, 0, { id: 'codex/gpt-5.4', label: 'Codex', provider: 'codex_cli', uiFallback: true });
+            }
+            return list;
+        }
+
+        function codexModelId() {
+            return availableModels.value.find(m => m.provider === 'codex_cli')?.id || 'codex/gpt-5.4';
+        }
+
+        function resolvePresetModelId(modelId) {
+            return modelId === CODEX_PRESET_MODEL ? codexModelId() : modelId;
+        }
+
+        function resolvePresetConfig(preset) {
+            return Object.fromEntries(
+                Object.entries(preset?.config || {}).map(([stageKey, modelId]) => [stageKey, resolvePresetModelId(modelId)])
+            );
         }
 
         function getMatchingPresetKey(config, batchModes) {
             return Object.entries(modelPresets).find(([, preset]) => {
-                const cfgMatch = Object.entries(preset.config).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
+                const resolvedConfig = resolvePresetConfig(preset);
+                const cfgMatch = Object.entries(resolvedConfig).every(([stageKey, modelId]) => config?.[stageKey] === modelId);
                 if (!cfgMatch) return false;
                 const presetModes = preset.batchModes || {};
-                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_gemma_pair') === mode);
+                return Object.entries(presetModes).every(([stage, mode]) => (batchModes?.[stage] || 'findings_only_block_context') === mode);
             })?.[0] || null;
         }
 
         function applyPreset(presetKey) {
             const preset = modelPresets[presetKey];
             if (!preset) return;
-            stageModelConfig.value = { ...preset.config };
-            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_gemma_pair' }) };
+            stageModelConfig.value = { ...stageModelConfig.value, ...resolvePresetConfig(preset) };
+            stageBatchModes.value = { ...(preset.batchModes || { block_batch: 'findings_only_block_context' }) };
             activePreset.value = presetKey;
         }
 
         function isModelAllowed(stageKey, modelId) {
             const r = stageModelRestrictions.value[stageKey];
             if (r && !r.includes(modelId)) return false;
-            // findings_only_gemma_pair: production block_batch is GPT-5.4 only.
+            // findings_only_block_context: production block_batch is GPT-5.4 only.
             if (stageKey === 'block_batch' && isFindingsOnlyMode()) {
-                return findingsOnlyCompatibleBlockModels.includes(modelId);
+                return findingsOnlyCompatibleBlockModels.includes(modelId) || String(modelId || '').startsWith('codex/');
             }
             return true;
         }
 
-        function modelInputType(stageKey, modelId) {
-            return 'radio';
+        function isBaseStageModelChecked(stageKey, modelId) {
+            const effectiveModel = stageModelConfig.value[stageKey];
+            if (effectiveModel === BLOCK_CODEX_ENSEMBLE_MODEL) {
+                return stageKey === 'block_batch' && modelId === 'openai/gpt-5.4';
+            }
+            if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
+                return stageKey === 'optimization' && modelId === 'claude-opus-4-7';
+            }
+            return effectiveModel === modelId;
         }
 
-        function isStageModelChecked(stageKey, modelId) {
-            return stageModelConfig.value[stageKey] === modelId;
+        function isCodexStageChecked(stageKey) {
+            const modelId = String(stageModelConfig.value[stageKey] || '');
+            return modelId.startsWith('codex/')
+                || modelId === BLOCK_CODEX_ENSEMBLE_MODEL
+                || modelId === OPT_CODEX_ENSEMBLE_MODEL;
         }
 
-        function selectStageModel(stageKey, modelId, event) {
-            stageModelConfig.value[stageKey] = modelId;
+        function isCodexStageAllowed(stageKey) {
+            const allowed = stageModelRestrictions.value[stageKey];
+            if (!allowed) return true;
+            return allowed.includes(codexModelId())
+                || (stageKey === 'block_batch' && allowed.includes(BLOCK_CODEX_ENSEMBLE_MODEL))
+                || (stageKey === 'optimization' && allowed.includes(OPT_CODEX_ENSEMBLE_MODEL));
+        }
+
+        function selectBaseStageModel(stageKey, modelId) {
+            const codexWasChecked = isCodexStageChecked(stageKey);
+            if (codexWasChecked && stageKey === 'block_batch' && modelId === 'openai/gpt-5.4') {
+                stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
+            } else if (codexWasChecked && stageKey === 'optimization' && modelId === 'claude-opus-4-7') {
+                stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
+            } else {
+                stageModelConfig.value[stageKey] = modelId;
+            }
+            activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
+        }
+
+        function toggleStageCodex(stageKey, event) {
+            const enabled = Boolean(event?.target?.checked);
+            const effectiveModel = stageModelConfig.value[stageKey];
+            if (enabled) {
+                if (stageKey === 'block_batch' && effectiveModel === 'openai/gpt-5.4') {
+                    stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
+                } else if (stageKey === 'optimization' && effectiveModel === 'claude-opus-4-7') {
+                    stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
+                } else {
+                    stageModelConfig.value[stageKey] = codexModelId();
+                }
+            } else if (effectiveModel === BLOCK_CODEX_ENSEMBLE_MODEL) {
+                stageModelConfig.value[stageKey] = 'openai/gpt-5.4';
+            } else if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
+                stageModelConfig.value[stageKey] = 'claude-opus-4-7';
+            } else if (String(effectiveModel || '').startsWith('codex/')) {
+                stageModelConfig.value[stageKey] = BASE_STAGE_MODEL_CONFIG[stageKey]
+                    || 'claude-sonnet-4-6';
+            }
+            activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
         }
 
         async function loadStageModels() {
@@ -3181,19 +3336,20 @@ const app = createApp({
                 stageModelSaveError.value = '';
                 const data = await api('/audit/model/stages');
                 stageModelConfig.value = data.stages || {};
-                availableModels.value = data.available_models || [];
+                availableModels.value = normalizeAvailableModels(data.available_models || []);
                 stageModelRestrictions.value = data.restrictions || {};
                 stageModelHints.value = data.hints || {};
+                stageEnsembleDetails.value = data.ensemble_details || {};
                 if (data.config_errors && Object.keys(data.config_errors).length > 0) {
                     stageModelSaveError.value = `Текущая конфигурация моделей невалидна: ${formatRejected(data.config_errors)}`;
                 }
-                // Параллельно подгружаем batch-modes (production: findings_only_gemma_pair)
+                // Параллельно подгружаем batch-modes (production block-context mode)
                 try {
                     const bm = await api('/audit/model/batch-modes');
-                    stageBatchModes.value = bm.modes || { block_batch: 'findings_only_gemma_pair' };
+                    stageBatchModes.value = bm.modes || { block_batch: 'findings_only_block_context' };
                     stageBatchModeChoices.value = bm.choices || {};
                 } catch (_) {
-                    stageBatchModes.value = { block_batch: 'findings_only_gemma_pair' };
+                    stageBatchModes.value = { block_batch: 'findings_only_block_context' };
                     stageBatchModeChoices.value = {};
                 }
                 activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
@@ -3328,6 +3484,40 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
+        // Проект «не проверен» (по последней загруженной версии), если у него
+        // есть аудит (замечания или оптимизации), но эксперт НЕ довёл оценку
+        // до конца — статус != 'complete' (нет отметок ИЛИ частично).
+        // Проекты без аудита не считаются — для них есть «Выделить необработанные».
+        function isProjectUnreviewed(p) {
+            const hasAudit = (p.findings_count || 0) > 0 || (p.optimization_count || 0) > 0;
+            return hasAudit && p.expert_review_status !== 'complete';
+        }
+
+        function sectionUnreviewedPids(sectionCode) {
+            return projects.value
+                .filter(p => (p.section || 'OTHER') === sectionCode && isProjectUnreviewed(p))
+                .map(p => p.project_id);
+        }
+
+        // Все ли «не проверенные» проекты раздела уже выделены (состояние флажка).
+        function isSectionUnreviewedSelected(sectionCode) {
+            const pids = sectionUnreviewedPids(sectionCode);
+            return pids.length > 0 && pids.every(id => selectedProjects.value.has(id));
+        }
+
+        // Флажок «Не проверено»: выделить/снять все не проверенные проекты раздела.
+        function toggleSectionUnreviewedSelection(sectionCode) {
+            const pids = sectionUnreviewedPids(sectionCode);
+            if (!pids.length) return;
+            const s = new Set(selectedProjects.value);
+            const allSelected = pids.every(id => s.has(id));
+            for (const id of pids) {
+                if (allSelected) s.delete(id); else s.add(id);
+            }
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
         const selectedCount = computed(() => selectedProjects.value.size);
 
         function openBatchModal() {
@@ -3404,6 +3594,32 @@ const app = createApp({
                 'pro+optimization': 'Аудит + оптимизация',
             };
             return labels[action] || action;
+        }
+
+        // ЧЧ:ММ из epoch-секунд; если не сегодня — с датой "ДД.ММ ЧЧ:ММ"
+        function formatQueueClock(ts) {
+            if (!ts) return '';
+            const d = new Date(ts * 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const hhmm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+            const now = new Date();
+            const sameDay = d.getFullYear() === now.getFullYear()
+                && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+            return sameDay ? hhmm : pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + ' ' + hhmm;
+        }
+
+        // Тайминги элемента очереди: "10:42 → 11:15 · 33м" (обновляется при polling'е)
+        function queueItemTiming(item) {
+            if (!item || !item.started_at) return '';
+            const start = formatQueueClock(item.started_at);
+            if (item.status === 'running') {
+                const elapsed = Math.max(0, Date.now() / 1000 - item.started_at);
+                return start + ' → … · ' + formatEta(elapsed);
+            }
+            if (!item.finished_at) return start;
+            const end = formatQueueClock(item.finished_at);
+            const dur = formatEta(Math.max(0, item.finished_at - item.started_at));
+            return start + ' → ' + end + ' · ' + dur;
         }
 
         async function cancelBatch() {
@@ -3485,7 +3701,10 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch/remove', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId }),
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        version_id: activeVersionId.value || null,
+                    }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -3762,7 +3981,10 @@ const app = createApp({
                 const resp = await fetch('/api/audit/batch/add-resume', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ project_id: projectId }),
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        version_id: activeVersionId.value || null,
+                    }),
                 });
                 if (!resp.ok) {
                     const err = await resp.json().catch(() => ({}));
@@ -3808,6 +4030,7 @@ const app = createApp({
         // Маппинг pipeline key → API stage name
         const pipelineToStage = {
             'crop_blocks': 'prepare',
+            'block_context': 'block_context',
             'gemma_enrichment': 'gemma_enrichment',
             'text_analysis': 'text_analysis',
             'blocks_analysis': 'block_analysis',
@@ -3824,7 +4047,8 @@ const app = createApp({
 
         const stageLabelMap = {
             'prepare': 'Кроп блоков',
-            'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+            'block_context': BLOCK_CONTEXT_STAGE_UI_LABEL,
+            'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
             'text_analysis': 'Анализ текста',
             'block_analysis': 'Анализ блоков',
             'findings_merge': 'Свод замечаний',
@@ -3839,6 +4063,223 @@ const app = createApp({
             'decision_carryover': 'Перенос вердиктов',
         };
 
+        // Короткие памятки по фактическому алгоритму карточек пайплайна.
+        const activeStageAlgorithmKey = ref(null);
+        const STAGE_ALGORITHMS = Object.freeze({
+            block_context: {
+                title: 'Векторные графы блоков',
+                subtitle: 'Подготавливает точный вход для Stage 01.',
+                steps: [
+                    { text: 'PDF-вектор · Vectograph · PNG' },
+                    { text: 'Роутер выбирает лучший источник' },
+                    { text: 'Собирает текст, связи и геометрию' },
+                    { text: 'Единый контекст + метка источника', tone: 'result' },
+                ],
+            },
+            text_analysis: {
+                title: '02 Анализ текста',
+                subtitle: 'Ищет ошибки в текстовой части проекта.',
+                steps: [
+                    { text: 'Markdown + векторный текст PDF' },
+                    { text: 'Чек-лист для раздела проекта' },
+                    { text: 'Выбранная модель ищет несоответствия' },
+                    { text: 'Текстовые замечания', tone: 'result' },
+                ],
+            },
+            findings: {
+                title: '03 Свод замечаний',
+                subtitle: 'Собирает общий список без потери авторства.',
+                steps: [
+                    { text: '01 Блоки + 02 Текст' },
+                    { text: 'Смысловое сопоставление' },
+                    { text: 'Похожие замечания объединяются' },
+                    { text: 'Итоговый список + бейджи источников', tone: 'result' },
+                ],
+            },
+            findings_critic: {
+                title: 'Верификатор',
+                subtitle: 'Отсеивает фантомы и правит слабые формулировки.',
+                steps: [
+                    { text: 'Итоговые замечания' },
+                    { text: 'Проверка блоков, листов и доказательств' },
+                    { text: 'Сомнительное уточняется или отклоняется' },
+                    { text: 'Проверенные замечания', tone: 'result' },
+                ],
+            },
+            norms_verified: {
+                title: '04 Верификация норм',
+                subtitle: 'Проверяет нормативные ссылки и цитаты.',
+                steps: [
+                    { text: 'Замечание + ссылка на норму' },
+                    { text: 'Поиск пункта в базе норм' },
+                    { text: 'Сверка смысла и точной цитаты' },
+                    { text: 'Подтверждённая или исправленная ссылка', tone: 'result' },
+                ],
+            },
+            optimization_critic: {
+                title: 'Critic / Fix',
+                subtitle: 'Проверяет качество идей оптимизации.',
+                steps: [
+                    { text: 'Предложения по оптимизации' },
+                    { text: 'Critic ищет слабые и рискованные идеи' },
+                    { text: 'Fix уточняет расчёт и формулировку' },
+                    { text: 'Проверенные варианты', tone: 'result' },
+                ],
+            },
+            debt_control: {
+                title: 'Контроль долгов',
+                subtitle: 'Не даёт потерять ранее согласованные замечания.',
+                steps: [
+                    { text: 'Согласованные замечания прошлой версии' },
+                    { text: 'Сопоставление с новым аудитом' },
+                    { text: 'Поиск пропавших позиций' },
+                    { text: 'Список незакрытых долгов', tone: 'result' },
+                ],
+            },
+            decision_carryover: {
+                title: 'Перенос вердиктов',
+                subtitle: 'Восстанавливает решения эксперта в новой версии.',
+                steps: [
+                    { text: 'Вердикты эксперта из прошлой версии' },
+                    { text: 'Точное и смысловое сопоставление' },
+                    { text: 'Неоднозначное остаётся на проверку' },
+                    { text: 'Решения перенесены без подмены', tone: 'result' },
+                ],
+            },
+        });
+
+        function stageModelDisplayName(modelId) {
+            const id = String(modelId || '');
+            if (id === 'codex/gpt-5.6-sol') return 'Codex GPT-5.6 Sol';
+            if (id.startsWith('codex/')) return `Codex ${id.slice(6).toUpperCase()}`;
+            if (id === 'openai/gpt-5.4') return 'GPT-5.4 (OpenRouter)';
+            if (id === 'claude-opus-4-7') return 'Claude Opus 4.7';
+            if (id === 'claude-sonnet-4-6') return 'Claude Sonnet 4.6';
+            const available = availableModels.value.find(model => model.id === id);
+            if (available?.label && available.provider !== 'codex_cli') {
+                return available.label.replace(' (CLI)', '');
+            }
+            return id || 'не задан';
+        }
+
+        function blockAnalysisAlgorithm() {
+            const usageModel = String(stageTokens('blocks_analysis')?.model || '');
+            const configuredModel = String(stageModelConfig.value?.block_batch || '');
+            const model = configuredModel || usageModel || 'openai/gpt-5.4';
+            const base = {
+                title: '01 Анализ блоков',
+                subtitle: 'Каждая модель получает одинаковые изображение и контекст.',
+            };
+            if (model.includes('ensemble/gpt-codex')) {
+                const details = stageEnsembleDetails.value?.block_batch || {};
+                const parallelModels = details.parallel_models || ['openai/gpt-5.4', 'codex/gpt-5.4'];
+                const judge = stageModelDisplayName(details.judge_model || 'codex/gpt-5.4');
+                const verifier = stageModelDisplayName(
+                    details.final_verifier_model || stageModelConfig.value?.findings_critic
+                );
+                return {
+                    ...base,
+                    note: `GPT и Codex не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
+                    steps: [
+                        { text: 'Изображение + контекст блока' },
+                        { type: 'split', branches: [
+                            { label: 'GPT', text: `${stageModelDisplayName(parallelModels[0])}: независимые замечания` },
+                            { label: 'Codex', text: `${stageModelDisplayName(parallelModels[1])}: независимые замечания` },
+                        ] },
+                        { text: `Судья: ${judge} сравнивает результаты`, tone: 'judge' },
+                        { text: 'Совпадения · расширения · новые · спорные' },
+                        { text: `${judge}: gap-search пропущенных проблем` },
+                        { text: 'Замечания + бейджи GPT / Codex', tone: 'result' },
+                    ],
+                };
+            }
+            let detector = 'GPT-5.4';
+            let badge = 'GPT';
+            if (model.includes('codex')) {
+                detector = 'Codex';
+                badge = 'Codex';
+            } else if (model.includes('claude') || model.includes('opus') || model.includes('sonnet')) {
+                detector = 'Claude';
+                badge = 'Claude';
+            }
+            return {
+                ...base,
+                steps: [
+                    { text: 'Изображение + контекст блока' },
+                    { text: `${detector} ищет замечания по чек-листу` },
+                    { text: `Каждое замечание получает бейдж ${badge}` },
+                    { text: 'Далее 03 Свод: объединение с текстом', tone: 'result' },
+                ],
+            };
+        }
+
+        function optimizationAlgorithm() {
+            const configuredModel = String(stageModelConfig.value?.optimization || '');
+            if (configuredModel.includes('ensemble/claude-codex-opt')) {
+                const details = stageEnsembleDetails.value?.optimization || {};
+                const parallelModels = details.parallel_models || [
+                    'claude-opus-4-7', 'codex/gpt-5.6-sol',
+                ];
+                const judge = stageModelDisplayName(
+                    details.judge_model || stageModelConfig.value?.optimization_critic
+                );
+                const fixer = stageModelDisplayName(
+                    details.fix_model || stageModelConfig.value?.optimization_corrector
+                );
+                const effort = details.codex_reasoning_effort
+                    ? ` / ${details.codex_reasoning_effort}`
+                    : '';
+                return {
+                    title: '05 Оптимизация',
+                    subtitle: 'Два независимых анализа запускаются параллельно.',
+                    note: 'На этапе объединения модель не голосует: сильные смысловые дубли удаляются детерминированно. Решение о качестве принимает следующий Critic.',
+                    steps: [
+                        { text: 'Один снимок проекта + графические блоки' },
+                        { type: 'split', branches: [
+                            { label: 'Claude', text: `${stageModelDisplayName(parallelModels[0])}: полный контекст` },
+                            { label: 'Codex', text: `${stageModelDisplayName(parallelModels[1])}${effort}: визуальный анализ` },
+                        ] },
+                        { text: 'Объединение + удаление сильных дублей' },
+                        { text: `Судья C OPT Critic: ${judge}`, tone: 'judge' },
+                        { text: `Исправление F OPT Fix: ${fixer}` },
+                        { text: 'Проверенные предложения по оптимизации', tone: 'result' },
+                    ],
+                };
+            }
+            return {
+                title: '05 Оптимизация',
+                subtitle: 'Ищет варианты удешевления и упрощения.',
+                steps: [
+                    { text: 'Проект + найденные замечания' },
+                    { text: 'Выбранная модель ищет оптимизации' },
+                    { text: 'C OPT Critic проверяет эффект и риск', tone: 'judge' },
+                    { text: 'Проверенные предложения по оптимизации', tone: 'result' },
+                ],
+            };
+        }
+
+        const activeStageAlgorithm = computed(() => {
+            if (activeStageAlgorithmKey.value === 'blocks_analysis') {
+                return blockAnalysisAlgorithm();
+            }
+            if (activeStageAlgorithmKey.value === 'optimization') {
+                return optimizationAlgorithm();
+            }
+            return STAGE_ALGORITHMS[activeStageAlgorithmKey.value] || null;
+        });
+
+        function openStageAlgorithm(stageKey) {
+            activeStageAlgorithmKey.value = stageKey;
+            if (['blocks_analysis', 'optimization'].includes(stageKey)
+                && Object.keys(stageModelConfig.value || {}).length === 0) {
+                loadStageModels();
+            }
+        }
+
+        function closeStageAlgorithm() {
+            activeStageAlgorithmKey.value = null;
+        }
+
         function canStartFrom(pipelineKey) {
             if (!currentProject.value) return false;
             if (isProjectRunning(currentProject.value.project_id)) return false;
@@ -3848,14 +4289,18 @@ const app = createApp({
 
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            // Для downstream-этапов Gemma считается ОК если: done/partial, migration_required,
-            // или blocks_analysis уже done (старые проекты без Gemma-прогона)
-            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
-            if (pipelineKey === 'gemma_enrichment') {
+            const gemmaReady = () => ready('block_context') || ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            // Старые/частично упавшие V2-прогоны могут иметь готовые 02-блоки,
+            // но не иметь статуса подготовки контекста в latest. Backend восстановит prereq-файлы.
+            const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
+            if (pipelineKey === 'block_context' || pipelineKey === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (pipelineKey === 'blocks_analysis') {
-                return ready('gemma_enrichment') && ready('text_analysis');
+                return ready('crop_blocks') || gemmaOk();
+            }
+            if (pipelineKey === 'text_analysis') {
+                return gemmaOk() && ready('blocks_analysis');
             }
             if ([
                 'findings', 'findings_critic', 'findings_corrector',
@@ -3872,12 +4317,16 @@ const app = createApp({
             if (isProjectRunning(currentProject.value.project_id)) return false;
             const pipeline = currentProject.value.pipeline || {};
             const ready = (key) => pipeline[key] === 'done' || pipeline[key] === 'partial';
-            const gemmaOk = () => ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required' || ready('blocks_analysis');
-            if (stage === 'gemma_enrichment') {
+            const gemmaReady = () => ready('block_context') || ready('gemma_enrichment') || pipeline['gemma_enrichment'] === 'migration_required';
+            const gemmaOk = () => gemmaReady() || ready('blocks_analysis');
+            if (stage === 'block_context' || stage === 'gemma_enrichment') {
                 return ready('crop_blocks');
             }
             if (stage === 'block_analysis') {
-                return ready('gemma_enrichment') && ready('text_analysis');
+                return ready('crop_blocks') || gemmaOk();
+            }
+            if (stage === 'text_analysis') {
+                return gemmaOk() && ready('blocks_analysis');
             }
             if ([
                 'findings_merge', 'findings_critic', 'findings_review',
@@ -3995,7 +4444,8 @@ const app = createApp({
 
         function retryStage(projectId, stage) {
             const labels = {
-                'crop_blocks': 'Кроп блоков', 'gemma_enrichment': GEMMA_STAGE_UI_LABEL,
+                'crop_blocks': 'Кроп блоков', 'block_context': BLOCK_CONTEXT_STAGE_UI_LABEL,
+                'gemma_enrichment': BLOCK_CONTEXT_STAGE_UI_LABEL,
                 'text_analysis': 'Анализ текста',
                 'block_analysis': 'Анализ блоков', 'findings_merge': 'Свод замечаний',
                 'findings_critic': 'Верификатор', 'findings_review': 'Верификатор',
@@ -4043,10 +4493,14 @@ const app = createApp({
                     resp = await fetch(`/api/audit/batch/add-retry`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ project_id: projectId, stage: stage }),
+                        body: JSON.stringify({
+                            project_id: projectId,
+                            stage: stage,
+                            version_id: activeVersionId.value || null,
+                        }),
                     });
                 } else {
-                    resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/retry/${stage}`, {
+                    resp = await fetch(_apiUrl(`/audit/${encodeURIComponent(projectId)}/retry/${stage}`), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                     });
@@ -4263,6 +4717,14 @@ const app = createApp({
             return projects.value.some(
                 p => (p.section || 'OTHER') === sec && !(p.findings_count > 0)
             );
+        });
+
+        // Число «не проверенных» проектов текущего раздела — для надписи
+        // «Не проверено (N)» и её скрытия, когда все проекты проверены.
+        const sectionUnreviewedCount = computed(() => {
+            const sec = sidebarFilterSection.value;
+            if (!sec || sec === '__all__') return 0;
+            return sectionUnreviewedPids(sec).length;
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
@@ -4602,6 +5064,634 @@ const app = createApp({
             return result;
         });
 
+        // ─── Сводная оптимизация раздела ───────────────────────────────
+        // Read-only слой над актуальными версиями всех проектов раздела:
+        // спецификации, принятые оптимизации и доказательные межпроектные
+        // сигналы. Данные загружаются при открытии отдельной страницы раздела.
+        const sectionOptimizationLoading = ref(false);
+        const sectionOptimizationError = ref('');
+        const sectionOptimizationData = ref(null);
+        const sectionOptimizationLoadedKey = ref('');
+        const sectionOptimizationTab = ref('specifications');
+        const sectionOptimizationSearch = ref('');
+        const sectionOptimizationProjectFilter = ref('');
+        const sectionOptimizationCollapsedProjects = ref({});
+        const sectionOptimizationExpandedSignals = ref({});
+        const sectionOptimizationPipelineActionLoading = ref(false);
+        const sectionOptimizationPipelineActionError = ref('');
+        const sectionOptimizationReplicationActionLoading = ref(false);
+        let _sectionOptimizationLoadSeq = 0;
+        let _sectionOptimizationPipelinePollSeq = 0;
+        const _sectionOptimizationReplicationPollTokens = new Map();
+        const _sectionOptimizationMemoryCache = new Map();
+
+        const sectionOptimizationMeta = computed(() => sectionOptimizationData.value?.meta || {});
+        const sectionOptimizationProjectOptions = computed(() => sectionOptimizationData.value?.projects || []);
+        const sectionOptimizationPipeline = computed(() => sectionOptimizationData.value?.pipeline || {
+            status: 'not_started', stages: [], snapshot_generated_at: null,
+        });
+        const sectionOptimizationPipelineRunning = computed(() => (
+            ['queued', 'running'].includes(sectionOptimizationPipeline.value.status)
+        ));
+        const sectionOptimizationReplications = computed(() => sectionOptimizationData.value?.replications || []);
+        const sectionOptimizationAgentAvailable = computed(() => (
+            (sectionOptimizationData.value?.analysis_stages || []).some(stage => stage.key === 'agent')
+        ));
+        const sectionOptimizationReplicationCandidates = computed(() => (
+            (sectionOptimizationData.value?.signals || [])
+                .filter(signal => signal.kind === 'replicate_accepted_optimization')
+        ));
+        const sectionOptimizationReplicationPendingCount = computed(() => (
+            sectionOptimizationReplicationCandidates.value
+                .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id)).length
+        ));
+        const sectionOptimizationReplicationProgressLabel = computed(() => {
+            const total = sectionOptimizationReplicationCandidates.value.length;
+            const processes = sectionOptimizationReplicationCandidates.value
+                .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
+                .filter(Boolean);
+            const running = processes.filter(item => ['queued', 'running'].includes(item.status)).length;
+            const prepared = processes.filter(item => item.agent_status === 'complete').length;
+            if (!total) return 'Нет кандидатов на тиражирование';
+            if (running) return `Готовится: ${running} · подготовлено: ${prepared} из ${total}`;
+            if (!sectionOptimizationReplicationPendingCount.value) return `Все ${total} кандидатов подготовлены`;
+            return `Подготовлено: ${prepared} из ${total}`;
+        });
+
+        const sectionOptimizationFilteredSpecifications = computed(() => {
+            let rows = sectionOptimizationData.value?.specification_rows || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) rows = rows.filter(row => row.project_id === projectId);
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                rows = rows.filter(row => [
+                    row.project_name, row.project_id, row.sheet, row.sheet_name,
+                    row.category, row.position, row.name, row.designation,
+                    row.type_mark, row.code, row.manufacturer, row.unit,
+                    row.quantity, row.mass, row.note,
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return rows;
+        });
+
+        const sectionOptimizationSpecificationGroups = computed(() => {
+            const rowsByProject = new Map();
+            for (const row of sectionOptimizationFilteredSpecifications.value) {
+                const projectId = row?.project_id || '';
+                if (!rowsByProject.has(projectId)) rowsByProject.set(projectId, []);
+                rowsByProject.get(projectId).push(row);
+            }
+            const projectId = sectionOptimizationProjectFilter.value;
+            const queryActive = Boolean(sectionOptimizationSearch.value.trim());
+            return sectionOptimizationProjectOptions.value
+                .filter(project => !projectId || project.project_id === projectId)
+                .map(project => {
+                    const rows = rowsByProject.get(project.project_id) || [];
+                    return {
+                        project,
+                        rows,
+                        hasSpecification: Number(project.specification_rows || 0) > 0,
+                    };
+                })
+                .filter(group => !queryActive || group.rows.length || !group.hasSpecification);
+        });
+
+        const sectionOptimizationFilteredAccepted = computed(() => {
+            let items = sectionOptimizationData.value?.accepted_optimizations || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) items = items.filter(item => item.project_id === projectId);
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                items = items.filter(item => [
+                    item.project_name, item.project_id, item.id, item.section,
+                    item.current, item.proposed, item.type, item.norm,
+                    ...(item.spec_items || []),
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return items;
+        });
+
+        const sectionOptimizationFilteredSignals = computed(() => {
+            let signals = sectionOptimizationData.value?.signals || [];
+            const projectId = sectionOptimizationProjectFilter.value;
+            if (projectId) signals = signals.filter(signal => (signal.project_ids || []).includes(projectId));
+            const query = sectionOptimizationSearch.value.trim().toLowerCase();
+            if (query) {
+                signals = signals.filter(signal => [
+                    signal.title, signal.reason, signal.next_step,
+                    signal.match_basis, signal.representative_proposal,
+                    ...(signal.project_ids || []),
+                ].some(value => String(value || '').toLowerCase().includes(query)));
+            }
+            return signals;
+        });
+
+        function sectionOptimizationPipelineStage(stageKey) {
+            const storedStage = (sectionOptimizationPipeline.value.stages || []).find(stage => stage.key === stageKey) || {
+                key: stageKey,
+                status: 'pending',
+                message: 'Ожидает запуска',
+            };
+            if (stageKey !== 'agent') return storedStage;
+
+            const total = sectionOptimizationReplicationCandidates.value.length;
+            if (!total) return storedStage;
+            const processes = sectionOptimizationReplicationCandidates.value
+                .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
+                .filter(Boolean);
+            const active = processes.filter(process => ['queued', 'running'].includes(process.status)).length;
+            const completed = processes.filter(process => process.agent_status === 'complete').length;
+            const failed = processes.filter(process => process.agent_status === 'failed').length;
+            if (active) {
+                return {
+                    ...storedStage,
+                    status: 'running',
+                    message: `Анализирует кандидатов: готово ${completed} из ${total}`,
+                };
+            }
+            if (completed === total) {
+                return {
+                    ...storedStage,
+                    status: 'done',
+                    message: `Заключения готовы: ${completed} из ${total}`,
+                };
+            }
+            if (failed) {
+                return {
+                    ...storedStage,
+                    status: 'waiting',
+                    message: `Готово ${completed} из ${total}; с ошибкой: ${failed}. Можно повторить запуск`,
+                };
+            }
+            if (completed) {
+                return {
+                    ...storedStage,
+                    status: 'waiting',
+                    message: `Готово ${completed} из ${total}; остальные ожидают запуска`,
+                };
+            }
+            return storedStage;
+        }
+
+        function sectionOptimizationPipelineStatusLabel(status) {
+            const labels = {
+                not_started: 'Не запускался',
+                queued: 'В очереди',
+                running: 'Выполняется',
+                ready_for_review: 'Кандидаты готовы к запуску умного агента',
+                failed: 'Завершился с ошибкой',
+                interrupted: 'Прерван',
+            };
+            return labels[status] || 'Неизвестный статус';
+        }
+
+        function sectionOptimizationPipelineStageMarker(stageKey, index) {
+            const status = sectionOptimizationPipelineStage(stageKey).status;
+            if (status === 'done') return '✓';
+            if (status === 'running') return '…';
+            if (status === 'failed' || status === 'interrupted') return '!';
+            if (status === 'waiting') return '•';
+            return index + 1;
+        }
+
+        function sectionOptimizationPipelineUrl(sectionCode, suffix = '') {
+            const objectId = currentObjectId.value || '';
+            const query = objectId ? '?object_id=' + encodeURIComponent(objectId) : '';
+            return '/optimization/section/' + encodeURIComponent(sectionCode) + '/pipeline' + suffix + query;
+        }
+
+        function sectionOptimizationReplicationsUrl(sectionCode, suffix = '') {
+            const objectId = currentObjectId.value || '';
+            const query = objectId ? '?object_id=' + encodeURIComponent(objectId) : '';
+            return '/optimization/section/' + encodeURIComponent(sectionCode) + '/replications' + suffix + query;
+        }
+
+        function sectionOptimizationReplicationFor(signalId) {
+            return sectionOptimizationReplications.value.find(item => item.signal_id === signalId) || null;
+        }
+
+        function sectionOptimizationReplicationNeedsAgent(signalId) {
+            const process = sectionOptimizationReplicationFor(signalId);
+            if (!process) return true;
+            if (['queued', 'running'].includes(process.status)) return false;
+            if (['failed', 'interrupted'].includes(process.status)) return true;
+            return process.agent_status !== 'complete';
+        }
+
+        function sectionOptimizationReplicationStatusLabel(process) {
+            if (!process) return 'Ожидает запуска умного агента';
+            if (process.agent_status !== 'complete'
+                && ['awaiting_graphics', 'awaiting_expert'].includes(process.status)) {
+                return 'Требуется запуск умного агента';
+            }
+            const labels = {
+                queued: 'В очереди умного агента',
+                running: process.agent_status === 'running'
+                    ? 'Умный агент анализирует…'
+                    : (process.agent_status === 'queued' ? 'В очереди умного агента' : 'Готовится досье…'),
+                awaiting_graphics: 'Агент запросил графическую проверку',
+                awaiting_expert: 'Агент завершил · ожидает эксперта',
+                approved: 'Тиражирование принято',
+                rejected: 'Тиражирование отклонено',
+                failed: process.agent_status === 'failed' ? 'Ошибка умного агента' : 'Ошибка подготовки',
+                interrupted: 'Процесс прерван',
+            };
+            return labels[process.status] || 'Статус не определён';
+        }
+
+        function sectionOptimizationAgentVerdictLabel(verdict) {
+            const labels = {
+                applicable: 'Можно тиражировать',
+                applicable_with_conditions: 'Можно с условиями',
+                needs_graphics: 'Нужна графика',
+                needs_data: 'Недостаточно данных',
+                reject: 'Не тиражировать',
+            };
+            return labels[verdict] || 'Требует проверки';
+        }
+
+        function upsertSectionOptimizationReplication(replication) {
+            if (!sectionOptimizationData.value || !replication?.replication_id) return;
+            const items = [...sectionOptimizationReplications.value];
+            const index = items.findIndex(item => item.replication_id === replication.replication_id);
+            if (index >= 0) items[index] = replication;
+            else items.unshift(replication);
+            sectionOptimizationData.value = {
+                ...sectionOptimizationData.value,
+                replications: items,
+            };
+        }
+
+        async function pollSectionOptimizationReplication(sectionCode, objectId, replicationId) {
+            const token = Symbol(replicationId);
+            _sectionOptimizationReplicationPollTokens.set(replicationId, token);
+            while (_sectionOptimizationReplicationPollTokens.get(replicationId) === token
+                && currentView.value === 'section-optimization'
+                && sidebarFilterSection.value === sectionCode
+                && (currentObjectId.value || '') === objectId) {
+                try {
+                    const replication = await api(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/' + encodeURIComponent(replicationId)),
+                        { withVersion: false, timeoutMs: 25000, retries: 0 },
+                    );
+                    if (_sectionOptimizationReplicationPollTokens.get(replicationId) !== token) return;
+                    upsertSectionOptimizationReplication(replication);
+                    if (!['queued', 'running'].includes(replication.status)) {
+                        _sectionOptimizationReplicationPollTokens.delete(replicationId);
+                        return;
+                    }
+                } catch (error) {
+                    if (_sectionOptimizationReplicationPollTokens.get(replicationId) === token) {
+                        sectionOptimizationPipelineActionError.value = error?.message || String(error);
+                        _sectionOptimizationReplicationPollTokens.delete(replicationId);
+                    }
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 700));
+            }
+        }
+
+        async function startAllSectionOptimizationReplications() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationReplicationActionLoading.value
+                || !sectionOptimizationAgentAvailable.value
+                || !sectionOptimizationReplicationPendingCount.value) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                let response;
+                try {
+                    response = await apiPost(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/start-all'),
+                        undefined,
+                        { withVersion: false },
+                    );
+                } catch (bulkError) {
+                    // Совместимость на время безопасного обновления backend:
+                    // одна кнопка всё равно запускает все строки через уже
+                    // существующий одиночный endpoint.
+                    if (!/404|not found/i.test(bulkError?.message || '')) throw bulkError;
+                    const pendingSignals = sectionOptimizationReplicationCandidates.value
+                        .filter(signal => sectionOptimizationReplicationNeedsAgent(signal.signal_id));
+                    const results = await Promise.allSettled(pendingSignals.map(signal => apiPost(
+                        sectionOptimizationReplicationsUrl(sectionCode, '/start'),
+                        {
+                            signal_id: signal.signal_id,
+                            target_project_ids: signal.target_project_ids || [],
+                        },
+                        { withVersion: false },
+                    )));
+                    response = {
+                        replications: results
+                            .filter(item => item.status === 'fulfilled' && item.value?.replication)
+                            .map(item => item.value.replication),
+                        failed_count: results.filter(item => item.status === 'rejected').length,
+                    };
+                }
+                for (const replication of (response?.replications || [])) {
+                    upsertSectionOptimizationReplication(replication);
+                    void pollSectionOptimizationReplication(
+                        sectionCode,
+                        currentObjectId.value || '',
+                        replication.replication_id,
+                    );
+                }
+                if (response?.failed_count) {
+                    sectionOptimizationPipelineActionError.value =
+                        `Не удалось запустить кандидатов: ${response.failed_count}`;
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        async function pollSectionOptimizationPipeline(sectionCode, objectId) {
+            const pollSeq = ++_sectionOptimizationPipelinePollSeq;
+            while (pollSeq === _sectionOptimizationPipelinePollSeq
+                && currentView.value === 'section-optimization'
+                && sidebarFilterSection.value === sectionCode
+                && (currentObjectId.value || '') === objectId) {
+                try {
+                    const pipeline = await api(
+                        sectionOptimizationPipelineUrl(sectionCode, '/status'),
+                        { withVersion: false, timeoutMs: 25000, retries: 0 },
+                    );
+                    if (pollSeq !== _sectionOptimizationPipelinePollSeq) return;
+                    if (sectionOptimizationData.value) {
+                        sectionOptimizationData.value = {
+                            ...sectionOptimizationData.value,
+                            pipeline,
+                        };
+                    }
+                    if (!['queued', 'running'].includes(pipeline.status)) {
+                        if (pipeline.status === 'ready_for_review') {
+                            await loadSectionOptimization(sectionCode, sectionOptimizationTab.value, true);
+                        }
+                        return;
+                    }
+                } catch (error) {
+                    if (pollSeq === _sectionOptimizationPipelinePollSeq) {
+                        sectionOptimizationPipelineActionError.value = error?.message || String(error);
+                    }
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        async function runSectionOptimizationPipeline() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationPipelineActionLoading.value) return;
+            sectionOptimizationPipelineActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationPipelineUrl(sectionCode, '/run'),
+                    undefined,
+                    { withVersion: false },
+                );
+                if (sectionOptimizationData.value && response?.pipeline) {
+                    sectionOptimizationData.value = {
+                        ...sectionOptimizationData.value,
+                        pipeline: response.pipeline,
+                    };
+                }
+                void pollSectionOptimizationPipeline(sectionCode, currentObjectId.value || '');
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationPipelineActionLoading.value = false;
+            }
+        }
+
+        async function requestSectionOptimizationGraphicsPlan() {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || sectionOptimizationPipelineActionLoading.value) return;
+            sectionOptimizationPipelineActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationPipelineUrl(sectionCode, '/graphics-plan'),
+                    undefined,
+                    { withVersion: false },
+                );
+                if (sectionOptimizationData.value && response?.pipeline) {
+                    sectionOptimizationData.value = {
+                        ...sectionOptimizationData.value,
+                        pipeline: response.pipeline,
+                    };
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value = error?.message || String(error);
+            } finally {
+                sectionOptimizationPipelineActionLoading.value = false;
+            }
+        }
+
+        async function loadSectionOptimization(sectionCode, initialTab = 'specifications', force = false) {
+            sectionOptimizationError.value = '';
+            sectionOptimizationTab.value = initialTab;
+            sectionOptimizationSearch.value = '';
+            sectionOptimizationProjectFilter.value = '';
+            const objectId = currentObjectId.value || '';
+            const cacheKey = `${objectId}|${sectionCode}`;
+
+            const seq = ++_sectionOptimizationLoadSeq;
+            const cached = !force ? _sectionOptimizationMemoryCache.get(cacheKey) : null;
+            const visibleData = cached || (sectionOptimizationLoadedKey.value === cacheKey
+                ? sectionOptimizationData.value
+                : null);
+            if (visibleData) {
+                sectionOptimizationData.value = visibleData;
+                sectionOptimizationLoadedKey.value = cacheKey;
+                sectionOptimizationLoading.value = false;
+            } else {
+                sectionOptimizationLoading.value = true;
+                sectionOptimizationData.value = null;
+                sectionOptimizationCollapsedProjects.value = {};
+                sectionOptimizationExpandedSignals.value = {};
+            }
+            try {
+                const query = objectId
+                    ? '?object_id=' + encodeURIComponent(objectId)
+                    : '';
+                const data = await api(
+                    '/optimization/section/' + encodeURIComponent(sectionCode) + query,
+                    { withVersion: false },
+                );
+                if (seq !== _sectionOptimizationLoadSeq
+                    || sidebarFilterSection.value !== sectionCode
+                    || (currentObjectId.value || '') !== objectId) return;
+                if (!data?.meta || !Array.isArray(data.specification_rows)
+                    || !Array.isArray(data.accepted_optimizations) || !Array.isArray(data.signals)) {
+                    throw new Error('Backend ещё не обновлён: получен устаревший формат сводки раздела.');
+                }
+                sectionOptimizationData.value = data;
+                sectionOptimizationLoadedKey.value = cacheKey;
+                _sectionOptimizationMemoryCache.delete(cacheKey);
+                _sectionOptimizationMemoryCache.set(cacheKey, data);
+                while (_sectionOptimizationMemoryCache.size > 20) {
+                    _sectionOptimizationMemoryCache.delete(_sectionOptimizationMemoryCache.keys().next().value);
+                }
+                if (['queued', 'running'].includes(data?.pipeline?.status)) {
+                    void pollSectionOptimizationPipeline(sectionCode, objectId);
+                }
+                for (const replication of (data.replications || [])) {
+                    if (['queued', 'running'].includes(replication.status)) {
+                        void pollSectionOptimizationReplication(sectionCode, objectId, replication.replication_id);
+                    }
+                }
+            } catch (error) {
+                if (seq !== _sectionOptimizationLoadSeq) return;
+                sectionOptimizationError.value = error?.message || String(error);
+            } finally {
+                if (seq === _sectionOptimizationLoadSeq) sectionOptimizationLoading.value = false;
+            }
+        }
+
+        function setSectionOptimizationTab(tab) {
+            sectionOptimizationTab.value = tab;
+        }
+
+        function navigateToSectionOptimization(sectionCode, tab = 'specifications') {
+            navigate('/section/' + encodeURIComponent(sectionCode) + '/optimization?tab=' + encodeURIComponent(tab));
+        }
+
+        function sectionOptimizationProjectLabel(projectId) {
+            const project = sectionOptimizationProjectOptions.value.find(item => item.project_id === projectId);
+            return project?.project_name || projectId;
+        }
+
+        function sectionOptimizationSpecificationTypeMark(row) {
+            const values = [row?.type_mark, row?.designation]
+                .map(value => String(value || '').trim())
+                .filter(Boolean);
+            return [...new Set(values)].join(' · ');
+        }
+
+        function sectionOptimizationSpecificationSectionTitle(row) {
+            return row?.category || row?.sheet_name || 'Спецификация';
+        }
+
+        function sectionOptimizationSpecificationSectionKey(row) {
+            if (!row) return '';
+            return `${row.project_id || ''}|${sectionOptimizationSpecificationSectionTitle(row)}`;
+        }
+
+        function sectionOptimizationSpecificationProjectKey(row) {
+            return row?.project_id || '';
+        }
+
+        function isSectionOptimizationProjectCollapsed(projectId) {
+            return Boolean(sectionOptimizationCollapsedProjects.value[projectId]);
+        }
+
+        function toggleSectionOptimizationProject(projectId) {
+            sectionOptimizationCollapsedProjects.value = {
+                ...sectionOptimizationCollapsedProjects.value,
+                [projectId]: !isSectionOptimizationProjectCollapsed(projectId),
+            };
+        }
+
+        function expandAllSectionOptimizationProjects() {
+            sectionOptimizationCollapsedProjects.value = {};
+        }
+
+        function collapseAllSectionOptimizationProjects() {
+            const collapsed = {};
+            for (const project of sectionOptimizationProjectOptions.value) {
+                if (project?.project_id) collapsed[project.project_id] = true;
+            }
+            sectionOptimizationCollapsedProjects.value = collapsed;
+        }
+
+        function sectionOptimizationSignalAcceptedItems(signal) {
+            if (!sectionOptimizationSignalHasAcceptedSources(signal)) return [];
+            const evidenceRefs = new Set(signal.evidence_refs || []);
+            return (sectionOptimizationData.value?.accepted_optimizations || [])
+                .filter(item => evidenceRefs.has(item.source_ref));
+        }
+
+        function sectionOptimizationSignalSpecificationItems(signal) {
+            const evidenceRefs = new Set(signal?.target_row_ids || signal?.evidence_refs || []);
+            return (sectionOptimizationData.value?.specification_rows || [])
+                .filter(item => evidenceRefs.has(item.row_id));
+        }
+
+        function sectionOptimizationSignalHasAcceptedSources(signal) {
+            return ['merge_accepted_optimizations', 'replicate_accepted_optimization'].includes(signal?.kind);
+        }
+
+        function isSectionOptimizationSignalExpanded(signalId) {
+            return Boolean(sectionOptimizationExpandedSignals.value[signalId]);
+        }
+
+        function toggleSectionOptimizationSignal(signalId) {
+            sectionOptimizationExpandedSignals.value = {
+                ...sectionOptimizationExpandedSignals.value,
+                [signalId]: !isSectionOptimizationSignalExpanded(signalId),
+            };
+        }
+
+        function sectionOptimizationSignalTypeLabel(signal) {
+            const labels = {
+                merge_accepted_optimizations: 'Объединение принятых решений',
+                replicate_accepted_optimization: 'Тиражирование решения',
+                technical_variance: 'Техническое расхождение',
+                consolidated_procurement: 'Общая закупка',
+            };
+            return labels[signal?.kind] || 'Кандидат';
+        }
+
+        function sectionOptimizationSignalGraphicsLabel(signal) {
+            if (!signal?.graphics_recommended) return 'Не требуется';
+            const plannedSignals = sectionOptimizationPipeline.value.graphics_plan?.signal_ids || [];
+            return plannedSignals.includes(signal.signal_id) ? 'План готов' : 'По запросу';
+        }
+
+        function formatSectionOptimizationQuantity(value) {
+            if (value === null || value === undefined || value === '') return '—';
+            return String(value);
+        }
+
+        watch(currentObjectId, (next, previous) => {
+            if (next === previous) return;
+            _sectionOptimizationLoadSeq++;
+            _sectionOptimizationPipelinePollSeq++;
+            sectionOptimizationLoading.value = false;
+            sectionOptimizationError.value = '';
+            sectionOptimizationPipelineActionError.value = '';
+            sectionOptimizationData.value = null;
+            sectionOptimizationLoadedKey.value = '';
+            sectionOptimizationCollapsedProjects.value = {};
+            sectionOptimizationExpandedSignals.value = {};
+            sectionOptimizationReplicationActionLoading.value = false;
+            _sectionOptimizationReplicationPollTokens.clear();
+            if (currentView.value === 'section-optimization'
+                && sidebarFilterSection.value
+                && sidebarFilterSection.value !== '__all__') {
+                loadSectionOptimization(
+                    sidebarFilterSection.value,
+                    sectionOptimizationTab.value,
+                    true,
+                );
+            }
+        });
+        watch(sidebarFilterSection, (next, previous) => {
+            if (next === previous) return;
+            if (currentView.value === 'section-optimization') return;
+            _sectionOptimizationLoadSeq++;
+            sectionOptimizationLoading.value = false;
+            sectionOptimizationError.value = '';
+            const expectedKey = `${currentObjectId.value || ''}|${next || ''}`;
+            if (expectedKey !== sectionOptimizationLoadedKey.value) {
+                sectionOptimizationData.value = null;
+                sectionOptimizationLoadedKey.value = '';
+            }
+        });
+
         // Навигация по проектам внутри раздела (Пред. / След.)
         const currentSectionProjectsList = computed(() => {
             if (!currentProject.value) return [];
@@ -4779,13 +5869,16 @@ const app = createApp({
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        // только релевантные файлы (pdf + md + result + ocr) из scan-like объекта
+        // только релевантные файлы (pdf + md + result + ocr + blocks + zip) из scan-like объекта.
+        // ZIP-комплекты портала отправляются как есть — бэкенд распаковывает сам.
         function _uploadBundleFiles(s) {
             const out = [];
             if (s.pdf) out.push(s.pdf);
             if (s.md) out.push(s.md);
             if (s.result) out.push(s.result);
             if (s.ocr) out.push(s.ocr);
+            if (s.blocks) out.push(s.blocks);
+            for (const z of (s.zips || [])) out.push(z);
             return out;
         }
 
@@ -4806,7 +5899,9 @@ const app = createApp({
 
         const canSubmitUpload = computed(() => {
             if (!uploadObjectId.value || !uploadDiscipline.value) return false;
-            if (!uploadScan.value || !uploadScan.value.pdf || uploadScanError.value) return false;
+            if (!uploadScan.value || uploadScanError.value) return false;
+            // PDF либо явно, либо внутри ZIP-комплекта (бэкенд распакует и проверит)
+            if (!uploadScan.value.pdf && !(uploadScan.value.zips || []).length) return false;
             if (uploadAddMode.value === 'new_version') {
                 // версия: нужен target; имя-дубли не блокируют (это и есть версия)
                 return !!uploadTargetProjectId.value;
@@ -4880,21 +5975,31 @@ const app = createApp({
             uploadFolderName.value = (all[0] && (all[0].webkitRelativePath || '').split('/')[0]) || '';
             if (!all.length) { uploadScan.value = null; return; }
 
-            const pdfs = [], mds = [], results = [], ocrs = [], ignored = [];
+            const pdfs = [], mds = [], results = [], ocrs = [], blocksFiles = [], zips = [], ignored = [];
             for (const f of all) {
                 const name = (f.name || '').toLowerCase();
                 if (name.endsWith('.pdf')) pdfs.push(f);
                 else if (name.endsWith('_document.md')) mds.push(f);
                 else if (name.endsWith('.md')) mds.push(f);
                 else if (name.endsWith('_result.json')) results.push(f);
+                else if (name.endsWith('_blocks.json')) blocksFiles.push(f);
                 else if (name.endsWith('_ocr.html') || name.endsWith('_ocr.htm')) ocrs.push(f);
+                else if (name.endsWith('.zip')) zips.push(f);  // ZIP-комплект портала — распакует бэкенд
                 else ignored.push(f);
             }
 
             uploadScanError.value = '';
             uploadScanWarnings.value = [];
-            if (pdfs.length === 0) {
-                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта.';
+            if (pdfs.length === 0 && zips.length === 1) {
+                // комплект внутри ZIP: PDF проверит precheck после распаковки на бэкенде;
+                // имя проекта — из имени архива без браузерного суффикса « (N)»
+                if (!uploadProjectName.value.trim()) {
+                    uploadProjectName.value = zips[0].name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '');
+                }
+            } else if (pdfs.length === 0 && zips.length > 1) {
+                uploadScanError.value = 'В папке несколько ZIP. Оставьте один архив на проект (или используйте «Несколько проектов»).';
+            } else if (pdfs.length === 0) {
+                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта (или ZIP-комплект портала).';
             } else if (pdfs.length > 1) {
                 uploadScanError.value = 'В папке найдено несколько PDF. Выберите папку одного проекта.';
             } else {
@@ -4903,13 +6008,16 @@ const app = createApp({
                 }
             }
             const md = mds.find(m => (m.name || '').toLowerCase().endsWith('_document.md')) || mds[0] || null;
-            if (!md) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
-            if (!results.length) uploadScanWarnings.value.push('Нет *_result.json — кроп блоков потребует подготовки.');
-            if (!ocrs.length) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
+            const hasZip = zips.length > 0;
+            if (!md && !hasZip) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
+            if (!results.length && !blocksFiles.length && !hasZip) uploadScanWarnings.value.push('Нет *_result.json / *_blocks.json — кроп блоков потребует подготовки.');
+            if (!ocrs.length && !hasZip) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
 
             uploadScan.value = {
                 pdf: pdfs.length === 1 ? pdfs[0] : null,
                 md, result: results[0] || null, ocr: ocrs[0] || null,
+                blocks: blocksFiles[0] || null,
+                zips,
                 ignored,
             };
             // авто-precheck дублей (если задано имя/объект/дисциплина)
@@ -4918,7 +6026,8 @@ const app = createApp({
 
         async function runSinglePrecheck() {
             const s = uploadScan.value;
-            if (!s || !s.pdf || !uploadObjectId.value || !uploadProjectName.value.trim()) {
+            const hasSource = s && (s.pdf || (s.zips || []).length);
+            if (!hasSource || !uploadObjectId.value || !uploadProjectName.value.trim()) {
                 uploadPrecheck.value = null; return;
             }
             uploadPrecheckLoading.value = true;
@@ -5026,21 +6135,27 @@ const app = createApp({
         // один кандидат из набора файлов (label = подпапка или basename PDF)
         function _buildUploadCandidate(label, files) {
             const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
-            // _results.md/_results.html — новый 3-файловый комплект портала (2026-07);
+            // _results.md/_results.html/_blocks.json — новый комплект портала (2026-07);
             // старые суффиксы (_document.md/_ocr.html) в приоритете, их приём
             // удалить после 2026-08-14 (раздел ВК пока грузится по-старому).
+            // ZIP-комплект отправляется как есть — бэкенд распаковывает сам.
             const md = files.find(f => /_document\.md$/i.test(f.name))
                 || files.find(f => /_results\.md$/i.test(f.name))
                 || files.find(f => /\.md$/i.test(f.name)) || null;
             const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
             const ocr = files.find(f => /_ocr\.html?$/i.test(f.name))
                 || files.find(f => /_results\.html?$/i.test(f.name)) || null;
+            const blocks = files.find(f => /_blocks\.json$/i.test(f.name)) || null;
+            const zips = files.filter(f => /\.zip$/i.test(f.name));
             const pdf = pdfs.length === 1 ? pdfs[0] : null;
+            const zipStem = (zips.length === 1 && !pdf)
+                ? zips[0].name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '') : null;
             return {
                 folder: label, files, pdf,
                 pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
-                md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
-                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : label,
+                md, result, ocr, blocks, zips, zipCount: zips.length,
+                hasMd: !!md, hasResult: !!result, hasOcr: !!ocr, hasBlocks: !!blocks,
+                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : (zipStem || label),
                 discipline: '', detectedDiscipline: '', disciplineSource: '',
                 addMode: 'new_project', targetProjectId: '',
                 status: 'pending', message: '', checked: false, precheck: null,
@@ -5078,9 +6193,16 @@ const app = createApp({
             for (const pdf of flatPdfs) {
                 const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
                 const sidecars = flat.filter(f => f !== pdf
-                    && /(_document\.md|\.md|_result\.json|_ocr\.html?|_results\.html?)$/i.test(f.name)
+                    && /(_document\.md|\.md|_result\.json|_blocks\.json|_ocr\.html?|_results\.html?)$/i.test(f.name)
                     && f.name.toLowerCase().startsWith(stem));
                 cands.push(_buildUploadCandidate(pdf.name.replace(/\.pdf$/i, ''), [pdf, ...sidecars]));
+            }
+            // (B') кандидаты из плоских ZIP — каждый ZIP-комплект портала = проект
+            const flatZips = flat.filter(f => /\.zip$/i.test(f.name))
+                .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+            for (const z of flatZips) {
+                const label = z.name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '');
+                cands.push(_buildUploadCandidate(label, [z]));
             }
             // запасной случай: на верхнем уровне есть файлы, но PDF не нашёлся —
             // отдать всё одним кандидатом (precheck честно покажет «нет PDF»).
@@ -5096,7 +6218,8 @@ const app = createApp({
         // если пусто, глобальный uploadDiscipline; если и он пуст — авто-детект.
         async function recheckCandidate(c) {
             if (!uploadObjectId.value) { c.status = 'error'; c.message = 'Выберите объект'; c.checked = false; return; }
-            if (c.pdfCount === 0) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
+            // ZIP-кандидат: PDF внутри архива, проверит бэкенд после распаковки
+            if (c.pdfCount === 0 && !(c.zipCount > 0)) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
             if (c.pdfCount > 1) { c.status = 'error'; c.message = 'Несколько PDF — оставьте один PDF на проект'; c.checked = false; return; }
             c.status = 'pending'; c.message = 'проверка…';
             try {
@@ -5651,7 +6774,9 @@ const app = createApp({
             const cacheKey = activeVersionId.value
                 ? `${id}::${activeVersionId.value}`
                 : id;
-            if (!forceRefresh) {
+            // Для запущенного проекта 60-секундный кэш не используем: пока идёт
+            // конвейер, снапшот успевает отстать на этап ещё до открытия страницы.
+            if (!forceRefresh && !isProjectRunning(id)) {
                 const cached = _cacheGet('project', cacheKey);
                 if (cached) { currentProject.value = cached; projectLoading.value = false; return; }
             }
@@ -5704,6 +6829,33 @@ const app = createApp({
                 // Снимаем индикатор только для АКТУАЛЬНОЙ загрузки, чтобы не
                 // погасить спиннер более свежего перехода.
                 if (_mySeq === _projectLoadSeq) projectLoading.value = false;
+            }
+        }
+
+        // Тихая перезагрузка карточки текущего проекта: без спиннера
+        // «Загрузка проекта…» и без сброса currentProject на время запроса.
+        // Используется live-обновлениями (смена этапа в poll, WS-reconnect),
+        // где мигание всей страницы недопустимо.
+        let _silentRefreshInFlight = false;
+        async function refreshProjectCardSilently(pid) {
+            if (_silentRefreshInFlight) return;
+            _silentRefreshInFlight = true;
+            try {
+                const project = await api(`/projects/${encodeURIComponent(pid)}`);
+                // Пока ждали ответ, пользователь мог уйти с карточки/проекта.
+                if (currentView.value === 'project'
+                    && currentProject.value
+                    && currentProject.value.project_id === pid) {
+                    currentProject.value = project;
+                    const cacheKey = activeVersionId.value
+                        ? `${pid}::${activeVersionId.value}`
+                        : pid;
+                    _cacheSet('project', cacheKey, project);
+                }
+            } catch (e) {
+                // Фоновое обновление: ошибку не показываем, следующий тик повторит
+            } finally {
+                _silentRefreshInFlight = false;
             }
         }
 
@@ -6656,6 +7808,10 @@ const app = createApp({
         async function loadBlocks(id) {
             blocksProjectId.value = id;
             selectedBlock.value = null;
+            // Каждый обычный вход в раздел начинается с полного корпуса блоков.
+            // Переход к конкретному блоку из замечания ниже штатно переопределит
+            // этот выбор после загрузки данных.
+            selectedBlockPage.value = 'all';
             blockCropErrors.value = 0;
             blockTotalExpected.value = 0;
             try {
@@ -6667,9 +7823,6 @@ const app = createApp({
                 blockPages.value = blocksData.pages || [];
                 blockCropErrors.value = blocksData.errors || 0;
                 blockTotalExpected.value = blocksData.total_expected || 0;
-                if (blockPages.value.length > 0 && !selectedBlockPage.value) {
-                    selectedBlockPage.value = blockPages.value[0].page_num;
-                }
             } catch (e) {
                 console.error('Failed to load blocks:', e);
                 blockPages.value = [];
@@ -6752,6 +7905,9 @@ const app = createApp({
             const an = blockAnalysis.value[blockId];
             return (an && an.status) || null;
         }
+        function blockHasNoVectorGraph(block) {
+            return !!block && block.vector_text_available === false;
+        }
         function blockParentId(blockId) {
             const an = blockAnalysis.value[blockId];
             return (an && an.parent_block_id) || null;
@@ -6796,20 +7952,30 @@ const app = createApp({
 
         function openBlock(block) {
             selectedBlock.value = block;
-            highlightedFindingId.value = null;
-            allHighlightsVisible.value = true;
-            hiddenHighlightFindings.value = new Set();
             // txt-режим переживает навигацию: при открытии нового блока подгружаем его текст
             blockLlmText.value = null;
             blockLlmTextError.value = '';
-            if (showBlockLlmText.value || showBlockRegions.value) loadBlockLlmText();
+            if (blockHasNoVectorGraph(block)) {
+                // Для растрового блока TXT/области не имеют содержимого и не
+                // должны переживать переход с предыдущего векторного блока.
+                showBlockLlmText.value = false;
+                showBlockRegions.value = false;
+            } else if (showBlockLlmText.value || showBlockRegions.value) {
+                loadBlockLlmText();
+            }
             resetBlockZoom();
         }
 
-        // Загрузить текст блока, реально уходящий в нейронку (Stage 02)
+        // Загрузить текст блока, реально уходящий в нейронку (Stage 01)
         async function loadBlockLlmText() {
             const block = selectedBlock.value;
             if (!block) return;
+            if (blockHasNoVectorGraph(block)) {
+                showBlockLlmText.value = false;
+                blockLlmText.value = null;
+                blockLlmTextError.value = '';
+                return;
+            }
             blockLlmTextLoading.value = true;
             blockLlmTextError.value = '';
             try {
@@ -6825,7 +7991,21 @@ const app = createApp({
                           + (qs ? '?' + qs : '');
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                blockLlmText.value = await resp.json();
+                const payload = await resp.json();
+                if (payload.vector_text_available === false) {
+                    // Защита для старого списка блоков без заранее рассчитанного
+                    // признака: endpoint является окончательным источником истины.
+                    block.vector_text_available = false;
+                    block.vector_graph_source_kind = payload.block_graph_package
+                        ? payload.block_graph_package.source_kind : null;
+                    block.vector_graph_message = payload.vector_graph_message
+                        || 'Векторный граф блока отсутствует';
+                    showBlockLlmText.value = false;
+                    showBlockRegions.value = false;
+                    blockLlmText.value = null;
+                    return;
+                }
+                blockLlmText.value = payload;
             } catch (e) {
                 blockLlmText.value = null;
                 blockLlmTextError.value = 'Не удалось загрузить текст блока: ' + (e.message || e);
@@ -6835,6 +8015,11 @@ const app = createApp({
         }
 
         function toggleBlockLlmText() {
+            if (blockHasNoVectorGraph(selectedBlock.value)) {
+                showBlockLlmText.value = false;
+                blockLlmText.value = null;
+                return;
+            }
             showBlockLlmText.value = !showBlockLlmText.value;
             if (showBlockLlmText.value) {
                 showBlockRegions.value = false; // txt и области взаимоисключающие
@@ -6869,6 +8054,29 @@ const app = createApp({
             }
             return out;
         });
+        // Пространственные группы текста блока (кнопка «области») — чисто геометрия вектор-слоя,
+        // bbox нормирован к региону блока (совпадает с region-image). Работает на ЛЮБОМ блоке с
+        // вектор-слоем. Цвет группы — золотой угол по номеру (различимые оттенки для десятков групп).
+        const blockTextGroupRects = computed(() => {
+            const tg = blockLlmText.value && blockLlmText.value.text_groups;
+            if (!tg || !tg.length) return [];
+            const cl = v => Math.max(0, Math.min(1, v));
+            return tg.map(g => {
+                const b = g.bbox || [0, 0, 0, 0];
+                const x0 = cl(b[0]), y0 = cl(b[1]), x1 = cl(b[2]), y1 = cl(b[3]);
+                const hue = (g.n * 137.508) % 360;
+                return {
+                    n: g.n,
+                    poly: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]],
+                    color: `hsl(${hue} 72% 45%)`,
+                    single: (g.natoms || 1) < 2,
+                    text: (g.text || []).join('\n'),
+                    natoms: g.natoms || 1,
+                    labelX: x0, labelY: y0,
+                };
+            });
+        });
+
         function toggleBlockRegions() {
             showBlockRegions.value = !showBlockRegions.value;
             if (showBlockRegions.value) {
@@ -6888,12 +8096,15 @@ const app = createApp({
             return vid ? base + '?version_id=' + encodeURIComponent(vid) : base;
         }
 
-        // База картинки блока: в режиме областей — рендер из fitz (совпадает с геометрией bbox),
-        // иначе обычный кроп Chandra. Иначе SVG-области сдвинуты на колонку (разная нормировка страниц).
+        // База картинки блока: region-image (рендер из fitz) — ТОЛЬКО для областей ЛИНИЙ однолинейки
+        // (их bbox из геометрии fitz-страницы, совпадает только с fitz-рендером). Для групп ТЕКСТА
+        // и обычного вида — штатный кроп Chandra: группы текста нормированы к coords_norm блока и
+        // ложатся на обычную картинку (аспект совпадает), поэтому подменять её НЕ нужно — иначе блок
+        // «меняется» на region-image (который к тому же мог рендерить не ту страницу).
         const blockImageSrc = computed(() => {
             const b = selectedBlock.value;
             if (!b) return '';
-            const kind = showBlockRegions.value ? 'region-image' : 'image';
+            const kind = (showBlockRegions.value && blockRegionRects.value.length) ? 'region-image' : 'image';
             return blockImgUrl(blocksProjectId.value, b.block_id, kind);
         });
 
@@ -7001,7 +8212,7 @@ const app = createApp({
 
         function blockFindingsCount(blockId) {
             // Бейдж количества на превью блока считаем по ФИНАЛЬНОМУ списку
-            // (03_findings, getBlockFindings), а не по сырым Stage 02 findings —
+            // (03_findings, getBlockFindings), а не по сырым Stage 01 findings —
             // чтобы число на превью совпадало с модалкой блока и не показывало
             // отфильтрованные критиком замечания.
             return getBlockFindings(blockId).length;
@@ -7034,10 +8245,12 @@ const app = createApp({
 
         async function loadBlockToFindingsMap(id) {
             try {
-                // Загрузить block-map и findings параллельно
-                const [mapData, findingsResp] = await Promise.all([
+                // Загрузить block-map, findings и необязательный shadow параллельно.
+                // Отсутствие shadow-файла (обычный prod default) не ломает блоки.
+                const [mapData, findingsResp, shadowResp] = await Promise.all([
                     api(`/findings/${id}/block-map`),
                     api(`/findings/${id}`),
+                    api(`/findings/${id}/textlayer-highlights-shadow`).catch(() => null),
                 ]);
                 const bmap = mapData.block_map || {};
                 const findings = findingsResp.findings || [];
@@ -7053,16 +8266,18 @@ const app = createApp({
                             problem: f.problem || f.finding || f.description || '',
                             norm: f.norm || '',
                             solution: f.solution || f.recommendation || '',
-                            highlight_regions: (f.highlight_regions || []).filter(r => {
-                                const rb = (r.block_id || '').replace(/^block_/, '');
-                                return rb === bid || !r.block_id;
-                            }),
                         });
                     }
                 }
                 blockToFindings.value = reverse;
+                textlayerHighlightsShadow.value = shadowResp && Array.isArray(shadowResp.records)
+                    ? shadowResp
+                    : null;
+                showTextlayerHighlightsShadow.value = false;
             } catch (e) {
                 blockToFindings.value = {};
+                textlayerHighlightsShadow.value = null;
+                showTextlayerHighlightsShadow.value = false;
             }
         }
 
@@ -7070,81 +8285,28 @@ const app = createApp({
             return blockToFindings.value[blockId] || [];
         }
 
-        // ─── Highlight regions для текущего блока ───
-        const currentBlockHighlights = computed(() => {
-            if (!selectedBlock.value) return [];
-            const bid = selectedBlock.value.block_id;
-            const hidden = hiddenHighlightFindings.value;
-            // Подсветки строим ТОЛЬКО по финальным замечаниям (03_findings),
-            // связанным с блоком. Сырые Stage 02 findings не показываем — критик
-            // мог их отфильтровать, и их подсветка вводила бы в заблуждение.
-            const findings = getBlockFindings(bid);
+        // Единственный пользовательский слой рамок: точные совпадения из
+        // text-layer shadow. Старые LLM highlight_regions здесь не рендерятся.
+        const currentBlockTextlayerHighlights = computed(() => {
+            if (!selectedBlock.value || !textlayerHighlightsShadow.value) return [];
+            const bid = String(selectedBlock.value.block_id || '').replace(/^block_/, '');
+            const records = textlayerHighlightsShadow.value.records || [];
             const regions = [];
-            for (const f of findings) {
-                if (!f.highlight_regions || !f.highlight_regions.length) continue;
-                if (hidden.has(f.id)) continue;
-                for (const r of f.highlight_regions) {
+            for (const record of records) {
+                for (const region of (record.computed_highlight_regions || [])) {
+                    const regionBlockId = String(region.block_id || '').replace(/^block_/, '');
+                    if (regionBlockId !== bid) continue;
                     regions.push({
-                        ...r,
-                        finding_id: f.id,
-                        severity: f.severity,
+                        ...region,
+                        finding_id: record.finding_id || '',
                     });
                 }
             }
             return regions;
         });
 
-        function highlightFinding(findingId) {
-            highlightedFindingId.value = highlightedFindingId.value === findingId ? null : findingId;
-        }
-
-        function toggleFindingHighlight(findingId) {
-            const s = new Set(hiddenHighlightFindings.value);
-            if (s.has(findingId)) s.delete(findingId); else s.add(findingId);
-            hiddenHighlightFindings.value = s;
-            // Обновить глобальный флаг
-            allHighlightsVisible.value = s.size === 0;
-        }
-
-        function isFindingHighlightVisible(findingId) {
-            return !hiddenHighlightFindings.value.has(findingId);
-        }
-
-        function toggleAllHighlights() {
-            if (allHighlightsVisible.value) {
-                // Выключить все — собрать все finding_id с регионами
-                const allIds = new Set();
-                if (selectedBlock.value) {
-                    const bid = selectedBlock.value.block_id;
-                    for (const f of getBlockFindings(bid)) {
-                        if (f.highlight_regions && f.highlight_regions.length) allIds.add(f.id);
-                    }
-                }
-                hiddenHighlightFindings.value = allIds;
-                allHighlightsVisible.value = false;
-            } else {
-                // Включить все
-                hiddenHighlightFindings.value = new Set();
-                allHighlightsVisible.value = true;
-            }
-        }
-
-        function severityColor(severity) {
-            const s = (severity || '').toUpperCase();
-            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.25)';
-            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.25)';
-            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.25)';
-            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.25)';
-            return 'rgba(150, 150, 200, 0.25)';
-        }
-
-        function severityStroke(severity) {
-            const s = (severity || '').toUpperCase();
-            if (s.includes('КРИТИЧ')) return 'rgba(255, 60, 60, 0.8)';
-            if (s.includes('ЭКОНОМ')) return 'rgba(255, 180, 30, 0.8)';
-            if (s.includes('ЭКСПЛУАТ')) return 'rgba(100, 180, 255, 0.8)';
-            if (s.includes('РЕКОМЕНД')) return 'rgba(100, 220, 140, 0.8)';
-            return 'rgba(150, 150, 200, 0.8)';
+        function toggleTextlayerHighlightsShadow() {
+            showTextlayerHighlightsShadow.value = !showTextlayerHighlightsShadow.value;
         }
 
         // ─── Optimization ───
@@ -7353,6 +8515,36 @@ const app = createApp({
         function optTypeClass(type) {
             const map = { 'cheaper_analog': 'sev-opt-cheaper', 'faster_install': 'sev-opt-faster', 'simpler_design': 'sev-opt-simpler', 'lifecycle': 'sev-opt-lifecycle' };
             return map[type] || '';
+        }
+
+        // Статус нормы предложения. Поля пишет этап 04 (пересмотр оптимизаций):
+        // norm_status = ok | revised | warning, norm_outcome = still_valid | revised | obsolete.
+        // Пока этап не отработал, полей нет — тогда молчим, а не рисуем «не проверена»:
+        // отсутствие проверки и провал проверки — разные вещи.
+        const OPT_NORM_OUTCOME_LABEL = {
+            still_valid: 'норма обновлена, предложение в силе',
+            revised: 'предложение пересмотрено под новую норму',
+            obsolete: 'новая норма обесценила предложение',
+        };
+        function optNormBadge(item) {
+            if (!item || !item.norm_verified) return null;
+            const status = String(item.norm_status || '');
+            if (status === 'ok') return { text: '✓ норма проверена', tone: 'ok' };
+            const reason = (item.norm_revision && item.norm_revision.revision_reason) || '';
+            if (status === 'warning') {
+                return { text: '⚠ норма не подтверждена', tone: 'warn', title: reason };
+            }
+            if (status === 'revised') {
+                const outcome = String(item.norm_outcome || '');
+                const label = OPT_NORM_OUTCOME_LABEL[outcome] || 'норма пересмотрена';
+                const was = (item.norm_revision && item.norm_revision.original_norm) || '';
+                return {
+                    text: outcome === 'obsolete' ? '⚠ ' + label : '↻ ' + label,
+                    tone: outcome === 'obsolete' ? 'warn' : 'revised',
+                    title: [was ? 'Было: ' + was : '', reason].filter(Boolean).join('\n'),
+                };
+            }
+            return null;
         }
 
         // Цветной кружок для бейджа оптимизации — по аналогии с sevIcon (замечания),
@@ -7567,7 +8759,7 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
-            // ↓ Кнопка «Подготовить данные»: crop PNG + Gemma enrichment в MD
+            // ↓ Кнопка «Подготовить данные»: PNG + контекст PDF/Vectograph
             const ids = Array.from(selectedProjects.value);
             if (!ids.length) return;
             // Фильтр: только проекты без аудита (findings_count == 0)
@@ -7582,7 +8774,7 @@ const app = createApp({
                 return;
             }
             const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n` +
-                               `Будут выполнены: crop PNG + Gemma enrichment MD.\n` +
+                               `Будут выполнены: crop PNG + подготовка контекста PDF/Vectograph.\n` +
                                `Время: ~30-60 сек на блок (зависит от размера проекта).` +
                                (skipped > 0 ? `\n(пропущено ${skipped} с уже выполненным аудитом)` : '');
             if (!confirm(confirmMsg)) return;
@@ -8130,6 +9322,50 @@ const app = createApp({
             if (s.includes('РЕКОМЕНД')) return 'recommended';
             if (s.includes('ПРОВЕР')) return 'check';
             return 'check';
+        }
+
+        function findingDetectorBadge(finding) {
+            if (!finding) return null;
+            const provenance = finding.provenance || {};
+            const foundBy = Array.isArray(provenance.found_by) ? provenance.found_by : [];
+            let summary = finding.detector_summary || provenance.detector_summary || '';
+            if (!summary) {
+                const hasGpt = foundBy.includes('gpt_openrouter');
+                const hasCodex = foundBy.includes('codex');
+                summary = hasGpt && hasCodex ? 'gpt_codex' : (hasGpt ? 'gpt' : (hasCodex ? 'codex' : ''));
+            }
+            const meta = {
+                gpt: { text: 'GPT', tone: 'gpt', title: 'Найдено GPT через OpenRouter' },
+                codex: { text: 'Codex', tone: 'codex', title: 'Найдено независимым проходом Codex' },
+                gpt_codex: { text: 'GPT + Codex', tone: 'both', title: 'Независимо найдено GPT и Codex' },
+                claude: { text: 'Claude', tone: 'claude', title: 'Найдено Claude' },
+                claude_codex: { text: 'Claude + Codex', tone: 'both', title: 'Независимо найдено Claude и Codex' },
+            }[summary];
+            if (!meta) return null;
+            const detections = Array.isArray(provenance.detections) ? provenance.detections : [];
+            const models = [...new Set(detections.map(d => d && d.model).filter(Boolean))];
+            const isGapSearch = detections.some(d => d && d.mode === 'gap_search');
+            const baseTitle = summary === 'codex' && isGapSearch
+                ? 'Найдено дополнительным gap-search Codex'
+                : meta.title;
+            const comparison = finding.detector_comparison || {};
+            const relation = comparison.primary_relation || comparison.relation || '';
+            const relationLabel = {
+                match: 'совпадение GPT/Codex',
+                extension: 'расширение другого замечания',
+                new: comparison.gap_search || comparison.origin === 'gap_search'
+                    ? 'новое: найдено gap-search'
+                    : 'новое: найдено одним детектором',
+                disputed: 'спорное: детекторы расходятся',
+            }[relation];
+            const titleParts = [
+                models.length ? `${baseTitle}: ${models.join(', ')}` : baseTitle,
+                relationLabel,
+            ].filter(Boolean);
+            return {
+                ...meta,
+                title: titleParts.join(' · '),
+            };
         }
 
         function sevIcon(severity) {
@@ -8680,19 +9916,32 @@ const app = createApp({
             // Переключаемся в project-режим: закрываем global, открываем project
             wsMode = 'project';
             closeGlobalWS();
+            // Счётчик переподключений должен пережить пересоздание сокета
+            // (closeProjectWS его сбрасывает): по нему onopen понимает, что это
+            // reconnect и нужен ресинк, а onclose наращивает backoff.
+            const prevReconnects = (wsCurrentProjectId === projectId) ? wsProjectReconnects : 0;
             closeProjectWS();
             wsCurrentProjectId = projectId;
-            wsProjectReconnects = 0;
+            wsProjectReconnects = prevReconnects;
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
             wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${encodeURIComponent(projectId)}`);
             wsProject.onopen = () => {
                 wsConnected.value = true;
+                const wasReconnect = wsProjectReconnects > 0;
                 wsProjectReconnects = 0;
+                // После обрыва пропущенные WS-события никто не дошлёт —
+                // ресинхронизируемся явно: live-статус + карточка проекта.
+                if (wasReconnect) {
+                    pollLiveStatus();
+                    refreshProjectCardSilently(projectId);
+                }
             };
             wsProject.onclose = () => {
                 wsConnected.value = false;
-                // Переподключение только если мы всё ещё в project-режиме для этого проекта
-                if (wsMode === 'project' && wsCurrentProjectId === projectId && wsProjectReconnects < 5) {
+                // Переподключаемся, пока мы в project-режиме для этого проекта.
+                // Потолка попыток нет: раньше после 5 неудач (сон ноутбука,
+                // рестарт туннеля) live-обновления молча умирали до F5.
+                if (wsMode === 'project' && wsCurrentProjectId === projectId) {
                     wsProjectReconnects++;
                     const delay = Math.min(2000 * wsProjectReconnects, 10000);
                     console.log(`[WS] Project WS reconnecting in ${delay}ms (attempt ${wsProjectReconnects})`);
@@ -8847,6 +10096,14 @@ const app = createApp({
                     }
                     const proj = projects.value.find(p => p.project_id === pid);
                     if (proj) proj.pipeline = pipeline;
+                }
+                // Детальный список «Статус конвейера» приходит тем же сообщением.
+                // Без этого список обновлялся только при полной перезагрузке
+                // карточки и отставал от баннера на целый этап.
+                const summary = msg.data.pipeline_summary;
+                if (Array.isArray(summary)
+                    && currentProject.value && currentProject.value.project_id === pid) {
+                    currentProject.value.pipeline_summary = summary;
                 }
             } else if (msg.type === 'error') {
                 pushToProjectLog(pid, {
@@ -9007,7 +10264,7 @@ const app = createApp({
         // План (schedPlans) пока локальный/mock — backend-стор work_plans.json
         // делается отдельным этапом.
         // ─────────────────────────────────────────────────────────────────
-        const schedMode = ref('month');                // 'week' | 'month' — по умолчанию месяц
+        const schedMode = ref('month');                // всегда 'month' — переключатель «Неделя» удалён из UI, week-ветки в коде не используются
         const schedAnchor = ref(_schedStartOfDay(new Date()));  // опорный день периода
         const schedPopover = ref(null);                // {engId, key} — раскрытый список проектов в ячейке
         const schedFiltersOpen = ref(false);
@@ -9350,7 +10607,7 @@ const app = createApp({
             const d = subSpendData.value;
             if (!d || !d.week_start_date) return '';
             const [y, m, day] = d.week_start_date.split('-');
-            return `с пятницы ${day}.${m} ${d.week_start_time || '16:00'} (сброс лимитов)`;
+            return `с пятницы ${day}.${m} ${d.week_start_time || '19:00'} (сброс лимитов)`;
         });
         async function subSpendLoad() {
             subSpendLoading.value = true;
@@ -9462,13 +10719,22 @@ const app = createApp({
             for (const k of keys) if (typeof e[k] === 'number') return e[k];
             return null;
         }
+        // Процент принятых (согласованных) = принято / (принято + отклонено).
+        // null, если счётчиков нет вовсе или суммарно 0 (делить не на что).
+        function _schedAcceptPct(agreed, disagreed) {
+            if (agreed == null && disagreed == null) return null;
+            const total = (agreed || 0) + (disagreed || 0);
+            if (total <= 0) return null;
+            return Math.round(((agreed || 0) / total) * 100);
+        }
         const schedStats = computed(() => schedVisibleEngineers.value.map(e => {
             const fact = schedFactFor(e.id);
             const plan = schedPlanFor(e.id);
             const pct = plan > 0 ? Math.round((fact / plan) * 100) : (fact > 0 ? 100 : 0);
             const agreed = _schedRemarkCount(e, 'agreed', 'remarks_agreed');
             const disagreed = _schedRemarkCount(e, 'disagreed', 'remarks_disagreed');
-            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed };
+            const remarkPct = _schedAcceptPct(agreed, disagreed);
+            return { id: e.id, name: e.name, fact, plan, pct, remaining: Math.max(0, plan - fact), agreed, disagreed, remarkPct };
         }));
         const schedTotals = computed(() => {
             const s = schedStats.value;
@@ -9478,7 +10744,8 @@ const app = createApp({
             const hasRemarks = s.some(x => x.agreed != null || x.disagreed != null);
             const agreed = hasRemarks ? s.reduce((a, x) => a + (x.agreed || 0), 0) : null;
             const disagreed = hasRemarks ? s.reduce((a, x) => a + (x.disagreed || 0), 0) : null;
-            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed };
+            const remarkPct = _schedAcceptPct(agreed, disagreed);
+            return { fact, plan, pct, remaining: Math.max(0, plan - fact), engineers: s.length, agreed, disagreed, remarkPct };
         });
 
         // ── Display-хелперы графика (только отображение, без backend-логики) ──
@@ -9664,6 +10931,9 @@ const app = createApp({
                 total: vals.filter(d => d.decision).length,
                 accepted: vals.filter(d => d.decision === 'accepted').length,
                 rejected: vals.filter(d => d.decision === 'rejected').length,
+                // Перенесённые из прошлой версии без вердикта — «возможные повторы»
+                // (те, что помечены «↩ Возможный повтор из … — проверьте»).
+                possibleRepeats: vals.filter(d => d.carried_over && !d.decision).length,
             };
         }
 
@@ -9907,6 +11177,7 @@ const app = createApp({
         // Client-side фильтрация — без перезапроса с сервера
         watch(filterSeverity, () => _applyFindingsFilter());
         watch(filterSearch, () => _applyFindingsFilter());
+        watch(currentView, () => closeStageAlgorithm());
         // Inline Critic v2 toggles
         watch(cv2ShowHidden, () => { findingsPage.value = 1; _applyFindingsFilter(); });
         watch(cv2DisplayFilter, () => { findingsPage.value = 1; _applyFindingsFilter(); });
@@ -9922,9 +11193,15 @@ const app = createApp({
             // ВНЕ popover'а.
             scCloseInlineMatch();
         }
+        function _stageAlgorithmKeydown(ev) {
+            if (ev.key === 'Escape' && activeStageAlgorithmKey.value) {
+                closeStageAlgorithm();
+            }
+        }
         onMounted(() => {
             window.addEventListener('hashchange', handleRoute);
             window.addEventListener('click', _scInlineMatchOutsideClick);
+            window.addEventListener('keydown', _stageAlgorithmKeydown);
             // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
             window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
             // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
@@ -9959,6 +11236,7 @@ const app = createApp({
         onUnmounted(() => {
             window.removeEventListener('hashchange', handleRoute);
             window.removeEventListener('click', _scInlineMatchOutsideClick);
+            window.removeEventListener('keydown', _stageAlgorithmKeydown);
             window.removeEventListener('click', closeHeaderPopovers);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
@@ -17122,7 +18400,8 @@ const app = createApp({
             subSpendOpen, subSpendLoading, subSpendData, subSpendWeekText,
             subSpendLoad, subSpendColor, subSpendInitials, subSpendDayLabel, subSpendTok,
             // State
-            currentView, currentProject, currentProjectId, projectLoading, projects, loading, isProjectView,
+            currentView, currentProject, currentProjectId, visiblePipelineSummary,
+            projectLoading, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
             // KB-Validation
             kbValidationAvailable, kbValidationLoading, findingKbDecision, findingKbLabel, findingKbClass, findingKbTooltip,
@@ -17141,16 +18420,17 @@ const app = createApp({
             selectedBlockPage, selectedBlock,
             blockAnalysis, selectedBlockAnalysis, currentPageBlocks, allBlocksList,
             emptyBlocksList, noFindingsBlocksList, skippedBlocksList,
-            blockStatus, blockParentId, blockMergedBadge, blockOriginalLabel,
+            blockStatus, blockHasNoVectorGraph, blockParentId, blockMergedBadge, blockOriginalLabel,
             currentBlocksList, currentBlockIndex, navigateBlock,
             blockHasAnalysis, blockFindingsCount, blockMaxSeverity,
             openBlock, loadBlocks, blockToFindings, getBlockFindings,
             blockImageContainer, blockImageStyle, onBlockZoomWheel, onBlockPanStart, resetBlockZoom, onBlockImageLoad,
-            blockNatW, blockNatH, highlightedFindingId, currentBlockHighlights, highlightFinding, severityColor, severityStroke,
-            allHighlightsVisible, hiddenHighlightFindings, toggleFindingHighlight, isFindingHighlightVisible, toggleAllHighlights,
+            blockNatW, blockNatH,
+            textlayerHighlightsShadow, showTextlayerHighlightsShadow, currentBlockTextlayerHighlights,
+            toggleTextlayerHighlightsShadow,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
-            showBlockRegions, blockRegionRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
+            showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             currentFindingStage,
             wsConnected,
@@ -17164,7 +18444,7 @@ const app = createApp({
             secondsSinceHeartbeat, isHeartbeatStale, getHeartbeatInfo,
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
-            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon,
+            navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon, findingDetectorBadge,
             debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
@@ -17179,6 +18459,8 @@ const app = createApp({
             startNormVerify, startOptimization, cancelAudit, generateExcel,
             startAllProjects, resumePipeline, resumeToQueue, resumeInfo,
             startFromStage, canStartFrom, pipelineToStage,
+            activeStageAlgorithmKey, activeStageAlgorithm,
+            openStageAlgorithm, closeStageAlgorithm,
             retryStage, retryDialog, retryStageToQueue,
             canRetryStage,
             skipStage, cleanProject,
@@ -17198,20 +18480,22 @@ const app = createApp({
             showPauseModal, isPaused, pauseMode, anyRunning,
             pausePipeline, resumePipelineGlobal,
             // Model config
-            showModelConfig, stageModelConfig, availableModels, stageLabels,
+            showModelConfig, stageModelConfig, availableModels, visibleStageModels, stageLabels,
             stageModelSaveError,
             stageModelRestrictions, stageModelHints, isModelAllowed,
-            modelInputType, isStageModelChecked, selectStageModel,
-            modelPresets, activePreset, activePresetHint, applyPreset,
+            isBaseStageModelChecked, isCodexStageChecked, isCodexStageAllowed,
+            selectBaseStageModel, toggleStageCodex,
+            modelPresets, activePreset, activePresetHint, isCustomStageConfig, applyPreset,
             stageBatchModes, isFindingsOnlyMode,
             loadStageModels, saveStageModels, openModelConfig, saveAndStartAudit,
             startAuditDirect,
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
+            sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
-            batchActionLabel,
+            batchActionLabel, queueItemTiming,
             // Queue management
             queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
             refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,
@@ -17262,6 +18546,34 @@ const app = createApp({
             onSectionDragStart, onSectionDragOver, onSectionDragEnd,
             // Project groups
             projectGroups, groupedSectionProjects,
+            // Сводная оптимизация раздела
+            sectionOptimizationLoading, sectionOptimizationError,
+            sectionOptimizationData, sectionOptimizationLoadedKey, sectionOptimizationMeta,
+            sectionOptimizationTab, sectionOptimizationSearch, sectionOptimizationProjectFilter,
+            sectionOptimizationCollapsedProjects, sectionOptimizationExpandedSignals, sectionOptimizationProjectOptions,
+            sectionOptimizationPipeline, sectionOptimizationPipelineRunning,
+            sectionOptimizationPipelineActionLoading, sectionOptimizationPipelineActionError,
+            sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
+            sectionOptimizationAgentAvailable,
+            sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
+            sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
+            sectionOptimizationFilteredAccepted,
+            sectionOptimizationFilteredSignals, loadSectionOptimization,
+            sectionOptimizationPipelineStage, sectionOptimizationPipelineStatusLabel,
+            sectionOptimizationPipelineStageMarker,
+            runSectionOptimizationPipeline, requestSectionOptimizationGraphicsPlan,
+            startAllSectionOptimizationReplications, sectionOptimizationReplicationFor,
+            sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
+            setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
+            sectionOptimizationSpecificationTypeMark,
+            sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,
+            sectionOptimizationSpecificationProjectKey,
+            isSectionOptimizationProjectCollapsed, toggleSectionOptimizationProject,
+            expandAllSectionOptimizationProjects, collapseAllSectionOptimizationProjects,
+            sectionOptimizationSignalAcceptedItems, sectionOptimizationSignalSpecificationItems,
+            sectionOptimizationSignalHasAcceptedSources, sectionOptimizationSignalTypeLabel,
+            sectionOptimizationSignalGraphicsLabel, isSectionOptimizationSignalExpanded,
+            toggleSectionOptimizationSignal, formatSectionOptimizationQuantity,
             currentSectionProjectsList, prevProject, nextProject,
             showCreateGroup, newGroupName, editingGroupId, editingGroupName,
             createGroup, renameGroup, startRenameGroup, deleteProjectGroup,
@@ -17293,7 +18605,7 @@ const app = createApp({
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, optTypeClass, optIcon, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, loadOptimization,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

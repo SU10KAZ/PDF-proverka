@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.stage_result import StageResult
+from backend.app.services.storage.stage_artifacts import TEXT_ANALYSIS_FILENAME
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
 from backend.app.pipeline.stages.text_analysis.rate_limit_retry import (
     load_rate_limit_config,
@@ -85,14 +86,14 @@ async def run_text_analysis(
     - update_pipeline_log("text_analysis" / stage_label, "running" → "done" / "error");
     - rate limit check + optional retry;
     - cancel check;
-    - проверкой создания 01_text_analysis.json;
+    - проверкой создания 02_text_analysis.json;
     - record_cli_usage.
 
     Не управляет:
     - job.stage / job.status (выставляет оркестратор);
     - heartbeat / cleanup (оркестратор);
     - очисткой старых файлов перед запуском (оркестратор);
-    - чтением triage_data / priority_pages (оркестратор читает 01_text_analysis.json).
+    - чтением triage_data / priority_pages (оркестратор читает 02_text_analysis.json).
     """
     pid = ctx.project_id
     output_dir = ctx.output_dir
@@ -230,9 +231,11 @@ async def run_text_analysis(
         # Повторяем запуск LLM (следующая итерация while).
 
     # ── Проверка выходного файла ──
-    output_path = output_dir / "01_text_analysis.json"
+    # Требуем КАНОНИЧЕСКОЕ имя без fallback: устаревший legacy-файл не должен
+    # маскировать ошибку записи только что выполненного этапа.
+    output_path = output_dir / TEXT_ANALYSIS_FILENAME
     if not output_path.exists():
-        error = "01_text_analysis.json не создан"
+        error = "02_text_analysis.json не создан"
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
 
@@ -249,19 +252,40 @@ async def run_text_analysis(
         validate_and_repair_json, output_path
     )
     if not is_valid:
-        error = f"01_text_analysis.json невалиден (не починить): {repair_msg}"
+        error = f"02_text_analysis.json невалиден (не починить): {repair_msg}"
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
     try:
         data = json.loads(output_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        error = f"01_text_analysis.json не парсится: {exc}"
+        error = f"02_text_analysis.json не парсится: {exc}"
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
     if not isinstance(data, dict) or not isinstance(data.get("text_findings"), list):
-        error = "01_text_analysis.json без обязательного списка text_findings (вероятно усечён)"
+        error = "02_text_analysis.json без обязательного списка text_findings (вероятно усечён)"
         ctx.update_pipeline_log(log_stage, "error", error=error)
         return StageResult.fail(error)
+
+    try:
+        from backend.app.pipeline.stages.prepare.task_builder import _get_md_file_path
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            augment_text_analysis_file,
+        )
+
+        md_file_path = _get_md_file_path(project_info, pid)
+        prescan_summary = await asyncio.to_thread(
+            augment_text_analysis_file, output_path, md_file_path
+        )
+        if prescan_summary.get("changed"):
+            await ctx.log(
+                "Text pre-scan: "
+                f"+{prescan_summary.get('added', 0)} findings, "
+                f"{prescan_summary.get('backfilled', 0)} evidence backfilled "
+                f"({prescan_summary.get('prescan_total', 0)} candidates)",
+                "info",
+            )
+    except Exception as exc:
+        await ctx.log(f"Text pre-scan skipped: {exc}", "warn")
 
     # Страж отсутствия вынесен в ОТДЕЛЬНЫЙ этап «Верификатор» (findings_verify),
     # работающий на слитом 03_findings.json (один прогон на финальном списке вместо

@@ -25,7 +25,7 @@ def _wj(p: Path, data):
 
 
 def _make_pair(tmp_path, code, disc, *, v2_findings, legacy_findings,
-               latest_extra=("01_text_analysis.json", "02_blocks_analysis.json"),
+               latest_extra=("02_text_analysis.json", "01_blocks_analysis.json"),
                status="complete"):
     """Создаёт документ в v2 + соответствующий legacy + запись в map."""
     v2 = tmp_path / "projects_v2"

@@ -186,7 +186,7 @@ def _patch_run_findings_only(monkeypatch, capture_dict, *, summary_overrides=Non
         "blocks_total": 5,
         "blocks_ok": 5,
         "blocks_failed": 0,
-        "blocks_skipped_no_enrichment": 0,
+        "blocks_skipped_no_context": 0,
         "wall_clock_s": 10.0,
         "cancelled": False,
         "uncovered_blocks": [],
@@ -209,8 +209,8 @@ def _patch_run_findings_only(monkeypatch, capture_dict, *, summary_overrides=Non
             "run_dir": None,
         }
 
-    def _fake_prereq(project_dir):
-        return {"ok": True, "reasons": [], "blocks_total": 5, "with_enrichment": 5, "uncovered_blocks": []}
+    def _fake_prereq(project_dir, **kwargs):
+        return {"ok": True, "reasons": [], "blocks_total": 5, "with_context": 5, "uncovered_blocks": []}
 
     from backend.app.pipeline.stages.block_analysis import gemma_findings_only as gfo
     monkeypatch.setattr(gfo, "run_findings_only_for_project", _fake_run)
@@ -527,3 +527,57 @@ def test_record_findings_only_usage_empty_summary_noop(monkeypatch):
     )
     pm._record_findings_only_usage(job, {"model": "openai/gpt-5.4", "totals": {}})
     assert captured_records == []
+
+
+# ─── 4. Параллельность блоков в codex/ensemble режимах ────────────────────
+
+
+async def _parallelism_for_ensemble(tmp_path, monkeypatch) -> int:
+    """Прогнать Stage 02 на ensemble-модели и вернуть переданный parallelism."""
+    import importlib
+
+    # Гасим load_dotenv: config вызывает его при импорте, и на боевой машине из
+    # .env приезжает реальное значение AUDIT_STAGE02_CODEX_PARALLELISM. Без
+    # заглушки тест проверял бы .env сервера, а не поведение кода.
+    monkeypatch.setattr("dotenv.load_dotenv", lambda *a, **kw: None)
+
+    import backend.app.core.config as cfg
+    importlib.reload(cfg)
+    import backend.app.pipeline.stages.block_analysis.runner as runner_mod
+    importlib.reload(runner_mod)
+
+    monkeypatch.setattr(runner_mod, "get_stage_model", lambda key: "ensemble/gpt-codex")
+    monkeypatch.delenv("AUDIT_STAGE02_MAX_PARALLEL_BATCHES", raising=False)
+    monkeypatch.delenv("AUDIT_STAGE02_MAX_BLOCKS", raising=False)
+
+    project_dir = _make_stage02_project(tmp_path)
+    capture = {}
+    _patch_run_findings_only(monkeypatch, capture)
+    ctx, _captured = _make_ctx(project_dir)
+    result = await runner_mod.run_block_analysis_findings_only(ctx)
+    assert result.success
+    return capture["call_kwargs"].get("parallelism")
+
+
+@pytest.mark.asyncio
+async def test_ensemble_parallelism_defaults_to_one(tmp_path, monkeypatch):
+    """Без env ensemble идёт по одному блоку — прежнее поведение не меняется."""
+    monkeypatch.delenv("AUDIT_STAGE02_CODEX_PARALLELISM", raising=False)
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 1
+
+
+@pytest.mark.asyncio
+async def test_ensemble_parallelism_env_override(tmp_path, monkeypatch):
+    """AUDIT_STAGE02_CODEX_PARALLELISM=3 → три блока одновременно."""
+    monkeypatch.setenv("AUDIT_STAGE02_CODEX_PARALLELISM", "3")
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 3
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw", ["garbage", "0", "-2", ""])
+async def test_ensemble_parallelism_invalid_env_falls_back_to_one(
+    tmp_path, monkeypatch, raw,
+):
+    """Невалидное значение не должно ломать production — откат на 1."""
+    monkeypatch.setenv("AUDIT_STAGE02_CODEX_PARALLELISM", raw)
+    assert await _parallelism_for_ensemble(tmp_path, monkeypatch) == 1

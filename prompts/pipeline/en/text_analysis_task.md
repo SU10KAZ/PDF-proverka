@@ -85,7 +85,7 @@ Analyze the MD content COMPLETELY. Extract:
 
 ```json
 {
-  "stage": "01_text_analysis",
+  "stage": "02_text_analysis",
   "project_id": "{PROJECT_ID}",
   "text_source": "md",
   "timestamp": "<ISO datetime>",
@@ -136,7 +136,7 @@ For EACH finding with a `norm` field:
 
 ## Output
 
-WRITE via Write tool: `{OUTPUT_PATH}/01_text_analysis.json`
+WRITE via Write tool: `{OUTPUT_PATH}/02_text_analysis.json`
 
 ## Rules
 

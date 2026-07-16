@@ -13,7 +13,7 @@ Use cases:
 Read inputs (read-only):
     _output/03_findings.json            (обязательно)
     _output/03_findings_review.json     (опционально — для legacy critic verdicts)
-    _output/02_blocks_analysis.json     (опционально — для evidence_quality)
+    _output/01_blocks_analysis.json     (опционально — для evidence_quality)
     _output/document_graph.json         (опционально — для будущих расширений)
 
 Write outputs (только в output_subdir):
@@ -26,6 +26,10 @@ Write outputs (только в output_subdir):
 from __future__ import annotations
 
 import json
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -126,7 +130,7 @@ def _extract_findings(findings_doc: Any) -> list[dict[str, Any]]:
 
 
 def _extract_blocks_index(blocks_doc: Any) -> Optional[set[str]]:
-    """Собрать множество block_id из 02_blocks_analysis.json.
+    """Собрать множество block_id из 01_blocks_analysis.json.
 
     Если файла нет или формат не распознан — возвращаем None (scorer корректно
     обрабатывает None как 'index не предоставлен').
@@ -135,7 +139,7 @@ def _extract_blocks_index(blocks_doc: Any) -> Optional[set[str]]:
         return None
     blocks_list = None
     if isinstance(blocks_doc, dict):
-        # Реальная схема 02_blocks_analysis.json — ключ "block_analyses"
+        # Реальная схема 01_blocks_analysis.json — ключ "block_analyses"
         # (как в deterministic_critic.build_index). "blocks"/"items" оставлены
         # для обратной совместимости со старыми/иными форматами.
         blocks_list = (
@@ -243,7 +247,7 @@ def run_critic_v2_triage(
         * НЕ модифицирует 03_findings.json/03_findings_review.json/expert_review.json
         * НЕ пишет вне <project_dir>/_output/<output_subdir>/
         * НЕ запускает LLM (даже при llm_enabled=True в этой версии)
-        * Не падает при отсутствии 02_blocks_analysis.json/document_graph.json
+        * Не падает при отсутствии 01_blocks_analysis.json/document_graph.json
     """
     project_dir = Path(project_dir)
     # Legacy callers pass the project root; v2-primary pipeline passes the
@@ -268,7 +272,7 @@ def run_critic_v2_triage(
         )
 
     # Optional inputs — graceful if missing.
-    blocks_doc = _load_json_safe(output_dir / "02_blocks_analysis.json")
+    blocks_doc = _load_json_safe(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME))
     blocks_index = _extract_blocks_index(blocks_doc)
     has_blocks = blocks_index is not None
     has_doc_graph = (output_dir / "document_graph.json").exists()

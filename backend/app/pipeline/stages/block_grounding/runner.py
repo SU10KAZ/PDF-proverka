@@ -8,6 +8,7 @@ run_block_grounding_stage(ctx, *, force) -> StageResult
 """
 from __future__ import annotations
 
+import asyncio
 import json
 from collections import Counter
 from pathlib import Path
@@ -25,6 +26,14 @@ if TYPE_CHECKING:
 
 STAGE_LABEL = "Block Value Grounding"
 SUMMARY_NAME = "block_grounding_summary.json"
+_qwen_lock: asyncio.Lock | None = None
+
+
+def _get_qwen_lock() -> asyncio.Lock:
+    global _qwen_lock
+    if _qwen_lock is None:
+        _qwen_lock = asyncio.Lock()
+    return _qwen_lock
 
 
 def _find_result_json(project_dir: Path, output_dir: Optional[Path]) -> Optional[Path]:
@@ -242,7 +251,6 @@ async def run_block_grounding_stage(ctx: "PipelineStageContext", *, force: bool 
     if BLOCK_VALUE_GROUNDING_QWEN_ENABLED and selected:
         try:
             from backend.app.pipeline.stages.block_grounding.qwen_grounding import run_qwen_grounding
-            from backend.app.pipeline.stages.prepare.prepare_service import prepare_state
             pdf = _find_source_pdf(project_dir)
             if pdf is None:
                 await ctx.log("  Phase 2: исходный PDF не найден — пропуск qwen", "warn")
@@ -252,8 +260,8 @@ async def run_block_grounding_stage(ctx: "PipelineStageContext", *, force: bool 
                 await ctx.log(f"  Phase 2 (qwen): {len(selected)} no-vector блоков "
                               f"(тайлинг {n_tiled}, кроп {n_crop})")
                 render_dir = Path(output_dir) / "block_grounding_qwen_tiles"
-                # сериализация LM Studio (своп gemma→qwen) общим prepare-локом
-                async with prepare_state.get_lock():
+                # Qwen остаётся opt-in и сериализуется своим независимым lock.
+                async with _get_qwen_lock():
                     qres = await run_qwen_grounding(
                         selected, pdf, model=BLOCK_VALUE_GROUNDING_QWEN_MODEL,
                         max_blocks=BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS, render_dir=render_dir)

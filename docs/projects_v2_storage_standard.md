@@ -150,7 +150,7 @@ objects/214_Alia_ASTERUS/
   (включая блоки, intermediate, бэкапы). Это **источник истины** — здесь ничего
   не теряется.
 - `03_analysis/latest/` — копии ключевых артефактов прогона:
-  `01_text_analysis.json`, `02_blocks_analysis.json`, `03_findings.json`,
+  `02_text_analysis.json`, `01_blocks_analysis.json`, `03_findings.json`,
   `document_graph.json`, `norm_checks.json`, `optimization.json`.
 - `04_review/` / `05_export/` / `99_service/` — **эвристически** разложенные
   копии артефактов верхнего уровня `_output` (удобство, не источник истины).
@@ -167,8 +167,8 @@ stability-check):
 
 - новые файлы кладутся в **отдельный** `03_analysis/runs/run_refresh_<timestamp>/`
   (verbatim), чтобы не смешивать старый snapshot с live-дописанным анализом;
-- критичные/основные analysis-файлы (`01_text_analysis.json`,
-  `02_blocks_analysis.json`, `03_findings.json`, `norm_checks.json`,
+- критичные/основные analysis-файлы (`02_text_analysis.json`,
+  `01_blocks_analysis.json`, `03_findings.json`, `norm_checks.json`,
   `03a_norms_verified.json`, `optimization.json`) дублируются в
   `03_analysis/latest/`;
 - в `version.json` проставляется состояние анализа:
@@ -207,7 +207,7 @@ stability-check):
 ```json
 {
   "analysis_status": "none | partial | complete | legacy_partial",
-  "missing_analysis_files": ["02_blocks_analysis.json", "norm_checks.json"],
+  "missing_analysis_files": ["01_blocks_analysis.json", "norm_checks.json"],
   "analysis_generation": "legacy",                 // только для legacy-снимков
   "preserve_reason": "legacy_algorithm_with_kb_findings"
 }
@@ -491,8 +491,8 @@ loss 0.
 ### Какие поля сравниваются
 
 `object_display_name`, `discipline`, `document_code`, `current_version_no`,
-`version_count`, `analysis_status`, наличие `01_text_analysis.json` /
-`02_blocks_analysis.json` / `03_findings.json`, `findings_count`,
+`version_count`, `analysis_status`, наличие `02_text_analysis.json` /
+`01_blocks_analysis.json` / `03_findings.json`, `findings_count`,
 `findings_by_severity` (soft), `pipeline_log_present` + `pipeline_log_stage_count`
 (soft), `has_blocks_analysis`, флаги `v2_legacy_preserve` / `source_only`, и
 `kb_link_entry_count` (только для King&Sons legacy preserve).

@@ -150,8 +150,8 @@ def apply_refresh(rec: dict, diffs: list[dict], archive_dir: Path,
 
 # whitelist допустимых НОВЫХ файлов (относительно папки версии legacy)
 NEW_FILE_WHITELIST = (
-    "_output/01_text_analysis.json",
-    "_output/02_blocks_analysis.json",
+    "_output/02_text_analysis.json",
+    "_output/01_blocks_analysis.json",
     "_output/03_findings.json",
     "_output/03_findings_review.json",
     "_output/norm_checks.json",
@@ -163,10 +163,10 @@ NEW_FILE_WHITELIST = (
 )
 # какие из них дублируются в 03_analysis/latest
 _LATEST_NAMES = {
-    "01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json",
+    "02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json",
     "norm_checks.json", "03a_norms_verified.json", "optimization.json",
 }
-_CRITICAL_NAMES = ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")
+_CRITICAL_NAMES = ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")
 
 
 def detect_new_files(rec: dict) -> list[dict]:

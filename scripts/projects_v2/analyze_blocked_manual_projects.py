@@ -54,8 +54,8 @@ _SOURCE_SUFFIXES = {
     "annotation_json": "_annotation.json",
 }
 # артефакты анализа, которые тянем в 03_analysis/latest при наличии
-_ANALYSIS_PICK = ("03_findings.json", "01_text_analysis.json",
-                  "02_blocks_analysis.json", "pipeline_log.json")
+_ANALYSIS_PICK = ("03_findings.json", "02_text_analysis.json",
+                  "01_blocks_analysis.json", "pipeline_log.json")
 # каталоги, которые НЕ тащим в bundle (бэкапы/кеши)
 _SKIP_DIR_MARKERS = ("_bench_backup", ".bak_", "_backup", "cache", "/raw", "/prompts")
 
@@ -179,8 +179,8 @@ def analyze(v2_root: Path) -> dict:
             "document_code": document_code, "kind": p.get("kind"),
             "legacy_path": str(legacy_path), "blockers": p.get("blockers", []),
             "has_03_findings": inv["analysis_present"]["03_findings.json"],
-            "has_01_text_analysis": inv["analysis_present"]["01_text_analysis.json"],
-            "has_02_blocks_analysis": inv["analysis_present"]["02_blocks_analysis.json"],
+            "has_01_text_analysis": inv["analysis_present"]["02_text_analysis.json"],
+            "has_02_blocks_analysis": inv["analysis_present"]["01_blocks_analysis.json"],
             "has_pipeline_log": inv["analysis_present"]["pipeline_log.json"],
             "kb_entries": len(kb_items), "kb_linked": bool(kb_items),
             "kb_items": kb_items,

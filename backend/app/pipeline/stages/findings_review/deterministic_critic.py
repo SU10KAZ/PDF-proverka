@@ -5,7 +5,7 @@
 -----
 Раньше «Critic замечаний» (`findings_critic`) запускался как агентный
 `claude -p --allowedTools Read,Write` и читал многомегабайтные `03_findings.json`
-+ `02_blocks_analysis.json` + `document_graph.json` инструментом Read по 2000
++ `01_blocks_analysis.json` + `document_graph.json` инструментом Read по 2000
 строк за вызов. На крупных проектах прогон не доживал до записи
 `03_findings_review.json` (таймаут 1200 c / лимит ходов → `is_error`, пустой
 результат), и этап падал с «critic produced no review artifact».
@@ -44,6 +44,11 @@ from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from typing import Awaitable, Callable, Optional
 
 logger = logging.getLogger(__name__)
@@ -327,7 +332,7 @@ def deterministic_verdict(finding: dict, idx: _Index):
     if image_refs and not existing_image and not existing_text:
         return _mk_review(
             fid, "phantom_block", ["block_exists"],
-            f"block_id отсутствуют в 02_blocks_analysis.json: {image_refs}.",
+            f"block_id отсутствуют в 01_blocks_analysis.json: {image_refs}.",
             [],
         )
 
@@ -572,7 +577,7 @@ async def run_deterministic_critic(
     if findings_data is None:
         return DeterministicCriticResult(error=f"{findings_filename} не найден/невалиден")
 
-    blocks_analysis = _load_json(output_dir / "02_blocks_analysis.json") or {}
+    blocks_analysis = _load_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)) or {}
     doc_graph = _load_json(output_dir / "document_graph.json") or {}
 
     reviews, candidates, result, idx = review_structural(

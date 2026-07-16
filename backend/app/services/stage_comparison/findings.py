@@ -484,7 +484,13 @@ def _build_graphic_findings(session_id: str, pair_id: str, pair: dict) -> list[d
             "severity": "low",
             "status": "needs_review",
             "title": f"Устаревшая связь блоков ({l.get('method')})",
-            "summary": f"Связь {lid}↔{rid} больше не соответствует карте листов. Причина: {l.get('stale_reason', 'alignment_changed')}",
+            # Без сырых block_id в видимом тексте: ID остаются в структурных
+            # left/right/source, а человеку показываем страницы.
+            "summary": (
+                f"Связь блоков (стр. {l.get('left_page', '?')} старой редакции ↔ "
+                f"стр. {l.get('right_page', '?')} новой) больше не соответствует "
+                f"карте листов. Причина: {l.get('stale_reason', 'alignment_changed')}"
+            ),
             "left": {
                 "pdf": (pair.get("left") or {}).get("filename"),
                 "page": l.get("left_page"),

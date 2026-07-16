@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 from backend.app.core.config import (
     DISCUSSION_SUMMARY_THRESHOLD,
     DISCUSSION_TEMPERATURE,
@@ -58,7 +63,7 @@ def _version_dir(project_id: str) -> Path:
 def _output_dir(project_id: str) -> Path:
     """Папка артефактов пайплайна активной версии (V2-aware).
 
-    Отсюда читаются 03_findings.json, 02_blocks_analysis.json, document_graph.json,
+    Отсюда читаются 03_findings.json, 01_blocks_analysis.json, document_graph.json,
     *_review.json, norm_checks.json, optimization.json. В projects_v2 они лежат в
     `03_analysis/latest`, а НЕ в `<version_dir>/_output` (там только shadow-
     артефакты) — из-за чего «Проработка замечаний» была пустой. Канонический
@@ -150,8 +155,8 @@ def _build_finding_context(project_id: str, item_id: str) -> tuple[str, list[dic
         parts.append(f"=== ЗАМЕЧАНИЕ {item_id} ===")
         parts.append(json.dumps(finding, ensure_ascii=False, indent=2))
 
-    # 2. Evidence-блоки из 02_blocks_analysis.json
-    blocks_data = _load_json(output_dir / "02_blocks_analysis.json")
+    # 2. Evidence-блоки из анализа блоков
+    blocks_data = _load_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME))
     evidence_block_ids = set()
     if finding:
         for ev in finding.get("evidence", []):
@@ -243,7 +248,7 @@ def _build_optimization_context(project_id: str, item_id: str) -> tuple[str, lis
         page_val = opt_item.get("page")
         pages = page_val if isinstance(page_val, list) else ([page_val] if page_val else [])
 
-        blocks_data = _load_json(output_dir / "02_blocks_analysis.json")
+        blocks_data = _load_json(resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME))
         if blocks_data and pages:
             block_list = blocks_data.get("blocks") or blocks_data.get("block_analyses") or []
             parts.append("\n=== БЛОКИ СО СТРАНИЦ ОПТИМИЗАЦИИ ===")

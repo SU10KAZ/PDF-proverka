@@ -8,11 +8,18 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.core.config import SEVERITY_CONFIG
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from backend.app.models.findings import FindingsResponse, FindingsSummary
 from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+
+
+TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME = "textlayer_highlights_shadow.json"
 
 
 def _get_version_output_dir(project_id: str, version_id: Optional[str] = None) -> Path:
@@ -36,6 +43,38 @@ def _get_findings_path(project_id: str, version_id: Optional[str] = None) -> Pat
     if main.exists():
         return main
     return output_dir / "03_findings_pre_merge.json"
+
+
+def get_textlayer_highlights_shadow(
+    project_id: str,
+    *,
+    version_id: Optional[str] = None,
+) -> Optional[dict]:
+    """Прочитать диагностические подсветки из text-layer shadow-артефакта.
+
+    Ручка намеренно только читает отдельный файл и не меняет финальные
+    ``highlight_regions`` в ``03_findings.json``.
+    """
+    output_dir = _get_version_output_dir(project_id, version_id)
+    data = _load_json(output_dir / TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME)
+    if isinstance(data, dict):
+        return data
+
+    # У мигрированной V1 артефакт пилота мог появиться уже после снимка в
+    # projects_v2. Берём его из legacy_folder_path только для этой конкретной
+    # версии; для v2+ без такой привязки никакого межверсионного fallback нет.
+    try:
+        context = version_service.resolve_project_version_context(project_id, version_id)
+        version_meta = _load_json(Path(context["version_dir"]) / "version.json")
+        legacy_folder_path = version_meta.get("legacy_folder_path") if isinstance(version_meta, dict) else None
+        if legacy_folder_path:
+            legacy_path = Path(legacy_folder_path) / "_output" / TEXTLAYER_HIGHLIGHTS_SHADOW_FILENAME
+            data = _load_json(legacy_path)
+            if isinstance(data, dict):
+                return data
+    except (KeyError, OSError, TypeError, ValueError):
+        pass
+    return None
 
 
 def _practicality_score(finding: dict) -> int:
@@ -1190,7 +1229,7 @@ def _load_blocks_data(project_id: str, version_id: Optional[str] = None) -> tupl
     block_info: dict[str, dict] = {}
 
     output_dir = _get_version_output_dir(project_id, version_id)
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     blocks_data = _load_json(blocks_path)
     if blocks_data:
         block_list = blocks_data.get("blocks") or blocks_data.get("block_analyses") or []
@@ -1293,7 +1332,14 @@ def get_optimization_block_map(
         matched_blocks: list[str] = []
         seen: set[str] = set()
 
-        # 1. Явные block_id в текстовых полях
+        # 0. Структурное поле source_block_ids (новый контракт: промпт запрещает
+        #    block_id в видимых current/proposed/risks — привязка живёт здесь)
+        for bid in item.get("source_block_ids") or []:
+            if isinstance(bid, str) and bid in all_block_ids and bid not in seen:
+                matched_blocks.append(bid)
+                seen.add(bid)
+
+        # 1. Явные block_id в текстовых полях (legacy-данные до запрета)
         for field in ("current", "proposed", "risks"):
             text = item.get(field, "")
             for m in block_id_re.finditer(text):
@@ -1342,11 +1388,39 @@ def get_optimization_block_map(
     }
 
 
+_CAPTION_DIGIT_TR = str.maketrans("0123456789", "abcdefghij")
+# Подпись блока из block_captions: «Название» (лист X[, стр. PDF Y]) или
+# компактная форма (лист X, стр. PDF Y).
+# номер листа бывает с вложенными скобками: «лист 1 (из 2)»
+_CAPTION_RE = re.compile(
+    r'(?:«(?P<name>[^»]{1,120})»\s*)?'
+    r'\(лист\s*(?P<sheet>[^,()]{1,40}(?:\([^()]{1,20}\)[^,()]{0,10})?)'
+    r'(?:,\s*стр\.\s*PDF\s*(?P<page>\d+))?\)',
+)
+
+
+def _caption_pattern_token(m: "re.Match") -> str:
+    """Подпись блока → стабильный различимый токен.
+
+    Без этого общие правила ниже (кавычки → _MAT_, скобки → (...)) схлопнули бы
+    ЛЮБЫЕ подписи разных блоков в один паттерн, и замечания по разным блокам
+    группировались бы как дубли. Цифры транслитерируются в буквы, чтобы их не
+    съело правило `\\d+ → _N_`.
+    """
+    name_key = re.sub(r'[^а-яёa-z]', '', (m.group('name') or '').lower())[:24]
+    loc = ((m.group('sheet') or '') + (m.group('page') or '')).translate(_CAPTION_DIGIT_TR)
+    loc_key = re.sub(r'[^а-яёa-z]', '', loc.lower())[:16]
+    return f'_CAP_{name_key}_{loc_key}_'
+
+
 def _normalize_problem_pattern(text: str) -> str:
     """Нормализует текст замечания для группировки: убирает конкретные числа, марки, номера."""
     if not text:
         return ""
     s = text.strip()
+    # Подписи блоков («Название» (лист N, стр. PDF M)) — В ПЕРВУЮ ОЧЕРЕДЬ,
+    # до правил кавычек/скобок, иначе разные блоки дают одинаковый паттерн
+    s = _CAPTION_RE.sub(_caption_pattern_token, s)
     # Марки элементов (В4-13, А4-14, ДВ12-5П, ОГ-8, К6.2 и т.д.)
     s = re.sub(r'[А-ЯA-Z]{1,4}\d[\w.*-]*', '_MARK_', s)
     # Названия материалов в кавычках
@@ -1420,6 +1494,12 @@ def aggregate_merged_fields(group_items: list[dict], leader: dict) -> dict:
                 if it.get(_qf):
                     fields[_qf] = it[_qf]
                     break
+    # Detector credit must survive UI grouping and the persistent merge pass.
+    # Import locally to keep this service usable without loading stage runners.
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        aggregate_traceability,
+    )
+    fields.update(aggregate_traceability(group_items))
     return fields
 
 

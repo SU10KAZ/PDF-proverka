@@ -36,12 +36,16 @@ class WSMessage(BaseModel):
         )
 
     @classmethod
-    def status_change(cls, project: str, pipeline: dict):
+    def status_change(cls, project: str, pipeline: dict,
+                      pipeline_summary: Optional[list] = None):
+        data: dict[str, Any] = {"pipeline": pipeline}
+        if pipeline_summary is not None:
+            data["pipeline_summary"] = pipeline_summary
         return cls(
             type="status",
             project=project,
             timestamp=datetime.now().isoformat(),
-            data={"pipeline": pipeline},
+            data=data,
         )
 
     @classmethod
@@ -147,7 +151,7 @@ class WSMessage(BaseModel):
 
     @classmethod
     def prepare_queue_progress(cls, queue_status: dict):
-        """Состояние глобальной очереди prepare-data (Qwen enrichment).
+        """Состояние глобальной очереди подготовки контекста блоков.
         Broadcast'ится глобально (все клиенты видят, не только подписчики проекта).
         """
         return cls(

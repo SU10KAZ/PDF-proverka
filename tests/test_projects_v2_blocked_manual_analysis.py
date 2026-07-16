@@ -72,7 +72,7 @@ def test_inventory_collects_sources_and_ambiguous(tmp_path):
         _mk(proj / v / f"{v}_result.json")
     # анализ в _output
     _mk(proj / "133_23-ГК-АК" / "_output" / "03_findings.json")
-    _mk(proj / "133_23-ГК-АК" / "_output" / "01_text_analysis.json")
+    _mk(proj / "133_23-ГК-АК" / "_output" / "02_text_analysis.json")
     # backup-каталог НЕ должен попадать
     _mk(proj / "_bench_backup_1" / "junk.pdf")
     # неклассифицируемый файл
@@ -82,8 +82,8 @@ def test_inventory_collects_sources_and_ambiguous(tmp_path):
     assert len(inv["by_role"]["pdf"]) == 2          # multiple pdf
     assert len(inv["by_role"]["document_md"]) == 2
     assert inv["analysis_present"]["03_findings.json"] is True
-    assert inv["analysis_present"]["01_text_analysis.json"] is True
-    assert inv["analysis_present"]["02_blocks_analysis.json"] is False
+    assert inv["analysis_present"]["02_text_analysis.json"] is True
+    assert inv["analysis_present"]["01_blocks_analysis.json"] is False
     assert any("_output" in d for d in inv["output_dirs"])
     # backup junk не попал в bundle
     assert not any("_bench_backup" in f for f in inv["source_files"])

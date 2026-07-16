@@ -38,14 +38,14 @@
 
 ## 3. Выход
 
-**Файл:** `projects/<id>/_output/01_text_analysis.json`
+**Файл:** `projects/<id>/_output/02_text_analysis.json`
 **Кодировка:** UTF-8, `ensure_ascii=False`, `indent=2`.
 
 **Корневая схема:**
 
 ```json
 {
-  "stage": "01_text_analysis",
+  "stage": "02_text_analysis",
   "project_id": "<id>",
   "text_source": "md",
   "timestamp": "<ISO 8601>",
@@ -96,7 +96,7 @@
 **Ветка А — Claude CLI** (если `is_claude_stage("text_analysis")`):
 - Тулзы: `Read,Write,Grep,Glob,WebSearch,WebFetch` ([config.py:201](webapp/config.py#L201)).
 - Таймаут: `1800 сек` (30 мин) ([config.py:182](webapp/config.py#L182)).
-- Claude **сам читает MD и сам пишет** `01_text_analysis.json` через Write.
+- Claude **сам читает MD и сам пишет** `02_text_analysis.json` через Write.
 - Логируется в audit_trail с моделью и `duration_ms` (токены = 0, не считаются для CLI-ветки).
 
 **Ветка Б — OpenRouter / локальный LLM** (`build_text_analysis_messages` в [prompt_builder.py:483](webapp/services/prompt_builder.py#L483)):
@@ -108,7 +108,7 @@
 
 ### 4.3. Audit trail
 
-После любой ветки → `_save_audit_trail(project_id, "01_text_analysis", model, in, out, ms, payload)`.
+После любой ветки → `_save_audit_trail(project_id, "02_text_analysis", model, in, out, ms, payload)`.
 Используется `usage_service` для подсчёта стоимости и для шапки дашборда.
 
 ---
@@ -142,7 +142,7 @@
 | MD-файл отсутствует | Hard error: Stage 01 не стартует без Markdown. |
 | `document_graph.json` содержит текст | Игнорируется как источник Stage 01; используется только как граф документа/страниц. |
 | Override промпта в `_output/prompts/text_analysis.md` | Используется как есть, дисциплинарные подстановки **не применяются**. |
-| Claude CLI вернул не-0 exit_code | Файл может быть записан или нет — статус определяется по наличию `01_text_analysis.json` (не по exit_code). |
+| Claude CLI вернул не-0 exit_code | Файл может быть записан или нет — статус определяется по наличию `02_text_analysis.json` (не по exit_code). |
 | LLM вернул не-JSON / битый JSON | Файл не записывается, `result.is_error = True`, статус остаётся `pending`/`failed`. Авто-репейр (как для `findings_merge`) **не применяется**. |
 | Норма-база дисциплины (`norms_reference.md`) отсутствует | Шаблон содержит плейсхолдер «Stage 04 will verify normative references separately» вместо инлайна. |
 | Локальный LLM (GEMMA) | Норматив-база НЕ вкладывается в system prompt (экономия контекста); проверка норм откладывается на stage 04. |

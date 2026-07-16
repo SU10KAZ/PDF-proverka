@@ -27,7 +27,6 @@ from backend.app.core.config import get_claude_cli, get_stage_model
 from backend.app.services.common.cli_utils import parse_cli_json_output
 from backend.app.services.common.object_service import get_object_by_id
 from backend.app.services.common.process_runner import run_command
-from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.external_register import section_map, service
 from backend.app.services.external_register.models import (
     FindingMatch,
@@ -48,8 +47,7 @@ MAX_ENTRIES_PER_CHUNK = 20
 
 
 def _load_subproject_findings(object_id: str, project_id: str) -> list[dict]:
-    proj_dir = resolve_project_dir(project_id, object_id=object_id)
-    findings_path = proj_dir / "_output" / "03_findings.json"
+    findings_path = service._findings_output_dir(object_id, project_id) / "03_findings.json"
     if not findings_path.exists():
         logger.info("No findings for %s (%s)", project_id, findings_path)
         return []

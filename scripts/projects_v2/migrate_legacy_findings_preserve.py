@@ -65,14 +65,14 @@ MIGRATION_KIND = "legacy_findings_preserve"
 # артефакты, которые тянем в 03_analysis/latest при наличии (без фейков)
 LATEST_PICK = (
     "03_findings.json",
-    "01_text_analysis.json",
-    "02_blocks_analysis.json",
+    "02_text_analysis.json",
+    "01_blocks_analysis.json",
     "pipeline_log.json",
     "norm_checks.json",
     "optimization.json",
 )
 # наличие любого из них => legacy_partial; иначе source_only
-ANALYSIS_MARKERS = ("03_findings.json", "01_text_analysis.json", "02_blocks_analysis.json")
+ANALYSIS_MARKERS = ("03_findings.json", "02_text_analysis.json", "01_blocks_analysis.json")
 # каталоги, которые НЕ попадают в legacy_bundle (бэкапы/кеши вне _output)
 _SKIP_BUNDLE_MARKERS = ("_bench_backup", ".bak_", "_backup")
 # для значимой копии в runs/ берём только лёгкие текстовые артефакты
@@ -206,8 +206,8 @@ def migrate_one(project_path: Path, v2_root: Path, *, objects_map: dict,
         "migration_kind": MIGRATION_KIND,
         "policy": POLICY,
         "has_03_findings": plan["analysis_present"]["03_findings.json"],
-        "has_01_text_analysis": plan["analysis_present"]["01_text_analysis.json"],
-        "has_02_blocks_analysis": plan["analysis_present"]["02_blocks_analysis.json"],
+        "has_01_text_analysis": plan["analysis_present"]["02_text_analysis.json"],
+        "has_02_blocks_analysis": plan["analysis_present"]["01_blocks_analysis.json"],
         "kb_linked": bool(kb_items),
         "kb_entries": len(kb_items),
         "analysis_status": "legacy_partial" if has_analysis else "source_only",

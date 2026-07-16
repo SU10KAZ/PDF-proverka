@@ -93,7 +93,7 @@ async def verify_graphic_async(
     extra_pngs, extra_ctx = [], ""
     if extra_block_ids:
         from .context import _find_block_png, _blocks_analysis_text, _load_json
-        ba = _load_json(ctx.output_dir / "02_blocks_analysis.json") or {}
+        ba = _load_json(ctx.output_dir / "01_blocks_analysis.json") or {}
         ba_text = _blocks_analysis_text(ba)
         seen = {b.replace("block_", "") for b in block_ids}
         ctx_parts = []

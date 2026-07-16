@@ -17,7 +17,10 @@
 Источник имени листа:
     1. MD-штамп (Chandra OCR пишет `## СТРАНИЦА N` + `**Лист:**` +
        `**Наименование листа:**`) — основной путь, переиспользуем
-       `build_fact_index` из evidence_first_fallback.
+       `build_fact_index` из evidence_first_fallback. Новый формат портала
+       (*_results.md, страницы `## Page N`, per-block `> **Stamp:** … |
+       Sheet: … | Name: …`) разбирает та же `build_fact_index` — внутри неё
+       ветка через единый парсер results_md; матчинг/скоринг общие.
     2. Фолбэк: если у страницы имя пустое, можно подмешать текст-слой блоков
        страницы (pdfplumber_text / ocr_text из result.json) как слабый
        текст-сигнатуру (`extra_text_by_page`). Это «фолбэк на текст-слой
@@ -37,7 +40,8 @@ from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
 from typing import Optional
 
-from .evidence_first_fallback import build_fact_index
+from ..common.results_md import is_results_md_text
+from .evidence_first_fallback import build_fact_index, strip_results_md_meta
 
 
 # ─── Тюнинг (env override, безопасные дефолты) ─────────────────────────────
@@ -250,7 +254,15 @@ def build_sheet_index(
     extra_text_by_page: опциональный текст-слой по страницам (pdfplumber_text /
     ocr_text). Используется ТОЛЬКО для страниц без имени листа как слабая
     текст-сигнатура (фолбэк), нормализованная так же, как имя.
+
+    Новый формат портала (*_results.md): структуру страниц отдаёт та же
+    `build_fact_index` (внутри — ветка results_md: имя листа из per-block
+    `> **Stamp:** … | Sheet: … | Name: …`, ключ = страница PDF). Здесь формат
+    нужен только чтобы срезать служебные строки нового формата перед
+    derived-извлечением — иначе штамп-имя из `Name: …` подхватилось бы как
+    «заголовок из содержимого». Старый путь — байт-в-байт прежний.
     """
+    is_new_format = is_results_md_text(md or "")
     pages = build_fact_index("x", md or "").pages
     extra = extra_text_by_page or {}
     recs: list[SheetRec] = []
@@ -279,7 +291,8 @@ def build_sheet_index(
         # уверенности) — он используется только в weak derived-проходе, для
         # divergence-сигнала позиционного выравнивания и для отображения.
         _excl = {norm} if norm else set()
-        derived = _derive_title_from_text(pr.body or "", exclude_norms=_excl)
+        body_for_derived = strip_results_md_meta(pr.body) if is_new_format else (pr.body or "")
+        derived = _derive_title_from_text(body_for_derived, exclude_norms=_excl)
         if not derived and pr.page in extra:
             derived = _derive_title_from_text(extra.get(pr.page) or "", exclude_norms=_excl)
         # Фолбэк по тексту-слою для всё ещё безымянных страниц.

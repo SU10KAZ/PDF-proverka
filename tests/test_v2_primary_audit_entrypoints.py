@@ -220,7 +220,7 @@ async def test_stage_runners_pass_ctx_paths_to_agent_runners(monkeypatch, tmp_pa
     version_dir = _make_v2_version(tmp_path, "DOC-W1")
     output_dir = version_dir / "03_analysis" / "runs" / "job-w1"
     output_dir.mkdir(parents=True, exist_ok=True)
-    _write(output_dir / "02_blocks_analysis.json", json.dumps({"block_analyses": []}))
+    _write(output_dir / "01_blocks_analysis.json", json.dumps({"block_analyses": []}))
     ctx = _FakeCtx(version_dir, output_dir)
     captured = {}
 

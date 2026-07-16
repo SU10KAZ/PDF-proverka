@@ -10,7 +10,7 @@
   3. Если текст-слоя нет (типично для CAD-чертежей без вектор-текста) — пометить
      status="needs_vision" (добивается зрением в Фазе 4).
 
-НЕ переписывает 02_blocks_analysis.json на диске — результат кешируется отдельно.
+НЕ переписывает 01_blocks_analysis.json на диске — результат кешируется отдельно.
 """
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ def _rows_from_words(words: list) -> list:
 
 def build_key_values_cache(output_dir: Path) -> dict:
     """Прогнать по всем блокам-таблицам проекта, вернуть {block_id: TableExtraction-dict}."""
-    ba_path = output_dir / "02_blocks_analysis.json"
+    ba_path = output_dir / "01_blocks_analysis.json"
     if not ba_path.is_file():
         return {}
     ba = json.loads(ba_path.read_text(encoding="utf-8"))

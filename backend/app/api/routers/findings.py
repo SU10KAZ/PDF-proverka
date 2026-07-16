@@ -62,6 +62,25 @@ async def get_finding_block_map(
     return result
 
 
+@router.get("/{project_id:path}/textlayer-highlights-shadow")
+async def get_textlayer_highlights_shadow(
+    project_id: str,
+    version_id: Optional[str] = Query(None, description="Конкретная версия (v1/v2/...), по умолчанию latest"),
+):
+    """Диагностические рамки, рассчитанные по текстовому слою PDF."""
+    _validate_version_id(project_id, version_id)
+    try:
+        result = findings_service.get_textlayer_highlights_shadow(
+            project_id,
+            version_id=version_id,
+        )
+    except FileNotFoundError:
+        result = None
+    if result is None:
+        raise HTTPException(404, "Text-layer shadow-подсветки для проекта не найдены")
+    return result
+
+
 @router.get("/{project_id:path}/finding/{finding_id}")
 async def get_finding(
     project_id: str,

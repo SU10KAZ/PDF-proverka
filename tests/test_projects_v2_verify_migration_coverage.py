@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 
@@ -107,6 +108,84 @@ def test_experiment_sandbox_excluded(roots):
     # junk не попадает в реальный backlog
     assert rep["counts"]["missing_v2_real_backlog"] == 0
     assert rep["real_backlog"] is False
+
+
+def test_smoke_project_itself_is_excluded(roots):
+    legacy, v2 = roots
+    _make_legacy_project(
+        legacy, "obj/EOM/_smoke_dualwrite_20260617",
+        doc_code="EOM/_smoke_dualwrite_20260617", section="EOM",
+    )
+    mf = _write_map(v2, [])
+    rep = vmc.classify_coverage(legacy, v2, mf)
+    assert rep["counts"]["experiment_sandbox_junk"] == 1
+    assert rep["real_backlog"] is False
+
+
+def test_stale_pdf_suffix_and_wrong_section_resolve_unique_v2_doc(roots):
+    legacy, v2 = roots
+    _make_legacy_project(
+        legacy, "obj/SS/DOC-PDF", doc_code="DOC-PDF.pdf", section="EOM",
+    )
+    _make_v2_doc(v2, "obj_slug", "SS", "DOC-PDF")
+    mf = _write_map(v2, [])
+    rep = vmc.classify_coverage(legacy, v2, mf)
+    assert rep["counts"]["dual_write_present_but_not_in_ledger"] == 1
+    assert rep["counts"]["missing_v2_real_backlog"] == 0
+
+
+def test_test_object_is_not_accepted_as_production_match(roots):
+    legacy, v2 = roots
+    _make_legacy_project(legacy, "obj/AR/DOC-T", doc_code="DOC-T", section="AR")
+    _make_v2_doc(v2, "test_synthetic", "AR", "DOC-T")
+    mf = _write_map(v2, [])
+    rep = vmc.classify_coverage(legacy, v2, mf)
+    assert rep["counts"]["missing_v2_real_backlog"] == 1
+
+
+def test_verified_archived_exclusion_is_not_backlog(roots, tmp_path):
+    legacy, v2 = roots
+    _make_legacy_project(
+        legacy, "obj/AR/AR7_norms_pilot", doc_code="AR7_norms_pilot", section="AR",
+    )
+    archive = tmp_path / "AR7.tgz"
+    archive.write_bytes(b"verified archive")
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    _write_map(v2, [])
+    (v2 / "_system" / "legacy_deletion_exclusions.json").write_text(
+        json.dumps({"exclusions": [{
+            "legacy_relative_path": "obj/AR/AR7_norms_pilot",
+            "archive_path": str(archive),
+            "archive_sha256": digest,
+        }]}),
+        encoding="utf-8",
+    )
+    rep = vmc.classify_coverage(legacy, v2, v2 / "_system" / "old_to_new_map.json")
+    assert rep["counts"]["archived_intentional_exclusion"] == 1
+    assert rep["counts"]["missing_v2_real_backlog"] == 0
+    assert rep["exclusion_checks"][0]["verified"] is True
+
+
+def test_unverified_archived_exclusion_remains_backlog(roots, tmp_path):
+    legacy, v2 = roots
+    _make_legacy_project(
+        legacy, "obj/AR/AR7_norms_pilot", doc_code="AR7_norms_pilot", section="AR",
+    )
+    archive = tmp_path / "AR7.tgz"
+    archive.write_bytes(b"changed")
+    _write_map(v2, [])
+    (v2 / "_system" / "legacy_deletion_exclusions.json").write_text(
+        json.dumps({"exclusions": [{
+            "legacy_relative_path": "obj/AR/AR7_norms_pilot",
+            "archive_path": str(archive),
+            "archive_sha256": "0" * 64,
+        }]}),
+        encoding="utf-8",
+    )
+    rep = vmc.classify_coverage(legacy, v2, v2 / "_system" / "old_to_new_map.json")
+    assert rep["counts"]["archived_intentional_exclusion"] == 0
+    assert rep["counts"]["missing_v2_real_backlog"] == 1
+    assert rep["exclusion_checks"][0]["verified"] is False
 
 
 # ── 4. orphan .pdf-named folder ─────────────────────────────────────────────

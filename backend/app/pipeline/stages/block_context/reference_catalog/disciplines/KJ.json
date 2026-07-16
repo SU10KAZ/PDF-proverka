@@ -1,0 +1,4364 @@
+{
+  "schema_version": 1,
+  "catalog_version": "2026.07.13-1",
+  "discipline": "КЖ",
+  "records": [
+    {
+      "block_id": "4EVQ-YCAE-M7A",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Плита перекрытия над 24 этажом Плита перекрытия Пм-25.2 на отм. +85,180. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-25.2 на отметке +85,180. На чертеже представлен опалубочный план плиты перекрытия сложной криволинейной формы с внутренними проемами. Обозначены оси, размеры между ними, а также привязки конструктивных элементов и балок сечением 300х500(h). Присутствуют многочисленные выноски с указанием типов отверстий (ВК, ОВ, ОИС) и сечений. Толщина плиты указана как t=200. Плита перекрытия над 24 этажом Плита перекрытия Пм-25.2 на отм. +85,180. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 3,
+          "elevation": 2,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 9,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 3,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4469,
+          "views_total": 0,
+          "coordinate_text_records_total": 321,
+          "coordinate_text_characters_total": 1082
+        }
+      }
+    },
+    {
+      "block_id": "4HH4-XRCF-939",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "",
+      "description": "Опалубочный план плиты перекрытия Пм-39.2 на отметке +134.680. Чертеж представляет собой опалубочный план плиты перекрытия сложной геометрической формы с закругленными углами. На плане нанесены оси, размеры проемов, привязки балок сечением 300х500(h) и обозначения сечений (1-1, 2-2, 3-3, 4-4, 5-5, 6-6). Внутренняя часть содержит прямоугольные контуры проемов с указанием размеров и углов наклона элементов. Толщина плиты указана как t=200.",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "elevation": 2,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 27,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4714,
+          "views_total": 0,
+          "coordinate_text_records_total": 321,
+          "coordinate_text_characters_total": 1153
+        }
+      }
+    },
+    {
+      "block_id": "4XVL-AGGM-WXE",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 29 этажа. Схема расположения закладных деталей ЭОМ",
+      "description": "На чертеже представлены узлы установки закладных деталей (труб ПНД и коробок КУ 1301) в монолитных стенах с нишами ЭОМ. Чертеж содержит восемь сечений (1-1, 2-2, 3-3, 4-4, А-А, Б-Б, В-В) с указанием расположения труб ПНД диаметром 32 мм и распределительных коробок КУ 1301. На разрезах показаны ниши ЭОМ, заполняемые пенополистиролом, с привязкой к высотным отметкам от +98,380 до +101,480. Геометрия стен отображена двойными линиями с штриховкой, обозначающей монолитный бетон. Указаны линейные размеры между осями и элементами, а также привязки к координационным осям. Вертикальные конструкции 29 этажа. Схема расположения закладных деталей ЭОМ",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        10,
+        10
+      ],
+      "covered_facts": 10,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 11,
+          "elevation": 22,
+          "embedded": 5,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 41,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 22,
+          "dimensions_total": 11,
+          "embedded_facts_total": 5,
+          "physical_line_segments_total": 3357,
+          "views_total": 0,
+          "coordinate_text_records_total": 155,
+          "coordinate_text_characters_total": 2004
+        }
+      }
+    },
+    {
+      "block_id": "666D-MRKA-KV3",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 33-38 этажа Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ на плане этажа. На чертеже представлены два горизонтальных сечения строительных конструкций с осями 2.4-2.6 и 2.Г-2.Е. Показаны стены с заштрихованными участками, обозначающими закладные детали, и линии разрезов 1-1, 2-2, 3-3, 4-4. Указаны размерные цепочки между осями (5600, 2700, 3450, 6950) и локальные размеры (525, 710, 1180). Элементы соединены пунктирными и сплошными линиями, обозначающими трассировку. Вертикальные конструкции 33-38 этажа Схема расположения закладных деталей ЭОМ",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 793,
+          "views_total": 0,
+          "coordinate_text_records_total": 23,
+          "coordinate_text_characters_total": 95
+        }
+      }
+    },
+    {
+      "block_id": "6GGM-PEU6-DCG",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Плита перекрытия над 17-23 этажом. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-22.2 над 21-23 этажом. На чертеже представлен опалубочный план плиты перекрытия с указанием балок сечением 300х500(h) по периметру и внутри контура. Обозначены оси, размеры пролетов, привязки балок и закладные детали ЗД-1, ЗД-2. Внутренние зоны разделены на участки с маркировкой 'по 1' - 'по 12'. Толщина плиты указана как t=200. Плита перекрытия над 17-23 этажом. Опалубка",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 7,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 11,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 23,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 7,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4072,
+          "views_total": 0,
+          "coordinate_text_records_total": 371,
+          "coordinate_text_characters_total": 1412
+        }
+      }
+    },
+    {
+      "block_id": "6NVX-XQVV-TLL",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Вертикальные конструкции 25-29 этажа. Схема расположения закладных деталей ЭОМ",
+      "description": "На чертеже представлен узел 2-2, показывающий расположение закладных деталей ЭОМ в монолитной стене. Узел 2-2 отображает вертикальный разрез стены с установленными закладными элементами. Слева показана стена с отметками А и Б, а также вертикальные размеры 1570 мм, 300 мм и 1230 мм. Справа от стены расположена труба ПНД диаметром 32 мм и коробка КУ 1301, установленная в нише ЭОМ. Ниша обозначена как подлежащая заполнению пенополистиролом. Привязка узла к оси 2.4 осуществляется через размер 525 мм. Вертикальные конструкции 25-29 этажа. Схема расположения закладных деталей ЭОМ",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 274,
+          "views_total": 0,
+          "coordinate_text_records_total": 16,
+          "coordinate_text_characters_total": 100
+        }
+      }
+    },
+    {
+      "block_id": "7L7K-V4R9-4HM",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 29 этажа на отм. +98.380. Опалубка",
+      "description": "Опалубочный план вертикальных конструкций 29 этажа на отметке +98.380. На чертеже представлен план опалубки этажа с сеткой осей от 11 до 18. Изображены железобетонные стены и колонны с указанием толщины конструкций (t=200) и маркировкой элементов (по 1, по 2, по 3, по 4, по 5). Присутствуют многочисленные проемы (Отв.1-Отв.5) и закладные детали (П-1 - П-10). Размеры проставлены между осями и внутри помещений, указаны углы поворота стен. Вертикальные конструкции 29 этажа на отм. +98.380. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 8
+        },
+        "counts": {
+          "nodes_total": 8,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 12,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 8,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4451,
+          "views_total": 0,
+          "coordinate_text_records_total": 442,
+          "coordinate_text_characters_total": 1590
+        }
+      }
+    },
+    {
+      "block_id": "7LCN-GGK4-U3X",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 22-28 этажа. Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ для вертикальных конструкций 22-28 этажей. На чертеже представлены два плана секций с обозначением осей 1.Ж, 1.Е, 1.Д, 1.Г в вертикальном направлении и 1.4, 1.5, 1.6 в горизонтальном. Стены показаны двойными линиями с штриховкой, внутри контуров стен нанесены линии с точками, обозначающие закладные детали. Указаны размеры 3450, 6750, 750, 5650, 1340, 2650, 1750, 600 и 1500. Присутствуют разрезы, обозначенные стрелками с цифрами 1, 2, 3, 4 и буквами А, Б. Вертикальные конструкции 22-28 этажа. Схема расположения закладных деталей ЭОМ",
+      "source_page": 42,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 695,
+          "views_total": 0,
+          "coordinate_text_records_total": 30,
+          "coordinate_text_characters_total": 153
+        }
+      }
+    },
+    {
+      "block_id": "7XYM-GXMD-RDW",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Плита перекрытия над 29 этажом. Закладная деталь ЗД-2",
+      "description": "Чертеж закладной детали ЗД-2 с указанием размеров и сечения. На чертеже представлен вид сверху и разрез 1-1 закладной детали ЗД-2. Вид сверху показывает квадратную пластину 200x200 мм с четырьмя анкерами, расположенными с шагом 90 мм. Разрез 1-1 демонстрирует крепление двух анкеров к пластине с помощью сварных швов, обозначенных выноской А. Указаны габаритные размеры пластины, расстояния между осями анкеров и общая длина анкеров 250 мм. Плита перекрытия над 29 этажом. Закладная деталь ЗД-2",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 298,
+          "views_total": 0,
+          "coordinate_text_records_total": 42,
+          "coordinate_text_characters_total": 95
+        }
+      }
+    },
+    {
+      "block_id": "993K-RQF4-NCG",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-30.2 на отметках +104.980 и +108.280. На чертеже представлен опалубочный план плиты перекрытия сложной геометрической формы с закругленными углами. Обозначены оси, размеры пролетов, привязки балок сечением 300х500(h) и расположение отверстий. Присутствуют выноски с указанием углов наклона контуров и ссылки на узлы (по 1, по 2, по 3, 4, 5, 6). В центральной части показаны внутренние контуры проемов и конструктивные элементы с маркировкой ЗД-1, ЗД-2. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "elevation": 2,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 30,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4744,
+          "views_total": 0,
+          "coordinate_text_records_total": 332,
+          "coordinate_text_characters_total": 1192
+        }
+      }
+    },
+    {
+      "block_id": "9DHY-J9XK-VAR",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 30-31 этажа. Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ с указанием осей и размеров. На чертеже представлены два плана этажа с сеткой осей 2.4-2.6 и 2.Г-2.Е. Показаны контуры стен с заштрихованными участками закладных деталей. Присутствуют выносные линии с размерами 5600, 2700, 3450, 6950, 1180, 700 и 525. Обозначены разрезы 1-1, 2-2, 3-3 и 4-4, а также отметка 'Отм. А' с толщиной 't=200'. Вертикальные конструкции 30-31 этажа. Схема расположения закладных деталей ЭОМ",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 874,
+          "views_total": 0,
+          "coordinate_text_records_total": 25,
+          "coordinate_text_characters_total": 106
+        }
+      }
+    },
+    {
+      "block_id": "9UVF-X7CL-YV6",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 35 этажа. Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ для вертикальных конструкций 35 этажа. На чертеже представлены два горизонтальных сечения монолитных стен с указанием осей 1.Г-1.Ж и 1.4-1.6. Показаны контуры стен с заштрихованными участками, места установки закладных деталей и трассировка труб ПНД. Присутствуют выносные линии с размерами 3450, 6750, 750, 1750, 600, 1500, 1340, 5650 и 2650. Обозначены разрезы 1-1, 2-2, 3-3, 4-4, А-А и Б-Б. Вертикальные конструкции 35 этажа. Схема расположения закладных деталей ЭОМ",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 757,
+          "views_total": 0,
+          "coordinate_text_records_total": 29,
+          "coordinate_text_characters_total": 142
+        }
+      }
+    },
+    {
+      "block_id": "D7MK-CJ3L-QVL",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 24 этажа Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ с указанием осей и размеров. На чертеже представлены два горизонтальных сечения строительных конструкций с нанесенными осями 2.4-2.6 и 2.Г-2.Е. Показаны закладные детали в виде заштрихованных прямоугольников, расположенных в стенах и перекрытиях. Присутствуют линии разрезов 1-1, 2-2, 3-3, 4-4, а также обозначения А и Б. Указаны размерные цепочки: 5600, 1180, 2700, 525, 710, 3450 и 6950. Вертикальные конструкции 24 этажа Схема расположения закладных деталей ЭОМ",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 694,
+          "views_total": 0,
+          "coordinate_text_records_total": 38,
+          "coordinate_text_characters_total": 108
+        }
+      }
+    },
+    {
+      "block_id": "JPYV-3J7U-EQQ",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Лестница Лк-2(2)н в осях 2.4-2.5/2.Г. Опалубка",
+      "description": "На чертеже представлен узел 9-9, показывающий установку закладных деталей ЭОМ в бетонной плите. Узел 9-9 отображает сечение бетонной плиты толщиной 200 мм с установленной трубой ПНД диаметром 32 мм и коробкой КУ 1301. Слева показана ниша ЭОМ, заполняемая пенополистиролом, с примыкающими элементами толщиной 110 мм и 90 мм. Размеры на чертеже включают горизонтальные отрезки 550 мм, 1390 мм и 310 мм. Элементы конструкции заштрихованы диагональными линиями, обозначающими бетон. Лестница Лк-2(2)н в осях 2.4-2.5/2.Г. Опалубка",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 159,
+          "views_total": 0,
+          "coordinate_text_records_total": 17,
+          "coordinate_text_characters_total": 98
+        }
+      }
+    },
+    {
+      "block_id": "TQTW-W93U-YRU",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_part_detail",
+      "title": "Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-26.2 на отметках +88,480...+101,680. На чертеже представлен опалубочный план плиты перекрытия сложной геометрической формы с закругленными углами. Внутреннее пространство содержит прямоугольные проемы, стены и балки сечением 300х500(h). Нанесены многочисленные размерные цепочки по осям, привязки проемов и конструктивных элементов. Присутствуют обозначения сечений (1-1, 2-2, 3-3, 4-4, 5-5, 6-6, 7-7, 8-8, 9-9, 10-10, 11-11) и маркировка закладных деталей ЗД-1, ЗД-2. Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 4,
+          "elevation": 2,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 10,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 28,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 4,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4550,
+          "views_total": 0,
+          "coordinate_text_records_total": 301,
+          "coordinate_text_characters_total": 1056
+        }
+      }
+    },
+    {
+      "block_id": "TV7D-6LEC-9UP",
+      "discipline": "КЖ",
+      "profile_id": "kj_embedded_parts",
+      "subtype": "embedded_parts_layout",
+      "title": "Вертикальные конструкции 32-34 этажа. Вертикальные конструкции 32-34 этажей. Схема расположения закладных деталей ЭОМ",
+      "description": "Схема расположения закладных деталей ЭОМ для вертикальных конструкций 32-34 этажей. На чертеже представлены планы вертикальных конструкций с указанием осей 1.4-1.6 и 1.Г-1.Ж. Изображены контуры стен с сечениями, обозначенными выносными линиями с индексами 1-1, 2-2, 3-3, 4-4, А-А и Б-Б. Указаны размеры между осями 5650 мм и 2650 мм, а также высотные привязки 3450 мм, 6750 мм и 750 мм. Элементы конструкций включают штриховку сечений и линии, обозначающие расположение закладных деталей. Вертикальные конструкции 32-34 этажа. Вертикальные конструкции 32-34 этажей. Схема расположения закладных деталей ЭОМ",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "embedded": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 1,
+          "physical_line_segments_total": 688,
+          "views_total": 0,
+          "coordinate_text_records_total": 25,
+          "coordinate_text_characters_total": 131
+        }
+      }
+    },
+    {
+      "block_id": "4UTW-PPGP-VEN",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "description": "План опалубки вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм. -0.180. На чертеже представлен план опалубки с радиальными и линейными осями, включающий колонны круглого сечения и стены. Присутствуют размерные линии с указанием расстояний между осями (например, 3880, 4410, 3405) и радиусов кривизны (R17950, R18450, R17770). Элементы промаркированы обозначениями типа 'Км-1-600-7850' и 'по 1'. Указаны отметки уровня -0.180 и толщина конструкций t=250. Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "structural_mark": 10
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 10,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2536,
+          "views_total": 0,
+          "coordinate_text_records_total": 137,
+          "coordinate_text_characters_total": 992
+        }
+      }
+    },
+    {
+      "block_id": "6TWX-LPX7-WRD",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 24 этажа. Схема расположения вертикальных конструкций 24-го этажа. Опалубка",
+      "description": "Схема расположения вертикальных конструкций 24-го этажа в опалубке. На чертеже представлен план этажа с симметричным расположением вертикальных конструкций, стен и колонн. Стены обозначены сплошными линиями с указанием толщины и привязок, присутствуют многочисленные проемы, маркированные как 'Отв.' и 'П-'. Геометрия включает прямые и криволинейные участки стен, а также внутренние шахты и лестнично-лифтовые узлы. Нанесены размерные цепочки, оси и угловые параметры для криволинейных элементов. Вертикальные конструкции 24 этажа. Схема расположения вертикальных конструкций 24-го этажа. Опалубка",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 12,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4214,
+          "views_total": 0,
+          "coordinate_text_records_total": 450,
+          "coordinate_text_characters_total": 1680
+        }
+      }
+    },
+    {
+      "block_id": "7CVE-DVUV-DRP",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 30-31 этажа Схема расположения вертикальных конструкций 30-31 этажей. Опалубка",
+      "description": "Схема расположения вертикальных конструкций (опалубочный план) 30-31 этажей. На чертеже представлен план опалубки этажа с симметричной геометрией, включающий несущие стены, колонны и проемы. Обозначены оси от 2.1 до 2.16 и от 2.А до 2.Ж. Присутствуют многочисленные размерные линии, указывающие толщину стен (преимущественно 200 мм) и расстояния между осями. Узлы и сечения обозначены выносными линиями с номерами (1-14). Вертикальные конструкции 30-31 этажа Схема расположения вертикальных конструкций 30-31 этажей. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 18,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4150,
+          "views_total": 0,
+          "coordinate_text_records_total": 397,
+          "coordinate_text_characters_total": 1388
+        }
+      }
+    },
+    {
+      "block_id": "94GR-6EGU-WJ9",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Плита покрытия. Конструкции покрытия на отм. +4,400. Опалубка",
+      "description": "На чертеже представлены две схемы опалубки: плиты покрытия на отм. +4,400 и балок покрытия на отм. +4,100. Левая часть содержит схему опалубки плиты покрытия с указанием радиусов криволинейных участков и привязок к осям. Правая часть отображает схему расположения балок покрытия с указанием углов наклона, шага балок 500 мм и линейных размеров. Обе схемы включают координационные оси, разрезы 1-1, 2-2, 3-3 и ссылочные узлы 7.А, 7.Б. Геометрия включает как прямолинейные, так и дугообразные элементы с соответствующими радиусами. Плита покрытия. Конструкции покрытия на отм. +4,400. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2229,
+          "views_total": 0,
+          "coordinate_text_records_total": 173,
+          "coordinate_text_characters_total": 768
+        }
+      }
+    },
+    {
+      "block_id": "9HPM-MX33-EET",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Плита покрытия пристройки корпуса 1-2. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-1 на отметке -0.180 в осях 1.2-1.7/1.К-1.Щ. На чертеже представлен опалубочный план плиты перекрытия сложной геометрической формы с указанием осей, радиусов криволинейных участков и привязок колонн. Обозначены рабочие швы бетонирования, толщина плиты t=250 и отметка -0.180. Присутствуют выносные линии с размерами, указывающие габариты конструкций и расстояния между осями. В нижней части расположены условные обозначения, поясняющие типы линий и элементов. Плита покрытия пристройки корпуса 1-2. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2860,
+          "views_total": 0,
+          "coordinate_text_records_total": 170,
+          "coordinate_text_characters_total": 1142
+        }
+      }
+    },
+    {
+      "block_id": "9HQ6-HNWV-7GJ",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 32-34 этажей. Опалубка",
+      "description": "Опалубочный план вертикальных конструкций 32-34 этажей жилого здания. На чертеже представлен план монолитных стен и колонн с указанием осей, размеров и маркировки проемов. Стены имеют различную толщину, обозначенную размерными линиями. Присутствуют выносные линии с указанием типов отверстий (Отв.1-7) и проемов (П-1 - П-10). Геометрия включает прямые и криволинейные участки стен, а также угловые элементы с указанием углов наклона. Вертикальные конструкции 32-34 этажей. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 14,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4024,
+          "views_total": 0,
+          "coordinate_text_records_total": 455,
+          "coordinate_text_characters_total": 1582
+        }
+      }
+    },
+    {
+      "block_id": "9LHX-Q4Q7-MUU",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 22-28 этажа. Опалубка",
+      "description": "Опалубочный план вертикальных конструкций 22-28 этажей. На чертеже представлен план опалубки вертикальных конструкций с сеткой осей от 1.1 до 1.16 и от 1.А до 1.И. Изображены монолитные стены, колонны и проемы, обозначенные индексами П-1...П-10 и Отв.1...Отв.6. Присутствуют многочисленные размерные линии, указывающие толщину стен, расстояния между осями и привязки элементов. Геометрия включает криволинейные участки по периметру и прямоугольное ядро жесткости в центре. Вертикальные конструкции 22-28 этажа. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 23,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4533,
+          "views_total": 0,
+          "coordinate_text_records_total": 500,
+          "coordinate_text_characters_total": 1782
+        }
+      }
+    },
+    {
+      "block_id": "9RUY-GPNG-QKF",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "description": "Опалубочный план вертикальных конструкций 1-го этажа пристройки корпуса 1-2 на отметке -0.180. На чертеже представлен план опалубки с криволинейными стенами и колоннами, расположенными в осях 1.2-1.7 и 1.К-1.Щ. Указаны радиусы кривизны стен (например, R17950, R18450) и привязки осей. Справа приведено сечение 1-1, показывающее вертикальный элемент с отметками -0.180 и +7.670. Элементы маркированы кодом Км-1-600-7850 и обозначением 'по 1'. Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 5,
+          "structural_mark": 13
+        },
+        "counts": {
+          "nodes_total": 18,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 13,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 5,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2688,
+          "views_total": 0,
+          "coordinate_text_records_total": 185,
+          "coordinate_text_characters_total": 1488
+        }
+      }
+    },
+    {
+      "block_id": "9YAR-Q4EW-YHU",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Плита покрытия пристройки корпуса1-2 Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "description": "Опалубочный план плиты перекрытия Пм-1 на отм. -0.180. На чертеже представлен опалубочный план сложной геометрической формы плиты перекрытия Пм-1. Указаны радиусы криволинейных участков (R17950, R17770, R17980, R17450, R1250) и привязки осей. Обозначены места расположения круглых колонн, рабочие швы бетонирования и ссылки на смежные конструкции корпусов К1 и К2. Толщина плиты составляет 250 мм. Плита покрытия пристройки корпуса1-2 Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Опалубка",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1370,
+          "views_total": 0,
+          "coordinate_text_records_total": 82,
+          "coordinate_text_characters_total": 805
+        }
+      }
+    },
+    {
+      "block_id": "URNX-4JHQ-QPD",
+      "discipline": "КЖ",
+      "profile_id": "kj_formwork_plan",
+      "subtype": "formwork_plan",
+      "title": "Вертикальные конструкции 30-31 этажа. Схема расположения вертикальных конструкций 30-31 этажей. Опалубка",
+      "description": "Схема расположения вертикальных конструкций 30-31 этажей (опалубка). На чертеже представлен план опалубки вертикальных конструкций с указанием осей, размеров проемов и толщины стен. Стены обозначены сплошными линиями с заштрихованными участками, указывающими на колонны или пилоны. Присутствуют многочисленные выносные линии с размерами, маркировкой отверстий (Отв.) и элементов (П-1, П-2 и т.д.). По периметру расположены радиальные элементы с указанием углов наклона (18,5°, 33,5°, 35°). Вертикальные конструкции 30-31 этажа. Схема расположения вертикальных конструкций 30-31 этажей. Опалубка",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 11,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4148,
+          "views_total": 0,
+          "coordinate_text_records_total": 417,
+          "coordinate_text_characters_total": 1591
+        }
+      }
+    },
+    {
+      "block_id": "6TMX-DCP3-KFD",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 29 этажа на отм. +98.380. Маркировочная схема",
+      "description": "Маркировочная схема вертикальных конструкций 29 этажа на отметке +98.380. На чертеже представлен план этажа с маркировкой вертикальных конструкций (колонн и стен). Элементы обозначены буквенно-цифровыми кодами (например, 47-Стм300, Км-400-1000-2800-1) с указанием отметок низа и верха. Присутствуют размерные линии, указывающие расстояния между осями и элементами, а также угловые размеры для криволинейных участков контура. Стены и колонны показаны сплошными линиями, некоторые участки имеют штриховку. Вертикальные конструкции 29 этажа на отм. +98.380. Маркировочная схема",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        17,
+        17
+      ],
+      "covered_facts": 17,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 218,
+          "structural_mark": 108
+        },
+        "counts": {
+          "nodes_total": 326,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 8,
+          "marks_total": 108,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 218,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4525,
+          "views_total": 0,
+          "coordinate_text_records_total": 567,
+          "coordinate_text_characters_total": 5413
+        }
+      }
+    },
+    {
+      "block_id": "6VCK-LXXM-N33",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 32-34 этажа Вертикальные конструкции 32-34 этажей. Маркировочная схема",
+      "description": "Маркировочная схема вертикальных конструкций 32-34 этажей с указанием типов стен и колонн. На чертеже представлена маркировочная схема вертикальных конструкций этажей 32-34 с сеткой осей. Стены и колонны промаркированы буквенно-цифровыми кодами (например, 1-Стм200, Км-400-1000-2800-1). Указаны размеры пролетов, привязки элементов и ссылки на разрезы. Схема включает в себя контур здания с закругленными углами и внутренние несущие конструкции. Вертикальные конструкции 32-34 этажа Вертикальные конструкции 32-34 этажей. Маркировочная схема",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 95
+        },
+        "counts": {
+          "nodes_total": 95,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 95,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3601,
+          "views_total": 0,
+          "coordinate_text_records_total": 472,
+          "coordinate_text_characters_total": 4367
+        }
+      }
+    },
+    {
+      "block_id": "7AJJ-RGYU-77P",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Схема расположения вертикальных конструкций 25-29 этажей. Маркировочная схема",
+      "description": "Маркировочная схема расположения вертикальных конструкций 25-29 этажей. На чертеже представлена общая компоновочная схема вертикальных конструкций (колонн и пилонов) с маркировкой элементов. Элементы имеют буквенно-цифровые обозначения, привязанные к координатной сетке. Указаны габаритные размеры здания 25800x24200 мм и промежуточные размеры между осями. Присутствуют выноски с указанием типов армирования и отметок для различных конструктивных узлов. Схема расположения вертикальных конструкций 25-29 этажей. Маркировочная схема",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 95
+        },
+        "counts": {
+          "nodes_total": 95,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 95,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4077,
+          "views_total": 0,
+          "coordinate_text_records_total": 506,
+          "coordinate_text_characters_total": 4586
+        }
+      }
+    },
+    {
+      "block_id": "97ET-PR6R-LKH",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 35 этажа. Маркировочная схема",
+      "description": "Маркировочная схема вертикальных конструкций 35-го этажа с указанием типов стен и колонн. На чертеже представлен план этажа с сеткой осей, включающей буквенные и цифровые обозначения. Схема содержит монолитные стены и колонны, промаркированные кодами типа 'Стм' и 'Км'. Указаны отметки низа и верха бетонирования, а также параметры армирования для различных элементов. Геометрия включает криволинейные участки по периметру и внутренние прямоугольные контуры стен. Вертикальные конструкции 35 этажа. Маркировочная схема",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        16,
+        16
+      ],
+      "covered_facts": 16,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 186,
+          "structural_mark": 99
+        },
+        "counts": {
+          "nodes_total": 285,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 99,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 186,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4304,
+          "views_total": 0,
+          "coordinate_text_records_total": 527,
+          "coordinate_text_characters_total": 5001
+        }
+      }
+    },
+    {
+      "block_id": "9NYJ-WR9J-HLE",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 29 этажа на отм. +98.380. Маркировочная схема",
+      "description": "Маркировочная схема вертикальных конструкций 29 этажа на отметке +98.380. На чертеже представлена маркировочная схема вертикальных конструкций с указанием осей от 11 до 18. Элементы включают колонны и стены с маркировками типа 'Стм' и 'Км', сопровождаемые отметками низа и верха конструкций. Присутствуют размерные линии, указывающие расстояния между осями и габариты элементов. Геометрия включает криволинейные участки по периметру с указанием углов наклона. Вертикальные конструкции 29 этажа на отм. +98.380. Маркировочная схема",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        17,
+        17
+      ],
+      "covered_facts": 17,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 216,
+          "structural_mark": 107
+        },
+        "counts": {
+          "nodes_total": 323,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 107,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 216,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4699,
+          "views_total": 0,
+          "coordinate_text_records_total": 572,
+          "coordinate_text_characters_total": 5380
+        }
+      }
+    },
+    {
+      "block_id": "9VDP-3UPG-TET",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 1 этажа. Вертикальные конструкции на отм. -0,350. Маркировочный план",
+      "description": "Маркировочный план вертикальных конструкций на отметке -0,350. На чертеже представлен план эллиптической формы с сеткой осей П.А-П.ГГ и П.14-П.16. Внутри контура расположены вертикальные конструкции (стойки) с маркировкой от 21-Стм250 до 34-Стм250 и 26-Стм200 до 33-Стм200. Указаны размеры привязок, расстояния между осями и конструкциями, а также высотные отметки начала и конца элементов. Конструкции обозначены прямоугольными и круглыми символами с выносками характеристик армирования. Вертикальные конструкции 1 этажа. Вертикальные конструкции на отм. -0,350. Маркировочный план",
+      "source_page": 21,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 33,
+          "structural_mark": 16
+        },
+        "counts": {
+          "nodes_total": 49,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 16,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 33,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1258,
+          "views_total": 0,
+          "coordinate_text_records_total": 81,
+          "coordinate_text_characters_total": 783
+        }
+      }
+    },
+    {
+      "block_id": "A4CM-4PLC-K3E",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 22-28 этажа. Вертикальные конструкции 22-24 этажа. Маркировочная схема",
+      "description": "Маркировочная схема вертикальных конструкций 22-24 этажа с указанием типов стен и колонн. На чертеже представлен план этажа с сеткой осей, включающий монолитные стены и колонны. Стены промаркированы кодами типа 'Стм' с указанием армирования и отметок. Колонны обозначены кодами 'Км' с указанием сечений и высот. В центре плана расположено ядро жесткости с лестнично-лифтовым узлом, окруженное несущими стенами и колоннами по периметру. Вертикальные конструкции 22-28 этажа. Вертикальные конструкции 22-24 этажа. Маркировочная схема",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 102
+        },
+        "counts": {
+          "nodes_total": 102,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 102,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3923,
+          "views_total": 0,
+          "coordinate_text_records_total": 504,
+          "coordinate_text_characters_total": 4623
+        }
+      }
+    },
+    {
+      "block_id": "AAHJ-KLKT-MCC",
+      "discipline": "КЖ",
+      "profile_id": "kj_marking_plan",
+      "subtype": "marking_plan",
+      "title": "Вертикальные конструкции 24 этажа. Схема расположения вертикальных конструкций 24-го этажа. Маркировочная схема",
+      "description": "Схема расположения вертикальных конструкций 24-го этажа с маркировкой стен и колонн. На чертеже представлена маркировочная схема вертикальных конструкций 24-го этажа с сеткой осей от 2.1 до 2.16 и от 2.А до 2.Ж. Изображены монолитные стены и колонны с указанием их марок, типов армирования и отметок низа/верха бетонирования. Присутствуют размерные линии, указывающие расстояния между осями и элементами конструкций. В нижней части расположены таблицы с параметрами арматурных деталей и спецификация колонн. Вертикальные конструкции 24 этажа. Схема расположения вертикальных конструкций 24-го этажа. Маркировочная схема",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        15,
+        15
+      ],
+      "covered_facts": 15,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 215,
+          "structural_mark": 109
+        },
+        "counts": {
+          "nodes_total": 324,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 109,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 215,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4413,
+          "views_total": 0,
+          "coordinate_text_records_total": 582,
+          "coordinate_text_characters_total": 5473
+        }
+      }
+    },
+    {
+      "block_id": "43NC-AXMP-C4W",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "",
+      "description": "Схема расположения армирования балок (3 ряд) плиты перекрытия Пм-39.2 на отм. +134.680. На чертеже представлен план плиты перекрытия с контурными линиями, внутренними проемами и сеткой осей. По периметру и внутри плиты расположены балки, обозначенные позициями арматуры (например, 16-Г-5.1, 16-Г-9.1). Указаны размеры пролетов, привязки к осям и количество стержней для каждой позиции. В центральной части видны прямоугольные контуры отверстий и внутренних конструктивных элементов.",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4599,
+          "views_total": 0,
+          "coordinate_text_records_total": 248,
+          "coordinate_text_characters_total": 1350
+        }
+      }
+    },
+    {
+      "block_id": "4A3C-VT6N-TAH",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схемы расположения нижнего армирования",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-26.2 вдоль цифровых осей. На чертеже представлена схема нижнего армирования плиты перекрытия с указанием позиций арматурных стержней, их диаметров, длин и шага установки. Геометрия плиты ограничена контуром с осями 2.1-2.16 и 2.А-2.Ж. Видны многочисленные выносные линии с размерами, указывающими привязку арматуры к осям и краям плиты. Внутренние контуры обозначают проемы и технологические отверстия, вокруг которых также проставлены параметры армирования. Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схемы расположения нижнего армирования",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 43,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 46,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 43,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 5391,
+          "views_total": 0,
+          "coordinate_text_records_total": 226,
+          "coordinate_text_characters_total": 1522
+        }
+      }
+    },
+    {
+      "block_id": "4CLX-GJME-JXT",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Лестница Лк-1(2)н в осях 1.4-1.5/1.Ж. Армирование площадок",
+      "description": "Схема верхнего и нижнего армирования лестничной площадки Лп-1(2).3н. На чертеже представлена схема армирования лестничной площадки с указанием расположения стержней, их шага и маркировки. Видны продольные и поперечные арматурные стержни, обозначенные выносками с указанием диаметров и шага укладки. Присутствуют размерные линии, определяющие расстояния между стержнями и общие габариты элементов. Стены показаны условно, армирование стен не отображено. Лестница Лк-1(2)н в осях 1.4-1.5/1.Ж. Армирование площадок",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 11,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 11,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1187,
+          "views_total": 0,
+          "coordinate_text_records_total": 82,
+          "coordinate_text_characters_total": 466
+        }
+      }
+    },
+    {
+      "block_id": "4EFR-3YHC-4DF",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита покрытия. Верхнее армирование вдоль буквенных, цифровых осей",
+      "description": "На чертеже представлены схемы установки дополнительных арматурных стержней и поддерживающих элементов для армирования плиты. Слева показана схема установки дополнительных арматурных стержней с шагом 200 мм, где основной и дополнительный слои арматуры обозначены кружками. Справа приведена схема установки поддерживающих элементов, состоящая из двух уровней с высотой 500 мм каждый и шагом 1000 мм. Основное армирование на схеме поддерживающих элементов показано условно пунктирными линиями. Присутствуют выносные линии с размерами 100, 200, 500 и 1000 мм. Плита покрытия. Верхнее армирование вдоль буквенных, цифровых осей",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 105,
+          "views_total": 0,
+          "coordinate_text_records_total": 28,
+          "coordinate_text_characters_total": 267
+        }
+      }
+    },
+    {
+      "block_id": "4FAQ-EJXD-CJ3",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Схема расположения выпусков из плиты и армирование парапета",
+      "description": "Схема стыковки арматурных стержней внахлест с указанием параметров длины. На чертеже изображены два параллельных арматурных стержня, соединенных внахлест. Обозначены параметры длины нахлеста Lр.н. для каждого стержня и общая длина перекрытия, обозначенная как ≥ Длина 1. Указано минимальное расстояние между стержнями в свету как ≥2d и ≥30мм. Стержни представлены тонкими линиями с выносными линиями для размеров. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Схема расположения выпусков из плиты и армирование парапета",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 33,
+          "views_total": 0,
+          "coordinate_text_records_total": 6,
+          "coordinate_text_characters_total": 61
+        }
+      }
+    },
+    {
+      "block_id": "4H7V-67LL-Q9V",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита перекрытия Пм-29.1. Схемы расположения верхнего армирования",
+      "description": "Схема расположения верхнего армирования плиты перекрытия над 29 этажом. На чертеже представлена схема верхнего армирования плиты перекрытия с указанием шага арматурных стержней и их количества. Геометрия плиты имеет сложную криволинейную форму с сеткой осей от 1.1 до 1.16 и от 1.А до 1.И. Нанесены многочисленные выноски с маркировкой арматуры (например, 16-П-24, 10-П-4) и размерные линии, указывающие расстояния между элементами. Присутствуют отметки высот, такие как +101,680, и толщина плиты t=200. Плита перекрытия Пм-29.1. Схемы расположения верхнего армирования",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 111
+        },
+        "counts": {
+          "nodes_total": 112,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 111,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 9001,
+          "views_total": 0,
+          "coordinate_text_records_total": 477,
+          "coordinate_text_characters_total": 3364
+        }
+      }
+    },
+    {
+      "block_id": "4JEP-F7LV-E6C",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-39.2 на отметке +134.680 вдоль буквенных осей. На чертеже представлена схема нижнего армирования плиты перекрытия с указанием позиций арматурных стержней, их диаметров, длин и шага укладки. Сетка осей охватывает буквенные (2.А-2.Ж) и цифровые (2.1-2.16) ряды. Присутствуют выноски с маркировкой арматуры, например, 10-6500 шаг 250, а также обозначения отверстий и зон дополнительного армирования. Геометрия плиты имеет сложный контур с закругленными углами и внутренними проемами.",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 50,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 52,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 50,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 5890,
+          "views_total": 0,
+          "coordinate_text_records_total": 261,
+          "coordinate_text_characters_total": 1713
+        }
+      }
+    },
+    {
+      "block_id": "4KQL-FLFH-HWA",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Плита перекрытия над 17-23 этажом. Поперечное армирование",
+      "description": "Схема поперечного армирования плиты перекрытия над 17-23 этажом с указанием расположения каркасов. На чертеже представлен план плиты перекрытия сложной формы с сеткой осей. Показаны места установки каркасов поперечного армирования, обозначенные как 'по А', 'Б' и 'В'. Указаны габаритные размеры плиты 25800 мм по горизонтали и 24200 мм по вертикали. Внутренние контуры включают прямоугольные вырезы и зоны расположения колонн. Плита перекрытия над 17-23 этажом. Поперечное армирование",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3019,
+          "views_total": 0,
+          "coordinate_text_records_total": 59,
+          "coordinate_text_characters_total": 255
+        }
+      }
+    },
+    {
+      "block_id": "4MRH-7JTT-WRW",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Плита перекрытия над 17-23 этажом. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "description": "Схема расположения верхнего армирования балок (4, 5 ряды) плиты перекрытия над 17-23 этажами. На чертеже представлена схема армирования плиты перекрытия с указанием позиций арматурных стержней и гнутых деталей. Видны контуры балок, обозначенные осями 2.А-2.Ж и 2.1-2.16, а также внутренние проемы. Указаны маркировки арматуры, такие как 16-Г-5.1, 20-3300 и другие, с привязкой к количеству штук и типам деталей. Присутствуют размерные линии, определяющие расстояния между элементами армирования и осями. Плита перекрытия над 17-23 этажом. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4489,
+          "views_total": 0,
+          "coordinate_text_records_total": 315,
+          "coordinate_text_characters_total": 2014
+        }
+      }
+    },
+    {
+      "block_id": "4MWW-KGUM-PT6",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Вертикальные конструкции 22-28 этажа. Спецификация элементов армирования стен 26-28 этажа",
+      "description": "Таблица содержит ведомость деталей с указанием позиций и геометрических параметров (а, b, c, d, e, dоп) для арматурных элементов. Изображение представляет собой четыре столбца таблицы «Ведомость деталей». Каждый ряд содержит позицию детали, схематичный эскиз формы арматурного стержня с буквенными обозначениями размеров и текстовую расшифровку этих размеров. Эскизы показывают различные конфигурации гибки стержней, включая прямые участки, углы и крюки. Размеры указаны в миллиметрах, а диаметры стержней обозначены как dоп. Вертикальные конструкции 22-28 этажа. Спецификация элементов армирования стен 26-28 этажа",
+      "source_page": 37,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 395,
+          "views_total": 0,
+          "coordinate_text_records_total": 174,
+          "coordinate_text_characters_total": 1886
+        }
+      }
+    },
+    {
+      "block_id": "4P6D-QKVD-FWU",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Плита перекрытия над 17-23 этажом. Плита перекрытия над 17-20 этажом. Спецификация элементов армирования",
+      "description": "Таблица «Ведомость деталей» содержит геометрические параметры (длины сегментов и углы) для различных элементов с маркировкой 20-Г и 16-Г. Таблица состоит из двух столбцов: «Поз.» и «Эскиз». В столбце «Эскиз» представлены схематичные изображения ломаных линий с указанием длин сегментов (a, b, c, d, e) и углов (α, β, γ). Каждая строка соответствует конкретной позиции, для которой справа приведены численные значения параметров. Линии на эскизах отображают геометрию деталей с переменным количеством изгибов. Плита перекрытия над 17-23 этажом. Плита перекрытия над 17-20 этажом. Спецификация элементов армирования",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 5,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1376,
+          "views_total": 0,
+          "coordinate_text_records_total": 189,
+          "coordinate_text_characters_total": 1062
+        }
+      }
+    },
+    {
+      "block_id": "4R3F-Y73Q-WQL",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "description": "Легенда условных обозначений для строительных чертежей. В левой части представлены графические символы: прямоугольник с отметкой +4,200, прямоугольник с параметром t=200, волнистая линия и пунктирный круг. Справа от каждого символа расположено текстовое пояснение. Текст описывает отметку верха плиты, толщину плиты, рабочий шов бетонирования и вышележащие круглые колонны. Все элементы выровнены в вертикальный список. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "raster_region": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 33,
+          "views_total": 0,
+          "coordinate_text_records_total": 10,
+          "coordinate_text_characters_total": 134
+        }
+      }
+    },
+    {
+      "block_id": "4RLV-36E6-NYK",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения армирования балок (3 ряд)",
+      "description": "Схема расположения армирования балок 3-го ряда плиты перекрытия Пм-25.2 на отметке +85,180. На чертеже представлен план плиты перекрытия сложной геометрической формы с внутренним прямоугольным отверстием. По периметру плиты и вдоль внутренних балок нанесены маркировки арматурных стержней и гнутых деталей с указанием их количества. Указаны размерные цепочки по осям, общие габариты 25800 мм и 24200 мм, а также толщина плиты t=200. Вдоль контура расположены выносные линии с позициями арматуры, такими как 16-Г-51, 16-Г-52, 16-Г-56 и другие. Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения армирования балок (3 ряд)",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4317,
+          "views_total": 0,
+          "coordinate_text_records_total": 257,
+          "coordinate_text_characters_total": 1377
+        }
+      }
+    },
+    {
+      "block_id": "4U4N-YNGA-PDM",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Схема расположения выпусков из плиты и армирование парапета",
+      "description": "Схема расположения выпусков из плиты покрытия Пм-2 на отметке +7,970 и армирование парапета. На чертеже представлена плита покрытия сложной криволинейной формы с радиусами R22240 и R24210. В углах плиты обозначены зоны деформационных швов (Д.ш.) и узлы А, Б, В. По периметру плиты нанесены выносные линии с размерами 375, 985, 1430 и 1560. В нижней части чертежа показаны оси 1.4, 1.5, 1.6 и 1.И, а также примыкания к конструкциям корпусов К1 и К2. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Схема расположения выпусков из плиты и армирование парапета",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 1,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 904,
+          "views_total": 0,
+          "coordinate_text_records_total": 37,
+          "coordinate_text_characters_total": 313
+        }
+      }
+    },
+    {
+      "block_id": "4YML-PXLR-YA4",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Схемы расположения верхнего армирования",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-30.2 на отметках +104.980 и +108.280. На чертеже представлена схема верхнего армирования плиты перекрытия Пм-30.2 с указанием расположения арматурных стержней, их диаметров, шага и количества. Плита имеет сложную геометрическую форму с закругленными углами и внутренними проемами. По периметру и внутри плиты нанесены размерные линии, привязывающие арматуру к осям 2.1-2.8 и 2.А-2.Ж. В центре и по краям плиты расположены выноски с маркировкой арматурных позиций, таких как 10-1650, 12-2300, 16-3300 и другие. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Схемы расположения верхнего армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 77,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 81,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 77,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 6687,
+          "views_total": 0,
+          "coordinate_text_records_total": 369,
+          "coordinate_text_characters_total": 2544
+        }
+      }
+    },
+    {
+      "block_id": "6ADR-N9C6-F7P",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "",
+      "description": "Схема расположения арматурных стержней с указанием шага укладки. На чертеже представлена схема армирования с использованием прямоугольных контуров и осевых линий. Указаны марки арматурных стержней (10-Г-2, 10-Г-17, 10-Х-1, 10-Х-3) с шагом 100 или 250 мм. Между осями 2.2 и 2.4 проставлен размер 1750 мм. Элементы соединены линиями-выносками, указывающими на конкретные участки армирования.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 15
+        },
+        "counts": {
+          "nodes_total": 15,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 15,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 907,
+          "views_total": 0,
+          "coordinate_text_records_total": 35,
+          "coordinate_text_characters_total": 213
+        }
+      }
+    },
+    {
+      "block_id": "6ARU-LGHU-YCX",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Вертикальные конструкции 1 этажа. Плита перекрытия на отм. -0,350. Выпуски",
+      "description": "План выпусков арматуры из плиты перекрытия на отметке -0,350 с указанием типов стержней и их длин. На чертеже представлен план плиты перекрытия с радиальной и ортогональной сеткой осей. Показаны выпуски арматуры различных типов ([1]-Вст250-16/125-Тип1 и [2]-Вст200-16/125-Тип1) с указанием их длин и углов расположения. Присутствуют размерные линии, определяющие геометрию выпусков и привязки к осям. В центральной части выделена зона с более плотным армированием, обозначенная штриховкой. Вертикальные конструкции 1 этажа. Плита перекрытия на отм. -0,350. Выпуски",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        15,
+        15
+      ],
+      "covered_facts": 15,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 24,
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 27,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 24,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2043,
+          "views_total": 0,
+          "coordinate_text_records_total": 117,
+          "coordinate_text_characters_total": 1005
+        }
+      }
+    },
+    {
+      "block_id": "6HTC-XJHQ-34F",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита покрытия. Нижнее армирование вдоль буквенных, цифровых осей",
+      "description": "Представлены две схемы нижнего армирования плиты покрытия вдоль буквенных и цифровых осей. На чертеже изображены два плана плиты покрытия овальной формы с нанесенной сеткой осей. Схемы содержат размерные линии с указанием шагов 8400 мм и 16800 мм, а также угловые размеры армирования. Пунктирными линиями показано расположение арматурных стержней, а сплошными линиями — контуры плиты и оси. Указаны параметры армирования '12-пог.м' с шагом 250 мм. Плита покрытия. Нижнее армирование вдоль буквенных, цифровых осей",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 5,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 2,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2140,
+          "views_total": 0,
+          "coordinate_text_records_total": 49,
+          "coordinate_text_characters_total": 328
+        }
+      }
+    },
+    {
+      "block_id": "6JML-NR94-A7U",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "opening_reinforcement",
+      "title": "Плита перекрытия над 17-23 этажом",
+      "description": "Типовая схема усиления отверстий в плите перекрытия с указанием армирования. На схеме представлено прямоугольное отверстие, обрамленное двойными линиями арматурных стержней. Указаны размеры 'Ширина отверстия' и анкеровка 'Lp.a' со ссылкой на таблицу 1. Вокруг отверстия расположены П-образные элементы армирования с шагом 250 мм и стержни диаметром 12 мм. Размеры отступов стержней от краев отверстия составляют 50 мм. Плита перекрытия над 17-23 этажом",
+      "source_page": 23,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 4,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 245,
+          "views_total": 0,
+          "coordinate_text_records_total": 41,
+          "coordinate_text_characters_total": 228
+        }
+      }
+    },
+    {
+      "block_id": "6PCK-K6RV-N9L",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Поперечное армирование",
+      "description": "Схема поперечного армирования плиты перекрытия Пм-26.2 на отметках +88,480...+101,680. На чертеже представлен план плиты перекрытия с сеткой осей и указанием зон поперечного армирования. Обозначены узлы армирования 'по А', 'по В', 'А', 'Б', 'В', 'Г'. Указаны габаритные размеры между осями: 25800 мм по горизонтали и 24200 мм по вертикали. Элементы армирования представлены в виде прямоугольных блоков, расположенных вокруг центрального ядра жесткости. Плита перекрытия над 25-29 этажом. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Поперечное армирование",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2747,
+          "views_total": 0,
+          "coordinate_text_records_total": 53,
+          "coordinate_text_characters_total": 256
+        }
+      }
+    },
+    {
+      "block_id": "73WT-R3HY-WXV",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита перекрытия над 21-23 этажом. Схемы располажения верхнего армирования",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-22.2 над 21-23 этажом. На чертеже представлена схема верхнего армирования плиты перекрытия с указанием расположения стержней, их шага и количества. Сетка армирования привязана к координационным осям, обозначенным буквенными и цифровыми индексами. Присутствуют многочисленные выноски с маркировкой арматурных элементов, таких как 10-П-7, 16-П-9, 12-2300 и другие. Геометрия плиты включает прямые и скругленные участки, а также внутренние проемы и контуры. Плита перекрытия над 21-23 этажом. Схемы располажения верхнего армирования",
+      "source_page": 22,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 76,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 77,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 76,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 6766,
+          "views_total": 0,
+          "coordinate_text_records_total": 393,
+          "coordinate_text_characters_total": 2541
+        }
+      }
+    },
+    {
+      "block_id": "77N6-HFNK-UNL",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Вертикальные конструкции 22-28 этажа Колонны Км-400-1200-2800-1, Км-400-1200-2800-2",
+      "description": "Легенда условных обозначений для чертежей армирования. На фрагменте представлена легенда условных обозначений, используемых в проектной документации. Приведены текстовые расшифровки для сокращения 'з.с.' (защитный слой), графического изображения рабочего шва бетонирования в виде зигзагообразной линии, контуров конструкций вышележащего уровня в виде пунктирного прямоугольника и указателя армирования в виде закрашенного треугольника. В нижней части фрагмента частично видна отметка уровня 0,000. Вертикальные конструкции 22-28 этажа Колонны Км-400-1200-2800-1, Км-400-1200-2800-2",
+      "source_page": 39,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "cover": 1,
+          "raster_region": 3
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 22,
+          "views_total": 0,
+          "coordinate_text_records_total": 11,
+          "coordinate_text_characters_total": 124
+        }
+      }
+    },
+    {
+      "block_id": "7DNG-AEAV-XU7",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-25.2 на отметке +85,180. На чертеже представлена схема верхнего армирования плиты перекрытия с сеткой осей и указанием диаметров арматурных стержней, их шага и количества. Геометрия плиты сложной формы с множеством внутренних отверстий и проемов. По всей площади нанесены выноски с маркировкой арматуры, например, 10-П-23, 16-П-20, 12-2300, с указанием шага укладки. Линии армирования показаны сплошными, с привязками к осям и размерами в миллиметрах. Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 81,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 83,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 81,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 7443,
+          "views_total": 0,
+          "coordinate_text_records_total": 355,
+          "coordinate_text_characters_total": 2541
+        }
+      }
+    },
+    {
+      "block_id": "7HV6-C9YX-RJ9",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Вертикальные конструкции 30-31 этажа Колонны Км-400-1000-2800-1, Км-400-1000-2800-2",
+      "description": "Представлена легенда условных обозначений для строительных чертежей. Легенда содержит заголовок 'Условные обозначения' и список из четырех пунктов. Первый пункт включает аббревиатуру 'з.с.' и описание 'Защитный слой'. Второй пункт представлен зигзагообразной линией и описанием 'Рабочий шов бетонирования'. Третий пункт состоит из прямоугольника с пунктирными линиями и описанием 'Конструкции вышележащего уровня'. Четвертый пункт содержит закрашенный черный треугольник и описание 'Указатель армирования'. Вертикальные конструкции 30-31 этажа Колонны Км-400-1000-2800-1, Км-400-1000-2800-2",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "cover": 1,
+          "raster_region": 4
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 22,
+          "views_total": 0,
+          "coordinate_text_records_total": 10,
+          "coordinate_text_characters_total": 119
+        }
+      }
+    },
+    {
+      "block_id": "7JM3-GM7H-PPF",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-39.2 на отметке +134.680 вдоль буквенных осей. На чертеже представлена схема верхнего армирования плиты перекрытия с указанием позиций арматурных стержней, их шага и количества. Геометрия плиты ограничена осями 2.1-2.8 и 2.А-2.Ж, с нанесенными размерами пролетов и привязками. Внутри контура плиты расположены многочисленные выноски с маркировкой арматуры (например, 10-Г-13, 16-Г-78) и указанием шага укладки. Присутствуют линии сетки, размерные цепочки и обозначения отверстий.",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 90,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 92,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 90,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 7637,
+          "views_total": 0,
+          "coordinate_text_records_total": 398,
+          "coordinate_text_characters_total": 2813
+        }
+      }
+    },
+    {
+      "block_id": "7N9E-KTEE-6XJ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль буквенных осей",
+      "description": "План верхнего армирования плиты покрытия Пм-2 на отметке +7,970 в осях 1.2-1.7/1.К-1.Щ. На чертеже представлен план армирования плиты покрытия с указанием расположения арматурных стержней, их шага и количества. Геометрия плиты ограничена осями 1.2-1.7 и 1.К-1.Щ, с центральным узлом в осях 2-2(11). Присутствуют выносные линии с размерами, спецификацией арматуры (например, 16-Г-14, 16-Г-9) и указанием шага укладки. Толщина плиты обозначена как t=300, отметка верха плиты +7,970. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль буквенных осей",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "spacing": 24,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 28,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 24,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3875,
+          "views_total": 0,
+          "coordinate_text_records_total": 192,
+          "coordinate_text_characters_total": 1212
+        }
+      }
+    },
+    {
+      "block_id": "7NNH-WLYM-RFR",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита перекрытия над 17-23 этажом. Плита перекрытия над 17-20 этажом. Схемы расположения нижнего армирования",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-18.2 над 17-20 этажом. На чертеже представлена схема нижнего армирования плиты перекрытия с указанием шага арматурных стержней и их количества. Геометрия плиты имеет скругленные углы и внутренние проемы сложной формы. По периметру и внутри плиты нанесены размерные линии с привязками к осям и указанием длин стержней. Арматурные элементы обозначены выносками с указанием диаметра, длины и шага укладки. Плита перекрытия над 17-23 этажом. Плита перекрытия над 17-20 этажом. Схемы расположения нижнего армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 39,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 40,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 39,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 5602,
+          "views_total": 0,
+          "coordinate_text_records_total": 260,
+          "coordinate_text_characters_total": 1579
+        }
+      }
+    },
+    {
+      "block_id": "7NPH-AAXX-444",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Лестница Лк-2(1)н в осях 2.4-2.5/2.Е. Армирование площадок",
+      "description": "Схема верхнего и нижнего армирования лестничной площадки Лп-2(1).5н. На чертеже представлена схема армирования лестничной площадки с указанием расположения стержней, их шага и маркировки. Видны контуры площадки с обозначением осей К и Л, а также выноски с указанием типов арматуры (например, 8-Х-1, 12-П-1, 8-П-1.1). Присутствуют размерные линии с указанием шага армирования (например, 50, 100, 150, 200 мм) и привязки стержней. В правой части показаны узлы сопряжения и выпуски арматуры, а также примечание о том, что армирование стен условно не показано. Лестница Лк-2(1)н в осях 2.4-2.5/2.Е. Армирование площадок",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 11,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 11,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1139,
+          "views_total": 0,
+          "coordinate_text_records_total": 84,
+          "coordinate_text_characters_total": 473
+        }
+      }
+    },
+    {
+      "block_id": "7PRN-G7MH-NFY",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Плита покрытия. Выпуски",
+      "description": "Схема расположения выпусков арматуры плиты покрытия с указанием параметров армирования. На чертеже представлена криволинейная плита покрытия с нанесенными осями и радиусами кривизны (R5375, R16285, R16375, R11220). Указаны длины выпусков арматуры [1]-Вст250-12/250-Тип1 с различными значениями L. Справа приведена деталь узла 'Тип 1', показывающая сопряжение плиты со стеной, отметку верха плиты +4,400 и толщину плиты t=300. Армирование плиты показано условно. Плита покрытия. Выпуски",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        9,
+        9
+      ],
+      "covered_facts": 9,
+      "structure_signature": {
+        "node_types": {
+          "concrete": 1,
+          "dimension": 10,
+          "elevation": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 10,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1427,
+          "views_total": 0,
+          "coordinate_text_records_total": 86,
+          "coordinate_text_characters_total": 799
+        }
+      }
+    },
+    {
+      "block_id": "7TXA-FPG9-LV6",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Вертикальные конструкции 35 этажа Спецификация элементов армирования стен 35-го этажа",
+      "description": "Представлена ведомость деталей армирования с указанием геометрических параметров гнутых стержней. Таблица разделена на четыре колонки, содержащие позиции арматурных элементов, их схематичные эскизы и буквенные обозначения размеров (a, b, c, d, e, dоп). Эскизы представляют собой контурные изображения гнутых стержней типов 'Г' и 'Х' с выносными линиями размеров. Размеры указаны в миллиметрах для каждого сегмента стержня. Таблица структурирована по этапам: начало, продолжение и окончание. Вертикальные конструкции 35 этажа Спецификация элементов армирования стен 35-го этажа",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 457,
+          "views_total": 0,
+          "coordinate_text_records_total": 206,
+          "coordinate_text_characters_total": 2263
+        }
+      }
+    },
+    {
+      "block_id": "7VVW-7C6E-HQ3",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схемы расположения нижнего армирования",
+      "description": "Схема расположения нижнего армирования плиты перекрытия над 29 этажом. На чертеже представлена схема армирования плиты перекрытия с указанием шага и количества стержней. Видны контуры плиты с закругленными углами, нанесены координационные оси и размерные линии. Арматурные стержни обозначены выносками с указанием диаметра, длины и шага укладки. Присутствуют отметки высот и привязки к осям. Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схемы расположения нижнего армирования",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 72
+        },
+        "counts": {
+          "nodes_total": 73,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 72,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 7284,
+          "views_total": 0,
+          "coordinate_text_records_total": 350,
+          "coordinate_text_characters_total": 2370
+        }
+      }
+    },
+    {
+      "block_id": "93LM-TUUX-MY4",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Спецификация элементов армирования и ведомость деталей",
+      "description": "Таблица ведомости деталей арматурных элементов с указанием геометрических параметров и длин. Изображение представляет собой две колонки таблицы «Ведомость деталей». В каждой строке указан позиционный номер элемента, схематичный эскиз формы арматуры и буквенные обозначения размеров (a, b, c) с соответствующими значениями в миллиметрах. Также для каждого элемента указан диаметр гиба (dоп) и общая длина (L). Таблица структурирована для быстрого считывания параметров армирования. Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Спецификация элементов армирования и ведомость деталей",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 288,
+          "views_total": 0,
+          "coordinate_text_records_total": 148,
+          "coordinate_text_characters_total": 1559
+        }
+      }
+    },
+    {
+      "block_id": "947C-9UJT-RYU",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Вертикальные конструкции 17-23 этажа Спецификация элементов армирования стен 17-23-го этажей",
+      "description": "Фрагмент ведомости деталей арматурных элементов с указанием геометрических параметров для позиций 16-Г-23, 25-Г-24...28 и 8-Х-1...10-Х-13. Таблица содержит три столбца: 'Поз.', 'Эскиз' и текстовое описание параметров (a, b, c, d, e, dоп). В столбце 'Эскиз' представлены схематичные изображения арматурных стержней с указанием точек измерения размеров. Для элементов типа 'Г' показаны стержни с изгибами, для элементов типа 'Х' — замкнутые или П-образные хомуты. Размеры указаны в миллиметрах. Вертикальные конструкции 17-23 этажа Спецификация элементов армирования стен 17-23-го этажей",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 169,
+          "views_total": 0,
+          "coordinate_text_records_total": 77,
+          "coordinate_text_characters_total": 865
+        }
+      }
+    },
+    {
+      "block_id": "969J-A3AC-JQV",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема верхнего армирования балок (4, 5 ряд)",
+      "description": "Представлена схема верхнего армирования балок (4, 5 ряд) плиты перекрытия Пм-29.1. На чертеже изображен план плиты перекрытия с сеткой осей и указанием расположения арматурных стержней. Приведены маркировки арматуры (например, 16-Г-9.1, 16-Г-8.1) с указанием количества штук. Нанесены размерные линии с привязками и отметками уровней, включая +101,680. В центральной части и по периметру расположены контуры балок и проемов, обозначенные штриховыми и сплошными линиями. Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема верхнего армирования балок (4, 5 ряд)",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "concrete": 1,
+          "elevation": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4797,
+          "views_total": 0,
+          "coordinate_text_records_total": 272,
+          "coordinate_text_characters_total": 1672
+        }
+      }
+    },
+    {
+      "block_id": "96KE-YK76-QP7",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема поперечного армирования",
+      "description": "Представлена схема поперечного армирования плиты перекрытия Пм-29.1. На чертеже изображен план плиты перекрытия с закругленными углами и центральным ядром жесткости. Указаны оси в буквенном и цифровом обозначении с соответствующими размерными цепочками. Внутри контура плиты расположены зоны армирования, обозначенные выносками 'по А', 'по В', 'по Г', 'Б' и 'В'. Присутствует отметка уровня +101,680 и толщина плиты t=200. Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема поперечного армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2698,
+          "views_total": 0,
+          "coordinate_text_records_total": 53,
+          "coordinate_text_characters_total": 239
+        }
+      }
+    },
+    {
+      "block_id": "96TE-9DW3-NPR",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Вертикальные конструкции 25-29 этажа. Колонна Км-400-1200-2800-1, Км-400-1200-2800-2",
+      "description": "Ведомость деталей армирования с эскизами и геометрическими параметрами стержней. Таблица содержит три строки с эскизами арматурных элементов под позициями 16-Г-1, 8-Х-1 и 6-Ш-1. Для каждого элемента приведены буквенные обозначения размеров (a, b, c, d, e, dоп) и их численные значения. Эскизы выполнены схематично с указанием точек изгиба и направлений размеров. Текст и цифры в таблице четко структурированы по столбцам. Вертикальные конструкции 25-29 этажа. Колонна Км-400-1200-2800-1, Км-400-1200-2800-2",
+      "source_page": 20,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {
+          "raster_region": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 29,
+          "views_total": 0,
+          "coordinate_text_records_total": 13,
+          "coordinate_text_characters_total": 130
+        }
+      }
+    },
+    {
+      "block_id": "9FER-NNAD-CHY",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита покрытия пристройки корпуса 1-2. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль буквенных осей",
+      "description": "Чертеж нижнего армирования плиты покрытия Пм-2 на отметке +7,970 в осях 1.2-1.7/1.К-1.Щ. На чертеже представлен план плиты покрытия сложной геометрической формы с указанием арматурных стержней, их шага и привязок. Обозначены оси, проходящие через конструкцию, и выноски с указанием типов армирования (например, 16-Г-14, 12-Г-9). В центре плиты показан вырез с узлами 1(11) и 2(11). Присутствуют размерные линии, указывающие расстояния между осями и элементами армирования, а также отметка высоты +7,970 и толщина плиты t=300. Плита покрытия пристройки корпуса 1-2. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль буквенных осей",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "spacing": 13,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 17,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 13,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3938,
+          "views_total": 0,
+          "coordinate_text_records_total": 176,
+          "coordinate_text_characters_total": 1114
+        }
+      }
+    },
+    {
+      "block_id": "9HUM-F39M-4CG",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-25.2 на отметке +85,180. На чертеже представлена схема нижнего армирования плиты перекрытия с указанием расположения стержней, их марок и шага укладки. Сетка осей охватывает прямоугольную область с закругленными углами, дополненную размерными линиями по периметру. Внутри контура нанесены многочисленные выноски с обозначениями арматурных элементов, таких как 10-П-4, 16-П-22, 20-3900 и других. Геометрия включает внутренние проемы и контуры стен, обозначенные сплошными и штриховыми линиями. Плита перекрытия над 24 этажом. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 81,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 83,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 3,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 81,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 7286,
+          "views_total": 0,
+          "coordinate_text_records_total": 333,
+          "coordinate_text_characters_total": 2449
+        }
+      }
+    },
+    {
+      "block_id": "9JTK-YU4J-9EJ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Вертикальные конструкции 1 этажа Плита перекрытия на отм. -0,350. Верхнее армирование вдоль буквенных, цифровых осей",
+      "description": "На чертеже представлен план верхнего армирования плиты перекрытия на отметке -0,350 вдоль буквенных осей. На плане изображена плита перекрытия сложной овальной формы с отверстиями под колонны. Указаны границы фонового армирования и участки армирования хомутами. Приведены размерные линии с привязками к осям, а также выноски с указанием шага и типа арматуры (12-пог.м, 16-3300). В левой части показана лестничная клетка с соответствующими размерами. Вертикальные конструкции 1 этажа Плита перекрытия на отм. -0,350. Верхнее армирование вдоль буквенных, цифровых осей",
+      "source_page": 16,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "spacing": 4,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 6,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 4,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1387,
+          "views_total": 0,
+          "coordinate_text_records_total": 46,
+          "coordinate_text_characters_total": 426
+        }
+      }
+    },
+    {
+      "block_id": "9KKG-VU76-GJT",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Лестница Лк-2(2)н в осях 2.4-2.5/2.Г. Армирование площадок",
+      "description": "Схема верхнего и нижнего армирования лестничной площадки Лп-2(2).2н. На чертеже представлена схема армирования лестничной площадки с указанием осей А и Б. Показаны продольные и поперечные стержни арматуры с шагом 50, 140, 150 и 200 мм. Приведены размеры участков 50, 100, 200 мм и общие габаритные размеры 1400 мм. Указаны марки арматурных элементов, такие как 8-Х-1, 12-П-2, 16-2850, 8-П-10 и 12-П-1. Лестница Лк-2(2)н в осях 2.4-2.5/2.Г. Армирование площадок",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 8,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 9,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 8,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1178,
+          "views_total": 0,
+          "coordinate_text_records_total": 87,
+          "coordinate_text_characters_total": 440
+        }
+      }
+    },
+    {
+      "block_id": "9KVY-JMHY-WRK",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Схемы расположения нижнего армирования",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-30.2 вдоль буквенных осей. На чертеже представлен план плиты перекрытия сложной криволинейной формы с сеткой осей. Показаны зоны армирования с указанием диаметров стержней, шага укладки и количества штук. Присутствуют выносные линии с размерами, обозначающие границы армирования и привязки к осям. В центральной части расположены прямоугольные контуры отверстий с соответствующими размерами и маркировкой. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм.+104.980, +108.280. Схемы расположения нижнего армирования",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 32,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 36,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 32,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4483,
+          "views_total": 0,
+          "coordinate_text_records_total": 200,
+          "coordinate_text_characters_total": 1271
+        }
+      }
+    },
+    {
+      "block_id": "9Q9E-LNQA-FQ6",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "Плита покрытия. Конструкции балок покрытия низ на отм. +3,700. Армирование",
+      "description": "Схема установки дополнительных арматурных стержней с шагом 200 мм. На схеме изображен горизонтальный элемент с основным и дополнительным армированием. Основное армирование представлено в виде сплошной линии с чередующимися светлыми и темными кругами. Дополнительные стержни обозначены темными кругами, расположенными между элементами основного армирования. Размеры между стержнями указаны как 100 мм и 200 мм, а также 200 мм для нижнего ряда. Выносные линии с подписями указывают на типы армирования. Плита покрытия. Конструкции балок покрытия низ на отм. +3,700. Армирование",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 1,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 48,
+          "views_total": 0,
+          "coordinate_text_records_total": 19,
+          "coordinate_text_characters_total": 147
+        }
+      }
+    },
+    {
+      "block_id": "9RUE-4A6X-C3C",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "description": "Схема расположения верхнего армирования балок (4, 5 ряды) плиты перекрытия Пм-30.2. На чертеже представлена схема армирования плиты перекрытия с указанием расположения балок и их арматурных элементов. По периметру плиты нанесены координационные оси, а также проставлены размеры между ними. Внутри контура плиты показаны зоны армирования с маркировкой стержней, их количеством и длиной. Присутствуют выносные линии с указанием типов гнутых деталей и дополнительных арматурных стержней. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4728,
+          "views_total": 0,
+          "coordinate_text_records_total": 293,
+          "coordinate_text_characters_total": 1832
+        }
+      }
+    },
+    {
+      "block_id": "9T6M-6AY7-XD4",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения нижнего армирования балок (1,2 ряды)",
+      "description": "Схема расположения нижнего армирования балок (1, 2 ряды) плиты перекрытия Пм-30.2. На чертеже представлена схема армирования плиты перекрытия Пм-30.2 с указанием расположения балок и позиций арматурных стержней. Схема включает координационные оси, проходящие по периметру и внутри контура плиты. Обозначены места установки арматуры с указанием типов деталей (Г, Х), диаметров, длин и количества стержней. Присутствуют выносные линии с размерами и привязками к осям, а также указания по дополнительному армированию во 2-м ряду. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения нижнего армирования балок (1,2 ряды)",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 12,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4829,
+          "views_total": 0,
+          "coordinate_text_records_total": 303,
+          "coordinate_text_characters_total": 1922
+        }
+      }
+    },
+    {
+      "block_id": "9WPT-CTX4-HF4",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "column_reinforcement",
+      "title": "Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль цифровых осей",
+      "description": "Чертеж нижнего армирования плиты перекрытия Пм-1 на отметке -0.180 в осях 1.2-1.7/1.К-1.Щ. На чертеже представлен план армирования плиты перекрытия сложной геометрической формы с указанием расположения арматурных стержней, их шага и количества. Приведены размеры пролетов, привязки к осям и ссылки на сопрягаемые конструкции корпусов К1 и К2. В нижней части расположены таблицы параметров арматурных деталей, схемы стыковки арматуры внахлест и условные обозначения. Геометрия включает круглые колонны, обозначенные пунктирными окружностями, и рабочие швы бетонирования. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль цифровых осей",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        12,
+        12
+      ],
+      "covered_facts": 12,
+      "structure_signature": {
+        "node_types": {
+          "concrete": 1,
+          "dimension": 2,
+          "elevation": 3,
+          "rebar": 1,
+          "spacing": 12,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 22,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 3,
+          "rebar_total": 1,
+          "positions_total": 0,
+          "spacings_total": 12,
+          "elevations_total": 3,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2963,
+          "views_total": 0,
+          "coordinate_text_records_total": 185,
+          "coordinate_text_characters_total": 1250
+        }
+      }
+    },
+    {
+      "block_id": "A4YW-WN7C-XEN",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "starter_bars",
+      "title": "Плита перекрытия над 17-23 этажом. Схема расположения выпусков",
+      "description": "Схема расположения выпусков арматуры в плите перекрытия над 17-23 этажами. На чертеже представлен план плиты перекрытия с сеткой осей и указанием мест расположения выпусков арматуры. В центральной части плиты выделены зоны с маркировкой выпусков [1], [2] и [3]. Указаны габаритные размеры плиты 25800 мм по горизонтали и 24200 мм по вертикали, а также разбивка по осям. Приведены параметры выпусков, включая типы 14 и 4.1, длину 140 мм и толщину плиты t=200. Плита перекрытия над 17-23 этажом. Схема расположения выпусков",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 3
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 3,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2248,
+          "views_total": 0,
+          "coordinate_text_records_total": 49,
+          "coordinate_text_characters_total": 329
+        }
+      }
+    },
+    {
+      "block_id": "AALD-YM9A-6EQ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_lower_reinforcement",
+      "title": "Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-1 на отм. -0.180 в осях 1.2-1.7. На чертеже представлен план армирования плиты перекрытия сложной геометрической формы с указанием расположения арматурных стержней. Обозначены участки с различным шагом армирования, включая стержни диаметром 10 мм и 12 мм. Присутствуют выносные линии с размерами, указывающими длину стержней и расстояния между ними. В нижней части плана показаны примыкания к корпусам К1 и К2, а также оси 1.2, 1.5 и 1.7. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        6,
+        6
+      ],
+      "covered_facts": 6,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 11,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 16,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 11,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1803,
+          "views_total": 0,
+          "coordinate_text_records_total": 76,
+          "coordinate_text_characters_total": 531
+        }
+      }
+    },
+    {
+      "block_id": "AAWX-FAMV-9XG",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "",
+      "description": "Схема расположения нижнего армирования балок (2 ряд) плиты перекрытия Пм-39.2 на отм. +134.680. На чертеже представлен план плиты перекрытия Пм-39.2 с указанием расположения балок и арматурных элементов. Плита имеет прямоугольную форму с закругленными углами и внутренними проемами. Обозначены оси от 2.А до 2.Ж и от 2.1 до 2.8, а также дополнительные узлы 2.9-2.16. Нанесены размерные линии с указанием расстояний между осями и габаритов элементов, а также маркировка арматурных изделий (например, 25-Г-91, 25-Г-92).",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3439,
+          "views_total": 0,
+          "coordinate_text_records_total": 142,
+          "coordinate_text_characters_total": 793
+        }
+      }
+    },
+    {
+      "block_id": "FCTE-JGDT-L6X",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения поперечного армирования балок",
+      "description": "Схема расположения поперечного армирования балок плиты перекрытия Пм-30.2. На чертеже представлена схема армирования плиты перекрытия Пм-30.2 с указанием шага установки стержней 10-Х-4. Контур плиты имеет сложную криволинейную форму с внутренними прямоугольными вырезами. По периметру и вдоль внутренних балок нанесены выносные линии с маркировкой арматуры и указанием количества стержней. В нижней части чертежа расположены размерные цепочки, определяющие габариты и привязки элементов. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Схемы расположения поперечного армирования балок",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "cover": 1,
+          "elevation": 2,
+          "spacing": 54,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 59,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 54,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 6050,
+          "views_total": 0,
+          "coordinate_text_records_total": 309,
+          "coordinate_text_characters_total": 2084
+        }
+      }
+    },
+    {
+      "block_id": "H4GT-PN4V-TDD",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм. -1,800 в осях П.3-П.9/П.Л-П.Т. Спецификация и ведомость деталей",
+      "description": "Представлена ведомость деталей арматурных элементов с указанием геометрических параметров для каждой позиции. Таблица разделена на две колонки, каждая из которых содержит столбцы 'Поз.' и 'Эскиз'. В столбце 'Эскиз' приведены схематичные изображения гнутых стержней с буквенными обозначениями размеров (a, b, c, d, e) и углов (α). Рядом с каждым эскизом указаны численные значения параметров и диаметр оправки (dоп). Таблица охватывает позиции от 16-Г-2 до 8-Ш-2. Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм. -1,800 в осях П.3-П.9/П.Л-П.Т. Спецификация и ведомость деталей",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "structural_mark": 4
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 4,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 289,
+          "views_total": 0,
+          "coordinate_text_records_total": 175,
+          "coordinate_text_characters_total": 2129
+        }
+      }
+    },
+    {
+      "block_id": "HUUG-N6FA-PUK",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "wall_reinforcement_plan",
+      "title": "Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Поперечное армирование",
+      "description": "План поперечного армирования плиты перекрытия Пм-30.2 на отметках +104.980 и +108.280. На чертеже представлен план плиты перекрытия с сеткой осей от 2.1 до 2.16 и от 2.А до 2.Ж. В центре расположено прямоугольное отверстие, окруженное контурами конструктивных элементов. Указаны размеры пролетов между осями, общие габариты 24200x25800 мм и толщина плиты t=200. В различных точках плана размещены выноски с маркировкой 'по А' и 'А', указывающие на места установки поперечного армирования. Плита перекрытия над 30-31 этажом. Плита перекрытия Пм-30.2 на отм. +104.980, +108.280. Поперечное армирование",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2755,
+          "views_total": 0,
+          "coordinate_text_records_total": 60,
+          "coordinate_text_characters_total": 279
+        }
+      }
+    },
+    {
+      "block_id": "KHUE-3FA3-MMU",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "",
+      "description": "Схема расположения нижнего армирования балок (1 ряд) плиты перекрытия Пм-39.2 на отметке +134.680. На чертеже представлен план плиты перекрытия с сеткой осей и маркировкой арматурных стержней. Вдоль контура плиты и внутренних балок нанесены выноски с указанием типов арматуры, их количества и длин. В центральной части расположены контуры проемов и внутренних конструктивных элементов. По периметру чертежа указаны размеры между осями и общие габариты плиты.",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 10,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4802,
+          "views_total": 0,
+          "coordinate_text_records_total": 274,
+          "coordinate_text_characters_total": 1691
+        }
+      }
+    },
+    {
+      "block_id": "KXDF-F3NC-CWD",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "slab_upper_reinforcement",
+      "title": "Плита перекрытия над 25-29 этажом Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схемы расположения верхнего армирования",
+      "description": "Схема верхнего армирования плиты перекрытия Пм-26.2 на отметках +88,480...+101,680. На чертеже представлена схема верхнего армирования плиты перекрытия сложной конфигурации с указанием шага и количества стержней. Обозначены цифровые оси от 2.1 до 2.16 и буквенные оси от 2.А до 2.Ж. Приведены многочисленные выноски с маркировкой арматурных стержней, например, 16-Г-46, 10-Г-37, 12-Г-45, а также размеры между осями и конструктивными элементами. Сетка армирования показана тонкими линиями, охватывающими всю площадь плиты. Плита перекрытия над 25-29 этажом Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схемы расположения верхнего армирования",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 84,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 87,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 84,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 7096,
+          "views_total": 0,
+          "coordinate_text_records_total": 395,
+          "coordinate_text_characters_total": 2704
+        }
+      }
+    },
+    {
+      "block_id": "MEFT-79LH-CHW",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "opening_reinforcement",
+      "title": "",
+      "description": "Типовая схема усиления отверстий в плите перекрытия с использованием арматурных стержней. На чертеже представлена схема усиления отверстия, окруженного двойными рядами арматурных стержней. Стержни расположены перпендикулярно друг другу, образуя сетку вокруг центрального прямоугольного отверстия. Указаны размеры анкеровки 'Lp.a' со ссылкой на таблицу 1 и шаг арматуры 250 мм. Присутствуют выносные линии с размерами 50 мм для отступов арматуры от краев отверстия. Обозначения '10-Г-...' и '12-...' указывают на типы арматурных стержней.",
+      "source_page": 10,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 4
+        },
+        "counts": {
+          "nodes_total": 4,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 4,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 245,
+          "views_total": 0,
+          "coordinate_text_records_total": 41,
+          "coordinate_text_characters_total": 228
+        }
+      }
+    },
+    {
+      "block_id": "NRKH-K67A-9WK",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "beam_reinforcement",
+      "title": "Плита перекрытия над 17-23 этажом. Схемы расположения армирования балок (3 ряд)",
+      "description": "Схема расположения армирования балок плиты перекрытия над 17-23 этажами. На чертеже представлен план плиты перекрытия с сеткой осей и маркировкой балок. Вдоль контура плиты и внутренних проемов расположены выносные линии с указанием марок арматурных элементов (например, 16-Г-5.1, 16-Г-9.1) и их количества. Указаны габаритные размеры по осям (25800 мм и 24200 мм) и промежуточные расстояния между осями. В центре чертежа обозначена отметка 'Отм. А' и толщина плиты 't=200'. Плита перекрытия над 17-23 этажом. Схемы расположения армирования балок (3 ряд)",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 7,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4294,
+          "views_total": 0,
+          "coordinate_text_records_total": 259,
+          "coordinate_text_characters_total": 1419
+        }
+      }
+    },
+    {
+      "block_id": "RELE-MX3A-MEN",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_plan",
+      "subtype": "bent_bar_layout",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм -1,800 в осях П.3-П.9/П.Л-П.Т. Армирование стен",
+      "description": "План армирования вертикальных конструкций пристройки на отметке -1,800 в осях П.3-П.9/П.Л-П.Т. На чертеже представлен план монолитных стен с указанием марок стен (например, 1-Стм600, 2-Стм300, 5-Стм600) и параметров армирования. Стены имеют различную толщину (300 мм, 600 мм) и сложную конфигурацию с выступами. Указаны привязки арматурных стержней, включая гнутые детали (марки 16-Г-...) и П-образные стержни (16-П-1). Размеры пролетов между осями составляют 8400, 8600, 2100 и 5000 мм. Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм -1,800 в осях П.3-П.9/П.Л-П.Т. Армирование стен",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        7,
+        7
+      ],
+      "covered_facts": 7,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 39,
+          "spacing": 26,
+          "structural_mark": 20
+        },
+        "counts": {
+          "nodes_total": 85,
+          "containers_total": 0,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 20,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 26,
+          "elevations_total": 39,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3231,
+          "views_total": 0,
+          "coordinate_text_records_total": 193,
+          "coordinate_text_characters_total": 1842
+        }
+      }
+    },
+    {
+      "block_id": "4K9U-VDRL-WTJ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Армирование колонн",
+      "description": "На чертеже представлен план армирования вертикальных конструкций 1-го этажа пристройки корпуса 1-2 на отметке -0.180. План содержит схематичное расположение колонн с указанием осей и радиусов кривизны (R17950, R18450, R17980, R17770, R17450). Справа приведены сечения 1-1, 2-2 и 3-3, детализирующие армирование колонн с указанием диаметров стержней (25-Г-1, 12-Х-1) и шага армирования. Указаны привязки осей и габаритные размеры конструкций. В нижней части расположены примечания по производству работ и армированию. Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Армирование колонн",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        15,
+        15
+      ],
+      "covered_facts": 15,
+      "structure_signature": {
+        "node_types": {
+          "cover": 1,
+          "dimension": 2,
+          "elevation": 5,
+          "rebar": 1,
+          "spacing": 2,
+          "structural_mark": 6
+        },
+        "counts": {
+          "nodes_total": 17,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 6,
+          "rebar_total": 1,
+          "positions_total": 0,
+          "spacings_total": 2,
+          "elevations_total": 5,
+          "dimensions_total": 2,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 3588,
+          "views_total": 1,
+          "coordinate_text_records_total": 190,
+          "coordinate_text_characters_total": 1796
+        }
+      }
+    },
+    {
+      "block_id": "4MX3-4V46-LAM",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "description": "Схема расположения верхнего армирования балок плиты перекрытия Пм-25.2 на отм. +85,180. На чертеже представлен план плиты перекрытия с сеткой осей от 2.1 до 2.16 и от 2.А до 2.Ж. Показаны контуры балок, арматурные стержни с маркировкой (например, 16-Г-5.1, 20-Г-36) и указания по дополнительному армированию в 4-м ряду. Приведены размерные цепочки по периметру и внутри плиты, а также сечения по линиям 1-1, 2-2, 3-3. В центре плиты расположены проемы сложной геометрической формы. Плита перекрытия Пм-25.2 на отм. +85,180. Схемы расположения верхнего армирования балок (4,5 ряды)",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 11,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4541,
+          "views_total": 1,
+          "coordinate_text_records_total": 323,
+          "coordinate_text_characters_total": 2043
+        }
+      }
+    },
+    {
+      "block_id": "4Q43-9DXD-GEG",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Вертикальные конструкции 24 этажа Сечения армирования стен. Стены 50-Стм...56-Стм",
+      "description": "На чертеже представлены схемы армирования вертикальных конструкций (стен) с маркировкой 50-Стм200, 51-Стм200, 52-Стм200, 54-Стм250, 55-Стм200 и 56-Стм200. Чертеж содержит шесть сечений стен с указанием арматурных каркасов, защитных слоев бетона (з.с. 40, з.с. 35) и отметок верха плиты. Каждое сечение включает обозначения вертикальной и горизонтальной арматуры, а также ссылки на горизонтальное усиление. Геометрия стен варьируется по высоте и ширине, с указанием шага армирования и типов гнутых элементов (маркировки типа 8-Х-1, 10-Х-12, 12-Х-13). Все элементы привязаны к отметкам верха плиты, таким как +84,980, +84,680, +84,580 и +84,080. Вертикальные конструкции 24 этажа Сечения армирования стен. Стены 50-Стм...56-Стм",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        13,
+        13
+      ],
+      "covered_facts": 13,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 8,
+          "elevation": 12,
+          "spacing": 16,
+          "structural_mark": 14
+        },
+        "counts": {
+          "nodes_total": 50,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 14,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 16,
+          "elevations_total": 12,
+          "dimensions_total": 8,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1665,
+          "views_total": 1,
+          "coordinate_text_records_total": 177,
+          "coordinate_text_characters_total": 1339
+        }
+      }
+    },
+    {
+      "block_id": "6DRC-7KQL-9TJ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Армирование колонн",
+      "description": "Схема армирования вертикальных конструкций 1 этажа пристройки корпуса 1-2 на отм. -0.180. На чертеже представлена плановая схема расположения вертикальных конструкций с указанием осей и радиусов криволинейных элементов. Присутствуют обозначения осей колонн круглого сечения и размеры между ними. Указаны привязки к корпусам К1 и К2 с отсылкой к отдельным чертежам. Геометрия включает криволинейные стены и колонны, соединенные осями с буквенно-цифровой маркировкой. Вертикальные конструкции 1 этажа пристройки корпуса 1-2 на отм. -0.180 в осях 1.2-1.7/1.К-1.Щ. Армирование колонн",
+      "source_page": 8,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2573,
+          "views_total": 1,
+          "coordinate_text_records_total": 83,
+          "coordinate_text_characters_total": 535
+        }
+      }
+    },
+    {
+      "block_id": "6N97-L6FX-VWA",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита перекрытия над 17-23 этажом. Схемы расположения поперечного армирования балок",
+      "description": "Схема расположения поперечного армирования балок плиты перекрытия над 17-23 этажом. На чертеже представлен план плиты перекрытия сложной криволинейной формы с внутренним прямоугольным контуром. По периметру и внутренним осям балок нанесены выноски с указанием типа арматуры (10-Х-1) и шага установки (125 мм) с количеством стержней. Присутствуют обозначения разрезов (1-1, 2-2, 3-3) и ссылки на узлы (по 1, по 2, по 3). Сетка осей пронумерована и обозначена буквами по периметру чертежа. Плита перекрытия над 17-23 этажом. Схемы расположения поперечного армирования балок",
+      "source_page": 17,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 54
+        },
+        "counts": {
+          "nodes_total": 54,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 54,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 5453,
+          "views_total": 1,
+          "coordinate_text_records_total": 243,
+          "coordinate_text_characters_total": 1735
+        }
+      }
+    },
+    {
+      "block_id": "6Q3E-XDPQ-ND7",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита покрытия. Верхнее армирование вдоль буквенных, цифровых осей",
+      "description": "Представлены схемы верхнего армирования плиты покрытия вдоль буквенных и цифровых осей. На чертеже изображены два плана плиты покрытия сложной формы с нанесенными осями и арматурными сетками. Указаны размеры пролетов (8400, 16800) и привязки арматурных стержней с шагом 250 мм. Присутствуют выноски с обозначениями диаметров арматуры (12-3300, 12-пог.м) и количества стержней. Геометрия включает контур плиты, внутренние отверстия и линии сечений 4-4. Плита покрытия. Верхнее армирование вдоль буквенных, цифровых осей",
+      "source_page": 11,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        1,
+        1
+      ],
+      "covered_facts": 1,
+      "structure_signature": {
+        "node_types": {
+          "spacing": 5
+        },
+        "counts": {
+          "nodes_total": 5,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 4,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 5,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1316,
+          "views_total": 1,
+          "coordinate_text_records_total": 53,
+          "coordinate_text_characters_total": 386
+        }
+      }
+    },
+    {
+      "block_id": "73V9-GD7C-7QQ",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита покрытия пристройки корпуса 1-2. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "description": "Чертеж верхнего армирования плиты покрытия Пм-2 на отметке +7,970 в осях 1.2-1.7/1.К-1.Щ. На чертеже представлен план армирования плиты сложной криволинейной формы с указанием шага арматурных стержней, их количества и длин. Приведены привязки к осям, размеры пролетов и участков, а также ссылки на конструктивные решения корпусов К1 и К2. В центре расположено отверстие с указанием размеров 670 и 1830, а также сечение 2-2. В нижней части чертежа размещены условные обозначения для отметки верха плиты, толщины и рабочего шва бетонирования. Плита покрытия пристройки корпуса 1-2. Плита покрытия Пм-2 на отм. +7,970 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
+      "source_page": 19,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        5,
+        5
+      ],
+      "covered_facts": 5,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 3,
+          "spacing": 8,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 12,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 1,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 8,
+          "elevations_total": 3,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2692,
+          "views_total": 1,
+          "coordinate_text_records_total": 130,
+          "coordinate_text_characters_total": 854
+        }
+      }
+    },
+    {
+      "block_id": "7LNW-CYWF-MNN",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схема расположения верхнего армирования балок (4,5 ряд)",
+      "description": "Схема расположения верхнего армирования балок плиты перекрытия Пм-26.2 на отметках +88,480...+101,680. На чертеже представлена схема армирования балок плиты перекрытия с указанием марок арматурных стержней и их количества. По периметру и внутренним контурам расположены выноски с обозначениями сечений (по 1, по 2, по 3) и привязками к осям. Указаны габаритные размеры 25800 мм по горизонтали и 24200 мм по вертикали. В нижней части чертежа приведена толщина плиты t=200 и отметка уровня. Плита перекрытия Пм-26.2 на отм. +88,480...+101,680. Схема расположения верхнего армирования балок (4,5 ряд)",
+      "source_page": 14,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        3,
+        3
+      ],
+      "covered_facts": 3,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 3,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 9,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 4437,
+          "views_total": 1,
+          "coordinate_text_records_total": 302,
+          "coordinate_text_characters_total": 1858
+        }
+      }
+    },
+    {
+      "block_id": "7QX4-EWMV-GVC",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "",
+      "description": "Схема расположения поперечного армирования балок плиты перекрытия Пм-39.2 на отметке +134.680. На чертеже представлена схема армирования плиты перекрытия сложной овальной формы с внутренними прямоугольными контурами. По периметру плиты нанесены выносные линии с указанием шага арматуры 10-Х-4 и количества стержней. Внутренние контуры обозначены пунктирными и сплошными линиями, отображающими балочную структуру. Имеются разрезы 1-1, 2-2, 3-3 и ссылки на узлы 'по 1', 'по 2', 'по 3'.",
+      "source_page": 15,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        4,
+        4
+      ],
+      "covered_facts": 4,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 2,
+          "spacing": 54,
+          "structural_mark": 2
+        },
+        "counts": {
+          "nodes_total": 58,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 2,
+          "marks_total": 2,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 54,
+          "elevations_total": 2,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 6053,
+          "views_total": 1,
+          "coordinate_text_records_total": 277,
+          "coordinate_text_characters_total": 1690
+        }
+      }
+    },
+    {
+      "block_id": "7Y49-96JA-96X",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Вертикальные конструкции 35 этажа. Сечения армирования стен. Стены 25-Стм...32-Стм",
+      "description": "На чертеже представлены схемы армирования стен (сечения 29-Стм200, 30-Стм200, 31-Стм200, 32-Стм200) и узлы установки арматуры. Чертеж содержит четыре вертикальных сечения стен с указанием арматурных стержней, защитных слоев (з.с. 40) и высотных отметок +118,180 и +121,280. Справа приведено сечение 32-Стм200 с детализацией горизонтального и вертикального армирования. В нижней части листа расположены схемы установки П-образных элементов, хомутов и поперечной арматуры, а также схема стыковки арматуры внахлест. Все элементы снабжены выносками с маркировкой диаметров, шага установки и количества стержней. Вертикальные конструкции 35 этажа. Сечения армирования стен. Стены 25-Стм...32-Стм",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        22,
+        22
+      ],
+      "covered_facts": 22,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 19,
+          "elevation": 8,
+          "spacing": 23,
+          "structural_mark": 19
+        },
+        "counts": {
+          "nodes_total": 69,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 6,
+          "marks_total": 19,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 23,
+          "elevations_total": 8,
+          "dimensions_total": 19,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 2817,
+          "views_total": 1,
+          "coordinate_text_records_total": 259,
+          "coordinate_text_characters_total": 2409
+        }
+      }
+    },
+    {
+      "block_id": "9F7G-L3UR-666",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема нижнего армирования балок (1, 2 ряд)",
+      "description": "Схема нижнего армирования балок (1, 2 ряд) плиты перекрытия Пм-29.1. На чертеже представлена схема армирования плиты перекрытия с сеткой осей от 1.1 до 1.16 и от 1.А до 1.И. Контур плиты имеет скругленные углы, внутри расположены прямоугольные проемы и балочные элементы. Множественные выносные линии указывают марки арматурных стержней, их количество и параметры, такие как длина (L) и диаметр. В нижней части чертежа приведены сечения 1-1, 2-2, 3-3 с указанием защитных слоев бетона и расположения арматурных рядов. Плита перекрытия над 29 этажом. Плита перекрытия Пм-29.1. Схема нижнего армирования балок (1, 2 ряд)",
+      "source_page": 12,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        2,
+        2
+      ],
+      "covered_facts": 2,
+      "structure_signature": {
+        "node_types": {
+          "elevation": 1,
+          "structural_mark": 1
+        },
+        "counts": {
+          "nodes_total": 2,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 12,
+          "marks_total": 1,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 1,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 5057,
+          "views_total": 1,
+          "coordinate_text_records_total": 319,
+          "coordinate_text_characters_total": 2193
+        }
+      }
+    },
+    {
+      "block_id": "A96N-QGV7-6YA",
+      "discipline": "КЖ",
+      "profile_id": "kj_reinforcement_section",
+      "subtype": "reinforcement_section",
+      "title": "Плита покрытия пристройки корпуса1-2. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль буквенных осей",
+      "description": "Схема нижнего армирования плиты перекрытия Пм-1 на отметке -0.180 в осях 1.2-1.7. На чертеже представлена конфигурация плиты перекрытия с указанием зон армирования и разрезов. Обозначены позиции арматурных стержней, таких как 10-4600, 10-5200, 10-2900, 12-Г-7 и 8-Г-1 с соответствующими шагами укладки. Присутствуют выноски с указанием привязки к смежным корпусам К1 и К2. Разрезы 1-1, 2-2 и 3-3 отмечены на плане для детализации конструкции. Плита покрытия пристройки корпуса1-2. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Нижнее армирование вдоль буквенных осей",
+      "source_page": 9,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        8,
+        8
+      ],
+      "covered_facts": 8,
+      "structure_signature": {
+        "node_types": {
+          "dimension": 1,
+          "elevation": 2,
+          "spacing": 7,
+          "structural_mark": 3
+        },
+        "counts": {
+          "nodes_total": 13,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 3,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 7,
+          "elevations_total": 2,
+          "dimensions_total": 1,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 1574,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 440
+        }
+      }
+    },
+    {
+      "block_id": "443U-3XMX-EXL",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Плита перекрытия на отм. -0,350. Спецификация и ведомость деталей",
+      "description": "Схема расположения корпусов и подземных автостоянок на участке строительства. На схеме представлены контуры зданий К1, К2, К3, К4, К5, К6 и К7, а также пристройки между ними. Указаны зоны подземных автостоянок с диапазонами машиномест П.1-П.24 и П.25-П.48. Здания имеют маркировку этажности: 42эт., 39эт., 30эт., 18эт., 28эт. и 15эт. Вокруг контуров зданий расположены выносные маркеры с цифровыми и буквенными обозначениями. Плита перекрытия на отм. -0,350. Спецификация и ведомость деталей",
+      "source_page": 18,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 153,
+          "views_total": 1,
+          "coordinate_text_records_total": 57,
+          "coordinate_text_characters_total": 316
+        }
+      }
+    },
+    {
+      "block_id": "4AF4-KRFH-NLC",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Вертикальные конструкции 25-29 этажа",
+      "description": "Схема расположения зданий и подземных автостоянок на участке. На схеме представлены контуры зданий К1, К2, К3, К4, К5, К6 и К7, а также зоны подземных автостоянок. Здания имеют указания этажности: 42эт., 39эт., 30эт., 28эт., 18эт. и 15эт. Между корпусами обозначены пристройки: К3-К4, К4-К5 и К5-К6. Зоны автостоянок разделены на сектора П.1-П.24 и П.25-П.48. В левой части схемы выделена зона Лобби. Вертикальные конструкции 25-29 этажа",
+      "source_page": 7,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 138,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "6MHL-HJV6-HXV",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Вертикальные конструкции 30-31 этажа",
+      "description": "Схема расположения конструктивных элементов и пристроек подземной автостоянки. На схеме представлены контуры колонн (К1-К7) и пристроек (К3-К4, К4-К5, К5-К6) в составе подземной автостоянки. Указаны зоны автостоянки с диапазонами парковочных мест (П.1-П.24 и П.25-П.48). Геометрические размеры высот (15эт., 18эт., 28эт., 30эт., 39эт., 42эт.) нанесены рядом с соответствующими конструктивными узлами. Схема ограничена сеткой осей, обозначенных в кружках по периметру. Вертикальные конструкции 30-31 этажа",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 138,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "7JP4-HNDE-W6X",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Плита перекрытия над 30-31 этажом",
+      "description": "Схема расположения конструктивных элементов и зон подземной автостоянки. На схеме представлены контуры конструкций К1-К7, включая зоны лобби и подземной автостоянки, разделенные на секции П.1-П.24 и П.25-П.48. Указаны пристройки К3-К4, К4-К5 и К5-К6 с соответствующими этажностями (15эт, 18эт, 28эт, 30эт, 39эт, 42эт). Элементы обозначены круговыми выносками с буквенно-цифровыми индексами осей. Геометрия включает прямоугольные и криволинейные контуры стен и колонн. Плита перекрытия над 30-31 этажом",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 140,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "7YQG-9EEN-LHU",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Плита перекрытия над 24 этажом",
+      "description": "Схема расположения зданий и подземных автостоянок с указанием этажности. На схеме представлены контуры зданий К1-К7, обозначенные как объекты с различной этажностью от 15 до 42 этажей. Между зданиями расположены зоны подземных автостоянок, разделенные на секции П.1-П.24 и П.25-П.48. Пристройки К3-К4, К4-К5 и К5-К6 соединяют основные корпуса. В левой части схемы выделена зона Лобби, примыкающая к зданию К1. Плита перекрытия над 24 этажом",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 137,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "A9M4-EJ7R-MKH",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Вертикальные конструкции 17-23 этажа",
+      "description": "Схема расположения конструктивных элементов (колонн, пристроек и зон автостоянки) с указанием этажности. На схеме представлены контуры колонн (К1-К7) и пристроек (К3-К4, К4-К5, К5-К6), а также зоны подземной автостоянки. Указаны высотные отметки для различных секций: 15эт., 18эт., 28эт., 30эт., 39эт. и 42эт. Элементы обозначены буквенно-цифровыми индексами в кружках, расположенных по периметру плана. Линии контуров выполнены сплошными, с заштрихованными областями для колонн К2 и К6. Вертикальные конструкции 17-23 этажа",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 139,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "QLGC-FRJX-EA7",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Вертикальные конструкции 33-38 этажа",
+      "description": "Схема расположения подземных автостоянок и пристроек с указанием этажности зданий. На схеме представлены контуры зданий К1, К2, К3, К4, К5, К6 и К7, а также зоны подземных автостоянок П.1-П.24 и П.25-П.48. Здания имеют различную этажность: 15эт., 18эт., 28эт., 30эт., 39эт. и 42эт. Обозначены пристройки К3-К4, К4-К5 и К5-К6. Зоны зданий и автостоянок ограничены контурными линиями, дополненными выносками с буквенно-цифровыми обозначениями осей. Вертикальные конструкции 33-38 этажа",
+      "source_page": 6,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 138,
+          "views_total": 1,
+          "coordinate_text_records_total": 54,
+          "coordinate_text_characters_total": 247
+        }
+      }
+    },
+    {
+      "block_id": "TULW-YCYU-YVQ",
+      "discipline": "КЖ",
+      "profile_id": "kj_structural_detail",
+      "subtype": "structural_detail",
+      "title": "Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм -1,800 в осях П.3-П.9/П.Л-П.Т. Спецификация и ведомость деталей",
+      "description": "Таблица ведомости деталей арматурных элементов с указанием геометрических параметров и углов гиба. Таблица содержит перечень позиций арматурных деталей с графическими эскизами их формы. Для каждой позиции указаны буквенные обозначения размеров (a, b, c, d, e), углы гиба (α) и диаметры оправки (dоп). Эскизы представляют собой схематичные изображения стержней с различными углами изгиба, включая Г-образные, П-образные, кольцевые и шпилечные формы. Размеры и параметры приведены в текстовом виде справа от каждого эскиза. Вертикальные конструкции 1 этажа пристройки корпуса 1-2. Вертикальные конструкции пристройки на отм -1,800 в осях П.3-П.9/П.Л-П.Т. Спецификация и ведомость деталей",
+      "source_page": 13,
+      "source_layer_state": "text_available",
+      "quality": [
+        1,
+        0,
+        0
+      ],
+      "covered_facts": 0,
+      "structure_signature": {
+        "node_types": {},
+        "counts": {
+          "nodes_total": 0,
+          "containers_total": 1,
+          "networks_total": 0,
+          "edges_total": 0,
+          "axes_total": 0,
+          "marks_total": 0,
+          "rebar_total": 0,
+          "positions_total": 0,
+          "spacings_total": 0,
+          "elevations_total": 0,
+          "dimensions_total": 0,
+          "embedded_facts_total": 0,
+          "physical_line_segments_total": 102,
+          "views_total": 1,
+          "coordinate_text_records_total": 48,
+          "coordinate_text_characters_total": 625
+        }
+      }
+    }
+  ]
+}

@@ -10,7 +10,7 @@ from backend.app.pipeline.stages.findings_review import deterministic_critic as 
 
 
 def _blocks(*ids_pages):
-    """(block_id, page, sheet, finding_text) -> 02_blocks_analysis.json-подобный dict."""
+    """(block_id, page, sheet, finding_text) -> 01_blocks_analysis.json-подобный dict."""
     return {
         "block_analyses": [
             {
@@ -117,7 +117,7 @@ def test_semantic_flags_weak_evidence(tmp_path):
         "related_block_ids": ["B1-AAAA-BBB"],
     }]}
     (tmp_path / "03_findings.json").write_text(json.dumps(findings), encoding="utf-8")
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_blocks(("B1-AAAA-BBB", 4, None, "x"))), encoding="utf-8")
     (tmp_path / "document_graph.json").write_text(json.dumps(_graph((4, "1", "txt"))), encoding="utf-8")
 
@@ -140,7 +140,7 @@ def test_semantic_failsoft_on_llm_error(tmp_path):
         "id": "F-001", "page": 4, "related_block_ids": ["B1-AAAA-BBB"],
     }]}
     (tmp_path / "03_findings.json").write_text(json.dumps(findings), encoding="utf-8")
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_blocks(("B1-AAAA-BBB", 4, None, "x"))), encoding="utf-8")
 
     async def boom(prompt):
@@ -161,7 +161,7 @@ def test_review_file_schema_no_llm(tmp_path):
         {"id": "F-002", "page": 4, "description": "нет evidence"},
     ]}
     (tmp_path / "03_findings.json").write_text(json.dumps(findings), encoding="utf-8")
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_blocks(("B1-AAAA-BBB", 4, None, "x"))), encoding="utf-8")
 
     res = _run(dc.run_deterministic_critic(tmp_path, llm_call=None, write=True))
@@ -186,7 +186,7 @@ def test_missing_findings_returns_error(tmp_path):
 def test_chunk_input_filename(tmp_path):
     chunk = {"findings": [{"id": "F-007", "page": 4, "related_block_ids": ["B1-AAAA-BBB"]}]}
     (tmp_path / "03_findings_review_input_001.json").write_text(json.dumps(chunk), encoding="utf-8")
-    (tmp_path / "02_blocks_analysis.json").write_text(
+    (tmp_path / "01_blocks_analysis.json").write_text(
         json.dumps(_blocks(("B1-AAAA-BBB", 4, None, "x"))), encoding="utf-8")
 
     res = _run(dc.run_deterministic_critic(

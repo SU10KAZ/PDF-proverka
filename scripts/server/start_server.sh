@@ -18,7 +18,22 @@ if ss -ltn 2>/dev/null | grep -q ":$PORT "; then
     exit 0
 fi
 
-rm -f "$LOG_DIR/server.log" "$LOG_DIR/server.err.log"
+# Ротация вместо удаления. История: 15.07.2026 бэкенд упал под батчем, watchdog
+# (ежеминутный cron) дёрнул этот скрипт — и первым же действием стёр server.err.log
+# с трейсбеком краха. Механизм реагирования на падение уничтожал улики падения,
+# и причину установить не удалось. Держим 10 прошлых запусков.
+for _log in server.log server.err.log; do
+    if [ -s "$LOG_DIR/$_log" ]; then
+        mv -f "$LOG_DIR/$_log" "$LOG_DIR/${_log%.log}.$(date +%Y%m%d-%H%M%S).log" 2>/dev/null || true
+    fi
+    rm -f "$LOG_DIR/$_log"
+done
+# Чистим только СТАРЬЁ, отдельно по каждому семейству (server.* и server.err.*),
+# иначе всплеск рестартов за минуту вымоет весь архив другого семейства.
+for _fam in "server.2*.log" "server.err.2*.log"; do
+    # shellcheck disable=SC2012
+    ls -1t "$LOG_DIR"/$_fam 2>/dev/null | tail -n +11 | while read -r _old; do rm -f "$_old"; done
+done
 
 cd "$ROOT_DIR"
 # Production cutover (2026-05-14): порт 8081 обслуживает backend.app.main:app.

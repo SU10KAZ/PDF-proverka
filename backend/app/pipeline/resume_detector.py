@@ -15,7 +15,13 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
 )
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import gemma_blocks_dir
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import STAGE02_BLOCKS_DIRNAME
+from backend.app.pipeline.stages.block_context.contract import validate_block_context_summary
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 
 
 def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) -> dict:
@@ -55,9 +61,15 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         # Legacy V1 / проект без manifest — прежнее поведение.
         output_dir = project_dir / "_output"
     tiles_dir = output_dir / "tiles"
-    gemma_state = evaluate_gemma_enrichment(project_dir)
-    gemma_ready = bool(gemma_state.get("ready"))
-    migration_state = detect_gemma_migration_state(project_dir, gemma_state=gemma_state)
+    context_state = validate_block_context_summary(output_dir)
+    if context_state.get("valid"):
+        gemma_state = {"ready": True, "status": "ok", "detail": f"{GEMMA_STAGE_LABEL}: готово"}
+        gemma_ready = True
+        migration_state = {"migration_required": False}
+    else:
+        gemma_state = evaluate_gemma_enrichment(project_dir)
+        gemma_ready = bool(gemma_state.get("ready"))
+        migration_state = detect_gemma_migration_state(project_dir, gemma_state=gemma_state)
 
     # Проверяем наличие ключевых файлов
     has_tiles = tiles_dir.is_dir() and any(tiles_dir.glob("page_*/*.png"))
@@ -66,15 +78,16 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
     has_03a = (output_dir / "03a_norms_verified.json").exists()
 
     # OCR-пайплайн (блоки)
-    blocks_dir = gemma_blocks_dir(project_dir)
+    blocks_dir = output_dir / STAGE02_BLOCKS_DIRNAME
     has_blocks = blocks_dir.is_dir() and (blocks_dir / "index.json").exists()
     runtime_batches_path = output_dir / "block_batches.runtime.json"
     legacy_batches_path = output_dir / "block_batches.json"
     has_block_batches = runtime_batches_path.exists() or legacy_batches_path.exists()
-    has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
-    has_01_text = (output_dir / "01_text_analysis.json").exists()
+    # Fallback-резолв: новые имена в приоритете, legacy читается для немигрированных данных.
+    has_02_blocks = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists()
+    has_01_text = resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists()
 
-    # Порядок этапов: по флагу блоки (02) могут идти ПЕРЕД текстом (01).
+    # Порядок этапов: по флагу блоки (01) могут идти ПЕРЕД текстом (02).
     from backend.app.core import config as _cfg
     blocks_before_text = bool(getattr(_cfg, "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED", False))
 
@@ -96,16 +109,16 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         if migration_state.get("migration_required"):
             return _migration_resume()
         if gemma_state.get("status") == "missing_blocks":
-            return _prepare_resume("Блоки не созданы; Gemma enrichment требует prepare/crop")
+            return _prepare_resume("Блоки не созданы; требуется подготовка Stage 01 crop")
         return {
-            "stage": "gemma_enrichment",
+            "stage": "block_context",
             "stage_label": GEMMA_STAGE_LABEL,
-            "detail": detail or gemma_state.get("detail", "Gemma enrichment не готов"),
+            "detail": detail or gemma_state.get("detail", f"{GEMMA_STAGE_LABEL}: не готово"),
             "can_resume": True,
         }
 
     def _migration_resume() -> dict:
-        stage = str(migration_state.get("stage") or "gemma_enrichment")
+        stage = str(migration_state.get("stage") or "block_context")
         return {
             "stage": stage,
             "stage_label": "Подготовка" if stage == "prepare" else GEMMA_STAGE_LABEL,
@@ -125,7 +138,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             )
         if blocks_before_text and has_blocks and not has_02_blocks:
             # Новый порядок: текст идёт после блоков и требует 02.
-            return _block_resume("02_blocks_analysis.json отсутствует; text_analysis требует блоки")
+            return _block_resume("01_blocks_analysis.json отсутствует; text_analysis требует блоки")
         return {
             "stage": "text_analysis",
             "stage_label": "Анализ текста",
@@ -141,7 +154,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
             return {
                 "stage": "text_analysis",
                 "stage_label": "Анализ текста",
-                "detail": "01_text_analysis.json отсутствует; resume на block_analysis запрещён",
+                "detail": "02_text_analysis.json отсутствует; resume на block_analysis запрещён",
                 "can_resume": True,
             }
 
@@ -165,19 +178,19 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
         # Порядок отсутствующих предпосылок зависит от порядка этапов.
         if blocks_before_text:
             if has_blocks and not has_02_blocks:
-                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+                return _block_resume("01_blocks_analysis.json отсутствует; findings_merge невозможен")
             if has_blocks and not has_01_text:
-                return _text_resume("01_text_analysis.json отсутствует; findings_merge невозможен")
+                return _text_resume("02_text_analysis.json отсутствует; findings_merge невозможен")
         else:
             if has_blocks and not has_01_text:
                 return {
                     "stage": "text_analysis",
                     "stage_label": "Анализ текста",
-                    "detail": "01_text_analysis.json отсутствует; findings_merge невозможен",
+                    "detail": "02_text_analysis.json отсутствует; findings_merge невозможен",
                     "can_resume": True,
                 }
             if has_blocks and not has_02_blocks:
-                return _block_resume("02_blocks_analysis.json отсутствует; findings_merge невозможен")
+                return _block_resume("01_blocks_analysis.json отсутствует; findings_merge невозможен")
         return {
             "stage": "findings_merge",
             "stage_label": "Свод замечаний",
@@ -235,10 +248,28 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                 ("main_audit", "main_audit", "Основной аудит"),
                 ("findings_merge", "findings_merge", "Свод замечаний"),
                 ("norm_verify", "norm_verify", "Верификация норм"),
+                ("optimization", "optimization", "Оптимизация"),
+                ("optimization_critic", "optimization_review", "Проверка оптимизации"),
+                ("optimization_corrector", "optimization_review", "Исправление оптимизаций"),
             ]
+
+            def _interrupted_detail(label: str, info: dict) -> str:
+                status = info.get("status") or "error"
+                if status == "interrupted":
+                    return f"Этап {label} был прерван"
+                return f"Ошибка на этапе {label}"
+
+            # ВНИМАНИЕ: статус "running" сюда НЕ включаем. Зависший после
+            # watchdog-рестарта running переводится в "interrupted" ещё на
+            # старте бэкенда (manager._recover_one_log) и попадёт в эту ветку
+            # как "interrupted". А "running", доживший до detect_resume,
+            # означает РЕАЛЬНО активный прогон (recovery пропускает active_pids)
+            # — считать его возобновляемым нельзя: это двойной запуск / гонка
+            # (класс «живой RUNNING → resume убивает аудит»).
             for log_key, resume_stage, label in stage_order:
                 info = stages_log.get(log_key, {})
                 if info.get("status") in ("error", "interrupted"):
+                    detail = _interrupted_detail(label, info)
                     if log_key == "gemma_enrichment" and not gemma_ready:
                         return _gemma_resume(f"Ошибка на этапе {GEMMA_STAGE_LABEL}")
                     if log_key in ("tile_audit", "block_analysis") and total_batches > 0 and completed_batches < total_batches:
@@ -253,7 +284,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                         return {
                             "stage": resume_stage,
                             "stage_label": label,
-                            "detail": f"Ошибка на этапе {label}",
+                            "detail": detail,
                             "can_resume": True,
                         }
                     if log_key == "crop_blocks" and not has_blocks:
@@ -264,12 +295,47 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                             "can_resume": True,
                         }
                     if log_key == "text_analysis" and not has_01_text:
-                        return _text_resume("01_text_analysis.json не создан")
+                        return _text_resume("02_text_analysis.json не создан")
                     if log_key in ("block_analysis", "tile_audit") and not has_02:
                         return _block_resume(
-                            "02_blocks_analysis.json не создан",
+                            "01_blocks_analysis.json не создан",
                             legacy_tile=(log_key == "tile_audit"),
                         )
+                    if log_key == "norm_verify":
+                        return {
+                            "stage": "norm_verify",
+                            "stage_label": "Верификация норм",
+                            "detail": detail,
+                            "can_resume": True,
+                        }
+                    if log_key == "optimization":
+                        if (output_dir / "optimization.json").exists():
+                            return {
+                                "stage": "optimization_review",
+                                "stage_label": "Проверка оптимизации",
+                                "detail": "optimization.json создан; требуется повторить проверку оптимизации",
+                                "can_resume": True,
+                            }
+                        return {
+                            "stage": "optimization",
+                            "stage_label": "Оптимизация",
+                            "detail": detail,
+                            "can_resume": True,
+                        }
+                    if log_key in ("optimization_critic", "optimization_corrector"):
+                        if (output_dir / "optimization.json").exists():
+                            return {
+                                "stage": "optimization_review",
+                                "stage_label": "Проверка оптимизации",
+                                "detail": detail,
+                                "can_resume": True,
+                            }
+                        return {
+                            "stage": "optimization",
+                            "stage_label": "Оптимизация",
+                            "detail": "optimization.json не создан",
+                            "can_resume": True,
+                        }
 
             # Если финальный этап уже завершён, проект нельзя "продолжать",
             # даже если отсутствует вспомогательный снапшот 03a_norms_verified.json.
@@ -306,7 +372,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
 
     def _need_text() -> Optional[dict]:
         if has_blocks and not has_01_text:
-            return _text_resume("01_text_analysis.json не создан")
+            return _text_resume("02_text_analysis.json не создан")
         return None
 
     def _need_blocks() -> Optional[dict]:
@@ -318,7 +384,7 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
                     legacy_tile=has_tile_batches and not has_blocks,
                 )
             return _block_resume(
-                "02_blocks_analysis.json не создан",
+                "01_blocks_analysis.json не создан",
                 legacy_tile=has_tile_batches and not has_blocks,
             )
         return None

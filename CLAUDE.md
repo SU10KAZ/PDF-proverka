@@ -25,8 +25,8 @@ projects/<КОД>/<имя>/
   _output/
     blocks/               ← кропнутые image-блоки (PNG) + index.json
     document_graph.json   ← структура страниц (knowledge graph)
-    01_text_analysis.json
-    02_blocks_analysis.json
+    02_text_analysis.json
+    01_blocks_analysis.json
     03_findings.json              ← МАСТЕР замечаний
     03_findings_review.json       ← вердикты critic
     norm_checks.json              ← верификация норм
@@ -121,8 +121,8 @@ python scripts/ci_regression_gate.py --record   # пересоздать baselin
 
 ```
 [00] Подготовка                  → document_graph.json
-[01] Анализ текста (MD)          → 01_text_analysis.json
-[02] Кропинг + анализ блоков     → 02_blocks_analysis.json
+[01] Анализ текста (MD)          → 02_text_analysis.json
+[02] Кропинг + анализ блоков     → 01_blocks_analysis.json
 [03] Свод замечаний (T+G→F)      → 03_findings.json
 [03b] Critic → Corrector (cond.) → 03_findings_review.json
 [04] Верификация норм            → norm_checks.json
@@ -135,8 +135,8 @@ python scripts/ci_regression_gate.py --record   # пересоздать baselin
 | Вопрос | Источник |
 |--------|----------|
 | Замечание по ID/категории | `03_findings.json` |
-| Что видели на чертеже | `02_blocks_analysis.json` |
-| Нормативные ссылки | `01_text_analysis.json` → `normative_refs_found` |
+| Что видели на чертеже | `01_blocks_analysis.json` |
+| Нормативные ссылки | `02_text_analysis.json` → `normative_refs_found` |
 | Структура документа, текст/блоки по страницам | `document_graph.json` |
 | Вердикты проверки замечаний | `03_findings_review.json` |
 | Статус нормативных документов | `norm_checks.json` |
@@ -299,7 +299,6 @@ resume/skip больше не считаются валидными. Нужно 
 Эти файлы **не** загружаются в контекст автоматически. Читай нужный через Read,
 когда задача касается этой подсистемы — однострочники ниже подскажут, что где.
 
-- docs/gemma_enrichment.md — обязательный Gemma OCR enrichment, crop policy и summary validation
 - docs/resume_retry.md — правила resume/retry и запрет обхода обязательных этапов
 - docs/blocks_and_stage02.md — Stage 02 single-block runtime plan, legacy A/B заметки, production profile
 - docs/critic_corrector.md — findings и optimization critic/corrector, evidence-трассировка
@@ -317,4 +316,5 @@ resume/skip больше не считаются валидными. Нужно 
 - docs/stage_comparison_stamp_sheet_matching.md — сопоставление листов по штампу (page-alignment): `stamp_matching.py` глобально матчит листы старой/новой стадии по `**Наименование листа:**` из MD (находит листы, уехавшие далеко — схема ВРУ стр.51↔32), фолбэк на текст-слой result.json; forward-fill продолжений, IDF-взвешенный косинус токенов + margin-гейт (неоднозначные имена не предлагаются, precision>recall); `store.suggest_alignment_by_stamp` + `POST .../page-alignment/suggest-by-stamp` (ничего не применяет); UI-кнопка «🏷 Сопоставить по штампам» в «Связь блоков» → панель предложений → «Применить» ставит листы напротив (обычный PUT page-alignment); always-on, офлайн (без Qwen/сети), env-тюнинг `STAGE_COMPARISON_STAMP_MATCH_*`
 - docs/stage_comparison_block_equivalence_precheck.md — pre-Qwen block equivalence gate (Stage 1: **observe only**, default OFF): `block_equivalence_precheck.py` сравнивает блоки result.json OLD↔NEW (pairing по `coords_norm`/IoU + page_alignment, split/merge→uncertain, added/deleted), строгое canonical-равенство текста + визуал через `cv2.findTransformECC` (MOTION_EUCLIDEAN, total/colored-diff, diff_bbox); decision→qwen_action (`qwen_skip_candidate` только при уверенной идентичности, иначе `qwen_required`); НИЧЕГО не пропускает (skip — Stage 2); cv2 опционален (без него visual→qwen_required, не ложный skip); артефакт `block_equivalence/block_equivalence_report.json` + debug PNG; хук в `run_md_enrichment_job` (observe, `asyncio.to_thread`, fail-soft) + surface в pipeline_queue per-pair; флаг `STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED`
 - docs/vectograf.md — «Вектограф» (vectograf): детерминированное построение графа однолинейной схемы (ВРУ/ГРЩ/РП) из вектор-слоя PDF по геометрии координат, без нейросети/OCR; связка `singleline_structurer.py` (разбор текста-формул) + `singleline_graph_geometry.py` (топология по координатам) + рендер Markdown; точка входа — `/blocks/llm-text` (blocks.py секции 6/7), панель «🔌 Граф схемы» в txt; ~1,5с/блок (в осн. открытие PDF), 0 токенов, офлайн; работает ТОЛЬКО по вектор-слою (сканы → Qwen); grep `Вектограф`/`vectograf`
+- docs/block_captions.md — гуманизация ссылок на блоки в текстах замечаний: block_id («6L97-3VTH-XTC») в problem/description/solution/risk → подписи «Название» (лист N, стр. PDF M); запрет ID в промптах merge/01/02/opt + детерминированный пост-проход block_captions.py в findings_merge (флаг FINDINGS_BLOCK_CAPTIONS_ENABLED default ON); найденные в тексте ID переносятся в related_block_ids; backfill старых данных — отдельный шаг по команде
 - docs/stable_finding_id.md — спека (дизайн для AuditManager rewrite, кода нет): почему `F-NNN` сбивается между прогонами (позиционная перенумерация в `findings_merge`: `merge_similar_findings` + `phase0_dedup`) и метод стабильной идентичности — отделить `ordinal` (косметика) от вечного `uid`; tracking по фингерпринту (version_id+sheet+norm+category+severity+`_normalize_problem_pattern`+`_salient_numbers`) с append-only реестром `finding_identity.json` (exact→fuzzy→mint, uid не переиспользуется); decisions/expert_review/KB ключуются на `uid` (он кодирует версию → хайдрейтинг читает нужную версию, а не latest, чинит пустые строки БЗ); кросс-версия = отдельная ось (`origin_finding_id`/`_stable_migrated_id`); миграция 447 орфанов version-aware-проходом; Python-шим — отдельный трек

@@ -170,7 +170,7 @@ def compare_document(adapter: ProjectsV2Adapter, doc: dict, migrations: list) ->
         def has(name, d):
             return bool(d) and (Path(d) / name).is_file()
         v2_arts = {n: (v2_latest / n).is_file() for n in
-                   ("01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json")}
+                   ("02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json")}
         legacy_arts = {n: has(n, legacy_out) for n in v2_arts}
 
         version_results.append({

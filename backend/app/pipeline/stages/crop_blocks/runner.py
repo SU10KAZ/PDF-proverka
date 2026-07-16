@@ -26,9 +26,9 @@ from backend.app.core.config import BLOCKS_SCRIPT
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
-    GEMMA_BLOCKS_DIRNAME,
+    STAGE02_BLOCKS_DIRNAME,
     crop_index_matches_policy,
-    gemma_enrichment_crop_policy,
+    stage02_crop_policy,
 )
 
 
@@ -39,14 +39,13 @@ def build_crop_args(
     force: bool = False,
     *,
     policy: dict | None = None,
-    output_dir_name: str | None = GEMMA_BLOCKS_DIRNAME,
+    output_dir_name: str | None = STAGE02_BLOCKS_DIRNAME,
 ) -> list[str]:
     """Build blocks.py crop args from an explicit crop policy.
 
-    Gemma enrichment intentionally uses its own production crop policy and is
-    not tied to the Stage 02 model choice.
+    Stage 01 uses the canonical context crop policy.
     """
-    policy = policy or gemma_enrichment_crop_policy()
+    policy = policy or stage02_crop_policy()
     args = ["crop", project_path]
     if output_dir_name:
         args.extend(["--output-dir", output_dir_name])
@@ -63,7 +62,7 @@ def build_crop_args(
 
 def existing_crop_matches_policy(blocks_index_path: Path, policy: dict | None = None) -> bool:
     """Check an existing crop index against an explicit crop policy."""
-    return crop_index_matches_policy(blocks_index_path, policy or gemma_enrichment_crop_policy())
+    return crop_index_matches_policy(blocks_index_path, policy or stage02_crop_policy())
 
 
 def crop_policy_label(policy: dict) -> str:
@@ -76,13 +75,13 @@ def crop_policy_label(policy: dict) -> str:
 def sync_v2_read_canary_blocks_alias(
     project_dir: Path | str,
     output_dir: Path | str,
-    source_dir_name: str = GEMMA_BLOCKS_DIRNAME,
+    source_dir_name: str = STAGE02_BLOCKS_DIRNAME,
 ) -> bool:
-    """Mirror v2 Gemma crop output to the read_canary-compatible ``blocks/`` dir.
+    """Mirror v2 Stage 01 crop output to the read_canary-compatible ``blocks/`` dir.
 
     Deploy read_canary treats ``03_analysis/{latest,runs}/blocks/index.json`` as
     the stable read contract. The audit write path keeps the richer producer
-    directory name (``blocks_gemma_100``), so under projects_v2 we materialize a
+    directory name (``blocks_stage02_100``), so under projects_v2 we materialize a
     same-run ``blocks/`` alias after crop. Legacy output dirs are left alone.
     """
     project_dir = Path(project_dir)
@@ -159,9 +158,9 @@ async def run_crop_blocks(
     project_rel_path: str,
     force: bool = False,
     policy: dict | None = None,
-    output_dir_name: str = GEMMA_BLOCKS_DIRNAME,
+    output_dir_name: str = STAGE02_BLOCKS_DIRNAME,
 ) -> StageResult:
-    """Запуск blocks.py crop для Gemma-enrichment crop policy.
+    """Запуск blocks.py crop для Stage 01 context policy.
 
     Управляет:
     - выбором force-флага (на основе несовпадения policy или stale dir);
@@ -174,7 +173,7 @@ async def run_crop_blocks(
     - job.stage / job.status (выставляет оркестратор);
     - heartbeat / cleanup / document_graph_v2 (дело оркестратора).
     """
-    effective_policy = policy or gemma_enrichment_crop_policy()
+    effective_policy = policy or stage02_crop_policy()
 
     ctx.update_pipeline_log("crop_blocks", "running")
     await ctx.log("═══ ЭТАП 1: Кроп image-блоков из PDF ═══")
@@ -219,7 +218,7 @@ async def run_crop_blocks(
     _sync_ctx_v2_read_canary_blocks_alias(ctx, output_dir_name)
     ctx.update_pipeline_log(
         "crop_blocks", "done",
-        message=f"OK (Gemma policy: {label})",
+        message=f"OK (Stage 01 policy: {label})",
     )
     return StageResult.ok(policy_label=label)
 
@@ -229,20 +228,19 @@ async def run_policy_recrop(
     *,
     project_rel_path: str,
     policy: dict | None = None,
-    output_dir_name: str = GEMMA_BLOCKS_DIRNAME,
+    output_dir_name: str = STAGE02_BLOCKS_DIRNAME,
 ) -> StageResult:
-    """Форсированный перекроп при несовпадении Gemma crop policy.
+    """Форсированный перекроп при несовпадении Stage 01 crop policy.
 
-    Вызывается из _run_gemma_enrichment_stage когда существующий crop index
-    не соответствует ожидаемой Gemma enrichment policy.
+    Вызывается перед локальной подготовкой контекста, если crop policy устарела.
 
     Всегда force=True — пересоздаёт crop поверх существующего.
     """
-    effective_policy = policy or gemma_enrichment_crop_policy()
+    effective_policy = policy or stage02_crop_policy()
     label = crop_policy_label(effective_policy)
 
     await ctx.log(
-        f"Crop не совпадает с Gemma enrichment policy ({label}) — перекропаю перед Gemma",
+        f"Crop не совпадает со Stage 01 policy ({label}) — выполняю перекроп",
         "warn",
     )
     ctx.update_pipeline_log("crop_blocks", "running")

@@ -38,7 +38,7 @@ def project(tmp_path, monkeypatch):
     """Раскладывает _output с блоками и замечаниями и патчит резолверы путей."""
     outdir = tmp_path / "proj" / "_output"
     _write(
-        outdir / "02_blocks_analysis.json",
+        outdir / "01_blocks_analysis.json",
         {
             "block_analyses": [
                 {"block_id": "AAA-BBB-CCC", "page": 5},

@@ -16,8 +16,19 @@ from pathlib import Path
 from typing import Optional
 from datetime import datetime
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 from backend.app.pipeline.stages.crop_blocks.block_markdown import BLOCK_HEADER_RE
-from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import GEMMA_BLOCKS_DIRNAME, gemma_blocks_index_path
+from backend.app.services.common import results_md
+from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
+    GEMMA_BLOCKS_DIRNAME,
+    STAGE02_BLOCKS_DIRNAME,
+)
+from backend.app.pipeline.stages.block_context.contract import resolve_blocks_index
 from backend.app.core.config import PROJECTS_DIR as _DEFAULT_PROJECTS_DIR, SEVERITY_CONFIG, HIDDEN_PROJECTS_FILE
 from backend.app.models.project import (
     ProjectInfo, ProjectStatus, PipelineStatus, TextExtractionQuality,
@@ -618,17 +629,148 @@ def unhide_project(project_id: str) -> None:
     _save_hidden_projects(hidden)
 
 
+def _delete_project_v2_primary(project_id: str) -> dict:
+    """projects_v2-primary удаление документа: обязательный backup ВСЕХ версий +
+    confirmation + guard, затем rmtree doc_dir и чистка old_to_new_map по
+    `v2_document_dir` (legacy-путь для map-матча может быть уже недоступен).
+
+    Backup делает удаление восстановимым (`_system/destructive_backups`).
+    Legacy-папка удаляется best-effort, если ещё существует (переходный период).
+    """
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_version_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    facade = StorageWriteFacade()
+    v2_root = facade.v2_root()
+    if v2_root is None:
+        raise ValueError("projects_v2 root не настроен")
+
+    adapter = ProjectsV2Adapter(v2_root)
+    doc = adapter.find_document_by_project_id(project_id)
+    if doc is None:
+        raise ValueError(f"Проект '{project_id}' не найден")
+
+    version_ids = [v.get("version_id") for v in (doc.get("versions") or []) if v.get("version_id")]
+    if not version_ids:
+        cur = adapter.resolve_version_id(doc, None)
+        version_ids = [cur] if cur else []
+
+    def _target(vid: str) -> V2Target:
+        return V2Target(
+            object_folder=doc["object_folder"],
+            discipline=doc["discipline"],
+            document_code=doc["document_code"],
+            version_id=vid,
+        )
+
+    # 1) backup ВСЕХ версий (append в destructive_backups) — удаление восстановимо
+    backup_ids: list[str] = []
+    for vid in version_ids:
+        t = _target(vid)
+        if t.version_dir(v2_root).is_dir():
+            backup_ids.append(backup_version_before_destructive(t, v2_root, "delete_project"))
+
+    primary_target = _target(version_ids[0]) if version_ids else _target("v1")
+    guard_backup_id = backup_ids[0] if backup_ids else "confirmed_no_version_on_disk"
+    record_destructive_confirmation(
+        primary_target, v2_root, op="delete_project",
+        backup_id=guard_backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary("delete_project", confirmed=True, backup_id=guard_backup_id)
+
+    # 2) удалить doc_dir целиком (защита: только внутри objects/ этого v2root)
+    doc_dir = primary_target.doc_dir(v2_root)
+    removed_doc = None
+    try:
+        inside = str(doc_dir.resolve()).startswith(str((Path(v2_root) / "objects").resolve()) + os.sep)
+    except Exception:
+        inside = False
+    if inside and doc_dir.is_dir():
+        shutil.rmtree(doc_dir)
+        removed_doc = str(doc_dir)
+
+    # 3) почистить old_to_new_map по v2_document_dir (без legacy-пути)
+    try:
+        v2lib = facade._load_v2lib()
+        map_path = Path(v2_root) / "_system" / "old_to_new_map.json"
+        mp = v2lib.load_old_to_new_map(map_path)
+        migs = mp.get("migrations", [])
+        dd_res = str(doc_dir.resolve())
+
+        def _match(e) -> bool:
+            v = e.get("v2_document_dir") or ""
+            try:
+                return str(Path(v).resolve()) == dd_res
+            except Exception:
+                return str(v) == str(doc_dir)
+
+        mp["migrations"] = [e for e in migs if not _match(e)]
+        v2lib.save_old_to_new_map(mp, map_path)
+    except Exception:
+        pass
+
+    # 4) best-effort удаление legacy-папки, если ещё существует (переходный период)
+    legacy_removed = None
+    try:
+        legacy_dir = resolve_project_dir(project_id, must_exist=True)
+        root_entry = Path(legacy_dir)
+        try:
+            c = version_service.container_dir_for(legacy_dir)
+            if c is not None:
+                root_entry = Path(c)
+        except Exception:
+            pass
+        root_entry = root_entry.resolve()
+        if root_entry.exists():
+            shutil.rmtree(root_entry)
+            legacy_removed = str(root_entry)
+    except Exception:
+        legacy_removed = None
+
+    try:
+        unhide_project(project_id)
+    except Exception:
+        pass
+    try:
+        invalidate_project_cache()
+    except Exception:
+        pass
+
+    return {
+        "project_id": project_id,
+        "deleted_v2_doc": removed_doc,
+        "deleted_legacy": legacy_removed,
+        "backup_ids": backup_ids,
+        "v2": {"removed": [removed_doc] if removed_doc else []},
+    }
+
+
 def delete_project(project_id: str) -> dict:
     """Жёстко удалить проект: legacy-папку (контейнер версий или plain) + его
     документ(ы) в projects_v2 + записи old_to_new_map + запись в hidden_projects.
 
-    Семантика — безвозвратное удаление (выбор оператора). Сначала убираем v2
-    (fail-soft, пока legacy ещё на месте для резолва по map), затем удаляем
-    legacy-папку (авторитетно). Гард «не во время аудита» — на уровне endpoint.
+    Семантика — безвозвратное удаление (выбор оператора). В v2-primary идём через
+    v2-native путь с обязательным backup (восстановимо), не завися от legacy. В
+    legacy/dual — прежнее поведение: убрать v2 по map, затем rmtree legacy.
+    Гард «не во время аудита» — на уровне endpoint.
 
     Raises:
         ValueError: проект не найден.
     """
+    v2_primary = False
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary
+        v2_primary = v2_is_primary()
+    except Exception:
+        v2_primary = False
+    if v2_primary:
+        return _delete_project_v2_primary(project_id)
+
     try:
         proj_dir = resolve_project_dir(project_id, must_exist=True)
     except (ProjectNotResolvedError, AmbiguousProjectError, FileNotFoundError) as e:
@@ -1029,12 +1171,7 @@ def get_project_status(
     block_count = 0
     block_errors = 0
     block_expected = 0
-    blocks_index = gemma_blocks_index_path(version_dir)
-    if not blocks_index.exists():
-        # Fallback на legacy-папку для немигрированных проектов
-        legacy_index = output_dir / "blocks" / "index.json"
-        if legacy_index.exists():
-            blocks_index = legacy_index
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         bi = _load_json(blocks_index)
         if bi:
@@ -1556,7 +1693,8 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         # Маппинг: ключ в pipeline_log → поле PipelineStatus
         mapping = {
             "crop_blocks": "crop_blocks",
-            "gemma_enrichment": "gemma_enrichment",
+            "gemma_enrichment": "block_context",
+            "block_context": "block_context",
             "text_analysis": "text_analysis",
             "block_analysis": "blocks_analysis",
             "block_retry": "block_retry",
@@ -1578,10 +1716,11 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
         valid_statuses = ("done", "error", "partial", "running", "skipped", "interrupted")
         # Маппинг: ключ pipeline_log → файл-индикатор завершения
         output_files = {
-            "crop_blocks": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
-            "gemma_enrichment": "gemma_enrichment_summary.json",
-            "text_analysis": "01_text_analysis.json",
-            "block_analysis": "02_blocks_analysis.json",
+            "crop_blocks": f"{STAGE02_BLOCKS_DIRNAME}/index.json",
+            "gemma_enrichment": "block_context_summary.json",
+            "block_context": "block_context_summary.json",
+            "text_analysis": TEXT_ANALYSIS_FILENAME,
+            "block_analysis": BLOCKS_ANALYSIS_FILENAME,
             "findings_merge": "03_findings.json",
             "findings_critic": "03_findings_review.json",
             "findings_corrector": "03_findings.json",
@@ -1593,7 +1732,7 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
             "decision_carryover": "decision_carryover_report.json",
             # Legacy aliases
             "prepare": f"{GEMMA_BLOCKS_DIRNAME}/index.json",
-            "tile_audit": "02_blocks_analysis.json",
+            "tile_audit": BLOCKS_ANALYSIS_FILENAME,
             "main_audit": "03_findings.json",
         }
         for log_key, field in mapping.items():
@@ -1623,15 +1762,15 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
                 # Кросс-валидация: если "error" но выходной файл существует → "done"
                 if s == "error":
                     out_file = output_files.get(log_key)
-                    if out_file and (output_dir / out_file).exists():
-                        fsize = (output_dir / out_file).stat().st_size
-                        if fsize > 100:
+                    if out_file:
+                        resolved = resolve_existing(output_dir, out_file)
+                        if resolved.exists() and resolved.stat().st_size > 100:
                             s = "done"
                 setattr(status, field, s)
         return status
 
     # 2. Fallback: логика по файлам (для проектов без pipeline_log.json)
-    blocks_index = gemma_blocks_index_path(output_dir.parent)
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         status.crop_blocks = "done"
 
@@ -1642,10 +1781,10 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
     elif gemma_state.get("status") not in {"missing_blocks", "missing_md", "missing"}:
         status.gemma_enrichment = "error"
 
-    if (output_dir / "01_text_analysis.json").exists():
+    if resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists():
         status.text_analysis = "done"
 
-    if (output_dir / "02_blocks_analysis.json").exists():
+    if resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists():
         status.blocks_analysis = "done"
     elif list(output_dir.glob("block_batch_*.json")):
         status.blocks_analysis = "partial"
@@ -1667,6 +1806,9 @@ def _get_pipeline_status(output_dir: Path, *, project_id: Optional[str] = None) 
     if (output_dir / "decision_carryover_report.json").exists():
         status.decision_carryover = "done"
 
+    if status.block_context == "pending" and status.gemma_enrichment != "pending":
+        status.block_context = status.gemma_enrichment
+    status.gemma_enrichment = status.block_context
     return status
 
 
@@ -1678,7 +1820,7 @@ def _load_pipeline_log(output_dir: Path) -> Optional[dict]:
 # Порядок и человеко-понятные названия этапов конвейера
 _PIPELINE_STAGE_ORDER = [
     ("crop_blocks", "Кроп блоков"),
-    ("gemma_enrichment", GEMMA_STAGE_LABEL),
+    ("block_context", "Векторные графы блоков"),
     ("text_analysis", "Анализ текста"),
     ("block_analysis", "Анализ блоков"),
     ("block_retry", "Retry нечитаемых блоков"),
@@ -1776,7 +1918,7 @@ def _normalize_crop_blocks_status(
     Источники истины (по убыванию приоритета):
       1) pipeline_log.crop_blocks.status == "done" → done
       2) legacy pipeline_log.prepare.status == "done" → done
-      3) существующий _output/blocks_gemma_100/index.json → done
+      3) существующий canonical/legacy blocks index → done
       4) raw status из лога (running/error/partial/...) или pending
     """
     info = stages.get("crop_blocks") or {}
@@ -1789,7 +1931,7 @@ def _normalize_crop_blocks_status(
     if legacy.get("status") == "done":
         return "done", message
 
-    blocks_index = gemma_blocks_index_path(output_dir.parent)
+    blocks_index = resolve_blocks_index(output_dir)
     if blocks_index.exists():
         try:
             if blocks_index.stat().st_size > 10:
@@ -1872,10 +2014,24 @@ def _normalize_gemma_enrichment_status(
       - log status=partial и detail.blocks_failed > 0 → partial
       - в остальном — raw status из лога (или pending)
     """
-    info = stages.get("gemma_enrichment") or {}
+    from backend.app.pipeline.stages.block_context.contract import (
+        validate_block_context_summary,
+    )
+
+    info = stages.get("block_context") or stages.get("gemma_enrichment") or {}
     raw_status = info.get("status") or ""
     raw_message = info.get("message", "")
     detail = info.get("detail") or {}
+
+    context_validation = validate_block_context_summary(output_dir)
+    if context_validation.get("valid"):
+        summary = context_validation.get("summary") or {}
+        failed = int(summary.get("blocks_failed") or 0)
+        total = int(summary.get("blocks_total") or 0)
+        ready = int(summary.get("blocks_ready") or 0)
+        status = "done" if failed == 0 else "partial"
+        message = f"Векторные графы блоков: {ready}/{total}"
+        return status, raw_message or message, message
 
     gemma_state = evaluate_gemma_enrichment(output_dir.parent)
     gemma_migration = detect_gemma_migration_state(output_dir.parent, gemma_state=gemma_state)
@@ -1924,17 +2080,36 @@ def _normalize_gemma_enrichment_status(
         blocks_ok = detail.get("blocks_ok")
         blocks_total = detail.get("blocks_total")
         blocks_failed = detail.get("blocks_failed")
+        uncovered = list(detail.get("uncovered_block_ids") or [])
+        high_detail_skipped_large = 0
+        # Старые pipeline_log писали detail без blocks_failed/uncovered
+        # (например {partial_allowed, blocks_ok, blocks_total}) — добираем
+        # недостающее из gemma_enrichment_summary.json. Иначе полностью
+        # покрытый проект навсегда остаётся ⚠ partial только потому, что
+        # high-detail 300 DPI пропустил большие блоки (fail-soft by design).
+        summary_path = output_dir / "gemma_enrichment_summary.json"
+        if summary_path.exists():
+            try:
+                with open(summary_path, "r", encoding="utf-8") as f:
+                    sdata = json.load(f)
+                if not isinstance(blocks_failed, int):
+                    blocks_failed = int(sdata.get("blocks_failed") or 0)
+                if not uncovered:
+                    uncovered = list(sdata.get("uncovered_block_ids") or [])
+                high_detail_skipped_large = int(sdata.get("high_detail_skipped_large") or 0)
+            except (OSError, json.JSONDecodeError, ValueError, TypeError):
+                pass
         if (
             isinstance(blocks_ok, int)
             and isinstance(blocks_total, int)
             and isinstance(blocks_failed, int)
         ):
-            if blocks_ok == blocks_total and blocks_failed == 0:
+            if blocks_ok == blocks_total and blocks_failed == 0 and not uncovered:
                 user_message = _build_gemma_done_message(
                     blocks_ok=blocks_ok,
                     blocks_total=blocks_total,
                     blocks_failed=0,
-                    high_detail_skipped_large=0,
+                    high_detail_skipped_large=high_detail_skipped_large,
                 )
                 return "done", user_message, raw_message
             if blocks_failed > 0:
@@ -1942,7 +2117,7 @@ def _normalize_gemma_enrichment_status(
                     blocks_ok=blocks_ok,
                     blocks_total=blocks_total,
                     blocks_failed=blocks_failed,
-                    uncovered_block_ids=list(detail.get("uncovered_block_ids") or []),
+                    uncovered_block_ids=uncovered,
                 )
                 return "partial", user_message, raw_message
 
@@ -1956,6 +2131,7 @@ def _normalize_gemma_enrichment_status(
 # но есть один из alias — берём его статус/message.
 _PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
     "crop_blocks": ("prepare",),
+    "block_context": ("gemma_enrichment",),
     "block_analysis": ("v4_extraction", "tile_audit"),
     "findings_merge": ("v4_formatter", "main_audit"),
 }
@@ -1964,9 +2140,10 @@ _PIPELINE_STAGE_ALIASES: dict[str, tuple[str, ...]] = {
 # Путь относительно `_output/`. Если файл/папка существует и не пустой —
 # статус этапа можно поднять до done.
 _PIPELINE_STAGE_ARTIFACTS: dict[str, tuple[str, ...]] = {
-    "crop_blocks": (f"{GEMMA_BLOCKS_DIRNAME}/index.json",),
-    "text_analysis": ("01_text_analysis.json",),
-    "block_analysis": ("02_blocks_analysis.json",),
+    "crop_blocks": (f"{STAGE02_BLOCKS_DIRNAME}/index.json",),
+    "block_context": ("block_context_summary.json",),
+    "text_analysis": (TEXT_ANALYSIS_FILENAME,),
+    "block_analysis": (BLOCKS_ANALYSIS_FILENAME,),
     "findings_merge": ("03_findings.json",),
     "findings_critic": ("03_findings_review.json",),
     # corrector обновляет тот же 03_findings.json + оставляет pre_review бэкап
@@ -1999,7 +2176,7 @@ _DOWNSTREAM_DEPENDENCY: dict[str, tuple[str, ...]] = {
     "optimization": ("optimization_critic", "optimization_corrector"),
     # gemma_enrichment — legacy: если block_analysis/findings уже done без
     # Gemma, значит проект использовал старый Qwen-конвейер.
-    "gemma_enrichment": ("block_analysis", "findings_merge"),
+    "block_context": ("block_analysis", "findings_merge"),
 }
 
 # Fallback message по терминальному статусу, если в логе message пустой.
@@ -2044,7 +2221,7 @@ def _has_legacy_marker(stages: dict) -> bool:
 
 def _artifact_exists(output_dir: Path, rel: str) -> bool:
     """Проверить, что артефакт существует и не пустой."""
-    p = output_dir / rel
+    p = resolve_existing(output_dir, rel)
     try:
         if not p.exists():
             return False
@@ -2135,7 +2312,7 @@ def _normalize_pipeline_stage_status(
     if key == "crop_blocks":
         status, normalized_message = _normalize_crop_blocks_status(output_dir, stages)
         return status, normalized_message or "", None, None
-    if key == "gemma_enrichment":
+    if key in {"block_context", "gemma_enrichment"}:
         status, user_message, raw_message = _normalize_gemma_enrichment_status(
             output_dir, stages,
         )
@@ -2148,13 +2325,13 @@ def _normalize_pipeline_stage_status(
         # v4_extraction / v4_formatter / main_audit / qwen_enrichment.
         if status == "pending" and (
             _has_legacy_marker(stages)
-            or _downstream_done(stages, "gemma_enrichment", inferred_status)
+            or _downstream_done(stages, "block_context", inferred_status)
         ):
             status = "skipped"
             if not user_message:
                 user_message = (
                     "Пропущено: legacy-аудит выполнен до внедрения "
-                    "Gemma OCR enrichment."
+                    "подготовки контекста блоков."
                 )
         return status, user_message, raw_message, None
 
@@ -2303,6 +2480,16 @@ def _build_pipeline_summary(output_dir: Path, pipeline_version: str = "legacy") 
             entry["error"] = info["error"]
 
         result.append(entry)
+
+    # Read-only compatibility alias for clients that still expect the old key.
+    block_context_entry = next((item for item in result if item.get("key") == "block_context"), None)
+    if block_context_entry is not None:
+        legacy_entry = dict(block_context_entry)
+        legacy_entry["key"] = "gemma_enrichment"
+        legacy_entry["label"] = "Векторные графы блоков"
+        legacy_entry["canonical_key"] = "block_context"
+        insert_at = result.index(block_context_entry) + 1
+        result.insert(insert_at, legacy_entry)
     return result
 
 
@@ -2371,7 +2558,11 @@ def scan_external_folder(folder_path: str) -> list[dict]:
 # раскладываем их в legacy projects/, генерируем project_info.json (клиентский
 # не доверяем) и запускаем dual_write_shadow зеркало.
 
-_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm"}
+_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm", ".zip"}
+
+# Гарды распаковки ZIP-комплектов портала (защита от zip-бомб):
+_ZIP_MAX_MEMBERS = 500
+_ZIP_MAX_TOTAL_UNCOMPRESSED = 4 * 1024 * 1024 * 1024  # 4 ГБ
 
 
 class UploadFolderError(ValueError):
@@ -2415,13 +2606,51 @@ def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _expand_zip_uploads(files: list[tuple[str, bytes]]) -> list[tuple[str, bytes]]:
+    """Заменить ZIP-архивы их содержимым (портал с 2026-07-15 отдаёт комплект
+    ZIP'ом: <имя>.pdf + <имя>_results.md/_results.html [+ <имя>_blocks.json],
+    плоско). Имена членов берутся basename'ом (zip-slip исключён), вложенные
+    ZIP не распаковываются (уйдут в ignored). Битый архив → UploadFolderError."""
+    import io
+    import zipfile
+
+    out: list[tuple[str, bytes]] = []
+    for fname, data in files:
+        safe = _safe_upload_basename(fname)
+        if not safe.lower().endswith(".zip"):
+            out.append((fname, data))
+            continue
+        try:
+            zf = zipfile.ZipFile(io.BytesIO(data))
+            members = [m for m in zf.infolist() if not m.is_dir()]
+        except zipfile.BadZipFile:
+            raise UploadFolderError(f"Не удалось распаковать архив {safe!r}: файл повреждён или не ZIP")
+        if len(members) > _ZIP_MAX_MEMBERS:
+            raise UploadFolderError(f"Архив {safe!r} содержит слишком много файлов ({len(members)})")
+        total = sum(m.file_size for m in members)
+        if total > _ZIP_MAX_TOTAL_UNCOMPRESSED:
+            raise UploadFolderError(f"Архив {safe!r} слишком большой в распакованном виде")
+        for m in members:
+            base = os.path.basename(m.filename.replace("\\", "/")).strip()
+            if not base or base.startswith(".") or "__MACOSX" in m.filename:
+                continue
+            try:
+                out.append((base, zf.read(m)))
+            except Exception as e:  # RuntimeError на зашифрованных членах и т.п.
+                raise UploadFolderError(f"Не удалось прочитать {m.filename!r} из архива {safe!r}: {e}")
+    return out
+
+
 def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
-    """(имя, байты)[] → {pdfs, mds, results, ocrs, ignored}. Бросает UploadFolderError
-    на небезопасном имени (path-traversal). Общая логика для save и precheck."""
+    """(имя, байты)[] → {pdfs, mds, results, ocrs, blocks, ignored}. ZIP-архивы
+    прозрачно распаковываются. Бросает UploadFolderError на небезопасном имени
+    (path-traversal) и битом ZIP. Общая логика для save и precheck."""
+    files = _expand_zip_uploads(files)
     pdfs: list[tuple[str, bytes]] = []
     mds: list[tuple[str, bytes]] = []
     results: list[tuple[str, bytes]] = []
     ocrs: list[tuple[str, bytes]] = []
+    blocks: list[tuple[str, bytes]] = []
     ignored: list[str] = []
     for fname, data in files:
         safe = _safe_upload_basename(fname)  # бросает на traversal
@@ -2436,24 +2665,32 @@ def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
             mds.append((safe, data))
         elif ext == ".json" and low.endswith("_result.json"):
             results.append((safe, data))
+        elif ext == ".json" and low.endswith("_blocks.json"):
+            # _blocks.json — геометрия блоков нового комплекта портала
+            # (с 2026-07-16): pages[] + blocks[] (coords_norm/crop_url).
+            # Файл ОПЦИОНАЛЕН — комплект без него валиден.
+            blocks.append((safe, data))
         elif ext in (".html", ".htm") and low.endswith(("_ocr.html", "_results.html", "_results.htm")):
-            # _results.html — новый 3-файловый комплект портала (2026-07);
+            # _results.html — новый комплект портала (2026-07);
             # _ocr.html — старый 4-файловый метод, приём удалить после 2026-08-14
             # (раздел ВК распознаётся по-старому до этой даты; чтение уже
             # загруженных проектов не трогать никогда).
             ocrs.append((safe, data))
         else:
             ignored.append(safe)
-    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs, "ignored": ignored}
+    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs,
+            "blocks": blocks, "ignored": ignored}
 
 
 def _compute_upload_fingerprint(cls: dict) -> dict:
-    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr и их
-    sha256 (имя+роль+хэш) — `*_ocr.html` входит в отпечаток."""
+    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr/blocks
+    и их sha256 (имя+роль+хэш). Комплект с _blocks.json НЕ является дублем того
+    же комплекта без него (иначе догрузить геометрию версией невозможно)."""
     files_manifest: list[dict] = []
     pdf_sha: Optional[str] = None
     for role, items in (("pdf", cls["pdfs"]), ("md", cls["mds"]),
-                        ("result", cls["results"]), ("ocr", cls["ocrs"])):
+                        ("result", cls["results"]), ("ocr", cls["ocrs"]),
+                        ("blocks", cls.get("blocks", []))):
         for name, data in items:
             h = _sha256_bytes(data)
             files_manifest.append({"role": role, "name": name, "sha256": h, "size": len(data)})
@@ -2555,7 +2792,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         cls = _classify_upload_files(files)
     except UploadFolderError as e:
         blocks.append({"code": "unsafe_filename", "message": str(e)})
-        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "ignored": []}
+        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "blocks": [], "ignored": []}
     fp = _compute_upload_fingerprint(cls)
 
     # --- авто-определение дисциплины -----------------------------------------
@@ -2645,10 +2882,12 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "has_blocks_json": bool(cls.get("blocks")),
         "ignored_files": cls["ignored"],
         "status": status, "blocks": blocks, "warnings": warnings,
         "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"]),
-                                                   new_format=_is_new_format_bundle(cls)),
+                                                   new_format=_is_new_format_bundle(cls),
+                                                   has_blocks_json=bool(cls.get("blocks"))),
     }
 
 
@@ -2692,6 +2931,7 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
         md_paths = _w(cls["mds"])
         result_paths = _w(cls["results"])
         ocr_paths = _w(cls["ocrs"])
+        blocks_paths = _w(cls["blocks"])
         try:
             res = _vs.create_version_from_existing_files(
                 target_project_id,
@@ -2699,7 +2939,8 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
                     "pdf": pdf_paths[0],
                     "md": md_paths[0] if md_paths else None,
                     "result_json": result_paths[0] if result_paths else None,
-                    "extra": ocr_paths,  # *_ocr.html едет в версию
+                    # *_ocr.html и *_blocks.json едут в версию как extra
+                    "extra": ocr_paths + blocks_paths,
                 },
                 expected_section=discipline or None,
                 comment="Загружено как версия из «Из папки на компьютере»",
@@ -2740,6 +2981,7 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
         "warnings": res.get("warnings", []),
         "versions_summary": res.get("versions_summary"),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "has_blocks_json": bool(cls["blocks"]),
     }
 
 
@@ -2808,8 +3050,9 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
 
     # --- классификация файлов (project_info.json и прочее — игнор) ------------
     cls = _classify_upload_files(files)
-    pdfs, mds, results, ocrs, ignored = (
-        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"], cls["ignored"]
+    pdfs, mds, results, ocrs, blocks_json, ignored = (
+        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"],
+        cls["blocks"], cls["ignored"]
     )
 
     if len(pdfs) == 0:
@@ -2837,19 +3080,42 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
             dup = ", ".join(idx["bundle"][bf][:3])
             raise UploadFolderConflict(f"Точный комплект уже загружался: {dup}")
 
-    # --- запись в legacy (авторитетно, первым) -------------------------------
-    dest.mkdir(parents=True, exist_ok=True)
+    # --- выбор корня записи --------------------------------------------------
+    # В v2-primary НЕ пишем авторитетно в legacy `projects/` (иначе загрузка
+    # воскрешает выведенную из эксплуатации папку и копит там копии). Пишем
+    # bundle во ВРЕМЕННЫЙ staging вне projects/, затем мигрируем в v2 проверенным
+    # `shadow_mirror` и удаляем staging. Basename папки объекта сохраняется в
+    # пути staging — `migrate_project` → `object_id_for` матчит объект ПО ИМЕНИ
+    # папки (by_name fallback), так что привязка объекта корректна без legacy.
+    v2_first = False
+    try:
+        from backend.app.services.storage.storage_write_facade import v2_is_primary as _v2_is_primary
+        v2_first = _v2_is_primary()
+    except Exception:
+        v2_first = False
+
+    staging_root: Optional[Path] = None
+    if v2_first:
+        import tempfile
+        staging_root = Path(tempfile.mkdtemp(prefix="v2upload_"))
+        write_dest = staging_root / obj_projects_dir.name / discipline / project_name
+    else:
+        write_dest = dest
+
+    # --- запись bundle (legacy-layout: <obj>/<discipline>/<name>) -------------
+    write_dest.mkdir(parents=True, exist_ok=True)
     saved: list[str] = []
 
     def _write_all(items: list[tuple[str, bytes]]) -> None:
         for safe, data in items:
-            (dest / safe).write_bytes(data)
+            (write_dest / safe).write_bytes(data)
             saved.append(safe)
 
     _write_all(pdfs)
     _write_all(mds)
     _write_all(results)
     _write_all(ocrs)
+    _write_all(blocks_json)
 
     md_names = [n for n, _ in mds]
     md_doc = next((n for n in md_names if n.lower().endswith("_document.md")), None)
@@ -2874,8 +3140,11 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     if md_names:
         info["md_file"] = md_primary
         info["md_files"] = md_names
+    if blocks_json:
+        # геометрия блоков нового комплекта (источник псевдо-result.json)
+        info["blocks_json_file"] = blocks_json[0][0]
 
-    (dest / "project_info.json").write_text(
+    (write_dest / "project_info.json").write_text(
         json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     # input_manifest.json — расширенный отпечаток (per-file sha256). Зеркалится в
@@ -2889,54 +3158,92 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "files": fp.get("files", []),
     }
-    (dest / "input_manifest.json").write_text(
+    (write_dest / "input_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    (dest / "_output").mkdir(exist_ok=True)
+    (write_dest / "_output").mkdir(exist_ok=True)
 
-    # --- dual_write_shadow зеркало (no-op в legacy, fail-soft) ----------------
+    # --- миграция/зеркало в v2 -----------------------------------------------
     # *_ocr.html попадёт в v2 01_input/02_work автоматически: find_input_quad
-    # распознаёт _ocr.html. try/except гарантирует, что сбой v2 не ломает legacy.
+    # распознаёт _ocr.html. try/except гарантирует fail-soft.
     try:
         from backend.app.services.storage import storage_write_facade as _swf
-        _swf.shadow_mirror_project_path_safe(dest)
+        if v2_first:
+            # Staging lives under /tmp, so neither its absolute path nor its
+            # object-directory basename is a reliable identity after an object
+            # rename.  Pass the registry identity explicitly; otherwise v2lib
+            # falls back to a hash and creates an orphan object.
+            _swf.shadow_mirror_project_path_safe(
+                write_dest,
+                object_id=object_id,
+                display_name=str(obj.get("name") or obj_projects_dir.name),
+            )
+        else:
+            _swf.shadow_mirror_project_path_safe(write_dest)
     except Exception:
         pass
 
+    if v2_first:
+        # v2-primary: bundle мигрирован из staging в v2. Проверяем, что документ
+        # реально появился в v2, и удаляем временный staging (в projects/ ничего
+        # не осталось). Если v2-документа нет — это surfaced failure загрузки.
+        try:
+            v2_ok = _v2_document_exists(object_id, project_name)
+        except Exception:
+            v2_ok = False
+        if staging_root is not None:
+            import shutil
+            shutil.rmtree(staging_root, ignore_errors=True)
+        if not v2_ok:
+            raise UploadFolderError(
+                f"Не удалось создать документ '{project_id}' в projects_v2"
+            )
+        invalidate_project_cache()
+
+    result_dest = str(dest) if not v2_first else project_id
     return {
         "project_id": project_id,
         "name": project_name,
         "section": discipline,
         "object_id": object_id,
-        "dest": str(dest),
+        "dest": result_dest,
         "saved_files": saved,
         "ignored_files": ignored,
         "has_pdf": True,
         "has_md": bool(md_names),
         "has_result": bool(results),
         "has_ocr": bool(ocrs),
+        "has_blocks_json": bool(blocks_json),
         "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs),
-                                            new_format=_is_new_format_bundle(cls)),
+                                            new_format=_is_new_format_bundle(cls),
+                                            has_blocks_json=bool(blocks_json)),
         "project_info": info,
     }
 
 
 def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool,
-                            new_format: bool = False) -> list[str]:
+                            new_format: bool = False,
+                            has_blocks_json: bool = False) -> list[str]:
     """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах.
 
-    new_format=True — комплект нового 3-файлового формата портала
-    (*_results.md + *_results.html, без result.json): отсутствие result.json
-    для него норма, но геометрия блоков недоступна до этапа конвертера.
+    new_format=True — комплект нового формата портала (*_results.md +
+    *_results.html [+ *_blocks.json], без result.json): отсутствие result.json
+    для него норма. Геометрия блоков берётся из *_blocks.json; без него —
+    предупреждаем (попросить выгрузку с _blocks.json у портала).
     """
     warns: list[str] = []
     if not has_md:
         warns.append("Не найден *_document.md — текстовый анализ потребует OCR/Chandra.")
     if not has_result:
-        if new_format:
+        if new_format and has_blocks_json:
             warns.append(
-                "Новый 3-файловый комплект (без *_result.json): геометрия блоков "
-                "и кроп будут доступны после этапа конвертации нового формата."
+                "Новый комплект портала: геометрия блоков будет получена из "
+                "*_blocks.json (без *_result.json)."
+            )
+        elif new_format:
+            warns.append(
+                "Новый комплект БЕЗ *_blocks.json: геометрия блоков недоступна — "
+                "скачайте выгрузку с файлом *_blocks.json или догрузите его версией."
             )
         else:
             warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
@@ -2946,9 +3253,12 @@ def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool,
 
 
 def _is_new_format_bundle(cls: dict) -> bool:
-    """Комплект нового 3-файлового формата: есть *_results.md или *_results.html."""
+    """Комплект нового формата портала: есть *_results.md / *_results.html
+    (или пришла геометрия *_blocks.json)."""
     names = [n for n, _ in cls.get("mds", [])] + [n for n, _ in cls.get("ocrs", [])]
-    return any(n.lower().endswith(("_results.md", "_results.html", "_results.htm")) for n in names)
+    if any(n.lower().endswith(("_results.md", "_results.html", "_results.htm")) for n in names):
+        return True
+    return bool(cls.get("blocks"))
 
 
 def register_external_project(source_path: str, pdf_file: str,
@@ -3325,6 +3635,15 @@ def _clean_project_data_v2_primary(
     }
     total_size = 0
 
+    # Слепок решённых вердиктов ПЕРЕД удалением findings: после «Очистить» +
+    # нового аудита F-ID перенумеруются, слепок в 04_review позволит перепривязать
+    # разметку эксперта (verdict_preservation, fail-soft).
+    try:
+        from backend.app.services.findings import verdict_preservation as _vp
+        _vp.snapshot_for_project(project_id, version_id=version_id)
+    except Exception as _vp_err:  # noqa: BLE001 — fail-soft, но наблюдаемо
+        print(f"[{project_id}:clean] verdict_preservation snapshot failed: {_vp_err}")
+
     analysis_dir = version_dir / "03_analysis"
     if analysis_dir.exists():
         for f in analysis_dir.rglob("*"):
@@ -3617,7 +3936,13 @@ def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[di
     Выделено из parse_md_document, чтобы тот же парсер можно было применить к MD
     из projects_v2 (read canary), гарантируя идентичный контракт. Возвращает None,
     если в тексте нет ни одного маркера `## СТРАНИЦА N`.
+
+    Новый формат портала (`*_results.md`, `## Page N`) распознаётся в начале и
+    уходит в _parse_results_md_pages; старый Chandra-путь ниже не меняется.
     """
+    if results_md.is_results_md_text(md_text):
+        return _parse_results_md_pages(md_text, project_id=project_id, md_file=md_file)
+
     page_splits = list(_PAGE_RE.finditer(md_text))
     if not page_splits:
         return None
@@ -3665,6 +3990,65 @@ def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[di
             "page_num": page_num,
             "sheet_info": sheet_info,
             "sheet_label": sheet_label,
+            "text_blocks": text_blocks,
+            "image_blocks": image_blocks,
+            "blocks": blocks,
+        })
+
+    return {
+        "project_id": project_id,
+        "md_file": md_file,
+        "total_pages": len(pages),
+        "pages": pages,
+    }
+
+
+def _parse_results_md_pages(md_text: str, *, project_id: str, md_file: str) -> Optional[dict]:
+    """Новый формат портала (`*_results.md`) → контракт parse_md_text.
+
+    Ключ листа = страница PDF (`## Page N`); Sheet из штампа — лишь подпись
+    (может быть пуст/неуникален): он идёт в sheet_info, наименование листа —
+    в sheet_label. Блоки маппятся в тот же dict, что и старый путь:
+    type в верхнем регистре (TEXT/IMAGE), content = тело блока; у IMAGE —
+    image_type/axes из мета-строки и brief/description/entities из секций
+    (Summary/Description/Entities). Возвращает None, если страниц нет
+    (симметрично старому пути без `## СТРАНИЦА N`).
+    """
+    doc = results_md.parse_results_md(md_text)
+    if not doc.pages:
+        return None
+
+    pages = []
+    for p in doc.pages:
+        blocks = []
+        for b in p.blocks:
+            block = {
+                "block_id": b.block_id,
+                "type": (b.block_type or "").upper(),
+                "content": b.body,
+            }
+            if b.is_image:
+                meta = b.image_meta or {}
+                sections = b.image_sections or {}
+                for key, value in (
+                    ("image_type", meta.get("type")),
+                    ("axes", meta.get("axes")),
+                    ("brief", sections.get("summary")),
+                    ("description", sections.get("description")),
+                    ("entities", sections.get("entities")),
+                ):
+                    # как и в старом пути: ключ появляется только при наличии значения
+                    if value:
+                        block[key] = value
+            blocks.append(block)
+
+        text_blocks = sum(1 for b in blocks if b["type"] == "TEXT")
+        image_blocks = sum(1 for b in blocks if b["type"] == "IMAGE")
+
+        pages.append({
+            "page_num": p.number,
+            "sheet_info": p.sheet,
+            "sheet_label": p.sheet_name,
             "text_blocks": text_blocks,
             "image_blocks": image_blocks,
             "blocks": blocks,

@@ -105,16 +105,20 @@ def build_balanced_sample(
     consistency_gate: bool = True,
     classes: tuple[str, ...] = ("graphic_confirmed", "graphic_rejected"),
     png_scan_cap: int = 600,
+    alia_only: bool = False,
 ) -> list[dict]:
     """Вернуть до per_class кейсов на каждый класс (диверсиф. по проектам, с PNG).
 
     consistency_gate=True (по умолчанию) отбрасывает кейсы с осыпавшимся F-ID
     (метка эксперта про другое замечание) — даёт ДОВЕРЕННЫЕ метки для бенчмарка.
+    alia_only=True оставляет только проект 214 ASTERUS (Alia) — префикс «13АВ».
     """
     all_cases = _load()
     by_class: dict[str, list[dict]] = defaultdict(list)
     for c in all_cases:
         if c.get("case_class") in classes:
+            if alia_only and not str(c.get("source_project", "")).startswith("13АВ"):
+                continue
             if consistency_gate and not is_consistent(c):
                 continue
             by_class[c["case_class"]].append(c)

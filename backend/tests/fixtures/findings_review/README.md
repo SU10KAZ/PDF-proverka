@@ -196,7 +196,7 @@ python backend/scripts/offline_findings_review_quality_check.py \
 
 ### Известные ограничения deterministic engine
 
-- **Phantom blocks**: engine не проверяет существование block_id в `02_blocks_analysis.json` — для этого нужен LLM critic gate
+- **Phantom blocks**: engine не проверяет существование block_id в `01_blocks_analysis.json` — для этого нужен LLM critic gate
 - **Семантическое несоответствие evidence**: определяется только по имени блока, не по содержанию
 - **Спорные параметрические замечания**: КРИТИЧЕСКОЕ с `"может не соответствовать"` может пройти через safety bypass
 - **Borderline без LLM**: все 4 borderline-fixture проходят как accept — это ожидаемо для deterministic engine

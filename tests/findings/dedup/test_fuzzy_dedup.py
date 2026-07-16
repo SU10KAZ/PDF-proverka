@@ -69,6 +69,18 @@ def test_two_criticals_kept_even_if_similar():
     assert len(kept) == 2, "two КРИТ MUST be kept even when signatures match"
 
 
+def test_disputed_detector_finding_never_collapses():
+    disputed = _f(
+        id="T-001",
+        problem="На схеме указан автомат 16 А",
+        detector_comparison={"primary_relation": "disputed"},
+    )
+    ordinary = _f(id="T-002", problem="На схеме указан автомат 16 А.")
+    kept, report = fuzzy_dedup([disputed, ordinary])
+    assert len(kept) == 2
+    assert report.disputed_protected_count == 1
+
+
 def test_threshold_zero_collapses_almost_everything_but_keeps_criticals():
     items = [
         _f(id=f"T-{i:03d}", problem=f"completely different finding {i}", severity="РЕКОМЕНДАТЕЛЬНОЕ")

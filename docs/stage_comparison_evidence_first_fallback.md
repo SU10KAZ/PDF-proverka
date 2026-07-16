@@ -264,8 +264,10 @@ Downstream (`unified_findings`, UI) видит обычный `status=done` со
 
 ## Приёмка и rollout
 
-- Acceptance-артефакты (КР2, real Opus shadow run): [experiments/stage_comparison_evidence_first_s2/results/kr2_acceptance/](../experiments/stage_comparison_evidence_first_s2/results/kr2_acceptance/)
-- Controlled rollout plan + риски: [experiments/stage_comparison_evidence_first_s2/ROLLOUT.md](../experiments/stage_comparison_evidence_first_s2/ROLLOUT.md)
+- Acceptance-артефакты (КР2, real Opus shadow run) и rollout plan: архив
+  `experiments/stage_comparison_evidence_first_s2/` удалён 2026-07-14 (приёмка пройдена,
+  фича в проде за флагом); содержимое доступно в git-истории:
+  `git log --diff-filter=D -- 'experiments/stage_comparison_evidence_first_s2/*'`
 
 ## Связанные файлы
 

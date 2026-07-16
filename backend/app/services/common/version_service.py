@@ -1124,6 +1124,25 @@ def resolve_version_output_dir(
     return ctx["output_dir"]
 
 
+def resolve_projects_v2_output_dir_strict(
+    project_id: str,
+    version_id: Optional[str] = None,
+) -> Path:
+    """Resolve an output directory exclusively inside ``projects_v2``.
+
+    Unlike :func:`resolve_version_output_dir`, this helper never falls back to
+    the legacy ``projects/`` tree.  Writers use it after the v2-primary cutover
+    so a stale, synthetic, or service-level project id cannot silently recreate
+    the retired storage root.
+    """
+    ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if ctx is None:
+        raise FileNotFoundError(
+            f"Документ projects_v2 не найден для project_id={project_id!r}"
+        )
+    return Path(ctx["output_dir"])
+
+
 def resolve_active_output_dir(project_id: str) -> Path:
     """reserc.md #97: ЕДИНЫЙ резолвер папки `_output` активной версии с fallback.
 
@@ -1304,6 +1323,7 @@ def _load_layout_project_info(version_dir: Path) -> dict[str, Any]:
 
 
 def _v2_input_names(version_dir: Path) -> list[str]:
+    from backend.app.services.common.crop_cache import CROPS_DIRNAME, MANIFEST_NAME
     inp = version_dir / "01_input"
     if not inp.is_dir():
         return []
@@ -1313,6 +1333,14 @@ def _v2_input_names(version_dir: Path) -> list[str]:
             continue
         rel = str(p.relative_to(inp))
         if rel == "project_info.json" or Path(rel).name.startswith("."):
+            continue
+        rel_parts = Path(rel).parts
+        # кэш кропов (01_input/crops/ + манифест) — наш derived-артефакт,
+        # не пользовательский исходник: сотни blk_*.pdf иначе попадают в
+        # pdf_files и могут стать «основным» PDF при повторной догрузке
+        if rel_parts and rel_parts[0] == CROPS_DIRNAME:
+            continue
+        if rel == MANIFEST_NAME:
             continue
         result.append(rel)
     return sorted(result)
@@ -1380,6 +1408,38 @@ def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
     ocr_candidates.sort(key=lambda p: p.name.lower().endswith("_results.html"))
     if ocr_candidates:
         _copy_if_exists(ocr_candidates[0], work / "ocr.html")
+
+    # _blocks.json — геометрия блоков нового комплекта портала (2026-07-16),
+    # опциональный файл; рабочая копия — 02_work/blocks.json.
+    blocks_candidates = sorted(
+        p for p in inp.rglob("*.json")
+        if p.is_file() and (p.name == "blocks.json" or p.name.lower().endswith("_blocks.json"))
+    ) if inp.is_dir() else []
+    if blocks_candidates:
+        _copy_if_exists(blocks_candidates[0], work / "blocks.json")
+
+    # Новый комплект без result.json: синтезируем 02_work/result.json из
+    # blocks.json (+ тексты из document.md) — пайплайн (crop_blocks, prepare,
+    # вектограф и пр.) получает канонический вход. Настоящий *_result.json
+    # портала синтезатор никогда не перезаписывает; fail-soft.
+    if (work / "blocks.json").is_file() and not result_candidates:
+        try:
+            from backend.app.services.common.blocks_json import synthesize_result_json_file
+            synthesize_result_json_file(
+                work / "blocks.json",
+                work / "result.json",
+                work / "document.md",
+                pdf_name=(info.get("pdf_file") or None),
+            )
+        except Exception:
+            pass
+        # кропы качаем сразу при загрузке (crop-токены живут per-generation) —
+        # в фоне, идемпотентно, fail-soft; кэш в 01_input/crops/
+        try:
+            from backend.app.services.common.crop_cache import ensure_crops_for_version
+            ensure_crops_for_version(version_dir)
+        except Exception:
+            pass
 
 
 def _update_version_project_info(
@@ -1690,6 +1750,36 @@ def _resolve_candidate_path(
     )
 
 
+def _document_exists_in_v2(project_id: str) -> bool:
+    """True, если документ существует в projects_v2 (без обращения к legacy)."""
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        adapter = ProjectsV2Adapter()
+        return adapter.is_available() and adapter.find_document_by_project_id(project_id) is not None
+    except Exception:
+        return False
+
+
+def _read_target_section(proj_dir: Path, project_id: str) -> Optional[str]:
+    """section текущего документа: legacy `project_info.json` → v2 version project_info.
+
+    В v2-primary legacy-папки может не быть — тогда section читается из
+    `project_info.json` текущей версии в projects_v2 (get_version_dir v2-aware).
+    """
+    candidates = [proj_dir / "project_info.json"]
+    try:
+        candidates.append(get_version_dir(proj_dir, project_id) / "project_info.json")
+    except Exception:
+        pass
+    for info_path in candidates:
+        try:
+            if info_path.exists():
+                return (json.loads(info_path.read_text(encoding="utf-8")) or {}).get("section")
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            continue
+    return None
+
+
 def create_version_from_existing_files(
     target_project_id: str,
     candidate_files: dict[str, Optional[str]],
@@ -1734,20 +1824,18 @@ def create_version_from_existing_files(
 
     proj_dir: Path = resolve_project_dir_fn(target_project_id)
     if not proj_dir.exists() or not proj_dir.is_dir():
-        raise FileNotFoundError(
-            f"Проект '{target_project_id}' не найден: {proj_dir}"
-        )
+        # v2-primary: документ может существовать ТОЛЬКО в projects_v2 (legacy
+        # выведен из эксплуатации). Тяжёлая работа ниже (create_next_version /
+        # save_files_to_version / get_version_dir) уже v2-aware и ключуется на
+        # project_id, а не на этой папке — 404 только если нет и в v2.
+        if not _document_exists_in_v2(target_project_id):
+            raise FileNotFoundError(
+                f"Проект '{target_project_id}' не найден: {proj_dir}"
+            )
 
-    # Проверка section.
+    # Проверка section (source — legacy project_info или v2 version project_info).
     if expected_section:
-        root_info_path = proj_dir / "project_info.json"
-        target_section: Optional[str] = None
-        if root_info_path.exists():
-            try:
-                with open(root_info_path, "r", encoding="utf-8") as f:
-                    target_section = (json.load(f) or {}).get("section")
-            except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-                target_section = None
+        target_section: Optional[str] = _read_target_section(proj_dir, target_project_id)
         if target_section and target_section != expected_section:
             raise ValueError(
                 f"Раздел target проекта '{target_section}' не совпадает с "

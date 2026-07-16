@@ -3,6 +3,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from typing import Any
 
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
@@ -11,9 +17,10 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
     gemma_output_root,
     validate_gemma_summary,
 )
+from backend.app.pipeline.stages.block_context.contract import STAGE_TITLE
 
 
-GEMMA_STAGE_LABEL = "Gemma OCR enrichment / предварительное распознавание чертежей"
+GEMMA_STAGE_LABEL = STAGE_TITLE
 GEMMA_MIGRATION_STATUS_DETAIL = "legacy_gemma_migration_required"
 
 _MIGRATION_REQUIRED_GEMMA_STATUSES = {
@@ -92,8 +99,7 @@ def find_project_markdown(
 # reserc.md #17: мёртвый partial-гейт удалён. Функция partial_gemma_allowed
 # вычисляла флаг allow_partial / partial_mode, но РЕЗУЛЬТАТ нигде не использовался
 # — gate всегда отдавал ready=True на status='partial'. Контракт зафиксирован
-# явно: partial-покрытие Gemma — first-class ready (см. docs/gemma_enrichment.md
-# «Ready status may still be partial …»). Config-ключи allow_partial/partial_mode
+# явно: partial-покрытие — first-class ready. Config-ключи allow_partial/partial_mode
 # были no-op и убраны вместе с функцией.
 
 
@@ -134,8 +140,8 @@ def detect_gemma_migration_state(
     if gemma_state is None:
         gemma_state = evaluate_gemma_enrichment(project_dir, project_info)
 
-    has_01_text = (output_dir / "01_text_analysis.json").exists()
-    has_02_blocks = (output_dir / "02_blocks_analysis.json").exists()
+    has_01_text = resolve_existing(output_dir, TEXT_ANALYSIS_FILENAME).exists()
+    has_02_blocks = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME).exists()
     has_03_findings = (output_dir / "03_findings.json").exists()
     has_norm_checks = (output_dir / "norm_checks.json").exists()
     has_03a = (output_dir / "03a_norms_verified.json").exists()

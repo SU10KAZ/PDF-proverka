@@ -87,7 +87,7 @@ def _make_project(
     )
 
     if has_blocks:
-        (output / "02_blocks_analysis.json").write_text(
+        (output / "01_blocks_analysis.json").write_text(
             json.dumps({"block_analyses": []}), encoding="utf-8"
         )
 
@@ -189,7 +189,7 @@ class TestBuildManifestRecord:
     def test_optional_artifacts_in_hashes(self, tmp_path):
         proj = _make_project(tmp_path, "Full", has_blocks=True, has_graph=True)
         rec = self.mod.build_manifest_record(proj)
-        assert "02_blocks_analysis.json" in rec["hashes"]
+        assert "01_blocks_analysis.json" in rec["hashes"]
         assert "document_graph.json" in rec["hashes"]
 
 

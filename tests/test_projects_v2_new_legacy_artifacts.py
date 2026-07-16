@@ -30,8 +30,8 @@ def _build_env(tmp_path, *, with_new_analysis=True, with_noise=True, existing_ma
     out = legacy_folder / "_output"
     out.mkdir(parents=True)
     if with_new_analysis:
-        (out / "01_text_analysis.json").write_text("T", encoding="utf-8")
-        (out / "02_blocks_analysis.json").write_text("B", encoding="utf-8")
+        (out / "02_text_analysis.json").write_text("T", encoding="utf-8")
+        (out / "01_blocks_analysis.json").write_text("B", encoding="utf-8")
         (out / "03_findings.json").write_text("F", encoding="utf-8")
     if with_noise:
         # не-whitelist: backup / cache / debug — НЕ должны попадать
@@ -72,7 +72,7 @@ def test_scan_finds_new_legacy_file_not_in_map(tmp_path):
     types = {r["drift_type"] for r in res["rows"]}
     assert "legacy_new_file_not_in_map" in types
     names = {r["file"] for r in res["rows"] if r["drift_type"] == "legacy_new_file_not_in_map"}
-    assert {"01_text_analysis.json", "02_blocks_analysis.json", "03_findings.json"} <= names
+    assert {"02_text_analysis.json", "01_blocks_analysis.json", "03_findings.json"} <= names
     assert res["documents"][0]["recommendation"] == sd.REC_REFRESH_SAFE
 
 
@@ -96,8 +96,8 @@ def test_refresh_adds_to_latest_and_run_refresh(tmp_path):
     s = res["summary"]
     assert s["new_files_added"] >= 3
     latest = version_root / "03_analysis" / "latest"
-    assert (latest / "01_text_analysis.json").exists()
-    assert (latest / "02_blocks_analysis.json").exists()
+    assert (latest / "02_text_analysis.json").exists()
+    assert (latest / "01_blocks_analysis.json").exists()
     assert (latest / "03_findings.json").exists()
     # run_refresh_* создан с verbatim-копиями
     runs = list((version_root / "03_analysis" / "runs").glob("run_refresh_*"))
@@ -112,7 +112,7 @@ def test_refresh_updates_map(tmp_path):
     mp = json.loads(map_path.read_text(encoding="utf-8"))
     files = mp["migrations"][0]["files"]
     new_paths = [f["new_path"] for f in files]
-    assert any("03_analysis/latest/01_text_analysis.json" in p for p in new_paths)
+    assert any("03_analysis/latest/02_text_analysis.json" in p for p in new_paths)
     assert any("run_refresh_" in p for p in new_paths)
     # у новых записей есть sha
     assert all(f["sha256"] for f in files if f.get("role") == "run_refresh_new")
@@ -131,7 +131,7 @@ def test_refresh_partial_analysis_status(tmp_path):
     # только 01 + 03 -> partial
     v2_root, map_path, legacy_folder, version_root = _build_env(tmp_path, with_new_analysis=False)
     out = legacy_folder / "_output"
-    (out / "01_text_analysis.json").write_text("T", encoding="utf-8")
+    (out / "02_text_analysis.json").write_text("T", encoding="utf-8")
     (out / "03_findings.json").write_text("F", encoding="utf-8")
     rms.run_refresh(v2_root=v2_root, document=DOC, version=VER,
                     stable_seconds=0, execute=True, include_new_files=True)
@@ -144,7 +144,7 @@ def test_without_flag_new_files_not_added(tmp_path):
     res = rms.run_refresh(v2_root=v2_root, document=DOC, version=VER,
                           stable_seconds=0, execute=True, include_new_files=False)
     assert res["summary"]["new_files_added"] == 0
-    assert not (version_root / "03_analysis" / "latest" / "01_text_analysis.json").exists()
+    assert not (version_root / "03_analysis" / "latest" / "02_text_analysis.json").exists()
     assert not list((version_root / "03_analysis" / "runs").glob("run_refresh_*"))
 
 
@@ -159,7 +159,7 @@ def test_unstable_legacy_not_updated(tmp_path):
                           between_hook=mutate)
     assert res["stable"] is False
     assert res["summary"]["new_files_added"] == 0
-    assert not (version_root / "03_analysis" / "latest" / "01_text_analysis.json").exists()
+    assert not (version_root / "03_analysis" / "latest" / "02_text_analysis.json").exists()
 
 
 def test_legacy_not_modified(tmp_path):

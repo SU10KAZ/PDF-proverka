@@ -4,17 +4,17 @@
 
 Регрессия, которую закрывают эти тесты:
 текущий production-режим Stage 02 (`findings_only_gemma_pair` / single_block)
-пишет единый merged `02_blocks_analysis.json` и НЕ пишет legacy
+пишет единый merged `01_blocks_analysis.json` и НЕ пишет legacy
 `block_batch_*.json`. Старый эндпоинт читал только legacy-источники, поэтому
 `blocks_map` оказывался пустым и ВСЕ блоки из `blocks_gemma_100/index.json`
 классифицировались как `skipped` («Без значимого содержимого»), хотя аудит
 завершён и у большинства блоков есть findings.
 
 Проверяем:
-* `02_blocks_analysis.json` — основной источник (single-block формат);
+* `01_blocks_analysis.json` — основной источник (single-block формат);
 * legacy fallback `block_batch_*.json` (старые batched-проекты без merged-файла);
 * v4 fallback `typed_facts_batch_*.json`;
-* приоритет: при наличии `02_blocks_analysis.json` legacy не используется;
+* приоритет: при наличии `01_blocks_analysis.json` legacy не используется;
 * отсутствие любых источников анализа не ломает эндпоинт (всё → skipped).
 
 Запуск:
@@ -60,7 +60,7 @@ def _setup_project(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if blocks_analysis is not None:
-        _write(output_dir / "02_blocks_analysis.json", blocks_analysis)
+        _write(output_dir / "01_blocks_analysis.json", blocks_analysis)
     if block_batch is not None:
         _write(output_dir / "block_batch_001.json", block_batch)
     if typed_facts is not None:
@@ -77,7 +77,7 @@ def _patch_output(monkeypatch, output_dir: Path) -> None:
 
 
 def test_single_block_02_blocks_analysis_is_primary(tmp_path, monkeypatch):
-    """Новый формат: 02_blocks_analysis.json → блоки классифицируются, не skipped."""
+    """Новый формат: 01_blocks_analysis.json → блоки классифицируются, не skipped."""
     output_dir = _setup_project(
         tmp_path,
         blocks_analysis={
@@ -114,7 +114,7 @@ def test_single_block_02_blocks_analysis_is_primary(tmp_path, monkeypatch):
 
 
 def test_02_blocks_analysis_takes_precedence_over_legacy(tmp_path, monkeypatch):
-    """При наличии 02_blocks_analysis.json legacy block_batch_*.json игнорируется."""
+    """При наличии 01_blocks_analysis.json legacy block_batch_*.json игнорируется."""
     output_dir = _setup_project(
         tmp_path,
         blocks_analysis={"block_analyses": [{"block_id": "A", "findings": []}]},
@@ -132,7 +132,7 @@ def test_02_blocks_analysis_takes_precedence_over_legacy(tmp_path, monkeypatch):
 
 
 def test_legacy_block_batch_fallback(tmp_path, monkeypatch):
-    """Старые batched-проекты без 02_blocks_analysis.json: читаем block_batch_*.json."""
+    """Старые batched-проекты без 01_blocks_analysis.json: читаем block_batch_*.json."""
     output_dir = _setup_project(
         tmp_path,
         block_batch={
@@ -207,7 +207,7 @@ def test_real_project_v2_counts(monkeypatch):
         / "133-23-ГК-АР1.pdf"
         / "_output"
     )
-    if not (output_dir / "02_blocks_analysis.json").exists():
+    if not (output_dir / "01_blocks_analysis.json").exists():
         pytest.skip("реальные данные проекта недоступны в этом окружении")
 
     _patch_output(monkeypatch, output_dir)

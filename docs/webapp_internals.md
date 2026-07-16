@@ -101,3 +101,31 @@ Cleanup policy:
 - only allowlisted Gemma models are unloaded
 - denylist models, especially `chandra-ocr-2`, are never touched
 - unload failures are warnings and must not mutate job/project status
+
+## Live-статус на карточке проекта (2026-07-16)
+
+Три источника с разной свежестью, синхронизированные так:
+
+- **Баннер** («Верификация норм — Процесс активен») — poll
+  `/api/audit/live-status` каждые 15 с, in-memory `job.stage`.
+- **Плитки этапов** (`currentProject.pipeline`) и **список «Статус
+  конвейера»** (`currentProject.pipeline_summary`) — оба приходят одним
+  WS-сообщением `status`: `update_pipeline_log` кладёт в
+  `WSMessage.status_change` и `pipeline`, и `pipeline_summary`
+  (из `_build_pipeline_summary` по только что записанному pipeline_log.json).
+  Раньше `pipeline_summary` приходил только с карточкой `/api/projects/{id}`
+  и замирал на весь прогон — список отставал от баннера на целый этап.
+
+Страховки от потери WS-сообщений:
+
+- broadcast идёт через `ws_manager.schedule_broadcast_to_project` —
+  работает и из рабочего потока без event loop (run_coroutine_threadsafe
+  на loop, запомненный при подключении клиента); раньше
+  `asyncio.ensure_future` из потока молча падал в `except: pass`;
+- `pollLiveStatus` при смене `stage` текущего проекта тихо перезагружает
+  карточку (`refreshProjectCardSilently`, без спиннера);
+- проектный WS переподключается без потолка попыток (раньше 5, причём
+  счётчик сбрасывался и лимит был мёртвым кодом) и при reconnect делает
+  ресинк: `pollLiveStatus()` + перезагрузка карточки;
+- 60-секундный кэш карточки не используется, пока проект запущен
+  (`isProjectRunning`).

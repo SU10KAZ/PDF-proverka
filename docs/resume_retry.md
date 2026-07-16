@@ -23,9 +23,9 @@ they must not bypass mandatory prerequisites.
   resume should run Gemma first.
 - `block_analysis` depends on:
   `gemma_enrichment_summary.json`,
-  `_output/01_text_analysis.json`,
+  `_output/02_text_analysis.json`,
   `_output/blocks_stage02_100/index.json`.
-- `findings_merge` cannot run without `_output/02_blocks_analysis.json`.
+- `findings_merge` cannot run without `_output/01_blocks_analysis.json`.
 
 Gemma gate is ready when base 100 DPI pass has valid metadata and every block has
 a final decision. The gate does not require 300 DPI for every block.
@@ -56,8 +56,8 @@ because the backend already records retry mode and per-block final decisions.
 Projects with old Gemma summary schema (`schema_version` absent or not equal to
 `2`) must rerun Gemma enrichment before resume can continue.
 
-If a project has historical completed OCR artifacts (`01_text_analysis.json`,
-`02_blocks_analysis.json`, `03_findings.json` or later outputs) but Gemma gate is
+If a project has historical completed OCR artifacts (`02_text_analysis.json`,
+`01_blocks_analysis.json`, `03_findings.json` or later outputs) but Gemma gate is
 not compatible with schema v2, resume detection must not report plain
 `completed`. Instead it returns `migration_required = true` and points to the
 next migration stage:

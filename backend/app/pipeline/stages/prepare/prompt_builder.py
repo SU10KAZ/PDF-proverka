@@ -15,6 +15,13 @@ import os
 import re
 from pathlib import Path
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    BLOCKS_FOR_TEXT_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
+
 from backend.app.core.config import (
     BASE_DIR, PROJECTS_DIR,
     TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
@@ -34,6 +41,9 @@ from backend.app.pipeline.stages.prepare.task_builder import (
     _load_vendor_list_for_discipline,
     _extract_page_to_sheet_map,
 )
+from backend.app.pipeline.stages.optimization.prescan import (
+    build_optimization_prescan_section_from_text,
+)
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.llm.llm_runner import build_interleaved_content, make_image_content
 
@@ -43,7 +53,7 @@ def _version_output_dir(project_id: str) -> Path:
     fallback — root `_output` для V1 / legacy.
 
     Используем для всех reads/writes runtime artefacts, чтобы V2 audit не
-    читал V1 cached artifacts (01_text_analysis.json, 02_blocks_analysis.json и др.).
+    читал V1 cached artifacts (02_text_analysis.json, 01_blocks_analysis.json и др.).
     Делегирует единому резолверу version_service.resolve_active_output_dir
     (reserc.md #97).
     """
@@ -153,7 +163,7 @@ def _load_and_clean_template(
 
 
 def _read_text_analysis_for_blocks(project_id: str) -> str:
-    """Прочитать 01_text_analysis.json, оставив только секции нужные для блочного анализа.
+    """Прочитать 02_text_analysis.json, оставив только секции нужные для блочного анализа.
 
     Отправляет:
       - project_params  — параметры проекта (марки, мощности, сечения) для cross-check
@@ -166,13 +176,13 @@ def _read_text_analysis_for_blocks(project_id: str) -> str:
       - image_block_priorities / image_blocks_priority — служебная
       - arithmetic_checks, arithmetic_verification и прочие промежуточные
     """
-    file_path = _version_output_dir(project_id) / "01_text_analysis.json"
+    file_path = resolve_existing(_version_output_dir(project_id), TEXT_ANALYSIS_FILENAME)
     if not file_path.exists():
-        return "(файл 01_text_analysis.json не найден)"
+        return "(файл 02_text_analysis.json не найден)"
     try:
         data = json.loads(file_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
-        return f"(ошибка чтения 01_text_analysis.json: {e})"
+        return f"(ошибка чтения 02_text_analysis.json: {e})"
 
     KEEP_KEYS = {"project_params", "text_findings", "normative_refs_found"}
     filtered = {k: v for k, v in data.items() if k in KEEP_KEYS}
@@ -187,7 +197,7 @@ def _read_json_file(project_id: str, filename: str) -> str:
     Returns:
         Содержимое файла или сообщение об отсутствии.
     """
-    file_path = _version_output_dir(project_id) / filename
+    file_path = resolve_existing(_version_output_dir(project_id), filename)
     if not file_path.exists():
         return f"(файл {filename} не найден)"
     try:
@@ -197,20 +207,20 @@ def _read_json_file(project_id: str, filename: str) -> str:
 
 
 def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> str:
-    """Прочитать 02_blocks_analysis.json для merge.
+    """Прочитать 01_blocks_analysis.json для merge.
 
     Для локального GEMMA резко уменьшаем payload: оставляем только поля,
     которые реально нужны, чтобы не терять свод замечаний из-за переполнения
     контекста и невалидного ответа.
     """
-    file_path = _version_output_dir(project_id) / "02_blocks_analysis.json"
+    file_path = resolve_existing(_version_output_dir(project_id), BLOCKS_ANALYSIS_FILENAME)
     if not file_path.exists():
-        return "(файл 02_blocks_analysis.json не найден)"
+        return "(файл 01_blocks_analysis.json не найден)"
 
     try:
         raw_text = file_path.read_text(encoding="utf-8")
     except OSError as e:
-        return f"(ошибка чтения 02_blocks_analysis.json: {e})"
+        return f"(ошибка чтения 01_blocks_analysis.json: {e})"
 
     if not compact_for_local:
         return raw_text
@@ -223,7 +233,7 @@ def _read_findings_merge_blocks(project_id: str, *, compact_for_local: bool) -> 
     compact: dict[str, object] = {
         "stage": data.get("stage"),
         "meta": data.get("meta"),
-        # Верификация текст↔блоки теперь приходит из 01_text_analysis.json
+        # Верификация текст↔блоки теперь приходит из 02_text_analysis.json
         # (items_verified_from_blocks); 01 читается целиком отдельно в build_findings_merge_messages.
         "block_analyses": [],
     }
@@ -281,15 +291,17 @@ def _read_norms_reference(project_info: dict) -> str:
 
 def _read_md_file(project_info: dict, project_id: str) -> str:
     """Прочитать обязательный MD-файл проекта и вернуть как строку."""
-    md_file = project_info.get("md_file")
-    if not md_file:
+    md_path_raw = _get_md_file_path(project_info or {}, project_id)
+    if not md_path_raw or md_path_raw == "(нет)":
         raise FileNotFoundError(
             "Markdown PDF representation is required: md_file is not set in project_info.json"
         )
-    md_path = _version_project_dir(project_id) / md_file
+
+    md_path = Path(md_path_raw)
     if not md_path.exists():
+        md_name = (project_info or {}).get("md_file") or md_path.name
         raise FileNotFoundError(
-            f"Markdown PDF representation is required: {md_file} not found"
+            f"Markdown PDF representation is required: {md_name} not found"
         )
     try:
         return md_path.read_text(encoding="utf-8")
@@ -313,7 +325,7 @@ def _resolve_text_analysis_source(project_info: dict, project_id: str) -> tuple[
 def _get_plan_images(project_id: str) -> list[Path]:
     """Получить PNG планов/схем для optimization (пространственный анализ).
 
-    Фильтрует блоки по sheet_type из document_graph и 02_blocks_analysis.json.
+    Фильтрует блоки по sheet_type из document_graph и 01_blocks_analysis.json.
     Поддерживает английские и русские названия типов.
     """
     project_dir = _version_project_dir(project_id)
@@ -390,8 +402,8 @@ def _get_plan_images(project_id: str) -> list[Path]:
                     if bid:
                         _add(_resolve_block_path(bid))
 
-    # Источник 2: 02_blocks_analysis.json (sheet_type из LLM-анализа)
-    analysis_path = output_dir / "02_blocks_analysis.json"
+    # Источник 2: 01_blocks_analysis.json (sheet_type из LLM-анализа)
+    analysis_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     if analysis_path.exists():
         try:
             analysis = json.loads(analysis_path.read_text(encoding="utf-8"))
@@ -466,6 +478,7 @@ def build_text_analysis_messages(
     system_prompt = _load_and_clean_template(
         TEXT_ANALYSIS_TASK_TEMPLATE, project_info, project_id,
         ABSENCE_GUARD=_absence_guard_block(),
+        BLOCKS_ANALYSIS_PATH=str(resolve_existing(_version_output_dir(project_id), BLOCKS_FOR_TEXT_FILENAME)),
     )
 
     text_source, source_text, user_prefix = _resolve_text_analysis_source(project_info, project_id)
@@ -483,6 +496,17 @@ def build_text_analysis_messages(
             "Stage 04 will verify normative references separately. "
             "At this stage, extract only norms explicitly present in the provided source text."
         )
+
+    try:
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            build_prescan_prompt_section,
+        )
+        md_file_path = _get_md_file_path(project_info, project_id)
+        prescan_section = build_prescan_prompt_section(md_file_path)
+        if prescan_section:
+            system_prompt += "\n\n" + prescan_section
+    except Exception:
+        pass
 
     return [
         {"role": "system", "content": system_prompt},
@@ -550,7 +574,7 @@ def build_block_batch_messages(
         BLOCK_MD_CONTEXT=md_context if md_context else "(no context available)",
     )
 
-    # 01_text_analysis.json для cross-check (только нужные секции)
+    # 02_text_analysis.json для cross-check (только нужные секции)
     text_analysis = _read_text_analysis_for_blocks(project_id)
 
     # Interleaved content (text + PNG) — version-aware project_dir, чтобы PNG-блоки
@@ -567,7 +591,7 @@ def build_block_batch_messages(
         {
             "type": "text",
             "text": (
-                f"## Text analysis context (01_text_analysis.json):\n\n"
+                f"## Text analysis context (02_text_analysis.json):\n\n"
                 f"{text_analysis}\n\n"
                 f"## Blocks to analyze ({len(blocks)} blocks):\n\n"
                 f"Analyze each block image below with its page context."
@@ -593,13 +617,13 @@ def build_findings_merge_messages(
     """Сформировать messages для findings_merge.
 
     system: шаблон findings_merge с инъекцией дисциплины
-    user: 01_text_analysis.json + 02_blocks_analysis.json inline
+    user: 02_text_analysis.json + 01_blocks_analysis.json inline
     """
     system_prompt = _load_and_clean_template(
         FINDINGS_MERGE_TASK_TEMPLATE, project_info, project_id,
     )
 
-    text_analysis = _read_json_file(project_id, "01_text_analysis.json")
+    text_analysis = _read_json_file(project_id, TEXT_ANALYSIS_FILENAME)
     local_gemma_mode = is_local_llm_model(get_stage_model("findings_merge"))
     blocks_analysis = _read_findings_merge_blocks(
         project_id,
@@ -607,14 +631,14 @@ def build_findings_merge_messages(
     )
 
     user_text = (
-        f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
-        f"## 02_blocks_analysis.json:\n\n{blocks_analysis}"
+        f"## 02_text_analysis.json:\n\n{text_analysis}\n\n"
+        f"## 01_blocks_analysis.json:\n\n{blocks_analysis}"
     )
 
     if local_gemma_mode:
         user_text += (
             "\n\n## Local merge note:\n\n"
-            "This payload is a compact projection of 02_blocks_analysis.json for local GEMMA. "
+            "This payload is a compact projection of 01_blocks_analysis.json for local GEMMA. "
             "Use block_id/page/sheet/findings as source of truth; do not assume omitted fields are absent in the project."
         )
 
@@ -700,7 +724,7 @@ def build_optimization_messages(
     """Сформировать messages для optimization.
 
     system: шаблон optimization с vendor_list и инъекцией дисциплины
-    user: MD-текст + 01_text_analysis.json + 03_findings.json + PNG планов/схем
+    user: MD-текст + 02_text_analysis.json + 03_findings.json + PNG планов/схем
     """
     section = (project_info or {}).get("section", "EOM")
     vendor_list = _load_vendor_list_for_discipline(section)
@@ -711,8 +735,14 @@ def build_optimization_messages(
     )
 
     md_text = _read_md_file(project_info, project_id)
-    text_analysis = _read_json_file(project_id, "01_text_analysis.json")
+    text_analysis = _read_json_file(project_id, TEXT_ANALYSIS_FILENAME)
     findings = _read_json_file(project_id, "03_findings.json")
+    prescan_section = build_optimization_prescan_section_from_text(
+        md_text,
+        section=section,
+        vendor_list_text=vendor_list,
+        findings_data=findings,
+    )
 
     # Multimodal: включить PNG планов/схем
     plan_images = _get_plan_images(project_id)
@@ -724,8 +754,9 @@ def build_optimization_messages(
                 "type": "text",
                 "text": (
                     f"## Project MD file:\n\n{md_text}\n\n"
-                    f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
+                    f"## 02_text_analysis.json:\n\n{text_analysis}\n\n"
                     f"## 03_findings.json:\n\n{findings}\n\n"
+                    f"{prescan_section}\n\n"
                     f"## Drawings (plans and schematics):\n"
                     f"Below are {len(plan_images)} drawing images for reference."
                 ),
@@ -741,8 +772,9 @@ def build_optimization_messages(
         # Текстовый режим
         user_content = (
             f"## Project MD file:\n\n{md_text}\n\n"
-            f"## 01_text_analysis.json:\n\n{text_analysis}\n\n"
-            f"## 03_findings.json:\n\n{findings}"
+            f"## 02_text_analysis.json:\n\n{text_analysis}\n\n"
+            f"## 03_findings.json:\n\n{findings}\n\n"
+            f"{prescan_section}"
         )
 
     return [

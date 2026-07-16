@@ -35,8 +35,8 @@ def _container_project(root: Path) -> Path:
         _mk(v1 / f"{part}_result.json")
     _mk(v1 / "project_info.json")
     _mk(v1 / "_output" / "03_findings.json", json.dumps({"findings": [{"id": "F-1"}]}))
-    _mk(v1 / "_output" / "01_text_analysis.json")
-    _mk(v1 / "_output" / "02_blocks_analysis.json")
+    _mk(v1 / "_output" / "02_text_analysis.json")
+    _mk(v1 / "_output" / "01_blocks_analysis.json")
     _mk(v1 / "_output" / "pipeline_log.json")
     _mk(v1 / "_output" / "blocks" / "block_001.png", "PNG")
     _mk(v1 / "_output" / "_bench_backup_123" / "old.json")  # бэкап внутри _output
@@ -106,8 +106,8 @@ def test_03_findings_goes_to_latest(tmp_path):
     res, v2 = _run(proj, tmp_path)
     vroot = Path(res["v2_document_dir"]) / "versions" / "v001"
     assert (vroot / "03_analysis" / "latest" / "03_findings.json").exists()
-    assert (vroot / "03_analysis" / "latest" / "01_text_analysis.json").exists()
-    assert (vroot / "03_analysis" / "latest" / "02_blocks_analysis.json").exists()
+    assert (vroot / "03_analysis" / "latest" / "02_text_analysis.json").exists()
+    assert (vroot / "03_analysis" / "latest" / "01_blocks_analysis.json").exists()
     assert res["analysis_status"] == "legacy_partial"
     # содержимое findings не потеряно
     data = json.loads((vroot / "03_analysis" / "latest" / "03_findings.json").read_text())

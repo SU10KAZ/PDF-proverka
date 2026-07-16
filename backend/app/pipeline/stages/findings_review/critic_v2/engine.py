@@ -37,7 +37,7 @@ def run_critic_v2_offline(
 
     Args:
         findings: list of finding dicts (from 03_findings.json or fixtures)
-        blocks_index: optional set of known block_ids from 02_blocks_analysis.json.
+        blocks_index: optional set of known block_ids from 01_blocks_analysis.json.
                       When provided, enables phantom-block detection and upgrades
                       evidence_quality for verified blocks.
 

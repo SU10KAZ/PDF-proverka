@@ -23,6 +23,7 @@ import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stages.block_analysis.runner import validate_and_repair_json
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
+from backend.app.core.config import get_stage_model, is_optimization_ensemble_model
 
 
 # ─── Result types ────────────────────────────────────────────────────────────
@@ -123,6 +124,76 @@ async def run_optimization(ctx: PipelineStageContext) -> OptimizationResult:
             success=False, rate_limited=True,
             error="Rate limit: ожидание превышено или отменено",
         )
+
+    if is_optimization_ensemble_model(get_stage_model("optimization")):
+        from backend.app.pipeline.stages.optimization.ensemble import (
+            run_optimization_ensemble,
+        )
+
+        async def _run_ensemble_once(suffix: str = ""):
+            result = await run_optimization_ensemble(
+                project_info=project_info,
+                project_id=pid,
+                output_dir=ctx.output_dir,
+                version_dir=ctx.project_dir,
+                version_id=ctx.version_id,
+                log=ctx.log,
+            )
+            for provider in result.providers:
+                if provider.cli_result is not None:
+                    ctx.record_cli_usage(
+                        provider.cli_result,
+                        f"optimization_{provider.provider}{suffix}",
+                    )
+            return result
+
+        ensemble_result = await _run_ensemble_once()
+        if ensemble_result.cancelled and not ensemble_result.success:
+            await ctx.log("OPT ensemble отменён", "warn")
+            ctx.update_pipeline_log("optimization", "error", error="Отменено")
+            return OptimizationResult(success=False, cancelled=True)
+
+        if not ensemble_result.success and ensemble_result.rate_limited:
+            await ctx.log("Rate limit у OPT ensemble, ожидание...", "warn")
+            can_continue = await ctx.wait_for_rate_limit(
+                "rate limit при OPT ensemble", ensemble_result.error or ""
+            )
+            if can_continue:
+                ensemble_result = await _run_ensemble_once("_retry")
+            else:
+                return OptimizationResult(
+                    success=False, rate_limited=True,
+                    error="Rate limit: ожидание превышено или отменено",
+                )
+
+        if not ensemble_result.success:
+            detail = ensemble_result.error or "Claude и Codex не создали валидный результат"
+            await ctx.log(f"OPT ensemble не завершён: {detail}", "error")
+            ctx.update_pipeline_log("optimization", "error", error=detail[:240])
+            return OptimizationResult(
+                success=False,
+                error=detail,
+                rate_limited=ensemble_result.rate_limited,
+            )
+
+        opt_file = ctx.output_dir / "optimization.json"
+        total_items, savings, size_kb = _read_optimization_meta(opt_file)
+        if ensemble_result.status == "degraded":
+            await ctx.log(
+                "OPT ensemble завершён в режиме деградации: один провайдер недоступен; "
+                "его ошибка сохранена в optimization_merge_report.json",
+                "warn",
+            )
+        await ctx.log(
+            f"Оптимизация завершена: {total_items} предложений, "
+            f"~{savings}% средняя экономия ({size_kb} KB)",
+            "info",
+        )
+        ctx.update_pipeline_log(
+            "optimization", "done",
+            message="OK Claude + Codex" if ensemble_result.status == "ok" else "OK (degraded ensemble)",
+        )
+        return OptimizationResult(success=True)
 
     exit_code, output, cli_result = await claude_runner.run_optimization(
         project_info, pid,
@@ -379,6 +450,10 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
             message=(f"OK детерм. (исправлено {det_res.corrected}, "
                      f"сохранено без вердикта {det_res.unreviewed_kept}, удалено 0)"),
         )
+        from backend.app.pipeline.stages.optimization.ensemble import (
+            restore_ensemble_provenance,
+        )
+        restore_ensemble_provenance(output_dir)
         await ctx.log("Optimization Corrector (детерм.) завершён — optimization.json обновлён")
         return OptimizationReviewResult(critic_ok=True, corrector_ok=True)
 
@@ -464,5 +539,12 @@ async def run_optimization_review(ctx: PipelineStageContext) -> OptimizationRevi
                 await ctx.log("Восстановлен optimization_pre_review.json", "warn")
         elif "Repaired" in repair_msg:
             await ctx.log(f"optimization.json починен автоматически: {repair_msg}", "warn")
+
+    from backend.app.pipeline.stages.optimization.ensemble import (
+        restore_ensemble_provenance,
+    )
+    restored = restore_ensemble_provenance(output_dir)
+    if restored:
+        await ctx.log(f"Восстановлено авторство Claude/Codex для {restored} OPT-пунктов")
 
     return OptimizationReviewResult(critic_ok=True, corrector_ok=True)

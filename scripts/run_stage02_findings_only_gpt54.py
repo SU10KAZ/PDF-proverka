@@ -5,7 +5,7 @@ CLI-обёртка над qwen_findings_only.run_findings_only_for_project.
 
 Production-готовый stage 02 в режиме findings-only через GPT-5.4 (low, OpenRouter).
 Для каждого блока: PNG + qwen-описание + extended categories → {"findings": [...]} → адаптация.
-Перезаписывает _output/02_blocks_analysis.json (с бэкапом в .classic.bak.json).
+Перезаписывает _output/01_blocks_analysis.json (с бэкапом в .classic.bak.json).
 
 Использование:
   python scripts/run_stage02_findings_only_gpt54.py "projects/214. Alia (ASTERUS)/KJ/13АВ-РД-КЖ5.1-К1К2 (2).pdf"
@@ -94,7 +94,7 @@ async def run(args) -> int:
     totals = summary["totals"]
     if result["run_dir"] is not None:
         print(f"[run] log dir: {result['run_dir'].relative_to(project_dir)}")
-    target = project_dir / "_output" / "02_blocks_analysis.json"
+    target = project_dir / "_output" / "01_blocks_analysis.json"
     bak = target.with_suffix(".classic.bak.json")
     if bak.exists() and bak.stat().st_mtime > target.stat().st_mtime - 3600:
         print(f"[backup] {bak.name} saved")

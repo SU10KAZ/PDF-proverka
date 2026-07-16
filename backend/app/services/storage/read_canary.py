@@ -42,6 +42,10 @@ logger = logging.getLogger(__name__)
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 
+from backend.app.pipeline.stages.block_context.contract import (
+    decorate_blocks_vector_state,
+)
+
 _CANARY_FLAG = "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED"
 _DEFAULT_FLAG = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
 _TRUE = {"1", "true", "yes", "on"}
@@ -223,11 +227,19 @@ def _legacy_output_dir_for_doc(doc_dir: Path, vid: str) -> Optional[Path]:
         m = re.match(r"v0*(\d+)$", str(vid))
         ver_n = int(m.group(1)) if m else 1
         container = legacy_root / discipline / f"{code}(main)"
-        candidates = [
-            container / (f"{code} V{ver_n}" if ver_n > 1 else code) / "_output",
-            container / code / "_output",
-            legacy_root / discipline / code / "_output",
-        ]
+        if ver_n > 1:
+            # Версия > 1: ищем ТОЛЬКО папку этой версии. НЕ падаем на `code/_output`
+            # (= v001) — иначе findings старой версии маскируют неаудированную новую.
+            # Имена legacy V-папок бывают и с суффиксом '.pdf' — учитываем оба варианта.
+            ver_names = [f"{code} V{ver_n}", f"{code} V{ver_n}.pdf"]
+            candidates = [container / n / "_output" for n in ver_names]
+            candidates += [legacy_root / discipline / n / "_output" for n in ver_names]
+        else:
+            # v001 — plain / контейнерная раскладка (fallback корректен: та же версия).
+            candidates = [
+                container / code / "_output",
+                legacy_root / discipline / code / "_output",
+            ]
         for cand in candidates:
             if cand.is_dir():
                 return cand
@@ -340,7 +352,7 @@ def _file_type(name: str) -> str:
     return "other"
 
 
-def _current_object_folder(a):
+def _current_object_folder(a, object_id: Optional[str] = None):
     """(folder_name | None, object_name) текущего активного объекта в projects_v2.
 
     Сопоставляет get_current_object().id с object_id адаптера, чтобы
@@ -356,8 +368,11 @@ def _current_object_folder(a):
       * совсем пусто → (None, None).
     """
     try:
-        from backend.app.services.common.object_service import get_current_object
-        cur = get_current_object()
+        from backend.app.services.common.object_service import (
+            get_current_object,
+            get_object_by_id,
+        )
+        cur = get_object_by_id(object_id) if object_id else get_current_object()
     except Exception:
         cur = None
     objs = a.list_objects()
@@ -695,7 +710,7 @@ def _classify_blocks_analysis(project_id, blocks_analysis, index_data,
     Чистая функция (без ФС). Пустые источники → {blocks:{}, counts: нули,
     total_analyzed:0} — фронтенд делает Object.entries(data.blocks), пустой dict
     не падает. legacy-only fallback'и (block_batch_*.json / typed_facts) тут не
-    нужны: v2 всегда имеет 02_blocks_analysis.json.
+    нужны: v2 всегда имеет 01_blocks_analysis.json.
     """
     try:
         from backend.app.api.routers.blocks import _normalize_block_info
@@ -818,7 +833,7 @@ def _v2_doc_hidden(doc: dict, hidden_set: set) -> bool:
     return False
 
 
-def v2_projects_list() -> dict:
+def v2_projects_list(object_id: Optional[str] = None) -> dict:
     """Список проектов из projects_v2 в LEGACY-форме для GET /api/projects.
 
     Возвращает {projects, object_name} — shape-совместимо с legacy (frontend
@@ -834,7 +849,7 @@ def v2_projects_list() -> dict:
     if not a.is_available():
         raise HTTPException(status_code=404,
                             detail="projects_v2 storage not available")
-    folder, object_name = _current_object_folder(a)
+    folder, object_name = _current_object_folder(a, object_id=object_id)
     # STRICT scope: текущий объект не найден в v2 → пустой список (а НЕ документы
     # всех объектов под именем текущего — это был баг кросс-объектной свалки).
     docs = a.list_documents(object_folder=folder) if folder else []
@@ -995,7 +1010,7 @@ def v2_blocks_analysis(request, project_id: str) -> dict:
 
     Frontend делает Object.entries(data.blocks) и читает an.status /
     an.parent_block_id — поэтому нужен КЛАССИФИЦИРОВАННЫЙ dict `blocks`
-    (как legacy get_blocks_analysis), а не сырой 02_blocks_analysis.json.
+    (как legacy get_blocks_analysis), а не сырой 01_blocks_analysis.json.
     Источники классификации (02 + block_batches + 03_findings + blocks index)
     читаются из адаптера. Нет данных → blocks:{}, counts: нули (не падает).
     """
@@ -1029,6 +1044,27 @@ def v2_blocks(request, project_id: str) -> dict:
             detail=(f"projects_v2 canary: blocks index not found for "
                     f"'{doc['document_code']}' (no silent legacy fallback)"),
         )
+    context_summary = a.read_block_context_summary(doc_dir, ver)
+    if not context_summary:
+        # У двух старых legacy-preserve снимков нет ни block_context, ни рабочего
+        # PDF в 02_work. Роутер Stage 01 для них закономерно вернёт no_sources:
+        # фиксируем это сразу в списке, чтобы UI не показывал ложную кнопку TXT.
+        version_dir = a.version_dir(doc_dir, ver)
+        work_dir = version_dir / "02_work"
+        has_router_pdf = (
+            (work_dir / "document.pdf").is_file()
+            or (version_dir / "document.pdf").is_file()
+            or (work_dir.is_dir() and any(work_dir.glob("*.pdf")))
+        )
+        if not has_router_pdf:
+            context_summary = {
+                "blocks": [
+                    {"block_id": block.get("block_id"), "source_kind": "no_sources"}
+                    for block in idx.get("blocks") or []
+                    if isinstance(block, dict) and block.get("block_id")
+                ]
+            }
+    decorate_blocks_vector_state(idx.get("blocks") or [], context_summary)
     pages_map: dict = {}
     for block in idx.get("blocks", []):
         pages_map.setdefault(block.get("page", 0), []).append(block)
@@ -1245,3 +1281,33 @@ def v2_document_page(request, project_id: str, page_num: int) -> dict:
         status_code=404,
         detail=(f"projects_v2 canary: page {page_num} not found for "
                 f"'{doc['document_code']}' (no silent legacy fallback)"))
+
+
+def v2_document_pdf(request, project_id: str) -> FileResponse:
+    """Исходный PDF выбранной версии из projects_v2 для встроенного просмотра."""
+    from backend.app.services.storage.projects_v2_source_resolver import (
+        resolve_version_source_files,
+    )
+
+    a, doc, doc_dir, cur = _resolve_doc_or_404(request, project_id)
+    ver = _resolve_version(a, doc_dir, cur, _req_version(request))
+    version_dir = a.version_dir(doc_dir, ver)
+    sources = resolve_version_source_files(version_dir, doc["document_code"])
+    pdf_path = sources.pdf_path
+    if not pdf_path or not Path(pdf_path).is_file():
+        raise HTTPException(
+            status_code=404,
+            detail=(f"projects_v2 canary: PDF not found for "
+                    f"'{doc['document_code']}' version '{ver}' "
+                    "(no silent legacy fallback)"),
+        )
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        filename=Path(pdf_path).name,
+        content_disposition_type="inline",
+        headers={
+            "X-Storage-Backend": BACKEND_V2,
+            "X-Audit-Version-Id": ver,
+        },
+    )

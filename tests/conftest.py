@@ -9,10 +9,22 @@
 `.env`.
 """
 import os
+import tempfile
+from pathlib import Path
 
 import pytest
 
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
+
+# Keep both storage generations and the object registry away from live data for
+# the entire pytest process.  Per-test monkeypatches are insufficient here:
+# TestClient can leave a pipeline task alive after a fixture is torn down, at
+# which point that task would see the restored production paths and recreate
+# ``projects/``.  A process-lifetime sandbox remains valid until Python exits.
+_STORAGE_SANDBOX = tempfile.TemporaryDirectory(prefix="pdf-proverka-pytest-storage-")
+_STORAGE_SANDBOX_ROOT = Path(_STORAGE_SANDBOX.name)
+os.environ["AUDIT_PROJECTS_DIR"] = str(_STORAGE_SANDBOX_ROOT / "projects")
+os.environ["AUDIT_OBJECTS_FILE"] = str(_STORAGE_SANDBOX_ROOT / "objects.json")
 
 # Storage cutover flags are production-controlled and may be v2-primary in the
 # developer shell. Tests must start from a deterministic legacy baseline and
@@ -67,10 +79,19 @@ def _isolate_batch_queue_file(tmp_path, monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def _isolate_storage_cutover_env(monkeypatch):
-    """Every test starts from legacy storage unless it opts into v2 explicitly."""
+def _isolate_storage_cutover_env(tmp_path, monkeypatch):
+    """Keep every test away from the live ``projects_v2`` store.
+
+    The suite intentionally starts in ``dual_write_shadow`` so a number of
+    integration tests exercise the mirror hooks.  Without an explicit v2 root
+    those hooks resolve ``config.DATA_DIR / projects_v2`` and write synthetic
+    pytest objects plus ledger entries into production.  Each test therefore
+    gets a private v2 root by default; tests that need another root can still
+    override or delete the environment variable with ``monkeypatch``.
+    """
     for name, value in _DEFAULT_STORAGE_ENV.items():
         monkeypatch.setenv(name, value)
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(tmp_path / "projects_v2"))
 
 
 @pytest.fixture(autouse=True)

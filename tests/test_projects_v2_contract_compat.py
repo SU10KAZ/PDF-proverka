@@ -78,8 +78,8 @@ def _make_doc(v2, disc, code, *, versions=("v001",), complete=True, with_md=True
             (inp / f"{code}_document.md").write_text(MD, encoding="utf-8")
         if complete:
             latest = vdir / "03_analysis" / "latest"
-            _wj(latest / "01_text_analysis.json", {"ok": True})
-            _wj(latest / "02_blocks_analysis.json", {"block_analyses": [
+            _wj(latest / "02_text_analysis.json", {"ok": True})
+            _wj(latest / "01_blocks_analysis.json", {"block_analyses": [
                 {"block_id": "IMG-BBBB-001", "page": 1, "findings": []},
                 {"block_id": "IMG-PARENT-1", "page": 2, "findings": [{"x": 1}]},
             ]})

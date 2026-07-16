@@ -93,7 +93,7 @@ def get_table_context(
     Args:
         finding: raw finding dict
         document_graph: parsed document_graph.json
-        blocks_analysis: optional parsed 02_blocks_analysis.json for richer labels
+        blocks_analysis: optional parsed 01_blocks_analysis.json for richer labels
         max_rows: max rows to return
 
     Returns:

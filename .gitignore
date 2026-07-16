@@ -219,3 +219,17 @@ project_rename.reverse.json
 /сравнение.xlsx
 !backend/app/data/consumer_synonyms.json
 logs/
+
+# === Кэши локальных инструментов (Playwright MCP, vitest) ===
+.playwright-mcp/
+.vite/
+
+# === Исходные ZIP-комплекты выгрузок для экспериментов (большие бинарники) ===
+experiments/**/*.zip
+
+# === Исследовательский архив эталонных блоков ===
+# Полноценный runtime-каталог находится в backend/app/pipeline/stages/block_context/reference_catalog.
+# Архив остаётся локально как кандидат на удаление; в Git храним только маркеры решения.
+/experiments/блоки разных дисциплин/*
+!/experiments/блоки разных дисциплин/DELETE_CANDIDATE.md
+!/experiments/блоки разных дисциплин/.deletion-candidate.json

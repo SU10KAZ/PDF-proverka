@@ -14,6 +14,7 @@ class TextExtractionQuality(BaseModel):
 
 class PipelineStatus(BaseModel):
     crop_blocks: str = "pending"            # pending / running / done / error / skipped
+    block_context: str = "pending"          # canonical vector graphs of graphic blocks
     gemma_enrichment: str = "pending"        # pending / running / done / error / partial / skipped / migration_required
     text_analysis: str = "pending"          # pending / running / done / error / skipped
     blocks_analysis: str = "pending"        # pending / running / done / error / partial / skipped

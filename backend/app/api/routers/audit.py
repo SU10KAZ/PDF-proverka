@@ -17,7 +17,7 @@ from backend.app.core.config import (
     get_claude_cli,
     get_claude_model, set_claude_model, CLAUDE_MODEL_OPTIONS,
     get_stage_models, set_stage_model, get_model_for_stage,
-    STAGE_MODELS_OPENROUTER, GEMINI_MODEL, GPT_MODEL,
+    STAGE_MODELS_OPENROUTER, GPT_MODEL,
     STAGE_MODEL_CONFIG, AVAILABLE_MODELS, get_stage_model, is_claude_stage,
     _save_stage_model_config,
     validate_current_stage_model_config, validate_stage_model_choice,
@@ -54,11 +54,7 @@ async def prepare_data_cancel():
 
 @router.post("/prepare-data/{project_id:path}/retry-failed")
 async def prepare_data_retry_failed(project_id: str, version_id: Optional[str] = None):
-    """Перепрогнать только упавшие блоки прошлого enrichment'а данного проекта.
-
-    Использует тот же Gemma-лок что и обычный prepare. Не делает full re-enrich,
-    обрабатывает только block_id'ы из summary.failed.
-    """
+    """Локально пересобрать контекст блоков проекта."""
     from backend.app.pipeline.stages.prepare.prepare_service import start_retry_failed
     return await start_retry_failed(project_id, version_id=version_id)
 
@@ -108,12 +104,37 @@ async def get_stage_model_config():
 
     Возвращает текущий маппинг этап → модель (Claude CLI + OpenRouter).
     """
-    from backend.app.core.config import STAGE_MODEL_RESTRICTIONS, STAGE_MODEL_HINTS
+    from backend.app.core.config import (
+        CODEX_STAGE_MODEL_ID,
+        OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+        OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+        OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
+        STAGE01_DUAL_REVIEW_MODEL,
+        STAGE_MODEL_HINTS,
+        STAGE_MODEL_RESTRICTIONS,
+    )
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
         "restrictions": STAGE_MODEL_RESTRICTIONS,
         "hints": STAGE_MODEL_HINTS,
+        "ensemble_details": {
+            "block_batch": {
+                "parallel_models": [GPT_MODEL, CODEX_STAGE_MODEL_ID],
+                "judge_model": STAGE01_DUAL_REVIEW_MODEL,
+                "final_verifier_model": STAGE_MODEL_CONFIG.get("findings_critic"),
+            },
+            "optimization": {
+                "parallel_models": [
+                    OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL,
+                    OPTIMIZATION_ENSEMBLE_CODEX_MODEL,
+                ],
+                "codex_reasoning_effort": OPTIMIZATION_ENSEMBLE_CODEX_REASONING_EFFORT,
+                "merge_method": "deterministic_deduplication",
+                "judge_model": STAGE_MODEL_CONFIG.get("optimization_critic"),
+                "fix_model": STAGE_MODEL_CONFIG.get("optimization_corrector"),
+            },
+        },
         "config_errors": validate_current_stage_model_config(),
     }
 
@@ -156,7 +177,7 @@ async def get_stage_batch_modes_config():
     """Текущие batch-режимы этапов (расширенные режимы поверх per-stage модели).
 
     Сейчас используется только block_batch:
-      - "findings_only_gemma_pair"   — production single-block GPT-5.4 + Gemma enrichment
+      - "findings_only_block_context" — production single-block с контекстом PDF/Vectograph
     """
     from backend.app.core.config import STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
     return {
@@ -169,7 +190,7 @@ async def get_stage_batch_modes_config():
 async def set_stage_batch_modes_config(request: dict):
     """Установить batch-режимы этапов.
 
-    Body: {"block_batch": "findings_only_gemma_pair"}.
+    Body: {"block_batch": "findings_only_block_context"}.
     """
     from backend.app.core.config import set_stage_batch_mode, STAGE_BATCH_MODES, STAGE_BATCH_MODE_CHOICES
     updated = {}
@@ -178,11 +199,10 @@ async def set_stage_batch_modes_config(request: dict):
         if stage not in STAGE_BATCH_MODE_CHOICES:
             rejected[stage] = f"unknown stage (choices: {list(STAGE_BATCH_MODE_CHOICES)})"
             continue
-        if mode not in STAGE_BATCH_MODE_CHOICES[stage]:
-            rejected[stage] = f"invalid mode (choices: {STAGE_BATCH_MODE_CHOICES[stage]})"
-            continue
         if set_stage_batch_mode(stage, mode):
-            updated[stage] = mode
+            updated[stage] = STAGE_BATCH_MODES[stage]
+        else:
+            rejected[stage] = f"invalid mode (choices: {STAGE_BATCH_MODE_CHOICES[stage]})"
     if rejected:
         return {"status": "partial", "updated": updated, "rejected": rejected,
                 "modes": dict(STAGE_BATCH_MODES)}
@@ -939,7 +959,7 @@ async def prepare_data_endpoint(
     timeout: int | None = None,
     version_id: Optional[str] = None,
 ):
-    """Запустить «Подготовить данные» = crop PNG + Gemma enrichment.
+    """Запустить «Подготовить данные» = crop PNG + локальный контекст блоков.
 
     Прогресс публикуется в WebSocket (ws/audit/{project_id}) с stage="prepare_data".
     Возвращает immediately с status=started — клиент следит по WS.
@@ -1055,6 +1075,7 @@ async def retry_stage(
 
     stage_to_pipeline_stage = {
         "crop_blocks": "prepare",
+        "block_context": "gemma_enrichment",
         "gemma_enrichment": "gemma_enrichment",
         "text_analysis": "text_analysis",
         "block_analysis": "block_analysis",

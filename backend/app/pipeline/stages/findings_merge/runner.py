@@ -24,6 +24,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
@@ -63,7 +67,7 @@ def _version_output_dir(project_id: str):
 def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None = None):
     """Backfill text-evidence + sheet в 03_findings.json.
 
-    1. selected_text_block_ids/evidence_text_refs — из 02_blocks_analysis.json
+    1. selected_text_block_ids/evidence_text_refs — из 01_blocks_analysis.json
     2. sheet — детерминированно из document_graph.json page_sheet_map
 
     output_dir: явная папка артефактов (run dir стадии). Без неё резолв по
@@ -72,7 +76,7 @@ def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None 
     """
     output_dir = output_dir or _version_output_dir(project_id)
     findings_path = output_dir / "03_findings.json"
-    blocks_path = output_dir / "02_blocks_analysis.json"
+    blocks_path = resolve_existing(output_dir, BLOCKS_ANALYSIS_FILENAME)
     graph_path = output_dir / "document_graph.json"
 
     if not findings_path.exists():
@@ -345,6 +349,9 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
         _normalize_problem_pattern,
         aggregate_merged_fields,
     )
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        is_disputed_comparison,
+    )
     from collections import OrderedDict
     import re as _re
     import shutil
@@ -364,12 +371,17 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
         return None
 
     groups: OrderedDict[str, list[dict]] = OrderedDict()
-    for f in items:
+    for index, f in enumerate(items):
         problem = f.get("problem") or f.get("description") or f.get("finding") or ""
         severity = f.get("severity", "")
         category = f.get("category", "")
         pattern = _normalize_problem_pattern(problem)
-        key = f"{severity}||{category}||{pattern}"
+        if is_disputed_comparison(f.get("detector_comparison")):
+            # A detector conflict is evidence to verify, not an ordinary
+            # duplicate. Keep each disputed candidate until verification.
+            key = f"__disputed__||{f.get('id') or index}"
+        else:
+            key = f"{severity}||{category}||{pattern}"
         if key not in groups:
             groups[key] = []
         groups[key].append(f)
@@ -408,6 +420,7 @@ def merge_similar_findings(project_id: str, output_dir: Path | None = None) -> d
                     "problem": it.get("problem") or it.get("description") or "",
                     "sheet": it.get("sheet", ""),
                     "page": it.get("page"),
+                    "source_finding_ids": it.get("source_finding_ids") or [],
                 }
                 for it in group_items
             ]
@@ -561,6 +574,13 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     # 03_findings.json, которую последующий promote run→latest затирал.
     # Подтверждено эмпирически: у v2-прогонов 0 замечаний с finding_quality/
     # text_evidence/highlight_regions против 100% в legacy.
+    from backend.app.pipeline.stages.block_analysis.provenance import (
+        backfill_final_findings_provenance,
+    )
+
+    # Attach explicit Stage 01 comparison labels before any deterministic
+    # collapse. This lets dedup protect unresolved GPT/Codex conflicts.
+    backfill_final_findings_provenance(ctx.output_dir)
     backfill_text_evidence_in_findings(pid, output_dir=ctx.output_dir)
 
     merge_result = merge_similar_findings(pid, output_dir=ctx.output_dir)
@@ -596,10 +616,36 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             else:
                 await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
 
+    # Recalculate counts and aggregate labels after all merge/dedup passes.
+    provenance_report = backfill_final_findings_provenance(ctx.output_dir)
+    if provenance_report.get("updated"):
+        counts = provenance_report.get("counts") or {}
+        await ctx.log(
+            "Источники замечаний: "
+            f"GPT={counts.get('gpt', 0)}, Codex={counts.get('codex', 0)}, "
+            f"GPT+Codex={counts.get('gpt_codex', 0)}, "
+            f"без трассировки={counts.get('unattributed', 0)}"
+        )
+
     refresh_finding_quality(pid, output_dir=ctx.output_dir)
 
     from backend.app.pipeline.stages.findings_merge.backfill_highlights import backfill_project
     backfill_project(ctx.project_dir, output_dir=ctx.output_dir)
+
+    # После восстановления LLM-регионов: text-layer grounding не трогает уже
+    # заполненные highlights, а в default shadow-режиме только пишет coverage/IoU.
+    from backend.app.pipeline.stages.findings_merge.ground_highlights_textlayer import (
+        backfill_textlayer_highlights,
+    )
+    textlayer = backfill_textlayer_highlights(ctx.project_dir, output_dir=ctx.output_dir)
+    if textlayer.get("enabled"):
+        mode = "shadow" if textlayer.get("shadow") else "live"
+        await ctx.log(
+            f"Text-layer highlights ({mode}): grounded "
+            f"{textlayer.get('grounded', 0)}/{textlayer.get('checked', 0)}, "
+            f"coverage={textlayer.get('coverage', 0):.1%}, "
+            f"written={textlayer.get('fixed', 0)}"
+        )
 
     from backend.app.pipeline.stages.block_analysis.runner import attach_stage02_coverage_to_findings
     coverage = attach_stage02_coverage_to_findings(pid, output_dir=ctx.output_dir)
@@ -609,6 +655,30 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
             f"В финальный отчёт добавлены блоки вне полноценного анализа: {excluded_count}",
             "warn",
         )
+
+    # Гуманизация ссылок на блоки: внутренние block_id в текстах → подписи
+    # «Название» (лист N, стр. PDF M). СТРОГО ПОСЛЕДНЕЙ из post-merge операций:
+    # merge_similar_findings/дедуп группируют по _normalize_problem_pattern
+    # сырых текстов (подписи схлопнули бы разные блоки в один паттерн), а
+    # extract_anchors текст-слоя ищет якоря тоже по сырым формулировкам.
+    # Fail-soft: ошибка не роняет merge.
+    from backend.app.core.config import FINDINGS_BLOCK_CAPTIONS_ENABLED
+    if FINDINGS_BLOCK_CAPTIONS_ENABLED:
+        try:
+            from backend.app.services.findings.block_captions import (
+                humanize_findings_file,
+            )
+            caption_stats = await _asyncio.to_thread(
+                humanize_findings_file, ctx.output_dir
+            )
+            if caption_stats and caption_stats.get("ids_replaced"):
+                await ctx.log(
+                    "Ссылки на блоки в текстах заменены подписями: "
+                    f"{caption_stats['ids_replaced']} ID "
+                    f"в {caption_stats['findings_changed']} замечаниях",
+                )
+        except Exception as exc:  # noqa: BLE001 — гуманизация не должна ронять merge
+            await ctx.log(f"Гуманизация ссылок на блоки: пропущена ({exc})", "warn")
 
     try:
         findings_count = len(

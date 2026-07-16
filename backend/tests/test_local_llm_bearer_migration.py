@@ -1,20 +1,15 @@
 """Тесты миграции локальных LLM на bearer/OpenAI-транспорт (новый LM Studio).
 
-Покрывают:
-  * URL-нормализатор (обе формы base URL — с /v1 и без);
-  * bearer/basic заголовки в трёх точках (llm_runner, gemma_enrich, graphic_llm_local);
-  * OpenAI-vision payload gemma при CHANDRA_CHAT_TRANSPORT=openai_completions;
-  * fail-soft health-probe при ENABLE_MODEL_LOAD=false (без native /api/v1/models).
+Покрывают URL-нормализатор, bearer/basic для действующих локальных LLM и
+отсутствие удалённого Gemma-транспорта.
 
 Стиль — синхронные тесты с asyncio.run(), как в test_stage_comparison_graphic_local_llm.py.
 """
 from __future__ import annotations
 
 import asyncio
-import io
 
 import pytest
-from PIL import Image
 
 from backend.app.core.config import _normalize_local_base_url
 
@@ -78,29 +73,13 @@ def test_local_auth_missing_bearer(monkeypatch):
     assert runner._local_auth_missing() is None
 
 
-# ─── gemma_enrich._auth_header (bearer|basic) ─────────────────────────────
+# ─── Retired Gemma transport ─────────────────────────────────────────────
 
-def test_gemma_auth_header_bearer(monkeypatch):
+def test_model_backed_gemma_transport_is_removed():
     import backend.app.pipeline.stages.gemma_enrichment.gemma_enrich as g
 
-    monkeypatch.setenv("CHANDRA_AUTH_MODE", "bearer")
-    monkeypatch.setenv("CHANDRA_BEARER_TOKEN", "tok-abc")
-    monkeypatch.delenv("NGROK_AUTH_USER", raising=False)
-    monkeypatch.delenv("NGROK_AUTH_PASS", raising=False)
-    headers = g._auth_header()  # НЕ должен требовать NGROK_AUTH_* в bearer
-    assert headers["Authorization"] == "Bearer tok-abc"
-    assert "ngrok-skip-browser-warning" not in headers
-
-
-def test_gemma_auth_header_basic(monkeypatch):
-    import backend.app.pipeline.stages.gemma_enrichment.gemma_enrich as g
-
-    monkeypatch.setenv("CHANDRA_AUTH_MODE", "basic")
-    monkeypatch.setenv("NGROK_AUTH_USER", "u")
-    monkeypatch.setenv("NGROK_AUTH_PASS", "p")
-    headers = g._auth_header()
-    assert headers["Authorization"].startswith("Basic ")
-    assert headers["ngrok-skip-browser-warning"] == "true"
+    assert not hasattr(g, "_auth_header")
+    assert not hasattr(g, "_gemma_call_attempt")
 
 
 # ─── graphic_llm_local bearer (config + headers + availability) ───────────
@@ -148,74 +127,6 @@ def test_graphic_available_bearer_missing_token(monkeypatch):
     ok, reason = g.check_local_graphic_llm_available(cfg)
     assert ok is False
     assert reason == "bearer_auth_credentials_missing"
-
-
-# ─── gemma OpenAI-vision payload при openai_completions ────────────────────
-
-class _FakeResp:
-    def __init__(self):
-        self.status_code = 200
-        self.text = '{"choices":[{"message":{"content":"{}"},"finish_reason":"stop"}]}'
-
-    def json(self):
-        return {"choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}]}
-
-
-class _CapturingClient:
-    def __init__(self):
-        self.calls = []
-
-    async def post(self, url, headers=None, json=None, timeout=None):
-        self.calls.append({"url": url, "headers": headers, "json": json})
-        return _FakeResp()
-
-
-def _make_png(tmp_path):
-    p = tmp_path / "blk.png"
-    Image.new("RGB", (4, 4), (255, 255, 255)).save(p, format="PNG")
-    return p
-
-
-def test_gemma_call_attempt_openai_transport(monkeypatch, tmp_path):
-    import backend.app.pipeline.stages.gemma_enrichment.gemma_enrich as g
-
-    monkeypatch.setenv("CHANDRA_CHAT_TRANSPORT", "openai_completions")
-    monkeypatch.setenv("CHANDRA_AUTH_MODE", "bearer")
-    monkeypatch.setenv("CHANDRA_BEARER_TOKEN", "tok")
-    png = _make_png(tmp_path)
-    client = _CapturingClient()
-
-    status, data, raw, _elapsed = asyncio.run(
-        g._gemma_call_attempt(client, "https://01.vibe.cloud-ip.cc", "hello", png, 1.0, "chandra-ocr-2", 60)
-    )
-    assert status == 200
-    call = client.calls[0]
-    assert call["url"].endswith("/v1/chat/completions")
-    payload = call["json"]
-    assert "messages" in payload and "input" not in payload
-    assert payload["max_tokens"] >= 1 and "max_output_tokens" not in payload
-    user_content = payload["messages"][-1]["content"]
-    types = {part["type"] for part in user_content}
-    assert types == {"text", "image_url"}
-    assert call["headers"]["Authorization"] == "Bearer tok"
-
-
-def test_gemma_call_attempt_native_transport_default(monkeypatch, tmp_path):
-    import backend.app.pipeline.stages.gemma_enrichment.gemma_enrich as g
-
-    monkeypatch.delenv("CHANDRA_CHAT_TRANSPORT", raising=False)  # default native
-    monkeypatch.setenv("CHANDRA_AUTH_MODE", "basic")
-    monkeypatch.setenv("NGROK_AUTH_USER", "u")
-    monkeypatch.setenv("NGROK_AUTH_PASS", "p")
-    png = _make_png(tmp_path)
-    client = _CapturingClient()
-
-    asyncio.run(
-        g._gemma_call_attempt(client, "https://host", "hello", png, 1.0, "gemma", 60)
-    )
-    call = client.calls[0]
-    assert call["url"].endswith("/api/v1/chat")
-    assert "input" in call["json"] and "messages" not in call["json"]
 
 
 # ─── probe_qwen_health fail-soft при ENABLE_MODEL_LOAD=false ───────────────

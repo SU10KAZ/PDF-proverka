@@ -9,6 +9,10 @@ Dual-language templates:
 """
 import hashlib
 import json
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_FOR_TEXT_FILENAME,
+    resolve_existing,
+)
 import logging
 import os
 import re
@@ -16,12 +20,14 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import parse_block_header
+from backend.app.pipeline.stages.optimization.prescan import build_optimization_prescan_section
 
 logger = logging.getLogger(__name__)
 
 from backend.app.core.config import (
     BASE_DIR, PROJECTS_DIR,
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE, NORM_REQUOTE_TASK_TEMPLATE,
+    OPTIMIZATION_NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
     TEXT_ANALYSIS_TASK_TEMPLATE, BLOCK_ANALYSIS_TASK_TEMPLATE,
     FINDINGS_MERGE_TASK_TEMPLATE,
@@ -31,6 +37,11 @@ from backend.app.core.config import (
 from backend.app.services.common.cli_utils import load_template
 import backend.app.services.common.discipline_service as discipline_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.common.results_md import (
+    is_results_md_name,
+    is_results_md_text,
+    parse_results_md,
+)
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
@@ -462,14 +473,37 @@ def prepare_norm_fix_task(
     template = load_template_for_llm(NORM_FIX_TASK_TEMPLATE)
     template = _inject_discipline(template, project_info or {})
 
-    project_path, _ = _get_project_paths(project_id)
+    project_path, output_path = _get_project_paths(project_id)
 
     task = (
         template
         .replace("{PROJECT_ID}", project_id)
         .replace("{PROJECT_PATH}", project_path)
+        .replace("{OUTPUT_PATH}", output_path)
         .replace("{BASE_DIR}", str(BASE_DIR))
         .replace("{FINDINGS_TO_FIX}", findings_to_fix_text)
+    )
+    return task
+
+
+def prepare_optimization_norm_fix_task(
+    optimizations_to_fix_text: str,
+    project_id: str,
+    project_info: Optional[dict] = None,
+) -> str:
+    """Подготовить задачу для пересмотра оптимизаций с устаревшими нормами."""
+    template = load_template_for_llm(OPTIMIZATION_NORM_FIX_TASK_TEMPLATE)
+    template = _inject_discipline(template, project_info or {})
+
+    project_path, output_path = _get_project_paths(project_id)
+
+    task = (
+        template
+        .replace("{PROJECT_ID}", project_id)
+        .replace("{PROJECT_PATH}", project_path)
+        .replace("{OUTPUT_PATH}", output_path)
+        .replace("{BASE_DIR}", str(BASE_DIR))
+        .replace("{OPTIMIZATIONS_TO_FIX}", optimizations_to_fix_text)
     )
     return task
 
@@ -515,7 +549,7 @@ def prepare_text_analysis_task(
 
     # Компактный view анализа блоков (порядок block→text). Файла может не быть (порядок
     # text→block или standalone-прогон) — тогда шаблон работает без блочного контекста.
-    blocks_analysis_path = str(Path(output_path) / "02_blocks_for_text.json")
+    blocks_analysis_path = str(resolve_existing(Path(output_path), BLOCKS_FOR_TEXT_FILENAME))
 
     task = (
         template
@@ -525,6 +559,16 @@ def prepare_text_analysis_task(
         .replace("{BLOCKS_ANALYSIS_PATH}", blocks_analysis_path)
         .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
+
+    try:
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            build_prescan_prompt_section,
+        )
+        prescan_section = build_prescan_prompt_section(md_file_path)
+        if prescan_section:
+            task = task + "\n\n" + prescan_section
+    except Exception:
+        pass
 
     # Аддитивная ВРЕЗКА-подсветка сверки МД↔вектор-слой (Этап 01), за флагом MD_MIRROR_RECONCILE_ENABLED
     # (default OFF → задача не меняется). Показывает нейросети места OCR-расхождений «В MD:X/В вектор:Y»
@@ -564,14 +608,24 @@ def build_text_analysis_prompt(
         or (project_info or {}).get("id")
         or "adhoc-project"
     )
-    return (
+    prompt = (
         template
         .replace("{PROJECT_ID}", project_id)
         .replace("{OUTPUT_PATH}", output_path)
         .replace("{MD_FILE_PATH}", md_file_path)
-        .replace("{BLOCKS_ANALYSIS_PATH}", str(Path(output_path) / "02_blocks_for_text.json"))
+        .replace("{BLOCKS_ANALYSIS_PATH}", str(resolve_existing(Path(output_path), BLOCKS_FOR_TEXT_FILENAME)))
         .replace("{ABSENCE_GUARD}", _absence_guard_block())
     )
+    try:
+        from backend.app.pipeline.stages.text_analysis.md_prescan import (
+            build_prescan_prompt_section,
+        )
+        prescan_section = build_prescan_prompt_section(md_file_path)
+        if prescan_section:
+            prompt = prompt + "\n\n" + prescan_section
+    except Exception:
+        pass
+    return prompt
 
 
 # ─── Извлечение контекста страниц из MD ───
@@ -604,6 +658,11 @@ def _extract_page_context_for_blocks(
     target_pages = set(block_pages)
     if not block_ids_set and not target_pages:
         return ""
+
+    # ── Новый формат портала (*_results.md) — ветка через единый парсер ──
+    # Старый Chandra-путь ниже («## СТРАНИЦА N») не меняется ни на символ.
+    if is_results_md_name(md_path.name) or is_results_md_text(content):
+        return _extract_page_context_results_md(content, block_ids_set, target_pages)
 
     # Два режима релевантности страниц:
     # 1) target_pages задан → фильтр по номерам страниц (основной путь)
@@ -784,10 +843,89 @@ def _extract_page_context_for_blocks(
     return "\n\n---\n\n".join(parts)
 
 
+def _extract_page_context_results_md(
+    content: str,
+    block_ids_set: set[str],
+    target_pages: set[int],
+) -> str:
+    """Контекст страниц для пакета блоков из НОВОГО формата портала (*_results.md).
+
+    Зеркало старого пути для нового формата: страница = `## Page N` (номер
+    страницы PDF), лист — подпись из штампов блоков (Sheet неуникален, ключ —
+    страница PDF). Секции рендерятся в прежнем скелете («## СТРАНИЦА N»,
+    «**Лист:** …», «### Текст на странице:», «### OCR-описания блоков:»),
+    чтобы вид контекста в промпте не зависел от формата исходного MD.
+    """
+    doc = parse_results_md(content)
+
+    # Релевантные страницы: явный фильтр по номерам (основной путь) либо
+    # «ленивый» режим — страницы, на которых есть IMAGE-блоки этого пакета.
+    if target_pages:
+        relevant = [p for p in doc.pages if p.number in target_pages]
+    else:
+        relevant = [
+            p for p in doc.pages
+            if any(b.is_image and b.block_id in block_ids_set for b in p.blocks)
+        ]
+
+    if not relevant:
+        if block_ids_set:
+            logger.warning(
+                "MD-контекст (results_md) пуст для %d блоков (block_ids: %s). "
+                "Возможно, block_id не совпадают с заголовками "
+                "'### BLOCK #N [IMAGE]: blk_…' нового формата",
+                len(block_ids_set),
+                ", ".join(list(block_ids_set)[:5]),
+            )
+        return ""
+
+    parts: list[str] = []
+    for page in relevant:
+        section_lines = [f"## СТРАНИЦА {page.number}"]
+        if page.sheet:
+            section_lines.append(f"**Лист:** {page.sheet}")
+        if page.sheet_name:
+            section_lines.append(f"**Наименование листа:** {page.sheet_name}")
+
+        # Заголовок блока восстанавливаем в виде нового формата — block_id
+        # остаётся видимым для привязки описания к блоку (как в старом пути).
+        texts = [
+            f"### BLOCK #{b.ordinal} [TEXT]: {b.block_id}\n{b.body}"
+            for b in page.blocks
+            if b.is_text and b.body.strip()
+        ]
+        images = [
+            f"### BLOCK #{b.ordinal} [IMAGE]: {b.block_id}\n{b.body}"
+            for b in page.blocks
+            if b.is_image and b.block_id in block_ids_set and b.body.strip()
+        ]
+
+        if texts:
+            section_lines.append("")
+            section_lines.append("### Текст на странице:")
+            for t in texts:
+                section_lines.append(t)
+                section_lines.append("")
+
+        if images:
+            section_lines.append("")
+            section_lines.append("### OCR-описания блоков:")
+            for img in images:
+                section_lines.append(img)
+                section_lines.append("")
+
+        parts.append("\n".join(section_lines))
+
+    return "\n\n---\n\n".join(parts)
+
+
 def _extract_page_to_sheet_map(md_file_path: str) -> dict[int, str]:
     """Извлечь маппинг PDF-страница → номер листа из MD-файла.
 
-    Парсит строки '**Лист:** N' внутри '## СТРАНИЦА M'.
+    Старый формат: строки '**Лист:** N' внутри '## СТРАНИЦА M'.
+    Новый формат портала (*_results.md): sheet_map парсера (ключ = страница
+    PDF из `## Page N`, значение — Sheet из штампов блоков; пустые Sheet
+    пропускаются, как и в старом пути).
     Возвращает {pdf_page: sheet_number_str}, например {5: "1 (из 15)", 6: "2"}.
     """
     md_path = Path(md_file_path)
@@ -798,6 +936,14 @@ def _extract_page_to_sheet_map(md_file_path: str) -> dict[int, str]:
         content = md_path.read_text(encoding="utf-8")
     except OSError:
         return {}
+
+    # ── Новый формат портала (*_results.md) — ветка через единый парсер ──
+    if is_results_md_name(md_path.name) or is_results_md_text(content):
+        return {
+            page: str(info["sheet"])
+            for page, info in parse_results_md(content).sheet_map().items()
+            if info.get("sheet")
+        }
 
     mapping: dict[int, str] = {}
     current_page = 0
@@ -1190,13 +1336,59 @@ _SECTION_NUMBER_RE = re.compile(r"^\s*(\d+(?:\.\d+)*)\.\s+(.+?)\s*$")
 _SEPARATOR_CELL_RE = re.compile(r"^:?-{2,}:?$")
 
 
+def _resolve_vendor_list_path() -> Optional[Path]:
+    """Найти `вендор лист.md` текущего объекта, приоритет — v2, затем legacy.
+
+    Порядок:
+      1) v2 лёгкий слот `projects_v2/objects/<folder>/DOC/вендор лист.md`
+         (per-object, вне версий) — резолвится по bound object_id или current_id;
+      2) legacy `<projects_dir объекта>/DOC/вендор лист.md`;
+      3) глобальный `PROJECTS_DIR/DOC/вендор лист.md`.
+
+    Возвращает None, если файла нет ни в одном месте (штатная ситуация —
+    заказчик ограничений по вендорам не задал).
+    """
+    # 1) v2 объектный DOC-слот
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+        from backend.app.services.common import project_service, object_service
+        object_id = project_service._get_bound_object_id() or object_service.get_current_id()
+        if object_id:
+            adapter = ProjectsV2Adapter()
+            if adapter.is_available():
+                folder = next(
+                    (o["folder_name"] for o in adapter.list_objects()
+                     if o.get("object_id") == object_id),
+                    None,
+                )
+                if folder:
+                    v2_path = adapter.object_dir(folder) / "DOC" / "вендор лист.md"
+                    if v2_path.exists():
+                        return v2_path
+    except Exception:
+        pass
+
+    # 2) legacy объектный DOC + 3) глобальный fallback
+    try:
+        from backend.app.services.common.project_service import _get_projects_dir
+        object_projects_dir = _get_projects_dir()
+    except Exception:
+        object_projects_dir = PROJECTS_DIR
+
+    legacy_path = object_projects_dir / "DOC" / "вендор лист.md"
+    if legacy_path.exists():
+        return legacy_path
+    fallback = PROJECTS_DIR / "DOC" / "вендор лист.md"
+    if fallback.exists():
+        return fallback
+    return None
+
+
 def _load_vendor_list_for_discipline(section: str) -> str:
     """Загрузить и отфильтровать вендор-лист по дисциплине.
 
-    Вендор-лист ищется в `<projects_dir_объекта>/DOC/вендор лист.md`
-    — у каждого объекта свой файл. projects_dir резолвится через binding
-    pipeline'а или current_id из objects.json. Fallback в глобальный
-    projects/DOC/, если у объекта файла нет.
+    Вендор-лист — per-object файл `DOC/вендор лист.md`; резолвится через
+    `_resolve_vendor_list_path()` (v2 объектный слот → legacy → глобальный).
 
     Поддерживаются два формата MD:
       1) Плоская таблица с разделами в **жирном** (213 / King&Sons).
@@ -1209,19 +1401,9 @@ def _load_vendor_list_for_discipline(section: str) -> str:
     или отсутствие позиций не являются ошибкой, это штатно означает
     «заказчик ограничений по вендорам не задал, выбор материала свободный».
     """
-    try:
-        from backend.app.services.common.project_service import _get_projects_dir
-        object_projects_dir = _get_projects_dir()
-    except Exception:
-        object_projects_dir = PROJECTS_DIR
-
-    vendor_path = object_projects_dir / "DOC" / "вендор лист.md"
-    if not vendor_path.exists():
-        fallback = PROJECTS_DIR / "DOC" / "вендор лист.md"
-        if fallback.exists() and fallback != vendor_path:
-            vendor_path = fallback
-        else:
-            return "(вендор-лист не приложен — ограничений заказчика по вендорам нет, выбор материала свободный)"
+    vendor_path = _resolve_vendor_list_path()
+    if vendor_path is None:
+        return "(вендор-лист не приложен — ограничений заказчика по вендорам нет, выбор материала свободный)"
 
     try:
         content = vendor_path.read_text(encoding="utf-8")
@@ -1312,6 +1494,14 @@ def prepare_optimization_task(
         .replace("{MD_FILE_PATH}", md_file_path)
         .replace("{VENDOR_LIST}", vendor_list_text)
     )
+    prescan_section = build_optimization_prescan_section(
+        md_file_path,
+        section=section,
+        vendor_list_text=vendor_list_text,
+        findings_path=Path(output_path) / "03_findings.json",
+    )
+    if prescan_section:
+        task = task.rstrip() + "\n\n" + prescan_section
     return task
 
 

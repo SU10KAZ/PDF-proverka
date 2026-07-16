@@ -86,6 +86,21 @@ def test_flag_on_writes_dedup_report(tmp_project, monkeypatch):
     assert "dedup_report" in data["meta"]
 
 
+def test_persistent_merge_keeps_disputed_candidates_separate(tmp_project):
+    fp = _make_findings_file(tmp_project, [
+        _f(
+            1,
+            id="F-001",
+            detector_comparison={"primary_relation": "disputed"},
+        ),
+        _f(2, id="F-002"),
+    ])
+    result = fm_runner.merge_similar_findings("dummy-project")
+    data = json.loads(fp.read_text(encoding="utf-8"))
+    assert result == {"merged_groups": 0}
+    assert len(data["findings"]) == 2
+
+
 def test_flag_on_no_dupes_writes_meta_no_change(tmp_project, monkeypatch):
     monkeypatch.setattr("backend.app.core.config.STAGE01_DEDUP_ENABLED", True)
     # Semantically distinct findings — class_dedup AND fuzzy_dedup should keep

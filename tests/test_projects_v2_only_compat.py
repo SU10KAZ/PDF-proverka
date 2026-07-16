@@ -35,7 +35,7 @@ def _make_v2_full(v2_root: Path, obj="OBJ_F", disc="KJ", code="DOC-6C",
     (latest / "03_findings.json").write_text(
         json.dumps({"findings": [{"id": f"F-{i}", "category": "Критическое"}
                                  for i in range(findings_n)]}), encoding="utf-8")
-    (latest / "02_blocks_analysis.json").write_text(json.dumps({"blocks": [{"block_id": "b1"}]}), encoding="utf-8")
+    (latest / "01_blocks_analysis.json").write_text(json.dumps({"blocks": [{"block_id": "b1"}]}), encoding="utf-8")
     (latest / "optimization.json").write_text(json.dumps({"items": [{"id": "o1"}]}), encoding="utf-8")
     (vdir / "03_analysis" / "runs" / "r1").mkdir(parents=True, exist_ok=True)
     (vdir / "03_analysis" / "runs" / "r1" / "pipeline_log.json").write_text(

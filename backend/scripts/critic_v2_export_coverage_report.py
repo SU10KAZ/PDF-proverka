@@ -84,7 +84,7 @@ def _scan_projects(projects_dir: Path) -> list[dict[str, Any]]:
       output_dir      — Path to _output if exists
       has_findings    — bool (03_findings.json exists)
       has_expert_rev  — bool (expert_review.json exists)
-      has_blocks      — bool (02_blocks_analysis.json exists)
+      has_blocks      — bool (01_blocks_analysis.json exists)
       has_doc_graph   — bool (document_graph.json exists)
     """
     out: list[dict[str, Any]] = []
@@ -113,7 +113,7 @@ def _scan_projects(projects_dir: Path) -> list[dict[str, Any]]:
                     "output_dir": str(out_dir) if out_dir.exists() else None,
                     "has_findings": (out_dir / "03_findings.json").exists(),
                     "has_expert_review": (out_dir / "expert_review.json").exists(),
-                    "has_blocks": (out_dir / "02_blocks_analysis.json").exists(),
+                    "has_blocks": (out_dir / "01_blocks_analysis.json").exists(),
                     "has_document_graph": (out_dir / "document_graph.json").exists(),
                 }
                 out.append(entry)

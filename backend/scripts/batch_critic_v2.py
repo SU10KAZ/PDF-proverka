@@ -6,7 +6,7 @@ Batch offline runner for critic v2 experiments across multiple projects.
 
 NOT connected to production pipeline.
 Does NOT modify any production artifacts (03_findings.json, 03_findings_review.json, etc.).
-Reads only: 03_findings.json and optionally 02_blocks_analysis.json per project.
+Reads only: 03_findings.json and optionally 01_blocks_analysis.json per project.
 Writes only: to --output-dir (default: /tmp/critic_v2_batch).
 
 Pipeline per project:
@@ -138,8 +138,12 @@ def discover_projects(
 # ─── Blocks index loader ─────────────────────────────────────────────────────
 
 def load_blocks_index_for_project(project_dir: Path) -> Optional[set[str]]:
-    """Extract block_ids from 02_blocks_analysis.json if present."""
-    blocks_path = project_dir / "_output" / "02_blocks_analysis.json"
+    """Extract block_ids from 01_blocks_analysis.json (legacy fallback: 02_blocks_analysis.json)."""
+    from backend.app.services.storage.stage_artifacts import (
+        BLOCKS_ANALYSIS_FILENAME,
+        resolve_existing,
+    )
+    blocks_path = resolve_existing(project_dir / "_output", BLOCKS_ANALYSIS_FILENAME)
     if not blocks_path.exists():
         return None
     try:
@@ -660,7 +664,7 @@ Examples:
     )
     parser.add_argument(
         "--with-blocks", action="store_true",
-        help="Load 02_blocks_analysis.json per project for phantom block detection.",
+        help="Load 01_blocks_analysis.json per project for phantom block detection.",
     )
     parser.add_argument(
         "--llm-gate", action="store_true",

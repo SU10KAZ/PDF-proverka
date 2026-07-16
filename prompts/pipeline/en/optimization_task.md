@@ -14,9 +14,15 @@ You are an experienced design engineer (Chief Project Engineer / cost engineerin
 READ via Read tool:
 
 - **MD file (project text)** — `{MD_FILE_PATH}` — primary working file. Contains exact text: numbers, tables, specifications, designations.
-- **Text analysis (project params, norms)** — `{OUTPUT_PATH}/01_text_analysis.json` — from stage 01.
-- **Block analysis results (if available)** — `{OUTPUT_PATH}/02_blocks_analysis.json` — completed drawing analysis from stage 02.
+- **Text analysis (project params, norms)** — `{OUTPUT_PATH}/02_text_analysis.json` — from stage 01.
+- **Block analysis results (if available)** — `{OUTPUT_PATH}/01_blocks_analysis.json` — completed drawing analysis from stage 02.
 - **Audit findings (if available)** — `{OUTPUT_PATH}/03_findings.json` — from stage 03. DO NOT contradict identified violations.
+
+### Keep findings separate from optimization
+
+`03_findings.json` is a constraint, not the main source of OPT items. First build candidates directly from specifications, repeated design solutions and drawings without copying finding formulations. Only then use findings to filter or qualify conflicting candidates.
+
+Do not create an OPT item when `proposed` merely repeats an existing F/T correction: fix a dimension, add a missing code, resolve a discrepancy, add a mandatory norm, or reissue a sheet. Such an item is already an audit finding. It is an optimization only when it also contains an independent, verifiable reduction in cost, installation time, number of types/operations, or lifecycle cost.
 
 ### Vendor List (approved manufacturers)
 
@@ -53,15 +59,20 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 - **spec_items** — specify concrete specification/register items. Format: `"Поз. N — Name"`. If item covers a group — list all
 - **savings_basis** — be honest: `"расчёт"` only if you have concrete numbers (prices, volumes), `"экспертная оценка"` if from experience on similar projects, `"не определено"` if no data
 - **page and sheet** — `page` = page number, `sheet` = sheet number from title block. They do NOT match. Use data from MD file (`**Лист:**` markers and page numbers)
+- **Source balance:** when the MD contains a real specification, at least half of the final OPT items must be independent of `03_findings.json` and originate in the specification/register/drawing. Items with `status: "обязательное исправление"` must not exceed 25% of the list and must not replace economic proposals.
+- **Effect balance:** when suitable positions exist, cover at least three independent lenses: procurement analogs, nomenclature unification, and installation acceleration/prefabrication. Do not fill the list with editorial corrections or a single effect type.
+- **AR checks:** wall/insulation material and density, screed/plaster technology, waterproofing, repeated doors/openings/railings, premium finishes, factory modules.
+- **KJ checks:** excess concrete F/W while preserving strength class, laps versus couplers, factory cages/meshes, column and bent-bar type count, opening/embed standardization, congested-zone concreting. Do not present a register correction as a production optimization.
+- **OV checks:** mass-equipment analogs, insulation thickness by diameter, duct/pipe/device type count, factory-ready collector and piping modules, support systems, VFD and heat recovery. Do not stop at marking or EI corrections.
 
 ## Work Sequence
 
 1. Analyze the MD content completely — building type, technical specifications, loads, equipment
-2. Analyze block analysis data (if available)
-3. Analyze audit findings (if available) — to not contradict audit findings
-4. Check against vendor list above — approved manufacturers for replacements
-5. Analyze specifications — primary source of items for optimization
-6. Create optimization list (replacements only from vendor list)
+2. Analyze specifications and build an independent economic/installation candidate list
+3. Analyze block data and add drawing-supported layout/unification candidates
+4. Check the vendor list for allowed replacement manufacturers
+5. Only now read audit findings and use them as a conflict filter, not a ready OPT list
+6. Check source and effect balance, then create the optimization list
 
 ## Output JSON Schema
 

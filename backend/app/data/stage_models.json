@@ -1,13 +1,13 @@
 {
-  "text_analysis": "claude-opus-4-7",
-  "block_batch": "openai/gpt-5.4",
-  "findings_merge": "claude-opus-4-7",
-  "findings_critic": "claude-sonnet-4-6",
-  "findings_corrector": "claude-sonnet-4-6",
-  "norm_verify": "claude-sonnet-4-6",
-  "norm_fix": "claude-sonnet-4-6",
-  "norm_requote": "claude-sonnet-4-6",
-  "optimization": "claude-opus-4-7",
-  "optimization_critic": "claude-sonnet-4-6",
-  "optimization_corrector": "claude-sonnet-4-6"
+  "text_analysis": "codex/gpt-5.4",
+  "block_batch": "ensemble/gpt-codex",
+  "findings_merge": "codex/gpt-5.4",
+  "findings_critic": "codex/gpt-5.4",
+  "findings_corrector": "codex/gpt-5.4",
+  "norm_verify": "codex/gpt-5.4",
+  "norm_fix": "codex/gpt-5.4",
+  "norm_requote": "codex/gpt-5.4",
+  "optimization": "ensemble/claude-codex-opt",
+  "optimization_critic": "codex/gpt-5.4",
+  "optimization_corrector": "codex/gpt-5.4"
 }

@@ -478,7 +478,7 @@ class StorageWriteFacade:
         run_id: Optional[str] = None,
         legacy_write: Optional[Callable[[], Any]] = None,
     ) -> WriteResult:
-        """Записать analysis-артефакт (03_findings.json, 02_blocks_analysis.json, …).
+        """Записать analysis-артефакт (03_findings.json, 01_blocks_analysis.json, …).
 
         Пишется в `03_analysis/latest/<artifact_name>`. Если задан run_id —
         дополнительно в `03_analysis/runs/<run_id>/<artifact_name>` (история).
@@ -550,7 +550,9 @@ class StorageWriteFacade:
             return parent
         return p
 
-    def shadow_mirror_project(self, legacy_project_dir, *, run_id: Optional[str] = None) -> WriteResult:
+    def shadow_mirror_project(self, legacy_project_dir, *, run_id: Optional[str] = None,
+                              object_id: Optional[str] = None,
+                              display_name: Optional[str] = None) -> WriteResult:
         """Зеркалировать ВЕСЬ legacy-проект в projects_v2 через проверенную
         миграцию (parity-faithful, идемпотентно, обновляет old_to_new_map).
 
@@ -567,7 +569,14 @@ class StorageWriteFacade:
             root_entry = self._project_root_entry(legacy_project_dir, v2lib)
             # objects.json лежит в <DATA>/backend/app/data; <DATA> = parent от projects_v2
             objects_map = v2lib.load_objects_map(root=v2root.parent)
-            rec = v2lib.migrate_project(root_entry, v2root, objects_map=objects_map, run_id=run_id)
+            rec = v2lib.migrate_project(
+                root_entry,
+                v2root,
+                objects_map=objects_map,
+                run_id=run_id,
+                object_id=object_id,
+                display_name=display_name,
+            )
             map_path = v2root / "_system" / "old_to_new_map.json"
             mp = v2lib.load_old_to_new_map(map_path)
             for vrec in rec["versions"]:
@@ -700,7 +709,9 @@ def _record_shadow_error(op: str, target: str, exc: BaseException) -> None:
         pass
 
 
-def shadow_mirror_project_path_safe(legacy_project_dir, *, run_id: Optional[str] = None):
+def shadow_mirror_project_path_safe(legacy_project_dir, *, run_id: Optional[str] = None,
+                                    object_id: Optional[str] = None,
+                                    display_name: Optional[str] = None):
     """Хук после legacy-записи: зеркалит проект в v2 (no-op в legacy, fail-soft).
 
     Передаётся явный legacy-путь (для register_*). НИКОГДА не бросает наружу.
@@ -708,7 +719,12 @@ def shadow_mirror_project_path_safe(legacy_project_dir, *, run_id: Optional[str]
     if not v2_writes_enabled():
         return None
     try:
-        return get_write_facade().shadow_mirror_project(legacy_project_dir, run_id=run_id)
+        return get_write_facade().shadow_mirror_project(
+            legacy_project_dir,
+            run_id=run_id,
+            object_id=object_id,
+            display_name=display_name,
+        )
     except Exception as exc:  # noqa: BLE001
         logger.warning("[storage_write_facade] shadow mirror (path) failed: %s", exc)
         _record_shadow_error("shadow_mirror_project_path", legacy_project_dir, exc)

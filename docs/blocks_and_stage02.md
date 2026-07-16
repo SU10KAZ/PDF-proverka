@@ -9,10 +9,10 @@ Markdown PDF representation
 → optional targeted gemma_enrichment high-detail (`_output/blocks_gemma_300`, 300 DPI)
 → Stage 01 text analysis
 → Stage 02 findings_only_gemma_pair + GPT-5.4 (`_output/blocks_stage02_100`, 100 DPI)
-→ blocks.py merge / coverage summary → 02_blocks_analysis.json
+→ blocks.py merge / coverage summary → 01_blocks_analysis.json
 ```
 
-Основное правило: Stage 02 читает готовый `02_blocks_analysis.json`, а не
+Основное правило: Stage 02 читает готовый `01_blocks_analysis.json`, а не
 строит своё понимание напрямую из Gemma crop-ов.
 
 ## Production Profile

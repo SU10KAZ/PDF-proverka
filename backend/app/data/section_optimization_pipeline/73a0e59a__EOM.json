@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "job_id": "section-opt-288097671051",
+  "section": "EOM",
+  "object_id": "73a0e59a",
+  "status": "ready_for_review",
+  "created_at": "2026-07-15T08:46:18.913558+00:00",
+  "updated_at": "2026-07-15T08:46:37.514459+00:00",
+  "completed_at": "2026-07-15T08:46:30.700763+00:00",
+  "error": "",
+  "stages": [
+    {
+      "key": "collect",
+      "title": "Сбор",
+      "status": "done",
+      "message": "Исходные данные собраны",
+      "started_at": "2026-07-15T08:46:18.935885+00:00",
+      "finished_at": "2026-07-15T08:46:26.994510+00:00",
+      "metrics": {
+        "projects": 18,
+        "specification_rows": 1952,
+        "accepted_optimizations": 40
+      }
+    },
+    {
+      "key": "normalize",
+      "title": "Нормализация",
+      "status": "done",
+      "message": "Номенклатура нормализована с сохранением источников",
+      "started_at": "2026-07-15T08:46:26.995256+00:00",
+      "finished_at": "2026-07-15T08:46:27.095302+00:00",
+      "metrics": {
+        "normalized_rows": 1952
+      }
+    },
+    {
+      "key": "synthesize",
+      "title": "Синтез",
+      "status": "done",
+      "message": "Кандидаты сформированы",
+      "started_at": "2026-07-15T08:46:27.095976+00:00",
+      "finished_at": "2026-07-15T08:46:30.700052+00:00",
+      "metrics": {
+        "replication_candidates": 20,
+        "signals": 20
+      }
+    },
+    {
+      "key": "graphics",
+      "title": "Графика по запросу",
+      "status": "done",
+      "message": "План графической проверки подготовлен без запуска модели",
+      "started_at": "2026-07-15T08:46:37.507755+00:00",
+      "finished_at": "2026-07-15T08:46:37.514453+00:00",
+      "metrics": {
+        "signals": 5,
+        "projects": 9,
+        "graphic_blocks_available": 310
+      }
+    },
+    {
+      "key": "review",
+      "title": "Эксперт",
+      "status": "waiting",
+      "message": "Ожидает решения эксперта; автоматически ничего не применяется",
+      "started_at": null,
+      "finished_at": null,
+      "metrics": {}
+    }
+  ],
+  "snapshot_generated_at": "2026-07-15T08:46:30.588703+00:00",
+  "graphics_plan": {
+    "created_at": "2026-07-15T08:46:37.514406+00:00",
+    "signals_count": 5,
+    "signal_ids": [
+      "REPL-512daf0dbc2f",
+      "REPL-61496ddca7e5",
+      "REPL-281ecbd110cc",
+      "REPL-44ef2f7ca25a",
+      "REPL-0cae5fab8d63"
+    ],
+    "projects": [
+      {
+        "project_id": "13АВ-РД-ЭМ1-ПА V1",
+        "project_name": "13АВ-РД-ЭМ1-ПА V1",
+        "version_id": "v001",
+        "graphic_blocks": 16
+      },
+      {
+        "project_id": "13АВ-РД-ЭМ2-ПА V1",
+        "project_name": "13АВ-РД-ЭМ2-ПА V1",
+        "version_id": "v002",
+        "graphic_blocks": 17
+      },
+      {
+        "project_id": "13АВ-РД-ЭО-К1 V1",
+        "project_name": "13АВ-РД-ЭО-К1 V1",
+        "version_id": "v001",
+        "graphic_blocks": 59
+      },
+      {
+        "project_id": "13АВ-РД-ЭО-К3",
+        "project_name": "13АВ-РД-ЭО-К3",
+        "version_id": "v002",
+        "graphic_blocks": 69
+      },
+      {
+        "project_id": "13АВ-РД-ЭО-К4",
+        "project_name": "13АВ-РД-ЭО-К4",
+        "version_id": "v001",
+        "graphic_blocks": 52
+      },
+      {
+        "project_id": "13АВ-РД-ЭО-К5",
+        "project_name": "13АВ-РД-ЭО-К5",
+        "version_id": "v002",
+        "graphic_blocks": 21
+      },
+      {
+        "project_id": "13АВ-РД-ЭО-К6",
+        "project_name": "13АВ-РД-ЭО-К6",
+        "version_id": "v002",
+        "graphic_blocks": 31
+      },
+      {
+        "project_id": "13АВ-РД-ЭО2-ПА V1",
+        "project_name": "13АВ-РД-ЭО2-ПА V1",
+        "version_id": "v001",
+        "graphic_blocks": 26
+      },
+      {
+        "project_id": "13АВ-РД-ЭОМ-НС V1",
+        "project_name": "13АВ-РД-ЭОМ-НС V1",
+        "version_id": "v001",
+        "graphic_blocks": 19
+      }
+    ],
+    "graphic_blocks_available": 310,
+    "note": "План подготовлен. Vision/LLM не запускался: подтвердите конкретный кандидат и объём графической проверки отдельно."
+  }
+}

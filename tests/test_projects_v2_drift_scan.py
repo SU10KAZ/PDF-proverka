@@ -23,7 +23,7 @@ def _sha(text: str) -> str:
 
 
 def _build_env(tmp_path, *, legacy_content, v2_content, recorded_sha,
-               legacy_exists=True, v2_exists=True):
+               legacy_recorded_sha=None, legacy_exists=True, v2_exists=True):
     legacy_folder = tmp_path / "projects" / "obj" / "AR" / "DOC V2.pdf"
     (legacy_folder / "_output").mkdir(parents=True)
     legacy_file = legacy_folder / "_output" / "pipeline_log.json"
@@ -45,7 +45,10 @@ def _build_env(tmp_path, *, legacy_content, v2_content, recorded_sha,
         "legacy_folder_path": str(legacy_folder), "v2_document_dir": str(v2_doc),
         "analysis_run_id": "run_x",
         "files": [{"old_path": str(legacy_file), "new_path": str(v2_file),
-                   "sha256": recorded_sha, "bytes": len(v2_content), "role": "run"}],
+                   "sha256": recorded_sha,
+                   **({"legacy_sha256": legacy_recorded_sha}
+                      if legacy_recorded_sha is not None else {}),
+                   "bytes": len(v2_content), "role": "run"}],
     }]}, ensure_ascii=False), encoding="utf-8")
     return v2_root, map_path, legacy_file, v2_file
 
@@ -56,6 +59,19 @@ def _build_env(tmp_path, *, legacy_content, v2_content, recorded_sha,
 def test_no_drift_empty_report(tmp_path):
     v2_root, *_ = _build_env(tmp_path, legacy_content="SAME", v2_content="SAME",
                              recorded_sha=_sha("SAME"))
+    res = sd.run_scan(v2_root=v2_root, stable_seconds=0)
+    assert res["summary"]["drift_documents"] == 0
+    assert res["rows"] == []
+
+
+def test_recorded_post_cutover_divergence_is_not_drift(tmp_path):
+    v2_root, *_ = _build_env(
+        tmp_path,
+        legacy_content="LEGACY",
+        v2_content="CANONICAL",
+        recorded_sha=_sha("CANONICAL"),
+        legacy_recorded_sha=_sha("LEGACY"),
+    )
     res = sd.run_scan(v2_root=v2_root, stable_seconds=0)
     assert res["summary"]["drift_documents"] == 0
     assert res["rows"] == []

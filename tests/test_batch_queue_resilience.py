@@ -251,67 +251,12 @@ def _patch_gemma(monkeypatch, ready_names: set[str], valid_names: set[str], tmp_
     )
 
 
-def test_prefetch_skips_not_ready_and_picks_next_in_window(monkeypatch, tmp_path):
+def test_model_prefetch_is_absent_from_queue_manager():
     mgr = _mgr()
-    q = _queue(
-        items=[
-            BatchQueueItem(project_id="cur", status="running"),
-            BatchQueueItem(project_id="v2_not_ready", status="pending"),  # нет crops
-            BatchQueueItem(project_id="ready", status="pending"),         # crops есть
-        ],
-        current_index=0,
-    )
-    mgr._batch_queue = q
-    # ready: crops есть, enrichment ещё не валиден → это реальный кандидат.
-    _patch_gemma(monkeypatch, ready_names={"ready"}, valid_names=set(), tmp_path=tmp_path)
 
-    target, _mutated = mgr._select_pregemma_candidate(q)
-    assert target is not None, "не должен залипать на v2_not_ready"
-    assert target.project_id == "ready"
+    assert not hasattr(mgr, "_select_pregemma_candidate")
+    assert not hasattr(mgr, "_run_gemma_prefetch_loop")
 
-
-def test_prefetch_marks_valid_ahead_and_returns_real_candidate(monkeypatch, tmp_path):
-    mgr = _mgr()
-    q = _queue(
-        items=[
-            BatchQueueItem(project_id="cur", status="running"),
-            BatchQueueItem(project_id="already_ok", status="pending"),  # crops + valid
-            BatchQueueItem(project_id="ready", status="pending"),       # crops, not valid
-        ],
-        current_index=0,
-    )
-    mgr._batch_queue = q
-    _patch_gemma(
-        monkeypatch,
-        ready_names={"already_ok", "ready"},
-        valid_names={"already_ok"},
-        tmp_path=tmp_path,
-    )
-
-    target, mutated = mgr._select_pregemma_candidate(q)
-    assert mutated is True
-    assert q.items[1].gemma_prefetch_status == "skipped"  # already_ok помечен
-    assert target is not None and target.project_id == "ready"
-
-
-def test_prefetch_window_none_when_all_not_ready(monkeypatch, tmp_path):
-    mgr = _mgr()
-    q = _queue(
-        items=[
-            BatchQueueItem(project_id="cur", status="running"),
-            BatchQueueItem(project_id="v2a", status="pending"),
-            BatchQueueItem(project_id="v2b", status="pending"),
-        ],
-        current_index=0,
-    )
-    mgr._batch_queue = q
-    _patch_gemma(monkeypatch, ready_names=set(), valid_names=set(), tmp_path=tmp_path)
-    target, mutated = mgr._select_pregemma_candidate(q)
-    assert target is None
-    assert mutated is False
-
-
-# ─── 9. диагностика для UI: worker_lost + current_project_running ─────────────
 
 def test_diagnostics_degraded_but_current_running():
     mgr = _mgr()

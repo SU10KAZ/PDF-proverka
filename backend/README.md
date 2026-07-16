@@ -58,6 +58,7 @@ backend/
 | `AUDIT_BASE_DIR` | Алиас для AUDIT_ROOT_DIR | - |
 | `AUDIT_DATA_DIR` | Папка runtime-данных | = ROOT_DIR |
 | `AUDIT_PROJECTS_DIR` | Папка проектов | DATA_DIR/projects |
+| `AUDIT_OBJECTS_FILE` | Путь к реестру объектов (в том числе для изоляции тестов) | APP_DATA_DIR/objects.json |
 | `AUDIT_PROMPTS_DIR` | Папка промптов | DATA_DIR/prompts |
 | `OPENROUTER_API_KEY` | API ключ OpenRouter | - |
 | `CHANDRA_BASE_URL` | URL LM Studio (ngrok) | - |

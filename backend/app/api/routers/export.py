@@ -20,6 +20,11 @@ from backend.app.core.config import BASE_DIR
 import backend.app.services.export.excel_service as excel_service
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_ANALYSIS_FILENAME,
+    TEXT_ANALYSIS_FILENAME,
+    resolve_existing,
+)
 from backend.app.services.storage.projects_v2_source_resolver import (
     load_version_project_info,
     resolve_version_source_files,
@@ -170,9 +175,12 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
                 if md.exists() and (not work_md.exists() or md.name != work_md.name):
                     zf.write(str(md), md.name)
 
+        # (source_filename, arcname): для переименованных артефактов источник
+        # резолвится через resolve_existing (legacy или новое имя на диске), а в
+        # ZIP всегда кладём под КАНОНИЧЕСКИМ именем.
         pipeline_files = [
-            ("01_text_analysis.json", "01_text_analysis.json"),
-            ("02_blocks_analysis.json", "02_blocks_analysis.json"),
+            (TEXT_ANALYSIS_FILENAME, TEXT_ANALYSIS_FILENAME),
+            (BLOCKS_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME),
             ("03_findings.json", "03_findings.json"),
             ("03_findings_review.json", "03_findings_review.json"),
             ("norm_checks.json", "norm_checks.json"),
@@ -181,7 +189,7 @@ async def _download_audit_package_v2(project_id: str, version_id: Optional[str] 
             ("document_graph.json", "document_graph.json"),
         ]
         for fname, arcname in pipeline_files:
-            fpath = output_dir / fname
+            fpath = resolve_existing(output_dir, fname)
             if fpath.exists():
                 zf.write(str(fpath), arcname)
 
@@ -290,9 +298,12 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
             zf.write(str(md), md.name)
 
         # --- JSON-файлы конвейера ---
+        # (source_filename, arcname): для переименованных артефактов источник
+        # резолвится через resolve_existing (legacy или новое имя на диске), а в
+        # ZIP всегда кладём под КАНОНИЧЕСКИМ именем.
         pipeline_files = [
-            ("01_text_analysis.json", "01_text_analysis.json"),
-            ("02_blocks_analysis.json", "02_blocks_analysis.json"),
+            (TEXT_ANALYSIS_FILENAME, TEXT_ANALYSIS_FILENAME),
+            (BLOCKS_ANALYSIS_FILENAME, BLOCKS_ANALYSIS_FILENAME),
             ("03_findings.json", "03_findings.json"),
             ("03_findings_review.json", "03_findings_review.json"),
             ("norm_checks.json", "norm_checks.json"),
@@ -301,7 +312,7 @@ async def download_audit_package(project_id: str, version_id: Optional[str] = No
             ("document_graph.json", "document_graph.json"),
         ]
         for fname, arcname in pipeline_files:
-            fpath = output_dir / fname
+            fpath = resolve_existing(output_dir, fname)
             if fpath.exists():
                 zf.write(str(fpath), arcname)
 
@@ -467,8 +478,8 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 | `*.pdf` | Исходный PDF этой версии — источник истины |
 | `*_document.md` | Полный текст документа (OCR из PDF) |
 | `document_graph.json` | Структура документа: текст и блоки по страницам |
-| `01_text_analysis.json` | Этап 1: анализ текста (таблицы, нормативные ссылки) |
-| `02_blocks_analysis.json` | Этап 2: анализ чертежей (описание каждого блока) |
+| `02_text_analysis.json` | Этап 1: анализ текста (таблицы, нормативные ссылки) |
+| `01_blocks_analysis.json` | Этап 2: анализ чертежей (описание каждого блока) |
 | `03_findings.json` | Этап 3: **все замечания аудита** (основной файл) |
 | `03_findings_review.json` | Вердикты критика по каждому замечанию |
 | `norm_checks.json` | Проверка актуальности нормативных документов |
@@ -507,7 +518,7 @@ def _build_audit_readme(project_dir: Path, output_dir: Path) -> str:
 1. **Загрузите файлы в чат с LLM** (Claude, ChatGPT, Gemini и др.)
 2. Начните с `03_findings.json` — это основной файл с замечаниями
 3. Для контекста подключите `document_graph.json` или `*_document.md`
-4. Описания чертежей в `02_blocks_analysis.json` (PNG не включены для экономии места)
+4. Описания чертежей в `01_blocks_analysis.json` (PNG не включены для экономии места)
 
 ## Таблица решений (audit_report.xlsx)
 

@@ -69,7 +69,7 @@
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
                          @click="navigate('/section/' + encodeURIComponent(code))"
-                         :class="{active: currentView === 'dashboard' && sidebarFilterSection === code}">
+                         :class="{active: (currentView === 'dashboard' || currentView === 'section-optimization') && sidebarFilterSection === code}">
                         <div class="nav-sub-dot" :style="{background: getDisciplineColor(code), opacity: 1}"></div>
                         {{ code }}
                         <span class="nav-sub-badge">{{ items.length }}</span>
@@ -483,6 +483,28 @@
                 <span class="version-pdf-btn__icon">📄</span>
                 <span>Просмотр PDF</span>
             </button>
+
+            <!-- Навигация по проектам раздела: перенесена в верхнюю панель версии, справа -->
+            <div class="audit-actions-col audit-actions-col--topbar">
+                <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
+                    <button class="btn btn-outline btn-sm"
+                            :disabled="!prevProject"
+                            @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
+                            :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
+                        &#8592; Предыдущий
+                    </button>
+                    <span class="project-nav-pos">
+                        {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
+                        / {{ currentSectionProjectsList.length }}
+                    </span>
+                    <button class="btn btn-outline btn-sm"
+                            :disabled="!nextProject"
+                            @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
+                            :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
+                        Следующий &#8594;
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- ═══ PDF версии — выезжающая снизу панель (родной просмотрщик браузера) ═══ -->
@@ -552,8 +574,8 @@
         </div>
 
         <!-- ═══ Section View (конкретный раздел) ═══ -->
-        <div v-if="currentView === 'dashboard' && sidebarFilterSection && sidebarFilterSection !== '__all__'" class="container">
-            <div class="dashboard-header">
+        <div v-if="(currentView === 'dashboard' || currentView === 'section-optimization') && sidebarFilterSection && sidebarFilterSection !== '__all__'" class="container">
+            <div v-if="currentView === 'dashboard'" class="dashboard-header">
                 <h2>
                     <a href="#" @click.prevent="sidebarFilterSection = '__all__'" class="dash-back-link">&larr;</a>
                     <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
@@ -563,6 +585,17 @@
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
                     </label>
+                    <template v-if="sectionUnreviewedCount > 0">
+                        <span class="dashboard-header__count dashboard-header__count--unreviewed"
+                              title="Проекты, у которых последняя загруженная версия не доведена экспертом до конца">
+                            Не проверено ({{ sectionUnreviewedCount }})
+                        </span>
+                        <label class="section-select-all" @click.stop
+                               title="Выделить все не проверенные проекты раздела">
+                            <input type="checkbox" :checked="isSectionUnreviewedSelected(sidebarFilterSection)"
+                                   @change="toggleSectionUnreviewedSelection(sidebarFilterSection)">
+                        </label>
+                    </template>
                     <button v-if="sectionHasUnanalyzed" class="btn btn-sm btn-outline"
                             style="margin-left:10px; vertical-align:middle;"
                             @click.stop="selectUnanalyzedInSection(sidebarFilterSection)"
@@ -582,7 +615,7 @@
             </div>
 
             <!-- Создание группы -->
-            <div v-if="showCreateGroup" class="group-create-row">
+            <div v-if="currentView === 'dashboard' && showCreateGroup" class="group-create-row">
                 <input v-model="newGroupName" class="input" placeholder="Название группы..."
                        @keyup.enter="createGroup(sidebarFilterSection, newGroupName); newGroupName=''; showCreateGroup=false"
                        ref="groupNameInput">
@@ -591,8 +624,473 @@
                 <button class="btn btn-sm btn-outline" @click="showCreateGroup=false; newGroupName=''">Отмена</button>
             </div>
 
+            <div v-if="currentView === 'section-optimization'" class="section-optimization-page__header">
+                <button class="section-optimization-page__back"
+                        @click="navigate('/section/' + encodeURIComponent(sidebarFilterSection))"
+                        title="Вернуться к проектам раздела">←</button>
+                <span class="section-optimization-card__sigma">Σ</span>
+                <div>
+                    <div class="section-optimization-page__eyebrow">
+                        <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
+                        Уровень раздела
+                    </div>
+                    <h2>Оптимизация раздела</h2>
+                    <p>{{ disciplineLabel(sidebarFilterSection) }} · все корпуса и части как один проект</p>
+                </div>
+            </div>
+
+            <section v-if="currentView === 'section-optimization'" class="section-optimization-panel section-optimization-panel--page">
+                <div v-if="sectionOptimizationLoading" class="section-optimization-state">
+                    <div class="spinner-lg"></div>
+                    <div>
+                        <strong>Открываю сохранённую оптимизацию {{ sidebarFilterSection }}</strong>
+                        <span>Загружаю последний готовый снимок раздела без повторного расчёта.</span>
+                    </div>
+                </div>
+
+                <div v-else-if="sectionOptimizationError" class="section-optimization-state section-optimization-state--error">
+                    <div>
+                        <strong>Не удалось собрать раздел</strong>
+                        <span>{{ sectionOptimizationError }}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline"
+                            @click="loadSectionOptimization(sidebarFilterSection, sectionOptimizationTab, true)">Повторить</button>
+                </div>
+
+                <template v-else-if="sectionOptimizationData">
+                    <div class="section-optimization-pipeline-actions">
+                        <div>
+                            <b>Pipeline раздела</b>
+                            <span>{{ sectionOptimizationPipelineStatusLabel(sectionOptimizationPipeline.status) }}</span>
+                        </div>
+                        <button class="btn btn-sm btn-primary"
+                                :disabled="sectionOptimizationPipelineRunning || sectionOptimizationPipelineActionLoading"
+                                @click="runSectionOptimizationPipeline">
+                            {{ sectionOptimizationPipelineRunning ? 'Выполняется…' : (sectionOptimizationPipeline.status === 'ready_for_review' ? 'Пересчитать раздел' : 'Запустить pipeline') }}
+                        </button>
+                    </div>
+                    <div v-if="sectionOptimizationPipelineActionError" class="section-optimization-pipeline-error">
+                        {{ sectionOptimizationPipelineActionError }}
+                    </div>
+                    <div class="section-optimization-flow section-optimization-flow--pipeline" aria-label="Pipeline оптимизации раздела">
+                        <template v-for="(stage, index) in sectionOptimizationData.analysis_stages" :key="stage.key">
+                            <button v-if="stage.key === 'graphics'"
+                                    type="button"
+                                    class="section-optimization-flow__stage section-optimization-flow__stage--button"
+                                    :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
+                                    :disabled="sectionOptimizationPipelineRunning || !sectionOptimizationPipeline.snapshot_generated_at"
+                                    :title="sectionOptimizationPipelineStage(stage.key).message || stage.description"
+                                    @click="requestSectionOptimizationGraphicsPlan">
+                                <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
+                                <b>{{ stage.title }}</b>
+                                <small>{{ sectionOptimizationPipelineStage(stage.key).message }}</small>
+                            </button>
+                            <div v-else class="section-optimization-flow__stage"
+                                 :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
+                                 :title="sectionOptimizationPipelineStage(stage.key).message || stage.description">
+                                <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
+                                <b>{{ stage.title }}</b>
+                                <small>{{ sectionOptimizationPipelineStage(stage.key).message }}</small>
+                            </div>
+                            <span v-if="index < sectionOptimizationData.analysis_stages.length - 1"
+                                  class="section-optimization-flow__arrow">→</span>
+                        </template>
+                    </div>
+
+                    <div v-if="sectionOptimizationTab === 'signals'"
+                         class="section-optimization-replication-bulk">
+                        <button class="btn btn-sm btn-primary"
+                                :disabled="sectionOptimizationReplicationActionLoading
+                                    || !sectionOptimizationAgentAvailable
+                                    || !sectionOptimizationReplicationPendingCount"
+                                @click="startAllSectionOptimizationReplications">
+                            {{ sectionOptimizationReplicationActionLoading
+                                ? 'Запускаю все тиражирования…'
+                                : (!sectionOptimizationAgentAvailable
+                                    ? 'Умный агент подключается…'
+                                    : 'Запустить умного агента для всех кандидатов') }}
+                        </button>
+                        <span>{{ sectionOptimizationAgentAvailable
+                            ? sectionOptimizationReplicationProgressLabel
+                            : 'Текущий аудит завершится — агент включится без потери данных' }}</span>
+                    </div>
+
+                    <div class="section-optimization-toolbar">
+                        <div class="section-optimization-tabs">
+                            <button :class="{'active': sectionOptimizationTab === 'specifications'}"
+                                    @click="setSectionOptimizationTab('specifications')">
+                                Форма 7 · Спецификация <span>{{ sectionOptimizationMeta.specification_rows }}</span>
+                            </button>
+                            <button :class="{'active': sectionOptimizationTab === 'accepted'}"
+                                    @click="setSectionOptimizationTab('accepted')">
+                                Принято <span>{{ sectionOptimizationMeta.accepted_optimizations }}</span>
+                            </button>
+                            <button :class="{'active': sectionOptimizationTab === 'signals'}"
+                                    @click="setSectionOptimizationTab('signals')">
+                                Кандидаты <span>{{ sectionOptimizationMeta.signals }}</span>
+                            </button>
+                        </div>
+                        <select v-model="sectionOptimizationProjectFilter" class="input section-optimization-project-filter">
+                            <option value="">Все проекты раздела</option>
+                            <option v-for="project in sectionOptimizationProjectOptions"
+                                    :key="project.project_id" :value="project.project_id">
+                                {{ project.project_name }} · {{ project.version_id }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div v-if="sectionOptimizationTab === 'specifications'" class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationSpecificationGroups.length"
+                               class="section-optimization-table section-optimization-table--form7">
+                            <colgroup>
+                                <col class="form7-col--position">
+                                <col class="form7-col--name">
+                                <col class="form7-col--type-mark">
+                                <col class="form7-col--code">
+                                <col class="form7-col--manufacturer">
+                                <col class="form7-col--unit">
+                                <col class="form7-col--quantity">
+                                <col class="form7-col--mass">
+                                <col class="form7-col--note">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span class="section-optimization-form7__position-heading">
+                                            <span>Позиция</span>
+                                            <span class="section-optimization-form7__all-toggle-actions" aria-label="Управление всеми проектами">
+                                                <button type="button" title="Развернуть все проекты" aria-label="Развернуть все проекты"
+                                                        @click="expandAllSectionOptimizationProjects">+</button>
+                                                <button type="button" title="Свернуть все проекты" aria-label="Свернуть все проекты"
+                                                        @click="collapseAllSectionOptimizationProjects">−</button>
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <th>Наименование и техническая характеристика</th>
+                                    <th>Тип, марка, обозначение документа, опросного листа</th>
+                                    <th>Код оборудования, изделия, материала</th>
+                                    <th>Завод-изготовитель</th>
+                                    <th>Единица измерения</th>
+                                    <th>Количество</th>
+                                    <th>Масса единицы, кг</th>
+                                    <th>Примечание</th>
+                                </tr>
+                                <tr class="section-optimization-form7__column-numbers" aria-hidden="true">
+                                    <th v-for="number in 9" :key="number">{{ number }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="group in sectionOptimizationSpecificationGroups" :key="group.project.project_id">
+                                    <tr class="section-optimization-form7__project-row">
+                                        <td colspan="9">
+                                            <button class="section-optimization-form7__project-toggle"
+                                                    @click="toggleSectionOptimizationProject(group.project.project_id)"
+                                                    :aria-expanded="!isSectionOptimizationProjectCollapsed(group.project.project_id)">
+                                                <span class="section-optimization-form7__project-caret"
+                                                      aria-hidden="true">{{ isSectionOptimizationProjectCollapsed(group.project.project_id) ? '›' : '⌄' }}</span>
+                                                <span :class="{ 'section-optimization-form7__project-name--missing': !group.hasSpecification }">
+                                                    {{ group.project.project_name || group.project.project_id }}
+                                                </span>
+                                                <span class="section-optimization-form7__project-meta">· {{ group.project.version_id }}</span>
+                                                <span v-if="group.hasSpecification" class="section-optimization-form7__project-meta">· {{ group.project.specification_rows }} строк</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <template v-if="!isSectionOptimizationProjectCollapsed(group.project.project_id)">
+                                        <tr v-if="!group.hasSpecification" class="section-optimization-form7__missing-row">
+                                            <td></td>
+                                            <td colspan="8">Спецификация отсутствует</td>
+                                        </tr>
+                                        <tr v-else-if="!group.rows.length" class="section-optimization-form7__missing-row">
+                                            <td></td>
+                                            <td colspan="8">По текущему поиску строки спецификации не найдены</td>
+                                        </tr>
+                                        <template v-for="(row, rowIndex) in group.rows" :key="row.row_id">
+                                            <tr v-if="rowIndex > 0 && sectionOptimizationSpecificationSectionKey(row) !== sectionOptimizationSpecificationSectionKey(group.rows[rowIndex - 1])"
+                                                :key="row.row_id + '-category'" class="section-optimization-form7__category-row">
+                                        <td></td>
+                                        <td colspan="8"><span>{{ sectionOptimizationSpecificationSectionTitle(row) }}</span></td>
+                                    </tr>
+                                    <tr :key="row.row_id + '-item'">
+                                        <td class="section-optimization-form7__center">{{ row.position || '—' }}</td>
+                                        <td class="section-optimization-table__name">
+                                            <div>{{ row.name }}</div>
+                                        </td>
+                                        <td>{{ sectionOptimizationSpecificationTypeMark(row) || '—' }}</td>
+                                        <td>{{ row.code || '—' }}</td>
+                                        <td>{{ row.manufacturer || '—' }}</td>
+                                        <td class="section-optimization-form7__center">{{ row.unit || '—' }}</td>
+                                        <td class="section-optimization-form7__center">{{ formatSectionOptimizationQuantity(row.quantity) }}</td>
+                                        <td class="section-optimization-form7__center">{{ row.mass || '—' }}</td>
+                                        <td>{{ row.note || '—' }}</td>
+                                    </tr>
+                                        </template>
+                                    </template>
+                                </template>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">Строки спецификаций не найдены по выбранному фильтру.</div>
+                    </div>
+
+                    <div v-else-if="sectionOptimizationTab === 'accepted'" class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationFilteredAccepted.length" class="section-optimization-table section-optimization-table--accepted">
+                            <thead>
+                                <tr>
+                                    <th>Проект / источник</th>
+                                    <th>Позиции</th>
+                                    <th>Текущее решение</th>
+                                    <th>Принятое предложение</th>
+                                    <th>Эффект</th>
+                                    <th>Ограничения</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in sectionOptimizationFilteredAccepted" :key="item.source_ref">
+                                    <td>
+                                        <button class="section-optimization-source"
+                                                @click="navigate('/project/' + item.project_id + '/optimization')">{{ item.project_name }}</button>
+                                        <small>{{ item.version_id }} · {{ item.id }} · л. {{ item.sheet || '—' }}</small>
+                                    </td>
+                                    <td>{{ (item.spec_items || []).join('; ') || '—' }}</td>
+                                    <td>{{ item.current || '—' }}</td>
+                                    <td class="section-optimization-table__name">{{ item.proposed || '—' }}</td>
+                                    <td>
+                                        <span class="opt-type-badge" :style="{background: optTypeColor(item.type)}">{{ optTypeLabel(item.type) }}</span>
+                                        <small v-if="item.savings_pct">Оценка: {{ item.savings_pct }}%</small>
+                                    </td>
+                                    <td>{{ item.risks || item.norm || '—' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">
+                            Нет принятых экспертом оптимизаций по выбранному фильтру. Непроверенные предложения сюда намеренно не включаются.
+                        </div>
+                    </div>
+
+                    <div v-else class="section-optimization-table-wrap">
+                        <table v-if="sectionOptimizationFilteredSignals.length" class="section-optimization-table section-optimization-table--signals">
+                            <thead>
+                                <tr>
+                                    <th>Тип</th>
+                                    <th>Кандидат</th>
+                                    <th>Проекты</th>
+                                    <th>Основание / источники</th>
+                                    <th>Графика</th>
+                                    <th>Следующий шаг</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="signal in sectionOptimizationFilteredSignals" :key="signal.signal_id">
+                                    <tr>
+                                        <td>
+                                            <span class="section-optimization-signal-type"
+                                                  :class="'section-optimization-signal-type--' + signal.kind">
+                                                {{ sectionOptimizationSignalTypeLabel(signal) }}
+                                            </span>
+                                            <small v-if="signal.match_score">Сходство {{ Math.round(signal.match_score * 100) }}%</small>
+                                        </td>
+                                        <td class="section-optimization-table__name">
+                                            <div>{{ signal.title }}</div>
+                                            <small>{{ signal.reason }}</small>
+                                        </td>
+                                        <td>
+                                            <template v-if="signal.kind === 'replicate_accepted_optimization'">
+                                                <div class="section-optimization-signal-project-group">
+                                                    <small>Решение принято</small>
+                                                    <div class="section-optimization-signal-projects">
+                                                        <button v-for="projectId in signal.source_project_ids" :key="'source-' + projectId"
+                                                                @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                                    </div>
+                                                </div>
+                                                <div class="section-optimization-signal-project-group section-optimization-signal-project-group--target">
+                                                    <small>Тиражировать</small>
+                                                    <div class="section-optimization-signal-projects">
+                                                        <button v-for="projectId in signal.target_project_ids" :key="'target-' + projectId"
+                                                                @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div v-else class="section-optimization-signal-projects">
+                                                <button v-for="projectId in signal.project_ids" :key="projectId"
+                                                        @click="navigate('/project/' + projectId)">{{ sectionOptimizationProjectLabel(projectId) }}</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button v-if="sectionOptimizationSignalHasAcceptedSources(signal)"
+                                                    class="section-optimization-source-table-toggle"
+                                                    :aria-expanded="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                                    @click="toggleSectionOptimizationSignal(signal.signal_id)">
+                                                <span>{{ isSectionOptimizationSignalExpanded(signal.signal_id) ? '▾' : '▸' }}</span>
+                                                <span>
+                                                    Принятые решения: {{ sectionOptimizationSignalAcceptedItems(signal).length }}
+                                                    <small v-if="signal.kind === 'replicate_accepted_optimization'">
+                                                        Целевые позиции: {{ sectionOptimizationSignalSpecificationItems(signal).length }}
+                                                    </small>
+                                                </span>
+                                            </button>
+                                            <button v-else
+                                                    class="section-optimization-source-table-toggle"
+                                                    :aria-expanded="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                                    @click="toggleSectionOptimizationSignal(signal.signal_id)">
+                                                <span>{{ isSectionOptimizationSignalExpanded(signal.signal_id) ? '▾' : '▸' }}</span>
+                                                Исходные позиции спецификации: {{ sectionOptimizationSignalSpecificationItems(signal).length }}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <span class="section-optimization-signal-graphics"
+                                                  :class="{'section-optimization-signal-graphics--requested': signal.graphics_recommended}">
+                                                {{ sectionOptimizationSignalGraphicsLabel(signal) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>{{ signal.next_step }}</div>
+                                            <div class="section-optimization-replication-action">
+                                                    <span v-if="sectionOptimizationReplicationFor(signal.signal_id)"
+                                                      class="section-optimization-replication-status"
+                                                      :class="'section-optimization-replication-status--' + sectionOptimizationReplicationFor(signal.signal_id).status">
+                                                    {{ sectionOptimizationReplicationStatusLabel(sectionOptimizationReplicationFor(signal.signal_id)) }}
+                                                </span>
+                                                <span v-else class="section-optimization-replication-status section-optimization-replication-status--not-started">
+                                                    Ожидает запуска умного агента
+                                                </span>
+                                                <small v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_summary"
+                                                       class="section-optimization-agent-summary">
+                                                    {{ sectionOptimizationReplicationFor(signal.signal_id).agent_summary }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="isSectionOptimizationSignalExpanded(signal.signal_id)"
+                                        class="section-optimization-source-decisions-row">
+                                        <td colspan="6">
+                                            <div v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_assessments?.length"
+                                                 class="section-optimization-agent-review">
+                                                <div class="section-optimization-agent-review__title">
+                                                    <b>Заключение умного агента</b>
+                                                    <span>{{ sectionOptimizationReplicationFor(signal.signal_id).agent_model }}</span>
+                                                </div>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Целевой проект</th>
+                                                            <th>Вердикт</th>
+                                                            <th>Уверенность</th>
+                                                            <th>Основание и условия</th>
+                                                            <th>Графика</th>
+                                                            <th>Действие эксперта</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="assessment in sectionOptimizationReplicationFor(signal.signal_id).agent_assessments"
+                                                            :key="'agent-' + assessment.project_id">
+                                                            <td>{{ assessment.project_name || sectionOptimizationProjectLabel(assessment.project_id) }}</td>
+                                                            <td>
+                                                                <span class="section-optimization-agent-verdict"
+                                                                      :class="'section-optimization-agent-verdict--' + assessment.verdict">
+                                                                    {{ sectionOptimizationAgentVerdictLabel(assessment.verdict) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>{{ Math.round((assessment.confidence || 0) * 100) }}%</td>
+                                                            <td>
+                                                                <b>{{ assessment.reason || '—' }}</b>
+                                                                <small v-if="assessment.conditions?.length">
+                                                                    Условия: {{ assessment.conditions.join('; ') }}
+                                                                </small>
+                                                                <small v-if="assessment.missing_data?.length">
+                                                                    Не хватает: {{ assessment.missing_data.join('; ') }}
+                                                                </small>
+                                                            </td>
+                                                            <td>
+                                                                <template v-if="assessment.graphics_required">
+                                                                    {{ assessment.graphics_reason || 'Требуется проверка' }}
+                                                                    <small v-if="assessment.suggested_pages?.length">
+                                                                        Стр.: {{ assessment.suggested_pages.join(', ') }}
+                                                                    </small>
+                                                                </template>
+                                                                <span v-else>Не требуется</span>
+                                                            </td>
+                                                            <td>{{ assessment.expert_action || 'Проверить заключение' }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <table v-if="sectionOptimizationSignalHasAcceptedSources(signal)" class="section-optimization-source-decisions">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Проект</th>
+                                                        <th>№ решения</th>
+                                                        <th>Текущее решение</th>
+                                                        <th>Принятое предложение</th>
+                                                        <th>Ограничения / эффект</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in sectionOptimizationSignalAcceptedItems(signal)" :key="item.source_ref">
+                                                        <td>
+                                                            <button @click="navigate('/project/' + item.project_id + '/optimization')">
+                                                                {{ item.project_name }}
+                                                            </button>
+                                                            <small>{{ item.version_id }}</small>
+                                                        </td>
+                                                        <td>{{ item.id || '—' }}</td>
+                                                        <td>{{ item.current || '—' }}</td>
+                                                        <td class="section-optimization-table__name">{{ item.proposed || '—' }}</td>
+                                                        <td>{{ item.risks || item.norm || (item.savings_pct ? ('Оценка: ' + item.savings_pct + '%') : '—') }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table v-if="signal.kind === 'replicate_accepted_optimization' || signal.kind === 'consolidated_procurement'"
+                                                   class="section-optimization-source-specifications">
+                                                <caption v-if="signal.kind === 'replicate_accepted_optimization'">Проекты для тиражирования решения</caption>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Проект</th>
+                                                        <th>Поз.</th>
+                                                        <th>Наименование и характеристика</th>
+                                                        <th>Обозначение / тип, марка</th>
+                                                        <th>Ед.</th>
+                                                        <th>Количество</th>
+                                                        <th>Примечание</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="item in sectionOptimizationSignalSpecificationItems(signal)" :key="item.row_id">
+                                                        <td>
+                                                            <button @click="navigate('/project/' + item.project_id)">
+                                                                {{ item.project_name }}
+                                                            </button>
+                                                            <small>{{ item.version_id }}</small>
+                                                        </td>
+                                                        <td>{{ item.position || '—' }}</td>
+                                                        <td class="section-optimization-table__name">{{ item.name || '—' }}</td>
+                                                        <td>{{ item.designation || item.type_mark || item.code || '—' }}</td>
+                                                        <td>{{ item.unit || '—' }}</td>
+                                                        <td>{{ formatSectionOptimizationQuantity(item.quantity) }}</td>
+                                                        <td>{{ item.note || '—' }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <div v-else class="section-optimization-empty">
+                            Надёжные межпроектные совпадения пока не найдены. Это не означает отсутствие потенциала — нужен смысловой этап анализа.
+                        </div>
+                    </div>
+
+                    <details v-if="sectionOptimizationData.warnings && sectionOptimizationData.warnings.length"
+                             class="section-optimization-warnings">
+                        <summary>Неполные источники: {{ sectionOptimizationData.warnings.length }}</summary>
+                        <ul><li v-for="warning in sectionOptimizationData.warnings" :key="warning">{{ warning }}</li></ul>
+                    </details>
+                </template>
+            </section>
+
             <!-- Группированный вывод проектов -->
-            <div v-for="group in groupedSectionProjects" :key="group.id"
+            <div v-for="(group, groupIndex) in groupedSectionProjects" :key="group.id"
+                 v-show="currentView === 'dashboard'"
                  class="project-group" :class="{'project-group--drag-over': dragOverGroupId === group.id, 'project-group--virtual': group.isVirtual && !group.noHeader}"
                  @dragover.prevent="onGroupDragOver($event, group.id)"
                  @dragleave="onGroupDragLeave($event, group.id)"
@@ -622,6 +1120,51 @@
 
                 <!-- Проекты -->
                 <div class="projects-grid" :class="{'projects-grid--in-group': !group.noHeader}">
+                    <!-- Первая карточка каждого раздела: сводка всех его проектов. -->
+                    <div v-if="groupIndex === 0"
+                         class="project-card section-optimization-card"
+                         role="button" tabindex="0"
+                         @click="navigateToSectionOptimization(sidebarFilterSection)"
+                         @keyup.enter="navigateToSectionOptimization(sidebarFilterSection)">
+                        <div class="project-card__header">
+                            <h3 class="project-card__name" title="Общая оптимизация всех проектов раздела">
+                                <span class="section-optimization-card__sigma">Σ</span>
+                                <span class="project-card__name-text">Оптимизация раздела</span>
+                            </h3>
+                            <div class="project-card__icons">
+                                <span class="section-optimization-card__badge">СВОДНАЯ</span>
+                            </div>
+                        </div>
+                        <div class="section-optimization-card__caption">Все корпуса и части как один проект</div>
+                        <div class="project-card__badges-row section-optimization-card__row">
+                            <div class="severity-badges">
+                                <span class="sev-badge sev-opt-lifecycle">
+                                    {{ sectionOptimizationMeta.project_count ?? filteredSectionProjects.length }}
+                                </span>
+                                <span class="sev-badge sev-check">
+                                    {{ sectionOptimizationMeta.specification_rows ?? '…' }}
+                                </span>
+                                <span class="findings-total">проектов / строк</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'specifications')">Спецификация</button>
+                            <span class="section-optimization-card__arrow">→</span>
+                        </div>
+                        <div class="project-card__badges-row section-optimization-card__row">
+                            <div class="severity-badges">
+                                <span class="sev-badge sev-opt-cheaper">
+                                    {{ sectionOptimizationMeta.accepted_optimizations ?? '…' }}
+                                </span>
+                                <span class="sev-badge sev-opt-lifecycle">
+                                    {{ sectionOptimizationMeta.accepted_merge_candidates ?? '…' }}
+                                </span>
+                                <span class="findings-total">принято / групп</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'signals')">Кандидаты</button>
+                            <span class="section-optimization-card__arrow">→</span>
+                        </div>
+                    </div>
                     <div v-for="p in group.projects" :key="p.project_id"
                          class="project-card" draggable="true"
                          :class="{'project-card--ready': p.has_blocks, 'project-card--running': isProjectRunning(p.project_id), 'project-card--selected': isProjectSelected(p.project_id), 'project-card--dragging': dragProjectId === p.project_id}"
@@ -697,7 +1240,7 @@
             <div class="batch-action-bar__actions">
                 <button class="btn btn-outline" :disabled="batchCropLoading"
                         @click="cropBatchBlocks"
-                        title="Полная подготовка данных: crop PNG-блоков + Gemma-enrichment MD (готовит проект к аудиту)">
+                        title="Полная подготовка данных: PNG-блоки + контекст PDF/Vectograph">
                     <span v-if="batchCropLoading">&#129534; Готовлю... ({{ batchCropProgress }})</span>
                     <span v-else>&#129534; Подготовить данные</span>
                 </button>
@@ -877,11 +1420,12 @@
                         <p class="modal-subtitle">
                             Выберите <strong>одну родительскую папку</strong> (браузер позволяет
                             выбрать только одну за раз — выделить несколько папок, в т.ч. через Shift,
-                            нельзя). Внутри поддерживаются две раскладки:
-                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF)
-                            <em>либо</em> просто <strong>PDF-файлы рядом</strong> — тогда каждый PDF
-                            станет отдельным кандидатом-проектом. Загрузка последовательная,
-                            дубли блокируются.
+                            нельзя). Внутри поддерживаются раскладки:
+                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF),
+                            просто <strong>PDF-файлы рядом</strong> — каждый PDF станет отдельным
+                            кандидатом-проектом, — <em>либо</em> <strong>ZIP-комплекты портала</strong>
+                            (каждый архив = проект, распакуется автоматически). Загрузка
+                            последовательная, дубли блокируются.
                         </p>
                         <div class="upload-form">
                             <div class="form-row">
@@ -912,7 +1456,7 @@
                         <div v-if="uploadCandidates.length" class="upload-multi-wrap">
                             <table class="upload-multi-table">
                                 <thead><tr>
-                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr</th>
+                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr/blk</th>
                                     <th>Дисциплина</th><th>Название / режим</th><th>Статус</th>
                                 </tr></thead>
                                 <tbody>
@@ -920,8 +1464,8 @@
                                         <td><input type="checkbox" v-model="c.checked"
                                                    :disabled="uploadLoading || !candUploadable(c)"></td>
                                         <td :title="c.folder">{{ c.folder }}</td>
-                                        <td>{{ c.pdfName || '— нет —' }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
-                                        <td class="cand-bundle">{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }}</td>
+                                        <td>{{ c.pdfName || (c.zipCount ? ('📦 ' + c.zips[0].name) : '— нет —') }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
+                                        <td class="cand-bundle"><template v-if="c.zipCount && !c.pdfCount">zip-комплект</template><template v-else>{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }} / {{ c.hasBlocks?'blk':'·' }}</template></td>
                                         <td>
                                             <select class="form-input form-input--sm" v-model="c.discipline"
                                                     :disabled="uploadLoading" @change="recheckCandidate(c)">
@@ -1154,40 +1698,58 @@
         <div v-if="showModelConfig" class="modal-overlay" @click.self="showModelConfig = false">
             <div class="modal-content model-config-modal" @click.stop>
                 <button class="modal-close" @click="showModelConfig = false">&times;</button>
-                <h3>Конфигурация моделей</h3>
-                <p class="model-config-desc">Выберите модель для каждого этапа аудита</p>
+                <div class="model-config-heading">
+                    <h3>Конфигурация моделей</h3>
+                    <p class="model-config-desc">Модели по этапам аудита</p>
+                </div>
                 <div class="model-preset-buttons">
                     <button class="btn btn-preset"
-                            :class="{ active: activePreset === 'findings_only' }"
-                            @click="applyPreset('findings_only')"
-                            title="Production: Markdown → Gemma OCR enrichment → Stage 02 findings-only single-block GPT-5.4.">Production Gemma+GPT5.4</button>
+                            :class="{ active: activePreset === 'claude_gpt_codex' }"
+                            @click="applyPreset('claude_gpt_codex')"
+                            title="Claude выполняет основные этапы; GPT-5.4 и Codex параллельно анализируют блоки, Claude и Codex — оптимизацию.">Claude+GPT +Codex</button>
+                    <button class="btn btn-preset"
+                            :class="{ active: activePreset === 'codex_exec' }"
+                            @click="applyPreset('codex_exec')"
+                            title="Блоки анализируют GPT-5.4 и Codex параллельно (сравнение и gap-search); оптимизацию — Claude Opus и Codex; остальные этапы выполняются через Codex exec.">Full Codex</button>
                 </div>
-                <p v-if="activePresetHint" class="model-preset-hint">{{ activePresetHint }}</p>
+                <p v-if="activePresetHint" class="model-preset-hint" :title="activePresetHint"
+                   :class="{ 'model-preset-hint--custom': isCustomStageConfig }">{{ activePresetHint }}</p>
                 <p v-if="stageModelSaveError" class="model-config-error">{{ stageModelSaveError }}</p>
+                <div class="model-config-table-wrap">
                 <table class="model-config-table">
                     <thead>
                         <tr>
                             <th class="model-config-stage-col">Этап</th>
-                            <th v-for="m in availableModels" :key="m.id">{{ m.label }}</th>
+                            <th v-for="m in visibleStageModels" :key="m.id">{{ m.label }}</th>
+                            <th>Codex</th>
                         </tr>
                     </thead>
                     <tbody>
                         <template v-for="(label, key) in stageLabels" :key="key">
                             <tr>
                                 <td class="model-config-stage-name">{{ label }}</td>
-                                <td v-for="m in availableModels" :key="m.id" class="model-config-radio-cell">
-                                    <input :type="modelInputType(key, m.id)"
+                                <td v-for="m in visibleStageModels" :key="m.id" class="model-config-radio-cell">
+                                    <input type="radio"
                                            :name="'model-' + key"
                                            :value="m.id"
-                                           :checked="isStageModelChecked(key, m.id)"
-                                           @change="selectStageModel(key, m.id, $event)"
+                                           :checked="isBaseStageModelChecked(key, m.id)"
+                                           @change="selectBaseStageModel(key, m.id)"
                                            :disabled="!isModelAllowed(key, m.id)"
                                            class="model-config-radio">
+                                </td>
+                                <td class="model-config-radio-cell">
+                                    <input type="checkbox"
+                                           :checked="isCodexStageChecked(key)"
+                                           @change="toggleStageCodex(key, $event)"
+                                           :disabled="!isCodexStageAllowed(key)"
+                                           :aria-label="'Codex для этапа ' + label"
+                                           class="model-config-radio model-config-codex-flag">
                                 </td>
                             </tr>
                         </template>
                     </tbody>
                 </table>
+                </div>
                 <div class="model-config-actions">
                     <button class="btn" @click="showModelConfig = false">Отмена</button>
                     <button class="btn btn-accent" @click="saveAndStartAudit()">Запустить аудит</button>
@@ -1210,10 +1772,10 @@
                     </div>
                 </div>
 
-                <!-- ═══ Prepare-data queue (Gemma enrichment) ═══ -->
+                <!-- ═══ Prepare-data queue (block context) ═══ -->
                 <div v-if="prepareQueue && prepareQueue.items && prepareQueue.items.length > 0" class="prepare-queue">
                     <div class="prepare-queue__header">
-                        <h3 style="margin: 0;">&#129534; Подготовка данных (Gemma enrichment)</h3>
+                        <h3 style="margin: 0;">&#129534; Векторные графы блоков</h3>
                         <button class="btn btn-outline btn-sm" @click="clearPrepareQueue">
                             Очистить завершённые
                         </button>
@@ -1405,16 +1967,8 @@
                         </select>
                         <span v-else class="queue-item__action-label">{{ batchActionLabel(item.action) }}</span>
 
-                        <!-- Pre-Gemma badge: показывает что Gemma OCR готов заранее (или идёт фоном) -->
-                        <span v-if="item.gemma_prefetched && (item.gemma_prefetch_status === 'done' || item.gemma_prefetch_status === 'skipped')"
-                              class="prefetch-badge prefetch-done"
-                              title="Gemma OCR готов заранее — этап будет пропущен">⚡</span>
-                        <span v-else-if="item.gemma_prefetch_status === 'running'"
-                              class="prefetch-badge prefetch-running"
-                              title="Pre-Gemma выполняется">↻</span>
-                        <span v-else-if="item.gemma_prefetch_status === 'failed'"
-                              class="prefetch-badge prefetch-failed"
-                              :title="'Pre-Gemma не удался — Gemma запустится штатно: ' + (item.gemma_prefetch_error || '')">⚠</span>
+                        <!-- Тайминги: запуск → окончание · общее время -->
+                        <span v-if="queueItemTiming(item)" class="queue-item__timing" title="Запуск → окончание · общее время">{{ queueItemTiming(item) }}</span>
 
                         <!-- Статус -->
                         <span class="queue-item__status">
@@ -1488,21 +2042,33 @@
 
                     <!-- Pipeline -->
                     <div class="pipeline-detail">
-                        <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('gemma_enrichment')}]"
-                             @click="canStartFrom('gemma_enrichment') && startFromStage(currentProject.project_id, 'gemma_enrichment')"
-                             :title="canStartFrom('gemma_enrichment') ? 'Клик: запустить с Gemma enrichment' : 'Gemma OCR enrichment / предварительное распознавание чертежей'">
-                            <div class="stage-num">GEMMA</div>
-                            <div class="stage-label">Gemma OCR</div>
+                        <div class="pipeline-stage pipeline-stage--ctx" :class="[stepClass(currentProject.pipeline.block_context || currentProject.pipeline.gemma_enrichment), {'pipeline-stage--clickable': canStartFrom('block_context')}]"
+                             @click="canStartFrom('block_context') && startFromStage(currentProject.project_id, 'block_context')"
+                             :title="canStartFrom('block_context') ? 'Клик: построить векторные графы блоков' : 'Построение векторных графов блоков'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('block_context')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм подготовки контекста">&#8942;</button>
+                            <div class="stage-num">CTX</div>
+                            <div class="stage-label stage-label--ctx">
+                                <span>Векторные</span>
+                                <span>графы</span>
+                                <span>блоков</span>
+                            </div>
                         </div>
                         <div class="pipeline-arrow">&rarr;</div>
                         <!-- Порядок block→text (PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED): блоки перед текстом.
-                             Бейджи 01/02 — канонические ID стадий (текст=01, блоки=02), не порядок исполнения. -->
+                             Бейджи 01/02 отражают порядок исполнения: блоки=01, текст=02. -->
                         <div class="pipeline-stage"
                              :class="[stepClass(currentProject.pipeline.blocks_analysis), {'pipeline-stage--clickable': canStartFrom('blocks_analysis')}]"
                              @click="canStartFrom('blocks_analysis') && startFromStage(currentProject.project_id, 'blocks_analysis')"
-                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (02_blocks_analysis.json)'"
+                             :title="canStartFrom('blocks_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ блоков (01_blocks_analysis.json)'"
                         >
-                            <div class="stage-num">02</div>
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('blocks_analysis')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм анализа блоков">&#8942;</button>
+                            <div class="stage-num">01</div>
                             <div class="stage-label">Блоки</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('blocks_analysis')">
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('blocks_analysis').inp }}</span>
@@ -1514,7 +2080,11 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.text_analysis), {'pipeline-stage--clickable': canStartFrom('text_analysis')}]"
                              @click="canStartFrom('text_analysis') && startFromStage(currentProject.project_id, 'text_analysis')"
                              :title="canStartFrom('text_analysis') ? 'Клик: запустить с этого этапа' : 'Анализ текста'">
-                            <div class="stage-num">01</div>
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('text_analysis')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм анализа текста">&#8942;</button>
+                            <div class="stage-num">02</div>
                             <div class="stage-label">Текст</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('text_analysis')">
                                 <span class="stage-tokens__in">&#8595;{{ stageTokensFormatted('text_analysis').inp }}</span>
@@ -1528,6 +2098,10 @@
                              @click="canStartFrom('findings') && startFromStage(currentProject.project_id, 'findings')"
                              :title="canStartFrom('findings') ? 'Клик: запустить с этого этапа' : 'Свод замечаний (03_findings.json)'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('findings')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм свода замечаний">&#8942;</button>
                             <div class="stage-num">03</div>
                             <div class="stage-label">Свод</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings')">
@@ -1542,6 +2116,10 @@
                              @click="canStartFrom('findings_critic') && startFromStage(currentProject.project_id, 'findings_critic')"
                              :title="canStartFrom('findings_critic') ? 'Клик: перезапустить Верификатор' : 'Верификатор замечаний: детерминированные проверки (фантом-блоки, лист/страница, no-evidence) + страж отсутствия'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('findings_critic')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм верификатора">&#8942;</button>
                             <div class="stage-num">ВФ</div>
                             <div class="stage-label">Верифик.</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('findings_critic') || stageTokensFormatted('findings_corrector')">
@@ -1553,6 +2131,10 @@
                         <div class="pipeline-stage" :class="[stepClass(currentProject.pipeline.norms_verified), {'pipeline-stage--clickable': canStartFrom('norms_verified')}]"
                              @click="canStartFrom('norms_verified') && startFromStage(currentProject.project_id, 'norms_verified')"
                              :title="canStartFrom('norms_verified') ? 'Клик: запустить с этого этапа' : 'Верификация норм'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('norms_verified')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм верификации норм">&#8942;</button>
                             <div class="stage-num">04</div>
                             <div class="stage-label">Нормы</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('norms_verified')">
@@ -1565,6 +2147,10 @@
                         <div class="pipeline-stage pipeline-stage--opt" :class="[stepClass(currentProject.pipeline.optimization), {'pipeline-stage--clickable': canStartFrom('optimization')}]"
                              @click="canStartFrom('optimization') && startFromStage(currentProject.project_id, 'optimization')"
                              :title="canStartFrom('optimization') ? 'Клик: запустить с этого этапа' : 'Оптимизация'">
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('optimization')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм оптимизации">&#8942;</button>
                             <div class="stage-num">OPT</div>
                             <div class="stage-label">Оптим.</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('optimization')">
@@ -1579,6 +2165,10 @@
                              @click="canStartFrom('optimization_critic') && startFromStage(currentProject.project_id, 'optimization_critic')"
                              :title="canStartFrom('optimization_critic') ? 'Клик: перезапустить Critic оптимизации' : 'Critic + Fix оптимизации'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('optimization_critic')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм Critic и Fix оптимизации">&#8942;</button>
                             <div class="stage-num">CF</div>
                             <div class="stage-label">Crit/Fix</div>
                             <div class="stage-tokens" v-if="stageTokensFormatted('optimization_critic') || stageTokensFormatted('optimization_corrector')">
@@ -1592,6 +2182,10 @@
                              @click="canStartFrom('debt_control') && startFromStage(currentProject.project_id, 'debt_control')"
                              :title="canStartFrom('debt_control') ? 'Клик: перезапустить контроль долгов' : 'Контроль долгов: согласованные замечания прошлой версии не теряются при новом аудите'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('debt_control')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм контроля долгов">&#8942;</button>
                             <div class="stage-num">КД</div>
                             <div class="stage-label">Долги</div>
                         </div>
@@ -1601,6 +2195,10 @@
                              @click="canStartFrom('decision_carryover') && startFromStage(currentProject.project_id, 'decision_carryover')"
                              :title="canStartFrom('decision_carryover') ? 'Клик: перезапустить перенос вердиктов' : 'Перенос вердиктов эксперта из предыдущей версии'"
                         >
+                            <button type="button" class="stage-algorithm-button"
+                                    @click.stop="openStageAlgorithm('decision_carryover')"
+                                    title="Как устроен этап"
+                                    aria-label="Алгоритм переноса вердиктов">&#8942;</button>
                             <div class="stage-num">ПВ</div>
                             <div class="stage-label">Перенос</div>
                         </div>
@@ -1612,46 +2210,68 @@
                             <strong>Аудит {{ activeVersionEntry?.label || activeVersionId }} временно недоступен на текущем legacy runner.</strong>
                             Версия и файлы сохранены. Полноценный аудит V2 будет доступен после переключения production на version-aware backend.
                         </div>
-                        <!-- Audit actions + навигация: колонка справа внутри белой карточки пайплайна -->
+                        <!-- Audit actions: колонка справа внутри белой карточки пайплайна -->
                         <div class="audit-actions-col">
-                        <div class="audit-buttons-inline">
-                            <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
-                                    :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
-                                    :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
-                                &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
-                            </button>
-                            <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
-                                    v-if="isProjectRunning(currentProject.project_id)">
-                                Отменить
-                            </button>
-                            <button class="btn btn-maroon" @click="cleanProject(currentProject.project_id)"
-                                    :disabled="isProjectRunning(currentProject.project_id)"
-                                    title="Удалить все результаты аудита">
-                                Очистить
-                            </button>
+                            <div class="audit-buttons-inline">
+                                <button class="btn btn-success" @click="startAudit(currentProject.project_id)"
+                                        :disabled="isProjectRunning(currentProject.project_id) || !canStartAuditNow.ok"
+                                        :title="canStartAuditNow.ok ? 'Аудит: кроп → текст → блоки → свод → нормы → оптимизация' : canStartAuditNow.reason">
+                                    &#9654; Запустить аудит<span v-if="activeVersionId && activeVersionId !== 'v1'"> ({{ activeVersionId }})</span>
+                                </button>
+                                <button class="btn btn-danger" @click="cancelAudit(currentProject.project_id)"
+                                        v-if="isProjectRunning(currentProject.project_id)">
+                                    Отменить
+                                </button>
+                                <button class="btn btn-maroon" @click="cleanProject(currentProject.project_id)"
+                                        :disabled="isProjectRunning(currentProject.project_id)"
+                                        title="Удалить все результаты аудита">
+                                    Очистить
+                                </button>
+                            </div>
                         </div>
+                    </div>
 
-                        <!-- Навигация по проектам раздела (внутри карточки, под аудит-кнопками) -->
-                        <div v-if="currentSectionProjectsList.length > 1" class="project-section-nav">
-                            <button class="btn btn-outline btn-sm"
-                                    :disabled="!prevProject"
-                                    @click="prevProject && navigate('/project/' + encodeURIComponent(prevProject.project_id))"
-                                    :title="prevProject ? (prevProject.name || prevProject.project_id) : ''">
-                                &#8592; Предыдущий
-                            </button>
-                            <span class="project-nav-pos">
-                                {{ currentSectionProjectsList.findIndex(p => p.project_id === currentProjectId) + 1 }}
-                                / {{ currentSectionProjectsList.length }}
-                            </span>
-                            <button class="btn btn-outline btn-sm"
-                                    :disabled="!nextProject"
-                                    @click="nextProject && navigate('/project/' + encodeURIComponent(nextProject.project_id))"
-                                    :title="nextProject ? (nextProject.name || nextProject.project_id) : ''">
-                                Следующий &#8594;
-                            </button>
-                        </div>
-                        </div>
+                    <div v-if="activeStageAlgorithm" class="modal-overlay stage-algorithm-overlay"
+                         @click.self="closeStageAlgorithm">
+                        <section class="modal-content stage-algorithm-modal"
+                                 role="dialog" aria-modal="true"
+                                 aria-labelledby="stage-algorithm-title">
+                            <button type="button" class="modal-close stage-algorithm-close"
+                                    @click="closeStageAlgorithm" title="Закрыть"
+                                    aria-label="Закрыть памятку">&#215;</button>
+                            <div class="stage-algorithm-eyebrow">Алгоритм этапа</div>
+                            <h3 id="stage-algorithm-title">{{ activeStageAlgorithm.title }}</h3>
+                            <p class="stage-algorithm-subtitle">{{ activeStageAlgorithm.subtitle }}</p>
 
+                            <div class="stage-algorithm-flow">
+                                <template v-for="(step, index) in activeStageAlgorithm.steps"
+                                          :key="activeStageAlgorithmKey + '-' + index">
+                                    <div v-if="step.type === 'split'" class="stage-algorithm-split">
+                                        <div v-for="branch in step.branches" :key="branch.label"
+                                             class="stage-algorithm-branch">
+                                            <span class="stage-algorithm-badge"
+                                                  :class="'stage-algorithm-badge--' + branch.label.toLowerCase()">
+                                                {{ branch.label }}
+                                            </span>
+                                            <span>{{ branch.text }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="stage-algorithm-step"
+                                         :class="{
+                                             'stage-algorithm-step--result': step.tone === 'result',
+                                             'stage-algorithm-step--judge': step.tone === 'judge'
+                                         }">
+                                        {{ step.text }}
+                                    </div>
+                                    <div v-if="index < activeStageAlgorithm.steps.length - 1"
+                                         class="stage-algorithm-arrow" aria-hidden="true">&#8595;</div>
+                                </template>
+                            </div>
+
+                            <p v-if="activeStageAlgorithm.note" class="stage-algorithm-note">
+                                {{ activeStageAlgorithm.note }}
+                            </p>
+                        </section>
                     </div>
 
                     <!-- Usage (сразу под пайплайном) -->
@@ -1762,10 +2382,10 @@
                     </div>
 
                     <!-- Pipeline Summary (детальный статус этапов) -->
-                    <div v-if="currentProject.pipeline_summary && currentProject.pipeline_summary.length > 0" class="pipeline-summary">
+                    <div v-if="visiblePipelineSummary.length > 0" class="pipeline-summary">
                         <div class="pipeline-summary__title">Статус конвейера</div>
                         <div class="pipeline-summary__list">
-                            <div v-for="s in currentProject.pipeline_summary" :key="s.key"
+                            <div v-for="s in visiblePipelineSummary" :key="s.key"
                                  class="pipeline-summary__item" :class="'ps-' + s.status">
                                 <span class="ps-icon">
                                     <template v-if="s.status === 'done'">✓</template>
@@ -1828,6 +2448,9 @@
                             <span class="expert-review-counter">
                                 Принято: <b style="color:#22c55e">{{ expertReviewSummary('finding').accepted }}</b>
                                 Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('finding').rejected }}</b>
+                                <template v-if="expertReviewSummary('finding').possibleRepeats">
+                                    Возможные повторы: <b style="color:#7c3aed">{{ expertReviewSummary('finding').possibleRepeats }}</b>
+                                </template>
                             </span>
                         </template>
                         <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
@@ -1883,6 +2506,12 @@
                                         @click="toggleFindingBlocks(f.id)"
                                         :style="{ cursor: ((findingBlockMap[f.id] && findingBlockMap[f.id].length) || (findingTextEvidence[f.id] && findingTextEvidence[f.id].length)) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ f.id }}</span>
+                                        <span v-if="findingDetectorBadge(f)"
+                                              class="finding-detector-badge"
+                                              :class="'finding-detector-badge--' + findingDetectorBadge(f).tone"
+                                              :title="findingDetectorBadge(f).title">
+                                            {{ findingDetectorBadge(f).text }}
+                                        </span>
                                         <span v-if="f.sub_findings" class="finding-group-badge" :title="f.sub_findings.length + ' объединённых замечаний'">
                                             ×{{ f.sub_findings.length }}
                                         </span>
@@ -2070,6 +2699,9 @@
                                 <span class="expert-review-counter">
                                     Принято: <b style="color:#22c55e">{{ expertReviewSummary('optimization').accepted }}</b>
                                     Отклонено: <b style="color:#ef4444">{{ expertReviewSummary('optimization').rejected }}</b>
+                                    <template v-if="expertReviewSummary('optimization').possibleRepeats">
+                                        Возможные повторы: <b style="color:#7c3aed">{{ expertReviewSummary('optimization').possibleRepeats }}</b>
+                                    </template>
                                 </span>
                             </template>
                             <button class="btn-expert-toggle" :class="{ active: expertReviewMode }" @click="toggleExpertReview()">
@@ -2113,6 +2745,12 @@
                                         @click="toggleOptBlocks(item.id)"
                                         :style="{ cursor: (optBlockMap[item.id] && optBlockMap[item.id].length) ? 'pointer' : 'default' }">
                                         <span class="finding-id-link">{{ item.id }}</span>
+                                        <span v-if="findingDetectorBadge(item)"
+                                              class="finding-detector-badge finding-detector-badge--inline"
+                                              :class="'finding-detector-badge--' + findingDetectorBadge(item).tone"
+                                              :title="findingDetectorBadge(item).title">
+                                            {{ findingDetectorBadge(item).text }}
+                                        </span>
                                         <span v-if="optBlockMap[item.id] && optBlockMap[item.id].length"
                                               class="finding-blocks-count"
                                               :title="optBlockMap[item.id].length + ' блоков'">
@@ -2144,7 +2782,12 @@
                                         </div>
                                     </td>
                                     <td class="opt-risks">{{ item.risks }}</td>
-                                    <td class="opt-norm">{{ item.norm || '—' }}</td>
+                                    <td class="opt-norm">
+                                        {{ item.norm || '—' }}
+                                        <div v-if="optNormBadge(item)" class="opt-norm-badge"
+                                             :class="'opt-norm-badge--' + optNormBadge(item).tone"
+                                             :title="optNormBadge(item).title">{{ optNormBadge(item).text }}</div>
+                                    </td>
                                     <td v-if="expertReviewMode" class="decision-cell" style="text-align:center">
                                         <div class="decision-toggle">
                                             <button class="btn-decision btn-accept" :class="{ active: getExpertDecision(item.id) === 'accepted' }"
@@ -2413,10 +3056,6 @@
                         <p class="sched-subtitle">Контроль фактически выполненных проверок по инженерам</p>
                     </div>
                     <div class="kb-header-actions sched-actions">
-                        <div class="sched-modeswitch">
-                            <button class="btn btn-sm" :class="schedMode==='week' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('week')">Неделя</button>
-                            <button class="btn btn-sm" :class="schedMode==='month' ? 'btn-primary' : 'btn-outline'" @click="schedSetMode('month')">Месяц</button>
-                        </div>
                         <div class="sched-navgroup">
                             <button class="btn btn-sm btn-outline sched-arrow" @click="schedPrev" title="Предыдущий период">&#8249;</button>
                             <span class="sched-period">{{ schedPeriodLabel }}</span>
@@ -2520,14 +3159,6 @@
                                         </tr>
                                     </tfoot>
                                 </table>
-                                <div class="sub-spend-note">
-                                    <b>% лимита</b> — доля основного недельного лимита подписки
-                                    (Opus/Sonnet/Haiku, ≈${{ Math.round(subSpendData.weekly_limit_usd) }}/нед, откалибровано по панели Claude).
-                                    <b>Fable 5</b> — отдельная квота Anthropic: за период ${{ Math.round(subSpendData.fable.cost) }}
-                                    ≈ {{ subSpendData.fable.pct_limit }}% (в основной % не входит).
-                                    <b>Токены</b> = вход+выход (без кэша); <b>$</b> — полная стоимость с кэшем.
-                                    Max 20x; Людмила исключена.
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -2544,7 +3175,7 @@
                         <div class="sched-kpi__body">
                             <div class="sched-kpi__label">Инженеров в работе</div>
                             <div class="sched-kpi__value">{{ schedTotals.engineers }}</div>
-                            <div class="sched-kpi__sub">Активны на {{ schedMode==='week' ? 'неделе' : 'месяце' }}</div>
+                            <div class="sched-kpi__sub">Активны в этом месяце</div>
                         </div>
                     </div>
                     <div class="sched-kpi">
@@ -2554,7 +3185,7 @@
                             </svg>
                         </div>
                         <div class="sched-kpi__body">
-                            <div class="sched-kpi__label">Отчётов за {{ schedMode==='week' ? 'неделю' : 'месяц' }}</div>
+                            <div class="sched-kpi__label">Отчётов за месяц</div>
                             <div class="sched-kpi__value">{{ schedTotals.fact }}</div>
                             <div class="sched-kpi__sub">Фактически</div>
                         </div>
@@ -2659,7 +3290,7 @@
                 <!-- ПЛАН + СТАТИСТИКА за период (под основной таблицей) -->
                 <div class="sched-stats">
                     <div class="sched-stats__head">
-                        План и статистика по инженерам — {{ schedMode==='week' ? 'неделя' : 'месяц' }}
+                        План и статистика по инженерам — месяц
                         <span v-if="schedPlanEdit" class="sched-plan__edithint">правка плана</span>
                     </div>
                     <div class="sched-stats__tablewrap">
@@ -2675,6 +3306,7 @@
                                             <span class="sched-remarks-th__top">Счётчик</span>
                                             <span>Замечаний</span>
                                             <span>Оптимизаций</span>
+                                            <span>% принятых</span>
                                         </span>
                                     </th>
                                     <th class="sched-stats-table__pct">Выполнение</th>
@@ -2695,7 +3327,7 @@
                                     </td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="s.agreed != null || s.disagreed != null">
-                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span>
+                                            <span class="sched-remark-ok" title="согласованные (замечания + оптимизации)">{{ s.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no" title="несогласованные (замечания + оптимизации)">{{ s.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ s.remarkPct != null ? s.remarkPct + '%' : '—' }}</span>
                                         </template>
                                         <span v-else class="sched-remark-na" title="Нет данных по решениям (замечания и оптимизации) за период">—</span>
                                     </td>
@@ -2713,7 +3345,7 @@
                                     <td>{{ schedTotals.plan }}</td>
                                     <td class="sched-stats-table__remarks">
                                         <template v-if="schedTotals.agreed != null || schedTotals.disagreed != null">
-                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span>
+                                            <span class="sched-remark-ok">{{ schedTotals.agreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-no">{{ schedTotals.disagreed || 0 }}</span><span class="sched-remark-sep">/</span><span class="sched-remark-pct" title="процент принятых замечаний">{{ schedTotals.remarkPct != null ? schedTotals.remarkPct + '%' : '—' }}</span>
                                         </template>
                                         <span v-else class="sched-remark-na">—</span>
                                     </td>
@@ -2790,6 +3422,9 @@
                                     <span class="block-label__id">{{ block.block_id }}</span>
                                     <span class="block-label__desc">{{ block.ocr_label }}</span>
                                 </div>
+                                <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                                    Векторный граф блока отсутствует
+                                </span>
                                 <span class="tile-analyzed-dot" title="Проверен, замечаний нет"></span>
                             </div>
                         </div>
@@ -2811,6 +3446,9 @@
                                     <span class="block-label__id">{{ block.block_id }}</span>
                                     <span class="block-label__desc">{{ block.ocr_label }}</span>
                                 </div>
+                                <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                                    Векторный граф блока отсутствует
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -2835,6 +3473,9 @@
                             <span class="block-label__id">{{ block.block_id }}</span>
                             <span class="block-label__desc">{{ block.ocr_label }}</span>
                         </div>
+                        <span v-if="blockHasNoVectorGraph(block)" class="tile-no-vector-badge">
+                            Векторный граф блока отсутствует
+                        </span>
                         <!-- Badge: количество замечаний -->
                         <span v-if="blockFindingsCount(block.block_id) > 0"
                               class="tile-badge" :class="'tile-badge--' + sevClass(blockMaxSeverity(block.block_id))">
@@ -2856,7 +3497,9 @@
 
                 <!-- Split-view overlay for block -->
                 <div v-if="selectedBlock" class="tile-split-overlay" @click="selectedBlock = null">
-                    <div class="tile-split-container" @click.stop>
+                    <div class="tile-split-container"
+                         :class="{'tile-split-container--navigable': currentBlocksList.length > 1}"
+                         @click.stop>
                         <button v-if="blockBackRoute" class="block-back-btn" @click="goBackFromBlock()" title="Назад к замечаниям">&larr; Назад</button>
                         <button class="tile-split-close" @click="selectedBlock = null">&times;</button>
                         <!-- Prev/Next navigation (в рамках текущей страницы или виртуальной 'Без сущностей') -->
@@ -2885,15 +3528,113 @@
                                  draggable="false"
                                  @load="onBlockImageLoad">
                             <!-- Текст, реально уходящий в нейронку для этого блока (поверх картинки) -->
-                            <div v-if="showBlockLlmText" class="block-llm-text"
+                            <div v-if="showBlockLlmText && !blockHasNoVectorGraph(selectedBlock)" class="block-llm-text"
                                  @click.stop @wheel.stop @mousedown.stop @dblclick.stop>
                                 <div v-if="blockLlmTextLoading" class="block-llm-text__msg">Загрузка…</div>
                                 <template v-else-if="blockLlmText && blockLlmText.user_text">
-                                    <!-- Блок 2 (что уходит в GPT текстом) — только для НЕ-схемных блоков -->
-                                    <template v-if="!blockLlmText.singleline_graph">
+                                    <!-- Универсальный профильный граф: ОВ, ВК, ЭОМ, СС, ГП, АР, КЖ, КМ, ТХ. -->
+                                    <template v-if="blockLlmText.block_graph_package && blockLlmText.profiled_graph && blockLlmText.profiled_graph_display && blockLlmText.block_graph_package.source_kind !== 'structured_singleline'">
+                                        <section class="pvg-card">
+                                            <header class="pvg-head">
+                                                <div>
+                                                    <div class="pvg-eyebrow">Векторный граф блока</div>
+                                                    <div class="pvg-title">{{ blockLlmText.block_graph_package.discipline_title }}</div>
+                                                </div>
+                                                <span class="pvg-ready" :class="{'pvg-ready--partial': blockLlmText.block_graph_package.readiness && blockLlmText.block_graph_package.readiness.complete === false}">
+                                                    {{ blockLlmText.block_graph_package.readiness && blockLlmText.block_graph_package.readiness.complete === false ? 'частичный' : 'готов' }}
+                                                </span>
+                                            </header>
+                                            <div class="pvg-chips">
+                                                <span><b>Профиль</b> {{ blockLlmText.profiled_graph_display.profile_title }}</span>
+                                                <span v-if="blockLlmText.profiled_graph_display.block_title"
+                                                      :title="blockLlmText.profiled_graph_display.block_title">
+                                                    <b>Блок</b> {{ blockLlmText.profiled_graph_display.block_title }}
+                                                </span>
+                                                <span><b>Источник</b> {{ blockLlmText.profiled_graph_display.source_title }}</span>
+                                                <span v-if="blockLlmText.block_graph_package.reference"
+                                                      :title="blockLlmText.block_graph_package.reference.explanation || blockLlmText.block_graph_package.reference.selection || ''">
+                                                    <b>Эталон</b> {{ blockLlmText.block_graph_package.reference.block_id || 'встроенная грамматика профиля' }}
+                                                    <small v-if="blockLlmText.block_graph_package.reference.match_score !== null && blockLlmText.block_graph_package.reference.match_score !== undefined">
+                                                        · сходство {{ Math.round(blockLlmText.block_graph_package.reference.match_score * 100) }}%
+                                                    </small>
+                                                </span>
+                                                <span v-if="blockLlmText.block_graph_package.reference_catalog">
+                                                    <b>Каталог</b> {{ blockLlmText.block_graph_package.reference_catalog.catalog_version }}
+                                                </span>
+                                            </div>
+                                            <div class="pvg-stats">
+                                                <div><b>{{ (blockLlmText.profiled_graph.containers || []).length }}</b><span>контейнеров</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.nodes || []).length }}</b><span>узлов</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.networks || []).length }}</b><span>сетей</span></div>
+                                                <div><b>{{ (blockLlmText.profiled_graph.edges || []).length }}</b><span>рёбер</span></div>
+                                            </div>
+
+                                            <div v-if="(blockLlmText.profiled_graph_display.containers || []).length" class="sld-section">
+                                                <div class="sld-section__head">▦ Контейнеры и физические группы</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Группа</th><th>Тип</th><th>Элементы</th></tr></thead>
+                                                    <tbody><tr v-for="(c,ci) in blockLlmText.profiled_graph_display.containers.slice(0,40)" :key="'pvgc'+ci">
+                                                        <td><b>{{ c.label }}</b></td><td>{{ c.type_title }}</td>
+                                                        <td>{{ c.members_total }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.nodes || []).length" class="sld-section">
+                                                <div class="sld-section__head pvg-section-head">
+                                                    <span>◆ Узлы графа</span>
+                                                    <span v-if="blockLlmText.profiled_graph_display.nodes_review_total"
+                                                          class="pvg-node-review-summary">
+                                                        ⚠ требуют проверки: {{ blockLlmText.profiled_graph_display.nodes_review_total }}
+                                                    </span>
+                                                </div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Обозначение</th><th>Тип</th></tr></thead>
+                                                    <tbody><tr v-for="(n,ni) in blockLlmText.profiled_graph_display.nodes.slice(0,120)"
+                                                               :key="'pvgn'+ni"
+                                                               :class="{'pvg-node-row--review': n.needs_review}">
+                                                        <td><b>{{ n.label }}</b></td>
+                                                        <td>
+                                                            {{ n.type_title }}
+                                                            <span v-if="n.needs_review" class="pvg-node-review"
+                                                                  :title="n.state_title">⚠ проверить</span>
+                                                        </td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.networks || []).length" class="sld-section">
+                                                <div class="sld-section__head">⌁ Сети и трассы</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Сеть</th><th>Тип</th><th>Подтверждение</th><th>Узлы</th></tr></thead>
+                                                    <tbody><tr v-for="(n,ni) in blockLlmText.profiled_graph_display.networks.slice(0,80)" :key="'pvgnet'+ni">
+                                                        <td><b>{{ n.label }}</b></td>
+                                                        <td>{{ n.type_title }}</td><td>{{ n.state_title }}</td>
+                                                        <td>{{ n.members_total }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="(blockLlmText.profiled_graph_display.edges || []).length" class="sld-section">
+                                                <div class="sld-section__head">→ Подтверждённые связи</div>
+                                                <table class="sld-table pvg-table"><thead><tr><th>Откуда</th><th>Куда</th><th>Связь</th><th>Подтверждение</th></tr></thead>
+                                                    <tbody><tr v-for="(e,ei) in blockLlmText.profiled_graph_display.edges.slice(0,120)" :key="'pvge'+ei">
+                                                        <td>{{ e.from_label }}</td><td>{{ e.to_label }}</td>
+                                                        <td>{{ e.type_title }}</td><td>{{ e.state_title }}</td>
+                                                    </tr></tbody>
+                                                </table>
+                                            </div>
+                                            <div v-if="blockLlmText.block_graph_package.readiness && (blockLlmText.block_graph_package.readiness.reasons || []).length" class="sld-review">
+                                                ⚑ Ограничения полноты:
+                                                <span v-for="(reason,ri) in blockLlmText.block_graph_package.readiness.reasons" :key="'pvgr'+ri" class="sld-review__item">{{ reason }}</span>
+                                            </div>
+                                            <details class="pvg-markdown">
+                                                <summary>Полное русскоязычное описание, уходящее в ChatGPT</summary>
+                                                <pre class="block-llm-text__body">{{ blockLlmText.block_graph_package.markdown }}</pre>
+                                            </details>
+                                        </section>
+                                    </template>
+
+                                    <!-- Непрофильный векторный текст / обычный блок. -->
+                                    <template v-else-if="!blockLlmText.singleline_graph || (blockLlmText.block_graph_package && blockLlmText.block_graph_package.source_kind !== 'structured_singleline')">
                                         <div class="block-llm-text__meta">
-                                            Что уходит в нейронку (Stage 02) ·
-                                            enrichment: <b>{{ blockLlmText.enrichment_source }}</b>
+                                            Что уходит в нейронку (Stage 01) ·
+                                            Источник описания:
+                                            <b>{{ blockLlmText.profiled_graph_display ? blockLlmText.profiled_graph_display.source_title : blockLlmText.enrichment_source }}</b>
                                             <span v-if="!blockLlmText.has_enrichment" style="color:var(--accent-orange,#e08a3c)">
                                                 (описание блока пустое — нет enrichment)</span>
                                         </div>
@@ -2901,7 +3642,7 @@
                                     </template>
 
                                     <!-- ГРАФ СХЕМЫ: для схем это И ЕСТЬ то, что уходит в нейронку -->
-                                    <template v-if="blockLlmText.singleline_graph">
+                                    <template v-if="blockLlmText.singleline_graph && (!blockLlmText.block_graph_package || blockLlmText.block_graph_package.source_kind === 'structured_singleline')">
                                         <!-- «Граф схемы» убран: единый вид ниже («Полная разметка»). Отходящие линии +
                                              питание = ровно то, что уходит в нейронку (render_graph_for_prompt); остальные
                                              разделы (расчёты/ТТ/примечания) — для просмотра. -->
@@ -2920,7 +3661,7 @@
                                                 <div class="sld-section__head">📄 Лист — {{ blockLlmText.singleline_graph.feeders_total }} линий
                                                     <span style="opacity:.6">(PDF стр.{{ blockLlmText.singleline_graph.source_page_index }})</span>
                                                     <span class="block-llm-text__ok">физика {{ Math.round((blockLlmText.singleline_graph.validation.power_rate||0)*100) }}% / {{ Math.round((blockLlmText.singleline_graph.validation.current_rate||0)*100) }}%</span>
-                                                    <span class="block-llm-text__muted">актив {{ blockLlmText.singleline_graph.validation.active }} · резерв {{ blockLlmText.singleline_graph.validation.reserve }} · review {{ blockLlmText.singleline_graph.validation.ambiguous }} · автомат {{ blockLlmText.singleline_graph.validation.breaker_bound }} · конфл {{ blockLlmText.singleline_graph.validation.geometry_conflicts }} · status {{ blockLlmText.singleline_graph.status }}</span>
+                                                    <span class="block-llm-text__muted">активных {{ blockLlmText.singleline_graph.validation.active }} · резервных {{ blockLlmText.singleline_graph.validation.reserve }} · требуют проверки {{ blockLlmText.singleline_graph.validation.ambiguous }} · автоматов {{ blockLlmText.singleline_graph.validation.breaker_bound }} · конфликтов {{ blockLlmText.singleline_graph.validation.geometry_conflicts }} · состояние {{ blockLlmText.singleline_graph.status === 'needs_review' ? 'требует проверки' : 'готово' }}</span>
                                                 </div>
                                                 <div style="padding:4px 8px; font-size:12px; line-height:1.6">
                                                     <div v-if="blockLlmText.singleline_graph.source.sheet_name"><b>{{ blockLlmText.singleline_graph.source.sheet_name }}</b></div>
@@ -3002,7 +3743,7 @@
                                                     <thead><tr><th>Откуда</th><th>Куда</th><th>Тип</th><th>Аппарат / примечание</th></tr></thead>
                                                     <tbody>
                                                         <tr v-for="(e,ei) in blockLlmText.singleline_graph.edges" :key="'e'+ei" class="sld-st-active">
-                                                            <td>{{ e.from }}</td><td>{{ e.to }}</td><td>{{ e.type }}</td><td>{{ e.label || '—' }}</td>
+                                                            <td>{{ e.from }}</td><td>{{ e.to }}</td><td>{{ e.type === 'power' ? 'питание' : (e.type === 'distribution' ? 'распределение' : e.type) }}</td><td>{{ e.label || '—' }}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -3028,7 +3769,7 @@
                                                                 <td style="white-space:normal; max-width:300px"><template v-if="fd.cable || fd.length_m != null"><span v-if="fd.length_m != null">L={{ fd.length_m }}м; </span><span v-if="fd.voltage_drop_pct != null">ΔU={{ fd.voltage_drop_pct }}%; </span><span v-if="fd.cable">{{ fd.cable }}; </span><span v-if="fd.Ikz_ka != null">Iкз(1)={{ fd.Ikz_ka }}кА; </span><span v-if="fd.routing">{{ fd.routing }}</span></template><span v-else>—</span></td>
                                                                 <td style="white-space:normal; max-width:220px">{{ (fd.additional_devices||[]).join('; ') || '—' }}</td>
                                                                 <td>{{ (fd.control||[]).join(', ') || '—' }}</td>
-                                                                <td>{{ fd.status }}</td>
+                                                                <td>{{ fd.status === 'active' ? 'действующая' : (fd.status === 'reserve' ? 'резервная' : (fd.status === 'ambiguous' ? 'проверить' : (fd.status === 'no_code' ? 'без кода' : (fd.status === 'structural' ? 'вводная/секционная' : fd.status)))) }}</td>
                                                                 <td style="white-space:normal; max-width:220px; color:var(--accent-orange,#c2691c)">{{ (fd.review||[]).join('; ') || '—' }}</td>
                                                             </tr>
                                                         </tbody>
@@ -3119,27 +3860,21 @@
                                 </template>
                                 <div v-else class="block-llm-text__msg">{{ blockLlmTextError || 'Нет данных' }}</div>
                             </div>
-                            <!-- SVG overlay для подсветки замечаний -->
-                            <svg v-if="currentBlockHighlights.length > 0"
-                                 class="block-highlight-svg"
+                            <!-- Observe-only overlay: рамки из textlayer_highlights_shadow.json. -->
+                            <svg v-if="showTextlayerHighlightsShadow && currentBlockTextlayerHighlights.length > 0"
+                                 class="block-highlight-svg block-textlayer-shadow-svg"
                                  :style="blockImageStyle"
                                  :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
-                                <template v-for="(r, ri) in currentBlockHighlights" :key="ri">
+                                <template v-for="(r, ri) in currentBlockTextlayerHighlights" :key="'tls-' + ri">
                                     <rect :x="r.x * blockNatW" :y="r.y * blockNatH"
                                           :width="r.w * blockNatW" :height="r.h * blockNatH"
-                                          :fill="severityColor(r.severity)"
-                                          :stroke="severityStroke(r.severity)"
-                                          :stroke-width="highlightedFindingId === r.finding_id ? 3 : 1.5"
-                                          :opacity="highlightedFindingId && highlightedFindingId !== r.finding_id ? 0.3 : 1"
-                                          rx="4" ry="4"
-                                          class="block-highlight-rect"
-                                          :class="{'block-highlight-rect--active': highlightedFindingId === r.finding_id}"
-                                          @click.stop="highlightFinding(r.finding_id)" />
-                                    <text v-if="r.label && (!highlightedFindingId || highlightedFindingId === r.finding_id)"
-                                          :x="r.x * blockNatW + 4" :y="r.y * blockNatH - 4"
-                                          class="block-highlight-label"
-                                          :fill="severityStroke(r.severity)">
-                                        {{ r.label }}
+                                          rx="3" ry="3"
+                                          class="block-textlayer-shadow-rect">
+                                        <title>{{ r.finding_id }} · {{ r.label || 'text-layer' }}</title>
+                                    </rect>
+                                    <text :x="r.x * blockNatW + 3" :y="r.y * blockNatH + 13"
+                                          class="block-textlayer-shadow-label">
+                                        {{ r.finding_id }} · {{ r.label || 'text-layer' }}
                                     </text>
                                 </template>
                             </svg>
@@ -3159,16 +3894,41 @@
                                           class="block-region-label">{{ r.qf }}</text>
                                 </template>
                             </svg>
+                            <!-- SVG overlay: ПРОСТРАНСТВЕННЫЕ ГРУППЫ ТЕКСТА (кнопка «области», любой блок -->
+                            <!-- с вектор-слоем). Показываем, когда нет областей линий однолинейки. -->
+                            <svg v-if="showBlockRegions && blockTextGroupRects.length && !blockRegionRects.length"
+                                 class="block-highlight-svg block-region-svg"
+                                 :style="blockImageStyle"
+                                 :viewBox="'0 0 ' + blockNatW + ' ' + blockNatH">
+                                <template v-for="(g, gi) in blockTextGroupRects" :key="'tg'+gi">
+                                    <polygon :points="g.poly.map(p => (p[0]*blockNatW)+','+(p[1]*blockNatH)).join(' ')"
+                                             class="block-tgroup-rect"
+                                             :class="{'block-tgroup-rect--single': g.single}"
+                                             :style="{ stroke: g.color, fill: g.color }">
+                                        <title>Группа {{ g.n }} ({{ g.natoms }} стр.)&#10;{{ g.text }}</title>
+                                    </polygon>
+                                    <text :x="g.labelX * blockNatW + 3" :y="g.labelY * blockNatH + 13"
+                                          class="block-tgroup-label" :style="{ fill: g.color }">{{ g.n }}</text>
+                                </template>
+                            </svg>
                             <p class="tile-split-image__label">
                                 {{ selectedBlock.block_id }}
                                 <span style="opacity:0.6;margin-left:8px">стр. {{ selectedBlock.page }}</span>
+                                <span v-if="blockHasNoVectorGraph(selectedBlock)"
+                                      class="tile-split-image__no-vector">
+                                    Векторный граф блока отсутствует
+                                </span>
                                 <span v-if="showBlockRegions && blockRegionRects.length"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
                                     &#9632; {{ blockRegionRects.length }} областей линий
                                 </span>
-                                <span v-if="currentBlockHighlights.length > 0"
+                                <span v-if="showBlockRegions && blockTextGroupRects.length && !blockRegionRects.length"
                                       style="opacity:0.7;margin-left:8px;color:var(--accent-cyan)">
-                                    &#9679; {{ currentBlockHighlights.length }} подсветок
+                                    &#9632; {{ blockTextGroupRects.length }} групп текста
+                                </span>
+                                <span v-if="showTextlayerHighlightsShadow && currentBlockTextlayerHighlights.length > 0"
+                                      class="tile-split-image__textlayer-count">
+                                    &#9670; {{ currentBlockTextlayerHighlights.length }} text-layer
                                 </span>
                             </p>
                         </div>
@@ -3191,19 +3951,33 @@
                                          class="tile-status-pill tile-status-pill--skipped">
                                         Без значимого содержимого
                                     </div>
-                                    <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 02), в стиле бейджа -->
-                                    <button class="tile-status-pill tile-status-pill--txt"
+                                    <!-- Тоггл txt: текст/граф, уходящий в нейронку (Stage 01), в стиле бейджа -->
+                                    <span v-if="blockHasNoVectorGraph(selectedBlock)"
+                                          class="tile-status-pill tile-status-pill--no-vector">
+                                        Векторный граф блока отсутствует
+                                    </span>
+                                    <button v-else class="tile-status-pill tile-status-pill--txt"
                                             :class="{'is-active': showBlockLlmText}"
                                             @click.stop="toggleBlockLlmText()"
-                                            title="Показать текст/граф, реально уходящий в нейронку (Stage 02)">
+                                            title="Показать текст/граф, реально уходящий в нейронку (Stage 01)">
                                         {{ showBlockLlmText ? '✓ txt' : 'txt' }}
                                     </button>
                                     <!-- Тоггл областей: полупрозрачные прямоугольники колонок линий поверх блока -->
-                                    <button class="tile-status-pill tile-status-pill--regions"
+                                    <button v-if="!blockHasNoVectorGraph(selectedBlock)"
+                                            class="tile-status-pill tile-status-pill--regions"
                                             :class="{'is-active': showBlockRegions}"
                                             @click.stop="toggleBlockRegions()"
                                             title="Показать области линий поверх блока для визуальной проверки связи данных">
                                         {{ showBlockRegions ? '✓ области' : 'области' }}
+                                    </button>
+                                    <!-- Диагностический overlay не меняет итоговые подсветки замечаний. -->
+                                    <button v-if="currentBlockTextlayerHighlights.length > 0"
+                                            class="tile-status-pill tile-status-pill--textlayer-shadow"
+                                            :class="{'is-active': showTextlayerHighlightsShadow}"
+                                            @click.stop="toggleTextlayerHighlightsShadow()"
+                                            title="Показать точные рамки из text-layer shadow для сравнения с LLM-подсветками">
+                                        {{ showTextlayerHighlightsShadow ? '✓ замечания' : 'замечания' }}
+                                        · {{ currentBlockTextlayerHighlights.length }}
                                     </button>
                                 </div>
 
@@ -3236,46 +4010,27 @@
                                 </div>
 
                                 <!-- Замечания: только финальный список (03_findings), прошедший критика. -->
-                                <!-- Сырые Stage 02 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
+                                <!-- Сырые Stage 01 findings (selectedBlockAnalysis.findings) пользователю НЕ показываем -->
                                 <!-- — критик мог их отфильтровать; источник истины = финальные замечания проекта. -->
                                 <div class="tile-analysis-section tile-analysis-section--findings">
                                     <div class="tile-analysis-section__header"
                                          v-if="getBlockFindings(selectedBlock.block_id).length > 0">
                                         <h4>Замечания ({{ getBlockFindings(selectedBlock.block_id).length }})</h4>
-                                        <button class="btn-toggle-highlights" @click="toggleAllHighlights"
-                                                :title="allHighlightsVisible ? 'Скрыть все подсветки' : 'Показать все подсветки'">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <template v-if="allHighlightsVisible">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                    <circle cx="12" cy="12" r="3"/>
-                                                </template>
-                                                <template v-else>
-                                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 01-4.24-4.24"/>
-                                                    <line x1="1" y1="1" x2="23" y2="23"/>
-                                                </template>
-                                            </svg>
-                                        </button>
                                     </div>
                                     <div v-for="(f, i) in getBlockFindings(selectedBlock.block_id)" :key="'f-' + i"
                                          class="tile-finding-card"
-                                         :class="['tile-finding-card--' + sevClass(f.severity),
-                                                   {'tile-finding-card--highlighted': highlightedFindingId === f.id,
-                                                    'tile-finding-card--dimmed': !isFindingHighlightVisible(f.id),
-                                                    'tile-finding-card--has-regions': f.highlight_regions && f.highlight_regions.length > 0}]"
-                                         @click="f.highlight_regions && f.highlight_regions.length ? highlightFinding(f.id) : null"
-                                         :style="f.highlight_regions && f.highlight_regions.length ? {cursor: 'pointer'} : {}">
+                                         :class="'tile-finding-card--' + sevClass(f.severity)">
                                         <div class="tile-finding-card__header">
-                                            <label v-if="f.highlight_regions && f.highlight_regions.length"
-                                                   class="finding-visibility-toggle" @click.stop
-                                                   :title="isFindingHighlightVisible(f.id) ? 'Скрыть подсветку' : 'Показать подсветку'">
-                                                <input type="checkbox"
-                                                       :checked="isFindingHighlightVisible(f.id)"
-                                                       @change="toggleFindingHighlight(f.id)">
-                                            </label>
                                             <span class="sev-badge sev-badge--sm" :class="'sev-' + sevClass(f.severity)">
                                                 {{ f.severity || 'N/A' }}
                                             </span>
                                             <span class="tile-finding-card__id">{{ f.id }}</span>
+                                            <span v-if="findingDetectorBadge(f)"
+                                                  class="finding-detector-badge finding-detector-badge--inline"
+                                                  :class="'finding-detector-badge--' + findingDetectorBadge(f).tone"
+                                                  :title="findingDetectorBadge(f).title">
+                                                {{ findingDetectorBadge(f).text }}
+                                            </span>
                                             <span v-if="f.highlight_regions && f.highlight_regions.length"
                                                   class="tile-finding-card__locate"
                                                   title="Показать на чертеже">&#9678;</span>
@@ -5070,7 +5825,7 @@
                                     <li>Будет запущен <b>backend Pipeline V2</b> (offline dry-run). Это <b>не read-only</b> операция.</li>
                                     <li>Операция может занять время; артефакты пишутся в
                                         <code>comparison/sessions/&lt;sid&gt;/pairs/{{ scPv2RunModal.pair_id }}/pipeline_v2/</code>.</li>
-                                    <li>По умолчанию модели (Qwen/Gemma/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
+                                    <li>По умолчанию модели (Qwen/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
                                     <li v-if="scPv2RunModal.is_rerun" style="color:#b45309">
                                         ⚠ Существующие артефакты будут сохранены в
                                         <code>pipeline_v2_backup_before_ui_run_&lt;TS&gt;</code> перед перезаписью.</li>

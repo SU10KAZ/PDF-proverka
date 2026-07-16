@@ -54,8 +54,8 @@ def _make_v2_project(v2: Path, code: str = "DOC-B6") -> Path:
     (vdir / "02_work").mkdir(parents=True, exist_ok=True)
     (vdir / "02_work" / "document.md").write_text("# normalized", encoding="utf-8")
     latest = vdir / "03_analysis" / "latest"
-    _write_json(latest / "01_text_analysis.json", {"ok": True})
-    _write_json(latest / "02_blocks_analysis.json", {"blocks": []})
+    _write_json(latest / "02_text_analysis.json", {"ok": True})
+    _write_json(latest / "01_blocks_analysis.json", {"blocks": []})
     _write_json(latest / "03_findings.json", {
         "audit_date": "2026-06-21",
         "findings": [

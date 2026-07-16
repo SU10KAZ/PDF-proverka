@@ -166,7 +166,7 @@ manager.py: **4747 строк** (было 4934 до pass 13, 7277 изначал
 - [ ] `norms/__init__.py` — bare relative import; ROOT_DIR в sys.path работает, но лучше перейти на явный пакет
 - [ ] `_run_tile_audit` — legacy метод в batch; определить будет ли удалён или сохранён
 - [ ] `_run_main_audit` — legacy метод; то же
-- [ ] `_backfill_highlight_regions` — убедиться что highlight_regions корректно индексируются из `02_blocks_analysis.json`
+- [ ] `_backfill_highlight_regions` — убедиться что highlight_regions корректно индексируются из `01_blocks_analysis.json`
 - [ ] `_run_post_findings_parallel` — сложная asyncio.gather схема; рефакторить отдельно после стабилизации
 - [ ] **critic/corrector improvement** — отдельный pass; менять только после smoke-прогона с реальным проектом
 - [ ] **Smoke-прогон** — запустить полный аудит реального проекта и убедиться что все stage runners работают корректно

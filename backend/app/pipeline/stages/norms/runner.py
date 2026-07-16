@@ -30,6 +30,73 @@ from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited, is_timeout
 
 
+def enrich_optimization_norm_status(output_dir: Path) -> int:
+    """Проставить предложениям статус нормы по norm_checks.json (чистый Python).
+
+    Без этого шага «✓ норма проверена» не появлялась бы НИКОГДА: поля писал
+    только этап пересмотра (3c), а он запускается лишь когда норма плохая. На
+    живом прогоне 13АВ-РД-ВК1-К1 V1 все 18 норм оказались действующими →
+    пересмотр не потребовался → 24 предложения остались вообще без признака,
+    хотя нормы у них проверены и лежат в norm_checks.json.
+
+    Не трогает то, что уже выставил пересмотр (norm_status revised/warning):
+    его вердикт содержательнее — он видел текст нормы через MCP.
+
+    Returns: количество обогащённых предложений.
+    """
+    optimization_path = output_dir / "optimization.json"
+    norm_checks_path = output_dir / "norm_checks.json"
+    if not optimization_path.exists() or not norm_checks_path.exists():
+        return 0
+
+    try:
+        od = json.loads(optimization_path.read_text(encoding="utf-8"))
+        nc = json.loads(norm_checks_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return 0
+
+    items = od.get("items") or []
+    if not items:
+        return 0
+
+    # OPT-ID → его проверки норм
+    by_opt: dict[str, list[dict]] = {}
+    for check in nc.get("checks") or []:
+        for oid in check.get("affected_optimizations") or []:
+            by_opt.setdefault(str(oid), []).append(check)
+
+    enriched = 0
+    for item in items:
+        oid = str(item.get("id") or "")
+        checks = by_opt.get(oid) or []
+        if not checks:
+            # У предложения нет распознанных норм — проверять нечего. Молчим:
+            # «не проверено» и «проверено и всё хорошо» — разные вещи.
+            continue
+        if item.get("norm_status") in ("revised", "warning"):
+            continue  # вердикт пересмотра сильнее — не перебиваем
+
+        bad = [c for c in checks if c.get("status") != "active"]
+        item["norm_verified"] = True
+        if bad:
+            reasons = "; ".join(
+                f"{c.get('norm_as_cited', '?')}: {c.get('status', '?')}" for c in bad[:3]
+            )
+            item["norm_status"] = "warning"
+            item.setdefault("norm_revision", {})["revision_reason"] = (
+                f"Норма не подтверждена в Norms-main — {reasons}"
+            )
+        else:
+            item["norm_status"] = "ok"
+        enriched += 1
+
+    if enriched:
+        optimization_path.write_text(
+            json.dumps(od, ensure_ascii=False, indent=2), encoding="utf-8",
+        )
+    return enriched
+
+
 def enrich_norm_quotes_from_checks(output_dir: Path) -> int:
     """Обогатить findings из norm_checks.json (полный norm contract).
 
@@ -178,6 +245,41 @@ def fix_paragraph_refs(output_dir: Path) -> int:
     return fixed
 
 
+def _optimization_intact(optimization_path: Path, backup_path: Path) -> bool:
+    """True, если пересмотр не потерял предложения (инвариант «ничего не удаляем»).
+
+    Агентный корректор оптимизаций уже ловили на тихой потере данных (замер 07-07:
+    ЭО1 14 → 7, удалено 41 предложение). Здесь та же защита на входе: файл обязан
+    остаться валидным JSON, а КАЖДЫЙ исходный id — на месте. Иначе откат к бэкапу.
+    """
+    try:
+        new = json.loads(optimization_path.read_text(encoding="utf-8"))
+        old = json.loads(backup_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+    old_ids = {i.get("id") for i in old.get("items") or [] if i.get("id")}
+    new_ids = {i.get("id") for i in new.get("items") or [] if i.get("id")}
+    return old_ids.issubset(new_ids)
+
+
+def _norm_fix_left_findings_untouched(findings_path: Path, backup_path: Path) -> bool:
+    """True, если norm_fix завершился, НЕ изменив 03_findings.json (байт-в-байт = бэкап).
+
+    Детерминированная замена текстовой эвристики по словам-маркерам («невозможно»,
+    «недоступны»…): те же слова встречаются в резюме УСПЕШНОГО прогона («часть цитат
+    недоступны») и приводили к откату реально применённых правок из бэкапа.
+    Файл не изменился → агент ничего не применил → фолбэк на deterministic enrichment
+    (откат при этом не нужен и не выполняется — содержимое и так равно бэкапу).
+    """
+    try:
+        if not findings_path.exists() or not backup_path.exists():
+            return False
+        return findings_path.read_bytes() == backup_path.read_bytes()
+    except OSError:
+        return False
+
+
 def count_manual_check_flags(output_dir: Path) -> int:
     """Подсчитать количество findings с флагом [Пункт нормы ... ручной сверки]."""
     findings_path = output_dir / "03_findings.json"
@@ -230,7 +332,10 @@ async def run_norm_verification(
 
     from norms import (
         extract_norms_from_findings,
+        extract_norms_from_optimization,
+        merge_norms_maps,
         generate_deterministic_checks,
+        format_optimizations_to_fix,
         format_llm_work_for_template,
         merge_llm_norm_results,
         merge_chunked_llm_results,
@@ -251,6 +356,31 @@ async def run_norm_verification(
     # ── Шаг 1: Извлечение норм ──
     await ctx.log("Шаг 1: Извлечение нормативных ссылок из замечаний...")
     norms_data = extract_norms_from_findings(findings_path)
+
+    # Нормы ПРЕДЛОЖЕНИЙ по оптимизации — в тот же контур. Промпт оптимизации
+    # требует поле `norm` и соответствие ДЕЙСТВУЮЩИМ нормам, но справочника не
+    # даёт, а этап 04 читал только findings → ссылки предложений не проверял
+    # никто (отсюда и самодеятельный web-поиск внутри стадии оптимизации).
+    # optimization.json появляется здесь только при PIPELINE_NORMS_AFTER_MERGE_ENABLED
+    # (нормы после параллельного блока). В легаси-порядке файла ещё нет — тогда
+    # ведём себя ровно как раньше, без ошибки.
+    optimization_path = output_dir / "optimization.json"
+    if optimization_path.exists():
+        try:
+            opt_norms = extract_norms_from_optimization(optimization_path)
+            if opt_norms["total_unique_norms"]:
+                before = norms_data["total_unique_norms"]
+                norms_data = merge_norms_maps(norms_data, opt_norms)
+                added = norms_data["total_unique_norms"] - before
+                await ctx.log(
+                    f"Нормы предложений по оптимизации: {opt_norms['total_unique_norms']} "
+                    f"из {opt_norms['total_optimizations']} предложений, "
+                    f"новых для проверки: {added}",
+                )
+        except (OSError, json.JSONDecodeError, KeyError) as e:
+            # fail-soft: битый optimization.json не должен ронять верификацию норм
+            await ctx.log(f"Нормы предложений пропущены: {e}", "warn")
+
     total_norms = norms_data["total_unique_norms"]
 
     if total_norms == 0:
@@ -570,6 +700,7 @@ async def run_norm_verification(
     )
 
     # ── Шаг 3: Пересмотр замечаний (если нужен) ──
+    norm_fix_failed = False
     if needs_fix:
         if wait_before_fix is not None and not wait_before_fix.is_set():
             await ctx.log("Ожидание завершения Corrector перед пересмотром норм...")
@@ -592,31 +723,88 @@ async def run_norm_verification(
             ctx.update_pipeline_log("norm_verify", "error", error=error)
             return StageResult.fail(error)
 
-        exit_code, output, cli_result = await claude_runner.run_norm_fix(
-            findings_to_fix_text, pid,
-            on_output=ctx.log,
-            project_info=project_info,
-            output_dir=output_dir,
-            version_dir=ctx.project_dir,
-            version_id=ctx.version_id,
-        )
-        ctx.record_cli_usage(cli_result, "norm_fix")
+        try:
+            exit_code, output, cli_result = await claude_runner.run_norm_fix(
+                findings_to_fix_text, pid,
+                on_output=ctx.log,
+                project_info=project_info,
+                output_dir=output_dir,
+                version_dir=ctx.project_dir,
+                version_id=ctx.version_id,
+            )
+            ctx.record_cli_usage(cli_result, "norm_fix")
+        except Exception as exc:
+            exit_code = 1
+            output = str(exc)
+            norm_fix_failed = True
+            await ctx.log(f"Norm fix: исключение ({exc}); продолжаю с исходными findings", "warn")
+
+        if exit_code == 0 and _norm_fix_left_findings_untouched(findings_path, pre_norm_path):
+            # Файл не изменился → правки не применены. НЕ форсируем exit_code=1:
+            # откат из бэкапа не нужен (содержимое идентично), а реальный успех
+            # с изменённым файлом сюда не попадает по построению.
+            norm_fix_failed = True
+            await ctx.log(
+                "Norm fix: агент завершился без изменений 03_findings.json; "
+                "продолжаю с deterministic norm enrichment",
+                "warn",
+            )
 
         if is_cancelled(exit_code):
             ctx.update_pipeline_log("norm_verify", "error", error="Отменено при norm_fix")
             return StageResult.cancel()
 
-        if exit_code == 0 and findings_path.exists():
-            shutil.copy2(findings_path, verified_path)
-            size_kb = round(verified_path.stat().st_size / 1024, 1)
-            await ctx.log(f"03a_norms_verified.json создан ({size_kb} KB)")
-        elif exit_code != 0:
-            await ctx.log(f"Norm fix: код {exit_code}", "warn")
+        if exit_code != 0:
+            norm_fix_failed = True
+            await ctx.log(f"Norm fix: код {exit_code}; {output[:300] if output else ''}", "warn")
             if pre_norm_path.exists():
                 shutil.copy2(pre_norm_path, findings_path)
                 await ctx.log("Восстановлен 03_findings.json из бэкапа", "warn")
     else:
         await ctx.log("Все нормы актуальны — пересмотр не требуется", "info")
+
+    # ── Шаг 3c: Пересмотр ОПТИМИЗАЦИЙ с изменившимися нормами ──
+    # Предложение возвращается автору вместе с вердиктом по норме: замена могла
+    # потерять смысл (obsolete) или измениться по сути (revised), а не только
+    # сослаться не туда. Удалять запрещено — решает эксперт.
+    if optimization_path.exists():
+        opts_to_fix_text = format_optimizations_to_fix(norm_checks_path, optimization_path)
+        if "Пересмотр не требуется" in opts_to_fix_text:
+            await ctx.log("Нормы в оптимизациях актуальны — пересмотр не требуется", "info")
+        else:
+            n_opts = opts_to_fix_text.count("\n### ") + opts_to_fix_text.startswith("### ")
+            await ctx.log(
+                f"Шаг 3c: Пересмотр {n_opts} предложений с изменившимися нормами...",
+            )
+            import shutil as _shutil
+            pre_opt_norm_path = output_dir / "optimization_pre_norm.json"
+            _shutil.copy2(optimization_path, pre_opt_norm_path)
+            try:
+                exit_code, output, cli_result = await claude_runner.run_optimization_norm_fix(
+                    opts_to_fix_text, pid,
+                    on_output=ctx.log,
+                    project_info=project_info,
+                    output_dir=output_dir,
+                    version_dir=ctx.project_dir,
+                    version_id=ctx.version_id,
+                )
+                ctx.record_cli_usage(cli_result, "optimization_norm_fix")
+            except Exception as exc:
+                exit_code, output = 1, str(exc)
+                await ctx.log(f"Пересмотр оптимизаций: исключение ({exc})", "warn")
+
+            # fail-soft: этап 04 существует ради findings. Провал пересмотра
+            # предложений не должен ронять верификацию норм — откатываем файл
+            # и идём дальше, оставив след в логе.
+            if exit_code != 0 or not _optimization_intact(optimization_path, pre_opt_norm_path):
+                _shutil.copy2(pre_opt_norm_path, optimization_path)
+                await ctx.log(
+                    f"Пересмотр оптимизаций не применён (код {exit_code}) — "
+                    f"optimization.json восстановлен из бэкапа",
+                    "warn",
+                )
+            else:
+                await ctx.log("Оптимизации пересмотрены с учётом актуальных норм", "info")
 
     # ── Шаг 4: No-op (norms_db.json больше не authoritative) ──
     await ctx.log(
@@ -629,10 +817,31 @@ async def run_norm_verification(
     if enriched > 0:
         await ctx.log(f"norm_quote обогащён из paragraph_checks: {enriched} замечаний")
 
+    # ── Шаг 5b: Статус нормы предложениям (детерминированно, без LLM) ──
+    # Иначе «✓ норма проверена» не появится никогда: поля пишет только шаг 3c,
+    # а он идёт лишь при плохой норме. Штатный случай (все нормы действуют)
+    # оставался бы в UI немым, хотя проверка прошла.
+    opt_enriched = enrich_optimization_norm_status(output_dir)
+    if opt_enriched > 0:
+        await ctx.log(f"Статус нормы проставлен предложениям: {opt_enriched}")
+
     # ── Шаг 6: Авто-исправление неверных номеров пунктов ──
     fixed_paras = fix_paragraph_refs(output_dir)
     if fixed_paras > 0:
         await ctx.log(f"Номера пунктов норм исправлены: {fixed_paras} замечаний")
+
+    if findings_path.exists() and (needs_fix or enriched > 0 or fixed_paras > 0):
+        import shutil
+        shutil.copy2(findings_path, verified_path)
+        size_kb = round(verified_path.stat().st_size / 1024, 1)
+        if norm_fix_failed:
+            await ctx.log(
+                f"03a_norms_verified.json создан из текущих findings ({size_kb} KB); "
+                "LLM-пересмотр норм не применён",
+                "warn",
+            )
+        elif needs_fix:
+            await ctx.log(f"03a_norms_verified.json обновлён ({size_kb} KB)")
 
     # ── Шаг 7: Уточнение оставшихся цитат (Python semantic search) ──
     remaining_flags = count_manual_check_flags(output_dir)
@@ -690,6 +899,13 @@ async def run_norm_verification(
         ctx.refresh_finding_quality()
 
     if verified_path.exists():
+        from backend.app.pipeline.stages.block_analysis.provenance import (
+            backfill_final_findings_provenance,
+        )
+        backfill_final_findings_provenance(
+            output_dir,
+            findings_filename="03a_norms_verified.json",
+        )
         from backend.app.pipeline.stages.findings_merge.runner import (
             refresh_finding_quality as _rfq,
         )
