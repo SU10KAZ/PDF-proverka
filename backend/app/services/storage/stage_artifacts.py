@@ -47,6 +47,16 @@ LEGACY_ALIASES = {
     BLOCK_CONTEXT_SUMMARY_FILENAME: "gemma_enrichment_summary.json",
 }
 
+# Пары, где каноническое и legacy — РАЗНЫЕ артефакты сосуществующих этапов, а НЕ
+# переименование одного файла. `block_context_summary.json` (этап `block_context`,
+# карта источников вектографа) и `gemma_enrichment_summary.json` (этап
+# `gemma_enrichment`, отчёт готовности OCR) живут рядом штатно и закономерно
+# различаются по размеру: legacy до сих пор читает `evaluate_gemma_enrichment`, а
+# canonical — потребители вектографа. Для таких пар fallback-чтение
+# (`resolve_existing` → `adapt_legacy_summary`) сохраняется, но предупреждение о
+# «незавершённой миграции» ложное и подавляется.
+COEXISTING_LEGACY = frozenset({BLOCK_CONTEXT_SUMMARY_FILENAME})
+
 # legacy stage-value -> canonical (для нормализации при чтении поля `stage`)
 STAGE_VALUE_ALIASES = {
     "01_text_analysis": TEXT_ANALYSIS_STAGE,
@@ -73,13 +83,15 @@ def resolve_existing(dir_path, name: str) -> Path:
     (несуществующий), чтобы вызывающий код штатно отработал `.exists() == False`.
 
     Если присутствуют ОБА файла и их размеры различаются — залогировать конфликт
-    (каноническое всё равно побеждает); это сигнал незавершённой миграции.
+    (каноническое всё равно побеждает); это сигнал незавершённой миграции. Для пар
+    из ``COEXISTING_LEGACY`` (разные артефакты сосуществующих этапов, а не
+    переименование) предупреждение не выдаётся — расхождение размеров там штатно.
     """
     d = Path(dir_path)
     canonical = d / name
     legacy_name = LEGACY_ALIASES.get(name)
     if canonical.exists():
-        if legacy_name:
+        if legacy_name and name not in COEXISTING_LEGACY:
             legacy = d / legacy_name
             try:
                 if legacy.exists() and legacy.stat().st_size != canonical.stat().st_size:
