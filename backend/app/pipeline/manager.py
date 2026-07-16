@@ -1523,8 +1523,14 @@ class PipelineManager:
             raise RuntimeError(res.error_message(pid))
         return res
 
-    def _make_stage_context(self, job: "AuditJob") -> "PipelineStageContext":
-        """Построить PipelineStageContext из текущего job для передачи в stage runner-ы."""
+    def _make_stage_context(self, job: "AuditJob",
+                            stage_override: str | None = None) -> "PipelineStageContext":
+        """Построить PipelineStageContext из текущего job для передачи в stage runner-ы.
+
+        stage_override — явная секция лога для ctx.log: в параллельной группе
+        (верификатор ∥ нормы) job общий, и job.stage гоняется — без явного
+        stage строки одного этапа помечались секцией другого.
+        """
         from backend.app.pipeline.context import PipelineStageContext
         pid = job.project_id
         # ctx.project_dir сейчас — это version_dir (V1: root; V2+: _versions/v{N}/).
@@ -1533,7 +1539,7 @@ class PipelineManager:
         project_dir = version_dir
 
         async def _log(msg: str, level: str = "info") -> None:
-            await self._log(job, msg, level)
+            await self._log(job, msg, level, stage_override=stage_override)
 
         async def _check_before_launch() -> bool:
             return await self._check_before_launch(job)
@@ -2420,7 +2426,8 @@ class PipelineManager:
         """Записать статус этапа в pipeline_log.json и отправить WS-обновление."""
         audit_logger.update_pipeline_log(project_id, stage_key, status, message, error, detail)
 
-    async def _log(self, job: AuditJob, message: str, level: str = "info"):
+    async def _log(self, job: AuditJob, message: str, level: str = "info",
+                   stage_override: str | None = None):
         """Записать лог в консоль, файл и WebSocket.
 
         Перехватывает финальный JSON-ответ Claude CLI ({"type":"result",...})
@@ -2429,6 +2436,9 @@ class PipelineManager:
         Остальной технический мусор (события Codex CLI, построчные JSON/diff-
         фрагменты записываемых артефактов, баннер codex exec) гуманизируется
         или подавляется в log_humanizer — в лог для человека он не попадает.
+
+        stage_override — явная секция лога для задач параллельной группы,
+        где job общий и job.stage гоняется (см. audit_logger.log_to_project).
         """
         # Быстрый фильтр — обычные строки идут как есть. Префикс провайдера
         # ('[OPT claude] ' из ансамбля) срываем ДО проверки: иначе финальный
@@ -2443,7 +2453,7 @@ class PipelineManager:
             if isinstance(payload, dict) and "type" in payload:
                 msg_type = payload.get("type")
                 if msg_type == "result":
-                    await self._emit_cli_summary(job, payload)
+                    await self._emit_cli_summary(job, payload, stage_override=stage_override)
                     return
                 # Прочие технические типы stream-json не захламляют лог
                 if msg_type in ("assistant", "user", "system", "tool_use", "tool_result"):
@@ -2453,16 +2463,19 @@ class PipelineManager:
         if humanized.text is None:
             return
 
-        await audit_logger.log_to_project(job, humanized.text, humanized.level)
+        await audit_logger.log_to_project(
+            job, humanized.text, humanized.level, stage_override=stage_override,
+        )
 
-    async def _emit_cli_summary(self, job: AuditJob, payload: dict):
+    async def _emit_cli_summary(self, job: AuditJob, payload: dict,
+                                stage_override: str | None = None):
         """
         Преобразовать {"type":"result",...} JSON от Claude CLI в:
           1) короткую строку в persisted-лог (для истории),
           2) структурированное cli_summary WS-сообщение для красивой карточки.
         """
         pid = job.project_id
-        stage_val = job.stage.value if job.stage else ""
+        stage_val = stage_override or (job.stage.value if job.stage else "")
 
         result_md = payload.get("result") or ""
         if not isinstance(result_md, str):
@@ -3997,7 +4010,9 @@ class PipelineManager:
         """
         job.stage = AuditStage.FINDINGS_REVIEW
         job.status = JobStatus.RUNNING
-        ctx = self._make_stage_context(job)
+        # stage_override: в параллельной группе job общий с norm_verify —
+        # без явной секции строки верификатора красились в norm_verify.
+        ctx = self._make_stage_context(job, stage_override="findings_review")
         # Верификатор fail-soft: не валит job (замечания не теряются). job.status
         # остаётся RUNNING — critic_v2 и promote выполняются как раньше.
         await _run_findings_verify_stage(ctx)
@@ -4053,7 +4068,8 @@ class PipelineManager:
             project_dir = Path(_project_path(pid, getattr(job, "version_id", None)))
 
         await self._log(job, f"Critic v2 triage: запуск (profile={profile}, "
-                              f"subdir={output_subdir}, llm=False)")
+                              f"subdir={output_subdir}, llm=False)",
+                        stage_override="findings_review")
         self._update_pipeline_log(
             pid, "critic_v2_triage", "running",
             detail={"profile": profile, "output_subdir": output_subdir},
@@ -4069,7 +4085,8 @@ class PipelineManager:
                 project_id=pid,
             )
         except Exception as exc:  # noqa: BLE001 — fail-open
-            await self._log(job, f"Critic v2 triage упал: {exc}", "warn")
+            await self._log(job, f"Critic v2 triage упал: {exc}", "warn",
+                            stage_override="findings_review")
             self._update_pipeline_log(
                 pid, "critic_v2_triage", "error",
                 error=str(exc),
@@ -4082,7 +4099,8 @@ class PipelineManager:
             return
 
         if not result.success:
-            await self._log(job, f"Critic v2 triage: {result.error}", "warn")
+            await self._log(job, f"Critic v2 triage: {result.error}", "warn",
+                            stage_override="findings_review")
             self._update_pipeline_log(
                 pid, "critic_v2_triage", "error",
                 error=result.error or "unknown",
@@ -4097,6 +4115,7 @@ class PipelineManager:
             job,
             f"Critic v2 triage готов: {result.triage_total}/{result.findings_total} "
             f"замечаний обработано, артефакты в {result.artifacts_dir}",
+            stage_override="findings_review",
         )
         self._update_pipeline_log(
             pid, "critic_v2_triage", "done",
@@ -4150,7 +4169,8 @@ class PipelineManager:
             try:
                 await self._run_findings_verify(job, project_info)
             except Exception as e:
-                await self._log(job, f"Верификатор (оркестратор) ошибка: {e}", "error")
+                await self._log(job, f"Верификатор (оркестратор) ошибка: {e}", "error",
+                                stage_override="findings_review")
                 review_error = True
             finally:
                 corrector_done.set()
@@ -4168,12 +4188,14 @@ class PipelineManager:
                     "missing_norms_queue.md",
                 ])
                 print(f"[{pid}] ═══ Верификация норм (параллельно) ═══")
-                await self._log(job, "═══ Верификация нормативных ссылок (параллельно с Critic) ═══")
+                await self._log(job, "═══ Верификация нормативных ссылок (параллельно с Critic) ═══",
+                                stage_override="norm_verify")
                 await self._run_norm_verification(
                     job, standalone=False, wait_before_fix=corrector_done,
                 )
             except Exception as e:
-                await self._log(job, f"Norm verify ошибка: {e}", "error")
+                await self._log(job, f"Norm verify ошибка: {e}", "error",
+                                stage_override="norm_verify")
                 self._update_pipeline_log(pid, "norm_verify", "error", error=str(e))
 
         async def _task_optimization():
@@ -4201,7 +4223,8 @@ class PipelineManager:
                     started_at=datetime.now().isoformat(),
                 )
                 print(f"[{pid}] ═══ Оптимизация (параллельно) ═══")
-                await self._log(job, "═══ Оптимизация (параллельно с Critic) ═══")
+                await self._log(job, "═══ Оптимизация (параллельно с Critic) ═══",
+                                stage_override="optimization")
 
                 await self._run_optimization(opt_job, standalone=False)
 
@@ -4211,11 +4234,13 @@ class PipelineManager:
                         f"Оптимизация: {opt_job.status.value}"
                         + (f" — {opt_job.error_message}" if opt_job.error_message else ""),
                         "warn",
+                        stage_override="optimization",
                     )
                     return
 
                 # Opt_critic ЖДЁТ corrector (нужны финальные findings для проверки конфликтов)
-                await self._log(job, "Оптимизация готова, ожидание Corrector для opt_critic...")
+                await self._log(job, "Оптимизация готова, ожидание Corrector для opt_critic...",
+                                stage_override="optimization")
                 await corrector_done.wait()
 
                 if job.status == JobStatus.CANCELLED:
@@ -4229,9 +4254,11 @@ class PipelineManager:
                         job,
                         f"Optimization review: {opt_job.error_message or 'ошибка'}",
                         "warn",
+                        stage_override="optimization",
                     )
             except Exception as e:
-                await self._log(job, f"Optimization ошибка: {e}", "error")
+                await self._log(job, f"Optimization ошибка: {e}", "error",
+                                stage_override="optimization")
                 self._update_pipeline_log(pid, "optimization", "error", error=str(e))
 
         # Запускаем параллельные задачи. Список (имя, корутина) строим динамически —
@@ -4255,6 +4282,7 @@ class PipelineManager:
             + (" + Нормы" if include_norms else "")
             + (" + Оптимизация" if include_optimization else "")
             + " ═══",
+            stage_override="findings_review",
         )
 
         print(f"[{pid}] Parallel tasks created: {len(tasks)} ({', '.join(_task_names)})")
@@ -4264,7 +4292,8 @@ class PipelineManager:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 task_name = _task_names[i] if i < len(_task_names) else f"task_{i}"
-                await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error")
+                await self._log(job, f"Параллельная задача {task_name} упала: {result}", "error",
+                                stage_override="findings_review")
                 print(f"[{pid}] Parallel task {task_name} exception: {result}")
 
         # Баг A4 аудита пайплайна: review_error выставлялся, но НИГДЕ не
@@ -4328,7 +4357,9 @@ class PipelineManager:
             job.stage = AuditStage.NORM_VERIFY
             await self._start_heartbeat(job)
 
-            ctx = self._make_stage_context(job)
+            # stage_override: при standalone=False job общий с верификатором —
+            # без явной секции строки норм могли краситься в findings_review.
+            ctx = self._make_stage_context(job, stage_override="norm_verify")
             result = await _run_norm_verification_stage(
                 ctx,
                 wait_before_fix=wait_before_fix,
@@ -4344,7 +4375,8 @@ class PipelineManager:
                 if standalone:
                     job.status = JobStatus.FAILED
                     job.error_message = result.error
-                await self._log(job, f"Верификация норм: {result.error}", "error")
+                await self._log(job, f"Верификация норм: {result.error}", "error",
+                                stage_override="norm_verify")
                 return
 
             # ГОНКА (баг C1 аудита пайплайна): при standalone=False нормы
@@ -4373,7 +4405,8 @@ class PipelineManager:
             if standalone:
                 job.status = JobStatus.FAILED
                 job.error_message = str(e)
-            await self._log(job, f"Исключение: {e}", "error")
+            await self._log(job, f"Исключение: {e}", "error",
+                            stage_override="norm_verify")
             self._update_pipeline_log(pid, "norm_verify", "error", error=str(e))
         finally:
             job.completed_at = datetime.now().isoformat()
@@ -4391,6 +4424,7 @@ class PipelineManager:
             job,
             "norms_db.json: пропуск обновления — authoritative источник Norms-main",
             "info",
+            stage_override="norm_verify",
         )
 
     @staticmethod

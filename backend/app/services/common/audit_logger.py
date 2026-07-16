@@ -479,15 +479,25 @@ def persist_log(project_id: str, message: str, level: str, stage: str,
         pass  # Не ломаем основной процесс
 
 
-async def log_to_project(job: AuditJob, message: str, level: str = "info"):
-    """Записать лог в консоль, файл и WebSocket."""
-    tag = f"[{job.project_id}:{job.stage.value}]"
+async def log_to_project(job: AuditJob, message: str, level: str = "info",
+                         stage_override: str | None = None):
+    """Записать лог в консоль, файл и WebSocket.
+
+    stage_override — явная секция лога вместо job.stage. Нужен параллельной
+    группе (верификатор ∥ нормы ∥ оптимизация): job там ОБЩИЙ, и мутация
+    job.stage одной задачей перекрашивала строки другой (строки верификатора
+    помечались norm_verify → попадали в чужую секцию, а retry «Проверки норм»
+    удалял их вместе со своей секцией). Явный stage делает атрибуцию
+    независимой от этой гонки.
+    """
+    stage = stage_override or job.stage.value
+    tag = f"[{job.project_id}:{stage}]"
     if level in ("error", "warn"):
         print(f"{tag} [{level.upper()}] {message}")
     # Freshness секции обеспечиваем ДО записи строки, причём WS-событие сброса
     # уходит прямым await РАНЬШЕ кадра с самой строкой — иначе отложенный
     # broadcast мог обогнать и стереть на фронте первую строку нового прогона.
-    targets = _ensure_log_section_fresh(job.project_id, job.stage.value)
+    targets = _ensure_log_section_fresh(job.project_id, stage)
     if targets:
         try:
             await ws_manager.broadcast_to_project(
@@ -496,10 +506,10 @@ async def log_to_project(job: AuditJob, message: str, level: str = "info"):
             )
         except Exception:
             pass
-    persist_log(job.project_id, message, level, job.stage.value)
+    persist_log(job.project_id, message, level, stage)
     await ws_manager.broadcast_to_project(
         job.project_id,
-        WSMessage.log(job.project_id, message, level, job.stage.value),
+        WSMessage.log(job.project_id, message, level, stage),
     )
 
 

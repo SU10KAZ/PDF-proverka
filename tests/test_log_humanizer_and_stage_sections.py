@@ -290,6 +290,32 @@ def test_log_to_project_orders_reset_before_line(project_log_dir, ws_broadcasts)
     assert log_msg.data["stage"] == "findings_merge"
 
 
+def test_stage_override_wins_over_racing_job_stage(project_log_dir, ws_broadcasts):
+    """Параллельная группа: norm_verify мутирует ОБЩИЙ job.stage, но строки
+    верификатора с явным stage_override остаются в своей секции — и freshness
+    чистит именно её, а не чужую."""
+    log_path = _seed_log(project_log_dir, [
+        {"timestamp": "t1", "level": "info", "stage": "findings_review", "message": "старый вердикт"},
+        {"timestamp": "t2", "level": "info", "stage": "norm_verify", "message": "старые нормы"},
+    ])
+    audit_logger.begin_log_run("P1")
+    job = AuditJob(job_id="j1", project_id="P1", stage=AuditStage.FINDINGS_REVIEW)
+    # Гонка: параллельная задача норм переставила stage на общем job
+    job.stage = AuditStage.NORM_VERIFY
+    asyncio.run(audit_logger.log_to_project(
+        job, "структурные проверки: ок", stage_override="findings_review",
+    ))
+
+    assert _stages_and_messages(log_path) == [
+        ("norm_verify", "старые нормы"),          # чужая секция не тронута
+        ("findings_review", "структурные проверки: ок"),
+    ]
+    log_msg = [m for _, m in ws_broadcasts if m.type == "log"][0]
+    assert log_msg.data["stage"] == "findings_review"
+    reset = [m for _, m in ws_broadcasts if m.type == "log_stage_reset"][0]
+    assert reset.data["stages"] == ["findings_review"]
+
+
 def test_update_pipeline_log_running_does_not_touch_audit_log(project_log_dir, ws_broadcasts):
     """running больше НЕ чистит секцию (старый хук удалён): заголовки, уже
     записанные оркестратором, не теряются."""
