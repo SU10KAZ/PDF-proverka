@@ -226,13 +226,23 @@ def update_pipeline_log(
 
     # WS-broadcast для реактивного обновления UI
     try:
-        from backend.app.services.common.project_service import _get_pipeline_status
+        from backend.app.services.common.project_service import (
+            _build_pipeline_summary,
+            _get_pipeline_status,
+        )
         pipeline = _get_pipeline_status(output_dir)
-        asyncio.ensure_future(
-            ws_manager.broadcast_to_project(
-                project_id,
-                WSMessage.status_change(project_id, pipeline.model_dump()),
-            )
+        # pipeline_summary — детальный список «Статус конвейера»: без него
+        # фронт обновлял только плитки, а список замирал до конца аудита.
+        try:
+            pipeline_summary = _build_pipeline_summary(output_dir)
+        except Exception:
+            pipeline_summary = None
+        ws_manager.schedule_broadcast_to_project(
+            project_id,
+            WSMessage.status_change(
+                project_id, pipeline.model_dump(),
+                pipeline_summary=pipeline_summary,
+            ),
         )
     except Exception:
         pass  # WS broadcast не должен ломать основной процесс

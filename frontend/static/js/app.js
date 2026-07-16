@@ -1608,6 +1608,9 @@ const app = createApp({
         const elapsedTick = ref(0); // реактивный тик для обновления таймера
         let pollTimer = null;
         let tickTimer = null;
+        // Последний увиденный poll'ом этап по проекту: {pid: stage|null}.
+        // По смене этапа pollLiveStatus тихо перезагружает карточку проекта.
+        const _lastPolledStage = {};
 
         // ─── Heartbeat ───
         const heartbeatData = ref({});       // {projectId: {stage, elapsed_sec, process_alive, eta_sec, ...}}
@@ -2237,6 +2240,14 @@ const app = createApp({
                             currentProject.value.completed_batches = data.batches[pid].completed;
                             currentProject.value.total_batches = data.batches[pid].total;
                         }
+                        // Смена этапа (или завершение аудита) → тихо перезагрузить
+                        // карточку. Страховка на случай потерянных WS-сообщений:
+                        // без неё «Статус конвейера» замирает до конца аудита.
+                        const liveStage = data.running[pid] ? data.running[pid].stage : null;
+                        if (pid in _lastPolledStage && _lastPolledStage[pid] !== liveStage) {
+                            refreshProjectCardSilently(pid);
+                        }
+                        _lastPolledStage[pid] = liveStage;
                     }
                 }
             } catch (e) {
@@ -6763,7 +6774,9 @@ const app = createApp({
             const cacheKey = activeVersionId.value
                 ? `${id}::${activeVersionId.value}`
                 : id;
-            if (!forceRefresh) {
+            // Для запущенного проекта 60-секундный кэш не используем: пока идёт
+            // конвейер, снапшот успевает отстать на этап ещё до открытия страницы.
+            if (!forceRefresh && !isProjectRunning(id)) {
                 const cached = _cacheGet('project', cacheKey);
                 if (cached) { currentProject.value = cached; projectLoading.value = false; return; }
             }
@@ -6816,6 +6829,33 @@ const app = createApp({
                 // Снимаем индикатор только для АКТУАЛЬНОЙ загрузки, чтобы не
                 // погасить спиннер более свежего перехода.
                 if (_mySeq === _projectLoadSeq) projectLoading.value = false;
+            }
+        }
+
+        // Тихая перезагрузка карточки текущего проекта: без спиннера
+        // «Загрузка проекта…» и без сброса currentProject на время запроса.
+        // Используется live-обновлениями (смена этапа в poll, WS-reconnect),
+        // где мигание всей страницы недопустимо.
+        let _silentRefreshInFlight = false;
+        async function refreshProjectCardSilently(pid) {
+            if (_silentRefreshInFlight) return;
+            _silentRefreshInFlight = true;
+            try {
+                const project = await api(`/projects/${encodeURIComponent(pid)}`);
+                // Пока ждали ответ, пользователь мог уйти с карточки/проекта.
+                if (currentView.value === 'project'
+                    && currentProject.value
+                    && currentProject.value.project_id === pid) {
+                    currentProject.value = project;
+                    const cacheKey = activeVersionId.value
+                        ? `${pid}::${activeVersionId.value}`
+                        : pid;
+                    _cacheSet('project', cacheKey, project);
+                }
+            } catch (e) {
+                // Фоновое обновление: ошибку не показываем, следующий тик повторит
+            } finally {
+                _silentRefreshInFlight = false;
             }
         }
 
@@ -9876,19 +9916,32 @@ const app = createApp({
             // Переключаемся в project-режим: закрываем global, открываем project
             wsMode = 'project';
             closeGlobalWS();
+            // Счётчик переподключений должен пережить пересоздание сокета
+            // (closeProjectWS его сбрасывает): по нему onopen понимает, что это
+            // reconnect и нужен ресинк, а onclose наращивает backoff.
+            const prevReconnects = (wsCurrentProjectId === projectId) ? wsProjectReconnects : 0;
             closeProjectWS();
             wsCurrentProjectId = projectId;
-            wsProjectReconnects = 0;
+            wsProjectReconnects = prevReconnects;
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
             wsProject = new WebSocket(`${proto}//${location.host}/ws/audit/${encodeURIComponent(projectId)}`);
             wsProject.onopen = () => {
                 wsConnected.value = true;
+                const wasReconnect = wsProjectReconnects > 0;
                 wsProjectReconnects = 0;
+                // После обрыва пропущенные WS-события никто не дошлёт —
+                // ресинхронизируемся явно: live-статус + карточка проекта.
+                if (wasReconnect) {
+                    pollLiveStatus();
+                    refreshProjectCardSilently(projectId);
+                }
             };
             wsProject.onclose = () => {
                 wsConnected.value = false;
-                // Переподключение только если мы всё ещё в project-режиме для этого проекта
-                if (wsMode === 'project' && wsCurrentProjectId === projectId && wsProjectReconnects < 5) {
+                // Переподключаемся, пока мы в project-режиме для этого проекта.
+                // Потолка попыток нет: раньше после 5 неудач (сон ноутбука,
+                // рестарт туннеля) live-обновления молча умирали до F5.
+                if (wsMode === 'project' && wsCurrentProjectId === projectId) {
                     wsProjectReconnects++;
                     const delay = Math.min(2000 * wsProjectReconnects, 10000);
                     console.log(`[WS] Project WS reconnecting in ${delay}ms (attempt ${wsProjectReconnects})`);
@@ -10043,6 +10096,14 @@ const app = createApp({
                     }
                     const proj = projects.value.find(p => p.project_id === pid);
                     if (proj) proj.pipeline = pipeline;
+                }
+                // Детальный список «Статус конвейера» приходит тем же сообщением.
+                // Без этого список обновлялся только при полной перезагрузке
+                // карточки и отставал от баннера на целый этап.
+                const summary = msg.data.pipeline_summary;
+                if (Array.isArray(summary)
+                    && currentProject.value && currentProject.value.project_id === pid) {
+                    currentProject.value.pipeline_summary = summary;
                 }
             } else if (msg.type === 'error') {
                 pushToProjectLog(pid, {
