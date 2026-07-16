@@ -16,6 +16,10 @@ from backend.app.pipeline.stages.prepare.prompt_builder import (
     _get_md_file_path,
     _version_output_dir,
 )
+from backend.app.services.common.results_md import (
+    is_results_md_name,
+    is_results_md_text,
+)
 
 
 @dataclass(frozen=True)
@@ -236,8 +240,33 @@ def _keyword_context(
     return "\n\n".join(parts)
 
 
-def _json_user(project_info: dict[str, Any], project_id: str, title: str, context: str) -> str:
+def _md_is_results_format(md_path: Path) -> bool:
+    """Новый ли это формат портала (*_results.md)?
+
+    Детект по имени файла и по тексту через единый парсер results_md;
+    старый Chandra-формат («## СТРАНИЦА N») не матчится никогда.
+    """
+    if is_results_md_name(md_path.name):
+        return True
+    try:
+        return is_results_md_text(md_path.read_text(encoding="utf-8", errors="replace"))
+    except OSError:
+        return False
+
+
+def _json_user(
+    project_info: dict[str, Any],
+    project_id: str,
+    title: str,
+    context: str,
+    *,
+    results_md: bool = False,
+) -> str:
     existing = _read_existing_findings(project_id)
+    # Заголовок страницы в MD-контексте: новый формат портала — «## Page N»
+    # (номер страницы PDF), старый Chandra — «## СТРАНИЦА N». Для старого
+    # формата подстановка воспроизводит прежний текст промпта байт-в-байт.
+    page_header = "## Page N" if results_md else "## СТРАНИЦА N"
     return f"""
 Проект: {_brief_project_label(project_info, project_id)}
 
@@ -256,7 +285,7 @@ def _json_user(project_info: dict[str, Any], project_id: str, title: str, contex
       "category": "documentation|normative_refs|fire_safety|coordination|dimensions|other",
       "problem": "краткая суть",
       "description": "доказательство с конкретными числами/строками MD",
-      "page": "номер страницы PDF (число) по ближайшему заголовку «## СТРАНИЦА N» выше цитируемых строк, иначе null",
+      "page": "номер страницы PDF (число) по ближайшему заголовку «{page_header}» выше цитируемых строк, иначе null",
       "norm": "",
       "norm_quote": null,
       "solution": "что исправить",
@@ -270,7 +299,13 @@ def _json_user(project_info: dict[str, Any], project_id: str, title: str, contex
 """.strip()
 
 
-def _ar_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -> list[dict[str, str]]:
+def _ar_messages(
+    project_info: dict[str, Any],
+    project_id: str,
+    md_path: Path,
+    *,
+    results_md: bool = False,
+) -> list[dict[str, str]]:
     context = _keyword_context(md_path, TARGETED_KEYWORDS)
     system = """
 Ты выполняешь дополнительный targeted audit для раздела АР: кладочные планы, ведомости материалов,
@@ -291,10 +326,16 @@ def _ar_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -
 
 Верни только новые/недублирующие или уточняющие замечания. Строго один JSON object без Markdown.
 """.strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "AR targeted", context)}]
+    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "AR targeted", context, results_md=results_md)}]
 
 
-def _eom_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -> list[dict[str, str]]:
+def _eom_messages(
+    project_info: dict[str, Any],
+    project_id: str,
+    md_path: Path,
+    *,
+    results_md: bool = False,
+) -> list[dict[str, str]]:
     context = _keyword_context(md_path, EOM_KEYWORDS)
     system = """
 Ты выполняешь targeted audit для ЭОМ/ЭМ: защитные аппараты, токи КЗ, расчетные токи,
@@ -317,10 +358,16 @@ def _eom_messages(project_info: dict[str, Any], project_id: str, md_path: Path) 
 
 Верни только новые/недублирующие или уточняющие замечания. Строго один JSON object без Markdown.
 """.strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "EOM/EM targeted", context)}]
+    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "EOM/EM targeted", context, results_md=results_md)}]
 
 
-def _ss_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -> list[dict[str, str]]:
+def _ss_messages(
+    project_info: dict[str, Any],
+    project_id: str,
+    md_path: Path,
+    *,
+    results_md: bool = False,
+) -> list[dict[str, str]]:
     context = _keyword_context(md_path, SS_KEYWORDS)
     system = """
 Ты выполняешь targeted audit для слаботочных систем: СКУД/СОВ/ОСПД/домофония/СКС.
@@ -346,10 +393,16 @@ RS-485, монтажный размер калитки и разблокиров
 
 Верни только новые/недублирующие или уточняющие замечания. Строго один JSON object без Markdown.
 """.strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "SS targeted", context)}]
+    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "SS targeted", context, results_md=results_md)}]
 
 
-def _km_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -> list[dict[str, str]]:
+def _km_messages(
+    project_info: dict[str, Any],
+    project_id: str,
+    md_path: Path,
+    *,
+    results_md: bool = False,
+) -> list[dict[str, str]]:
     context = _keyword_context(md_path, KM_KEYWORDS)
     system = """
 Ты выполняешь targeted audit для КМ: нормы стальных конструкций, болты/гайки,
@@ -373,10 +426,16 @@ def _km_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -
 
 Верни только новые/недублирующие или уточняющие замечания. Строго один JSON object без Markdown.
 """.strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "KM targeted", context)}]
+    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "KM targeted", context, results_md=results_md)}]
 
 
-def _docnorm_messages(project_info: dict[str, Any], project_id: str, md_path: Path) -> list[dict[str, str]]:
+def _docnorm_messages(
+    project_info: dict[str, Any],
+    project_id: str,
+    md_path: Path,
+    *,
+    results_md: bool = False,
+) -> list[dict[str, str]]:
     context = _keyword_context(md_path, DOCNORM_KEYWORDS, window=5, max_chars=60000)
     system = """
 Ты выполняешь дополнительный targeted audit для документной части РД:
@@ -394,13 +453,17 @@ def _docnorm_messages(project_info: dict[str, Any], project_id: str, md_path: Pa
 
 Верни только новые/недублирующие замечания. Строго один JSON object без Markdown.
 """.strip()
-    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "Doc/norm targeted", context)}]
+    return [{"role": "system", "content": system}, {"role": "user", "content": _json_user(project_info, project_id, "Doc/norm targeted", context, results_md=results_md)}]
 
 
 def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str) -> list[CodexTargetedPass]:
     md_path = Path(_get_md_file_path(project_info, project_id))
     if not md_path.is_file():
         return []
+
+    # Формат MD определяем один раз на все пассы: от него зависит подсказка
+    # заголовка страницы («## Page N» vs «## СТРАНИЦА N») в JSON-инструкции.
+    results_md = _md_is_results_format(md_path)
 
     section = str(project_info.get("section") or project_info.get("discipline") or "").upper()
     passes: list[CodexTargetedPass] = []
@@ -417,7 +480,7 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
             CodexTargetedPass(
                 stage=stage,
                 output_filename=f"03_findings_targeted_{stage}.json",
-                messages=builder(project_info, project_id, md_path),
+                messages=builder(project_info, project_id, md_path, results_md=results_md),
             )
         )
 
@@ -425,7 +488,7 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
         CodexTargetedPass(
             stage="alia_docnorm_audit",
             output_filename="03_findings_targeted_alia_docnorm_audit.json",
-            messages=_docnorm_messages(project_info, project_id, md_path),
+            messages=_docnorm_messages(project_info, project_id, md_path, results_md=results_md),
         )
     )
     return passes

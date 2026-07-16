@@ -16,6 +16,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
+from backend.app.services.common.results_md import is_results_md_text, parse_results_md
+
 
 SEVERITIES = {
     "КРИТИЧЕСКОЕ",
@@ -78,7 +80,36 @@ def _norm_text(value: Any) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def _split_pages_results_md(md_text: str) -> list[MdPage]:
+    """Страницы нового формата портала (`*_results.md`) в структуре MdPage.
+
+    Номер страницы = физическая страница PDF (1-based, из ``## Page N``).
+    Структура выхода совпадает со старым путём: ``MdPage.text`` — плоский
+    текст страницы (тела блоков), ``MdBlock.block_type`` — верхний регистр
+    (``TEXT``/``IMAGE``), как в старом ``### BLOCK [TEXT]: …``.
+    """
+    doc = parse_results_md(md_text)
+    pages: list[MdPage] = []
+    for page in doc.pages:
+        blocks = tuple(
+            MdBlock(
+                block_id=block.block_id,
+                block_type=block.block_type.upper(),
+                text=block.body,
+            )
+            for block in page.blocks
+        )
+        pages.append(MdPage(page=page.number, text=page.text(), blocks=blocks))
+    return pages
+
+
 def _split_pages(md_text: str) -> list[MdPage]:
+    # Новый формат портала vibe (*_results.md) разбирается единым парсером
+    # results_md; старый Chandra-формат («## СТРАНИЦА N») — прежним кодом.
+    if is_results_md_text(md_text):
+        results_pages = _split_pages_results_md(md_text)
+        if results_pages:
+            return results_pages
     headers = list(re.finditer(r"(?m)^##\s+СТРАНИЦА\s+(\d+)\s*$", md_text))
     if not headers:
         return [MdPage(page=0, text=md_text, blocks=_split_blocks(md_text))]

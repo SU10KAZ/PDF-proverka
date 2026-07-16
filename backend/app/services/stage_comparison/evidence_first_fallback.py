@@ -44,6 +44,8 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from ..common import results_md as results_md_mod
+
 logger = logging.getLogger(__name__)
 
 STRATEGY = "evidence_first_s2_fallback"
@@ -261,9 +263,92 @@ def _extract_stamp(md: str) -> str:
     return ""
 
 
+# ─── Новый формат портала (*_results.md) ────────────────────────────────────
+# Ветка нового формата (2026-07): страницы `## Page N`, per-block мета-цитаты
+# `> **Stamp:** Code: … | Sheet: … | Name: …` вместо `**Лист:**` /
+# `**Наименование листа:**`, документный `**Stamp:**` в шапке вместо
+# `**Штамп:**`. Структуру даёт единый парсер results_md; здесь только сборка
+# PageRec. Старый Chandra-путь ниже не менялся.
+
+# Документный штамп нового формата — строка `**Stamp:** …` БЕЗ цитаты `>`
+# (per-block строки начинаются с `>` и сюда не матчатся). Ищем только в шапке
+# до первой страницы — как parse_results_md.
+_RESULTS_DOC_STAMP_RE = re.compile(r"^\*\*Stamp:\*\*\s*(?P<stamp>.+?)\s*$", re.MULTILINE)
+# Служебные строки нового формата: заголовки блоков и мета-цитаты.
+_RESULTS_META_LINE_RE = re.compile(
+    r"^\s*(?:###\s+BLOCK\s+#\d+\s+\[[A-Z]+\]:|>\s*\*\*(?:Created|Crop|Stamp):\*\*)")
+
+
+def strip_results_md_meta(text: str) -> str:
+    """Убрать из среза НОВОГО формата служебные строки — остаётся контент листа.
+
+    Вырезаются заголовки блоков (`### BLOCK #N [TYPE]: blk_…`) и мета-цитаты
+    (`> **Created/Crop/Stamp:** …`): без этого штамп-имя листа из `Name: …`
+    подхватывалось бы как «заголовок из содержимого» (derived title), а
+    классификация мерила бы длину бойлерплейта, а не контента. Для старого
+    формата НЕ применяется (у него свои маркеры). Никогда не падает.
+    """
+    return "\n".join(
+        line for line in (text or "").splitlines()
+        if not _RESULTS_META_LINE_RE.match(line))
+
+
+def _build_fact_index_results_md(side: str, md: str) -> FactIndex:
+    """Fact index для нового формата портала (*_results.md).
+
+    Структуру (страницы/блоки/штампы) даёт единый парсер results_md; body
+    страницы — СЫРОЙ срез MD между заголовками `## Page N` (сохраняет
+    enrichment-вставки для чанкинга и evidence-verification). Номер/имя листа —
+    из per-block `> **Stamp:** … | Sheet: … | Name: …`; ключ листа = страница
+    PDF, sheet — лишь подпись (бывает пустой на титулах).
+    """
+    doc = results_md_mod.parse_results_md(md)
+    first_page = results_md_mod.PAGE_HEADER_RE.search(md)
+    head_end = first_page.start() if first_page else len(md)
+    sm = _RESULTS_DOC_STAMP_RE.search(md, 0, head_end)
+    stamp = sm.group("stamp").strip()[:600] if sm else ""
+
+    pages: list[PageRec] = []
+    lines = md.splitlines()
+    for i, pg in enumerate(doc.pages):
+        # Сырой срез: от строки после `## Page N` до следующего заголовка.
+        start = pg.start_line                       # 1-based строка заголовка
+        end = doc.pages[i + 1].start_line - 1 if i + 1 < len(doc.pages) else len(lines)
+        body = "\n".join(lines[start:end])
+        sheet_no = (pg.sheet or "").strip()
+        sheet_name = (pg.sheet_name or "").strip()
+        # image-блоки страницы + block_id-маркеры enrichment-вставок (дедуп).
+        block_ids = list(dict.fromkeys(
+            [b.block_id for b in pg.blocks if b.is_image]
+            + _QWEN_BLOCK_ID_RE.findall(body)))
+        content = strip_results_md_meta(body)
+        sect = _classify_section(sheet_name, content, len(block_ids))
+        bpart = _norm_building_part(sheet_name) if sect in ("structural", "sections_details") else "общий"
+        pages.append(PageRec(
+            page=pg.number, sheet_no=sheet_no, sheet_name=sheet_name,
+            body=body, section_class=sect, building_part=bpart,
+            image_block_ids=block_ids,
+        ))
+    if not pages:
+        # Детект сработал по заголовкам блоков, но `## Page N` нет — единый
+        # псевдо-лист, как в старом пути.
+        pages.append(PageRec(
+            page=1, sheet_no="", sheet_name="", body=md,
+            section_class="other", building_part="общий",
+            image_block_ids=_QWEN_BLOCK_ID_RE.findall(md),
+        ))
+    return FactIndex(side=side, pages=pages, stamp=stamp, total_chars=len(md))
+
+
 def build_fact_index(side: str, md: str) -> FactIndex:
-    """Stage 1: распарсить enriched MD в детерминированный fact index."""
+    """Stage 1: распарсить enriched MD в детерминированный fact index.
+
+    Новый формат портала (*_results.md) уходит в отдельную ветку
+    (:func:`_build_fact_index_results_md`); старый Chandra-путь не менялся.
+    """
     md = md or ""
+    if results_md_mod.is_results_md_text(md):
+        return _build_fact_index_results_md(side, md)
     pages: list[PageRec] = []
     matches = list(_PAGE_HEADING_RE.finditer(md))
     if matches:
@@ -1080,6 +1165,7 @@ __all__ = [
     "FallbackConfig",
     "load_fallback_config",
     "build_fact_index",
+    "strip_results_md_meta",
     "build_scope_map",
     "deterministic_fact_diff",
     "scope_aware_section_split",

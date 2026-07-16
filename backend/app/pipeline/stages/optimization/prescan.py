@@ -14,6 +14,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from backend.app.services.common.results_md import is_results_md_text, parse_results_md
+
 
 _UNIT_THRESHOLDS = {
     "шт": 20.0,
@@ -172,7 +174,28 @@ def _truncate(value: Any, limit: int = 220) -> str:
     return text if len(text) <= limit else text[: limit - 3].rstrip() + "..."
 
 
+def _split_pages_results_md(md_text: str) -> list[_MdPage]:
+    """Страницы нового формата портала (`*_results.md`) в структуре _MdPage.
+
+    Номер страницы = физическая страница PDF (1-based, из ``## Page N``);
+    sheet — подпись из штампа блоков (может быть пустой: титулы, нераспознанные
+    штампы). ``text`` — плоский текст страницы (тела блоков), как и в старом
+    пути, где страница = сырой текст между заголовками ``## СТРАНИЦА``.
+    """
+    doc = parse_results_md(md_text)
+    return [
+        _MdPage(page=page.number, sheet=_clean_text(page.sheet or ""), text=page.text())
+        for page in doc.pages
+    ]
+
+
 def _split_pages(md_text: str) -> list[_MdPage]:
+    # Новый формат портала vibe (*_results.md) разбирается единым парсером
+    # results_md; старый Chandra-формат («## СТРАНИЦА N») — прежним кодом.
+    if is_results_md_text(md_text):
+        results_pages = _split_pages_results_md(md_text)
+        if results_pages:
+            return results_pages
     headers = list(re.finditer(r"(?m)^##\s+СТРАНИЦА\s+(\d+)\s*$", md_text))
     if not headers:
         return [_MdPage(page=0, sheet="", text=md_text)]

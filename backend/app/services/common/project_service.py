@@ -23,6 +23,7 @@ from backend.app.services.storage.stage_artifacts import (
 )
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import BLOCK_HEADER_RE
+from backend.app.services.common import results_md
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import (
     GEMMA_BLOCKS_DIRNAME,
     STAGE02_BLOCKS_DIRNAME,
@@ -3924,7 +3925,13 @@ def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[di
     Выделено из parse_md_document, чтобы тот же парсер можно было применить к MD
     из projects_v2 (read canary), гарантируя идентичный контракт. Возвращает None,
     если в тексте нет ни одного маркера `## СТРАНИЦА N`.
+
+    Новый формат портала (`*_results.md`, `## Page N`) распознаётся в начале и
+    уходит в _parse_results_md_pages; старый Chandra-путь ниже не меняется.
     """
+    if results_md.is_results_md_text(md_text):
+        return _parse_results_md_pages(md_text, project_id=project_id, md_file=md_file)
+
     page_splits = list(_PAGE_RE.finditer(md_text))
     if not page_splits:
         return None
@@ -3972,6 +3979,65 @@ def parse_md_text(md_text: str, *, project_id: str, md_file: str) -> Optional[di
             "page_num": page_num,
             "sheet_info": sheet_info,
             "sheet_label": sheet_label,
+            "text_blocks": text_blocks,
+            "image_blocks": image_blocks,
+            "blocks": blocks,
+        })
+
+    return {
+        "project_id": project_id,
+        "md_file": md_file,
+        "total_pages": len(pages),
+        "pages": pages,
+    }
+
+
+def _parse_results_md_pages(md_text: str, *, project_id: str, md_file: str) -> Optional[dict]:
+    """Новый формат портала (`*_results.md`) → контракт parse_md_text.
+
+    Ключ листа = страница PDF (`## Page N`); Sheet из штампа — лишь подпись
+    (может быть пуст/неуникален): он идёт в sheet_info, наименование листа —
+    в sheet_label. Блоки маппятся в тот же dict, что и старый путь:
+    type в верхнем регистре (TEXT/IMAGE), content = тело блока; у IMAGE —
+    image_type/axes из мета-строки и brief/description/entities из секций
+    (Summary/Description/Entities). Возвращает None, если страниц нет
+    (симметрично старому пути без `## СТРАНИЦА N`).
+    """
+    doc = results_md.parse_results_md(md_text)
+    if not doc.pages:
+        return None
+
+    pages = []
+    for p in doc.pages:
+        blocks = []
+        for b in p.blocks:
+            block = {
+                "block_id": b.block_id,
+                "type": (b.block_type or "").upper(),
+                "content": b.body,
+            }
+            if b.is_image:
+                meta = b.image_meta or {}
+                sections = b.image_sections or {}
+                for key, value in (
+                    ("image_type", meta.get("type")),
+                    ("axes", meta.get("axes")),
+                    ("brief", sections.get("summary")),
+                    ("description", sections.get("description")),
+                    ("entities", sections.get("entities")),
+                ):
+                    # как и в старом пути: ключ появляется только при наличии значения
+                    if value:
+                        block[key] = value
+            blocks.append(block)
+
+        text_blocks = sum(1 for b in blocks if b["type"] == "TEXT")
+        image_blocks = sum(1 for b in blocks if b["type"] == "IMAGE")
+
+        pages.append({
+            "page_num": p.number,
+            "sheet_info": p.sheet,
+            "sheet_label": p.sheet_name,
             "text_blocks": text_blocks,
             "image_blocks": image_blocks,
             "blocks": blocks,

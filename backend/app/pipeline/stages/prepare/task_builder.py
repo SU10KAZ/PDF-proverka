@@ -37,6 +37,11 @@ from backend.app.core.config import (
 from backend.app.services.common.cli_utils import load_template
 import backend.app.services.common.discipline_service as discipline_service
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.common.results_md import (
+    is_results_md_name,
+    is_results_md_text,
+    parse_results_md,
+)
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
 
 
@@ -654,6 +659,11 @@ def _extract_page_context_for_blocks(
     if not block_ids_set and not target_pages:
         return ""
 
+    # ── Новый формат портала (*_results.md) — ветка через единый парсер ──
+    # Старый Chandra-путь ниже («## СТРАНИЦА N») не меняется ни на символ.
+    if is_results_md_name(md_path.name) or is_results_md_text(content):
+        return _extract_page_context_results_md(content, block_ids_set, target_pages)
+
     # Два режима релевантности страниц:
     # 1) target_pages задан → фильтр по номерам страниц (основной путь)
     # 2) target_pages пуст → "ленивый" режим: страница релевантна,
@@ -833,10 +843,89 @@ def _extract_page_context_for_blocks(
     return "\n\n---\n\n".join(parts)
 
 
+def _extract_page_context_results_md(
+    content: str,
+    block_ids_set: set[str],
+    target_pages: set[int],
+) -> str:
+    """Контекст страниц для пакета блоков из НОВОГО формата портала (*_results.md).
+
+    Зеркало старого пути для нового формата: страница = `## Page N` (номер
+    страницы PDF), лист — подпись из штампов блоков (Sheet неуникален, ключ —
+    страница PDF). Секции рендерятся в прежнем скелете («## СТРАНИЦА N»,
+    «**Лист:** …», «### Текст на странице:», «### OCR-описания блоков:»),
+    чтобы вид контекста в промпте не зависел от формата исходного MD.
+    """
+    doc = parse_results_md(content)
+
+    # Релевантные страницы: явный фильтр по номерам (основной путь) либо
+    # «ленивый» режим — страницы, на которых есть IMAGE-блоки этого пакета.
+    if target_pages:
+        relevant = [p for p in doc.pages if p.number in target_pages]
+    else:
+        relevant = [
+            p for p in doc.pages
+            if any(b.is_image and b.block_id in block_ids_set for b in p.blocks)
+        ]
+
+    if not relevant:
+        if block_ids_set:
+            logger.warning(
+                "MD-контекст (results_md) пуст для %d блоков (block_ids: %s). "
+                "Возможно, block_id не совпадают с заголовками "
+                "'### BLOCK #N [IMAGE]: blk_…' нового формата",
+                len(block_ids_set),
+                ", ".join(list(block_ids_set)[:5]),
+            )
+        return ""
+
+    parts: list[str] = []
+    for page in relevant:
+        section_lines = [f"## СТРАНИЦА {page.number}"]
+        if page.sheet:
+            section_lines.append(f"**Лист:** {page.sheet}")
+        if page.sheet_name:
+            section_lines.append(f"**Наименование листа:** {page.sheet_name}")
+
+        # Заголовок блока восстанавливаем в виде нового формата — block_id
+        # остаётся видимым для привязки описания к блоку (как в старом пути).
+        texts = [
+            f"### BLOCK #{b.ordinal} [TEXT]: {b.block_id}\n{b.body}"
+            for b in page.blocks
+            if b.is_text and b.body.strip()
+        ]
+        images = [
+            f"### BLOCK #{b.ordinal} [IMAGE]: {b.block_id}\n{b.body}"
+            for b in page.blocks
+            if b.is_image and b.block_id in block_ids_set and b.body.strip()
+        ]
+
+        if texts:
+            section_lines.append("")
+            section_lines.append("### Текст на странице:")
+            for t in texts:
+                section_lines.append(t)
+                section_lines.append("")
+
+        if images:
+            section_lines.append("")
+            section_lines.append("### OCR-описания блоков:")
+            for img in images:
+                section_lines.append(img)
+                section_lines.append("")
+
+        parts.append("\n".join(section_lines))
+
+    return "\n\n---\n\n".join(parts)
+
+
 def _extract_page_to_sheet_map(md_file_path: str) -> dict[int, str]:
     """Извлечь маппинг PDF-страница → номер листа из MD-файла.
 
-    Парсит строки '**Лист:** N' внутри '## СТРАНИЦА M'.
+    Старый формат: строки '**Лист:** N' внутри '## СТРАНИЦА M'.
+    Новый формат портала (*_results.md): sheet_map парсера (ключ = страница
+    PDF из `## Page N`, значение — Sheet из штампов блоков; пустые Sheet
+    пропускаются, как и в старом пути).
     Возвращает {pdf_page: sheet_number_str}, например {5: "1 (из 15)", 6: "2"}.
     """
     md_path = Path(md_file_path)
@@ -847,6 +936,14 @@ def _extract_page_to_sheet_map(md_file_path: str) -> dict[int, str]:
         content = md_path.read_text(encoding="utf-8")
     except OSError:
         return {}
+
+    # ── Новый формат портала (*_results.md) — ветка через единый парсер ──
+    if is_results_md_name(md_path.name) or is_results_md_text(content):
+        return {
+            page: str(info["sheet"])
+            for page, info in parse_results_md(content).sheet_map().items()
+            if info.get("sheet")
+        }
 
     mapping: dict[int, str] = {}
     current_page = 0
