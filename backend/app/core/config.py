@@ -281,7 +281,11 @@ _BACKEND_DATA_DIR = APP_DATA_DIR
 BATCH_QUEUE_FILE             = APP_DATA_DIR / "batch_queue.json"
 PREPARE_QUEUE_FILE           = APP_DATA_DIR / "prepare_queue.json"
 MISSING_NORMS_VAULT_FILE     = APP_DATA_DIR / "missing_norms_vault.json"
-OBJECTS_FILE_PATH            = APP_DATA_DIR / "objects.json"
+OBJECTS_FILE_PATH            = (
+    Path(os.environ["AUDIT_OBJECTS_FILE"]).resolve()
+    if os.environ.get("AUDIT_OBJECTS_FILE")
+    else APP_DATA_DIR / "objects.json"
+)
 USERS_FILE_PATH              = APP_DATA_DIR / "users.json"
 PROJECT_GROUPS_FILE          = APP_DATA_DIR / "project_groups.json"
 USAGE_DATA_FILE              = APP_DATA_DIR / "usage_data.json"

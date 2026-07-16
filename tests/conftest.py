@@ -9,10 +9,22 @@
 `.env`.
 """
 import os
+import tempfile
+from pathlib import Path
 
 import pytest
 
 os.environ["PORTAL_AUTH_ENABLED"] = "false"
+
+# Keep both storage generations and the object registry away from live data for
+# the entire pytest process.  Per-test monkeypatches are insufficient here:
+# TestClient can leave a pipeline task alive after a fixture is torn down, at
+# which point that task would see the restored production paths and recreate
+# ``projects/``.  A process-lifetime sandbox remains valid until Python exits.
+_STORAGE_SANDBOX = tempfile.TemporaryDirectory(prefix="pdf-proverka-pytest-storage-")
+_STORAGE_SANDBOX_ROOT = Path(_STORAGE_SANDBOX.name)
+os.environ["AUDIT_PROJECTS_DIR"] = str(_STORAGE_SANDBOX_ROOT / "projects")
+os.environ["AUDIT_OBJECTS_FILE"] = str(_STORAGE_SANDBOX_ROOT / "objects.json")
 
 # Storage cutover flags are production-controlled and may be v2-primary in the
 # developer shell. Tests must start from a deterministic legacy baseline and

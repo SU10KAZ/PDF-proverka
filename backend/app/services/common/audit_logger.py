@@ -24,6 +24,39 @@ from backend.app.ws.manager import ws_manager
 # процессе: pre-crop/skip/resume-хвост) → duration_sec=0, а не wall-clock.
 _STAGE_RUN_STARTS: dict[tuple, float] = {}
 
+# Service-level jobs are not documents and therefore cannot be resolved through
+# ``projects_v2/objects``.  Their persistent logs live in the system namespace,
+# never in the retired legacy tree.
+_V2_SYSTEM_LOG_DIRS = {
+    "__BATCH__": "batch",
+}
+
+
+def _v2_primary_output_dir(project_id: str) -> Path | None:
+    """Return a v2-only log directory when v2 is the primary write store."""
+    try:
+        from backend.app.services.storage.storage_write_facade import (
+            get_write_facade,
+            v2_is_primary,
+        )
+    except Exception:
+        return None
+
+    if not v2_is_primary():
+        return None
+
+    system_dir = _V2_SYSTEM_LOG_DIRS.get(project_id)
+    if system_dir is not None:
+        v2_root = get_write_facade().v2_root()
+        if v2_root is None:
+            raise FileNotFoundError("Корень projects_v2 не настроен")
+        return Path(v2_root) / "_system" / "runtime_logs" / "audit" / system_dir
+
+    # Strict by design: in v2-primary an unknown document must not fall through
+    # to resolve_project_dir(), whose compatibility contract permits returning a
+    # non-existent legacy path that writers would then create with mkdir().
+    return version_service.resolve_projects_v2_output_dir_strict(project_id)
+
 
 def _project_output_dir(project_id: str) -> Path:
     """Папка `_output` для текущей активной версии проекта.
@@ -31,6 +64,10 @@ def _project_output_dir(project_id: str) -> Path:
     Берёт `bind_version()` из ContextVar (выставляется на старте каждого job)
     или latest_version_id. Для legacy V1 == корневой `_output`.
     """
+    v2_dir = _v2_primary_output_dir(project_id)
+    if v2_dir is not None:
+        return v2_dir
+
     try:
         return version_service.resolve_version_output_dir(project_id)
     except (version_service.VersionNotFoundError, FileNotFoundError):

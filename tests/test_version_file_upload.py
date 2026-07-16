@@ -63,7 +63,15 @@ def projects_dir(tmp_path, monkeypatch):
 @pytest.fixture
 def client(projects_dir):
     from backend.app.main import app
-    return TestClient(app), projects_dir
+    # A context-managed client keeps the application event loop alive through
+    # fixture teardown, so the audit worker can be cancelled before the
+    # project-path monkeypatch is restored.
+    with TestClient(app) as test_client:
+        yield test_client, projects_dir
+        try:
+            test_client.delete("/api/audit/batch/cancel")
+        except Exception:
+            pass
 
 
 @pytest.fixture
