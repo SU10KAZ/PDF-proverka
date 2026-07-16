@@ -1420,11 +1420,12 @@
                         <p class="modal-subtitle">
                             Выберите <strong>одну родительскую папку</strong> (браузер позволяет
                             выбрать только одну за раз — выделить несколько папок, в т.ч. через Shift,
-                            нельзя). Внутри поддерживаются две раскладки:
-                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF)
-                            <em>либо</em> просто <strong>PDF-файлы рядом</strong> — тогда каждый PDF
-                            станет отдельным кандидатом-проектом. Загрузка последовательная,
-                            дубли блокируются.
+                            нельзя). Внутри поддерживаются раскладки:
+                            <strong>подпапки-проекты</strong> (по одной на проект, в каждой один PDF),
+                            просто <strong>PDF-файлы рядом</strong> — каждый PDF станет отдельным
+                            кандидатом-проектом, — <em>либо</em> <strong>ZIP-комплекты портала</strong>
+                            (каждый архив = проект, распакуется автоматически). Загрузка
+                            последовательная, дубли блокируются.
                         </p>
                         <div class="upload-form">
                             <div class="form-row">
@@ -1455,7 +1456,7 @@
                         <div v-if="uploadCandidates.length" class="upload-multi-wrap">
                             <table class="upload-multi-table">
                                 <thead><tr>
-                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr</th>
+                                    <th></th><th>Папка</th><th>PDF</th><th>md/res/ocr/blk</th>
                                     <th>Дисциплина</th><th>Название / режим</th><th>Статус</th>
                                 </tr></thead>
                                 <tbody>
@@ -1463,8 +1464,8 @@
                                         <td><input type="checkbox" v-model="c.checked"
                                                    :disabled="uploadLoading || !candUploadable(c)"></td>
                                         <td :title="c.folder">{{ c.folder }}</td>
-                                        <td>{{ c.pdfName || '— нет —' }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
-                                        <td class="cand-bundle">{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }}</td>
+                                        <td>{{ c.pdfName || (c.zipCount ? ('📦 ' + c.zips[0].name) : '— нет —') }}<template v-if="c.pdfCount>1"> ({{ c.pdfCount }} PDF!)</template></td>
+                                        <td class="cand-bundle"><template v-if="c.zipCount && !c.pdfCount">zip-комплект</template><template v-else>{{ c.hasMd?'md':'·' }} / {{ c.hasResult?'res':'·' }} / {{ c.hasOcr?'ocr':'·' }} / {{ c.hasBlocks?'blk':'·' }}</template></td>
                                         <td>
                                             <select class="form-input form-input--sm" v-model="c.discipline"
                                                     :disabled="uploadLoading" @change="recheckCandidate(c)">

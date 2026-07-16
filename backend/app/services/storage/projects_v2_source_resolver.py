@@ -20,6 +20,9 @@ _DOC_SUFFIX = "_document.md"
 # (upload/миграция), не эти паттерны чтения.
 _DOC_SUFFIXES = ("_document.md", "_results.md")
 _OCR_HTML_SUFFIXES = ("_ocr.html", "_results.html", "_results.htm")
+# _blocks.json — геометрия блоков нового комплекта портала (2026-07-16),
+# опциональный файл; нормализованная рабочая копия — 02_work/blocks.json.
+_BLOCKS_JSON_SUFFIX = "_blocks.json"
 _EXCLUDE_PREFIXES = ("audit_", "readme", "claude", "_combined")
 
 
@@ -27,6 +30,7 @@ class V2SourceFiles(NamedTuple):
     md_path: Optional[Path]
     pdf_path: Optional[Path]
     result_json_path: Optional[Path]
+    blocks_json_path: Optional[Path] = None
 
 
 class VersionSourceFiles(NamedTuple):
@@ -40,6 +44,8 @@ class VersionSourceFiles(NamedTuple):
     result_json_paths: tuple[Path, ...]
     ocr_html_paths: tuple[Path, ...]
     layout: str
+    blocks_json_path: Optional[Path] = None
+    blocks_json_paths: tuple[Path, ...] = ()
 
 
 def _norm(value: str | None) -> str:
@@ -143,6 +149,16 @@ def _resolve_result_json(version_dir: Path, document_code: str | None) -> Option
     return _select_candidate(candidates, document_code, suffix="_result.json")
 
 
+def _resolve_blocks_json(version_dir: Path, document_code: str | None) -> Optional[Path]:
+    work = version_dir / "02_work"
+    inp = version_dir / "01_input"
+    normalized = work / "blocks.json"
+    if normalized.is_file():
+        return normalized
+    candidates = _files(work, f"*{_BLOCKS_JSON_SUFFIX}") + _files(inp, f"*{_BLOCKS_JSON_SUFFIX}")
+    return _select_candidate(candidates, document_code, suffix=_BLOCKS_JSON_SUFFIX)
+
+
 def resolve_v2_source_files(version_dir: str | Path, document_code: str | None = None) -> V2SourceFiles:
     """Return MD/PDF/result JSON source files for a projects_v2 version.
 
@@ -155,6 +171,7 @@ def resolve_v2_source_files(version_dir: str | Path, document_code: str | None =
         md_path=_resolve_md(version_dir, document_code),
         pdf_path=_resolve_pdf(version_dir, document_code),
         result_json_path=_resolve_result_json(version_dir, document_code),
+        blocks_json_path=_resolve_blocks_json(version_dir, document_code),
     )
 
 
@@ -290,6 +307,11 @@ def resolve_version_source_files(
             *[p for s in _OCR_HTML_SUFFIXES for p in _files(work, f"*{s}")],
             *[p for s in _OCR_HTML_SUFFIXES for p in _files(inp, f"*{s}")],
         ])
+        blocks_json_paths = _unique([
+            work / "blocks.json",
+            *_files(work, f"*{_BLOCKS_JSON_SUFFIX}"),
+            *_files(inp, f"*{_BLOCKS_JSON_SUFFIX}"),
+        ])
         return VersionSourceFiles(
             md_path=v2.md_path or (md_paths[0] if len(md_paths) == 1 else None),
             pdf_path=v2.pdf_path or (pdf_paths[0] if len(pdf_paths) == 1 else None),
@@ -301,6 +323,8 @@ def resolve_version_source_files(
             result_json_paths=result_json_paths,
             ocr_html_paths=ocr_html_paths,
             layout="projects_v2",
+            blocks_json_path=v2.blocks_json_path or (blocks_json_paths[0] if blocks_json_paths else None),
+            blocks_json_paths=blocks_json_paths,
         )
 
     pdf_paths = _unique(version_dir.glob("*.pdf"))
@@ -309,6 +333,10 @@ def resolve_version_source_files(
     ocr_html_paths = _unique([
         *[p for s in _OCR_HTML_SUFFIXES for p in version_dir.glob(f"*{s}")],
         version_dir / "ocr.html",
+    ])
+    blocks_json_paths = _unique([
+        *version_dir.glob(f"*{_BLOCKS_JSON_SUFFIX}"),
+        version_dir / "blocks.json",
     ])
     return VersionSourceFiles(
         md_path=_select_with_info(version_dir, md_paths, document_code, info, "md_file"),
@@ -321,4 +349,6 @@ def resolve_version_source_files(
         result_json_paths=result_json_paths,
         ocr_html_paths=ocr_html_paths,
         layout="legacy",
+        blocks_json_path=_select_candidate(list(blocks_json_paths), document_code, suffix=_BLOCKS_JSON_SUFFIX) or (blocks_json_paths[0] if len(blocks_json_paths) == 1 else None),
+        blocks_json_paths=blocks_json_paths,
     )

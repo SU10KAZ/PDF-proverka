@@ -1124,6 +1124,25 @@ def resolve_version_output_dir(
     return ctx["output_dir"]
 
 
+def resolve_projects_v2_output_dir_strict(
+    project_id: str,
+    version_id: Optional[str] = None,
+) -> Path:
+    """Resolve an output directory exclusively inside ``projects_v2``.
+
+    Unlike :func:`resolve_version_output_dir`, this helper never falls back to
+    the legacy ``projects/`` tree.  Writers use it after the v2-primary cutover
+    so a stale, synthetic, or service-level project id cannot silently recreate
+    the retired storage root.
+    """
+    ctx = _resolve_projects_v2_version_context(project_id, version_id)
+    if ctx is None:
+        raise FileNotFoundError(
+            f"Документ projects_v2 не найден для project_id={project_id!r}"
+        )
+    return Path(ctx["output_dir"])
+
+
 def resolve_active_output_dir(project_id: str) -> Path:
     """reserc.md #97: ЕДИНЫЙ резолвер папки `_output` активной версии с fallback.
 
@@ -1380,6 +1399,15 @@ def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
     ocr_candidates.sort(key=lambda p: p.name.lower().endswith("_results.html"))
     if ocr_candidates:
         _copy_if_exists(ocr_candidates[0], work / "ocr.html")
+
+    # _blocks.json — геометрия блоков нового комплекта портала (2026-07-16),
+    # опциональный файл; рабочая копия — 02_work/blocks.json.
+    blocks_candidates = sorted(
+        p for p in inp.rglob("*.json")
+        if p.is_file() and (p.name == "blocks.json" or p.name.lower().endswith("_blocks.json"))
+    ) if inp.is_dir() else []
+    if blocks_candidates:
+        _copy_if_exists(blocks_candidates[0], work / "blocks.json")
 
 
 def _update_version_project_info(

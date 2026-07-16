@@ -49,10 +49,12 @@ INPUT_QUAD = {
     "document_md": "_document.md",
     "ocr_html": "_ocr.html",
     "result_json": "_result.json",
+    "blocks_json": "_blocks.json",
 }
 
 # Суффиксы-синонимы по ролям, в порядке приоритета. С 2026-07 портал отдаёт
-# 3-файловый комплект: <имя>.pdf + <имя>_results.md + <имя>_results.html
+# новый комплект: <имя>.pdf + <имя>_results.md + <имя>_results.html
+# [+ <имя>_blocks.json — геометрия блоков, ОПЦИОНАЛЕН, появился 2026-07-16]
 # (без result.json). Старый 4-файловый метод (_document.md/_ocr.html/_result.json)
 # принимаем до ~2026-08-14 (раздел ВК ещё распознаётся по-старому), после чего
 # приём старых суффиксов можно удалить; ЧТЕНИЕ уже мигрированных версий от
@@ -62,6 +64,7 @@ INPUT_SUFFIXES: dict[str, tuple[str, ...]] = {
     "document_md": ("_document.md", "_results.md"),
     "ocr_html": ("_ocr.html", "_results.html", "_results.htm"),
     "result_json": ("_result.json",),
+    "blocks_json": ("_blocks.json",),
 }
 
 # Нормализованные имена в 02_work (рабочая копия для backend).
@@ -70,6 +73,7 @@ WORK_NORMALIZED = {
     "document_md": "document.md",
     "ocr_html": "ocr.html",
     "result_json": "result.json",
+    "blocks_json": "blocks.json",
 }
 
 # Ключевые артефакты анализа, которые обязаны попасть в 03_analysis/latest
@@ -273,7 +277,7 @@ def enumerate_versions(path: Path) -> list[VersionRec]:
 def find_input_quad(version_dir: Path) -> dict[str, Optional[Path]]:
     """Ищет входной комплект в папке версии по суффиксам имени.
 
-    Возвращает {pdf, document_md, ocr_html, result_json} -> Path | None.
+    Возвращает {pdf, document_md, ocr_html, result_json, blocks_json} -> Path | None.
     `.pdf` ищем как файл (исключая директории с .pdf в имени).
     """
     found: dict[str, Optional[Path]] = {k: None for k in INPUT_QUAD}
@@ -282,7 +286,7 @@ def find_input_quad(version_dir: Path) -> dict[str, Optional[Path]]:
     entries = sorted(version_dir.iterdir(), key=lambda p: p.name)
     # сначала специфичные суффиксы; для каждой роли перебираем синонимы
     # в порядке приоритета (старый суффикс выигрывает у нового при обоих в папке)
-    for key in ("document_md", "ocr_html", "result_json"):
+    for key in ("document_md", "ocr_html", "result_json", "blocks_json"):
         for suffix in INPUT_SUFFIXES[key]:
             for e in entries:
                 if e.is_file() and e.name.lower().endswith(suffix):

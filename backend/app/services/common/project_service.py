@@ -2557,7 +2557,11 @@ def scan_external_folder(folder_path: str) -> list[dict]:
 # раскладываем их в legacy projects/, генерируем project_info.json (клиентский
 # не доверяем) и запускаем dual_write_shadow зеркало.
 
-_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm"}
+_ALLOWED_UPLOAD_EXTS = {".pdf", ".md", ".json", ".html", ".htm", ".zip"}
+
+# Гарды распаковки ZIP-комплектов портала (защита от zip-бомб):
+_ZIP_MAX_MEMBERS = 500
+_ZIP_MAX_TOTAL_UNCOMPRESSED = 4 * 1024 * 1024 * 1024  # 4 ГБ
 
 
 class UploadFolderError(ValueError):
@@ -2601,13 +2605,51 @@ def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _expand_zip_uploads(files: list[tuple[str, bytes]]) -> list[tuple[str, bytes]]:
+    """Заменить ZIP-архивы их содержимым (портал с 2026-07-15 отдаёт комплект
+    ZIP'ом: <имя>.pdf + <имя>_results.md/_results.html [+ <имя>_blocks.json],
+    плоско). Имена членов берутся basename'ом (zip-slip исключён), вложенные
+    ZIP не распаковываются (уйдут в ignored). Битый архив → UploadFolderError."""
+    import io
+    import zipfile
+
+    out: list[tuple[str, bytes]] = []
+    for fname, data in files:
+        safe = _safe_upload_basename(fname)
+        if not safe.lower().endswith(".zip"):
+            out.append((fname, data))
+            continue
+        try:
+            zf = zipfile.ZipFile(io.BytesIO(data))
+            members = [m for m in zf.infolist() if not m.is_dir()]
+        except zipfile.BadZipFile:
+            raise UploadFolderError(f"Не удалось распаковать архив {safe!r}: файл повреждён или не ZIP")
+        if len(members) > _ZIP_MAX_MEMBERS:
+            raise UploadFolderError(f"Архив {safe!r} содержит слишком много файлов ({len(members)})")
+        total = sum(m.file_size for m in members)
+        if total > _ZIP_MAX_TOTAL_UNCOMPRESSED:
+            raise UploadFolderError(f"Архив {safe!r} слишком большой в распакованном виде")
+        for m in members:
+            base = os.path.basename(m.filename.replace("\\", "/")).strip()
+            if not base or base.startswith(".") or "__MACOSX" in m.filename:
+                continue
+            try:
+                out.append((base, zf.read(m)))
+            except Exception as e:  # RuntimeError на зашифрованных членах и т.п.
+                raise UploadFolderError(f"Не удалось прочитать {m.filename!r} из архива {safe!r}: {e}")
+    return out
+
+
 def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
-    """(имя, байты)[] → {pdfs, mds, results, ocrs, ignored}. Бросает UploadFolderError
-    на небезопасном имени (path-traversal). Общая логика для save и precheck."""
+    """(имя, байты)[] → {pdfs, mds, results, ocrs, blocks, ignored}. ZIP-архивы
+    прозрачно распаковываются. Бросает UploadFolderError на небезопасном имени
+    (path-traversal) и битом ZIP. Общая логика для save и precheck."""
+    files = _expand_zip_uploads(files)
     pdfs: list[tuple[str, bytes]] = []
     mds: list[tuple[str, bytes]] = []
     results: list[tuple[str, bytes]] = []
     ocrs: list[tuple[str, bytes]] = []
+    blocks: list[tuple[str, bytes]] = []
     ignored: list[str] = []
     for fname, data in files:
         safe = _safe_upload_basename(fname)  # бросает на traversal
@@ -2622,24 +2664,32 @@ def _classify_upload_files(files: list[tuple[str, bytes]]) -> dict:
             mds.append((safe, data))
         elif ext == ".json" and low.endswith("_result.json"):
             results.append((safe, data))
+        elif ext == ".json" and low.endswith("_blocks.json"):
+            # _blocks.json — геометрия блоков нового комплекта портала
+            # (с 2026-07-16): pages[] + blocks[] (coords_norm/crop_url).
+            # Файл ОПЦИОНАЛЕН — комплект без него валиден.
+            blocks.append((safe, data))
         elif ext in (".html", ".htm") and low.endswith(("_ocr.html", "_results.html", "_results.htm")):
-            # _results.html — новый 3-файловый комплект портала (2026-07);
+            # _results.html — новый комплект портала (2026-07);
             # _ocr.html — старый 4-файловый метод, приём удалить после 2026-08-14
             # (раздел ВК распознаётся по-старому до этой даты; чтение уже
             # загруженных проектов не трогать никогда).
             ocrs.append((safe, data))
         else:
             ignored.append(safe)
-    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs, "ignored": ignored}
+    return {"pdfs": pdfs, "mds": mds, "results": results, "ocrs": ocrs,
+            "blocks": blocks, "ignored": ignored}
 
 
 def _compute_upload_fingerprint(cls: dict) -> dict:
-    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr и их
-    sha256 (имя+роль+хэш) — `*_ocr.html` входит в отпечаток."""
+    """pdf_sha256 + bundle_fingerprint. bundle учитывает pdf/md/result/ocr/blocks
+    и их sha256 (имя+роль+хэш). Комплект с _blocks.json НЕ является дублем того
+    же комплекта без него (иначе догрузить геометрию версией невозможно)."""
     files_manifest: list[dict] = []
     pdf_sha: Optional[str] = None
     for role, items in (("pdf", cls["pdfs"]), ("md", cls["mds"]),
-                        ("result", cls["results"]), ("ocr", cls["ocrs"])):
+                        ("result", cls["results"]), ("ocr", cls["ocrs"]),
+                        ("blocks", cls.get("blocks", []))):
         for name, data in items:
             h = _sha256_bytes(data)
             files_manifest.append({"role": role, "name": name, "sha256": h, "size": len(data)})
@@ -2741,7 +2791,7 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         cls = _classify_upload_files(files)
     except UploadFolderError as e:
         blocks.append({"code": "unsafe_filename", "message": str(e)})
-        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "ignored": []}
+        cls = {"pdfs": [], "mds": [], "results": [], "ocrs": [], "blocks": [], "ignored": []}
     fp = _compute_upload_fingerprint(cls)
 
     # --- авто-определение дисциплины -----------------------------------------
@@ -2831,10 +2881,12 @@ def precheck_uploaded_project_folder(*, object_id: str, discipline: Optional[str
         "pdf_sha256": fp.get("pdf_sha256"), "bundle_fingerprint": fp.get("bundle_fingerprint"),
         "pdf_count": npdf, "pdf_name": (cls["pdfs"][0][0] if cls["pdfs"] else None),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "has_blocks_json": bool(cls.get("blocks")),
         "ignored_files": cls["ignored"],
         "status": status, "blocks": blocks, "warnings": warnings,
         "bundle_warnings": _upload_bundle_warnings(bool(cls["mds"]), bool(cls["results"]), bool(cls["ocrs"]),
-                                                   new_format=_is_new_format_bundle(cls)),
+                                                   new_format=_is_new_format_bundle(cls),
+                                                   has_blocks_json=bool(cls.get("blocks"))),
     }
 
 
@@ -2878,6 +2930,7 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
         md_paths = _w(cls["mds"])
         result_paths = _w(cls["results"])
         ocr_paths = _w(cls["ocrs"])
+        blocks_paths = _w(cls["blocks"])
         try:
             res = _vs.create_version_from_existing_files(
                 target_project_id,
@@ -2885,7 +2938,8 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
                     "pdf": pdf_paths[0],
                     "md": md_paths[0] if md_paths else None,
                     "result_json": result_paths[0] if result_paths else None,
-                    "extra": ocr_paths,  # *_ocr.html едет в версию
+                    # *_ocr.html и *_blocks.json едут в версию как extra
+                    "extra": ocr_paths + blocks_paths,
                 },
                 expected_section=discipline or None,
                 comment="Загружено как версия из «Из папки на компьютере»",
@@ -2926,6 +2980,7 @@ def _save_uploaded_as_new_version(*, object_id: str, discipline: str,
         "warnings": res.get("warnings", []),
         "versions_summary": res.get("versions_summary"),
         "has_md": bool(cls["mds"]), "has_result": bool(cls["results"]), "has_ocr": bool(cls["ocrs"]),
+        "has_blocks_json": bool(cls["blocks"]),
     }
 
 
@@ -2994,8 +3049,9 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
 
     # --- классификация файлов (project_info.json и прочее — игнор) ------------
     cls = _classify_upload_files(files)
-    pdfs, mds, results, ocrs, ignored = (
-        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"], cls["ignored"]
+    pdfs, mds, results, ocrs, blocks_json, ignored = (
+        cls["pdfs"], cls["mds"], cls["results"], cls["ocrs"],
+        cls["blocks"], cls["ignored"]
     )
 
     if len(pdfs) == 0:
@@ -3058,6 +3114,7 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     _write_all(mds)
     _write_all(results)
     _write_all(ocrs)
+    _write_all(blocks_json)
 
     md_names = [n for n, _ in mds]
     md_doc = next((n for n in md_names if n.lower().endswith("_document.md")), None)
@@ -3082,6 +3139,9 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
     if md_names:
         info["md_file"] = md_primary
         info["md_files"] = md_names
+    if blocks_json:
+        # геометрия блоков нового комплекта (источник псевдо-result.json)
+        info["blocks_json_file"] = blocks_json[0][0]
 
     (write_dest / "project_info.json").write_text(
         json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -3141,28 +3201,37 @@ def save_uploaded_project_folder(*, object_id: str, discipline: str,
         "has_md": bool(md_names),
         "has_result": bool(results),
         "has_ocr": bool(ocrs),
+        "has_blocks_json": bool(blocks_json),
         "warnings": _upload_bundle_warnings(bool(md_names), bool(results), bool(ocrs),
-                                            new_format=_is_new_format_bundle(cls)),
+                                            new_format=_is_new_format_bundle(cls),
+                                            has_blocks_json=bool(blocks_json)),
         "project_info": info,
     }
 
 
 def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool,
-                            new_format: bool = False) -> list[str]:
+                            new_format: bool = False,
+                            has_blocks_json: bool = False) -> list[str]:
     """Человекочитаемые предупреждения о недостающих (не блокирующих) файлах.
 
-    new_format=True — комплект нового 3-файлового формата портала
-    (*_results.md + *_results.html, без result.json): отсутствие result.json
-    для него норма, но геометрия блоков недоступна до этапа конвертера.
+    new_format=True — комплект нового формата портала (*_results.md +
+    *_results.html [+ *_blocks.json], без result.json): отсутствие result.json
+    для него норма. Геометрия блоков берётся из *_blocks.json; без него —
+    предупреждаем (попросить выгрузку с _blocks.json у портала).
     """
     warns: list[str] = []
     if not has_md:
         warns.append("Не найден *_document.md — текстовый анализ потребует OCR/Chandra.")
     if not has_result:
-        if new_format:
+        if new_format and has_blocks_json:
             warns.append(
-                "Новый 3-файловый комплект (без *_result.json): геометрия блоков "
-                "и кроп будут доступны после этапа конвертации нового формата."
+                "Новый комплект портала: геометрия блоков будет получена из "
+                "*_blocks.json (без *_result.json)."
+            )
+        elif new_format:
+            warns.append(
+                "Новый комплект БЕЗ *_blocks.json: геометрия блоков недоступна — "
+                "скачайте выгрузку с файлом *_blocks.json или догрузите его версией."
             )
         else:
             warns.append("Не найден *_result.json — кроп блоков потребует подготовки.")
@@ -3172,9 +3241,12 @@ def _upload_bundle_warnings(has_md: bool, has_result: bool, has_ocr: bool,
 
 
 def _is_new_format_bundle(cls: dict) -> bool:
-    """Комплект нового 3-файлового формата: есть *_results.md или *_results.html."""
+    """Комплект нового формата портала: есть *_results.md / *_results.html
+    (или пришла геометрия *_blocks.json)."""
     names = [n for n, _ in cls.get("mds", [])] + [n for n, _ in cls.get("ocrs", [])]
-    return any(n.lower().endswith(("_results.md", "_results.html", "_results.htm")) for n in names)
+    if any(n.lower().endswith(("_results.md", "_results.html", "_results.htm")) for n in names):
+        return True
+    return bool(cls.get("blocks"))
 
 
 def register_external_project(source_path: str, pdf_file: str,

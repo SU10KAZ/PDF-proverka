@@ -5858,13 +5858,16 @@ const app = createApp({
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        // только релевантные файлы (pdf + md + result + ocr) из scan-like объекта
+        // только релевантные файлы (pdf + md + result + ocr + blocks + zip) из scan-like объекта.
+        // ZIP-комплекты портала отправляются как есть — бэкенд распаковывает сам.
         function _uploadBundleFiles(s) {
             const out = [];
             if (s.pdf) out.push(s.pdf);
             if (s.md) out.push(s.md);
             if (s.result) out.push(s.result);
             if (s.ocr) out.push(s.ocr);
+            if (s.blocks) out.push(s.blocks);
+            for (const z of (s.zips || [])) out.push(z);
             return out;
         }
 
@@ -5885,7 +5888,9 @@ const app = createApp({
 
         const canSubmitUpload = computed(() => {
             if (!uploadObjectId.value || !uploadDiscipline.value) return false;
-            if (!uploadScan.value || !uploadScan.value.pdf || uploadScanError.value) return false;
+            if (!uploadScan.value || uploadScanError.value) return false;
+            // PDF либо явно, либо внутри ZIP-комплекта (бэкенд распакует и проверит)
+            if (!uploadScan.value.pdf && !(uploadScan.value.zips || []).length) return false;
             if (uploadAddMode.value === 'new_version') {
                 // версия: нужен target; имя-дубли не блокируют (это и есть версия)
                 return !!uploadTargetProjectId.value;
@@ -5959,21 +5964,31 @@ const app = createApp({
             uploadFolderName.value = (all[0] && (all[0].webkitRelativePath || '').split('/')[0]) || '';
             if (!all.length) { uploadScan.value = null; return; }
 
-            const pdfs = [], mds = [], results = [], ocrs = [], ignored = [];
+            const pdfs = [], mds = [], results = [], ocrs = [], blocksFiles = [], zips = [], ignored = [];
             for (const f of all) {
                 const name = (f.name || '').toLowerCase();
                 if (name.endsWith('.pdf')) pdfs.push(f);
                 else if (name.endsWith('_document.md')) mds.push(f);
                 else if (name.endsWith('.md')) mds.push(f);
                 else if (name.endsWith('_result.json')) results.push(f);
+                else if (name.endsWith('_blocks.json')) blocksFiles.push(f);
                 else if (name.endsWith('_ocr.html') || name.endsWith('_ocr.htm')) ocrs.push(f);
+                else if (name.endsWith('.zip')) zips.push(f);  // ZIP-комплект портала — распакует бэкенд
                 else ignored.push(f);
             }
 
             uploadScanError.value = '';
             uploadScanWarnings.value = [];
-            if (pdfs.length === 0) {
-                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта.';
+            if (pdfs.length === 0 && zips.length === 1) {
+                // комплект внутри ZIP: PDF проверит precheck после распаковки на бэкенде;
+                // имя проекта — из имени архива без браузерного суффикса « (N)»
+                if (!uploadProjectName.value.trim()) {
+                    uploadProjectName.value = zips[0].name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '');
+                }
+            } else if (pdfs.length === 0 && zips.length > 1) {
+                uploadScanError.value = 'В папке несколько ZIP. Оставьте один архив на проект (или используйте «Несколько проектов»).';
+            } else if (pdfs.length === 0) {
+                uploadScanError.value = 'В папке не найден PDF. Нужен ровно один PDF проекта (или ZIP-комплект портала).';
             } else if (pdfs.length > 1) {
                 uploadScanError.value = 'В папке найдено несколько PDF. Выберите папку одного проекта.';
             } else {
@@ -5982,13 +5997,16 @@ const app = createApp({
                 }
             }
             const md = mds.find(m => (m.name || '').toLowerCase().endsWith('_document.md')) || mds[0] || null;
-            if (!md) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
-            if (!results.length) uploadScanWarnings.value.push('Нет *_result.json — кроп блоков потребует подготовки.');
-            if (!ocrs.length) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
+            const hasZip = zips.length > 0;
+            if (!md && !hasZip) uploadScanWarnings.value.push('Нет *_document.md — текстовый анализ потребует OCR.');
+            if (!results.length && !blocksFiles.length && !hasZip) uploadScanWarnings.value.push('Нет *_result.json / *_blocks.json — кроп блоков потребует подготовки.');
+            if (!ocrs.length && !hasZip) uploadScanWarnings.value.push('Нет *_ocr.html — text_evidence будет ограничен.');
 
             uploadScan.value = {
                 pdf: pdfs.length === 1 ? pdfs[0] : null,
                 md, result: results[0] || null, ocr: ocrs[0] || null,
+                blocks: blocksFiles[0] || null,
+                zips,
                 ignored,
             };
             // авто-precheck дублей (если задано имя/объект/дисциплина)
@@ -5997,7 +6015,8 @@ const app = createApp({
 
         async function runSinglePrecheck() {
             const s = uploadScan.value;
-            if (!s || !s.pdf || !uploadObjectId.value || !uploadProjectName.value.trim()) {
+            const hasSource = s && (s.pdf || (s.zips || []).length);
+            if (!hasSource || !uploadObjectId.value || !uploadProjectName.value.trim()) {
                 uploadPrecheck.value = null; return;
             }
             uploadPrecheckLoading.value = true;
@@ -6105,21 +6124,27 @@ const app = createApp({
         // один кандидат из набора файлов (label = подпапка или basename PDF)
         function _buildUploadCandidate(label, files) {
             const pdfs = files.filter(f => /\.pdf$/i.test(f.name));
-            // _results.md/_results.html — новый 3-файловый комплект портала (2026-07);
+            // _results.md/_results.html/_blocks.json — новый комплект портала (2026-07);
             // старые суффиксы (_document.md/_ocr.html) в приоритете, их приём
             // удалить после 2026-08-14 (раздел ВК пока грузится по-старому).
+            // ZIP-комплект отправляется как есть — бэкенд распаковывает сам.
             const md = files.find(f => /_document\.md$/i.test(f.name))
                 || files.find(f => /_results\.md$/i.test(f.name))
                 || files.find(f => /\.md$/i.test(f.name)) || null;
             const result = files.find(f => /_result\.json$/i.test(f.name)) || null;
             const ocr = files.find(f => /_ocr\.html?$/i.test(f.name))
                 || files.find(f => /_results\.html?$/i.test(f.name)) || null;
+            const blocks = files.find(f => /_blocks\.json$/i.test(f.name)) || null;
+            const zips = files.filter(f => /\.zip$/i.test(f.name));
             const pdf = pdfs.length === 1 ? pdfs[0] : null;
+            const zipStem = (zips.length === 1 && !pdf)
+                ? zips[0].name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '') : null;
             return {
                 folder: label, files, pdf,
                 pdfName: pdf ? pdf.name : (pdfs[0] ? pdfs[0].name : null), pdfCount: pdfs.length,
-                md, result, ocr, hasMd: !!md, hasResult: !!result, hasOcr: !!ocr,
-                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : label,
+                md, result, ocr, blocks, zips, zipCount: zips.length,
+                hasMd: !!md, hasResult: !!result, hasOcr: !!ocr, hasBlocks: !!blocks,
+                name: pdf ? pdf.name.replace(/\.pdf$/i, '') : (zipStem || label),
                 discipline: '', detectedDiscipline: '', disciplineSource: '',
                 addMode: 'new_project', targetProjectId: '',
                 status: 'pending', message: '', checked: false, precheck: null,
@@ -6157,9 +6182,16 @@ const app = createApp({
             for (const pdf of flatPdfs) {
                 const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
                 const sidecars = flat.filter(f => f !== pdf
-                    && /(_document\.md|\.md|_result\.json|_ocr\.html?|_results\.html?)$/i.test(f.name)
+                    && /(_document\.md|\.md|_result\.json|_blocks\.json|_ocr\.html?|_results\.html?)$/i.test(f.name)
                     && f.name.toLowerCase().startsWith(stem));
                 cands.push(_buildUploadCandidate(pdf.name.replace(/\.pdf$/i, ''), [pdf, ...sidecars]));
+            }
+            // (B') кандидаты из плоских ZIP — каждый ZIP-комплект портала = проект
+            const flatZips = flat.filter(f => /\.zip$/i.test(f.name))
+                .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+            for (const z of flatZips) {
+                const label = z.name.replace(/\.zip$/i, '').replace(/\s*\(\d+\)$/, '');
+                cands.push(_buildUploadCandidate(label, [z]));
             }
             // запасной случай: на верхнем уровне есть файлы, но PDF не нашёлся —
             // отдать всё одним кандидатом (precheck честно покажет «нет PDF»).
@@ -6175,7 +6207,8 @@ const app = createApp({
         // если пусто, глобальный uploadDiscipline; если и он пуст — авто-детект.
         async function recheckCandidate(c) {
             if (!uploadObjectId.value) { c.status = 'error'; c.message = 'Выберите объект'; c.checked = false; return; }
-            if (c.pdfCount === 0) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
+            // ZIP-кандидат: PDF внутри архива, проверит бэкенд после распаковки
+            if (c.pdfCount === 0 && !(c.zipCount > 0)) { c.status = 'error'; c.message = 'Нет PDF'; c.checked = false; return; }
             if (c.pdfCount > 1) { c.status = 'error'; c.message = 'Несколько PDF — оставьте один PDF на проект'; c.checked = false; return; }
             c.status = 'pending'; c.message = 'проверка…';
             try {
