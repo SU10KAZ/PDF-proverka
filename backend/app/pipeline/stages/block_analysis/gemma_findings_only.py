@@ -155,6 +155,32 @@ SYSTEM_PROMPT_BASE = """Ты — инженер-проверяющий прое�
 НЕ описывай что видишь на блоке. НЕ пересказывай описание. НЕ делай summary.
 Если проблем не нашёл — верни {"findings": []}.
 
+## Evidence-first правила
+
+Большинство блоков корректны. Пустой findings[] — нормальный и ожидаемый результат.
+Сначала определи тип блока и проверяй ТОЛЬКО применимые к нему категории. Не обязан
+находить замечание в каждой категории и не обязан исчерпывать чек-лист.
+
+Публикуй не более 3 независимых проблем на блок. Finding допустим только когда:
+  1. указан конкретный affected_entity (марка, помещение, узел, размер или решение);
+  2. есть наблюдаемое evidence_quote из изображения/векторного текста/контекста;
+  3. контекст достаточен, контрдоказательства на листе и в результатах поиска проверены;
+  4. confidence не ниже 0.80;
+  5. это прямое нарушение, явное противоречие двух значений или явное отсутствие
+     обязательного элемента — не совет по улучшению и не гипотеза.
+
+Если данных не хватает, НЕ превращай это в замечание об отсутствии. Верни кандидата
+с context_status="needs_retrieval" или "external_only", claim_type="context_gap" и
+перечисли required_context. Такой кандидат сохранится для аудита, но не будет опубликован.
+Не используй условные формулировки «если», «возможно», «может», «требуется проверить»
+для готового замечания. Не выдумывай норму: norm_quote=null лучше ложной ссылки.
+
+Заголовки «Эталонная текстовая разметка», название профиля/типа фрагмента,
+``document_type``, квитанция поиска и прочие служебные пояснения подготовлены
+системой анализа, а НЕ автором проекта. Они нужны только для навигации. Никогда не
+создавай замечание о противоречии чертежа этим служебным метаданным и не предлагай
+исправлять «текстовую разметку», «индексацию», «контекст» или тип профиля.
+
 Каждое finding:
   - severity: одно из "КРИТИЧЕСКОЕ" | "ЭКОНОМИЧЕСКОЕ" | "ЭКСПЛУАТАЦИОННОЕ" | "РЕКОМЕНДАТЕЛЬНОЕ" | "ПРОВЕРИТЬ ПО СМЕЖНЫМ"
   - category: короткий тег (snake_case)
@@ -162,6 +188,15 @@ SYSTEM_PROMPT_BASE = """Ты — инженер-проверяющий прое�
   - norm_quote: цитата или ссылка на пункт нормы РФ если применимо, иначе null
   - value_found: точная цитата с чертежа (значение, марка, размер) — или пустая строка
   - recommendation: что делать (1 предложение)
+  - claim_type: "direct_violation" | "contradiction" | "explicit_omission" | "context_gap" | "recommendation"
+  - problem_class: устойчивое краткое имя типа проблемы (snake_case)
+  - affected_entity: конкретный объект замечания
+  - evidence_quote: точная цитата либо однозначное описание видимого графического факта
+  - evidence_kind: "block_image" | "block_vector" | "same_page" | "document_retrieval" | "none"
+  - context_status: "sufficient" | "needs_retrieval" | "external_only"
+  - confidence: число от 0 до 1
+  - counterevidence_checked: true только если проверены переданные контексты
+  - required_context: список недостающих источников; [] при достаточном контексте
 
 В полях finding и recommendation НЕ упоминай внутренние идентификаторы
 (block_id вида RUXD-WP4R-6C3, номера G-NNN/T-NNN) — их читают сторонние
@@ -172,9 +207,12 @@ SYSTEM_PROMPT_BASE = """Ты — инженер-проверяющий прое�
 
 _EXTENDED_HEADER = """
 
-## Категории замечаний (пройди мысленно по ВСЕМУ списку — это чек-лист направлений поиска)
+## Категории замечаний (справочник применимых направлений поиска)
 
-Для КАЖДОЙ категории ниже проверь, применима ли она к этому блоку, и если применима — нет ли в блоке соответствующей проблемы. НЕ пропускай категории «для красоты» — особенно cross-discipline и cross-section. Эти категории часто выпадают из фокуса, но именно там находятся важнейшие замечания.
+Сначала классифицируй блок, затем выбери только категории, которые подтверждаются
+содержанием этого блока. Cross-discipline и cross-section разрешены только при наличии
+двух явно переданных и противоречащих друг другу фактов; отсутствие смежного раздела
+в контексте не является доказательством дефекта.
 
 """
 
@@ -213,10 +251,37 @@ RESPONSE_SCHEMA = {
                         "norm_quote": {"type": ["string", "null"]},
                         "value_found": {"type": "string"},
                         "recommendation": {"type": "string"},
+                        "claim_type": {
+                            "type": "string",
+                            "enum": [
+                                "direct_violation", "contradiction", "explicit_omission",
+                                "context_gap", "recommendation",
+                            ],
+                        },
+                        "problem_class": {"type": "string"},
+                        "affected_entity": {"type": "string"},
+                        "evidence_quote": {"type": "string"},
+                        "evidence_kind": {
+                            "type": "string",
+                            "enum": [
+                                "block_image", "block_vector", "same_page",
+                                "document_retrieval", "none",
+                            ],
+                        },
+                        "context_status": {
+                            "type": "string",
+                            "enum": ["sufficient", "needs_retrieval", "external_only"],
+                        },
+                        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+                        "counterevidence_checked": {"type": "boolean"},
+                        "required_context": {"type": "array", "items": {"type": "string"}},
                     },
                     "required": [
                         "severity", "category", "finding",
                         "norm_quote", "value_found", "recommendation",
+                        "claim_type", "problem_class", "affected_entity",
+                        "evidence_quote", "evidence_kind", "context_status",
+                        "confidence", "counterevidence_checked", "required_context",
                     ],
                     "additionalProperties": False,
                 },
@@ -421,6 +486,66 @@ def load_page_text(
 PAGE_CONTEXT_PER_BLOCK = 8000
 PAGE_CONTEXT_TOTAL = 16000
 
+# ── Контекст листа: РАЗДЕЛЕНИЕ данных и оговорки (07-17) ──────────────────────
+# Историческая _page_context_section склеивала в одну строку ДВЕ разные вещи:
+#   (D) ДАННЫЕ листа  — текст соседних text_blocks + описания/вектор соседних блоков;
+#   (C) анти-FP ОГОВОРКУ — «не считай замечанием отсутствие расшифровки в блоке».
+# Из-за склейки замер «global-ON вредит ЭОМ» смешал две оси: неизвестно, что навредило —
+# данные или оговорка. Разводим: ДАННЫЕ подаём всем дисциплинам, ОГОВОРКУ — только там,
+# где замер показал пользу (AI, планы интерьеров); на ЭОМ/СС оговорка глушит инженерную
+# критику «не указано сечение/защиту/EI» (shadow: КРИТ 7→4, жёсткие 13→5).
+#
+# Флаги читаем из env ПРЯМО ЗДЕСЬ, а не в config.py, чтобы не коснуться строки, которую
+# в рабочем дереве правит соседняя сессия (config.py:769). После её коммита можно перенести.
+def _gfo_env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _gfo_env_set(name: str, default_set) -> set:
+    raw = os.environ.get(name)
+    if raw is None:
+        return set(default_set)
+    return {t.strip() for t in raw.replace(";", ",").split(",") if t.strip()}
+
+
+def _gfo_env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name) or default)
+    except (TypeError, ValueError):
+        return default
+
+
+# Режим анти-FP оговорки: off | all | disciplines (по коду section из project_info).
+STAGE01_ABSENCE_CAVEAT_MODE = (
+    os.environ.get("STAGE01_ABSENCE_CAVEAT_MODE", "disciplines").strip().lower()
+    or "disciplines"
+)
+# Дисциплины (section-код), где оговорка ВКЛючена при mode=disciplines. Дефолт консервативный:
+# только AI (замерено). AR (архитектура) — кандидат на добавление после замера, не по догадке.
+STAGE01_ABSENCE_CAVEAT_DISCIPLINES = _gfo_env_set(
+    "STAGE01_ABSENCE_CAVEAT_DISCIPLINES", {"AI"}
+)
+# Секция соседних блоков листа (описания из MD + вектор-текст соседей). Подфича ДАННЫХ листа:
+# работает только когда STAGE01_PAGE_CONTEXT_ENABLED (иначе данные листа вообще не подаются).
+STAGE01_PAGE_NEIGHBORS_ENABLED = _gfo_env_bool("STAGE01_PAGE_NEIGHBORS_ENABLED", True)
+NEIGHBOR_MAX_BLOCKS = _gfo_env_int("STAGE01_NEIGHBOR_MAX_BLOCKS", 6)
+NEIGHBOR_VECTOR_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_VECTOR_PER_BLOCK", 800)
+NEIGHBOR_MD_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_MD_PER_BLOCK", 400)
+NEIGHBOR_TOTAL = _gfo_env_int("STAGE01_NEIGHBOR_TOTAL", 6000)
+
+
+def _caveat_enabled_for_section(section: str) -> bool:
+    """Включать ли анти-FP оговорку для данной дисциплины (section-код)."""
+    mode = STAGE01_ABSENCE_CAVEAT_MODE
+    if mode == "off":
+        return False
+    if mode == "all":
+        return True
+    return (section or "").strip() in STAGE01_ABSENCE_CAVEAT_DISCIPLINES
+
 
 def build_block_user_text(block_id: str, page, enrichment: Optional[dict], page_text: str) -> str:
     """Текст блока, уходящий в LLM на Stage 01 (без изображения).
@@ -469,52 +594,143 @@ def _context_source_from_enrichment(enrichment: dict) -> str:
 
 
 def _page_context_section(page_text: str) -> str:
-    """Секция контекста листа для промпта блока + правила его применения.
+    """Секция контекста листа для промпта блока + анти-FP оговорка.
 
-    Блок — ФРАГМЕНТ листа. Легенда, примечания и спецификации физически находятся
-    вне его полигона (обычно на том же листе) — это норма РД. Без контекста модель
-    считает недостачу аномалией документа и репортит «расшифровка отсутствует».
+    Блок — это ФРАГМЕНТ листа. Легенда, примечания и спецификации физически
+    находятся вне его полигона (обычно на том же листе, иногда на соседнем —
+    это норма РД, а не дефект). Без этой секции модель считает недостачу
+    аномалией документа и репортит «расшифровка отсутствует».
 
-    Область глушения СТРОГО ограничена СПРАВОЧНЫМИ данными. Правки по итогам
-    адверсариального аудита прогона 07-17:
-      * фильтр приглушил G-163 (нет габарита прохода и расстояния до поручня в нише
-        ЛК) — это ИНЖЕНЕРНЫЙ дефект, его в контексте листа и не должно быть;
-      * потерян Д23 (подпись «одностворчатая» против двустворчатой графики) — это
-        ПРОТИВОРЕЧИЕ, другой класс, под фильтр «отсутствие данных» попадать не должен;
-      * crowding-out: внимание сместилось на сверки эскиз↔ведомость (на стр.24
-        категории схлопнулись в documentation×12).
+    ⚠️ ЭТО ВЕРСИЯ v1. Не «улучшать» её оговорками — проверено замером 07-17.
+    Версия v2 (противоречие выведено из-под фильтра + защита «инженерных дефектов»
+    от глушения + анти-crowding-out) дала на том же прогоне РЕГРЕСС:
+      * чистый шум 24 → 51 (8% → 16%), findings 273 → 313;
+      * КРИТ 18 → 28, но точность КРИТ = 7/28 = 25%; из 7 подтверждённых лишь ОДИН
+        уникален для v2 (и с выдуманной нормой), остальные 6 уже были в v1 другой
+        категорией = инфляция severity;
+      * «противоречие вне фильтра» породило ИНВЕРСНЫЙ класс FP — модель конструирует
+        расхождение там, где план и ведомость совпадают (П-1 стр.5: 16.05 м² сходится);
+      * «защита инженерных дефектов» превратила подрезки плитки (735/890/895, стр.10)
+        в фиктивное КРИТ по доступности — в v1 они корректно = РЕКОМЕНДАТЕЛЬНОЕ;
+      * потерян кросс-детекторный дедуп: один ложный тезис про клапаны выдан 4× как КРИТ.
+    Единственную реальную потерю v1 (доводчик с фиксацией на дверях EI/EIS) забирать
+    точечным правилом, а не откатом на v2.
     """
-    return (
+    return _page_context_data_section(page_text) + _absence_caveat_section()
+
+
+def _page_context_data_section(page_text: str, neighbors_section: str = "") -> str:
+    """ТОЛЬКО ДАННЫЕ листа (без единой фразы оговорки): текст листа + опц. соседние блоки.
+
+    Подаётся ВСЕМ дисциплинам при STAGE01_PAGE_CONTEXT_ENABLED. Не содержит инструкций
+    «не считай замечанием…» — они вынесены в _absence_caveat_section и включаются отдельно.
+    """
+    out = (
         "\n## Контекст ЛИСТА (условные обозначения, примечания, спецификации, ведомость):\n"
         f"```\n{page_text}\n```\n"
-        "\n## Как пользоваться контекстом листа (важно):\n"
-        "Анализируемый блок — ФРАГМЕНТ листа. СПРАВОЧНЫЕ данные (условные обозначения, "
-        "расшифровки марок, сноски «*», позиции спецификаций и ведомостей) размещаются вне "
-        "блока — выше по листу или на отдельных листах. Это НОРМА рабочей документации.\n"
-        "\n"
-        "1. СВЕРЯЙ блок с контекстом листа. Если блок ПРОТИВОРЕЧИТ контексту — это ДЕФЕКТ: "
-        "сообщай обязательно и цитируй ОБА значения (что на блоке / что в ведомости).\n"
-        "   Примеры: на эскизе «двустворчатая», в ведомости «однопольный»; на эскизе клапан "
-        "850x150, в спецификации 360x360; в подписи «до 180°», на схеме 160°.\n"
-        "   Противоречие — НЕ «отсутствие данных». Оно НИКОГДА не приглушается.\n"
-        "\n"
-        "2. НЕ сообщай об отсутствии СПРАВОЧНЫХ данных, если они ЕСТЬ в контексте листа "
-        "выше. Сначала проверь контекст: нашёл расшифровку/позицию — замечания НЕТ.\n"
-        "\n"
-        "3. Если СПРАВОЧНЫХ данных нет НИ в блоке, НИ в контексте листа — сообщай по "
-        "существу («в проекте не найдена ведомость X», «марка Y нигде не расшифрована»), "
-        "а не «на фрагменте не показано».\n"
-        "\n"
-        "4. Пункты 2-3 касаются ТОЛЬКО справочных данных. Они НЕ распространяются на "
-        "ИНЖЕНЕРНЫЕ дефекты: отсутствие габарита прохода, ширины, поручня, уклона, зазора, "
-        "деформационного шва, гидроизоляции, огнезащиты, крепления, узла примыкания и т.п. "
-        "Такие данные в ведомости и не размещаются — их отсутствие является дефектом "
-        "проектирования. Сообщай о них независимо от контекста листа.\n"
-        "\n"
-        "5. Контекст листа — вспомогательный инструмент, а не единственный предмет проверки. "
-        "Не своди анализ к сверке с ведомостью: геометрия, безопасность, эвакуация, МГН и "
-        "конструктивные решения на самом блоке проверяются в полном объёме.\n"
     )
+    if neighbors_section:
+        out += neighbors_section
+    return out
+
+
+def _absence_caveat_section() -> str:
+    """ТОЛЬКО анти-FP оговорка о границах фрагмента (без данных).
+
+    ⚠️ Замер 07-17: помогает на AI (планы интерьеров), ВРЕДИТ на ЭОМ/СС (глушит инженерную
+    критику «не указано сечение/защиту/EI»). Поэтому включается per-discipline, не глобально.
+    См. _caveat_enabled_for_section и STAGE01_ABSENCE_CAVEAT_*.
+    """
+    return (
+        "\n## Границы фрагмента (важно):\n"
+        "Анализируемый блок — ФРАГМЕНТ листа, а не весь лист. Условные обозначения, "
+        "расшифровки марок, сноски («*»), спецификации и ведомости размещаются вне блока — "
+        "выше по листу или на отдельных листах спецификаций. Это НОРМА рабочей документации.\n"
+        "- НЕ считай замечанием то, что расшифровка/легенда/сноска/спецификация отсутствует "
+        "В САМОМ БЛОКЕ: сначала проверь контекст листа выше.\n"
+        "- Если расшифровка есть в контексте листа — замечания НЕТ.\n"
+        "- Сообщай о недостающей расшифровке ТОЛЬКО если её нет ни в блоке, ни в контексте "
+        "листа, и при этом она нужна для однозначного чтения чертежа. Тогда формулируй по "
+        "существу («в проекте не найдена ведомость X»), а не «на фрагменте не показано».\n"
+    )
+
+
+def build_page_neighbors_section(
+    graph: dict,
+    target_block_id: str,
+    page,
+    vector_map: dict,
+    by_id: dict,
+) -> str:
+    """Секция «соседние блоки этого листа» для контекста анализируемого блока.
+
+    Требование Андрея Ивановича (07-17): если на странице есть другие блоки — подать их
+    ОПИСАНИЯ из MD (ocr_raw) + ТЕКСТОВЫЙ СЛОЙ (вектор PDF). Так блок «не указано X»
+    видит, что X есть на соседнем блоке того же листа (78% ложняков судьи — именно это).
+
+    Детерминизм обязателен (cache_key завязан на user_text): соседи ранжируются по
+    геометрической близости центроидов coords_norm, тай-брейк по block_id. Жёсткие лимиты
+    (NEIGHBOR_*) против crowding-out: на листе из 20 блоков берём только ближайшие 6.
+
+    Приоритет источников: вектор-текст (точный, из PDF) выше MD-описания (подсказка
+    нейросети портала — врёт: транслитерация Д→D, выдуманные размеры). MD помечается как
+    подсказка, при конфликте — верить чертежу/PDF (правило проекта PDF > MD).
+    """
+    pg = next((p for p in graph.get("pages", []) if p.get("page") == page), None)
+    if not pg:
+        return ""
+    tgt_center = None
+    cands: list[dict] = []
+    for b in pg.get("image_blocks", []) or []:
+        bid = str(b.get("id") or b.get("block_id") or "")
+        if not bid:
+            continue
+        coords = b.get("coords_norm") or []
+        cx = (coords[0] + coords[2]) / 2 if len(coords) >= 4 else 0.5
+        cy = (coords[1] + coords[3]) / 2 if len(coords) >= 4 else 0.5
+        if bid == target_block_id:
+            tgt_center = (cx, cy)
+            continue
+        vec = str(vector_map.get(bid) or "")
+        md = str(b.get("ocr_raw") or b.get("ocr_text_normalized") or "")
+        if not vec and not md:
+            continue  # штамп/пустой блок — нечего показывать
+        cands.append({"bid": bid, "cx": cx, "cy": cy, "vec": vec, "md": md})
+    if not cands:
+        return ""
+    if tgt_center is not None:
+        for c in cands:
+            c["dist"] = ((c["cx"] - tgt_center[0]) ** 2 + (c["cy"] - tgt_center[1]) ** 2) ** 0.5
+    else:
+        for c in cands:
+            c["dist"] = 0.0
+    cands.sort(key=lambda c: (round(c["dist"], 6), c["bid"]))
+
+    parts = [
+        "\n## Соседние блоки на этом листе (для контекста; при конфликте — верь чертежу/PDF):\n"
+    ]
+    total = 0
+    used = 0
+    for c in cands:
+        if used >= NEIGHBOR_MAX_BLOCKS:
+            break
+        lines = [f"### Соседний блок ({c['bid'][:12]}…):"]
+        if c["vec"]:
+            lines.append(f"Точный текст (вектор-слой PDF): {c['vec'][:NEIGHBOR_VECTOR_PER_BLOCK]}")
+        if c["md"]:
+            lines.append(
+                "Описание (подсказка нейросети, НЕ истина; при конфликте — PDF): "
+                f"{c['md'][:NEIGHBOR_MD_PER_BLOCK]}"
+            )
+        chunk = "\n".join(lines) + "\n"
+        if total + len(chunk) > NEIGHBOR_TOTAL:
+            break
+        parts.append(chunk)
+        total += len(chunk)
+        used += 1
+    if used == 0:
+        return ""
+    return "\n".join(parts)
 
 
 def build_effective_block_context(
@@ -523,15 +739,37 @@ def build_effective_block_context(
     page_text: str,
     *,
     output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
 ) -> tuple[str, str]:
-    """Build the Stage 01 prompt text and its normalized context source."""
+    """Build the Stage 01 prompt text and its normalized context source.
+
+    ``page_neighbors`` — предсобранная секция соседних блоков листа (ДАННЫЕ, добавляются
+    к тексту листа). ``include_absence_caveat`` — добавлять ли анти-FP оговорку (per-discipline,
+    решается вызывающим через _caveat_enabled_for_section). Обе применяются ТОЛЬКО когда
+    STAGE01_PAGE_CONTEXT_ENABLED и есть page_text.
+    """
     user_text = build_block_user_text(block["block_id"], block["page"], enrichment, page_text)
     context_source = _context_source_from_enrichment(enrichment)
 
     # The source router is the canonical Stage 01 path. A block without vector text keeps
     # the image-only placeholder text and is still analyzed from its attached PNG.
     _router_applied = False
-    if output_dir is not None:
+    if routed_context is not None:
+        _rtext, _rkind = routed_context
+        context_source = "image_only" if _rkind == "gemma_fallback" else _rkind
+        if _rtext:
+            user_text = _rtext
+            from backend.app.core import config as _pcfg
+            if _pcfg.STAGE01_PAGE_CONTEXT_ENABLED and page_text:
+                user_text += _page_context_data_section(page_text, page_neighbors)
+                if include_absence_caveat:
+                    user_text += _absence_caveat_section()
+        _router_applied = True
+    elif output_dir is not None:
         try:
             from backend.app.pipeline.stages.block_grounding.block_source_router import (
                 resolve_block_source as _resolve_block_source,
@@ -548,7 +786,9 @@ def build_effective_block_context(
                 user_text = _rtext
                 from backend.app.core import config as _pcfg
                 if _pcfg.STAGE01_PAGE_CONTEXT_ENABLED and page_text:
-                    user_text += _page_context_section(page_text)
+                    user_text += _page_context_data_section(page_text, page_neighbors)
+                    if include_absence_caveat:
+                        user_text += _absence_caveat_section()
             _router_applied = True
         except Exception:
             context_source = "error"
@@ -594,6 +834,20 @@ def build_effective_block_context(
     except Exception:
         pass
 
+    if document_type:
+        user_text += (
+            "\n\n## Тип проверяемого документа\n"
+            f"document_type={document_type}. Для полного комплекта РД отсутствие данных "
+            "на одном фрагменте не доказывает отсутствие в документе.\n"
+        )
+    if document_context:
+        user_text += "\n\n" + document_context
+        user_text += (
+            "\n\nРезультаты поиска выше являются дополнительным контекстом. "
+            "Если нужного источника нет и утверждение нельзя доказать, поставь "
+            "context_status=needs_retrieval или external_only; не публикуй гипотезу как факт.\n"
+        )
+
     return user_text, context_source
 
 
@@ -603,10 +857,15 @@ def build_effective_block_user_text(
     page_text: str,
     *,
     output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
 ) -> str:
     """Compatibility wrapper for callers that only need the Stage 01 text."""
     return build_effective_block_context(
-        block, enrichment, page_text, output_dir=output_dir
+        block, enrichment, page_text, output_dir=output_dir,
+        routed_context=routed_context, document_context=document_context,
+        document_type=document_type,
     )[0]
 
 
@@ -629,6 +888,11 @@ async def call_gpt_for_block(
     version_id: str = "",
     job_id: str = "",
     output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
 ) -> dict:
     png_path = blocks_dir / block["file"]
     if not png_path.exists():
@@ -639,6 +903,11 @@ async def call_gpt_for_block(
         enrichment,
         page_text,
         output_dir=output_dir,
+        routed_context=routed_context,
+        document_context=document_context,
+        document_type=document_type,
+        page_neighbors=page_neighbors,
+        include_absence_caveat=include_absence_caveat,
     )
 
     # ─── Paid response cache check (до guard и до сети) ────────────
@@ -825,6 +1094,11 @@ async def call_codex_for_block(
     reasoning_effort: str = "",
     project_id: str = "",
     output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
 ) -> dict:
     """Run the same single-block payload through a Codex subscription session."""
     png_path = blocks_dir / block["file"]
@@ -838,6 +1112,11 @@ async def call_codex_for_block(
         enrichment,
         page_text,
         output_dir=output_dir,
+        routed_context=routed_context,
+        document_context=document_context,
+        document_type=document_type,
+        page_neighbors=page_neighbors,
+        include_absence_caveat=include_absence_caveat,
     )
     result = await run_codex_json_messages(
         [
@@ -1261,9 +1540,40 @@ async def run_findings_only_for_project(
 
     project_info = load_version_project_info(project_dir)
     section = (project_info.get("section") or "_generic").strip() or "_generic"
+    md_text_for_type = ""
+    md_path_for_type = _resolve_md_path(project_dir, project_info)
+    if md_path_for_type is not None:
+        try:
+            md_text_for_type = md_path_for_type.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            md_text_for_type = ""
+    from backend.app.services.text_analysis.document_type_detector import (
+        detect_document_type,
+    )
+    document_type, document_type_confidence = detect_document_type(
+        project_info, md_text_for_type or None
+    )
     index = json.loads(index_path.read_text(encoding="utf-8"))
     graph = json.loads(graph_path.read_text(encoding="utf-8"))
     context_summary = load_block_context_summary(output_dir)
+
+    # Вектор-текст ВСЕХ блоков документа для секции «соседние блоки листа» — ОДИН проход
+    # по PDF на весь прогон (не resolve поблочно: там каждый вызов заново открывает PDF).
+    # Считаем только когда контекст листа и соседи включены, иначе — 0 стоимости (прод OFF).
+    from backend.app.core import config as _pcfg_nb
+    neighbor_vector_map: dict = {}
+    if (
+        _pcfg_nb.STAGE01_PAGE_CONTEXT_ENABLED
+        and STAGE01_PAGE_NEIGHBORS_ENABLED
+        and output_dir is not None
+    ):
+        try:
+            from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                vector_covered_block_ids,
+            )
+            neighbor_vector_map = vector_covered_block_ids(output_dir) or {}
+        except Exception:
+            neighbor_vector_map = {}
     context_blocks = {
         str(item.get("block_id")): item
         for item in context_summary.get("blocks") or []
@@ -1371,6 +1681,8 @@ async def run_findings_only_for_project(
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
             "section": section,
+            "document_type": document_type,
+            "document_type_confidence": document_type_confidence,
             "enrichment_sources": dict(enr_sources),
             "skipped_no_enrichment": len(skip_no_enrich),
             "uncovered_blocks": coverage_uncovered_blocks,
@@ -1426,6 +1738,59 @@ async def run_findings_only_for_project(
                 )
             else:
                 page_text = load_page_text(graph, block["page"])
+
+            # ДАННЫЕ: секция соседних блоков листа (описания MD + вектор-слой).
+            # ОГОВОРКА: анти-FP, per-discipline (section из project_info) — только где помогает.
+            page_neighbors = ""
+            include_caveat = False
+            if _pcfg2.STAGE01_PAGE_CONTEXT_ENABLED:
+                include_caveat = _caveat_enabled_for_section(section)
+                if STAGE01_PAGE_NEIGHBORS_ENABLED and neighbor_vector_map:
+                    try:
+                        page_neighbors = build_page_neighbors_section(
+                            graph, str(block.get("block_id") or ""),
+                            block.get("page"), neighbor_vector_map, by_id,
+                        )
+                    except Exception:
+                        page_neighbors = ""
+
+            # Resolve the canonical block package once.  ``prefer_prepared=False``
+            # deliberately refreshes profile routing when code/profile mappings
+            # change (notably AI -> architecture); otherwise an old raw-vector
+            # prepared package would silently survive a rerun.
+            routed_context: Optional[tuple[str, str]] = None
+            retrieval_query_text = ""
+            try:
+                from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                    resolve_block_package,
+                )
+                package = resolve_block_package(
+                    output_dir, str(block.get("block_id") or ""), block.get("page"),
+                    prefer_prepared=False,
+                )
+                package_text = str(package.get("user_text") or "")
+                package_kind = str(package.get("source_kind") or "error")
+                if package_text:
+                    routed_context = (package_text, package_kind)
+                classification = package.get("classification") or {}
+                retrieval_query_text = str(
+                    classification.get("block_title")
+                    or classification.get("description")
+                    or package_text
+                )
+            except Exception:
+                routed_context = None
+
+            from backend.app.pipeline.stages.block_analysis.document_retrieval import (
+                retrieve_document_context,
+            )
+            retrieval_query = retrieval_query_text or (
+                routed_context[0] if routed_context else page_text
+            )
+            document_context, retrieval_receipt = retrieve_document_context(
+                graph, retrieval_query, int(block.get("page") or 0)
+            )
+
             async def _dispatch() -> dict:
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
                 if use_dual:
@@ -1439,6 +1804,11 @@ async def run_findings_only_for_project(
                             timeout=timeout_s, project_id=project_id,
                             version_id=version_id, job_id=job_id,
                             output_dir=output_dir,
+                            routed_context=routed_context,
+                            document_context=document_context,
+                            document_type=document_type,
+                            page_neighbors=page_neighbors,
+                            include_absence_caveat=include_caveat,
                         ),
                         call_codex_for_block(
                             block, item["enrichment"], page_text, blocks_dir,
@@ -1446,6 +1816,11 @@ async def run_findings_only_for_project(
                             system_prompt=system_prompt, timeout=timeout_s,
                             reasoning_effort=reasoning_effort,
                             project_id=project_id, output_dir=output_dir,
+                            routed_context=routed_context,
+                            document_context=document_context,
+                            document_type=document_type,
+                            page_neighbors=page_neighbors,
+                            include_absence_caveat=include_caveat,
                         ),
                     )
                     combined = combine_detector_results(
@@ -1498,6 +1873,11 @@ async def run_findings_only_for_project(
                         item["enrichment"],
                         page_text,
                         output_dir=output_dir,
+                        routed_context=routed_context,
+                        document_context=document_context,
+                        document_type=document_type,
+                        page_neighbors=page_neighbors,
+                        include_absence_caveat=include_caveat,
                     )
                     try:
                         review = await review_dual_findings(
@@ -1536,11 +1916,24 @@ async def run_findings_only_for_project(
                         model=model, system_prompt=system_prompt, timeout=timeout_s,
                         reasoning_effort=reasoning_effort,
                         project_id=project_id, output_dir=output_dir,
+                        routed_context=routed_context,
+                        document_context=document_context,
+                        document_type=document_type,
+                        page_neighbors=page_neighbors,
+                        include_absence_caveat=include_caveat,
                     )
                 if use_claude_cli:
                     sheet = sheet_for_page(graph, block["page"]) or ""
+                    claude_page_text = (
+                        page_text + "\n\n" + document_context
+                        + f"\n\ndocument_type={document_type}"
+                    )
+                    if _pcfg2.STAGE01_PAGE_CONTEXT_ENABLED and page_neighbors:
+                        claude_page_text += page_neighbors
+                    if _pcfg2.STAGE01_PAGE_CONTEXT_ENABLED and include_caveat:
+                        claude_page_text += _absence_caveat_section()
                     return await call_claude_cli_for_block(
-                        block, item["enrichment"], page_text, blocks_dir, sheet,
+                        block, item["enrichment"], claude_page_text, blocks_dir, sheet,
                         model=model, system_prompt=system_prompt, timeout=timeout_s,
                         clean_cwd=claude_clean_cwd,
                     )
@@ -1554,6 +1947,11 @@ async def run_findings_only_for_project(
                     version_id=version_id,
                     job_id=job_id,
                     output_dir=output_dir,
+                    routed_context=routed_context,
+                    document_context=document_context,
+                    document_type=document_type,
+                    page_neighbors=page_neighbors,
+                    include_absence_caveat=include_caveat,
                 )
 
             try:
@@ -1569,6 +1967,21 @@ async def run_findings_only_for_project(
                     "parse_error": "block_hard_timeout",
                     "elapsed_ms": block_hard_timeout_s * 1000,
                 }
+
+            # Publication is evidence-first, but no candidate is destroyed:
+            # deferred_findings stays in the per-block audit record.
+            if res.get("ok"):
+                from backend.app.core import config as _gate_cfg
+                if getattr(_gate_cfg, "STAGE01_EVIDENCE_GATE_ENABLED", True):
+                    from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
+                        gate_findings,
+                    )
+                    candidates = list((res.get("parsed") or {}).get("findings") or [])
+                    published, deferred, gate_report = gate_findings(candidates)
+                    res["parsed"] = {"findings": published}
+                    res["deferred_findings"] = deferred
+                    res["evidence_gate"] = gate_report
+            res["document_retrieval"] = retrieval_receipt
             n = len((res.get("parsed") or {}).get("findings", [])) if res.get("ok") else 0
             record = {
                 "block_id": item["block_id"],
@@ -1592,6 +2005,7 @@ async def run_findings_only_for_project(
                     "page": block["page"],
                     "ok": res.get("ok"),
                     "findings": n,
+                    "deferred_findings": len(res.get("deferred_findings") or []),
                     "input_tokens": res.get("input_tokens"),
                     "cached_input_tokens": res.get("cached_input_tokens"),
                     "output_tokens": res.get("output_tokens"),
@@ -1747,6 +2161,11 @@ async def run_findings_only_for_project(
                 context_source=res.get("context_source") or _context_source_from_enrichment(p.get("enrichment") or {}),
             ),
         }
+        if isinstance(res.get("evidence_gate"), dict):
+            analysis["evidence_gate"] = res["evidence_gate"]
+            analysis["deferred_findings"] = list(res.get("deferred_findings") or [])
+        if isinstance(res.get("document_retrieval"), dict):
+            analysis["document_retrieval"] = res["document_retrieval"]
         if use_dual and isinstance(res.get("dual_review"), dict):
             analysis["dual_review"] = res["dual_review"]
         block_analyses.append(analysis)
@@ -1788,6 +2207,36 @@ async def run_findings_only_for_project(
             "counts": aggregate_counts,
         }
 
+    gate_reports = [
+        r["result"].get("evidence_gate")
+        for r in results
+        if isinstance(r.get("result", {}).get("evidence_gate"), dict)
+    ]
+    gate_reason_counts: dict[str, int] = {}
+    for report in gate_reports:
+        for reason, count in (report.get("reason_counts") or {}).items():
+            gate_reason_counts[str(reason)] = gate_reason_counts.get(str(reason), 0) + int(count or 0)
+    evidence_gate_meta = {
+        "schema_version": 1,
+        "enabled": bool(gate_reports),
+        "blocks_gated": len(gate_reports),
+        "candidates": sum(int(r.get("candidates") or 0) for r in gate_reports),
+        "published": sum(int(r.get("published") or 0) for r in gate_reports),
+        "deferred": sum(int(r.get("deferred") or 0) for r in gate_reports),
+        "reason_counts": dict(sorted(gate_reason_counts.items())),
+    }
+    retrieval_reports = [
+        r["result"].get("document_retrieval")
+        for r in results
+        if isinstance(r.get("result", {}).get("document_retrieval"), dict)
+    ]
+    document_retrieval_meta = {
+        "scope": "all_document_vector_text_other_pages",
+        "blocks_searched": len(retrieval_reports),
+        "blocks_with_hits": sum(1 for r in retrieval_reports if r.get("status") == "hits"),
+        "selected_hits": sum(int(r.get("selected_hits") or 0) for r in retrieval_reports),
+    }
+
     output_doc = {
         "batch_id": 0,
         "project_id": project_info.get("project_id", project_dir.name),
@@ -1812,6 +2261,10 @@ async def run_findings_only_for_project(
             "reasoning_effort": reasoning_effort,
             "extended_prompt": cats_loaded,
             "section": section,
+            "document_type": document_type,
+            "document_type_confidence": document_type_confidence,
+            "evidence_gate": evidence_gate_meta,
+            "document_retrieval": document_retrieval_meta,
             "context_source_counts": context_source_counts,
             "context_coverage": {
                 "blocks_total": context_summary.get("blocks_total", 0),
@@ -1915,6 +2368,10 @@ async def run_findings_only_for_project(
         "model": model,
         "reasoning_effort": reasoning_effort,
         "extended_prompt": cats_loaded,
+        "document_type": document_type,
+        "document_type_confidence": document_type_confidence,
+        "evidence_gate": evidence_gate_meta,
+        "document_retrieval": document_retrieval_meta,
         "blocks_total": len(wanted),
         "blocks_with_context": sum(1 for p in plan if p["enrichment"] is not None),
         "blocks_ok": len(ok),
@@ -1962,6 +2419,8 @@ async def run_findings_only_for_project(
             "output_tokens": total_out,
             "reasoning_tokens": total_reason,
             "findings": total_findings,
+            "finding_candidates": evidence_gate_meta["candidates"],
+            "findings_deferred": evidence_gate_meta["deferred"],
             "estimated_cost_usd_in": round(cost_in, 4),
             "estimated_cost_usd_out": round(cost_out, 4),
             "estimated_cost_usd_total": round(cost_total, 4),
