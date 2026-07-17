@@ -226,6 +226,7 @@ def test_section_payload_includes_only_expert_accepted_optimizations():
     assert payload["meta"]["replication_candidates"] == 1
     assert payload["signals"][0]["source_project_ids"] == ["P1", "P2"]
     assert payload["signals"][0]["target_project_ids"] == ["P3"]
+    assert payload["capabilities"]["targeted_graphics_agent"] is True
 
 
 def test_replication_keeps_fire_class_and_ip_constraints():

@@ -941,6 +941,17 @@ body {
 .section-optimization-agent-verdict--needs_data { color: var(--amber); background: var(--amber-light); }
 .section-optimization-agent-verdict--needs_graphics { color: var(--purple); background: var(--purple-light); }
 .section-optimization-agent-verdict--reject { color: var(--red); background: var(--red-light); }
+.section-optimization-graphics-conclusion { display: inline-flex; margin-bottom: 4px; padding: 2px 5px; border-radius: 5px; font-weight: 800; background: var(--card2-bg); }
+.section-optimization-graphics-conclusion--supports_replication { color: var(--green); background: var(--green-light); }
+.section-optimization-graphics-conclusion--contradicts_replication { color: var(--red); background: var(--red-light); }
+.section-optimization-graphics-conclusion--inconclusive,
+.section-optimization-graphics-conclusion--not_visible { color: var(--amber); background: var(--amber-light); }
+.section-optimization-graphics-answer { display: block; margin-bottom: 4px; font-weight: 650 !important; }
+.section-optimization-graphics-evidence { display: grid; gap: 4px; margin-top: 5px; }
+.section-optimization-graphics-evidence button { display: block; width: 100%; padding: 4px 5px; border: 1px solid var(--teal-border); border-radius: 5px; background: var(--teal-light); color: var(--text2); font: inherit; text-align: left; cursor: pointer; }
+.section-optimization-graphics-evidence button:hover { border-color: var(--teal); color: var(--teal); }
+.section-optimization-graphics-evidence button span { display: block; color: var(--teal); font-weight: 800; }
+.section-optimization-graphics-evidence button small { margin-top: 1px !important; color: var(--text2) !important; }
 .section-optimization-warnings { margin-top: 10px; padding: 7px 9px; border: 1px solid rgba(196,115,0,.25); border-radius: 6px; color: var(--amber); font-size: 9px; }
 .section-optimization-warnings ul { margin: 6px 0 0 18px; padding: 0; }
 
@@ -1797,6 +1808,13 @@ th.cv2-sort-active {
 .log-error .log-msg { color: var(--red); }
 .log-success .log-msg { color: var(--green); }
 .log-debug .log-msg { color: var(--text3); }
+/* Баннер «начало лога усечено» (файл длиннее окна выборки) */
+.log-truncated-banner {
+    margin: 0 12px 8px; padding: 6px 12px;
+    border: 1px solid var(--amber); border-radius: var(--radius);
+    color: var(--amber); background: color-mix(in srgb, var(--amber) 10%, transparent);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 12px;
+}
 /* ── Секции лога по этапам конвейера ─────────────────────────── */
 .log-section { border-bottom: 1px solid var(--border); }
 .log-section:last-child { border-bottom: none; }

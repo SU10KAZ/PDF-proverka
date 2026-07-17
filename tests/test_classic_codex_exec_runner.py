@@ -50,6 +50,7 @@ async def test_claude_runner_dispatches_codex_model_to_codex_transport(monkeypat
     assert captured["stage"] == "findings_merge"
     assert captured["project_id"] == "DOC-1"
     assert captured["model"] == "codex/gpt-5.4"
+    assert captured["allowed_tools"] == "Read,Write"
 
 
 @pytest.mark.asyncio
@@ -194,6 +195,56 @@ async def test_codex_runner_attaches_images_to_exec_command(monkeypatch, tmp_pat
     assert "<ATTACHED_IMAGES>" in captured["input_text"]
     assert str(png_path.resolve()) in captured["input_text"]
     assert "USE DRAWINGS" in captured["input_text"]
+
+
+@pytest.mark.asyncio
+async def test_codex_runner_configures_required_norms_mcp_and_disables_web(monkeypatch):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    captured = {}
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+
+    async def fake_run_command(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured.update(kwargs)
+        out_file = Path(cmd[cmd.index("-o") + 1])
+        out_file.write_text("DONE", encoding="utf-8")
+        return 0, "", ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    tools = (
+        "Read,Write,"
+        "mcp__norms__get_norm_status,"
+        "mcp__norms__get_paragraph_json,"
+        "mcp__norms__semantic_search_json"
+    )
+    exit_code, _, _ = await codex_runner.run_codex_exec(
+        "VERIFY NORMS",
+        timeout=42,
+        stage="optimization",
+        project_id="DOC-NORMS",
+        model="codex/gpt-5.4",
+        allowed_tools=tools,
+    )
+
+    cmd = captured["cmd"]
+    config_values = [cmd[index + 1] for index, value in enumerate(cmd) if value == "-c"]
+    assert exit_code == 0
+    assert 'web_search="disabled"' in config_values
+    assert "mcp_servers.norms.required=true" in config_values
+    assert 'mcp_servers.norms.default_tools_approval_mode="approve"' in config_values
+    assert any(value.startswith("mcp_servers.norms.command=") for value in config_values)
+    assert any(value.startswith("mcp_servers.norms.args=") for value in config_values)
+    enabled = next(
+        value for value in config_values
+        if value.startswith("mcp_servers.norms.enabled_tools=")
+    )
+    assert "get_norm_status" in enabled
+    assert "get_paragraph_json" in enabled
+    assert "semantic_search_json" in enabled
+    assert "Normative status, clauses, and quotations" in captured["input_text"]
+    assert "Web search is disabled" in captured["input_text"]
 
 
 @pytest.mark.asyncio
@@ -638,6 +689,7 @@ async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monk
     ):
         captured["run_cli"] = {
             "task_text": task_text,
+            "tools": tools,
             "stage": stage,
             "project_id": project_id,
             "model": model,
@@ -669,6 +721,8 @@ async def test_run_optimization_codex_uses_agentic_exec_with_visual_context(monk
     assert captured["run_cli"]["stage"] == "optimization"
     assert captured["run_cli"]["project_id"] == "DOC-OV"
     assert captured["run_cli"]["model"] == "codex/gpt-5.4"
+    assert "mcp__norms__get_norm_status" in captured["run_cli"]["tools"]
+    assert "WebSearch" not in captured["run_cli"]["tools"]
     assert captured["run_cli"]["image_paths"] == [image_path]
     assert "OPT TASK" in captured["run_cli"]["task_text"]
     assert "Графический контекст" in captured["run_cli"]["task_text"]

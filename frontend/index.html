@@ -674,18 +674,7 @@
                     </div>
                     <div class="section-optimization-flow section-optimization-flow--pipeline" aria-label="Pipeline оптимизации раздела">
                         <template v-for="(stage, index) in sectionOptimizationData.analysis_stages" :key="stage.key">
-                            <button v-if="stage.key === 'graphics'"
-                                    type="button"
-                                    class="section-optimization-flow__stage section-optimization-flow__stage--button"
-                                    :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
-                                    :disabled="sectionOptimizationPipelineRunning || !sectionOptimizationPipeline.snapshot_generated_at"
-                                    :title="sectionOptimizationPipelineStage(stage.key).message || stage.description"
-                                    @click="requestSectionOptimizationGraphicsPlan">
-                                <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
-                                <b>{{ stage.title }}</b>
-                                <small>{{ sectionOptimizationPipelineStage(stage.key).message }}</small>
-                            </button>
-                            <div v-else class="section-optimization-flow__stage"
+                            <div class="section-optimization-flow__stage"
                                  :class="'section-optimization-flow__stage--' + sectionOptimizationPipelineStage(stage.key).status"
                                  :title="sectionOptimizationPipelineStage(stage.key).message || stage.description">
                                 <span>{{ sectionOptimizationPipelineStageMarker(stage.key, index) }}</span>
@@ -702,17 +691,18 @@
                         <button class="btn btn-sm btn-primary"
                                 :disabled="sectionOptimizationReplicationActionLoading
                                     || !sectionOptimizationAgentAvailable
+                                    || !sectionOptimizationGraphicsAgentAvailable
                                     || !sectionOptimizationReplicationPendingCount"
                                 @click="startAllSectionOptimizationReplications">
                             {{ sectionOptimizationReplicationActionLoading
                                 ? 'Запускаю все тиражирования…'
-                                : (!sectionOptimizationAgentAvailable
-                                    ? 'Умный агент подключается…'
+                                : (!sectionOptimizationAgentAvailable || !sectionOptimizationGraphicsAgentAvailable
+                                    ? 'Графический агент подключается…'
                                     : 'Запустить умного агента для всех кандидатов') }}
                         </button>
-                        <span>{{ sectionOptimizationAgentAvailable
+                        <span>{{ sectionOptimizationAgentAvailable && sectionOptimizationGraphicsAgentAvailable
                             ? sectionOptimizationReplicationProgressLabel
-                            : 'Текущий аудит завершится — агент включится без потери данных' }}</span>
+                            : 'Текущая очередь завершится — vision-агент включится без потери данных' }}</span>
                     </div>
 
                     <div class="section-optimization-toolbar">
@@ -953,6 +943,13 @@
                                                 <span v-else class="section-optimization-replication-status section-optimization-replication-status--not-started">
                                                     Ожидает запуска умного агента
                                                 </span>
+                                                <button v-if="sectionOptimizationReplicationCanRetryGraphics(sectionOptimizationReplicationFor(signal.signal_id))"
+                                                        class="btn btn-sm btn-secondary section-optimization-graphics-retry"
+                                                        :disabled="sectionOptimizationReplicationActionLoading"
+                                                        :title="'Повторить только графическую проверку по уже готовому досье — умный агент не запускается заново'"
+                                                        @click="retrySectionOptimizationGraphics(sectionOptimizationReplicationFor(signal.signal_id))">
+                                                    🖼 Повторить графику
+                                                </button>
                                                 <small v-if="sectionOptimizationReplicationFor(signal.signal_id)?.agent_summary"
                                                        class="section-optimization-agent-summary">
                                                     {{ sectionOptimizationReplicationFor(signal.signal_id).agent_summary }}
@@ -986,8 +983,8 @@
                                                             <td>{{ assessment.project_name || sectionOptimizationProjectLabel(assessment.project_id) }}</td>
                                                             <td>
                                                                 <span class="section-optimization-agent-verdict"
-                                                                      :class="'section-optimization-agent-verdict--' + assessment.verdict">
-                                                                    {{ sectionOptimizationAgentVerdictLabel(assessment.verdict) }}
+                                                                      :class="'section-optimization-agent-verdict--' + (assessment.resolved_verdict || assessment.verdict)">
+                                                                    {{ sectionOptimizationAgentVerdictLabel(assessment.resolved_verdict || assessment.verdict) }}
                                                                 </span>
                                                             </td>
                                                             <td>{{ Math.round((assessment.confidence || 0) * 100) }}%</td>
@@ -1001,7 +998,40 @@
                                                                 </small>
                                                             </td>
                                                             <td>
-                                                                <template v-if="assessment.graphics_required">
+                                                                <template v-if="assessment.graphics_review">
+                                                                    <span class="section-optimization-graphics-conclusion"
+                                                                          :class="'section-optimization-graphics-conclusion--' + assessment.graphics_review.conclusion">
+                                                                        {{ sectionOptimizationGraphicsConclusionLabel(assessment.graphics_review.conclusion) }}
+                                                                        · {{ Math.round((assessment.graphics_review.confidence || 0) * 100) }}%
+                                                                    </span>
+                                                                    <b class="section-optimization-graphics-answer">
+                                                                        {{ assessment.graphics_review.answer || 'Заключение отсутствует' }}
+                                                                    </b>
+                                                                    <div v-if="assessment.graphics_review.evidence?.length"
+                                                                         class="section-optimization-graphics-evidence">
+                                                                        <button v-for="block in assessment.graphics_review.evidence"
+                                                                                :key="block.project_id + ':' + block.block_id"
+                                                                                type="button"
+                                                                                @click="openSectionOptimizationGraphicsBlock(block.project_id, block.block_id, block.page)">
+                                                                            <span>{{ block.block_id }} · стр. {{ block.page }}</span>
+                                                                            <small>{{ block.observation }}</small>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div v-else-if="assessment.graphics_review.selected_blocks?.length"
+                                                                         class="section-optimization-graphics-evidence">
+                                                                        <button v-for="block in assessment.graphics_review.selected_blocks"
+                                                                                :key="'selected:' + block.project_id + ':' + block.block_id"
+                                                                                type="button"
+                                                                                @click="openSectionOptimizationGraphicsBlock(block.project_id, block.block_id, block.page)">
+                                                                            <span>{{ block.block_id }} · стр. {{ block.page }}</span>
+                                                                            <small>{{ block.label }}</small>
+                                                                        </button>
+                                                                    </div>
+                                                                    <small v-if="assessment.graphics_review.selected_blocks?.length">
+                                                                        Просмотрено блоков: {{ assessment.graphics_review.selected_blocks.length }}
+                                                                    </small>
+                                                                </template>
+                                                                <template v-else-if="assessment.graphics_required">
                                                                     {{ assessment.graphics_reason || 'Требуется проверка' }}
                                                                     <small v-if="assessment.suggested_pages?.length">
                                                                         Стр.: {{ assessment.suggested_pages.join(', ') }}
@@ -4173,6 +4203,8 @@
                     <div v-if="logLoading" class="empty-state">
                         Загрузка истории логов...
                     </div>
+                    <!-- Файл лога длиннее окна выборки — начало усечено -->
+                    <div v-if="logTruncatedNotice" class="log-truncated-banner">{{ logTruncatedNotice }}</div>
                     <!-- Секции по этапам конвейера -->
                     <div v-for="section in logSections" :key="section.key" class="log-section">
                         <div class="log-section__header" @click="toggleLogSection(section)">

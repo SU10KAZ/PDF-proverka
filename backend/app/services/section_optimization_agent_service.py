@@ -11,6 +11,7 @@ import asyncio
 import inspect
 import json
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Awaitable, Callable, Optional
 
@@ -132,6 +133,18 @@ def _semaphore() -> asyncio.Semaphore:
         _AGENT_SEMAPHORE = asyncio.Semaphore(_agent_concurrency())
         _AGENT_SEMAPHORE_LOOP = loop
     return _AGENT_SEMAPHORE
+
+
+@asynccontextmanager
+async def optimization_agent_slot():
+    """Общий слот для текстового и графического агентов раздела.
+
+    Массовый запуск создаёт по задаче на кандидата. Единый семафор не даёт
+    текстовым и vision-вызовам конкурировать друг с другом и запускать десятки
+    подписочных Codex-сессий одновременно.
+    """
+    async with _semaphore():
+        yield
 
 
 def _clean_text(value: Any, limit: int = 6000) -> str:
@@ -353,7 +366,7 @@ async def analyze_replication_dossier(
             ),
         },
     ]
-    async with _semaphore():
+    async with optimization_agent_slot():
         if on_slot_acquired is not None:
             callback_result = on_slot_acquired()
             if inspect.isawaitable(callback_result):
@@ -393,5 +406,6 @@ __all__ = [
     "SectionOptimizationAgentError",
     "analyze_replication_dossier",
     "configured_agent_model",
+    "optimization_agent_slot",
     "validate_agent_review",
 ]

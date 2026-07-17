@@ -31,6 +31,9 @@ _DEFAULT_SANDBOX = "workspace-write"
 _DEFAULT_JSON_SANDBOX = "read-only"
 _ALLOWED_SANDBOXES = {"read-only", "workspace-write", "danger-full-access"}
 _ALLOWED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh"}
+_NORMS_MCP_PREFIX = "mcp__norms__"
+_NORMS_MCP_PYTHON = ROOT_DIR / "norms" / "tools" / "venv" / "bin" / "python"
+_NORMS_MCP_SERVER = ROOT_DIR / "norms" / "tools" / "mcp_server.py"
 
 
 def find_codex_cli() -> str | None:
@@ -86,6 +89,49 @@ def _reasoning_effort_args(reasoning_effort: str | None) -> list[str]:
     return ["-c", f'model_reasoning_effort="{effort}"']
 
 
+def _allowed_tool_names(allowed_tools: str | None) -> set[str]:
+    if allowed_tools is None:
+        return set()
+    return {
+        part.strip()
+        for part in str(allowed_tools).split(",")
+        if part.strip()
+    }
+
+
+def _tool_config_args(allowed_tools: str | None) -> list[str]:
+    """Translate the classic Claude allow-list into hermetic Codex config.
+
+    ``--ignore-user-config`` intentionally keeps pipeline runs independent of a
+    developer's personal Codex setup. Stage-required MCP servers must therefore
+    be supplied as one-off ``-c`` overrides. Normative stages fail closed when
+    the project MCP cannot initialize instead of silently falling back to web.
+    """
+    if allowed_tools is None:
+        return []
+
+    tool_names = _allowed_tool_names(allowed_tools)
+    args: list[str] = []
+    if not ({"WebSearch", "WebFetch"} & tool_names):
+        args.extend(["-c", 'web_search="disabled"'])
+
+    norms_tools = sorted(
+        name.removeprefix(_NORMS_MCP_PREFIX)
+        for name in tool_names
+        if name.startswith(_NORMS_MCP_PREFIX)
+    )
+    if norms_tools:
+        args.extend([
+            "-c", f"mcp_servers.norms.command={json.dumps(str(_NORMS_MCP_PYTHON))}",
+            "-c", f"mcp_servers.norms.args={json.dumps([str(_NORMS_MCP_SERVER)])}",
+            "-c", "mcp_servers.norms.required=true",
+            "-c", f"mcp_servers.norms.enabled_tools={json.dumps(norms_tools)}",
+            "-c", 'mcp_servers.norms.default_tools_approval_mode="approve"',
+            "-c", "mcp_servers.norms.tool_timeout_sec=120",
+        ])
+    return args
+
+
 def _normalize_image_paths(image_paths: Sequence[str | Path] | None) -> list[Path]:
     if not image_paths:
         return []
@@ -113,6 +159,7 @@ def _build_prompt(
     stage: str,
     project_id: str,
     image_paths: Sequence[str | Path] | None = None,
+    allowed_tools: str | None = None,
 ) -> str:
     images = _normalize_image_paths(image_paths)
     image_section = ""
@@ -127,6 +174,21 @@ def _build_prompt(
             "</ATTACHED_IMAGES>\n\n"
         )
 
+    allowed = _allowed_tool_names(allowed_tools)
+    tool_policy = ""
+    norms_tools = sorted(name for name in allowed if name.startswith(_NORMS_MCP_PREFIX))
+    if norms_tools:
+        tool_policy += (
+            "Normative status, clauses, and quotations must be checked only with "
+            "the configured `norms` MCP tools. Do not substitute web search or "
+            "model memory. If MCP does not confirm a claim, leave it unverified "
+            "as required by the task.\n"
+        )
+    if allowed_tools is not None and not ({"WebSearch", "WebFetch"} & allowed):
+        tool_policy += "Web search is disabled for this stage.\n"
+    if tool_policy:
+        tool_policy = f"<TOOL_POLICY>\n{tool_policy}</TOOL_POLICY>\n\n"
+
     return (
         "You are running as OpenAI Codex exec inside the Audit Manager classic "
         "pipeline. You are replacing a Claude Code CLI agent for this single "
@@ -139,6 +201,7 @@ def _build_prompt(
         "task. Do not modify unrelated files. Do not print JSON instead of "
         "writing it when the task asks for an output file. Finish with one short "
         "status line.\n\n"
+        f"{tool_policy}"
         f"{image_section}"
         "<PIPELINE_TASK>\n"
         f"{task_text or ''}\n"
@@ -273,6 +336,7 @@ async def run_codex_exec(
     model: str | None = None,
     image_paths: Sequence[str | Path] | None = None,
     reasoning_effort: str | None = None,
+    allowed_tools: str | None = None,
 ) -> tuple[int, str, CLIResult]:
     """Run Codex exec and return the classic `(exit_code, output, CLIResult)` tuple."""
     cli = find_codex_cli()
@@ -288,7 +352,13 @@ async def run_codex_exec(
     image_args: list[str] = []
     for image_path in images:
         image_args.extend(["--image", str(image_path)])
-    prompt = _build_prompt(task_text, stage=stage, project_id=project_id, image_paths=images)
+    prompt = _build_prompt(
+        task_text,
+        stage=stage,
+        project_id=project_id,
+        image_paths=images,
+        allowed_tools=allowed_tools,
+    )
     cmd = [
         cli,
         "exec",
@@ -301,6 +371,7 @@ async def run_codex_exec(
         "--model",
         resolved_model,
         *_reasoning_effort_args(reasoning_effort),
+        *_tool_config_args(allowed_tools),
         *image_args,
         "-C",
         str(ROOT_DIR),
@@ -407,6 +478,8 @@ async def run_codex_json_messages(
         "--model",
         resolved_model,
         *_reasoning_effort_args(reasoning_effort),
+        "-c",
+        'web_search="disabled"',
         "--json",
         *schema_args,
         *image_args,

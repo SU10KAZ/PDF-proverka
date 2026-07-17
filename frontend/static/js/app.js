@@ -1570,6 +1570,9 @@ const app = createApp({
         const logAutoScroll = ref(true);
         const logContainer = ref(null);
         const logLoading = ref(false);
+        // Файл лога длиннее окна выборки (limit в loadProjectLog) — текст
+        // баннера «начало лога усечено» над секциями; '' = баннера нет.
+        const logTruncatedNotice = ref('');
 
         // Текущая фаза «размышления модели»: merge | critic | corrector | done | ''
         const findingStage = ref({});     // {projectId: 'merge'|...}
@@ -5224,6 +5227,9 @@ const app = createApp({
         const sectionOptimizationAgentAvailable = computed(() => (
             (sectionOptimizationData.value?.analysis_stages || []).some(stage => stage.key === 'agent')
         ));
+        const sectionOptimizationGraphicsAgentAvailable = computed(() => (
+            sectionOptimizationData.value?.capabilities?.targeted_graphics_agent === true
+        ));
         const sectionOptimizationReplicationCandidates = computed(() => (
             (sectionOptimizationData.value?.signals || [])
                 .filter(signal => signal.kind === 'replicate_accepted_optimization')
@@ -5238,7 +5244,7 @@ const app = createApp({
                 .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
                 .filter(Boolean);
             const running = processes.filter(item => ['queued', 'running'].includes(item.status)).length;
-            const prepared = processes.filter(item => item.agent_status === 'complete').length;
+            const prepared = processes.filter(sectionOptimizationReplicationComplete).length;
             if (!total) return 'Нет кандидатов на тиражирование';
             if (running) return `Готовится: ${running} · подготовлено: ${prepared} из ${total}`;
             if (!sectionOptimizationReplicationPendingCount.value) return `Все ${total} кандидатов подготовлены`;
@@ -5319,14 +5325,45 @@ const app = createApp({
                 status: 'pending',
                 message: 'Ожидает запуска',
             };
-            if (stageKey !== 'agent') return storedStage;
-
             const total = sectionOptimizationReplicationCandidates.value.length;
-            if (!total) return storedStage;
             const processes = sectionOptimizationReplicationCandidates.value
                 .map(signal => sectionOptimizationReplicationFor(signal.signal_id))
                 .filter(Boolean);
-            const active = processes.filter(process => ['queued', 'running'].includes(process.status)).length;
+            if (stageKey === 'graphics') {
+                if (!total) return storedStage;
+                const active = processes.filter(process => ['queued', 'running'].includes(process.status)
+                    && ['queued', 'running'].includes(process.graphics_status)).length;
+                const required = processes.filter(process => process.graphics_required).length;
+                const completed = processes.filter(process => process.graphics_status === 'complete').length;
+                const agentReady = processes.filter(process => process.agent_status === 'complete').length;
+                if (active) {
+                    return {
+                        ...storedStage,
+                        status: 'running',
+                        message: `Vision-проверка: готово ${completed} из ${required}`,
+                    };
+                }
+                if (agentReady === total && processes.every(sectionOptimizationReplicationComplete)) {
+                    return {
+                        ...storedStage,
+                        status: 'done',
+                        message: required
+                            ? `Графически проверено: ${completed} проектных запросов`
+                            : 'Графическая проверка не потребовалась',
+                    };
+                }
+                if (required) {
+                    return {
+                        ...storedStage,
+                        status: 'waiting',
+                        message: `Проверено ${completed} из ${required} графических запросов`,
+                    };
+                }
+                return storedStage;
+            }
+            if (stageKey !== 'agent' || !total) return storedStage;
+
+            const active = processes.filter(process => ['queued', 'running'].includes(process.agent_status)).length;
             const completed = processes.filter(process => process.agent_status === 'complete').length;
             const failed = processes.filter(process => process.agent_status === 'failed').length;
             if (active) {
@@ -5397,27 +5434,100 @@ const app = createApp({
             return sectionOptimizationReplications.value.find(item => item.signal_id === signalId) || null;
         }
 
+        function sectionOptimizationReplicationComplete(process) {
+            if (!process || process.agent_status !== 'complete') return false;
+            // Бэкенд нормализует старые задачи на чтении, поэтому graphics_status
+            // приходит всегда. Терпимость к отсутствию ключа здесь противоречила
+            // бы гейту дублей: UI показывал бы «подготовлено» там, где бэкенд
+            // задачу не признаёт.
+            return ['not_required', 'complete'].includes(process.graphics_status);
+        }
+
+        // Графика не доведена, но досье умного агента оплачено и цело: полный
+        // перезапуск стоил бы новой сессии агента, поэтому такие процессы
+        // догоняет отдельная кнопка повтора графики.
+        function sectionOptimizationReplicationCanRetryGraphics(process) {
+            if (!process || process.agent_status !== 'complete') return false;
+            if (['queued', 'running'].includes(process.status)) return false;
+            if (process.graphics_status === 'running') return false;
+            return ['pending', 'partial', 'failed'].includes(process.graphics_status);
+        }
+
         function sectionOptimizationReplicationNeedsAgent(signalId) {
             const process = sectionOptimizationReplicationFor(signalId);
             if (!process) return true;
             if (['queued', 'running'].includes(process.status)) return false;
             if (['failed', 'interrupted'].includes(process.status)) return true;
-            return process.agent_status !== 'complete';
+            // Недоведённая графика — не повод гонять умного агента заново.
+            if (sectionOptimizationReplicationCanRetryGraphics(process)) return false;
+            return !sectionOptimizationReplicationComplete(process);
+        }
+
+        async function retrySectionOptimizationGraphics(process) {
+            const sectionCode = sidebarFilterSection.value;
+            if (!sectionCode || !process || sectionOptimizationReplicationActionLoading.value) return;
+            if (!sectionOptimizationReplicationCanRetryGraphics(process)) return;
+            sectionOptimizationReplicationActionLoading.value = true;
+            sectionOptimizationPipelineActionError.value = '';
+            try {
+                const response = await apiPost(
+                    sectionOptimizationReplicationsUrl(
+                        sectionCode,
+                        '/' + encodeURIComponent(process.replication_id) + '/graphics/retry',
+                    ),
+                    undefined,
+                    { withVersion: false },
+                );
+                if (response?.replication) {
+                    upsertSectionOptimizationReplication(response.replication);
+                    void pollSectionOptimizationReplication(
+                        sectionCode,
+                        currentObjectId.value || '',
+                        process.replication_id,
+                    );
+                }
+            } catch (error) {
+                sectionOptimizationPipelineActionError.value =
+                    error?.message || 'Не удалось повторить графическую проверку';
+            } finally {
+                sectionOptimizationReplicationActionLoading.value = false;
+            }
+        }
+
+        // Эксперт обязан отличать «графика проверена» от «графика не доведена»:
+        // во втором случае вердикт агента не подкреплён чертежами, и это его
+        // решение — довериться или нажать повтор.
+        function sectionOptimizationReplicationGraphicsLabel(process) {
+            if (process.graphics_status === 'failed') {
+                return 'Графика не проверена · ожидает эксперта';
+            }
+            if (process.graphics_status === 'partial') {
+                return 'Графика проверена частично · ожидает эксперта';
+            }
+            if (process.graphics_status === 'pending' && process.graphics_required) {
+                return 'Графика не запускалась · ожидает эксперта';
+            }
+            if (process.graphics_required && process.graphics_status === 'complete') {
+                return 'Графика проверена · ожидает эксперта';
+            }
+            return 'Агент завершил · ожидает эксперта';
         }
 
         function sectionOptimizationReplicationStatusLabel(process) {
             if (!process) return 'Ожидает запуска умного агента';
-            if (process.agent_status !== 'complete'
-                && ['awaiting_graphics', 'awaiting_expert'].includes(process.status)) {
+            if (process.agent_status !== 'complete' && process.status === 'awaiting_expert') {
                 return 'Требуется запуск умного агента';
             }
             const labels = {
                 queued: 'В очереди умного агента',
-                running: process.agent_status === 'running'
-                    ? 'Умный агент анализирует…'
-                    : (process.agent_status === 'queued' ? 'В очереди умного агента' : 'Готовится досье…'),
-                awaiting_graphics: 'Агент запросил графическую проверку',
-                awaiting_expert: 'Агент завершил · ожидает эксперта',
+                running: process.graphics_status === 'running'
+                    ? 'Графический агент анализирует блоки…'
+                    : (process.graphics_status === 'queued'
+                        ? 'Графическая проверка в очереди'
+                        : (process.agent_status === 'running'
+                            ? 'Умный агент анализирует…'
+                            : (process.agent_status === 'queued' ? 'В очереди умного агента' : 'Готовится досье…'))),
+                awaiting_expert: sectionOptimizationReplicationGraphicsLabel(process),
                 approved: 'Тиражирование принято',
                 rejected: 'Тиражирование отклонено',
                 failed: process.agent_status === 'failed' ? 'Ошибка умного агента' : 'Ошибка подготовки',
@@ -5435,6 +5545,39 @@ const app = createApp({
                 reject: 'Не тиражировать',
             };
             return labels[verdict] || 'Требует проверки';
+        }
+
+        function sectionOptimizationGraphicsConclusionLabel(conclusion) {
+            const labels = {
+                supports_replication: 'Графика подтверждает',
+                contradicts_replication: 'Графика противоречит',
+                inconclusive: 'Недостаточно доказательств',
+                not_visible: 'Не видно на выбранных блоках',
+            };
+            return labels[conclusion] || 'Графика не проверена';
+        }
+
+        function openSectionOptimizationGraphicsBlock(projectId, blockId, page) {
+            if (!projectId || !blockId) return;
+            blockBackRoute.value = {
+                hash: window.location.hash || `#/section/${encodeURIComponent(sidebarFilterSection.value)}/optimization`,
+                expandedFinding: null,
+                expandedOpt: null,
+            };
+            navigate(`/project/${encodeURIComponent(projectId)}/blocks`);
+            nextTick(async () => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                if (page) selectedBlockPage.value = page;
+                await nextTick();
+                for (const pg of blockPages.value) {
+                    const found = (pg.blocks || []).find(block => block.block_id === blockId);
+                    if (!found) continue;
+                    selectedBlockPage.value = pg.page_num;
+                    await nextTick();
+                    openBlock(found);
+                    break;
+                }
+            });
         }
 
         function upsertSectionOptimizationReplication(replication) {
@@ -5482,6 +5625,7 @@ const app = createApp({
             const sectionCode = sidebarFilterSection.value;
             if (!sectionCode || sectionOptimizationReplicationActionLoading.value
                 || !sectionOptimizationAgentAvailable.value
+                || !sectionOptimizationGraphicsAgentAvailable.value
                 || !sectionOptimizationReplicationPendingCount.value) return;
             sectionOptimizationReplicationActionLoading.value = true;
             sectionOptimizationPipelineActionError.value = '';
@@ -9946,8 +10090,13 @@ const app = createApp({
             /**  Загрузить историю логов из файла проекта + восстановить структурированные карточки. */
             if (!projectId) return;
             logLoading.value = true;
+            logTruncatedNotice.value = '';
             try {
-                const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/log?limit=500`);
+                // Лимит 5000: полный прогон должен помещаться целиком —
+                // усечение истории выглядит как «лог перезаписался с этапа X»
+                // (наблюдалось при limit=500: флуд одного этапа вытеснял
+                // все предыдущие секции из окна выборки).
+                const resp = await fetch(`/api/audit/${encodeURIComponent(projectId)}/log?limit=5000`);
                 if (resp.ok) {
                     const data = await resp.json();
                     const entries = (data.entries || []).map(e => {
@@ -9963,6 +10112,12 @@ const app = createApp({
                             stage: e.stage || '',
                         };
                     });
+                    // Файл длиннее окна выборки — честно сказать об усечении
+                    // баннером над секциями, а не молча показывать лог
+                    // «с середины процесса».
+                    logTruncatedNotice.value = (data.has_more && entries.length)
+                        ? `⚠ Показаны последние ${entries.length} из ${data.total} записей — начало лога усечено`
+                        : '';
                     projectLogs.value[projectId] = entries;
                     findingIndex.value[projectId] = {};
 
@@ -10288,9 +10443,17 @@ const app = createApp({
                     ...findingStage.value,
                     [pid]: msg.data.stage || '',
                 };
-                // При начале новой фазы merge — сбрасываем индекс (новый запуск конвейера)
+                // При начале новой фазы merge — новый свод полностью заменяет
+                // набор замечаний: убираем и индекс, и старые finding-карточки
+                // (в т.ч. восстановленные после F5), иначе при retry свода они
+                // задваиваются. Лог-строки не трогаем: карточки отражают
+                // ТЕКУЩИЙ 03_findings.json, а не историю процесса.
                 if (msg.data.stage === 'merge') {
                     findingIndex.value[pid] = {};
+                    const list = projectLogs.value[pid];
+                    if (list && list.length) {
+                        projectLogs.value[pid] = list.filter(e => e.kind !== 'finding');
+                    }
                 }
             } else if (msg.type === 'finding_added') {
                 pushFindingCard(pid, {
@@ -18590,6 +18753,7 @@ const app = createApp({
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
             showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
+            logTruncatedNotice,
             logSections, isLogSectionCollapsed, toggleLogSection,
             currentFindingStage,
             wsConnected,
@@ -18714,6 +18878,7 @@ const app = createApp({
             sectionOptimizationPipelineActionLoading, sectionOptimizationPipelineActionError,
             sectionOptimizationReplicationActionLoading, sectionOptimizationReplications,
             sectionOptimizationAgentAvailable,
+            sectionOptimizationGraphicsAgentAvailable,
             sectionOptimizationReplicationPendingCount, sectionOptimizationReplicationProgressLabel,
             sectionOptimizationFilteredSpecifications, sectionOptimizationSpecificationGroups,
             sectionOptimizationFilteredAccepted,
@@ -18722,7 +18887,9 @@ const app = createApp({
             sectionOptimizationPipelineStageMarker,
             runSectionOptimizationPipeline, requestSectionOptimizationGraphicsPlan,
             startAllSectionOptimizationReplications, sectionOptimizationReplicationFor,
+            retrySectionOptimizationGraphics, sectionOptimizationReplicationCanRetryGraphics,
             sectionOptimizationReplicationStatusLabel, sectionOptimizationAgentVerdictLabel,
+            sectionOptimizationGraphicsConclusionLabel, openSectionOptimizationGraphicsBlock,
             setSectionOptimizationTab, navigateToSectionOptimization, sectionOptimizationProjectLabel,
             sectionOptimizationSpecificationTypeMark,
             sectionOptimizationSpecificationSectionTitle, sectionOptimizationSpecificationSectionKey,

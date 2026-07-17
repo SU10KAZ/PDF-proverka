@@ -185,6 +185,36 @@ async def start_all_section_replications(
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/section/{section_code}/replications/{replication_id}/graphics/retry")
+async def retry_section_replication_graphics(
+    section_code: str,
+    replication_id: str,
+    object_id: Optional[str] = Query(None, description="Объект, выбранный в интерфейсе"),
+):
+    """Повторить только графическую проверку по уже готовому досье.
+
+    Отдельный вход нужен, чтобы недоведённая графика не стоила повторной оплаты
+    текстового агента: «Запустить всех» такие задачи пропускает.
+    """
+    code = _section_code_or_400(section_code)
+    from backend.app.services.section_optimization_replication_service import (
+        SectionReplicationConflict,
+        SectionReplicationNotFound,
+        retry_graphics,
+    )
+    try:
+        return {
+            "status": "started",
+            "replication": retry_graphics(code, replication_id, object_id=object_id),
+        }
+    except SectionReplicationConflict as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except SectionReplicationNotFound as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 @router.get("/section/{section_code}/replications")
 async def get_section_replications(
     section_code: str,
@@ -268,6 +298,12 @@ async def get_section_optimization(
             "description": "Инженерная оценка применимости решения отдельно для каждого целевого проекта.",
         })
         data["analysis_stages"] = stages
+    capabilities = dict(data.get("capabilities") or {})
+    capabilities.update({
+        "section_optimization_agent": True,
+        "targeted_graphics_agent": True,
+    })
+    data["capabilities"] = capabilities
     data["pipeline"] = pipeline
     data["replications"] = list_replications(code, object_id=object_id)
     return data

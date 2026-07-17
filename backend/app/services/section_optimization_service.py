@@ -1042,6 +1042,10 @@ def synthesize_section_optimization_data(normalized: dict) -> dict:
             {"key": "graphics", "title": "Графика по запросу", "description": "Точечная проверка только спорных кандидатов по связанным блокам чертежей."},
             {"key": "review", "title": "Эксперт", "description": "Принятие решения уровня раздела; автоматическое применение запрещено."},
         ],
+        "capabilities": {
+            "section_optimization_agent": True,
+            "targeted_graphics_agent": True,
+        },
         "warnings": list(normalized.get("warnings") or []),
     }
 

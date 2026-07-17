@@ -47,6 +47,8 @@ Solutions more expensive during construction but with savings over 10-25 years: 
 ## Analysis Rules
 
 - All replacements must comply with current norms (СП, ГОСТ, ТР ТС)
+- **Norms source is Norms-main MCP only:** before filling `norm` or making a normative claim in `proposed`/`risks`, verify document status with `mcp__norms__get_norm_status` and the clause number and meaning with `mcp__norms__get_paragraph_json`; use `mcp__norms__semantic_search_json` when needed. WebSearch/WebFetch are forbidden for checking, finding, or updating norms.
+- **No MCP confirmation means no guessing:** if Norms-main does not return the document or clause, do not insert a reference from memory. Leave `norm: ""`, set `status: "требует проверки"`, and briefly state the verification gap in `risks`. Do not claim that a norm “directly permits” a solution without an MCP-confirmed clause.
 - DO NOT propose replacements that reduce reliability or fire safety
 - When in doubt → `"status": "требует проверки"`
 - Priority: large items with maximum effect first

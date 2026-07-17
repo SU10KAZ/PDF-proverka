@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import copy
 import json
+import logging
 import os
 import threading
 import uuid
@@ -25,11 +26,22 @@ from backend.app.services.section_optimization_agent_service import (
     analyze_replication_dossier,
     configured_agent_model,
 )
+from backend.app.services.section_optimization_graphics_agent_service import (
+    analyze_graphics_requests,
+)
 
+
+logger = logging.getLogger(__name__)
 
 _LOCK = threading.RLock()
 _ACTIVE_TASKS: dict[str, "asyncio.Task[Any]"] = {}
 _ACTIVE_STATUSES = {"queued", "running"}
+# Графика доведена до конца — повторять её незачем.
+_GRAPHICS_DONE_STATUSES = {"complete", "not_required"}
+# Графика не доведена, но досье с оплаченным agent_review цело: задачу нужно
+# ПРИЗНАТЬ (иначе start_all переоплатит текстового агента), но не доводить
+# автоматически — графику догоняет отдельная кнопка повтора.
+_GRAPHICS_RETRYABLE_STATUSES = {"pending", "partial", "failed"}
 _STAGES = (
     ("validate", "Проверка кандидата"),
     ("package", "Подготовка досье"),
@@ -85,6 +97,40 @@ def _read_json(path: Path) -> Optional[dict]:
         return value if isinstance(value, dict) else None
     except (OSError, json.JSONDecodeError):
         return None
+
+
+def _normalize_legacy_job(job: dict) -> dict:
+    """Привести задачу схем 1-2 к контракту схемы 3 — в памяти, без записи.
+
+    Схема 2 не знала поля `graphics_status`, поэтому без нормализации ни одна
+    старая задача не проходит гейт `_active_job_for_signal` и start_all заводит
+    по ней дубль, заново оплачивая текстового агента.
+
+    Отображение опирается на инварианты старого кода, а не на догадки:
+    * `awaiting_expert` в схеме 2 достигался ТОЛЬКО веткой «графика не нужна»,
+      поэтому отсутствие `graphics_status` там равнозначно `not_required`;
+    * `awaiting_graphics` был терминальным состоянием «agent_review готов, ждём
+      ручного запуска графики». Производителя у него больше нет, но досье цело,
+      поэтому задача становится `awaiting_expert` + `graphics_status="pending"`:
+      её видно эксперту, start_all её не переоплачивает, а графику догоняет
+      кнопка повтора.
+    """
+    if "graphics_status" not in job:
+        if job.get("status") == "awaiting_graphics":
+            job["status"] = "awaiting_expert"
+            job["graphics_status"] = "pending"
+        elif job.get("status") == "awaiting_expert":
+            job["graphics_status"] = "not_required"
+        else:
+            job["graphics_status"] = "pending"
+    job.setdefault("graphics_reviews", [])
+    return job
+
+
+def _load_job(path: Path) -> Optional[dict]:
+    """Прочитать задачу с диска и нормализовать её к текущей схеме."""
+    job = _read_json(path)
+    return _normalize_legacy_job(job) if job is not None else None
 
 
 def _write_json(path: Path, payload: dict) -> None:
@@ -161,17 +207,70 @@ def _signal_from_snapshot(snapshot: dict, signal_id: str) -> dict:
 
 def _active_job_for_signal(section: str, object_id: str, signal_id: str) -> Optional[dict]:
     for path in _replications_dir(section, object_id).glob("*.json"):
-        job = _read_json(path)
+        job = _load_job(path)
         if not job or job.get("signal_id") != signal_id:
             continue
         if job.get("status") in _ACTIVE_STATUSES:
             return job
+        # Задачу нужно признать, если текстовый агент уже отработал: его сессия
+        # оплачена, а досье лежит на диске. Недоведённую графику догоняет
+        # отдельный повтор, а не повторная оплата всего процесса.
         if (
-            job.get("status") in {"awaiting_graphics", "awaiting_expert"}
+            job.get("status") == "awaiting_expert"
             and job.get("agent_status") == "complete"
+            and job.get("graphics_status")
+            in (_GRAPHICS_DONE_STATUSES | _GRAPHICS_RETRYABLE_STATUSES)
         ):
             return job
     return None
+
+
+def _apply_graphics_reviews(job: dict, graphics_reviews: list[dict], graphics_meta: dict) -> None:
+    """Разложить обзоры графики по оценкам агента и обновить статус задачи.
+
+    Вызывается и из первичной подготовки, и из повтора графики — логика обязана
+    быть одна, иначе повтор со временем разойдётся с основным путём.
+    """
+    reviews_by_project = {
+        str(review.get("project_id") or ""): review
+        for review in graphics_reviews
+        if review.get("project_id")
+    }
+    enriched_assessments: list[dict] = []
+    for assessment in job.get("agent_assessments") or []:
+        enriched = dict(assessment)
+        review = reviews_by_project.get(str(assessment.get("project_id") or ""))
+        if review:
+            enriched["graphics_review"] = review
+            # У мягко упавшего обзора resolved_verdict пуст: вердикт текстового
+            # агента сохраняется, а не подменяется на needs_data.
+            enriched["resolved_verdict"] = review.get("resolved_verdict") or assessment.get("verdict")
+        else:
+            enriched["resolved_verdict"] = assessment.get("verdict")
+        enriched_assessments.append(enriched)
+    job["agent_assessments"] = enriched_assessments
+    job["dossier"]["agent_review"]["target_assessments"] = copy.deepcopy(enriched_assessments)
+    job["dossier"]["graphics_reviews"] = graphics_reviews
+    job["graphics_reviews"] = graphics_reviews
+    job["graphics_agent"] = graphics_meta
+    job["graphics_model"] = graphics_meta.get("model") or configured_agent_model()
+    # Статус берётся из метрик стадии, а не проставляется оптимистично: часть
+    # проектов могла деградировать мягко (partial/failed), и эксперт обязан это
+    # видеть, а повтор — знать, что доводить.
+    job["graphics_status"] = graphics_meta.get("status") or "complete"
+
+
+def _graphics_assessments_to_retry(job: dict) -> list[dict]:
+    """Оценки, по которым графику нужно догнать: запрошена, но не выполнена."""
+    pending: list[dict] = []
+    for assessment in job.get("agent_assessments") or []:
+        if not assessment.get("graphics_required"):
+            continue
+        review = assessment.get("graphics_review") or {}
+        if review and review.get("status") != "failed":
+            continue
+        pending.append(assessment)
+    return pending
 
 
 async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
@@ -254,6 +353,7 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
                     for key in (
                         "source_ref", "project_id", "project_name", "version_id", "id", "current",
                         "proposed", "risks", "norm", "savings_pct", "spec_items",
+                        "page", "sheet",
                     )
                 }
                 for item in source_decisions
@@ -342,15 +442,46 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
         if graphics_assessments:
             graphics.update({
                 "status": "waiting",
-                "message": f"Агент запросил графическую проверку: {len(graphics_assessments)} проект(а)",
+                "message": f"Ожидает vision-проверку: {len(graphics_assessments)} проект(а)",
             })
-            job["status"] = "awaiting_graphics"
+            job["graphics_status"] = "queued"
+            _write_job(job)
+
+            job["graphics_status"] = "running"
+            _begin_stage(
+                job,
+                "graphics",
+                f"Графический агент проверяет блоки: {len(graphics_assessments)} проект(а)",
+            )
+            graphics_reviews, graphics_meta = await analyze_graphics_requests(
+                job["dossier"],
+                graphics_assessments,
+                object_id=job["object_id"],
+                section=job["section"],
+                replication_id=job["replication_id"],
+            )
+            _apply_graphics_reviews(job, graphics_reviews, graphics_meta)
+            _finish_stage(
+                job,
+                "graphics",
+                f"Графический агент проверил {len(graphics_reviews)} проект(а)",
+                graphics_meta,
+            )
+            job["status"] = "awaiting_expert"
         else:
             graphics.update({
                 "status": "skipped",
                 "message": "Для этого кандидата графическая проверка не требуется",
                 "finished_at": _utc_now(),
             })
+            job["graphics_status"] = "not_required"
+            job["agent_assessments"] = [
+                {**assessment, "resolved_verdict": assessment.get("verdict")}
+                for assessment in (job.get("agent_assessments") or [])
+            ]
+            job["dossier"]["agent_review"]["target_assessments"] = copy.deepcopy(
+                job["agent_assessments"]
+            )
             job["status"] = "awaiting_expert"
         expert.update({
             "status": "waiting",
@@ -363,6 +494,8 @@ async def _prepare_replication(job: dict, snapshot: dict, signal: dict) -> None:
         job["error"] = str(exc)
         if job.get("agent_status") in {"queued", "running"}:
             job["agent_status"] = "failed"
+        if job.get("graphics_status") in {"queued", "running"}:
+            job["graphics_status"] = "failed"
         for stage in job.get("stages") or []:
             if stage.get("status") == "running":
                 stage.update({"status": "failed", "message": str(exc), "finished_at": _utc_now()})
@@ -397,7 +530,7 @@ def start_replication(
             raise SectionReplicationConflict("Процесс тиражирования этого кандидата уже запущен")
         now = _utc_now()
         job = {
-            "schema_version": 2,
+            "schema_version": 3,
             "replication_id": "repl-" + uuid.uuid4().hex[:12],
             "section": code,
             "object_id": resolved_object_id,
@@ -416,6 +549,12 @@ def start_replication(
             "graphics_required": bool(signal.get("graphics_recommended")),
             "graphics_hint": bool(signal.get("graphics_recommended")),
             "graphics_requests": [],
+            "graphics_status": "pending",
+            "graphics_reviews": [],
+            "graphics_agent": None,
+            "graphics_model": configured_agent_model(),
+            "graphics_target_counts": {},
+            "resolved_target_counts": {},
             "agent_status": "pending",
             "agent_model": configured_agent_model(),
             "agent_recommendation": None,
@@ -430,6 +569,92 @@ def start_replication(
         task = asyncio.create_task(
             _prepare_replication(job, snapshot, signal),
             name=job["replication_id"],
+        )
+        _ACTIVE_TASKS[job["replication_id"]] = task
+        return _public_job(job)
+
+
+async def _run_graphics_retry(job: dict, assessments: list[dict]) -> None:
+    """Догнать графику по сохранённому досье. Текстовый агент не перезапускается."""
+    task_key = job["replication_id"]
+    try:
+        _begin_stage(
+            job,
+            "graphics",
+            f"Повтор графической проверки: {len(assessments)} проект(а)",
+        )
+        reviews, meta = await analyze_graphics_requests(
+            job["dossier"],
+            assessments,
+            object_id=job["object_id"],
+            section=job["section"],
+            replication_id=job["replication_id"],
+        )
+        with _LOCK:
+            # Слить с уже имеющимися обзорами: повтор гонит только недоведённые
+            # проекты, а успешные из прошлого прогона обязаны сохраниться.
+            merged = {
+                str(r.get("project_id") or ""): r
+                for r in (job.get("graphics_reviews") or [])
+                if r.get("project_id") and r.get("status") != "failed"
+            }
+            for review in reviews:
+                merged[str(review.get("project_id") or "")] = review
+            _apply_graphics_reviews(job, list(merged.values()), meta)
+            _finish_stage(
+                job,
+                "graphics",
+                f"Графический агент проверил {len(reviews)} проект(а)",
+                meta,
+            )
+            job["status"] = "awaiting_expert"
+            _write_job(job)
+    except Exception as exc:  # noqa: BLE001 — повтор не должен ронять задачу
+        logger.exception("Повтор графики упал: %s", task_key)
+        with _LOCK:
+            job["graphics_status"] = "failed"
+            job["error"] = str(exc)
+            job["status"] = "awaiting_expert"
+            _write_job(job)
+    finally:
+        _ACTIVE_TASKS.pop(task_key, None)
+
+
+def retry_graphics(
+    section: str,
+    replication_id: str,
+    *,
+    object_id: Optional[str] = None,
+) -> dict:
+    """Повторить ТОЛЬКО графическую проверку по уже готовому досье.
+
+    Существует потому, что упавшая или недоведённая графика не должна стоить
+    повторной оплаты текстового агента: его сессия уже оплачена, а результат
+    лежит в `dossier.agent_review`.
+    """
+    code = _clean_section(section)
+    resolved_object_id = _resolve_object_id(object_id)
+    with _LOCK:
+        path = _job_path(code, resolved_object_id, replication_id)
+        job = _load_job(path)
+        if not job:
+            raise SectionReplicationNotFound("Процесс тиражирования не найден")
+        if job["replication_id"] in _ACTIVE_TASKS or job.get("status") in _ACTIVE_STATUSES:
+            raise SectionReplicationConflict("Процесс тиражирования уже выполняется")
+        if job.get("agent_status") != "complete" or not (job.get("dossier") or {}).get("agent_review"):
+            raise SectionReplicationConflict(
+                "Нет готового досье умного агента — запустите подготовку целиком"
+            )
+        assessments = _graphics_assessments_to_retry(job)
+        if not assessments:
+            raise SectionReplicationConflict("Графическая проверка не требуется или уже выполнена")
+
+        job["graphics_status"] = "running"
+        job["error"] = ""
+        _write_job(job)
+        task = asyncio.create_task(
+            _run_graphics_retry(job, assessments),
+            name=f"{job['replication_id']}-graphics-retry",
         )
         _ACTIVE_TASKS[job["replication_id"]] = task
         return _public_job(job)
@@ -519,7 +744,7 @@ def get_replication(
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
     with _LOCK:
-        job = _read_json(_job_path(code, resolved_object_id, replication_id))
+        job = _load_job(_job_path(code, resolved_object_id, replication_id))
         if not job:
             raise SectionReplicationNotFound("Процесс тиражирования не найден")
         job = _mark_interrupted_if_needed(job)
@@ -532,7 +757,7 @@ def list_replications(section: str, *, object_id: Optional[str] = None) -> list[
     with _LOCK:
         jobs: list[dict] = []
         for path in _replications_dir(code, resolved_object_id).glob("*.json"):
-            job = _read_json(path)
+            job = _load_job(path)
             if not job:
                 continue
             jobs.append(_public_job(_mark_interrupted_if_needed(job)))
@@ -544,6 +769,7 @@ __all__ = [
     "SectionReplicationNotFound",
     "get_replication",
     "list_replications",
+    "retry_graphics",
     "start_all_replications",
     "start_replication",
 ]

@@ -43,6 +43,7 @@ from backend.app.core.config import (
     get_claude_cli,
     get_model_for_stage,
     TEXT_ANALYSIS_TOOLS, FINDINGS_MERGE_TOOLS, NORM_VERIFY_TOOLS,
+    OPTIMIZATION_TOOLS,
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_FINDINGS_MERGE_TIMEOUT,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT, CLAUDE_NORM_REQUOTE_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
@@ -258,6 +259,7 @@ async def _run_cli(
             model=model,
             image_paths=image_paths,
             reasoning_effort=reasoning_effort,
+            allowed_tools=tools,
         )
 
     from backend.app.services.common.process_runner import run_command
@@ -1148,7 +1150,7 @@ async def run_optimization(
         if reasoning_effort_override:
             cli_kwargs["reasoning_effort"] = reasoning_effort_override
         exit_code, combined, cli_result = await _run_cli(
-            task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
+            task_text, OPTIMIZATION_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
             on_output, **cli_kwargs,
         )
 
@@ -1173,7 +1175,7 @@ async def run_optimization(
         ):
             task_text = prepare_optimization_task(project_info, project_id)
         exit_code, combined, cli_result = await _run_cli(
-            task_text, TEXT_ANALYSIS_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
+            task_text, OPTIMIZATION_TOOLS, CLAUDE_OPTIMIZATION_TIMEOUT,
             on_output, stage="optimization", project_id=project_id,
             model=model,
         )

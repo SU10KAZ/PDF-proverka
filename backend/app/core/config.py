@@ -227,6 +227,12 @@ NORM_VERIFY_TOOLS = (
 TEXT_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 BLOCK_ANALYSIS_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
 FINDINGS_MERGE_TOOLS = "Read,Write,Grep,Glob,WebSearch,WebFetch"
+OPTIMIZATION_TOOLS = (
+    "Read,Write,Grep,Glob,"
+    "mcp__norms__get_norm_status,"
+    "mcp__norms__get_paragraph_json,"
+    "mcp__norms__semantic_search_json"
+)
 OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 
 # Модель Claude CLI (sonnet = экономит лимит All models)
@@ -747,6 +753,19 @@ VERDICT_PRESERVATION_SHADOW = _env_bool("VERDICT_PRESERVATION_SHADOW", False)
 # Детерминированно, офлайн, идемпотентно, fail-soft. ON по умолчанию —
 # сторонний эксперт не должен видеть внутренние идентификаторы.
 FINDINGS_BLOCK_CAPTIONS_ENABLED = _env_bool("FINDINGS_BLOCK_CAPTIONS_ENABLED", True)
+# Stage 01: вернуть блоку КОНТЕКСТ ЛИСТА (условные обозначения, примечания,
+# спецификации, ведомость) + анти-FP оговорку про границы фрагмента.
+# Причина: build_block_user_text подавал page_text, но source router (канонический
+# путь, 72/73 блока на АИ2) затирает user_text целиком своим вектор-текстом блока —
+# page_text молча терялся, хотя system-промпт обещает модели «текстовый контекст
+# страницы». Замер на 133-23-ГК-АИ2: 27/35 страниц (77%) имеют непустой page_text,
+# и ВСЕ 27 содержат легенду/примечания/спецификацию — ровно то, на отсутствие чего
+# блоки репортили 63% documentation-шума («расшифровка отсутствует», «звёздочка не
+# расшифрована»), при том что «Условные обозначения → Размер, обязательный к
+# выполнению» лежит на том же листе. Цена возврата ~222 токена/блок (~16K на прогон,
+# 0.7% от 2.4М). Асимметрия-улика: единственный image_only-блок контекст ПОЛУЧАЛ.
+# Default OFF — включать после A/B (меняет промпт → инвалидирует кэш блоков).
+STAGE01_PAGE_CONTEXT_ENABLED = _env_bool("STAGE01_PAGE_CONTEXT_ENABLED", False)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает

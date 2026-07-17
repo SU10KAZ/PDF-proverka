@@ -85,12 +85,15 @@ describe('section optimization card', () => {
   it('turns the section stages into a runnable pipeline UI', () => {
     expect(html).toContain('Запустить pipeline');
     expect(html).toContain('Заключение умного агента');
-    expect(html).toContain('requestSectionOptimizationGraphicsPlan');
+    expect(html).toContain('sectionOptimizationGraphicsConclusionLabel(assessment.graphics_review.conclusion)');
+    expect(html).toContain('openSectionOptimizationGraphicsBlock(block.project_id, block.block_id, block.page)');
     expect(js).toContain('async function runSectionOptimizationPipeline()');
     expect(js).toContain('async function pollSectionOptimizationPipeline(sectionCode, objectId)');
     expect(js).toContain('function sectionOptimizationPipelineStageMarker(stageKey, index)');
     expect(js).toContain('Анализирует кандидатов: готово ${completed} из ${total}');
     expect(js).toContain('Заключения готовы: ${completed} из ${total}');
+    expect(js).toContain('Vision-проверка: готово ${completed} из ${required}');
+    expect(js).toContain('function sectionOptimizationGraphicsConclusionLabel(conclusion)');
   });
 
   it('keeps candidates in a table with explainable accepted source decisions', () => {
@@ -116,13 +119,15 @@ describe('section optimization card', () => {
     expect(js).toContain('evidenceRefs.has(item.source_ref)');
     expect(html).toContain('Запустить умного агента для всех кандидатов');
     expect(html).toContain('Ожидает запуска умного агента');
-    expect(html).toContain('sectionOptimizationAgentVerdictLabel(assessment.verdict)');
+    expect(html).toContain('sectionOptimizationAgentVerdictLabel(assessment.resolved_verdict || assessment.verdict)');
     expect(html).toContain('@click="startAllSectionOptimizationReplications"');
     expect(html).not.toContain('@click="startSectionOptimizationReplication(signal)"');
     expect(js).toContain('async function startAllSectionOptimizationReplications()');
     expect(js).toContain('function sectionOptimizationReplicationNeedsAgent(signalId)');
     expect(js).toContain('function sectionOptimizationAgentVerdictLabel(verdict)');
     expect(js).toContain('const sectionOptimizationAgentAvailable = computed(() => (');
+    expect(js).toContain('const sectionOptimizationGraphicsAgentAvailable = computed(() => (');
+    expect(html).toContain('Графический агент подключается…');
     expect(js).toContain("sectionOptimizationReplicationsUrl(sectionCode, '/start-all')");
     expect(js).toContain('async function pollSectionOptimizationReplication(sectionCode, objectId, replicationId)');
     expect(js).toContain("'/replications' + suffix + query");

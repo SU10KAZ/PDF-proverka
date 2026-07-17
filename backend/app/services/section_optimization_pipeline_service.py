@@ -3,9 +3,9 @@
 Срез ``section_optimization_service`` остаётся read-only и может быть
 построен для предпросмотра. Этот модуль добавляет явный operator-triggered
 конвейер: состояние job сохраняется на диске, а первые три этапа выполняются
-последовательно в фоне. Графический этап намеренно не запускает платную
-модель сам: по отдельному запросу он формирует доказательный план по уже
-доступным графическим блокам. Последний шаг всегда ожидает эксперта.
+последовательно в фоне. Текстовый и графический агенты запускаются общей
+кнопкой кандидатов через сохраняемые replication jobs. Последний шаг всегда
+ожидает эксперта.
 """
 from __future__ import annotations
 
@@ -198,6 +198,10 @@ def _ensure_stage_schema(state: dict) -> dict:
             "status": "waiting",
             "message": "Запускается общей кнопкой на вкладке «Кандидаты»",
         })
+    if state.get("status") == "ready_for_review":
+        graphics = next(stage for stage in stages if stage.get("key") == "graphics")
+        if graphics.get("status") == "waiting":
+            graphics["message"] = "Запускается автоматически, если умный агент запросил проверку блоков"
     state["stages"] = stages
     return state
 
@@ -362,7 +366,7 @@ async def _run_pipeline(state: dict) -> None:
         graphics = _stage_ref(state, "graphics")
         graphics.update({
             "status": "waiting",
-            "message": "Запускается отдельно только для выбранных спорных кандидатов",
+            "message": "Запускается автоматически, если умный агент запросил проверку блоков",
         })
         review = _stage_ref(state, "review")
         review.update({
@@ -407,10 +411,11 @@ def start_pipeline(section: str, *, object_id: Optional[str] = None) -> dict:
 
 
 def request_graphics_plan(section: str, *, object_id: Optional[str] = None) -> dict:
-    """Этап 4: подготовить доказательный план графической проверки.
+    """Legacy-preview доказательного плана графической проверки.
 
-    Это сознательно не запускает vision/LLM: выбор конкретных спорных
-    кандидатов и подтверждение платного вызова остаются за оператором.
+    Оставлен для совместимости API. Реальный targeted vision теперь запускается
+    автоматически внутри процесса тиражирования после решения текстового
+    агента и использует его точечный вопрос.
     """
     code = _clean_section(section)
     resolved_object_id = _resolve_object_id(object_id)
