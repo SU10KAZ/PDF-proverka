@@ -422,6 +422,7 @@ async def _run_codex_json_stage(
     output_filename: str,
     audit_stage: str,
     output_dir: str | Path | None = None,
+    allowed_tools: str | None = None,
 ) -> tuple[int, str, LLMResult]:
     """Run Codex exec in JSON-only mode and let backend write the artifact."""
     from backend.app.services.llm.codex_runner import run_codex_json_messages
@@ -433,6 +434,7 @@ async def _run_codex_json_stage(
             on_output=on_output,
             stage=stage,
             project_id=project_id,
+            allowed_tools=allowed_tools,
             model=model,
         )
         if not _codex_json_broken(result):
@@ -802,11 +804,15 @@ async def run_norm_verify(
             project_id=project_id, version_id=version_id,
         ):
             messages = prompt_builder.build_norm_verify_messages(norms_list_text, project_id, project_info)
+        # NORM_VERIFY_TOOLS несёт mcp__norms__*: без него codex-ветка уходила в
+        # JSON-режим вообще без сервера норм и сверяла их статус по памяти
+        # модели — молча, без единой ошибки.
         return await _run_codex_json_stage(
             stage="norm_verify", messages=messages, model=model,
             timeout=CLAUDE_NORM_VERIFY_TIMEOUT, project_id=project_id,
             on_output=on_output, output_filename=llm_out_filename,
             audit_stage="04_norm_verify", output_dir=output_dir,
+            allowed_tools=NORM_VERIFY_TOOLS,
         )
 
     if is_claude_stage("norm_verify"):

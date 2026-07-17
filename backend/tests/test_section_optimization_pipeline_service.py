@@ -7,6 +7,26 @@ import pytest
 from backend.app.services import section_optimization_pipeline_service as pipeline
 
 
+
+async def _wait_until_settled(section: str, object_id: str, timeout: float = 5.0) -> dict:
+    """Дождаться выхода конвейера из рабочего статуса по реальному сроку.
+
+    Раньше тест крутил ровно 20 холостых тиков `sleep(0)` и утверждал результат
+    сразу после. Число тиков — не гарантия: стоит задаче добавить точку
+    переключения, и тест начинает мигать, обвиняя исправный код. Срок — гарантия.
+    """
+    deadline = asyncio.get_event_loop().time() + timeout
+    while asyncio.get_event_loop().time() < deadline:
+        state = pipeline.get_pipeline_state(section, object_id=object_id)
+        if state["status"] not in {"queued", "running"}:
+            return state
+        await asyncio.sleep(0.01)
+    raise AssertionError(
+        f"конвейер не завершился за {timeout}с, застрял в статусе "
+        f"{pipeline.get_pipeline_state(section, object_id=object_id)['status']!r}"
+    )
+
+
 @pytest.fixture(autouse=True)
 def isolated_pipeline_storage(monkeypatch, tmp_path):
     monkeypatch.setattr(pipeline, "_root", lambda: tmp_path)
@@ -50,11 +70,7 @@ async def test_pipeline_runs_real_stages_and_persists_snapshot(monkeypatch, tmp_
     started = pipeline.start_pipeline("eom", object_id="object-1")
     assert started["status"] == "queued"
 
-    for _ in range(20):
-        await asyncio.sleep(0)
-        state = pipeline.get_pipeline_state("EOM", object_id="object-1")
-        if state["status"] != "queued" and state["status"] != "running":
-            break
+    state = await _wait_until_settled("EOM", "object-1")
 
     assert state["status"] == "ready_for_review"
     assert [stage["status"] for stage in state["stages"]] == [

@@ -286,12 +286,39 @@ def reset_audit_log(project_id: str) -> None:
     """
     # Фронт держит live-копию лога в памяти — сообщаем, что прогон начат
     # с нуля (даже если файла ещё нет: в памяти могли остаться WS-записи).
+    #
+    # Здесь ПЛАНИРОВАНИЕ, а не ожидание: из синхронного вызова иначе нельзя.
+    # Строки самого прогона рассылаются напрямую (await broadcast_to_project),
+    # поэтому запланированный сброс может выполниться ПОСЛЕ них и стереть
+    # начало свежего прогона из UI. Асинхронные вызывающие обязаны пользоваться
+    # reset_audit_log_async(), которая ждёт рассылку и снимает эту гонку.
     try:
         ws_manager.schedule_broadcast_to_project(
             project_id, WSMessage.log_reset(project_id),
         )
     except Exception:
         pass
+    _archive_audit_log(project_id)
+
+
+async def reset_audit_log_async(project_id: str) -> None:
+    """То же, что reset_audit_log, но с гарантией порядка.
+
+    Сброс дожидается доставки ДО того, как вызывающий начнёт писать строки
+    нового прогона: иначе «очистить лог» и «первая строка» состязаются, и
+    очистка, пришедшая второй, стирает начало прогона у эксперта.
+    """
+    try:
+        await ws_manager.broadcast_to_project(
+            project_id, WSMessage.log_reset(project_id),
+        )
+    except Exception:
+        pass
+    _archive_audit_log(project_id)
+
+
+def _archive_audit_log(project_id: str) -> None:
+    """Переименовать audit_log.jsonl в audit_log_<timestamp>.jsonl."""
     try:
         log_path = _project_output_dir(project_id) / "audit_log.jsonl"
         if not log_path.exists():

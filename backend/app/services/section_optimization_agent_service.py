@@ -314,7 +314,13 @@ def validate_agent_review(raw: dict, dossier: dict) -> dict:
     }
 
 
-def _record_usage(result: LLMResult, scope: str) -> None:
+def _record_usage(result: LLMResult, scope: str, *, stage: str = AGENT_STAGE) -> None:
+    """Записать расход токенов. Общая точка для текстового и графического агентов.
+
+    Стадия — параметр, а не константа: копия этой функции в графическом агенте
+    отличалась ровно одной строкой, и любая правка учёта (реальный cost_usd,
+    новое поле) попадала в одну копию из двух, тихо искажая отчёты о расходе.
+    """
     try:
         from backend.app.services.common.usage_service import usage_tracker
 
@@ -322,7 +328,7 @@ def _record_usage(result: LLMResult, scope: str) -> None:
             timestamp=datetime.now().isoformat(),
             session_id=result.response_id or None,
             project_id=scope,
-            stage=AGENT_STAGE,
+            stage=stage,
             model=result.model or configured_agent_model(),
             cost_usd=0.0,
             duration_ms=int(result.duration_ms or 0),

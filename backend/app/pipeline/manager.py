@@ -5400,7 +5400,7 @@ class PipelineManager:
             except Exception:
                 pass
             try:
-                audit_logger.reset_audit_log(pid)
+                await audit_logger.reset_audit_log_async(pid)
             except Exception:
                 pass
 

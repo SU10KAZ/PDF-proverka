@@ -250,10 +250,8 @@ def _apply_graphics_reviews(job: dict, graphics_reviews: list[dict], graphics_me
         enriched_assessments.append(enriched)
     job["agent_assessments"] = enriched_assessments
     job["dossier"]["agent_review"]["target_assessments"] = copy.deepcopy(enriched_assessments)
-    job["dossier"]["graphics_reviews"] = graphics_reviews
     job["graphics_reviews"] = graphics_reviews
     job["graphics_agent"] = graphics_meta
-    job["graphics_model"] = graphics_meta.get("model") or configured_agent_model()
     # Статус берётся из метрик стадии, а не проставляется оптимистично: часть
     # проектов могла деградировать мягко (partial/failed), и эксперт обязан это
     # видеть, а повтор — знать, что доводить.
@@ -552,9 +550,6 @@ def start_replication(
             "graphics_status": "pending",
             "graphics_reviews": [],
             "graphics_agent": None,
-            "graphics_model": configured_agent_model(),
-            "graphics_target_counts": {},
-            "resolved_target_counts": {},
             "agent_status": "pending",
             "agent_model": configured_agent_model(),
             "agent_recommendation": None,

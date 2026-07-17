@@ -10091,6 +10091,12 @@ const app = createApp({
             if (!projectId) return;
             logLoading.value = true;
             logTruncatedNotice.value = '';
+            // Отметка живых строк на момент старта запроса. Запрос идёт заметное
+            // время (полный прогон — сотни килобайт), и всё, что прилетит по WS
+            // за этот срок, попадёт в projectLogs через pushToProjectLog. Без
+            // отметки присваивание в конце затрёт эти строки — молча, ровно в
+            // тот момент, когда идёт живой аудит и терять их нельзя.
+            const liveBefore = (projectLogs.value[projectId] || []).length;
             try {
                 // Лимит 5000: полный прогон должен помещаться целиком —
                 // усечение истории выглядит как «лог перезаписался с этапа X»
@@ -10118,7 +10124,10 @@ const app = createApp({
                     logTruncatedNotice.value = (data.has_more && entries.length)
                         ? `⚠ Показаны последние ${entries.length} из ${data.total} записей — начало лога усечено`
                         : '';
-                    projectLogs.value[projectId] = entries;
+                    // Дописать строки, прилетевшие по WS ПОКА шёл запрос: в
+                    // файле их ещё нет, а на экране они уже были.
+                    const arrivedDuringFetch = (projectLogs.value[projectId] || []).slice(liveBefore);
+                    projectLogs.value[projectId] = entries.concat(arrivedDuringFetch);
                     findingIndex.value[projectId] = {};
 
                     // Восстановить finding-карточки из 03_findings.json + 03_findings_review.json

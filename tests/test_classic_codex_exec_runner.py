@@ -814,3 +814,67 @@ async def test_codex_json_stage_valid_json_runs_once(tmp_path, monkeypatch):
 
     assert calls["n"] == 1
     assert exit_code == 0
+
+
+def test_codex_json_mode_wires_norms_mcp_when_stage_declares_tools():
+    """JSON-вход codex обязан подключать сервер норм так же, как exec-вход.
+
+    Регресс: `_tool_config_args` вклеивался только в run_codex_exec, а
+    norm_verify на codex уходит в JSON-режим — и оставался вообще без MCP,
+    сверяя статус норм по памяти модели. Молча, без единой ошибки.
+    """
+    from backend.app.core.config import NORM_VERIFY_TOOLS
+    from backend.app.services.llm.codex_runner import _json_tool_args
+
+    args = _json_tool_args(NORM_VERIFY_TOOLS)
+    assert any("mcp_servers.norms.command=" in a for a in args)
+    assert "mcp_servers.norms.required=true" in args
+
+
+def test_codex_json_mode_keeps_web_disabled_without_tools():
+    """Стадия без инструментов сохраняет исторический дефолт: веб выключен."""
+    from backend.app.services.llm.codex_runner import _json_tool_args
+
+    assert _json_tool_args(None) == ["-c", 'web_search="disabled"']
+
+
+def test_normative_stage_refuses_to_run_without_norms_tools():
+    """Нормативная стадия падает закрыто, если сервер норм не пробросили.
+
+    Предохранитель против класса ошибки, а не против модели: цитата нормы по
+    памяти неотличима от настоящей, поэтому невыполненный этап безопаснее.
+    """
+    import pytest
+
+    from backend.app.core.config import NORM_VERIFY_TOOLS
+    from backend.app.services.llm.codex_runner import (
+        NormsMcpUnavailableError,
+        assert_norms_stage_wired,
+    )
+
+    with pytest.raises(NormsMcpUnavailableError):
+        assert_norms_stage_wired("norm_verify", None)
+    with pytest.raises(NormsMcpUnavailableError):
+        assert_norms_stage_wired("norm_verify", "Read,Write,Grep")
+
+    assert_norms_stage_wired("norm_verify", NORM_VERIFY_TOOLS)  # не бросает
+    assert_norms_stage_wired("optimization", None)  # ненормативная — свободна
+
+
+def test_missing_norms_venv_raises_actionable_setup_error(monkeypatch):
+    """Отсутствие venv сервера норм даёт внятную ошибку, а не `os error 2`.
+
+    Интерпретатор в gitignore, поэтому в свежем клоне/worktree/CI его нет:
+    codex обрывал сессию невнятно, Claude молча терял mcp__norms__*.
+    """
+    import pathlib
+
+    import pytest
+
+    from backend.app.services.llm import codex_runner
+    from backend.app.services.llm.codex_runner import NormsMcpUnavailableError
+
+    monkeypatch.setattr(codex_runner, "_NORMS_MCP_PYTHON", pathlib.Path("/nonexistent/python"))
+    with pytest.raises(NormsMcpUnavailableError) as exc:
+        codex_runner.assert_norms_mcp_available()
+    assert "norms/tools/README.md" in str(exc.value)

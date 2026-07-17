@@ -99,6 +99,70 @@ def _allowed_tool_names(allowed_tools: str | None) -> set[str]:
     }
 
 
+class NormsMcpUnavailableError(RuntimeError):
+    """Сервер норм не может быть запущен — нормативная стадия обязана упасть.
+
+    Существует, чтобы отличить внятную ошибку установки от невнятного
+    ``No such file or directory (os error 2)`` из недр codex.
+    """
+
+
+def assert_norms_mcp_available() -> None:
+    """Проверить, что интерпретатор сервера норм на месте.
+
+    Нормативные стадии падают закрыто: процитировать норму по памяти модели
+    хуже, чем не выполнить этап. Интерпретатор лежит в gitignore
+    (``norms/tools/venv/``), поэтому в свежем клоне, worktree или контейнере его
+    может не быть — без этой проверки codex обрывает сессию с невнятной
+    ошибкой, а Claude молча теряет ``mcp__norms__*`` и отвечает по памяти.
+    """
+    if _NORMS_MCP_PYTHON.is_file():
+        return
+    raise NormsMcpUnavailableError(
+        f"Сервер норм недоступен: не найден интерпретатор {_NORMS_MCP_PYTHON}. "
+        "Нормативные стадии не выполняются без базы норм (цитирование по памяти "
+        "модели запрещено). Установка описана в norms/tools/README.md, раздел "
+        "«Setup после clone»."
+    )
+
+
+# Стадии, которым запрещено делать выводы о нормах без сервера норм. Цитата по
+# памяти модели неотличима от настоящей и потому опаснее невыполненного этапа.
+_NORMS_REQUIRED_STAGES = {"norm_verify"}
+
+
+def assert_norms_stage_wired(stage: str, allowed_tools: str | None) -> None:
+    """Не дать нормативной стадии стартовать без инструментов сервера норм.
+
+    Предохранитель против класса ошибки, а не против конкретной модели: у codex
+    два входа, и MCP исходно подключили только к одному, отчего norm_verify на
+    codex молча сверял нормы по памяти. Проверка держится на инварианте
+    «нормативная стадия обязана заявить mcp__norms__*», поэтому ловит любую
+    будущую правку, которая снова забудет прокинуть инструменты, — независимо
+    от того, какая модель выбрана в интерфейсе.
+    """
+    if stage not in _NORMS_REQUIRED_STAGES:
+        return
+    names = _allowed_tool_names(allowed_tools or "")
+    if not any(name.startswith(_NORMS_MCP_PREFIX) for name in names):
+        raise NormsMcpUnavailableError(
+            f"Стадия '{stage}' запущена без инструментов сервера норм. "
+            "Сверка норм по памяти модели запрещена: пробросьте NORM_VERIFY_TOOLS."
+        )
+
+
+def _json_tool_args(allowed_tools: str | None) -> list[str]:
+    """Аргументы инструментов для JSON-режима.
+
+    Отличие от `_tool_config_args` ровно одно: стадия, не заявившая инструментов,
+    обязана сохранить исторический дефолт «веб-поиск выключен», а не остаться
+    вообще без ограничения.
+    """
+    if allowed_tools is None:
+        return ["-c", 'web_search="disabled"']
+    return _tool_config_args(allowed_tools)
+
+
 def _tool_config_args(allowed_tools: str | None) -> list[str]:
     """Translate the classic Claude allow-list into hermetic Codex config.
 
@@ -121,6 +185,7 @@ def _tool_config_args(allowed_tools: str | None) -> list[str]:
         if name.startswith(_NORMS_MCP_PREFIX)
     )
     if norms_tools:
+        assert_norms_mcp_available()
         args.extend([
             "-c", f"mcp_servers.norms.command={json.dumps(str(_NORMS_MCP_PYTHON))}",
             "-c", f"mcp_servers.norms.args={json.dumps([str(_NORMS_MCP_SERVER)])}",
@@ -349,6 +414,8 @@ async def run_codex_exec(
     os.close(fd)
     out_file = Path(out_name)
     images = _normalize_image_paths(image_paths)
+    assert_norms_stage_wired(stage, allowed_tools)
+
     image_args: list[str] = []
     for image_path in images:
         image_args.extend(["--image", str(image_path)])
@@ -426,6 +493,7 @@ async def run_codex_json_messages(
     image_paths: Sequence[str | Path] | None = None,
     reasoning_effort: str | None = None,
     output_schema: dict[str, Any] | None = None,
+    allowed_tools: str | None = None,
 ) -> LLMResult:
     """Run Codex exec as a JSON-only text model.
 
@@ -450,6 +518,8 @@ async def run_codex_json_messages(
         project_id=project_id,
         image_paths=images,
     )
+    assert_norms_stage_wired(stage, allowed_tools)
+
     image_args: list[str] = []
     for image_path in images:
         image_args.extend(["--image", str(image_path)])
@@ -478,8 +548,12 @@ async def run_codex_json_messages(
         "--model",
         resolved_model,
         *_reasoning_effort_args(reasoning_effort),
-        "-c",
-        'web_search="disabled"',
+        # Инструменты стадии (в т.ч. сервер норм) прокидываются тем же
+        # переводчиком, что и на пути run_codex_exec: без этого JSON-стадии
+        # оставались вообще без MCP, и норм-стадия на codex сверяла статус норм
+        # по памяти модели. Когда стадия инструментов не заявляет, поведение
+        # прежнее — веб-поиск выключен.
+        *_json_tool_args(allowed_tools),
         "--json",
         *schema_args,
         *image_args,

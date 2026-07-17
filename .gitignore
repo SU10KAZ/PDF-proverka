@@ -161,6 +161,12 @@ projects/
 backend/app/data/objects.json
 backend/app/data/project_groups.json
 backend/app/data/missing_norms_vault.json
+# Выбор моделей/режимов правится из интерфейса (POST /api/audit/model/stages)
+# и является состоянием прода, а не кодом. Пока файлы лежали в истории, версия
+# из git расходилась с реальностью, и любой checkout тихо уводил конвейер на
+# другие модели при следующем рестарте. Код без файлов берёт дефолты.
+backend/app/data/stage_models.json
+backend/app/data/stage_batch_modes.json
 
 # Live expert/knowledge data
 knowledge_base/decisions_log.json

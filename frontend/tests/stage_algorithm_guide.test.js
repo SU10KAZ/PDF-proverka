@@ -16,7 +16,10 @@ describe('pipeline stage algorithm guide', () => {
     expect(html).toContain('<span>Векторные</span>');
     expect(html).toContain('<span>графы</span>');
     expect(html).toContain('<span>блоков</span>');
-    expect(css).toContain('.pipeline-stage--ctx { justify-content: center; }');
+    // Центрирование даёт базовый .pipeline-stage — отдельное правило для
+    // модификатора дублировало бы его и было убрано. Проверяем гарантию
+    // (карточка центрирована), а не исчезнувшую деталь реализации.
+    expect(css).toMatch(/\.pipeline-stage \{[^}]*justify-content: center;/);
     expect(css).toContain('.stage-label--ctx { display: flex; flex-direction: column; align-items: center;');
   });
 

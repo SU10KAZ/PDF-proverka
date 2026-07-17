@@ -119,7 +119,7 @@ def test_validate_graphics_review_rejects_hallucinated_evidence():
 @pytest.mark.asyncio
 async def test_graphics_agent_attaches_selected_images(monkeypatch, tmp_path):
     monkeypatch.setenv("SECTION_OPTIMIZATION_GRAPHICS_SOURCE_BLOCKS", "0")
-    monkeypatch.setattr(graphics, "_record_usage", lambda *_args: None)
+    monkeypatch.setattr(graphics, "_record_usage", lambda *_args, **_kwargs: None)
     image_path = tmp_path / "block_B-SCHEME.png"
     image_path.write_bytes(b"not-decoded-by-fake-runner")
     catalog = [{

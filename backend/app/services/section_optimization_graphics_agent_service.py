@@ -21,6 +21,7 @@ from typing import Any, Awaitable, Callable, Optional
 
 from backend.app.models.usage import LLMResult, UsageRecord
 from backend.app.services.section_optimization_agent_service import (
+    _record_usage,
     configured_agent_model,
     optimization_agent_slot,
 )
@@ -518,29 +519,6 @@ def _not_visible_review(project_id: str, selected_blocks: list[dict], message: s
     }
 
 
-def _record_usage(result: LLMResult, scope: str) -> None:
-    try:
-        from backend.app.services.common.usage_service import usage_tracker
-
-        usage_tracker.record_usage(UsageRecord(
-            timestamp=datetime.now().isoformat(),
-            session_id=result.response_id or None,
-            project_id=scope,
-            stage=GRAPHICS_AGENT_STAGE,
-            model=result.model or configured_agent_model(),
-            cost_usd=0.0,
-            duration_ms=int(result.duration_ms or 0),
-            duration_api_ms=int(result.duration_ms or 0),
-            num_turns=1,
-            api_calls=1,
-            input_tokens=int(result.input_tokens or 0),
-            output_tokens=int(result.output_tokens or 0),
-            cache_read_tokens=int(result.cached_tokens or 0),
-        ))
-    except Exception:
-        pass
-
-
 def _graphics_timeout() -> int:
     try:
         return max(120, int(os.environ.get("SECTION_OPTIMIZATION_GRAPHICS_TIMEOUT_SEC", "900") or "900"))
@@ -681,7 +659,7 @@ async def analyze_graphics_assessment(
             reasoning_effort=os.environ.get("SECTION_OPTIMIZATION_GRAPHICS_REASONING_EFFORT", "high"),
             output_schema=GRAPHICS_OUTPUT_SCHEMA,
         )
-    _record_usage(result, scope)
+    _record_usage(result, scope, stage=GRAPHICS_AGENT_STAGE)
     if result.is_error or not isinstance(result.json_data, dict):
         raise SectionOptimizationGraphicsAgentError(
             result.error_message or "Графический агент не вернул структурированное заключение"
