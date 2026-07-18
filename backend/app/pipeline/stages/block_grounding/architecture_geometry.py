@@ -24,7 +24,13 @@ DETAIL_PROFILES=set(ALL_AR_PROFILES)-PLAN_PROFILES-ELEVATION_PROFILES
 
 def classify_ar_profile(text):
     u=re.sub(r"\s+"," ",text or "").upper()
+    if "ПЛАН РАССТАНОВКИ МЕБЕЛИ" in u or ("МЕБЕЛ" in u and "ПЛАН" in u):
+        return PROFILE_FURNITURE
     opening=any(x in u for x in ("ДВЕР", "ОКОН", "ОКНО", "ЛЮК", "ПРОЕМ", "ПРОЁМ", "ВИТРАЖ"))
+    # Интерьерная развёртка почти всегда содержит двери, виды и габариты. Если
+    # проверять opening первым, она ошибочно становится «эскизом двери» и теряет
+    # размерные цепочки стен (реальный пример АИ2: 580+580 против 1155 мм).
+    if "РАЗВЕРТ" in u:return PROFILE_WALL_ELEVATION
     # Фронтальные виды и схемы заполнения проёмов важнее попутных ссылок на
     # лестницы, кладочные планы и дополнительных разрезов внутри описания.
     if opening and (any(x in u for x in ("ФРОНТАЛЬН", "ВИД СПЕРЕДИ", "ЭСКИЗ", "СХЕМЫ ДВЕР",
@@ -37,7 +43,6 @@ def classify_ar_profile(text):
     if (("ПРИМЫКАН" in u and "ПОЛ" in u and "СТЕН" in u) or
         ("ГИДРОИЗОЛЯЦ" in u and "ПЛАВАЮЩ" in u and "ПОЛ" in u)):
         return PROFILE_FLOOR_WALL_JUNCTION
-    if "РАЗВЕРТ" in u:return PROFILE_WALL_ELEVATION
     if "ФАСАД" in u:return PROFILE_FACADE
     if ("ОГРАЖДЕНИ" in u or "ПЕРИЛ" in u) and any(x in u for x in ("УЗЕЛ", "ДЕТАЛ", "СХЕМ", "ЧЕРТЕЖ", "ЧЕРТЁЖ")):return PROFILE_RAILING
     if any(x in u for x in ("ЧЕРТЕЖ ЛЕСТНИЦ", "ЧЕРТЁЖ ЛЕСТНИЦ", "СХЕМА ЛЕСТНИЦ", "ПЛАН ЛЕСТНИЦ",
@@ -79,6 +84,7 @@ PATTERNS=(
  ("installation_requirement",re.compile(r"\b(?:наносить\s+в\s+\d+\s+сло(?:я|ев)|рекомендуется\s+проклеить)\b",re.I)),
  ("finish_mark",re.compile(r"\b(?:СТ|ПЛ|ПТ|ПОТ|ПОЛ|ОТД)\s*[-.]\s*\d+[A-ZА-Яа-я0-9.]*",re.I)),
  ("furniture_or_equipment",re.compile(r"\b(?:шкаф\w*|стол\w*|стул\w*|диван\w*|кроват\w*|тумб\w*|кухонн\w*\s+гарнитур\w*|оборудован\w*|сантехприбор\w*)\b",re.I)),
+ ("furniture_mark",re.compile(r"(?<![A-Za-zА-Яа-яЁё0-9])[MМ]\s*[-–]?\s*\d{1,3}(?![A-Za-zА-Яа-яЁё0-9])",re.I)),
  ("electrical_fixture",re.compile(r"\b(?:розетк\w*|выключател\w*|светильник\w*|бра\b|электровывод\w*|датчик\w*)\b",re.I)),
  ("roof_element",re.compile(r"\b(?:воронк\w*|парапет\w*|аэратор\w*|ходов\w*\s+дорожк\w*|водосток\w*|дефлектор\w*)\b",re.I)),
  ("stair_or_railing",re.compile(r"\b(?:лестниц\w*|ступен\w*|косоур\w*|тетив\w*|перил\w*|ограждени\w*|поручень\w*|балясин\w*)\b",re.I)),
@@ -100,7 +106,7 @@ def _facts(page,profile=None):
         for kind,pattern in PATTERNS:
             for m in pattern.finditer(line["text"]):
                 item=dict(line);item["text"]=re.sub(r"\s+"," ",m.group()).strip(" ;,.");nodes.append(_node(page,item,kind,len(nodes)+1,source_label=line["text"]))
-        if profile==PROFILE_FLOOR_WALL_JUNCTION and re.fullmatch(r"\s*\d{2,5}\s*",line["text"]):
+        if profile in {PROFILE_FLOOR_WALL_JUNCTION,PROFILE_WALL_ELEVATION} and re.fullmatch(r"\s*\d{2,5}\s*",line["text"]):
             item=dict(line);item["text"]=line["text"].strip();nodes.append(_node(page,item,"dimension",len(nodes)+1,source_label=line["text"]))
     return _unique(nodes)
 def _architectural_views(page):
@@ -194,6 +200,7 @@ NODE_RU={"room":"помещение","opening":"дверь, окно или пр
  "finish_mark":"марка отделки","furniture_or_equipment":"мебель или оборудование","electrical_fixture":"электроустановочное изделие",
  "roof_element":"элемент кровли","stair_or_railing":"элемент лестницы или ограждения","fire_rating":"огнестойкость","fastener":"крепёж"}
 NODE_RU.update({"construction_element":"элемент конструкции","layer_count":"количество слоёв","installation_requirement":"требование к монтажу"})
+NODE_RU["furniture_mark"]="марка мебели"
 NODE_RU["raster_region"]="растровая область без читаемых подписей"
 def render_ar_markdown(graph):
     v=graph["validation"];lines=[f"# Эталонная текстовая разметка АР: {PROFILE_RU.get(graph['profile_id'],'Архитектурный блок')}","",f"**Источник:** {graph['source']['pdf_file']}",
@@ -204,7 +211,10 @@ def render_ar_markdown(graph):
     for i,(k,c) in enumerate(counts.most_common(14)):lines.append(("└──" if i==min(len(counts),14)-1 else "├──")+f" {NODE_RU.get(k,k)}: {c}")
     lines += ["```","","## 2. Состав и параметры",""];group=collections.defaultdict(list)
     for n in graph.get("nodes",[]):group[n["node_type"]].append(n["label"])
-    for k,labels in group.items():lines.append(f"- **{NODE_RU.get(k,k)} — {len(labels)}:** {', '.join(list(dict.fromkeys(labels))[:30])}{' …' if len(set(labels))>30 else ''}")
+    for k,labels in group.items():
+        counts_by_label=collections.Counter(labels)
+        rendered=[f"{label} × {count}" if count>1 else label for label,count in counts_by_label.items()]
+        lines.append(f"- **{NODE_RU.get(k,k)} — {len(labels)}:** {', '.join(rendered[:30])}{' …' if len(rendered)>30 else ''}")
     lines += ["","## 3. Виды и отношения",""]
     if graph.get("containers"):
         for i,c in enumerate(graph["containers"][:30],1):

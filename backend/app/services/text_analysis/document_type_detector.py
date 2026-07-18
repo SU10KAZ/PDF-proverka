@@ -81,6 +81,10 @@ FILENAME_HINTS: list[tuple[re.Pattern[str], str]] = [
      "audit_comparison"),
     (re.compile(r"(?:^|[_\-\s])(?:spec|specification|ведомость|specifikatsiya)",
                 re.IGNORECASE), "specification_only"),
+    # Код стадии РД в шифре файла — более сильный сигнал полного комплекта,
+    # чем наличие отдельных ведомостей/спецификаций в распознанном Markdown.
+    (re.compile(r"(?:^|[_\-\s])(?:РД|RD)(?:[_\-\s\.]|$)", re.IGNORECASE),
+     "full_rd"),
 ]
 
 
