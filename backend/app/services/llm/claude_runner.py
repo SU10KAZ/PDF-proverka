@@ -504,6 +504,7 @@ async def _run_codex_targeted_findings_merge(
     from backend.app.pipeline.stages.prepare.codex_targeted_findings import (
         build_targeted_findings_passes,
         combine_findings_with_targeted,
+        enforce_stage01_atomicity,
         json_dumps,
     )
 
@@ -575,7 +576,15 @@ async def _run_codex_targeted_findings_merge(
     if not targeted_payloads:
         return 0, "\n".join(part for part in combined_text_parts if part), base_result
 
-    combined = combine_findings_with_targeted(base_data, targeted_payloads)
+    combined = combine_findings_with_targeted(
+        base_data,
+        targeted_payloads,
+        output_dir=resolved_output_dir,
+    )
+    combined = enforce_stage01_atomicity(
+        combined,
+        resolved_output_dir / "01_blocks_analysis.json",
+    )
     _write_json(resolved_output_dir / "03_findings.json", combined)
 
     base_result.json_data = combined
