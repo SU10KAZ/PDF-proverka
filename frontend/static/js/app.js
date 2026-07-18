@@ -8818,6 +8818,38 @@ const app = createApp({
             return null;
         }
 
+        // Статус нормы ЗАМЕЧАНИЯ. Поле пишет этап 04 (norm_verify → 03a_norms_verified):
+        // norm_verification = { status, edition_status, needs_revision, current_version,
+        // replacement_doc, verified_via }. active → «действует»; отменён/заменён/устаревшая
+        // редакция — предупреждение. Неизвестно/нет в базе → молчим: отсутствие проверки и
+        // провал проверки — разные вещи (как в optNormBadge).
+        function findingNormBadge(f) {
+            const nv = f && f.norm_verification;
+            if (!nv || typeof nv !== 'object') return null;
+            const status = String(nv.status || '');
+            const edition = String(nv.edition_status || '');
+            const repl = nv.replacement_doc || '';
+            const cur = nv.current_version || '';
+            if (['obsolete', 'superseded', 'replaced', 'cancelled', 'withdrawn'].includes(status)) {
+                return {
+                    text: repl ? '⚠ заменён: ' + repl : '⚠ отменён',
+                    tone: 'warn',
+                    title: 'Норма недействующая' + (repl ? ', действует ' + repl : ''),
+                };
+            }
+            if (nv.needs_revision === true || edition === 'obsolete' || edition === 'superseded') {
+                return {
+                    text: cur ? '↻ ред. устарела → ' + cur : '↻ редакция устарела',
+                    tone: 'revised',
+                    title: 'Актуальная редакция: ' + (cur || 'см. базу норм'),
+                };
+            }
+            if (status === 'active' && (edition === 'active' || edition === '')) {
+                return { text: '✓ действует', tone: 'active', title: 'Норма действует (сверено с базой норм)' };
+            }
+            return null; // unknown / not_found / norms_unsupported / norms_missing → молчим
+        }
+
         // Цветной кружок для бейджа оптимизации — по аналогии с sevIcon (замечания),
         // чтобы карточки-счётчики выглядели одинаково.
         function optIcon(type) {
@@ -18940,7 +18972,7 @@ const app = createApp({
             optBlockMap, optBlockInfo, expandedOptId,
             toggleOptBlocks, getOptBlocks,
             filteredOptimization, optimizationTypeLabels, optimizationTypeColors,
-            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, loadOptimization,
+            optTypeLabel, optTypeColor, optTypeClass, optIcon, optNormBadge, findingNormBadge, loadOptimization,
             // Document viewer
             documentProjectId, documentPages, documentCurrentPage, documentPageData, documentLoading,
             loadDocument, loadDocumentPage, docPrevPage, docNextPage, renderMarkdown,

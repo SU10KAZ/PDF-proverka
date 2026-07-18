@@ -2598,7 +2598,12 @@
                                             <span v-if="f.migration_status">· {{ migratedStatusLabel(f.migration_status) }}</span>
                                         </div>
                                     </td>
-                                    <td class="norm-cell">{{ f.norm }}</td>
+                                    <td class="norm-cell">
+                                        {{ f.norm }}
+                                        <div v-if="findingNormBadge(f)" class="opt-norm-badge"
+                                             :class="'opt-norm-badge--' + findingNormBadge(f).tone"
+                                             :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</div>
+                                    </td>
                                     <!-- HIDDEN по запросу: ячейки колонок Critic v2 / KB-Agent / EV.
                                          Парные заголовки th скрыты выше. Восстанавливать строго вместе.
                                     <td v-if="findingsCv2Available" class="cv2-disp-cell" style="text-align:center"
@@ -4070,6 +4075,9 @@
                                         </div>
                                         <div v-if="f.norm" class="tile-finding-card__norm">
                                             {{ f.norm }}
+                                            <span v-if="findingNormBadge(f)" class="opt-norm-badge"
+                                                  :class="'opt-norm-badge--' + findingNormBadge(f).tone"
+                                                  :title="findingNormBadge(f).title">{{ findingNormBadge(f).text }}</span>
                                         </div>
                                     </div>
                                     <div v-if="getBlockFindings(selectedBlock.block_id).length === 0"

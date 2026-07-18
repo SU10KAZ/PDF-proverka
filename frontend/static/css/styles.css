@@ -2242,6 +2242,7 @@ th.cv2-sort-active {
 .opt-norm-badge--ok      { color: var(--text3); }
 .opt-norm-badge--revised { color: var(--teal); }
 .opt-norm-badge--warn    { color: var(--amber); font-weight: 600; }
+.opt-norm-badge--active  { color: #16a34a; font-weight: 600; }
 
 /* Конфиг не совпал ни с одним пресетом — метка «Своя раскладка». Не бирюза
    пресета, а янтарь: состояние не штатное, но и не ошибка. Полный текст в title. */
