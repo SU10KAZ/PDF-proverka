@@ -50,6 +50,9 @@ _PATH_DISCIPLINES = {
     "KM": "КМ", "КМ": "КМ", "TX": "ТХ", "ТХ": "ТХ",
     "OV": "ОВ", "ОВ": "ОВ", "VK": "ВК", "ВК": "ВК",
     "SS": "СС", "СС": "СС",
+    # АИ (интерьеры) использует те же типы графических блоков, что АР:
+    # планы, развёртки, ведомости отделки, потолки, дверные узлы.
+    "AI": "АР", "АИ": "АР",
 }
 
 _TASK = (
@@ -174,7 +177,8 @@ def _classification_metadata(
 
 def _discipline_hint(output_dir) -> Optional[str]:
     """Дисциплина версии из пути хранения; защищает от междисциплинарных ложных профилей."""
-    parts = Path(output_dir).parts
+    output_path = Path(output_dir)
+    parts = output_path.parts
     if "disciplines" in parts:
         pos = parts.index("disciplines") + 1
         if pos < len(parts):
@@ -182,6 +186,24 @@ def _discipline_hint(output_dir) -> Optional[str]:
             # Незнакомая дисциплина — тоже значимый hint: она не должна
             # проваливаться в свободный перебор чужих профильных построителей.
             return _PATH_DISCIPLINES.get(raw, raw)
+    # Изолированные эксперименты/legacy-копии могут не повторять полный путь
+    # ``disciplines/<code>``, но сохраняют канонический project_info. Без этого
+    # AI-копия свободно перебирала ГП/ЭОМ и ошибочно структурировала 36/73 блоков
+    # чужими профилями. Метаданные версии надёжнее имени временного каталога.
+    for parent in list(output_path.parents)[:5]:
+        for candidate in (
+            parent / "01_input" / "project_info.json",
+            parent / "project_info.json",
+        ):
+            if not candidate.is_file():
+                continue
+            try:
+                info = json.loads(candidate.read_text(encoding="utf-8"))
+                raw = str(info.get("section") or "").strip().upper()
+                if raw:
+                    return _PATH_DISCIPLINES.get(raw, raw)
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                continue
     # Legacy: .../<объект>/<discipline>/<document>/_output.
     for part in reversed(parts):
         value = _PATH_DISCIPLINES.get(str(part).upper())
@@ -222,16 +244,34 @@ def _extract_block(pdf_path: Path, dg: dict, block_id: str):
         doc.close()
 
 
-def vector_covered_block_ids(output_dir) -> dict:
-    """{block_id: вектор-текст} для image-блоков с ГОДНЫМ вектор-слоем (≥ _MIN_VECTOR_CHARS).
+def vector_text_block_index(
+    output_dir,
+    *,
+    include_text_blocks: bool = True,
+    include_image_blocks: bool = True,
+) -> dict:
+    """Точный PDF-векторный текст image- и text-блоков за один проход.
 
-    ОБЩИЙ предикат с `resolve_block_source`: тот же полигон-клип, тот же порог. Блок попадает
-    сюда ТОГДА И ТОЛЬКО ТОГДА, когда роутер на Stage 02 отдаст ему вектор-текст (не gemma_fallback).
-    Используется гейтом пропуска стадии Gemma: эти блоки можно НЕ гонять через Gemma — роутер и так
-    подаст их точный текст. Один open PDF (батч). fail-soft → {}.
+    В отличие от :func:`vector_covered_block_ids`, индекс включает короткие
+    подписи и ``text_blocks``.  Это нужно детерминированным evidence-проверкам:
+    значимый токен может состоять из одного обозначения, а текст в
+    ``document_graph`` для text-блока является OCR-производным и потому не
+    может служить источником истины.
 
-    ВАЖНО: значение (вектор-текст) кладётся в placeholder-enrichment пропущенного блока —
-    страховка на случай, если роутер на Stage 02 всё же fail-soft'нётся: блок не станет слепым.
+    Формат записи::
+
+        {block_id: {
+            "text": str,
+            "page": int | str | None,
+            "page_index": int,
+            "block_kind": "image" | "text",
+            "source": "pdf_vector_text",
+            "source_file": str,
+            "router_eligible": bool,
+        }}
+
+    Смещения внутри ``text`` остаются смещениями Python Unicode-строки.
+    Любая ошибка даёт пустой индекс (fail-soft).
     """
     try:
         import fitz  # локально, как в остальных block_grounding
@@ -252,22 +292,69 @@ def vector_covered_block_ids(output_dir) -> dict:
                 page = doc[pi]
                 pw, ph = float(page.rect.width), float(page.rect.height)
                 words = page.get_text("words")
-                for b in p.get("image_blocks", []):
-                    bid = b.get("id") or b.get("block_id")
-                    if not bid:
-                        continue
-                    poly = b.get("polygon_points_norm")
-                    clipped = (
-                        _clip_words_to_polygon(words, poly, pw, ph)
-                        if poly
-                        else _clip_words_to_bbox(words, b.get("coords_norm"), pw, ph)
-                    )
-                    txt = _block_text(clipped)
-                    if len((txt or "").strip()) >= _MIN_VECTOR_CHARS:
-                        out[str(bid)] = txt
+                page_number = p.get("page")
+                if page_number is None:
+                    page_number = (pi or 0) + 1
+                block_fields = []
+                if include_text_blocks:
+                    block_fields.append(("text", "text_blocks"))
+                if include_image_blocks:
+                    block_fields.append(("image", "image_blocks"))
+                for block_kind, field in block_fields:
+                    for b in p.get(field, []) or []:
+                        bid = b.get("id") or b.get("block_id")
+                        if not bid:
+                            continue
+                        poly = b.get("polygon_points_norm")
+                        clipped = (
+                            _clip_words_to_polygon(words, poly, pw, ph)
+                            if poly
+                            else _clip_words_to_bbox(
+                                words, b.get("coords_norm"), pw, ph
+                            )
+                        )
+                        txt = _block_text(clipped)
+                        if not str(txt or "").strip():
+                            continue
+                        out[str(bid)] = {
+                            "text": txt,
+                            "page": page_number,
+                            "page_index": pi,
+                            "block_kind": block_kind,
+                            "source": "pdf_vector_text",
+                            "source_file": str(pdf),
+                            "router_eligible": (
+                                block_kind == "image"
+                                and len(str(txt).strip()) >= _MIN_VECTOR_CHARS
+                            ),
+                        }
             return out
         finally:
             doc.close()
+    except Exception:
+        return {}
+
+
+def vector_covered_block_ids(output_dir) -> dict:
+    """{block_id: вектор-текст} для image-блоков с ГОДНЫМ вектор-слоем (≥ _MIN_VECTOR_CHARS).
+
+    ОБЩИЙ предикат с `resolve_block_source`: тот же полигон-клип, тот же порог. Блок попадает
+    сюда ТОГДА И ТОЛЬКО ТОГДА, когда роутер на Stage 02 отдаст ему вектор-текст (не gemma_fallback).
+    Используется гейтом пропуска стадии Gemma: эти блоки можно НЕ гонять через Gemma — роутер и так
+    подаст их точный текст. Один open PDF (батч). fail-soft → {}.
+
+    ВАЖНО: значение (вектор-текст) кладётся в placeholder-enrichment пропущенного блока —
+    страховка на случай, если роутер на Stage 02 всё же fail-soft'нётся: блок не станет слепым.
+    """
+    try:
+        return {
+            block_id: record["text"]
+            for block_id, record in vector_text_block_index(
+                output_dir,
+                include_text_blocks=False,
+            ).items()
+            if isinstance(record, dict) and record.get("router_eligible") is True
+        }
     except Exception:
         return {}
 
@@ -321,6 +408,22 @@ def resolve_block_package(
             classification = _classification_metadata(chandra, profile_id, source)
             if graph is not None:
                 graph["classification"] = classification
+            # Структурный профиль — индекс, а не замена первичного источника.
+            # Для АИ сохраняем рядом полный точный текст полигона: профиль может
+            # ошибиться в типе или не извлечь марку/размер, а LLM не должен
+            # принимать отсутствие поля в производном графе за отсутствие в РД.
+            if (
+                kwargs.get("source_kind") == "structured_architecture"
+                and block_text
+                and kwargs.get("user_text")
+            ):
+                kwargs["user_text"] += (
+                    "\n\n## Полный точный текст полигона из PDF\n"
+                    "Это первичный проектный источник; служебное название профиля выше "
+                    "не является данными проекта.\n```\n"
+                    + block_text
+                    + "\n```\n"
+                )
             kwargs["classification"] = classification
             return make_package(**kwargs)
 

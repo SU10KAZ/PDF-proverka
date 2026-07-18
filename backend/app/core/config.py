@@ -464,7 +464,7 @@ if not CODEX_STAGE_MODEL_ID.startswith("codex/"):
 # missed by both detectors. These switches never affect single-model modes.
 STAGE01_DUAL_REVIEW_ENABLED = _env_bool("STAGE01_DUAL_REVIEW_ENABLED", True)
 STAGE01_DUAL_GAP_SEARCH_ENABLED = _env_bool(
-    "STAGE01_DUAL_GAP_SEARCH_ENABLED", True
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED", False
 )
 STAGE01_DUAL_REVIEW_MODEL = (
     os.environ.get("STAGE01_DUAL_REVIEW_MODEL", CODEX_STAGE_MODEL_ID).strip()
@@ -764,11 +764,18 @@ FINDINGS_BLOCK_CAPTIONS_ENABLED = _env_bool("FINDINGS_BLOCK_CAPTIONS_ENABLED", T
 # расшифрована»), при том что «Условные обозначения → Размер, обязательный к
 # выполнению» лежит на том же листе. Цена возврата ~222 токена/блок (~16K на прогон,
 # 0.7% от 2.4М). Асимметрия-улика: единственный image_only-блок контекст ПОЛУЧАЛ.
-# Default OFF — включать после A/B (меняет промпт → инвалидирует кэш блоков).
-STAGE01_PAGE_CONTEXT_ENABLED = _env_bool("STAGE01_PAGE_CONTEXT_ENABLED", False)
+# A/B на 133-23-ГК-АИ2: полный контекст снизил эвристический documentation-шум
+# с 84 до 36 кандидатов. Поэтому безопасный контекст листа теперь штатный.
+STAGE01_PAGE_CONTEXT_ENABLED = _env_bool("STAGE01_PAGE_CONTEXT_ENABLED", True)
 # Stage 01: evidence-first publication gate. Кандидаты без достаточного контекста
 # не теряются, а сохраняются в deferred_findings с детерминированными причинами.
 STAGE01_EVIDENCE_GATE_ENABLED = _env_bool("STAGE01_EVIDENCE_GATE_ENABLED", True)
+# Детерминированный shadow/observe-only поиск OCR-гомоглифов и ложных
+# «не указано» по точному PDF-векторному слою. Ничего не удаляет и не меняет
+# решение evidence gate; только добавляет аудируемый receipt. До замера OFF.
+FINDING_EVIDENCE_OCR_OBSERVER_ENABLED = _env_bool(
+    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False
+)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает

@@ -536,6 +536,121 @@ NEIGHBOR_VECTOR_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_VECTOR_PER_BLOCK", 80
 NEIGHBOR_MD_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_MD_PER_BLOCK", 400)
 NEIGHBOR_TOTAL = _gfo_env_int("STAGE01_NEIGHBOR_TOTAL", 6000)
 
+# ── Координатно-привязанный вектор-текст соседей (07-18) ──────────────────────
+# Замер на силовой однолинейке ЭМ_1-1: плоский вектор соседей (vector_covered_block_ids →
+# _block_text, координаты потеряны) заставлял модель принимать РЕАЛЬНЫЕ внутрипанельные дубли
+# позиционных обозначений (1QF6 дважды, 4QF32 D50 vs D40) за «склейку соседних блоков» → она
+# УБИРАЛА реальную критику (10/11 подавленных находок были реальны, вкл. КРИТ 2QF8 16А<26,4А).
+# Фикс: повторяющиеся обозначения аннотируются позицией @(gx,gy) в 30pt-сетке — два одинаковых
+# кода на разных X ИЛИ Y читаются как РАЗНЫЕ аппараты. Полный Вектограф-граф здесь НЕ годится:
+# он схлопывает идентичные метки QF в один узел (прячет ровно тот дубль). Флаг default OFF.
+STAGE01_NEIGHBOR_COORD_TEXT_ENABLED = _gfo_env_bool("STAGE01_NEIGHBOR_COORD_TEXT_ENABLED", False)
+# Ограничить координатный рендер профилем электрики/схематики (по block_type или QF-регэкспу):
+# проблема дублей-обозначений специфична для схем, на планах/таблицах координаты = лишний шум.
+STAGE01_NEIGHBOR_COORD_ELECTRICAL_ONLY = _gfo_env_bool("STAGE01_NEIGHBOR_COORD_ELECTRICAL_ONLY", True)
+NEIGHBOR_COORD_GRID_PT = _gfo_env_int("STAGE01_NEIGHBOR_COORD_GRID_PT", 30)
+NEIGHBOR_COORD_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_COORD_PER_BLOCK", 1200)
+
+# Позиционное обозначение аппарата/марки: 1QF6, 4QF32, РП1, ВА105, QF8, П2.2 и т.п.
+_NEIGHBOR_DESIG_RE = re.compile(r"^\d?[A-ZА-Я]{1,3}\d")
+# Электрический сосед по вектор-тексту (fallback, если block_type в графе пуст).
+_NEIGHBOR_ELEC_RE = re.compile(r"\bQF\d|ВА\d{2,}|кВт|кВА|Iр=|РУНН|ГРЩ|ВРУ|\bРП\d", re.I)
+
+
+def _render_neighbor_coord_text(clipped_words: list, grid: int = 30) -> str:
+    """Координатно-привязанный текст блока: повторяющиеся обозначения → `КОД@(gx,gy)`.
+
+    clipped_words — кортежи (x0,y0,x1,y1,text,block_no,line_no,word_no) в pt (из
+    _clip_words_to_polygon). Порядок чтения: по строке-бэнду Y, затем X. Аннотируются ТОЛЬКО
+    обозначения, встречающиеся в блоке ≥2 раз (экономия + именно они — источник ложной
+    «склейки»). Детерминизм: round(x/grid), round(y/grid), стабильная сортировка → cache_key
+    стабилен. Дедупа НЕТ (иначе воспроизвели бы баг схлопывания Вектографа).
+    """
+    if not clipped_words:
+        return ""
+    counts: dict[str, int] = {}
+    for w in clipped_words:
+        t = w[4]
+        if _NEIGHBOR_DESIG_RE.match(t):
+            counts[t] = counts.get(t, 0) + 1
+    band = max(1, grid)
+    ordered = sorted(clipped_words, key=lambda w: (round(w[1] / band), round(w[0])))
+    out: list[str] = []
+    for w in ordered:
+        t = w[4]
+        if counts.get(t, 0) >= 2:
+            gx = int(w[0] // grid)
+            gy = int(w[1] // grid)
+            out.append(f"{t}@({gx},{gy})")
+        else:
+            out.append(t)
+    return " ".join(out)
+
+
+def _neighbor_is_electrical(block: dict, vec_text: str) -> bool:
+    """Профиль соседа = электрика/схематика (для координатного рендера). Дёшево, без PDF."""
+    bt = str(block.get("block_type") or block.get("ocr_label") or "").lower()
+    if any(k in bt for k in ("single", "singleline", "electr", "grsh", "схем", "щит", "рп")):
+        return True
+    return bool(_NEIGHBOR_ELEC_RE.search(vec_text or ""))
+
+
+def build_neighbor_coord_map(output_dir, graph: dict) -> dict:
+    """{block_id: координатный текст} для ВСЕХ image-блоков — ОДИН проход по PDF на прогон.
+
+    Тот же паттерн «один fitz.open на батч», что vector_covered_block_ids. Клип к полигону
+    блока обязателен (иначе чужой текст листа протечёт). fail-soft → {} (тогда координатный
+    режим тихо откатывается на плоский vector_map). Хелперы клипа импортируются read-only из
+    singleline_graph_geometry (мой код), block_source_router НЕ редактируется.
+    """
+    try:
+        import fitz  # локально, как в block_grounding
+        from backend.app.pipeline.stages.block_grounding.block_source_router import _locate
+        from backend.app.pipeline.stages.block_grounding.singleline_graph_geometry import (
+            _clip_words_to_polygon,
+            _clip_words_to_bbox,
+        )
+    except Exception:
+        return {}
+    try:
+        pdf, dgp = _locate(output_dir)
+        if pdf is None or dgp is None:
+            return {}
+        dg = json.loads(dgp.read_text(encoding="utf-8"))
+        doc = fitz.open(str(pdf))
+    except Exception:
+        return {}
+    try:
+        out: dict = {}
+        for p in dg.get("pages", []):
+            pi = p.get("page_index", p.get("page"))
+            if pi is None or pi >= doc.page_count:
+                continue
+            page = doc[pi]
+            pw, ph = float(page.rect.width), float(page.rect.height)
+            words = page.get_text("words")
+            for b in p.get("image_blocks", []) or []:
+                bid = b.get("id") or b.get("block_id")
+                if not bid:
+                    continue
+                poly = b.get("polygon_points_norm")
+                clipped = (
+                    _clip_words_to_polygon(words, poly, pw, ph)
+                    if poly
+                    else _clip_words_to_bbox(words, b.get("coords_norm"), pw, ph)
+                )
+                txt = _render_neighbor_coord_text(clipped, grid=NEIGHBOR_COORD_GRID_PT)
+                if txt.strip():
+                    out[str(bid)] = txt
+        return out
+    except Exception:
+        return {}
+    finally:
+        try:
+            doc.close()
+        except Exception:
+            pass
+
 
 def _caveat_enabled_for_section(section: str) -> bool:
     """Включать ли анти-FP оговорку для данной дисциплины (section-код)."""
@@ -661,6 +776,7 @@ def build_page_neighbors_section(
     page,
     vector_map: dict,
     by_id: dict,
+    coord_map: Optional[dict] = None,
 ) -> str:
     """Секция «соседние блоки этого листа» для контекста анализируемого блока.
 
@@ -695,7 +811,7 @@ def build_page_neighbors_section(
         md = str(b.get("ocr_raw") or b.get("ocr_text_normalized") or "")
         if not vec and not md:
             continue  # штамп/пустой блок — нечего показывать
-        cands.append({"bid": bid, "cx": cx, "cy": cy, "vec": vec, "md": md})
+        cands.append({"bid": bid, "cx": cx, "cy": cy, "vec": vec, "md": md, "block": b})
     if not cands:
         return ""
     if tgt_center is not None:
@@ -715,7 +831,23 @@ def build_page_neighbors_section(
         if used >= NEIGHBOR_MAX_BLOCKS:
             break
         lines = [f"### Соседний блок ({c['bid'][:12]}…):"]
-        if c["vec"]:
+        # Для электрических/схемных соседей — координатно-привязанный текст (повторы обозначений
+        # с позициями @(gx,gy)), чтобы реальные внутрипанельные дубли не читались как «склейка».
+        _coord = ""
+        if (
+            STAGE01_NEIGHBOR_COORD_TEXT_ENABLED
+            and coord_map
+            and (not STAGE01_NEIGHBOR_COORD_ELECTRICAL_ONLY
+                 or _neighbor_is_electrical(c.get("block") or {}, c["vec"]))
+        ):
+            _coord = str(coord_map.get(c["bid"]) or "")
+        if _coord:
+            lines.append(
+                "Точный текст (вектор-слой PDF, привязка по координатам; повтор обозначения "
+                "на разной позиции @(x,y) = РАЗНЫЕ аппараты, НЕ артефакт склейки): "
+                f"{_coord[:NEIGHBOR_COORD_PER_BLOCK]}"
+            )
+        elif c["vec"]:
             lines.append(f"Точный текст (вектор-слой PDF): {c['vec'][:NEIGHBOR_VECTOR_PER_BLOCK]}")
         if c["md"]:
             lines.append(
@@ -1377,6 +1509,13 @@ def adapt_findings_to_production(
         comparison = f.get("_comparison")
         if isinstance(comparison, dict):
             item["detector_comparison"] = dict(comparison)
+        observations = f.get("_finding_evidence_observations")
+        if isinstance(observations, list):
+            item["_finding_evidence_observations"] = [
+                dict(observation)
+                for observation in observations
+                if isinstance(observation, dict)
+            ]
         out.append(item)
     return out
 
@@ -1562,11 +1701,32 @@ async def run_findings_only_for_project(
     # Считаем только когда контекст листа и соседи включены, иначе — 0 стоимости (прод OFF).
     from backend.app.core import config as _pcfg_nb
     neighbor_vector_map: dict = {}
-    if (
+    symbol_vector_index: dict = {}
+    symbol_evidence_enabled = bool(
+        getattr(_pcfg_nb, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False)
+    )
+    page_neighbors_need_vector = (
         _pcfg_nb.STAGE01_PAGE_CONTEXT_ENABLED
         and STAGE01_PAGE_NEIGHBORS_ENABLED
         and output_dir is not None
-    ):
+    )
+    if symbol_evidence_enabled and output_dir is not None:
+        try:
+            from backend.app.pipeline.stages.block_grounding.block_source_router import (
+                vector_text_block_index,
+            )
+            symbol_vector_index = vector_text_block_index(output_dir) or {}
+            if page_neighbors_need_vector:
+                neighbor_vector_map = {
+                    block_id: record.get("text")
+                    for block_id, record in symbol_vector_index.items()
+                    if isinstance(record, dict)
+                    and record.get("router_eligible") is True
+                }
+        except Exception:
+            symbol_vector_index = {}
+            neighbor_vector_map = {}
+    elif page_neighbors_need_vector:
         try:
             from backend.app.pipeline.stages.block_grounding.block_source_router import (
                 vector_covered_block_ids,
@@ -1574,6 +1734,20 @@ async def run_findings_only_for_project(
             neighbor_vector_map = vector_covered_block_ids(output_dir) or {}
         except Exception:
             neighbor_vector_map = {}
+
+    # Координатно-привязанный текст соседей (позиции повторов обозначений) — ОДИН проход по PDF.
+    # Только когда координатный режим включён поверх соседей (иначе 0 стоимости).
+    neighbor_coord_map: dict = {}
+    if (
+        _pcfg_nb.STAGE01_PAGE_CONTEXT_ENABLED
+        and STAGE01_PAGE_NEIGHBORS_ENABLED
+        and STAGE01_NEIGHBOR_COORD_TEXT_ENABLED
+        and output_dir is not None
+    ):
+        try:
+            neighbor_coord_map = build_neighbor_coord_map(output_dir, graph) or {}
+        except Exception:
+            neighbor_coord_map = {}
     context_blocks = {
         str(item.get("block_id")): item
         for item in context_summary.get("blocks") or []
@@ -1750,6 +1924,7 @@ async def run_findings_only_for_project(
                         page_neighbors = build_page_neighbors_section(
                             graph, str(block.get("block_id") or ""),
                             block.get("page"), neighbor_vector_map, by_id,
+                            coord_map=neighbor_coord_map,
                         )
                     except Exception:
                         page_neighbors = ""
@@ -1971,12 +2146,30 @@ async def run_findings_only_for_project(
             # Publication is evidence-first, but no candidate is destroyed:
             # deferred_findings stays in the per-block audit record.
             if res.get("ok"):
+                candidates = list((res.get("parsed") or {}).get("findings") or [])
+                if symbol_evidence_enabled:
+                    try:
+                        from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
+                            observe_symbol_token_evidence,
+                        )
+                        candidates, observer_report = observe_symbol_token_evidence(
+                            candidates,
+                            vector_sources=symbol_vector_index,
+                            document_graph=graph,
+                            target_block_id=item["block_id"],
+                            target_page=block["page"],
+                            enabled=True,
+                        )
+                        res["parsed"] = {"findings": candidates}
+                        res["finding_evidence_observer"] = observer_report
+                    except Exception:
+                        # Shadow observer is fail-soft by contract.
+                        pass
                 from backend.app.core import config as _gate_cfg
                 if getattr(_gate_cfg, "STAGE01_EVIDENCE_GATE_ENABLED", True):
                     from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
                         gate_findings,
                     )
-                    candidates = list((res.get("parsed") or {}).get("findings") or [])
                     published, deferred, gate_report = gate_findings(candidates)
                     res["parsed"] = {"findings": published}
                     res["deferred_findings"] = deferred
@@ -2164,6 +2357,8 @@ async def run_findings_only_for_project(
         if isinstance(res.get("evidence_gate"), dict):
             analysis["evidence_gate"] = res["evidence_gate"]
             analysis["deferred_findings"] = list(res.get("deferred_findings") or [])
+        if isinstance(res.get("finding_evidence_observer"), dict):
+            analysis["finding_evidence_observer"] = res["finding_evidence_observer"]
         if isinstance(res.get("document_retrieval"), dict):
             analysis["document_retrieval"] = res["document_retrieval"]
         if use_dual and isinstance(res.get("dual_review"), dict):

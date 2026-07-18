@@ -60,7 +60,12 @@ def test_provenance_records_context_source_per_detection():
 
 def test_stage01_context_router_is_unconditional(tmp_path, monkeypatch):
     from backend.app.pipeline.stages.block_grounding import block_source_router
+    from backend.app.core import config as _config
 
+    # Тест проверяет, что при ВКЛючённом контексте листа он добавляется поверх роутерного
+    # текста. Форсируем флаг явно, чтобы тест не зависел от ambient-конфига/.env
+    # (иначе прод-override STAGE01_PAGE_CONTEXT_ENABLED=false ломает герметичность).
+    monkeypatch.setattr(_config, "STAGE01_PAGE_CONTEXT_ENABLED", True)
     monkeypatch.setattr(
         block_source_router,
         "resolve_block_source",
@@ -74,7 +79,9 @@ def test_stage01_context_router_is_unconditional(tmp_path, monkeypatch):
         output_dir=tmp_path,
     )
 
-    assert text == "VECTOR CONTEXT"
+    assert text.startswith("VECTOR CONTEXT")
+    assert "Контекст ЛИСТА" in text
+    assert "page text" in text
     assert source == "raw_vector"
 
 
@@ -162,7 +169,7 @@ def test_stage02_model_restrictions_allow_codex_and_dual():
     assert config.validate_stage_model_choice("block_batch", config.CODEX_STAGE_MODEL_ID) is None
     assert config.validate_stage_model_choice("block_batch", config.STAGE02_DUAL_MODEL_ID) is None
     assert config.STAGE01_DUAL_REVIEW_ENABLED is True
-    assert config.STAGE01_DUAL_GAP_SEARCH_ENABLED is True
+    assert config.STAGE01_DUAL_GAP_SEARCH_ENABLED is False
     assert config.STAGE01_DUAL_REVIEW_MODEL.startswith("codex/")
 
 
