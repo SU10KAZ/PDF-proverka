@@ -20,7 +20,7 @@ from backend.app.services.storage.stage_artifacts import (
 )
 
 
-STAGE01_PROMPT_VERSION = "stage01-findings-v1"
+STAGE01_PROMPT_VERSION = "stage01-findings-evidence-v3"
 # Compatibility alias for older imports; new writers use the Stage 01 value.
 STAGE02_PROMPT_VERSION = STAGE01_PROMPT_VERSION
 

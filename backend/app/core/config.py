@@ -766,6 +766,9 @@ FINDINGS_BLOCK_CAPTIONS_ENABLED = _env_bool("FINDINGS_BLOCK_CAPTIONS_ENABLED", T
 # 0.7% от 2.4М). Асимметрия-улика: единственный image_only-блок контекст ПОЛУЧАЛ.
 # Default OFF — включать после A/B (меняет промпт → инвалидирует кэш блоков).
 STAGE01_PAGE_CONTEXT_ENABLED = _env_bool("STAGE01_PAGE_CONTEXT_ENABLED", False)
+# Stage 01: evidence-first publication gate. Кандидаты без достаточного контекста
+# не теряются, а сохраняются в deferred_findings с детерминированными причинами.
+STAGE01_EVIDENCE_GATE_ENABLED = _env_bool("STAGE01_EVIDENCE_GATE_ENABLED", True)
 # Порядок пост-findings: вывести norm_verify из параллельного блока и запускать его
 # ПОСЛЕ финализации findings (Верификатор → debt_control merge/stable-id → нормы).
 # Так нормы всегда верифицируются против финальных, стабильных F-ID (убирает
