@@ -66,7 +66,12 @@ def test_mark_system_context_contains_global_conflicts(tmp_path):
 
 
 def test_ai_builds_exhaustive_norm_and_mark_passes(monkeypatch, tmp_path):
+    from backend.app.core import config
+
     md_path = _write_md(tmp_path)
+    monkeypatch.setattr(
+        config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", True,
+    )
     monkeypatch.setattr(targeted, "_get_md_file_path", lambda *_: str(md_path))
     monkeypatch.setattr(targeted, "_read_existing_findings", lambda *_args, **_kw: '{"findings":[]}')
 

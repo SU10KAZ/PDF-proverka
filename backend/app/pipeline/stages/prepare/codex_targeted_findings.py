@@ -30,6 +30,22 @@ class CodexTargetedPass:
     messages: list[dict[str, str]]
 
 
+def _finding_evidence_observer_enabled() -> bool:
+    """Return the shared observer switch, defaulting safely to OFF."""
+    try:
+        from backend.app.core import config as _config
+
+        return bool(
+            getattr(
+                _config,
+                "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED",
+                False,
+            )
+        )
+    except Exception:
+        return False
+
+
 def _canonical_finding_key(item: dict[str, Any]) -> str:
     text = item.get("problem") or item.get("finding") or item.get("description") or ""
     text = str(text).lower().replace("ё", "е")
@@ -702,13 +718,19 @@ def build_targeted_findings_passes(project_info: dict[str, Any], project_id: str
             messages=_docnorm_messages(project_info, project_id, md_path, results_md=results_md),
         )
     )
-    passes.append(
-        CodexTargetedPass(
-            stage="alia_mark_system_audit",
-            output_filename="03_findings_targeted_alia_mark_system_audit.json",
-            messages=_mark_system_messages(project_info, project_id, md_path, results_md=results_md),
+    if _finding_evidence_observer_enabled():
+        passes.append(
+            CodexTargetedPass(
+                stage="alia_mark_system_audit",
+                output_filename="03_findings_targeted_alia_mark_system_audit.json",
+                messages=_mark_system_messages(
+                    project_info,
+                    project_id,
+                    md_path,
+                    results_md=results_md,
+                ),
+            )
         )
-    )
     return passes
 
 
@@ -760,14 +782,7 @@ def _observe_pdf_symbol_evidence(
     output_dir: str | Path | None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
     """Run the shared PDF-vector observer after targeted union (fail-soft)."""
-    from backend.app.core import config as _config
-
-    if (
-        output_dir is None
-        or not getattr(
-            _config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False
-        )
-    ):
+    if output_dir is None or not _finding_evidence_observer_enabled():
         return findings, None
     try:
         from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
@@ -830,6 +845,7 @@ def combine_findings_with_targeted(
     next_idx = max(max_idx, len(findings)) + 1
     targeted_added = 0
     targeted_stages: list[str] = []
+    observer_enabled = _finding_evidence_observer_enabled()
 
     for stage, payload in targeted_payloads:
         targeted_findings = payload.get("findings") if isinstance(payload, dict) else []
@@ -847,7 +863,8 @@ def combine_findings_with_targeted(
             normalized.setdefault("source_stage", stage)
             if not normalized.get("problem") and normalized.get("finding"):
                 normalized["problem"] = normalized.get("finding")
-            _ensure_text_evidence_refs(normalized)
+            if observer_enabled:
+                _ensure_text_evidence_refs(normalized)
             findings.append(normalized)
             if key:
                 seen_keys.add(key)

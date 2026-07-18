@@ -238,7 +238,12 @@ class TestCodexTargetedPageHeaderHint:
         assert ctf._md_is_results_format(tmp_path / "missing.md") is False
 
     def test_build_passes_new_format_threads_flag(self, new_md_path, tmp_path, monkeypatch):
+        from backend.app.core import config
+
         monkeypatch.setenv("AUDIT_OUTPUT_DIR", str(tmp_path))
+        monkeypatch.setattr(
+            config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False,
+        )
         monkeypatch.setattr(ctf, "_get_md_file_path", lambda info, pid: new_md_path)
         passes = ctf.build_targeted_findings_passes({"section": "SS"}, "p1")
         assert [p.stage for p in passes] == ["alia_ss_lowcurrent_audit", "alia_docnorm_audit"]
@@ -247,10 +252,37 @@ class TestCodexTargetedPageHeaderHint:
             assert "«## СТРАНИЦА N»" not in self._user_content(p.messages)
 
     def test_build_passes_old_format_unchanged(self, old_md_path, tmp_path, monkeypatch):
+        from backend.app.core import config
+
         monkeypatch.setenv("AUDIT_OUTPUT_DIR", str(tmp_path))
+        monkeypatch.setattr(
+            config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False,
+        )
         monkeypatch.setattr(ctf, "_get_md_file_path", lambda info, pid: old_md_path)
         passes = ctf.build_targeted_findings_passes({"section": "AR"}, "p1")
         assert [p.stage for p in passes] == ["alia_ar_masonry_audit", "alia_docnorm_audit"]
         for p in passes:
             assert "«## СТРАНИЦА N»" in self._user_content(p.messages)
             assert "«## Page N»" not in self._user_content(p.messages)
+
+    def test_build_passes_observer_on_adds_mark_system_pass(
+        self, new_md_path, tmp_path, monkeypatch,
+    ):
+        from backend.app.core import config
+
+        monkeypatch.setenv("AUDIT_OUTPUT_DIR", str(tmp_path))
+        monkeypatch.setattr(
+            config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", True,
+        )
+        monkeypatch.setattr(ctf, "_get_md_file_path", lambda info, pid: new_md_path)
+
+        passes = ctf.build_targeted_findings_passes({"section": "SS"}, "p1")
+
+        assert [p.stage for p in passes] == [
+            "alia_ss_lowcurrent_audit",
+            "alia_docnorm_audit",
+            "alia_mark_system_audit",
+        ]
+        for targeted_pass in passes:
+            assert "«## Page N»" in self._user_content(targeted_pass.messages)
+            assert "«## СТРАНИЦА N»" not in self._user_content(targeted_pass.messages)

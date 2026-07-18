@@ -85,7 +85,12 @@ def test_targeted_finding_without_page_gets_no_refs():
     assert "evidence_text_refs" not in item
 
 
-def test_combine_applies_text_refs_to_added():
+def test_combine_applies_text_refs_to_added_when_observer_enabled(monkeypatch):
+    from backend.app.core import config
+
+    monkeypatch.setattr(
+        config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", True,
+    )
     base = {"findings": []}
     targeted = [("ss", {"findings": [{
         "problem": "y",
@@ -94,6 +99,26 @@ def test_combine_applies_text_refs_to_added():
     }]})]
     combined = combine_findings_with_targeted(base, targeted)
     assert combined["findings"][0]["evidence_text_refs"] == ["page_5_text"]
+
+
+def test_combine_leaves_text_refs_unchanged_when_observer_disabled(monkeypatch):
+    from backend.app.core import config
+
+    monkeypatch.setattr(
+        config, "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED", False,
+    )
+    base = {"findings": []}
+    targeted = [("ss", {"findings": [{
+        "problem": "y",
+        "page": 5,
+        "evidence": [
+            {"type": "text", "block_id": None, "page": 5, "md_lines": "1-2"},
+        ],
+    }]})]
+
+    combined = combine_findings_with_targeted(base, targeted)
+
+    assert "evidence_text_refs" not in combined["findings"][0]
 
 
 # ── 3. norm_fix: детектор «ничего не изменилось» ─────────────────────────────
