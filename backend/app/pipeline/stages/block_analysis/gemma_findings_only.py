@@ -551,6 +551,19 @@ STAGE01_NEIGHBOR_COORD_ELECTRICAL_ONLY = _gfo_env_bool("STAGE01_NEIGHBOR_COORD_E
 NEIGHBOR_COORD_GRID_PT = _gfo_env_int("STAGE01_NEIGHBOR_COORD_GRID_PT", 30)
 NEIGHBOR_COORD_PER_BLOCK = _gfo_env_int("STAGE01_NEIGHBOR_COORD_PER_BLOCK", 1200)
 
+# ── Третья нога ансамбля блок-анализа (07-20, за флагом) ──────────────────────
+# Замер на силовой однолинейке ЭМ_1-1 (блок ГРЩ): разные модели ловят РАЗНЫЕ реальные
+# находки (GPT-5.4 → надёжный PEN; codex-5.6-sol → больший объём, изредка ТТ), поэтому
+# объединение трёх независимых ног шире двух. Добавляется к GPT-5.4 + codex-5.4, все на том
+# же reasoning_effort (low в проде). codex-нога = subscription ($0). Default OFF — прод не
+# трогаем до проверки на блоке; тяжёлые числовые (секционник/уставки) сюда НЕ закрываются
+# ансамблем — под них отдельный детерминированный табличный чек.
+STAGE01_THIRD_LEG_ENABLED = _gfo_env_bool("STAGE01_THIRD_LEG_ENABLED", False)
+STAGE01_THIRD_LEG_MODEL = (
+    os.environ.get("STAGE01_THIRD_LEG_MODEL", "codex/gpt-5.6-sol").strip()
+    or "codex/gpt-5.6-sol"
+)
+
 # Позиционное обозначение аппарата/марки: 1QF6, 4QF32, РП1, ВА105, QF8, П2.2 и т.п.
 _NEIGHBOR_DESIG_RE = re.compile(r"^\d?[A-ZА-Я]{1,3}\d")
 # Электрический сосед по вектор-тексту (fallback, если block_type в графе пуст).
@@ -1540,23 +1553,32 @@ def combine_detector_results(
     paid_cached_input_tokens = 0
     paid_cached_output_tokens = 0
 
+    _ref_offsets: dict[str, int] = {}
     for detector_model, result in detector_results:
+        _det_key = detector_for_model(detector_model)
+        _ref_base = _ref_offsets.get(_det_key, 0)
+        _last_ref_index = 0
         if result.get("ok"):
             ok_models.append(detector_model)
             for raw_index, raw in enumerate(
                 (result.get("parsed") or {}).get("findings") or [], start=1
             ):
+                _last_ref_index = raw_index
                 if not isinstance(raw, dict):
                     continue
                 tagged = dict(raw)
                 tagged["_detector_model"] = detector_model
-                tagged["_detector_run_id"] = f"{run_id}:{detector_for_model(detector_model)}"
+                tagged["_detector_run_id"] = f"{run_id}:{_det_key}"
                 tagged["_detector_ref"] = (
-                    f"{detector_for_model(detector_model)}:{raw_index:03d}"
+                    f"{_det_key}:{_ref_base + raw_index:03d}"
                 )
                 combined_findings.append(tagged)
         else:
             failed_models.append(detector_model)
+        # Сквозная нумерация ref для ног ОДНОГО детектора (две codex-ноги): без смещения обе
+        # дали бы «codex:001…», и dual_review (словарь по _detector_ref) потерял бы находки
+        # одной. Для 2-ногого случая (gpt+codex) смещение=0 → поведение прежнее (обр. совм.).
+        _ref_offsets[_det_key] = _ref_base + _last_ref_index
 
         if detector_for_model(detector_model) == "gpt_openrouter":
             in_tokens = int(result.get("input_tokens") or 0)
@@ -1970,7 +1992,7 @@ async def run_findings_only_for_project(
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
                 if use_dual:
                     assert client is not None
-                    gpt_result, codex_result = await asyncio.gather(
+                    _dispatch_calls = [
                         call_gpt_for_block(
                             client, block, item["enrichment"], page_text, blocks_dir,
                             api_key=api_key or "", model=DEFAULT_MODEL,
@@ -1997,9 +2019,41 @@ async def run_findings_only_for_project(
                             page_neighbors=page_neighbors,
                             include_absence_caveat=include_caveat,
                         ),
+                    ]
+                    # Третья нога (за флагом): ещё одна независимая codex-модель (по умолчанию
+                    # codex/gpt-5.6-sol) на том же low. Разные модели ловят РАЗНЫЕ находки —
+                    # combine_detector_results делает union по списку ног любой длины.
+                    _use_third_leg = (
+                        STAGE01_THIRD_LEG_ENABLED
+                        and STAGE01_THIRD_LEG_MODEL
+                        and STAGE01_THIRD_LEG_MODEL != CODEX_STAGE_MODEL_ID
                     )
+                    if _use_third_leg:
+                        _dispatch_calls.append(
+                            call_codex_for_block(
+                                block, item["enrichment"], page_text, blocks_dir,
+                                model=STAGE01_THIRD_LEG_MODEL,
+                                system_prompt=system_prompt, timeout=timeout_s,
+                                reasoning_effort=reasoning_effort,
+                                project_id=project_id, output_dir=output_dir,
+                                routed_context=routed_context,
+                                document_context=document_context,
+                                document_type=document_type,
+                                page_neighbors=page_neighbors,
+                                include_absence_caveat=include_caveat,
+                            )
+                        )
+                    _dispatch_results = await asyncio.gather(*_dispatch_calls)
+                    _detector_pairs = [
+                        (DEFAULT_MODEL, _dispatch_results[0]),
+                        (CODEX_STAGE_MODEL_ID, _dispatch_results[1]),
+                    ]
+                    if _use_third_leg:
+                        _detector_pairs.append(
+                            (STAGE01_THIRD_LEG_MODEL, _dispatch_results[2])
+                        )
                     combined = combine_detector_results(
-                        [(DEFAULT_MODEL, gpt_result), (CODEX_STAGE_MODEL_ID, codex_result)],
+                        _detector_pairs,
                         run_id=run_id,
                     )
                     if not combined.get("detectors_complete"):
