@@ -4238,19 +4238,27 @@ const app = createApp({
                 const verifier = stageModelDisplayName(
                     details.final_verifier_model || stageModelConfig.value?.findings_critic
                 );
+                const modelBadge = (m) => {
+                    const s = String(m || '').toLowerCase();
+                    if (s.startsWith('openai') || (s.includes('gpt') && !s.includes('codex'))) return 'GPT';
+                    if (s.includes('codex')) return 'Codex';
+                    if (s.includes('claude') || s.includes('opus') || s.includes('sonnet')) return 'Claude';
+                    return 'LLM';
+                };
+                const branches = parallelModels.map((m) => ({
+                    label: modelBadge(m),
+                    text: `${stageModelDisplayName(m)}: независимые замечания`,
+                }));
                 return {
                     ...base,
-                    note: `GPT и Codex не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
+                    note: `Модели не видят ответы друг друга. После 03 Свода итог дополнительно проверяет ${verifier}.`,
                     steps: [
                         { text: 'Изображение + контекст блока' },
-                        { type: 'split', branches: [
-                            { label: 'GPT', text: `${stageModelDisplayName(parallelModels[0])}: независимые замечания` },
-                            { label: 'Codex', text: `${stageModelDisplayName(parallelModels[1])}: независимые замечания` },
-                        ] },
+                        { type: 'split', branches },
                         { text: `Судья: ${judge} сравнивает результаты`, tone: 'judge' },
                         { text: 'Совпадения · расширения · новые · спорные' },
                         { text: `${judge}: gap-search пропущенных проблем` },
-                        { text: 'Замечания + бейджи GPT / Codex', tone: 'result' },
+                        { text: `Замечания + бейджи ${[...new Set(branches.map((b) => b.label))].join(' / ')}`, tone: 'result' },
                     ],
                 };
             }

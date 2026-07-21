@@ -3,6 +3,7 @@ REST API для запуска и управления аудитом.
 """
 import asyncio
 import json
+import os
 import re
 import subprocess
 import traceback
@@ -113,6 +114,19 @@ async def get_stage_model_config():
         STAGE_MODEL_HINTS,
         STAGE_MODEL_RESTRICTIONS,
     )
+    # Ноги этапа 01: GPT (OpenRouter) + codex-5.4, плюс опциональная 3-я нога
+    # за флагом STAGE01_THIRD_LEG_ENABLED (gemma_findings_only читает её из env).
+    # Зеркалим ту же логику, чтобы панель UI показывала реальный состав ансамбля.
+    _block_parallel_models = [GPT_MODEL, CODEX_STAGE_MODEL_ID]
+    _third_leg_on = os.environ.get("STAGE01_THIRD_LEG_ENABLED", "").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+    _third_leg_model = (
+        os.environ.get("STAGE01_THIRD_LEG_MODEL", "codex/gpt-5.6-sol").strip()
+        or "codex/gpt-5.6-sol"
+    )
+    if _third_leg_on and _third_leg_model and _third_leg_model != CODEX_STAGE_MODEL_ID:
+        _block_parallel_models.append(_third_leg_model)
     return {
         "stages": dict(STAGE_MODEL_CONFIG),
         "available_models": AVAILABLE_MODELS,
@@ -120,7 +134,7 @@ async def get_stage_model_config():
         "hints": STAGE_MODEL_HINTS,
         "ensemble_details": {
             "block_batch": {
-                "parallel_models": [GPT_MODEL, CODEX_STAGE_MODEL_ID],
+                "parallel_models": _block_parallel_models,
                 "judge_model": STAGE01_DUAL_REVIEW_MODEL,
                 "final_verifier_model": STAGE_MODEL_CONFIG.get("findings_critic"),
             },
