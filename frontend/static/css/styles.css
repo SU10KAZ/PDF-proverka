@@ -1802,7 +1802,7 @@ th.cv2-sort-active {
 .log-entry { display: flex; align-items: baseline; gap: 14px; padding: 3px 16px; line-height: 1.6; transition: background 0.1s; }
 .log-entry:hover { background: var(--card2-bg); }
 .log-time { color: var(--text3); min-width: 52px; flex-shrink: 0; }
-.log-msg { color: var(--text2); flex: 1; word-break: break-all; }
+.log-msg { color: var(--text2); flex: 1; overflow-wrap: anywhere; font-family: 'JetBrains Mono', ui-monospace, monospace; white-space: pre-wrap; }
 .log-info .log-msg { color: var(--text2); }
 .log-warning .log-msg { color: var(--amber); }
 .log-error .log-msg { color: var(--red); }

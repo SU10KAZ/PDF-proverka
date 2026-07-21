@@ -46,6 +46,71 @@ if TYPE_CHECKING:
 RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
 
 
+# ─── Таблица прогресса этапа 01 (моноширинный лог) ───────────────────────────
+# Заголовок печатается один раз перед первой строкой блока; строки блоков
+# выровнены по этим же ширинам. Колонки названы по-русски.
+# (name, width, align) — align: ">" правое, "<" левое.
+_STAGE01_TABLE_COLS = [
+    ("№", 3, ">"),
+    ("Блок", 8, "<"),
+    ("Стр", 3, ">"),
+    ("Время", 6, ">"),
+    ("Замеч", 5, ">"),
+    ("Модели", 16, "<"),
+    ("Совп", 4, ">"),
+    ("Расш", 4, ">"),
+    ("Нов", 3, ">"),
+    ("Спор", 4, ">"),
+    ("Гэп", 3, ">"),
+    ("Вход", 7, ">"),
+    ("Выход", 6, ">"),
+    ("Рассужд", 7, ">"),
+]
+
+
+def _stage01_short_model(model: str) -> str:
+    """Короткая метка модели-ноги для колонки «Модели»."""
+    s = str(model or "").lower()
+    if "openai" in s or ("gpt" in s and "codex" not in s):
+        return "GPT"
+    if "sol" in s:
+        return "sol"
+    if "luna" in s:
+        return "luna"
+    if "terra" in s or "tera" in s:
+        return "terra"
+    if "protection" in s or "determin" in s:
+        return "чек"
+    if "codex" in s:
+        return "codex"
+    tail = s.split("/")[-1]
+    return (tail[:6] or "?")
+
+
+def _stage01_table_row(cells: list) -> str:
+    """Собрать выровненную строку таблицы из значений по ширинам колонок."""
+    parts = []
+    for (_name, width, align), val in zip(_STAGE01_TABLE_COLS, cells):
+        parts.append(f"{str(val):{align}{width}}")
+    return "  " + "  ".join(parts)
+
+
+def _stage01_table_header() -> str:
+    """Строка заголовка + разделительная линия под ширины колонок."""
+    header = _stage01_table_row([c[0] for c in _STAGE01_TABLE_COLS])
+    total = sum(w for _n, w, _a in _STAGE01_TABLE_COLS) + 2 * (len(_STAGE01_TABLE_COLS) - 1)
+    return header + "\n  " + "─" * total
+
+
+def _stage01_models_cell(detectors_ok: list, detectors_failed: list) -> str:
+    """Колонка «Модели»: кто отработал (·) + упавшие через ✗."""
+    ok = "·".join(_stage01_short_model(m) for m in (detectors_ok or [])) or "—"
+    failed = detectors_failed or []
+    if failed:
+        ok += " ✗" + "·".join(_stage01_short_model(m) for m in failed)
+    return ok
+
+
 def _read_stage02_smoke_env() -> dict:
     """Прочитать legacy-named smoke-limits для Stage 01 из env.
 
@@ -610,6 +675,8 @@ async def run_block_analysis_findings_only(
 
     cancel_event = asyncio.Event()
     loop = asyncio.get_running_loop()
+    # Печать заголовка таблицы прогресса ровно один раз (перед первой строкой).
+    _stage01_tbl_state = {"header_shown": False}
 
     def _on_progress(event: dict) -> None:
         # Связать cancel_event с реальной отменой пайплайна: оркестратор не
@@ -635,35 +702,45 @@ async def run_block_analysis_findings_only(
             ms = event.get("elapsed_ms") or 0
             ok = event.get("ok")
             n = event.get("findings", 0)
+            # Заголовок таблицы — один раз, перед первой строкой блока.
+            if not _stage01_tbl_state["header_shown"]:
+                _stage01_tbl_state["header_shown"] = True
+                asyncio.run_coroutine_threadsafe(
+                    ctx.log(_stage01_table_header(), "info"), loop
+                )
             if ok:
-                msg = (
-                    f"  [{completed:>3}/{total}] OK {bid} p={pg} t={ms/1000:.1f}s "
-                    f"findings={n} in={event.get('input_tokens')}"
+                counts = event.get("dual_review_counts") or {}
+                bid_short = str(bid).replace("blk_", "")[:8]
+                models_cell = _stage01_models_cell(
+                    event.get("detectors_ok") or [],
+                    event.get("detectors_failed") or [],
                 )
-                if event.get("cached_input_tokens") is not None:
-                    msg += f" cached={event.get('cached_input_tokens')}"
-                msg += (
-                    f" out={event.get('output_tokens')}"
-                    f" reason={event.get('reasoning_tokens')}"
-                )
+                row = _stage01_table_row([
+                    completed,
+                    bid_short,
+                    pg,
+                    f"{ms / 1000:.1f}с",
+                    n,
+                    models_cell,
+                    counts.get("matches", 0),
+                    counts.get("extensions", 0),
+                    counts.get("new", 0),
+                    counts.get("disputed", 0),
+                    event.get("gap_findings", 0),
+                    event.get("input_tokens") if event.get("input_tokens") is not None else "—",
+                    event.get("output_tokens") if event.get("output_tokens") is not None else "—",
+                    event.get("reasoning_tokens") if event.get("reasoning_tokens") is not None else "—",
+                ])
                 level = "warn" if event.get("partial") else "info"
-                if event.get("partial"):
-                    msg += f" partial_failed={event.get('detectors_failed') or []}"
-                if event.get("dual_review_status"):
-                    counts = event.get("dual_review_counts") or {}
-                    msg += (
-                        f" review={event.get('dual_review_status')}"
-                        f" match={counts.get('matches', 0)}"
-                        f" ext={counts.get('extensions', 0)}"
-                        f" new={counts.get('new', 0)}"
-                        f" disputed={counts.get('disputed', 0)}"
-                        f" gaps={event.get('gap_findings', 0)}"
-                    )
-                asyncio.run_coroutine_threadsafe(ctx.log(msg, level), loop)
+                asyncio.run_coroutine_threadsafe(ctx.log(row, level), loop)
             else:
                 err = (event.get("error") or "")[:80]
                 asyncio.run_coroutine_threadsafe(
-                    ctx.log(f"  [{completed:>3}/{total}] FAIL {bid}: {err}", "warn"),
+                    ctx.log(
+                        f"  [{completed:>3}/{total}] ОШИБКА "
+                        f"{str(bid).replace('blk_', '')[:8]} стр={pg}: {err}",
+                        "warn",
+                    ),
                     loop,
                 )
             if ctx.progress_sync:
