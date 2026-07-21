@@ -27,6 +27,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -43,6 +45,49 @@ from backend.app.pipeline.stages.block_context.reference_catalog import load_ref
 # Тоньше → считаем, что вектор-слоя нет (скан/растр) → fallback на Gemma.
 _MIN_VECTOR_CHARS = 40
 _REFERENCE_RULES = load_reference_rules()
+
+_PER_BLOCK_PROFILE_ROUTING_FLAG = "STAGE01_PER_BLOCK_PROFILE_ROUTING_ENABLED"
+_PER_BLOCK_PROFILE_ROUTING_POLICY = "stage01_per_block_profile_v1"
+
+# Пер-блочный роутинг пока нужен только смешанным комплектам АИ.  АР остаётся
+# на прежнем дисциплинарном маршруте: включение A/B-флага для АИ не должно
+# незаметно менять уже проверенные архитектурные корпуса.
+_AI_DISCIPLINE_CODES = frozenset({"AI", "АИ"})
+
+_PARKING_GEOMETRY_MARKERS = (
+    "рамп", "проезд", "машино-мест", "машиномест", "уклон",
+)
+_PARKING_PLACE_MARKERS = ("автостоян", "паркинг")
+_PARKING_LAYOUT_MARKERS = (
+    "план", "разметк",
+)
+_REFERENCE_SHEET_MARKERS = (
+    "ведомость ссылочных документов", "ссылочные документы",
+    "перечень ссылочных документов", "титульный лист",
+)
+_INTERIOR_MARKERS = (
+    "развертк", "развёртк", "ведомость отделки", "спецификация отделки",
+    "отделк", "напольн", "потолк", "чистовая", "мебел",
+)
+_DOOR_INTERIOR_MARKERS = (
+    "двер", "д20", "д22", "д16", "д14", "д13.2", "антипаник",
+)
+_DOOR_CONTEXT_MARKERS = (
+    "эскиз", "узел", "спецификац", "ведомост", "маркировоч", "ручк",
+    "высот", "размер",
+)
+
+
+def per_block_profile_routing_enabled() -> bool:
+    """Default-OFF A/B-флаг пер-блочного профиль-роутинга Stage 01.
+
+    Читается на каждый вызов, чтобы per-run env override и monkeypatch в тестах
+    не зависели от порядка импорта worker-процесса.
+    """
+    raw = os.environ.get(_PER_BLOCK_PROFILE_ROUTING_FLAG)
+    if raw is None or raw == "":
+        return False
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 _PATH_DISCIPLINES = {
     "EOM": "ЭОМ", "ЭОМ": "ЭОМ", "GP": "ГП", "ГП": "ГП",
@@ -212,6 +257,268 @@ def _discipline_hint(output_dir) -> Optional[str]:
     return None
 
 
+def _storage_discipline_code(output_dir) -> Optional[str]:
+    """Исходный код дисциплины без AI→АР alias.
+
+    Нужен только для ограничения A/B-флага смешанными комплектами АИ; штатный
+    _discipline_hint продолжает определять допустимые профильные построители
+    как раньше.
+    """
+    output_path = Path(output_dir)
+    parts = output_path.parts
+    if "disciplines" in parts:
+        pos = parts.index("disciplines") + 1
+        if pos < len(parts):
+            raw = str(parts[pos]).strip().upper()
+            if raw:
+                return raw
+    for parent in list(output_path.parents)[:5]:
+        for candidate in (
+            parent / "01_input" / "project_info.json",
+            parent / "project_info.json",
+        ):
+            if not candidate.is_file():
+                continue
+            try:
+                info = json.loads(candidate.read_text(encoding="utf-8"))
+                raw = str(info.get("section") or "").strip().upper()
+                if raw:
+                    return raw
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                continue
+    for part in reversed(parts):
+        raw = str(part).strip().upper()
+        if raw in _PATH_DISCIPLINES:
+            return raw
+    return None
+
+
+def _per_block_profile_routing_applies(output_dir) -> bool:
+    """Флаг ON и документ относится именно к АИ (не ко всему АР-корпусу)."""
+    return (
+        per_block_profile_routing_enabled()
+        and _storage_discipline_code(output_dir) in _AI_DISCIPLINE_CODES
+    )
+
+
+def _document_graph_block_context(dg: dict, block_id: str) -> tuple[dict, dict]:
+    """(page, image_block) из document_graph; пустые dict при неполных данных."""
+    try:
+        for page in dg.get("pages", []) or []:
+            if not isinstance(page, dict):
+                continue
+            for block in page.get("image_blocks", []) or []:
+                if not isinstance(block, dict):
+                    continue
+                bid = block.get("id") or block.get("block_id")
+                if str(bid) == str(block_id):
+                    return page, block
+    except Exception:
+        pass
+    return {}, {}
+
+
+def _sheet_title(page_record: dict) -> str:
+    """Наименование листа из известных вариантов CTX/document_graph.json."""
+    values = []
+    for key in (
+        "sheet_name", "sheet_title", "title", "name",
+        "Наименование листа", "наименование листа",
+    ):
+        value = page_record.get(key) if isinstance(page_record, dict) else None
+        if isinstance(value, str) and value.strip():
+            values.append(value.strip())
+    stamp = page_record.get("stamp_data") if isinstance(page_record, dict) else None
+    if isinstance(stamp, dict):
+        value = stamp.get("sheet_name") or stamp.get("title")
+        if isinstance(value, str) and value.strip():
+            values.append(value.strip())
+    return " | ".join(dict.fromkeys(values))
+
+
+def _canonical_graphic_block_type(block_type: str) -> str:
+    """Привести Chandra/document_graph Type к литералам graphic_profiles.py."""
+    value = str(block_type or "").strip().lower().replace("ё", "е")
+    canonical = {
+        "dense_grsh_singleline", "scheme", "dense_scheme", "table_legend",
+        "stamp", "plan", "photo_or_general",
+    }
+    if value in canonical:
+        return value
+    if any(marker in value for marker in (
+        "ведомост", "спецификац", "экспликац", "таблиц", "перечень",
+    )):
+        return "table_legend"
+    if any(marker in value for marker in (
+        "штамп", "титульн", "основная надпись",
+    )):
+        return "stamp"
+    if "план" in value:
+        return "plan"
+    if "схем" in value:
+        return "scheme"
+    return "photo_or_general"
+
+
+def _route_from_semantic_text(text: str) -> Optional[tuple[str, str, list[str]]]:
+    """Сильные смысловые сигналы; raw-предикаты намеренно проверяются первыми."""
+    value = str(text or "").lower()
+    if not value.strip():
+        return None
+
+    reference_hits = [
+        marker for marker in _REFERENCE_SHEET_MARKERS if marker in value
+    ]
+    if reference_hits:
+        return "raw_vector", "reference_or_title_sheet", reference_hits
+
+    geometry_hits = [
+        marker for marker in _PARKING_GEOMETRY_MARKERS if marker in value
+    ]
+    if geometry_hits:
+        return "raw_vector", "parking_geometry", geometry_hits
+
+    parking_place_hits = [
+        marker for marker in _PARKING_PLACE_MARKERS if marker in value
+    ]
+    parking_layout_hits = [
+        marker for marker in _PARKING_LAYOUT_MARKERS if marker in value
+    ]
+    if parking_place_hits and parking_layout_hits:
+        return (
+            "raw_vector",
+            "parking_plan_or_section",
+            (parking_place_hits + parking_layout_hits)[:8],
+        )
+
+    interior_hits = [marker for marker in _INTERIOR_MARKERS if marker in value]
+    door_hits = [marker for marker in _DOOR_INTERIOR_MARKERS if marker in value]
+    door_context_hits = [
+        marker for marker in _DOOR_CONTEXT_MARKERS if marker in value
+    ]
+    if interior_hits:
+        return "structured_architecture", "interior_finish_or_elevation", interior_hits
+    if door_hits and door_context_hits:
+        return (
+            "structured_architecture",
+            "door_drawing_or_schedule",
+            (door_hits + door_context_hits)[:6],
+        )
+    if re.search(r"\bплан\b[^\n]{0,80}-\s*\d+\s*(?:-?го\s+)?этаж", value):
+        return "raw_vector", "negative_storey_plan", ["план -N этажа"]
+    return None
+
+
+def _per_block_profile_route(
+    *,
+    sheet_name: str = "",
+    sheet_no=None,
+    block_type: str = "",
+    classification_text: str = "",
+    block_text: str = "",
+) -> dict:
+    """Выбрать профиль блока АИ по приоритету лист → block_type → контент.
+
+    Возвращаемое решение является аудируемым и само по себе fail-soft: target
+    None означает «сохранить прежний дисциплинарный роутинг».
+    """
+    canonical_type = _canonical_graphic_block_type(block_type)
+    graphic_profile_id = None
+    try:
+        from backend.app.services.stage_comparison.graphic_profiles import (
+            classify_graphic_profile,
+        )
+
+        graphic_profile_id, _ = classify_graphic_profile(canonical_type)
+    except Exception:
+        graphic_profile_id = None
+
+    base = {
+        "policy": _PER_BLOCK_PROFILE_ROUTING_POLICY,
+        "flag": _PER_BLOCK_PROFILE_ROUTING_FLAG,
+        "enabled": True,
+        "sheet_name": str(sheet_name or "").strip() or None,
+        "sheet_no": sheet_no,
+        "block_type": str(block_type or "").strip() or None,
+        "graphic_block_type": canonical_type,
+        "graphic_profile_id": graphic_profile_id,
+    }
+
+    def choice(
+        target: Optional[str],
+        signal_source: str,
+        reason: str,
+        markers: list[str],
+        confidence: str,
+    ) -> dict:
+        return {
+            **base,
+            "selected_source_kind": target,
+            "selected_profile": target,
+            "signal_source": signal_source,
+            "reason": reason,
+            "matched_markers": list(dict.fromkeys(markers))[:8],
+            "confidence": confidence,
+        }
+
+    # 1. Штамп/наименование листа — самый сильный источник.
+    sheet_decision = _route_from_semantic_text(sheet_name)
+    if sheet_decision:
+        target, reason, markers = sheet_decision
+        return choice(target, "sheet_name", reason, markers, "high")
+    normalized_sheet_no = str(sheet_no or "").strip().lower().replace(",", ".")
+    if normalized_sheet_no == "0.1":
+        return choice(
+            "raw_vector", "sheet_no", "title_or_reference_sheet_0_1",
+            ["лист 0.1"], "high",
+        )
+
+    # 2. Специализированный block_type. Generic «План» остаётся слабым:
+    # он одинаков для отделки и паркинга, поэтому контент ниже может его уточнить.
+    block_type_decision = _route_from_semantic_text(block_type)
+    if block_type_decision:
+        target, reason, markers = block_type_decision
+        return choice(target, "block_type", reason, markers, "high")
+    if graphic_profile_id == "title_stamp_notes":
+        return choice(
+            "raw_vector", "block_type_classifier", "title_stamp_profile",
+            [canonical_type], "high",
+        )
+    weak_graphic_target = (
+        "structured_architecture"
+        if graphic_profile_id == "architectural_plan_or_facade"
+        else None
+    )
+
+    # 3. Chandra-классификация + точный text-layer полигона.
+    content = (str(classification_text or "") + "\n" + str(block_text or "")).strip()
+    content_decision = _route_from_semantic_text(content)
+    if content_decision:
+        target, reason, markers = content_decision
+        return choice(target, "block_content", reason, markers, "high")
+
+    # Угловые значения сами по себе важны: два и более десятичных угла
+    # характерны для трассировки криволинейной рампы, а не для дверной дуги 90°.
+    degree_hits = re.findall(r"(?<!\w)\d{1,3}(?:[.,]\d+)?\s*°", content)
+    if len(degree_hits) >= 2 and any(
+        "." in hit or "," in hit for hit in degree_hits
+    ):
+        return choice(
+            "raw_vector", "block_text_geometry", "multiple_decimal_angles",
+            degree_hits[:8], "high",
+        )
+
+    if weak_graphic_target:
+        return choice(
+            weak_graphic_target, "block_type_classifier",
+            "generic_architectural_plan", [canonical_type], "medium",
+        )
+    return choice(
+        None, "discipline_fallback", "no_decisive_per_block_signal", [],
+        "low",
+    )
+
+
 def _extract_block(pdf_path: Path, dg: dict, block_id: str):
     """(page_text, block_text, bbox_norm, polygon_norm, page_pdf) для image-блока. Один open PDF."""
     import fitz  # локально, как в остальных block_grounding
@@ -370,10 +677,22 @@ def resolve_block_package(
       no_sources | block_not_found | error.
     fail-soft: при любой проблеме возвращается пакет без текста и прод-путь сохраняется.
     """
+    ai_output = _storage_discipline_code(output_dir) in _AI_DISCIPLINE_CODES
+    routing_applies = _per_block_profile_routing_applies(output_dir)
     if prefer_prepared:
         prepared = load_prepared_package(Path(output_dir), str(block_id))
         if prepared is not None:
-            return prepared
+            routing_meta = (
+                prepared.get("classification") or {}
+            ).get("profile_routing") or {}
+            cached_routing_applies = (
+                routing_meta.get("policy") == _PER_BLOCK_PROFILE_ROUTING_POLICY
+                and routing_meta.get("enabled") is True
+            )
+            # Не смешиваем prepared-пакеты A/B: ON не читает старый mono-profile,
+            # OFF не читает пакет, ранее построенный с пер-блочным флагом.
+            if not ai_output or cached_routing_applies == routing_applies:
+                return prepared
     try:
         pdf, dgp = _locate(output_dir)
         if pdf is None or dgp is None:
@@ -391,6 +710,36 @@ def resolve_block_package(
         block_profile_context = _classification_context(chandra, block_text, "")
         legacy_page_context = (block_text or "") + "\n" + (page_text or "")
         legacy_block_context = block_text or ""
+        page_record, block_record = _document_graph_block_context(dg, str(block_id))
+        route_sheet_name = _sheet_title(page_record)
+        route_sheet_no = (
+            page_record.get("sheet_no_raw")
+            or page_record.get("sheet_no_normalized")
+            or page_record.get("sheet_no")
+        )
+        route_block_type = (
+            getattr(chandra, "block_type", None)
+            or block_record.get("block_type")
+            or block_record.get("type")
+            or ""
+        )
+        routing_decision = None
+        if routing_applies:
+            try:
+                routing_decision = _per_block_profile_route(
+                    sheet_name=route_sheet_name,
+                    sheet_no=route_sheet_no,
+                    block_type=route_block_type,
+                    classification_text=profile_context,
+                    block_text=block_text,
+                )
+            except Exception as exc:
+                routing_decision = {
+                    "policy": _PER_BLOCK_PROFILE_ROUTING_POLICY, "enabled": True,
+                    "selected_source_kind": None, "signal_source": "discipline_fallback",
+                    "reason": f"classifier_error:{type(exc).__name__}",
+                    "confidence": "low",
+                }
         profile_sources: dict[str, str] = {}
 
         def remember_profile_source(profile_id, source: str) -> None:
@@ -404,8 +753,29 @@ def resolve_block_package(
             ).strip() or None
             source = profile_sources.get(str(profile_id or ""))
             if source is None and profile_id == "raw_vector":
-                source = "vector_pdf_fallback"
+                if (
+                    routing_decision
+                    and routing_decision.get("selected_source_kind") == "raw_vector"
+                ):
+                    source = "per_block_" + str(
+                        routing_decision.get("signal_source") or "content"
+                    )
+                else:
+                    source = "vector_pdf_fallback"
             classification = _classification_metadata(chandra, profile_id, source)
+            if routing_decision:
+                routing_meta = dict(routing_decision)
+                actual_source_kind = str(kwargs.get("source_kind") or "")
+                selected_source_kind = routing_meta.get("selected_source_kind")
+                routing_meta.update({
+                    "actual_source_kind": actual_source_kind,
+                    "actual_profile_id": profile_id,
+                    "applied": bool(
+                        selected_source_kind
+                        and selected_source_kind == actual_source_kind
+                    ),
+                })
+                classification["profile_routing"] = routing_meta
             if graph is not None:
                 graph["classification"] = classification
             # Структурный профиль — индекс, а не замена первичного источника.
@@ -510,14 +880,28 @@ def resolve_block_package(
         try:
             from .architecture_geometry import (build_ar_graph_from_source,classify_ar_profile,
                 evaluate_ar_gate,render_ar_markdown)
-            ar_context=profile_context
+            selected_block_source = (
+                routing_decision.get("selected_source_kind")
+                if routing_decision else None
+            )
+            architecture_allowed = (
+                allows("АР") and selected_block_source != "raw_vector"
+            )
+            ar_context = profile_context + (
+                "\n" + route_sheet_name
+                if selected_block_source == "structured_architecture" and route_sheet_name else ""
+            )
             ar_upper=ar_context.upper()
-            ar_marker=chandra is not None or any(x in ar_upper for x in ("АРХИТЕКТУРНЫЕ РЕШЕНИЯ","КЛАДОЧ","МАРКИРОВОЧ",
-              "РАЗВЕРТК","ФАСАД","ОТДЕЛКА КВАРТИР","ЧИСТОВАЯ ОТДЕЛКА","УЗЛЫ КРОВЛИ",
-              "ЛЕСТНИЦ","ОГРАЖДЕНИЯ ЛЕСТНИЧНЫХ"))
+            ar_marker=(
+              selected_block_source == "structured_architecture"
+              or chandra is not None
+              or any(x in ar_upper for x in ("АРХИТЕКТУРНЫЕ РЕШЕНИЯ","КЛАДОЧ","МАРКИРОВОЧ",
+                "РАЗВЕРТК","ФАСАД","ОТДЕЛКА КВАРТИР","ЧИСТОВАЯ ОТДЕЛКА","УЗЛЫ КРОВЛИ",
+                "ЛЕСТНИЦ","ОГРАЖДЕНИЯ ЛЕСТНИЧНЫХ"))
+            )
             ar_source="chandra_md" if chandra is not None else "vector_page_fallback"
-            ar_profile=classify_ar_profile(ar_context) if ar_marker and allows("АР") else None
-            if ar_profile is None and chandra is not None and allows("АР"):
+            ar_profile=classify_ar_profile(ar_context) if ar_marker and architecture_allowed else None
+            if ar_profile is None and chandra is not None and architecture_allowed:
                 ar_profile=classify_ar_profile(legacy_block_context)
                 ar_source="vector_block_fallback"
                 if ar_profile is None:

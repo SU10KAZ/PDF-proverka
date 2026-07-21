@@ -760,11 +760,18 @@ def gate_findings(
     publishable: list[dict[str, Any]] = []
     deferred: list[dict[str, Any]] = []
     reason_counts: dict[str, int] = {}
+    deterministic: list[dict[str, Any]] = []
 
     for raw in findings or []:
         if not isinstance(raw, dict):
             continue
         item = dict(raw)
+        if str(item.get("_detector_model") or "") == "deterministic/protection":
+            # These findings are already exact arithmetic over vector evidence.
+            # Keep the model-candidate cap independent from this trusted leg.
+            item["_evidence_gate"] = {"status": "published", "reasons": []}
+            deterministic.append(item)
+            continue
         if not (_CONTROL_FIELDS & set(item)):
             item["_evidence_gate"] = {"status": "legacy_passthrough", "reasons": []}
             publishable.append(item)
@@ -845,10 +852,12 @@ def gate_findings(
     report = {
         "schema_version": 1,
         "candidates": len([item for item in findings or [] if isinstance(item, dict)]),
-        "published": len(unique),
+        "published": len(deterministic) + len(unique),
         "deferred": len(deferred),
         "min_confidence": min_confidence,
         "max_published_per_block": max_published,
         "reason_counts": dict(sorted(reason_counts.items())),
     }
-    return unique, deferred, report
+    if deterministic:
+        report["deterministic_published"] = len(deterministic)
+    return [*deterministic, *unique], deferred, report

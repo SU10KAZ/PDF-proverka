@@ -69,6 +69,7 @@ from backend.app.core.config import (
     STAGE01_DUAL_GAP_SEARCH_ENABLED,
     STAGE01_DUAL_REVIEW_ENABLED,
     STAGE01_DUAL_REVIEW_MODEL,
+    STAGE01_PROTECTION_TABLE_CHECK_ENABLED,
     STAGE02_DUAL_MODEL_ID,
     is_codex_model,
 )
@@ -80,6 +81,10 @@ from backend.app.pipeline.stages.block_analysis.provenance import (
     STAGE01_PROMPT_VERSION,
     build_finding_provenance,
     detector_for_model,
+)
+from backend.app.pipeline.stages.block_analysis.protection_table_check import (
+    DETECTOR_MODEL as PROTECTION_DETECTOR_MODEL,
+    run_protection_table_detector,
 )
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -1812,6 +1817,10 @@ async def run_findings_only_for_project(
         if use_dual
         else [model]
     )
+    configured_detector_models = list(detector_models)
+    if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
+        configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
+
     if not use_claude_cli and not use_codex_cli:
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
@@ -1957,6 +1966,7 @@ async def run_findings_only_for_project(
             # prepared package would silently survive a rerun.
             routed_context: Optional[tuple[str, str]] = None
             retrieval_query_text = ""
+            package: Optional[dict[str, Any]] = None
             try:
                 from backend.app.pipeline.stages.block_grounding.block_source_router import (
                     resolve_block_package,
@@ -1977,6 +1987,20 @@ async def run_findings_only_for_project(
                 )
             except Exception:
                 routed_context = None
+
+            protection_pair: Optional[tuple[str, dict]] = None
+            if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
+                try:
+                    protection_result = run_protection_table_detector(
+                        package,
+                        output_dir=output_dir,
+                        block_id=str(block.get("block_id") or ""),
+                    )
+                    if protection_result is not None:
+                        protection_pair = (PROTECTION_DETECTOR_MODEL, protection_result)
+                except Exception:
+                    # The optional deterministic leg is strictly fail-soft.
+                    protection_pair = None
 
             from backend.app.pipeline.stages.block_analysis.document_retrieval import (
                 retrieve_document_context,
@@ -2052,6 +2076,8 @@ async def run_findings_only_for_project(
                         _detector_pairs.append(
                             (STAGE01_THIRD_LEG_MODEL, _dispatch_results[2])
                         )
+                    if protection_pair is not None:
+                        _detector_pairs.append(protection_pair)
                     combined = combine_detector_results(
                         _detector_pairs,
                         run_id=run_id,
@@ -2196,6 +2222,15 @@ async def run_findings_only_for_project(
                     "parse_error": "block_hard_timeout",
                     "elapsed_ms": block_hard_timeout_s * 1000,
                 }
+
+            if not use_dual and protection_pair is not None:
+                # Single-model transports use the same arbitrary-length union
+                # contract as ensemble mode; a failed LLM leg remains visible as
+                # a partial result while exact deterministic findings survive.
+                res = combine_detector_results(
+                    [(model, res), protection_pair],
+                    run_id=run_id,
+                )
 
             # Publication is evidence-first, but no candidate is destroyed:
             # deferred_findings stays in the per-block audit record.
@@ -2504,7 +2539,7 @@ async def run_findings_only_for_project(
                     "run_id": f"{run_id}:{detector_for_model(detector_model)}",
                     "prompt_version": STAGE01_PROMPT_VERSION,
                 }
-                for detector_model in detector_models
+                for detector_model in configured_detector_models
             ],
             **({"dual_review": dual_review_meta} if dual_review_meta is not None else {}),
             "reasoning_effort": reasoning_effort,

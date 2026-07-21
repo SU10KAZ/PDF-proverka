@@ -28,6 +28,8 @@ STAGE02_PROMPT_VERSION = STAGE01_PROMPT_VERSION
 def detector_for_model(model: str | None) -> str:
     """Return the stable detector identifier used in analytics and UI."""
     value = str(model or "").strip().lower()
+    if value.startswith("deterministic/"):
+        return "deterministic"
     if value.startswith("codex/") or value == "codex":
         return "codex"
     if "gpt" in value and not value.startswith("codex/"):
