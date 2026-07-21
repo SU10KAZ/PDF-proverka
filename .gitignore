@@ -239,3 +239,8 @@ experiments/**/*.zip
 /experiments/блоки разных дисциплин/*
 !/experiments/блоки разных дисциплин/DELETE_CANDIDATE.md
 !/experiments/блоки разных дисциплин/.deletion-candidate.json
+
+# === Выгрузки A/B-экспериментов (артефакты прогонов, не код) ===
+experiments/full_codex_ai2/
+experiments/vk_codex_vs_ensemble/
+backups/
