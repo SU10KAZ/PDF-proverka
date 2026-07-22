@@ -173,6 +173,11 @@ def build_result_json(
             if not ocr_json.get("sheet_number") and sheet_info.get("sheet"):
                 ocr_json["sheet_number"] = sheet_info["sheet"]
             out["ocr_json"] = ocr_json
+            # graph_builder._extract_sheet_info читает НОМЕР ЛИСТА из
+            # block["stamp_data"] (канонический ключ старого портала), а не из
+            # ocr_json. Без этого sheet_no_raw страниц графа остаётся None и
+            # столбец «Лист/Раздел» в Excel пустой. Эмитим stamp_data тоже.
+            out["stamp_data"] = ocr_json
             out["ocr_text"] = json.dumps(ocr_json, ensure_ascii=False, indent=2)
         elif md_block is not None:
             out["ocr_text"] = md_block.body

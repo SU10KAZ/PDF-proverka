@@ -198,6 +198,14 @@ def f_sheet(f, _):
     v = f.get("sheet") or f.get("location") or ""
     if isinstance(v, list):
         v = ", ".join(str(x) for x in v)
+    if not v:
+        # Штампованного листа нет (страница-продолжение / штамп не распознан) —
+        # показываем хотя бы страницу PDF, чтобы столбец не был пустым.
+        page = f.get("page")
+        if isinstance(page, list) and page:
+            v = "стр. PDF " + ", ".join(str(x) for x in page)
+        elif isinstance(page, int):
+            v = f"стр. PDF {page}"
     return v
 def f_problem(f, _):
     """Короткое название проблемы (≤ 80 символов)."""
