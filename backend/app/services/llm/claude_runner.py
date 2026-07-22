@@ -611,6 +611,89 @@ async def _run_codex_targeted_findings_merge(
 
 # ─── Анализ текста (Claude CLI, Sonnet) ───────────────────────────────
 
+async def _run_codex_text_analysis_chunked(
+    *,
+    message_sets: list[list[dict]],
+    plan_meta: dict,
+    model: str,
+    timeout: int,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+) -> tuple[int, str, LLMResult]:
+    """Прогнать N чанков text_analysis и слить их в 02_text_analysis.json.
+
+    Каждый чанк пишет диагностический part-файл (02_text_analysis.partN.json).
+    Финальный merge пишет канонический файл; токены/длительность суммируются в
+    один combined-result (как у targeted findings-merge). Падение любого чанка —
+    hard fail (стадия покажет ошибку), частичный merge не публикуем.
+    """
+    from backend.app.pipeline.stages.text_analysis.md_chunker import (
+        merge_text_analysis_parts,
+    )
+
+    n = len(message_sets)
+    await send_output(
+        on_output,
+        f"[text_analysis] промпт > лимита Codex → нарезка на {n} чанков "
+        f"по листам (листов {plan_meta.get('total_pages', '?')}, скелет "
+        f"{plan_meta.get('skeleton_pages', 0)} листов / "
+        f"{plan_meta.get('skeleton_chars', 0)} симв."
+        + (", скелет усечён" if plan_meta.get("skeleton_truncated") else "")
+        + ")",
+    )
+
+    parts: list[dict] = []
+    combined_in = combined_out = combined_dur = 0
+    last_result: LLMResult | None = None
+    for i, msgs in enumerate(message_sets, 1):
+        exit_code, text, result = await _run_codex_json_stage(
+            stage="text_analysis", messages=msgs, model=model, timeout=timeout,
+            project_id=project_id, on_output=on_output,
+            output_filename=f"02_text_analysis.part{i}.json",
+            audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
+        )
+        last_result = result
+        combined_in += result.input_tokens or 0
+        combined_out += result.output_tokens or 0
+        combined_dur += result.duration_ms or 0
+        if exit_code != 0 or result.is_error:
+            await send_output(
+                on_output,
+                f"[text_analysis] чанк {i}/{n} упал "
+                f"({result.error_message or f'код {exit_code}'}) — прерываю нарезку",
+            )
+            return (exit_code or 1), text, result
+        if isinstance(result.json_data, dict):
+            parts.append(result.json_data)
+        await send_output(
+            on_output,
+            f"[text_analysis] чанк {i}/{n} готов "
+            f"(+{len((result.json_data or {}).get('text_findings', []) if isinstance(result.json_data, dict) else [])} замечаний)",
+        )
+
+    merged = merge_text_analysis_parts(parts)
+    output_path = _resolve_output_dir(project_id, output_dir=output_dir) / TEXT_ANALYSIS_FILENAME
+    _write_json(output_path, merged)
+
+    # combined-result: суммарные токены/длительность, слитый JSON как ответ.
+    combined = last_result
+    combined.input_tokens = combined_in
+    combined.output_tokens = combined_out
+    combined.duration_ms = combined_dur
+    combined.json_data = merged
+    combined.text = json.dumps(merged, ensure_ascii=False)
+    combined.is_error = False
+    combined.error_message = None
+
+    await send_output(
+        on_output,
+        f"[text_analysis] слито {len(merged.get('text_findings', []))} замечаний "
+        f"из {n} чанков → {TEXT_ANALYSIS_FILENAME}",
+    )
+    return 0, combined.text, combined
+
+
 async def run_text_analysis(
     project_info: dict,
     project_id: str,
@@ -625,17 +708,39 @@ async def run_text_analysis(
 
     if is_codex_model(model):
         import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+        from backend.app.pipeline.stages.text_analysis.md_chunker import (
+            CODEX_TEXT_INPUT_BUDGET,
+        )
 
         with _scoped_audit_paths(
             output_dir=output_dir, version_dir=version_dir,
             project_id=project_id, version_id=version_id,
         ):
-            messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
-        return await _run_codex_json_stage(
-            stage="text_analysis", messages=messages, model=model,
+            message_sets, plan_meta = prompt_builder.build_text_analysis_message_sets(
+                project_info, project_id, budget=CODEX_TEXT_INPUT_BUDGET,
+            )
+
+        # single-pass (обычные проекты + Tier 1) — как раньше, один вызов пишет
+        # канонический 02_text_analysis.json.
+        if len(message_sets) == 1:
+            if plan_meta.get("mode") == "single_no_norms":
+                await send_output(
+                    on_output,
+                    "[text_analysis] промпт > лимита Codex → убрал inline норм-базу "
+                    f"({plan_meta.get('chars', 0)} симв., этап 04 перепроверит нормы)",
+                )
+            return await _run_codex_json_stage(
+                stage="text_analysis", messages=message_sets[0], model=model,
+                timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
+                on_output=on_output, output_filename=TEXT_ANALYSIS_FILENAME,
+                audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
+            )
+
+        # Tier 2: нарезка по листам со скелетом → N проходов → merge.
+        return await _run_codex_text_analysis_chunked(
+            message_sets=message_sets, plan_meta=plan_meta, model=model,
             timeout=CLAUDE_TEXT_ANALYSIS_TIMEOUT, project_id=project_id,
-            on_output=on_output, output_filename=TEXT_ANALYSIS_FILENAME,
-            audit_stage=TEXT_ANALYSIS_STAGE, output_dir=output_dir,
+            on_output=on_output, output_dir=output_dir,
         )
 
     if is_claude_stage("text_analysis"):

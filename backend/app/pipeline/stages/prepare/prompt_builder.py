@@ -478,11 +478,23 @@ def _build_page_contexts_from_graph(
 def build_text_analysis_messages(
     project_info: dict,
     project_id: str,
+    *,
+    include_norms: bool = True,
+    md_override: str | None = None,
+    skeleton: str | None = None,
 ) -> list[dict]:
     """Сформировать messages для text_analysis.
 
-    system: шаблон с инъекцией дисциплины + нормативная база inline
-    user: полный текст MD-файла
+    system: шаблон с инъекцией дисциплины + (опц.) нормативная база inline
+    user: полный текст MD-файла (или md_override для чанка)
+
+    Аргументы нарезки (используются только на больших проектах, где полный
+    промпт превышает лимит Codex — см. md_chunker):
+        include_norms — вкладывать ли inline-базу норм в system. Tier 1 при
+            переполнении ставит False (этап 04 перепроверяет нормы отдельно).
+        md_override   — тело MD для конкретного чанка вместо полного файла.
+        skeleton      — общий «скелет» сводных листов (ПЗ/нагрузки/спец),
+            добавляемый в user reference-only ради перекрёстной сверки.
     """
     from backend.app.pipeline.stages.prepare.task_builder import _absence_guard_block
     system_prompt = _load_and_clean_template(
@@ -492,13 +504,16 @@ def build_text_analysis_messages(
     )
 
     text_source, source_text, user_prefix = _resolve_text_analysis_source(project_info, project_id)
+    if md_override is not None:
+        source_text = md_override
     model = get_stage_model("text_analysis")
 
     # Подгрузить нормативную базу дисциплины inline там, где контекст позволяет.
     # Для local GEMMA держим prompt компактнее: актуальность норм всё равно финально
-    # проверяется отдельным stage 04 через MCP norms.
+    # проверяется отдельным stage 04 через MCP norms. include_norms=False —
+    # Tier 1 разгрузки промпта на больших проектах (та же мотивация).
     norms_text = _read_norms_reference(project_info)
-    if norms_text and not is_local_llm_model(model):
+    if include_norms and norms_text and not is_local_llm_model(model):
         system_prompt += f"\n\n## Normative Reference (discipline norms database)\n\n{norms_text}"
     else:
         system_prompt += (
@@ -518,16 +533,106 @@ def build_text_analysis_messages(
     except Exception:
         pass
 
+    if skeleton:
+        user_body = (
+            "## Сводные листы для перекрёстной сверки (REFERENCE ONLY)\n\n"
+            "Ниже — сводные текстовые листы проекта (ПЗ, таблицы нагрузок, "
+            "спецификация). Используй их ТОЛЬКО для перекрёстной сверки значений "
+            "с целевыми листами этого прохода (ПЗ↔таблицы↔спецификация). НЕ "
+            "выпускай замечания, чья первичная привязка — сводный лист, если "
+            "расхождение не затрагивает целевой лист этого прохода.\n\n"
+            f"{skeleton}\n\n"
+            "## Целевые листы этого прохода (замечания выпускай здесь):\n\n"
+            f"{source_text}"
+        )
+    else:
+        user_body = source_text
+
     return [
         {"role": "system", "content": system_prompt},
         {
             "role": "user",
             "content": (
                 f'{user_prefix}Required output field: `"text_source": "{text_source}"`.\n\n'
-                f"{source_text}"
+                f"{user_body}"
             ),
         },
     ]
+
+
+def _messages_char_len(messages: list[dict]) -> int:
+    """Суммарная длина текстового содержимого messages (для оценки лимита Codex)."""
+    total = 0
+    for m in messages:
+        content = m.get("content")
+        if isinstance(content, str):
+            total += len(content)
+        elif isinstance(content, list):
+            for part in content:
+                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                    total += len(part["text"])
+    return total
+
+
+def build_text_analysis_message_sets(
+    project_info: dict,
+    project_id: str,
+    *,
+    budget: int,
+) -> tuple[list[list[dict]], dict]:
+    """Спланировать проходы text_analysis под лимит Codex на один ход.
+
+    Возвращает (список наборов messages, meta). Один набор → single-pass
+    (поведение как раньше); несколько → чанки, которые раннер сольёт.
+
+    Двухступенчато (решение зафиксировано):
+      single    — промпт с норм-базой влезает в бюджет (обычные проекты).
+      Tier 1    — убрать inline норм-базу; если влезло — один проход.
+      Tier 2    — нарезка MD по листам + общий скелет в каждый чанк.
+    """
+    from backend.app.pipeline.stages.text_analysis.md_chunker import (
+        plan_text_analysis_chunks,
+    )
+
+    # single-pass с нормами (как сегодня).
+    msgs = build_text_analysis_messages(project_info, project_id)
+    size = _messages_char_len(msgs)
+    if size <= budget:
+        return [msgs], {"mode": "single", "chars": size}
+
+    # Tier 1: разгрузить system, убрав inline норм-базу (этап 04 перепроверит).
+    msgs_nn = build_text_analysis_messages(project_info, project_id, include_norms=False)
+    size_nn = _messages_char_len(msgs_nn)
+    if size_nn <= budget:
+        return [msgs_nn], {"mode": "single_no_norms", "chars": size_nn}
+
+    # Tier 2: нарезка по листам со скелетом.
+    _, source_text, _ = _resolve_text_analysis_source(project_info, project_id)
+    system_len = len(msgs_nn[0].get("content", ""))
+    plan = plan_text_analysis_chunks(
+        source_text, total_budget=budget, system_len=system_len,
+    )
+    if plan is None:
+        # Теоретически недостижимо (size_nn > budget), но перестрахуемся.
+        return [msgs_nn], {"mode": "single_no_norms", "chars": size_nn}
+
+    sets = [
+        build_text_analysis_messages(
+            project_info, project_id,
+            include_norms=False, md_override=chunk, skeleton=plan.skeleton,
+        )
+        for chunk in plan.chunks
+    ]
+    meta = {
+        "mode": "chunked",
+        "chunks": len(sets),
+        "total_pages": plan.total_pages,
+        "skeleton_pages": plan.skeleton_pages,
+        "skeleton_chars": len(plan.skeleton),
+        "skeleton_truncated": plan.skeleton_truncated,
+        "chars_no_norms": size_nn,
+    }
+    return sets, meta
 
 
 # ═══════════════════════════════════════════════════════════════════════════
