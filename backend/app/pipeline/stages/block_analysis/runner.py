@@ -50,41 +50,46 @@ RUNTIME_BATCHES_FILE = "block_batches.runtime.json"
 # Заголовок печатается один раз перед первой строкой блока; строки блоков
 # выровнены по этим же ширинам. Колонки названы по-русски.
 # (name, width, align) — align: ">" правое, "<" левое.
+# «Модели» — последний столбец: у него переменная длина (2/3/4 ноги ансамбля
+# + возможный детектор защит), поэтому вынесен в конец, чтобы не сдвигать
+# выравнивание числовых колонок.
 _STAGE01_TABLE_COLS = [
     ("№", 3, ">"),
     ("Блок", 8, "<"),
     ("Стр", 3, ">"),
     ("Время", 6, ">"),
-    ("Замеч", 5, ">"),
-    ("Модели", 16, "<"),
-    ("Совп", 4, ">"),
-    ("Расш", 4, ">"),
-    ("Нов", 3, ">"),
-    ("Спор", 4, ">"),
-    ("Гэп", 3, ">"),
+    ("Замечания", 9, ">"),
+    ("Совпадения", 10, ">"),
+    ("Расширения", 10, ">"),
+    ("Новые", 5, ">"),
+    ("Спорные", 7, ">"),
+    ("Пробелы", 7, ">"),
     ("Вход", 7, ">"),
     ("Выход", 6, ">"),
-    ("Рассужд", 7, ">"),
+    ("Рассуждения", 11, ">"),
+    ("Модели", 8, "<"),
 ]
 
 
-def _stage01_short_model(model: str) -> str:
-    """Короткая метка модели-ноги для колонки «Модели»."""
-    s = str(model or "").lower()
-    if "openai" in s or ("gpt" in s and "codex" not in s):
-        return "GPT"
-    if "sol" in s:
-        return "sol"
-    if "luna" in s:
-        return "luna"
-    if "terra" in s or "tera" in s:
-        return "terra"
-    if "protection" in s or "determin" in s:
-        return "чек"
-    if "codex" in s:
-        return "codex"
-    tail = s.split("/")[-1]
-    return (tail[:6] or "?")
+def _stage01_model_name(model: str) -> str:
+    """Полное читаемое имя модели-ноги для колонки «Модели»."""
+    s = str(model or "").strip()
+    low = s.lower()
+    if "protection" in low or "determin" in low:
+        return "Детектор защит"
+    if "sol" in low:
+        return "Codex-sol"
+    if "luna" in low:
+        return "Luna"
+    if "terra" in low or "tera" in low:
+        return "Terra"
+    if low.startswith("codex/") or low.startswith("codex-"):
+        ver = low.split("gpt-")[-1] if "gpt-" in low else ""
+        return f"Codex-{ver}" if ver else "Codex"
+    if "openai" in low or "gpt" in low:
+        ver = low.split("gpt-")[-1] if "gpt-" in low else ""
+        return f"GPT-{ver}" if ver else "GPT"
+    return s.split("/")[-1] or "?"
 
 
 def _stage01_table_row(cells: list) -> str:
@@ -103,11 +108,11 @@ def _stage01_table_header() -> str:
 
 
 def _stage01_models_cell(detectors_ok: list, detectors_failed: list) -> str:
-    """Колонка «Модели»: кто отработал (·) + упавшие через ✗."""
-    ok = "·".join(_stage01_short_model(m) for m in (detectors_ok or [])) or "—"
+    """Колонка «Модели»: кто отработал (через запятую) + упавшие через ✗."""
+    ok = ", ".join(_stage01_model_name(m) for m in (detectors_ok or [])) or "—"
     failed = detectors_failed or []
     if failed:
-        ok += " ✗" + "·".join(_stage01_short_model(m) for m in failed)
+        ok += "  ✗" + ", ✗".join(_stage01_model_name(m) for m in failed)
     return ok
 
 
@@ -721,7 +726,6 @@ async def run_block_analysis_findings_only(
                     pg,
                     f"{ms / 1000:.1f}с",
                     n,
-                    models_cell,
                     counts.get("matches", 0),
                     counts.get("extensions", 0),
                     counts.get("new", 0),
@@ -730,6 +734,7 @@ async def run_block_analysis_findings_only(
                     event.get("input_tokens") if event.get("input_tokens") is not None else "—",
                     event.get("output_tokens") if event.get("output_tokens") is not None else "—",
                     event.get("reasoning_tokens") if event.get("reasoning_tokens") is not None else "—",
+                    models_cell,
                 ])
                 level = "warn" if event.get("partial") else "info"
                 asyncio.run_coroutine_threadsafe(ctx.log(row, level), loop)
