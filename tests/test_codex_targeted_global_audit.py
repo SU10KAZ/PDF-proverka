@@ -146,6 +146,158 @@ def test_atomicity_guard_splits_distinct_serious_findings_from_same_block(tmp_pa
     }
 
 
+def test_atomicity_guard_keeps_same_issue_candidates_merged(tmp_path):
+    """Регрессия 23.07: G-038/G-039 превращались в дубли F-005/F-027."""
+    stage01_path = tmp_path / "01_blocks_analysis.json"
+    stage01_path.write_text(
+        json.dumps(
+            {
+                "block_analyses": [
+                    {
+                        "block_id": "blk_angle",
+                        "page": 10,
+                        "findings": [
+                            {
+                                "id": "G-038",
+                                "severity": "ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+                                "category": "documentation",
+                                "finding": (
+                                    "На схеме указаны анкерные болты, а в примечании "
+                                    "два дюбель-гвоздя."
+                                ),
+                                "value_found": (
+                                    "«Анкерный болт»; «Опорный уголок крепить "
+                                    "двумя дюбель-гвоздями»"
+                                ),
+                                "comparison_ref": "codex:002",
+                                "detector_comparison": {
+                                    "relation": "new",
+                                    "counterpart_refs": [],
+                                    "confidence": 1.0,
+                                },
+                            },
+                            {
+                                "id": "G-039",
+                                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                                "category": "documentation",
+                                "finding": (
+                                    "В узле показаны анкерные болты, тогда как общие "
+                                    "указания требуют два дюбель-гвоздя."
+                                ),
+                                "value_found": (
+                                    "Анкерный болт; Опорный уголок крепить "
+                                    "двумя дюбель-гвоздями."
+                                ),
+                                "comparison_ref": "codex:001",
+                                "detector_comparison": {
+                                    "relation": "match",
+                                    "counterpart_refs": ["gpt_openrouter:001"],
+                                    "confidence": 0.99,
+                                },
+                            },
+                        ],
+                    }
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    merged = {
+        "findings": [
+            {
+                "id": "F-005",
+                "severity": "ЭКОНОМИЧЕСКОЕ",
+                "problem": "Для опорного уголка заданы два типа крепежа.",
+                "source_finding_ids": ["T-005", "G-038", "G-039"],
+            }
+        ]
+    }
+
+    result = targeted.enforce_stage01_atomicity(merged, stage01_path)
+
+    assert result is merged
+    assert len(result["findings"]) == 1
+    assert result["findings"][0]["source_finding_ids"] == [
+        "T-005", "G-038", "G-039",
+    ]
+
+
+def test_atomicity_guard_collapses_duplicate_component_before_split(tmp_path):
+    """Два повтора одного дефекта + другой дефект дают две, а не три строки."""
+    stage01_path = tmp_path / "01_blocks_analysis.json"
+    stage01_path.write_text(
+        json.dumps(
+            {
+                "block_analyses": [
+                    {
+                        "block_id": "blk_mixed",
+                        "page": 16,
+                        "findings": [
+                            {
+                                "id": "G-091",
+                                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                                "category": "material",
+                                "finding": "Плотность утеплителя указана неверно.",
+                                "value_found": "ТЕХНОАКУСТИК 41 кг/м3",
+                                "comparison_ref": "gpt:001",
+                                "detector_comparison": {
+                                    "relation": "match",
+                                    "counterpart_refs": ["codex:001"],
+                                    "confidence": 0.99,
+                                },
+                            },
+                            {
+                                "id": "G-092",
+                                "severity": "ЭКОНОМИЧЕСКОЕ",
+                                "category": "material",
+                                "finding": "Марка утеплителя не соответствует плотности.",
+                                "value_found": "Паспортная плотность 43 кг/м3",
+                                "comparison_ref": "codex:001",
+                                "detector_comparison": {
+                                    "relation": "extension",
+                                    "counterpart_refs": ["gpt:001"],
+                                    "confidence": 0.99,
+                                },
+                            },
+                            {
+                                "id": "G-093",
+                                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                                "category": "fastening",
+                                "finding": "Шаг перфоленты не согласован с армированием.",
+                                "value_found": "каждый 3 ряд вместо каждого 2 ряда",
+                            },
+                        ],
+                    }
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    merged = {
+        "findings": [
+            {
+                "id": "F-016",
+                "severity": "ЭКСПЛУАТАЦИОННОЕ",
+                "source_finding_ids": ["G-091", "G-092", "G-093"],
+            }
+        ]
+    }
+
+    result = targeted.enforce_stage01_atomicity(merged, stage01_path)
+
+    assert len(result["findings"]) == 2
+    assert [item["source_finding_ids"] for item in result["findings"]] == [
+        ["G-091", "G-092"],
+        ["G-093"],
+    ]
+    assert result["meta"]["stage01_atomicity_guard"] == {
+        "split_groups": 1,
+        "restored_findings": 2,
+    }
+
+
 def test_atomicity_guard_keeps_cross_block_dedup_and_recommendations(tmp_path):
     stage01_path = tmp_path / "01_blocks_analysis.json"
     stage01_path.write_text(

@@ -912,6 +912,139 @@ def _dimension_receipt(item: dict[str, Any]) -> str:
     return f"Расчётная проверка: {expression} = {calculated} мм; указанный общий размер — {stated} мм."
 
 
+_ATOMIC_SAME_ISSUE_RELATIONS = frozenset({"match", "extension"})
+
+
+def _atomic_text_signature(value: Any) -> str:
+    """Стабильная сигнатура короткого evidence/problem без пунктуации."""
+    text = str(value or "").lower().replace("ё", "е")
+    return re.sub(r"[^\w]+", " ", text).strip()
+
+
+def _atomic_value_signature(item: dict[str, Any]) -> str:
+    """Вернуть только достаточно содержательный value_found.
+
+    Короткие заглушки вроде 'не указано' нельзя использовать для
+    дедупликации: в одном блоке ими могут быть описаны разные дефекты.
+    """
+    signature = _atomic_text_signature(item.get("value_found"))
+    if len(signature) < 12 or len(signature.split()) < 2:
+        return ""
+    if signature in {"не указано", "не определено", "отсутствует в проекте"}:
+        return ""
+    return signature
+
+
+def _atomic_comparison_records(item: dict[str, Any]) -> list[dict[str, Any]]:
+    comparison = item.get("detector_comparison")
+    if not isinstance(comparison, dict):
+        return []
+    records: list[dict[str, Any]] = []
+    if comparison.get("relation") or comparison.get("primary_relation"):
+        records.append(comparison)
+    for record in comparison.get("relations") or []:
+        if isinstance(record, dict):
+            records.append(record)
+    return records
+
+
+def _comparison_links_same_issue(
+    source: dict[str, Any],
+    counterpart: dict[str, Any],
+) -> bool:
+    """True, если dual-comparison явно связал кандидатов как match/extension."""
+    counterpart_ref = str(counterpart.get("comparison_ref") or "").strip()
+    if not counterpart_ref:
+        return False
+    for record in _atomic_comparison_records(source):
+        relation = str(
+            record.get("relation") or record.get("primary_relation") or ""
+        ).strip().lower()
+        if relation not in _ATOMIC_SAME_ISSUE_RELATIONS:
+            continue
+        try:
+            confidence = float(record.get("confidence"))
+        except (TypeError, ValueError):
+            confidence = 1.0
+        if confidence < 0.8:
+            continue
+        refs = {
+            str(ref).strip()
+            for ref in record.get("counterpart_refs") or []
+            if str(ref).strip()
+        }
+        if counterpart_ref in refs:
+            return True
+    return False
+
+
+def _same_atomic_issue(
+    left: dict[str, Any],
+    right: dict[str, Any],
+) -> bool:
+    """Консервативно определить два G-кандидата одного дефекта.
+
+    Приоритет у явного результата dual-comparison. Для legacy/new-кандидатов
+    без прямой связи допускается только точное совпадение содержательного
+    value_found либо полного текста проблемы внутри одной категории.
+    """
+    if (
+        _comparison_links_same_issue(left, right)
+        or _comparison_links_same_issue(right, left)
+    ):
+        return True
+
+    left_category = _atomic_text_signature(left.get("category"))
+    right_category = _atomic_text_signature(right.get("category"))
+    if not left_category or left_category != right_category:
+        return False
+
+    left_value = _atomic_value_signature(left)
+    right_value = _atomic_value_signature(right)
+    if left_value and left_value == right_value:
+        return True
+
+    left_problem, _ = _split_finding_text(left.get("finding"))
+    right_problem, _ = _split_finding_text(right.get("finding"))
+    left_problem_sig = _atomic_text_signature(left_problem)
+    right_problem_sig = _atomic_text_signature(right_problem)
+    return bool(left_problem_sig and left_problem_sig == right_problem_sig)
+
+
+def _partition_atomic_issues(
+    candidates: list[dict[str, Any]],
+) -> list[list[dict[str, Any]]]:
+    """Разбить кандидатов одного блока на компоненты разных дефектов."""
+    parent = list(range(len(candidates)))
+
+    def find(index: int) -> int:
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    for left in range(len(candidates)):
+        for right in range(left + 1, len(candidates)):
+            if _same_atomic_issue(candidates[left], candidates[right]):
+                union(left, right)
+
+    groups: dict[int, list[dict[str, Any]]] = {}
+    order: list[int] = []
+    for index, candidate in enumerate(candidates):
+        root = find(index)
+        if root not in groups:
+            groups[root] = []
+            order.append(root)
+        groups[root].append(candidate)
+    return [groups[root] for root in order]
+
+
 def enforce_stage01_atomicity(
     production: dict[str, Any],
     stage01_path: Path,
@@ -919,10 +1052,11 @@ def enforce_stage01_atomicity(
     """Не позволить merge объединить разные доказанные дефекты одного блока.
 
     Cross-block повторы по-прежнему можно объединять: это нормальная дедупликация
-    одного дефекта, найденного в двух представлениях. Но два non-recommendational
-    G-кандидата из ОДНОГО блока уже прошли evidence gate как отдельные сущности.
-    Их объединение теряет affected entity (например, разные помещения/двери),
-    поэтому итоговый finding детерминированно раскладывается обратно.
+    одного дефекта, найденного в двух представлениях. Несколько
+    non-recommendational G-кандидатов из ОДНОГО блока сначала объединяются по
+    явному match/extension и точному evidence. Только оставшиеся разные группы
+    детерминированно раскладываются обратно, чтобы не потерять affected entity
+    (например, разные помещения/двери).
     """
     if not isinstance(production, dict):
         return production
@@ -973,20 +1107,23 @@ def enforce_stage01_atomicity(
             candidate = candidates[source_id]
             block_id = str(candidate.get("_block_id") or "")
             by_block.setdefault(block_id, []).append(candidate)
-        atomic_group = None
+        atomic_groups = None
         if len(by_block) == 1:
             only_group = next(iter(by_block.values()))
             if len(only_group) > 1 and all(
                 str(item.get("severity") or "").upper() != "РЕКОМЕНДАТЕЛЬНОЕ"
                 for item in only_group
             ):
-                atomic_group = only_group
-        if not atomic_group:
+                issue_groups = _partition_atomic_issues(only_group)
+                if len(issue_groups) > 1:
+                    atomic_groups = issue_groups
+        if not atomic_groups:
             result.append(final)
             continue
 
         split_groups += 1
-        for index, candidate in enumerate(atomic_group):
+        for index, candidate_group in enumerate(atomic_groups):
+            candidate = candidate_group[0]
             problem, solution = _split_finding_text(candidate.get("finding"))
             receipt = _dimension_receipt(candidate)
             description = problem
@@ -1006,7 +1143,11 @@ def enforce_stage01_atomicity(
                     "solution": solution or final.get("solution"),
                     "norm": candidate.get("norm") or final.get("norm"),
                     "norm_quote": candidate.get("norm_quote"),
-                    "source_finding_ids": [candidate.get("id")],
+                    "source_finding_ids": [
+                        member.get("id")
+                        for member in candidate_group
+                        if member.get("id")
+                    ],
                     "source_block_ids": [candidate.get("_block_id")],
                     "related_block_ids": [candidate.get("_block_id")],
                     "evidence": [
