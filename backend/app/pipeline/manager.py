@@ -3055,6 +3055,86 @@ class PipelineManager:
                 "Сначала выполните block_analysis."
             )
 
+    def _reconcile_completed_block_analysis_for_resume(
+        self,
+        job: AuditJob,
+        output_dir: Path,
+    ) -> bool:
+        """Снять ложный ``interrupted`` с полностью сохранённого block_analysis.
+
+        После рестарта startup-recovery честно помечает любой оставшийся
+        ``running`` как ``interrupted``. Но при явном resume с более позднего
+        этапа (например, text_analysis) канонический 01_blocks_analysis.json
+        может уже содержать полный результат предыдущего успешного прогона.
+        В таком случае красный статус не должен мешать UI/resume-detector и
+        создавать впечатление, что блоковые замечания потеряны.
+
+        Статус восстанавливается только когда артефакт сам доказывает полноту:
+        есть запись по каждому блоку, все счётчики закрывают total и прогон не
+        был cancelled. Частичный файл никогда не маскируется как успешный.
+        """
+        log_path = Path(output_dir) / "pipeline_log.json"
+        try:
+            log_data = json.loads(log_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            return False
+
+        stage_info = (log_data.get("stages") or {}).get("block_analysis") or {}
+        if stage_info.get("status") != "interrupted":
+            return False
+
+        artifact_path = resolve_existing(Path(output_dir), BLOCKS_ANALYSIS_FILENAME)
+        try:
+            artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            return False
+
+        analyses = artifact.get("block_analyses")
+        meta = artifact.get("stage01_meta")
+        if not isinstance(analyses, list) or not isinstance(meta, dict):
+            return False
+
+        try:
+            total = int(meta.get("blocks_total") or len(analyses))
+            ok = int(meta.get("blocks_ok") or 0)
+            failed = int(meta.get("blocks_failed") or 0)
+            partial = int(meta.get("blocks_partial") or 0)
+            skipped = int(meta.get("blocks_skipped_no_context") or 0)
+        except (TypeError, ValueError):
+            return False
+
+        processed = ok + failed + partial + skipped
+        if (
+            bool(meta.get("cancelled"))
+            or total <= 0
+            or len(analyses) < total
+            or processed < total
+        ):
+            return False
+
+        clean = failed == 0 and partial == 0 and skipped == 0 and ok >= total
+        status = "done" if clean else "partial"
+        message = (
+            f"OK ({ok}/{total} блоков; восстановлено из сохранённого результата)"
+            if clean
+            else f"Завершено частично ({ok}/{total} блоков; восстановлено из артефакта)"
+        )
+        self._update_pipeline_log(
+            job.project_id,
+            "block_analysis",
+            status,
+            message=message,
+            detail={
+                "reconciled_from_artifact": True,
+                "blocks_total": total,
+                "blocks_ok": ok,
+                "blocks_failed": failed,
+                "blocks_partial": partial,
+                "blocks_skipped": skipped,
+            },
+        )
+        return True
+
     async def start_from_stage(
         self,
         project_id: str,
@@ -3234,6 +3314,7 @@ class PipelineManager:
                         f"Нельзя запускать {normalized}: 01_blocks_analysis.json отсутствует. "
                         "Сначала выполните block_analysis."
                     )
+                self._reconcile_completed_block_analysis_for_resume(job, output_dir)
             if start_idx >= 5 and not (output_dir / "03_findings.json").exists():
                 raise RuntimeError(
                     f"Нельзя запускать {normalized}: 03_findings.json отсутствует. "
@@ -3288,6 +3369,7 @@ class PipelineManager:
                     if blocks_before_text:
                         # Новый порядок: текст читает финальный 02 — он обязан существовать.
                         self._assert_block_analysis_exists(output_dir, "text_analysis")
+                        self._reconcile_completed_block_analysis_for_resume(job, output_dir)
                     self._backup_findings_before_restart(pid)
                     if blocks_before_text:
                         # Не трогаем блоки (посчитаны на block-этапе выше).
