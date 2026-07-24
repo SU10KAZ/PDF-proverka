@@ -1,6 +1,7 @@
 """Build block context locally from PDF vectors, Vectograph profiles, or PNG."""
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import inspect
 import json
@@ -75,14 +76,26 @@ async def build_block_context(
         block_id = str(block.get("block_id") or "")
         page = block.get("page")
         if resolve_block_source is not _canonical_resolve_block_source:
-            legacy_text, legacy_source = resolve_block_source(output_dir, block_id, page)
+            legacy_text, legacy_source = await asyncio.to_thread(
+                resolve_block_source,
+                output_dir,
+                block_id,
+                page,
+            )
             package = make_package(
                 block_id=block_id, page=page, source_kind=legacy_source,
                 user_text=legacy_text,
             )
         else:
-            package = resolve_block_package(
-                output_dir, block_id, page, prefer_prepared=False
+            # PDF/vector parsing is CPU-heavy and synchronous. Running it in the
+            # server event loop made the API and WebSocket unresponsive for the
+            # entire block-context stage on large documents.
+            package = await asyncio.to_thread(
+                resolve_block_package,
+                output_dir,
+                block_id,
+                page,
+                prefer_prepared=False,
             )
         text = package.get("user_text")
         source = str(package.get("source_kind") or "error")

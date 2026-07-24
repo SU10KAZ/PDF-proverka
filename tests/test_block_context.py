@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
+import time
 
 import pytest
 
@@ -57,6 +59,43 @@ async def test_builder_writes_canonical_vector_and_image_context(tmp_path, monke
     assert summary["blocks"][0]["graph_artifact"] == "block_vector_graphs/B-1.json"
     assert not (tmp_path / "gemma_enrichment_summary.json").exists()
     assert validate_block_context_summary(tmp_path, canonical_only=True)["valid"] is True
+
+
+@pytest.mark.asyncio
+async def test_builder_keeps_event_loop_responsive_during_package_resolution(
+    tmp_path,
+    monkeypatch,
+):
+    index = _index(tmp_path)
+
+    def _slow_resolve(_output, block_id, page, *, prefer_prepared):
+        assert prefer_prepared is False
+        time.sleep(0.05)
+        return {
+            "block_id": block_id,
+            "page": page,
+            "source_kind": "structured_architecture",
+            "user_text": f"context for {block_id}",
+        }
+
+    monkeypatch.setattr(builder_mod, "resolve_block_package", _slow_resolve)
+
+    event_loop_ticked = asyncio.Event()
+
+    async def _tick_while_resolver_runs():
+        await asyncio.sleep(0.01)
+        event_loop_ticked.set()
+
+    tick_task = asyncio.create_task(_tick_while_resolver_runs())
+    await build_block_context(
+        tmp_path,
+        output_dir=tmp_path,
+        blocks_index_path=index,
+    )
+    ticked_during_build = event_loop_ticked.is_set()
+    await tick_task
+
+    assert ticked_during_build
 
 
 def test_legacy_summary_is_read_through_adapter(tmp_path):

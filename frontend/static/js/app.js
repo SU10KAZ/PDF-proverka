@@ -10312,8 +10312,10 @@ const app = createApp({
             wsGlobal = new WebSocket(`${proto}//${location.host}/ws/global`);
             wsGlobal.onopen = () => {
                 wsConnected.value = true;
-                // При подключении подгружаем актуальное состояние prepare-queue (badge в навигации)
+                // После обрыва WS могли потеряться progress-события обеих
+                // очередей, поэтому восстанавливаем их состояние через REST.
                 fetchPrepareQueue();
+                refreshBatchQueue();
             };
             wsGlobal.onclose = () => {
                 wsConnected.value = false;
