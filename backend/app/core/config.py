@@ -773,6 +773,24 @@ STAGE01_PAGE_CONTEXT_ENABLED = _env_bool("STAGE01_PAGE_CONTEXT_ENABLED", True)
 # Stage 01: evidence-first publication gate. Кандидаты без достаточного контекста
 # не теряются, а сохраняются в deferred_findings с детерминированными причинами.
 STAGE01_EVIDENCE_GATE_ENABLED = _env_bool("STAGE01_EVIDENCE_GATE_ENABLED", True)
+# Stage 01: максимум опубликованных находок на один блок (ПОСЛЕ evidence-фильтров и
+# дедупа). 0 или отрицательное = БЕЗ ограничения. Кап снят 2026-07-24: замер показал,
+# что прежний потолок 3 отсекал реальные высокоуверенные находки (10 находок conf
+# 0.85–0.97 на 7 блоках уходили в deferred с reason block_finding_cap). Quality-гейт
+# (confidence≥0.80, claim_type, evidence) и дедуп по (problem_class, affected_entity)
+# продолжают работать — снимается только числовой потолок. (_env_int определён ниже,
+# поэтому парсим напрямую.)
+def _parse_int_env(_name: str, _default: int) -> int:
+    _raw = os.environ.get(_name)
+    if _raw is None or not _raw.strip():
+        return _default
+    try:
+        return int(_raw.strip())
+    except ValueError:
+        return _default
+
+
+STAGE01_BLOCK_MAX_FINDINGS = _parse_int_env("STAGE01_BLOCK_MAX_FINDINGS", 0)
 # Детерминированный shadow/observe-only поиск OCR-гомоглифов и ложных
 # «не указано» по точному PDF-векторному слою. Ничего не удаляет и не меняет
 # решение evidence gate; только добавляет аудируемый receipt. До замера OFF.

@@ -16,7 +16,19 @@ from typing import Any
 
 
 DUAL_REVIEW_SCHEMA_VERSION = 1
-MAX_GAP_FINDINGS = 5
+# Сколько НОВЫХ находок судья (gap-search) может добавить на блок. env-настраиваемо:
+# STAGE01_MAX_GAP_FINDINGS, 0 или отрицательное = без ограничения. Дефолт 5 сохраняет
+# прежнее поведение (gap-находки судьи спекулятивнее детекторных — их потолок отдельный
+# от снятого per-block капа публикации, см. finding_evidence_gate.gate_findings).
+def _max_gap_findings() -> int:
+    try:
+        raw = int(os.environ.get("STAGE01_MAX_GAP_FINDINGS", "5"))
+    except (TypeError, ValueError):
+        return 5
+    return raw if raw > 0 else 10**9
+
+
+MAX_GAP_FINDINGS = _max_gap_findings()
 VALID_RELATIONS = {"match", "extension", "disputed"}
 VALID_SEVERITIES = {
     "КРИТИЧЕСКОЕ",

@@ -749,14 +749,20 @@ def gate_findings(
     findings: list[dict[str, Any]],
     *,
     min_confidence: float = 0.80,
-    max_published: int = 3,
+    max_published: int | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     """Split candidates into ``published`` and ``deferred`` with reason codes.
 
     Old cached/custom responses that contain none of the evidence-control fields
     pass through for backwards compatibility.  New v2-schema responses always
     contain all fields and therefore receive the full gate.
+
+    ``max_published`` — числовой потолок находок на блок ПОСЛЕ quality-фильтров и
+    дедупа. ``None`` или ``<= 0`` = без ограничения (кап снят 2026-07-24). Quality-
+    фильтры (confidence, claim_type, evidence) и дедуп по (problem_class,
+    affected_entity) работают всегда, независимо от этого значения.
     """
+    cap_active = isinstance(max_published, int) and max_published > 0
     publishable: list[dict[str, Any]] = []
     deferred: list[dict[str, Any]] = []
     reason_counts: dict[str, int] = {}
@@ -840,7 +846,7 @@ def gate_findings(
             reason_counts["block_duplicate"] = reason_counts.get("block_duplicate", 0) + 1
             continue
         seen.add(key)
-        if len(unique) >= max_published:
+        if cap_active and len(unique) >= max_published:
             overflow = dict(item)
             overflow["_evidence_gate"] = {"status": "deferred", "reasons": ["block_finding_cap"]}
             deferred.append(overflow)

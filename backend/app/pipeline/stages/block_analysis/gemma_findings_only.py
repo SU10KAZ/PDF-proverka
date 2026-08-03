@@ -168,7 +168,7 @@ SYSTEM_PROMPT_BASE = """Ты — инженер-проверяющий прое�
 Сначала определи тип блока и проверяй ТОЛЬКО применимые к нему категории. Не обязан
 находить замечание в каждой категории и не обязан исчерпывать чек-лист.
 
-Публикуй не более 3 независимых проблем на блок. Finding допустим только когда:
+Finding допустим только когда:
   1. указан конкретный affected_entity (марка, помещение, узел, размер или решение);
   2. есть наблюдаемое evidence_quote из изображения/векторного текста/контекста;
   3. контекст достаточен, контрдоказательства на листе и в результатах поиска проверены;
@@ -1093,10 +1093,12 @@ async def call_gpt_for_block(
     # где retry платил $0.32 за повтор того же блока.
     from backend.app.pipeline.stages.block_analysis import stage02_paid_cache
     cache_key = ""
-    image_bytes_for_cache = b""
     if stage02_paid_cache.cache_enabled() and output_dir is not None:
         try:
-            image_bytes_for_cache = png_path.read_bytes()
+            # Идентичность картинки берём из index.json, а НЕ из байтов PNG:
+            # восстановленный после эвакуации кроп выглядит так же, но байт-в-байт
+            # не совпадает — на байтах кэш промахивался бы всегда и блок платился
+            # бы повторно (ровно то, ради чего кэш и заводили).
             cache_key = stage02_paid_cache.compute_cache_key(
                 model=model,
                 block_id=str(block.get("block_id", "")),
@@ -2287,7 +2289,10 @@ async def run_findings_only_for_project(
                     from backend.app.pipeline.stages.block_analysis.finding_evidence_gate import (
                         gate_findings,
                     )
-                    published, deferred, gate_report = gate_findings(candidates)
+                    _block_cap = getattr(_gate_cfg, "STAGE01_BLOCK_MAX_FINDINGS", 0) or None
+                    published, deferred, gate_report = gate_findings(
+                        candidates, max_published=_block_cap
+                    )
                     res["parsed"] = {"findings": published}
                     res["deferred_findings"] = deferred
                     res["evidence_gate"] = gate_report
