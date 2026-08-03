@@ -527,6 +527,36 @@ def _coerce_ocr_text(value: object) -> str:
     return str(value)
 
 
+def _save_pixmap_atomic(pix, out_path: Path) -> None:
+    """Сохранить pixmap атомарно: временный файл рядом + os.replace.
+
+    Две причины, обе обязательные:
+
+    1. ЖЁСТКИЕ ССЫЛКИ. Одинаковые кропы дедуплицированы между
+       ``blocks_stage02_100`` / ``blocks_gemma_100`` / ``blocks`` жёсткими
+       ссылками (scripts/projects_v2/dedupe_block_crops.py). ``pix.save()``
+       пишет В ФАЙЛ, то есть по общему inode — пере-кроп одной папки молча
+       переписал бы кроп соседней, чей index.json описывает другую политику
+       рендера. ``os.replace`` подставляет НОВЫЙ inode и рвёт связь ровно у
+       того файла, который перезаписывают.
+    2. АТОМАРНОСТЬ. Падение посреди ``pix.save()`` оставляло полу-записанный
+       PNG, который проходил проверку «файл существует» и уезжал в LLM.
+    """
+    out_path = Path(out_path)
+    # Расширение ОБЯЗАНО сохраниться: PyMuPDF определяет формат по суффиксу и
+    # на ".tmp" падает с "Image format tmp not in (...)".
+    tmp_path = out_path.with_name(f".{out_path.stem}.{os.getpid()}.tmp{out_path.suffix}")
+    try:
+        pix.save(str(tmp_path))
+        os.replace(tmp_path, out_path)
+    finally:
+        if tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
+
+
 def _render_pdf_bytes_to_png(
     pdf_bytes: bytes,
     out_png: Path,
@@ -564,7 +594,7 @@ def _render_pdf_bytes_to_png(
 
     mat = fitz.Matrix(render_scale, render_scale)
     pix = page.get_pixmap(matrix=mat, alpha=False)
-    pix.save(str(out_png))
+    _save_pixmap_atomic(pix, out_png)
 
     w, h = pix.width, pix.height
     doc.close()
@@ -705,7 +735,7 @@ def crop_from_pdf(
         rs = max(0.5, min(8.0, rs))
         mat = fitz.Matrix(rs, rs)
         pix = page.get_pixmap(matrix=mat, clip=clip, alpha=False)
-        pix.save(str(output))
+        _save_pixmap_atomic(pix, output)
         return pix.width, pix.height
 
     w, h = _render_clip(target_px or TARGET_LONG_SIDE_PX, out_png, clip_dpi=dpi)
@@ -1219,7 +1249,7 @@ def _render_full_page(pdf_path: Path, page_num: int, output_path: Path,
         mat = fitz.Matrix(scale, scale)
         pix = page.get_pixmap(matrix=mat, alpha=False)
 
-        pix.save(str(output_path))
+        _save_pixmap_atomic(pix, output_path)
         size_kb = output_path.stat().st_size / 1024
         doc.close()
 
@@ -1264,7 +1294,7 @@ def _render_page_quadrants(pdf_path: Path, page_num: int, blocks_dir: Path,
             mat = fitz.Matrix(scale, scale)
             pix = page.get_pixmap(matrix=mat, alpha=False, clip=clip)
             out_path = blocks_dir / f"block_page_{page_num:03d}_{name}.png"
-            pix.save(str(out_path))
+            _save_pixmap_atomic(pix, out_path)
             size_kb = out_path.stat().st_size / 1024
             results.append({
                 "block_id": f"page_{page_num:03d}_{name}",

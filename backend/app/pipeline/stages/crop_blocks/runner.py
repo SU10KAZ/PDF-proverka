@@ -19,6 +19,7 @@ Stage runner для этапа crop_blocks (скачивание и обрезк
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import shutil
 from uuid import uuid4
 
@@ -72,6 +73,19 @@ def crop_policy_label(policy: dict) -> str:
     return f"{policy.get('dpi')} DPI, {compact}, {small}"
 
 
+def _link_or_copy(src: str, dst: str, *, follow_symlinks: bool = True) -> None:
+    """``copy_function`` для copytree: жёсткая ссылка, при неудаче — копия.
+
+    ``os.link`` не работает между файловыми системами и может упереться в
+    лимит ссылок; в обоих случаях тихо откатываемся на ``shutil.copy2``, чтобы
+    алиас существовал всегда — это read-контракт deploy read_canary.
+    """
+    try:
+        os.link(src, dst)
+    except OSError:
+        shutil.copy2(src, dst, follow_symlinks=follow_symlinks)
+
+
 def sync_v2_read_canary_blocks_alias(
     project_dir: Path | str,
     output_dir: Path | str,
@@ -83,6 +97,18 @@ def sync_v2_read_canary_blocks_alias(
     the stable read contract. The audit write path keeps the richer producer
     directory name (``blocks_stage02_100``), so under projects_v2 we materialize a
     same-run ``blocks/`` alias after crop. Legacy output dirs are left alone.
+
+    Алиас строится ЖЁСТКИМИ ССЫЛКАМИ, а не копией: раньше ``shutil.copytree``
+    дублировал каждый PNG на диске (замер 2026-08-03: 1.7 ГБ чистого дубля при
+    диске на 98%). Путь чтения и содержимое не меняются — меняется только число
+    inode'ов. Пере-кроп безопасен, потому что запись PNG атомарна
+    (``blocks._save_pixmap_atomic``: tmp + ``os.replace`` подставляет новый inode
+    и рвёт связь только у переписываемого файла).
+
+    Жёсткие ссылки, а НЕ симлинки, намеренно: ``backup_version_before_destructive``
+    делает ``copytree(..., symlinks=True)`` — симлинк уехал бы в бэкап и мог бы
+    указывать на живые данные другой версии. При ``OSError`` (другая ФС,
+    исчерпан лимит ссылок) откатываемся на обычное копирование файла.
     """
     project_dir = Path(project_dir)
     output_dir = Path(output_dir)
@@ -105,7 +131,7 @@ def sync_v2_read_canary_blocks_alias(
     try:
         if tmp_dir.exists():
             shutil.rmtree(tmp_dir)
-        shutil.copytree(source_dir, tmp_dir)
+        shutil.copytree(source_dir, tmp_dir, copy_function=_link_or_copy)
         if dest_dir.exists() or dest_dir.is_symlink():
             if dest_dir.is_dir() and not dest_dir.is_symlink():
                 shutil.rmtree(dest_dir)
