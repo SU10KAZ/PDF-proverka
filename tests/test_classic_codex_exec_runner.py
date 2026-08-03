@@ -153,6 +153,15 @@ async def test_codex_runner_builds_exec_command_and_reads_output_file(monkeypatc
     assert not captured["out_file"].exists()
 
 
+def test_codex_runner_accepts_max_reasoning_effort():
+    from backend.app.services.llm.codex_runner import _reasoning_effort_args
+
+    assert _reasoning_effort_args("max") == [
+        "-c",
+        'model_reasoning_effort="max"',
+    ]
+
+
 @pytest.mark.asyncio
 async def test_codex_runner_attaches_images_to_exec_command(monkeypatch, tmp_path):
     import backend.app.services.llm.codex_runner as codex_runner
