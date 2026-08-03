@@ -1321,7 +1321,7 @@
                 Текущий: <strong>{{ batchQueue.current_project }}</strong>
             </div>
             <div class="batch-queue-items">
-                <div v-for="(item, i) in batchQueue.items" :key="item.project_id"
+                <div v-for="(item, i) in visibleQueueItems" :key="item.project_id + ':' + item._idx"
                      class="batch-queue-item" :class="'batch-queue-item--' + item.status">
                     <span class="batch-queue-item__idx">{{ i + 1 }}</span>
                     <span class="batch-queue-item__name">{{ item.project_id }}</span>
@@ -1796,6 +1796,10 @@
                         <button v-if="batchRunning" class="btn btn-danger-outline btn-sm" @click="cancelBatch">
                             Отменить очередь
                         </button>
+                        <button v-if="finishedQueueCount > 0" class="btn btn-outline btn-sm" @click="hideFinishedQueueItems"
+                                title="Убрать из списка завершённые и упавшие записи (сами проекты не трогаются)">
+                            Убрать завершённые ({{ finishedQueueCount }})
+                        </button>
                         <button class="btn btn-accent btn-sm" @click="queueAddMode = !queueAddMode">
                             {{ queueAddMode ? 'Скрыть' : '+ Добавить проекты' }}
                         </button>
@@ -1965,11 +1969,11 @@
 
                 <!-- Элементы очереди -->
                 <div v-if="batchQueue && batchQueue.items && batchQueue.items.length > 0" class="queue-items">
-                    <div v-for="(item, idx) in batchQueue.items" :key="item.project_id"
-                         class="queue-item" :class="['queue-item--' + item.status, {'queue-item--drag-over': queueDragOverIdx === idx}]"
+                    <div v-for="(item, idx) in visibleQueueItems" :key="item.project_id + ':' + item._idx"
+                         class="queue-item" :class="['queue-item--' + item.status, {'queue-item--drag-over': queueDragOverIdx === item._idx}]"
                          :draggable="item.status === 'pending'"
-                         @dragstart="onQueueDragStart(idx)"
-                         @dragover.prevent="onQueueDragOver(idx)"
+                         @dragstart="onQueueDragStart(item._idx)"
+                         @dragover.prevent="onQueueDragOver(item._idx)"
                          @dragend="onQueueDragEnd()">
 
                         <!-- Drag handle -->

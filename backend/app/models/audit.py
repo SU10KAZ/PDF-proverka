@@ -125,6 +125,10 @@ class BatchQueueItem(BaseModel):
     # Тайминги обработки item'а (epoch seconds, как у PrepareQueueItem)
     started_at: Optional[float] = None
     finished_at: Optional[float] = None
+    # Скрыт из панели очереди (косметика). Элемент НЕ удаляется из списка:
+    # worker батча идёт по позиционному индексу, и удаление сдвинуло бы
+    # оставшиеся pending — часть проектов была бы молча пропущена.
+    hidden: bool = False
 
 
 class BatchQueueStatus(BaseModel):

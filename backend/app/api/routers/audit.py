@@ -564,6 +564,23 @@ async def remove_batch_item(request: dict):
         raise HTTPException(409, str(e))
 
 
+@router.post("/batch/hide-finished")
+async def hide_finished_batch_items(request: dict = {}):
+    """Убрать из панели очереди завершённые записи (по умолчанию — все
+    терминальные: completed/failed/skipped/cancelled).
+
+    Body: {"statuses": ["failed"]} — сузить набор.
+    Элементы не удаляются физически: worker батча идёт по позиционному
+    индексу, и удаление сдвинуло бы pending-хвост.
+    """
+    statuses = request.get("statuses") if isinstance(request, dict) else None
+    try:
+        queue = await pipeline_manager.hide_finished_batch_items(statuses)
+        return {"status": "hidden", "queue": queue.model_dump()}
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+
+
 @router.post("/batch/update-action")
 async def update_batch_item(request: dict):
     """Изменить действие для pending-элемента очереди."""

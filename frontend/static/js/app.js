@@ -3776,6 +3776,37 @@ const app = createApp({
             } catch (e) { alert(e.message); }
         }
 
+        // Видимые элементы очереди: скрытые (hidden) не рисуем, но помним
+        // исходный индекс — drag&drop/reorder работают по позиции в полном
+        // списке, который на бэкенде не сокращается (worker идёт по индексу).
+        const visibleQueueItems = computed(() => {
+            const items = (batchQueue.value && batchQueue.value.items) || [];
+            return items
+                .map((it, i) => ({ ...it, _idx: i }))
+                .filter(it => !it.hidden);
+        });
+
+        const finishedQueueCount = computed(() => {
+            const done = ['completed', 'failed', 'skipped', 'cancelled'];
+            return visibleQueueItems.value.filter(it => done.includes(it.status)).length;
+        });
+
+        async function hideFinishedQueueItems() {
+            try {
+                const resp = await fetch('/api/audit/batch/hide-finished', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({}),
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.detail || `Ошибка: ${resp.status}`);
+                }
+                const data = await resp.json();
+                batchQueue.value = data.queue;
+            } catch (e) { alert(e.message); }
+        }
+
         async function updateQueueItemAction(projectId, action) {
             try {
                 const resp = await fetch('/api/audit/batch/update-action', {
@@ -18873,6 +18904,7 @@ const app = createApp({
             // Queue management
             queueAddMode, queueAddAction, queueAddSelected, queueDragIdx, queueDragOverIdx,
             refreshBatchQueue, removeFromQueue, updateQueueItemAction, reorderQueue,
+            visibleQueueItems, finishedQueueCount, hideFinishedQueueItems,
             clearQueueHistory, resumeBatchQueue,
             onQueueDragStart, onQueueDragOver, onQueueDragEnd,
             toggleQueueAddProject, confirmQueueAdd, startQueueFromView,

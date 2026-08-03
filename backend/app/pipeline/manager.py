@@ -6036,6 +6036,43 @@ class PipelineManager:
         await self._broadcast_batch_progress(queue)
         return queue
 
+    async def hide_finished_batch_items(
+        self, statuses: Optional[list[str]] = None
+    ) -> BatchQueueStatus:
+        """Убрать из панели завершённые элементы очереди (косметика).
+
+        Физически элементы остаются в списке: worker батча обходит очередь по
+        позиционному индексу (локальный `idx` в `_run_batch_queue`), поэтому
+        удаление элементов ПЕРЕД текущим сдвинуло бы хвост, и часть pending
+        проектов была бы молча пропущена. Помечаем `hidden=True` — длина
+        списка не меняется, обход не страдает, панель чистая.
+
+        statuses: какие статусы прятать (по умолчанию все терминальные).
+        Running/pending не скрываются никогда.
+        """
+        queue = self._batch_queue
+        if not queue:
+            raise RuntimeError("Нет групповой очереди")
+
+        allowed = {"completed", "failed", "skipped", "cancelled"}
+        targets = allowed if not statuses else (set(statuses) & allowed)
+        if not targets:
+            raise RuntimeError("Нечего скрывать: допустимы статусы " + ", ".join(sorted(allowed)))
+
+        hidden_count = 0
+        for item in queue.items:
+            if item.status in targets and not item.hidden:
+                item.hidden = True
+                hidden_count += 1
+
+        if hidden_count:
+            self._persist_queue()
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", f"- Скрыто завершённых записей: {hidden_count}", "info")
+            )
+            await self._broadcast_batch_progress(queue)
+        return queue
+
     async def update_batch_item_action(self, project_id: str, action: str) -> BatchQueueStatus:
         """Изменить действие (audit/optimization/audit+optimization) для pending-элемента."""
         queue = self._batch_queue
