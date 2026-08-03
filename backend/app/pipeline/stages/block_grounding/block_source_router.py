@@ -1067,6 +1067,67 @@ def resolve_block_package(
                   gate=evaluate_hvac_gate(hvac_graph),markdown=structured,
                   user_text=head+structured+"\n\n"+_TASK)
 
+        # Специализированные СС-грамматики: структурная схема АПС/АППЗ,
+        # аксонометрия кабельных лотков и клеммные подключения. Этот построитель
+        # точнее общих ALIA-профилей и поэтому должен срабатывать первым.
+        low_voltage_text = block_text
+        low_voltage_bbox = bbox
+        low_voltage_poly = poly
+        if (
+            not poly
+            and isinstance(bbox, (list, tuple))
+            and len(bbox) == 4
+            and float(bbox[0]) <= 0.001
+            and float(bbox[1]) <= 0.001
+            and float(bbox[2]) >= 0.999
+            and float(bbox[3]) >= 0.999
+        ):
+            # У самостоятельного whole-page блока исходный page text сохраняет
+            # порядок многострочных выносок лучше реконструкции из words.
+            # Для реальных полигонов по-прежнему используем только block_text,
+            # чтобы соседняя схема не протекала в текущий CTX-граф.
+            low_voltage_text = page_text or block_text
+            low_voltage_bbox = None
+        try:
+            from .low_voltage_geometry import (
+                build_low_voltage_graph,
+                evaluate_low_voltage_gate,
+                normalize_low_voltage_graph,
+                profile_id_for_subtype,
+                render_low_voltage_graph_markdown,
+            )
+            low_voltage_graph = (
+                build_low_voltage_graph(
+                    pdf,
+                    low_voltage_text,
+                    bbox_norm=low_voltage_bbox,
+                    polygon_norm=low_voltage_poly,
+                )
+                if allows("СС") and len((low_voltage_text or "").strip()) >= _MIN_VECTOR_CHARS
+                else None
+            )
+            low_voltage_gate = evaluate_low_voltage_gate(low_voltage_graph)
+        except Exception:
+            low_voltage_graph = None
+            low_voltage_gate = {"use": False}
+        if low_voltage_graph and low_voltage_gate.get("use"):
+            low_voltage_graph = normalize_low_voltage_graph(low_voltage_graph)
+            low_voltage_profile = profile_id_for_subtype(low_voltage_graph.get("subtype"))
+            remember_profile_source(low_voltage_profile, "vector_block_pdf")
+            structured = render_low_voltage_graph_markdown(low_voltage_graph)
+            if structured and len(structured) > 150:
+                return package(
+                    block_id=block_id,
+                    page=page or page_pdf,
+                    source_kind="structured_alia_scheme",
+                    discipline="СС",
+                    profile_id=low_voltage_profile,
+                    graph=low_voltage_graph,
+                    gate=low_voltage_gate,
+                    markdown=structured,
+                    user_text=head+structured+"\n\n"+_TASK,
+                )
+
         if len((block_text or "").strip()) < _MIN_VECTOR_CHARS:
             return package(block_id=block_id,page=page or page_pdf,
               source_kind="image_only",user_text=None)  # Stage 01 анализирует PNG

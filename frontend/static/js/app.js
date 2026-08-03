@@ -8414,7 +8414,9 @@ const app = createApp({
         const blockImageSrc = computed(() => {
             const b = selectedBlock.value;
             if (!b) return '';
-            const kind = (showBlockRegions.value && blockRegionRects.value.length) ? 'region-image' : 'image';
+            const needsRegionRender = showBlockRegions.value
+                && blockRegionRects.value.length && !b.region_image_uses_crop;
+            const kind = needsRegionRender ? 'region-image' : 'image';
             return blockImgUrl(blocksProjectId.value, b.block_id, kind);
         });
 

@@ -7,6 +7,7 @@ import pytest
 
 from backend.app.pipeline.stages.block_grounding import architecture_geometry as ar
 from backend.app.pipeline.stages.block_grounding import block_source_router as router
+from backend.app.pipeline.stages.block_grounding import low_voltage_geometry as lv
 
 
 FLAG = "STAGE01_PER_BLOCK_PROFILE_ROUTING_ENABLED"
@@ -128,6 +129,73 @@ def test_multiple_decimal_angles_are_geometry_fallback():
     assert decision["signal_source"] == "block_text_geometry"
 
 
+def test_resolver_routes_specialized_low_voltage_graph_to_ctx_profile(
+    tmp_path, monkeypatch
+):
+    output = tmp_path / "objects/O/disciplines/SS/documents/D/versions/v1/out"
+    output.mkdir(parents=True)
+    graph_path = output / "document_graph.json"
+    graph_path.write_text('{"pages": []}', encoding="utf-8")
+    pdf_path = output.parent / "document.pdf"
+    page_text = "Структурная схема АПС АЛС1.1 " + ("1A1.1 " * 12)
+    block_text = "реконструированный текст слов " + ("фрагмент " * 8)
+    captured = {}
+
+    monkeypatch.setattr(router, "_locate", lambda _: (pdf_path, graph_path))
+    monkeypatch.setattr(
+        router,
+        "_extract_block",
+        lambda *_args: (page_text, block_text, [0, 0, 1, 1], None, 1),
+    )
+    monkeypatch.setattr(router, "_load_chandra_description", lambda *_args: None)
+
+    def build_low_voltage(_pdf, vector_text, **_kwargs):
+        captured["vector_text"] = vector_text
+        captured["bbox_norm"] = _kwargs.get("bbox_norm")
+        return {
+            "profile_id": "low_voltage_scheme",
+            "subtype": "aps_structural",
+            "source": {},
+            "root": "ПО №1",
+            "loops": [{"id": "АЛС1.1", "floors": [{"floor": 1}]}],
+            "floors": [{"floor": 1}],
+            "devices": [{
+                "id": "device-1", "address": "1A1.1", "loop": "АЛС1.1",
+                "floor": 1, "status": "present",
+            }],
+            "edges": [],
+            "validation": {},
+            "warnings": [],
+            "status": "ok",
+        }
+
+    monkeypatch.setattr(
+        lv,
+        "build_low_voltage_graph",
+        build_low_voltage,
+    )
+    monkeypatch.setattr(lv, "evaluate_low_voltage_gate", lambda _graph: {"use": True})
+    monkeypatch.setattr(
+        lv,
+        "render_low_voltage_graph_markdown",
+        lambda _graph: "# Структурный CTX-граф АПС\n" + ("связь " * 40),
+    )
+
+    package = router.resolve_block_package(
+        output, "APS-BLOCK", 1, prefer_prepared=False
+    )
+
+    assert package["source_kind"] == "structured_alia_scheme"
+    assert package["profile_id"] == "fire_alarm_loop_topology"
+    assert package["graph"]["profile_id"] == "fire_alarm_loop_topology"
+    assert package["graph"]["nodes"]
+    assert package["graph"]["networks"]
+    assert package["graph"]["edges"]
+    assert package["classification"]["source"] == "vector_block_pdf"
+    assert captured["vector_text"] == page_text
+    assert captured["bbox_norm"] is None
+
+
 def _chandra(block_type: str, text: str):
     return SimpleNamespace(
         block_type=block_type,
@@ -246,4 +314,3 @@ def test_resolver_produces_mixed_sources_and_off_keeps_legacy(
     )
     assert legacy["source_kind"] == "structured_architecture"
     assert "profile_routing" not in legacy["classification"]
-

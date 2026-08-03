@@ -21,6 +21,19 @@ from .profiled_graph_localization import ru_state, ru_subtype
 
 PROFILE_ID = "low_voltage_scheme"
 
+PROFILE_IDS_BY_SUBTYPE = {
+    "aps_structural": "fire_alarm_loop_topology",
+    "aps_fragment": "fire_alarm_loop_topology",
+    "tray_axonometry": "cable_tray_axonometry",
+    "terminal_wiring": "low_voltage_terminal_wiring",
+}
+
+
+def profile_id_for_subtype(subtype: Optional[str]) -> str:
+    """Профиль UI/CTX для конкретной геометрической грамматики СС."""
+    return PROFILE_IDS_BY_SUBTYPE.get(str(subtype or ""), PROFILE_ID)
+
+
 _ADDRESS_RE = re.compile(
     r"^(?P<controller>\d+)(?P<family>[A-Za-zА-Яа-я]+)(?P<loop>\d+)\."
     r"(?P<start>\d+)(?:\.{2,3}(?P<end>\d+))?(?:\((?P<logical>\d+)\))?$"
@@ -614,6 +627,212 @@ def _build_terminal_graph(pdf_path: Path, page_index: int, text: str, *, page=No
         "warnings": warnings,
         "status": "partial_topology" if confirmed_connections else "requires_path_tracing",
     }
+
+
+def normalize_low_voltage_graph(graph: Optional[dict]) -> Optional[dict]:
+    """Добавить универсальную проекцию containers/nodes/networks/edges.
+
+    Специализированные поля (loops/devices/elements/connections) остаются
+    источником истины. Универсальная проекция нужна окну CTX в UI и общему
+    сравнению графов; она не достраивает связность, которой нет в PDF.
+    """
+    if not isinstance(graph, dict):
+        return graph
+    subtype = str(graph.get("subtype") or "")
+    validation = graph.setdefault("validation", {})
+
+    if subtype in {"aps_structural", "aps_fragment"}:
+        root_label = str(graph.get("root") or "Прибор пожарной автоматики")
+        root_id = "root-1"
+        loop_nodes = {
+            str(loop.get("id")): f"loop-node-{index}"
+            for index, loop in enumerate(graph.get("loops") or [], 1)
+        }
+        floor_nodes = {
+            str(floor.get("floor")): f"floor-node-{index}"
+            for index, floor in enumerate(graph.get("floors") or [], 1)
+        }
+        nodes = [{
+            "id": root_id,
+            "label": root_label,
+            "node_type": "fire_alarm_control_panel",
+            "state": "present",
+        }]
+        nodes.extend({
+            "id": node_id,
+            "label": loop_label,
+            "node_type": "fire_alarm_loop",
+            "state": "semantic_confirmed",
+        } for loop_label, node_id in loop_nodes.items())
+        nodes.extend({
+            "id": node_id,
+            "label": f"{floor_label} этаж" if floor_label.isdigit() else floor_label,
+            "node_type": "floor",
+            "state": "present",
+        } for floor_label, node_id in floor_nodes.items())
+        for device in graph.get("devices") or []:
+            nodes.append({
+                **device,
+                "label": device.get("address") or device.get("id"),
+                "node_type": "addressable_fire_alarm_device",
+                "state": device.get("status") or "present",
+            })
+
+        containers = []
+        for loop in graph.get("loops") or []:
+            loop_id = str(loop.get("id"))
+            containers.append({
+                "id": f"loop-container-{len(containers) + 1}",
+                "container_type": "fire_alarm_loop",
+                "label": loop_id,
+                "member_ids": [
+                    device.get("id") for device in graph.get("devices") or []
+                    if str(device.get("loop")) == loop_id
+                ],
+            })
+        for floor in graph.get("floors") or []:
+            floor_label = str(floor.get("floor"))
+            containers.append({
+                "id": f"floor-container-{len(containers) + 1}",
+                "container_type": "floor",
+                "label": f"{floor_label} этаж" if floor_label.isdigit() else floor_label,
+                "member_ids": [
+                    device.get("id") for device in graph.get("devices") or []
+                    if str(device.get("floor")) == floor_label
+                ],
+            })
+
+        networks = [{
+            "id": f"network-{index}",
+            "network_type": "aps",
+            "label": str(loop.get("id")),
+            "endpoint_ids": [
+                device.get("id") for device in graph.get("devices") or []
+                if str(device.get("loop")) == str(loop.get("id"))
+            ],
+            "path_state": "semantic_code_confirmed",
+        } for index, loop in enumerate(graph.get("loops") or [], 1)]
+
+        edges = []
+        for loop_label, loop_node_id in loop_nodes.items():
+            edges.append({
+                "id": f"edge-{len(edges) + 1}",
+                "from": root_id,
+                "to": loop_node_id,
+                "edge_type": "contains_loop",
+                "edge_state": "semantic_confirmed",
+            })
+            floors = next(
+                (loop.get("floors") or [] for loop in graph.get("loops") or []
+                 if str(loop.get("id")) == loop_label),
+                [],
+            )
+            for floor in floors:
+                floor_node_id = floor_nodes.get(str(floor.get("floor")))
+                if floor_node_id:
+                    edges.append({
+                        "id": f"edge-{len(edges) + 1}",
+                        "from": loop_node_id,
+                        "to": floor_node_id,
+                        "edge_type": "serves_floor",
+                        "edge_state": "semantic_confirmed",
+                    })
+        for device in graph.get("devices") or []:
+            floor_node_id = floor_nodes.get(str(device.get("floor")))
+            if floor_node_id:
+                edges.append({
+                    "id": f"edge-{len(edges) + 1}",
+                    "from": floor_node_id,
+                    "to": device.get("id"),
+                    "edge_type": "contains_device",
+                    "edge_state": "present",
+                })
+
+        graph["hierarchy_edges"] = graph.get("edges") or []
+        graph["containers"] = containers
+        graph["nodes"] = nodes
+        graph["networks"] = networks
+        graph["edges"] = edges
+        complete = graph.get("status") == "ok" and subtype == "aps_structural"
+        graph["readiness"] = {
+            "status": "complete" if complete else "topology_partial",
+            "complete": complete,
+            "reasons": [] if complete else list(graph.get("warnings") or [
+                "структура извлечена, отдельные адреса требуют проверки",
+            ]),
+        }
+
+    elif subtype == "tray_axonometry":
+        nodes = []
+        for element in graph.get("elements") or []:
+            if element.get("kind") == "tray":
+                label = (
+                    f"{element.get('tray_type')} лоток {element.get('system')} "
+                    f"{element.get('width_mm')}×{element.get('height_mm')} мм, "
+                    f"L={element.get('length_m')} м"
+                )
+                node_type = "tray_callout"
+            else:
+                label = (
+                    f"Гильзы: {element.get('count')} шт., "
+                    f"∅{element.get('diameter_mm')} мм, L={element.get('length_mm')} мм"
+                )
+                node_type = "conduit_group"
+            nodes.append({
+                **element,
+                "label": label,
+                "node_type": node_type,
+                "state": element.get("field_state") or "present",
+            })
+        graph["containers"] = [{
+            "id": "assembly-1",
+            "container_type": "installation_detail",
+            "label": graph.get("title") or "Аксонометрия кабельных лотков",
+            "member_ids": [node.get("id") for node in nodes],
+        }]
+        graph["nodes"] = nodes
+        graph["networks"] = []
+        graph["edges"] = []
+        graph["readiness"] = {
+            "status": "topology_partial",
+            "complete": False,
+            "reasons": list(graph.get("warnings") or [
+                "инвентарь извлечён, связность цветных трасс не подтверждена",
+            ]),
+        }
+
+    elif subtype == "terminal_wiring":
+        nodes = [{
+            **component,
+            "label": component.get("name") or component.get("id"),
+            "node_type": "apparatus",
+            "state": component.get("field_state") or "present",
+        } for component in graph.get("components") or []]
+        graph["containers"] = [{
+            "id": "wiring-1",
+            "container_type": "apparatus_body",
+            "label": "Клеммные подключения устройств",
+            "member_ids": [node.get("id") for node in nodes],
+        }]
+        graph["nodes"] = nodes
+        graph.setdefault("networks", [])
+        graph["edges"] = []
+        graph["readiness"] = {
+            "status": "topology_partial",
+            "complete": False,
+            "reasons": list(graph.get("warnings") or [
+                "сохранены только подтверждённые межкомпонентные связи",
+            ]),
+        }
+
+    validation.update({
+        "containers_total": len(graph.get("containers") or []),
+        "nodes_total": len(graph.get("nodes") or []),
+        "networks_total": len(graph.get("networks") or []),
+        "edges_total": len(graph.get("edges") or []),
+    })
+    graph["profile_id"] = profile_id_for_subtype(subtype)
+    return graph
 
 
 def build_low_voltage_graph(

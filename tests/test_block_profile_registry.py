@@ -166,3 +166,48 @@ def test_prepared_package_round_trip(tmp_path):
     assert loaded is not None
     assert loaded["block_id"] == "B/2"
     assert loaded["profile_id"] == "hvac_floor_plan"
+
+
+def test_prepared_package_loads_safe_graph_sidecar(tmp_path):
+    package = make_package(
+        block_id="GALLERY-1",
+        page=1,
+        source_kind="structured_hvac",
+        discipline="ОВ",
+        profile_id="hvac_floor_plan",
+        user_text="контекст",
+        graph={"profile_id": "hvac_floor_plan", "nodes": [{"id": "n1"}]},
+    )
+    path = artifact_path(tmp_path, "GALLERY-1")
+    sidecar = path.parent / "_graphs" / "GALLERY-1.json"
+    sidecar.parent.mkdir(parents=True)
+    sidecar.write_text(json.dumps(package["graph"], ensure_ascii=False), encoding="utf-8")
+    package["graph"] = None
+    package["graph_artifact"] = "_graphs/GALLERY-1.json"
+    path.write_text(json.dumps(package, ensure_ascii=False), encoding="utf-8")
+
+    loaded = load_prepared_package(tmp_path, "GALLERY-1")
+
+    assert loaded is not None
+    assert loaded["graph"]["nodes"] == [{"id": "n1"}]
+
+
+def test_prepared_package_rejects_graph_sidecar_outside_artifact_dir(tmp_path):
+    package = make_package(
+        block_id="GALLERY-2",
+        page=1,
+        source_kind="structured_hvac",
+        discipline="ОВ",
+        profile_id="hvac_floor_plan",
+        user_text="контекст",
+        graph={"profile_id": "hvac_floor_plan", "nodes": []},
+    )
+    path = artifact_path(tmp_path, "GALLERY-2")
+    path.parent.mkdir(parents=True)
+    outside = tmp_path / "outside.json"
+    outside.write_text(json.dumps(package["graph"]), encoding="utf-8")
+    package["graph"] = None
+    package["graph_artifact"] = "../outside.json"
+    path.write_text(json.dumps(package), encoding="utf-8")
+
+    assert load_prepared_package(tmp_path, "GALLERY-2") is None

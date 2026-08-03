@@ -130,6 +130,9 @@ PROFILE_LABELS = {
     "multidiscipline_niche_layout": "Компоновка многодисциплинарной ниши",
     "discipline_floor_plan": "План размещения слаботочных систем",
     "device_terminal_wiring": "Клеммные подключения устройства",
+    "fire_alarm_loop_topology": "Структурная схема АПС и АППЗ",
+    "cable_tray_axonometry": "Аксонометрия кабельных лотков",
+    "low_voltage_terminal_wiring": "Клеммные подключения слаботочных систем",
     "installation_assembly": "Монтажный узел слаботочных систем",
     "physical_panel_layout": "Физическая компоновка шкафа",
     "access_point_assembly": "Монтажный узел точки доступа",
@@ -148,6 +151,8 @@ CONTAINER_TYPE_LABELS = {
     "technology_view": "технологический вид",
     "installation_detail": "монтажный узел",
     "speaker_line": "линия оповещения",
+    "fire_alarm_loop": "адресный шлейф пожарной автоматики",
+    "floor": "этажная группа",
     "physical_equipment_group": "физическая группа оборудования",
     "panel": "щит или панель",
     "telecommunication_cabinet": "телекоммуникационный шкаф",
@@ -245,6 +250,9 @@ NODE_TYPE_LABELS = {
     "served_space": "обслуживаемая зона", "heat_source": "источник тепла",
     "collector": "коллектор", "grounding_part": "часть заземления",
     "switch": "выключатель", "well_equipment": "оборудование колодца",
+    "fire_alarm_control_panel": "прибор пожарной автоматики",
+    "fire_alarm_loop": "адресный шлейф",
+    "addressable_fire_alarm_device": "адресное устройство пожарной автоматики",
 }
 
 
@@ -340,6 +348,9 @@ EDGE_TYPE_LABELS = {
     "panel_to_ospd": "щит → шкаф ОСПД", "dap": "диспетчерская связь",
     "site_heat_distribution": "источник тепла → корпус", "airflow_sequence": "последовательность воздушного потока",
     "gateway_to_distribution": "шлюз → распределительный щит", "aps": "связь АПС",
+    "contains_loop": "прибор содержит адресный шлейф",
+    "serves_floor": "шлейф обслуживает этаж",
+    "contains_device": "этажная группа содержит адресное устройство",
     "airflow_serves_space": "воздушный поток обслуживает зону", "питание": "питание",
     "распределение": "распределение", "порядок слоёв": "порядок слоёв",
     "последовательность слоёв": "последовательность слоёв",

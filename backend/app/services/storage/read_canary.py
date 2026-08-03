@@ -1069,8 +1069,19 @@ def v2_blocks(request, project_id: str) -> dict:
     pages_map: dict = {}
     for block in idx.get("blocks", []):
         pages_map.setdefault(block.get("page", 0), []).append(block)
-    pages = [{"page_num": pn, "block_count": len(pages_map[pn]), "blocks": pages_map[pn]}
-             for pn in sorted(pages_map.keys())]
+    pages = []
+    for pn in sorted(pages_map.keys()):
+        blocks = pages_map[pn]
+        page_labels = {
+            str(block.get("page_label") or "").strip()
+            for block in blocks if str(block.get("page_label") or "").strip()
+        }
+        pages.append({
+            "page_num": pn,
+            "page_label": next(iter(page_labels)) if len(page_labels) == 1 else None,
+            "block_count": len(blocks),
+            "blocks": blocks,
+        })
     return {
         "storage_backend": BACKEND_V2,
         "canary": True,
@@ -1085,7 +1096,7 @@ def v2_blocks(request, project_id: str) -> dict:
 
 
 def v2_block_image(request, project_id: str, block_id: str):
-    """PNG кропа блока (canary для .../blocks/image/{block_id}).
+    """Изображение кропа блока (canary для .../blocks/image/{block_id}).
 
     Файл резолвится через blocks index по block_id (или по имени `block_<id>.png`)
     и ОБЯЗАТЕЛЬНО проверяется на принадлежность папке блоков версии (анти-traversal).

@@ -450,5 +450,21 @@ def load_prepared_package(output_dir: Path, block_id: str) -> Optional[dict[str,
         and str(payload.get("block_id")) == str(block_id)
         and payload.get("source_kind")
     ):
+        # Large review galleries keep the immutable graph JSON as a hard-linked
+        # sidecar instead of duplicating it inside every package. The reference
+        # is relative and must stay below block_vector_graphs/.
+        graph_artifact = payload.get("graph_artifact")
+        if payload.get("graph") is None and isinstance(graph_artifact, str):
+            artifact_root = path.parent.resolve()
+            candidate = (path.parent / graph_artifact).resolve()
+            if artifact_root not in candidate.parents or not candidate.is_file():
+                return None
+            try:
+                graph = json.loads(candidate.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                return None
+            if not isinstance(graph, dict):
+                return None
+            payload["graph"] = graph
         return payload
     return None

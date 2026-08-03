@@ -551,8 +551,13 @@ async def get_blocks(
     pages = []
     for page_num in sorted(pages_map.keys()):
         blocks = pages_map[page_num]
+        page_labels = {
+            str(block.get("page_label") or "").strip()
+            for block in blocks if str(block.get("page_label") or "").strip()
+        }
         pages.append({
             "page_num": page_num,
+            "page_label": next(iter(page_labels)) if len(page_labels) == 1 else None,
             "block_count": len(blocks),
             "blocks": blocks,
         })
@@ -821,6 +826,17 @@ async def get_block_llm_text(
             user_text = None
         elif _rtext:
             user_text = _rtext
+        # A prepared single-line package is already the canonical deterministic
+        # graph. Review galleries may omit the original multi-page source PDF,
+        # so reuse the saved graph instead of requiring a rebuild.
+        if (
+            _rkind == "structured_singleline"
+            and isinstance(block_graph_package.get("graph"), dict)
+        ):
+            singleline_graph = block_graph_package["graph"]
+            singleline_graph_markdown = (
+                block_graph_package.get("markdown") or singleline_graph_markdown
+            )
         _router_applied = True
     except Exception:
         pass

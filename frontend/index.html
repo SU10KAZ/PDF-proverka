@@ -3429,7 +3429,7 @@
                     <button v-for="pg in blockPages" :key="pg.page_num"
                             class="page-btn" :class="{'page-btn--active': selectedBlockPage === pg.page_num}"
                             @click="selectedBlockPage = pg.page_num">
-                        <span>Стр. {{ pg.page_num }}</span>
+                        <span>{{ pg.page_label || ('Стр. ' + pg.page_num) }}</span>
                         <span class="page-btn__count">({{ pg.block_count }})</span>
                     </button>
                     <button v-if="emptyBlocksList.length > 0"

@@ -8,6 +8,8 @@ from backend.app.pipeline.stages.block_grounding.low_voltage_geometry import (
     build_low_voltage_graph,
     classify_low_voltage_subtype,
     evaluate_low_voltage_gate,
+    normalize_low_voltage_graph,
+    profile_id_for_subtype,
     render_low_voltage_graph_markdown,
 )
 
@@ -57,6 +59,13 @@ def test_subtype_classifier_separates_three_geometric_grammars():
     assert classify_low_voltage_subtype("обычное примечание") is None
 
 
+def test_low_voltage_subtypes_have_separate_ctx_profiles():
+    assert profile_id_for_subtype("aps_structural") == "fire_alarm_loop_topology"
+    assert profile_id_for_subtype("aps_fragment") == "fire_alarm_loop_topology"
+    assert profile_id_for_subtype("tray_axonometry") == "cable_tray_axonometry"
+    assert profile_id_for_subtype("terminal_wiring") == "low_voltage_terminal_wiring"
+
+
 @pytest.mark.skipif(not APS_PDF.exists(), reason="локальный PDF-корпус СС отсутствует")
 def test_real_aps_builds_complete_hierarchy():
     graph = build_low_voltage_graph(APS_PDF, _text(APS_PDF))
@@ -81,6 +90,15 @@ def test_real_aps_builds_complete_hierarchy():
     assert "ПО №7 → **АЛС9.2**" in markdown
     assert "9A2.181" in markdown
 
+    normalize_low_voltage_graph(graph)
+    assert graph["profile_id"] == "fire_alarm_loop_topology"
+    assert len(graph["nodes"]) == (
+        1 + len(graph["loops"]) + len(graph["floors"]) + len(graph["devices"])
+    )
+    assert len(graph["networks"]) == len(graph["loops"])
+    assert graph["validation"]["nodes_total"] == len(graph["nodes"])
+    assert all(edge.get("from") and edge.get("to") for edge in graph["edges"])
+
 
 @pytest.mark.skipif(not TRAY_PDF.exists(), reason="локальный PDF-корпус СС отсутствует")
 def test_real_tray_builds_exact_inventory_without_fake_topology():
@@ -98,6 +116,12 @@ def test_real_tray_builds_exact_inventory_without_fake_topology():
     assert graph["validation"]["callout_link_rate"] == 1.0
     gate = evaluate_low_voltage_gate(graph)
     assert gate["use"] is True and gate["mode"] == "inventory_only"
+
+    normalize_low_voltage_graph(graph)
+    assert graph["profile_id"] == "cable_tray_axonometry"
+    assert len(graph["nodes"]) == len(graph["elements"]) == 10
+    assert graph["edges"] == []
+    assert graph["readiness"]["complete"] is False
 
 
 @pytest.mark.skipif(not WIRING_PDF.exists(), reason="локальный PDF-корпус СС отсутствует")
