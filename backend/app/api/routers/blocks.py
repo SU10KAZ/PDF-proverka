@@ -1,6 +1,7 @@
 """
 REST API для OCR-блоков чертежей.
 """
+import asyncio
 import json
 import re
 from pathlib import Path
@@ -14,7 +15,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response
 
-from backend.app.services.common import version_service
+from backend.app.services.common import block_crop_store, version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.block_context.contract import (
     VECTOR_GRAPH_MISSING_MESSAGE,
@@ -1164,6 +1165,19 @@ async def get_blocks_analysis(
     }
 
 
+_BLOCK_MEDIA_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+}
+
+
+def _block_media_type(path: Path) -> str:
+    """MIME по расширению: галерея векторных графов пишет .webp, не только .png."""
+    return _BLOCK_MEDIA_TYPES.get(Path(path).suffix.lower(), "image/png")
+
+
 @router.get("/{project_id:path}/blocks/image/{block_id}")
 async def get_block_image(
     project_id: str,
@@ -1180,10 +1194,16 @@ async def get_block_image(
     if read_canary.resolve_read_backend(request) == read_canary.BACKEND_V2:
         return read_canary.v2_block_image(request, project_id, block_id)
     output_dir = _version_output(project_id, version_id)
-    block_path = resolve_blocks_dir(output_dir) / f"block_{block_id}.png"
-    if not block_path.exists():
+    blocks_dir = resolve_blocks_dir(output_dir)
+    # Имя берём из index.json: галерея векторных графов пишет block_<id>.webp,
+    # и прежний хардкод "block_{id}.png" отдавал на таких блоках 404.
+    # resolve_block_image при включённом флаге дотягивает эвакуированный кроп.
+    block_path = await asyncio.to_thread(
+        block_crop_store.resolve_block_image, blocks_dir, block_id
+    )
+    if block_path is None:
         raise HTTPException(404, f"Блок {block_id} не найден")
-    return FileResponse(str(block_path), media_type="image/png")
+    return FileResponse(str(block_path), media_type=_block_media_type(block_path))
 
 
 @router.get("/{project_id:path}/blocks/region-image/{block_id}")

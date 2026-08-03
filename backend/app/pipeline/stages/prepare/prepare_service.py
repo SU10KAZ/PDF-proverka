@@ -33,6 +33,7 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 from backend.app.pipeline.stages.block_context.builder import build_block_context
 from backend.app.pipeline.stages.block_context.contract import (
     STAGE_TITLE,
+    crops_materialized,
     validate_block_context_summary,
 )
 from backend.app.ws.manager import ws_manager
@@ -390,10 +391,22 @@ async def _crop_for_project(project_id: str) -> None:
             policy = stage02_crop_policy()
             blocks_dir = out_dir / STAGE02_BLOCKS_DIRNAME
             index_path = blocks_dir / "index.json"
+            # «index.json есть, PNG нет» раньше проходило как «кропы готовы»
+            # и Stage 01 стартовал вслепую — см. crops_materialized().
+            missing_pngs: list[str] = []
+            if index_path.exists():
+                _ok, missing_pngs = crops_materialized(blocks_dir)
             force_crop = (
                 (index_path.exists() and not crop_index_matches_policy(index_path, policy))
                 or (not index_path.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
+                or bool(missing_pngs)
             )
+            if missing_pngs:
+                await _ws_log(
+                    project_id,
+                    f"Отсутствует {len(missing_pngs)} PNG из index.json — пере-кроп блоков",
+                    "warn",
+                )
 
             async def _on_crop_output(line: str) -> None:
                 level = "error" if line.startswith("[ERR]") or "[ERROR]" in line else "info"

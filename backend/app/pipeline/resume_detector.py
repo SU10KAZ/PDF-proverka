@@ -16,7 +16,10 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_gate import (
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract import STAGE02_BLOCKS_DIRNAME
-from backend.app.pipeline.stages.block_context.contract import validate_block_context_summary
+from backend.app.pipeline.stages.block_context.contract import (
+    crops_materialized,
+    validate_block_context_summary,
+)
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
     TEXT_ANALYSIS_FILENAME,
@@ -79,7 +82,14 @@ def detect_resume_stage(project_id: str, *, version_id: Optional[str] = None) ->
 
     # OCR-пайплайн (блоки)
     blocks_dir = output_dir / STAGE02_BLOCKS_DIRNAME
-    has_blocks = blocks_dir.is_dir() and (blocks_dir / "index.json").exists()
+    # Наличие index.json само по себе НЕ означает, что кропы на месте:
+    # resume засевает run-папку одним index.json, а эвакуация кропов делает это
+    # состояние штатным. Без проверки PNG resume уводил бы мимо стадии crop.
+    has_blocks = (
+        blocks_dir.is_dir()
+        and (blocks_dir / "index.json").exists()
+        and crops_materialized(blocks_dir)[0]
+    )
     runtime_batches_path = output_dir / "block_batches.runtime.json"
     legacy_batches_path = output_dir / "block_batches.json"
     has_block_batches = runtime_batches_path.exists() or legacy_batches_path.exists()

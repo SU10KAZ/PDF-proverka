@@ -9,6 +9,7 @@ workspace-write, not read-only.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import shutil
 import tempfile
@@ -20,6 +21,8 @@ from backend.app.core.config import ROOT_DIR, resolve_codex_model
 from backend.app.models.usage import CLIResult, LLMResult
 from backend.app.services.common.process_runner import run_command
 from backend.app.services.llm.llm_runner import _try_parse_json_content
+
+logger = logging.getLogger(__name__)
 
 OnOutput = Optional[Callable[[str], Awaitable[None]]]
 
@@ -205,11 +208,20 @@ def _normalize_image_paths(image_paths: Sequence[str | Path] | None) -> list[Pat
     normalized: list[Path] = []
     seen: set[Path] = set()
     for raw_path in image_paths:
+        # Молчаливый дроп здесь — худший из отказов: модель получает промпт без
+        # картинки и отвечает «по тексту», а прогон выглядит успешным. Логируем
+        # каждый выброшенный путь; через logging-мост это попадает в
+        # logs/actions/*.jsonl (см. docs/action_log.md).
         try:
             path = Path(raw_path).expanduser().resolve(strict=True)
-        except (OSError, RuntimeError):
+        except (OSError, RuntimeError) as exc:
+            logger.warning("codex_runner: изображение недоступно (%s): %s", exc, raw_path)
             continue
-        if not path.is_file() or path.suffix.lower() not in allowed_suffixes:
+        if not path.is_file():
+            logger.warning("codex_runner: изображение не файл, пропуск: %s", path)
+            continue
+        if path.suffix.lower() not in allowed_suffixes:
+            logger.warning("codex_runner: неподдерживаемый формат, пропуск: %s", path)
             continue
         if path in seen:
             continue

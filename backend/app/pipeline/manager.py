@@ -115,6 +115,7 @@ from backend.app.pipeline.stages.text_analysis.runner import (
 from backend.app.pipeline.stages.block_context.runner import (
     run_block_context_stage as _run_block_context_stage_fn,
 )
+from backend.app.pipeline.stages.block_context.contract import crops_materialized
 # ──────────────────────────────────────────────────────────────────────────
 
 
@@ -2006,10 +2007,17 @@ class PipelineManager:
             and blocks_dir.exists()
             and any(blocks_dir.glob("block_*.png"))
         )
+        # «index.json есть, PNG нет» — состояние, в котором раньше рапортовалось
+        # «кропы готовы», а анализ блоков шёл вслепую. Достижимо и без эвакуации
+        # (resume засевает run-папку одним index.json), поэтому проверяем всегда.
+        missing_pngs: list[str] = []
+        if index_path.exists():
+            _ok, missing_pngs = crops_materialized(blocks_dir)
         needs_crop = (
             force := (
                 (index_path.exists() and not _existing_crop_matches_policy(index_path, policy))
                 or stale_existing_dir
+                or bool(missing_pngs)
             )
         ) or not index_path.exists()
         if not needs_crop:
@@ -2019,6 +2027,13 @@ class PipelineManager:
                 f"({_crop_policy_label(policy)})",
             )
             return
+        if missing_pngs:
+            await self._log(
+                job,
+                f"Stage 01 crop: отсутствует {len(missing_pngs)} PNG из index.json "
+                f"— пере-кроп (иначе анализ блоков пошёл бы вслепую)",
+                "warn",
+            )
 
         await self._log(
             job,
@@ -2132,6 +2147,82 @@ class PipelineManager:
         # standalone block_analysis-only прогон). ПОЛНЫЙ снимок после всего
         # конвейера делает _run_batch_queue по завершении (late artifacts).
         self._shadow_mirror_completed_audit(job.project_id, job)
+
+    def _pipeline_log_has_running_stage(self, output_dir: Path) -> bool:
+        """Есть ли в pipeline_log.json стадия в статусе running."""
+        for rel in ("pipeline_log.json", "../latest/pipeline_log.json"):
+            path = (output_dir / rel).resolve()
+            if not path.is_file():
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                return True  # нечитаемый лог — считаем занятым (безопасная сторона)
+            stages = data.get("stages") or {}
+            if any((st or {}).get("status") == "running" for st in stages.values()):
+                return True
+        return False
+
+    async def _maybe_evict_block_crops(self, job: "AuditJob", queue) -> None:
+        """Эвакуировать локальные PNG-кропы после ПОЛНОГО завершения конвейера.
+
+        Место вызова — единственно верное: `_run_batch_queue` после
+        `_shadow_mirror_completed_audit`. Это единая точка завершения любого
+        action (full/resume/retry/optimization). Шесть мест, где выставляется
+        `JobStatus.COMPLETED`, не годятся: часть срабатывает, когда findings и
+        optimization ещё нуждаются в кропах.
+
+        Полностью fail-soft: никогда не трогает job.status/item.status и не
+        поднимает исключение наверх. Файловый ввод-вывод уходит в поток, чтобы
+        не блокировать event loop (иначе watchdog по /api/info убьёт бэкенд).
+        """
+        from backend.app.core.config import (
+            BLOCK_CROP_EVICTION_DRY_RUN,
+            BLOCK_CROP_EVICTION_ENABLED,
+            BLOCK_CROP_EVICT_LATEST,
+        )
+
+        if not BLOCK_CROP_EVICTION_ENABLED:
+            return
+        try:
+            if job.status != JobStatus.COMPLETED or self.is_running(job.project_id):
+                return
+            # По этой же версии не должно остаться ни идущей, ни ждущей работы.
+            key = (job.project_id, getattr(job, "version_id", None))
+            for it in getattr(queue, "items", []) or []:
+                same = (it.project_id, getattr(it, "version_id", None)) == key
+                if same and it.status in ("pending", "running", "interrupted"):
+                    return
+
+            _root, _project_dir, output_dir = self._resolve_job_paths(job)
+            if self._pipeline_log_has_running_stage(output_dir):
+                return
+            if output_dir.name == "latest" and not BLOCK_CROP_EVICT_LATEST:
+                return
+
+            from backend.app.services.common import block_crop_store
+
+            reports = await asyncio.to_thread(
+                block_crop_store.evict_run_dir,
+                output_dir,
+                dry_run=BLOCK_CROP_EVICTION_DRY_RUN,
+                evicted_by="manager.post_completion",
+            )
+            evicted = sum(r.evicted for r in reports)
+            kept = sum(r.kept for r in reports)
+            freed = sum(r.freed_bytes for r in reports)
+            if evicted or kept:
+                suffix = " [dry-run]" if BLOCK_CROP_EVICTION_DRY_RUN else ""
+                await self._log(
+                    job,
+                    f"Кропы эвакуированы: {evicted} PNG, {freed / 2 ** 20:.0f} МБ "
+                    f"освобождено, {kept} оставлено (невосстановимы){suffix}",
+                )
+        except Exception as exc:  # noqa: BLE001 — эвакуация не смеет ронять аудит
+            try:
+                await self._log(job, f"Эвакуация кропов пропущена (soft): {exc}", "warn")
+            except Exception:
+                pass
 
     def _shadow_mirror_completed_audit(self, project_id: str, job=None) -> None:
         """Зеркалировать legacy-проект в projects_v2 после успешного этапа/аудита.
@@ -5114,8 +5205,10 @@ class PipelineManager:
 
             # Пропустить если блоки уже есть
             index_file = stage02_blocks_index_path(proj_dir)
-            if index_file.exists() and _existing_crop_matches_policy(
-                index_file, stage02_crop_policy()
+            if (
+                index_file.exists()
+                and _existing_crop_matches_policy(index_file, stage02_crop_policy())
+                and crops_materialized(index_file.parent)[0]
             ):
                 print(f"[PRE-CROP] {pid} ({version_id}): блоки уже есть, пропуск")
                 return True
@@ -5331,6 +5424,7 @@ class PipelineManager:
                         # на block_analysis (мирор внутри block-стадии), а поздние
                         # этапы в v2 не попадали. no-op в legacy-режиме, fail-soft.
                         self._shadow_mirror_completed_audit(pid, job)
+                        await self._maybe_evict_block_crops(job, queue)
                         await ws_manager.broadcast_global(
                             WSMessage.log("__BATCH__", f"  ✓ {pid}: завершён", "info")
                         )

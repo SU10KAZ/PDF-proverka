@@ -18,7 +18,7 @@ def _key(**over):
     base = dict(
         model="openai/gpt-5.4", block_id="b1", system_prompt="sys",
         user_text="find issues", enrichment={"a": 1}, page_text="page",
-        image_bytes=b"PNGDATA",
+        image_identity="block_id=b1|page=1|crop_px=[0, 0, 10, 10]",
     )
     base.update(over)
     return cache.compute_cache_key(**base)
@@ -33,7 +33,8 @@ def test_cache_key_deterministic_and_order_independent():
 def test_cache_key_changes_on_prompt_or_image():
     base = _key()
     assert _key(user_text="other") != base       # сменился prompt → новый ключ
-    assert _key(image_bytes=b"OTHER") != base     # сменилась картинка → новый ключ
+    # сменилась картинка (другие координаты кропа) → новый ключ
+    assert _key(image_identity="block_id=b1|page=1|crop_px=[9, 9, 99, 99]") != base
 
 
 def test_save_then_load_roundtrip_marks_cache_hit(tmp_path):

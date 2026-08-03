@@ -6,7 +6,9 @@ section that tells Codex how to use them for optimization proposals.
 """
 from __future__ import annotations
 
+import dataclasses
 import json
+import logging
 import os
 import re
 from collections import Counter
@@ -18,6 +20,8 @@ from backend.app.services.storage.stage_artifacts import (
     BLOCKS_ANALYSIS_FILENAME,
     resolve_existing,
 )
+
+_logger = logging.getLogger(__name__)
 
 try:
     import fitz  # type: ignore
@@ -203,6 +207,39 @@ def _preferred_dirs() -> list[str]:
     return result
 
 
+def _is_restorable(directory: Path, block_id: str) -> bool:
+    try:
+        from backend.app.services.common import block_crop_store
+
+        return block_crop_store.is_restorable(directory, block_id)
+    except Exception:  # noqa: BLE001 — вспомогательная проверка, fail-soft
+        return False
+
+
+def _hydrate_selected(selected: list) -> list:
+    """Восстановить картинки отобранных вложений; недоступные — выбросить."""
+    from backend.app.services.common import block_crop_store
+
+    alive = []
+    for attachment in selected:
+        path = attachment.image_path
+        if path is not None and Path(path).is_file():
+            alive.append(attachment)
+            continue
+        restored = block_crop_store.resolve_block_image(
+            Path(path).parent, attachment.block_id, file_name=Path(path).name
+        )
+        if restored is None:
+            _logger.warning(
+                "optimization/visual_context: блок %s пропущен — картинка недоступна",
+                attachment.block_id,
+            )
+            continue
+        # VisualAttachment — frozen dataclass, поэтому пересобираем копией.
+        alive.append(dataclasses.replace(attachment, image_path=restored))
+    return alive
+
+
 def _image_mapping_for_dir(output_dir: Path) -> dict[str, tuple[str, Path]]:
     mapping: dict[str, tuple[str, Path]] = {}
     for dirname in _preferred_dirs():
@@ -221,6 +258,10 @@ def _image_mapping_for_dir(output_dir: Path) -> dict[str, tuple[str, Path]]:
                     continue
                 image_path = directory / file_name
                 if image_path.is_file():
+                    mapping[block_id] = (dirname, image_path)
+                elif _is_restorable(directory, block_id):
+                    # Кроп эвакуирован: оставляем блок кандидатом, гидрация
+                    # произойдёт только для реально отобранных (см. ниже).
                     mapping[block_id] = (dirname, image_path)
 
     for dirname in _preferred_dirs():
@@ -391,6 +432,9 @@ def collect_optimization_visual_context(
         reverse=True,
     )
     selected = _select_page_diverse(ranked, limit=limit)
+    # Гидрируем ТОЛЬКО отобранные (их не больше limit): восстанавливать весь
+    # каталог было бы дорого и бессмысленно — в модель уйдут единицы.
+    selected = _hydrate_selected(selected)
     image_paths = [attachment.image_path for attachment in selected]
     prompt_section = _build_prompt_section(selected, discipline=discipline)
     return OptimizationVisualContext(

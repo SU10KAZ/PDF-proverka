@@ -1,8 +1,27 @@
 """Stage 02 paid response cache.
 
-Cache key = sha256(model | block_id | prompt_text | image_bytes). Hit означает,
+Cache key = sha256(model | block_id | prompt_text | image_identity). Hit означает,
 что точно такой же платный вопрос уже отправлялся в OpenRouter, и мы можем
 вернуть сохранённый ответ без нового сетевого запроса и без записи в paid_cost.
+
+Почему image_identity, а не байты PNG (schema v2, 2026-08-03)
+------------------------------------------------------------
+Раньше в ключ подмешивались САМИ БАЙТЫ картинки. Это ломалось об эфемерные
+кропы (docs/block_crop_lifecycle.md): удалённый кроп восстанавливается
+ре-рендером из 02_work/document.pdf и выглядит так же, но байт-в-байт не
+совпадает (замер: 1818 КБ против 1770 КБ у одного блока). Каждый
+восстановленный блок давал бы гарантированный промах кэша — то есть повторную
+оплату ровно в том сценарии, ради которого кэш и заводили.
+
+Идентичность считаем от того, что ОДНОЗНАЧНО задаёт картинку и не зависит от
+конкретных байт: block_id + страница + координаты кропа + политика рендера
+(dpi / min_long_side / compact) + итоговый размер в пикселях. Два кропа с
+одинаковой пятёркой — это один и тот же вид одного и того же места листа,
+отрендеренный одинаково.
+
+Смена схемы v1 → v2 инвалидирует старые записи ЧИСТО: try_load_cached
+сравнивает schema_version и на несовпадении возвращает None, а не отдаёт
+ответ, посчитанный по другому правилу.
 
 Назначение: в инциденте 2026-05-16 один и тот же блок M31A платился 9-15 раз
 ($0.3227 × 9 ≈ $2.90), потому что retry Stage 02 каждый раз дёргал OpenRouter
@@ -29,7 +48,8 @@ from typing import Any, Optional
 logger = logging.getLogger(__name__)
 
 CACHE_DIRNAME = "_stage02_paid_response_cache"
-CACHE_SCHEMA_VERSION = 1
+# v2: в ключ идёт image_identity вместо байтов PNG (см. docstring модуля).
+CACHE_SCHEMA_VERSION = 2
 
 
 def _stable_prompt_serialization(
@@ -57,6 +77,38 @@ def _stable_prompt_serialization(
     return "\n---\n".join(parts)
 
 
+def build_image_identity(block: dict, index_top: Optional[dict] = None) -> str:
+    """Устойчивое обозначение картинки блока — без её байтов.
+
+    Однозначно задаёт «какой участок листа и как отрендерен»:
+    страница + координаты кропа + политика рендера + итоговый размер.
+    Ре-рендер того же блока из того же PDF даёт ту же строку, хотя байты PNG
+    отличаются, — именно это делает кэш устойчивым к эвакуации кропов.
+
+    Если координат нет (старые индексы, ~9% записей), честно помечаем это
+    маркером ``nocoords`` и добавляем размер файла: полностью «слепой» ключ
+    хуже, чем ключ с более слабой, но явной идентичностью.
+    """
+    top = index_top or {}
+    crop_px = block.get("crop_px")
+    render_size = block.get("render_size")
+    parts = [
+        f"block_id={block.get('block_id') or ''}",
+        f"page={block.get('page')}",
+        f"file={block.get('file') or ''}",
+        f"dpi={top.get('dpi')}",
+        f"min_long_side={top.get('min_long_side')}",
+        f"compact={bool(top.get('compact'))}",
+        f"render_size={list(render_size) if render_size else None}",
+    ]
+    if isinstance(crop_px, (list, tuple)) and len(crop_px) == 4:
+        parts.append(f"crop_px={[int(v) for v in crop_px]}")
+    else:
+        parts.append("crop_px=nocoords")
+        parts.append(f"size_kb={block.get('size_kb')}")
+    return "|".join(parts)
+
+
 def compute_cache_key(
     *,
     model: str,
@@ -65,9 +117,9 @@ def compute_cache_key(
     user_text: str,
     enrichment: dict,
     page_text: str,
-    image_bytes: bytes,
+    image_identity: str,
 ) -> str:
-    """sha256 from prompt + image. Hex digest, full length (64 chars)."""
+    """sha256 from prompt + image identity. Hex digest, full length (64 chars)."""
     prompt_blob = _stable_prompt_serialization(
         model=model,
         block_id=block_id,
@@ -79,7 +131,7 @@ def compute_cache_key(
     h = hashlib.sha256()
     h.update(prompt_blob.encode("utf-8"))
     h.update(b"\n--IMAGE--\n")
-    h.update(image_bytes or b"")
+    h.update((image_identity or "").encode("utf-8"))
     return h.hexdigest()
 
 

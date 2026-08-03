@@ -132,6 +132,29 @@ def _load_json(path: Path) -> Optional[dict]:
         return None
 
 
+def _block_png(output_dir: Path, block: dict) -> Optional[Path]:
+    """PNG блока для контекста обсуждения.
+
+    Две починки против прежнего кода: папка резолвится через
+    ``resolve_blocks_dir`` (хардкод ``"blocks"`` не находил кропы у проектов
+    projects_v2, где они лежат в ``blocks_stage02_100``), и эвакуированный кроп
+    восстанавливается вместо тихой потери картинки-доказательства.
+    """
+    from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
+    from backend.app.services.common import block_crop_store
+
+    bid = str(block.get("block_id") or "")
+    if not bid:
+        return None
+    blocks_dir = resolve_blocks_dir(Path(output_dir))
+    path = block_crop_store.resolve_block_image(
+        blocks_dir, bid, file_name=block.get("file") or None
+    )
+    if path is None:
+        logger.warning("discussion: картинка блока %s недоступна (%s)", bid, blocks_dir)
+    return path
+
+
 def _build_finding_context(project_id: str, item_id: str) -> tuple[str, list[dict]]:
     """Собрать текстовый контекст и PNG блоков для замечания.
 
@@ -174,11 +197,8 @@ def _build_finding_context(project_id: str, item_id: str) -> tuple[str, list[dic
                 parts.append(f"\n--- Блок {bid} ---")
                 parts.append(json.dumps(block, ensure_ascii=False, indent=2))
                 # PNG
-                block_file = block.get("file", f"block_{bid}.png")
-                png_path = output_dir / "blocks" / block_file
-                if not png_path.exists():
-                    png_path = output_dir / "blocks" / f"block_{bid}.png"
-                if png_path.exists():
+                png_path = _block_png(output_dir, block)
+                if png_path is not None:
                     images.append(make_image_content(png_path))
 
     # 3. Страницы из document_graph
@@ -257,11 +277,8 @@ def _build_optimization_context(project_id: str, item_id: str) -> tuple[str, lis
                     bid = block.get("block_id", "")
                     parts.append(f"\n--- Блок {bid} ---")
                     parts.append(json.dumps(block, ensure_ascii=False, indent=2))
-                    block_file = block.get("file", f"block_{bid}.png")
-                    png_path = output_dir / "blocks" / block_file
-                    if not png_path.exists():
-                        png_path = output_dir / "blocks" / f"block_{bid}.png"
-                    if png_path.exists():
+                    png_path = _block_png(output_dir, block)
+                    if png_path is not None:
                         images.append(make_image_content(png_path))
 
     # 3. Review вердикт

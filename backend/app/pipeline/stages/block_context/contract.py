@@ -97,6 +97,75 @@ def resolve_blocks_index(output_dir: Path) -> Path:
     return resolve_blocks_dir(output_dir) / "index.json"
 
 
+#: PNG меньше этого размера считаем непригодным (обрезанная/пустая запись).
+#: Порог согласован с проверкой `size_kb > 1` в crop_blocks/blocks.py.
+MIN_USABLE_CROP_BYTES = 1024
+
+
+def block_file_for(entry: dict[str, Any]) -> str:
+    """Имя файла кропа для записи index.json.
+
+    Авторитетно именно поле ``file``: галерея векторных графов пишет
+    ``block_<id>.webp`` (backend/scripts/build_vector_graph_gallery.py), а
+    несколько мест исторически собирали имя как ``block_{id}.png`` и потому
+    отдавали 404 на таких блоках. Fallback оставлен для старых индексов.
+    """
+    name = str(entry.get("file") or "").strip()
+    if name:
+        return name
+    return f"block_{entry.get('block_id')}.png"
+
+
+def crops_materialized(
+    blocks_dir: Path,
+    index: dict[str, Any] | None = None,
+) -> tuple[bool, list[str]]:
+    """Есть ли на диске PNG для КАЖДОГО блока, заявленного в index.json.
+
+    Возвращает ``(всё_на_месте, [block_id отсутствующих])``.
+
+    Зачем: состояние «index.json есть, PNG нет» достижимо УЖЕ СЕЙЧАС (resume
+    засевает run-папку одним index.json, manager.py), а после включения
+    эвакуации кропов оно становится штатным. Все проверки готовности при этом
+    смотрели только на существование index.json и рапортовали «кропы готовы»,
+    после чего анализ блоков шёл вслепую и возвращал `PNG missing` по каждому
+    блоку. Этот предикат — единственная точка правды о наличии картинок.
+
+    Проверяем КАЖДУЮ запись, а не только количество файлов: обрезанный PNG
+    (например, от падения посреди записи) сохраняет количество, но картинкой не
+    является — и молча уехал бы в модель. Пара сотен ``stat`` на вызов, а зовут
+    эту функцию только на контрольных точках готовности.
+    """
+    blocks_dir = Path(blocks_dir)
+    if index is None:
+        index_path = blocks_dir / "index.json"
+        if not index_path.is_file():
+            return True, []  # индекса нет — это не наш случай, решает вызывающий
+        try:
+            index = json.loads(index_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return True, []
+
+    entries = index if isinstance(index, list) else (index.get("blocks") or [])
+    entries = [e for e in entries if isinstance(e, dict)]
+    if not entries:
+        return True, []
+
+    if not blocks_dir.is_dir():
+        return False, [str(e.get("block_id") or "") for e in entries]
+
+    missing: list[str] = []
+    for entry in entries:
+        path = blocks_dir / block_file_for(entry)
+        try:
+            if path.stat().st_size >= MIN_USABLE_CROP_BYTES:
+                continue
+        except OSError:
+            pass
+        missing.append(str(entry.get("block_id") or ""))
+    return (not missing), missing
+
+
 def summary_path(output_dir: Path) -> Path:
     return Path(output_dir) / BLOCK_CONTEXT_SUMMARY_FILENAME
 

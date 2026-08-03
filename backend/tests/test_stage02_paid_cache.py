@@ -2,13 +2,13 @@
 
 Назначение cache: в инциденте 2026-05-16 один и тот же блок M31A платился
 9-15 раз ($0.32 за вызов), потому что retry Stage 02 дёргал OpenRouter заново.
-Cache на (model, block_id, prompt, image) делает retry zero-cost.
+Cache на (model, block_id, prompt, image_identity) делает retry zero-cost.
 
 Покрытие:
   - cache miss → None
   - cache hit возвращает сохранённый response с from_cache=True, cost_usd=0
   - смена model инвалидирует cache
-  - смена image_bytes инвалидирует cache
+  - смена image_identity инвалидирует cache
   - смена system_prompt инвалидирует cache
   - смена enrichment инвалидирует cache (через каноническую сериализацию)
   - STAGE02_PAID_CACHE_ENABLED=false → cache_enabled()=False
@@ -41,7 +41,7 @@ def _make_key(**overrides) -> str:
         user_text="USER",
         enrichment={"label": "lighting plan", "page": 4},
         page_text="Сводный план освещения, 1-й этаж",
-        image_bytes=b"\x89PNG\r\n\x1a\nFAKE",
+        image_identity="block_id=block_007_1|page=4|crop_px=[10, 10, 200, 300]",
     )
     base.update(overrides)
     return cache_mod.compute_cache_key(**base)
@@ -62,7 +62,7 @@ def test_different_model_invalidates_key():
 
 def test_different_image_invalidates_key():
     k1 = _make_key()
-    k2 = _make_key(image_bytes=b"DIFFERENT_PNG_BYTES")
+    k2 = _make_key(image_identity="block_id=block_007_1|page=4|crop_px=[0, 0, 50, 50]")
     assert k1 != k2
 
 

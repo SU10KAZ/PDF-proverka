@@ -340,7 +340,11 @@ def _get_plan_images(project_id: str) -> list[Path]:
     """
     project_dir = _version_project_dir(project_id)
     output_dir = _version_output_dir(project_id)
-    blocks_dir = output_dir / "blocks"
+    # Резолвим через resolve_blocks_dir: хардкод "blocks" не находил кропы
+    # у проектов projects_v2, где они лежат в blocks_stage02_100.
+    from backend.app.pipeline.stages.block_context.contract import resolve_blocks_dir
+
+    blocks_dir = resolve_blocks_dir(output_dir)
     if not blocks_dir.exists():
         return []
 
@@ -372,11 +376,14 @@ def _get_plan_images(project_id: str) -> list[Path]:
 
     def _resolve_block_path(block_id: str) -> Path | None:
         """Найти PNG файл блока по block_id."""
-        # 1. Через index.json
-        if block_id in block_id_to_file:
-            p = blocks_dir / block_id_to_file[block_id]
-            if p.exists():
-                return p
+        # 1. Через index.json (+ восстановление эвакуированного кропа)
+        from backend.app.services.common import block_crop_store
+
+        resolved = block_crop_store.resolve_block_image(
+            blocks_dir, block_id, file_name=block_id_to_file.get(block_id)
+        )
+        if resolved is not None:
+            return resolved
         # 2. Glob fallback
         for png in blocks_dir.glob(f"*{block_id}*.png"):
             return png

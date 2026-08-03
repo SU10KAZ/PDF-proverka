@@ -38,6 +38,7 @@ import re
 import tempfile
 import time
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Optional
 
@@ -49,6 +50,7 @@ from backend.app.services.storage.stage_artifacts import (
     BLOCK_CONTEXT_SUMMARY_FILENAME,
 )
 from backend.app.pipeline.stages.block_context.contract import (
+    crops_materialized,
     load_block_context_summary,
     validate_block_context_summary,
 )
@@ -708,6 +710,31 @@ def sheet_for_page(graph: dict, page: int) -> Optional[str]:
     return None
 
 
+@lru_cache(maxsize=32)
+def _blocks_index_top_cached(index_path: str, mtime_ns: int, size: int) -> dict:
+    try:
+        data = json.loads(Path(index_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    return {k: v for k, v in data.items() if k != "blocks"}
+
+
+def _blocks_index_top(blocks_dir: Path) -> dict:
+    """Шапка index.json (политика рендера) — для ключа платного кэша.
+
+    Мемоизируем по (путь, mtime, размер): функция зовётся на каждый блок, а
+    index.json бывает на мегабайты.
+    """
+    index_path = Path(blocks_dir) / "index.json"
+    try:
+        st = index_path.stat()
+    except OSError:
+        return {}
+    return _blocks_index_top_cached(str(index_path), st.st_mtime_ns, st.st_size)
+
+
 # ─── PNG → data URL ──────────────────────────────────────────────────────────
 
 def png_to_data_url(path: Path) -> str:
@@ -1077,14 +1104,15 @@ async def call_gpt_for_block(
                 user_text=user_text,
                 enrichment=enrichment,
                 page_text=page_text,
-                image_bytes=image_bytes_for_cache,
+                image_identity=stage02_paid_cache.build_image_identity(
+                    block, _blocks_index_top(blocks_dir)
+                ),
             )
             cached = stage02_paid_cache.try_load_cached(output_dir, cache_key)
             if cached is not None:
                 cached.setdefault("context_source", context_source)
                 return cached
         except OSError:
-            # disk error при чтении PNG — пусть дальше упадёт на той же ошибке
             cache_key = ""
 
     # ─── Paid API guard (defence-in-depth) ──────────────────────────
@@ -2748,6 +2776,16 @@ def check_prerequisites(project_dir: Path, *, output_dir_override: Optional[Path
         reasons.append(f"Нет _output/{STAGE02_BLOCKS_DIRNAME}/index.json (запустите Stage 01 crop)")
     elif not crop_index_matches_policy(index_path, stage02_crop_policy()):
         reasons.append(f"_output/{STAGE02_BLOCKS_DIRNAME}/index.json не соответствует Stage 01 crop policy")
+    else:
+        # Последний рубеж: даже при прямом вызове стадии (минуя проверки готовности
+        # в manager/prepare) анализ блоков не должен стартовать без картинок —
+        # иначе каждый блок вернёт "PNG missing", а прогон будет выглядеть успешным.
+        _ok, _missing = crops_materialized(index_path.parent)
+        if _missing:
+            reasons.append(
+                f"_output/{STAGE02_BLOCKS_DIRNAME}: отсутствует {len(_missing)} PNG "
+                f"из index.json (кропы не материализованы — нужен пере-кроп)"
+            )
     context_validation = validate_block_context_summary(output_dir)
     if not context_validation.get("valid"):
         reasons.append(f"Векторные графы блоков не готовы: {context_validation.get('reason')}")

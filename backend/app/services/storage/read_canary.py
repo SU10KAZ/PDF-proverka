@@ -45,6 +45,7 @@ from fastapi.responses import FileResponse
 from backend.app.pipeline.stages.block_context.contract import (
     decorate_blocks_vector_state,
 )
+from backend.app.services.common import block_crop_store
 
 _CANARY_FLAG = "AUDIT_PROJECTS_V2_READ_CANARY_ENABLED"
 _DEFAULT_FLAG = "AUDIT_PROJECTS_V2_READ_DEFAULT_ENABLED"
@@ -1113,23 +1114,45 @@ def v2_block_image(request, project_id: str, block_id: str):
                 target = bd / fn
             break
     # 2) фолбэк на конвенцию block_<id>.png
+    file_name = target.name if target is not None else f"block_{want}.png"
     if target is None:
-        target = bd / f"block_{want}.png"
+        target = bd / file_name
     # анти-traversal: файл обязан лежать ВНУТРИ папки блоков версии
     try:
         target_resolved = target.resolve()
     except Exception:
         target_resolved = None
     if (target_resolved is None
-            or bd_resolved not in target_resolved.parents
-            or not target_resolved.is_file()):
+            or bd_resolved not in target_resolved.parents):
         raise HTTPException(
             status_code=404,
             detail=(f"projects_v2 canary: block image '{block_id}' not found for "
                     f"'{doc['document_code']}' (no silent legacy fallback)"),
         )
-    return FileResponse(str(target_resolved), media_type="image/png",
-                        headers={"X-Storage-Backend": BACKEND_V2})
+    crop_source = "local"
+    if not target_resolved.is_file():
+        # Кроп эвакуирован (или не докропан): восстанавливаем из локального PDF,
+        # при неудаче — по crop_url. Проверка traversal уже пройдена по ИМЕНИ;
+        # возвращаемый путь может лежать в LRU-кэше вне папки версии.
+        restored = block_crop_store.resolve_block_image(bd, want, file_name=file_name)
+        if restored is None:
+            raise HTTPException(
+                status_code=404,
+                detail=(f"projects_v2 canary: block image '{block_id}' not found for "
+                        f"'{doc['document_code']}' (no silent legacy fallback)"),
+            )
+        target_resolved = restored
+        crop_source = "restored"
+    media_types = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".webp": "image/webp",
+    }
+    media_type = media_types.get(target_resolved.suffix.lower(), "application/octet-stream")
+    return FileResponse(str(target_resolved), media_type=media_type,
+                        headers={"X-Storage-Backend": BACKEND_V2,
+                                 "X-Crop-Source": crop_source})
 
 
 def v2_version_files(request, project_id: str, version_id: str) -> dict:

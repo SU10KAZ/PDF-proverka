@@ -123,6 +123,19 @@ def _find_block_png(output_dir: Path, block_id: str) -> Optional[Path]:
                         candidate = base / fname
                         if candidate.is_file():
                             return candidate
+                        # Кроп эвакуирован — восстанавливаем. Эта одна ветка
+                        # покрывает трёх потребителей: context.py, verify.py и
+                        # rejected_audit_service (его block.png_path родом отсюда).
+                        try:
+                            from backend.app.services.common import block_crop_store
+
+                            restored = block_crop_store.resolve_block_image(
+                                base, eid, file_name=fname
+                            )
+                        except ImportError:
+                            restored = None
+                        if restored is not None:
+                            return restored
     return None
 
 

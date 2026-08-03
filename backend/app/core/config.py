@@ -1104,5 +1104,52 @@ ACTION_LOG_APPLOG_MAX_PER_MIN = _env_int("ACTION_LOG_APPLOG_MAX_PER_MIN", 600)
 # в дополнение к встроенному списку поллинговых GET (см. action_log.py).
 ACTION_LOG_NOISE_EXTRA      = _env_csv("ACTION_LOG_NOISE_EXTRA", [])
 
+# ─── Эфемерные кропы блоков (block crop store) ─────────────────────────────
+# Кропы блоков — крупнейшая устранимая статья на диске (замер 2026-08-03:
+# 12.2 ГБ / 64764 PNG при диске на 98%). Они полностью воспроизводимы из
+# локального 02_work/document.pdf по crop_px: контрольный ре-рендер дал ровно
+# render_size из index.json при 99.52% совпадения пикселей с облачным кропом.
+#
+# Порядок восстановления НАМЕРЕННО local-first: облачные crop_url живут
+# per-generation (решение от 13-14.07.2026, crop_cache.py), и замер показал,
+# что 15% ссылок в корпусе уже мертвы. Локальный PDF не протухает.
+#
+# ВКЛЮЧАТЬ СТРОГО В ПОРЯДКЕ RESTORE → EVICTION: пока восстановление не
+# проверено в бою, удалять кропы нельзя.
+BLOCK_CROP_RESTORE_ENABLED   = _env_bool("BLOCK_CROP_RESTORE_ENABLED", False)
+# Разрешён ли сетевой рунд (crop_url) как ЗАПАСНОЙ источник после локального.
+BLOCK_CROP_RESTORE_ALLOW_NETWORK = _env_bool("BLOCK_CROP_RESTORE_ALLOW_NETWORK", True)
+# Порядок источников восстановления: local_pdf | crop_url.
+BLOCK_CROP_RESTORE_ORDER     = _env_csv("BLOCK_CROP_RESTORE_ORDER", ["local_pdf", "crop_url"])
+# Параллелизм восстановления и бюджет на один HTTP-запрос (сек).
+# fitz CPU-bound и не потокобезопасен — держим низким.
+BLOCK_CROP_RESTORE_CONCURRENCY = _env_int("BLOCK_CROP_RESTORE_CONCURRENCY", 2)
+BLOCK_CROP_RESTORE_BUDGET_S  = _env_int("BLOCK_CROP_RESTORE_BUDGET_S", 2)
+BLOCK_CROP_RESTORE_TIMEOUT_S = _env_int("BLOCK_CROP_RESTORE_TIMEOUT_S", 30)
+# LRU-кэш восстановленных кропов. ВНЕ деревьев проектов: один общий потолок
+# удержим только над одним пулом, и кэш не должен уезжать в бэкапы версий.
+BLOCK_CROP_CACHE_DIR = (
+    Path(os.environ["AUDIT_BLOCK_CROP_CACHE_DIR"]).resolve()
+    if os.environ.get("AUDIT_BLOCK_CROP_CACHE_DIR")
+    else DATA_DIR / "cache" / "block_crops"
+)
+BLOCK_CROP_CACHE_MAX_BYTES      = _env_int("BLOCK_CROP_CACHE_MAX_BYTES", 1_500_000_000)
+BLOCK_CROP_CACHE_MAX_FILE_BYTES = _env_int("BLOCK_CROP_CACHE_MAX_FILE_BYTES", 64 * 1024 * 1024)
+# Пол свободного места: ниже него не пишем в кэш вовсе (диск живёт на пределе).
+BLOCK_CROP_CACHE_MIN_FREE_BYTES = _env_int("BLOCK_CROP_CACHE_MIN_FREE_BYTES", 2_000_000_000)
+# Запись моложе этого возраста не вытесняется: агент, восстановивший пачку
+# кропов, иначе потеряет первые до того, как их прочитает codex_runner.
+BLOCK_CROP_CACHE_MIN_AGE_S      = _env_int("BLOCK_CROP_CACHE_MIN_AGE_S", 900)
+# Как часто запускать вытеснение (раз в N вставок).
+BLOCK_CROP_CACHE_SWEEP_EVERY    = _env_int("BLOCK_CROP_CACHE_SWEEP_EVERY", 50)
+
+# Эвакуация кропов после ПОЛНОГО завершения пайплайна.
+# Оба флага нужны одновременно: включённый EVICTION при DRY_RUN=True (default)
+# только пишет в лог, что было бы удалено.
+BLOCK_CROP_EVICTION_ENABLED  = _env_bool("BLOCK_CROP_EVICTION_ENABLED", False)
+BLOCK_CROP_EVICTION_DRY_RUN  = _env_bool("BLOCK_CROP_EVICTION_DRY_RUN", True)
+# 03_analysis/latest — тёплая локальная копия для UI; трогать только осознанно.
+BLOCK_CROP_EVICT_LATEST      = _env_bool("BLOCK_CROP_EVICT_LATEST", False)
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR

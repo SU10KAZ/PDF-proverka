@@ -389,7 +389,17 @@ class ProjectsV2Adapter:
                 return cand
         runs = analysis / "runs"
         if runs.is_dir():
-            for run in sorted((p for p in runs.iterdir() if p.is_dir()), reverse=True):
+            # Порядок ОБЯЗАН совпадать с _fallback_run_dir/_runs_file: там
+            # «свежий прогон» = по mtime, а здесь раньше сортировали
+            # лексикографически по UUID-имени. На живом дереве победители
+            # расходились у 53% версий с несколькими прогонами — то есть любая
+            # логика «оставить свежий прогон» удаляла бы ровно ту папку,
+            # которую читает этот метод.
+            for run in sorted(
+                (p for p in runs.iterdir() if p.is_dir()),
+                key=lambda p: (p.stat().st_mtime_ns, p.name),
+                reverse=True,
+            ):
                 for name in self._BLOCKS_DIRNAMES:
                     bd = run / name
                     if (bd / "index.json").is_file():
@@ -402,6 +412,60 @@ class ProjectsV2Adapter:
                 for idx in sorted(legacy_out.glob(f"*/_output/{name}/index.json")):
                     return idx.parent
         return None
+
+    def resolved_blocks_dirs(self, doc_dir: Path, version_id: str) -> set[Path]:
+        """ВСЕ папки кропов, до которых способно дотянуться чтение.
+
+        Нужна как zero-overlap guard для эвакуации: удалять можно только то,
+        что заведомо НЕ является живым путём чтения. Намеренно перестраховываемся
+        и включаем победителей ОБОИХ исторических порядков сортировки run-папок
+        (по mtime и лексикографически), latest и legacy-бандлы King&Sons.
+
+        Важно: считать «runs/* — это история» нельзя. Замер 2026-08-03: у 183 из
+        440 версий index блоков есть ТОЛЬКО в runs/, то есть именно run-папка и
+        обслуживает UI.
+        """
+        vdir = self.version_dir(doc_dir, version_id)
+        analysis = vdir / "03_analysis"
+        found: set[Path] = set()
+
+        for name in self._BLOCKS_DIRNAMES:
+            cand = analysis / "latest" / name
+            if (cand / "index.json").is_file():
+                found.add(cand.resolve())
+
+        runs = analysis / "runs"
+        if runs.is_dir():
+            run_dirs = [p for p in runs.iterdir() if p.is_dir()]
+            # Зеркалим ПОВЕДЕНИЕ ЧИТАТЕЛЯ, а не только его «победителя»:
+            # blocks_dir() идёт по прогонам по порядку и берёт ПЕРВЫЙ, где есть
+            # index.json. Прогон-лидер вполне может индекса не иметь (например,
+            # run_refresh_*, где кроп ещё не делался), и тогда читатель
+            # проваливается на следующий. Проверка только двух лидеров давала
+            # пустой набор защищённых папок — и живой путь чтения уезжал под
+            # эвакуацию. Поэтому для КАЖДОГО из двух исторических порядков
+            # сортировки идём по списку до первого прогона с индексом.
+            orderings = (
+                sorted(run_dirs, key=lambda p: (p.stat().st_mtime_ns, p.name), reverse=True),
+                sorted(run_dirs, reverse=True),
+            )
+            for ordering in orderings:
+                for run in ordering:
+                    hit = False
+                    for name in self._BLOCKS_DIRNAMES:
+                        bd = run / name
+                        if (bd / "index.json").is_file():
+                            found.add(bd.resolve())
+                            hit = True
+                    if hit:
+                        break
+
+        legacy_out = vdir / "99_service" / "legacy_output"
+        if legacy_out.is_dir():
+            for name in self._BLOCKS_DIRNAMES:
+                for idx in legacy_out.glob(f"*/_output/{name}/index.json"):
+                    found.add(idx.parent.resolve())
+        return found
 
     def read_blocks_index(self, doc_dir: Path, version_id: str) -> Optional[dict]:
         bd = self.blocks_dir(doc_dir, version_id)

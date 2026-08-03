@@ -181,14 +181,23 @@ def _safe_block_image(blocks_dir: Path, block: dict) -> Optional[Path]:
     raw_name = str(block.get("file") or f"block_{block_id}.png")
     if not block_id or Path(raw_name).name != raw_name:
         return None
+    if Path(raw_name).suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
+        return None
     try:
         root = blocks_dir.resolve(strict=True)
         path = (blocks_dir / raw_name).resolve(strict=True)
     except (OSError, RuntimeError):
-        return None
-    if root not in path.parents or path.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
-        return None
-    return path if path.is_file() else None
+        path = None
+    else:
+        if root not in path.parents:
+            return None
+        if path.is_file():
+            return path
+    # Файла нет — пробуем восстановить эвакуированный кроп. Проверка traversal
+    # уже сделана по ИМЕНИ выше; восстановленный путь может лежать в LRU-кэше.
+    from backend.app.services.common import block_crop_store
+
+    return block_crop_store.resolve_block_image(blocks_dir, block_id, file_name=raw_name)
 
 
 def collect_graphics_catalog(

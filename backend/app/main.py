@@ -4,6 +4,7 @@ Audit Manager — точка входа FastAPI (backend).
 """
 import sys
 import os
+import re
 from pathlib import Path
 
 # Принудительно UTF-8 для stdout/stderr
@@ -93,6 +94,27 @@ async def lifespan(app: FastAPI):
     action_log_core.uninstall_logging_bridge()
 
 
+_GZIP_SKIP_PATH_RE = re.compile(
+    r"^/api/(tiles/.+/blocks/(image|region-image)/|document/.+/page/)"
+)
+
+
+class _ImageSafeGZipMiddleware(GZipMiddleware):
+    """GZip для всего, кроме бинарных картинок.
+
+    Starlette решает, сжимать ли ответ, ТОЛЬКО по размеру тела (>= minimum_size)
+    и не смотрит на content-type. PNG/WebP уже сжаты: deflate уровня 9 на них
+    даёт околонулевую экономию, но тратит CPU прямо в event loop. При открытии
+    вкладки «Блоки» это десятки кропов подряд, вплоть до ~2 МБ каждый.
+    """
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") == "http" and _GZIP_SKIP_PATH_RE.match(scope.get("path") or ""):
+            await self.app(scope, receive, send)
+            return
+        await super().__call__(scope, receive, send)
+
+
 app = FastAPI(
     title="Audit Manager",
     description="Управление аудитом проектной документации жилых зданий",
@@ -114,7 +136,12 @@ app.add_middleware(current_object_mw.CurrentObjectMiddleware)
 # грузится». gzip сжимает JS/HTML/JSON в ~4–6 раз. minimum_size, чтобы не
 # тратить CPU на мелочь. Добавлен раньше PortalAuth → PortalAuth остаётся
 # внешним, gzip сжимает финальные ответы приложения и статики.
-app.add_middleware(GZipMiddleware, minimum_size=1000)
+#
+# ВАЖНО: GZipMiddleware смотрит только на размер тела, НЕ на content-type, и
+# жмёт уровнем 9 в event loop. Для уже сжатых PNG/WebP это нулевая экономия и
+# чистая нагрузка на цикл — а кропы бывают под 2 МБ и грузятся десятками при
+# открытии вкладки «Блоки». Исключаем бинарные картинки по пути.
+app.add_middleware(_ImageSafeGZipMiddleware, minimum_size=1000)
 
 # ─── Portal auth ────────────────────────────────────────────
 # Простая защита портала логином/паролем. Включается через PORTAL_AUTH_ENABLED.
@@ -201,6 +228,23 @@ async def ws_global(websocket: WebSocket):
         ws_manager.disconnect_global(websocket)
 
 
+def _disk_stats(path) -> dict:
+    """Свободное место на ФС данных. Fail-soft: /api/info обязан отвечать всегда."""
+    import shutil
+
+    try:
+        usage = shutil.disk_usage(str(path))
+    except OSError:
+        return {"available": False}
+    return {
+        "available": True,
+        "total_bytes": usage.total,
+        "used_bytes": usage.used,
+        "free_bytes": usage.free,
+        "used_percent": round(usage.used * 100 / usage.total, 1) if usage.total else None,
+    }
+
+
 # ─── API Info ───────────────────────────────────────────────
 @app.get("/api/info")
 async def api_info():
@@ -235,6 +279,10 @@ async def api_info():
             "projects_dir": str(PROJECTS_DIR),
             "comparison_root": comparison_root,
         },
+        # Контроля свободного места до сих пор не было нигде, хотя диск дважды
+        # доводили до 100% (инцидент с обнулением stage_models.json). Отдаём
+        # прямо в health-эндпоинте — дёшево (один statvfs) и всегда под рукой.
+        "disk": _disk_stats(DATA_DIR),
     }
 
 
