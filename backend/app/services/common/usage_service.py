@@ -62,6 +62,11 @@ class UsageTracker:
     def __init__(self):
         self._records: list[dict] = []
         self._session_reset_at: Optional[str] = None
+        # project_id → timestamp очистки. Нужен, чтобы проект со сброшенным
+        # usage продолжал приходить в projects-summary (с нулями), иначе
+        # фронт не затирает старые цифры и в карточках этапов висит расход
+        # ПРОШЛОГО прогона.
+        self._cleared: dict[str, str] = {}
         self._load()
 
     # ── Persistence ──────────────────────────────────────────
@@ -79,9 +84,14 @@ class UsageTracker:
             self._session_reset_at = data.get(
                 "session_reset_at", datetime.now().isoformat()
             )
+            cleared = data.get("cleared_projects") or {}
+            self._cleared = {
+                str(k): str(v) for k, v in cleared.items()
+            } if isinstance(cleared, dict) else {}
         except (json.JSONDecodeError, OSError):
             self._records = []
             self._session_reset_at = datetime.now().isoformat()
+            self._cleared = {}
 
     def _save(self):
         """Сохранить данные в файл с автоочисткой старых записей."""
@@ -90,10 +100,17 @@ class UsageTracker:
         self._records = [r for r in self._records if r.get("timestamp", "") >= cutoff]
 
         _DATA_DIR.mkdir(parents=True, exist_ok=True)
+        # Отметки очистки живут не дольше самих записей
+        self._cleared = {
+            pid: ts for pid, ts in (getattr(self, "_cleared", None) or {}).items()
+            if ts >= cutoff
+        }
+
         data = {
             "version": 1,
             "session_reset_at": self._session_reset_at,
             "records": self._records,
+            "cleared_projects": self._cleared,
         }
         tmp = USAGE_DATA_FILE.with_suffix(".tmp")
         try:
@@ -113,12 +130,19 @@ class UsageTracker:
                 r for r in self._records
                 if r.get("project_id") != project_id
             ]
+            # Запомнить факт очистки: проект должен остаться в
+            # projects-summary с нулями, пока не пойдут новые записи.
+            if getattr(self, "_cleared", None) is None:
+                self._cleared = {}
+            self._cleared[project_id] = datetime.now().isoformat()
             self._save()
 
     def record_usage(self, record: UsageRecord):
         """Добавить запись о потреблении после Claude CLI вызова."""
         with _lock:
             self._records.append(record.model_dump())
+            if getattr(self, "_cleared", None):
+                self._cleared.pop(record.project_id, None)
             self._save()
 
     def enrich_from_jsonl(self, session_id: str, record_timestamp: str):
@@ -367,8 +391,17 @@ class UsageTracker:
     def clear_all(self):
         """Полная очистка всех записей usage."""
         with _lock:
+            now = datetime.now().isoformat()
+            # Помечаем очищенными, чтобы карточки этапов обнулились у всех,
+            # а не остались висеть со старыми цифрами (см. clear_project_usage).
+            if getattr(self, "_cleared", None) is None:
+                self._cleared = {}
+            for r in self._records:
+                pid = r.get("project_id")
+                if pid:
+                    self._cleared[pid] = now
             self._records = []
-            self._session_reset_at = datetime.now().isoformat()
+            self._session_reset_at = now
             self._save()
 
     # ── History ──────────────────────────────────────────────
@@ -458,10 +491,26 @@ class UsageTracker:
             "stages_summary": stages_summary,
         }
 
+    @staticmethod
+    def _empty_usage_entry() -> dict:
+        """Нулевая сводка — проект есть, расхода текущего прогона нет."""
+        return {
+            "total_input_tokens": 0,
+            "total_output_tokens": 0,
+            "total_tokens": 0,
+            "total_cost_usd": 0.0,
+            "paid_cost_usd": 0.0,
+            "free_cost_usd": 0.0,
+            "notional_cost_usd": 0.0,
+            "total_calls": 0,
+            "stages_summary": {},
+        }
+
     def get_all_projects_usage(self) -> dict:
         """Краткая сводка usage по всем проектам (с duration по этапам)."""
         with _lock:
             records = list(self._records)
+            cleared = dict(getattr(self, "_cleared", None) or {})
 
         projects: dict[str, list[dict]] = defaultdict(list)
         for r in records:
@@ -470,12 +519,21 @@ class UsageTracker:
                 projects[pid].append(r)
 
         result = {}
+        # Проекты со сброшенным usage (свежий аудит только стартовал) должны
+        # остаться в ответе с нулями: иначе фронт не получает ключ и оставляет
+        # в карточках этапов расход прошлого прогона.
+        for pid in cleared:
+            if pid not in projects:
+                result[pid] = self._empty_usage_entry()
+
         for pid, recs in projects.items():
             # Фильтр: только записи текущего прогона аудита
             audit_started = self._get_audit_started_at(pid)
             if audit_started:
                 recs = [r for r in recs if r.get("timestamp", "") >= audit_started]
             if not recs:
+                # Все записи — от прошлого прогона: отдаём нули, а не пропуск.
+                result[pid] = self._empty_usage_entry()
                 continue
             t_in, t_out, t_cost, t_calls = self._sum_records(recs)
             notional = self._sum_notional(recs)
