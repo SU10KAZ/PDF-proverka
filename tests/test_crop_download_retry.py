@@ -141,3 +141,49 @@ def test_crop_index_records_failed_block_ids(monkeypatch, tmp_path):
     assert index["total_blocks"] == 0
     assert index["total_expected"] == 1
     assert index["errors"] == 1
+
+
+def test_full_crop_without_image_blocks_writes_empty_stage02_index(monkeypatch, tmp_path):
+    """Успешный пустой crop обязан материализовать downstream-контракт index.json."""
+    result_json = tmp_path / "empty_result.json"
+    result_json.write_text(
+        json.dumps({
+            "pages": [{
+                "page_number": 1,
+                "width": 1000,
+                "height": 1000,
+                "blocks": [{"id": "txt-1", "block_type": "text"}],
+            }],
+        }),
+        encoding="utf-8",
+    )
+    output_root = tmp_path / "run"
+    blocks_dir = output_root / blocks.STAGE02_BLOCKS_DIRNAME
+    blocks_dir.mkdir(parents=True)
+    stale_png = blocks_dir / "block_stale.png"
+    stale_png.write_bytes(b"stale")
+
+    monkeypatch.setattr(blocks, "detect_all_result_jsons", lambda _project: [result_json])
+    monkeypatch.setattr(blocks, "_load_project_info", lambda _project: {})
+    monkeypatch.setattr(blocks, "_source_files", lambda _project, _info: object())
+    monkeypatch.setattr(blocks, "_select_source_pdf", lambda *_args: None)
+    monkeypatch.setattr(blocks, "gemma_output_root", lambda _project: output_root)
+
+    result = blocks.crop_blocks(
+        str(tmp_path),
+        dpi=100,
+        skip_small=False,
+        output_dir_name=blocks.STAGE02_BLOCKS_DIRNAME,
+    )
+
+    assert result["total_blocks"] == 0
+    assert not stale_png.exists()
+    index_path = blocks_dir / "index.json"
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    assert index["blocks"] == []
+    assert index["total_blocks"] == 0
+    assert index["total_expected"] == 0
+    assert index["profile"] == blocks.stage02_crop_policy()["profile"]
+    assert index["dpi"] == 100
+    assert index["skip_small"] is False
+    assert blocks.crop_index_matches_policy(index_path, blocks.stage02_crop_policy())

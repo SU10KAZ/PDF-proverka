@@ -855,7 +855,63 @@ def crop_blocks(
         print("[WARN] Нет image-блоков для скачивания")
         if no_url_count:
             print(f"  ({no_url_count} блоков без crop_url)")
-        return {"total_blocks": 0, "cropped": 0, "skipped": 0, "errors": 0, "blocks": []}
+
+        result = {
+            "total_blocks": 0,
+            "cropped": 0,
+            "skipped": 0,
+            "errors": 0,
+            "failed_block_ids": [],
+            "blocks": [],
+        }
+
+        # Точечный crop с неизвестными block_id не должен затирать уже
+        # существующий полный index. Полный же проход с нулём image-блоков —
+        # валидный результат: downstream ожидает index.json даже для пустого набора.
+        if block_ids:
+            return result
+
+        output_dir = _output_subdir(project_dir, output_dir_name)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for old_png in output_dir.glob("block_*.png"):
+            print(f"  [CLEANUP] {old_png.name}")
+            old_png.unlink()
+
+        index_profile = ""
+        index_min_long_side = MIN_LONG_SIDE_PX_COMPACT if compact else MIN_LONG_SIDE_PX
+        if output_dir.name == GEMMA_BASE_BLOCKS_DIRNAME:
+            policy = gemma_enrichment_crop_policy()
+            index_profile = policy["profile"]
+            index_min_long_side = policy["min_long_side"]
+        elif output_dir.name == GEMMA_HIGH_DETAIL_BLOCKS_DIRNAME:
+            policy = gemma_high_detail_crop_policy()
+            index_profile = policy["profile"]
+            index_min_long_side = policy["min_long_side"]
+        elif output_dir.name == STAGE02_BLOCKS_DIRNAME:
+            policy = stage02_crop_policy()
+            index_profile = policy["profile"]
+            index_min_long_side = policy["min_long_side"]
+
+        index_data = {
+            "total_blocks": 0,
+            "total_expected": 0,
+            "errors": 0,
+            "failed_block_ids": [],
+            "failed_details": [],
+            "profile": index_profile,
+            "compact": compact,
+            "dpi": dpi,
+            "min_long_side": index_min_long_side,
+            "skip_small": skip_small,
+            "output_dir_name": output_dir.name,
+            "source_result_json": [rj.name for rj in result_json_paths],
+            "blocks": [],
+        }
+        index_path = output_dir / "index.json"
+        with open(index_path, "w", encoding="utf-8") as f:
+            json.dump(index_data, f, ensure_ascii=False, indent=2)
+        print(f"  Index: {index_path}")
+        return result
 
     if compact:
         print(f"  [COMPACT] Режим compact: {TARGET_DPI_COMPACT} DPI + full-версии ({TARGET_DPI} DPI)")
