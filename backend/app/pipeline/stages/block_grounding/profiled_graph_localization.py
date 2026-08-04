@@ -10,6 +10,7 @@ from typing import Any
 
 
 SOURCE_LABELS = {
+    "structured_legend": "структурированная расшифровка условных обозначений",
     "structured_singleline": "структурированный граф однолинейной схемы",
     "structured_electrical": "структурированный граф ЭОМ",
     "structured_general_plan": "структурированный граф генерального плана",
@@ -30,6 +31,7 @@ SOURCE_LABELS = {
 
 PROFILE_LABELS = {
     "raw_vector": "Векторный текст без предметной классификации",
+    "legend": "Условные обозначения",
     "electrical_singleline": "Однолинейная электрическая схема",
     "panel_circuit_scheme": "Схема электрических цепей щита",
     "electrical_distribution_plan": "План силовых распределительных сетей",
@@ -170,6 +172,8 @@ CONTAINER_TYPE_LABELS = {
 
 
 NODE_TYPE_LABELS = {
+    "legend_code": "код условного обозначения", "legend_meaning": "расшифровка обозначения",
+    "legend_value": "параметр условного обозначения", "legend_note": "надпись вне строк легенды",
     "assembly_part": "элемент сборки", "elevation": "высотная отметка",
     "dimension": "размер", "opening": "дверь, окно или проём",
     "duct_size": "сечение воздуховода", "diameter": "диаметр",
@@ -327,6 +331,7 @@ STATE_LABELS = {
 
 
 EDGE_TYPE_LABELS = {
+    "обозначает": "код → расшифровка обозначения", "параметр": "обозначение → параметр",
     "system_to_air_device": "система вентиляции → устройство", "riser_to_parameter": "стояк → параметр",
     "riser_to_level": "стояк → уровень или отметка", "source_to_system": "источник → система",
     "riser_to_device": "стояк → прибор или арматура", "system_to_riser": "система → стояк",

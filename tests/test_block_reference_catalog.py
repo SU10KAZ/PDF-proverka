@@ -13,7 +13,10 @@ def test_embedded_catalog_is_complete_and_self_contained():
 
     assert manifest["runtime_dependency_on_experiments"] is False
     assert manifest["records_total"] == 1133 == len(records)
-    assert manifest["profiles_total"] == 105
+    # 106 = 105 дисциплинарных профилей + надведомственный «legend»
+    # («Условные обозначения»): легенда встречается в любом разделе.
+    assert manifest["profiles_total"] == 106
+    assert sum(row["profile_id"] == "legend" for row in records) == 14
     assert set(manifest["disciplines"]) == {
         "АР", "ВК", "ГП", "КЖ", "КМ", "ОВ", "СС", "ТХ", "ЭОМ",
     }

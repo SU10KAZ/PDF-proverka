@@ -22,6 +22,16 @@ MANIFEST=VK/"VK_DIVERSE_CORPUS.json";OUT=VK/"vk_out"
 def cases():return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else []
 
 
+from backend.app.pipeline.stages.block_grounding.legend_geometry import (PROFILE_LEGEND,
+    evaluate_legend_gate,render_legend_markdown)
+
+# «Условные обозначения» — надведомственный профиль: легенда встречается в любом
+# разделе, в набор профилей ВК не входит, гейт и рендер у неё свои.
+def _is_legend(graph):return graph["profile_id"]==PROFILE_LEGEND
+def _gate(graph):return evaluate_legend_gate(graph) if _is_legend(graph) else evaluate_water_gate(graph)
+def _render(graph):return render_legend_markdown(graph) if _is_legend(graph) else render_water_markdown(graph)
+
+
 @pytest.fixture(scope="module")
 def graphs():return {case["block_id"]:json.loads((OUT/f"{case['block_id']}.structure.json").read_text()) for case in cases()}
 
@@ -31,15 +41,16 @@ def test_vk_corpus_has_pdf_and_structured_description(case,graphs):
     with fitz.open(VK/case["output"]) as document:assert document.page_count==1
     assert case["drawing_paths"]>0 or case["embedded_images"]>0 or case["text_characters"]>0
     graph=graphs[case["block_id"]];assert graph["profile_id"]==case["profile_id"]
-    gate=evaluate_water_gate(graph);assert gate["use"] is True
-    description=render_water_markdown(graph)
-    assert "Эталонная текстовая разметка ВК" in description
+    gate=_gate(graph);assert gate["use"] is True
+    description=_render(graph)
+    assert ("Расшифровка обозначений" if _is_legend(graph)
+            else "Эталонная текстовая разметка ВК") in description
     assert graph["profile_id"] not in description
 
 
 def test_all_eleven_vk_families_are_present(graphs):
     assert len(graphs)==168
-    assert {graph["profile_id"] for graph in graphs.values()}==set(ALL_WATER_PROFILES)
+    assert {graph["profile_id"] for graph in graphs.values()}-{PROFILE_LEGEND}==set(ALL_WATER_PROFILES)
 
 
 def test_vk_references_are_integral(graphs):
@@ -57,7 +68,7 @@ def test_vk_references_are_integral(graphs):
 
 def test_vk_human_output_hides_internal_codes_and_states(graphs):
     for graph in graphs.values():
-        description=render_water_markdown(graph)
+        description=_render(graph)
         forbidden={graph["profile_id"]}
         subtype=graph["validation"]["subtype"]
         if re.fullmatch(r"[a-z0-9_]+",str(subtype)):forbidden.add(subtype)
@@ -71,9 +82,12 @@ def test_vk_human_output_hides_internal_codes_and_states(graphs):
 def test_vk_descriptions_state_evidence_depth(graphs):
     allowed={"engineering_graph","semantic_hierarchy","physical_hierarchy","geometry_inventory",
              "spatial_inventory","analytical_geometry","raster_inventory"}
-    depths={graph["validation"]["description_depth"] for graph in graphs.values()}
+    depths={graph["validation"]["description_depth"] for graph in graphs.values()
+            if not _is_legend(graph)}
     assert depths<=allowed and "engineering_graph" in depths and "physical_hierarchy" in depths
     for graph in graphs.values():
+        if _is_legend(graph):
+            assert "Уровень описания" in _render(graph);continue
         text=render_water_markdown(graph);assert "Уровень описания" in text and "Инженерное дерево" in text
 
 

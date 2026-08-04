@@ -37,6 +37,16 @@ def summary_records():
     return {record["block_id"]:record for record in summary["records"]}
 
 
+from backend.app.pipeline.stages.block_grounding.legend_geometry import (PROFILE_LEGEND,
+    evaluate_legend_gate, render_legend_markdown)
+
+
+# «Условные обозначения» — надведомственный профиль: легенда встречается в любом
+# разделе, в набор профилей ОВ не входит, гейт и рендер у неё свои.
+def _is_legend(graph):
+    return graph["profile_id"] == PROFILE_LEGEND
+
+
 @pytest.mark.parametrize("case", cases(), ids=lambda case: case["block_id"])
 def test_hvac_corpus_has_vector_pdf_and_description(case, graphs):
     path = HVAC / case["output"]
@@ -48,6 +58,12 @@ def test_hvac_corpus_has_vector_pdf_and_description(case, graphs):
 
     graph = graphs[case["block_id"]]
     assert graph["profile_id"] == case["profile_id"]
+    if _is_legend(graph):
+        assert evaluate_legend_gate(graph)["use"] is True
+        description = render_legend_markdown(graph)
+        assert "Расшифровка обозначений" in description
+        assert graph["profile_id"] not in description
+        return
     gate = evaluate_hvac_gate(graph)
     expected=summary_records()[case["block_id"]]
     assert gate["use"] is expected["gate_use"]
@@ -59,7 +75,8 @@ def test_hvac_corpus_has_vector_pdf_and_description(case, graphs):
 
 def test_all_nine_hvac_families_are_present(graphs):
     assert len(graphs) == 154
-    assert {graph["profile_id"] for graph in graphs.values()} == set(ALL_HVAC_PROFILES)
+    assert ({graph["profile_id"] for graph in graphs.values()} - {PROFILE_LEGEND}
+            == set(ALL_HVAC_PROFILES))
 
 
 def test_profile_specific_evidence_passes_strict_gates(graphs):

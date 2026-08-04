@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "catalog_version": "2026.07.13-1",
+  "catalog_version": "2026.08.04-legend",
   "generated_on": "2026-07-13",
   "records_total": 1133,
-  "profiles_total": 105,
+  "profiles_total": 106,
   "source_digest_sha256": "c3463c8118ae8b754d66cae3764f1179185133e0be8d728bdd37eca4a727a48a",
   "runtime_dependency_on_experiments": false,
   "disciplines": {
@@ -11,14 +11,14 @@
       "file": "disciplines/AR.json",
       "profile_document": "profiles/AR.md",
       "records": 247,
-      "profiles": 21,
+      "profiles": 22,
       "structure_examples": 247
     },
     "ВК": {
       "file": "disciplines/VK.json",
       "profile_document": "profiles/VK.md",
       "records": 168,
-      "profiles": 11,
+      "profiles": 12,
       "structure_examples": 168
     },
     "ГП": {
@@ -32,7 +32,7 @@
       "file": "disciplines/KJ.json",
       "profile_document": "profiles/KJ.md",
       "records": 110,
-      "profiles": 6,
+      "profiles": 7,
       "structure_examples": 110
     },
     "КМ": {
@@ -46,7 +46,7 @@
       "file": "disciplines/HVAC.json",
       "profile_document": "profiles/HVAC.md",
       "records": 154,
-      "profiles": 9,
+      "profiles": 10,
       "structure_examples": 153
     },
     "СС": {
@@ -60,7 +60,7 @@
       "file": "disciplines/TX.json",
       "profile_document": "profiles/TX.md",
       "records": 35,
-      "profiles": 7,
+      "profiles": 8,
       "structure_examples": 35
     },
     "ЭОМ": {

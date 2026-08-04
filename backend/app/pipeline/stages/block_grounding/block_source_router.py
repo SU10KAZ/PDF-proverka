@@ -797,6 +797,39 @@ def resolve_block_package(
             kwargs["classification"] = classification
             return make_package(**kwargs)
 
+        # (0) «Условные обозначения» — универсальный профиль поверх дисциплин.
+        # Легенда встречается в любом разделе, и до появления профиля она
+        # наследовала тип листа: легенда на листе плана потолка становилась
+        # «планом потолка», а расшифровка марок («СН-1.2 → стена из газобетона
+        # D600 → 250 мм») терялась целиком. Проверка стоит первой: легенда не
+        # должна перехватываться дисциплинарными каскадами по словам «план»,
+        # «стена», «трубопровод», которых в ней всегда много.
+        try:
+            from .legend_geometry import (PROFILE_LEGEND,
+                add_legend_secondary_description, build_legend_graph_from_source,
+                classify_legend_profile, evaluate_legend_gate, render_legend_markdown)
+            legend_description = str(getattr(chandra, "description", "") or "")
+            if classify_legend_profile(block_text or "", description=legend_description):
+                legend_graph = build_legend_graph_from_source(
+                    pdf, page_index=page_pdf - 1, bbox_norm=bbox,
+                    polygon_norm=poly, block_id=str(block_id),
+                )
+                add_legend_secondary_description(legend_graph, legend_description)
+                legend_gate = evaluate_legend_gate(legend_graph)
+                if legend_graph is not None and legend_gate.get("use"):
+                    legend_md = render_legend_markdown(legend_graph)
+                    if legend_md and len(legend_md) > 150:
+                        remember_profile_source(PROFILE_LEGEND, "legend_rows_pdf")
+                        return package(
+                            block_id=block_id, page=page or page_pdf,
+                            source_kind="structured_legend", discipline=discipline_hint,
+                            profile_id=PROFILE_LEGEND, graph=legend_graph,
+                            gate=legend_gate, markdown=legend_md,
+                            user_text=head + legend_md + "\n\n" + _TASK,
+                        )
+        except Exception:
+            pass
+
         # (1) однолинейка + гейт → полный структурированный рендер
         if allows("ЭОМ") and len((block_text or "").strip()) >= _MIN_VECTOR_CHARS:
             graph = None

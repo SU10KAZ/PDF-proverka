@@ -987,8 +987,8 @@
     {
       "block_id": "7CKK-7FJR-3U7",
       "discipline": "ТХ",
-      "profile_id": "tx_parking_detail",
-      "subtype": "parking_marking_and_safety",
+      "profile_id": "legend",
+      "subtype": "условные обозначения",
       "title": "Технологические решения автостоянки. В осях П.24-П.48. План расположения машиномест на -1 этаже. М 1:200",
       "description": "На фрагменте представлены условные обозначения для различных типов машиномест и габаритов автомобилей. Изображение содержит графические схемы машиномест с указанием размеров (5300x2500 мм, 6000x3600 мм) и типов (семейное, для МГН). Приведены схемы размещения автомобилей в габаритах машиномест с указанием классов (Большой, Средний, Малый) и соответствующих размеров. Также показаны условные обозначения колесоотбойников и угловых демпферов. Присутствуют выносные линии с размерами и текстовые пояснения к каждому типу парковочного места. Технологические решения автостоянки. В осях П.24-П.48. План расположения машиномест на -1 этаже. М 1:200",
       "source_page": 6,
@@ -998,30 +998,23 @@
         5,
         5
       ],
-      "covered_facts": 5,
+      "covered_facts": 23,
       "structure_signature": {
         "node_types": {
-          "accessibility": 2,
-          "dimension": 1,
-          "parking_device": 3,
-          "parking_space": 1
+          "legend_meaning": 23,
+          "legend_code": 3,
+          "legend_value": 9,
+          "legend_note": 11
         },
         "counts": {
-          "nodes_total": 7,
-          "containers_total": 1,
+          "nodes_total": 46,
+          "containers_total": 0,
           "networks_total": 0,
-          "edges_total": 0,
-          "axes_total": 1,
-          "lifts_total": 0,
-          "parking_spaces_total": 1,
-          "lift_devices_total": 0,
-          "parking_devices_total": 3,
-          "waste_devices_total": 0,
-          "elevations_total": 0,
-          "physical_line_segments_total": 316,
-          "views_total": 1,
-          "coordinate_text_records_total": 60,
-          "coordinate_text_characters_total": 712
+          "edges_total": 12,
+          "legend_entries_total": 23,
+          "legend_entries_with_code": 3,
+          "legend_values_total": 9,
+          "legend_values_text_confirmed": 0
         }
       }
     },
@@ -1067,8 +1060,8 @@
     {
       "block_id": "93VW-UYM9-G6Q",
       "discipline": "ТХ",
-      "profile_id": "tx_parking_detail",
-      "subtype": "parking_marking_and_safety",
+      "profile_id": "legend",
+      "subtype": "условные обозначения",
       "title": "Технологические решения автостоянки. В осях П.1-П.24. План расположения машиномест на -1 этаже. М 1:200",
       "description": "Представлены условные обозначения типов машиномест и элементов парковки. На схеме изображены четыре типа машиномест с указанием их габаритных размеров и разметки. Приведены примеры минимального габарита, семейного зависимого места, а также мест для МГН с шириной 3600 мм и 2500 мм. Дополнительно показаны графические обозначения колесоотбойника и углового демпфера. Все элементы снабжены пояснительными надписями справа от графических схем. Технологические решения автостоянки. В осях П.1-П.24. План расположения машиномест на -1 этаже. М 1:200",
       "source_page": 6,
@@ -1078,30 +1071,23 @@
         5,
         5
       ],
-      "covered_facts": 5,
+      "covered_facts": 6,
       "structure_signature": {
         "node_types": {
-          "accessibility": 2,
-          "dimension": 1,
-          "parking_device": 2,
-          "parking_space": 1
+          "legend_meaning": 6,
+          "legend_code": 1,
+          "legend_value": 8,
+          "legend_note": 14
         },
         "counts": {
-          "nodes_total": 6,
-          "containers_total": 1,
+          "nodes_total": 29,
+          "containers_total": 0,
           "networks_total": 0,
-          "edges_total": 0,
-          "axes_total": 0,
-          "lifts_total": 0,
-          "parking_spaces_total": 1,
-          "lift_devices_total": 0,
-          "parking_devices_total": 2,
-          "waste_devices_total": 0,
-          "elevations_total": 0,
-          "physical_line_segments_total": 165,
-          "views_total": 1,
-          "coordinate_text_records_total": 30,
-          "coordinate_text_characters_total": 261
+          "edges_total": 9,
+          "legend_entries_total": 6,
+          "legend_entries_with_code": 1,
+          "legend_values_total": 8,
+          "legend_values_text_confirmed": 1
         }
       }
     },

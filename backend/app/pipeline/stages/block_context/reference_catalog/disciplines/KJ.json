@@ -1775,8 +1775,8 @@
     {
       "block_id": "4R3F-Y73Q-WQL",
       "discipline": "КЖ",
-      "profile_id": "kj_reinforcement_plan",
-      "subtype": "column_reinforcement",
+      "profile_id": "legend",
+      "subtype": "условные обозначения",
       "title": "Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
       "description": "Легенда условных обозначений для строительных чертежей. В левой части представлены графические символы: прямоугольник с отметкой +4,200, прямоугольник с параметром t=200, волнистая линия и пунктирный круг. Справа от каждого символа расположено текстовое пояснение. Текст описывает отметку верха плиты, толщину плиты, рабочий шов бетонирования и вышележащие круглые колонны. Все элементы выровнены в вертикальный список. Плита перекрытия Пм-1 на отм. -0,180 в осях 1.2-1.7/1.К-1.Щ. Верхнее армирование вдоль цифровых осей",
       "source_page": 10,
@@ -1786,29 +1786,22 @@
         1,
         1
       ],
-      "covered_facts": 1,
+      "covered_facts": 3,
       "structure_signature": {
         "node_types": {
-          "elevation": 1,
-          "raster_region": 1
+          "legend_meaning": 3,
+          "legend_code": 4,
+          "legend_value": 1
         },
         "counts": {
-          "nodes_total": 2,
+          "nodes_total": 8,
           "containers_total": 0,
           "networks_total": 0,
-          "edges_total": 0,
-          "axes_total": 0,
-          "marks_total": 0,
-          "rebar_total": 0,
-          "positions_total": 0,
-          "spacings_total": 0,
-          "elevations_total": 1,
-          "dimensions_total": 0,
-          "embedded_facts_total": 0,
-          "physical_line_segments_total": 33,
-          "views_total": 0,
-          "coordinate_text_records_total": 10,
-          "coordinate_text_characters_total": 134
+          "edges_total": 5,
+          "legend_entries_total": 3,
+          "legend_entries_with_code": 3,
+          "legend_values_total": 1,
+          "legend_values_text_confirmed": 0
         }
       }
     },
@@ -2175,8 +2168,8 @@
     {
       "block_id": "77N6-HFNK-UNL",
       "discipline": "КЖ",
-      "profile_id": "kj_reinforcement_plan",
-      "subtype": "column_reinforcement",
+      "profile_id": "legend",
+      "subtype": "условные обозначения",
       "title": "Вертикальные конструкции 22-28 этажа Колонны Км-400-1200-2800-1, Км-400-1200-2800-2",
       "description": "Легенда условных обозначений для чертежей армирования. На фрагменте представлена легенда условных обозначений, используемых в проектной документации. Приведены текстовые расшифровки для сокращения 'з.с.' (защитный слой), графического изображения рабочего шва бетонирования в виде зигзагообразной линии, контуров конструкций вышележащего уровня в виде пунктирного прямоугольника и указателя армирования в виде закрашенного треугольника. В нижней части фрагмента частично видна отметка уровня 0,000. Вертикальные конструкции 22-28 этажа Колонны Км-400-1200-2800-1, Км-400-1200-2800-2",
       "source_page": 39,
@@ -2186,29 +2179,21 @@
         1,
         1
       ],
-      "covered_facts": 1,
+      "covered_facts": 4,
       "structure_signature": {
         "node_types": {
-          "cover": 1,
-          "raster_region": 3
+          "legend_meaning": 4,
+          "legend_code": 5
         },
         "counts": {
-          "nodes_total": 4,
+          "nodes_total": 9,
           "containers_total": 0,
           "networks_total": 0,
-          "edges_total": 0,
-          "axes_total": 0,
-          "marks_total": 0,
-          "rebar_total": 0,
-          "positions_total": 0,
-          "spacings_total": 0,
-          "elevations_total": 0,
-          "dimensions_total": 0,
-          "embedded_facts_total": 0,
-          "physical_line_segments_total": 22,
-          "views_total": 0,
-          "coordinate_text_records_total": 11,
-          "coordinate_text_characters_total": 124
+          "edges_total": 5,
+          "legend_entries_total": 4,
+          "legend_entries_with_code": 4,
+          "legend_values_total": 0,
+          "legend_values_text_confirmed": 0
         }
       }
     },
@@ -2256,8 +2241,8 @@
     {
       "block_id": "7HV6-C9YX-RJ9",
       "discipline": "КЖ",
-      "profile_id": "kj_reinforcement_plan",
-      "subtype": "column_reinforcement",
+      "profile_id": "legend",
+      "subtype": "условные обозначения",
       "title": "Вертикальные конструкции 30-31 этажа Колонны Км-400-1000-2800-1, Км-400-1000-2800-2",
       "description": "Представлена легенда условных обозначений для строительных чертежей. Легенда содержит заголовок 'Условные обозначения' и список из четырех пунктов. Первый пункт включает аббревиатуру 'з.с.' и описание 'Защитный слой'. Второй пункт представлен зигзагообразной линией и описанием 'Рабочий шов бетонирования'. Третий пункт состоит из прямоугольника с пунктирными линиями и описанием 'Конструкции вышележащего уровня'. Четвертый пункт содержит закрашенный черный треугольник и описание 'Указатель армирования'. Вертикальные конструкции 30-31 этажа Колонны Км-400-1000-2800-1, Км-400-1000-2800-2",
       "source_page": 19,
@@ -2267,29 +2252,21 @@
         1,
         1
       ],
-      "covered_facts": 1,
+      "covered_facts": 4,
       "structure_signature": {
         "node_types": {
-          "cover": 1,
-          "raster_region": 4
+          "legend_meaning": 4,
+          "legend_code": 5
         },
         "counts": {
-          "nodes_total": 5,
+          "nodes_total": 9,
           "containers_total": 0,
           "networks_total": 0,
-          "edges_total": 0,
-          "axes_total": 0,
-          "marks_total": 0,
-          "rebar_total": 0,
-          "positions_total": 0,
-          "spacings_total": 0,
-          "elevations_total": 0,
-          "dimensions_total": 0,
-          "embedded_facts_total": 0,
-          "physical_line_segments_total": 22,
-          "views_total": 0,
-          "coordinate_text_records_total": 10,
-          "coordinate_text_characters_total": 119
+          "edges_total": 5,
+          "legend_entries_total": 4,
+          "legend_entries_with_code": 4,
+          "legend_values_total": 0,
+          "legend_values_text_confirmed": 0
         }
       }
     },

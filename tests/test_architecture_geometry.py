@@ -3,6 +3,14 @@ from pathlib import Path
 import fitz,pytest
 from backend.app.pipeline.stages.block_grounding.architecture_geometry import ALL_AR_PROFILES,build_ar_graph_from_source,evaluate_ar_gate,render_ar_markdown
 from backend.app.pipeline.stages.block_grounding.block_source_router import resolve_block_source
+from backend.app.pipeline.stages.block_grounding.legend_geometry import (PROFILE_LEGEND,
+    evaluate_legend_gate,render_legend_markdown)
+
+# «Условные обозначения» — надведомственный профиль: легенда встречается в любом
+# разделе, поэтому в наборы профилей дисциплины она не входит и проверяется
+# своим гейтом и своим рендером.
+def _gate(g):return evaluate_legend_gate(g) if g["profile_id"]==PROFILE_LEGEND else evaluate_ar_gate(g)
+def _render(g):return render_legend_markdown(g) if g["profile_id"]==PROFILE_LEGEND else render_ar_markdown(g)
 ROOT=Path(__file__).resolve().parents[1];AR=ROOT/"experiments"/"блоки разных дисциплин"/"АР";OUT=AR/"ar_out"
 def cases():return json.loads((AR/"AR_DIVERSE_CORPUS.json").read_text()) if (AR/"AR_DIVERSE_CORPUS.json").exists() else []
 @pytest.fixture(scope="module")
@@ -10,10 +18,11 @@ def graphs():return {c["block_id"]:json.loads((OUT/f"{c['block_id']}.structure.j
 @pytest.mark.parametrize("case",cases(),ids=lambda c:c["block_id"])
 def test_ar_corpus_has_vector_pdf_and_accepted_graph(case,graphs):
     with fitz.open(AR/case["output"]) as d:assert d.page_count==1 and (d[0].get_text() or d[0].get_drawings() or d[0].get_images())
-    g=graphs[case["block_id"]];assert g["profile_id"]==case["profile_id"] and evaluate_ar_gate(g)["use"] is True
+    g=graphs[case["block_id"]];assert g["profile_id"]==case["profile_id"] and _gate(g)["use"] is True
 def test_all_ar_profiles_and_subtypes_present(graphs):
-    assert len(graphs)==247 and {g["profile_id"] for g in graphs.values()}==set(ALL_AR_PROFILES)
-    assert len({c["subtype"] for c in cases()})==27
+    assert len(graphs)==247
+    assert {g["profile_id"] for g in graphs.values()}-{PROFILE_LEGEND}==set(ALL_AR_PROFILES)
+    assert len({c["subtype"] for c in cases()})==28
 def test_ar_reference_integrity(graphs):
     for g in graphs.values():
         ids={n["id"] for n in g.get("nodes",[])}
@@ -27,8 +36,13 @@ def test_ar_profile_specific_structures(graphs):
     assert graphs["694C-YAJW-3Q6"]["validation"]["physical_line_segments_total"]>100
 def test_ar_human_output_is_russian(graphs):
     for g in graphs.values():
-        text=render_ar_markdown(g);assert "Эталонная текстовая разметка АР" in text and "Архитектурное дерево" in text
-        assert g["profile_id"] not in text and g["validation"]["subtype"] not in text
+        text=_render(g)
+        if g["profile_id"]==PROFILE_LEGEND:
+            assert "Расшифровка обозначений" in text and "| Код | Параметр |" in text
+        else:
+            assert "Эталонная текстовая разметка АР" in text and "Архитектурное дерево" in text
+            assert g["validation"]["subtype"] not in text
+        assert g["profile_id"] not in text
         assert not re.search(r"\b(?:node|view|edge)-\d+\b",text)
 def test_ar_semantic_audit_has_no_known_losses():
     r=json.loads((AR/"AR_SEMANTIC_COVERAGE.json").read_text());assert r["blocks_total"]==247
