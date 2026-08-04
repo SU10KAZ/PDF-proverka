@@ -3201,17 +3201,17 @@ const app = createApp({
         const BLOCK_CODEX_ENSEMBLE_MODEL = "ensemble/gpt-codex";
         const OPT_CODEX_ENSEMBLE_MODEL = "ensemble/claude-codex-opt";
         const BASE_STAGE_MODEL_CONFIG = {
-            text_analysis:          "claude-opus-4-7",
+            text_analysis:          "claude-opus-5",
             block_batch:            "openai/gpt-5.4",
-            findings_merge:         "claude-opus-4-7",
-            findings_critic:        "claude-sonnet-4-6",
-            findings_corrector:     "claude-sonnet-4-6",
-            norm_verify:            "claude-sonnet-4-6",
-            norm_fix:               "claude-sonnet-4-6",
-            norm_requote:           "claude-sonnet-4-6",
-            optimization:           "claude-opus-4-7",
-            optimization_critic:    "claude-sonnet-4-6",
-            optimization_corrector: "claude-sonnet-4-6",
+            findings_merge:         "claude-opus-5",
+            findings_critic:        "claude-sonnet-5",
+            findings_corrector:     "claude-sonnet-5",
+            norm_verify:            "claude-sonnet-5",
+            norm_fix:               "claude-sonnet-5",
+            norm_requote:           "claude-sonnet-5",
+            optimization:           "claude-opus-5",
+            optimization_critic:    "claude-sonnet-5",
+            optimization_corrector: "claude-sonnet-5",
         };
         const modelPresets = {
             claude_gpt_codex: {
@@ -3338,7 +3338,7 @@ const app = createApp({
                 return stageKey === 'block_batch' && modelId === 'openai/gpt-5.4';
             }
             if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
-                return stageKey === 'optimization' && modelId === 'claude-opus-4-7';
+                return stageKey === 'optimization' && modelId === 'claude-opus-5';
             }
             return effectiveModel === modelId;
         }
@@ -3362,7 +3362,7 @@ const app = createApp({
             const codexWasChecked = isCodexStageChecked(stageKey);
             if (codexWasChecked && stageKey === 'block_batch' && modelId === 'openai/gpt-5.4') {
                 stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
-            } else if (codexWasChecked && stageKey === 'optimization' && modelId === 'claude-opus-4-7') {
+            } else if (codexWasChecked && stageKey === 'optimization' && modelId === 'claude-opus-5') {
                 stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
             } else {
                 stageModelConfig.value[stageKey] = modelId;
@@ -3376,7 +3376,7 @@ const app = createApp({
             if (enabled) {
                 if (stageKey === 'block_batch' && effectiveModel === 'openai/gpt-5.4') {
                     stageModelConfig.value[stageKey] = BLOCK_CODEX_ENSEMBLE_MODEL;
-                } else if (stageKey === 'optimization' && effectiveModel === 'claude-opus-4-7') {
+                } else if (stageKey === 'optimization' && effectiveModel === 'claude-opus-5') {
                     stageModelConfig.value[stageKey] = OPT_CODEX_ENSEMBLE_MODEL;
                 } else {
                     stageModelConfig.value[stageKey] = codexModelId();
@@ -3384,10 +3384,10 @@ const app = createApp({
             } else if (effectiveModel === BLOCK_CODEX_ENSEMBLE_MODEL) {
                 stageModelConfig.value[stageKey] = 'openai/gpt-5.4';
             } else if (effectiveModel === OPT_CODEX_ENSEMBLE_MODEL) {
-                stageModelConfig.value[stageKey] = 'claude-opus-4-7';
+                stageModelConfig.value[stageKey] = 'claude-opus-5';
             } else if (String(effectiveModel || '').startsWith('codex/')) {
                 stageModelConfig.value[stageKey] = BASE_STAGE_MODEL_CONFIG[stageKey]
-                    || 'claude-sonnet-4-6';
+                    || 'claude-sonnet-5';
             }
             activePreset.value = getMatchingPresetKey(stageModelConfig.value, stageBatchModes.value);
         }
@@ -4245,8 +4245,8 @@ const app = createApp({
             if (id === 'codex/gpt-5.6-sol') return 'Codex GPT-5.6 Sol';
             if (id.startsWith('codex/')) return `Codex ${id.slice(6).toUpperCase()}`;
             if (id === 'openai/gpt-5.4') return 'GPT-5.4 (OpenRouter)';
-            if (id === 'claude-opus-4-7') return 'Claude Opus 4.7';
-            if (id === 'claude-sonnet-4-6') return 'Claude Sonnet 4.6';
+            if (id === 'claude-opus-5') return 'Claude Opus 5';
+            if (id === 'claude-sonnet-5') return 'Claude Sonnet 5';
             const available = availableModels.value.find(model => model.id === id);
             if (available?.label && available.provider !== 'codex_cli') {
                 return available.label.replace(' (CLI)', '');
@@ -4318,7 +4318,7 @@ const app = createApp({
             if (configuredModel.includes('ensemble/claude-codex-opt')) {
                 const details = stageEnsembleDetails.value?.optimization || {};
                 const parallelModels = details.parallel_models || [
-                    'claude-opus-4-7', 'codex/gpt-5.6-sol',
+                    'claude-opus-5', 'codex/gpt-5.6-sol',
                 ];
                 const judge = stageModelDisplayName(
                     details.judge_model || stageModelConfig.value?.optimization_critic

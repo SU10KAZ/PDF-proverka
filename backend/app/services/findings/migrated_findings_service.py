@@ -1214,7 +1214,7 @@ def _run_claude_cli_sync(prompt: str, timeout: Optional[int] = None) -> Optional
     try:
         model = get_claude_model()
     except Exception:
-        model = "claude-sonnet-4-6"
+        model = "claude-sonnet-5"
 
     cmd = [
         cli, "-p",

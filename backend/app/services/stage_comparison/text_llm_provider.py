@@ -9,7 +9,7 @@
   • provider=claude_code → CLI ищется в стандартных местах. Если не найден →
     ProviderResult(status="provider_not_available", reason="..."). Сервис в
     этом случае сохраняет prompt в text_llm_prompt.md для ручного запуска.
-  • Реальный вызов — subprocess.run([CLI, "-p", "--model", "sonnet", ...],
+  • Реальный вызов — subprocess.run([CLI, "-p", "--model", "claude-sonnet-5", ...],
     input=prompt, ...). Без shell=True. Безопасные аргументы.
 
 ВАЖНО: provider НЕ парсит структуру changes/summary — он возвращает только
@@ -72,7 +72,7 @@ class ProviderResult:
 class ProviderConfig:
     enabled: bool
     provider: str          # "claude_code" | ...
-    model: str             # "sonnet" | "opus" | ...
+    model: str             # "claude-sonnet-5" | "claude-opus-5" | ...
     timeout_sec: int
     max_chars: int
 
@@ -98,7 +98,7 @@ def load_config() -> ProviderConfig:
     return ProviderConfig(
         enabled=_env_bool("STAGE_COMPARISON_TEXT_LLM_ENABLED", False),
         provider=os.environ.get("STAGE_COMPARISON_TEXT_LLM_PROVIDER", "claude_code").strip().lower() or "claude_code",
-        model=os.environ.get("STAGE_COMPARISON_TEXT_LLM_MODEL", "sonnet").strip() or "sonnet",
+        model=os.environ.get("STAGE_COMPARISON_TEXT_LLM_MODEL", "claude-sonnet-5").strip() or "claude-sonnet-5",
         timeout_sec=_env_int("STAGE_COMPARISON_TEXT_LLM_TIMEOUT_SEC", 300),
         max_chars=_env_int("STAGE_COMPARISON_TEXT_LLM_MAX_CHARS", 350_000),
     )

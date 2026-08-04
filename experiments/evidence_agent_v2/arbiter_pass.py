@@ -74,7 +74,7 @@ def _verdict(t: str):
     return str(o.get("expert_wrong", "cannot_tell")).strip().lower(), str(o.get("reason", ""))[:240]
 
 
-def main(model: str = "sonnet") -> int:
+def main(model: str = "claude-sonnet-5") -> int:
     items = json.loads((OUT_DIR / "shortlist_ranked.json").read_text(encoding="utf-8"))
     prog = OUT_DIR / f"arbiter_{model}_progress.jsonl"
     done = {}
@@ -143,6 +143,6 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env")
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="sonnet")
+    ap.add_argument("--model", default="claude-sonnet-5")
     a = ap.parse_args()
     raise SystemExit(main(a.model))

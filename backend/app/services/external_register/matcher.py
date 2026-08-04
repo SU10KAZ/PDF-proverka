@@ -253,7 +253,7 @@ async def match_register(
     if only_section is not None:
         by_section = {k: v for k, v in by_section.items() if k == only_section}
 
-    chosen_model = model or get_stage_model("findings_critic") or "claude-sonnet-4-6"
+    chosen_model = model or get_stage_model("findings_critic") or "claude-sonnet-5"
 
     stats = {
         "sections_processed": 0,

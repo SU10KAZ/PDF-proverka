@@ -157,7 +157,7 @@ async def get_stage_model_config():
 async def set_stage_model_config(request: dict):
     """Установить модели для всех этапов (bulk update).
 
-    Body: {"text_analysis": "claude-opus-4-7", "block_batch": "openai/gpt-5.4", ...}
+    Body: {"text_analysis": "claude-opus-5", "block_batch": "openai/gpt-5.4", ...}
     """
     updated = {}
     rejected = {}

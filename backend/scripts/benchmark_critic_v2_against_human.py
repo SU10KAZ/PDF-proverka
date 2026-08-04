@@ -1596,7 +1596,7 @@ Examples:
         help="Model override for real LLM providers "
              "(e.g. 'claude-haiku-4-5-20251001' for claude_runner, "
              "'openai/gpt-4o-mini' for openrouter). "
-             "Default: claude-sonnet-4-6 / openai/gpt-4o-mini.",
+             "Default: claude-sonnet-5 / openai/gpt-4o-mini.",
     )
     parser.add_argument(
         "--llm-timeout", type=int, default=180,

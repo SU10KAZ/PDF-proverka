@@ -13,7 +13,7 @@ text_llm_diff.json — единый артефакт для UI и для rebuild
 {
   "version": 1,
   "provider": "claude_code",
-  "model": "sonnet",
+  "model": "claude-sonnet-5",
   "status": "done | error | provider_not_available | too_large | disabled |
              missing_md | blocked",
   "created_at": "...",

@@ -67,7 +67,7 @@ def _floor_threshold() -> float:
 
 
 def _claude_model() -> str:
-    return (os.environ.get("STAGE_COMPARISON_REVIEW_TRANSFER_MODEL") or "sonnet").strip() or "sonnet"
+    return (os.environ.get("STAGE_COMPARISON_REVIEW_TRANSFER_MODEL") or "claude-sonnet-5").strip() or "claude-sonnet-5"
 
 
 def _claude_timeout() -> int:

@@ -51,7 +51,7 @@ DEFAULT_CONF_THRESHOLD = 0.85
 DEFAULT_TOP_K = 3
 DEFAULT_MAX_LLM_CALLS = 80
 DEFAULT_TIMEOUT_SEC = 120
-DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_MODEL = "claude-sonnet-5"
 
 
 def is_enabled() -> bool:

@@ -145,7 +145,7 @@ def _build_clean_env() -> dict:
 
 
 def is_claude_cli_model(model: str) -> bool:
-    """Sonnet/Opus через Claude CLI subscription (`claude-sonnet-4-6`, `claude-opus-4-7`, …)."""
+    """Sonnet/Opus через Claude CLI subscription (`claude-sonnet-5`, `claude-opus-5`, …)."""
     return model.startswith("claude-")
 
 

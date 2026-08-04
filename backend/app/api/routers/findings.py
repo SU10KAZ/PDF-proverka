@@ -124,7 +124,7 @@ async def run_kb_validation(
     project_id: str,
     version_id: Optional[str] = Query(None),
     section: str = Query("TX"),
-    model: str = Query("sonnet"),
+    model: str = Query("claude-sonnet-5"),
 ):
     """Run KB validation. This can take several minutes."""
     import backend.app.services.findings.kb_validation_service as kbsvc

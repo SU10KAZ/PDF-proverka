@@ -97,7 +97,7 @@ def load_config() -> EnrichedCompareConfig:
     return EnrichedCompareConfig(
         enabled=_env_bool("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", False),
         provider=(os.environ.get("STAGE_COMPARISON_ENRICHED_COMPARE_PROVIDER") or "claude_code").strip().lower() or "claude_code",
-        model=(os.environ.get("STAGE_COMPARISON_ENRICHED_COMPARE_MODEL") or "opus").strip() or "opus",
+        model=(os.environ.get("STAGE_COMPARISON_ENRICHED_COMPARE_MODEL") or "claude-opus-5").strip() or "claude-opus-5",
         timeout_sec=_env_int("STAGE_COMPARISON_ENRICHED_COMPARE_TIMEOUT_SEC", 900),
         max_chars=_env_int("STAGE_COMPARISON_ENRICHED_COMPARE_MAX_CHARS", 600_000),
         selfcheck_enabled=_env_bool("STAGE_COMPARISON_SELFCHECK_ENABLED", False),

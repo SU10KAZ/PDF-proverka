@@ -179,7 +179,7 @@ examples = retriever.find_similar(finding, top_k=5)
 **Файл:** `kb_gate.py` → `_call_claude_cli()`
 
 ```bash
-claude -p --model sonnet --allowedTools none --output-format json --max-turns 1
+claude -p --model claude-sonnet-5 --allowedTools none --output-format json --max-turns 1
 ```
 
 Особенности:
@@ -354,7 +354,7 @@ data = kbs.run_kb_validation("13АВ-РД-ТХ1.2-ПА V1", section="TX", model=
 
 | Переменная | По умолчанию | Назначение |
 |------------|--------------|------------|
-| `KB_GATE_MODEL` | `sonnet` | Модель Claude |
+| `KB_GATE_MODEL` | `claude-sonnet-5` | Модель Claude |
 | `KB_GATE_BATCH_SIZE` | `8` | Замечаний за один LLM-вызов |
 | `KB_GATE_TOP_K` | `5` | Примеров из KB на замечание |
 | `ANTHROPIC_API_KEY` | — | Авторизация Claude CLI |

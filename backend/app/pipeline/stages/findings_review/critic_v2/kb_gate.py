@@ -15,7 +15,7 @@ Run standalone via: scripts/validate_findings_kb.py
 
 Env / config:
     CLAUDE_CLI path resolved from backend.app.core.config
-    KB_GATE_MODEL  - optional, default: sonnet
+    KB_GATE_MODEL  - optional, default: claude-sonnet-5
     KB_GATE_BATCH_SIZE - optional, default: 8
     KB_GATE_TOP_K  - optional, default: 5
 """
@@ -44,7 +44,7 @@ _VALID_TAXONOMY = {
 }
 
 REJECT_CONFIDENCE_THRESHOLD = 0.75
-_DEFAULT_MODEL = "sonnet"
+_DEFAULT_MODEL = "claude-sonnet-5"
 _CLAUDE_CLI_DEFAULT = "/home/coder/.local/bin/claude"
 
 

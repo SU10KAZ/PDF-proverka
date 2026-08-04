@@ -69,7 +69,7 @@ def run_kb_validation(
     version_id: Optional[str] = None,
     section: str = "TX",
     batch_size: int = 5,
-    model: str = "sonnet",
+    model: str = "claude-sonnet-5",
 ) -> dict:
     """Run KB validation for a project and save the result."""
     import sys

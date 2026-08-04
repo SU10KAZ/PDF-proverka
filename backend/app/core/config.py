@@ -235,38 +235,42 @@ OPTIMIZATION_TOOLS = (
 )
 OPTIMIZATION_REVIEW_TOOLS = "Read,Write,Grep,Glob"
 
-# Модель Claude CLI (sonnet = экономит лимит All models)
-CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6"
-CLAUDE_MODEL_OPTIONS = ["claude-sonnet-4-6", "claude-opus-4-7"]
+# Модель Claude CLI (sonnet = экономит лимит All models).
+# 2026-08-04: пайплайн переведён на поколение 5 (claude-opus-5 / claude-sonnet-5).
+# Важно: алиасы "opus"/"sonnet" СПЕЦИАЛЬНО не используются — CLI резолвит их в
+# текущее поколение по своему усмотрению (замер 2026-08-03: opus→4.8, sonnet→5),
+# поэтому модель везде задаётся явным id.
+CLAUDE_MODEL_DEFAULT = "claude-sonnet-5"
+CLAUDE_MODEL_OPTIONS = ["claude-sonnet-5", "claude-opus-5"]
 
 _current_model = CLAUDE_MODEL_DEFAULT
 
 _stage_models: dict[str, str | None] = {
     "text_analysis":   None,
     "block_batch":     None,
-    "findings_merge":  "claude-opus-4-7",
+    "findings_merge":  "claude-opus-5",
     "findings_critic": None,
     "findings_corrector": None,
     "norm_verify":     None,
     "norm_fix":        None,
     "norm_requote":    None,
-    "optimization":    "claude-opus-4-7",
+    "optimization":    "claude-opus-5",
     "optimization_critic": None,
     "optimization_corrector": None,
 }
 
 _STAGE_MODEL_DEFAULTS: dict[str, str] = {
-    "text_analysis":          "claude-opus-4-7",
+    "text_analysis":          "claude-opus-5",
     "block_batch":            "ensemble/gpt-codex",
-    "findings_merge":         "claude-opus-4-7",
-    "findings_critic":        "claude-opus-4-7",
-    "findings_corrector":     "claude-opus-4-7",
-    "norm_verify":            "claude-opus-4-7",
-    "norm_fix":               "claude-opus-4-7",
-    "norm_requote":           "claude-sonnet-4-6",
+    "findings_merge":         "claude-opus-5",
+    "findings_critic":        "claude-opus-5",
+    "findings_corrector":     "claude-opus-5",
+    "norm_verify":            "claude-opus-5",
+    "norm_fix":               "claude-opus-5",
+    "norm_requote":           "claude-sonnet-5",
     "optimization":           "ensemble/claude-codex-opt",
-    "optimization_critic":    "claude-sonnet-4-6",
-    "optimization_corrector": "claude-sonnet-4-6",
+    "optimization_critic":    "claude-sonnet-5",
+    "optimization_corrector": "claude-sonnet-5",
 }
 
 # ─── Runtime data directory ─────────────────────────────────────────────────
@@ -440,8 +444,8 @@ CODEX_STAGE_MODEL_ID = os.environ.get("AUDIT_CODEX_STAGE_MODEL", f"codex/{CODEX_
 STAGE02_DUAL_MODEL_ID = "ensemble/gpt-codex"
 OPTIMIZATION_DUAL_MODEL_ID = "ensemble/claude-codex-opt"
 OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL = (
-    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-4-7").strip()
-    or "claude-opus-4-7"
+    os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CLAUDE_MODEL", "claude-opus-5").strip()
+    or "claude-opus-5"
 )
 OPTIMIZATION_ENSEMBLE_CODEX_MODEL = (
     os.environ.get("AUDIT_OPTIMIZATION_ENSEMBLE_CODEX_MODEL", "codex/gpt-5.6-sol").strip()
@@ -488,8 +492,8 @@ except ValueError:
     STAGE01_CODEX_PARALLELISM = 1
 
 AVAILABLE_MODELS = [
-    {"id": "claude-opus-4-7",            "label": "Opus 4.7 (CLI)",        "provider": "claude_cli"},
-    {"id": "claude-sonnet-4-6",          "label": "Sonnet (CLI)",           "provider": "claude_cli"},
+    {"id": "claude-opus-5",              "label": "Opus 5 (CLI)",           "provider": "claude_cli"},
+    {"id": "claude-sonnet-5",            "label": "Sonnet 5 (CLI)",         "provider": "claude_cli"},
     {"id": "openai/gpt-5.4",             "label": "GPT-5.4",                "provider": "openrouter"},
     {"id": CODEX_STAGE_MODEL_ID,          "label": "Codex",                  "provider": "codex_cli"},
     {"id": STAGE02_DUAL_MODEL_ID,         "label": "GPT + Codex",            "provider": "ensemble"},
@@ -503,8 +507,8 @@ STAGE_MODEL_RESTRICTIONS = {
         STAGE02_DUAL_MODEL_ID,
     ],
     "optimization": [
-        "claude-opus-4-7",
-        "claude-sonnet-4-6",
+        "claude-opus-5",
+        "claude-sonnet-5",
         "openai/gpt-5.4",
         CODEX_STAGE_MODEL_ID,
         OPTIMIZATION_DUAL_MODEL_ID,

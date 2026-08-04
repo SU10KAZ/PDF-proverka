@@ -1148,9 +1148,13 @@ SOLO_BLOCK_THRESHOLD_KB = 3 * 1024  # блок > 3 MB — отдельный п�
 # Значения подобраны эмпирически: у каждой модели свой лимит на количество изображений
 # и размер payload, а также свой оптимум по attention.
 MODEL_BATCH_LIMITS: dict[str, dict[str, int]] = {
-    # Claude Vision (Opus 4.7 / Sonnet 4.6) — production-safe risk-aware policy.
+    # Claude Vision (Opus 5 / Sonnet 5) — production-safe risk-aware policy.
     # Hard cap 12 блоков для любого пути. Фактические размеры пакета выбирает
     # risk-aware packer: heavy≈5, normal≈8, light≈10. Compact НЕ раздувает этот cap.
+    # Ключи прошлого поколения оставлены: старые прогоны и ручные конфиги не должны
+    # проваливаться на дефолт 15 блоков (он рассчитан не на Claude Vision).
+    "claude-opus-5":                   {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
+    "claude-sonnet-5":                 {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-opus-4-7":                 {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     "claude-sonnet-4-6":               {"max_blocks": 12, "max_size_kb": 5120,  "solo_kb": 3072, "min_blocks": 3},
     # Gemini 3 Pro: технически выдерживает 3072 images, 20MB, 1M контекст.
