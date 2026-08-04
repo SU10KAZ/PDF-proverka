@@ -77,7 +77,7 @@ def test_vertical_rotated_number_not_split_and_not_reversed():
 def test_legend_zone_symbols_excluded():
     span = _span_text("7", 100, 100)
     labels = symbols.split_number_labels({"texts": [span]}, _scope_all_block,
-                                         legend_zone=(90, 90, 120, 120))
+                                         [(90, 90, 120, 120)])
     assert labels == []
 
 
@@ -104,12 +104,12 @@ def test_template_match_and_residual():
     def texts_index(bbox, pad=0.0):
         return []
     sig = symbols.cluster_signature(_fixture_cluster(), texts_index)
-    tpl, _ = symbols.match_template(sig, [FIXTURE_TPL])
+    tpl, _, _ = symbols.match_template(sig, [FIXTURE_TPL])
     assert tpl is FIXTURE_TPL
     # слишком большой круг → residual, а не «ближайший тип молча»
     sig_bad = symbols.cluster_signature(_fixture_cluster(d=12.0), texts_index)
-    tpl_bad, reasons = symbols.match_template(sig_bad, [FIXTURE_TPL])
-    assert tpl_bad is None and reasons
+    tpl_bad, reasons, ambiguous = symbols.match_template(sig_bad, [FIXTURE_TPL])
+    assert tpl_bad is None and reasons and not ambiguous
 
 
 def _blue_quad(qid, x0, y0, w, h):
@@ -210,11 +210,131 @@ def test_chains_from_microsegments():
     assert chains[0]["length"] > 50
 
 
+SWITCH2_TPL = {"kind": "switch_2", "label": "выключатель двухклавишный", "source": "sheet_legend",
+               "signature": {"circles": [], "rects": [(12.4, 14.2)], "n_axis_lines": 0,
+                             "n_diag_lines": 1, "colors": {"red": 2},
+                             "inner_letters": [], "inner_digits": [], "inner_elevations": []}}
+CHANGEOVER_TPL = {"kind": "switch_changeover", "label": "переключатель", "source": "sheet_legend",
+                  "signature": {"circles": [11.9], "rects": [(11.8, 14.3)], "n_axis_lines": 0,
+                                "n_diag_lines": 0, "colors": {"red": 2},
+                                "inner_letters": [], "inner_digits": [], "inner_elevations": []}}
+
+
+def _switch2_cluster_with_circled_digits():
+    """Рамка + диагональ + два кружка вокруг цифр (оформление подписей)."""
+    els = [
+        {"eid": 0, "kind": "rect", "color": "red", "bbox": (100, 100, 112.4, 114.2),
+         "ref": {"w": 12.4, "h": 14.2, "color_family": "red"}},
+        {"eid": 1, "kind": "line", "color": "red", "bbox": (100, 100, 112.4, 114.2),
+         "ref": {"p1": (100, 114.2), "p2": (112.4, 100), "color_family": "red"}},
+    ]
+    for i, cx in enumerate((118.0, 128.0)):
+        d = 7.1
+        els.append({"eid": 2 + i, "kind": "circle", "color": "red",
+                    "bbox": (cx - d / 2, 104 - d / 2, cx + d / 2, 104 + d / 2),
+                    "ref": {"d": d, "center": (cx, 104.0), "color_family": "red",
+                            "layer": "свет нумерация"}})
+    return els
+
+
+def test_switch2_with_circled_group_numbers_restored():
+    digits = [_span_text("3", 116.0, 100.5), _span_text("4", 126.0, 100.5)]
+
+    def texts_index(bbox, pad=0.0):
+        out = []
+        for t in digits:
+            cx = (t["bbox"][0] + t["bbox"][2]) / 2
+            cy = (t["bbox"][1] + t["bbox"][3]) / 2
+            if bbox[0] - pad <= cx <= bbox[2] + pad and bbox[1] - pad <= cy <= bbox[3] + pad:
+                out.append(t)
+        return out
+
+    syms = symbols.classify_clusters([_switch2_cluster_with_circled_digits()],
+                                     [SWITCH2_TPL, CHANGEOVER_TPL], texts_index)
+    assert len(syms) == 1
+    assert syms[0]["kind"] == "switch_2", syms[0]
+    assert len(syms[0]["label_overlay_circles"]) == 2
+
+
+def test_changeover_true_circle_not_stripped():
+    """Истинная окружность переключателя (без цифры внутри) не снимается."""
+    d = 11.9
+    cluster = [
+        {"eid": 0, "kind": "rect", "color": "red", "bbox": (100, 100, 111.8, 114.3),
+         "ref": {"w": 11.8, "h": 14.3, "color_family": "red"}},
+        {"eid": 1, "kind": "circle", "color": "red",
+         "bbox": (106 - d / 2, 107 - d / 2, 106 + d / 2, 107 + d / 2),
+         "ref": {"d": d, "center": (106.0, 107.0), "color_family": "red",
+                 "layer": "09_Освещение"}},
+    ]
+
+    def texts_index(bbox, pad=0.0):
+        return []
+
+    syms = symbols.classify_clusters([cluster], [SWITCH2_TPL, CHANGEOVER_TPL], texts_index)
+    assert len(syms) == 1
+    assert syms[0]["kind"] == "switch_changeover"
+    assert "label_overlay_circles" not in syms[0]
+
+
+def test_ambiguous_templates_do_not_pick_first():
+    """Два сильных шаблона разных видов → неоднозначность, не выбор первого."""
+    tpl_a = dict(SWITCH2_TPL)
+    tpl_b = {**SWITCH2_TPL, "kind": "master_switch", "label": "мастер"}
+    cluster = [
+        {"eid": 0, "kind": "rect", "color": "red", "bbox": (100, 100, 112.4, 114.2),
+         "ref": {"w": 12.4, "h": 14.2, "color_family": "red"}},
+        {"eid": 1, "kind": "line", "color": "red", "bbox": (100, 100, 112.4, 114.2),
+         "ref": {"p1": (100, 114.2), "p2": (112.4, 100), "color_family": "red"}},
+    ]
+
+    def texts_index(bbox, pad=0.0):
+        return []
+
+    syms = symbols.classify_clusters([cluster], [tpl_a, tpl_b], texts_index)
+    assert syms[0]["kind"] == "unresolved_symbol"
+    assert syms[0]["reason"] == "multiple_templates_match"
+    assert syms[0]["matched_kinds"] == ["master_switch", "switch_2"]
+
+
+def test_run_profile_no_graph_for_alien_pdf(tmp_path):
+    """Чужой тип блока → no_graph/profile_not_applicable, не пустой граф."""
+    import fitz
+    pdf = tmp_path / "alien.pdf"
+    doc = fitz.open()
+    page = doc.new_page(width=400, height=300)
+    page.insert_text((50, 50), "Spec sheet: pump curve", fontsize=12)
+    page.insert_text((50, 80), "Discharge head baseline", fontsize=10)
+    doc.save(str(pdf))
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import run_profile
+    result = run_profile(str(pdf))
+    assert result["status"] == "no_graph"
+    assert result["reason"] == "profile_not_applicable"
+    assert result["graph"] is None
+
+
+def test_run_profile_rotation_unsupported(tmp_path):
+    import fitz
+    pdf = tmp_path / "rotated.pdf"
+    doc = fitz.open()
+    page = doc.new_page(width=400, height=300)
+    page.insert_text((50, 50), "any", fontsize=12)
+    page.set_rotation(90)
+    doc.save(str(pdf))
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import run_profile
+    result = run_profile(str(pdf))
+    assert result["status"] == "no_graph"
+    assert result["reason"] == "rotation_unsupported"
+
+
 # ------------------------------------------------- запрет ручных карт
 
 def test_no_manual_map_of_this_pdf_in_code():
     forbidden = [r"YF7P", r"6\.70\d", r"\b70[0-9]\s*:\s*", r"Жилая комната"]
-    sources = list(PKG.glob("*.py")) + [ROOT / "scripts/build_ar_ceiling_lighting_description.py"]
+    sources = list(PKG.glob("*.py")) + [
+        ROOT / "scripts/build_ar_ceiling_lighting_description.py",
+        ROOT / "scripts/build_ar_ceiling_lighting_corpus.py",
+    ]
     for path in sources:
         text = path.read_text(encoding="utf-8")
         for pattern in forbidden:
@@ -352,3 +472,85 @@ def test_reference_runtime_sane(reference_result):
     # стратификация и grid-hash: полный лист (34 тыс. drawings) за десятки
     # секунд максимум, а не квадратичные минуты
     assert reference_result["elapsed_s"] < 60
+
+
+# ------------------------------------------ регресс с реестром легенд
+
+REGISTRY_JSON = ROOT / "experiments/vectograf/ar_ceiling_lighting/legend_registry.json"
+
+
+@pytest.fixture(scope="module")
+def reference_with_registry():
+    if not REFERENCE_PDF.is_file():
+        pytest.skip("эталонный PDF корпуса недоступен")
+    if not REGISTRY_JSON.is_file():
+        pytest.skip("legend_registry.json не построен")
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import run_profile
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.registry import (
+        load_legend_registry)
+    return run_profile(str(REFERENCE_PDF), legend_registry=load_legend_registry(REGISTRY_JSON))
+
+
+def test_reference_status_complete(reference_with_registry):
+    assert reference_with_registry["status"] == "complete"
+
+
+def test_reference_wall_lights_restored_from_registry(reference_with_registry):
+    """На листе 001 подписи «вывод под настенный светильник» нет — тип
+    приходит из кросс-листового реестра (tier 4), а не угадывается."""
+    g = reference_with_registry["graph"]
+    walls = [x for x in g["lights"] if x["kind"] == "wall_light_output"]
+    assert len(walls) == 13
+    assert all(x["classification_source"] == "cross_sheet_legend_registry" for x in walls)
+    assert any(w.startswith("LEGEND_FROM_REGISTRY") for w in g["warnings"])
+
+
+def test_reference_two_key_switches_with_circles_restored(reference_with_registry):
+    g = reference_with_registry["graph"]
+    with_overlays = [s for s in g["switches"] if s.get("label_overlay_circles")]
+    assert len(with_overlays) >= 5, "двухклавишные с обведёнными цифрами не восстановлены"
+    for sw in with_overlays:
+        assert sw["kind"] in ("switch_1", "switch_2", "switch_changeover")
+        assert sw["groups"], "цифры внутри кружков должны стать управляемыми группами"
+
+
+def test_reference_no_unresolved_symbols_with_registry(reference_with_registry):
+    g = reference_with_registry["graph"]
+    assert g["validation"]["unresolved_symbols_total"] == 0
+
+
+def test_reference_dimension_tiers_disciplined(reference_with_registry):
+    """tier 3 — только подтверждённая выносная цепочка + масштаб; близость
+    без цепочки остаётся tier 2 candidate/requires_review."""
+    g = reference_with_registry["graph"]
+    seen_tier3 = False
+    for dev in g["switches"] + g["master_switches"] + g["lights"]:
+        for dim in dev.get("dimensions", []):
+            if dim["tier"] >= 3:
+                seen_tier3 = True
+                assert dim["scale_consistent"] is True
+                assert dim["binding"] == "extension_chain_confirmed"
+            else:
+                assert dim["requires_review"] is True
+    assert seen_tier3, "ни одной подтверждённой размерной связи"
+
+
+def test_reference_conflicts_present_everywhere(reference_with_registry):
+    """GEOMETRY_CONFLICT виден в графе, метриках и Markdown одновременно."""
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md import (
+        render_markdown)
+    g = reference_with_registry["graph"]
+    if not g["conflicts"]:
+        pytest.skip("на эталоне нет конфликтов")
+    assert g["validation"]["conflicts_total"] == len(g["conflicts"])
+    md = render_markdown(g)
+    assert "Геометрические конфликты" in md
+
+
+def test_reference_markdown_has_all_apartments(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md import (
+        render_markdown)
+    md = render_markdown(reference_with_registry["graph"])
+    for n in range(700, 710):
+        assert f"## Квартира {n}" in md
+    assert "### Помещение 6.709.1" in md

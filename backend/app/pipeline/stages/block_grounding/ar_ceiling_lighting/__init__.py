@@ -13,8 +13,8 @@ provenance/tier), чтобы последующая интеграция не т
 Точка входа: :func:`build_ar_ceiling_lighting_result` (см. runner.py) и
 CLI ``scripts/build_ar_ceiling_lighting_description.py``.
 """
-from .runner import build_ar_ceiling_lighting_result, write_artifacts
+from .runner import (PROFILE_ID, PROFILE_VERSION, build_ar_ceiling_lighting_result,
+                     compact_fixture, run_profile, write_artifacts)
 
-PROFILE_ID = "ar_ceiling_lighting"
-
-__all__ = ["PROFILE_ID", "build_ar_ceiling_lighting_result", "write_artifacts"]
+__all__ = ["PROFILE_ID", "PROFILE_VERSION", "build_ar_ceiling_lighting_result",
+           "compact_fixture", "run_profile", "write_artifacts"]

@@ -12,11 +12,17 @@ import collections
 KIND_TEXT = {
     "light_output": "вывод под светильник",
     "chandelier_output": "вывод под люстру",
+    "wall_light_output": "вывод под настенный светильник",
     "switch_1": "одноклавишный выключатель",
     "switch_2": "двухклавишный выключатель",
     "switch_changeover": "переключатель с нескольких мест",
     "master_switch": "мастер-выключатель",
+    "smoke_detector": "пожарный извещатель",
 }
+
+
+def _kind_text(kind: str) -> str:
+    return KIND_TEXT.get(kind, kind)
 
 
 def _plural_ru(n: int, one: str, few: str, many: str) -> str:
@@ -41,6 +47,13 @@ def render_markdown(graph: dict) -> str:
     v = graph["validation"]
 
     out.append("# План потолков и освещения — поквартирное описание\n")
+    status = graph.get("status") or "complete"
+    if status == "partial":
+        out.append("> **Описание сформировано частично.** Неразрешённые элементы "
+                   "перечислены в конце документа. Предупреждения:")
+        for w in graph.get("warnings") or []:
+            out.append(f"> - {w}")
+        out.append("")
     out.append("## Данные листа\n")
     out.append(f"- Обозначение: {sheet.get('doc_number') or 'не извлечено'}")
     out.append(f"- Наименование: {sheet.get('sheet_name') or 'не извлечено'}")
@@ -167,7 +180,7 @@ def _render_room(room, graph, zones_by_id, lights_by_id, switches_by_id, masters
     if lights:
         out.append("**Освещение**\n")
         for light in sorted(lights, key=lambda x: (x["kind"], x["groups"])):
-            line = f"- {KIND_TEXT[light['kind']].capitalize()}, {_groups_phrase(light['groups'])}."
+            line = f"- {_kind_text(light['kind']).capitalize()}, {_groups_phrase(light['groups'])}."
             extras = []
             if light.get("centered_by_guides"):
                 extras.append("положение — по пересечению линий центрирования")
@@ -185,7 +198,7 @@ def _render_room(room, graph, zones_by_id, lights_by_id, switches_by_id, masters
         out.append("**Управление**\n")
         for sw in sorted(switches, key=lambda x: (x["kind"], x["groups"])):
             place = " у дверного проёма" if sw.get("near_door") and sw.get("dimensions") else ""
-            out.append(f"- {KIND_TEXT[sw['kind']].capitalize()} {_groups_phrase(sw['groups'])}{place}.")
+            out.append(f"- {_kind_text(sw['kind']).capitalize()} {_groups_phrase(sw['groups'])}{place}.")
         for m in masters:
             out.append("- Мастер-выключатель «М» (зелёное обозначение по легенде листа).")
         chains = _confirmed_chains(room, groups, lights_by_id, switches_by_id)
@@ -195,11 +208,12 @@ def _render_room(room, graph, zones_by_id, lights_by_id, switches_by_id, masters
                 out.append(f"  - `{chain}`")
         out.append("")
 
-    dims_lines = _room_dimensions(room, switches, masters, lights)
+    dims_lines, dims_review = _room_dimensions(room, switches, masters, lights)
     if dims_lines:
         out.append("**Размерные привязки**\n")
         out.extend(dims_lines)
         out.append("")
+    review.extend(dims_review)
 
     for sym in unresolved_by_room.get(room["mark"], []):
         numbers = sorted(set(sym.get("adjacent_group_numbers") or []))
@@ -228,16 +242,18 @@ def _confirmed_chains(room, groups, lights_by_id, switches_by_id) -> list[str]:
             continue
         light_kinds = collections.Counter(lights_by_id[i]["kind"] for i in g["lights"])
         lights_txt = ", ".join(
-            f"{n} × {KIND_TEXT[k]}" if n > 1 else KIND_TEXT[k]
+            f"{n} × {_kind_text(k)}" if n > 1 else _kind_text(k)
             for k, n in sorted(light_kinds.items()))
-        sw_txt = " + ".join(sorted({KIND_TEXT[switches_by_id[i]["kind"]] for i in room_switches}))
+        sw_txt = " + ".join(sorted({_kind_text(switches_by_id[i]["kind"]) for i in room_switches}))
         rooms_txt = ", ".join(g["rooms"]) if g["rooms"] else "помещение не извлечено"
         chains.append(f"{sw_txt} группы {g['number']} → группа {g['number']} → {lights_txt} ({rooms_txt})")
     return chains
 
 
-def _room_dimensions(room, switches, masters, lights) -> list[str]:
+def _room_dimensions(room, switches, masters, lights) -> tuple[list[str], list[str]]:
+    """(подтверждённые строки, кандидаты для «Требует проверки»)."""
     lines = []
+    review = []
     for dev in switches + masters:
         for dim in dev.get("dimensions", []):
             if dim["to"] == "wall_or_opening":
@@ -246,11 +262,17 @@ def _room_dimensions(room, switches, masters, lights) -> list[str]:
                 target = "к оси соседнего устройства"
             else:
                 continue  # неразрешённый конец → не утверждаем
-            name = KIND_TEXT[dev["kind"]]
-            mark = "" if dim["tier"] >= 3 else " (масштабная сверка не пройдена)"
-            lines.append(f"- Ось устройства «{name}» привязана размером {dim['value_mm']} мм "
-                         f"{target}{mark}.")
-    return sorted(set(lines))
+            name = _kind_text(dev["kind"])
+            if dim["tier"] >= 3:
+                lines.append(f"- Ось устройства «{name}» привязана размером {dim['value_mm']} мм "
+                             f"{target}.")
+            else:
+                why = ("масштабная сверка не пройдена"
+                       if dim.get("binding") != "proximity_only"
+                       else "связь только по близости, выносная цепочка не подтверждена")
+                review.append(f"Размер {dim['value_mm']} мм у устройства «{name}» ({target}) — "
+                              f"{why}; привязка не утверждается.")
+    return sorted(set(lines)), sorted(set(review))
 
 
 def _weak_devices_of_room(room, graph) -> list[str]:
@@ -258,7 +280,7 @@ def _weak_devices_of_room(room, graph) -> list[str]:
     for dev in graph["lights"] + graph["switches"] + graph["master_switches"]:
         rb = dev.get("room_binding") or {}
         if dev.get("room") is None and rb.get("candidate") == room["mark"]:
-            notes.append(f"{KIND_TEXT[dev['kind']].capitalize()} {_groups_phrase(dev.get('groups') or [])} "
+            notes.append(f"{_kind_text(dev['kind']).capitalize()} {_groups_phrase(dev.get('groups') or [])} "
                          f"стоит в полосе неопределённости открытой планировки у этого помещения — "
                          "принадлежность помещению не подтверждена.")
     return notes
@@ -279,10 +301,10 @@ def _render_groups_table(apt, groups, lights_by_id, switches_by_id) -> list[str]
     }
     for g in sorted(groups, key=lambda x: int(x["number"])):
         light_kinds = collections.Counter(lights_by_id[i]["kind"] for i in g["lights"])
-        lights_txt = "; ".join(f"{KIND_TEXT[k]} ×{n}" if n > 1 else KIND_TEXT[k]
+        lights_txt = "; ".join(f"{_kind_text(k)} ×{n}" if n > 1 else _kind_text(k)
                                for k, n in sorted(light_kinds.items())) or "—"
         sw_kinds = collections.Counter(switches_by_id[i]["kind"] for i in g["switches"])
-        sw_txt = "; ".join(f"{KIND_TEXT[k]} ×{n}" if n > 1 else KIND_TEXT[k]
+        sw_txt = "; ".join(f"{_kind_text(k)} ×{n}" if n > 1 else _kind_text(k)
                            for k, n in sorted(sw_kinds.items())) or "—"
         state = state_ru.get(g["state"], g["state"])
         if g.get("unresolved_participants"):
@@ -347,7 +369,7 @@ def _render_unassigned(graph) -> list[str]:
         if dev.get("room") is None:
             rb = dev.get("room_binding") or {}
             cand = rb.get("candidate") or rb.get("nearest_mark")
-            items.append(f"{KIND_TEXT[dev['kind']].capitalize()} {_groups_phrase(dev.get('groups') or [])}: "
+            items.append(f"{_kind_text(dev['kind']).capitalize()} {_groups_phrase(dev.get('groups') or [])}: "
                          f"помещение не подтверждено (кандидат — {cand}); объект физически "
                          "найден в области плана.")
     for sym in graph["unresolved_symbols"]:
@@ -363,6 +385,13 @@ def _render_unassigned(graph) -> list[str]:
     else:
         out.append("- Все найденные объекты плана привязаны.")
     out.append("")
+    conflicts = graph.get("conflicts") or []
+    if conflicts:
+        out.append("### Геометрические конфликты (требуют проверки)\n")
+        for c in conflicts:
+            cand = ", ".join(str(x) for x in (c.get("candidates") or [])) or "—"
+            out.append(f"- {c.get('what')}: {c.get('detail')} (кандидаты: {cand}).")
+        out.append("")
     out.append("Прочее непривязанное хранится в semantic_ledger (semantic_graph.json), "
                "по видам записей:")
     for kind, n in sorted(ledger_counts.items()):
@@ -380,9 +409,11 @@ def _render_block_control(graph, v) -> list[str]:
     out.append(f"- Областей помещений восстановлено строго: {v['rooms_region_resolved']}; "
                f"остальные — открытая планировка (watershed) или не подтверждены.")
     out.append(f"- Потолочных марок: {v['ceiling_zones_total']}; световых точек: {v['lights_total']} "
-               f"(в помещениях: {v['lights_in_rooms']}); выключателей: {v['switches_total']} "
+               f"(из них настенных: {v.get('wall_lights_total', 0)}; в помещениях: "
+               f"{v['lights_in_rooms']}); выключателей: {v['switches_total']} "
                f"(в помещениях: {v['switches_in_rooms']}); мастер-выключателей: "
-               f"{v['master_switches_total']}.")
+               f"{v['master_switches_total']}; прочего оборудования по легенде: "
+               f"{v.get('other_devices_total', 0)}.")
     out.append(f"- Группы освещения: подтверждено {v['groups_confirmed']}, "
                f"неполных {v['groups_incomplete']} (нумерация групп локальна для квартиры).")
     out.append(f"- Размерных конструкций: {v['dimensions_total']}, из них привязано к "

@@ -8,6 +8,7 @@ SpatialIndex) → структурная сигнатура кластера →
 from __future__ import annotations
 
 import collections
+import math
 import re
 
 from .legend import ELEV_RE
@@ -16,6 +17,10 @@ from .spatial import SpatialIndex, bbox_gap, seg_angle_deg
 # насколько размеры элементов кластера могут отличаться от эталона легенды
 SIZE_TOL = 0.28
 MAX_SYMBOL_ELEMENT = 42.0  # pt; крупнее — не элемент условного обозначения
+
+# виды-выключатели: только для них разрешено снятие кружков-оформления
+SWITCH_TEMPLATE_KINDS = {"switch_1", "switch_2", "switch_changeover", "master_switch"}
+NUMBERING_LAYER_RE = re.compile(r"нумерац", re.I)
 
 
 def _bbox_of_segment(s):
@@ -27,7 +32,11 @@ def _inside(bb, zone):
     return bb[0] >= zone[0] and bb[1] >= zone[1] and bb[2] <= zone[2] and bb[3] <= zone[3]
 
 
-def collect_symbol_elements(inv: dict, scope_of, legend_zone) -> list[dict]:
+def _in_any_zone(bb, zones) -> bool:
+    return any(_inside(bb, z) for z in zones or ())
+
+
+def collect_symbol_elements(inv: dict, scope_of, legend_zones) -> list[dict]:
     """Цветные (red/green) элементы block_scope — кандидаты в символы."""
     elements = []
 
@@ -36,7 +45,7 @@ def collect_symbol_elements(inv: dict, scope_of, legend_zone) -> list[dict]:
             return
         if scope_of(bbox) != "block":
             return
-        if legend_zone and _inside(bbox, legend_zone):
+        if _in_any_zone(bbox, legend_zones):
             return
         elements.append({"eid": len(elements), "kind": kind, "bbox": bbox,
                          "color": color, "ref": ref})
@@ -125,8 +134,11 @@ def _dims_match(a: list, b: list) -> bool:
     return True
 
 
-def match_template(sig: dict, templates: list[dict]) -> tuple[dict | None, list[str]]:
-    """Единственный строго совпавший шаблон или (None, причины)."""
+def match_template(sig: dict, templates: list[dict]) -> tuple[dict | None, list[str], list[str]]:
+    """Единственный строго совпавший шаблон или (None, причины, совпавшие виды).
+
+    Несколько сильных совпадений — НЕ выбор первого, а явная неоднозначность:
+    третий элемент возврата отдаёт совпавшие виды для GEOMETRY_CONFLICT."""
     reasons = []
     matched = []
     for tpl in templates:
@@ -158,10 +170,63 @@ def match_template(sig: dict, templates: list[dict]) -> tuple[dict | None, list[
             continue
         matched.append(tpl)
     if len(matched) == 1:
-        return matched[0], []
+        return matched[0], [], []
     if len(matched) > 1:
-        return None, [f"неоднозначно: {[t['kind'] for t in matched]}"]
-    return None, reasons
+        kinds = sorted({t["kind"] for t in matched})
+        if len(kinds) == 1:
+            # один и тот же вид из легенды листа и из реестра — не конфликт
+            local = [t for t in matched if t.get("source") == "sheet_legend"]
+            return (local[0] if local else matched[0]), [], []
+        return None, [f"неоднозначно: {kinds}"], kinds
+    return None, reasons, []
+
+
+def _is_label_overlay_circle(el: dict, texts_index) -> bool:
+    """Окружность-оформление подписи группы (не часть устройства).
+
+    Критерии (все геометрические): внутри РОВНО один знак-цифра, его центр
+    совпадает с центром окружности, и слой окружности либо слой цифры —
+    слой нумерации групп. Истинная окружность переключателя с нескольких
+    мест цифры внутри не содержит и под гейт не попадает.
+    """
+    if el["kind"] != "circle":
+        return False
+    ref = el["ref"]
+    d = ref["d"]
+    cx, cy = ref["center"]
+    digit_chars = []
+    digit_layers = set()
+    for t in texts_index(el["bbox"], pad=1.0):
+        for ch in t.get("chars") or ():
+            if not ch["c"].isdigit():
+                continue
+            tb = ch["bbox"]
+            tcx, tcy = (tb[0] + tb[2]) / 2, (tb[1] + tb[3]) / 2
+            if math.hypot(tcx - cx, tcy - cy) <= 0.4 * d:
+                digit_chars.append(ch)
+                digit_layers.add(t.get("layer") or "")
+    if len(digit_chars) != 1:
+        return False
+    return bool(NUMBERING_LAYER_RE.search(ref.get("layer") or "")
+                or any(NUMBERING_LAYER_RE.search(la) for la in digit_layers))
+
+
+def _match_with_overlay_strip(cluster, sig, templates, texts_index):
+    """Повторный матч после снятия кружков-оформления подписей групп.
+
+    Возврат (core, csig, tpl, overlays) либо None. Принимается только
+    сигнатура известного выключателя: световые точки и прочее оформлением
+    подписей не «дотягиваются».
+    """
+    overlays = [el for el in cluster if _is_label_overlay_circle(el, texts_index)]
+    if not overlays or len(overlays) == len(cluster):
+        return None
+    core = [el for el in cluster if el not in overlays]
+    csig = cluster_signature(core, texts_index)
+    tpl, _, _ = match_template(csig, templates)
+    if tpl is not None and tpl["kind"] in SWITCH_TEMPLATE_KINDS:
+        return core, csig, tpl, overlays
+    return None
 
 
 def classify_clusters(clusters: list[list[dict]], templates: list[dict], texts_index) -> list[dict]:
@@ -169,9 +234,25 @@ def classify_clusters(clusters: list[list[dict]], templates: list[dict], texts_i
     out = []
     for cluster in clusters:
         sig = cluster_signature(cluster, texts_index)
-        tpl, reasons = match_template(sig, templates)
+        tpl, reasons, ambiguous = match_template(sig, templates)
         if tpl is not None:
             out.append(_symbol(cluster, sig, tpl))
+            continue
+        if ambiguous:
+            out.append({"kind": "unresolved_symbol", "signature": sig, "bbox": sig["bbox"],
+                        "reason": "multiple_templates_match",
+                        "matched_kinds": ambiguous,
+                        "detail": "несколько сильных шаблонов претендуют на символ",
+                        "residuals": reasons[:6]})
+            continue
+        stripped = _match_with_overlay_strip(cluster, sig, templates, texts_index)
+        if stripped is not None:
+            core, csig, ctpl, overlays = stripped
+            sym = _symbol(core, csig, ctpl)
+            sym["label_overlay_circles"] = [
+                {"center": o["ref"]["center"], "d": o["ref"]["d"], "layer": o["ref"]["layer"]}
+                for o in sorted(overlays, key=lambda o: o["ref"]["center"])]
+            out.append(sym)
             continue
         rects = [el for el in cluster if el["kind"] == "rect"]
         if len(rects) >= 2:
@@ -179,16 +260,33 @@ def classify_clusters(clusters: list[list[dict]], templates: list[dict], texts_i
             part_syms = []
             for part in parts:
                 psig = cluster_signature(part, texts_index)
-                ptpl, _ = match_template(psig, templates)
-                part_syms.append((part, psig, ptpl))
-            if all(ptpl is not None for _, _, ptpl in part_syms):
-                for part, psig, ptpl in part_syms:
-                    out.append(_symbol(part, psig, ptpl, split_from_multi=True))
+                ptpl, _, _ = match_template(psig, templates)
+                if ptpl is None:
+                    part_stripped = _match_with_overlay_strip(part, psig, templates, texts_index)
+                    if part_stripped is not None:
+                        part, psig, ptpl, part_overlays = part_stripped
+                        part_syms.append((part, psig, ptpl, part_overlays))
+                        continue
+                part_syms.append((part, psig, ptpl, []))
+            if all(ptpl is not None for _, _, ptpl, _ in part_syms):
+                for part, psig, ptpl, part_overlays in part_syms:
+                    sym = _symbol(part, psig, ptpl, split_from_multi=True)
+                    if part_overlays:
+                        sym["label_overlay_circles"] = [
+                            {"center": o["ref"]["center"], "d": o["ref"]["d"], "layer": o["ref"]["layer"]}
+                            for o in sorted(part_overlays, key=lambda o: o["ref"]["center"])]
+                    out.append(sym)
                 continue
             out.append({"kind": "unresolved_symbol", "signature": sig, "bbox": sig["bbox"],
                         "reason": "template_residual_above_threshold",
                         "detail": "составной кластер: часть секций не совпала с эталонами",
                         "residuals": reasons[:6]})
+            continue
+        if not any(el["kind"] in ("circle", "rect") for el in cluster):
+            # чистые линии без якорного элемента (шлейфы, стрелки, обводка)
+            # символом устройства быть не могут — фиксируются как linework
+            out.append({"kind": "colored_linework", "signature": sig, "bbox": sig["bbox"],
+                        "reason": "no_anchor_element"})
             continue
         out.append({"kind": "unresolved_symbol", "signature": sig, "bbox": sig["bbox"],
                     "reason": "template_residual_above_threshold", "residuals": reasons[:6]})
@@ -202,6 +300,7 @@ def classify_clusters(clusters: list[list[dict]], templates: list[dict], texts_i
 def _symbol(cluster, sig, tpl, *, split_from_multi: bool = False) -> dict:
     return {"kind": tpl["kind"], "kind_label": tpl["label"], "bbox": sig["bbox"],
             "signature": sig, "split_from_multi": split_from_multi,
+            "classification_source": tpl.get("source") or "sheet_legend",
             "element_refs": sorted(el["eid"] for el in cluster)}
 
 
@@ -220,7 +319,7 @@ def _split_by_rects(cluster, rects) -> list[list[dict]]:
 
 # ---------------------------------------------------------------- потолки
 
-def detect_ceiling_markers(inv: dict, scope_of, legend_zone) -> tuple[list[dict], list[dict]]:
+def detect_ceiling_markers(inv: dict, scope_of, legend_zones) -> tuple[list[dict], list[dict]]:
     """Составные потолочные маркеры: рамка типа + рамка отметки.
 
     Обе рамки синие; поле с текстом вида «+2.850» — отметка, короткое
@@ -233,7 +332,7 @@ def detect_ceiling_markers(inv: dict, scope_of, legend_zone) -> tuple[list[dict]
             continue
         if scope_of(q["bbox"]) != "block":
             continue
-        if legend_zone and _inside(q["bbox"], legend_zone):
+        if _in_any_zone(q["bbox"], legend_zones):
             continue
         frames.append(dict(q))
     chars = []
@@ -296,7 +395,7 @@ def detect_ceiling_markers(inv: dict, scope_of, legend_zone) -> tuple[list[dict]
 
 # ------------------------------------------------------------ цифры групп
 
-def split_number_labels(inv: dict, scope_of, legend_zone) -> list[dict]:
+def split_number_labels(inv: dict, scope_of, legend_zones) -> list[dict]:
     """Красные числовые подписи block_scope с раскроем «слипшихся» спанов.
 
     Спан делится на числа по геометрии СИМВОЛОВ: разрыв по x больше
@@ -309,7 +408,7 @@ def split_number_labels(inv: dict, scope_of, legend_zone) -> list[dict]:
             continue
         if scope_of(t["bbox"]) != "block":
             continue
-        if legend_zone and _inside(t["bbox"], legend_zone):
+        if _in_any_zone(t["bbox"], legend_zones):
             continue
         digits = [ch for ch in t["chars"] if ch["c"].isdigit()]
         if not digits or any(not (ch["c"].isdigit() or ch["c"].isspace()) for ch in t["chars"]):

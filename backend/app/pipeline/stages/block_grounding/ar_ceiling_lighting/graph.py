@@ -15,8 +15,9 @@ import math
 from .rooms import nearest_mark, room_of_point
 from .spatial import SpatialIndex, bbox_gap
 
-LIGHT_KINDS = ("light_output", "chandelier_output")
+LIGHT_KINDS = ("light_output", "chandelier_output", "wall_light_output")
 SWITCH_KINDS = ("switch_1", "switch_2", "switch_changeover")
+OTHER_DEVICE_KINDS = ("smoke_detector",)
 
 GROUP_BIND_GAP = 7.0       # pt: подпись группы должна примыкать к символу
 GROUP_AMBIGUITY_MARGIN = 1.4
@@ -24,16 +25,36 @@ DOOR_NEAR_MM = 500.0
 
 
 def assemble(cp, inv, ref, syms, ceil_markers, ceil_unpaired, labels, dims,
-             consumed_labels, marks, marks_rejected, room_data, guides_stub) -> dict:
-    conflicts: list[dict] = []
+             consumed_labels, marks, marks_rejected, room_data, dim_conflicts=None) -> dict:
+    conflicts: list[dict] = list(dim_conflicts or [])
+    conflicts.extend(ref.get("conflicts") or [])
     ledger: list[dict] = []
 
     rooms = _build_rooms(ref, marks, room_data)
     apartments = _build_apartments(ref, rooms)
 
-    lights, switches, masters, unresolved_syms = _split_devices(syms)
-    for dev in lights + switches + masters:
+    linework = [s for s in syms if s["kind"] == "colored_linework"]
+    syms = [s for s in syms if s["kind"] != "colored_linework"]
+    for lw in linework:
+        ledger.append({"kind": "colored_linework", "bbox": lw["bbox"],
+                       "state": "no_anchor_element",
+                       "detail": f"линий {lw['signature']['n_axis_lines'] + lw['signature']['n_diag_lines']}"})
+
+    lights, switches, masters, others, unresolved_syms = _split_devices(syms)
+    for dev in lights + switches + masters + others:
         _bind_room(dev, room_data, marks)
+
+    for sym in unresolved_syms:
+        if sym.get("reason") == "multiple_templates_match":
+            conflicts.append({
+                "type": "GEOMETRY_CONFLICT",
+                "what": "классификация символа",
+                "bbox": sym["bbox"],
+                "candidates": sym.get("matched_kinds") or [],
+                "detail": "несколько сильных шаблонов легенды претендуют на один символ — "
+                          "тип не выбран",
+            })
+    _master_overlap_conflicts(switches + lights, masters, conflicts)
 
     _bind_group_labels(labels, consumed_labels, lights, switches, masters, conflicts, ledger,
                        unresolved_syms)
@@ -52,6 +73,8 @@ def assemble(cp, inv, ref, syms, ceil_markers, ceil_unpaired, labels, dims,
     _bind_masters(masters, rooms, apartments)
     _door_adjacency(inv, cp, switches + masters, dims)
     _attach_dimensions(dims, lights, switches, masters)
+    for dev in others:
+        dev.setdefault("groups", [])
 
     for sym in unresolved_syms:
         ledger.append({"kind": "unresolved_symbol", "bbox": sym["bbox"],
@@ -65,7 +88,7 @@ def assemble(cp, inv, ref, syms, ceil_markers, ceil_unpaired, labels, dims,
             continue  # копии марок в ведомости/легенде — штатный reference
         ledger.append({"kind": "room_mark_rejected", "bbox": rej["bbox"],
                        "state": rej["why"], "detail": rej["mark"]})
-    for dev in lights + switches + masters:
+    for dev in lights + switches + masters + others:
         if dev.get("room") is None:
             ledger.append({"kind": f"{dev['category']}_room_unassigned", "bbox": dev["bbox"],
                            "state": dev["room_binding"]["state"],
@@ -85,12 +108,14 @@ def assemble(cp, inv, ref, syms, ceil_markers, ceil_unpaired, labels, dims,
         "lights": lights,
         "switches": switches,
         "master_switches": masters,
+        "other_devices": others,
         "groups": groups,
         "dimensions": dims,
         "unresolved_symbols": unresolved_syms,
         "conflicts": conflicts,
         "semantic_ledger": ledger,
         "warnings": list(ref.get("warnings") or []),
+        "legend_sections": ref.get("legend_sections") or [],
     }
     graph["nodes"], graph["edges"] = _flat_projection(cp, graph)
     graph["validation"] = _validation(graph, room_data)
@@ -173,14 +198,17 @@ def _link_rooms_to_apartments(rooms, apartments) -> None:
 
 # ----------------------------------------------------------- устройства
 
-def _split_devices(syms) -> tuple[list, list, list, list]:
-    lights, switches, masters, unresolved = [], [], [], []
+def _split_devices(syms) -> tuple[list, list, list, list, list]:
+    lights, switches, masters, others, unresolved = [], [], [], [], []
     ordered = sorted(syms, key=lambda s: (round(s["center"][1], 1), round(s["center"][0], 1)))
     for sym in ordered:
         base = {
             "symbol_id": sym["symbol_id"], "kind": sym["kind"], "bbox": sym["bbox"],
             "center": sym["center"], "signature": sym.get("signature"),
+            "classification_source": sym.get("classification_source") or "sheet_legend",
         }
+        if sym.get("label_overlay_circles"):
+            base["label_overlay_circles"] = sym["label_overlay_circles"]
         if sym["kind"] in LIGHT_KINDS:
             base.update({"id": f"light-{len(lights) + 1}", "category": "light",
                          "groups": [], "group_bindings": []})
@@ -194,9 +222,35 @@ def _split_devices(syms) -> tuple[list, list, list, list]:
             base.update({"id": f"master-{len(masters) + 1}", "category": "master_switch",
                          "groups": [], "group_bindings": [], "dimensions": []})
             masters.append(base)
+        elif sym["kind"] in OTHER_DEVICE_KINDS:
+            base.update({"id": f"other-{len(others) + 1}", "category": "other_device",
+                         "groups": [], "group_bindings": []})
+            others.append(base)
         else:
             unresolved.append(sym)
-    return lights, switches, masters, unresolved
+    return lights, switches, masters, others, unresolved
+
+
+def _master_overlap_conflicts(devices, masters, conflicts) -> None:
+    """Пересечение классифицированного устройства с мастер-выключателем —
+    два сильных толкования одной области: явный конфликт, не молчаливый
+    выбор одного из символов."""
+    for m in masters:
+        mb = m["bbox"]
+        for dev in devices:
+            b = dev["bbox"]
+            ix = min(mb[2], b[2]) - max(mb[0], b[0])
+            iy = min(mb[3], b[3]) - max(mb[1], b[1])
+            if ix > 0.5 and iy > 0.5:
+                conflicts.append({
+                    "type": "GEOMETRY_CONFLICT",
+                    "what": "пересечение символов устройств",
+                    "bbox": (max(mb[0], b[0]), max(mb[1], b[1]),
+                             min(mb[2], b[2]), min(mb[3], b[3])),
+                    "candidates": sorted([m["symbol_id"], dev["symbol_id"]]),
+                    "detail": "область мастер-выключателя пересекается с другим "
+                              "классифицированным устройством",
+                })
 
 
 def _bind_room(dev, room_data, marks) -> None:
@@ -504,28 +558,37 @@ def _door_adjacency(inv, cp, devices, dims) -> None:
 
 
 def _attach_dimensions(dims, lights, switches, masters) -> None:
-    by_id = {d["id"]: d for d in switches + masters + lights}
+    """Раздача размеров устройствам.
+
+    tier 3 — только подтверждённая цепочка (extension_chain_confirmed)
+    И пройденная масштабная сверка; конец-«кандидат по близости» даёт
+    tier 2 / requires_review и живёт только в «Требует проверки»."""
     sym_to_dev = {d["symbol_id"]: d for d in switches + masters + lights}
     for dim in dims:
         attached = [e for e in dim["ends"] if e["attached_to"] == "device_axis"]
-        others = [e for e in dim["ends"] if e["attached_to"] != "device_axis"]
+        candidates = [e for e in dim["ends"] if e["attached_to"] == "device_axis_candidate"]
+        rest = [e for e in dim["ends"]
+                if e["attached_to"] not in ("device_axis", "device_axis_candidate")]
         dim["binding_state"] = "unbound"
-        if not attached:
+        if not attached and not candidates:
             continue
-        target_desc = "wall_or_opening" if any(e["attached_to"] == "wall_or_opening" for e in others) else \
-            ("device_axis" if len(attached) == 2 else "unresolved")
-        dim["binding_state"] = f"device_to_{target_desc}"
-        for e in attached:
+        target_desc = "wall_or_opening" if any(e["attached_to"] == "wall_or_opening" for e in rest) else \
+            ("device_axis" if len(attached) + len(candidates) == 2 else "unresolved")
+        dim["binding_state"] = f"device_to_{target_desc}" if attached else "device_candidate_only"
+        for e in attached + candidates:
             dev = sym_to_dev.get(e.get("device_id"))
             if dev is None:
                 continue
+            end_tier = e.get("binding_tier", 2)
+            confirmed = end_tier >= 3 and dim.get("scale_consistent", False)
             dev.setdefault("dimensions", []).append({
                 "dim_id": dim["dim_id"], "value_mm": dim["value_mm"],
                 "to": target_desc, "orientation": dim["orientation"],
-                "tier": 3 if dim.get("scale_consistent") else 2,
+                "tier": 3 if confirmed else 2,
+                "binding": e.get("binding"),
+                "requires_review": not confirmed,
                 "scale_consistent": dim.get("scale_consistent", False),
             })
-    _ = by_id
 
 
 # --------------------------------------------------- плоская проекция
@@ -573,6 +636,11 @@ def _flat_projection(cp, graph) -> tuple[list, list]:
         if m.get("apartment"):
             edge(m["id"], f"apt-{m['apartment']}", "intended_scope",
                  m["intended_scope"]["tier"], m["intended_scope"]["state"])
+    for dev in graph.get("other_devices") or []:
+        node(dev["id"], dev["kind"], "other_device", dev["bbox"], 3, "classified_by_legend")
+        if dev.get("room"):
+            edge(dev["room"], dev["id"], "contains",
+                 dev["room_binding"]["tier"], dev["room_binding"]["state"])
     for g in graph["groups"]:
         node(g["group_id"], f"группа {g['number']} кв. {g['apartment']}", "lighting_group",
              None, 3, g["state"])
@@ -606,7 +674,9 @@ def _validation(graph, room_data) -> dict:
         "rooms_region_resolved": sum(1 for r in graph["rooms"] if r["region_state"] == "resolved"),
         "ceiling_zones_total": len(graph["ceiling_zones"]),
         "lights_total": len(lights),
+        "wall_lights_total": sum(1 for x in lights if x["kind"] == "wall_light_output"),
         "lights_in_rooms": sum(1 for x in lights if x.get("room")),
+        "other_devices_total": len(graph.get("other_devices") or []),
         "switches_total": len(switches),
         "switches_in_rooms": sum(1 for x in switches if x.get("room")),
         "master_switches_total": len(graph["master_switches"]),

@@ -1,0 +1,847 @@
+{
+ "conflicts": [
+  {
+   "candidates": [
+    [
+     "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf"
+    ],
+    [
+     "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «ceiling_type_tag»"
+  },
+  {
+   "candidates": [
+    [
+     "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+     "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+    ],
+    [
+     "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «smoke_detector»"
+  },
+  {
+   "candidates": [
+    [
+     "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf"
+    ],
+    [
+     "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «ceiling_type_tag»"
+  },
+  {
+   "candidates": [
+    [
+     "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+     "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+    ],
+    [
+     "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «smoke_detector»"
+  },
+  {
+   "candidates": [
+    [
+     "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf"
+    ],
+    [
+     "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «ceiling_type_tag»"
+  },
+  {
+   "candidates": [
+    [
+     "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+     "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+    ],
+    [
+     "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+    ]
+   ],
+   "detail": "сигнатуры символа с разных листов не прошли геометрический гейт слияния — записи хранятся раздельно",
+   "type": "GEOMETRY_CONFLICT",
+   "what": "реестр легенд: вид «ceiling_type_tag»"
+  }
+ ],
+ "entries": [
+  {
+   "aspect_ratio": 2.7,
+   "colors": [
+    "blue"
+   ],
+   "kind": "ceiling_elevation_tag",
+   "label": "отметка уровня потолка, - , дана от отметки чистого пола.дана от отметки чистого пола.",
+   "labels": [
+    "отметка уровня потолка, - , дана от отметки чистого пола.дана от отметки чистого пола.",
+    "отметка уровня потолка , дана от отметки чистого пола."
+   ],
+   "layers": [
+    "06_Потолок"
+   ],
+   "legend_bbox": [
+    1762.56,
+    768.04,
+    1796.8,
+    780.72
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "blue": 1
+    },
+    "inner_digits": [],
+    "inner_elevations": [
+     "+2.850"
+    ],
+    "inner_letters": [],
+    "layers": {
+     "06_Потолок": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      12.6,
+      31.6
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.72,
+   "colors": [
+    "blue"
+   ],
+   "kind": "ceiling_type_tag",
+   "label": "маркировка потолка",
+   "labels": [
+    "маркировка потолка"
+   ],
+   "layers": [
+    "06_Потолок"
+   ],
+   "legend_bbox": [
+    1732.92,
+    421.06,
+    1773.24,
+    444.46
+   ],
+   "pdfs": [
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "blue": 1
+    },
+    "inner_digits": [
+     "1"
+    ],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "06_Потолок": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      18.5,
+      40.3
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.67,
+   "colors": [
+    "black"
+   ],
+   "kind": "ceiling_type_tag",
+   "label": "маркировка потолка -",
+   "labels": [
+    "маркировка потолка -"
+   ],
+   "layers": [
+    "06_Потолок"
+   ],
+   "legend_bbox": [
+    1764.0,
+    740.44,
+    1795.56,
+    759.29
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "black": 1
+    },
+    "inner_digits": [
+     "1"
+    ],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "06_Потолок": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      18.5,
+      31.6
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 2.7,
+   "colors": [
+    "blue"
+   ],
+   "kind": "ceiling_type_tag",
+   "label": "маркировка потолка- отметка уровня потолка,дана от отметки чистого пола.",
+   "labels": [
+    "маркировка потолка- отметка уровня потолка,дана от отметки чистого пола."
+   ],
+   "layers": [
+    "06_Потолок"
+   ],
+   "legend_bbox": [
+    460.92,
+    1631.2,
+    495.17,
+    1643.88
+   ],
+   "pdfs": [
+    "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "blue": 1
+    },
+    "inner_digits": [],
+    "inner_elevations": [
+     "+2.800"
+    ],
+    "inner_letters": [],
+    "layers": {
+     "06_Потолок": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      12.6,
+      31.6
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.0,
+   "colors": [
+    "red"
+   ],
+   "kind": "chandelier_output",
+   "label": "вывод под люстру",
+   "labels": [
+    "вывод под люстру",
+    "вывод под люстру 2 ух клавишное включение",
+    "вывод под светильник- вывод под люстру- группа светильников- выключатель одноклавишный"
+   ],
+   "layers": [
+    "09_Освещение"
+   ],
+   "legend_bbox": [
+    1770.0,
+    624.64,
+    1789.92,
+    644.56
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf",
+    "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [
+     9.7,
+     13.3
+    ],
+    "colors": {
+     "red": 6
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "09_Освещение": 6
+    },
+    "n_axis_lines": 2,
+    "n_diag_lines": 2,
+    "rects": []
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 0.56,
+   "colors": [],
+   "kind": "group_label",
+   "label": "группа светильников",
+   "labels": [
+    "группа светильников"
+   ],
+   "layers": [],
+   "legend_bbox": [
+    1776.12,
+    649.8,
+    1783.55,
+    663.15
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {},
+    "inner_digits": [
+     "1"
+    ],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {},
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": []
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.0,
+   "colors": [
+    "red"
+   ],
+   "kind": "light_output",
+   "label": "вывод под светильник",
+   "labels": [
+    "вывод под светильник"
+   ],
+   "layers": [
+    "09_Освещение"
+   ],
+   "legend_bbox": [
+    1773.36,
+    608.56,
+    1786.56,
+    621.76
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [
+     6.6
+    ],
+    "colors": {
+     "red": 3
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "09_Освещение": 3
+    },
+    "n_axis_lines": 2,
+    "n_diag_lines": 0,
+    "rects": []
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 0.88,
+   "colors": [
+    "green"
+   ],
+   "kind": "master_switch",
+   "label": "мастер выключатель",
+   "labels": [
+    "мастер выключатель",
+    "подрозетник под мастер выключатель"
+   ],
+   "layers": [
+    "09_Освещение"
+   ],
+   "legend_bbox": [
+    1774.68,
+    717.88,
+    1787.28,
+    732.16
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [
+     11.9
+    ],
+    "colors": {
+     "green": 2
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [
+     "М"
+    ],
+    "layers": {
+     "09_Освещение": 2
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      12.5,
+      14.3
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.0,
+   "colors": [
+    "red"
+   ],
+   "kind": "smoke_detector",
+   "label": "Извещатель пожарный дымовой ИП 212-64-R3 W1.02",
+   "labels": [
+    "Извещатель пожарный дымовой ИП 212-64-R3 W1.02"
+   ],
+   "layers": [
+    "RC-Извещатели_пожарные"
+   ],
+   "legend_bbox": [
+    1761.6,
+    626.2,
+    1775.76,
+    640.36
+   ],
+   "pdfs": [
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "red": 21
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "RC-Извещатели_пожарные": 21
+    },
+    "n_axis_lines": 6,
+    "n_diag_lines": 12,
+    "rects": [
+     [
+      14.2,
+      14.2
+     ],
+     [
+      14.2,
+      14.2
+     ],
+     [
+      14.2,
+      14.2
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 1.0,
+   "colors": [
+    "red"
+   ],
+   "kind": "smoke_detector",
+   "label": "Извещатель пожарный дымовой оптико - электронный автономный ИП 212-142",
+   "labels": [
+    "Извещатель пожарный дымовой оптико - электронный автономный ИП 212-142"
+   ],
+   "layers": [
+    "АО Извещатели ПС"
+   ],
+   "legend_bbox": [
+    1761.6,
+    647.68,
+    1775.76,
+    661.84
+   ],
+   "pdfs": [
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "red": 20
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [
+     "А"
+    ],
+    "layers": {
+     "АО Извещатели ПС": 20
+    },
+    "n_axis_lines": 6,
+    "n_diag_lines": 12,
+    "rects": [
+     [
+      14.2,
+      14.2
+     ],
+     [
+      14.2,
+      14.2
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 0.82,
+   "colors": [
+    "red"
+   ],
+   "kind": "switch_1",
+   "label": "выключатель одноклавишный",
+   "labels": [
+    "выключатель одноклавишный",
+    "подрозетник на 1 группу света (жилые комнаты - люстры двухклавишное включение)",
+    "подрозетник на 1 группу света",
+    "подрозетник на 1 группу света (жилые комнаты - люстры двухклавишное включение"
+   ],
+   "layers": [
+    "свет нумерация"
+   ],
+   "legend_bbox": [
+    1774.08,
+    667.36,
+    1785.84,
+    681.64
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "red": 1
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "свет нумерация": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      11.8,
+      14.3
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 0.87,
+   "colors": [
+    "red"
+   ],
+   "kind": "switch_2",
+   "label": "выключатель двуклавишный",
+   "labels": [
+    "выключатель двуклавишный",
+    "подрозетник на 2 группы света (жилые комнаты - люстры двухклавишное включение)",
+    "подрозетник на 2 группы света"
+   ],
+   "layers": [
+    "свет нумерация"
+   ],
+   "legend_bbox": [
+    1774.08,
+    700.96,
+    1786.44,
+    715.12
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "red": 2
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "свет нумерация": 2
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 1,
+    "rects": [
+     [
+      12.4,
+      14.2
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 0.83,
+   "colors": [
+    "red"
+   ],
+   "kind": "switch_changeover",
+   "label": "переключатель с нескольких мест",
+   "labels": [
+    "переключатель с нескольких мест",
+    "подрозетник под переключатель с нескольких мест"
+   ],
+   "layers": [
+    "09_Освещение",
+    "свет нумерация"
+   ],
+   "legend_bbox": [
+    1774.08,
+    683.92,
+    1785.96,
+    698.2
+   ],
+   "pdfs": [
+    "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [
+     11.9
+    ],
+    "colors": {
+     "red": 2
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "09_Освещение": 1,
+     "свет нумерация": 1
+    },
+    "n_axis_lines": 0,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      11.8,
+      14.3
+     ]
+    ]
+   },
+   "tier": 4
+  },
+  {
+   "aspect_ratio": 2.36,
+   "colors": [
+    "red"
+   ],
+   "kind": "wall_light_output",
+   "label": "вывод под настенный светильник",
+   "labels": [
+    "вывод под настенный светильник"
+   ],
+   "layers": [
+    "09_Освещение"
+   ],
+   "legend_bbox": [
+    1765.2,
+    521.92,
+    1777.92,
+    527.32
+   ],
+   "pdfs": [
+    "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+    "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+    "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf"
+   ],
+   "provenance": "sheet_legend_label",
+   "rotation_invariant": true,
+   "signature": {
+    "circles": [],
+    "colors": {
+     "red": 2
+    },
+    "inner_digits": [],
+    "inner_elevations": [],
+    "inner_letters": [],
+    "layers": {
+     "09_Освещение": 2
+    },
+    "n_axis_lines": 1,
+    "n_diag_lines": 0,
+    "rects": [
+     [
+      5.4,
+      5.9
+     ]
+    ]
+   },
+   "tier": 4
+  }
+ ],
+ "profile_id": "ar_ceiling_lighting",
+ "schema_version": 1,
+ "sheets": [
+  {
+   "legend_rows": 33,
+   "pdf": "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+   "profile_templates": 9,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 31,
+   "pdf": "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+   "profile_templates": 12,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 31,
+   "pdf": "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+   "profile_templates": 12,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 12,
+   "pdf": "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf",
+   "profile_templates": 5,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 0,
+   "pdf": "АР — 005 план потолка и освещения — потолок и освещение — 9RRN-DJLN-7E6.pdf",
+   "profile_templates": 0,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 0,
+   "pdf": "АР — 006 план потолка и освещения — потолок и освещение — 443P-M6Y7-JPR.pdf",
+   "profile_templates": 0,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 0,
+   "pdf": "АР — 007 план потолка и освещения — потолок и освещение — A4GF-ARAR-UYR.pdf",
+   "profile_templates": 0,
+   "state": "parsed"
+  },
+  {
+   "error": "page.rotation=270: профиль требует rotation=0",
+   "pdf": "АР — 008 план потолка и освещения — потолок и освещение — 6NAY-6WET-WK7.pdf",
+   "state": "skipped"
+  },
+  {
+   "legend_rows": 0,
+   "pdf": "АР — 009 план потолка и освещения — потолок и освещение — 77AW-66TM-UXN.pdf",
+   "profile_templates": 0,
+   "state": "parsed"
+  },
+  {
+   "legend_rows": 8,
+   "pdf": "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf",
+   "profile_templates": 5,
+   "state": "parsed"
+  }
+ ]
+}

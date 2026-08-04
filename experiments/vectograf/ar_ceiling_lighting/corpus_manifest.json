@@ -1,0 +1,117 @@
+{
+ "files": [
+  {
+   "applicable": true,
+   "block_slug": "YF7P-R6DK-PXT",
+   "normalized_name": "ар - 001 план потолка и освещения - потолок и освещение - yf7p-r6dk-pxt.pdf",
+   "reason": null,
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/YF7P-R6DK-PXT",
+   "sha256": "c50cff5c797ab4104c19906d539903585e9072b80d965c1e964ebb575cbe314a",
+   "source_name": "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf",
+   "status": "complete"
+  },
+  {
+   "applicable": true,
+   "block_slug": "67DH-JHPR-9GT",
+   "normalized_name": "ар - 002 план потолка и освещения - потолок и освещение - 67dh-jhpr-9gt.pdf",
+   "reason": null,
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/67DH-JHPR-9GT",
+   "sha256": "322e9e78e63ac640532fcad0e3a0d4cc74f9ff31142f2da94d14568883f3ae62",
+   "source_name": "АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 002 план потолка и освещения — потолок и освещение — 67DH-JHPR-9GT.pdf",
+   "status": "complete"
+  },
+  {
+   "applicable": true,
+   "block_slug": "7L6W-9ERV-PTT",
+   "normalized_name": "ар - 003 план потолка и освещения - потолок и освещение - 7l6w-9erv-ptt.pdf",
+   "reason": null,
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/7L6W-9ERV-PTT",
+   "sha256": "2023cbeba33b09f5b7a16e3d116433c73dec51fe1278c146c58520792b61e545",
+   "source_name": "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf",
+   "status": "complete"
+  },
+  {
+   "applicable": true,
+   "block_slug": "4L77-9LKK-KHF",
+   "normalized_name": "ар - 004 план потолка и освещения - потолок и освещение - 4l77-9lkk-khf.pdf",
+   "reason": null,
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/4L77-9LKK-KHF",
+   "sha256": "1ed1a7d7d6d9d0e4ba007b6011deecdf878b98c194aca6418f6aab7ae96571a5",
+   "source_name": "АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 004 план потолка и освещения — потолок и освещение — 4L77-9LKK-KHF.pdf",
+   "status": "complete"
+  },
+  {
+   "applicable": true,
+   "block_slug": "9RRN-DJLN-7E6",
+   "normalized_name": "ар - 005 план потолка и освещения - потолок и освещение - 9rrn-djln-7e6.pdf",
+   "reason": "no_room_marks",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/9RRN-DJLN-7E6",
+   "sha256": "b52813d879ed4cad4eb376553aef94d0654a8b8f14372bf252daecab5f8c2319",
+   "source_name": "АР — 005 план потолка и освещения — потолок и освещение — 9RRN-DJLN-7E6.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 005 план потолка и освещения — потолок и освещение — 9RRN-DJLN-7E6.pdf",
+   "status": "partial"
+  },
+  {
+   "applicable": true,
+   "block_slug": "443P-M6Y7-JPR",
+   "normalized_name": "ар - 006 план потолка и освещения - потолок и освещение - 443p-m6y7-jpr.pdf",
+   "reason": "no_room_marks",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/443P-M6Y7-JPR",
+   "sha256": "a744689e16d4f0574f51e79c5b80613f2d0c4e098a42ac4bbedb1909105d7359",
+   "source_name": "АР — 006 план потолка и освещения — потолок и освещение — 443P-M6Y7-JPR.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 006 план потолка и освещения — потолок и освещение — 443P-M6Y7-JPR.pdf",
+   "status": "partial"
+  },
+  {
+   "applicable": true,
+   "block_slug": "A4GF-ARAR-UYR",
+   "normalized_name": "ар - 007 план потолка и освещения - потолок и освещение - a4gf-arar-uyr.pdf",
+   "reason": "no_room_marks",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/A4GF-ARAR-UYR",
+   "sha256": "0b27449de6ebd917bf1f7262c8226ee459a5209e2a68c2cc5014ee920a97af34",
+   "source_name": "АР — 007 план потолка и освещения — потолок и освещение — A4GF-ARAR-UYR.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 007 план потолка и освещения — потолок и освещение — A4GF-ARAR-UYR.pdf",
+   "status": "partial"
+  },
+  {
+   "applicable": false,
+   "block_slug": "6NAY-6WET-WK7",
+   "normalized_name": "ар - 008 план потолка и освещения - потолок и освещение - 6nay-6wet-wk7.pdf",
+   "reason": "rotation_unsupported",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/6NAY-6WET-WK7",
+   "sha256": "9d186fbc3a311e61abd01187971f3a2c11d94046bfbdeae1ac202b1a33522746",
+   "source_name": "АР — 008 план потолка и освещения — потолок и освещение — 6NAY-6WET-WK7.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 008 план потолка и освещения — потолок и освещение — 6NAY-6WET-WK7.pdf",
+   "status": "no_graph"
+  },
+  {
+   "applicable": false,
+   "block_slug": "77AW-66TM-UXN",
+   "normalized_name": "ар - 009 план потолка и освещения - потолок и освещение - 77aw-66tm-uxn.pdf",
+   "reason": "profile_not_applicable",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/77AW-66TM-UXN",
+   "sha256": "db40d968e2ea44af51839b85f6df72b4a5d4162beae2efdb4f4df17c0022fd3c",
+   "source_name": "АР — 009 план потолка и освещения — потолок и освещение — 77AW-66TM-UXN.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 009 план потолка и освещения — потолок и освещение — 77AW-66TM-UXN.pdf",
+   "status": "no_graph"
+  },
+  {
+   "applicable": true,
+   "block_slug": "9UNV-M6D6-HQV",
+   "normalized_name": "ар - 010 план потолка и освещения - потолок и освещение - 9unv-m6d6-hqv.pdf",
+   "reason": "no_room_marks",
+   "result_dir": "experiments/vectograf/ar_ceiling_lighting/corpus/9UNV-M6D6-HQV",
+   "sha256": "d2e887a7aa25fa1895bc75965db8a56eed02394c26a66a8b52d337001c4a2c4b",
+   "source_name": "АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf",
+   "source_path": "experiments/блоки разных дисциплин/АР/АР — 010 план потолка и освещения — потолок и освещение — 9UNV-M6D6-HQV.pdf",
+   "status": "partial"
+  }
+ ],
+ "name_filter": "план потолка и освещения — потолок и освещение",
+ "profile_id": "ar_ceiling_lighting",
+ "schema_version": 1
+}
