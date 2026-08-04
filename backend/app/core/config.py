@@ -267,7 +267,7 @@ _STAGE_MODEL_DEFAULTS: dict[str, str] = {
     "findings_corrector":     "claude-opus-5",
     "norm_verify":            "claude-opus-5",
     "norm_fix":               "claude-opus-5",
-    "norm_requote":           "claude-sonnet-5",
+    "norm_requote":           "claude-opus-5",
     "optimization":           "ensemble/claude-codex-opt",
     "optimization_critic":    "claude-sonnet-5",
     "optimization_corrector": "claude-sonnet-5",
