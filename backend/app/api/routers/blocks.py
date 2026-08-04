@@ -914,6 +914,44 @@ async def get_block_llm_text(
     except Exception:
         neighbor_text_blocks = None
 
+    # Shadow-пакет профильного описания (например, ar_ceiling_lighting):
+    # backfill-скрипт пишет его в block_vector_graphs/<block_id>.<profile>.json.
+    # Stage 01/02 читают строго <block_id>.json и shadow-файл НЕ видят —
+    # production-аудит не меняется; UI получает полный Markdown. Имя файла
+    # строится санитайзером artifact_filename (никаких путей от клиента),
+    # отсутствующий артефакт даёт null, а не 500. fail-soft.
+    profiled_graph_markdown_full = None
+    profile_shadow = None
+    try:
+        from backend.app.pipeline.stages.block_grounding.block_profile_registry import (
+            ARTIFACT_DIRNAME as _bg_dirname,
+            artifact_filename as _bg_filename,
+        )
+        _safe = _bg_filename(block_id)
+        if _safe.endswith(".json"):
+            _safe = _safe[:-5]
+        _shadow_path = (Path(output_dir) / _bg_dirname /
+                        f"{_safe}.ar_ceiling_lighting.json").resolve()
+        _artifact_root = (Path(output_dir) / _bg_dirname).resolve()
+        if _artifact_root in _shadow_path.parents and _shadow_path.is_file():
+            _shadow = json.loads(_shadow_path.read_text(encoding="utf-8"))
+            if isinstance(_shadow, dict) and str(_shadow.get("block_id")) == str(block_id):
+                profiled_graph_markdown_full = _shadow.get("markdown")
+                profile_shadow = {
+                    "profile_id": _shadow.get("profile_id"),
+                    "profile_version": _shadow.get("profile_version"),
+                    "status": _shadow.get("status"),
+                    "warnings": _shadow.get("warnings") or [],
+                    "conflict_count": len(_shadow.get("conflicts") or []),
+                    "validation": _shadow.get("validation") or {},
+                    "source_pdf": _shadow.get("source_pdf"),
+                    "source_sha256": _shadow.get("source_sha256"),
+                    "provenance": _shadow.get("provenance") or {},
+                }
+    except Exception:
+        profiled_graph_markdown_full = None
+        profile_shadow = None
+
     return {
         "project_id": project_id,
         "block_id": block_id,
@@ -949,6 +987,12 @@ async def get_block_llm_text(
         "vector_graph_message": (
             VECTOR_GRAPH_MISSING_MESSAGE if vector_text_available is False else None
         ),
+        # Полное человекочитаемое Markdown-описание блока (shadow-профиль,
+        # например «АР. План потолков и освещения»). null = артефакта нет,
+        # UI сохраняет прежнее поведение панели.
+        "profiled_graph_markdown_full": profiled_graph_markdown_full,
+        # Сводка shadow-профиля: profile_id/status/warnings/conflict_count/…
+        "profile_shadow": profile_shadow,
         # пространственные группы текста блока (оверлей «области»): bbox в [0,1] региона блока
         "text_groups": text_groups,
         # соседние text-блоки страницы: send=уникальные (слать), dropped=дубли текст-слоя (не слать)

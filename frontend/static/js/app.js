@@ -8277,6 +8277,16 @@ const app = createApp({
         }
 
         // Загрузить текст блока, реально уходящий в нейронку (Stage 01)
+        // Кэш ответов llm-text по блоку: повторное открытие панели «txt»
+        // не делает лишний запрос, а переключение блоков не показывает
+        // текст предыдущего блока (ключ = проект|версия|блок).
+        const blockLlmTextCache = new Map();
+
+        function blockLlmTextCacheKey(block) {
+            return [blocksProjectId.value || '', activeVersionId.value || '',
+                    block && block.block_id || ''].join('|');
+        }
+
         async function loadBlockLlmText() {
             const block = selectedBlock.value;
             if (!block) return;
@@ -8286,6 +8296,13 @@ const app = createApp({
                 blockLlmTextError.value = '';
                 return;
             }
+            const cacheKey = blockLlmTextCacheKey(block);
+            if (blockLlmTextCache.has(cacheKey)) {
+                blockLlmText.value = blockLlmTextCache.get(cacheKey);
+                blockLlmTextError.value = '';
+                return;
+            }
+            blockLlmText.value = null; // не показывать текст предыдущего блока
             blockLlmTextLoading.value = true;
             blockLlmTextError.value = '';
             try {
@@ -8316,6 +8333,7 @@ const app = createApp({
                     return;
                 }
                 blockLlmText.value = payload;
+                blockLlmTextCache.set(cacheKey, payload);
             } catch (e) {
                 blockLlmText.value = null;
                 blockLlmTextError.value = 'Не удалось загрузить текст блока: ' + (e.message || e);
@@ -8333,9 +8351,47 @@ const app = createApp({
             showBlockLlmText.value = !showBlockLlmText.value;
             if (showBlockLlmText.value) {
                 showBlockRegions.value = false; // txt и области взаимоисключающие
-                if (!blockLlmText.value || !blockLlmText.value.user_text) loadBlockLlmText();
+                const cur = selectedBlock.value;
+                if (!blockLlmText.value
+                        || String(blockLlmText.value.block_id) !== String(cur && cur.block_id)) {
+                    loadBlockLlmText();
+                }
             }
         }
+
+        // Полное профильное Markdown-описание блока (shadow-профиль, напр.
+        // «АР. План потолков и освещения»): рендер как форматированный документ.
+        // Санитизация: исходный HTML экранируется ДО marked.parse (разметку
+        // строит только сам markdown), затем страховочно вырезаются script/
+        // iframe, on*-атрибуты и javascript:-ссылки.
+        function renderMarkdownSafe(text) {
+            if (!text) return '';
+            const escaped = String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            let html;
+            if (typeof marked !== 'undefined') {
+                try {
+                    html = marked.parse(escaped, { breaks: false, gfm: true });
+                } catch (e) {
+                    html = escaped.replace(/\n/g, '<br>');
+                }
+            } else {
+                html = escaped.replace(/\n/g, '<br>');
+            }
+            return html
+                .replace(/<\s*(script|iframe|object|embed|form)[^>]*>/gi, '')
+                .replace(/<\s*\/\s*(script|iframe|object|embed|form)\s*>/gi, '')
+                .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+                .replace(/(href|src)\s*=\s*(["']?)\s*javascript:[^"'\s>]*\2/gi, '$1="#"');
+        }
+
+        const blockProfiledMarkdownHtml = computed(() => {
+            const payload = blockLlmText.value;
+            if (!payload || !payload.profiled_graph_markdown_full) return '';
+            return renderMarkdownSafe(payload.profiled_graph_markdown_full);
+        });
 
         // Полупрозрачные области линий поверх блока — визуальная проверка связи данных
         const showBlockRegions = ref(false);
@@ -18835,6 +18891,8 @@ const app = createApp({
             toggleTextlayerHighlightsShadow,
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
+            // полное профильное Markdown-описание блока (shadow-профиль)
+            blockProfiledMarkdownHtml, renderMarkdownSafe,
             showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             logTruncatedNotice,

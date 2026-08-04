@@ -3570,6 +3570,27 @@
                             <div v-if="showBlockLlmText && !blockHasNoVectorGraph(selectedBlock)" class="block-llm-text"
                                  @click.stop @wheel.stop @mousedown.stop @dblclick.stop>
                                 <div v-if="blockLlmTextLoading" class="block-llm-text__msg">Загрузка…</div>
+                                <!-- Полное профильное описание блока (shadow-профиль, напр. «АР. План
+                                     потолков и освещения»): главное содержимое панели «Текст».
+                                     Рендерится как форматированный документ (заголовки, списки,
+                                     таблицы), а не сырой Markdown; без обрезки и без лимита сущностей. -->
+                                <template v-else-if="blockLlmText && (blockLlmText.profiled_graph_markdown_full || (blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'no_graph'))">
+                                    <div v-if="blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'no_graph'"
+                                         class="block-llm-text__notice block-llm-text__notice--muted">
+                                        Для данного блока профиль «План потолков и освещения» неприменим.
+                                    </div>
+                                    <template v-else>
+                                        <div v-if="blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'partial'"
+                                             class="block-llm-text__notice">
+                                            Описание сформировано частично. Неразрешённые элементы перечислены в конце документа.
+                                        </div>
+                                        <article class="block-profile-md" v-html="blockProfiledMarkdownHtml"></article>
+                                    </template>
+                                    <details v-if="blockLlmText.system_prompt" class="block-llm-text__sys">
+                                        <summary>system prompt Stage 02</summary>
+                                        <pre>{{ blockLlmText.system_prompt }}</pre>
+                                    </details>
+                                </template>
                                 <template v-else-if="blockLlmText && blockLlmText.user_text">
                                     <!-- Универсальный профильный граф: ОВ, ВК, ЭОМ, СС, ГП, АР, КЖ, КМ, ТХ. -->
                                     <template v-if="blockLlmText.block_graph_package && blockLlmText.profiled_graph && blockLlmText.profiled_graph_display && blockLlmText.block_graph_package.source_kind !== 'structured_singleline'">
