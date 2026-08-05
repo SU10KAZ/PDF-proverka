@@ -114,6 +114,10 @@ def main() -> int:
     parser.add_argument("--legend-registry", default=str(DEFAULT_REGISTRY))
     parser.add_argument("--pdf", default=None,
                         help="явный путь к вектор-PDF (default: 02_work/document.pdf версии)")
+    parser.add_argument("--corpus-dir", default=None,
+                        help="каталог одностраничных вектор-PDF блоков: PDF блока ищется "
+                             "по block_id в имени файла (галерейные проекты, где у всех "
+                             "блоков page=1 и общий document.pdf — склейка)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     if not args.project_id and not args.project_dir:
@@ -121,7 +125,17 @@ def main() -> int:
 
     output_dir, version_dir, project_id = _resolve_output_dir(args)
     pdf_path = Path(args.pdf) if args.pdf else version_dir / "02_work" / "document.pdf"
-    if not pdf_path.is_file():
+    corpus_pdfs: dict[str, Path] = {}
+    if args.corpus_dir:
+        for p in sorted(Path(args.corpus_dir).rglob("*.pdf")):
+            stem = p.stem
+            # block_id — последний токен имени (после последнего тире/пробела)
+            tail = stem.replace("—", "-").split("-")
+            for n in (3, 2, 1):
+                token = "-".join(t.strip() for t in tail[-n:]).strip()
+                if token:
+                    corpus_pdfs.setdefault(token, p)
+    if not pdf_path.is_file() and not corpus_pdfs:
         print(f"ОШИБКА: PDF не найден: {pdf_path}", file=sys.stderr)
         return 2
     registry_entries = load_legend_registry(args.legend_registry)
@@ -132,15 +146,26 @@ def main() -> int:
         return 2
     print(f"Проект {project_id}: блоков к обработке {len(blocks)}; PDF: {pdf_path}")
 
-    pdf_sha = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+    sha_cache: dict[Path, str] = {}
+
+    def sha_of(path: Path) -> str:
+        if path not in sha_cache:
+            sha_cache[path] = hashlib.sha256(path.read_bytes()).hexdigest()
+        return sha_cache[path]
+
     written, skipped = [], []
     for b in blocks:
         block_id = b["block_id"]
         page = b.get("page")
-        if not page:
-            skipped.append((block_id, "нет страницы в индексе"))
+        block_pdf = corpus_pdfs.get(block_id)
+        if block_pdf is not None:
+            src_pdf, page_index = block_pdf, 0
+        elif pdf_path.is_file() and page:
+            src_pdf, page_index = pdf_path, int(page) - 1
+        else:
+            skipped.append((block_id, "нет источника PDF (ни corpus-dir, ни страницы)"))
             continue
-        result = run_profile(str(pdf_path), page_index=int(page) - 1, block_id=block_id,
+        result = run_profile(str(src_pdf), page_index=page_index, block_id=block_id,
                              legend_registry=registry_entries)
         status = result["status"]
         if status in ("no_graph", "error"):
@@ -159,8 +184,8 @@ def main() -> int:
             "profile_id": PROFILE_ID,
             "profile_version": PROFILE_VERSION,
             "status": status,
-            "source_pdf": pdf_path.name,
-            "source_sha256": pdf_sha,
+            "source_pdf": src_pdf.name,
+            "source_sha256": sha_of(src_pdf),
             "warnings": graph.get("warnings") or [],
             "conflicts": graph.get("conflicts") or [],
             "ledger_summary": _ledger_summary(graph),
