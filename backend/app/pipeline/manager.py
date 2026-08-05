@@ -2013,13 +2013,12 @@ class PipelineManager:
         missing_pngs: list[str] = []
         if index_path.exists():
             _ok, missing_pngs = crops_materialized(blocks_dir)
-        needs_crop = (
-            force := (
-                (index_path.exists() and not _existing_crop_matches_policy(index_path, policy))
-                or stale_existing_dir
-                or bool(missing_pngs)
-            )
-        ) or not index_path.exists()
+        # --force = перекачать по crop_url ВСЁ. Оправдан только когда уже
+        # скачанные PNG отрендерены по другой политике: переиспользовать их
+        # нельзя. Недостающие PNG форса не требуют — crop_blocks() берёт
+        # существующие файлы ([EXISTS]) и качает только отсутствующие.
+        force = index_path.exists() and not _existing_crop_matches_policy(index_path, policy)
+        needs_crop = force or stale_existing_dir or bool(missing_pngs) or not index_path.exists()
         if not needs_crop:
             await self._log(
                 job,
@@ -2031,7 +2030,7 @@ class PipelineManager:
             await self._log(
                 job,
                 f"Stage 01 crop: отсутствует {len(missing_pngs)} PNG из index.json "
-                f"— пере-кроп (иначе анализ блоков пошёл бы вслепую)",
+                f"— докачиваю недостающие (иначе анализ блоков пошёл бы вслепую)",
                 "warn",
             )
 

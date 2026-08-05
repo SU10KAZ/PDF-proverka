@@ -170,6 +170,57 @@ def summary_path(output_dir: Path) -> Path:
     return Path(output_dir) / BLOCK_CONTEXT_SUMMARY_FILENAME
 
 
+def block_context_up_to_date(
+    output_dir: Path,
+    *,
+    blocks_index_path: Path | None = None,
+) -> dict[str, Any]:
+    """Готов ли контекст блоков для ТЕКУЩЕГО набора кропов.
+
+    Отвечает на вопрос «можно ли пропустить пересборку»: одной валидности
+    сводки мало — она могла быть построена по прошлому набору блоков. Поэтому
+    дополнительно сверяем, что каждый block_id из index.json уже покрыт
+    сводкой. Обратное несовпадение (в сводке блоков больше) допустимо: лишние
+    записи не мешают, а перекроп мог отсеять мелочь.
+
+    Возвращает ``{"ready": bool, "reason": str, "summary": dict}``.
+    """
+    output_dir = Path(output_dir)
+    validation = validate_block_context_summary(output_dir, canonical_only=True)
+    if not validation.get("valid"):
+        return {"ready": False, "reason": str(validation.get("reason") or "summary невалиден")}
+
+    summary = validation.get("summary") or {}
+    index_path = Path(blocks_index_path) if blocks_index_path else resolve_blocks_index(output_dir)
+    if not index_path.is_file():
+        return {"ready": False, "reason": "index.json кропов отсутствует", "summary": summary}
+    try:
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return {"ready": False, "reason": f"index.json не читается: {exc}", "summary": summary}
+
+    entries = index if isinstance(index, list) else (index.get("blocks") or [])
+    indexed_ids = {
+        str(e.get("block_id"))
+        for e in entries
+        if isinstance(e, dict) and e.get("block_id")
+    }
+    covered_ids = {
+        str(b.get("block_id"))
+        for b in (summary.get("blocks") or [])
+        if isinstance(b, dict) and b.get("block_id")
+    }
+    uncovered = indexed_ids - covered_ids
+    if uncovered:
+        return {
+            "ready": False,
+            "reason": f"контекст не покрывает {len(uncovered)} блоков из index.json",
+            "summary": summary,
+            "uncovered": sorted(uncovered),
+        }
+    return {"ready": True, "reason": "", "summary": summary}
+
+
 def _legacy_source(block: dict[str, Any]) -> str:
     response_source = str(block.get("base_response_source") or "")
     if response_source == "vector_skip":

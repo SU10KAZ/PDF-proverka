@@ -7,12 +7,33 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 )
 
 from .builder import build_block_context
-from .contract import STAGE_TITLE, validate_block_context_summary
+from .contract import (
+    STAGE_TITLE,
+    block_context_up_to_date,
+    validate_block_context_summary,
+)
 
 
 async def run_block_context_stage(ctx, *, force: bool = False) -> StageResult:
-    del force  # local rebuild is deterministic and cheap
     index_path = ctx.output_dir / STAGE02_BLOCKS_DIRNAME / "index.json"
+
+    # Контекст, уже собранный «Подготовкой данных», переиспользуем: запуск
+    # аудита не должен гонять этап заново. Сверяем не только валидность
+    # сводки, но и покрытие текущего index.json — иначе после докропа новые
+    # блоки остались бы без контекста. force (retry/resume этапа) пропуск
+    # игнорирует.
+    if not force:
+        state = block_context_up_to_date(ctx.output_dir, blocks_index_path=index_path)
+        if state.get("ready"):
+            summary = state.get("summary") or {}
+            message = (
+                f"{STAGE_TITLE}: уже собран, пропускаю "
+                f"({summary.get('blocks_ready', 0)}/{summary.get('blocks_total', 0)})"
+            )
+            ctx.update_pipeline_log("block_context", "done", message=message)
+            ctx.update_pipeline_log("gemma_enrichment", "done", message=message)
+            return StageResult.ok(message=message, summary=summary)
+
     ctx.update_pipeline_log("block_context", "running")
 
     async def _progress(event: dict) -> None:
