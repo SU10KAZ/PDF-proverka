@@ -11,7 +11,8 @@ project_rename_service — безопасное переименование з�
   * `decisions_log.json`  → entries[].source_project (scope по object_id);
   * `usage_data.json`     → records[].project_id;
   * `project_groups.json` → groups[object_id][section][].project_ids;
-  * `missing_norms_vault.json` → norms{}.occurrences[].project_id.
+  * legacy `missing_norms_vault.json` → norms{}.occurrences[].project_id;
+    новый строковый список не содержит project_id и не требует ремапа.
 
 Внутренние data-файлы проекта (PDF / `<имя>_document.md` / `*_result.json` и
 прочие артефакты) НЕ переименовываются: они адресуются относительным именем
@@ -19,6 +20,17 @@ project_rename_service — безопасное переименование з�
 имена остаются косметическим эхом старого названия. Переименование этих файлов
 потребовало бы переписать `md_file`/`pdf_file` в `project_info.json` и
 внутренние ссылки артефактов — это отдельный, более рискованный объём работы.
+
+Слой хранения (`AUDIT_PROJECTS_V2_WRITE_MODE`):
+  * `legacy` / `dual_write_shadow` — переименовывается legacy-папка, а
+    `projects_v2` догоняется shadow-синхронизацией (`sync_v2_shadow_rename`);
+  * `projects_v2_primary` — источник истины projects_v2 (legacy-папки может уже
+    не быть), работает `_rename_project_v2_primary`: переезжает папка документа
+    `documents/<document_code>`, обновляются `document.json`, метаданные версий
+    (`01_input/project_info.json`, `04_review/expert_review.json`) и
+    `_system/old_to_new_map.json`. Как и clean/delete, операция проходит через
+    safety-контракт (снимок метаданных → confirmation log → guard), но снимок
+    лёгкий: rename ничего не удаляет, полный copytree версии не нужен.
 
 Безопасность:
   * имя валидируется (без слэшей, обратных слэшей, '..', управляющих символов,
@@ -427,6 +439,250 @@ def _remap_vault(path: Path, id_map: dict[str, str]) -> int:
     return changed
 
 
+# ─── projects_v2-primary ветка ─────────────────────────────────────────────
+def _remap_old_to_new_map(map_path: Path, old_code: str, new_code: str,
+                          old_doc_dir: Path, new_doc_dir: Path) -> int:
+    """`old_to_new_map.json`: document_code + пути v2 после переезда папки."""
+    data = _load_json(map_path)
+    if not isinstance(data, dict):
+        return 0
+    old_prefix = str(old_doc_dir)
+    new_prefix = str(new_doc_dir)
+    changed = 0
+
+    def _repath(value: Any) -> Any:
+        if isinstance(value, str) and (value == old_prefix or value.startswith(old_prefix + os.sep)):
+            return new_prefix + value[len(old_prefix):]
+        return value
+
+    for entry in data.get("migrations", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        touched = False
+        if entry.get("document_code") == old_code:
+            entry["document_code"] = new_code
+            touched = True
+        for key in ("v2_document_dir", "v2_version_dir"):
+            if key in entry:
+                new_val = _repath(entry.get(key))
+                if new_val != entry.get(key):
+                    entry[key] = new_val
+                    touched = True
+        for f in entry.get("files", []) or []:
+            if not isinstance(f, dict):
+                continue
+            new_val = _repath(f.get("new_path"))
+            if new_val != f.get("new_path"):
+                f["new_path"] = new_val
+                touched = True
+        if touched:
+            changed += 1
+    if changed:
+        _atomic_write_json(map_path, data)
+    return changed
+
+
+def _update_v2_version_metadata(doc_dir: Path, new_base: str) -> list[str]:
+    """`project_info.json` / `expert_review.json` версий → новый project_id."""
+    updated: list[str] = []
+    versions_root = doc_dir / "versions"
+    if not versions_root.is_dir():
+        return updated
+    for vdir in sorted(versions_root.iterdir()):
+        if not vdir.is_dir():
+            continue
+        info = vdir / "01_input" / "project_info.json"
+        if info.exists():
+            _update_project_info(info, new_base)
+            updated.append(str(info))
+        review = vdir / "04_review" / "expert_review.json"
+        if review.exists():
+            data = _load_json(review)
+            if isinstance(data, dict) and data.get("project_id") not in (None, new_base):
+                data["project_id"] = new_base
+                try:
+                    _atomic_write_json(review, data)
+                    updated.append(str(review))
+                except Exception:
+                    pass
+    return updated
+
+
+def _rename_project_v2_primary(
+    project_id: str,
+    new_name: str,
+    *,
+    object_id: Optional[str] = None,
+    decisions_log_file: Optional[Path] = None,
+    usage_data_file: Optional[Path] = None,
+    project_groups_file: Optional[Path] = None,
+    missing_norms_vault_file: Optional[Path] = None,
+    reverse_log_file: Optional[Path] = None,
+    check_running: bool = True,
+    v2_root: Optional[Path] = None,
+) -> dict[str, Any]:
+    """Переименование документа в `projects_v2` (write mode = v2-primary).
+
+    Legacy-папки в этом режиме может не быть вовсе, поэтому источник истины —
+    `projects_v2/objects/<obj>/disciplines/<disc>/documents/<document_code>`.
+    Операция обратима (папка переезжает, ничего не удаляется), но проходит через
+    тот же safety-контракт, что и clean/delete: снимок мутируемых метаданных →
+    append-only confirmation log → guard. Все проверки — ДО первой мутации.
+    """
+    from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    from backend.app.services.storage.storage_write_facade import StorageWriteFacade, V2Target
+    from backend.app.services.storage.v2_primary_wiring import (
+        backup_paths_before_destructive,
+        guard_destructive_v2_primary,
+        record_destructive_confirmation,
+    )
+
+    if v2_root is not None:
+        root = Path(v2_root).resolve()
+    else:
+        resolved = StorageWriteFacade().v2_root()
+        if resolved is None:
+            raise RenameError("projects_v2 root не настроен")
+        root = Path(resolved).resolve()
+
+    new_base = sanitize_new_name(new_name)
+    new_code = _norm_doc_name(new_base)
+    if not new_code:
+        raise InvalidProjectNameError("Имя проекта не может быть пустым")
+
+    adapter = ProjectsV2Adapter(root)
+    doc = adapter.find_document_by_project_id(project_id, object_id=object_id)
+    if doc is None:
+        raise ProjectNotFoundError(f"Проект '{project_id}' не найден")
+
+    old_code = doc["document_code"]
+    doc_dir = Path(doc["doc_dir"]).resolve()
+    objects_root = (root / "objects").resolve()
+    if not _within(doc_dir, objects_root):
+        raise ProjectNotFoundError(f"Проект '{project_id}' вне projects_v2")
+    if object_id is None:
+        object_id = doc.get("object_id")
+
+    new_project_id = _replace_basename(project_id, new_base)
+    warnings: list[str] = []
+
+    if new_code == _norm_doc_name(old_code) and doc_dir.name == new_code:
+        return {
+            "status": "renamed", "project_id": project_id,
+            "old_name": old_code, "new_name": new_code,
+            "old_path": str(doc_dir), "new_path": str(doc_dir),
+            "storage_layer": "projects_v2", "stores": {},
+            "warnings": ["Имя не изменилось"],
+        }
+
+    if check_running and _is_running(project_id, old_code):
+        raise ProjectBusyError(
+            f"По проекту '{old_code}' идёт аудит. Сначала отмените его."
+        )
+
+    new_doc_dir = doc_dir.parent / new_code
+    if not _within(doc_dir.parent, objects_root):
+        raise RenameError("Целевой путь вне projects_v2")
+    if new_doc_dir.exists():
+        raise RenameConflictError(f"Документ '{new_code}' уже существует")
+    if adapter.find_document(new_code, object_id=object_id) is not None:
+        raise RenameConflictError(f"Проект '{new_code}' уже существует в этом объекте")
+
+    # ── safety-контракт: снимок метаданных → confirmation → guard ──
+    map_path = root / "_system" / "old_to_new_map.json"
+    backup_id = backup_paths_before_destructive(
+        [doc_dir / "document.json", map_path], root, "rename_project", label=old_code,
+    )
+    target = V2Target(
+        object_folder=doc["object_folder"],
+        discipline=doc["discipline"],
+        document_code=old_code,
+        version_id=doc.get("current_version") or "v001",
+    )
+    record_destructive_confirmation(
+        target, root, op="rename_project", backup_id=backup_id, project_id=project_id,
+    )
+    guard_destructive_v2_primary("rename_project", confirmed=True, backup_id=backup_id)
+
+    # ── APPLY: перенос папки документа + поля document.json ──
+    v2_sync = sync_v2_shadow_rename(
+        old_code, new_code, object_id=object_id, v2_root=root,
+    )
+    warnings.extend(f"projects_v2: {w}" for w in v2_sync.get("warnings", []))
+    if not new_doc_dir.is_dir():
+        raise RenameError(
+            "projects_v2: папка документа не переименована "
+            f"({old_code} → {new_code}); warnings={v2_sync.get('warnings')}"
+        )
+
+    id_map = {old_code: new_code}
+    reverse: dict[str, Any] = {
+        "at": _now_iso(), "old_base": old_code, "new_base": new_code,
+        "storage_layer": "projects_v2", "backup_id": backup_id,
+        "moves": [[str(new_doc_dir), str(doc_dir)]],
+        "id_map": id_map, "object_id": object_id, "stores": {},
+    }
+
+    # ── метаданные версий + карта миграции ──
+    try:
+        reverse["version_metadata"] = _update_v2_version_metadata(new_doc_dir, new_code)
+    except Exception as ex:
+        warnings.append(f"метаданные версий: {ex}")
+    try:
+        reverse["old_to_new_map"] = _remap_old_to_new_map(
+            map_path, old_code, new_code, doc_dir, new_doc_dir,
+        )
+    except Exception as ex:
+        warnings.append(f"old_to_new_map: {ex}")
+
+    # ── ремап сторов, ключуемых по project_id ──
+    stores: dict[str, int] = {}
+    remaps = (
+        ("decisions_log", decisions_log_file or config.DECISIONS_LOG_FILE,
+         lambda p: _remap_decisions_log(p, id_map, object_id)),
+        ("usage_data", usage_data_file or config.USAGE_DATA_FILE,
+         lambda p: _remap_usage(p, id_map)),
+        ("project_groups", project_groups_file or config.PROJECT_GROUPS_FILE,
+         lambda p: _remap_groups(p, id_map, object_id)),
+        ("missing_norms_vault", missing_norms_vault_file or config.MISSING_NORMS_VAULT_FILE,
+         lambda p: _remap_vault(p, id_map)),
+    )
+    for name, path, fn in remaps:
+        try:
+            stores[name] = fn(Path(path))
+        except Exception as ex:
+            warnings.append(f"{name}: {ex}")
+    reverse["stores"] = stores
+
+    rl = Path(reverse_log_file) if reverse_log_file else (config.APP_DATA_DIR / "project_rename.reverse.json")
+    try:
+        _atomic_write_json(rl, reverse)
+    except Exception as ex:
+        warnings.append(f"reverse-log: {ex}")
+
+    project_service.invalidate_project_cache()
+
+    print(
+        f"[rename_project] projects_v2: {doc_dir} -> {new_doc_dir} | "
+        f"backup={backup_id} | stores={stores} | object_id={object_id} | "
+        f"warnings={warnings}"
+    )
+
+    return {
+        "status": "renamed",
+        "project_id": new_project_id,
+        "old_name": old_code,
+        "new_name": new_code,
+        "old_path": str(doc_dir),
+        "new_path": str(new_doc_dir),
+        "storage_layer": "projects_v2",
+        "stores": stores,
+        "backup_id": backup_id,
+        "v2_shadow": v2_sync,
+        "warnings": warnings,
+    }
+
+
 # ─── Главная функция ──────────────────────────────────────────────────────
 def rename_project(
     project_id: str,
@@ -448,9 +704,23 @@ def rename_project(
     Возвращает dict с new project_id / old_name / new_name / old_path /
     new_path / storage_layer / store-counts / warnings.
     """
-    # Шаг 6C: в V2_PRIMARY переименование запрещено до safety-контракта (no-op в
-    # legacy/dual_write_shadow → прод не затрагивается).
+    # В V2_PRIMARY источник истины — projects_v2 (legacy-папки может не быть):
+    # отдельная ветка с обязательным backup+confirmation. В legacy/
+    # dual_write_shadow guard — no-op, работает прежний legacy-путь ниже.
+    from backend.app.services.storage.storage_write_facade import v2_is_primary
     from backend.app.services.storage.v2_primary_wiring import guard_destructive_v2_primary
+    if v2_is_primary():
+        return _rename_project_v2_primary(
+            project_id, new_name,
+            object_id=object_id,
+            decisions_log_file=decisions_log_file,
+            usage_data_file=usage_data_file,
+            project_groups_file=project_groups_file,
+            missing_norms_vault_file=missing_norms_vault_file,
+            reverse_log_file=reverse_log_file,
+            check_running=check_running,
+            v2_root=v2_root,
+        )
     guard_destructive_v2_primary("rename_project")
     new_base = sanitize_new_name(new_name)
 

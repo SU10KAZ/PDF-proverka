@@ -320,6 +320,52 @@ def backup_version_before_destructive(target: V2Target, v2_root: Path, op: str) 
     return backup_dir.name
 
 
+def backup_paths_before_destructive(
+    paths: Any, v2_root: Path, op: str, *, label: str,
+) -> str:
+    """Снимок конкретных файлов перед ОБРАТИМОЙ destructive-op → backup_id.
+
+    Для операций, которые не удаляют пользовательские данные (переименование
+    документа), полный `copytree` версии избыточен и дорог: достаточно снимка
+    мутируемых JSON (`document.json`, `old_to_new_map.json`). Пути внутри backup
+    сохраняются относительно ``v2_root``, поэтому восстановление — прямое
+    копирование обратно. Файлы вне ``v2_root`` кладутся в подпапку `_external/`
+    по basename.
+    """
+    root = Path(v2_root).resolve()
+    backups = _destructive_backups_dir(root)
+    backups.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    base_id = "{ts}_{label}__{op}".format(
+        ts=ts,
+        label=_safe_backup_component(label, "item"),
+        op=_safe_backup_component(op, "op"),
+    )
+    backup_dir = backups / base_id
+    suffix = 1
+    while backup_dir.exists():
+        backup_dir = backups / f"{base_id}_{suffix}"
+        suffix += 1
+
+    copied = 0
+    for raw in paths or []:
+        src = Path(raw)
+        if not src.is_file():
+            continue
+        try:
+            rel = src.resolve().relative_to(root)
+        except ValueError:
+            rel = Path("_external") / src.name
+        dst = backup_dir / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        copied += 1
+    if copied == 0:
+        # backup_id обязан указывать на существующую папку (restore/audit).
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    return backup_dir.name
+
+
 def record_destructive_confirmation(
     target: V2Target,
     v2_root: Path,

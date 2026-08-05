@@ -412,3 +412,149 @@ def test_v2_resolve_prefers_new_after_rename(projects_dir, stores):
     adapter = ProjectsV2Adapter(v2_root=v2)
     assert adapter.find_document("RES", object_id="OBJ") is not None
     assert adapter.find_document("RES V1", object_id="OBJ") is None
+
+
+# ─── projects_v2-primary: rename без legacy-папки ──────────────────────────
+def _mk_v2_version(doc_dir: Path, version_id: str = "v001", *, project_id: str) -> Path:
+    """Наполнить версию v2-документа метаданными, которые ремапит rename."""
+    vdir = doc_dir / "versions" / version_id
+    (vdir / "01_input").mkdir(parents=True)
+    (vdir / "04_review").mkdir(parents=True)
+    (vdir / "01_input" / "project_info.json").write_text(
+        json.dumps({"project_id": project_id, "name": project_id, "section": "AR"},
+                   ensure_ascii=False), encoding="utf-8")
+    (vdir / "04_review" / "expert_review.json").write_text(
+        json.dumps({"project_id": project_id, "decisions": {"F-001": "accepted"}},
+                   ensure_ascii=False), encoding="utf-8")
+    return vdir
+
+
+@pytest.fixture
+def v2_primary(monkeypatch):
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "projects_v2_primary")
+
+
+def test_v2_primary_rename_moves_doc_dir_without_legacy(projects_dir, stores, v2_primary):
+    """В v2-primary rename работает по projects_v2, даже если legacy-папки нет."""
+    v2 = _v2_root_for(projects_dir)
+    doc_dir = _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+                         doc_code="0000-OLD", legacy_projects_root=projects_dir)
+    _mk_v2_version(doc_dir, project_id="0000-OLD")
+
+    res = _rename("0000-OLD", "NEW-CODE", stores, v2_root=v2)
+
+    assert res["storage_layer"] == "projects_v2"
+    assert res["project_id"] == "NEW-CODE"
+    new_dir = v2 / "objects/OBJ_F/disciplines/AR/documents/NEW-CODE"
+    assert new_dir.is_dir() and not doc_dir.exists()
+    assert json.loads((new_dir / "document.json").read_text())["document_code"] == "NEW-CODE"
+    # метаданные версии переехали на новый project_id
+    vdir = new_dir / "versions" / "v001"
+    assert json.loads((vdir / "01_input" / "project_info.json").read_text())["project_id"] == "NEW-CODE"
+    review = json.loads((vdir / "04_review" / "expert_review.json").read_text())
+    assert review["project_id"] == "NEW-CODE"
+    assert review["decisions"] == {"F-001": "accepted"}  # вердикты не тронуты
+
+
+def test_v2_primary_rename_writes_backup_and_confirmation(projects_dir, stores, v2_primary):
+    """Safety-контракт: снимок метаданных + append-only confirmation log."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="0000-OLD", legacy_projects_root=projects_dir)
+
+    res = _rename("0000-OLD", "NEW-CODE", stores, v2_root=v2)
+
+    backup_dir = v2 / "_system" / "destructive_backups" / res["backup_id"]
+    assert backup_dir.is_dir()
+    saved = list(backup_dir.rglob("document.json"))
+    assert saved, list(backup_dir.rglob("*"))
+    assert json.loads(saved[0].read_text())["document_code"] == "0000-OLD"  # до-состояние
+    conf = (v2 / "_system" / "destructive_confirmations.jsonl").read_text(encoding="utf-8")
+    rows = [json.loads(l) for l in conf.splitlines() if l.strip()]
+    assert any(r["op"] == "rename_project" and r["backup_id"] == res["backup_id"] for r in rows)
+
+
+def test_v2_primary_rename_remaps_stores(projects_dir, stores, v2_primary):
+    """decisions_log / usage_data / project_groups / vault переезжают на новый id."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="0000-OLD", legacy_projects_root=projects_dir)
+    Path(stores["decisions_log_file"]).write_text(json.dumps({"entries": [
+        {"object_id": "OBJ", "source_project": "0000-OLD", "item_id": "F-001"},
+        {"object_id": "OTHER", "source_project": "0000-OLD", "item_id": "F-002"},
+    ]}), encoding="utf-8")
+    Path(stores["usage_data_file"]).write_text(json.dumps({"records": [
+        {"project_id": "0000-OLD", "cost_usd": 1.0}]}), encoding="utf-8")
+    Path(stores["project_groups_file"]).write_text(json.dumps({
+        "OBJ": {"AR": [{"project_ids": ["0000-OLD", "KEEP"]}]}}), encoding="utf-8")
+
+    res = _rename("0000-OLD", "NEW-CODE", stores, v2_root=v2)
+
+    assert res["stores"]["decisions_log"] == 1  # только свой object_id
+    dec = json.loads(Path(stores["decisions_log_file"]).read_text())["entries"]
+    assert dec[0]["source_project"] == "NEW-CODE"
+    assert dec[1]["source_project"] == "0000-OLD"  # чужой объект не тронут
+    usage = json.loads(Path(stores["usage_data_file"]).read_text())["records"]
+    assert usage[0]["project_id"] == "NEW-CODE"
+    groups = json.loads(Path(stores["project_groups_file"]).read_text())
+    assert groups["OBJ"]["AR"][0]["project_ids"] == ["NEW-CODE", "KEEP"]
+
+
+def test_v2_primary_rename_conflict_leaves_everything_intact(projects_dir, stores, v2_primary):
+    """Занятое имя → 409 и НИ одной мутации (папка, backup, confirmation)."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="0000-OLD", legacy_projects_root=projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="TAKEN", legacy_projects_root=projects_dir)
+
+    with pytest.raises(prs.RenameConflictError):
+        _rename("0000-OLD", "TAKEN", stores, v2_root=v2)
+
+    docs = v2 / "objects/OBJ_F/disciplines/AR/documents"
+    assert (docs / "0000-OLD" / "document.json").exists()
+    assert json.loads((docs / "TAKEN" / "document.json").read_text())["document_code"] == "TAKEN"
+    assert not (v2 / "_system" / "destructive_backups").exists()
+    assert not (v2 / "_system" / "destructive_confirmations.jsonl").exists()
+
+
+def test_v2_primary_rename_unknown_project_is_404(projects_dir, stores, v2_primary):
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="0000-OLD", legacy_projects_root=projects_dir)
+    with pytest.raises(prs.ProjectNotFoundError):
+        _rename("NOPE", "NEW-CODE", stores, v2_root=v2)
+
+
+def test_v2_primary_rename_updates_old_to_new_map(projects_dir, stores, v2_primary):
+    """old_to_new_map: document_code + v2-пути переезжают вместе с папкой."""
+    v2 = _v2_root_for(projects_dir)
+    doc_dir = _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+                         doc_code="0000-OLD", legacy_projects_root=projects_dir)
+    map_path = v2 / "_system" / "old_to_new_map.json"
+    map_path.parent.mkdir(parents=True, exist_ok=True)
+    map_path.write_text(json.dumps({"migrations": [
+        {"object_id": "OBJ", "discipline": "AR", "document_code": "0000-OLD",
+         "v2_document_dir": str(doc_dir),
+         "files": [{"old_path": "/tmp/x.pdf", "new_path": str(doc_dir / "versions/v001/01_input/x.pdf")}]},
+        {"object_id": "OBJ", "discipline": "AR", "document_code": "OTHER",
+         "v2_document_dir": str(doc_dir.parent / "OTHER"), "files": []},
+    ]}, ensure_ascii=False), encoding="utf-8")
+
+    _rename("0000-OLD", "NEW-CODE", stores, v2_root=v2)
+
+    migs = json.loads(map_path.read_text())["migrations"]
+    assert migs[0]["document_code"] == "NEW-CODE"
+    assert migs[0]["v2_document_dir"].endswith("/documents/NEW-CODE")
+    assert "/documents/NEW-CODE/versions/v001/01_input/x.pdf" in migs[0]["files"][0]["new_path"]
+    assert migs[0]["files"][0]["old_path"] == "/tmp/x.pdf"  # legacy-история не переписана
+    assert migs[1]["document_code"] == "OTHER"  # чужая запись не тронута
+
+
+def test_v2_primary_rename_same_name_is_noop(projects_dir, stores, v2_primary):
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="SAME", legacy_projects_root=projects_dir)
+    res = _rename("SAME", "SAME", stores, v2_root=v2)
+    assert res["warnings"] == ["Имя не изменилось"]
+    assert not (v2 / "_system" / "destructive_backups").exists()
