@@ -190,22 +190,6 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 
 ## Normative Accuracy (norm_quote)
 
-**A proper reference is document AND clause:** `СП 60.13330.2020 (действует), п. 7.5.3`.
-Give the clause whenever you know it — and for routine СПДС / СП / ГОСТ requirements you
-almost always do. A document-only reference can be checked for nothing beyond "this
-document exists"; the engineer cannot act on it.
-
-Never invent a clause number. If you genuinely do not know the clause, write the document
-alone (`ГОСТ 21.110-2013 (действует)`) — such a reference is flagged as needing the clause
-filled in, but at least the document is named. `null` is a dead end nobody can recover.
-
-Every clause is verified against the norms index after the merge: if no clause with that
-number exists in the document, the finding is flagged as doubtful. An invented number is
-therefore worse than an honestly incomplete reference — it gets caught anyway.
-
-Set `"norm": null` only when the finding is not about a normative requirement at all —
-arithmetic that does not add up, internal inconsistency inside the set, a typo.
-
 When merging T-NNN and G-NNN into final F-NNN — **preserve** `norm_quote` from source stages.
 
 If two findings merge into one:
