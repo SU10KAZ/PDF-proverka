@@ -132,51 +132,65 @@ def renumber(findings: list) -> int:
     return len(id_map)
 
 
+# Порядок как в projects_v2_adapter._FINDINGS_PRIORITY: сайт читает
+# 03a_norms_verified.json РАНЬШЕ 03_findings.json, поэтому чинить надо оба —
+# иначе бэкфилл виден в Excel, но не в UI.
+FINDINGS_FILES = ("03_findings.json", "03a_norms_verified.json")
+
+
 def process_version(
     version_dir: Path, *, apply: bool, do_renumber: bool, force_renumber: bool,
 ) -> dict | None:
     output_dir = version_dir / "03_analysis" / "latest"
-    findings_path = output_dir / "03_findings.json"
-    if not findings_path.exists():
+    targets = [output_dir / name for name in FINDINGS_FILES]
+    targets = [p for p in targets if p.exists()]
+    if not targets:
         return None
-    data = _load(findings_path)
-    if not isinstance(data, dict) or not isinstance(data.get("findings"), list):
-        return None
-    findings = data["findings"]
 
     verdicts = _has_verdicts(version_dir, output_dir)
     psm, bpi, mdi = _graph_indexes(output_dir)
-    sheets_fixed = fix_sheets(findings, psm, bpi, mdi)
-    ids_fixed = 0
-    skipped_renumber = False
-    if do_renumber:
-        if verdicts and not force_renumber:
-            skipped_renumber = True
-        else:
-            ids_fixed = renumber(findings)
+    allow_renumber = do_renumber and (force_renumber or not verdicts)
+    skipped_renumber = do_renumber and not allow_renumber
 
-    report = {
+    sheets_fixed = 0
+    ids_fixed = 0
+    total_findings = 0
+    backups: list = []
+    for findings_path in targets:
+        data = _load(findings_path)
+        if not isinstance(data, dict) or not isinstance(data.get("findings"), list):
+            continue
+        findings = data["findings"]
+        total_findings = max(total_findings, len(findings))
+        file_sheets = fix_sheets(findings, psm, bpi, mdi)
+        file_ids = renumber(findings) if allow_renumber else 0
+        sheets_fixed += file_sheets
+        ids_fixed += file_ids
+        if not (file_sheets or file_ids):
+            continue
+        if apply:
+            stamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+            backup = findings_path.with_suffix(f".json.bak_{stamp}")
+            shutil.copy2(findings_path, backup)
+            meta = data.get("meta")
+            if isinstance(meta, dict):
+                if file_sheets:
+                    meta["sheet_backfilled"] = file_sheets
+                if file_ids:
+                    meta["findings_renumbered"] = file_ids
+            findings_path.write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            backups.append(str(backup))
+
+    return {
         "version": str(version_dir),
-        "findings": len(findings),
+        "findings": total_findings,
         "sheets_fixed": sheets_fixed,
         "ids_renumbered": ids_fixed,
         "has_verdicts": verdicts,
         "renumber_skipped_due_to_verdicts": skipped_renumber,
+        "backups": backups,
     }
-    if apply and (sheets_fixed or ids_fixed):
-        stamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-        backup = findings_path.with_suffix(f".json.bak_{stamp}")
-        shutil.copy2(findings_path, backup)
-        meta = data.get("meta")
-        if isinstance(meta, dict):
-            if sheets_fixed:
-                meta["sheet_backfilled"] = sheets_fixed
-            if ids_fixed:
-                meta["findings_renumbered"] = ids_fixed
-        findings_path.write_text(
-            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        report["backup"] = str(backup)
-    return report
 
 
 def iter_versions(root: Path):
