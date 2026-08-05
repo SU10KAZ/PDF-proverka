@@ -648,6 +648,30 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
 
     ctx.update_pipeline_log("findings_merge", "done", message="OK")
 
+    # ── Канон имён полей ──────────────────────────────────────────────────────
+    # ПЕРВОЙ из post-merge операций: все остальные проходы (провенанс, дедуп,
+    # нумерация, верификация норм) читают канонические имена. Свод изредка
+    # переименовывает поля — на ЭО1-3 все 40 замечаний вышли с `norm_reference`
+    # вместо `norm`, и верификация норм молча прошла мимо всего проекта.
+    from backend.app.pipeline.stages.findings_merge.normalize_schema import (
+        normalize_findings_schema,
+    )
+    try:
+        schema_report = await _asyncio.to_thread(
+            normalize_findings_schema, ctx.output_dir
+        )
+        if schema_report.get("renamed"):
+            pairs = ", ".join(
+                f"{alias}→{cnt}" for alias, cnt in schema_report["renamed"].items()
+            )
+            await ctx.log(
+                "Схема замечаний: переименованные поля приведены к канону "
+                f"({pairs}) в {schema_report['findings_changed']} замечаниях",
+                "warn",
+            )
+    except Exception as exc:  # noqa: BLE001 — канон имён не должен ронять merge
+        await ctx.log(f"Нормализация схемы замечаний пропущена ({exc})", "warn")
+
     # ── Post-merge operations ─────────────────────────────────────────────────
     # ВСЕМ хелперам передаётся ctx.output_dir (run dir стадии). Раньше они
     # резолвили папку сами по pid → v2 latest: обогащали ЧУЖУЮ копию
