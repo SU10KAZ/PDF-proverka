@@ -13,7 +13,12 @@ from backend.app.services.storage.stage_artifacts import (
     resolve_existing,
 )
 from backend.app.models.findings import FindingsResponse, FindingsSummary
-from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
+from backend.app.pipeline.stages.prepare.graph_builder import (
+    build_block_page_index,
+    get_page_sheet_no,
+    looks_like_sheet_ref,
+    resolve_finding_sheet_label,
+)
 from backend.app.services.common import version_service
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
@@ -1148,6 +1153,7 @@ def _enrich_sheet_page(
             sheet_no = get_page_sheet_no(p)
             if page_num is not None and sheet_no:
                 page_to_sheet[page_num] = str(sheet_no)
+    block_to_page = build_block_page_index(graph_data or {})
 
     # Паттерн для парсинга старого формата "Лист X (стр. PDF N)"
     # Также ловит "Лист 10/Сводная спецификация (стр. PDF 15)" и "Лист 13, 14 (стр. PDF 13–14)"
@@ -1165,14 +1171,20 @@ def _enrich_sheet_page(
         if page_val is not None:
             # page может быть int или list[int]
             pages = page_val if isinstance(page_val, list) else [page_val]
-            if not sheet_val or sheet_val == str(page_val):
-                # sheet пустой или совпадает с page → подставить из графа
+            # Занятый sheet НЕ считается корректным сам по себе: старые прогоны
+            # писали туда название листа из штампа («Корпус 14.6. Маркировочные
+            # планы 1 этажа») вместо номера — такое значение перекрываем.
+            sheet_is_name = bool(sheet_val) and not looks_like_sheet_ref(sheet_val)
+            if not sheet_val or sheet_val == str(page_val) or sheet_is_name:
+                # sheet пустой / равен page / это название → подставить из графа
                 sheets = []
                 for pg in pages:
                     if isinstance(pg, int) and pg in page_to_sheet:
                         sheets.append(page_to_sheet[pg])
                 if sheets:
                     unique = list(dict.fromkeys(sheets))
+                    if sheet_is_name and not f.get("sheet_title"):
+                        f["sheet_title"] = str(sheet_val).strip()
                     if emit_sheet_no:
                         f["sheet_no"] = unique[0] if len(unique) == 1 else unique
                     f["sheet"] = "Лист " + ", ".join(unique) if len(unique) <= 3 else f"Листы {unique[0]}–{unique[-1]}"
@@ -1180,6 +1192,11 @@ def _enrich_sheet_page(
 
         # Старый формат: разобрать "Лист X (стр. PDF N)"
         if not sheet_val:
+            # Замечания текстового этапа приходят без page и без sheet — лист
+            # выводим по блокам, на которые они ссылаются, иначе столбец пуст.
+            label = resolve_finding_sheet_label(f, page_to_sheet, block_to_page)
+            if label:
+                f["sheet"] = label
             continue
 
         m = old_format_re.search(sheet_val)

@@ -697,6 +697,188 @@ def get_page_sheet_no(page: dict) -> str | None:
     return page.get("sheet_no")
 
 
+# Ссылка на лист: «Лист 2», «Листы 2, 4», «Лист 31.11» либо голый номер «2»,
+# «31.11», «13–14». Всё остальное (например «Корпус 14.6. Маркировочные планы
+# 1 этажа») — это НАЗВАНИЕ листа из штампа, попавшее в поле sheet по ошибке.
+_SHEET_REF_PREFIX_RE = re.compile(r"^\s*лист(?:ы)?\b", re.IGNORECASE)
+_SHEET_REF_NUMERIC_RE = re.compile(r"^[\d]+(?:[.,\-–—/][\d]+)*$")
+
+
+def looks_like_sheet_ref(value) -> bool:
+    """True, если finding["sheet"] — ссылка на лист, а не название из штампа.
+
+    Нужна как гейт для детерминированной подстановки номера листа: старые
+    прогоны писали в sheet название листа, и «непустое значение» переставало
+    быть признаком корректного номера (см. sheet_for_page в stage 02).
+    """
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return True
+    if isinstance(value, (list, tuple)):
+        return bool(value) and all(looks_like_sheet_ref(v) for v in value)
+    text = str(value).strip()
+    if not text:
+        return False
+    if _SHEET_REF_PREFIX_RE.match(text):
+        return True
+    parts = [p.strip() for p in re.split(r"[,;]", text) if p.strip()]
+    return bool(parts) and all(_SHEET_REF_NUMERIC_RE.match(p) for p in parts)
+
+
+def build_page_sheet_map(graph: dict) -> dict:
+    """page (int) → номер листа (str) из штампа."""
+    result: dict = {}
+    if not isinstance(graph, dict):
+        return result
+    for page in graph.get("pages", []):
+        num = page.get("page")
+        sheet_no = get_page_sheet_no(page)
+        if num is not None and sheet_no:
+            result[num] = str(sheet_no)
+    return result
+
+
+def build_block_page_index(graph: dict) -> dict:
+    """block_id → page для text_blocks и image_blocks графа.
+
+    Нужен для замечаний текстового этапа: у них page=None, зато есть
+    source_block_ids / evidence[].block_id — по ним лист определяется
+    детерминированно, без этого столбец «Лист» оставался пустым.
+    """
+    index: dict = {}
+    if not isinstance(graph, dict):
+        return index
+    for page in graph.get("pages", []):
+        page_num = page.get("page")
+        if page_num is None:
+            continue
+        for key in ("text_blocks", "image_blocks", "blocks"):
+            for block in page.get(key) or []:
+                if not isinstance(block, dict):
+                    continue
+                bid = block.get("id") or block.get("block_id")
+                if bid:
+                    index.setdefault(str(bid), page_num)
+    return index
+
+
+def finding_block_ids(finding: dict) -> list:
+    """Все block_id, на которые ссылается замечание (в порядке приоритета)."""
+    ids: list = []
+    if not isinstance(finding, dict):
+        return ids
+
+    def _add(value):
+        if value and str(value) not in ids:
+            ids.append(str(value))
+
+    for key in ("source_block_ids", "related_block_ids", "selected_text_block_ids"):
+        for bid in finding.get(key) or []:
+            _add(bid)
+    for ev in finding.get("evidence") or []:
+        if isinstance(ev, dict):
+            _add(ev.get("block_id"))
+    for ref in finding.get("evidence_text_refs") or []:
+        if isinstance(ref, dict):
+            _add(ref.get("text_block_id") or ref.get("block_id"))
+    return ids
+
+
+_MD_PAGE_HEADING_RE = re.compile(r"^##\s*Page\s+(\d+)\s*$", re.IGNORECASE | re.MULTILINE)
+
+
+def resolve_document_markdown(output_dir) -> Path | None:
+    """Найти document.md версии по папке артефактов (…/03_analysis/latest|runs/X)."""
+    current = Path(output_dir)
+    for _ in range(5):
+        candidate = current / "02_work" / "document.md"
+        if candidate.exists():
+            return candidate
+        if current.parent == current:
+            break
+        current = current.parent
+    return None
+
+
+def build_md_line_page_index(md_text: str) -> list:
+    """[(первая строка блока страницы, номер страницы)] из «## Page N» в MD."""
+    index: list = []
+    if not md_text:
+        return index
+    for match in _MD_PAGE_HEADING_RE.finditer(md_text):
+        line_no = md_text.count("\n", 0, match.start()) + 1
+        try:
+            index.append((line_no, int(match.group(1))))
+        except ValueError:
+            continue
+    return index
+
+
+def page_for_md_line(md_line_index: list, line_no: int):
+    """Страница, которой принадлежит строка MD."""
+    page = None
+    for start_line, page_num in md_line_index:
+        if start_line <= line_no:
+            page = page_num
+        else:
+            break
+    return page
+
+
+def _finding_md_lines(finding: dict) -> list:
+    """Начальные номера строк MD из evidence[].md_lines («859-863»)."""
+    starts: list = []
+    for ev in finding.get("evidence") or []:
+        if not isinstance(ev, dict):
+            continue
+        raw = str(ev.get("md_lines") or "").strip()
+        if not raw:
+            continue
+        head = re.split(r"[-–—,]", raw)[0].strip()
+        if head.isdigit():
+            starts.append(int(head))
+    return starts
+
+
+def resolve_finding_sheet_label(
+    finding: dict,
+    page_sheet_map: dict,
+    block_page_index: dict | None = None,
+    md_line_index: list | None = None,
+) -> str | None:
+    """«Лист N» / «Листы N, M» для замечания или None, если лист не выводится.
+
+    Порядок: finding["page"] → страницы блоков, на которые ссылается замечание
+    → строки MD из evidence[].md_lines (у замечаний текстового этапа часто нет
+    ни page, ни block_id).
+    """
+    if not isinstance(finding, dict) or not page_sheet_map:
+        return None
+
+    page = finding.get("page")
+    pages = page if isinstance(page, list) else ([page] if page is not None else [])
+    if not pages and block_page_index:
+        for bid in finding_block_ids(finding):
+            page_num = block_page_index.get(bid)
+            if page_num is not None and page_num not in pages:
+                pages.append(page_num)
+    if not pages and md_line_index:
+        for line_no in _finding_md_lines(finding):
+            page_num = page_for_md_line(md_line_index, line_no)
+            if page_num is not None and page_num not in pages:
+                pages.append(page_num)
+
+    numbers: list = []
+    for page_num in pages:
+        sheet_no = page_sheet_map.get(page_num)
+        if sheet_no and sheet_no not in numbers:
+            numbers.append(sheet_no)
+    if not numbers:
+        return None
+    return ("Лист " if len(numbers) == 1 else "Листы ") + ", ".join(numbers)
+
+
 def get_text_block_text(tb: dict) -> str:
     """Получить текст из text_block (совместимо с v1 и v2)."""
     return tb.get("text", "")

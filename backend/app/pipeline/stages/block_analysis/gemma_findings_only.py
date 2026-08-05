@@ -701,9 +701,16 @@ def build_block_user_text(block_id: str, page, enrichment: Optional[dict], page_
 
 
 def sheet_for_page(graph: dict, page: int) -> Optional[str]:
+    # Номер листа читаем через общий v1/v2-helper: в v2-графе sheet_no всегда
+    # None, а номер лежит в sheet_no_raw. Прямое чтение sheet_no уводило в
+    # fallback на sheet_name → в block_analyses[].sheet попадало НАЗВАНИЕ листа
+    # («Корпус 14.6. Маркировочные планы 1 этажа»), merge копировал его в
+    # finding["sheet"], и в UI/Excel вместо «Лист 2» выводилось название.
+    from backend.app.pipeline.stages.prepare.graph_builder import get_page_sheet_no
+
     for p in graph.get("pages", []):
         if p.get("page") == page:
-            sno = p.get("sheet_no")
+            sno = get_page_sheet_no(p)
             if sno:
                 return f"Лист {sno}"
             return p.get("sheet_name")

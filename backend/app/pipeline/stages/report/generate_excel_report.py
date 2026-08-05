@@ -454,6 +454,63 @@ def load_json(path: str) -> dict:
         return json.load(f)
 
 
+def normalize_findings_sheets(findings: list, findings_path: str) -> int:
+    """Перекрыть sheet=НАЗВАНИЕ листа номером из document_graph.json.
+
+    Старые прогоны stage 02 читали граф по v1-ключу sheet_no (в v2 он всегда
+    None) и клали в поле sheet НАЗВАНИЕ листа из штампа. Такое значение
+    непустое, поэтому ни бэкфилл в findings_merge, ни фолбэк «стр. PDF N» в
+    f_sheet не срабатывали — в столбце «Лист/Раздел» оказывалось название без
+    номера и без страницы. Правим display-side, файл аудита не трогаем.
+    """
+    if not findings:
+        return 0
+    try:
+        from backend.app.pipeline.stages.prepare.graph_builder import (
+            build_block_page_index, build_md_line_page_index, build_page_sheet_map,
+            looks_like_sheet_ref, resolve_document_markdown,
+            resolve_finding_sheet_label,
+        )
+    except Exception:
+        return 0
+
+    graph_path = os.path.join(os.path.dirname(findings_path), "document_graph.json")
+    if not os.path.isfile(graph_path):
+        return 0
+    try:
+        graph = load_json(graph_path)
+    except Exception:
+        return 0
+
+    page_to_sheet = build_page_sheet_map(graph)
+    if not page_to_sheet:
+        return 0
+    block_to_page = build_block_page_index(graph)
+    md_line_index = []
+    md_path = resolve_document_markdown(os.path.dirname(findings_path))
+    if md_path is not None:
+        try:
+            md_line_index = build_md_line_page_index(md_path.read_text(encoding="utf-8"))
+        except OSError:
+            pass
+
+    fixed = 0
+    for f in findings:
+        if not isinstance(f, dict):
+            continue
+        sheet = f.get("sheet")
+        if sheet and looks_like_sheet_ref(sheet):
+            continue
+        label = resolve_finding_sheet_label(f, page_to_sheet, block_to_page, md_line_index)
+        if not label:
+            continue
+        if sheet:
+            f.setdefault("sheet_title", str(sheet).strip())
+        f["sheet"] = label
+        fixed += 1
+    return fixed
+
+
 # ═══════════════════════════════════════════════════════════════════════
 #  ЛИСТ СВОДКА
 # ═══════════════════════════════════════════════════════════════════════
@@ -1130,7 +1187,9 @@ def main():
                 p["findings_json"] = fj
                 p["meta_json"]     = fj.get("meta", {})
                 cnt = len(fj.get("findings", []))
-                print(f"  [OK]  {p['project_id']:32s}  {cnt} замечаний")
+                fixed = normalize_findings_sheets(fj.get("findings", []), p["findings_path"])
+                suffix = f"  (лист восстановлен у {fixed})" if fixed else ""
+                print(f"  [OK]  {p['project_id']:32s}  {cnt} замечаний{suffix}")
             except Exception as e:
                 print(f"  [!!]  {p['project_id']:32s}  Ошибка: {e}")
 

@@ -12,6 +12,7 @@ Stage runner для этапа findings_merge (свод замечаний → 0
   backfill_text_evidence_in_findings(project_id)
   refresh_finding_quality(project_id, filename)
   merge_similar_findings(project_id) -> dict | None
+  renumber_findings_sequentially(project_id) -> dict | None
 
 Публичный API (runner):
   run_findings_merge(ctx) -> FindingsMergeResult
@@ -32,6 +33,14 @@ import backend.app.services.llm.claude_runner as claude_runner
 from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.pipeline.stages.block_analysis.runner import validate_and_repair_json
+from backend.app.pipeline.stages.prepare.graph_builder import (
+    build_block_page_index,
+    build_md_line_page_index,
+    build_page_sheet_map,
+    looks_like_sheet_ref,
+    resolve_document_markdown,
+    resolve_finding_sheet_label,
+)
 from backend.app.services.common.cli_utils import is_cancelled, is_rate_limited
 from backend.app.services.common.project_service import resolve_project_dir
 
@@ -99,21 +108,26 @@ def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None 
         except (json.JSONDecodeError, OSError):
             pass
 
-    # page_sheet_map из document_graph.json
-    psm = {}
+    # page_sheet_map из document_graph.json + block_id → page для замечаний
+    # текстового этапа (у них page=None, но есть ссылки на блоки).
+    psm: dict = {}
+    bpi: dict = {}
     if graph_path.exists():
         try:
             graph = json.loads(graph_path.read_text(encoding="utf-8"))
-            for pg in graph.get("pages", []):
-                page_num = pg.get("page")
-                sheet_no = (
-                    pg.get("sheet_no_raw")
-                    or pg.get("sheet_no_normalized")
-                    or pg.get("sheet_no")
-                )
-                if page_num is not None and sheet_no:
-                    psm[str(page_num)] = sheet_no
+            psm = build_page_sheet_map(graph)
+            bpi = build_block_page_index(graph)
         except (json.JSONDecodeError, OSError):
+            pass
+
+    # Строки MD → страница: последний источник листа для замечаний текстового
+    # этапа, у которых evidence несёт только md_lines.
+    mdi: list = []
+    md_path = resolve_document_markdown(output_dir)
+    if md_path is not None:
+        try:
+            mdi = build_md_line_page_index(md_path.read_text(encoding="utf-8"))
+        except OSError:
             pass
 
     modified = 0
@@ -147,32 +161,31 @@ def backfill_text_evidence_in_findings(project_id: str, output_dir: Path | None 
         sheet = finding.get("sheet")
         page = finding.get("page")
         sheet_empty = sheet is None or (isinstance(sheet, str) and not sheet.strip())
+        # Занятое поле больше не считается корректным: merge копировал из
+        # block-контекста НАЗВАНИЕ листа («Корпус 14.6. Маркировочные планы
+        # 1 этажа»), и бэкфилл молчал → в UI/Excel вместо «Лист 2» название.
+        sheet_is_name = not sheet_empty and not looks_like_sheet_ref(sheet)
+        needs_sheet = sheet_empty or sheet_is_name
 
-        if sheet_empty and page is not None and psm:
-            pages_to_check = [page] if isinstance(page, int) else (
-                page if isinstance(page, list) else []
-            )
-            resolved_sheets = []
-            for p in pages_to_check:
-                s = psm.get(str(p))
-                if s and s not in resolved_sheets:
-                    resolved_sheets.append(s)
-
-            if resolved_sheets:
-                if len(resolved_sheets) == 1:
-                    finding["sheet"] = f"Лист {resolved_sheets[0]}"
-                else:
-                    finding["sheet"] = "Листы " + ", ".join(resolved_sheets)
+        if needs_sheet and psm:
+            # Замечания текстового этапа приходят без page — для них лист
+            # выводим по блокам, на которые они ссылаются (block_page_index).
+            label = resolve_finding_sheet_label(finding, psm, bpi, mdi)
+            if label:
+                if sheet_is_name and not finding.get("sheet_title"):
+                    # Название листа из штампа не теряем — переносим в отдельное
+                    # поле, а sheet отдаём под номер.
+                    finding["sheet_title"] = str(sheet).strip()
+                finding["sheet"] = label
+                finding.pop("sheet_unavailable", None)
+                finding.pop("sheet_unavailable_reason", None)
                 modified += 1
-            else:
+            elif sheet_empty:
                 finding["sheet_unavailable"] = True
-                finding["sheet_unavailable_reason"] = "page_not_in_map"
+                finding["sheet_unavailable_reason"] = (
+                    "page_not_in_map" if page is not None else "no_page"
+                )
                 modified += 1
-
-        elif sheet_empty and page is None:
-            finding["sheet_unavailable"] = True
-            finding["sheet_unavailable_reason"] = "no_page"
-            modified += 1
 
     if modified > 0:
         findings_path.write_text(
@@ -324,6 +337,73 @@ def apply_phase0_dedup(project_id: str, output_dir: Path | None = None) -> dict 
             "error": f"{type(exc).__name__}: {exc}",
             "duration_ms": int((time.monotonic() - started) * 1000),
         }
+
+
+def renumber_findings_sequentially(
+    project_id: str,
+    output_dir: Path | None = None,
+) -> dict | None:
+    """Сплошная перенумерация F-ID по порядку следования в 03_findings.json.
+
+    Почему безусловно (а не только внутри merge/dedup): F-ID выдаются в двух
+    местах ХВОСТОМ, а элементы вставляются В СЕРЕДИНУ списка —
+    `enforce_stage01_atomicity` расщепляет замечание и кладёт части сразу за
+    родителем с номерами max_idx+1, а targeted-аудиты дописываются в конец.
+    Сплошная нумерация раньше делалась только если merge_similar_findings слил
+    хотя бы одну группу (merge_count > 0) либо был включён phase0-дедуп
+    (STAGE01_DEDUP_ENABLED, по умолчанию OFF). Когда ни то, ни другое не
+    сработало, в отчёте получалось «F-016, F-035, F-036, F-017».
+
+    Это ФИНАЛЬНЫЙ шаг findings_merge: downstream (critic/norms/optimization,
+    expert_review, decisions) читает id уже после него, ссылок на старые
+    номера внутри прогона нет. Идемпотентна: на сплошной нумерации no-op.
+    """
+    output_dir = output_dir or _version_output_dir(project_id)
+    findings_path = output_dir / "03_findings.json"
+    if not findings_path.exists():
+        return None
+
+    try:
+        fd = json.loads(findings_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        return {"renumbered": 0, "error": f"read_failed: {exc}"}
+
+    items = fd.get("findings")
+    if not isinstance(items, list) or not items:
+        return {"renumbered": 0}
+
+    id_map: dict[str, str] = {}
+    for index, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            continue
+        new_id = f"F-{index:03d}"
+        old_id = str(item.get("id") or "")
+        if old_id and old_id != new_id:
+            id_map[old_id] = new_id
+
+    if not id_map:
+        return {"renumbered": 0}
+
+    for index, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            continue
+        item["id"] = f"F-{index:03d}"
+        guard = item.get("atomicity_guard")
+        if isinstance(guard, dict):
+            split_from = str(guard.get("split_from") or "")
+            if split_from in id_map:
+                guard["split_from"] = id_map[split_from]
+        dup_of = str(item.get("duplicate_of") or "")
+        if dup_of in id_map:
+            item["duplicate_of"] = id_map[dup_of]
+
+    meta = fd.get("meta")
+    if isinstance(meta, dict):
+        meta["findings_renumbered"] = len(id_map)
+    findings_path.write_text(
+        json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8",
+    )
+    return {"renumbered": len(id_map), "total": len(items)}
 
 
 def refresh_finding_quality(
@@ -482,8 +562,8 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
     - валидацией и авторемонтом 03_findings.json;
     - post-merge операциями:
         backfill_text_evidence, merge_similar_findings,
-        refresh_finding_quality, backfill_highlight_regions,
-        attach_stage02_coverage;
+        renumber_findings_sequentially, refresh_finding_quality,
+        backfill_highlight_regions, attach_stage02_coverage;
     - update_pipeline_log("findings_merge", ...).
 
     Не управляет:
@@ -615,6 +695,17 @@ async def run_findings_merge(ctx: PipelineStageContext) -> FindingsMergeResult:
                 )
             else:
                 await ctx.log("Phase 0 dedup: no-op (0 duplicates)")
+
+    # ── Сплошная нумерация F-001…F-NNN ───────────────────────────────────────
+    # Безусловно, а не побочным эффектом merge/dedup: atomicity_guard вставляет
+    # расщеплённые замечания в середину списка с хвостовыми номерами, из-за чего
+    # в отчёте шло «F-016, F-035, F-036, F-017».
+    renumber_report = renumber_findings_sequentially(pid, output_dir=ctx.output_dir)
+    if renumber_report and renumber_report.get("renumbered"):
+        await ctx.log(
+            f"Нумерация замечаний выровнена: изменено {renumber_report['renumbered']} "
+            f"из {renumber_report.get('total', 0)} ID",
+        )
 
     # Recalculate counts and aggregate labels after all merge/dedup passes.
     provenance_report = backfill_final_findings_provenance(ctx.output_dir)
