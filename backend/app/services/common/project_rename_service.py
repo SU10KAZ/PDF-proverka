@@ -312,6 +312,15 @@ def _update_project_info(info_path: Path, new_base: str) -> None:
         pass
 
 
+def _paid_cost_file() -> Path:
+    """Путь к `paid_cost.json` (живёт в usage_service, не в config)."""
+    try:
+        from backend.app.services.common import usage_service
+        return Path(usage_service.PAID_COST_FILE)
+    except Exception:
+        return Path(config.APP_DATA_DIR) / "paid_cost.json"
+
+
 def _object_id_for_dir(proj_dir: Path) -> Optional[str]:
     """object_id объекта, чей projects_dir является предком папки проекта."""
     try:
@@ -347,6 +356,58 @@ def _is_running(project_id: str, basename: str) -> bool:
 
 
 # ─── Ремап сторов ───────────────────────────────────────────────────────────
+def _with_prefixed_forms(id_map: dict[str, str], prefix: Optional[str]) -> dict[str, str]:
+    """Дополнить id_map формой `<префикс>/<имя>`.
+
+    `decisions_log` ключуется по `source_project`, и туда попадает как голый
+    basename, так и путь с дисциплиной (`AR/СТ26-01-14-АР6-РД_V1`). Сравнение
+    строгое, поэтому обе формы должны быть в карте — иначе вердикты эксперта
+    останутся висеть на старом имени (орфаны).
+    """
+    if not prefix or prefix in (".", ""):
+        return dict(id_map)
+    out = dict(id_map)
+    for old, new in id_map.items():
+        if "/" in old:
+            continue
+        out[f"{prefix}/{old}"] = f"{prefix}/{new}"
+    return out
+
+
+def _remap_paid_cost(path: Path, id_map: dict[str, str]) -> int:
+    """`paid_cost.json` → daily_breakdown[*].by_project (project_id в КЛЮЧАХ).
+
+    Агрегат расходов показывается в дашборде; без ремапа переименованный проект
+    раздваивается на старое и новое имя. При коллизии (в одном дне есть и старый,
+    и новый ключ) суммы складываются. Append-only `paid_cost_events.jsonl` НЕ
+    трогаем: это журнал фактов на момент события.
+    """
+    data = _load_json(path)
+    if not isinstance(data, dict):
+        return 0
+    changed = 0
+    for day in (data.get("daily_breakdown") or {}).values():
+        if not isinstance(day, dict):
+            continue
+        by_project = day.get("by_project")
+        if not isinstance(by_project, dict):
+            continue
+        remapped: dict[str, Any] = {}
+        for pid, value in by_project.items():
+            new_pid = id_map.get(pid, pid)
+            if new_pid != pid:
+                changed += 1
+            if new_pid in remapped and isinstance(remapped[new_pid], (int, float)) \
+                    and isinstance(value, (int, float)):
+                remapped[new_pid] = remapped[new_pid] + value
+            else:
+                remapped[new_pid] = value
+        day["by_project"] = remapped
+    if changed:
+        _atomic_write_json(path, data)
+    return changed
+
+
 def _remap_decisions_log(path: Path, id_map: dict[str, str],
                          object_id: Optional[str]) -> int:
     data = _load_json(path)
@@ -482,6 +543,18 @@ def _remap_old_to_new_map(map_path: Path, old_code: str, new_code: str,
     return changed
 
 
+def _keep_prefix(old_value: Any, new_base: str) -> str:
+    """Новое имя в ТОЙ ЖЕ форме, что и старое значение.
+
+    `project_id` хранится и как голый код, и как `<дисциплина>/<код>` — обе формы
+    живут в базе. Переименование не должно менять форму записи, иначе оно молча
+    нормализует чужие данные.
+    """
+    old = str(old_value or "")
+    prefix, sep, _ = old.rpartition("/")
+    return f"{prefix}{sep}{new_base}" if sep else new_base
+
+
 def _update_v2_version_metadata(doc_dir: Path, new_base: str) -> list[str]:
     """`project_info.json` / `expert_review.json` версий → новый project_id."""
     updated: list[str] = []
@@ -493,18 +566,27 @@ def _update_v2_version_metadata(doc_dir: Path, new_base: str) -> list[str]:
             continue
         info = vdir / "01_input" / "project_info.json"
         if info.exists():
-            _update_project_info(info, new_base)
-            updated.append(str(info))
+            data = _load_json(info)
+            data = data if isinstance(data, dict) else {}
+            data["project_id"] = _keep_prefix(data.get("project_id"), new_base)
+            data["name"] = _keep_prefix(data.get("name"), new_base) if data.get("name") else new_base
+            try:
+                _atomic_write_json(info, data)
+                updated.append(str(info))
+            except Exception:
+                pass
         review = vdir / "04_review" / "expert_review.json"
         if review.exists():
             data = _load_json(review)
-            if isinstance(data, dict) and data.get("project_id") not in (None, new_base):
-                data["project_id"] = new_base
-                try:
-                    _atomic_write_json(review, data)
-                    updated.append(str(review))
-                except Exception:
-                    pass
+            if isinstance(data, dict) and data.get("project_id"):
+                new_pid = _keep_prefix(data.get("project_id"), new_base)
+                if new_pid != data["project_id"]:
+                    data["project_id"] = new_pid
+                    try:
+                        _atomic_write_json(review, data)
+                        updated.append(str(review))
+                    except Exception:
+                        pass
     return updated
 
 
@@ -517,6 +599,7 @@ def _rename_project_v2_primary(
     usage_data_file: Optional[Path] = None,
     project_groups_file: Optional[Path] = None,
     missing_norms_vault_file: Optional[Path] = None,
+    paid_cost_file: Optional[Path] = None,
     reverse_log_file: Optional[Path] = None,
     check_running: bool = True,
     v2_root: Optional[Path] = None,
@@ -615,7 +698,8 @@ def _rename_project_v2_primary(
             f"({old_code} → {new_code}); warnings={v2_sync.get('warnings')}"
         )
 
-    id_map = {old_code: new_code}
+    # `source_project` в decisions_log приходит и как `<код>`, и как `<дисц>/<код>`.
+    id_map = _with_prefixed_forms({old_code: new_code}, doc.get("discipline"))
     reverse: dict[str, Any] = {
         "at": _now_iso(), "old_base": old_code, "new_base": new_code,
         "storage_layer": "projects_v2", "backup_id": backup_id,
@@ -646,6 +730,8 @@ def _rename_project_v2_primary(
          lambda p: _remap_groups(p, id_map, object_id)),
         ("missing_norms_vault", missing_norms_vault_file or config.MISSING_NORMS_VAULT_FILE,
          lambda p: _remap_vault(p, id_map)),
+        ("paid_cost", paid_cost_file or _paid_cost_file(),
+         lambda p: _remap_paid_cost(p, id_map)),
     )
     for name, path, fn in remaps:
         try:
@@ -694,6 +780,7 @@ def rename_project(
     usage_data_file: Optional[Path] = None,
     project_groups_file: Optional[Path] = None,
     missing_norms_vault_file: Optional[Path] = None,
+    paid_cost_file: Optional[Path] = None,
     reverse_log_file: Optional[Path] = None,
     check_running: bool = True,
     sync_v2: bool = True,
@@ -717,6 +804,7 @@ def rename_project(
             usage_data_file=usage_data_file,
             project_groups_file=project_groups_file,
             missing_norms_vault_file=missing_norms_vault_file,
+            paid_cost_file=paid_cost_file,
             reverse_log_file=reverse_log_file,
             check_running=check_running,
             v2_root=v2_root,
@@ -855,6 +943,7 @@ def rename_project(
     usage_file = usage_data_file or config.USAGE_DATA_FILE
     groups_file = project_groups_file or config.PROJECT_GROUPS_FILE
     vault_file = missing_norms_vault_file or config.MISSING_NORMS_VAULT_FILE
+    cost_file = paid_cost_file or _paid_cost_file()
 
     stores: dict[str, int] = {}
     try:
@@ -873,6 +962,10 @@ def rename_project(
         stores["missing_norms_vault"] = _remap_vault(Path(vault_file), id_map)
     except Exception as ex:
         warnings.append(f"missing_norms_vault: {ex}")
+    try:
+        stores["paid_cost"] = _remap_paid_cost(Path(cost_file), id_map)
+    except Exception as ex:
+        warnings.append(f"paid_cost: {ex}")
     reverse["stores"] = stores
     reverse["id_map"] = id_map
     reverse["object_id"] = object_id

@@ -451,6 +451,7 @@ def test_v2_primary_rename_moves_doc_dir_without_legacy(projects_dir, stores, v2
     # метаданные версии переехали на новый project_id
     vdir = new_dir / "versions" / "v001"
     assert json.loads((vdir / "01_input" / "project_info.json").read_text())["project_id"] == "NEW-CODE"
+    # форма записи сохраняется: голый код остаётся голым
     review = json.loads((vdir / "04_review" / "expert_review.json").read_text())
     assert review["project_id"] == "NEW-CODE"
     assert review["decisions"] == {"F-001": "accepted"}  # вердикты не тронуты
@@ -558,3 +559,68 @@ def test_v2_primary_rename_same_name_is_noop(projects_dir, stores, v2_primary):
     res = _rename("SAME", "SAME", stores, v2_root=v2)
     assert res["warnings"] == ["Имя не изменилось"]
     assert not (v2 / "_system" / "destructive_backups").exists()
+
+
+def test_v2_primary_rename_remaps_decisions_with_discipline_prefix(projects_dir, stores, v2_primary):
+    """source_project в decisions_log бывает `<дисциплина>/<код>` — обе формы."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="СТ26-01-14-АР6-РД_V1", legacy_projects_root=projects_dir)
+    Path(stores["decisions_log_file"]).write_text(json.dumps({"entries": [
+        {"object_id": "OBJ", "source_project": "AR/СТ26-01-14-АР6-РД_V1", "item_id": "F-001"},
+        {"object_id": "OBJ", "source_project": "СТ26-01-14-АР6-РД_V1", "item_id": "F-002"},
+        {"object_id": "OBJ", "source_project": "VK/СТ26-01-14-АР6-РД_V1", "item_id": "F-003"},
+    ]}), encoding="utf-8")
+
+    res = _rename("СТ26-01-14-АР6-РД_V1", "СТ26_01-14-АР6-РД_V1", stores, v2_root=v2)
+
+    assert res["stores"]["decisions_log"] == 2
+    dec = json.loads(Path(stores["decisions_log_file"]).read_text())["entries"]
+    assert dec[0]["source_project"] == "AR/СТ26_01-14-АР6-РД_V1"
+    assert dec[1]["source_project"] == "СТ26_01-14-АР6-РД_V1"
+    assert dec[2]["source_project"] == "VK/СТ26-01-14-АР6-РД_V1"  # чужая дисциплина не тронута
+
+
+def test_v2_primary_rename_remaps_paid_cost_keys(projects_dir, stores, v2_primary, tmp_path):
+    """paid_cost.json: project_id лежит в КЛЮЧАХ by_project, при коллизии — сумма."""
+    v2 = _v2_root_for(projects_dir)
+    _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+               doc_code="OLD-CODE", legacy_projects_root=projects_dir)
+    cost = tmp_path / "paid_cost.json"
+    cost.write_text(json.dumps({"total_lifetime_usd": 10.0, "daily_breakdown": {
+        "2026-07-24": {"total": 3.0, "by_project": {"OLD-CODE": 2.0, "KEEP": 1.0}},
+        "2026-07-25": {"total": 5.0, "by_project": {"OLD-CODE": 2.0, "NEW-CODE": 3.0}},
+    }}), encoding="utf-8")
+
+    res = _rename("OLD-CODE", "NEW-CODE", stores, v2_root=v2, paid_cost_file=cost)
+
+    assert res["stores"]["paid_cost"] == 2
+    days = json.loads(cost.read_text())["daily_breakdown"]
+    assert days["2026-07-24"]["by_project"] == {"NEW-CODE": 2.0, "KEEP": 1.0}
+    assert days["2026-07-25"]["by_project"] == {"NEW-CODE": 5.0}  # 2.0 + 3.0 слились
+
+
+def test_v2_primary_rename_keeps_project_id_form(projects_dir, stores, v2_primary):
+    """project_id в форме `<дисциплина>/<код>` остаётся с префиксом после rename."""
+    v2 = _v2_root_for(projects_dir)
+    doc_dir = _mk_v2_doc(v2, object_folder="OBJ_F", object_id="OBJ", discipline="AR",
+                         doc_code="OLD-CODE", legacy_projects_root=projects_dir)
+    vdir = doc_dir / "versions" / "v001"
+    (vdir / "01_input").mkdir(parents=True)
+    (vdir / "04_review").mkdir(parents=True)
+    (vdir / "01_input" / "project_info.json").write_text(json.dumps(
+        {"project_id": "AR/OLD-CODE", "name": "OLD-CODE", "section": "AR"},
+        ensure_ascii=False), encoding="utf-8")
+    (vdir / "04_review" / "expert_review.json").write_text(json.dumps(
+        {"project_id": "AR/OLD-CODE", "decisions": {"F-001": "accepted"}},
+        ensure_ascii=False), encoding="utf-8")
+
+    _rename("OLD-CODE", "NEW-CODE", stores, v2_root=v2)
+
+    new_vdir = v2 / "objects/OBJ_F/disciplines/AR/documents/NEW-CODE/versions/v001"
+    info = json.loads((new_vdir / "01_input" / "project_info.json").read_text())
+    assert info["project_id"] == "AR/NEW-CODE"   # префикс сохранён
+    assert info["name"] == "NEW-CODE"            # name был голым — остался голым
+    review = json.loads((new_vdir / "04_review" / "expert_review.json").read_text())
+    assert review["project_id"] == "AR/NEW-CODE"
+    assert review["decisions"] == {"F-001": "accepted"}
