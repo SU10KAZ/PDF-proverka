@@ -182,14 +182,29 @@ __all__ = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _build_cmd(tools: str, model: str | None = None) -> list[str]:
-    """Собрать команду запуска Claude CLI."""
+    """Собрать команду запуска Claude CLI.
+
+    Этапам без ``mcp__*`` в списке инструментов MCP-серверы не поднимаем:
+    нормативный сервер (`norms/tools/mcp_server.py`) разрастается до ~2,8 ГБ
+    RSS на КАЖДЫЙ вызов CLI, и на 11-гигабайтной машине два таких сервера
+    загоняют систему в своп — ядро начинает убивать рабочие стадии
+    (04.08.2026: text_analysis ЭО1-3 «код 143», optimization ОВ1-2.3 «exit -9»).
+    Свод/текст/блоки его всё равно не вызывают — им он мёртвый груз.
+    Отключается через AUDIT_STRICT_MCP_FOR_NON_NORM_STAGES=false.
+    """
     resolved_model = model or get_model_for_stage("default")
-    return [
+    cmd = [
         get_claude_cli(), "-p",
         "--model", resolved_model,
         "--allowedTools", tools,
         "--output-format", "json",
     ]
+    strict_enabled = os.environ.get(
+        "AUDIT_STRICT_MCP_FOR_NON_NORM_STAGES", "true",
+    ).strip().lower() not in ("false", "0", "no", "off")
+    if strict_enabled and "mcp__" not in (tools or ""):
+        cmd.append("--strict-mcp-config")
+    return cmd
 
 
 # Чистая cwd для запуска `claude -p` без подгрузки project CLAUDE.md / hooks / memory / skills.

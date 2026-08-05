@@ -211,7 +211,11 @@ CLAUDE_TEXT_ANALYSIS_TIMEOUT = 1800
 CLAUDE_BLOCK_BATCH_CLEAN_CWD = True
 
 CLAUDE_BLOCK_ANALYSIS_TIMEOUT = 1800
-CLAUDE_FINDINGS_MERGE_TIMEOUT = 1800
+# 1800 с оказалось не запасом, а потолком: свод ДОО (44 находки по блокам + 27 по
+# тексту) дважды подряд убивался ровно на 1801 с, теряя уже проделанную работу
+# целиком (04.08.2026). Час — страховка на крупные комплекты; штатный свод
+# укладывается в 10-25 мин и таймаута не касается.
+CLAUDE_FINDINGS_MERGE_TIMEOUT = 3600
 # findings_critic/corrector-таймауты и chunk-size удалены вместе с LLM-критиком
 # (детерминированный этап «Верификатор» не чанкует и не запускает агентную сессию).
 CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT = 600
