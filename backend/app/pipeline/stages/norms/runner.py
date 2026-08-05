@@ -344,6 +344,7 @@ async def run_norm_verification(
         write_missing_norms_queue,
         verify_paragraphs_native,
         requote_norms_native,
+        backfill_missing_quotes_native,
     )
 
     ctx.update_pipeline_log("norm_verify", "running")
@@ -842,6 +843,29 @@ async def run_norm_verification(
             )
         elif needs_fix:
             await ctx.log(f"03a_norms_verified.json обновлён ({size_kb} KB)")
+
+    # ── Шаг 6.5: Дозаливка ОТСУТСТВУЮЩИХ цитат по номеру пункта ──
+    # Шаг 7 ниже строит поисковый запрос из уже имеющейся цитаты и при пустой
+    # norm_quote молча пропускает замечание. А пусто оно чаще всего: этапы 01/02
+    # дают цитату лишь в 2-22% находок. Здесь текст пункта берётся точным
+    # обращением к индексу норм — 0 токенов, без сети. Fail-soft.
+    try:
+        quotes_report = await asyncio.get_event_loop().run_in_executor(
+            None, backfill_missing_quotes_native, output_dir
+        )
+        if quotes_report.get("filled"):
+            await ctx.log(
+                f"Цитаты норм восстановлены из индекса: {quotes_report['filled']} "
+                f"из {quotes_report['candidates']} замечаний без цитаты"
+            )
+        if quotes_report.get("no_paragraph"):
+            await ctx.log(
+                f"Ссылок на норму без номера пункта: {quotes_report['no_paragraph']} — "
+                "процитировать нечего, требуется уточнение пункта",
+                "warn",
+            )
+    except Exception as _bq_exc:  # noqa: BLE001 — дозаливка не должна ронять нормы
+        await ctx.log(f"Дозаливка цитат пропущена ({_bq_exc})", "warn")
 
     # ── Шаг 7: Уточнение оставшихся цитат (Python semantic search) ──
     remaining_flags = count_manual_check_flags(output_dir)

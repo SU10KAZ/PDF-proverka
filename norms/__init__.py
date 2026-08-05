@@ -60,7 +60,11 @@ from norms._core import (  # noqa: F401
     compute_norm_policy_class,
     should_review_norm,
 )
-from norms._native_verify import verify_paragraphs_native, requote_norms_native  # noqa: F401
+from norms._native_verify import (  # noqa: F401
+    verify_paragraphs_native,
+    requote_norms_native,
+    backfill_missing_quotes_native,
+)
 from norms.external_provider import (  # noqa: F401
     load_status_index,
     resolve_norm_status,

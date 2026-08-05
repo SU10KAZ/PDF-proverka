@@ -190,6 +190,15 @@ T-NNN/G-NNN, or other findings' F-NNN numbers.
 
 ## Normative Accuracy (norm_quote)
 
+**A norm reference without a clause number is NOT a reference.** `norm` must carry
+the document AND the clause (`СП 60.13330.2020 (действует), п. 7.5.3`). If you cannot
+name the clause, set `"norm": null` — do not write the document alone
+(`СП 60.13330.2020 (действует)`). A bare document name cannot be quoted, cannot be
+verified, and is useless to the engineer who has to act on the finding.
+
+Never invent a clause number to satisfy this rule: `null` is the correct answer when
+the source findings did not name one.
+
 When merging T-NNN and G-NNN into final F-NNN — **preserve** `norm_quote` from source stages.
 
 If two findings merge into one:

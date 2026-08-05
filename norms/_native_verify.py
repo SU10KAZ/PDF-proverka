@@ -408,6 +408,83 @@ def requote_norms_native(output_dir: Path) -> dict:
     return {"resolved": resolved, "remaining": remaining, "total": len(flagged)}
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Дозаливка ОТСУТСТВУЮЩИХ цитат по номеру пункта (детерминированно, без LLM)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_PARA_RE = re.compile(r"п\.\s*(\d+(?:\.\d+)*)")
+
+
+def backfill_missing_quotes_native(output_dir: Path) -> dict:
+    """Достать текст пункта для замечаний, где норма есть, а цитаты нет.
+
+    Шаг 7 (`requote_norms_native`) строит поисковый запрос ИЗ цитаты, поэтому
+    при пустой `norm_quote` он молча пропускает замечание — а это самая частая
+    ситуация: этапы 01/02 дают цитату лишь в 2-22% находок. Здесь запрос не
+    нужен вовсе: если в ссылке есть код документа и номер пункта, текст берётся
+    точным обращением `get_paragraph(code, para)`.
+
+    Замер на реальных проектах (04.08.2026): ЭО1-3 — 38 цитат из 39 возможных;
+    ОВ/ВК — ноль, потому что свод сослался на документы БЕЗ номера пункта
+    («СП 60.13330.2020 (действует)»), и цитировать там нечего в принципе.
+
+    Ноль токенов, никакой сети: локальный индекс норм.
+
+    Returns:
+        {"filled": N, "candidates": M, "no_paragraph": K}
+    """
+    findings_path = output_dir / "03_findings.json"
+    if not findings_path.exists():
+        return {"filled": 0, "candidates": 0, "no_paragraph": 0}
+    try:
+        fd = json.loads(findings_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"filled": 0, "candidates": 0, "no_paragraph": 0}
+
+    findings = fd.get("findings", [])
+    candidates = [f for f in findings if f.get("norm") and not f.get("norm_quote")]
+    if not candidates:
+        return {"filled": 0, "candidates": 0, "no_paragraph": 0}
+
+    norms_api = _import_norms_api()
+    filled = 0
+    no_paragraph = 0
+
+    for finding in candidates:
+        norm_str = str(finding.get("norm") or "")
+        got = False
+        # Ссылка может нести несколько документов через «;» — берём первый,
+        # где пункт реально находится.
+        for chunk in norm_str.split(";"):
+            code = re.sub(r"\s*\([^)]*\)", "", chunk).split(",")[0].strip()
+            para_m = _PARA_RE.search(chunk)
+            if not code or not para_m:
+                continue
+            try:
+                res = norms_api.get_paragraph(code, para_m.group(1))
+            except Exception:  # noqa: BLE001 — дозаливка необязательна
+                continue
+            text = (res.get("text") or "").strip()
+            if res.get("found") and text:
+                finding["norm_quote"] = text[:400]
+                finding["norm_quote_source"] = "norms_index"
+                filled += 1
+                got = True
+                break
+        if not got and not _PARA_RE.search(norm_str):
+            no_paragraph += 1
+
+    if filled:
+        findings_path.write_text(
+            json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    return {
+        "filled": filled,
+        "candidates": len(candidates),
+        "no_paragraph": no_paragraph,
+    }
+
+
 def _remove_manual_check_flag(finding: dict, norm_str: str) -> None:
     """Убрать префикс [Пункт нормы ... требует ручной сверки] из description."""
     desc = finding.get("description", "") or ""
