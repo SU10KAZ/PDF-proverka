@@ -84,3 +84,41 @@ def test_build_optimization_project_sheet_hidden_project_id():
     ws = wb["ОПТ ЭМ1"]
     pid_col = len(ger.OPT_COLUMNS) + 1
     assert ws.cell(row=2, column=pid_col).value == pid
+
+
+# ─── служебные вкладки в книге ───────────────────────────────────────────────
+
+def test_no_instruction_sheet_builder():
+    """Лист «ИНСТРУКЦИЯ» удалён из отчёта — билдера больше нет.
+
+    Пакет аудита (`GET /api/export/audit-package/...`) кладёт внутрь
+    `audit_report.xlsx`; лишние служебные вкладки в нём не нужны.
+    """
+    assert not hasattr(ger, "build_instruction_sheet")
+
+
+def test_empty_default_sheet_removed_with_no_summary(tmp_path, monkeypatch, capsys):
+    """`--no-summary` (так вызывает audit-package) больше не оставляет пустой
+    дефолтный лист openpyxl «Sheet»: СВОДКА его не занимает, значит удаляем.
+    """
+    import sys
+    from openpyxl import load_workbook
+
+    out = tmp_path / "report.xlsx"
+    project = {
+        "project_id": "TEST-PRJ", "folder": str(tmp_path),
+        "findings_path": str(tmp_path / "03_findings.json"),
+        "optimization_path": str(tmp_path / "optimization.json"),
+        "info_path": str(tmp_path / "project_info.json"),
+        "has_findings": False, "has_optimization": False,
+        "sheet_name": "TEST-PRJ",
+    }
+    monkeypatch.setattr(ger, "find_projects", lambda *a, **k: [project])
+    monkeypatch.setattr(sys, "argv",
+                        ["generate_excel_report.py", "--out", str(out), "--no-summary"])
+    ger.main()
+
+    names = load_workbook(out).sheetnames
+    assert "Sheet" not in names, f"пустой дефолтный лист остался: {names}"
+    assert "ИНСТРУКЦИЯ" not in names, f"лист инструкции остался: {names}"
+    assert names, "книга не должна остаться без листов"

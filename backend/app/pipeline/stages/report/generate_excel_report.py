@@ -1080,57 +1080,6 @@ def build_optimization_project_sheet(wb, pd_entry: dict):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-#  ЛИСТ ИНСТРУКЦИЯ (для оффлайн-заполнения экспертных решений)
-# ═══════════════════════════════════════════════════════════════════════
-
-def build_instruction_sheet(wb):
-    """Лист с инструкцией по заполнению решений эксперта."""
-    ws = wb.create_sheet(title="ИНСТРУКЦИЯ")
-    ws.sheet_view.showGridLines = False
-    ws.sheet_view.zoomScale = 100
-
-    ws.column_dimensions["A"].width = 4
-    ws.column_dimensions["B"].width = 80
-
-    instructions = [
-        ("ИНСТРУКЦИЯ ПО ЗАПОЛНЕНИЮ РЕШЕНИЙ ЭКСПЕРТА", True, 14, HEADER_BG, HEADER_FG),
-        ("", False, 10, None, None),
-        ("Этот файл содержит результаты аудита проектной документации.", False, 11, None, None),
-        ("Ваша задача — проверить каждое замечание и оптимизацию, и указать своё решение.", False, 11, None, None),
-        ("", False, 10, None, None),
-        ("ПОРЯДОК ЗАПОЛНЕНИЯ:", True, 12, "2E75B6", "FFFFFF"),
-        ("", False, 10, None, None),
-        ('1. Откройте лист нужного проекта (вкладка внизу Excel).', False, 11, None, None),
-        ('2. Найдите колонку "Решение эксперта" (предпоследняя).', False, 11, None, None),
-        ('3. Для каждого замечания укажите: Принято или Отклонено', False, 11, None, None),
-        ('4. Если выбрано "Отклонено" — ОБЯЗАТЕЛЬНО заполните колонку "Причина отклонения".', False, 11, "FFCCCC", None),
-        ('5. Повторите для всех замечаний и оптимизаций.', False, 11, None, None),
-        ('6. Сохраните файл и загрузите на платформу:', False, 11, None, None),
-        ('   Дашборд → База знаний → Загрузить Excel', False, 11, None, None),
-        ("", False, 10, None, None),
-        ("ДОПУСТИМЫЕ ЗНАЧЕНИЯ В КОЛОНКЕ «РЕШЕНИЕ ЭКСПЕРТА»:", True, 12, "2E75B6", "FFFFFF"),
-        ("", False, 10, None, None),
-        ('• Принято — замечание/оптимизация подтверждены, будут отправлены заказчику', False, 11, None, None),
-        ('• Отклонено — замечание/оптимизация ошибочны или неприменимы', False, 11, None, None),
-        ('• (пусто) — ещё не проверено', False, 11, None, None),
-        ("", False, 10, None, None),
-        ("ВАЖНО:", True, 12, "C00000", "FFFFFF"),
-        ("", False, 10, None, None),
-        ('• Не удаляйте и не переименовывайте колонки — система ищет по названию.', False, 11, None, None),
-        ('• Не меняйте ID замечаний (колонка № или ID).', False, 11, None, None),
-        ('• Причина отклонения обязательна — она попадёт в базу знаний для улучшения системы.', False, 11, None, None),
-    ]
-
-    for idx, (text, bold, size, bg, fg) in enumerate(instructions, 1):
-        c = ws.cell(row=idx, column=2, value=text)
-        c.font = Font(bold=bold, size=size, color=fg or "333333", name="Calibri")
-        if bg:
-            c.fill = make_fill(bg)
-        c.alignment = Alignment(wrap_text=True, vertical="center")
-        ws.row_dimensions[idx].height = 22 if text else 10
-
-
-# ═══════════════════════════════════════════════════════════════════════
 #  ГЛАВНАЯ ФУНКЦИЯ
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -1227,8 +1176,14 @@ def main():
         for p in projects:
             build_optimization_project_sheet(wb, p)
 
-    # ── Лист ИНСТРУКЦИЯ ──────────────────────────────────────────────
-    build_instruction_sheet(wb)
+    # ── Убрать пустой дефолтный лист openpyxl ────────────────────────
+    # `Workbook()` всегда создаёт активный лист "Sheet". Его занимает под себя
+    # СВОДКА, но с `--no-summary` (так вызывает audit-package) summary не
+    # строится, и в книге остаётся пустая вкладка "Sheet".
+    for _ws in list(wb.worksheets):
+        if _ws.title == "Sheet" and _ws.max_row == 1 and _ws.max_column == 1 \
+                and _ws["A1"].value is None and len(wb.worksheets) > 1:
+            wb.remove(_ws)
 
     # ── Сохранить ─────────────────────────────────────────────────────
     if args.out:
