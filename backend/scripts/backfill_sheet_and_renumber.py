@@ -67,16 +67,24 @@ def _graph_indexes(output_dir: Path) -> tuple[dict, dict, list]:
 
 
 def _has_verdicts(version_dir: Path, output_dir: Path) -> bool:
+    """Есть ли вердикты эксперта, ключованные на F-ID.
+
+    Реальный формат expert_review.json — {"decisions": [{"item_id": "F-001",
+    …}]}; проверка только по "findings" молча пропускала бы такие версии в
+    перенумерацию и осиротила вердикты.
+    """
     for candidate in (
         version_dir / "04_review" / "expert_review.json",
         output_dir / "expert_review.json",
         version_dir / "_output" / "expert_review.json",
     ):
         data = _load(candidate)
-        if isinstance(data, dict) and data.get("findings"):
-            return True
         if isinstance(data, list) and data:
             return True
+        if isinstance(data, dict):
+            for key in ("decisions", "findings", "items", "reviews"):
+                if data.get(key):
+                    return True
     return False
 
 

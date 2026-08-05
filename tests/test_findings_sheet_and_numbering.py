@@ -192,3 +192,41 @@ def test_renumber_is_noop_on_sequential_ids(tmp_path):
 
 def test_renumber_missing_file_returns_none(tmp_path):
     assert renumber_findings_sequentially("pid", output_dir=tmp_path) is None
+
+
+# ─── скрипт бэкфилла: защита вердиктов ───────────────────────────────────────
+
+def test_backfill_script_detects_verdicts_in_decisions_key(tmp_path):
+    """expert_review.json хранит вердикты под "decisions" — гейт обязан их видеть.
+
+    Проверка только по ключу "findings" молча пропускала бы такие версии в
+    перенумерацию, осиротив вердикты эксперта и записи decisions_log.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "backfill_sheet_and_renumber",
+        "backend/scripts/backfill_sheet_and_renumber.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    version_dir = tmp_path / "v001"
+    review_dir = version_dir / "04_review"
+    output_dir = version_dir / "03_analysis" / "latest"
+    review_dir.mkdir(parents=True)
+    output_dir.mkdir(parents=True)
+    (review_dir / "expert_review.json").write_text(json.dumps(
+        {"project_id": "X", "decisions": [{"item_id": "F-001", "decision": "rejected"}]},
+        ensure_ascii=False), encoding="utf-8")
+    assert module._has_verdicts(version_dir, output_dir) is True
+
+    (output_dir / "document_graph.json").write_text(
+        json.dumps(V2_GRAPH, ensure_ascii=False), encoding="utf-8")
+    (output_dir / "03_findings.json").write_text(json.dumps(
+        {"findings": [{"id": "F-013"}, {"id": "F-032"}]}, ensure_ascii=False),
+        encoding="utf-8")
+    report = module.process_version(
+        version_dir, apply=False, do_renumber=True, force_renumber=False)
+    assert report["renumber_skipped_due_to_verdicts"] is True
+    assert report["ids_renumbered"] == 0
