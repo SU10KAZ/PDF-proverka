@@ -864,6 +864,21 @@ async def run_norm_verification(
                 "процитировать нечего, требуется уточнение пункта",
                 "warn",
             )
+        states = quotes_report.get("states") or {}
+        if states:
+            await ctx.log(
+                "Ссылки на нормы по индексу: "
+                + ", ".join(f"{k}={v}" for k, v in sorted(states.items()))
+            )
+        # Пункт назван, но в самом документе не найден — вероятнее всего номер
+        # придуман. Раньше это тонуло: проверка сверяла цитату с текстом пункта,
+        # а цитаты почти всегда не было (2 подтверждения на 4645 проверок).
+        if states.get("paragraph_not_found"):
+            await ctx.log(
+                f"Пунктов, не найденных в своём документе: {states['paragraph_not_found']} — "
+                "номер пункта под сомнением, нужна ручная сверка",
+                "warn",
+            )
     except Exception as _bq_exc:  # noqa: BLE001 — дозаливка не должна ронять нормы
         await ctx.log(f"Дозаливка цитат пропущена ({_bq_exc})", "warn")
 
@@ -899,6 +914,23 @@ async def run_norm_verification(
             await ctx.log(
                 f"norm_requote завершён: исправлено {resolved}/{remaining_flags}, "
                 f"осталось {remaining_after} [ручная сверка]"
+            )
+
+    # ── Шаг 7b: Синхронизация 03a_norms_verified.json с итоговыми findings ──
+    # 03a создаётся на Шаге 6, то есть ДО дозаливки цитат (6.5) и уточнения
+    # пунктов (7). А UI и Excel читают именно 03a — выше 03_findings.json. Без
+    # этой синхронизации восстановленные цитаты и состояния ссылок доезжали до
+    # файла, но не до глаз инженера.
+    if findings_path.exists():
+        import shutil as _shutil_sync
+        try:
+            _shutil_sync.copy2(findings_path, verified_path)
+            await ctx.log(
+                "03a_norms_verified.json синхронизирован с итоговыми findings", "info"
+            )
+        except OSError as _sync_exc:  # noqa: BLE001 — синхронизация не критична
+            await ctx.log(
+                f"03a_norms_verified.json не синхронизирован ({_sync_exc})", "warn"
             )
 
     # ── Финальные операции ──

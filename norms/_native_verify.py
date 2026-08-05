@@ -415,6 +415,41 @@ def requote_norms_native(output_dir: Path) -> dict:
 _PARA_RE = re.compile(r"п\.\s*(\d+(?:\.\d+)*)")
 
 
+def _clean_norm_code(chunk: str) -> str:
+    """Код документа из куска ссылки: без статуса в скобках и названия в «ёлочках»."""
+    code = re.sub(r"\s*\([^)]*\)", "", chunk)
+    code = re.sub(r"\s*«[^»]*»", "", code)
+    return code.split(",")[0].strip()
+
+
+def _resolve_norm_code(norms_api, code: str) -> str | None:
+    """Код из замечания → канонический код индекса.
+
+    Индекс хранит коды в своей форме («ГОСТ Р 21_101-2020»), а свод пишет их
+    так, как принято в документации («ГОСТ 21.101-2020»). Резолв алиасов внутри
+    norms_api снимает разницу точек и подчёркиваний, но не подставляет пропущенное
+    «Р»: без этого варианта ГОСТы СПДС — самая частая ссылка в наших замечаниях —
+    молча считались отсутствующими в индексе.
+    """
+    if not code:
+        return None
+    variants = [code]
+    upper = code.upper()
+    if upper.startswith("ГОСТ Р "):
+        variants.append("ГОСТ " + code[7:])
+    elif upper.startswith("ГОСТ "):
+        variants.append("ГОСТ Р " + code[5:])
+    for variant in variants:
+        try:
+            status = norms_api.get_norm_status(variant)
+        except Exception:  # noqa: BLE001 — резолв не должен ронять этап
+            continue
+        matched = status.get("matched_code")
+        if matched:
+            return matched
+    return None
+
+
 def backfill_missing_quotes_native(output_dir: Path) -> dict:
     """Достать текст пункта для замечаний, где норма есть, а цитаты нет.
 
@@ -430,8 +465,24 @@ def backfill_missing_quotes_native(output_dir: Path) -> dict:
 
     Ноль токенов, никакой сети: локальный индекс норм.
 
+    Здесь же каждой ссылке проставляется `norm_paragraph_state` — что удалось
+    подтвердить по индексу:
+
+    * `paragraph_verified` — документ и пункт найдены, текст пункта приложен;
+    * `paragraph_not_found` — документ есть, пункта с таким номером в нём нет
+      (самый честный признак придуманного номера);
+    * `paragraph_missing` — назван только документ, пункт не указан;
+    * `document_without_text` — документ в индексе есть, текста его пунктов нет;
+    * `document_not_in_index` — документа в индексе нет вовсе.
+
+    Проверено на живых данных (06.08.2026, 400 ссылок): пункт реально существует
+    у 72% ссылок, названных сводом. Автоподбор пункта семантическим поиском по
+    тексту замечания на тех же данных дал 7% совпадения с моделью и точность,
+    не растущую с порогом score — поэтому пункт здесь только ПРОВЕРЯЕТСЯ, но
+    никогда не подставляется автоматически.
+
     Returns:
-        {"filled": N, "candidates": M, "no_paragraph": K}
+        {"filled": N, "candidates": M, "no_paragraph": K, "states": {...}}
     """
     findings_path = output_dir / "03_findings.json"
     if not findings_path.exists():
@@ -442,46 +493,68 @@ def backfill_missing_quotes_native(output_dir: Path) -> dict:
         return {"filled": 0, "candidates": 0, "no_paragraph": 0}
 
     findings = fd.get("findings", [])
-    candidates = [f for f in findings if f.get("norm") and not f.get("norm_quote")]
-    if not candidates:
+    with_norm = [f for f in findings if f.get("norm")]
+    if not with_norm:
         return {"filled": 0, "candidates": 0, "no_paragraph": 0}
 
     norms_api = _import_norms_api()
     filled = 0
     no_paragraph = 0
+    states: dict[str, int] = {}
 
-    for finding in candidates:
+    for finding in with_norm:
         norm_str = str(finding.get("norm") or "")
+        needs_quote = not (finding.get("norm_quote") or "").strip()
+        state = "document_not_in_index"
         got = False
         # Ссылка может нести несколько документов через «;» — берём первый,
         # где пункт реально находится.
         for chunk in norm_str.split(";"):
-            code = re.sub(r"\s*\([^)]*\)", "", chunk).split(",")[0].strip()
+            code = _clean_norm_code(chunk)
             para_m = _PARA_RE.search(chunk)
-            if not code or not para_m:
+            if not code:
+                continue
+            canon = _resolve_norm_code(norms_api, code)
+            if not canon:
+                continue
+            if not para_m:
+                # Документ в индексе есть, а пункт не назван — ссылка неполная,
+                # но НЕ мусор: инженеру есть с чем работать, а нам — что дозапросить.
+                state = "paragraph_missing"
                 continue
             try:
-                res = norms_api.get_paragraph(code, para_m.group(1))
+                res = norms_api.get_paragraph(canon, para_m.group(1))
             except Exception:  # noqa: BLE001 — дозаливка необязательна
                 continue
             text = (res.get("text") or "").strip()
             if res.get("found") and text:
-                finding["norm_quote"] = text[:400]
-                finding["norm_quote_source"] = "norms_index"
-                filled += 1
+                state = "paragraph_verified"
+                if needs_quote:
+                    finding["norm_quote"] = text[:400]
+                    finding["norm_quote_source"] = "norms_index"
+                    filled += 1
                 got = True
                 break
+            # Документ найден, а пункта с таким номером в нём нет — самый
+            # частый признак придуманного номера. Молчать об этом нельзя.
+            state = (
+                "document_without_text"
+                if res.get("resolution_reason") == "no_document_text"
+                else "paragraph_not_found"
+            )
+        finding["norm_paragraph_state"] = state
+        states[state] = states.get(state, 0) + 1
         if not got and not _PARA_RE.search(norm_str):
             no_paragraph += 1
 
-    if filled:
-        findings_path.write_text(
-            json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+    findings_path.write_text(
+        json.dumps(fd, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return {
         "filled": filled,
-        "candidates": len(candidates),
+        "candidates": sum(1 for f in with_norm if not (f.get("norm_quote") or "").strip()) + filled,
         "no_paragraph": no_paragraph,
+        "states": states,
     }
 
 
