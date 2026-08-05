@@ -505,8 +505,19 @@ def resolve_project_dir(
 
     if direct.exists():
         return direct
-    # Если projects_dir не существует — не падаем, возвращаем direct path
+    # Если projects_dir не существует — не падаем, возвращаем direct path.
+    # НО must_exist=True обязан остаться must_exist: после cutover на
+    # projects_v2 legacy `projects/<объект>/` не существует вовсе, и ранний
+    # return отдавал writer'ам ФАНТОМНЫЙ путь вместо ProjectNotResolvedError.
+    # Из-за этого `_pid_resolves()` в импорте Excel признавал валидным любой
+    # стейл project_id (500 «Папка проекта не найдена» вместо фолбэка на
+    # project_id из UI).
     if not projects_dir.exists():
+        if must_exist:
+            raise ProjectNotResolvedError(
+                f"Project directory not resolved for project_id={project_id!r} "
+                f"(projects_dir не существует: {projects_dir})"
+            )
         return direct
     # Контейнерная раскладка: <parent>/<база>(main)/<база>. Покрывает и
     # project_id со слешем (например "KJ/TGT2" → KJ/TGT2(main)/TGT2).

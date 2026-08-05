@@ -265,3 +265,28 @@ def test_reverse_fallback_missing_no_pdf_folder_no_regression(projects_dir_pdf_f
         resolve_project_dir("совсем-нет-такого", must_exist=True)
     got = resolve_project_dir("совсем-нет-такого")
     assert got == p / "совсем-нет-такого" and not got.exists()
+
+
+def test_missing_projects_dir_must_exist_raises(tmp_path, monkeypatch):
+    """projects_dir НЕ существует (cutover на projects_v2 — legacy `projects/`
+    пуста) → `must_exist=True` обязан бросить, а не вернуть фантомный путь.
+
+    Регрессия 500 на `POST /api/knowledge-base/upload-excel`: ранний
+    `return direct` при несуществующем projects_dir делал `_pid_resolves()`
+    в импорте Excel истинным для ЛЮБОГО стейл-project_id → импорт брал
+    протухший id из скрытой ячейки вместо фолбэка на project_id из UI и падал
+    в `save_expert_review` с «Папка проекта … не найдена».
+    """
+    gone = tmp_path / "projects"  # не создаём
+    monkeypatch.setattr(ps, "_get_projects_dir", lambda: gone)
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE", [])
+    monkeypatch.setattr(ps, "_PROJECT_DIRS_CACHE_TIME", 0.0)
+
+    with pytest.raises(ProjectNotResolvedError):
+        resolve_project_dir("AR/СТ26-01-14-АР1-4-2-РД_V1", must_exist=True)
+
+    # без must_exist поведение прежнее: несуществующий direct, ничего не создано
+    got = resolve_project_dir("AR/СТ26-01-14-АР1-4-2-РД_V1")
+    assert got == gone / "AR/СТ26-01-14-АР1-4-2-РД_V1"
+    assert not got.exists()
+    assert not gone.exists()
