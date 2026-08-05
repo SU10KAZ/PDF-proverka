@@ -5327,42 +5327,46 @@ class PipelineManager:
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
 
-            idx = 0
             while True:
-                # Проверяем условие выхода под локом, чтобы _enqueue_single
-                # не успел дописать item в момент перехода в "completed".
-                if idx >= len(queue.items):
-                    async with self._enqueue_lock:
-                        if idx >= len(queue.items):
-                            queue.status = "completed"
-                            break
-                    # под локом увидели свежие items — продолжаем цикл
-
-                item = queue.items[idx]
-                if item.status in ("completed", "failed", "skipped", "cancelled"):
-                    idx += 1
-                    continue
-                if item.status == "interrupted":
-                    item.status = "pending"
-
-                if queue.status == "cancelled":
-                    item.status = "cancelled"
-                    idx += 1
-                    continue
-
-                # Проверка паузы перед следующим проектом
+                # Пауза проверяется ДО выбора элемента. Раньше item захватывался
+                # выше гейта: пока воркер спал на _pause_event, он держал ссылку
+                # на конкретный объект, и перестановка очереди в UI на него уже
+                # не действовала — оператор двигал строки, а запускался старый
+                # проект (инцидент 04.08.2026, 11:51).
                 if self._paused:
                     await self._log(
                         meta_job,
-                        f"⏸ Очередь на паузе (перед проектом {idx + 1}/{queue.total})",
+                        f"⏸ Очередь на паузе ({queue.completed}/{queue.total} готово)",
                         "warn",
                     )
                     await self._pause_event.wait()
                     await self._log(meta_job, "▶ Очередь продолжена", "info")
 
+                # Выбор элемента — каждый раз заново, ПЕРВЫЙ незавершённый.
+                # Прежний монотонный idx не возвращался назад: элемент, попавший
+                # после перестановки/позднего add в позицию ниже текущей, не
+                # выполнялся никогда («мёртвый слот»). Под локом — чтобы
+                # _enqueue_single не дописал item в момент решения о завершении.
+                async with self._enqueue_lock:
+                    item = next(
+                        (it for it in queue.items
+                         if it.status in ("pending", "interrupted")),
+                        None,
+                    )
+                    if item is None:
+                        queue.status = "completed"
+                        break
+                    if queue.status == "cancelled":
+                        item.status = "cancelled"
+                        continue
+                    # Прерванный рестартом элемент продолжаем, а не гоним с нуля
+                    # (см. resume_action ниже).
+                    was_interrupted = item.status == "interrupted"
+                    item.status = "running"
+                    idx = queue.items.index(item)
+
                 queue.current_index = idx
                 meta_job.progress_current = idx
-                item.status = "running"
                 # Тайминги item'а: при повторном запуске (resume interrupted)
                 # перезаписываем — показываем фактический последний прогон.
                 item.started_at = time.time()
@@ -5383,7 +5387,6 @@ class PipelineManager:
                     await ws_manager.broadcast_global(
                         WSMessage.log("__BATCH__", f"  ⏭ Пропуск {pid}: уже выполняется", "warn")
                     )
-                    idx += 1
                     continue
 
                 # version_id зафиксирован на момент enqueue (см. _enqueue_single).
@@ -5411,7 +5414,24 @@ class PipelineManager:
                     self.active_jobs[pid] = job
                     self._tasks[pid] = asyncio.current_task()
 
-                    await self._dispatch_action(item, job, default_action=queue.action)
+                    # Элемент, прерванный рестартом бэкенда, продолжаем с места
+                    # обрыва, а не гоняем весь action заново. Раньше авто-resume
+                    # брал item целиком: проект с готовыми блоками/текстом/сводом
+                    # пересчитывался с crop_blocks (инцидент 04.08.2026 — минус
+                    # полтора часа и ~$3 на ОВ1-2.3). Точечные retry_stage-item'ы
+                    # уже адресны, их не трогаем.
+                    _action_override = None
+                    if was_interrupted and not item.retry_stage:
+                        _action_override = "resume"
+                        await self._log(
+                            job,
+                            "Элемент был прерван рестартом — продолжаю с места обрыва",
+                            "info",
+                        )
+                    await self._dispatch_action(
+                        item, job, default_action=queue.action,
+                        action_override=_action_override,
+                    )
 
                     if job.status == JobStatus.COMPLETED:
                         item.status = "completed"
@@ -5482,8 +5502,6 @@ class PipelineManager:
                     except Exception:
                         pass
 
-                idx += 1
-
             # Итог (queue.status уже выставлен в "completed" под локом выше)
             meta_job.progress_current = queue.total
             meta_job.status = JobStatus.COMPLETED
@@ -5540,6 +5558,7 @@ class PipelineManager:
         item: BatchQueueItem,
         job: AuditJob,
         default_action: str = "full",
+        action_override: Optional[str] = None,
     ) -> None:
         """Выполнить action из item, мутируя job на месте.
 
@@ -5553,7 +5572,9 @@ class PipelineManager:
         самостоятельно.
         """
         pid = job.project_id
-        action = item.action or default_action or "full"
+        # action_override — «продолжить, а не начать заново» для элемента,
+        # прерванного рестартом бэкенда (см. _run_batch_queue).
+        action = action_override or item.action or default_action or "full"
         extra = item.extra_params or {}
 
         # Pre-action cleanup — убить зомби от прошлых запусков того же проекта
@@ -5659,8 +5680,15 @@ class PipelineManager:
         if action == "resume":
             resume_info = self.detect_resume_stage(pid, version_id=job.version_id)
             if not resume_info.get("can_resume"):
-                job.status = JobStatus.FAILED
-                job.error_message = "Нечего возобновлять"
+                if action_override == "resume":
+                    # Авто-продолжение прерванного элемента: «нечего возобновлять»
+                    # означает, что конвейер уже дошёл до конца — это успех, а не
+                    # сбой (иначе UI покажет ложный failed после рестарта).
+                    job.status = JobStatus.COMPLETED
+                    await self._log(job, "Все этапы уже выполнены — продолжать нечего", "info")
+                else:
+                    job.status = JobStatus.FAILED
+                    job.error_message = "Нечего возобновлять"
                 job.completed_at = datetime.now().isoformat()
                 return
             # Стадии оптимизации НЕ входят в ocr_stages конвейера: без этого роутинга
