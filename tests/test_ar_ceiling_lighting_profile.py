@@ -554,3 +554,82 @@ def test_reference_markdown_has_all_apartments(reference_with_registry):
     for n in range(700, 710):
         assert f"## Квартира {n}" in md
     assert "### Помещение 6.709.1" in md
+
+
+# ------------------------------------------------- компактное описание
+
+@pytest.fixture(scope="module")
+def compact_md(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        render_markdown_compact)
+    return render_markdown_compact(reference_with_registry["graph"])
+
+
+def test_compact_has_first_and_last_apartment(compact_md):
+    assert "## Квартира 700" in compact_md
+    assert "## Квартира 709" in compact_md
+
+
+def test_compact_has_all_60_room_marks(compact_md, reference_with_registry):
+    marks = {r["mark"] for r in reference_with_registry["graph"]["rooms"]}
+    assert len(marks) == 60
+    for mark in marks:
+        assert f"### {mark}" in compact_md, f"марка {mark} потеряна в compact"
+
+
+def test_compact_room_6709_1_content(compact_md):
+    section = compact_md.split("### 6.709.1")[1].split("###")[0]
+    assert "тип 1" in section and "+2.850" in section
+    assert "люстру, группа 7" in section
+    assert "одноклавишный выключатель группы 7" in section
+    assert "200 мм" in section
+
+
+def test_compact_incomplete_groups_5_6_apartment_709(compact_md):
+    apt709 = compact_md.split("## Квартира 709")[1]
+    groups_line = [l for l in apt709.split("\n") if l.startswith("**Группы квартиры:**")]
+    assert groups_line, "сводка групп квартиры 709 не найдена"
+    assert "5 и 6 — найдены только выключатели" in groups_line[0]
+
+
+def test_compact_contains_both_conflicts(compact_md, reference_with_registry):
+    conflicts = reference_with_registry["graph"]["conflicts"]
+    assert len(conflicts) == 2
+    assert "равноудалён от двух устройств" in compact_md
+    assert "пересекается с другим классифицированным устройством" in compact_md
+
+
+def test_full_markdown_unchanged_and_kept(reference_with_registry):
+    """Полный рендер не изменён: прежняя структура и полнота сохраняются."""
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md import (
+        render_markdown)
+    full = render_markdown(reference_with_registry["graph"])
+    assert "## Данные листа" in full
+    assert "### Сводка групп освещения квартиры 700" in full
+    assert "## Контроль результата по всему блоку" in full
+    assert "### Помещение 6.709.1" in full
+    assert len(full) > 40000
+
+
+def test_compact_no_sym_ids_and_no_coordinates(compact_md):
+    assert not re.search(r"\bsym-\d+\b", compact_md)
+    assert not re.search(r"\b\d{3,4}\.\d{2}\s*,\s*\d{3,4}\.\d{2}\b", compact_md)
+    assert "bbox" not in compact_md and "tier" not in compact_md
+
+
+def test_compact_no_spread_phrase(compact_md):
+    assert "распространена на всё помещение" not in compact_md
+
+
+def test_compact_master_note_once(compact_md):
+    assert compact_md.count("перечень отключаемых групп") == 1
+
+
+def test_compact_ambiguity_not_duplicated(compact_md):
+    assert compact_md.count("равноудалён от двух устройств") == 1
+    assert compact_md.count("пересекается с другим классифицированным устройством") == 1
+
+
+def test_compact_size_limit(compact_md):
+    assert len(compact_md) <= 25000, f"compact {len(compact_md)} символов > 25000"
+    assert compact_md.count("\n") < 600

@@ -15,6 +15,7 @@ CLI ``scripts/build_ar_ceiling_lighting_description.py``.
 """
 from .runner import (PROFILE_ID, PROFILE_VERSION, build_ar_ceiling_lighting_result,
                      compact_fixture, run_profile, write_artifacts)
+from .render_md_compact import render_markdown_compact
 
 __all__ = ["PROFILE_ID", "PROFILE_VERSION", "build_ar_ceiling_lighting_result",
-           "compact_fixture", "run_profile", "write_artifacts"]
+           "compact_fixture", "render_markdown_compact", "run_profile", "write_artifacts"]

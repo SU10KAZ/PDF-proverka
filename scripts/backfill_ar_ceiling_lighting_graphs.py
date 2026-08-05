@@ -36,6 +36,8 @@ from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (  #
     PROFILE_ID, PROFILE_VERSION, run_profile)
 from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md import (  # noqa: E402
     render_markdown)
+from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md_compact import (  # noqa: E402
+    render_markdown_compact)
 from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.registry import (  # noqa: E402
     load_legend_registry)
 from backend.app.pipeline.stages.block_grounding.block_profile_registry import (  # noqa: E402
@@ -173,6 +175,7 @@ def main() -> int:
             continue
         graph = result["graph"]
         md = render_markdown(graph)
+        md_compact = render_markdown_compact(graph)
         package = make_package(
             block_id=block_id, page=page, source_kind="structured_architecture",
             user_text=None,  # shadow: в LLM этот пакет не уходит
@@ -181,6 +184,7 @@ def main() -> int:
                   "reasons": ["shadow-профиль ar_ceiling_lighting, в Stage 01/02 не подаётся"]},
         )
         package.update({
+            "markdown_compact": md_compact,
             "profile_id": PROFILE_ID,
             "profile_version": PROFILE_VERSION,
             "status": status,

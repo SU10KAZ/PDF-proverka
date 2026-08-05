@@ -27,7 +27,11 @@ FULL_MD = "\n".join(
 )
 
 
-def _shadow_package(block_id: str, *, status: str = "complete", warnings=None) -> dict:
+COMPACT_MD = "# Компакт\n\n## Квартира 700\n\n## Квартира 709\n\n### 6.709.1 — Жилая комната\n"
+
+
+def _shadow_package(block_id: str, *, status: str = "complete", warnings=None,
+                    with_compact: bool = True) -> dict:
     return {
         "schema_version": 6,
         "block_id": block_id,
@@ -36,6 +40,7 @@ def _shadow_package(block_id: str, *, status: str = "complete", warnings=None) -
         "profile_id": "ar_ceiling_lighting",
         "profile_version": "test",
         "status": status,
+        "markdown_compact": COMPACT_MD if with_compact else None,
         "markdown": FULL_MD,
         "user_text": None,
         "graph": None,
@@ -149,3 +154,18 @@ def test_existing_contract_fields_preserved(env):
                 "block_graph_package", "profiled_graph", "profiled_graph_display",
                 "vector_text", "text_groups"):
         assert key in payload, f"поле {key} исчезло из контракта"
+
+
+def test_endpoint_returns_compact_markdown(env):
+    _write_shadow(env, "B-1", _shadow_package("B-1"))
+    payload = _call("B-1")
+    assert payload["profiled_graph_markdown_compact"] == COMPACT_MD
+    assert payload["profiled_graph_markdown_full"] == FULL_MD  # full сохранён
+
+
+def test_endpoint_compact_absent_gives_null_full_kept(env):
+    """Fallback-случай: compact отсутствует → поле null, full доступен."""
+    _write_shadow(env, "B-1", _shadow_package("B-1", with_compact=False))
+    payload = _call("B-1")
+    assert payload["profiled_graph_markdown_compact"] is None
+    assert payload["profiled_graph_markdown_full"] == FULL_MD

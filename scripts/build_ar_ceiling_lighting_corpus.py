@@ -148,7 +148,8 @@ def main() -> int:
             entry["applicable"] = result["status"] not in ("no_graph",)
             write_artifacts(result, str(result_dir), pdf_path=str(pdf),
                             include_raw_inventory=args.include_raw_inventory,
-                            markdown_name="description_full.md")
+                            markdown_name="description_full.md",
+                            markdown_compact_name="description_compact.md")
             matrix_rows.append(_matrix_row(pdf.name, result))
         except Exception as exc:  # noqa: BLE001 — пакет не останавливается
             entry["status"] = "error"

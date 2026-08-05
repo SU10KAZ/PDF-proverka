@@ -287,8 +287,10 @@ def compact_fixture(graph: dict) -> dict:
 
 def write_artifacts(result: dict, out_dir: str, *, pdf_path: str,
                     include_raw_inventory: bool = True,
-                    markdown_name: str | None = None) -> dict:
+                    markdown_name: str | None = None,
+                    markdown_compact_name: str | None = None) -> dict:
     from .render_md import render_markdown
+    from .render_md_compact import render_markdown_compact
     from .overlay import render_overlay_svg
 
     out = Path(out_dir)
@@ -342,6 +344,11 @@ def write_artifacts(result: dict, out_dir: str, *, pdf_path: str,
     md_path = out / (markdown_name or f"{block_id}_apartments.md")
     md_path.write_text(md, encoding="utf-8")
     paths["markdown"] = str(md_path)
+
+    md_compact = render_markdown_compact(graph)
+    compact_path = out / (markdown_compact_name or f"{block_id}_apartments_compact.md")
+    compact_path.write_text(md_compact, encoding="utf-8")
+    paths["markdown_compact"] = str(compact_path)
 
     paths["compact_fixture"] = dump("compact_fixture.json", compact_fixture(graph))
 

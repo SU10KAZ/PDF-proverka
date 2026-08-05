@@ -8389,8 +8389,11 @@ const app = createApp({
 
         const blockProfiledMarkdownHtml = computed(() => {
             const payload = blockLlmText.value;
-            if (!payload || !payload.profiled_graph_markdown_full) return '';
-            return renderMarkdownSafe(payload.profiled_graph_markdown_full);
+            if (!payload) return '';
+            // компактное описание по умолчанию; fallback — полный технический рендер
+            const md = payload.profiled_graph_markdown_compact || payload.profiled_graph_markdown_full;
+            if (!md) return '';
+            return renderMarkdownSafe(md);
         });
 
         // Полупрозрачные области линий поверх блока — визуальная проверка связи данных

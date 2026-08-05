@@ -72,6 +72,10 @@ describe('панель «Текст»: полное профильное Markdow
     expect(css).toContain('.block-llm-text__notice');
   });
 
+  it('вкладка txt показывает compact с fallback на full', () => {
+    expect(appJs).toContain('payload.profiled_graph_markdown_compact || payload.profiled_graph_markdown_full');
+  });
+
   it('вкладка «Источник» (просмотр блока) не изменена', () => {
     // рендер изображения блока остаётся прежним
     expect(html).toContain('blockImageSrc');

@@ -921,6 +921,7 @@ async def get_block_llm_text(
     # строится санитайзером artifact_filename (никаких путей от клиента),
     # отсутствующий артефакт даёт null, а не 500. fail-soft.
     profiled_graph_markdown_full = None
+    profiled_graph_markdown_compact = None
     profile_shadow = None
     try:
         from backend.app.pipeline.stages.block_grounding.block_profile_registry import (
@@ -937,6 +938,7 @@ async def get_block_llm_text(
             _shadow = json.loads(_shadow_path.read_text(encoding="utf-8"))
             if isinstance(_shadow, dict) and str(_shadow.get("block_id")) == str(block_id):
                 profiled_graph_markdown_full = _shadow.get("markdown")
+                profiled_graph_markdown_compact = _shadow.get("markdown_compact")
                 profile_shadow = {
                     "profile_id": _shadow.get("profile_id"),
                     "profile_version": _shadow.get("profile_version"),
@@ -950,6 +952,7 @@ async def get_block_llm_text(
                 }
     except Exception:
         profiled_graph_markdown_full = None
+        profiled_graph_markdown_compact = None
         profile_shadow = None
 
     return {
@@ -991,6 +994,8 @@ async def get_block_llm_text(
         # например «АР. План потолков и освещения»). null = артефакта нет,
         # UI сохраняет прежнее поведение панели.
         "profiled_graph_markdown_full": profiled_graph_markdown_full,
+        # Компактное описание для вкладки txt (UI берёт его, fallback — full)
+        "profiled_graph_markdown_compact": profiled_graph_markdown_compact,
         # Сводка shadow-профиля: profile_id/status/warnings/conflict_count/…
         "profile_shadow": profile_shadow,
         # пространственные группы текста блока (оверлей «области»): bbox в [0,1] региона блока
