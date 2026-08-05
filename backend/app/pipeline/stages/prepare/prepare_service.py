@@ -350,6 +350,32 @@ def _build_crop_args(
     return args
 
 
+def _plan_crop_refresh(blocks_dir: Path, policy: dict) -> tuple[bool, list[str]]:
+    """Решить, нужен ли полный пере-кроп, и что из PNG недостаёт.
+
+    `--force` = перекачать ВСЁ по crop_url. Он оправдан только когда уже
+    скачанные PNG отрендерены по другой политике (профиль/DPI разъехались) —
+    переиспользовать их нельзя.
+
+    Недостающие PNG форса НЕ требуют: crop_blocks() переиспользует существующие
+    файлы (лог `[EXISTS]`), качает по crop_url только отсутствующие и в любом
+    случае пересобирает index.json целиком. Раньше здесь стоял force на любой
+    пропавший PNG — один битый файл заставлял качать весь проект заново.
+
+    Возвращает (force_crop, missing_pngs).
+    """
+    index_path = blocks_dir / "index.json"
+    # «index.json есть, PNG нет» раньше проходило как «кропы готовы»
+    # и Stage 01 стартовал вслепую — см. crops_materialized().
+    missing_pngs: list[str] = []
+    if index_path.exists():
+        _ok, missing_pngs = crops_materialized(blocks_dir)
+        force_crop = not crop_index_matches_policy(index_path, policy)
+    else:
+        force_crop = False
+    return force_crop, missing_pngs
+
+
 def _parse_crop_stdout(stdout: str) -> dict | None:
     for line in reversed((stdout or "").splitlines()):
         line = line.strip()
@@ -390,21 +416,17 @@ async def _crop_for_project(project_id: str) -> None:
         try:
             policy = stage02_crop_policy()
             blocks_dir = out_dir / STAGE02_BLOCKS_DIRNAME
-            index_path = blocks_dir / "index.json"
-            # «index.json есть, PNG нет» раньше проходило как «кропы готовы»
-            # и Stage 01 стартовал вслепую — см. crops_materialized().
-            missing_pngs: list[str] = []
-            if index_path.exists():
-                _ok, missing_pngs = crops_materialized(blocks_dir)
-            force_crop = (
-                (index_path.exists() and not crop_index_matches_policy(index_path, policy))
-                or (not index_path.exists() and blocks_dir.exists() and any(blocks_dir.glob("block_*.png")))
-                or bool(missing_pngs)
-            )
-            if missing_pngs:
+            force_crop, missing_pngs = _plan_crop_refresh(blocks_dir, policy)
+            if force_crop:
                 await _ws_log(
                     project_id,
-                    f"Отсутствует {len(missing_pngs)} PNG из index.json — пере-кроп блоков",
+                    "Профиль рендера в index.json не совпадает с политикой — полный пере-кроп",
+                    "warn",
+                )
+            elif missing_pngs:
+                await _ws_log(
+                    project_id,
+                    f"Отсутствует {len(missing_pngs)} PNG из index.json — докачиваем недостающие",
                     "warn",
                 )
 

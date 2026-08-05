@@ -9175,31 +9175,18 @@ const app = createApp({
         }
 
         async function cropBatchBlocks() {
-            // ↓ Кнопка «Подготовить данные»: PNG + контекст PDF/Vectograph
-            const ids = Array.from(selectedProjects.value);
-            if (!ids.length) return;
-            // Фильтр: только проекты без аудита (findings_count == 0)
-            const byId = new Map(projects.value.map(p => [p.project_id, p]));
-            const targets = ids.filter(pid => {
-                const p = byId.get(pid);
-                return p && !(p.findings_count > 0);
-            });
-            const skipped = ids.length - targets.length;
-            if (!targets.length) {
-                alert(`Все ${ids.length} выбранных проектов уже имеют аудит — подготовка пропущена.\nИспользуйте Force re-enrich на странице проекта если хотите переобогатить.`);
-                return;
-            }
-            const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n` +
-                               `Будут выполнены: crop PNG + подготовка контекста PDF/Vectograph.\n` +
-                               `Время: ~30-60 сек на блок (зависит от размера проекта).` +
-                               (skipped > 0 ? `\n(пропущено ${skipped} с уже выполненным аудитом)` : '');
+            // ↓ Кнопка «Подготовить данные» = ровно два шага:
+            //   1) скачать кропы блоков по crop_url (существующие PNG переиспользуются,
+            //      докачивается только недостающее);
+            //   2) собрать контекст блоков (CTX) — локально, без нейросети и токенов.
+            // Фильтров по наличию аудита нет: готовим все отмеченные проекты.
+            const targets = Array.from(selectedProjects.value);
+            if (!targets.length) return;
+            const confirmMsg = `Подготовить данные для ${targets.length} проектов?\n\n` +
+                               `1. Скачивание кропов блоков по ссылкам (crop_url)\n` +
+                               `2. Сборка контекста блоков (CTX) — всегда заново\n\n` +
+                               `Прогресс — в очереди подготовки и в логе проекта.`;
             if (!confirm(confirmMsg)) return;
-
-            const force = confirm(
-                `Force re-enrich?\n\n` +
-                `OK = переобогатить даже уже подготовленные проекты (с backup _output/).\n` +
-                `Cancel = пропустить уже подготовленные.`
-            );
 
             batchCropLoading.value = true;
             let done = 0;
@@ -9207,7 +9194,9 @@ const app = createApp({
             for (const pid of targets) {
                 batchCropProgress.value = `${done}/${targets.length}`;
                 try {
-                    const url = `/api/audit/${encodeURIComponent(pid)}/prepare-data?force=${force ? 'true' : 'false'}`;
+                    // force=true → CTX пересобирается даже если сводка уже валидна.
+                    // На кропы force не влияет: они всегда докачиваются, а не перекачиваются.
+                    const url = `/api/audit/${encodeURIComponent(pid)}/prepare-data?force=true`;
                     const resp = await fetch(url, {method: 'POST'});
                     if (!resp.ok) {
                         const err = await resp.json().catch(() => ({}));
@@ -9223,7 +9212,6 @@ const app = createApp({
             batchCropProgress.value = '';
             const msg = `Подготовка запущена: ${done}/${targets.length} проектов.\n` +
                         `Прогресс — в WebSocket-логе (откройте проект для деталей).` +
-                        (skipped > 0 ? `\nПропущено (есть аудит): ${skipped}` : '') +
                         (errors.length ? `\n\nОшибки:\n${errors.join('\n')}` : '');
             alert(msg);
             await refreshProjects();
