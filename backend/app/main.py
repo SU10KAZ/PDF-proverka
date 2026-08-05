@@ -89,6 +89,10 @@ async def lifespan(app: FastAPI):
     action_log_core.log_event("system", event="startup")
     yield
     action_log_core.log_event("system", event="shutdown")
+    # Воркеры векторных графов блоков живут дольше запроса — гасим явно,
+    # чтобы после рестарта не оставались осиротевшие python-процессы.
+    from backend.app.pipeline.stages.block_context.builder import shutdown_pool
+    shutdown_pool()
     # Снять мост с process-global root: в проде безвредно, а в тестах
     # `with TestClient(app)` хендлер не переживает выход из контекста.
     action_log_core.uninstall_logging_bridge()

@@ -4,6 +4,8 @@ import asyncio
 import inspect
 import json
 import time
+from concurrent.futures import Future, ThreadPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
 
 import pytest
 
@@ -96,6 +98,117 @@ async def test_builder_keeps_event_loop_responsive_during_package_resolution(
     await tick_task
 
     assert ticked_during_build
+
+
+@pytest.mark.asyncio
+async def test_blocks_are_resolved_in_parallel_but_reported_in_order(
+    tmp_path,
+    monkeypatch,
+):
+    """Параллельный разбор не должен менять порядок блоков и прогресса.
+
+    B-1 медленнее B-2: на последовательном пути это невидимо, а на параллельном
+    B-2 финиширует первым — сводка и progress_cb обязаны остаться в порядке
+    index.json, иначе счётчик «N/M блоков» в очереди поедет.
+    """
+    index = _index(tmp_path)
+
+    def _worker(_output_dir, block_id, page):
+        time.sleep(0.20 if block_id == "B-1" else 0.0)
+        return {
+            "block_id": block_id,
+            "page": page,
+            "source_kind": "structured_architecture",
+            "user_text": f"context for {block_id}",
+        }
+
+    pool = ThreadPoolExecutor(max_workers=2)
+    monkeypatch.setattr(builder_mod, "_resolve_package_in_worker", _worker)
+    monkeypatch.setattr(builder_mod, "_get_pool", lambda: pool)
+
+    progress: list[str] = []
+
+    async def _cb(event):
+        if event.get("type") == "block_done":
+            progress.append(event["block_id"])
+
+    started = time.time()
+    try:
+        summary = await build_block_context(
+            tmp_path,
+            output_dir=tmp_path,
+            blocks_index_path=index,
+            progress_cb=_cb,
+        )
+    finally:
+        pool.shutdown(wait=False)
+    elapsed = time.time() - started
+
+    assert progress == ["B-1", "B-2"]
+    assert [item["block_id"] for item in summary["blocks"]] == ["B-1", "B-2"]
+    # B-2 считался, пока спал B-1: последовательный путь дал бы ≥0.20+0.20.
+    assert elapsed < 0.35
+
+
+@pytest.mark.asyncio
+async def test_broken_pool_falls_back_to_threads_without_losing_blocks(
+    tmp_path,
+    monkeypatch,
+):
+    """Смерть воркера (OOM в fitz) не должна валить стадию и терять блоки."""
+    index = _index(tmp_path)
+
+    class _DeadPool:
+        def submit(self, _fn, *_args, **_kwargs):
+            future = Future()
+            future.set_exception(BrokenProcessPool("worker died"))
+            return future
+
+    monkeypatch.setattr(builder_mod, "_POOL_DISABLED", False)
+    monkeypatch.setattr(builder_mod, "_pool_applies", lambda: True)
+    monkeypatch.setattr(builder_mod, "_get_pool", lambda: _DeadPool())
+
+    in_thread: list[str] = []
+
+    async def _fallback(block, _output_dir):
+        block_id = str(block.get("block_id"))
+        in_thread.append(block_id)
+        return {
+            "block_id": block_id,
+            "page": block.get("page"),
+            "source_kind": "structured_architecture",
+            "user_text": f"context for {block_id}",
+        }
+
+    monkeypatch.setattr(builder_mod, "_resolve_in_thread", _fallback)
+
+    summary = await build_block_context(
+        tmp_path,
+        output_dir=tmp_path,
+        blocks_index_path=index,
+    )
+
+    assert in_thread == ["B-1", "B-2"]
+    assert summary["blocks_ready"] == 2
+    assert summary["status"] == "ok"
+    assert builder_mod._POOL_DISABLED is True
+
+
+def test_worker_count_is_bounded_and_overridable(monkeypatch):
+    monkeypatch.setenv("BLOCK_CONTEXT_WORKERS", "3")
+    assert builder_mod.block_context_workers() == 3
+
+    # 1 воркер — прежнее последовательное поведение без пула вообще.
+    monkeypatch.setenv("BLOCK_CONTEXT_WORKERS", "1")
+    assert builder_mod.block_context_workers() == 1
+    assert builder_mod._get_pool() is None
+
+    monkeypatch.delenv("BLOCK_CONTEXT_WORKERS", raising=False)
+    monkeypatch.setattr(builder_mod.os, "cpu_count", lambda: 16)
+    # Два ядра оставляем бэкенду, но не больше потолка.
+    assert builder_mod.block_context_workers() == builder_mod.DEFAULT_MAX_WORKERS
+    monkeypatch.setattr(builder_mod.os, "cpu_count", lambda: 2)
+    assert builder_mod.block_context_workers() == 1
 
 
 def test_legacy_summary_is_read_through_adapter(tmp_path):
