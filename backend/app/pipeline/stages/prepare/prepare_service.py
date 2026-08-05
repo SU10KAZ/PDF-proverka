@@ -499,6 +499,34 @@ def _ensure_crop_started(project_id: str) -> None:
         )
 
 
+def _ensure_document_graph(project_id: str, project_dir: Path, out_dir: Path) -> None:
+    """Собрать document_graph.json (чистый Python, без LLM/сети) — как в аудите.
+
+    Контекст блоков читает граф: без него роутер источника даёт 0 вектор-покрытия,
+    поэтому строим граф ДО build_block_context. Fail-soft: ошибка не валит prepare.
+    """
+    try:
+        from backend.app.pipeline.stages.prepare.graph_builder import (
+            build_document_graph_v2,
+            generate_locality_debug,
+        )
+
+        graph_source_dir, result_json_paths = project_dir, None
+        if v2_is_primary():
+            from backend.app.services.storage.projects_v2_source_resolver import resolve_v2_source_files
+
+            sources = resolve_v2_source_files(project_dir, project_id)
+            if sources.result_json_path is not None:
+                graph_source_dir = sources.result_json_path.parent
+                result_json_paths = [sources.result_json_path]
+
+        graph = build_document_graph_v2(graph_source_dir, out_dir, result_json_paths=result_json_paths)
+        if graph:
+            generate_locality_debug(graph, out_dir)
+    except Exception as e:
+        print(f"[{project_id}:prepare] document_graph v2 не построен: {e}")
+
+
 async def _run_prepare(
     project_id: str,
     force: bool,
@@ -522,6 +550,10 @@ async def _run_prepare(
         await _broadcast_queue()
         await _ws_log(project_id, f"Crop не выполнен: {crop_result['error']}", "error")
         return {"status": "error", "stage": "crop", "error": crop_result["error"]}
+
+    # Граф строим ДО проверки «контекст уже готов»: на skip-ветке контекст мог
+    # быть собран раньше, а document_graph.json так и не появиться.
+    await asyncio.to_thread(_ensure_document_graph, project_id, project_dir, out_dir)
 
     validation = validate_block_context_summary(out_dir, canonical_only=True)
     if validation.get("valid") and not force:
