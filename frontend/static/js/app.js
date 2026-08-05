@@ -8387,11 +8387,24 @@ const app = createApp({
                 .replace(/(href|src)\s*=\s*(["']?)\s*javascript:[^"'\s>]*\2/gi, '$1="#"');
         }
 
+        // Режим профильного описания: 'audit' — краткий контекст для поиска
+        // замечаний (по умолчанию), 'detail' — подробное поквартирное описание.
+        // Полный технический рендер в UI не показывается (доступен через API).
+        const blockMdMode = ref('audit');
+
+        function setBlockMdMode(mode) {
+            blockMdMode.value = mode === 'detail' ? 'detail' : 'audit';
+        }
+
         const blockProfiledMarkdownHtml = computed(() => {
             const payload = blockLlmText.value;
             if (!payload) return '';
-            // компактное описание по умолчанию; fallback — полный технический рендер
-            const md = payload.profiled_graph_markdown_compact || payload.profiled_graph_markdown_full;
+            // «Подробно» → compact; «Аудит» → audit. Fallback: audit → compact → full
+            const md = blockMdMode.value === 'detail'
+                ? (payload.profiled_graph_markdown_compact || payload.profiled_graph_markdown_audit
+                   || payload.profiled_graph_markdown_full)
+                : (payload.profiled_graph_markdown_audit || payload.profiled_graph_markdown_compact
+                   || payload.profiled_graph_markdown_full);
             if (!md) return '';
             return renderMarkdownSafe(md);
         });
@@ -18895,7 +18908,7 @@ const app = createApp({
             // «txt»-режим: текст блока, уходящий в нейронку
             showBlockLlmText, blockLlmText, blockLlmTextLoading, blockLlmTextError, toggleBlockLlmText,
             // полное профильное Markdown-описание блока (shadow-профиль)
-            blockProfiledMarkdownHtml, renderMarkdownSafe,
+            blockProfiledMarkdownHtml, renderMarkdownSafe, blockMdMode, setBlockMdMode,
             showBlockRegions, blockRegionRects, blockTextGroupRects, toggleBlockRegions, blockImageSrc, blockImgUrl,
             logProjectId, logEntries, logAutoScroll, logContainer, logLoading,
             logTruncatedNotice,

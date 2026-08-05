@@ -288,9 +288,11 @@ def compact_fixture(graph: dict) -> dict:
 def write_artifacts(result: dict, out_dir: str, *, pdf_path: str,
                     include_raw_inventory: bool = True,
                     markdown_name: str | None = None,
-                    markdown_compact_name: str | None = None) -> dict:
+                    markdown_compact_name: str | None = None,
+                    markdown_audit_name: str | None = None) -> dict:
     from .render_md import render_markdown
     from .render_md_compact import render_markdown_compact
+    from .render_md_audit import build_audit_context, render_markdown_audit
     from .overlay import render_overlay_svg
 
     out = Path(out_dir)
@@ -349,6 +351,12 @@ def write_artifacts(result: dict, out_dir: str, *, pdf_path: str,
     compact_path = out / (markdown_compact_name or f"{block_id}_apartments_compact.md")
     compact_path.write_text(md_compact, encoding="utf-8")
     paths["markdown_compact"] = str(compact_path)
+
+    md_audit = render_markdown_audit(graph)
+    audit_path = out / (markdown_audit_name or f"{block_id}_audit.md")
+    audit_path.write_text(md_audit, encoding="utf-8")
+    paths["markdown_audit"] = str(audit_path)
+    paths["audit_context"] = dump("audit_context.json", build_audit_context(graph))
 
     paths["compact_fixture"] = dump("compact_fixture.json", compact_fixture(graph))
 

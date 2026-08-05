@@ -72,8 +72,34 @@ describe('панель «Текст»: полное профильное Markdow
     expect(css).toContain('.block-llm-text__notice');
   });
 
-  it('вкладка txt показывает compact с fallback на full', () => {
-    expect(appJs).toContain('payload.profiled_graph_markdown_compact || payload.profiled_graph_markdown_full');
+  it('вкладка txt по умолчанию показывает audit', () => {
+    expect(appJs).toMatch(/const blockMdMode = ref\('audit'\)/);
+    expect(appJs).toContain('payload.profiled_graph_markdown_audit || payload.profiled_graph_markdown_compact');
+  });
+
+  it('переключатель «Аудит» / «Подробно» есть в существующей панели', () => {
+    expect(html).toContain('class="block-md-modes"');
+    expect(html).toContain(">Аудит</button>");
+    expect(html).toContain(">Подробно</button>");
+    expect(html).toContain("setBlockMdMode('detail')");
+    expect(css).toContain('.block-md-mode');
+  });
+
+  it('режим «Подробно» показывает compact', () => {
+    const fn = appJs.slice(appJs.indexOf('const blockProfiledMarkdownHtml'));
+    expect(fn).toMatch(/blockMdMode\.value === 'detail'[\s\S]{0,200}profiled_graph_markdown_compact/);
+  });
+
+  it('fallback audit → compact → full', () => {
+    const fn = appJs.slice(appJs.indexOf('const blockProfiledMarkdownHtml'),
+                           appJs.indexOf('const blockProfiledMarkdownHtml') + 900);
+    expect(fn).toContain('profiled_graph_markdown_audit || payload.profiled_graph_markdown_compact');
+    expect(fn).toContain('|| payload.profiled_graph_markdown_full');
+  });
+
+  it('полный технический вариант не является основным в UI', () => {
+    // full участвует только как последний fallback, не как режим переключателя
+    expect(html).not.toContain(">Полный</button>");
   });
 
   it('вкладка «Источник» (просмотр блока) не изменена', () => {

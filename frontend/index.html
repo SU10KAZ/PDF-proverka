@@ -3574,12 +3574,23 @@
                                      потолков и освещения»): главное содержимое панели «Текст».
                                      Рендерится как форматированный документ (заголовки, списки,
                                      таблицы), а не сырой Markdown; без обрезки и без лимита сущностей. -->
-                                <template v-else-if="blockLlmText && (blockLlmText.profiled_graph_markdown_full || (blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'no_graph'))">
+                                <template v-else-if="blockLlmText && (blockLlmText.profiled_graph_markdown_audit || blockLlmText.profiled_graph_markdown_compact || blockLlmText.profiled_graph_markdown_full || (blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'no_graph'))">
                                     <div v-if="blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'no_graph'"
                                          class="block-llm-text__notice block-llm-text__notice--muted">
                                         Для данного блока профиль «План потолков и освещения» неприменим.
                                     </div>
                                     <template v-else>
+                                        <!-- Аудит: краткий контекст для поиска замечаний (по умолчанию).
+                                             Подробно: поквартирное описание. Полный технический
+                                             вариант в UI не показывается — он доступен через API. -->
+                                        <div class="block-md-modes">
+                                            <button type="button" class="block-md-mode"
+                                                    :class="{'is-active': blockMdMode === 'audit'}"
+                                                    @click.stop="setBlockMdMode('audit')">Аудит</button>
+                                            <button type="button" class="block-md-mode"
+                                                    :class="{'is-active': blockMdMode === 'detail'}"
+                                                    @click.stop="setBlockMdMode('detail')">Подробно</button>
+                                        </div>
                                         <div v-if="blockLlmText.profile_shadow && blockLlmText.profile_shadow.status === 'partial'"
                                              class="block-llm-text__notice">
                                             Описание сформировано частично. Неразрешённые элементы перечислены в конце документа.

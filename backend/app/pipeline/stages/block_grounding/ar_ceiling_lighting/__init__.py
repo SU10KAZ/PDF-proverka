@@ -16,6 +16,10 @@ CLI ``scripts/build_ar_ceiling_lighting_description.py``.
 from .runner import (PROFILE_ID, PROFILE_VERSION, build_ar_ceiling_lighting_result,
                      compact_fixture, run_profile, write_artifacts)
 from .render_md_compact import render_markdown_compact
+from .render_md_audit import (build_ar_ceiling_lighting_audit_context,
+                              build_audit_context, render_markdown_audit)
 
-__all__ = ["PROFILE_ID", "PROFILE_VERSION", "build_ar_ceiling_lighting_result",
-           "compact_fixture", "render_markdown_compact", "run_profile", "write_artifacts"]
+__all__ = ["PROFILE_ID", "PROFILE_VERSION", "build_ar_ceiling_lighting_audit_context",
+           "build_ar_ceiling_lighting_result", "build_audit_context", "compact_fixture",
+           "render_markdown_audit", "render_markdown_compact", "run_profile",
+           "write_artifacts"]

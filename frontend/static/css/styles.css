@@ -4869,3 +4869,9 @@ tr.row-rejected td.sc-cell-goto {
 .block-profile-md table { border-collapse: collapse; margin: 8px 0 12px; max-width: 100%; display: block; overflow-x: auto; font-size: 12px; }
 .block-profile-md th, .block-profile-md td { border: 1px solid var(--border2); padding: 4px 8px; text-align: left; vertical-align: top; }
 .block-profile-md th { background: var(--bg2, rgba(127,127,127,0.08)); font-weight: 600; }
+
+/* Переключатель режима профильного описания: Аудит / Подробно */
+.block-md-modes { display: flex; gap: 6px; margin-bottom: 12px; }
+.block-md-mode { font: inherit; font-size: 11.5px; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: background .12s, color .12s, border-color .12s; }
+.block-md-mode:hover { border-color: var(--accent-cyan, #1f9ec4); color: var(--text); }
+.block-md-mode.is-active { background: var(--accent-cyan, #1f9ec4); border-color: var(--accent-cyan, #1f9ec4); color: #fff; font-weight: 600; }

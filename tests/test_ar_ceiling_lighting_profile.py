@@ -633,3 +633,149 @@ def test_compact_ambiguity_not_duplicated(compact_md):
 def test_compact_size_limit(compact_md):
     assert len(compact_md) <= 25000, f"compact {len(compact_md)} символов > 25000"
     assert compact_md.count("\n") < 600
+
+
+# ------------------------------------------------------- audit-контекст
+
+@pytest.fixture(scope="module")
+def audit_md(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        render_markdown_audit)
+    return render_markdown_audit(reference_with_registry["graph"])
+
+
+def test_audit_size_limit(audit_md):
+    assert len(audit_md) <= 7000, f"audit {len(audit_md)} символов > 7000"
+    assert len(audit_md) >= 3500, "audit подозрительно короткий — проверить полноту"
+
+
+def test_audit_line_limit(audit_md):
+    assert audit_md.count("\n") <= 120, f"audit {audit_md.count(chr(10))} строк > 120"
+
+
+def test_audit_does_not_list_all_rooms(audit_md, reference_with_registry):
+    """60 помещений покомнатно не перечисляются: заголовков помещений нет,
+    а упоминаний марок кратно меньше, чем в подробном описании."""
+    marks = [r["mark"] for r in reference_with_registry["graph"]["rooms"]]
+    assert len(marks) == 60
+    # нет заголовков помещений и покомнатных карточек
+    assert not re.search(r"^#+\s*6\.\d+\.\d+", audit_md, re.M)
+    assert not re.search(r"^-\s*\*\*Потолок:", audit_md, re.M)
+    assert not re.search(r"^-\s*\*\*Свет:", audit_md, re.M)
+    # марки встречаются только внутри агрегатов, а не строкой на помещение
+    room_cards = [l for l in audit_md.split("\n")
+                  if re.match(r"^-\s*6\.\d+\.\d+\s*—", l)]
+    assert not room_cards, f"найдено {len(room_cards)} карточек помещений"
+    # названия помещений (признак покомнатного описания) в audit не выводятся
+    assert "Жилая комната" not in audit_md and "Кухня-ниша" not in audit_md
+    assert len(marks) > audit_md.count("\n") / 2, "строк больше, чем помещений — это перечень"
+
+
+def test_audit_no_repeated_chain_phrase(audit_md):
+    assert audit_md.count("выключатель → группа") <= 2
+
+
+def test_audit_has_all_incomplete_groups(audit_md, reference_with_registry):
+    incomplete = [g for g in reference_with_registry["graph"]["groups"]
+                  if g["state"] != "confirmed"]
+    assert len(incomplete) == 13
+    for g in incomplete:
+        assert re.search(rf"Кв\. {g['apartment']}, группа {g['number']}:", audit_md), \
+            f"неполная группа {g['group_id']} потеряна"
+
+
+def test_audit_has_both_conflicts(audit_md):
+    assert "GEOMETRY_CONFLICT (2)" in audit_md
+    assert "равноудалён от двух устройств" in audit_md
+    assert "пересекается с другим классифицированным устройством" in audit_md
+
+
+def test_audit_has_unconfirmed_dimensions(audit_md):
+    assert "Не подтверждённые привязки" in audit_md
+    assert "выносная цепочка не подтверждена" in audit_md
+
+
+def test_audit_has_unassigned_aggregates(audit_md):
+    assert "Устройств без подтверждённого помещения:" in audit_md
+    assert "вероятные помещения:" in audit_md
+
+
+def test_audit_simple_groups_aggregated_by_ranges(audit_md):
+    line = [l for l in audit_md.split("\n") if l.startswith("- Типовые связи")]
+    assert line, "агрегат типовых групп не найден"
+    for apt in ("700", "702", "703"):
+        assert f"кв. {apt} —" in line[0]
+    assert "–" in line[0] or "и" in line[0], "номера не сведены диапазонами"
+
+
+def test_audit_no_sym_ids_no_coordinates(audit_md):
+    assert not re.search(r"\bsym-\d+\b", audit_md)
+    assert not re.search(r"\b\d{3,4}\.\d{2}\s*,\s*\d{3,4}\.\d{2}\b", audit_md)
+    assert "tier" not in audit_md and "bbox" not in audit_md
+
+
+def test_audit_has_disclaimer_once(audit_md):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md_audit import (
+        DISCLAIMER)
+    assert audit_md.count(DISCLAIMER) == 1
+    for forbidden in ("отсутствует в проекте", "не предусмотрено проектом", "ошибка проекта"):
+        assert forbidden not in audit_md
+
+
+def test_full_and_compact_unchanged_by_audit(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        render_markdown_compact)
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md import (
+        render_markdown)
+    graph = reference_with_registry["graph"]
+    full = render_markdown(graph)
+    compact = render_markdown_compact(graph)
+    assert "## Данные листа" in full and len(full) > 40000
+    assert "### 6.709.1" in compact and 15000 < len(compact) <= 25000
+
+
+def test_audit_context_has_all_sections(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        build_ar_ceiling_lighting_audit_context)
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md_audit import (
+        SECTION_KEYS)
+    ctx = build_ar_ceiling_lighting_audit_context(reference_with_registry["graph"])
+    assert list(ctx.keys()) == list(SECTION_KEYS)
+    assert all(isinstance(val, str) and val.strip() for val in ctx.values())
+
+
+def test_audit_context_sections_filter(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        build_ar_ceiling_lighting_audit_context)
+    ctx = build_ar_ceiling_lighting_audit_context(
+        reference_with_registry["graph"], sections=["dimensions"])
+    assert list(ctx) == ["dimensions"]
+    assert "Квартира" not in ctx["dimensions"] and "Потолки" not in ctx["dimensions"]
+
+
+def test_audit_apartment_filter(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        render_markdown_audit)
+    md = render_markdown_audit(reference_with_registry["graph"], apartment_id="709")
+    assert "6.709." in md
+    assert "6.700." not in md and "Кв. 700" not in md
+
+
+def test_audit_group_filter(reference_with_registry):
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import (
+        render_markdown_audit)
+    md = render_markdown_audit(reference_with_registry["graph"],
+                               group_ids=["709:5", "709:6"])
+    assert "Кв. 709, группа 5" in md and "Кв. 709, группа 6" in md
+    assert "группа 7" not in md and "Кв. 700" not in md
+
+
+def test_audit_filter_happens_before_render(reference_with_registry):
+    """Фильтрация по графу, а не обрезка текста: подграф меньше полного."""
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.render_md_audit import (
+        filter_graph)
+    graph = reference_with_registry["graph"]
+    sub = filter_graph(graph, apartment_id="709")
+    assert len(sub["rooms"]) == 7 and len(graph["rooms"]) == 60
+    assert {g["apartment"] for g in sub["groups"]} == {"709"}
+    assert len(graph["rooms"]) == 60, "исходный граф не должен мутировать"
