@@ -1989,6 +1989,67 @@ class PipelineManager:
                 job, f"Перенос вердиктов НЕ выполнен (деградация): {exc}", "error",
             )
 
+    def _seed_prepared_inputs_from_latest(self, job: AuditJob) -> dict:
+        """Перенести в run dir то, что уже сделала «Подготовка данных».
+
+        В projects_v2-primary аудит исполняется в СВЕЖЕЙ `03_analysis/runs/<job_id>`,
+        а кнопка «Подготовить данные» пишет кропы и контекст блоков в
+        `03_analysis/latest`. Без переноса запуск аудита заново качал кропы и
+        заново собирал контекст — ровно то, от чего подготовка и избавляет.
+
+        Переносим СТРОГО два вида артефактов подготовки: каталог кропов Stage 01
+        и каноническую сводку контекста блоков. Ничего другого сеять нельзя —
+        иначе полный прогон подхватил бы результаты прошлого аудита.
+
+        PNG кладём жёсткими ссылками: кропы и так дедуплицированы hardlink'ами
+        (dedupe_block_crops.py), а запись кропа атомарна через os.replace
+        (_save_pixmap_atomic) — пере-кроп рвёт связь, а не портит latest.
+
+        Fail-soft: любая ошибка означает лишь «этап отработает как раньше».
+        """
+        seeded = {"index": 0, "png": 0, "summary": 0}
+        try:
+            from backend.app.services.storage import storage_write_facade as _swf
+            if not _swf.v2_is_primary():
+                return seeded
+            _root, project_dir, output_dir = self._resolve_job_paths(job)
+            latest_dir = project_dir / "03_analysis" / "latest"
+            if not latest_dir.is_dir() or output_dir == latest_dir:
+                return seeded
+            if "03_analysis" not in output_dir.parts:
+                return seeded
+
+            from backend.app.pipeline.stages.block_context.contract import (
+                BLOCK_CONTEXT_SUMMARY_FILENAME,
+            )
+
+            src_blocks = latest_dir / STAGE02_BLOCKS_DIRNAME
+            dst_blocks = output_dir / STAGE02_BLOCKS_DIRNAME
+            if (src_blocks / "index.json").is_file():
+                dst_blocks.mkdir(parents=True, exist_ok=True)
+                if not (dst_blocks / "index.json").exists():
+                    shutil.copy2(src_blocks / "index.json", dst_blocks / "index.json")
+                    seeded["index"] += 1
+                for src_png in src_blocks.glob("block_*.png"):
+                    dst_png = dst_blocks / src_png.name
+                    if dst_png.exists():
+                        continue
+                    try:
+                        os.link(src_png, dst_png)
+                    except OSError:
+                        shutil.copy2(src_png, dst_png)
+                    seeded["png"] += 1
+
+            src_summary = latest_dir / BLOCK_CONTEXT_SUMMARY_FILENAME
+            dst_summary = output_dir / BLOCK_CONTEXT_SUMMARY_FILENAME
+            if src_summary.is_file() and not dst_summary.exists():
+                output_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src_summary, dst_summary)
+                seeded["summary"] += 1
+        except Exception as exc:  # fail-soft: без переноса этапы просто отработают
+            print(f"[{job.project_id}] seed prepared inputs failed: {exc}")
+        return seeded
+
     async def _ensure_stage02_crops(self, job: AuditJob) -> None:
         """Ensure findings-only Stage 01 has its 100 DPI crop index."""
         pid = job.project_id
@@ -4902,6 +4963,15 @@ class PipelineManager:
             # ═══ ЭТАП 1: Кроп image-блоков ═══
             job.stage = AuditStage.CROP_BLOCKS
             self._update_pipeline_log(pid, "crop_blocks", "running")
+            # Переиспользуем работу «Подготовки данных»: кропы и контекст лежат
+            # в latest, а прогон идёт в свежем runs/<job_id>.
+            _seeded = self._seed_prepared_inputs_from_latest(job)
+            if any(_seeded.values()):
+                await self._log(
+                    job,
+                    f"Подготовленные входы взяты из latest: {_seeded['png']} кропов, "
+                    f"индексов {_seeded['index']}, контекст блоков {_seeded['summary']}",
+                )
             await self._ensure_stage02_crops(job)
             self._update_pipeline_log(pid, "crop_blocks", "done", message="Stage 01 crops ready")
 
