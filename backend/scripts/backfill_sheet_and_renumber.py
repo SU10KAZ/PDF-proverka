@@ -66,12 +66,47 @@ def _graph_indexes(output_dir: Path) -> tuple[dict, dict, list]:
     return build_page_sheet_map(graph), build_block_page_index(graph), md_index
 
 
-def _has_verdicts(version_dir: Path, output_dir: Path) -> bool:
+def _project_id(version_dir: Path) -> str:
+    """project_id версии («AR/СТ26_…») — ключ, которым её знает decisions_log."""
+    for candidate in (
+        version_dir / "01_input" / "project_info.json",
+        version_dir / "project_info.json",
+    ):
+        data = _load(candidate)
+        if isinstance(data, dict):
+            pid = str(data.get("project_id") or "").strip()
+            if pid:
+                return pid
+    return version_dir.parents[1].name
+
+
+def _decisions_log_projects(log_path: Path) -> set:
+    """Проекты, у которых в журнале решений есть записи, ключованные на F-ID."""
+    data = _load(log_path)
+    entries = data.get("entries") if isinstance(data, dict) else data
+    projects: set = set()
+    if not isinstance(entries, list):
+        return projects
+    for entry in entries:
+        if not isinstance(entry, dict) or entry.get("item_type") != "finding":
+            continue
+        pid = str(entry.get("source_project") or entry.get("project_id") or "").strip()
+        if pid:
+            projects.add(pid)
+            projects.add(pid.split("/")[-1])
+    return projects
+
+
+def _has_verdicts(
+    version_dir: Path, output_dir: Path, decisions_projects: set | None = None,
+) -> bool:
     """Есть ли вердикты эксперта, ключованные на F-ID.
 
-    Реальный формат expert_review.json — {"decisions": [{"item_id": "F-001",
-    …}]}; проверка только по "findings" молча пропускала бы такие версии в
-    перенумерацию и осиротила вердикты.
+    Смотрим ДВА источника: expert_review.json версии (реальный формат —
+    {"decisions": [{"item_id": "F-001", …}]}, проверка только по "findings"
+    молча пропускала такие версии) и записи knowledge_base/decisions_log.json
+    по этому project_id — журнал переживает удаление expert_review и тоже
+    ключуется на F-ID.
     """
     for candidate in (
         version_dir / "04_review" / "expert_review.json",
@@ -85,6 +120,11 @@ def _has_verdicts(version_dir: Path, output_dir: Path) -> bool:
             for key in ("decisions", "findings", "items", "reviews"):
                 if data.get(key):
                     return True
+
+    if decisions_projects:
+        pid = _project_id(version_dir)
+        if pid in decisions_projects or pid.split("/")[-1] in decisions_projects:
+            return True
     return False
 
 
@@ -138,8 +178,36 @@ def renumber(findings: list) -> int:
 FINDINGS_FILES = ("03_findings.json", "03a_norms_verified.json")
 
 
+def _finding_key(finding: dict) -> str:
+    if not isinstance(finding, dict):
+        return ""
+    return (finding.get("problem") or finding.get("description")
+            or finding.get("finding") or "")[:80]
+
+
+def _files_aligned(targets: list) -> bool:
+    """Одинаковы ли наборы и порядок замечаний во всех файлах версии.
+
+    Перенумерация позиционная: если 03a_norms_verified.json содержит другой
+    набор или порядок, независимая нумерация файлов развела бы один и тот же
+    F-ID на РАЗНЫЕ замечания (сайт читает 03a, Excel — 03_findings).
+    """
+    keys = None
+    for path in targets:
+        data = _load(path)
+        if not isinstance(data, dict) or not isinstance(data.get("findings"), list):
+            continue
+        current = [_finding_key(f) for f in data["findings"]]
+        if keys is None:
+            keys = current
+        elif current != keys:
+            return False
+    return True
+
+
 def process_version(
     version_dir: Path, *, apply: bool, do_renumber: bool, force_renumber: bool,
+    decisions_projects: set | None = None,
 ) -> dict | None:
     output_dir = version_dir / "03_analysis" / "latest"
     targets = [output_dir / name for name in FINDINGS_FILES]
@@ -147,9 +215,12 @@ def process_version(
     if not targets:
         return None
 
-    verdicts = _has_verdicts(version_dir, output_dir)
+    verdicts = _has_verdicts(version_dir, output_dir, decisions_projects)
     psm, bpi, mdi = _graph_indexes(output_dir)
-    allow_renumber = do_renumber and (force_renumber or not verdicts)
+    aligned = _files_aligned(targets)
+    allow_renumber = (
+        do_renumber and (force_renumber or not verdicts) and aligned
+    )
     skipped_renumber = do_renumber and not allow_renumber
 
     sheets_fixed = 0
@@ -188,6 +259,7 @@ def process_version(
         "sheets_fixed": sheets_fixed,
         "ids_renumbered": ids_fixed,
         "has_verdicts": verdicts,
+        "files_aligned": aligned,
         "renumber_skipped_due_to_verdicts": skipped_renumber,
         "backups": backups,
     }
@@ -208,6 +280,8 @@ def main() -> int:
     parser.add_argument("--no-renumber", action="store_true", help="чинить только номер листа")
     parser.add_argument("--force-renumber", action="store_true",
                         help="перенумеровать даже при наличии вердиктов эксперта (осиротит их)")
+    parser.add_argument("--decisions-log", default=str(ROOT / "knowledge_base" / "decisions_log.json"),
+                        help="журнал решений — источник проектов с вердиктами")
     args = parser.parse_args()
 
     versions = [Path(v).resolve() for v in args.version]
@@ -216,32 +290,42 @@ def main() -> int:
     if not versions:
         parser.error("нужен --version или --root")
 
+    decisions_projects = _decisions_log_projects(Path(args.decisions_log))
     mode = "APPLY" if args.apply else "DRY-RUN"
-    print(f"[{mode}] версий к обработке: {len(versions)}")
-    totals = {"sheets": 0, "ids": 0, "touched": 0, "skipped": 0}
+    print(f"[{mode}] версий к обработке: {len(versions)}; "
+          f"проектов с решениями в журнале: {len(decisions_projects) // 2}")
+    totals = {"sheets": 0, "ids": 0, "touched": 0, "skipped": 0, "misaligned": 0}
     for version_dir in versions:
         report = process_version(
             version_dir, apply=args.apply,
             do_renumber=not args.no_renumber,
             force_renumber=args.force_renumber,
+            decisions_projects=decisions_projects,
         )
         if not report:
             continue
         if report["renumber_skipped_due_to_verdicts"]:
             totals["skipped"] += 1
+        if not report["files_aligned"]:
+            totals["misaligned"] += 1
         if not (report["sheets_fixed"] or report["ids_renumbered"]):
             continue
         totals["sheets"] += report["sheets_fixed"]
         totals["ids"] += report["ids_renumbered"]
         totals["touched"] += 1
         name = Path(report["version"]).parents[1].name
+        if report["renumber_skipped_due_to_verdicts"]:
+            reason = ("  [файлы рассинхронены — нумерация пропущена]"
+                      if not report["files_aligned"]
+                      else "  [вердикты — нумерация пропущена]")
+        else:
+            reason = ""
         print(f"  {name:44s} лист: {report['sheets_fixed']:3d}  "
-              f"ID: {report['ids_renumbered']:3d}"
-              + ("  [вердикты — нумерация пропущена]"
-                 if report["renumber_skipped_due_to_verdicts"] else ""))
+              f"ID: {report['ids_renumbered']:3d}{reason}")
     print(f"[{mode}] версий изменено: {totals['touched']}, "
           f"листов: {totals['sheets']}, ID: {totals['ids']}, "
-          f"пропущено из-за вердиктов: {totals['skipped']}")
+          f"нумерация пропущена: {totals['skipped']} "
+          f"(из них рассинхрон файлов: {totals['misaligned']})")
     if not args.apply:
         print("Ничего не записано. Повторите с --apply.")
     return 0
