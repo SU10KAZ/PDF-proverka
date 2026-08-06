@@ -29,6 +29,8 @@ import logging
 import os
 import re
 import shutil
+import tempfile
+import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional, Callable, Awaitable, Sequence, Union
@@ -58,6 +60,7 @@ _LOCAL_GEMMA_BLOCK_DPI_FALLBACKS: list[tuple[int, float]] = [
     (200, 200 / 300),
     (100, 100 / 300),
 ]
+from backend.app.services.common import audit_scope, resource_budget
 from backend.app.services.common.cli_utils import (
     is_cancelled, is_timeout, is_rate_limited,
     is_prompt_too_long,
@@ -216,18 +219,61 @@ _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 
 def _ensure_clean_cwd() -> str:
-    """Создать (если нужно) и очистить /tmp/sonnet_clean. Возвращает путь."""
-    p = _CLEAN_CWD_PATH
-    os.makedirs(p, exist_ok=True)
-    # Чистим всё, что туда могло попасть от прошлых запусков (output JSON и пр.)
-    for entry in os.listdir(p):
-        full = os.path.join(p, entry)
-        if os.path.isfile(full):
-            try:
-                os.unlink(full)
-            except OSError:
-                pass
-    return p
+    """Отдать чистый рабочий каталог для одного запуска `claude -p`.
+
+    Смысл каталога — запускать CLI вне репозитория, чтобы не подтягивались
+    project CLAUDE.md, .claude/settings.json, hooks, memory и skills.
+
+    Раньше это был ОДИН общий каталог `/tmp/sonnet_clean`, и каждый вызов
+    удалял в нём все файлы. Пока CLI запускался по одному, это было безобидно.
+    При параллельных проектах (до 20 одновременных `claude -p`) старт нового
+    вызова стирает рабочие файлы уже бегущих — поэтому каталог теперь свой на
+    каждый вызов. Общий путь остаётся корнем для них, чтобы не плодить мусор
+    по всему /tmp и чтобы старая уборка по этому пути продолжала работать.
+    """
+    root = _CLEAN_CWD_PATH
+    os.makedirs(root, exist_ok=True)
+    _sweep_stale_run_dirs(root)
+    return tempfile.mkdtemp(prefix="run_", dir=root)
+
+
+# Через сколько каталог запуска считается брошенным. Больше самого длинного
+# таймаута CLI, чтобы уборка не унесла файлы у живого процесса.
+_RUN_DIR_TTL_SEC = 6 * 3600
+
+
+def _sweep_stale_run_dirs(root: str) -> None:
+    """Подмести каталоги давно умерших запусков.
+
+    Основной путь удаляет свой каталог сам, но при kill -9 бэкенда мусор
+    остаётся. Возрастная уборка не трогает живые запуски (TTL заведомо больше
+    любого таймаута CLI) — в отличие от прежней логики «стереть всё сейчас»,
+    которая при параллельных проектах убирала файлы у работающих соседей.
+    """
+    now = time.time()
+    try:
+        entries = os.listdir(root)
+    except OSError:
+        return
+    for entry in entries:
+        if not entry.startswith("run_"):
+            continue
+        full = os.path.join(root, entry)
+        try:
+            if os.path.isdir(full) and now - os.path.getmtime(full) > _RUN_DIR_TTL_SEC:
+                shutil.rmtree(full, ignore_errors=True)
+        except OSError:
+            pass
+
+
+def _release_clean_cwd(path: str | None) -> None:
+    """Удалить каталог одного запуска. Ошибки глушим: это уборка, не логика."""
+    if not path or not path.startswith(_CLEAN_CWD_PATH):
+        return
+    try:
+        shutil.rmtree(path, ignore_errors=True)
+    except Exception:
+        pass
 
 
 def _build_clean_env_overrides() -> dict:
@@ -290,15 +336,28 @@ async def _run_cli(
         env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
         cwd_arg = None
 
-    exit_code, stdout, stderr = await run_command(
-        cmd,
-        input_text=task_text,
-        timeout=timeout,
-        on_output=on_output,
-        env_overrides=env_overrides,
-        cwd=cwd_arg,
-        project_id=project_id,
-    )
+    # Бюджеты — общие на весь бэкенд (см. common/resource_budget.py).
+    # Без них пять параллельных проектов дают ~20 одновременных `claude -p`,
+    # а этапы с mcp__ поднимают норм-MCP по ~2,8 ГБ на КАЖДЫЙ процесс.
+    # Имя "_none" неизвестно бюджету и слот не занимает — так ветвление
+    # обходится без второго контекст-менеджера.
+    mcp_slot = "norms_mcp" if "mcp__" in (tools or "") else "_none"
+    try:
+        async with resource_budget.slot("claude_cli"), resource_budget.slot(mcp_slot):
+            exit_code, stdout, stderr = await run_command(
+                cmd,
+                input_text=task_text,
+                timeout=timeout,
+                on_output=on_output,
+                env_overrides=env_overrides,
+                cwd=cwd_arg,
+                project_id=project_id,
+            )
+    finally:
+        # Каталог запуска свой на каждый вызов — убираем сразу, иначе при
+        # параллельных проектах в /tmp/sonnet_clean копятся тысячи папок.
+        if clean_cwd:
+            _release_clean_cwd(cwd_arg)
 
     combined = (stdout or "") + "\n" + (stderr or "")
     cli_result = parse_cli_json_output(stdout or "")
@@ -384,9 +443,9 @@ def _resolve_output_dir(project_id: str, output_dir: str | Path | None = None):
     """
     if output_dir:
         return Path(output_dir)
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
-    if env_output_dir:
-        return Path(env_output_dir)
+    scoped_output_dir = audit_scope.get_output_dir()
+    if scoped_output_dir:
+        return Path(scoped_output_dir)
 
     from backend.app.services.common import version_service
     from backend.app.services.common.project_service import resolve_project_dir
@@ -404,26 +463,21 @@ def _scoped_audit_paths(
     project_id: str | None = None,
     version_id: str | None = None,
 ):
-    scoped_env = {}
-    if output_dir is not None:
-        scoped_env["AUDIT_OUTPUT_DIR"] = str(output_dir)
-    if version_dir is not None:
-        scoped_env["AUDIT_VERSION_DIR"] = str(version_dir)
-    if project_id is not None:
-        scoped_env["AUDIT_PROJECT_ID"] = str(project_id)
-    if version_id is not None:
-        scoped_env["AUDIT_VERSION_ID"] = str(version_id)
+    """Назначить пути аудита на время блока.
 
-    previous = {key: os.environ.get(key) for key in scoped_env}
-    os.environ.update(scoped_env)
-    try:
+    Раньше писало в `os.environ` — при параллельной обработке проектов это
+    приводило к записи артефактов одного проекта в каталог другого (пока A
+    ждал ответа LLM, B перетирал AUDIT_OUTPUT_DIR). Теперь привязка живёт в
+    ContextVar и изолирована по задачам; подробности и правило чтения —
+    в `services/common/audit_scope.py`.
+    """
+    with audit_scope.bind_audit_scope(
+        output_dir=output_dir,
+        version_dir=version_dir,
+        project_id=project_id,
+        version_id=version_id,
+    ):
         yield
-    finally:
-        for key, value in previous.items():
-            if value is None:
-                os.environ.pop(key, None)
-            else:
-                os.environ[key] = value
 
 
 async def _run_codex_json_stage(

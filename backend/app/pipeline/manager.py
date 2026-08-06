@@ -251,6 +251,29 @@ class BatchResumeBlockedError(RuntimeError):
 # current_index.
 BATCH_PRECROP_WINDOW = max(1, int(os.environ.get("BATCH_PRECROP_WINDOW", "6")))
 
+# Сколько проектов очередь ведёт ОДНОВРЕМЕННО (слотов).
+#
+# Значение по умолчанию 1 = прежняя строго последовательная обработка: item
+# исполняется в самой корутине __BATCH__, от чего зависят cancel() и
+# cleanup_zombies. Поднимать осмысленно только вместе с бюджетами ресурсов
+# (services/common/resource_budget.py): пять проектов без них дают ~20
+# одновременных CLI-процессов и до 10 норм-MCP по ~2,8 ГБ — это OOM, а не
+# ускорение. Читается на каждый запуск очереди, поэтому меняется без рестарта.
+BATCH_MAX_PARALLEL_DEFAULT = 1
+BATCH_MAX_PARALLEL_CAP = 8
+
+
+def batch_max_parallel() -> int:
+    """Число одновременно обрабатываемых проектов (BATCH_MAX_PARALLEL)."""
+    raw = (os.environ.get("BATCH_MAX_PARALLEL") or "").strip()
+    if not raw:
+        return BATCH_MAX_PARALLEL_DEFAULT
+    try:
+        value = int(raw)
+    except ValueError:
+        return BATCH_MAX_PARALLEL_DEFAULT
+    return max(1, min(BATCH_MAX_PARALLEL_CAP, value))
+
 # Порог числа реальных ошибок, после которого Stage 02 прекращает запускать
 # новые блоки. На production single-block пути остаток скипнутых блоков теперь
 # помечается failed (reserc.md #1) — раньше был тихий return и блоки исчезали
@@ -371,8 +394,10 @@ class PipelineManager:
         self._pause_mode = mode
         self._pause_event.clear()  # блокировать _check_pause()
 
-        # Логируем во все активные проекты
-        for pid, job in self.active_jobs.items():
+        # Логируем во все активные проекты. list() обязателен: на каждом await
+        # параллельный слот может завершить свой item и сделать
+        # active_jobs.pop(pid) → «dictionary changed size during iteration».
+        for pid, job in list(self.active_jobs.items()):
             await self._log(job, f"⏸ ПАУЗА ({mode})", "warn")
 
         await ws_manager.broadcast_global(
@@ -405,7 +430,9 @@ class PipelineManager:
         self._pause_mode = None
         self._pause_event.set()  # разблокировать _check_pause()
 
-        for pid, job in self.active_jobs.items():
+        # list() — та же причина, что и в pause(): параллельный слот может
+        # снять свой job из active_jobs на любом await внутри цикла.
+        for pid, job in list(self.active_jobs.items()):
             await self._log(job, "▶ Продолжение работы", "info")
             # Восстановить pause_total_sec
             if hasattr(job, '_pause_started_at') and job._pause_started_at:
@@ -483,6 +510,28 @@ class PipelineManager:
             return q.items[idx].project_id
         return None
 
+    def _current_batch_item_pids(self) -> set[str]:
+        """Все project_id, которые очередь выполняет ПРЯМО СЕЙЧАС.
+
+        При последовательной обработке это один проект (тот, на который смотрит
+        current_index). При параллельной (BATCH_MAX_PARALLEL > 1) их несколько:
+        current_index указывает лишь на последний захваченный слот, поэтому
+        источник истины — статус item'ов. Всё, что защищает «живой текущий
+        проект» от cleanup_zombies, должно смотреть сюда, иначе при параллели
+        живые аудиты в соседних слотах будут признаны зомби.
+        """
+        q = self._batch_queue
+        if q is None:
+            return set()
+        pids = {it.project_id for it in q.items if it.status == "running"}
+        # Совместимость: если статусы ещё не проставлены (ранний старт),
+        # опираемся на current_index — прежнее поведение.
+        if not pids:
+            cur = self._current_batch_item_pid()
+            if cur is not None:
+                pids.add(cur)
+        return pids
+
     def _has_live_project_audit(self) -> bool:
         """True если реально выполняется аудит проекта этой очереди.
 
@@ -499,9 +548,9 @@ class PipelineManager:
                 continue
             if job.status == JobStatus.RUNNING:
                 return True
-        cur = self._current_batch_item_pid()
-        if cur is not None and has_live_processes(cur):
-            return True
+        for cur in self._current_batch_item_pids():
+            if has_live_processes(cur):
+                return True
         return False
 
     def _protected_pids(self) -> set[str]:
@@ -514,9 +563,9 @@ class PipelineManager:
         protected: set[str] = set(active_process_pids())
         if self._batch_worker_alive():
             protected.add("__BATCH__")
-            cur = self._current_batch_item_pid()
-            if cur is not None:
-                protected.add(cur)
+            # При параллельной обработке выполняющихся проектов несколько —
+            # защищаем все, иначе соседние слоты снимаются как зомби.
+            protected.update(self._current_batch_item_pids())
         return protected
 
     def get_batch_diagnostics(self) -> dict:
@@ -5380,7 +5429,17 @@ class PipelineManager:
             await asyncio.sleep(1)
 
     async def _run_batch_queue(self, queue: BatchQueueStatus, meta_job: AuditJob):
-        """Последовательная обработка очереди проектов."""
+        """Обработка очереди проектов: 1 или несколько слотов одновременно.
+
+        Слот — независимый потребитель очереди: берёт первый свободный item и
+        ведёт его до конца. Число слотов задаёт BATCH_MAX_PARALLEL (см.
+        `batch_max_parallel`), по умолчанию 1.
+
+        При одном слоте item исполняется В ЭТОЙ ЖЕ корутине `__BATCH__` — так
+        было всегда, и от этого зависят `cancel()` (гард «таск не воркер») и
+        `cleanup_zombies`. Поэтому при значении 1 поведение остаётся прежним
+        до последней детали, а параллель включается только явным флагом.
+        """
         precrop_task = None
         try:
             await ws_manager.broadcast_global(
@@ -5396,6 +5455,102 @@ class PipelineManager:
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
 
+            parallel = max(1, min(batch_max_parallel(), max(1, queue.total)))
+            if parallel <= 1:
+                await self._batch_slot_worker(queue, meta_job)
+            else:
+                await self._log(
+                    meta_job,
+                    f"Параллельная обработка: {parallel} слотов одновременно",
+                    "info",
+                )
+                await ws_manager.broadcast_global(
+                    WSMessage.log(
+                        "__BATCH__",
+                        f"⇉ Параллельно: {parallel} проектов одновременно",
+                        "info",
+                    )
+                )
+                slots = [
+                    asyncio.create_task(self._batch_slot_guarded(queue, meta_job))
+                    for _ in range(parallel)
+                ]
+                # return_exceptions: падение одного слота не должно отменять
+                # соседние — их проекты уже в работе, обрыв стоил бы часов.
+                results = await asyncio.gather(*slots, return_exceptions=True)
+                for res in results:
+                    if isinstance(res, BaseException) and not isinstance(
+                        res, asyncio.CancelledError
+                    ):
+                        raise res
+
+            # Ни один слот не нашёл работы. Статус мог остаться прежним, если
+            # очередь опустела не через ветку «item is None» (например, всё
+            # разобрали параллельные слоты) — сверяем по фактам.
+            if queue.status == "running":
+                if any(it.status == "pending" for it in queue.items):
+                    queue.status = "interrupted"
+                else:
+                    queue.status = "completed"
+
+            # Итог (queue.status уже выставлен в "completed" под локом выше)
+            meta_job.progress_current = queue.total
+            meta_job.status = JobStatus.COMPLETED
+
+            await ws_manager.broadcast_global(
+                WSMessage.log(
+                    "__BATCH__",
+                    f"═══ Групповое действие завершено: {queue.completed}/{queue.total} OK, "
+                    f"{queue.failed} ошибок ═══",
+                    "info",
+                )
+            )
+            await self._broadcast_batch_progress(queue, complete=True)
+
+        except Exception as e:
+            meta_job.status = JobStatus.FAILED
+            # Не оставлять текущий item в 'running' — иначе UI вечно покажет
+            # «Выполняется» при мёртвом воркере.
+            for _it in queue.items:
+                if _it.status == "running":
+                    _it.status = "failed"
+                    if not _it.error:
+                        _it.error = f"Сбой воркера очереди: {e}"
+                    queue.failed += 1
+            # Раньше здесь безусловно ставился 'completed' — при живых pending
+            # это делало очередь невозобновимой (resume требует interrupted),
+            # и остаток батча застревал навсегда. Честный статус: interrupted,
+            # если есть кого продолжать.
+            has_pending = any(_it.status == "pending" for _it in queue.items)
+            queue.status = "interrupted" if has_pending else "completed"
+            print(f"[BATCH] КРИТИЧЕСКАЯ ОШИБКА: {e}")
+            import traceback
+            traceback.print_exc()
+        finally:
+            # Зафиксировать финальное состояние очереди на диске: до этого
+            # persist происходил только как side-effect prefetch-тасков, и
+            # kill процесса в окне оставлял batch_queue.json со стейл-статусами.
+            self._persist_queue()
+            # Остановить фоновый pre-crop.
+            for _task in (precrop_task,):
+                if _task is not None and not _task.done():
+                    _task.cancel()
+                    try:
+                        await _task
+                    except (asyncio.CancelledError, Exception):
+                        pass
+            # Identity-aware: не сносим регистрацию нового worker'а, если enqueue
+            # успел поднять его пока мы доходили до finally (гонка close+enqueue).
+            self._cleanup_batch_worker(meta_job)
+
+    async def _batch_slot_worker(self, queue: BatchQueueStatus, meta_job: AuditJob):
+        """Один слот: берёт item за item, пока в очереди есть работа.
+
+        Слотов может быть несколько (BATCH_MAX_PARALLEL). Захват item'а идёт
+        под `_enqueue_lock`, поэтому два слота не возьмут один проект: первый
+        же переводит item в 'running', и для второго он больше не «свободен».
+        """
+        try:
             while True:
                 # Пауза проверяется ДО выбора элемента. Раньше item захватывался
                 # выше гейта: пока воркер спал на _pause_event, он держал ссылку
@@ -5417,12 +5572,26 @@ class PipelineManager:
                 # выполнялся никогда («мёртвый слот»). Под локом — чтобы
                 # _enqueue_single не дописал item в момент решения о завершении.
                 async with self._enqueue_lock:
+                    # Проект, который уже ведёт соседний слот, пропускаем: реестры
+                    # active_jobs/_tasks/_heartbeat_tasks и kill_all_processes
+                    # ключуются голым project_id, поэтому два одновременных item'а
+                    # одного проекта затёрли бы друг друга. Он останется pending и
+                    # будет взят, как только освободится.
+                    # Точное множество: у _current_batch_item_pids есть fallback
+                    # на current_index, который на старте (running ещё нет)
+                    # исключил бы самый первый проект из выборки.
+                    busy = {it.project_id for it in queue.items if it.status == "running"}
                     item = next(
                         (it for it in queue.items
-                         if it.status in ("pending", "interrupted")),
+                         if it.status in ("pending", "interrupted")
+                         and it.project_id not in busy),
                         None,
                     )
                     if item is None:
+                        # Работы нет. Если соседние слоты ещё ведут проекты —
+                        # просто выходим, статус очереди выставит последний слот.
+                        if any(it.status == "running" for it in queue.items):
+                            break
                         queue.status = "completed"
                         break
                     if queue.status == "cancelled":
@@ -5465,6 +5634,9 @@ class PipelineManager:
                 from backend.app.services.common import version_service
                 version_token = version_service.bind_version(item.version_id)
                 object_token = None
+                # job создаётся уже внутри try; если упадём до него (например,
+                # на резолве object_id), обработчики не должны словить NameError.
+                job = None
                 try:
                     item_object_id = self._resolve_object_id_for_project(
                         None, pid, item.version_id,
@@ -5531,8 +5703,23 @@ class PipelineManager:
                             WSMessage.log("__BATCH__", f"  ✗ {pid}: {job.status.value}", "error")
                         )
 
+                except asyncio.CancelledError:
+                    # В параллельном режиме _tasks[pid] указывает на задачу
+                    # СЛОТА, а не на воркер очереди, поэтому гард в cancel()
+                    # пропускает task.cancel() — и отмена прилетает сюда.
+                    # CancelledError — BaseException, обычным `except Exception`
+                    # он не ловится: без этой ветки item навсегда остался бы
+                    # 'running' (фантом в UI и невозможность resume).
+                    item.status = "cancelled"
+                    item.error = "Остановлено пользователем"
+                    if job is not None:
+                        job.status = JobStatus.CANCELLED
+                    await ws_manager.broadcast_global(
+                        WSMessage.log("__BATCH__", f"  ⊘ {pid}: остановлен", "warn")
+                    )
+                    # Не пробрасываем: слот должен продолжить с другими проектами.
                 except Exception as e:
-                    if job.status == JobStatus.CANCELLED:
+                    if job is not None and job.status == JobStatus.CANCELLED:
                         # Остановлено пользователем во время этапа — это не сбой.
                         item.status = "cancelled"
                         item.error = "Остановлено пользователем"
@@ -5571,55 +5758,35 @@ class PipelineManager:
                     except Exception:
                         pass
 
-            # Итог (queue.status уже выставлен в "completed" под локом выше)
-            meta_job.progress_current = queue.total
-            meta_job.status = JobStatus.COMPLETED
-
-            await ws_manager.broadcast_global(
-                WSMessage.log(
-                    "__BATCH__",
-                    f"═══ Групповое действие завершено: {queue.completed}/{queue.total} OK, "
-                    f"{queue.failed} ошибок ═══",
-                    "info",
-                )
-            )
-            await self._broadcast_batch_progress(queue, complete=True)
-
-        except Exception as e:
-            meta_job.status = JobStatus.FAILED
-            # Не оставлять текущий item в 'running' — иначе UI вечно покажет
-            # «Выполняется» при мёртвом воркере.
-            for _it in queue.items:
-                if _it.status == "running":
-                    _it.status = "failed"
-                    if not _it.error:
-                        _it.error = f"Сбой воркера очереди: {e}"
-                    queue.failed += 1
-            # Раньше здесь безусловно ставился 'completed' — при живых pending
-            # это делало очередь невозобновимой (resume требует interrupted),
-            # и остаток батча застревал навсегда. Честный статус: interrupted,
-            # если есть кого продолжать.
-            has_pending = any(_it.status == "pending" for _it in queue.items)
-            queue.status = "interrupted" if has_pending else "completed"
-            print(f"[BATCH] КРИТИЧЕСКАЯ ОШИБКА: {e}")
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            # Диагностика на месте падения. Решение о статусах принимает
+            # вызывающий: при одном слоте исключение долетает до прежней ветки
+            # в _run_batch_queue (поведение без изменений), при нескольких —
+            # до guard'а, который не роняет проекты соседних слотов.
             import traceback
             traceback.print_exc()
-        finally:
-            # Зафиксировать финальное состояние очереди на диске: до этого
-            # persist происходил только как side-effect prefetch-тасков, и
-            # kill процесса в окне оставлял batch_queue.json со стейл-статусами.
-            self._persist_queue()
-            # Остановить фоновый pre-crop.
-            for _task in (precrop_task,):
-                if _task is not None and not _task.done():
-                    _task.cancel()
-                    try:
-                        await _task
-                    except (asyncio.CancelledError, Exception):
-                        pass
-            # Identity-aware: не сносим регистрацию нового worker'а, если enqueue
-            # успел поднять его пока мы доходили до finally (гонка close+enqueue).
-            self._cleanup_batch_worker(meta_job)
+            raise
+
+    async def _batch_slot_guarded(self, queue: BatchQueueStatus, meta_job: AuditJob):
+        """Слот с изоляцией сбоя: падение одного не трогает соседей.
+
+        Нужен только в параллельном режиме. При одном слоте guard не
+        используется — там исключение обязано дойти до `_run_batch_queue`,
+        который помечает очередь interrupted/completed (прежнее поведение).
+        """
+        try:
+            await self._batch_slot_worker(queue, meta_job)
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            # Свой item уже переведён в терминальный статус в _run_batch_item
+            # (там except/finally); здесь только фиксируем факт смерти слота.
+            print(f"[BATCH] слот очереди упал: {e}")
+            await ws_manager.broadcast_global(
+                WSMessage.log("__BATCH__", f"✗ Слот очереди упал: {e}", "error")
+            )
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(

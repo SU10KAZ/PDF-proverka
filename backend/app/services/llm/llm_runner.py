@@ -79,6 +79,7 @@ from backend.app.core.config import (
     get_stage_model,
 )
 from backend.app.models.usage import LLMResult
+from backend.app.services.common import resource_budget
 from backend.app.services.llm import model_control_service
 from backend.app.services.llm.paid_api_guard import (
     PaidApiBlockedError,
@@ -1043,7 +1044,49 @@ async def run_llm(
             and isinstance(local_format, dict)
             and local_format.get("type") == "json_schema"
         ):
-            return await _run_local_chat_completions(
+            # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
+            # (common/resource_budget.py). Иначе второй проект с другим
+            # context_length инициирует перезагрузку, которая выгружает ВСЕ
+            # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
+            # параллели. slot() реентерабелен: рекурсивный retry после reload
+            # повторно слот не берёт.
+            async with resource_budget.slot("local_llm"):
+                return await _run_local_chat_completions(
+                    model=model,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temp,
+                    timeout=timeout,
+                    response_format=local_format,
+                )
+        if CHANDRA_CHAT_TRANSPORT == "openai_completions":
+            # Новый сервер: native /api/v1/chat отсутствует → шлём в OpenAI
+            # /v1/chat/completions. messages уже в OpenAI-формате (text + image_url).
+            # response_format не форсируем (модель может не поддерживать json_schema;
+            # отдаёт голый JSON — парсер _run_local_chat_completions вытащит).
+            # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
+            # (common/resource_budget.py). Иначе второй проект с другим
+            # context_length инициирует перезагрузку, которая выгружает ВСЕ
+            # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
+            # параллели. slot() реентерабелен: рекурсивный retry после reload
+            # повторно слот не берёт.
+            async with resource_budget.slot("local_llm"):
+                return await _run_local_chat_completions(
+                    model=model,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temp,
+                    timeout=timeout,
+                    response_format=None,
+                )
+        # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
+        # (common/resource_budget.py). Иначе второй проект с другим
+        # context_length инициирует перезагрузку, которая выгружает ВСЕ
+        # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
+        # параллели. slot() реентерабелен: рекурсивный retry после reload
+        # повторно слот не берёт.
+        async with resource_budget.slot("local_llm"):
+            return await _run_local_chandra_chat(
                 model=model,
                 messages=messages,
                 max_tokens=max_tokens,
@@ -1051,27 +1094,6 @@ async def run_llm(
                 timeout=timeout,
                 response_format=local_format,
             )
-        if CHANDRA_CHAT_TRANSPORT == "openai_completions":
-            # Новый сервер: native /api/v1/chat отсутствует → шлём в OpenAI
-            # /v1/chat/completions. messages уже в OpenAI-формате (text + image_url).
-            # response_format не форсируем (модель может не поддерживать json_schema;
-            # отдаёт голый JSON — парсер _run_local_chat_completions вытащит).
-            return await _run_local_chat_completions(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temp,
-                timeout=timeout,
-                response_format=None,
-            )
-        return await _run_local_chandra_chat(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=temp,
-            timeout=timeout,
-            response_format=local_format,
-        )
 
     # ─── Paid API guard: проверка ДО network request ────────────────────
     # Локальные модели (is_local_llm_model) выше — guard их не трогает.

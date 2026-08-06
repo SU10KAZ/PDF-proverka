@@ -21,6 +21,7 @@ from backend.app.core.config import ROOT_DIR, resolve_codex_model
 from backend.app.models.usage import CLIResult, LLMResult
 from backend.app.services.common.process_runner import run_command
 from backend.app.services.llm.llm_runner import _try_parse_json_content
+from backend.app.services.common import resource_budget
 
 logger = logging.getLogger(__name__)
 
@@ -461,16 +462,23 @@ async def run_codex_exec(
     env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
 
     started = time.monotonic()
+    # Общий бюджет на весь бэкенд (common/resource_budget.py): пять
+    # параллельных проектов на Stage 01 дают ~20 одновременных `codex exec`
+    # (2 блока × 3 ноги ансамбля + gap-search), каждый — отдельный Node-процесс
+    # с workspace-write песочницей по корню репозитория. Этапы с mcp__
+    # дополнительно поднимают норм-MCP (~2,8 ГБ RSS на процесс).
+    _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
     try:
-        exit_code, stdout, stderr = await run_command(
-            cmd,
-            input_text=prompt,
-            timeout=timeout,
-            on_output=on_output,
-            env_overrides=env_overrides,
-            cwd=str(ROOT_DIR),
-            project_id=project_id,
-        )
+        async with resource_budget.slot("codex_cli"), resource_budget.slot(_mcp_slot):
+            exit_code, stdout, stderr = await run_command(
+                cmd,
+                input_text=prompt,
+                timeout=timeout,
+                on_output=on_output,
+                env_overrides=env_overrides,
+                cwd=str(ROOT_DIR),
+                project_id=project_id,
+            )
         duration_ms = int((time.monotonic() - started) * 1000)
         try:
             final_text = out_file.read_text(encoding="utf-8", errors="replace")
@@ -578,16 +586,23 @@ async def run_codex_json_messages(
     env_overrides = {k: None for k in os.environ if k.startswith("CLAUDE")}
 
     started = time.monotonic()
+    # Общий бюджет на весь бэкенд (common/resource_budget.py): пять
+    # параллельных проектов на Stage 01 дают ~20 одновременных `codex exec`
+    # (2 блока × 3 ноги ансамбля + gap-search), каждый — отдельный Node-процесс
+    # с workspace-write песочницей по корню репозитория. Этапы с mcp__
+    # дополнительно поднимают норм-MCP (~2,8 ГБ RSS на процесс).
+    _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
     try:
-        exit_code, stdout, stderr = await run_command(
-            cmd,
-            input_text=prompt,
-            timeout=timeout,
-            on_output=on_output,
-            env_overrides=env_overrides,
-            cwd=str(ROOT_DIR),
-            project_id=project_id,
-        )
+        async with resource_budget.slot("codex_cli"), resource_budget.slot(_mcp_slot):
+            exit_code, stdout, stderr = await run_command(
+                cmd,
+                input_text=prompt,
+                timeout=timeout,
+                on_output=on_output,
+                env_overrides=env_overrides,
+                cwd=str(ROOT_DIR),
+                project_id=project_id,
+            )
         duration_ms = int((time.monotonic() - started) * 1000)
         try:
             final_text = out_file.read_text(encoding="utf-8", errors="replace")
