@@ -5,9 +5,7 @@ import asyncio
 import hashlib
 import inspect
 import json
-import multiprocessing
 import os
-import threading
 from concurrent.futures import BrokenExecutor, ProcessPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +26,7 @@ from backend.app.pipeline.stages.block_context.reference_catalog import catalog_
 # Публичное имя оставлено для совместимости расширений/тестов, которые подменяли
 # прежний двухэлементный резолвер builder.resolve_block_source.
 resolve_block_source = _canonical_resolve_block_source
+from backend.app.services.common import cpu_pool
 from backend.app.services.storage.stage_artifacts import BLOCK_CONTEXT_SUMMARY_FILENAME
 
 from .contract import SCHEMA_VERSION, STAGE
@@ -42,19 +41,21 @@ ProgressCb = Callable[[dict[str, Any]], Awaitable[None] | None]
 # считает одно ядро — bench на 16-ядерной машине показывал 85% CPU у бэкенда
 # и 5–22 с на блок при чистых 1–1.5 с. Пул процессов снимает именно это.
 #
-# Пул один на процесс бэкенда и общий для всех проектов очереди: иначе N
-# проектов × M воркеров вынесли бы машину. Метод старта — spawn: fork из
-# многопоточного uvicorn-процесса рискует дедлоком в дочернем.
+# Владелец пула — backend/app/services/common/cpu_pool.py. Здесь своего пула
+# больше НЕТ: при параллельной обработке нескольких проектов два независимых
+# пула дали бы 2×(ядра−2) воркеров и задушили бы сам бэкенд. Пул один на
+# процесс и общий для всех проектов очереди — он и есть бюджет ядер, который
+# они делят. Оконная подача задач и per-block fallback остаются здесь.
 
-_POOL_LOCK = threading.Lock()
-_POOL: ProcessPoolExecutor | None = None
-_POOL_DISABLED = False
-
-DEFAULT_MAX_WORKERS = 8
+DEFAULT_MAX_WORKERS = cpu_pool.DEFAULT_MAX_WORKERS
 
 
 def block_context_workers() -> int:
-    """Сколько блоков считать параллельно. BLOCK_CONTEXT_WORKERS=1 → как раньше."""
+    """Сколько блоков считать параллельно. BLOCK_CONTEXT_WORKERS=1 → как раньше.
+
+    Это ЛИМИТ ОДНОВРЕМЕННОСТИ разбора (глубина окна подачи), а размер самого
+    пула задаётся CPU_POOL_WORKERS. При дефолтах обе величины совпадают.
+    """
     raw = (os.environ.get("BLOCK_CONTEXT_WORKERS") or "").strip()
     if raw:
         try:
@@ -69,50 +70,20 @@ def block_context_workers() -> int:
 
 
 def _get_pool() -> ProcessPoolExecutor | None:
-    """Ленивый общий пул; None — работаем в потоке (как до параллелизации)."""
-    global _POOL, _POOL_DISABLED
-    if _POOL_DISABLED:
+    """Общий пул процессов; None — работаем в потоке (как до параллелизации)."""
+    if block_context_workers() <= 1:
         return None
-    workers = block_context_workers()
-    if workers <= 1:
-        return None
-    with _POOL_LOCK:
-        if _POOL_DISABLED:
-            return None
-        if _POOL is None:
-            try:
-                _POOL = ProcessPoolExecutor(
-                    max_workers=workers,
-                    mp_context=multiprocessing.get_context("spawn"),
-                )
-            except Exception as exc:  # окружение без права форка и т.п.
-                _POOL_DISABLED = True
-                print(f"[block_context] пул процессов недоступен ({exc}); считаем в потоке")
-                return None
-        return _POOL
+    return cpu_pool.get_executor()
 
 
 def _disable_pool(reason: str) -> None:
     """Пул сломался — досчитываем в потоке, стадия не падает."""
-    global _POOL, _POOL_DISABLED
-    with _POOL_LOCK:
-        _POOL_DISABLED = True
-        pool, _POOL = _POOL, None
-    print(f"[block_context] пул процессов отключён: {reason}")
-    if pool is not None:
-        try:
-            pool.shutdown(wait=False, cancel_futures=True)
-        except Exception:
-            pass
+    cpu_pool.disable_pool(f"[block_context] {reason}")
 
 
 def shutdown_pool() -> None:
     """Погасить пул (вызывается на shutdown бэкенда; в норме не нужен)."""
-    global _POOL
-    with _POOL_LOCK:
-        pool, _POOL = _POOL, None
-    if pool is not None:
-        pool.shutdown(wait=False, cancel_futures=True)
+    cpu_pool.shutdown_pool()
 
 
 def _resolve_package_in_worker(output_dir: str, block_id: str, page: Any) -> dict[str, Any]:

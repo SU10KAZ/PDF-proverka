@@ -164,7 +164,11 @@ async def test_broken_pool_falls_back_to_threads_without_losing_blocks(
             future.set_exception(BrokenProcessPool("worker died"))
             return future
 
-    monkeypatch.setattr(builder_mod, "_POOL_DISABLED", False)
+    # Владелец пула — общий cpu_pool (builder только подаёт в него задачи),
+    # поэтому и флаг «пул отключён» проверяем там же.
+    from backend.app.services.common import cpu_pool as cpu_pool_mod
+
+    monkeypatch.setattr(cpu_pool_mod, "_POOL_DISABLED", False)
     monkeypatch.setattr(builder_mod, "_pool_applies", lambda: True)
     monkeypatch.setattr(builder_mod, "_get_pool", lambda: _DeadPool())
 
@@ -191,7 +195,7 @@ async def test_broken_pool_falls_back_to_threads_without_losing_blocks(
     assert in_thread == ["B-1", "B-2"]
     assert summary["blocks_ready"] == 2
     assert summary["status"] == "ok"
-    assert builder_mod._POOL_DISABLED is True
+    assert cpu_pool_mod._POOL_DISABLED is True
 
 
 def test_worker_count_is_bounded_and_overridable(monkeypatch):

@@ -79,6 +79,7 @@ from backend.app.services.storage.projects_v2_source_resolver import (
     load_version_project_info,
     resolve_version_source_files,
 )
+from backend.app.services.common import cpu_pool
 from backend.app.pipeline.stages.block_analysis.provenance import (
     STAGE01_PROMPT_VERSION,
     build_finding_provenance,
@@ -120,18 +121,40 @@ _CLEAN_CWD_PATH = "/tmp/sonnet_clean"
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 
+def _resolve_block_package_in_worker(output_dir: str, block_id: str, page: Any) -> dict[str, Any]:
+    """Точка входа дочернего процесса пула (уровень модуля — требование pickle).
+
+    prefer_prepared=False сохранён намеренно: при смене профильных маппингов
+    (например AI → architecture) готовый пакет со старой маршрутизацией должен
+    быть пересчитан, иначе он молча переживёт перезапуск.
+    """
+    from pathlib import Path as _Path
+
+    from backend.app.pipeline.stages.block_grounding.block_source_router import (
+        resolve_block_package as _resolve,
+    )
+
+    return _resolve(_Path(output_dir), block_id, page, prefer_prepared=False)
+
+
 def _ensure_clean_cwd() -> str:
-    """Создать (если нужно) и очистить /tmp/sonnet_clean. Возвращает путь."""
-    p = _CLEAN_CWD_PATH
-    os.makedirs(p, exist_ok=True)
-    for entry in os.listdir(p):
-        full = os.path.join(p, entry)
-        if os.path.isfile(full):
-            try:
-                os.unlink(full)
-            except OSError:
-                pass
-    return p
+    """Чистый рабочий каталог на ОДИН запуск `claude -p`.
+
+    Раньше здесь был дубль реализации из claude_runner: общий каталог, который
+    каждый вызов вычищал целиком. При параллельных проектах старт одного
+    вызова стирал рабочие файлы уже бегущих. Делегируем единственной
+    реализации, чтобы дефект не разъезжался по копиям.
+    """
+    from backend.app.services.llm.claude_runner import _ensure_clean_cwd as _impl
+
+    return _impl()
+
+
+def _release_clean_cwd(path: str | None) -> None:
+    """Удалить каталог запуска (см. _ensure_clean_cwd)."""
+    from backend.app.services.llm.claude_runner import _release_clean_cwd as _impl
+
+    _impl(path)
 
 
 def _build_clean_env() -> dict:
@@ -2008,9 +2031,19 @@ async def run_findings_only_for_project(
                 from backend.app.pipeline.stages.block_grounding.block_source_router import (
                     resolve_block_package,
                 )
-                package = resolve_block_package(
-                    output_dir, str(block.get("block_id") or ""), block.get("page"),
-                    prefer_prepared=False,
+                # Разбор вектор-слоя — чистый CPU (fitz + геометрия профиля):
+                # замерено 0,7 с/блок на лёгкой дисциплине и до 40 с на одном
+                # блоке тяжёлой. Раньше он считался ПРЯМО НА event loop внутри
+                # `async def _one`: при нескольких параллельных проектах это не
+                # деградация латентности, а остановка бэкенда — health-проверка
+                # не отвечает, и вотчдог убивает живой аудит.
+                # Уводим в общий пул процессов (common/cpu_pool.py): пул один на
+                # бэкенд, поэтому проекты делят бюджет ядер, а не плодят свои.
+                package = await cpu_pool.run(
+                    _resolve_block_package_in_worker,
+                    str(output_dir),
+                    str(block.get("block_id") or ""),
+                    block.get("page"),
                 )
                 package_text = str(package.get("user_text") or "")
                 package_kind = str(package.get("source_kind") or "error")
