@@ -685,6 +685,11 @@ def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = 
 RATE_LIMIT_THRESHOLD_PCT = 90
 RATE_LIMIT_CHECK_INTERVAL = 60
 RATE_LIMIT_MAX_WAIT = 5 * 3600
+
+# Разбежка пробуждений после rate limit между параллельными проектами.
+# Без неё все ждущие проекты стартуют в одну секунду и мгновенно вылетают
+# в лимит снова. При одном проекте не влияет ни на что (waiters=0).
+RATE_LIMIT_STAGGER_SEC = int(os.environ.get("RATE_LIMIT_STAGGER_SEC", "30") or "30")
 RATE_LIMIT_MAX_RETRIES = 5
 
 ANTHROPIC_PLAN = "Max 20x"

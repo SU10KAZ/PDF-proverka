@@ -65,9 +65,51 @@ from backend.app.api.routers import (
 from backend.app.ws.manager import ws_manager
 
 
+def default_thread_pool_size() -> int:
+    """Сколько потоков отдать под asyncio.to_thread.
+
+    THREAD_POOL_WORKERS перекрывает расчёт. По умолчанию — вчетверо больше
+    ядер, но не меньше 32: работа здесь блокирующая и в основном ждёт диск
+    или дочерний процесс, поэтому потоков нужно больше, чем ядер.
+    """
+    raw = (os.environ.get("THREAD_POOL_WORKERS") or "").strip()
+    if raw:
+        try:
+            value = int(raw)
+            if value > 0:
+                return value
+        except ValueError:
+            pass
+    return max(32, (os.cpu_count() or 4) * 4)
+
+
+def _install_default_thread_executor() -> None:
+    """Заменить дефолтный executor цикла на пул нужного размера (fail-soft)."""
+    try:
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
+
+        workers = default_thread_pool_size()
+        asyncio.get_running_loop().set_default_executor(
+            ThreadPoolExecutor(max_workers=workers, thread_name_prefix="audit")
+        )
+        print(f"[startup] пул потоков to_thread: {workers}")
+    except Exception as exc:  # noqa: BLE001 — размер пула не повод не стартовать
+        print(f"[startup] не удалось расширить пул потоков: {exc}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle."""
+    # Пул потоков под asyncio.to_thread. По умолчанию Python даёт
+    # min(32, ядра+4) ≈ 20 потоков, и этот пул ОБЩИЙ: в нём же сидят
+    # длинные норм-задачи (run_in_executor(None, ...)) и весь блокирующий
+    # sync-IO конвейера. При нескольких параллельных проектах он выедается,
+    # to_thread из других стадий встаёт в очередь, event loop залипает,
+    # health-проверка не отвечает — и вотчдог убивает живой аудит.
+    # Расширяем заранее: потоки дешёвые, а голодание здесь стоит часов работы.
+    _install_default_thread_executor()
+
     data_dir = Path(__file__).parent / "data"
     data_dir.mkdir(exist_ok=True)
     from backend.app.pipeline.manager import pipeline_manager

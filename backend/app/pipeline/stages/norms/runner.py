@@ -297,6 +297,29 @@ def count_manual_check_flags(output_dir: Path) -> int:
 
 # ─── run_norm_verification ───────────────────────────────────────────────────
 
+def other_projects_on_norm_stage(exclude_project_id: str) -> int:
+    """Сколько ДРУГИХ проектов сейчас находятся на норм-этапе.
+
+    Считаем по живому состоянию очереди, а не отдельным счётчиком: у
+    run_norm_verification много ранних return'ов, и счётчик, увеличенный на
+    входе, при первом же early-return протёк бы навсегда — модели перестали
+    бы выгружаться совсем, а это ровно профиль OOM-инцидента 01.07.
+    """
+    try:
+        from backend.app.models.audit import AuditStage, JobStatus
+        from backend.app.pipeline.manager import pipeline_manager
+    except Exception:
+        return 0
+    norm_stages = {AuditStage.NORM_VERIFY, AuditStage.NORM_FIX}
+    count = 0
+    for pid, job in list(pipeline_manager.active_jobs.items()):
+        if pid in ("__BATCH__", exclude_project_id):
+            continue
+        if job.status == JobStatus.RUNNING and job.stage in norm_stages:
+            count += 1
+    return count
+
+
 async def run_norm_verification(
     ctx: PipelineStageContext,
     *,
@@ -938,16 +961,30 @@ async def run_norm_verification(
     # затянули в backend e5-large+reranker (~4.3 ГБ RSS) через module-cache
     # search.py — без release они жили в uvicorn навсегда (профиль OOM 01.07).
     # Замер: 4063 МБ → 477 МБ после release+malloc_trim.
-    try:
-        from search import release_models as _release_norm_models  # norms/tools в sys.path
-        _rss_after = await asyncio.to_thread(_release_norm_models)
-        if _rss_after:
-            await ctx.log(
-                f"Семантические модели норм выгружены (RSS процесса ≈{_rss_after} МБ)",
-                "info",
-            )
-    except Exception:
-        pass  # release — оптимизация памяти, не должна ронять стадию
+    #
+    # Выгружает ТОЛЬКО последний уходящий: кэш моделей в search.py глобальный
+    # на процесс, и при параллельных проектах release одного проекта обнулял
+    # бы модели, которыми прямо сейчас пользуются остальные — те получали бы
+    # повторную загрузку 4,3 ГБ и десятки секунд простоя на каждом чужом
+    # завершении. Счётчик активных норм-этапов ведёт norm_models_scope().
+    _others_on_norms = other_projects_on_norm_stage(pid)
+    if _others_on_norms == 0:
+        try:
+            from search import release_models as _release_norm_models  # norms/tools в sys.path
+            _rss_after = await asyncio.to_thread(_release_norm_models)
+            if _rss_after:
+                await ctx.log(
+                    f"Семантические модели норм выгружены (RSS процесса ≈{_rss_after} МБ)",
+                    "info",
+                )
+        except Exception:
+            pass  # release — оптимизация памяти, не должна ронять стадию
+    else:
+        await ctx.log(
+            f"Норм-этап идёт ещё у {_others_on_norms} проект(ов) — "
+            f"семантические модели оставлены загруженными",
+            "info",
+        )
 
     await ctx.log("Верификация нормативных ссылок завершена", "info")
 

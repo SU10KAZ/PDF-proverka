@@ -19,6 +19,7 @@ from backend.app.core.config import (
     PROCESS_PROJECT_SCRIPT, GENERATE_EXCEL_SCRIPT,
     BLOCKS_SCRIPT, NORMS_SCRIPT,
     MAX_PARALLEL_BATCHES,
+    RATE_LIMIT_STAGGER_SEC,
     get_block_batch_parallelism,
     get_stage_model,
     get_stage_batch_mode,
@@ -294,6 +295,13 @@ class PipelineManager:
         # Пауза: Event set = работа, Event clear = пауза
         self._pause_event = asyncio.Event()
         self._pause_event.set()  # изначально НЕ на паузе
+        # Согласование rate-limit между параллельными проектами.
+        # _wait_for_rate_limit вызывается на КАЖДЫЙ job: пока проект был один,
+        # это и было глобальным поведением. При параллельных проектах пять
+        # job'ов уходили в пять независимых ожиданий, не зная друг о друге, и
+        # после сброса синхронно били в API — снова упираясь в лимит.
+        self._rate_limit_deadline: float = 0.0   # общий дедлайн, time.monotonic()
+        self._rate_limit_waiters: int = 0        # сколько проектов ждут сейчас
         self._paused = False
         self._pause_mode: str | None = None  # "finish_current" | "interrupt"
 
@@ -859,6 +867,35 @@ class PipelineManager:
             ),
         )
 
+        # ── Согласование с другими проектами ──
+        # Берём самый поздний известный дедлайн: если сосед уже выяснил у CLI
+        # точное время сброса, нет смысла просыпаться раньше и получать отказ.
+        # Разбежка (stagger) разводит пробуждения: без неё пять проектов
+        # стартуют в одну секунду и мгновенно вылетают в лимит снова.
+        _now = time.monotonic()
+        # Унаследованный дедлайн читаем ДО публикации своего.
+        _inherited = self._rate_limit_deadline if self._rate_limit_deadline > _now else 0.0
+        _own_wait = parsed_wait or wait_sec or RATE_LIMIT_CHECK_INTERVAL
+        _deadline = max(_inherited, _now + _own_wait)
+        self._rate_limit_deadline = _deadline
+        stagger = self._rate_limit_waiters * RATE_LIMIT_STAGGER_SEC
+        self._rate_limit_waiters += 1
+        # Выходить по таймеру имеем право, только если время сброса ИЗВЕСТНО:
+        # своё (parsed_wait от CLI) или унаследованное от соседа. Без него
+        # остаётся прежний путь — опрашивать scanner до can_proceed, иначе
+        # можно проснуться раньше реального сброса и снова словить лимит.
+        if parsed_wait or _inherited:
+            effective_wait = max(0, int(_deadline - _now)) + stagger
+        else:
+            effective_wait = 0
+        if stagger:
+            await self._log(
+                job,
+                f"Ожидание rate limit согласовано с другими проектами: "
+                f"старт через ~{effective_wait // 60} мин (разбежка {stagger} с)",
+                "info",
+            )
+
         try:
             while total_waited < RATE_LIMIT_MAX_WAIT:
                 if job.status == JobStatus.CANCELLED:
@@ -869,8 +906,8 @@ class PipelineManager:
                 await asyncio.sleep(sleep_chunk)
                 total_waited += sleep_chunk
 
-                # Если есть точное время из CLI — просто ждём до него
-                if parsed_wait and total_waited >= parsed_wait:
+                # Если есть точное время (своё или общее) — ждём до него
+                if effective_wait and total_waited >= effective_wait:
                     await self._log(
                         job,
                         f"Время сброса rate limit достигнуто (ждали {total_waited // 60} мин). Продолжаем.",
@@ -878,8 +915,10 @@ class PipelineManager:
                     )
                     return True
 
-                # Без точного времени — проверяем scanner
-                if not parsed_wait:
+                # Без точного времени — проверяем scanner. Свою разбежку
+                # выдерживаем даже когда лимит уже сброшен: иначе все ждущие
+                # проекты стартуют одновременно.
+                if not parsed_wait and total_waited >= stagger:
                     global_scanner.invalidate_cache()
                     check = global_scanner.check_rate_limit(RATE_LIMIT_THRESHOLD_PCT)
 
@@ -917,6 +956,11 @@ class PipelineManager:
             # Накапливаем реальное время паузы (для вычисления чистого времени)
             paused_sec = (datetime.now() - pause_start).total_seconds()
             job.pause_total_sec += paused_sec
+            self._rate_limit_waiters = max(0, self._rate_limit_waiters - 1)
+            if self._rate_limit_waiters == 0:
+                # Последний ждавший снимает общий дедлайн: следующий rate limit
+                # должен вычисляться заново, а не наследовать протухший.
+                self._rate_limit_deadline = 0.0
 
     async def _check_before_launch(self, job: AuditJob) -> bool:
         """
