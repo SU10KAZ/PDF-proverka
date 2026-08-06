@@ -39,6 +39,7 @@ from backend.app.services.storage.stage_artifacts import (
 )
 from backend.app.pipeline.stage_result import StageResult
 from backend.app.services.common.project_service import resolve_project_dir
+from backend.app.services.common import audit_scope
 
 if TYPE_CHECKING:
     from backend.app.pipeline.context import PipelineStageContext
@@ -292,7 +293,7 @@ def attach_stage02_coverage_to_findings(
     внешних вызовов.
     """
     if output_dir is None:
-        env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+        env_output_dir = audit_scope.get_output_dir()
         if env_output_dir:
             output_dir = Path(env_output_dir)
         else:

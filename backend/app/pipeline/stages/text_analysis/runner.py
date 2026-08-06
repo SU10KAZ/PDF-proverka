@@ -28,6 +28,7 @@ from backend.app.pipeline.stages.text_analysis.rate_limit_retry import (
     compute_fallback_backoff,
     REASON_RATE_LIMIT_EXHAUSTED,
 )
+from backend.app.services.common import audit_scope
 
 if TYPE_CHECKING:
     from backend.app.pipeline.context import PipelineStageContext
@@ -141,26 +142,21 @@ async def run_text_analysis(
                 **runner_kwargs,
             )
         else:
-            scoped_env = {
-                "AUDIT_OUTPUT_DIR": str(output_dir),
-                "AUDIT_VERSION_DIR": str(version_dir),
-                "AUDIT_PROJECT_ID": str(pid),
-            }
-            if version_id:
-                scoped_env["AUDIT_VERSION_ID"] = str(version_id)
-            previous_env = {key: os.environ.get(key) for key in scoped_env}
-            os.environ.update(scoped_env)
-            try:
+            # Legacy-ветка: у runner'а нет kwargs, пути передаём через область
+            # видимости. Раньше здесь был os.environ.update вокруг await —
+            # при параллельных проектах соседний проект перетирал
+            # AUDIT_OUTPUT_DIR, и текст уезжал в чужой _output/.
+            # ContextVar изолирован по задачам (см. common/audit_scope.py).
+            with audit_scope.bind_audit_scope(
+                output_dir=output_dir,
+                version_dir=version_dir,
+                project_id=pid,
+                version_id=version_id or None,
+            ):
                 exit_code, output, cli_result = await _runner(
                     project_info, pid,
                     on_output=ctx.log,
                 )
-            finally:
-                for key, value in previous_env.items():
-                    if value is None:
-                        os.environ.pop(key, None)
-                    else:
-                        os.environ[key] = value
         ctx.record_cli_usage(
             cli_result,
             _usage_label if rl_attempt == 0 else f"{_usage_label}_retry{rl_attempt}",

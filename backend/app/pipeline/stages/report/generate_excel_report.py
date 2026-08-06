@@ -17,6 +17,7 @@ import sys
 import json
 import argparse
 from datetime import datetime
+from backend.app.services.common import audit_scope
 
 # Фикс кодировки Windows (cp1251 -> utf-8 в консоли)
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -375,8 +376,8 @@ def _iter_project_dirs(root=None):
 
 def _specific_context(raw_path: str) -> tuple[str, str, str]:
     d = os.path.abspath(raw_path)
-    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    env_version_dir = audit_scope.get_version_dir()
+    env_output_dir = audit_scope.get_output_dir()
 
     output_dir = None
     version_dir = d

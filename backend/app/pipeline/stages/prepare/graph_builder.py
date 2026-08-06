@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Optional
 
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+from backend.app.services.common import audit_scope
 
 
 # ─── Нормализация OCR-текста ───────────────────────────────────────────────
@@ -357,7 +358,7 @@ def build_document_graph_v2(
     """
     project_dir = Path(project_dir)
     if output_dir is None:
-        output_dir = Path(os.environ.get("AUDIT_OUTPUT_DIR") or project_dir / "_output")
+        output_dir = Path(audit_scope.get_output_dir() or project_dir / "_output")
     output_dir = Path(output_dir)
 
     # Ищем canonical JSON. Legacy callers keep directory glob behavior; v2-primary

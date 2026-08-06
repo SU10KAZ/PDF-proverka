@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from backend.app.pipeline.stages.crop_blocks.block_markdown import strip_gemma_enrichment_sections
+from backend.app.services.common import audit_scope
 
 
 GEMMA_ENRICHMENT_SCHEMA_VERSION = 2
@@ -140,7 +141,7 @@ def gemma_output_root(project_dir: Path | str) -> Path:
     if bound_output_dir is not None:
         return Path(bound_output_dir)
 
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    env_output_dir = audit_scope.get_output_dir()
     if env_output_dir:
         return Path(env_output_dir)
 

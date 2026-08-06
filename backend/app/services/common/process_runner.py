@@ -10,6 +10,7 @@ import platform
 from typing import Callable, Optional, Awaitable
 
 from backend.app.core.config import BASE_DIR
+from backend.app.services.common import audit_scope
 
 # На Windows скрываем консольные окна подпроцессов
 _SUBPROCESS_FLAGS: dict = {}
@@ -173,6 +174,11 @@ async def run_script(
         (exit_code, stdout, stderr)
     """
     env = os.environ.copy()
+    # Область видимости аудита живёт в ContextVar (см. common/audit_scope.py)
+    # и НЕ наследуется дочерним процессом. Раньше пути лежали в общем
+    # os.environ и наследовались сами — при параллельных проектах это уводило
+    # артефакты в чужой каталог. Передаём область ЗАДАЧИ явно.
+    env.update(audit_scope.as_env())
     # Обеспечиваем UTF-8
     env["PYTHONIOENCODING"] = "utf-8"
     if env_overrides:
@@ -263,6 +269,11 @@ async def run_command(
         остальное аналогично run_script
     """
     env = os.environ.copy()
+    # Область видимости аудита живёт в ContextVar (см. common/audit_scope.py)
+    # и НЕ наследуется дочерним процессом. Раньше пути лежали в общем
+    # os.environ и наследовались сами — при параллельных проектах это уводило
+    # артефакты в чужой каталог. Передаём область ЗАДАЧИ явно.
+    env.update(audit_scope.as_env())
     env["PYTHONIOENCODING"] = "utf-8"
 
     # Если удаляется CLAUDECODE — удаляем ВСЕ переменные Claude Code сессии,
@@ -480,6 +491,11 @@ async def run_command_stream(
     Каждая yield-строка — одна строка stdout.
     """
     env = os.environ.copy()
+    # Область видимости аудита живёт в ContextVar (см. common/audit_scope.py)
+    # и НЕ наследуется дочерним процессом. Раньше пути лежали в общем
+    # os.environ и наследовались сами — при параллельных проектах это уводило
+    # артефакты в чужой каталог. Передаём область ЗАДАЧИ явно.
+    env.update(audit_scope.as_env())
     env["PYTHONIOENCODING"] = "utf-8"
     env["PYTHONUNBUFFERED"] = "1"
 

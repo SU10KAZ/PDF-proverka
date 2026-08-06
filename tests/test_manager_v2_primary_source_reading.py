@@ -201,8 +201,13 @@ async def test_text_analysis_runner_uses_v2_version_dir_and_output(monkeypatch, 
     captured = {}
 
     async def fake_run_triage(project_info_arg, project_id, on_output=None):
-        captured["output_dir_env"] = Path(__import__("os").environ["AUDIT_OUTPUT_DIR"])
-        captured["version_dir_env"] = Path(__import__("os").environ["AUDIT_VERSION_DIR"])
+        # Пути аудита передаются через область видимости (ContextVar), а не через
+        # os.environ: общий env при параллельных проектах уводил артефакты в
+        # чужой _output/. См. backend/app/services/common/audit_scope.py.
+        from backend.app.services.common import audit_scope
+
+        captured["output_dir_env"] = Path(audit_scope.get_output_dir())
+        captured["version_dir_env"] = Path(audit_scope.get_version_dir())
         md_path = prompt_builder._get_md_file_path(project_info_arg, project_id)
         captured["md_path"] = Path(md_path)
         messages = prompt_builder.build_text_analysis_messages(project_info_arg, project_id)

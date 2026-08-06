@@ -46,6 +46,7 @@ from backend.app.pipeline.stages.optimization.prescan import (
 )
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.llm.llm_runner import build_interleaved_content, make_image_content
+from backend.app.services.common import audit_scope
 
 
 def _version_output_dir(project_id: str) -> Path:
@@ -57,7 +58,7 @@ def _version_output_dir(project_id: str) -> Path:
     Делегирует единому резолверу version_service.resolve_active_output_dir
     (reserc.md #97).
     """
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    env_output_dir = audit_scope.get_output_dir()
     if env_output_dir:
         return Path(env_output_dir)
 
@@ -67,7 +68,7 @@ def _version_output_dir(project_id: str) -> Path:
 
 def _version_project_dir(project_id: str) -> Path:
     """version_dir активной версии (parent of _output)."""
-    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    env_version_dir = audit_scope.get_version_dir()
     if env_version_dir:
         return Path(env_version_dir)
     return _version_output_dir(project_id).parent

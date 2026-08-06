@@ -43,6 +43,7 @@ from backend.app.services.common.results_md import (
     parse_results_md,
 )
 from backend.app.services.storage.projects_v2_source_resolver import resolve_version_source_files
+from backend.app.services.common import audit_scope
 
 
 # ─── Страж отсутствия (absence guard) ───
@@ -87,7 +88,7 @@ def _version_output_dir(project_id: str) -> Path:
     автоматически уезжают в папку версии. Делегирует единому резолверу
     version_service.resolve_active_output_dir (reserc.md #97).
     """
-    env_output_dir = os.environ.get("AUDIT_OUTPUT_DIR")
+    env_output_dir = audit_scope.get_output_dir()
     if env_output_dir:
         return Path(env_output_dir)
 
@@ -97,7 +98,7 @@ def _version_output_dir(project_id: str) -> Path:
 
 def _version_project_dir(project_id: str) -> Path:
     """version_dir активной версии (parent of _output)."""
-    env_version_dir = os.environ.get("AUDIT_VERSION_DIR")
+    env_version_dir = audit_scope.get_version_dir()
     if env_version_dir:
         return Path(env_version_dir)
     return _version_output_dir(project_id).parent
