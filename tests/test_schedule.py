@@ -160,10 +160,15 @@ def test_frozen_completion_date_filtered_out_of_period():
 def test_canonical_project_strips_discipline_prefix():
     assert schedule_service.canonical_project("OV/13АВ-РД-ОВ2-К1 V1", "OV") == "13АВ-РД-ОВ2-К1 V1"
     assert schedule_service.canonical_project("13АВ-РД-ОВ2-К1 V1", "OV") == "13АВ-РД-ОВ2-К1 V1"
-    # без section префикс не трогаем
-    assert schedule_service.canonical_project("OV/Foo", "") == "OV/Foo"
-    # префикс не совпадает с section — не трогаем
-    assert schedule_service.canonical_project("EOM/Foo", "OV") == "EOM/Foo"
+    # Раньше срез требовал совпадения с section, и на этих двух случаях плитки
+    # двоились: у проекта из папки заказчика `.../PS/ПД-…-ПС-1_V1` префикс PS,
+    # а дисциплина документа SS (06.08.2026, четыре плитки у Репникова вместо
+    # двух). Теперь срезается любой короткий латинский код — разные дисциплины
+    # различает ключ группы (object_id + section), а не эта функция.
+    assert schedule_service.canonical_project("OV/Foo", "") == "Foo"
+    assert schedule_service.canonical_project("EOM/Foo", "OV") == "Foo"
+    # Слэш внутри самого имени префиксом не считается.
+    assert schedule_service.canonical_project("Объект 214/Foo", "OV") == "Объект 214/Foo"
 
 
 def test_bare_and_prefixed_forms_collapse_to_one_event_same_day():

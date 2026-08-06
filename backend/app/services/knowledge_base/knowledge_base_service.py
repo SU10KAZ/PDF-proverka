@@ -22,6 +22,34 @@ from backend.app.services.storage.projects_v2_source_resolver import (
 )
 
 
+def canonical_source_project(project_id: str) -> str:
+    """Единая форма имени проекта для decisions_log.
+
+    Один проект приходит в лог под двумя написаниями, и это создавало по две
+    записи на КАЖДОЕ решение эксперта — 6409 лишних записей из 20433 (31%) на
+    117 проектах к 06.08.2026:
+
+      * загрузка решений из Excel берёт project_id из скрытой колонки файла, а
+        туда пишется форма с префиксом папки — `PS/ПД-00542664-ПС-1_V1`;
+      * сохранение из интерфейса берёт имя из адреса — `ПД-00542664-ПС-1_V1`.
+
+    Обе формы указывают на один документ, поэтому в лог кладём голое имя:
+    дисциплина и так хранится отдельным полем `section`, а API и UI работают
+    именно с basename. Побочно это чинило график: у проекта из папки `PS/`
+    дисциплина документа `SS`, и плитки двоились в дне инженера.
+
+    Слэш внутри самого имени комплекта не трогаем — префиксом считается только
+    короткий латинский токен.
+    """
+    pid = (project_id or "").strip()
+    if "/" not in pid:
+        return pid
+    head, _, tail = pid.partition("/")
+    if tail and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,5}", head):
+        return tail.strip()
+    return pid
+
+
 def _version_dir(project_id: str, *, must_exist: bool = False) -> Path:
     """Активная версия проекта (из ContextVar bound_version_id, fallback на latest).
 
@@ -563,7 +591,9 @@ def _enrich_decisions(project_id: str, decisions: list[ExpertDecision], reviewer
         entry = KnowledgeBaseEntry(
             id=f"DEC-{next_num:04d}",
             object_id=object_id,
-            source_project=project_id,
+            # Одна форма имени на все пути записи — иначе Excel-импорт и
+            # сохранение из UI заводят на один проект две группы записей.
+            source_project=canonical_source_project(project_id),
             section=section,
             item_id=dec.item_id,
             item_type=dec.item_type,

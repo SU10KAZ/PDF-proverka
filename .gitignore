@@ -9,7 +9,10 @@
 *.webp
 
 # === Knowledge base (живые данные: решения экспертов, work_plans, .bak, .lock) ===
-knowledge_base/
+# Якорь обязателен: без ведущего слэша правило скрывало и КОД в
+# backend/app/services/knowledge_base/ — правки там `git add` молча отвергал
+# (06.08.2026, ловушка при фиксе форм project_id).
+/knowledge_base/
 _output_kb/
 
 # === Frontend restore-бэкапы (см. *.kbev-backup-*) ===
