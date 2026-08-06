@@ -8,11 +8,13 @@
 """
 
 import json
+import math
 import os
+import re
 import time
 import threading
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 from collections import defaultdict
 
@@ -27,7 +29,12 @@ def _usage_output_dir(project_id: str) -> Path:
         return version_service.resolve_version_output_dir(project_id)
     except (version_service.VersionNotFoundError, FileNotFoundError):
         return resolve_project_dir(project_id) / "_output"
-from backend.app.core.config import APP_DATA_DIR, USAGE_DATA_FILE, USAGE_OFFSETS_FILE
+from backend.app.core.config import (
+    APP_DATA_DIR,
+    PAID_API_MONTHLY_LIMIT_USD,
+    USAGE_DATA_FILE,
+    USAGE_OFFSETS_FILE,
+)
 
 _DATA_DIR = APP_DATA_DIR
 
@@ -1081,6 +1088,8 @@ PAID_COST_FILE = _DATA_DIR / "paid_cost.json"
 # глобальный paid_cost_tracker. Тесты, которые monkeypatch'ат PAID_COST_FILE
 # на tmp_path, под гард не попадают — путь у них другой.
 _PRODUCTION_PAID_COST_FILE = PAID_COST_FILE
+_MONTH_KEY_RE = re.compile(r"^\d{4}-(?:0[1-9]|1[0-2])$")
+
 
 class PaidCostTracker:
     """Трекер реальных расходов на платные нейросети (Gemini, GPT и др.).
@@ -1089,6 +1098,8 @@ class PaidCostTracker:
     - total_lifetime_usd — никогда не обнуляется
     - display_usd — обнуляется пользователем через UI
     - daily_breakdown[YYYY-MM-DD] = {total, by_model, by_project, by_stage, n_calls}
+    - monthly_calibrations[YYYY-MM] — поправка к tracked-сумме конкретного
+      календарного месяца. Она не переносится на следующий месяц.
     """
 
     def __init__(self):
@@ -1097,6 +1108,8 @@ class PaidCostTracker:
             "display_usd": 0.0,
             "reset_history": [],
             "daily_breakdown": {},
+            "monthly_calibrations": {},
+            "monthly_calibration_history": [],
         }
         self._lock = threading.Lock()
         self._load()
@@ -1105,10 +1118,128 @@ class PaidCostTracker:
         try:
             if PAID_COST_FILE.exists():
                 with open(PAID_COST_FILE, "r", encoding="utf-8") as f:
-                    self._data = json.load(f)
+                    loaded = json.load(f)
+                if isinstance(loaded, dict):
+                    self._data = loaded
         except (json.JSONDecodeError, OSError):
             pass
-        self._data.setdefault("daily_breakdown", {})
+        if not isinstance(self._data.get("daily_breakdown"), dict):
+            self._data["daily_breakdown"] = {}
+        if not isinstance(self._data.get("monthly_calibrations"), dict):
+            self._data["monthly_calibrations"] = {}
+        if not isinstance(self._data.get("monthly_calibration_history"), list):
+            self._data["monthly_calibration_history"] = []
+
+    @staticmethod
+    def _effective_now(now: datetime | date | None = None) -> datetime:
+        """Нормализовать clock для production и детерминированных тестов."""
+        if now is None:
+            return datetime.now()
+        if isinstance(now, datetime):
+            return now
+        if isinstance(now, date):
+            return datetime.combine(now, datetime.min.time())
+        raise ValueError("now must be a datetime or date")
+
+    @classmethod
+    def _resolve_month_key(
+        cls,
+        month: str | None = None,
+        *,
+        now: datetime | date | None = None,
+    ) -> tuple[str, datetime]:
+        effective_now = cls._effective_now(now)
+        current_month = effective_now.strftime("%Y-%m")
+        if month is None:
+            return current_month, effective_now
+        if not isinstance(month, str) or not _MONTH_KEY_RE.fullmatch(month):
+            raise ValueError("month must have YYYY-MM format")
+        # Не позволяем заранее занести overlay в будущий месяц: иначе он
+        # незаметно станет стартовым расходом после rollover.
+        if month > current_month:
+            raise ValueError("month must not be in the future")
+        return month, effective_now
+
+    @staticmethod
+    def _finite_float(value, default: float | None = 0.0) -> float | None:
+        try:
+            result = float(value)
+        except (TypeError, ValueError):
+            return default
+        return result if math.isfinite(result) else default
+
+    def _monthly_tracked_usd(self, month_key: str) -> float:
+        """Сумма daily_breakdown только за указанный календарный месяц."""
+        total = 0.0
+        breakdown = self._data.get("daily_breakdown", {})
+        if not isinstance(breakdown, dict):
+            return total
+        for day_key, entry in breakdown.items():
+            if (
+                not isinstance(day_key, str)
+                or len(day_key) != 10
+                or not day_key.startswith(f"{month_key}-")
+                or not isinstance(entry, dict)
+            ):
+                continue
+            # Отсекаем похожие, но не календарные ключи (например 2026-02-31).
+            try:
+                datetime.strptime(day_key, "%Y-%m-%d")
+            except ValueError:
+                continue
+            value = self._finite_float(entry.get("total"), default=None)
+            if value is not None:
+                total += value
+        return round(total, 6)
+
+    def _monthly_payload(self, month_key: str) -> dict:
+        tracked = self._monthly_tracked_usd(month_key)
+        calibrations = self._data.get("monthly_calibrations", {})
+        calibration = calibrations.get(month_key) if isinstance(calibrations, dict) else None
+        if not isinstance(calibration, dict):
+            calibration = {}
+
+        adjustment = self._finite_float(
+            calibration.get("adjustment_usd"), default=0.0,
+        ) or 0.0
+        spent = round(tracked + adjustment, 6)
+        limit = self._finite_float(PAID_API_MONTHLY_LIMIT_USD, default=0.0) or 0.0
+        limit = max(0.0, limit)
+        remaining = max(0.0, limit - spent)
+        over_limit = max(0.0, spent - limit)
+        percent = round(spent / limit * 100, 1) if limit > 0 else 0.0
+
+        calibrated_to = self._finite_float(
+            calibration.get("calibrated_to_usd", calibration.get("actual_spent_usd")),
+            default=None,
+        )
+        calibrated_at = calibration.get("calibrated_at")
+        if not isinstance(calibrated_at, str) or not calibrated_at:
+            calibrated_at = None
+
+        return {
+            "month_key": month_key,
+            "monthly_spent_usd": spent,
+            "monthly_tracked_usd": tracked,
+            "monthly_adjustment_usd": round(adjustment, 6),
+            "monthly_limit_usd": round(limit, 6),
+            "monthly_remaining_usd": round(remaining, 6),
+            # Намеренно НЕ clamp'им: dashboard должен честно показывать >100%.
+            "monthly_percent": percent,
+            "monthly_over_limit_usd": round(over_limit, 6),
+            "monthly_calibrated_to_usd": (
+                round(calibrated_to, 6) if calibrated_to is not None else None
+            ),
+            "monthly_calibrated_at": calibrated_at,
+        }
+
+    def _get_payload_for_month(self, month_key: str) -> dict:
+        return {
+            # Legacy-поля остаются неизменными для старых клиентов.
+            "display_usd": round(self._data.get("display_usd", 0.0), 4),
+            "total_lifetime_usd": round(self._data.get("total_lifetime_usd", 0.0), 4),
+            **self._monthly_payload(month_key),
+        }
 
     def _save(self):
         try:
@@ -1127,12 +1258,13 @@ class PaidCostTracker:
         model: str = "",
         project_id: str = "",
         stage: str = "",
+        now: datetime | date | None = None,
     ):
         """Добавить расход с разбивкой по дню/модели/проекту/этапу."""
+        cost_usd = self._finite_float(cost_usd, default=None)
         if cost_usd is None or cost_usd <= 0:
             return
-        cost_usd = float(cost_usd)
-        day = datetime.now().date().isoformat()
+        day = self._effective_now(now).date().isoformat()
         with self._lock:
             # Перечитываем файл, чтобы не затереть инкременты, сделанные другим
             # процессом (subprocess-скрипты, второй инстанс backend и т.п.).
@@ -1162,18 +1294,57 @@ class PaidCostTracker:
                 bucket[bucket_key] = round(bucket.get(bucket_key, 0.0) + cost_usd, 6)
             self._save()
 
-    def get(self) -> dict:
+    def get(self, *, now: datetime | date | None = None) -> dict:
         """Текущие значения счётчиков (без daily_breakdown — для лёгкого polling).
 
         Перечитываем файл, чтобы видеть инкременты от subprocess'ов
         (skripты simulate_*, ad-hoc запуски pipeline и т.п.).
         """
+        month_key, _ = self._resolve_month_key(now=now)
         with self._lock:
             self._load()
-            return {
-                "display_usd": round(self._data.get("display_usd", 0.0), 4),
-                "total_lifetime_usd": round(self._data.get("total_lifetime_usd", 0.0), 4),
+            return self._get_payload_for_month(month_key)
+
+    def calibrate_month(
+        self,
+        actual_spent_usd: float,
+        *,
+        month: str | None = None,
+        now: datetime | date | None = None,
+    ) -> dict:
+        """Сверить tracked-сумму календарного месяца с фактическим расходом.
+
+        Сохраняется не замена daily_breakdown, а помесячный adjustment. Поэтому
+        сразу после сверки ``monthly_spent_usd == actual_spent_usd``, каждый
+        последующий add() увеличивает итог, а следующий месяц начинает с нуля.
+        """
+        if isinstance(actual_spent_usd, bool):
+            raise ValueError("amount_usd must be a finite non-negative number")
+        actual = self._finite_float(actual_spent_usd, default=None)
+        if actual is None or actual < 0:
+            raise ValueError("amount_usd must be a finite non-negative number")
+        actual = round(actual, 6)
+        month_key, effective_now = self._resolve_month_key(month, now=now)
+
+        with self._lock:
+            self._load()
+            tracked = self._monthly_tracked_usd(month_key)
+            calibrated_at = effective_now.isoformat(timespec="seconds")
+            record = {
+                "tracked_usd_at_calibration": tracked,
+                "calibrated_to_usd": actual,
+                "adjustment_usd": round(actual - tracked, 6),
+                "calibrated_at": calibrated_at,
             }
+            calibrations = self._data.setdefault("monthly_calibrations", {})
+            calibrations[month_key] = record
+
+            # Append-only audit внутри агрегатного файла: повторная калибровка
+            # не стирает сведения о предыдущей сверке.
+            history = self._data.setdefault("monthly_calibration_history", [])
+            history.append({"month_key": month_key, **record})
+            self._save()
+            return self._get_payload_for_month(month_key)
 
     def get_daily(self, days: int = 30) -> dict:
         """Daily breakdown за последние N дней + total.

@@ -170,12 +170,12 @@
             <div class="header-right">
                 <!-- Paid API cost counter -->
                 <button class="paid-cost-btn" @click.stop="toggleHeaderPopover('paid')"
-                        :class="{'paid-cost-btn--active': paidCost.display_usd > 0}"
-                        title="Расходы на платные API">
+                        :class="{'paid-cost-btn--active': paidCost.monthly_spent_usd > 0}"
+                        title="Расходы на платные API за текущий месяц">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     </svg>
-                    <span class="paid-cost-btn__amount">{{ formatCostShort(paidCost.display_usd) }}</span>
+                    <span class="paid-cost-btn__amount">{{ formatCostShort(paidCost.monthly_spent_usd) }}</span>
                 </button>
                 <!-- Paid cost panel -->
                 <div class="paid-cost-panel" v-if="showPaidCost" @click.stop>
@@ -191,12 +191,44 @@
                         </span>
                     </div>
                     <div class="paid-cost-panel__row">
-                        <span class="paid-cost-panel__label">Текущий счётчик:</span>
-                        <span class="paid-cost-panel__value paid-cost-panel__value--main">${{ (paidCost.display_usd || 0).toFixed(2) }}</span>
+                        <span class="paid-cost-panel__label">За {{ formatPaidMonth(paidCost.month_key) }}:</span>
+                        <span class="paid-cost-panel__value paid-cost-panel__value--main">${{ (paidCost.monthly_spent_usd || 0).toFixed(2) }}</span>
                     </div>
                     <div class="paid-cost-panel__row">
                         <span class="paid-cost-panel__label">Всего за всё время:</span>
                         <span class="paid-cost-panel__value">${{ (paidCost.total_lifetime_usd || 0).toFixed(2) }}</span>
+                    </div>
+
+                    <!-- Календарный месячный бюджет -->
+                    <div class="paid-monthly-budget">
+                        <div class="paid-monthly-budget__header">
+                            <span>Лимит на месяц</span>
+                            <span>${{ (paidCost.monthly_spent_usd || 0).toFixed(2) }} / ${{ (paidCost.monthly_limit_usd || 0).toFixed(2) }}</span>
+                        </div>
+                        <div class="paid-monthly-budget__track"
+                             role="progressbar"
+                             :aria-valuenow="paidCost.monthly_percent || 0"
+                             aria-valuemin="0"
+                             :aria-valuemax="100">
+                            <div class="paid-monthly-budget__fill"
+                                 :class="{
+                                    'paid-monthly-budget__fill--warning': (paidCost.monthly_percent || 0) >= 75 && (paidCost.monthly_percent || 0) < 100,
+                                    'paid-monthly-budget__fill--danger': (paidCost.monthly_percent || 0) >= 100,
+                                 }"
+                                 :style="{ width: Math.min(100, Math.max(0, paidCost.monthly_percent || 0)) + '%' }"></div>
+                        </div>
+                        <div class="paid-monthly-budget__footer">
+                            <span>Использовано {{ (paidCost.monthly_percent || 0).toFixed(1) }}%</span>
+                            <span v-if="!(paidCost.monthly_over_limit_usd > 0)">Осталось ${{ (paidCost.monthly_remaining_usd || 0).toFixed(2) }}</span>
+                            <span v-else class="paid-monthly-budget__over">Сверх лимита ${{ paidCost.monthly_over_limit_usd.toFixed(2) }}</span>
+                        </div>
+                        <div v-if="paidCost.monthly_calibrated_to_usd != null"
+                             class="paid-monthly-budget__calibration">
+                            Сверено с OpenRouter: ${{ Number(paidCost.monthly_calibrated_to_usd).toFixed(2) }}
+                            <span v-if="paidCost.monthly_adjustment_usd">
+                                · поправка к детализации {{ formatSignedCost(paidCost.monthly_adjustment_usd) }}
+                            </span>
+                        </div>
                     </div>
                     <div class="paid-cost-panel__row" v-if="paidApiStatus && paidApiStatus.daily_limit_usd > 0">
                         <span class="paid-cost-panel__label">Сегодня потрачено:</span>
@@ -333,10 +365,8 @@
                         </div>
                     </div>
 
-                    <div class="paid-cost-panel__footer">
-                        <button class="btn btn--small btn--danger" @click.stop="resetPaidCost" :disabled="!paidCost.display_usd">
-                            Обнулить счётчик
-                        </button>
+                    <div class="paid-cost-panel__hint">
+                        Новый месячный счётчик начинается автоматически 1-го числа.
                     </div>
                 </div>
 

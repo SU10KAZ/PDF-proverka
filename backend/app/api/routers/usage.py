@@ -120,6 +120,25 @@ async def get_paid_cost():
     return paid_cost_tracker.get()
 
 
+@router.post("/paid-cost/monthly/calibrate")
+async def calibrate_paid_cost_month(payload: dict = Body(...)):
+    """Сверить календарный месяц с фактической суммой биллинга.
+
+    Body: ``{"amount_usd": 61.43, "month": "2026-08"}``.
+    ``month`` необязателен и по умолчанию равен текущему календарному месяцу;
+    будущие месяцы и невалидные/отрицательные суммы отклоняются.
+    """
+    if not isinstance(payload, dict) or "amount_usd" not in payload:
+        raise HTTPException(status_code=400, detail="amount_usd is required")
+    try:
+        return paid_cost_tracker.calibrate_month(
+            payload.get("amount_usd"),
+            month=payload.get("month"),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/paid-cost/daily")
 async def get_paid_cost_daily(days: int = 30):
     """Дневной break-down платных расходов для dashboard.

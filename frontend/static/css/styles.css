@@ -444,6 +444,55 @@ body {
 .paid-cost-panel__value--main { color: var(--amber); font-size: 16px; font-weight: 700; }
 .paid-cost-panel__hint { font-size: 10px; color: var(--text3); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 .paid-cost-panel__footer { display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+.paid-monthly-budget {
+  margin: 8px 0 4px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card2-bg);
+}
+.paid-monthly-budget__header,
+.paid-monthly-budget__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+}
+.paid-monthly-budget__header {
+  margin-bottom: 7px;
+  color: var(--text2);
+  font-weight: 600;
+}
+.paid-monthly-budget__header span:last-child {
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+}
+.paid-monthly-budget__track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--border2);
+}
+.paid-monthly-budget__fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: var(--teal);
+  transition: width 0.25s ease, background 0.2s ease;
+}
+.paid-monthly-budget__fill--warning { background: var(--amber); }
+.paid-monthly-budget__fill--danger { background: var(--red); }
+.paid-monthly-budget__footer {
+  margin-top: 6px;
+  color: var(--text3);
+}
+.paid-monthly-budget__over { color: var(--red); font-weight: 600; }
+.paid-monthly-budget__calibration {
+  margin-top: 6px;
+  color: var(--text3);
+  font-size: 10px;
+}
 
 /* Usage toggle */
 .usage-toggle-btn {

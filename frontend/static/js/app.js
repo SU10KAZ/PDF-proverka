@@ -1695,7 +1695,19 @@ const app = createApp({
         let usagePollTimer = null;
 
         // ─── Paid API cost ───
-        const paidCost = ref({ display_usd: 0, total_lifetime_usd: 0 });
+        const paidCost = ref({
+            display_usd: 0,
+            total_lifetime_usd: 0,
+            month_key: '',
+            monthly_spent_usd: 0,
+            monthly_adjustment_usd: 0,
+            monthly_limit_usd: 250,
+            monthly_remaining_usd: 250,
+            monthly_percent: 0,
+            monthly_over_limit_usd: 0,
+            monthly_calibrated_to_usd: null,
+            monthly_calibrated_at: null,
+        });
         const showPaidCost = ref(false);
         // Paid API guard: kill-switch статус + последние paid/blocked события.
         const paidApiStatus = ref(null);
@@ -1844,6 +1856,23 @@ const app = createApp({
             if (!usd || usd === 0) return '$0';
             if (usd < 0.01) return '<$0.01';
             return '$' + usd.toFixed(2);
+        }
+
+        function formatSignedCost(usd) {
+            const value = Number(usd || 0);
+            return `${value >= 0 ? '+' : '−'}$${Math.abs(value).toFixed(2)}`;
+        }
+
+        function formatPaidMonth(monthKey) {
+            const match = /^(\d{4})-(\d{2})$/.exec(String(monthKey || ''));
+            if (!match) return 'текущий месяц';
+            const names = [
+                'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+                'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь',
+            ];
+            const monthIndex = Number(match[2]) - 1;
+            if (monthIndex < 0 || monthIndex >= names.length) return 'текущий месяц';
+            return `${names[monthIndex]} ${match[1]}`;
         }
 
         // ─── Account info ───
@@ -19055,7 +19084,8 @@ const app = createApp({
             onGroupHeaderDragStart, onGroupHeaderDragEnd,
             // Model switcher
             // Paid cost
-            paidCost, showPaidCost, fetchPaidCost, resetPaidCost, formatCostShort,
+            paidCost, showPaidCost, fetchPaidCost, resetPaidCost,
+            formatCostShort, formatSignedCost, formatPaidMonth,
             paidApiStatus, paidEvents, paidBlockedEvents,
             fetchPaidApiStatus, fetchPaidEvents, fetchPaidBlockedEvents,
             // Paid-cost daily dashboard

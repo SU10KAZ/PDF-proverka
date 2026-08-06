@@ -16,7 +16,7 @@ Tests for PaidCostTracker daily break-down (по дням, моделям, пр�
 """
 from __future__ import annotations
 
-import importlib
+import asyncio
 import json
 import sys
 from datetime import datetime, timedelta
@@ -151,8 +151,114 @@ def test_legacy_file_without_daily_breakdown(tmp_path, monkeypatch):
     monkeypatch.setattr(usage_service, "PAID_COST_FILE", legacy_file)
 
     tracker = usage_service.PaidCostTracker()
-    assert tracker.get()["total_lifetime_usd"] == pytest.approx(100.0)
+    snapshot = tracker.get()
+    assert snapshot["total_lifetime_usd"] == pytest.approx(100.0)
+    assert snapshot["display_usd"] == pytest.approx(10.0)
+    assert snapshot["month_key"] == datetime.now().strftime("%Y-%m")
+    assert snapshot["monthly_tracked_usd"] == 0.0
+    assert snapshot["monthly_adjustment_usd"] == 0.0
+    assert snapshot["monthly_spent_usd"] == 0.0
+    assert snapshot["monthly_calibrated_to_usd"] is None
+    assert snapshot["monthly_calibrated_at"] is None
     daily = tracker.get_daily(days=30)
     assert daily["days"] == []
     tracker.add(0.5, model="m", project_id="p", stage="s")
     assert tracker.get_daily(days=1)["window_total_usd"] == pytest.approx(0.5)
+
+
+def test_month_calibration_is_overlay_and_future_add_increases_it(
+    fresh_tracker, monkeypatch,
+):
+    from backend.app.services.common import usage_service
+
+    monkeypatch.setattr(usage_service, "PAID_API_MONTHLY_LIMIT_USD", 250.0)
+    now = datetime(2026, 8, 6, 12, 0, 0)
+    fresh_tracker.add(63.1201, model="m", project_id="p", stage="s", now=now)
+
+    calibrated = fresh_tracker.calibrate_month(61.43, now=now)
+    assert calibrated["month_key"] == "2026-08"
+    assert calibrated["monthly_tracked_usd"] == pytest.approx(63.1201)
+    assert calibrated["monthly_adjustment_usd"] == pytest.approx(-1.6901)
+    assert calibrated["monthly_spent_usd"] == pytest.approx(61.43)
+    assert calibrated["monthly_calibrated_to_usd"] == pytest.approx(61.43)
+    assert calibrated["monthly_calibrated_at"] == "2026-08-06T12:00:00"
+
+    # Calibration is a fixed reconciliation overlay, not a frozen override.
+    fresh_tracker.add(2.5, model="m", project_id="p", stage="s", now=now)
+    after_add = fresh_tracker.get(now=now)
+    assert after_add["monthly_tracked_usd"] == pytest.approx(65.6201)
+    assert after_add["monthly_adjustment_usd"] == pytest.approx(-1.6901)
+    assert after_add["monthly_spent_usd"] == pytest.approx(63.93)
+
+    persisted = json.loads(usage_service.PAID_COST_FILE.read_text(encoding="utf-8"))
+    record = persisted["monthly_calibrations"]["2026-08"]
+    assert record["tracked_usd_at_calibration"] == pytest.approx(63.1201)
+    assert record["calibrated_to_usd"] == pytest.approx(61.43)
+    assert record["adjustment_usd"] == pytest.approx(-1.6901)
+    assert persisted["monthly_calibration_history"][-1]["month_key"] == "2026-08"
+
+
+def test_month_rollover_does_not_carry_calibration(fresh_tracker):
+    january = datetime(2026, 1, 31, 23, 0, 0)
+    february = datetime(2026, 2, 1, 1, 0, 0)
+
+    fresh_tracker.add(5.0, model="m", project_id="p", stage="s", now=january)
+    fresh_tracker.calibrate_month(7.0, now=january)
+    assert fresh_tracker.get(now=january)["monthly_spent_usd"] == pytest.approx(7.0)
+
+    rolled = fresh_tracker.get(now=february)
+    assert rolled["month_key"] == "2026-02"
+    assert rolled["monthly_tracked_usd"] == 0.0
+    assert rolled["monthly_adjustment_usd"] == 0.0
+    assert rolled["monthly_spent_usd"] == 0.0
+    assert rolled["monthly_calibrated_to_usd"] is None
+    assert rolled["monthly_calibrated_at"] is None
+
+    fresh_tracker.add(1.25, model="m", project_id="p", stage="s", now=february)
+    assert fresh_tracker.get(now=february)["monthly_spent_usd"] == pytest.approx(1.25)
+    # January's reconciliation remains available when querying that month via clock.
+    assert fresh_tracker.get(now=january)["monthly_spent_usd"] == pytest.approx(7.0)
+
+
+def test_monthly_limit_reports_remaining_percent_and_overage(
+    fresh_tracker, monkeypatch,
+):
+    from backend.app.services.common import usage_service
+
+    monkeypatch.setattr(usage_service, "PAID_API_MONTHLY_LIMIT_USD", 10.0)
+    now = datetime(2026, 7, 10, 12, 0, 0)
+    fresh_tracker.add(12.5, model="m", project_id="p", stage="s", now=now)
+
+    snapshot = fresh_tracker.get(now=now)
+    assert snapshot["monthly_limit_usd"] == pytest.approx(10.0)
+    assert snapshot["monthly_remaining_usd"] == 0.0
+    assert snapshot["monthly_percent"] == pytest.approx(125.0)
+    assert snapshot["monthly_over_limit_usd"] == pytest.approx(2.5)
+
+
+@pytest.mark.parametrize("amount", [-1, float("nan"), float("inf"), "bad", True])
+def test_calibrate_month_validates_amount(fresh_tracker, amount):
+    with pytest.raises(ValueError, match="finite non-negative"):
+        fresh_tracker.calibrate_month(amount)
+
+
+@pytest.mark.parametrize("month", ["2026-1", "2026-13", "not-a-month", 202601])
+def test_calibrate_month_validates_month(fresh_tracker, month):
+    with pytest.raises(ValueError, match="YYYY-MM"):
+        fresh_tracker.calibrate_month(1.0, month=month)
+
+
+def test_calibration_endpoint_accepts_amount_and_rejects_bad_body(
+    fresh_tracker, monkeypatch,
+):
+    from backend.app.api.routers import usage as usage_router
+    from fastapi import HTTPException
+
+    monkeypatch.setattr(usage_router, "paid_cost_tracker", fresh_tracker)
+    response = asyncio.run(usage_router.calibrate_paid_cost_month({"amount_usd": 3.5}))
+    assert response["monthly_spent_usd"] == pytest.approx(3.5)
+    assert response["monthly_calibrated_to_usd"] == pytest.approx(3.5)
+
+    with pytest.raises(HTTPException) as exc_info:
+        asyncio.run(usage_router.calibrate_paid_cost_month({}))
+    assert exc_info.value.status_code == 400

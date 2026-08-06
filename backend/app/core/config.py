@@ -334,6 +334,11 @@ def _env_float(name: str, default: float) -> float:
 # 0 = без лимита; >0 = жёсткий потолок $/день; превышение → блок до конца суток.
 PAID_API_DAILY_LIMIT_USD      = _env_float("PAID_API_DAILY_LIMIT_USD", 0.0)
 
+# Календарный месячный бюджет платных API. Это отчётный лимит для dashboard:
+# в отличие от дневного guard он не блокирует вызовы, а показывает остаток и
+# перерасход. Переопределяется через env для разных бюджетов окружений.
+PAID_API_MONTHLY_LIMIT_USD    = _env_float("PAID_API_MONTHLY_LIMIT_USD", 250.0)
+
 # Append-only журналы (НЕ truncate'ятся при clear_project_usage).
 PAID_COST_EVENTS_FILE         = APP_DATA_DIR / "paid_cost_events.jsonl"
 PAID_API_BLOCKED_EVENTS_FILE  = APP_DATA_DIR / "paid_api_blocked_events.jsonl"
