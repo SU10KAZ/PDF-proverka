@@ -2082,6 +2082,70 @@ class PipelineManager:
                 job, f"Перенос вердиктов НЕ выполнен (деградация): {exc}", "error",
             )
 
+    async def _seed_run_dir_from_latest(self, job: AuditJob, *, reason: str) -> int:
+        """Засеять пустой run dir JSON-артефактами из `03_analysis/latest`.
+
+        На v2-primary КАЖДОЕ задание исполняется в свежей `runs/<job_id>`, а
+        готовые артефакты лежат в `latest`. Для resume это уже учтено (баг B1),
+        а одиночные этапы — «Верификация норм», «Оптимизация» и её пересмотр —
+        стартовали в пустом каталоге и падали на входе: POST /verify-norms по
+        V2-проекту отвечал «Файл 03_findings.json не найден. Сначала выполните
+        основной аудит», хотя аудит был выполнен (06.08.2026).
+
+        Копируются только отсутствующие файлы: пер-прогонные лог и pipeline_log
+        остаются своими, тяжёлые PNG не трогаем — поздним стадиям хватает
+        index.json.
+
+        Returns: сколько файлов скопировано (0 — если сеять нечего или не нужно).
+        """
+        try:
+            _root, project_dir, output_dir = self._resolve_job_paths(job)
+        except Exception:  # noqa: BLE001 — засев не должен ронять стадию
+            return 0
+
+        latest_dir = project_dir / "03_analysis" / "latest"
+        if (
+            not latest_dir.is_dir()
+            or output_dir == latest_dir
+            or "03_analysis" not in output_dir.parts
+        ):
+            return 0
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        seeded = 0
+        for src in sorted(latest_dir.iterdir()):
+            if not src.is_file() or src.suffix not in (".json", ".jsonl", ".md"):
+                continue
+            if src.name == "pipeline_log.json" or src.name.startswith("audit_log"):
+                continue
+            dst = output_dir / src.name
+            if dst.exists():
+                continue
+            try:
+                shutil.copy2(src, dst)
+                seeded += 1
+            except OSError as copy_err:
+                await self._log(
+                    job, f"Seed run dir: не скопирован {src.name}: {copy_err}", "warn",
+                )
+
+        for sub in ("blocks_stage02_100", "blocks_gemma_100", "blocks"):
+            src_idx = latest_dir / sub / "index.json"
+            dst_idx = output_dir / sub / "index.json"
+            if src_idx.is_file() and not dst_idx.exists():
+                try:
+                    dst_idx.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(src_idx, dst_idx)
+                    seeded += 1
+                except OSError:
+                    pass
+
+        if seeded:
+            await self._log(
+                job, f"{reason}: run dir засеян {seeded} артефактами из latest", "info",
+            )
+        return seeded
+
     def _seed_prepared_inputs_from_latest(self, job: AuditJob) -> dict:
         """Перенести в run dir то, что уже сделала «Подготовка данных».
 
@@ -4683,6 +4747,13 @@ class PipelineManager:
             job.stage = AuditStage.NORM_VERIFY
             await self._start_heartbeat(job)
 
+            # Одиночный запуск идёт в пустой runs/<job_id>, а findings лежат в
+            # latest — без засева этап отвечал «03_findings.json не найден» на
+            # выполненном аудите. В составе конвейера сеять нечего: артефакты
+            # уже в этом же run dir.
+            if standalone:
+                await self._seed_run_dir_from_latest(job, reason="Верификация норм")
+
             # stage_override: при standalone=False job общий с верификатором —
             # без явной секции строки норм могли краситься в findings_review.
             ctx = self._make_stage_context(job, stage_override="norm_verify")
@@ -5904,6 +5975,11 @@ class PipelineManager:
                 job.stage = AuditStage.OPTIMIZATION
             elif action == "optimization_review":
                 # Version-aware: V1 = root/_output, V2+ = _versions/v{N}/_output.
+                # Засев обязателен ДО проверки: на v2-primary run dir свежий и
+                # пустой, поэтому optimization.json «не находился» даже там, где
+                # оптимизация была выполнена (тот же класс, что «Верификация
+                # норм: 03_findings.json не найден», 06.08.2026).
+                await self._seed_run_dir_from_latest(job, reason="Пересмотр оптимизации")
                 _root_dir, _proj_dir, _output_dir = self._resolve_job_paths(job)
                 opt_path = _output_dir / "optimization.json"
                 if not opt_path.exists():
