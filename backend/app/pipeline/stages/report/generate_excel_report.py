@@ -138,6 +138,12 @@ PROJ_COLUMNS = [
     ("solution",         "Решение",             48),
     ("severity",         "Категория",           22),
     ("risk",             "Чем грозит",          32),
+    # Нормативная ссылка в выгрузке отсутствовала вовсе: вся работа этапа норм
+    # доезжала только до веб-интерфейса, а эксперт в Excel видел замечание без
+    # основания. Цитата рядом с пунктом — чтобы не открывать норматив ради
+    # одной строки (06.08.2026).
+    ("norm",             "Норма (пункт)",       34),
+    ("norm_quote",       "Цитата нормы",        56),
     ("expert_decision",  "Решение эксперта",    16),
     ("rejection_reason", "Причина отклонения",  32),
 ]
@@ -295,6 +301,17 @@ def f_rejection_reason(f, _, folder=""):
     return d.get("rejection_reason", "") or ""
 
 
+def f_norm(f, _):
+    """Нормативная ссылка. Пустая — честнее выдуманной, так и показываем."""
+    return (f.get("norm") or "").strip()
+
+
+def f_norm_quote(f, _):
+    """Текст пункта. Достаётся из индекса норм на этапе привязки/дозаливки."""
+    quote = (f.get("norm_quote") or "").strip()
+    return " ".join(quote.split())[:900]
+
+
 FIELD_FUNCS = {
     "num":              f_num,
     "finding_id":       f_finding_id,
@@ -304,6 +321,8 @@ FIELD_FUNCS = {
     "solution":         f_solution,
     "severity":         f_severity,
     "risk":             f_risk,
+    "norm":             f_norm,
+    "norm_quote":       f_norm_quote,
     "expert_decision":  f_expert_decision,
     "rejection_reason": f_rejection_reason,
 }
