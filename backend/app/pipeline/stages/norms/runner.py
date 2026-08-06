@@ -377,6 +377,27 @@ async def run_norm_verification(
         ctx.update_pipeline_log("norm_verify", "error", error=error)
         return StageResult.fail(error)
 
+    # ── Шаг 0: Нормативная привязка (пункт к ссылке, до всех проверок) ──
+    # Ссылку проставляет свод, попутно с десятком других задач, и глубина ссылки
+    # оказалась свойством модели: opus давал номер пункта у 71% ссылок,
+    # codex/gpt-5.4 — почти никогда. Здесь задача одна и ответ обязателен, а
+    # каждый названный пункт сверяется с базой и при неудаче возвращается модели
+    # на исправление. Замер 06.08.2026: opus 20/20, codex 20/20, sonnet 19/20.
+    # Идёт ПЕРВЫМ, чтобы статусы, цитаты и очередь missing_norms ниже работали
+    # уже с полными ссылками. Fail-soft: сбой оставляет findings как есть.
+    from backend.app.pipeline.stages.norms import clause_binding_runner as _binding
+
+    if _binding.is_enabled():
+        try:
+            report = await _binding.bind_clauses(output_dir, log=ctx.log)
+            if report.get("bound"):
+                ctx.update_pipeline_log(
+                    "norm_verify", "running",
+                    message=f"Привязано пунктов: {report['bound']}/{report['targets']}",
+                )
+        except Exception as _cb_exc:  # noqa: BLE001
+            await ctx.log(f"Нормативная привязка пропущена ({_cb_exc})", "warn")
+
     # ── Шаг 1: Извлечение норм ──
     await ctx.log("Шаг 1: Извлечение нормативных ссылок из замечаний...")
     norms_data = extract_norms_from_findings(findings_path)
