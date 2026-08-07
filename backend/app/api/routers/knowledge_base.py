@@ -230,7 +230,7 @@ async def upload_decisions_excel(
 
 @router.get("/missing-norms")
 async def get_missing_norms(status: Optional[str] = Query(None)):
-    """Список норм, не найденных в vault во время проверок."""
+    """Действующие нормы, отсутствующие в нормативной базе."""
     norms = mn_svc.get_missing_norms(status=status)
     stats = mn_svc.get_stats()
     return {"norms": norms, "stats": stats}
@@ -238,25 +238,25 @@ async def get_missing_norms(status: Optional[str] = Query(None)):
 
 @router.post("/missing-norms/{doc_number:path}/mark-added")
 async def mark_norm_added(doc_number: str):
-    """Отметить норму как добавленную в vault."""
+    """Удалить норму из списка после добавления в базу."""
     ok = mn_svc.mark_added(doc_number)
     if not ok:
         raise HTTPException(404, f"Норма '{doc_number}' не найдена")
-    return {"status": "ok", "doc_number": doc_number, "new_status": "added"}
+    return {"status": "ok", "doc_number": doc_number, "new_status": "removed"}
 
 
 @router.post("/missing-norms/{doc_number:path}/dismiss")
 async def dismiss_norm(doc_number: str):
-    """Снять норму из списка (не требуется)."""
+    """Удалить отменённую или ошибочную норму из активного списка."""
     ok = mn_svc.mark_dismissed(doc_number)
     if not ok:
         raise HTTPException(404, f"Норма '{doc_number}' не найдена")
-    return {"status": "ok", "doc_number": doc_number, "new_status": "dismissed"}
+    return {"status": "ok", "doc_number": doc_number, "new_status": "removed"}
 
 
 @router.post("/missing-norms/{doc_number:path}/restore")
 async def restore_norm(doc_number: str):
-    """Вернуть норму в список ожидающих."""
+    """Legacy endpoint: история удалённых норм больше не хранится."""
     ok = mn_svc.mark_pending(doc_number)
     if not ok:
         raise HTTPException(404, f"Норма '{doc_number}' не найдена")

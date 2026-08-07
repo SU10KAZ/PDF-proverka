@@ -2966,70 +2966,38 @@
                 <!-- ═══ Нормы для добавления ═══ -->
                 <div v-if="kbTab === 'missing_norms'">
                     <div class="kb-filters" style="align-items:center; gap:12px">
-                        <select v-model="missingNormsFilter" class="filter-select" @change="loadMissingNorms()" style="max-width:200px">
-                            <option value="pending">Ожидают добавления</option>
-                            <option value="added">Добавлены в vault</option>
-                            <option value="dismissed">Не требуются</option>
-                            <option value="">Все</option>
-                        </select>
                         <span style="color:#94a3b8; font-size:13px">
-                            Ожидают: <b style="color:#f97316">{{ missingNormsStats.pending }}</b> &nbsp;|&nbsp;
-                            Добавлены: <b style="color:#22c55e">{{ missingNormsStats.added }}</b> &nbsp;|&nbsp;
-                            Не нужны: <b style="color:#64748b">{{ missingNormsStats.dismissed }}</b>
+                            Отсутствуют в базе и не отменены:
+                            <b style="color:#f97316">{{ missingNormsStats.total || 0 }}</b>
                         </span>
                     </div>
 
                     <div v-if="kbLoading" class="loading">Загрузка...</div>
                     <div v-else-if="missingNorms.length === 0" class="empty-state" style="padding:40px; text-align:center; color:#64748b">
-                        {{ missingNormsFilter === 'pending' ? 'Все нормы есть в vault — отлично!' : 'Нет записей' }}
+                        Все действующие нормы есть в базе — отлично!
                     </div>
                     <div v-else class="table-container">
                         <table class="kb-table">
                             <thead>
                                 <tr>
-                                    <th class="mn-col-nowrap" style="width:220px">Норма</th>
-                                    <th class="mn-col-nowrap" style="width:72px">Тип</th>
-                                    <th class="mn-col-nowrap" style="width:84px; text-align:center">Проектов</th>
-                                    <th class="mn-col-nowrap" style="width:84px; text-align:center">Замечаний</th>
-                                    <th>Проекты</th>
-                                    <th class="mn-col-nowrap" style="width:104px">Впервые</th>
-                                    <th class="mn-col-nowrap" style="width:88px; text-align:center">Действие</th>
+                                    <th>Норма</th>
+                                    <th class="mn-col-nowrap" style="width:190px; text-align:center">Действие</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="norm in missingNorms" :key="norm.doc_number"
-                                    :class="{ 'mn-row--added': norm.status === 'added', 'mn-row--dismissed': norm.status === 'dismissed' }">
-                                    <td class="mn-col-nowrap">
-                                        <span class="mn-doc-number">{{ norm.doc_number }}</span>
-                                        <div v-if="norm.status === 'added'" style="font-size:11px; color:#22c55e; margin-top:2px">
-                                            ✓ добавлена {{ (norm.added_to_vault_at || '').slice(0,10) }}
-                                        </div>
-                                    </td>
-                                    <td class="mn-col-nowrap"><span class="kb-section-badge">{{ norm.family || '—' }}</span></td>
-                                    <td class="mn-col-nowrap" style="text-align:center">{{ norm.project_count }}</td>
-                                    <td class="mn-col-nowrap" style="text-align:center">{{ norm.finding_count }}</td>
-                                    <td class="mn-col-projects">
-                                        <span v-for="(occ, i) in norm.occurrences" :key="i">
-                                            {{ occ.project_id }}<span v-if="i < norm.occurrences.length-1">, </span>
-                                        </span>
-                                    </td>
-                                    <td class="mn-col-nowrap" style="font-size:11px; color:#64748b">{{ (norm.first_seen_at || '').slice(0,10) }}</td>
+                                <tr v-for="norm in missingNorms" :key="norm.doc_number">
+                                    <td><span class="mn-doc-number">{{ norm.doc_number }}</span></td>
                                     <td class="mn-col-nowrap" style="text-align:center">
-                                        <span v-if="norm.status === 'pending'" class="mn-actions">
+                                        <span class="mn-actions">
                                             <button class="btn btn-sm" style="background:#22c55e; color:#fff"
-                                                    @click="markNormAdded(norm.doc_number)" title="Отметить как добавленную в vault">
+                                                    @click="markNormAdded(norm.doc_number)" title="Убрать после добавления нормы в базу">
                                                 + Добавить
                                             </button>
                                             <button class="btn btn-sm mn-actions__dismiss" style="background:#475569; color:#fff"
-                                                    @click="dismissNorm(norm.doc_number)" title="Не требуется">
+                                                    @click="dismissNorm(norm.doc_number)" title="Убрать отменённую или ошибочную норму">
                                                 ✕
                                             </button>
                                         </span>
-                                        <button v-if="norm.status !== 'pending'"
-                                                class="btn btn-sm" style="background:#334155; color:#94a3b8"
-                                                @click="restoreNorm(norm.doc_number)">
-                                            Вернуть
-                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
