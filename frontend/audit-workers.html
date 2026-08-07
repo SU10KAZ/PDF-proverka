@@ -50,6 +50,17 @@
     <main id="content" hidden>
         <section class="summary" id="summary"></section>
 
+        <!-- Зона 0: заявки на регистрацию. Показывается только когда они есть:
+             до одобрения оператором воркер не получает токен и не работает. -->
+        <section class="block block--pending" id="pendingBlock" hidden>
+            <h2>Ожидают одобрения</h2>
+            <p class="hint">
+                Заявка приходит с bootstrap-secret и даёт только одноразовый
+                claim-secret. Токен выдаётся исключительно после одобрения.
+            </p>
+            <div id="pending" class="cards"></div>
+        </section>
+
         <!-- Зона 1: карточки VPS -->
         <section class="block">
             <h2>Подключённые VPS</h2>

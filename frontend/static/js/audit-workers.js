@@ -42,6 +42,25 @@
     return `${Math.floor(s / 3600)} ч ${Math.floor((s % 3600) / 60)} мин`;
   }
 
+  // Данные ресурсов приходят с ПОЛУ-ДОВЕРЕННОГО воркера и попадают в innerHTML.
+  // Не число — значит не показываем: экранирования мало, потому что число здесь
+  // единственный осмысленный тип, а строка в этом месте — всегда чужая затея.
+  function num(value, fallback = '—') {
+    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+  }
+
+  function humanBytes(bytes) {
+    if (bytes === null || bytes === undefined) return '—';
+    if (bytes < 1024) return `${bytes} Б`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} МБ`;
+  }
+
+  function humanStamp(epochSeconds) {
+    if (!epochSeconds) return '—';
+    return new Date(epochSeconds * 1000).toLocaleString('ru-RU');
+  }
+
   const CONNECTION_LABEL = {
     online: '● онлайн', stale: '● связь нестабильна',
     offline: '● связь потеряна', reconnecting: '● догоняет события',
@@ -74,12 +93,15 @@
     const warnings = (worker.warnings || []).map(
       (w) => `<li class="warn">⚠ ${esc(w.message || w.code)}</li>`).join('');
 
+    // Ожидающему одобрения нужна и вторая кнопка: заявка могла прийти от кого
+    // угодно, знающего bootstrap-secret, и «просто не одобрять» — не решение.
     const actions = pending
-      ? `<button class="btn btn--primary" data-approve="${esc(worker.worker_id)}">Одобрить</button>`
+      ? `<button class="btn btn--primary" data-approve="${esc(worker.worker_id)}">Одобрить</button>
+         <button class="btn btn--danger" data-reject="${esc(worker.worker_id)}">Отклонить</button>`
       : `<button class="btn" data-revoke="${esc(worker.worker_id)}">Отозвать</button>`;
 
     return `
-      <article class="card ${offline ? 'card--offline' : ''}">
+      <article class="card ${offline ? 'card--offline' : ''} ${pending ? 'card--pending' : ''}">
         <header class="card-head">
           <div>
             <h3>${esc(worker.display_name)}</h3>
@@ -94,10 +116,10 @@
           <div><dt>Состояние</dt><dd>${esc(worker.worker_state)}</dd></div>
           <div><dt>Версия агента</dt><dd>${esc(worker.worker_version || '—')}</dd></div>
           <div><dt>Протокол</dt><dd>v${esc(worker.protocol_version)}</dd></div>
-          <div><dt>RAM</dt><dd>${ram.available_gb ?? '—'} / ${ram.total_gb ?? '—'} ГБ${
-            ram.swap_used_gb ? ` · своп ${ram.swap_used_gb} ГБ` : ''}</dd></div>
-          <div><dt>CPU</dt><dd>${cpu.cores ?? '—'} ядер · LA5 ${cpu.la5 ?? '—'}</dd></div>
-          <div><dt>Диск</dt><dd>${disk.free_gb ?? '—'} / ${disk.total_gb ?? '—'} ГБ</dd></div>
+          <div><dt>RAM</dt><dd>${num(ram.available_gb)} / ${num(ram.total_gb)} ГБ${
+            ram.swap_used_gb ? ` · своп ${num(ram.swap_used_gb)} ГБ` : ''}</dd></div>
+          <div><dt>CPU</dt><dd>${num(cpu.cores)} ядер · LA5 ${num(cpu.la5)}</dd></div>
+          <div><dt>Диск</dt><dd>${num(disk.free_gb)} / ${num(disk.total_gb)} ГБ</dd></div>
           <div><dt>Слоты</dt><dd>
             свободно ${freeSlots} из ${esc(worker.configured_max_slots)}
             ${slots.binding_constraint
@@ -118,9 +140,9 @@
     if (progress.percent_reliable && progress.percent !== null) {
       return `
         <div class="progress">
-          <div class="progress-bar"><span style="width:${progress.percent}%"></span></div>
-          <span class="mono">${progress.processed} / ${progress.total} ${esc(progress.unit || '')}
-            (${progress.percent}%)</span>
+          <div class="progress-bar"><span style="width:${num(progress.percent, 0)}%"></span></div>
+          <span class="mono">${num(progress.processed)} / ${num(progress.total)} ${esc(progress.unit || '')}
+            (${num(progress.percent)}%)</span>
         </div>`;
     }
     // Достоверного процента нет — показываем неопределённый индикатор,
@@ -130,7 +152,7 @@
         <div class="progress-bar progress-bar--indeterminate"><span></span></div>
         <span class="hint">
           прогресс не оценивается · ${humanDuration(progress.elapsed_sec)} ·
-          операций: ${progress.completed_operations ?? 0}
+          операций: ${num(progress.completed_operations, 0)}
         </span>
       </div>`;
   }
@@ -145,6 +167,14 @@
     const unconfirmed = job.retention_unconfirmed
       ? `<p class="warn">⚠ ${esc(job.retention_warning || 'Центр не подтвердил приём')}</p>` : '';
     const canDownload = job.state === 'completed';
+    // Реквизиты принятого пакета: без них «завершено» ничем не подтверждено.
+    const accepted = job.validated_at
+      ? `<dl class="kv kv--result">
+           <div><dt>SHA-256</dt><dd class="mono small">${esc(job.result_package_hash || '—')}</dd></div>
+           <div><dt>Размер</dt><dd>${humanBytes(job.result_package_size)}</dd></div>
+           <div><dt>Принят</dt><dd>${humanStamp(job.validated_at)}</dd></div>
+           <div><dt>Хранится до</dt><dd>${humanStamp(job.retention_until)}</dd></div>
+         </dl>` : '';
     return `
       <article class="job job--${esc(job.state)}">
         <header>
@@ -157,6 +187,7 @@
         ${renderProgress(progress)}
         ${eta ? `<p class="hint">${eta.slice(3)}</p>` : ''}
         ${last}
+        ${accepted}
         ${unconfirmed}
         <footer class="job-actions">
           <button class="btn btn--small" data-logs="${esc(job.job_id)}">Логи</button>
@@ -197,10 +228,17 @@
         <span>VPS: <strong>${s.total ?? 0}</strong></span>
         <span>онлайн: <strong>${s.online ?? 0}</strong></span>
         <span>свободных слотов: <strong>${s.free_slots ?? 0}</strong></span>
-        <span>активных заданий: <strong>${s.active_jobs ?? 0}</strong></span>`;
+        <span>активных заданий: <strong>${s.active_jobs ?? 0}</strong></span>
+        ${s.pending ? `<span class="warn">ждут одобрения: <strong>${s.pending}</strong></span>` : ''}`;
 
-      $('workers').innerHTML = state.workers.map(renderWorker).join('');
-      $('workersEmpty').hidden = state.workers.length > 0;
+      // Ожидающие одобрения — отдельной секцией сверху: заявка без решения
+      // оператора не должна теряться среди работающих карточек.
+      const pendingWorkers = state.workers.filter((w) => w.registration_status === 'pending');
+      const activeWorkers = state.workers.filter((w) => w.registration_status !== 'pending');
+      $('pendingBlock').hidden = pendingWorkers.length === 0;
+      $('pending').innerHTML = pendingWorkers.map(renderWorker).join('');
+      $('workers').innerHTML = activeWorkers.map(renderWorker).join('');
+      $('workersEmpty').hidden = activeWorkers.length > 0;
       $('jobs').innerHTML = state.jobs.map(renderJob).join('');
       $('jobsEmpty').hidden = state.jobs.length > 0;
 
@@ -240,10 +278,16 @@
   // ─── Действия ──────────────────────────────────────────────────────────────
   document.addEventListener('click', async (event) => {
     const approve = event.target.closest('[data-approve]');
+    const reject = event.target.closest('[data-reject]');
     const revoke = event.target.closest('[data-revoke]');
     const logs = event.target.closest('[data-logs]');
     try {
-      if (approve) {
+      if (reject) {
+        if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
+          + 'claim-secret будет погашен, воркер токен не получит.')) return;
+        await api(`/api/workers/${reject.dataset.reject}/reject`, { method: 'POST' });
+        await refresh();
+      } else if (approve) {
         await api(`/api/workers/${approve.dataset.approve}/approve`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

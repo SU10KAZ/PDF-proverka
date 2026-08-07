@@ -49,6 +49,7 @@ body {
 }
 .btn:hover { border-color: var(--accent); }
 .btn--primary { background: var(--accent); border-color: var(--accent); color: #06101f; font-weight: 600; }
+.btn--danger { border-color: var(--warn); color: var(--warn); }
 .btn--small { padding: 5px 10px; font-size: 13px; }
 .checkbox { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); }
 
@@ -73,6 +74,9 @@ body {
 .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
 .card--offline { opacity: .72; }
+/* Заявка ждёт решения оператора — карточка не должна теряться среди рабочих. */
+.card--pending { border-color: var(--warn); box-shadow: inset 3px 0 0 var(--warn); }
+.block--pending h2 { color: var(--warn); }
 .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .card-head h3 { margin: 0; font-size: 16px; }
 .card-head p { margin: 2px 0 0; color: var(--muted); }
@@ -120,3 +124,7 @@ body {
     padding: 12px 14px; max-height: 420px; overflow: auto; font-size: 12.5px;
     white-space: pre-wrap; word-break: break-word; margin: 0;
 }
+
+/* Реквизиты принятого пакета: SHA-256 длинный, ему нужен перенос. */
+.kv--result { margin-top: 10px; }
+.kv--result dd.mono { word-break: break-all; text-align: right; }
