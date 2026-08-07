@@ -325,24 +325,172 @@ def assign_profile_groups(blocks: list[GalleryBlock]) -> None:
         )
 
 
-def render_preview(source_pdf: Path, destination: Path, max_px: int, quality: int) -> None:
-    if destination.is_file() and destination.stat().st_mtime_ns >= source_pdf.stat().st_mtime_ns:
-        return
+def render_preview(
+    source_pdf: Path,
+    destination: Path,
+    max_px: int,
+    quality: int,
+    *,
+    dpi: int | None = None,
+    force: bool = False,
+) -> tuple[int, int]:
+    """Отрендерить первую страницу в превью и вернуть фактический размер.
+
+    Штатная витрина остаётся ограниченной ``max_px`` по длинной стороне. Для
+    операторского просмотра можно задать точный ``dpi``; PNG используется для
+    300 DPI, потому что WebP ограничен размером 16 383 px по каждой стороне, а
+    отдельные сохранённые схемы корпуса шире этого предела.
+    """
+    if (
+        not force
+        and destination.is_file()
+        and destination.stat().st_mtime_ns >= source_pdf.stat().st_mtime_ns
+    ):
+        with Image.open(destination) as existing:
+            return existing.size
     document = fitz.open(source_pdf)
     try:
         if document.page_count < 1:
             raise RuntimeError(f"empty PDF: {source_pdf}")
         page = document[0]
-        longest = max(float(page.rect.width), float(page.rect.height), 1.0)
-        scale = max_px / longest
-        pixmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False)
+        if dpi is not None:
+            pixmap = page.get_pixmap(dpi=dpi, colorspace=fitz.csRGB, alpha=False)
+        else:
+            longest = max(float(page.rect.width), float(page.rect.height), 1.0)
+            scale = max_px / longest
+            pixmap = page.get_pixmap(
+                matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False
+            )
         image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
         destination.parent.mkdir(parents=True, exist_ok=True)
         temp = destination.with_name(f"{destination.name}.gallery-{os.getpid()}.tmp")
-        image.save(temp, format="WEBP", quality=quality, method=4)
+        suffix = destination.suffix.lower()
+        if suffix == ".png":
+            image.save(temp, format="PNG", compress_level=6, dpi=(dpi or 72, dpi or 72))
+        elif suffix in {".jpg", ".jpeg"}:
+            image.save(
+                temp,
+                format="JPEG",
+                quality=quality,
+                subsampling=0,
+                dpi=(dpi or 72, dpi or 72),
+            )
+        elif suffix == ".webp":
+            image.save(temp, format="WEBP", quality=quality, method=4)
+        else:
+            raise ValueError(f"unsupported preview format: {destination.suffix}")
         os.replace(temp, destination)
+        return image.size
     finally:
         document.close()
+
+
+def rerender_existing_previews(
+    discipline: str,
+    *,
+    dpi: int,
+    preview_format: str,
+    preview_quality: int,
+    force: bool,
+) -> dict[str, Any]:
+    """Перерендерить только картинки опубликованной POS-витрины.
+
+    Источники и имена берутся из уже опубликованного manifest/index. Поэтому
+    этот режим не перестраивает CTX-пакеты, графы, профили и номера страниц.
+    Индекс переключается на новые файлы атомарно и только после завершения всей
+    дисциплины; при прерывании UI продолжит читать прежние WebP.
+    """
+    document_code = f"ВЕКТОГРАФ — {discipline}"
+    output_dir = (
+        POS_DOCUMENTS / document_code / "versions" / VERSION_ID
+        / "03_analysis" / "latest"
+    )
+    blocks_dir = output_dir / "blocks_stage02_100"
+    index_path = blocks_dir / "index.json"
+    manifest_path = output_dir / "vector_graph_gallery.json"
+    index_payload = json_read(index_path)
+    manifest_payload = json_read(manifest_path)
+    if not isinstance(index_payload, dict) or not isinstance(index_payload.get("blocks"), list):
+        raise RuntimeError(f"invalid gallery index: {index_path}")
+    if not isinstance(manifest_payload, dict) or not isinstance(manifest_payload.get("blocks"), list):
+        raise RuntimeError(f"invalid gallery manifest: {manifest_path}")
+
+    manifest_by_id = {
+        str(item.get("block_id")): item
+        for item in manifest_payload["blocks"]
+        if isinstance(item, dict) and item.get("block_id")
+    }
+    extension = {"png": ".png", "jpeg": ".jpg", "webp": ".webp"}[preview_format]
+    corpus_root = CORPUS_ROOT.resolve()
+    rendered = []
+
+    for position, record in enumerate(index_payload["blocks"], 1):
+        if not isinstance(record, dict) or not record.get("block_id"):
+            raise RuntimeError(f"invalid gallery block #{position}: {index_path}")
+        block_id = str(record["block_id"])
+        manifest_record = manifest_by_id.get(block_id)
+        if manifest_record is None:
+            raise RuntimeError(f"block {block_id} is absent from {manifest_path}")
+        source_rel = str(manifest_record.get("source_pdf") or "")
+        source_pdf = (ROOT / source_rel).resolve()
+        try:
+            source_pdf.relative_to(corpus_root)
+        except ValueError as exc:
+            raise RuntimeError(f"source escapes gallery corpus: {source_rel}") from exc
+        if not source_pdf.is_file():
+            raise RuntimeError(f"gallery source not found: {source_pdf}")
+
+        old_file = str(record.get("file") or "")
+        if not old_file or Path(old_file).name != old_file:
+            raise RuntimeError(f"unsafe preview name for block {block_id}: {old_file!r}")
+        image_name = Path(old_file).with_suffix(extension).name
+        width, height = render_preview(
+            source_pdf,
+            blocks_dir / image_name,
+            max_px=0,
+            quality=preview_quality,
+            dpi=dpi,
+            force=force,
+        )
+        rendered.append((record, manifest_record, image_name, width, height))
+        if position % 25 == 0 or position == len(index_payload["blocks"]):
+            print(
+                f"  {discipline}: {position}/{len(index_payload['blocks'])} @ {dpi} DPI",
+                flush=True,
+            )
+
+    rendered_at = dt.datetime.now(dt.timezone.utc).isoformat()
+    for record, manifest_record, image_name, width, height in rendered:
+        record.update({
+            "file": image_name,
+            "dpi": dpi,
+            "render_size": [width, height],
+        })
+        manifest_record.update({
+            "file": image_name,
+            "preview_dpi": dpi,
+            "preview_render_size": [width, height],
+        })
+    index_payload.update({
+        "dpi": dpi,
+        "preview_format": preview_format,
+        "preview_rendered_at": rendered_at,
+    })
+    manifest_payload["preview"] = {
+        "dpi": dpi,
+        "format": preview_format,
+        "quality": "lossless" if preview_format == "png" else preview_quality,
+        "rendered_at": rendered_at,
+    }
+    atomic_json(index_path, index_payload)
+    atomic_json(manifest_path, manifest_payload)
+    return {
+        "document": document_code,
+        "blocks": len(rendered),
+        "dpi": dpi,
+        "format": preview_format,
+        "preview_dir": str(blocks_dir.relative_to(ROOT)),
+    }
 
 
 def create_catalog_pdf(path: Path, discipline: str, blocks: list[GalleryBlock]) -> None:
@@ -767,6 +915,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execute", action="store_true", help="создать/обновить документы ALIA/POS")
     parser.add_argument(
+        "--previews-only",
+        action="store_true",
+        help="перерендерить картинки уже опубликованных POS-витрин, не меняя графы",
+    )
+    parser.add_argument(
         "--disciplines",
         nargs="*",
         choices=tuple(DISCIPLINES),
@@ -775,6 +928,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--max-preview-px", type=int, default=2200)
     parser.add_argument("--preview-quality", type=int, default=90)
+    parser.add_argument("--preview-dpi", type=int, default=300)
+    parser.add_argument(
+        "--preview-format",
+        choices=("png", "jpeg", "webp"),
+        default="png",
+        help="для точных 300 DPI рекомендуется png (у webp предел 16383 px)",
+    )
+    parser.add_argument(
+        "--force-previews",
+        action="store_true",
+        help="перезаписать даже актуальные файлы превью",
+    )
     return parser.parse_args()
 
 
@@ -786,6 +951,31 @@ def main() -> int:
         raise SystemExit(f"corpus not found: {CORPUS_ROOT}")
     if not (ALIA_OBJECT / "object.json").is_file():
         raise SystemExit(f"ALIA object not found: {ALIA_OBJECT}")
+
+    if args.previews_only:
+        if not args.execute:
+            raise SystemExit("--previews-only requires --execute")
+        if args.preview_dpi < 72 or args.preview_dpi > 600:
+            raise SystemExit("--preview-dpi must be between 72 and 600")
+        summaries = [
+            rerender_existing_previews(
+                discipline,
+                dpi=args.preview_dpi,
+                preview_format=args.preview_format,
+                preview_quality=max(50, min(100, args.preview_quality)),
+                force=args.force_previews,
+            )
+            for discipline in args.disciplines
+        ]
+        print(json.dumps({
+            "mode": "previews_only",
+            "documents": summaries,
+            "totals": {
+                "blocks": sum(item["blocks"] for item in summaries),
+                "documents": len(summaries),
+            },
+        }, ensure_ascii=False, indent=2))
+        return 0
 
     summaries = []
     for discipline in args.disciplines:
