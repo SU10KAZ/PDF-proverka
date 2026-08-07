@@ -33,17 +33,37 @@ SECRET_ENV_NAME_PATTERNS = (
 )
 
 _ASSIGNMENT_RE = re.compile(
-    r"\b(" + "|".join(SECRET_ENV_NAME_PATTERNS) + r")\s*[:=]\s*(\"[^\"]*\"|'[^']*'|\S+)"
+    r"(?i)\b(" + "|".join(SECRET_ENV_NAME_PATTERNS) + r")\s*[:=]\s*(\"[^\"]*\"|'[^']*'|\S+)"
 )
-_AUTH_HEADER_RE = re.compile(r"(?i)\b(authorization\s*:\s*bearer)\s+\S+")
+# Схема заголовка — любая: Basic пропускался насквозь, а base64 «логин:пароль»
+# читается тривиально.
+_AUTH_HEADER_RE = re.compile(
+    r"(?i)\b(authorization\s*:\s*)(bearer|basic|token|digest|apikey)?\s*\S+"
+)
+# Ключи в JSON и в repr словаря Python: кавычки бывают и одинарные.
 _JSON_SECRET_RE = re.compile(
-    r"(?i)\"(token|secret|password|api_key|apikey|worker_token|execution_token|"
-    r"bootstrap_secret)\"\s*:\s*\"[^\"]*\""
+    r"(?i)([\"'])(token|secret|password|passwd|api_key|apikey|access_key|"
+    r"worker_token|execution_token|claim_secret|bootstrap_secret|session)\1"
+    r"\s*:\s*([\"'])[^\"']*\3"
 )
 # Явные форматы ключей провайдеров.
-_KEYLIKE_RE = re.compile(r"\b(sk-ant-[A-Za-z0-9_\-]{8,}|sk-[A-Za-z0-9_\-]{20,}|ghp_[A-Za-z0-9]{20,})\b")
+_KEYLIKE_RE = re.compile(
+    r"\b(sk-ant-[A-Za-z0-9_\-]{8,}|sk-[A-Za-z0-9_\-]{20,}|ghp_[A-Za-z0-9]{20,}"
+    r"|AIza[A-Za-z0-9_\-]{20,}|xox[abprs]-[A-Za-z0-9\-]{10,}"
+    # JWT: три base64url-сегмента через точку.
+    r"|eyJ[A-Za-z0-9_\-]{6,}\.[A-Za-z0-9_\-]{4,}\.[A-Za-z0-9_\-]{4,})\b"
+)
 # Наши собственные префиксы токенов.
-_OWN_TOKEN_RE = re.compile(r"\b(wtk_|etk_)[A-Za-z0-9_\-]{8,}")
+_OWN_TOKEN_RE = re.compile(r"\b(wtk_|etk_|clm_)[A-Za-z0-9_\-]{8,}")
+# Cookie целиком: разбирать её значения бессмысленно — они все чувствительные.
+_COOKIE_RE = re.compile(r"(?i)\b(set-)?cookie\s*:\s*\S.*")
+# Учётные данные внутри URL (scheme://user:pass@host).
+_URL_CRED_RE = re.compile(r"(?i)\b([a-z][a-z0-9+.\-]*://)[^\s/@:]+:[^\s/@]+@")
+# Приватные ключи в PEM: вырезаем весь блок, а не только заголовок.
+_PEM_RE = re.compile(
+    r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----",
+    re.DOTALL,
+)
 # Домашние пути чужой машины — не секрет, но лишняя информация о хосте.
 _HOME_PATH_RE = re.compile(r"/home/[A-Za-z0-9._-]+/")
 
@@ -51,9 +71,17 @@ REDACTED = "<redacted>"
 
 
 def _redact_once(text: str, extra_literals: Iterable[str]) -> str:
-    out = _AUTH_HEADER_RE.sub(r"\1 " + REDACTED, text)
+    out = _PEM_RE.sub("<redacted:private_key>", text)
+    out = _AUTH_HEADER_RE.sub(
+        lambda m: f"{m.group(1)}{(m.group(2) + ' ') if m.group(2) else ''}{REDACTED}", out
+    )
+    out = _COOKIE_RE.sub("Cookie: " + REDACTED, out)
+    out = _URL_CRED_RE.sub(r"\1<redacted>:<redacted>@", out)
     out = _ASSIGNMENT_RE.sub(lambda m: f"{m.group(1)}=<redacted:{m.group(1)}>", out)
-    out = _JSON_SECRET_RE.sub(lambda m: f'"{m.group(1)}": "{REDACTED}"', out)
+    out = _JSON_SECRET_RE.sub(
+        lambda m: f"{m.group(1)}{m.group(2)}{m.group(1)}: {m.group(3)}{REDACTED}{m.group(3)}",
+        out,
+    )
     out = _KEYLIKE_RE.sub(REDACTED, out)
     out = _OWN_TOKEN_RE.sub(lambda m: m.group(1) + REDACTED, out)
     out = _HOME_PATH_RE.sub("~/", out)

@@ -41,7 +41,13 @@ def build_view(
             "eta_basis": "unavailable",
             "last_significant_event": None,
             "completed_operations": 0,
+            "process_status": None,
         }
+
+    # Снимок пришёл от воркера и хранится в БД. Любое поле может оказаться
+    # строкой: без приведения `round()` роняет операторский экран НАВСЕГДА —
+    # отравленный снимок сохранён, и падает весь список заданий, а не одно.
+    snapshot = _coerce_snapshot(snapshot)
 
     processed = snapshot.get("processed")
     total = snapshot.get("total")
@@ -69,15 +75,58 @@ def build_view(
         "total": total,
         "percent": percent,
         "percent_reliable": reliable,
-        "elapsed_sec": round(snapshot.get("elapsed_sec", elapsed), 1),
+        # После приведения ключ может присутствовать со значением None —
+        # значит .get(key, default) не спасает, нужен явный выбор.
+        "elapsed_sec": round(
+            snapshot["elapsed_sec"] if isinstance(snapshot.get("elapsed_sec"), (int, float))
+            else elapsed, 1),
         "throughput_per_min": throughput,
         "delta_5min": snapshot.get("delta_5min"),
         "eta_sec": eta_sec,
         "eta_basis": eta_basis,
         "last_significant_event": snapshot.get("last_significant_event"),
-        "completed_operations": snapshot.get("completed_operations", processed or 0),
-        "snapshot_age_sec": round(max(0.0, stamp - float(snapshot.get("received_at", stamp))), 1),
+        "completed_operations": (
+            snapshot["completed_operations"]
+            if isinstance(snapshot.get("completed_operations"), (int, float))
+            else (processed or 0)
+        ),
+        "process_status": snapshot.get("process_status"),
+        "snapshot_age_sec": round(
+            max(0.0, stamp - (
+                snapshot["received_at"]
+                if isinstance(snapshot.get("received_at"), (int, float)) else stamp
+            )), 1),
     }
+
+
+_NUMERIC_FIELDS = ("processed", "total", "stage_index", "stage_total",
+                   "elapsed_sec", "throughput_per_min", "received_at", "seq")
+_TEXT_FIELDS = ("stage", "unit", "last_significant_event", "process_status")
+_TEXT_MAX = 500
+
+
+def _coerce_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Числовые поля — только числа, текстовые — только короткие строки."""
+    out = dict(snapshot)
+    for key in _NUMERIC_FIELDS:
+        value = out.get(key)
+        if value is not None and (
+            isinstance(value, bool) or not isinstance(value, (int, float))
+        ):
+            out[key] = None
+    for key in _TEXT_FIELDS:
+        value = out.get(key)
+        if value is not None and not isinstance(value, str):
+            out[key] = None
+        elif isinstance(value, str) and len(value) > _TEXT_MAX:
+            out[key] = value[:_TEXT_MAX]
+    completed = out.get("completed_operations")
+    if isinstance(completed, bool) or not isinstance(completed, (int, float)):
+        out["completed_operations"] = None
+    delta = out.get("delta_5min")
+    if delta is not None and not isinstance(delta, dict):
+        out["delta_5min"] = None
+    return out
 
 
 def _eta(

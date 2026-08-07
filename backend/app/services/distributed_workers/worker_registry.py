@@ -59,15 +59,54 @@ def record_heartbeat(
         "active_jobs": json.dumps(active_jobs, ensure_ascii=False),
     }
     if resource_snapshot is not None:
+        clean = sanitize_resource_snapshot(resource_snapshot)
         fields["resource_snapshot"] = json.dumps(
-            {**resource_snapshot, "warnings": warnings}, ensure_ascii=False
+            {**clean, "warnings": warnings}, ensure_ascii=False
         )
     repositories.update_worker_fields(worker_id, fields, settings=settings)
     if resource_snapshot is not None:
         repositories.record_resource_snapshot(
-            worker_id, resource_snapshot, settings=settings
+            worker_id, clean, settings=settings
         )
     return repositories.get_worker(worker_id, settings=settings) or {}
+
+
+# Поля снимка ресурсов, которые ДОЛЖНЫ быть числами. Всё остальное в этих
+# разделах — либо короткая строка из закрытого набора, либо мусор.
+_NUMERIC_SNAPSHOT_SECTIONS = ("ram", "cpu", "disk", "processes", "slots")
+_SNAPSHOT_TEXT_FIELDS = {"binding_constraint", "explanation"}
+_SNAPSHOT_TEXT_MAX = 200
+
+
+def sanitize_resource_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Привести снимок ресурсов к безопасному виду.
+
+    Снимок приходит с ПОЛУ-ДОВЕРЕННОГО воркера и попадает и в БД, и на экран
+    оператора. Два конкретных последствия отсутствия этой чистки:
+    строка вместо числа в `elapsed_sec`/метриках роняла операторский экран
+    навсегда (снимок сохраняется), а HTML в `ram.total_gb` исполнялся в
+    аутентифицированной сессии оператора. Поэтому: числовые поля — только
+    числа, текстовые — только короткие строки, лишние ключи отбрасываются.
+    """
+    clean: dict[str, Any] = {}
+    at = snapshot.get("at")
+    clean["at"] = float(at) if isinstance(at, (int, float)) else time.time()
+    for section in _NUMERIC_SNAPSHOT_SECTIONS:
+        raw = snapshot.get(section)
+        if not isinstance(raw, dict):
+            continue
+        out: dict[str, Any] = {}
+        for key, value in raw.items():
+            if not isinstance(key, str) or len(key) > 64:
+                continue
+            if isinstance(value, bool):
+                out[key] = value
+            elif isinstance(value, (int, float)):
+                out[key] = value
+            elif key in _SNAPSHOT_TEXT_FIELDS and isinstance(value, str):
+                out[key] = value[:_SNAPSHOT_TEXT_MAX]
+        clean[section] = out
+    return clean
 
 
 def refresh_connectivity(

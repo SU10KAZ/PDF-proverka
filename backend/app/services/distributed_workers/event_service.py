@@ -17,6 +17,7 @@ job_logs/<job_id>/<attempt_id>.jsonl. Курсор при этом ОДИН на
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -54,10 +55,31 @@ _EVENT_TO_STATE: dict[str, JobState] = {
 }
 
 
+# Идентификаторы, попадающие в путь файловой системы. Проверяются ЗДЕСЬ, а не
+# у вызывающего: операторская ручка логов передавала `attempt` из query-строки
+# как есть, и `?attempt=../../secret` читал произвольный .jsonl с диска.
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9._\-]{1,128}$")
+
+
+class UnsafeIdentifier(ValueError):
+    """Идентификатор не годится как сегмент пути."""
+
+
+def _safe_segment(value: str, *, field: str) -> str:
+    value = (value or "").strip()
+    if not _SAFE_ID_RE.match(value) or value in (".", ".."):
+        raise UnsafeIdentifier(f"Недопустимый {field}: {value!r}")
+    return value
+
+
 def log_file_path(
     job_id: str, attempt_id: str, *, settings: DistributedWorkersSettings
 ) -> Path:
-    return settings.job_logs_dir / job_id / f"{attempt_id}.jsonl"
+    return (
+        settings.job_logs_dir
+        / _safe_segment(job_id, field="job_id")
+        / f"{_safe_segment(attempt_id, field='attempt_id')}.jsonl"
+    )
 
 
 def ingest_batch(
@@ -91,6 +113,8 @@ def ingest_batch(
     # Секреты чистятся ещё на воркере (I-12), центр прогоняет редактор повторно.
     normalized: list[dict[str, Any]] = []
     log_lines: list[dict[str, Any]] = []
+    # Отдельный список по ВСЕМУ пакету — для побочных эффектов (см. ниже).
+    all_normalized: list[dict[str, Any]] = []
     for ev in fresh:
         payload = redaction.redact_mapping(dict(ev.get("payload") or {}))
         item = {
@@ -105,6 +129,25 @@ def ingest_batch(
             log_lines.append(item)
         else:
             normalized.append(item)
+            all_normalized.append(item)
+
+    for ev in events:
+        if int(ev["seq"]) > last_seen:
+            continue          # уже собрано выше
+        etype = str(ev["event_type"])
+        if etype in FILE_ONLY_EVENT_TYPES:
+            continue
+        all_normalized.append(
+            {
+                "sequence": int(ev["seq"]),
+                "event_id": str(ev["event_id"]),
+                "event_type": etype,
+                "occurred_at": float(ev["occurred_at"]),
+                "schema_version": int(ev.get("schema_version") or 1),
+                "payload": redaction.redact_mapping(dict(ev.get("payload") or {})),
+            }
+        )
+    all_normalized.sort(key=lambda item: item["sequence"])
 
     # Строки лога пишем ДО сдвига курсора: если процесс упадёт между шагами,
     # повторная доставка допишет их снова — а это безопасно, потому что
@@ -124,7 +167,12 @@ def ingest_batch(
         settings=settings,
     )
 
-    _apply_side_effects(job, normalized, settings=settings)
+    # ВАЖНО: применяем ВЕСЬ батч, а не только «свежие» события. Курсор
+    # сдвигается отдельной транзакцией, и обрыв между ней и этим вызовом
+    # раньше терял переход навсегда: повтор батча давал пустой `fresh`.
+    # Повторное применение безопасно — transition пропускает уже достигнутое
+    # состояние (см. _apply_side_effects).
+    _apply_side_effects(job, all_normalized, settings=settings)
 
     return {
         "last_seen_seq": last_seen_seq,
