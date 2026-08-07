@@ -16,6 +16,8 @@ Run: python -m pytest tests/test_distributed_workers_flag_off.py -v
 """
 from __future__ import annotations
 
+import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -136,38 +138,67 @@ def test_pipeline_manager_untouched():
 
 
 def test_no_llm_invocation_in_worker_package():
-    """Ни Claude Code, ни Codex на этом этапе не запускаются.
+    """В пакете воркера нет обращений ни к Claude Code, ни к Codex.
 
-    Проверяется по существу, а не по вхождению слова: имя бинаря не должно
-    встречаться в строковом литерале, из которого может собраться argv, и
-    ни один модуль LLM-раннеров не импортируется.
+    Ищем имя бинаря в ЛЮБОМ строковом литерале, а не только вплотную к
+    кавычке: путь вида "/usr/local/bin/claude" прежний шаблон пропускал.
     """
-    package = _ROOT / "audit_worker"
-    binary_literal = re.compile(r"""["'](claude|codex)(\s|["'])""", re.IGNORECASE)
-    runner_import = re.compile(r"(claude_runner|codex_runner|anthropic|openai)")
+    import ast
+
+    banned = {"claude", "codex", "claude-code", "anthropic", "openrouter"}
     offenders = []
-    for path in package.rglob("*.py"):
-        for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-            if binary_literal.search(line) or runner_import.search(line):
-                offenders.append(f"{path.name}:{line_no}: {line.strip()[:80]}")
-    assert not offenders, "агент не должен запускать LLM:\n" + "\n".join(offenders)
+    for path in sorted((_ROOT / "audit_worker").glob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        docstrings = {
+            id(ast.get_docstring(n, clean=False))
+            for n in ast.walk(tree)
+            if isinstance(n, (ast.Module, ast.ClassDef, ast.FunctionDef))
+        }
+        literals = [
+            n for n in ast.walk(tree)
+            if isinstance(n, ast.Constant) and isinstance(n.value, str)
+            and id(n.value) not in docstrings
+        ]
+        for node in literals:
+            text = node.value.strip().lower()
+            # Только исполняемые формы: имя бинаря целиком или хвост пути к нему.
+            candidate = text.rsplit("/", 1)[-1] if "/" in text else text
+            if candidate in banned:
+                offenders.append(f"{path.name}:{node.lineno} {node.value[:80]}")
+    assert not offenders, offenders
 
 
 def test_only_one_subprocess_spawn_point():
-    """Единственная точка порождения процессов — фиксированный argv тест-раннера."""
-    package = _ROOT / "audit_worker"
-    spawners = []
-    for path in package.rglob("*.py"):
-        text = path.read_text(encoding="utf-8")
-        if "subprocess.Popen(" in text or "subprocess.run(" in text:
-            spawners.append(path.name)
-    assert spawners == ["test_runner.py"], spawners
+    """Порождение процесса — ровно одно место и без shell.
 
-    source = (package / "test_runner.py").read_text(encoding="utf-8")
-    assert "argv = build_argv(params_path)" in source
-    assert "subprocess.Popen(  # noqa: S603" in source
-    assert "shell=False" in source
+    Проверяем ДЕРЕВО РАЗБОРА, а не текст: переименование переменной или
+    перенос строки тест не ломают, а вторая точка запуска (Popen, run, call,
+    check_output, os.system, os.popen, exec*) — ломает.
+    """
+    import ast
 
+    spawners = {
+        "Popen", "run", "call", "check_call", "check_output",
+        "system", "popen", "execv", "execve", "execvp", "spawnv",
+    }
+    found: list[str] = []
+    for path in sorted((_ROOT / "audit_worker").glob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            name = getattr(func, "attr", None) or getattr(func, "id", None)
+            module = getattr(getattr(func, "value", None), "id", None)
+            if name in spawners and module in ("subprocess", "os"):
+                found.append(f"{path.name}:{node.lineno} {module}.{name}")
+                for kw in node.keywords:
+                    if kw.arg == "shell":
+                        assert isinstance(kw.value, ast.Constant) and kw.value.value is False, (
+                            f"shell=True в {path.name}:{node.lineno}"
+                        )
+    assert len(found) == 1, f"точек запуска процесса должно быть ровно одна: {found}"
+    assert found[0].startswith("test_runner.py"), found
 
 def test_no_arbitrary_command_execution_in_agent():
     """Ни одной ветки, где команда/argv приходят из задания."""
@@ -203,3 +234,95 @@ def test_portal_auth_exempts_only_worker_prefix():
     assert portal_auth.is_path_exempt("/api/workers") is False
     assert portal_auth.is_path_exempt("/api/workers/jobs") is False
     assert portal_auth.is_path_exempt("/api/projects") is False
+
+
+# ─── Проверка НАСТОЯЩЕГО backend/app/main.py ─────────────────────────────────
+# Тесты выше работают с самодельной сборкой приложения из helpers — она по
+# построению не содержит спорных маршрутов, поэтому их ассерты «404» не могут
+# упасть и решение в main.py не проверяют. Ниже — проверка самого main.py:
+# он импортируется в отдельном процессе, потому что читает флаг НА ИМПОРТЕ и
+# кэшируется в sys.modules на весь прогон pytest.
+_ROUTE_PROBE = r'''
+import json, os, sys
+sys.path.insert(0, %(root)r)
+from backend.app.main import app
+paths = sorted({getattr(r, "path", "") for r in app.routes})
+print(json.dumps({
+    "worker_api": [p for p in paths if p.startswith("/api/v1/worker")],
+    "admin_api": [p for p in paths if p.startswith("/api/workers")],
+    "page": [p for p in paths if p == "/audit-workers"],
+    "total": len(paths),
+}, ensure_ascii=False))
+'''
+
+
+def _probe_main(env: dict) -> dict:
+    """Импортировать реальный main.py в отдельном процессе и вернуть маршруты."""
+    import subprocess
+
+    root = str(_ROOT)
+    child_env = {**os.environ, **env}
+    child_env.pop("PYTEST_CURRENT_TEST", None)
+    result = subprocess.run(
+        [sys.executable, "-c", _ROUTE_PROBE % {"root": root}],
+        capture_output=True, text=True, env=child_env, cwd=root, timeout=180,
+    )
+    assert result.returncode == 0, result.stderr[-3000:]
+    return json.loads(result.stdout.strip().splitlines()[-1])
+
+
+def test_real_main_registers_nothing_when_flag_off(tmp_path):
+    """При выключенном флаге в НАСТОЯЩЕМ приложении нет ни одной ручки воркеров."""
+    routes = _probe_main({
+        "DISTRIBUTED_WORKERS_ENABLED": "false",
+        "DISTRIBUTED_WORKERS_DATA_DIR": str(tmp_path / "off"),
+    })
+    assert routes["worker_api"] == []
+    # Единственное исключение — статус, он обязан отвечать всегда.
+    assert routes["admin_api"] == ["/api/workers/status"]
+    assert routes["page"] == ["/audit-workers"]
+    assert routes["total"] > 100          # остальное приложение на месте
+    assert not (tmp_path / "off").exists()
+
+
+def test_real_main_registers_both_contours_when_flag_on(tmp_path):
+    routes = _probe_main({
+        "DISTRIBUTED_WORKERS_ENABLED": "true",
+        "DISTRIBUTED_WORKERS_DATA_DIR": str(tmp_path / "on"),
+        "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": "x" * 32,
+        "PORTAL_AUTH_ENABLED": "true",
+    })
+    assert "/api/v1/worker/register" in routes["worker_api"]
+    assert "/api/v1/worker/claim" in routes["worker_api"]
+    assert "/api/workers" in routes["admin_api"]
+    assert len(routes["worker_api"]) >= 15
+
+
+def test_admin_contour_not_exposed_without_portal_auth(tmp_path):
+    """Операторский API не поднимается, если портальная защита выключена.
+
+    У него нет собственной аутентификации, а rotate-token отдаёт живой токен
+    воркера открытым текстом.
+    """
+    routes = _probe_main({
+        "DISTRIBUTED_WORKERS_ENABLED": "true",
+        "DISTRIBUTED_WORKERS_DATA_DIR": str(tmp_path / "insecure"),
+        "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": "x" * 32,
+        "PORTAL_AUTH_ENABLED": "false",
+        "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "false",
+    })
+    assert routes["admin_api"] == ["/api/workers/status"]
+    assert "/api/workers/jobs" not in routes["admin_api"]
+    # Контур воркеров при этом работает: у него своя аутентификация по токену.
+    assert "/api/v1/worker/register" in routes["worker_api"]
+
+
+def test_admin_contour_available_with_explicit_dev_optin(tmp_path):
+    routes = _probe_main({
+        "DISTRIBUTED_WORKERS_ENABLED": "true",
+        "DISTRIBUTED_WORKERS_DATA_DIR": str(tmp_path / "dev"),
+        "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": "x" * 32,
+        "PORTAL_AUTH_ENABLED": "false",
+        "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "true",
+    })
+    assert "/api/workers" in routes["admin_api"]

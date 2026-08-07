@@ -102,14 +102,18 @@ def test_test_process_runs_and_writes_artifacts(tmp_path):
         max_total_sec=60.0,
     )
     seen: list[tuple[int, int]] = []
+    streams: list[str] = []
     outcome = test_runner.run_test_job(
         params=params,
         job_dir=tmp_path / "job",
         on_progress=lambda s, t, e, m: seen.append((s, t)),
-        on_log=lambda level, line: None,
+        on_log=lambda stream, level, line: streams.append(stream),
     )
     assert outcome.exit_code == 0
     assert seen == [(1, 2), (2, 2)]
+    # stdout и stderr читаются РАЗДЕЛЬНО: поток указан у каждой строки.
+    assert set(streams) <= {"stdout", "stderr"}
+    assert outcome.stdout_lines > 0
     summary = json.loads((tmp_path / "job" / "result" / "summary.json").read_text())
     assert summary["status"] == "ok" and summary["steps"] == 2
     assert (tmp_path / "job" / "result" / "run_log.txt").is_file()
@@ -122,12 +126,18 @@ def test_test_process_reports_failure(tmp_path):
         {"label": "fail", "steps": 3, "step_seconds": 0.0, "fail_at_step": 2},
         max_total_sec=60.0,
     )
+    stderr_seen: list[str] = []
     outcome = test_runner.run_test_job(
         params=params, job_dir=tmp_path / "job",
-        on_progress=lambda *a: None, on_log=lambda *a: None,
+        on_progress=lambda *a: None,
+        on_log=lambda stream, level, line: (
+            stderr_seen.append(line) if stream == "stderr" else None
+        ),
     )
     assert outcome.exit_code != 0
     assert outcome.failed_message
+    # Сообщение об ошибке пришло именно из stderr, а не потерялось в общем потоке.
+    assert outcome.stderr_lines > 0 and stderr_seen
 
 
 # ─── EventOutbox ─────────────────────────────────────────────────────────────
@@ -366,12 +376,13 @@ def test_worker_rejects_traversal(tmp_path):
 def test_result_package_requires_content(tmp_path):
     from audit_worker import package_io
 
-    (tmp_path / "result").mkdir()
+    (tmp_path / "job" / "result").mkdir(parents=True)
     with pytest.raises(package_io.BundleError):
         package_io.build_result_package(
-            dest_path=tmp_path / "out.tar.gz", result_dir=tmp_path / "result",
+            dest_path=tmp_path / "out.tar.gz", job_dir=tmp_path / "job",
             job_id="j", attempt_id="a", project_id="p", version_id=None,
-            worker_version="0.1.0", protocol_version=1, manifest_version=1,
+            worker_id="wrk_x", worker_version="0.1.0", protocol_version=1,
+            manifest_version=1,
         )
 
 

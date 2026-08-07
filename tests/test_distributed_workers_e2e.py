@@ -85,30 +85,33 @@ def test_vertical_slice_full_cycle(tmp_path, transport, admin):
     config = _make_worker_config(tmp_path, transport)
     config.ensure_dirs()
 
-    # 1. Регистрация — заявка, токен выдан один раз.
+    # 1. Регистрация — только ЗАЯВКА. Токена ещё нет: выдаётся одноразовый
+    #    claim-secret, который сработает лишь после одобрения оператором.
     identity = ensure_registered(config, bootstrap_secret=BOOTSTRAP)
     assert identity["worker_id"].startswith("wrk_")
-    assert identity["token"].startswith("wtk_")
+    assert identity.get("token") is None
     assert identity["registration_status"] == "pending"
-    # Токен лежит в отдельном файле с правами 0600.
-    assert config.token_path.is_file()
-    assert oct(config.token_path.stat().st_mode)[-3:] == "600"
+    claim_path = config.token_path.with_name("claim_secret")
+    assert claim_path.is_file()
+    assert oct(claim_path.stat().st_mode)[-3:] == "600"
+    assert not config.token_path.exists()
 
     worker_id = identity["worker_id"]
 
-    # 2. До одобрения heartbeat отбивается 403.
-    agent = WorkerAgent(config, identity)
-    with pytest.raises(Exception) as exc_info:
-        agent.heartbeat.beat_once()
-    assert "403" in str(exc_info.value)
-
-    # 3. Оператор одобряет.
+    # 2. Оператор одобряет.
     response = admin.post(
         f"/api/workers/{worker_id}/approve",
         json={"display_name": "VPS-e2e", "configured_max_slots": 2},
     )
     assert response.status_code == 200, response.text
     assert response.json()["worker"]["registration_status"] == "approved"
+
+    # 3. Только теперь воркер забирает токен — и ровно один раз.
+    identity = ensure_registered(config)
+    assert identity["token"].startswith("wtk_")
+    assert oct(config.token_path.stat().st_mode)[-3:] == "600"
+    assert not claim_path.exists()          # одноразовый секрет удалён
+    agent = WorkerAgent(config, identity)
 
     # 4. Heartbeat проходит и приносит ресурсы.
     beat = agent.heartbeat.beat_once()
@@ -167,10 +170,26 @@ def test_vertical_slice_full_cycle(tmp_path, transport, admin):
     # 9. События дошли, порядок сохранён, дыр нет.
     events = admin.get(f"/api/workers/jobs/{job_id}/events").json()["events"]
     seqs = [e["sequence"] for e in events]
-    assert seqs == sorted(seqs)
+    # ORDER BY sequence гарантирует сортировку сам по себе, поэтому проверяем
+    # то, что зависит от кода: дублей нет, а дыры в таблице объясняются ровно
+    # строками лога (они по проекту уходят в файл, а не в таблицу).
+    assert len(seqs) == len(set(seqs)), "дубли событий"
+    log_seqs = [
+        l["seq"] for l in admin.get(f"/api/workers/jobs/{job_id}/logs").json()["lines"]
+    ]
+    assert not set(seqs) & set(log_seqs), "событие попало и в таблицу, и в файл"
+    united = sorted(set(seqs) | set(log_seqs))
+    assert united == list(range(1, len(united) + 1)), (
+        f"дыра в последовательности: {united[:20]}"
+    )
     types = {e["event_type"] for e in events}
     assert {"source_verified", "job_accepted", "job_started", "stage_progress",
-            "stage_completed", "job_completed_locally"} <= types
+            "stage_completed", "artifact_created", "job_completed_locally",
+            "result_upload_started", "job_completed"} <= types
+    # Артефакты объявлены поимённо, с размером и хэшем.
+    artifacts = {e["payload"]["path_rel"] for e in events
+                 if e["event_type"] == "artifact_created"}
+    assert {"result/summary.json", "result/run_log.txt"} <= artifacts
     # log_line в таблицу не попадают — они в файле.
     assert "log_line" not in types
 
@@ -215,6 +234,7 @@ def test_offline_run_then_late_delivery(tmp_path, transport, admin):
         f"/api/workers/{identity['worker_id']}/approve",
         json={"configured_max_slots": 1},
     )
+    identity = ensure_registered(config)      # claim после одобрения
     agent = WorkerAgent(config, identity)
     admin.post(
         "/api/workers/jobs",
@@ -273,7 +293,18 @@ def test_offline_run_then_late_delivery(tmp_path, transport, admin):
 
     events = admin.get(f"/api/workers/jobs/{job_id}/events").json()["events"]
     seqs = [e["sequence"] for e in events]
-    assert seqs == sorted(seqs)
+    # ORDER BY sequence гарантирует сортировку сам по себе, поэтому проверяем
+    # то, что зависит от кода: дублей нет, а дыры в таблице объясняются ровно
+    # строками лога (они по проекту уходят в файл, а не в таблицу).
+    assert len(seqs) == len(set(seqs)), "дубли событий"
+    log_seqs = [
+        l["seq"] for l in admin.get(f"/api/workers/jobs/{job_id}/logs").json()["lines"]
+    ]
+    assert not set(seqs) & set(log_seqs), "событие попало и в таблицу, и в файл"
+    united = sorted(set(seqs) | set(log_seqs))
+    assert united == list(range(1, len(united) + 1)), (
+        f"дыра в последовательности: {united[:20]}"
+    )
     agent.shutdown()
 
 
