@@ -236,6 +236,25 @@ def test_monthly_limit_reports_remaining_percent_and_overage(
     assert snapshot["monthly_over_limit_usd"] == pytest.approx(2.5)
 
 
+def test_monthly_limit_override_applies_only_to_selected_month(
+    fresh_tracker, monkeypatch,
+):
+    from backend.app.services.common import usage_service
+
+    monkeypatch.setattr(usage_service, "PAID_API_MONTHLY_LIMIT_USD", 250.0)
+    state = {"daily_breakdown": {}}
+    state["monthly_limit_overrides_usd"] = {"2026-08": 200.0}
+    usage_service.PAID_COST_FILE.write_text(json.dumps(state), encoding="utf-8")
+
+    august = fresh_tracker.get(now=datetime(2026, 8, 31, 23, 59))
+    september = fresh_tracker.get(now=datetime(2026, 9, 1, 0, 1))
+
+    assert august["monthly_limit_usd"] == pytest.approx(200.0)
+    assert august["monthly_limit_is_override"] is True
+    assert september["monthly_limit_usd"] == pytest.approx(250.0)
+    assert september["monthly_limit_is_override"] is False
+
+
 @pytest.mark.parametrize("amount", [-1, float("nan"), float("inf"), "bad", True])
 def test_calibrate_month_validates_amount(fresh_tracker, amount):
     with pytest.raises(ValueError, match="finite non-negative"):

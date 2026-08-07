@@ -1110,6 +1110,7 @@ class PaidCostTracker:
             "daily_breakdown": {},
             "monthly_calibrations": {},
             "monthly_calibration_history": [],
+            "monthly_limit_overrides_usd": {},
         }
         self._lock = threading.Lock()
         self._load()
@@ -1129,6 +1130,8 @@ class PaidCostTracker:
             self._data["monthly_calibrations"] = {}
         if not isinstance(self._data.get("monthly_calibration_history"), list):
             self._data["monthly_calibration_history"] = []
+        if not isinstance(self._data.get("monthly_limit_overrides_usd"), dict):
+            self._data["monthly_limit_overrides_usd"] = {}
 
     @staticmethod
     def _effective_now(now: datetime | date | None = None) -> datetime:
@@ -1203,7 +1206,17 @@ class PaidCostTracker:
             calibration.get("adjustment_usd"), default=0.0,
         ) or 0.0
         spent = round(tracked + adjustment, 6)
-        limit = self._finite_float(PAID_API_MONTHLY_LIMIT_USD, default=0.0) or 0.0
+        configured_limit = (
+            self._finite_float(PAID_API_MONTHLY_LIMIT_USD, default=0.0) or 0.0
+        )
+        overrides = self._data.get("monthly_limit_overrides_usd", {})
+        override_limit = (
+            self._finite_float(overrides.get(month_key), default=None)
+            if isinstance(overrides, dict) and month_key in overrides
+            else None
+        )
+        limit_is_override = override_limit is not None and override_limit >= 0
+        limit = override_limit if limit_is_override else configured_limit
         limit = max(0.0, limit)
         remaining = max(0.0, limit - spent)
         over_limit = max(0.0, spent - limit)
@@ -1223,6 +1236,7 @@ class PaidCostTracker:
             "monthly_tracked_usd": tracked,
             "monthly_adjustment_usd": round(adjustment, 6),
             "monthly_limit_usd": round(limit, 6),
+            "monthly_limit_is_override": limit_is_override,
             "monthly_remaining_usd": round(remaining, 6),
             # Намеренно НЕ clamp'им: dashboard должен честно показывать >100%.
             "monthly_percent": percent,
