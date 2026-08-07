@@ -82,7 +82,8 @@ def upload_result(
             if not data:
                 break
             _put_chunk_with_retry(
-                client, upload_id, idx, data, attempts=max_attempts_per_chunk
+                client, upload_id, idx, data, attempts=max_attempts_per_chunk,
+                execution_token=execution_token,
             )
             received.add(idx)
             if on_progress:
@@ -102,12 +103,14 @@ def upload_result(
 
 
 def _put_chunk_with_retry(
-    client: CenterClient, upload_id: str, idx: int, data: bytes, *, attempts: int
+    client: CenterClient, upload_id: str, idx: int, data: bytes, *, attempts: int,
+    execution_token: str = "",
 ) -> None:
     last: Optional[Exception] = None
     for attempt in range(attempts):
         try:
-            client.put_chunk(upload_id, idx, data, sha256_bytes(data))
+            client.put_chunk(upload_id, idx, data, sha256_bytes(data),
+                             execution_token=execution_token)
             return
         except CenterError as exc:
             last = exc

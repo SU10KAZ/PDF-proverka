@@ -72,16 +72,23 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
     JobState.SOURCE_UPLOADING: {
         JobState.SOURCE_READY: (_W,),
         JobState.SOURCE_UPLOADING: (_W,),
+        # Ре-предложение ЕЩЁ НЕ НАЧАТОЙ работы (см. reoffer_unknown_jobs).
+        # Это не нарушение I-03: I-03 запрещает переназначать РАБОТУ, которая
+        # может выполняться; здесь воркер на сверке доказал, что о задании не
+        # знает вовсе, значит выполнять его некому.
+        JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCELLED: (_O,),
     },
     JobState.SOURCE_READY: {
         JobState.ACCEPTED_BY_WORKER: (_W,),
+        JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCELLED: (_O,),
     },
     JobState.ACCEPTED_BY_WORKER: {
         JobState.RUNNING: (_W,),
+        JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCEL_REQUESTED: (_O,),
     },
@@ -314,7 +321,9 @@ def build_source_package(
         "model_config_hash": None,
         "feature_flags_hash": None,
         "norm_snapshot_hash": None,
-        "required_artifacts": ["payload/job.json"],
+        # Обязательные файлы источника: воркер проверяет их наличие
+        # после распаковки и отказывается работать без них.
+        "required_files": ["payload/job.json", "payload/README.txt"],
         "excluded_recoverable": [],
         "hardlink_groups": {},
         "path_rules": {"absolute_paths_present": False, "rewrite_on_unpack": []},
@@ -322,6 +331,19 @@ def build_source_package(
     return package_service.build_package(
         dest_path=dest_path, files=files, manifest=manifest, compression=compression
     )
+
+
+def result_package_path(
+    job: dict[str, Any], *, settings: DistributedWorkersSettings
+) -> Optional[Path]:
+    """Принятый (провалидированный) архив результата, если он есть на диске."""
+    directory = settings.validated_results_dir / job["job_id"] / job["attempt_id"]
+    if not directory.is_dir():
+        return None
+    for candidate in sorted(directory.iterdir()):
+        if candidate.is_file() and candidate.name != "validation_report.json":
+            return candidate
+    return None
 
 
 def source_package_path(
@@ -334,6 +356,154 @@ def source_package_path(
         if candidate.is_file() and candidate.name != package_service.MANIFEST_NAME:
             return candidate
     return None
+
+
+# Состояния «задание выдано, но работа ещё не начиналась». Из них безопасно
+# вернуть задание в очередь: результата нет, процесса нет, терять нечего.
+_PRE_RUN_STATES = (
+    JobState.SOURCE_UPLOADING,
+    JobState.SOURCE_READY,
+    JobState.ACCEPTED_BY_WORKER,
+)
+
+
+def reoffer_unknown_jobs(
+    *,
+    worker_id: str,
+    known_job_ids: set[str],
+    settings: DistributedWorkersSettings,
+) -> list[str]:
+    """Вернуть в очередь задания, о которых воркер на сверке не заявил.
+
+    Единственный источник такой ситуации — потерянный ответ на `/jobs/next`
+    (или падение центра сразу после выдачи): у центра задание уже не
+    `assigned`, поэтому опрос его не выдаст, а воркер о нём не знает и в
+    reconcile не упомянет. Без этого прохода пара (project_id, version_id)
+    блокировалась навсегда уникальным индексом.
+
+    Трогаем ТОЛЬКО состояния до начала работы: `running` сюда не попадает
+    никогда — там I-03 и возможный живой процесс.
+    """
+    reoffered: list[str] = []
+    for state in _PRE_RUN_STATES:
+        for job in repositories.list_jobs(
+            worker_id=worker_id, state=state.value, settings=settings
+        ):
+            if job["job_id"] in known_job_ids:
+                continue
+            try:
+                transition(
+                    job_id=job["job_id"],
+                    to_state=JobState.ASSIGNED,
+                    actor="center",
+                    reason="воркер на сверке не знает о задании — возврат в очередь",
+                    settings=settings,
+                )
+            except JobError:
+                continue
+            reoffered.append(job["job_id"])
+    return reoffered
+
+
+def catch_up_to_result_received(
+    *, job_id: str, settings: DistributedWorkersSettings
+) -> dict[str, Any]:
+    """Догнать состояние до `result_received`, когда события отстали от пакета.
+
+    Реальный случай: связь пропала во время аудита, воркер доработал офлайн, а
+    после возврата связи первым доехал АРХИВ, а не события. Центр при этом ещё
+    считает задание `running`, и прямой переход `running → result_received` в
+    таблице отсутствует — раньше это давало HTTP 500, и доставить готовый
+    результат было невозможно вообще.
+
+    Здесь центр не «догадывается» о завершении по молчанию (это запрещено
+    I-01/I-02): у него на руках собранный архив с сошедшимся sha256 — прямое
+    доказательство, что воркер работу закончил. Поэтому проходим ровно теми
+    рёбрами, что описаны в таблице, от имени worker, помечая причину.
+    """
+    path = {
+        JobState.RUNNING: [JobState.COMPLETED_LOCALLY, JobState.RESULT_UPLOADING],
+        JobState.ACCEPTED_BY_WORKER: [
+            JobState.RUNNING, JobState.COMPLETED_LOCALLY, JobState.RESULT_UPLOADING,
+        ],
+        JobState.COMPLETED_LOCALLY: [JobState.RESULT_UPLOADING],
+        JobState.RESULT_UPLOADING: [],
+    }
+    # RESULT_RECEIVED и VALIDATING обрабатываются отдельно: перехода в
+    # result_received из них нет и не нужно — финализацию надо просто
+    # повторить (см. finalize_result, он идемпотентен по состоянию).
+    job = repositories.get_job(job_id, settings=settings)
+    if job is None:
+        raise JobError(f"Задание {job_id} не найдено")
+    current = JobState(job["state"])
+    if current in (JobState.RESULT_RECEIVED, JobState.VALIDATING):
+        # Центр упал посреди финализации. Раньше отсюда выхода не было вовсе:
+        # повторная попытка давала validating → validating, роутер отвечал 409,
+        # а воркер бесконечно перезаливал архив. Возвращаем как есть —
+        # finalize_result сам увидит, что переход уже сделан.
+        return job
+    if current not in path:
+        return job
+    for step in path[current]:
+        job = transition(
+            job_id=job_id,
+            to_state=step,
+            actor="worker",
+            reason="догон состояния: архив результата получен раньше событий",
+            settings=settings,
+        )
+    return transition(
+        job_id=job_id,
+        to_state=JobState.RESULT_RECEIVED,
+        actor="worker",
+        reason="архив собран, sha256 сошёлся",
+        fields={"returned_at": time.time()},
+        settings=settings,
+    )
+
+
+def store_unpublished_result(
+    *,
+    job: dict[str, Any],
+    archive: Path,
+    settings: DistributedWorkersSettings,
+) -> dict[str, Any]:
+    """Принять на ХРАНЕНИЕ результат попытки, которая уже провалена/отменена.
+
+    Ребро `failed → superseded_result_received` в таблице §10.3 было, но им
+    никто не пользовался, и такой архив ронял приём с HTTP 500. Публикации
+    здесь нет и быть не может: результат складывается отдельно и помечается
+    как «результат отозванной попытки». Зато он не теряется, и воркеру есть
+    что подтвердить — иначе пакет вечно висел бы в retention_unconfirmed.
+    """
+    target_dir = settings.rejected_results_dir / job["job_id"] / job["attempt_id"]
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / archive.name
+    archive.replace(target)
+    (target_dir / "unpublished_reason.json").write_text(
+        json.dumps(
+            {
+                "reason": "результат получен после провала/отмены попытки",
+                "state_before": job["state"],
+                "stored_at": time.time(),
+                "published": False,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return transition(
+        job_id=job["job_id"],
+        to_state=JobState.SUPERSEDED_RESULT_RECEIVED,
+        actor="worker",
+        reason="результат принят на хранение без публикации",
+        fields={
+            "returned_at": time.time(),
+            "retention_until": time.time() + RETENTION_DAYS * 86400,
+        },
+        settings=settings,
+    )
 
 
 # ─── Финализация результата ──────────────────────────────────────────────────
@@ -349,13 +519,14 @@ def finalize_result(
     job_id = job["job_id"]
     attempt_id = job["attempt_id"]
 
-    transition(
-        job_id=job_id,
-        to_state=JobState.VALIDATING,
-        actor="center",
-        reason="запуск проверки результата",
-        settings=settings,
-    )
+    if job.get("state") != JobState.VALIDATING.value:
+        transition(
+            job_id=job_id,
+            to_state=JobState.VALIDATING,
+            actor="center",
+            reason="запуск проверки результата",
+            settings=settings,
+        )
     report = package_service.validate_result_package(
         archive=archive,
         expected_hash=expected_hash,
@@ -485,6 +656,12 @@ def to_view(
         view["retention_warning"] = (
             "Центр не подтвердил приём — автоматическое удаление запрещено"
         )
+    # Реквизиты принятого пакета: оператор должен видеть, ЧТО именно принято,
+    # а не только слово «завершено». Размер берём с диска — отдельной колонки
+    # для него нет, а дублировать факт в БД ради экрана незачем.
+    result_path = result_package_path(job, settings=settings)
+    view["result_package_size"] = result_path.stat().st_size if result_path else None
+    view["result_package_name"] = result_path.name if result_path else None
     view.pop("execution_token_sha256", None)
     return view
 

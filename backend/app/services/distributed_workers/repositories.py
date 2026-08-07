@@ -236,14 +236,21 @@ def get_job(
 def list_jobs(
     *,
     worker_id: Optional[str] = None,
+    state: Optional[str] = None,
     limit: int = 200,
     settings: DistributedWorkersSettings | None = None,
 ) -> list[dict[str, Any]]:
     sql = "SELECT * FROM remote_jobs"
     args: list[Any] = []
+    where: list[str] = []
     if worker_id:
-        sql += " WHERE assigned_worker_id = ?"
+        where.append("assigned_worker_id = ?")
         args.append(worker_id)
+    if state:
+        where.append("state = ?")
+        args.append(state)
+    if where:
+        sql += " WHERE " + " AND ".join(where)
     sql += " ORDER BY created_at DESC LIMIT ?"
     args.append(limit)
     with database.read_conn(settings) as conn:
@@ -352,6 +359,52 @@ def jobs_for_worker_nonterminal(
             f"SELECT * FROM remote_jobs WHERE assigned_worker_id = ? "
             f"AND state NOT IN ({placeholders})",
             (worker_id, *terminal),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def claim_upload_for_assembly(
+    upload_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> Optional[str]:
+    """Занять сессию под сборку архива. Возвращает прежний статус или None.
+
+    Без этого захвата два одновременных `complete` входили в сборку оба,
+    писали в один tmp-файл и портили друг другу архив, а проигравший затирал
+    уже выставленный `verified` статусом `failed` — задание после этого было
+    не доставить вообще.
+    """
+    with database.write_txn(settings) as conn:
+        row = conn.execute(
+            "SELECT status FROM upload_sessions WHERE upload_id = ?", (upload_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        status = row["status"]
+        if status == "assembling":
+            return None          # уже собирает кто-то другой
+        conn.execute(
+            "UPDATE upload_sessions SET status = 'assembling' WHERE upload_id = ?",
+            (upload_id,),
+        )
+    return status
+
+
+def jobs_with_retention(
+    worker_id: str, *, limit: int = 200, settings: DistributedWorkersSettings | None = None
+) -> list[dict[str, Any]]:
+    """Задания воркера, у которых центр УЖЕ проставил срок хранения.
+
+    Такие задания всегда терминальны (`retention_until` появляется вместе с
+    `completed`/`superseded_result_received`), поэтому выборка «нетерминальных»
+    их не видела и канал retention_updates в heartbeat всегда был пуст —
+    воркер узнавал срок только из ответа на complete или из reconcile.
+    """
+    with database.read_conn(settings) as conn:
+        rows = conn.execute(
+            "SELECT * FROM remote_jobs WHERE assigned_worker_id = ?"
+            " AND retention_until IS NOT NULL"
+            " ORDER BY validated_at DESC, returned_at DESC LIMIT ?",
+            (worker_id, limit),
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -567,6 +620,18 @@ def record_chunk(
             (now + 86400, upload_id),
         )
     return "inserted"
+
+
+def chunk_hash(
+    upload_id: str, idx: int, *, settings: DistributedWorkersSettings | None = None
+) -> Optional[str]:
+    """sha256 уже принятого чанка или None."""
+    with database.read_conn(settings) as conn:
+        row = conn.execute(
+            "SELECT sha256 FROM upload_chunks WHERE upload_id = ? AND idx = ?",
+            (upload_id, idx),
+        ).fetchone()
+    return row["sha256"] if row else None
 
 
 def received_chunks(

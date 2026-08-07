@@ -13,12 +13,20 @@
 """
 from __future__ import annotations
 
+import json
 import threading
 import time
 from pathlib import Path
 from typing import Any, Optional
 
-from audit_worker import PROTOCOL_VERSION, __version__, package_io, reconciliation, test_runner
+from audit_worker import (
+    PROTOCOL_VERSION,
+    __version__,
+    package_io,
+    process_registry,
+    reconciliation,
+    test_runner,
+)
 from audit_worker.client import (
     AttemptSupersededError,
     CenterClient,
@@ -33,7 +41,38 @@ from audit_worker.job_poller import JobPullClient
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
 from audit_worker.process_registry import ProcessRegistry
 from audit_worker.resource_monitor import ResourceMonitor
-from audit_worker.uploader import UploadFailed, upload_result
+from audit_worker.uploader import upload_result
+
+
+def _write_completed_marker(job_dir: Path, outcome: "test_runner.RunOutcome") -> None:
+    """Маркер «процесс отработал» рядом с результатом.
+
+    Различает два неотличимых по pid состояния: процесс завершился штатно
+    против «процесс исчез». Без маркера рестарт агента не может понять,
+    надо ли что-то доделывать.
+    """
+    marker = job_dir / "work" / "completed.marker"
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text(
+        json.dumps(
+            {
+                "exit_code": outcome.exit_code,
+                "duration_sec": round(outcome.duration_sec, 3),
+                "steps_done": outcome.steps_done,
+                "steps_total": outcome.steps_total,
+                "stdout_lines": outcome.stdout_lines,
+                "stderr_lines": outcome.stderr_lines,
+                "finished_at": time.time(),
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
+class UploadDeferred(RuntimeError):
+    """Результат готов, но канал недоступен: передача отложена, НЕ провал."""
 
 
 def _log(message: str) -> None:
@@ -92,6 +131,7 @@ class WorkerAgent:
             while not self._stop.is_set():
                 try:
                     self._drain_commands()
+                    self._deliver_pending_results()
                     assignment = self.poller.poll(
                         free_slots=self._free_slots(),
                         compressions=["gzip", "none"],
@@ -129,6 +169,8 @@ class WorkerAgent:
                 f"задание {meta['job_id'][:8]} пережило рестарт агента "
                 f"(процессы живы) — не трогаю"
             )
+        self._package_finished_jobs()
+        self._report_lost_processes()
         verdict = reconciliation.reconcile(
             self.client,
             self.jobs,
@@ -144,6 +186,13 @@ class WorkerAgent:
                 f"сверка: {item['job_id'][:8]} → {item['action']} "
                 f"(центр: {item.get('center_state')}, ждёт seq {item['expected_next_seq']})"
             )
+            # Приём подтверждён — только теперь у пакета появляется срок
+            # хранения. Пока retention_until пуст, удалять его запрещено (I-08).
+            if item.get("result_accepted") and item.get("retention_until"):
+                self.jobs.update(
+                    item["job_id"], item["attempt_id"],
+                    retention_until=item["retention_until"],
+                )
             if item["action"] == "stop_superseded":
                 self.registry.terminate_job(item["job_id"], item["attempt_id"])
                 self.jobs.update(
@@ -151,6 +200,82 @@ class WorkerAgent:
                 )
             elif item["action"] == "upload_result":
                 self._resume_upload(item["job_id"], item["attempt_id"])
+
+    def _package_finished_jobs(self) -> None:
+        """Доупаковать работу, завершённую до рестарта агента.
+
+        Окно между выходом процесса и сборкой архива раньше стоило всей
+        сделанной работы: задание попадало в «процесс потерян» и объявлялось
+        провалом. Признак того, что работа сделана, — `completed.marker`
+        с нулевым кодом возврата.
+        """
+        for meta in reconciliation.finished_but_unpackaged(self.jobs, self.registry):
+            job_id, attempt_id = meta["job_id"], meta["attempt_id"]
+            job_dir = self.jobs.job_dir(job_id, attempt_id)
+            outbox = EventOutbox(
+                job_dir / "events",
+                secret_literals=(self.token, meta.get("execution_token") or ""),
+            )
+            ctx = {
+                "job_id": job_id,
+                "attempt_id": attempt_id,
+                "execution_token": meta.get("execution_token"),
+                "outbox": outbox,
+                "stage": "package",
+            }
+            assignment = {
+                "project_id": meta.get("project_id", ""),
+                "version_id": meta.get("version_id"),
+                "package": meta.get("package") or {"manifest_version": 1},
+            }
+            _log(
+                f"задание {job_id[:8]}: процесс отработал до рестарта — "
+                f"собираю результат и отправляю"
+            )
+            try:
+                self._package_and_upload(assignment, ctx, job_dir)
+            except UploadDeferred:
+                pass    # архив на диске, дошлём позже
+            except Exception as exc:  # noqa: BLE001 — одно задание не роняет агента
+                _log(f"не удалось собрать результат {job_id[:8]}: {exc}")
+
+    def _report_lost_processes(self) -> None:
+        """Сообщить о заданиях, чей процесс не пережил рестарт агента.
+
+        На этапе 0 возобновления нет (реальный конвейер и `resume` вне объёма),
+        поэтому честный исход — провал с явной причиной, а не вечное `running`.
+        """
+        for meta in reconciliation.lost_processes(self.jobs, self.registry):
+            job_id, attempt_id = meta["job_id"], meta["attempt_id"]
+            job_dir = self.jobs.job_dir(job_id, attempt_id)
+            outbox = EventOutbox(
+                job_dir / "events",
+                secret_literals=(self.token, meta.get("execution_token") or ""),
+            )
+            outbox.append(
+                "job_failed",
+                {
+                    "code": "process_lost_after_restart",
+                    "message": "Процесс задания не пережил рестарт агента",
+                    "reason": "error",
+                    "pid": meta.get("pid"),
+                },
+            )
+            self.jobs.update(
+                job_id, attempt_id,
+                local_state="failed",
+                process_status="lost",
+                error="process_lost_after_restart",
+            )
+            _log(f"задание {job_id[:8]}: процесс потерян при рестарте — отмечено провалом")
+            self._flush_outbox(
+                {
+                    "job_id": job_id,
+                    "attempt_id": attempt_id,
+                    "outbox": outbox,
+                    "execution_token": meta.get("execution_token"),
+                }
+            )
 
     # ─── Слоты и heartbeat ───────────────────────────────────────────────────
     def _free_slots(self) -> int:
@@ -280,6 +405,10 @@ class WorkerAgent:
             self.registry.terminate_job(job_id, attempt_id)
             self.jobs.update(job_id, attempt_id, local_state="superseded")
             return {"ok": False, "reason": "superseded"}
+        except UploadDeferred as exc:
+            # Работа сделана, потерян только канал. Задание остаётся
+            # completed_locally и попадёт в очередь досылки.
+            return {"ok": False, "reason": "upload_deferred", "detail": str(exc)}
         except Exception as exc:  # noqa: BLE001 — одно задание не роняет агента
             _log(f"задание {job_id[:8]} завершилось ошибкой: {exc}")
             outbox.append(
@@ -403,16 +532,30 @@ class WorkerAgent:
             last_progress["processed"] = step
             last_progress["at"] = now
 
-        def on_log(level: str, line: str) -> None:
+        def on_log(stream: str, level: str, line: str) -> None:
+            # stdout и stderr различаются полем `source` — они читаются
+            # раздельными потоками и не сливаются в один.
             outbox.append(
                 "log_line",
-                {"level": level, "stage": "test_pipeline_v1", "source": "stdout",
+                {"level": level, "stage": "test_pipeline_v1", "source": stream,
                  "message": line},
             )
 
         def on_pid(pid: int) -> None:
-            self.registry.register(pid, job_id=job_id, attempt_id=attempt_id)
             self.jobs.update(job_id, attempt_id, pid=pid)
+
+        def on_start(pid: int, fingerprint: str) -> None:
+            self.registry.register(
+                pid, job_id=job_id, attempt_id=attempt_id,
+                command_fingerprint=fingerprint,
+            )
+            self.jobs.update(
+                job_id, attempt_id,
+                pid=pid,
+                command_fingerprint=fingerprint,
+                process_start_time=process_registry.process_start_time(pid),
+                process_status="running",
+            )
 
         outcome = test_runner.run_test_job(
             params=params,
@@ -420,9 +563,15 @@ class WorkerAgent:
             on_progress=on_progress,
             on_log=on_log,
             on_pid=on_pid,
+            on_start=on_start,
             cancel_check=lambda: job_id in self._cancelled,
         )
         self.registry.prune_dead()
+        # Маркер завершения: по нему после рестарта агента видно, что процесс
+        # ОТРАБОТАЛ, а не «исчез». Без него мёртвый pid неотличим от убитого.
+        _write_completed_marker(job_dir, outcome)
+        self.jobs.update(job_id, attempt_id, process_status="exited",
+                         exit_code=outcome.exit_code)
 
         if job_id in self._cancelled:
             outbox.append("cancellation_received", {"job_id": job_id})
@@ -455,8 +604,24 @@ class WorkerAgent:
         outbox.append(
             "stage_completed",
             {"stage": "test_pipeline_v1", "status": "done",
-             "duration_sec": round(outcome.duration_sec, 2)},
+             "duration_sec": round(outcome.duration_sec, 2),
+             "stdout_lines": outcome.stdout_lines,
+             "stderr_lines": outcome.stderr_lines},
         )
+        # Артефакты объявляются явно: центр должен знать, ЧТО создано, ещё до
+        # того, как получит архив.
+        for artifact in sorted((job_dir / "result").rglob("*")):
+            if not artifact.is_file():
+                continue
+            outbox.append(
+                "artifact_created",
+                {
+                    "name": artifact.relative_to(job_dir / "result").as_posix(),
+                    "path_rel": "result/" + artifact.relative_to(job_dir / "result").as_posix(),
+                    "bytes": artifact.stat().st_size,
+                    "sha256": package_io.sha256_file(artifact),
+                },
+            )
         return {"ok": True, "outcome": outcome}
 
     def _package_and_upload(
@@ -469,16 +634,20 @@ class WorkerAgent:
         archive = job_dir / "result" / f"{attempt_id}.tar.gz"
         # ВАЖНО: архив пишется на диск ДО уведомления центра — иначе падение
         # между «сказал» и «собрал» потеряло бы результат.
+        meta = self.jobs.load(job_id, attempt_id) or {}
         manifest = package_io.build_result_package(
             dest_path=archive,
-            result_dir=job_dir / "result",
+            job_dir=job_dir,
             job_id=job_id,
             attempt_id=attempt_id,
             project_id=assignment.get("project_id", ""),
             version_id=assignment.get("version_id"),
+            worker_id=self.worker_id,
             worker_version=__version__,
             protocol_version=PROTOCOL_VERSION,
             manifest_version=int(assignment["package"].get("manifest_version", 1)),
+            source_package_hash=assignment["package"].get("sha256"),
+            exit_code=int(meta.get("exit_code", 0) or 0),
         )
         result_hash = manifest["archive"]["sha256"]
         result_size = manifest["archive"]["compressed_bytes"]
@@ -517,32 +686,62 @@ class WorkerAgent:
                 uploads_dir=job_dir / "uploads",
                 on_progress=on_chunk,
             )
-        except UploadFailed as exc:
-            outbox.append("job_failed", {"code": "upload_failed", "message": str(exc),
-                                         "reason": "error"})
-            self.jobs.update(job_id, attempt_id, local_state="completed_locally",
-                             error=str(exc))
+        except Exception as exc:  # noqa: BLE001 — включая обрыв связи
+            # Аудит УЖЕ выполнен, архив лежит на диске. Неудачная передача —
+            # это не провал задания: события job_failed здесь быть не должно
+            # (по §10.3 перевести result_uploading → failed вправе только центр
+            # и только по исчерпании попыток). Остаёмся в completed_locally,
+            # результат досылается позже — сам или по reconcile.
+            _log(
+                f"задание {job_id[:8]}: результат готов, но передать не вышло "
+                f"({exc}) — оставляю на диске, дошлю позже"
+            )
+            self.jobs.update(
+                job_id, attempt_id,
+                local_state="completed_locally",
+                upload_error=str(exc),
+            )
             self._flush_outbox(ctx)
-            raise
+            raise UploadDeferred(str(exc)) from exc
 
         retention_until = response.get("retention_until")
+        # Центр мог принять архив, но НЕ принять результат (валидация не
+        # прошла). Тогда «finished» — ложь: пакет остаётся на воркере без
+        # подтверждения, а `finished` исключает его и из досылки, и из
+        # collect_known_jobs — задание становилось невидимым навсегда.
+        accepted = retention_until is not None
         self.jobs.update(
             job_id,
             attempt_id,
-            local_state="finished",
+            local_state="finished" if accepted else "completed_locally",
             retention_until=retention_until,
             center_state=response.get("state"),
+            center_validation=response.get("validation"),
         )
         outbox.append(
             "job_completed",
             {"center_state": response.get("state"), "retention_until": retention_until},
         )
         self._flush_outbox(ctx)
-        if retention_until is None:
+        if not accepted:
             _log(
-                f"задание {job_id[:8]}: центр не подтвердил приём — "
-                f"результат остаётся на воркере бессрочно (retention_unconfirmed)"
+                f"задание {job_id[:8]}: центр не подтвердил приём "
+                f"(состояние «{response.get('state')}») — результат остаётся на "
+                f"воркере как retention_unconfirmed и попадёт в следующую сверку"
             )
+
+    def _deliver_pending_results(self) -> None:
+        """Дослать результаты, оставшиеся на диске после обрыва передачи.
+
+        Без этого прохода готовый пакет ждал бы рестарта агента: сверка
+        выполняется только на старте, а сам цикл о нём бы не вспомнил.
+        """
+        for meta in self.jobs.iter_all():
+            if meta.get("local_state") != "completed_locally":
+                continue
+            if not meta.get("result_hash"):
+                continue
+            self._resume_upload(meta["job_id"], meta["attempt_id"])
 
     def _resume_upload(self, job_id: str, attempt_id: str) -> None:
         meta = self.jobs.load(job_id, attempt_id)
@@ -553,6 +752,17 @@ class WorkerAgent:
         archive = job_dir / "result" / f"{attempt_id}.tar.gz"
         if not archive.is_file():
             return
+        # Сначала события, потом архив: центр должен узнать о завершении
+        # раньше, чем получит пакет. Порядок восстановим и на его стороне, но
+        # правильный порядок дешевле, чем догон.
+        pending = EventOutbox(
+            job_dir / "events",
+            secret_literals=(self.token, meta.get("execution_token") or ""),
+        )
+        self._flush_outbox({
+            "job_id": job_id, "attempt_id": attempt_id, "outbox": pending,
+            "execution_token": meta.get("execution_token"),
+        })
         try:
             response = upload_result(
                 client=self.client,
@@ -565,7 +775,23 @@ class WorkerAgent:
             self.jobs.update(
                 job_id, attempt_id, local_state="finished",
                 retention_until=response.get("retention_until"),
+                center_state=response.get("state"),
             )
+            # Хвост журнала не должен отличаться от обычного пути: иначе в
+            # истории задания просто нет отметки о завершении.
+            outbox = EventOutbox(
+                job_dir / "events",
+                secret_literals=(self.token, meta.get("execution_token") or ""),
+            )
+            outbox.append(
+                "job_completed",
+                {"center_state": response.get("state"),
+                 "retention_until": response.get("retention_until")},
+            )
+            self._flush_outbox({
+                "job_id": job_id, "attempt_id": attempt_id, "outbox": outbox,
+                "execution_token": meta.get("execution_token"),
+            })
         except Exception as exc:  # noqa: BLE001 — досылка повторится позже
             _log(f"досылка не удалась: {exc}")
 
@@ -618,7 +844,19 @@ class WorkerAgent:
             except Exception as exc:  # noqa: BLE001 — нет связи: копим дальше (I-01)
                 ctx["last_send_error"] = str(exc)
                 return
-            ctx.pop("last_send_error", None)
+            reconnected = bool(ctx.pop("last_send_error", None))
+            if reconnected:
+                # Связь была потеряна и восстановилась — центр должен узнать
+                # об этом явно, а не догадываться по возобновлению потока.
+                outbox.append(
+                    "worker_reconnected",
+                    {
+                        "pending_events": outbox.last_written_seq - outbox.last_acked_seq,
+                        "instance_id": self.instance_id,
+                    },
+                )
             outbox.ack(int(response.get("last_seen_seq", 0)))
-            if len(batch) < self.config.event_batch_max:
+            # Досылаем в этом же проходе: иначе только что добавленное
+            # worker_reconnected повисло бы неотправленным до следующего цикла.
+            if len(batch) < self.config.event_batch_max and not reconnected:
                 return

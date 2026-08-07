@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -48,6 +49,43 @@ class EventOutbox:
         self.active_segment: int = int(cursor.get("active_segment", 1))
         self.truncating: bool = bool(cursor.get("truncating", False))
         self._info_counter = 0
+        # append() зовут из НЕСКОЛЬКИХ потоков: чтения stdout и stderr,
+        # отправитель событий (worker_reconnected) и основной поток задания.
+        # Без лока read-modify-write над last_written_seq выдавал двум событиям
+        # один seq, и pending_batch навсегда обрывался на дубле — событие
+        # (в том числе job_completed_locally) не уходило никогда.
+        self._lock = threading.Lock()
+        self._repair_cursor_against_segments()
+
+    def _repair_cursor_against_segments(self) -> None:
+        """Согласовать курсор с тем, что реально лежит в сегментах.
+
+        Курсор впереди файлов (жёсткий отказ машины, потеря страничного кэша)
+        останавливал поток событий насовсем: pending_batch требует ровно
+        `last_acked+1`, не находит его и возвращает пустой список, а 409
+        от центра, который чинит рассинхрон, не приходит — отправлять нечего.
+        """
+        highest = 0
+        for path in sorted(self.dir.glob("outbox-*.jsonl")):
+            try:
+                with path.open("r", encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            seq = int(json.loads(line).get("seq", 0))
+                        except (ValueError, TypeError):
+                            continue
+                        highest = max(highest, seq)
+            except OSError:
+                continue
+        if highest and highest < self.last_written_seq:
+            self.last_written_seq = highest
+            self._save_cursor()
+        if self.last_acked_seq > self.last_written_seq:
+            self.last_acked_seq = self.last_written_seq
+            self._save_cursor()
 
     # ─── Сегменты ────────────────────────────────────────────────────────────
     def _segment_path(self, index: int) -> Path:
@@ -81,6 +119,16 @@ class EventOutbox:
         occurred_at: Optional[float] = None,
     ) -> Optional[int]:
         """Записать событие. Возвращает seq или None, если событие прорежено."""
+        with self._lock:
+            return self._append_locked(event_type, payload, occurred_at=occurred_at)
+
+    def _append_locked(
+        self,
+        event_type: str,
+        payload: Optional[dict[str, Any]] = None,
+        *,
+        occurred_at: Optional[float] = None,
+    ) -> Optional[int]:
         if self._should_drop(event_type):
             return None
         self._rotate_if_needed()
@@ -115,7 +163,9 @@ class EventOutbox:
         if not self.truncating:
             self.truncating = True
             self._save_cursor()
-            self.append(
+            # Именно _append_locked: лок уже удерживается вызывающим append,
+            # а он нереентерабельный — self.append() дал бы самоблокировку.
+            self._append_locked(
                 "events_truncated",
                 {
                     "reason": "outbox_size_limit",

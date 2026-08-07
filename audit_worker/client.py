@@ -146,6 +146,17 @@ class CenterClient:
             self._raise(response)
         return response.json()
 
+    def claim(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Обменять одноразовый claim-secret на токен (после одобрения)."""
+        response = self._client.post(
+            f"{self.base_url}/api/v1/worker/claim",
+            json=payload,
+            headers={"X-Protocol-Version": str(PROTOCOL_VERSION)},
+        )
+        if response.status_code >= 400:
+            self._raise(response)
+        return response.json()
+
     def update_registration(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self.request("PUT", "/api/v1/worker/registration", json_body=payload)
 
@@ -164,7 +175,13 @@ class CenterClient:
             "POST",
             f"/api/v1/worker/jobs/{job_id}/accept",
             json_body=payload,
-            headers={"X-Execution-Token": execution_token},
+            headers={
+                "X-Execution-Token": execution_token,
+                # Ключ детерминирован по попытке: повтор из-за обрыва вернёт
+                # тот же ответ, а не выполнит операцию второй раз. Без него
+                # серверная защита от повтора вообще не включалась.
+                "Idempotency-Key": f"accept:{job_id}:{payload.get('attempt_id', '')}",
+            },
         )
 
     def reject_job(
@@ -229,23 +246,36 @@ class CenterClient:
             "POST",
             "/api/v1/worker/uploads",
             json_body=payload,
-            headers={"X-Execution-Token": execution_token},
+            headers={
+                "X-Execution-Token": execution_token,
+                # По хэшу архива: тот же архив — та же сессия загрузки.
+                "Idempotency-Key": (
+                    f"upload:{payload.get('job_id', '')}:"
+                    f"{payload.get('attempt_id', '')}:{payload.get('sha256', '')}"
+                ),
+            },
         )
 
     def get_upload(self, upload_id: str) -> dict[str, Any]:
         return self.request("GET", f"/api/v1/worker/uploads/{upload_id}")
 
     def put_chunk(
-        self, upload_id: str, idx: int, data: bytes, sha256_hex: str
+        self, upload_id: str, idx: int, data: bytes, sha256_hex: str,
+        execution_token: str = "",
     ) -> dict[str, Any]:
+        headers = {
+            "X-Chunk-SHA256": sha256_hex,
+            "Content-Type": "application/octet-stream",
+        }
+        # Токен попытки — как и на остальных ручках по заданию: отозванная
+        # попытка не должна дописывать чанки в свою сессию.
+        if execution_token:
+            headers["X-Execution-Token"] = execution_token
         return self.request(
             "PUT",
             f"/api/v1/worker/uploads/{upload_id}/chunks/{idx}",
             content=data,
-            headers={
-                "X-Chunk-SHA256": sha256_hex,
-                "Content-Type": "application/octet-stream",
-            },
+            headers=headers,
         )
 
     def complete_upload(

@@ -111,6 +111,28 @@ def store_chunk(
     if declared_sha256 and package_service.normalize_hash(declared_sha256) != actual:
         raise UploadError("X-Chunk-SHA256 не совпал с фактическим содержимым чанка")
 
+    # ПОРЯДОК ВАЖЕН: сначала байты на диск, потом отметка в БД.
+    # При обратном порядке сбой записи оставлял бы чанк «принятым» без файла,
+    # и сборка падала бы уже на complete, когда воркер считает дело сделанным.
+    existing = repositories.chunk_hash(
+        session["upload_id"], idx, settings=settings
+    )
+    if existing is not None:
+        if existing != actual:
+            raise ChunkConflict(
+                f"Чанк {idx} уже принят с другим содержимым — повторите загрузку "
+                f"новой сессией"
+            )
+        return "replayed"
+
+    target = chunk_dir(session["upload_id"], settings=settings) / f"chunk-{idx:06d}"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp = target.with_suffix(".part")
+    tmp.write_bytes(data)
+    # Частично записанный чанк не может считаться принятым: до os.replace
+    # файла с финальным именем не существует, а записи в БД ещё нет.
+    tmp.replace(target)
+
     outcome = repositories.record_chunk(
         upload_id=session["upload_id"], idx=idx, sha256=actual, size=len(data),
         settings=settings,
@@ -120,12 +142,6 @@ def store_chunk(
             f"Чанк {idx} уже принят с другим содержимым — повторите загрузку "
             f"новой сессией"
         )
-    if outcome == "inserted":
-        target = chunk_dir(session["upload_id"], settings=settings) / f"chunk-{idx:06d}"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        tmp = target.with_suffix(".part")
-        tmp.write_bytes(data)
-        tmp.replace(target)
     return outcome
 
 

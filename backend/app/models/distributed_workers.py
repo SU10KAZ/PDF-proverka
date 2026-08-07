@@ -83,6 +83,7 @@ class RetentionState(str, Enum):
 class RegistrationStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
+    REJECTED = "rejected"
     REVOKED = "revoked"
 
 
@@ -174,13 +175,34 @@ class RegisterRequest(BaseModel):
 class RegisterResponse(BaseModel):
     worker_id: str
     registration_status: RegistrationStatus
-    # Отдаётся ЕДИНСТВЕННЫЙ раз в жизни. Центр хранит только sha256.
-    worker_token: Optional[str] = None
+    # ОДНОРАЗОВЫЙ claim-secret. Токена доступа здесь НЕТ намеренно: он
+    # выдаётся только после одобрения оператором, в обмен на этот секрет
+    # (POST /claim). Центр хранит только его sha256.
+    claim_secret: Optional[str] = None
     heartbeat_interval_sec: int
     poll_timeout_sec: int
     chunk_size_bytes: int
     protocol_version: int
     message: str
+
+
+class ClaimRequest(BaseModel):
+    """Обмен одноразового claim-secret на постоянный токен."""
+
+    worker_id: str = Field(min_length=4, max_length=64)
+    instance_id: str = Field(min_length=4, max_length=128)
+    claim_secret: str = Field(min_length=16, max_length=256)
+
+
+class ClaimResponse(BaseModel):
+    worker_id: str
+    registration_status: RegistrationStatus
+    # Единственный раз в жизни. Повторный claim → 409.
+    worker_token: str
+    heartbeat_interval_sec: int
+    poll_timeout_sec: int
+    chunk_size_bytes: int
+    protocol_version: int
 
 
 class RegistrationUpdateRequest(BaseModel):
@@ -409,6 +431,16 @@ class ReconcileKnownJob(BaseModel):
     last_acked_seq: int = 0
     result_ready: bool = False
     result_hash: Optional[str] = None
+    # Поля ниже объявлены явно: pydantic молча выбрасывает необъявленные, и
+    # присланное воркером «процесс мёртв» иначе не доезжает до решения центра.
+    pipeline_stage: Optional[str] = None
+    processes_alive: bool = False
+    source_present: bool = False
+    result_present: bool = False
+    upload_id: Optional[str] = None
+    # Что воркер помнит о ретеншне. Если здесь null, а центр результат принял,
+    # ответ вернёт retention_until — иначе пакет будет храниться вечно.
+    retention_until: Optional[float] = None
 
 
 class ReconcileRequest(BaseModel):
@@ -429,12 +461,23 @@ class ReconcileJobVerdict(BaseModel):
         "continue", "upload_result", "stop_superseded", "discard_unknown", "await_operator"
     ]
     upload_hint: Optional[dict[str, Any]] = None
+    # Действителен ли execution_token попытки. Отличается от attempt_valid
+    # тем, что попытка может совпадать, а задание — уже быть терминальным.
+    execution_token_valid: bool = False
+    # Приём результата подтверждён центром (I-08): только после этого воркеру
+    # разрешено заводить таймер удаления.
+    result_accepted: bool = False
+    retention_until: Optional[float] = None
 
 
 class ReconcileResponse(BaseModel):
     server_time: float
     jobs: list[ReconcileJobVerdict] = Field(default_factory=list)
     unknown_jobs: list[str] = Field(default_factory=list)
+    # Попытки, отозванные в пользу новых: воркер обязан остановить процессы.
+    superseded_jobs: list[str] = Field(default_factory=list)
+    # Задания, возвращённые в очередь: воркер получит их обычным опросом.
+    reoffered_jobs: list[str] = Field(default_factory=list)
     pending_commands: int = 0
 
 
