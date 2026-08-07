@@ -27,6 +27,13 @@ SOURCE_KINDS = {
     "structured_hvac",
     "structured_water",
     "structured_alia_scheme",
+    # Профиль «Условные обозначения»: производится роутером
+    # (block_source_router.py:825), но в этот список добавлен не был — и любой
+    # проект, где нашёлся блок легенды, падал на валидации контракта с
+    # «unknown source_kind». Поймано вживую 06.08.2026 на СТ26_01-14-ОВ1-1-РД
+    # (11 блоков в 4 проектах). Против повторения — тест
+    # test_block_context_source_kinds_cover_router.
+    "structured_legend",
     "raw_vector",
     "image_only",
     "missing",
