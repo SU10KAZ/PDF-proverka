@@ -213,6 +213,9 @@ project_rename.reverse.json
 /backend/app/data/objects.json
 /backend/app/data/project_groups.json
 /backend/app/data/missing_norms_vault.json
+# Отчёты интернет-аудита реестра норм: воспроизводятся scripts/audit_missing_norms_online.py,
+# итог решений закреплён в missing_norms_review_rules.json (он — в git).
+/backend/app/data/missing_norms_online_*.json
 /backend/app/data/prepare_queue.json
 /backend/app/data/hidden_projects.json
 /backend/app/data/usage_offsets.json
@@ -247,3 +250,15 @@ experiments/**/*.zip
 experiments/full_codex_ai2/
 experiments/vk_codex_vs_ensemble/
 backups/
+
+# === Артефакты прогонов Вектографа (граф/инвентарь/overlay по block_id) ===
+# В git остаются только реестр легенд, corpus_manifest.json и матрица переносимости.
+experiments/vectograf/*/corpus/
+experiments/vectograf/*/????-????-*/
+
+# === Локальный мусор инструментов правки и бэкапы перед миграциями ===
+*.orig
+*.rej
+*.before_*
+/scratchpad/
+/scratchpad_*.json
