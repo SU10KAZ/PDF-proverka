@@ -253,10 +253,28 @@ app.include_router(audit_workers_admin.status_router)
 
 if _dw_settings().enabled:
     from backend.app.api.routers import audit_worker_agent  # noqa: E402
+    from backend.app.core import portal_auth as _portal_auth  # noqa: E402
 
     app.include_router(audit_worker_agent.router)
-    app.include_router(audit_workers_admin.router)
-    print("[startup] распределённые audit-worker: ВКЛЮЧЕНЫ")
+
+    # Операторский контур собственной аутентификации не имеет — он целиком
+    # опирается на портальную. Без неё `POST /api/workers/{id}/rotate-token`
+    # отдал бы живой токен воркера любому, кто дотянулся до порта. Поднимаем
+    # его только при включённой портальной защите либо при ЯВНОМ признании
+    # риска (локальный пилот).
+    _dw_admin_ok = (
+        _portal_auth.get_settings().enabled or _dw_settings().allow_insecure_admin
+    )
+    if _dw_admin_ok:
+        app.include_router(audit_workers_admin.router)
+        print("[startup] распределённые audit-worker: ВКЛЮЧЕНЫ")
+    else:
+        print(
+            "[startup] распределённые audit-worker: контур воркеров включён, "
+            "ОПЕРАТОРСКИЙ контур НЕ поднят — PORTAL_AUTH_ENABLED=false. "
+            "Включите портальную авторизацию или, для локального пилота, "
+            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN=true."
+        )
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 def _ws_authorized(websocket: WebSocket) -> bool:

@@ -49,6 +49,7 @@ class DistributedWorkersSettings:
     test_job_max_sec: int
     protocol_version: int
     manifest_version: int
+    allow_insecure_admin: bool = False
 
     # ─── Производные пути ───────────────────────────────────────────────────
     @property
@@ -114,6 +115,10 @@ def get_settings() -> DistributedWorkersSettings:
     data_dir = Path(raw_dir).resolve() if raw_dir else config.DISTRIBUTED_WORKERS_DATA_DIR
     return DistributedWorkersSettings(
         enabled=_env_bool("DISTRIBUTED_WORKERS_ENABLED", config.DISTRIBUTED_WORKERS_ENABLED),
+        allow_insecure_admin=_env_bool(
+            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN",
+            config.DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN,
+        ),
         data_dir=data_dir,
         bootstrap_secret=os.environ.get(
             "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET",

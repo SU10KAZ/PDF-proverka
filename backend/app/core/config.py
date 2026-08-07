@@ -1262,6 +1262,15 @@ DISTRIBUTED_WORKERS_LONG_POLL_SEC = _env_int("DISTRIBUTED_WORKERS_LONG_POLL_SEC"
 # Потолок суммарной длительности тестового задания (валидируется воркером).
 DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC = _env_int("DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC", 300)
 
+# Операторский контур /api/workers/* защищён ТОЛЬКО портальной авторизацией:
+# собственной у него нет. При PORTAL_AUTH_ENABLED=false он оказался бы открыт
+# всем, а ручка rotate-token отдаёт живой токен воркера открытым текстом.
+# Поэтому по умолчанию такое сочетание запрещено; для локального пилота есть
+# явный выключатель — как и для http:// на стороне воркера.
+DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN = _env_bool(
+    "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", False
+)
+
 # Версия протокола центр↔воркер. Целое; растёт при несовместимом изменении API.
 DISTRIBUTED_WORKERS_PROTOCOL_VERSION = 1
 # Версия схемы package_manifest.json.

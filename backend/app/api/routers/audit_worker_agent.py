@@ -12,15 +12,19 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import time
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse
 
 from backend.app.models.distributed_workers import (
     AcceptRequest,
+    ClaimRequest,
+    ClaimResponse,
     CommandAckRequest,
     ConnectivityState,
     EventBatchRequest,
@@ -68,11 +72,83 @@ router = APIRouter(prefix="/api/v1/worker", tags=["audit-worker-agent"])
 HEARTBEAT_INTERVAL_SEC = 30
 
 
+def _bearer(authorization: Optional[str]) -> Optional[str]:
+    """Достать значение строго из схемы Bearer.
+
+    Раньше бралось всё после первого пробела при ЛЮБОЙ схеме — то есть
+    `Authorization: Foo <секрет>` тоже проходил.
+    """
+    if not authorization:
+        return None
+    scheme, _, value = authorization.partition(" ")
+    if scheme.strip().lower() != "bearer":
+        return None
+    return value.strip() or None
+
+
 def _settings():
     settings = get_settings()
     if not settings.enabled:
         raise HTTPException(status_code=404, detail="Подсистема воркеров отключена.")
     return settings
+
+
+async def _idempotent(
+    *,
+    principal: auth.WorkerPrincipal,
+    request: Request,
+    endpoint: str,
+    body: Any,
+    compute,
+):
+    """Обёртка идемпотентности по заголовку `Idempotency-Key`.
+
+    Повтор с тем же ключом и тем же телом → сохранённый ответ.
+    Повтор с тем же ключом, но ДРУГИМ телом → 409: это почти наверняка ошибка
+    клиента, и молча выдать чужой ответ было бы хуже, чем отказать.
+    Без заголовка обработчик выполняется как обычно (сами операции и так
+    спроектированы безопасными к повтору).
+    """
+    key = (request.headers.get("Idempotency-Key") or "").strip()
+    if not key:
+        return await compute()
+
+    settings = principal.settings
+    canonical = json.dumps(body, ensure_ascii=False, sort_keys=True, default=str)
+    request_sha256 = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    scoped = f"{principal.worker_id}:{endpoint}:{key}"
+
+    prior = await database.run_db(
+        repositories.get_idempotent_response, scoped, settings=settings
+    )
+    if prior is not None:
+        if prior["request_sha256"] != request_sha256:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "error": "idempotency_key_reuse",
+                    "message": "Тот же Idempotency-Key использован с другим телом запроса",
+                    "endpoint": endpoint,
+                },
+            )
+        return JSONResponse(
+            status_code=int(prior["status_code"]),
+            content=json.loads(prior["response_json"]),
+        )
+
+    result = await compute()
+    payload = jsonable_encoder(result)
+    await database.run_db(
+        repositories.save_idempotent_response,
+        key=scoped,
+        worker_id=principal.worker_id,
+        endpoint=endpoint,
+        request_sha256=request_sha256,
+        response_json=json.dumps(payload, ensure_ascii=False),
+        status_code=200,
+        settings=settings,
+    )
+    return result
 
 
 async def _load_job_for_worker(
@@ -97,11 +173,7 @@ async def register(
 ) -> RegisterResponse:
     """Заявка на регистрацию. Требует bootstrap-секрет; одобряет оператор вручную."""
     settings = _settings()
-    auth.verify_bootstrap_secret(
-        authorization.split(None, 1)[1].strip()
-        if authorization and " " in authorization
-        else None
-    )
+    auth.verify_bootstrap_secret(_bearer(authorization))
     if payload.protocol_version != settings.protocol_version:
         raise HTTPException(
             status_code=426,
@@ -111,7 +183,7 @@ async def register(
             ),
         )
     try:
-        worker, token, created = await database.run_db(
+        worker, claim_secret, created = await database.run_db(
             registration_service.register_worker,
             instance_id=payload.instance_id,
             display_name_hint=payload.display_name_hint,
@@ -125,12 +197,56 @@ async def register(
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
-    message = (
-        "Зарегистрирован. Ожидает одобрения оператора."
-        if created
-        else "Регистрация уже существует; токен повторно не выдаётся."
-    )
+    if created:
+        message = ("Заявка принята. Ожидает одобрения оператора, после чего "
+                   "заберите токен через POST /claim.")
+    else:
+        message = (
+            "Регистрация уже существует. Повторная заявка claim-secret НЕ "
+            "перевыпускает (иначе чужой instance_id перехватывал бы выдачу "
+            "токена). Секрет утерян — оператор отклоняет заявку или делает "
+            "ротацию токена."
+        )
     return RegisterResponse(
+        worker_id=worker["worker_id"],
+        registration_status=RegistrationStatus(worker["registration_status"]),
+        claim_secret=claim_secret,
+        heartbeat_interval_sec=HEARTBEAT_INTERVAL_SEC,
+        poll_timeout_sec=settings.long_poll_sec,
+        chunk_size_bytes=settings.upload_chunk_bytes,
+        protocol_version=settings.protocol_version,
+        message=message,
+    )
+
+
+@router.post("/claim", response_model=ClaimResponse)
+async def claim(payload: ClaimRequest) -> ClaimResponse:
+    """Обменять одноразовый claim-secret на постоянный токен.
+
+    Доступно ТОЛЬКО после одобрения оператором и ровно один раз. Повтор → 409:
+    токен хранится на центре хэшем и извлечь его обратно нельзя, при утере
+    оператор делает ротацию.
+
+    Эндпоинт намеренно не требует bearer-токена (его ещё нет) — правом
+    служит сам claim-secret.
+    """
+    settings = _settings()
+    try:
+        worker, token = await database.run_db(
+            registration_service.claim_token,
+            worker_id=payload.worker_id,
+            claim_secret=payload.claim_secret,
+            settings=settings,
+        )
+    except registration_service.ClaimRejected as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await database.run_db(
+        repositories.update_worker_fields,
+        worker["worker_id"],
+        {"instance_id": payload.instance_id},
+        settings=settings,
+    )
+    return ClaimResponse(
         worker_id=worker["worker_id"],
         registration_status=RegistrationStatus(worker["registration_status"]),
         worker_token=token,
@@ -138,7 +254,6 @@ async def register(
         poll_timeout_sec=settings.long_poll_sec,
         chunk_size_bytes=settings.upload_chunk_bytes,
         protocol_version=settings.protocol_version,
-        message=message,
     )
 
 
@@ -195,8 +310,11 @@ async def heartbeat(
     has_work = await database.run_db(
         repositories.has_assigned_job, principal.worker_id, settings=settings
     )
+    # ВАЖНО: выборка именно по наличию retention_until, а не «нетерминальные».
+    # Срок хранения проставляется ВМЕСТЕ с переходом в терминальное состояние,
+    # поэтому прежний фильтр гарантированно давал пустой список.
     jobs = await database.run_db(
-        repositories.jobs_for_worker_nonterminal, principal.worker_id, settings=settings
+        repositories.jobs_with_retention, principal.worker_id, settings=settings
     )
     retention_updates = [
         {
@@ -205,7 +323,6 @@ async def heartbeat(
             "retention_until": j.get("retention_until"),
         }
         for j in jobs
-        if j.get("retention_until") is not None
     ]
     return HeartbeatResponse(
         server_time=time.time(),
@@ -250,6 +367,7 @@ async def post_resources(
 @router.post("/jobs/next")
 async def jobs_next(
     payload: JobsNextRequest,
+    request: Request,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
 ):
     """Long-poll за следующим заданием. 204 = заданий нет.
@@ -260,6 +378,29 @@ async def jobs_next(
     settings = principal.settings
     if payload.free_slots <= 0:
         raise HTTPException(status_code=409, detail="Нет свободных слотов у воркера.")
+
+    key = (request.headers.get("Idempotency-Key") or "").strip()
+    if key:
+        prior = await database.run_db(
+            repositories.get_idempotent_response,
+            f"{principal.worker_id}:jobs_next:{key}",
+            settings=settings,
+        )
+        if prior is not None:
+            # Повтор того же запроса не должен выдать ВТОРОЕ задание.
+            # Токен попытки в кэше НЕ хранится (иначе он лежал бы в БД
+            # открытым текстом, обесценивая хранение только хэша) — на повторе
+            # выпускаем свежий и переписываем хэш: задание то же самое.
+            cached = json.loads(prior["response_json"])
+            replay_token = auth.generate_execution_token()
+            await database.run_db(
+                repositories.update_job_fields,
+                cached["job_id"],
+                {"execution_token_sha256": auth.hash_token(replay_token)},
+                settings=settings,
+            )
+            cached["execution_token"] = replay_token
+            return JSONResponse(status_code=int(prior["status_code"]), content=cached)
 
     deadline = time.monotonic() + min(payload.wait_sec, settings.long_poll_sec)
     job: Optional[dict[str, Any]] = None
@@ -319,6 +460,22 @@ async def jobs_next(
         event_start_seq=1,
         heartbeat_interval_sec=HEARTBEAT_INTERVAL_SEC,
     )
+    if key:
+        # Из кэша вырезаем секрет попытки: в БД он не должен оседать открытым.
+        cacheable = jsonable_encoder(assignment)
+        cacheable.pop("execution_token", None)
+        await database.run_db(
+            repositories.save_idempotent_response,
+            key=f"{principal.worker_id}:jobs_next:{key}",
+            worker_id=principal.worker_id,
+            endpoint="jobs_next",
+            request_sha256=hashlib.sha256(
+                json.dumps(payload.model_dump(), sort_keys=True, default=str).encode()
+            ).hexdigest(),
+            response_json=json.dumps(cacheable, ensure_ascii=False),
+            status_code=200,
+            settings=settings,
+        )
     return assignment
 
 
@@ -345,8 +502,22 @@ async def download_source(
 async def accept_job(
     job_id: str,
     payload: AcceptRequest,
+    request: Request,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
+):
+    return await _idempotent(
+        principal=principal, request=request, endpoint=f"accept:{job_id}",
+        body=payload.model_dump(),
+        compute=lambda: _accept_job_impl(job_id, payload, principal, x_execution_token),
+    )
+
+
+async def _accept_job_impl(
+    job_id: str,
+    payload: AcceptRequest,
+    principal: auth.WorkerPrincipal,
+    x_execution_token: Optional[str],
 ) -> dict[str, Any]:
     job = await _load_job_for_worker(job_id, principal, x_execution_token)
     if payload.attempt_id != job["attempt_id"]:
@@ -463,8 +634,21 @@ async def post_events(
 @router.post("/uploads", response_model=UploadSessionInfo)
 async def create_upload(
     payload: UploadCreateRequest,
+    request: Request,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
+):
+    return await _idempotent(
+        principal=principal, request=request, endpoint="uploads",
+        body=payload.model_dump(),
+        compute=lambda: _create_upload_impl(payload, principal, x_execution_token),
+    )
+
+
+async def _create_upload_impl(
+    payload: UploadCreateRequest,
+    principal: auth.WorkerPrincipal,
+    x_execution_token: Optional[str],
 ) -> UploadSessionInfo:
     job = await _load_job_for_worker(payload.job_id, principal, x_execution_token)
     if payload.attempt_id != job["attempt_id"]:
@@ -510,6 +694,13 @@ async def get_upload(
     )
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
+    # Соседние ручки эту проверку делают, а эта её не делала: чужой воркер
+    # читал состояние чужой выгрузки, зная только upload_id.
+    job = await database.run_db(
+        repositories.get_job, session["job_id"], settings=principal.settings
+    )
+    if job is None or job.get("assigned_worker_id") != principal.worker_id:
+        raise HTTPException(status_code=403, detail="Сессия принадлежит другому воркеру.")
     info = await database.run_db(
         upload_service.session_info, session, settings=principal.settings
     )
@@ -523,6 +714,7 @@ async def put_chunk(
     request: Request,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_chunk_sha256: Optional[str] = Header(default=None),
+    x_execution_token: Optional[str] = Header(default=None),
 ) -> dict[str, Any]:
     settings = principal.settings
     session = await database.run_db(
@@ -530,11 +722,9 @@ async def put_chunk(
     )
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
-    job = await database.run_db(
-        repositories.get_job, session["job_id"], settings=settings
-    )
-    if job is None or job.get("assigned_worker_id") != principal.worker_id:
-        raise HTTPException(status_code=403, detail="Сессия принадлежит другому воркеру.")
+    # Через _load_job_for_worker — так же, как все остальные ручки по заданию:
+    # здесь не хватало проверки актуальности попытки (I-05).
+    job = await _load_job_for_worker(session["job_id"], principal, x_execution_token)
 
     body = await request.body()
     if len(body) > settings.upload_chunk_bytes + 1024:
@@ -586,6 +776,17 @@ async def complete_upload(
             retention_until=fresh.get("retention_until"),
         )
 
+    # Занимаем сессию под сборку: два одновременных complete раньше писали в
+    # один tmp-файл и портили архив друг другу.
+    previous_status = await database.run_db(
+        repositories.claim_upload_for_assembly, upload_id, settings=settings
+    )
+    if previous_status is None:
+        raise HTTPException(
+            status_code=409,
+            detail="Сборка этой загрузки уже идёт. Повторите запрос позже.",
+        )
+
     try:
         archive = await database.run_db(
             upload_service.assemble,
@@ -602,23 +803,66 @@ async def complete_upload(
         )
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    job = await database.run_db(
-        job_service.transition,
-        job_id=job["job_id"],
-        to_state=JobState.RESULT_RECEIVED,
-        actor="worker",
-        reason="архив собран, sha256 сошёлся",
-        fields={"returned_at": time.time()},
-        settings=settings,
-    )
-    updated, report = await database.run_db(
-        job_service.finalize_result,
-        job=job,
-        archive=archive,
-        expected_hash=payload.sha256,
-        expected_size=payload.total_size,
-        settings=settings,
-    )
+    # Попытка уже провалена или отменена: результат принимаем на ХРАНЕНИЕ,
+    # но не публикуем. Иначе готовый архив некуда деть и он висит на воркере.
+    if job["state"] in (JobState.FAILED.value, JobState.CANCELLED.value):
+        stored = await database.run_db(
+            job_service.store_unpublished_result,
+            job=job,
+            archive=archive,
+            settings=settings,
+        )
+        await database.run_db(
+            repositories.update_upload_session,
+            upload_id,
+            {"status": "verified", "finalized_at": time.time()},
+            settings=settings,
+        )
+        await database.run_db(upload_service.cleanup_chunks, upload_id, settings=settings)
+        return UploadCompleteResponse(
+            state=JobState(stored["state"]),
+            validation={
+                "published": False,
+                "stored_only": True,
+                "reason": "попытка уже завершена как неуспешная — результат не публикуется",
+            },
+            server_time=time.time(),
+            retention_until=stored.get("retention_until"),
+        )
+
+    try:
+        job = await database.run_db(
+            job_service.catch_up_to_result_received,
+            job_id=job["job_id"],
+            settings=settings,
+        )
+    except job_service.JobError as exc:
+        # Несогласованность состояний — это 409 с внятным текстом, а не 500:
+        # воркеру нужно понять, повторять ли, и не потерять готовый архив.
+        await database.run_db(
+            repositories.update_upload_session,
+            upload_id,
+            {"status": "failed", "error": str(exc)},
+            settings=settings,
+        )
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    try:
+        updated, report = await database.run_db(
+            job_service.finalize_result,
+            job=job,
+            archive=archive,
+            expected_hash=payload.sha256,
+            expected_size=payload.total_size,
+            settings=settings,
+        )
+    except job_service.JobError as exc:
+        await database.run_db(
+            repositories.update_upload_session,
+            upload_id,
+            {"status": "failed", "error": str(exc)},
+            settings=settings,
+        )
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     await database.run_db(
         repositories.update_upload_session,
         upload_id,
@@ -665,13 +909,18 @@ async def ack_command(
     payload: CommandAckRequest,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
 ) -> dict[str, Any]:
+    # Порядок важен: раньше запись шла ПЕРВОЙ, и чужой воркер, получив 403,
+    # успевал погасить команду — настоящий адресат не видел её никогда.
+    existing = await database.run_db(
+        repositories.get_command, command_id, settings=principal.settings
+    )
+    if not existing:
+        raise HTTPException(status_code=404, detail="Команда не найдена.")
+    if existing.get("worker_id") != principal.worker_id:
+        raise HTTPException(status_code=403, detail="Команда адресована другому воркеру.")
     item, replayed = await database.run_db(
         repositories.ack_command, command_id, payload.result, settings=principal.settings
     )
-    if not item:
-        raise HTTPException(status_code=404, detail="Команда не найдена.")
-    if item.get("worker_id") != principal.worker_id:
-        raise HTTPException(status_code=403, detail="Команда адресована другому воркеру.")
     return {"result": payload.result, "replayed": replayed}
 
 
@@ -703,6 +952,14 @@ async def reconcile(
     settings = principal.settings
     verdicts: list[ReconcileJobVerdict] = []
     unknown: list[str] = []
+    superseded: list[str] = []
+
+    terminal_states = (
+        JobState.COMPLETED.value,
+        JobState.CANCELLED.value,
+        JobState.FAILED.value,
+        JobState.SUPERSEDED_RESULT_RECEIVED.value,
+    )
 
     for known in payload.known_jobs:
         job = await database.run_db(
@@ -715,19 +972,23 @@ async def reconcile(
         cursor = await database.run_db(
             repositories.get_cursor, job["job_id"], job["attempt_id"], settings=settings
         )
+        is_terminal = job["state"] in terminal_states
         if not attempt_valid:
             action = "stop_superseded"
-        elif job["state"] in (
-            JobState.COMPLETED.value,
-            JobState.CANCELLED.value,
-            JobState.FAILED.value,
-        ):
+            superseded.append(known.job_id)
+        elif is_terminal:
             action = "await_operator"
         elif known.result_ready or job["state"] in (
             JobState.COMPLETED_LOCALLY.value,
             JobState.RESULT_UPLOADING.value,
         ):
             action = "upload_result"
+        elif known.local_state == "running" and not known.processes_alive:
+            # Процесс не пережил рестарт. Сказать «continue» нечестно: продолжать
+            # нечего. Центр НЕ объявляет провал сам (ребра running → failed для
+            # роли center нет вовсе, I-01/I-02) — решение за оператором, а о
+            # смерти процесса отчитывается сам воркер своим событием job_failed.
+            action = "await_operator"
         else:
             action = "continue"
 
@@ -745,6 +1006,13 @@ async def reconcile(
                     upload_service.session_info, session, settings=settings
                 )
 
+        # Результат принят — сообщаем retention_until даже если воркер был
+        # офлайн в момент приёма и пропустил retention_update в heartbeat.
+        # Без этого пакет остаётся retention_unconfirmed навсегда (I-08).
+        result_accepted = job["state"] == JobState.COMPLETED.value and bool(
+            job.get("validated_at")
+        )
+
         verdicts.append(
             ReconcileJobVerdict(
                 job_id=job["job_id"],
@@ -754,8 +1022,24 @@ async def reconcile(
                 expected_next_seq=cursor + 1,
                 action=action,
                 upload_hint=hint,
+                execution_token_valid=attempt_valid and not is_terminal,
+                result_accepted=result_accepted,
+                retention_until=job.get("retention_until") if result_accepted else None,
             )
         )
+
+    # Задания, закреплённые за этим воркером, о которых он НЕ знает, а работа
+    # ещё не начиналась. Так выглядит потерянный ответ на /jobs/next: задание
+    # уже не `assigned`, поэтому опрос его не вернёт, а воркер не знает ни
+    # job_id, ни токена — раньше это навсегда блокировало пару (проект,
+    # версия) через ux_jobs_active_project. Возвращаем в очередь.
+    known_ids = {k.job_id for k in payload.known_jobs}
+    reoffered = await database.run_db(
+        job_service.reoffer_unknown_jobs,
+        worker_id=principal.worker_id,
+        known_job_ids=known_ids,
+        settings=settings,
+    )
 
     commands = await database.run_db(
         repositories.pending_commands, principal.worker_id, settings=settings
@@ -764,5 +1048,7 @@ async def reconcile(
         server_time=time.time(),
         jobs=verdicts,
         unknown_jobs=unknown,
+        superseded_jobs=superseded,
+        reoffered_jobs=reoffered,
         pending_commands=len(commands),
     )
