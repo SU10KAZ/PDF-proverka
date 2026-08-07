@@ -466,10 +466,14 @@ async def run_codex_exec(
     # параллельных проектов на Stage 01 дают ~20 одновременных `codex exec`
     # (2 блока × 3 ноги ансамбля + gap-search), каждый — отдельный Node-процесс
     # с workspace-write песочницей по корню репозитория. Этапы с mcp__
-    # дополнительно поднимают норм-MCP (~2,8 ГБ RSS на процесс).
+    # дополнительно поднимают норм-MCP (5,6 ГБ RSS на процесс, замер 04.08).
+    # ПОРЯДОК: дефицитный norms_mcp берём ПЕРВЫМ, обильный codex_cli вторым —
+    # иначе задача держит слот codex, стоя в очереди за норм-слотом
+    # (hold-and-wait). Порядок одинаков во всех точках захвата, включая
+    # claude_runner — расхождение дало бы взаимную блокировку.
     _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
     try:
-        async with resource_budget.slot("codex_cli"), resource_budget.slot(_mcp_slot):
+        async with resource_budget.slot(_mcp_slot), resource_budget.slot("codex_cli"):
             exit_code, stdout, stderr = await run_command(
                 cmd,
                 input_text=prompt,
@@ -590,10 +594,14 @@ async def run_codex_json_messages(
     # параллельных проектов на Stage 01 дают ~20 одновременных `codex exec`
     # (2 блока × 3 ноги ансамбля + gap-search), каждый — отдельный Node-процесс
     # с workspace-write песочницей по корню репозитория. Этапы с mcp__
-    # дополнительно поднимают норм-MCP (~2,8 ГБ RSS на процесс).
+    # дополнительно поднимают норм-MCP (5,6 ГБ RSS на процесс, замер 04.08).
+    # ПОРЯДОК: дефицитный norms_mcp берём ПЕРВЫМ, обильный codex_cli вторым —
+    # иначе задача держит слот codex, стоя в очереди за норм-слотом
+    # (hold-and-wait). Порядок одинаков во всех точках захвата, включая
+    # claude_runner — расхождение дало бы взаимную блокировку.
     _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
     try:
-        async with resource_budget.slot("codex_cli"), resource_budget.slot(_mcp_slot):
+        async with resource_budget.slot(_mcp_slot), resource_budget.slot("codex_cli"):
             exit_code, stdout, stderr = await run_command(
                 cmd,
                 input_text=prompt,

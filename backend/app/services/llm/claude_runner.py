@@ -338,12 +338,19 @@ async def _run_cli(
 
     # Бюджеты — общие на весь бэкенд (см. common/resource_budget.py).
     # Без них пять параллельных проектов дают ~20 одновременных `claude -p`,
-    # а этапы с mcp__ поднимают норм-MCP по ~2,8 ГБ на КАЖДЫЙ процесс.
+    # а этапы с mcp__ поднимают норм-MCP по 5,6 ГБ на КАЖДЫЙ процесс.
     # Имя "_none" неизвестно бюджету и слот не занимает — так ветвление
     # обходится без второго контекст-менеджера.
+    #
+    # ПОРЯДОК ЗАХВАТА ВАЖЕН: сначала ДЕФИЦИТНЫЙ norms_mcp, потом обильный
+    # claude_cli. При обратном порядке задача занимала слот CLI и с ним
+    # вставала в очередь за норм-слотом — на нормативных этапах несколько
+    # проектов держали слоты CLI, ничего не выполняя (hold-and-wait).
+    # Порядок обязан быть ОДИНАКОВЫМ во всех точках захвата (здесь и в
+    # codex_runner) — иначе взаимная блокировка.
     mcp_slot = "norms_mcp" if "mcp__" in (tools or "") else "_none"
     try:
-        async with resource_budget.slot("claude_cli"), resource_budget.slot(mcp_slot):
+        async with resource_budget.slot(mcp_slot), resource_budget.slot("claude_cli"):
             exit_code, stdout, stderr = await run_command(
                 cmd,
                 input_text=task_text,
