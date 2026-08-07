@@ -1022,3 +1022,70 @@ overrides:
     details: Извлечено из преамбулы СП 40-102-2000_ Проектирование и монтаж трубопроводов
       систе_document.md (auto-merge medium-confidence)
     last_verified: '2026-04-20'
+  "СП 29.13330.2022": unknown
+  "СП 29.13330.2021": unknown
+  "СО 10545-7": unknown
+  "СНиП 2.03.13-88": replaced
+  "ГОСТ 8509-2014": unknown
+  "ГОСТ Р МЭК 60598-1": replaced
+  "СП 7.13130.2023": unknown
+  "СП 71.13330.2016": replaced
+  "ГОСТ Р 51049-2009": replaced
+  "СНиП 23-01-99*": replaced
+  "СП 7.13330.2021": unknown
+  "ГОСТ 30494-2022": unknown
+  "СП 54.13330.2020": replaced
+  "СП 61.13330.2011": replaced
+  "СП 61.13330.2016": unknown
+  "ГОСТ 3266-75": replaced
+  "ГОСТ 21.001-2014": unknown
+  "ГОСТ 8105-2018": unknown
+  "ГОСТ 32702-2014": unknown
+  "ГОСТ 9467-2009": cancelled
+  "СО 17637-2014": replaced
+  "СП 20.1330.2016": unknown
+  "ГОСТ 34208-2016": unknown
+  "ГОСТ 24633-2015": unknown
+  "ГОСТ 6727-2014": cancelled
+  "СП 132.13330.2024": unknown
+  "ГОСТ Р МЭК 62561-1": unknown
+  "СО 153": unknown
+  "ГОСТ Р 50571.5.534-2014": unknown
+  "ГОСТ 15588-2024": unknown
+  "СП 63.13330.2022": replaced
+  "ГОСТ Р 50827": replaced
+  "ГОСТ 32126.1-2013": replaced
+  "ГОСТ Р МЭК 60670-1-2007": replaced
+  "ГОСТ Р 56368-2015": unknown
+  "ГОСТ IEC 60670-1-2014": replaced
+  "СНиП 21-01": cancelled
+  "ГОСТ Р МЭК 62305-1...4": unknown
+  "ГОСТ IEC 60446-2014": unknown
+  "ГОСТ Р МЭК 61439-1-2013": cancelled
+  "ГОСТ Р МЭК 61439-1": replaced
+  "ГОСТ Р 51326.1-99": cancelled
+  "ГОСТ Р МЭК 60800-2012": replaced
+  "ГОСТ IEC 60598-2-3-2014": replaced
+  "ГОСТ IEC 60670-22-2017": replaced
+  "ГОСТ Р МЭК 61347-2-13-2018": unknown
+  "ГОСТ Р МЭК 62305-3-2009": replaced
+  "ГОСТ 2.709-89": cancelled
+  "СНиП 3.05.07-85": replaced
+  "ГОСТ 23279-2022": unknown
+  "ГОСТ 30247-2014": unknown
+  "ГОСТ Р 52628-2006": replaced
+  "СО 898-2": unknown
+  "СО 273": unknown
+  "ГОСТ Р 588883-2020": unknown
+  "ГОСТ Р 51032": unknown
+  "ГОСТ 2.305": unknown
+  "ГОСТ 28457-90": cancelled
+  "СанПиН 2.1.3684-21":
+    doc_status: active
+    edition_status: unknown
+    current_version: "СанПиН 2.1.3684-21"
+    aliases:
+      - "СанПиН 2.1.3684-21"
+    details: "Локальный текст получен из официальной публикации; редакция 12.02.2026 изменяет пункты 272, 280-283 и не затрагивает пункты 1-271."
+    source_url: "https://publication.pravo.gov.ru/document/0001202102050027"
+    last_verified: "2026-08-05"

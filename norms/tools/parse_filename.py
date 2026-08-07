@@ -10,6 +10,7 @@ from pathlib import Path
 
 # (type, regex). Узкие паттерны раньше широких.
 _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("СанПиН", re.compile(r"^СанПиН\s+([\d\.\-]+)", re.IGNORECASE)),
     ("ГОСТ Р", re.compile(r"^ГОСТ\s+Р\s+([\d_\-\.]+)")),
     ("ГОСТ", re.compile(r"^ГОСТ\s+([\d_\-\.]+)")),
     ("СНиП", re.compile(r"^СНиП\s+([\d_\-\.]+)")),
@@ -93,6 +94,10 @@ def parse_filename(name: str) -> dict:
         code_raw = m.group(1).rstrip("_- ")
         code = _normalize_code(type_, code_raw)
         year = _extract_year(code_raw)
+        if type_ == "СанПиН":
+            short_year = re.search(r"-(\d{2})$", code_raw)
+            if short_year:
+                year = 2000 + int(short_year.group(1))
         title = _extract_title(stem, m.end())
         return {
             "type": type_,

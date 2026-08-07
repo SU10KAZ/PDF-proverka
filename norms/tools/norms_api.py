@@ -42,6 +42,7 @@ _by_code_cache: dict[str, dict] | None = None
 # ---------- family detection ----------
 
 _FAMILY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("СанПиН", re.compile(r"^\s*СанПиН\s+\d", re.IGNORECASE)),
     ("ГОСТ Р", re.compile(r"^\s*ГОСТ\s+Р\b", re.IGNORECASE)),
     ("ГОСТ", re.compile(r"^\s*ГОСТ\b", re.IGNORECASE)),
     ("СНиП", re.compile(r"^\s*СНиП\b", re.IGNORECASE)),
@@ -62,7 +63,7 @@ _SUPPORTED_FAMILIES = {name for name, _ in _FAMILY_PATTERNS}
 
 # Для каких семейств есть структурированный parse MD-файлов (hosted in vault).
 _VAULT_HOSTED_FAMILIES = {
-    "ГОСТ", "ГОСТ Р", "СП", "СНиП", "ВСН", "МДС", "РД", "ПУЭ", "ФЗ",
+    "СанПиН", "ГОСТ", "ГОСТ Р", "СП", "СНиП", "ВСН", "МДС", "РД", "ПУЭ", "ФЗ",
 }
 
 
