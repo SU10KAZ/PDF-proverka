@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аудит-воркеры</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Неблокирующая загрузка шрифтов (как в index.html): render-blocking
+         Google Fonts при недоступности подвешивает отрисовку. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+    <link rel="stylesheet" href="/static/css/audit-workers.css?v={{css_version}}">
+</head>
+<body>
+<div class="shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Этап 0 — вертикальный срез</p>
+            <h1>Аудит-воркеры</h1>
+            <p class="lead">
+                Сторонние VPS, выполняющие задания платформы. На этом этапе доступен
+                только безопасный тестовый прогон <code>test_pipeline_v1</code>:
+                реальный аудит, Claude Code, Codex и нормативный этап не подключены.
+            </p>
+        </div>
+        <div class="topbar-actions">
+            <label class="checkbox">
+                <input type="checkbox" id="autoRefresh" checked>
+                <span>Автообновление</span>
+            </label>
+            <button id="refreshBtn" class="btn btn--primary">Обновить</button>
+        </div>
+    </header>
+
+    <!-- Подсистема выключена: честное сообщение вместо пустого экрана -->
+    <section id="disabledBanner" class="banner banner--muted" hidden>
+        <strong>Функция отключена.</strong>
+        <span id="disabledReason"></span>
+        <p class="hint">
+            Включается переменной <code>DISTRIBUTED_WORKERS_ENABLED=true</code> и требует
+            заданного <code>DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET</code>.
+            См. <code>docs/distributed_audit_workers/03_step0_implementation.md</code>.
+        </p>
+    </section>
+
+    <section id="configError" class="banner banner--error" hidden></section>
+
+    <main id="content" hidden>
+        <section class="summary" id="summary"></section>
+
+        <!-- Зона 1: карточки VPS -->
+        <section class="block">
+            <h2>Подключённые VPS</h2>
+            <div id="workers" class="cards"></div>
+            <p id="workersEmpty" class="hint" hidden>
+                Ни один воркер ещё не зарегистрировался. Установите агент на VPS и
+                выполните <code>python -m audit_worker register --bootstrap-secret …</code>.
+            </p>
+        </section>
+
+        <!-- Зона 2: задания -->
+        <section class="block">
+            <h2>Задания</h2>
+            <div id="jobs" class="jobs"></div>
+            <p id="jobsEmpty" class="hint" hidden>Заданий пока нет.</p>
+        </section>
+
+        <!-- Зона 3: выдача тестового задания -->
+        <section class="block">
+            <h2>Отправить тестовое задание</h2>
+            <form id="createForm" class="form-grid">
+                <label>Воркер
+                    <select id="jobWorker" class="input" required></select>
+                </label>
+                <label>Идентификатор проекта
+                    <input id="jobProject" class="input" value="test-project"
+                           pattern="[A-Za-z0-9._\- ]+" required>
+                </label>
+                <label>Метка
+                    <input id="jobLabel" class="input" value="smoke"
+                           pattern="[A-Za-z0-9._\-]+" required>
+                </label>
+                <label>Шагов
+                    <input id="jobSteps" class="input" type="number" value="5" min="1" max="100">
+                </label>
+                <label>Секунд на шаг
+                    <input id="jobStepSeconds" class="input" type="number" value="0.5"
+                           min="0" max="10" step="0.1">
+                </label>
+                <label>Размер результата, байт
+                    <input id="jobResultBytes" class="input" type="number" value="4096"
+                           min="0" max="8388608">
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary">Отправить</button>
+                    <span id="createHint" class="hint"></span>
+                </div>
+            </form>
+            <p class="hint">
+                В задание уходят только эти скаляры. Команда, argv, пути и переменные
+                окружения не передаются — воркер строит запуск сам.
+            </p>
+        </section>
+
+        <!-- Зона 4: логи выбранного задания -->
+        <section class="block" id="logsBlock" hidden>
+            <h2>Логи задания <span id="logsJobId" class="mono"></span></h2>
+            <pre id="logs" class="logs"></pre>
+        </section>
+    </main>
+</div>
+<script src="/static/js/audit-workers.js?v={{js_version}}"></script>
+</body>
+</html>

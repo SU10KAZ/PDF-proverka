@@ -416,6 +416,27 @@ async def serve_spa():
     return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 
+@app.get("/audit-workers")
+async def serve_audit_workers():
+    """Отдать экран «Аудит-воркеры».
+
+    Отдельная страница по образцу /model-control: так экран не требует правок
+    в 19-тысячестрочном app.js и не может сломать основной SPA. Сама страница
+    сначала спрашивает /api/workers/status и при выключенном флаге честно
+    показывает «функция отключена».
+    """
+    page_path = _html_dir / "audit-workers.html"
+    if not page_path.exists():
+        return {"message": "Audit workers page not found"}
+    css_path = (_static_mount_dir / "css" / "audit-workers.css") if _static_mount_dir else None
+    js_path = (_static_mount_dir / "js" / "audit-workers.js") if _static_mount_dir else None
+    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
+    html = page_path.read_text(encoding="utf-8")
+    html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
 @app.get("/model-control")
 async def serve_model_control():
     """Отдать страницу управления моделями."""
