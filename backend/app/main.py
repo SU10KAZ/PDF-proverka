@@ -236,6 +236,28 @@ app.include_router(projects_v2_shadow.router)
 app.include_router(action_log.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
 
+# ─── Распределённые audit-worker (этап 0) ───────────────────
+# Роутеры регистрируются ТОЛЬКО при DISTRIBUTED_WORKERS_ENABLED=true. При
+# выключенном флаге путей нет вовсе (404), SQLite-база не создаётся и фоновых
+# задач не появляется — существующая платформа работает без изменений.
+# Исключение: /api/workers/status отдаётся всегда, чтобы фронт мог честно
+# показать «функция отключена» вместо пустого экрана.
+from backend.app.services.distributed_workers.settings import (  # noqa: E402
+    get_settings as _dw_settings,
+)
+
+from backend.app.api.routers import audit_workers_admin  # noqa: E402
+
+# /api/workers/status отвечает всегда — фронт по нему понимает, что показывать.
+app.include_router(audit_workers_admin.status_router)
+
+if _dw_settings().enabled:
+    from backend.app.api.routers import audit_worker_agent  # noqa: E402
+
+    app.include_router(audit_worker_agent.router)
+    app.include_router(audit_workers_admin.router)
+    print("[startup] распределённые audit-worker: ВКЛЮЧЕНЫ")
+
 # ─── WebSocket Endpoints ────────────────────────────────────
 def _ws_authorized(websocket: WebSocket) -> bool:
     """Проверить session-cookie на WebSocket (middleware ws не перехватывает)."""

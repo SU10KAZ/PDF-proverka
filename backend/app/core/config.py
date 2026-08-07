@@ -1217,5 +1217,55 @@ BLOCK_CROP_EVICTION_DRY_RUN  = _env_bool("BLOCK_CROP_EVICTION_DRY_RUN", True)
 # 03_analysis/latest — тёплая локальная копия для UI; трогать только осознанно.
 BLOCK_CROP_EVICT_LATEST      = _env_bool("BLOCK_CROP_EVICT_LATEST", False)
 
+# ─── Распределённые audit-worker (этап 0: вертикальный срез) ────────────────
+# Подсистема выдачи заданий сторонним VPS. Этап 0 умеет ТОЛЬКО безопасное
+# тестовое задание `test_pipeline_v1` — реальный аудит, Claude/Codex и
+# нормативный этап не подключены (см. docs/distributed_audit_workers/).
+#
+# Kill-switch. При false: роутеры не регистрируются, SQLite-база НЕ создаётся,
+# фоновых задач нет, экран отдаёт «функция отключена». Существующий конвейер
+# при любом значении флага не затрагивается — точек врезки в PipelineManager
+# на этом этапе нет вовсе.
+DISTRIBUTED_WORKERS_ENABLED = _env_bool("DISTRIBUTED_WORKERS_ENABLED", False)
+
+# Корень состояния подсистемы: workers.db + пакеты + логи заданий.
+# ВНЕ projects_v2 и вне деревьев проектов — база не должна уезжать в архивы.
+DISTRIBUTED_WORKERS_DATA_DIR = (
+    Path(os.environ["DISTRIBUTED_WORKERS_DATA_DIR"]).resolve()
+    if os.environ.get("DISTRIBUTED_WORKERS_DATA_DIR")
+    else APP_DATA_DIR / "distributed_workers"
+)
+
+# Секрет одноразовой регистрации воркера. Дефолта НЕТ намеренно: при
+# DISTRIBUTED_WORKERS_ENABLED=true и пустом секрете подсистема обязана падать
+# понятной ошибкой конфигурации, а не открывать регистрацию всем желающим.
+DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET = os.environ.get(
+    "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET", ""
+).strip()
+
+# Пороги оси СВЯЗИ (не исполнения!). Молчание воркера меняет только
+# connection_status и никогда не переводит задание в failed.
+DISTRIBUTED_WORKERS_HEARTBEAT_STALE_SEC   = _env_int("DISTRIBUTED_WORKERS_HEARTBEAT_STALE_SEC", 90)
+DISTRIBUTED_WORKERS_HEARTBEAT_OFFLINE_SEC = _env_int("DISTRIBUTED_WORKERS_HEARTBEAT_OFFLINE_SEC", 600)
+
+# Потолок размера пакета в любую сторону (защита диска и от «бомбы»).
+DISTRIBUTED_WORKERS_MAX_PACKAGE_BYTES = _env_int(
+    "DISTRIBUTED_WORKERS_MAX_PACKAGE_BYTES", 2 * 1024 * 1024 * 1024
+)
+# Размер чанка загрузки результата. Держать НИЖЕ nginx client_max_body_size
+# (на проде 200M), иначе загрузка результата не пролезет вовсе.
+DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES = _env_int(
+    "DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES", 32 * 1024 * 1024
+)
+# Потолок ожидания в long-poll выдачи задания.
+DISTRIBUTED_WORKERS_LONG_POLL_SEC = _env_int("DISTRIBUTED_WORKERS_LONG_POLL_SEC", 25)
+# Потолок суммарной длительности тестового задания (валидируется воркером).
+DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC = _env_int("DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC", 300)
+
+# Версия протокола центр↔воркер. Целое; растёт при несовместимом изменении API.
+DISTRIBUTED_WORKERS_PROTOCOL_VERSION = 1
+# Версия схемы package_manifest.json.
+DISTRIBUTED_WORKERS_MANIFEST_VERSION = 1
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR
