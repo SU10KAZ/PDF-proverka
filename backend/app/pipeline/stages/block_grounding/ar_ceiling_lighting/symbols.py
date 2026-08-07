@@ -8,8 +8,10 @@ SpatialIndex) → структурная сигнатура кластера →
 from __future__ import annotations
 
 import collections
+import itertools
 import math
 import re
+import unicodedata
 
 from .legend import ELEV_RE
 from .spatial import SpatialIndex, bbox_gap, seg_angle_deg
@@ -66,11 +68,108 @@ def collect_symbol_elements(inv: dict, scope_of, legend_zones) -> list[dict]:
     return elements
 
 
-def cluster_elements(elements: list[dict], *, join_gap: float = 1.2) -> list[list[dict]]:
+def _normalize_layer_name(value) -> str:
+    text = unicodedata.normalize("NFKC", str(value or ""))
+    return re.sub(r"\s+", " ", text).strip().casefold()
+
+
+def _build_layer_policy(templates: list[dict] | None) -> tuple[set[str], set[frozenset[str]]]:
+    """Доверенные слои и межслойные пары из device-template signatures."""
+    known_layers: set[str] = set()
+    compatible_pairs: set[frozenset[str]] = set()
+    for template in templates or ():
+        raw_layers = (template.get("signature") or {}).get("layers") or {}
+        names = raw_layers.keys() if isinstance(raw_layers, dict) else raw_layers
+        normalized = set()
+        for name in names:
+            layer = _normalize_layer_name(name)
+            if layer:
+                normalized.add(layer)
+        layers = sorted(normalized)
+        known_layers.update(layers)
+        compatible_pairs.update(
+            frozenset(pair) for pair in itertools.combinations(layers, 2))
+    return known_layers, compatible_pairs
+
+
+def _layer_pair_compatible(left: str, right: str, known_layers: set[str],
+                           compatible_pairs: set[frozenset[str]]) -> bool:
+    if left == right:
+        return True
+    if not left or not right:
+        return False
+    if frozenset((left, right)) in compatible_pairs:
+        return True
+    # Два полностью неизвестных слоя сохраняют legacy-поведение. Но
+    # известный device-layer не поглощает неизвестную смежную дисциплину.
+    return left not in known_layers and right not in known_layers
+
+
+def _incompatible_layer_pairs(left: set[str], right: set[str], known_layers: set[str],
+                              compatible_pairs: set[frozenset[str]]) -> list[tuple[str, str]]:
+    return sorted({
+        tuple(sorted((a, b)))
+        for a in left for b in right
+        if not _layer_pair_compatible(a, b, known_layers, compatible_pairs)
+    })
+
+
+def _layer_evidence_rank(left: str, right: str, known_layers: set[str],
+                         compatible_pairs: set[frozenset[str]]) -> int:
+    """Стабильный приоритет: свой слой → template evidence → legacy unknown."""
+    if left == right:
+        return 0
+    if frozenset((left, right)) in compatible_pairs:
+        return 1
+    if left and right and left not in known_layers and right not in known_layers:
+        return 2
+    return 3
+
+
+def _element_stable_key(element: dict, layer: str) -> tuple:
+    bbox = tuple(round(float(value), 6) for value in element["bbox"])
+    return (layer, element.get("kind") or "", element.get("color") or "", bbox)
+
+
+def _edge_stable_key(edge: tuple[int, int, float], elements: list[dict],
+                     layer_keys: list[str], known_layers: set[str],
+                     compatible_pairs: set[frozenset[str]]) -> tuple:
+    left_id, right_id, gap = edge
+    left_layer, right_layer = layer_keys[left_id], layer_keys[right_id]
+    endpoint_keys = sorted((
+        _element_stable_key(elements[left_id], left_layer),
+        _element_stable_key(elements[right_id], right_layer),
+    ))
+    return (_layer_evidence_rank(left_layer, right_layer, known_layers, compatible_pairs),
+            round(gap, 9), tuple(sorted((left_layer, right_layer))),
+            tuple(endpoint_keys), min(left_id, right_id), max(left_id, right_id))
+
+
+def cluster_elements(elements: list[dict], *, join_gap: float = 1.2,
+                     layer_templates: list[dict] | None = None,
+                     diagnostics: dict | None = None) -> list[list[dict]]:
+    """Кластеры по bbox с fail-closed гейтом известных CAD-слоёв."""
+    known_layers, compatible_pairs = _build_layer_policy(layer_templates)
+    layer_keys = [_normalize_layer_name(el["ref"].get("layer")) for el in elements]
+    blocked_pairs = collections.Counter()
+
     index = SpatialIndex(cell=8.0)
     for el in elements:
         index.insert(el["eid"], el["bbox"])
     parent = list(range(len(elements)))
+    component_layers = [{layer} for layer in layer_keys]
+
+    candidate_edges = []
+    for el in elements:
+        for oid in index.query(el["bbox"], pad=join_gap):
+            if oid <= el["eid"]:
+                continue
+            gap = bbox_gap(el["bbox"], elements[oid]["bbox"])
+            if gap <= join_gap:
+                candidate_edges.append((el["eid"], oid, gap))
+    candidate_edges.sort(
+        key=lambda edge: _edge_stable_key(
+            edge, elements, layer_keys, known_layers, compatible_pairs))
 
     def find(a):
         while parent[a] != a:
@@ -78,17 +177,38 @@ def cluster_elements(elements: list[dict], *, join_gap: float = 1.2) -> list[lis
             a = parent[a]
         return a
 
-    for el in elements:
-        for oid in index.query(el["bbox"], pad=join_gap):
-            if oid == el["eid"]:
-                continue
-            if bbox_gap(el["bbox"], elements[oid]["bbox"]) <= join_gap:
-                ra, rb = find(el["eid"]), find(oid)
-                if ra != rb:
-                    parent[max(ra, rb)] = min(ra, rb)
+    blocked_edges = 0
+    for left_id, right_id, _gap in candidate_edges:
+        ra, rb = find(left_id), find(right_id)
+        if ra == rb:
+            continue
+        incompatible = _incompatible_layer_pairs(
+            component_layers[ra], component_layers[rb], known_layers, compatible_pairs)
+        if incompatible:
+            blocked_edges += 1
+            for pair in incompatible:
+                blocked_pairs[pair] += 1
+            continue
+        keep, drop = min(ra, rb), max(ra, rb)
+        parent[drop] = keep
+        component_layers[keep].update(component_layers[drop])
+
     groups: dict[int, list[dict]] = collections.defaultdict(list)
     for el in elements:
         groups[find(el["eid"])].append(el)
+
+    if diagnostics is not None:
+        allowed_pairs = sorted(tuple(sorted(pair)) for pair in compatible_pairs)
+        diagnostics.update({
+            "policy": "template_evidence_v1",
+            "known_layers": sorted(known_layers),
+            "compatible_layer_pairs": [list(pair) for pair in allowed_pairs],
+            "blocked_cross_layer_edges": blocked_edges,
+            "blocked_cross_layer_pairs": [
+                {"layers": list(pair), "edges": count}
+                for pair, count in sorted(blocked_pairs.items())
+            ],
+        })
     return [groups[k] for k in sorted(groups)]
 
 

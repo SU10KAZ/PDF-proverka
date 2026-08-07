@@ -258,7 +258,7 @@ def _assemble_rows(texts, header, y_top: float, y_bot: float, schedule_x0: float
                 host = row
                 break
         if host is not None:
-            tail = _norm(_join_tokens([t for t, _ in tokens]))
+            tail = _join_tokens_dedup([t for t, _ in tokens])
             if tail and _canon(tail) not in _canon(host["text"]):
                 host["text"] = _norm(host["text"] + " " + tail)
                 host["bbox"] = _union_bbox([host["bbox"]] +
@@ -290,6 +290,62 @@ def _join_tokens(tokens: list[dict]) -> str:
         parts.append(txt)
         prev_x1 = t["bbox"][2]
     return _norm("".join(parts))
+
+
+def _span_overlap_fraction(left: dict, right: dict) -> float:
+    lb, rb = left["bbox"], right["bbox"]
+    width = max(0.0, min(lb[2], rb[2]) - max(lb[0], rb[0]))
+    height = max(0.0, min(lb[3], rb[3]) - max(lb[1], rb[1]))
+    left_area = max(0.0, lb[2] - lb[0]) * max(0.0, lb[3] - lb[1])
+    right_area = max(0.0, rb[2] - rb[0]) * max(0.0, rb[3] - rb[1])
+    smaller_area = min(left_area, right_area)
+    return width * height / smaller_area if smaller_area > 0 else 0.0
+
+
+def _punctuation_follows_skipped_span(token: dict, skipped: list[dict]) -> bool:
+    tb = token["bbox"]
+    token_layer = token.get("layer") or ""
+    token_h = max(tb[3] - tb[1], 1.0)
+    token_cy = (tb[1] + tb[3]) / 2
+    for span in skipped:
+        sb = span["bbox"]
+        span_h = max(sb[3] - sb[1], 1.0)
+        gap = tb[0] - sb[2]
+        if (token_layer == (span.get("layer") or "")
+                and -0.25 * token_h <= gap <= 0.75 * max(token_h, span_h)
+                and abs(token_cy - (sb[1] + sb[3]) / 2) <= 0.5 * max(token_h, span_h)):
+            return True
+    return False
+
+
+def _join_tokens_dedup(tokens: list[dict]) -> str:
+    """Геометрическая склейка с подавлением наложенных CAD-дублей.
+
+    В отличие от _join_dedup сохраняет исходные промежутки между
+    неповторяющимися спанами, включая отдельно вынесенную пунктуацию.
+    """
+    kept: list[dict] = []
+    skipped: list[dict] = []
+    body = ""
+    for token in tokens:
+        piece = _norm(token["text"])
+        if not piece:
+            continue
+        canon_piece = _canon(piece)
+        duplicate = canon_piece and any(
+            canon_piece == _canon(_norm(prior["text"]))
+            and _span_overlap_fraction(token, prior) >= 0.75
+            for prior in kept
+        )
+        if duplicate:
+            skipped.append(token)
+            continue
+        if (not canon_piece and body.rstrip().endswith(piece)
+                and _punctuation_follows_skipped_span(token, skipped)):
+            continue
+        kept.append(token)
+        body = _join_tokens(kept)
+    return body
 
 
 def _join_dedup(prefix_parts: list[str], tokens: list[dict]) -> str:

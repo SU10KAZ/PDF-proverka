@@ -14,6 +14,8 @@ from pathlib import Path
 import pytest
 
 from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import graph as graph_mod
+from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import legend
+from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import runner as runner_mod
 from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import symbols
 from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.spatial import (
     OccupancyGrid, SpatialIndex, build_chains)
@@ -22,6 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 PKG = ROOT / "backend/app/pipeline/stages/block_grounding/ar_ceiling_lighting"
 REFERENCE_PDF = (ROOT / "experiments/блоки разных дисциплин/АР/"
                  "АР — 001 план потолка и освещения — потолок и освещение — YF7P-R6DK-PXT.pdf")
+LAYER_SPLIT_REFERENCE_PDF = (ROOT / "experiments/блоки разных дисциплин/АР/"
+                             "АР — 003 план потолка и освещения — потолок и освещение — 7L6W-9ERV-PTT.pdf")
 
 
 # ------------------------------------------------------------ синтетика
@@ -79,6 +83,56 @@ def test_legend_zone_symbols_excluded():
     labels = symbols.split_number_labels({"texts": [span]}, _scope_all_block,
                                          [(90, 90, 120, 120)])
     assert labels == []
+
+
+def test_legend_continuation_deduplicates_parallel_cad_layers():
+    header = {"text": "Условные обозначения", "bbox": (210, 0, 350, 10)}
+    row = _span_text("- отметка уровня потолка,", 104.8, 20,
+                     layer="08_ Розетки подписи")
+    tail = _span_text("дана от отметки чистого пола", 105.4, 32,
+                      layer="06_Потолок")
+    dot = _span_text(".", tail["bbox"][2] + 0.05, 32, layer="06_Потолок")
+    overlay = _span_text("дана от отметки чистого пола.", 104.8, 33.0,
+                         layer="08_ Розетки подписи")
+
+    rows = legend._assemble_rows(
+        [row, tail, dot, overlay], header, 10, 100, 1_000)
+
+    assert [item["text"] for item in rows] == [
+        "отметка уровня потолка, дана от отметки чистого пола."
+    ]
+
+
+def test_legend_continuation_preserves_split_punctuation():
+    header = {"text": "Условные обозначения", "bbox": (210, 0, 350, 10)}
+    row = _span_text("- отметка уровня потолка,", 104.8, 20)
+    tail = _span_text("дана от отметки чистого пола", 105.4, 32)
+    dot = _span_text(".", tail["bbox"][2] + 0.05, 32)
+
+    rows = legend._assemble_rows([row, tail, dot], header, 10, 100, 1_000)
+
+    assert [item["text"] for item in rows] == [
+        "отметка уровня потолка, дана от отметки чистого пола."
+    ]
+
+
+def test_legend_continuation_preserves_nonoverlapping_repeated_words():
+    header = {"text": "Условные обозначения", "bbox": (210, 0, 350, 10)}
+    row = _span_text("- отметка уровня потолка,", 104.8, 20)
+    parts = []
+    x = 105.4
+    for value in ("на", "первый", "и", "на", "второй"):
+        part = _span_text(value, x, 32)
+        parts.append(part)
+        x = part["bbox"][2] + 4.0
+    dot = _span_text(".", parts[-1]["bbox"][2] + 0.05, 32)
+
+    rows = legend._assemble_rows(
+        [row, *parts, dot], header, 10, 100, 1_000)
+
+    assert [item["text"] for item in rows] == [
+        "отметка уровня потолка, на первый и на второй."
+    ]
 
 
 FIXTURE_TPL = {"kind": "light_output", "label": "вывод под светильник",
@@ -210,6 +264,103 @@ def test_chains_from_microsegments():
     assert chains[0]["length"] > 50
 
 
+def _layer_element(eid: int, bbox: tuple[float, float, float, float], layer: str):
+    return {
+        "eid": eid,
+        "kind": "line",
+        "bbox": bbox,
+        "color": "red",
+        "ref": {"layer": layer},
+    }
+
+
+def _layer_template(*layers: str):
+    return {"signature": {"layers": {layer: 1 for layer in layers}}}
+
+
+def test_cluster_elements_blocks_known_to_unknown_layer_union():
+    elements = [
+        _layer_element(0, (0, 0, 2, 2), "lighting"),
+        _layer_element(1, (1, 0, 3, 2), "plumbing"),
+    ]
+    diagnostics = {}
+
+    clusters = symbols.cluster_elements(
+        elements,
+        layer_templates=[_layer_template("lighting")],
+        diagnostics=diagnostics,
+    )
+
+    assert [[el["eid"] for el in cluster] for cluster in clusters] == [[0], [1]]
+    assert diagnostics["blocked_cross_layer_edges"] == 1
+    assert diagnostics["blocked_cross_layer_pairs"] == [
+        {"layers": ["lighting", "plumbing"], "edges": 1}
+    ]
+
+
+def test_cluster_elements_allows_template_evidenced_layer_pair():
+    elements = [
+        _layer_element(0, (0, 0, 2, 2), "lighting"),
+        _layer_element(1, (1, 0, 3, 2), "numbering"),
+    ]
+
+    clusters = symbols.cluster_elements(
+        elements,
+        layer_templates=[_layer_template("lighting", "numbering")],
+    )
+
+    assert [[el["eid"] for el in cluster] for cluster in clusters] == [[0, 1]]
+
+
+def test_cluster_elements_normalizes_layers_and_preserves_unknown_legacy():
+    normalized = [
+        _layer_element(0, (0, 0, 2, 2), "  Lighting  "),
+        _layer_element(1, (1, 0, 3, 2), "LIGHTING"),
+    ]
+    unknown = [
+        _layer_element(0, (0, 0, 2, 2), "custom-a"),
+        _layer_element(1, (1, 0, 3, 2), "custom-b"),
+    ]
+    empty_mixed = [
+        _layer_element(0, (0, 0, 2, 2), ""),
+        _layer_element(1, (1, 0, 3, 2), "custom"),
+    ]
+
+    assert len(symbols.cluster_elements(
+        normalized, layer_templates=[_layer_template("lighting")])) == 1
+    assert len(symbols.cluster_elements(unknown)) == 1
+    assert len(symbols.cluster_elements(empty_mixed)) == 2
+
+
+def test_cluster_elements_prevents_transitive_layer_bridge():
+    templates = [_layer_template("a", "b"), _layer_template("b", "c")]
+
+    def partition(layer_order):
+        boxes = {"a": (0.0, 0, 2.0, 2), "b": (1.9, 0, 3.9, 2),
+                 "c": (3.8, 0, 5.8, 2)}
+        elements = [
+            _layer_element(eid, boxes[layer], layer)
+            for eid, layer in enumerate(layer_order)
+        ]
+        diagnostics = {}
+        clusters = symbols.cluster_elements(
+            elements, layer_templates=templates, diagnostics=diagnostics)
+        layer_groups = sorted(
+            sorted(el["ref"]["layer"] for el in cluster)
+            for cluster in clusters
+        )
+        return layer_groups, diagnostics
+
+    expected_groups = [["a", "b"], ["c"]]
+    for order in (("a", "b", "c"), ("c", "b", "a")):
+        groups, diagnostics = partition(order)
+        assert groups == expected_groups
+        assert diagnostics["blocked_cross_layer_pairs"] == [
+            {"layers": ["a", "c"], "edges": 1}
+        ]
+        assert ["b", "c"] in diagnostics["compatible_layer_pairs"]
+
+
 SWITCH2_TPL = {"kind": "switch_2", "label": "выключатель двухклавишный", "source": "sheet_legend",
                "signature": {"circles": [], "rects": [(12.4, 14.2)], "n_axis_lines": 0,
                              "n_diag_lines": 1, "colors": {"red": 2},
@@ -261,7 +412,8 @@ def test_changeover_true_circle_not_stripped():
     d = 11.9
     cluster = [
         {"eid": 0, "kind": "rect", "color": "red", "bbox": (100, 100, 111.8, 114.3),
-         "ref": {"w": 11.8, "h": 14.3, "color_family": "red"}},
+         "ref": {"w": 11.8, "h": 14.3, "color_family": "red",
+                 "layer": "свет нумерация"}},
         {"eid": 1, "kind": "circle", "color": "red",
          "bbox": (106 - d / 2, 107 - d / 2, 106 + d / 2, 107 + d / 2),
          "ref": {"d": d, "center": (106.0, 107.0), "color_family": "red",
@@ -271,7 +423,29 @@ def test_changeover_true_circle_not_stripped():
     def texts_index(bbox, pad=0.0):
         return []
 
-    syms = symbols.classify_clusters([cluster], [SWITCH2_TPL, CHANGEOVER_TPL], texts_index)
+    local_changeover = {
+        **CHANGEOVER_TPL,
+        "signature": {
+            **CHANGEOVER_TPL["signature"],
+            "layers": {"09_Освещение": 1},
+        },
+    }
+    registry_changeover = {
+        **CHANGEOVER_TPL,
+        "source": "registry",
+        "signature": {
+            **CHANGEOVER_TPL["signature"],
+            "layers": {"09_Освещение": 1, "свет нумерация": 1},
+        },
+    }
+    layer_templates = runner_mod._collect_device_layer_templates(
+        [local_changeover], [registry_changeover])
+    assert layer_templates == [local_changeover, registry_changeover]
+    clusters = symbols.cluster_elements(cluster, layer_templates=layer_templates)
+    assert len(clusters) == 1
+
+    syms = symbols.classify_clusters(
+        clusters, [SWITCH2_TPL, local_changeover], texts_index)
     assert len(syms) == 1
     assert syms[0]["kind"] == "switch_changeover"
     assert "label_overlay_circles" not in syms[0]
@@ -491,6 +665,19 @@ def reference_with_registry():
     return run_profile(str(REFERENCE_PDF), legend_registry=load_legend_registry(REGISTRY_JSON))
 
 
+@pytest.fixture(scope="module")
+def layer_split_reference_with_registry():
+    if not LAYER_SPLIT_REFERENCE_PDF.is_file():
+        pytest.skip("регрессионный PDF листа 003 недоступен")
+    if not REGISTRY_JSON.is_file():
+        pytest.skip("legend_registry.json не построен")
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting import run_profile
+    from backend.app.pipeline.stages.block_grounding.ar_ceiling_lighting.registry import (
+        load_legend_registry)
+    return run_profile(
+        str(LAYER_SPLIT_REFERENCE_PDF), legend_registry=load_legend_registry(REGISTRY_JSON))
+
+
 def test_reference_status_complete(reference_with_registry):
     assert reference_with_registry["status"] == "complete"
 
@@ -517,6 +704,26 @@ def test_reference_two_key_switches_with_circles_restored(reference_with_registr
 def test_reference_no_unresolved_symbols_with_registry(reference_with_registry):
     g = reference_with_registry["graph"]
     assert g["validation"]["unresolved_symbols_total"] == 0
+
+
+def test_layer_split_reference_restores_wall_lights(layer_split_reference_with_registry):
+    result = layer_split_reference_with_registry
+    assert result["status"] == "complete"
+    assert result["graph"]["profile_version"] == "2026.08.07-2"
+    validation = result["graph"]["validation"]
+
+    assert validation["lights_total"] == 76
+    assert validation["wall_lights_total"] == 15
+    assert validation["groups_confirmed"] == 64
+    assert validation["groups_incomplete"] == 10
+    assert validation["unresolved_symbols_total"] == 9
+
+    diagnostics = validation["symbol_layer_clustering"]
+    assert diagnostics["blocked_cross_layer_edges"] > 0
+    assert diagnostics["blocked_cross_layer_pairs"] == [{
+        "layers": ["09_освещение", "14_сантех выводы"],
+        "edges": diagnostics["blocked_cross_layer_edges"],
+    }]
 
 
 def test_reference_dimension_tiers_disciplined(reference_with_registry):

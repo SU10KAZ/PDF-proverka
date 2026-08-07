@@ -29,7 +29,7 @@ from .coords import CanonicalSpaceError, RotationUnsupported
 from .spatial import SpatialIndex
 
 PROFILE_ID = "ar_ceiling_lighting"
-PROFILE_VERSION = "2026.08.05-2"
+PROFILE_VERSION = "2026.08.07-2"
 
 # виды устройств, которые обязаны иметь эталон, чтобы классифицировать план
 DEVICE_TEMPLATE_KINDS = {
@@ -38,6 +38,16 @@ DEVICE_TEMPLATE_KINDS = {
 }
 
 SHEET_NAME_RE = re.compile(r"план\s+потолк|потолок\s+и\s+освещени", re.I)
+
+
+def _collect_device_layer_templates(device_templates: list[dict],
+                                    legend_registry: list[dict] | None) -> list[dict]:
+    """Layer evidence включает registry-записи уже найденного локально вида."""
+    collected = list(device_templates)
+    collected.extend(
+        entry for entry in (legend_registry or [])
+        if entry.get("kind") in DEVICE_TEMPLATE_KINDS)
+    return collected
 
 
 def run_profile(pdf_path: str, *, page_index: int = 0, block_id: str | None = None,
@@ -97,7 +107,13 @@ def build_ar_ceiling_lighting_result(pdf_path: str, *, page_index: int = 0,
             "строка электрической легенды не разобрана — световые устройства не удалось "
             "классифицировать по доступной легенде")
 
-    clusters = symbols.cluster_elements(elements)
+    # Слои — отрицательный гейт union, не признак типа. Полный registry
+    # сохраняет доказанные межслойные пары даже для вида, уже найденного
+    # в собственной легенде текущего листа.
+    layer_templates = _collect_device_layer_templates(device_templates, legend_registry)
+    layer_diagnostics: dict = {}
+    clusters = symbols.cluster_elements(
+        elements, layer_templates=layer_templates, diagnostics=layer_diagnostics)
     texts_index = _make_texts_index(inv)
     syms = symbols.classify_clusters(clusters, templates, texts_index)
     classified_n = sum(1 for s in syms if s["kind"] != "unresolved_symbol")
@@ -116,6 +132,7 @@ def build_ar_ceiling_lighting_result(pdf_path: str, *, page_index: int = 0,
 
     graph = graph_mod.assemble(cp, inv, ref, syms, ceil_markers, ceil_unpaired, labels,
                                dims, consumed, marks, marks_rejected, room_data, dim_conflicts)
+    graph["validation"]["symbol_layer_clustering"] = layer_diagnostics
     guides = dims_mod.detect_centering_guides(inv, scope_of, graph["lights"])
     for light in graph["lights"]:
         pair = guides["confirmed"].get(light["symbol_id"])
