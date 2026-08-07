@@ -302,6 +302,13 @@ class PipelineManager:
         # после сброса синхронно били в API — снова упираясь в лимит.
         self._rate_limit_deadline: float = 0.0   # общий дедлайн, time.monotonic()
         self._rate_limit_waiters: int = 0        # сколько проектов ждут сейчас
+        # Сигнал супервизору очереди: в неё дописали items, пора долить слоты.
+        # Без него число слотов замирало на том, каким было при СТАРТЕ очереди
+        # (запустил 1 проект → 1 слот → дослал 9, и все девять шли по одному,
+        # хотя BATCH_MAX_PARALLEL=5). Замечено Андреем Ивановичем 06.08.2026.
+        # Событие создаётся лениво: у менеджера нет своего event loop, а
+        # asyncio.Event привязывается к тому, в котором создан.
+        self._batch_slots_wake: Optional[asyncio.Event] = None
         self._paused = False
         self._pause_mode: str | None = None  # "finish_current" | "interrupt"
 
@@ -5417,8 +5424,25 @@ class PipelineManager:
             if meta_job:
                 meta_job.progress_total = queue.total
 
+        # Разбудить супервизор: если очередь уже работает, но слотов меньше
+        # потолка (её запустили одним проектом), дописанные проекты должны
+        # получить слоты СЕЙЧАС, а не ждать освобождения единственного.
+        if new_items:
+            self._wake_batch_slots()
+
         await self._broadcast_batch_progress(queue)
         return queue
+
+    def _wake_batch_slots(self) -> None:
+        """Сообщить супервизору очереди, что появилась новая работа."""
+        wake = self._batch_slots_wake
+        if wake is not None:
+            try:
+                wake.set()
+            except RuntimeError:
+                # Событие принадлежит другому (уже закрытому) loop — супервизор
+                # мёртв, будить некого. Не роняем enqueue из-за этого.
+                pass
 
     # ─── Pre-crop: фоновая загрузка блоков для следующих проектов в очереди ───
 
@@ -5570,34 +5594,13 @@ class PipelineManager:
             if queue.total > 1:
                 precrop_task = asyncio.create_task(self._run_precrop_loop(queue))
 
-            parallel = max(1, min(batch_max_parallel(), max(1, queue.total)))
-            if parallel <= 1:
+            if batch_max_parallel() <= 1:
+                # Один слот исполняется В САМОЙ корутине __BATCH__: от
+                # identity текущей задачи зависят cancel() и cleanup_zombies.
+                # Ветку не трогать — это байт-в-байт прежнее поведение.
                 await self._batch_slot_worker(queue, meta_job)
             else:
-                await self._log(
-                    meta_job,
-                    f"Параллельная обработка: {parallel} слотов одновременно",
-                    "info",
-                )
-                await ws_manager.broadcast_global(
-                    WSMessage.log(
-                        "__BATCH__",
-                        f"⇉ Параллельно: {parallel} проектов одновременно",
-                        "info",
-                    )
-                )
-                slots = [
-                    asyncio.create_task(self._batch_slot_guarded(queue, meta_job))
-                    for _ in range(parallel)
-                ]
-                # return_exceptions: падение одного слота не должно отменять
-                # соседние — их проекты уже в работе, обрыв стоил бы часов.
-                results = await asyncio.gather(*slots, return_exceptions=True)
-                for res in results:
-                    if isinstance(res, BaseException) and not isinstance(
-                        res, asyncio.CancelledError
-                    ):
-                        raise res
+                await self._run_batch_slot_pool(queue, meta_job)
 
             # Ни один слот не нашёл работы. Статус мог остаться прежним, если
             # очередь опустела не через ветку «item is None» (например, всё
@@ -5657,6 +5660,94 @@ class PipelineManager:
             # Identity-aware: не сносим регистрацию нового worker'а, если enqueue
             # успел поднять его пока мы доходили до finally (гонка close+enqueue).
             self._cleanup_batch_worker(meta_job)
+
+    def _desired_slot_count(self, queue: BatchQueueStatus) -> int:
+        """Сколько слотов нужно очереди ПРЯМО СЕЙЧАС.
+
+        Не `min(потолок, длина очереди)`, как было: та формула считалась один
+        раз на старте, и очередь, запущенная одним проектом, навсегда
+        оставалась однослотовой — дослать в неё девять проектов не помогало.
+
+        Считаем от живого состояния: занятые слоты плюс работа, которую
+        реально можно взять. Проект, который уже ведёт соседний слот, не
+        «берущийся» — два item'а одного проекта одновременно недопустимы
+        (реестры active_jobs/_tasks ключуются голым project_id), поэтому
+        поднимать под него слот бессмысленно: он бы мгновенно вышел, и
+        супервизор крутил бы холостой цикл spawn→exit.
+        """
+        busy = {it.project_id for it in queue.items if it.status == "running"}
+        takeable = sum(
+            1 for it in queue.items
+            if it.status in ("pending", "interrupted") and it.project_id not in busy
+        )
+        return max(0, min(batch_max_parallel(), len(busy) + takeable))
+
+    async def _run_batch_slot_pool(self, queue: BatchQueueStatus, meta_job: AuditJob):
+        """Пул слотов с доливкой: держит столько слотов, сколько есть работы.
+
+        Отличие от прежнего фиксированного `gather`: набор слотов
+        пересматривается — когда в работающую очередь дописывают проекты,
+        `_wake_batch_slots` будит супервизор и он поднимает недостающие слоты
+        немедленно, а не ждёт освобождения существующих.
+        """
+        wake = asyncio.Event()
+        self._batch_slots_wake = wake
+        slots: set[asyncio.Task] = set()
+        waker: Optional[asyncio.Task] = None
+        announced = 0
+        try:
+            while True:
+                desired = self._desired_slot_count(queue)
+                while len(slots) < desired:
+                    slots.add(
+                        asyncio.create_task(self._batch_slot_guarded(queue, meta_job))
+                    )
+                if len(slots) > announced:
+                    announced = len(slots)
+                    await self._log(
+                        meta_job,
+                        f"Параллельная обработка: {announced} слотов одновременно",
+                        "info",
+                    )
+                    await ws_manager.broadcast_global(
+                        WSMessage.log(
+                            "__BATCH__",
+                            f"⇉ Параллельно: {announced} проектов одновременно",
+                            "info",
+                        )
+                    )
+                if not slots:
+                    break
+
+                waker = asyncio.create_task(wake.wait())
+                done, _ = await asyncio.wait(
+                    slots | {waker}, return_when=asyncio.FIRST_COMPLETED
+                )
+                if waker in done:
+                    wake.clear()
+                else:
+                    waker.cancel()
+                waker = None
+                slots -= done
+                # Падение слота не отменяет соседей (их проекты уже в работе,
+                # обрыв стоил бы часов), но и не проглатывается.
+                for task in done:
+                    if task is waker:
+                        continue
+                    exc = task.exception()
+                    if exc is not None and not isinstance(exc, asyncio.CancelledError):
+                        raise exc
+        finally:
+            self._batch_slots_wake = None
+            # Будильник живёт только внутри одной итерации; если вышли из цикла
+            # через отмену/исключение прямо на asyncio.wait — он остаётся
+            # висеть («Task was destroyed but it is pending»).
+            if waker is not None:
+                waker.cancel()
+            for task in slots:
+                task.cancel()
+            if slots:
+                await asyncio.gather(*slots, return_exceptions=True)
 
     async def _batch_slot_worker(self, queue: BatchQueueStatus, meta_job: AuditJob):
         """Один слот: берёт item за item, пока в очереди есть работа.

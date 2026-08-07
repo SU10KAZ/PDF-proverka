@@ -303,3 +303,187 @@ def test_batch_max_parallel_reads_env(monkeypatch):
 class _AliveTask:
     def done(self) -> bool:
         return False
+
+
+# ─── Дозагрузка очереди: вопрос Андрея Ивановича от 06.08.2026 ─────────
+# «Если запущено 10 проектов и 5 пошли сразу — после завершения одного
+#  шестой автоматически пойдёт, чтобы постоянно было 5 в работе?»
+
+
+class _TimelineProbe:
+    """Пишет, сколько проектов работало в момент старта каждого следующего."""
+
+    def __init__(self, holds: dict[str, float], default: float = 0.05):
+        self.holds = holds
+        self.default = default
+        self.now = 0
+        self.peak = 0
+        self.at_start: list[tuple[str, int]] = []
+        self.samples: list[int] = []
+
+    async def dispatch(self, item, job, default_action="full", action_override=None):
+        self.now += 1
+        self.peak = max(self.peak, self.now)
+        self.at_start.append((item.project_id, self.now))
+        try:
+            await asyncio.sleep(self.holds.get(item.project_id, self.default))
+            job.status = JobStatus.COMPLETED
+        finally:
+            self.now -= 1
+
+    async def sample(self, period: float, stop: asyncio.Event):
+        while not stop.is_set():
+            self.samples.append(self.now)
+            await asyncio.sleep(period)
+
+
+@pytest.mark.asyncio
+async def test_ten_projects_keep_five_slots_busy(monkeypatch):
+    """10 проектов при 5 слотах: пул доливается, а не ждёт всю пятёрку.
+
+    Ключевое свойство — слот берёт следующий item СРАЗУ, как освободился, не
+    дожидаясь соседей. Разные длительности специально: если бы дозагрузка шла
+    «волнами по пять», шестой стартовал бы только после самого долгого.
+    """
+    monkeypatch.setenv("BATCH_MAX_PARALLEL", "5")
+    pids = [f"P{i:02d}" for i in range(10)]
+    # Первые пять — резко разной длительности, остальные ровные.
+    holds = {"P00": 0.02, "P01": 0.20, "P02": 0.20, "P03": 0.20, "P04": 0.20}
+    probe = _TimelineProbe(holds, default=0.03)
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([_item(p) for p in pids])
+    mgr._batch_queue = queue
+
+    stop = asyncio.Event()
+    sampler = asyncio.create_task(probe.sample(0.005, stop))
+    await mgr._run_batch_queue(queue, _meta_job())
+    stop.set()
+    await sampler
+
+    assert probe.peak == 5, f"потолок должен быть ровно 5, был {probe.peak}"
+    assert max(probe.samples) <= 5, "пул не имеет права превышать BATCH_MAX_PARALLEL"
+    assert queue.completed == 10 and queue.status == "completed"
+    assert all(it.status == "completed" for it in queue.items)
+
+    # Шестой обязан стартовать, пока четверо ещё работают — то есть на входе
+    # он видит 5 занятых слотов (свой + четыре чужих).
+    sixth_pid, sixth_now = probe.at_start[5]
+    assert sixth_now == 5, (
+        f"шестой ({sixth_pid}) стартовал при {sixth_now} занятых слотах — "
+        "значит пул опустел и дозагрузка идёт волнами, а не по мере освобождения"
+    )
+    # И это не разовая удача: пул держится полным почти весь прогон.
+    full = sum(1 for _, n in probe.at_start if n == 5)
+    assert full >= 6, f"полным пул был лишь при {full} стартах из 10"
+
+
+@pytest.mark.asyncio
+async def test_first_free_slot_takes_the_next_item_not_a_fixed_one(monkeypatch):
+    """Освободившийся слот берёт ПЕРВЫЙ незавершённый сверху очереди.
+
+    От этого зависит перестановка строк в интерфейсе: оператор двигает
+    приоритет — и следующий свободный слот берёт то, что подняли наверх.
+    """
+    monkeypatch.setenv("BATCH_MAX_PARALLEL", "2")
+    probe = _TimelineProbe({"A": 0.02, "B": 0.30}, default=0.02)
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([_item(p) for p in ("A", "B", "C", "D")])
+    mgr._batch_queue = queue
+
+    await mgr._run_batch_queue(queue, _meta_job())
+
+    # A закончился первым → его слот берёт C (первый pending), не D.
+    assert probe.at_start[2][0] == "C", f"третьим взяли {probe.at_start[2][0]}, а не C"
+    assert queue.completed == 4
+
+
+@pytest.mark.asyncio
+async def test_slots_grow_when_projects_are_added_to_a_running_queue(monkeypatch):
+    """Дозагрузка поднимает слоты (запрос Андрея Ивановича 06.08.2026).
+
+    Раньше число слотов считалось ОДИН раз на старте как
+    `min(потолок, длина очереди)`. Запустил очередь одним проектом — получил
+    один слот навсегда, и дослать в неё девять не помогало: они шли по
+    одному. Теперь супервизор пересматривает набор слотов, а enqueue его
+    будит через `_wake_batch_slots`.
+    """
+    monkeypatch.setenv("BATCH_MAX_PARALLEL", "5")
+    probe = _TimelineProbe({"A": 0.30}, default=0.05)
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([_item("A")])          # очередь СТАРТУЕТ с одним проектом
+    mgr._batch_queue = queue
+
+    async def _add_later():
+        await asyncio.sleep(0.05)         # супервизор уже поднял свой слот
+        for p in ("B", "C", "D", "E", "F", "G"):
+            queue.items.append(_item(p))
+        queue.total = len(queue.items)
+        mgr._wake_batch_slots()           # то же, что делает start_batch
+
+    await asyncio.gather(mgr._run_batch_queue(queue, _meta_job()), _add_later())
+
+    assert queue.completed == 7
+    assert probe.peak == 5, (
+        f"после дозагрузки пул должен вырасти до потолка, а вырос до {probe.peak}"
+    )
+    # Долитые проекты обязаны пойти ПАРАЛЛЕЛЬНО с ещё работающим A, а не после.
+    started_while_a_runs = [pid for pid, n in probe.at_start if n >= 2]
+    assert len(started_while_a_runs) >= 4, (
+        "долитые проекты дождались завершения первого — доливка не сработала"
+    )
+
+
+@pytest.mark.asyncio
+async def test_pool_never_exceeds_ceiling_after_adds(monkeypatch):
+    """Доливка не имеет права перескочить BATCH_MAX_PARALLEL."""
+    monkeypatch.setenv("BATCH_MAX_PARALLEL", "3")
+    probe = _TimelineProbe({}, default=0.04)
+    mgr = _mgr(probe.dispatch)
+    queue = _queue([_item("A")])
+    mgr._batch_queue = queue
+
+    async def _flood():
+        for wave in range(3):
+            await asyncio.sleep(0.02)
+            for i in range(5):
+                queue.items.append(_item(f"W{wave}_{i}"))
+            queue.total = len(queue.items)
+            mgr._wake_batch_slots()
+
+    await asyncio.gather(mgr._run_batch_queue(queue, _meta_job()), _flood())
+
+    assert probe.peak <= 3, f"пул превысил потолок: {probe.peak}"
+    assert queue.completed == 16
+
+
+@pytest.mark.asyncio
+async def test_single_item_with_high_ceiling_still_cancels_cleanly(monkeypatch):
+    """Один проект при потолке 5 теперь идёт в дочерней задаче, не в __BATCH__.
+
+    Это ИЗМЕНЕНИЕ: прежняя формула `min(потолок, длина)` давала для одного
+    item'а parallel=1 и исполняла его прямо в корутине __BATCH__. Ради
+    доливки пришлось перейти на пул и здесь — значит отмена обязана
+    по-прежнему доходить до item'а, а очередь не должна зависать.
+    """
+    monkeypatch.setenv("BATCH_MAX_PARALLEL", "5")
+    started = asyncio.Event()
+
+    async def _slow(item, job, default_action="full", action_override=None):
+        started.set()
+        await asyncio.sleep(10)
+        job.status = JobStatus.COMPLETED
+
+    mgr = _mgr(_slow)
+    queue = _queue([_item("SOLO")])
+    mgr._batch_queue = queue
+
+    task = asyncio.create_task(mgr._run_batch_queue(queue, _meta_job()))
+    await asyncio.wait_for(started.wait(), timeout=2)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert queue.items[0].status != "running", (
+        "после отмены item не должен остаться running — иначе cleanup_zombies "
+        "посчитает его живым, а resume снесёт артефакты"
+    )
