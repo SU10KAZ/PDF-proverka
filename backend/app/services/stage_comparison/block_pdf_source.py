@@ -219,6 +219,7 @@ def resolve_block_pdf_source(
     http_get: Optional[Callable[[str], tuple[int, Optional[str], Optional[bytes]]]] = None,
     allow_download: bool = True,
     source_pdf_path: Optional[str | Path] = None,
+    prefer_source_pdf: bool = False,
 ) -> BlockPdfSource:
     """Найти лучший PDF-фрагмент блока (устойчиво к истёкшим/удалённым crop_url).
 
@@ -280,6 +281,29 @@ def resolve_block_pdf_source(
     partial_status: Optional[int] = None
     partial_ctype: Optional[str] = None
 
+    # Autonomous retrieval can already have the authoritative PDF and exact
+    # block geometry. In that workflow, trying thousands of expired public
+    # crop URLs first only adds latency; use the same-version local PDF before
+    # the network and retain crop_url as a fail-soft fallback.
+    if prefer_source_pdf and can_source_fallback:
+        try:
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            out, side = _cache_paths()
+            if not ck:
+                out = cache_dir / f"{_safe_block_id(bid)}_src.pdf"
+            built = _build_block_pdf_from_source(
+                source_pdf_path=source_pdf_path, page_number=int(page),
+                coords_px=coords_px, page_px_size=page_px, out_path=out)
+            if built is not None:
+                if side is not None:
+                    side.write_text("source_pdf", encoding="utf-8")
+                logger.info("block_pdf_source: %s ← preferred source_pdf (page %s)", bid, page)
+                return BlockPdfSource(block_id=bid, source="source_pdf", pdf_path=built,
+                                      crop_url_status=None, content_type="application/pdf")
+        except Exception as exc:  # noqa: BLE001 — fail-soft → crop_url
+            logger.warning("block_pdf_source: %s preferred source-PDF failed: %s",
+                           bid, type(exc).__name__)
+
     # 1. crop_url PDF
     if crop_url and allow_download:
         try:
@@ -302,7 +326,7 @@ def resolve_block_pdf_source(
                            bid, type(exc).__name__)
 
     # 2. source-PDF fallback (crop_url 404/недоступен → рендер из локального PDF)
-    if can_source_fallback:
+    if can_source_fallback and not prefer_source_pdf:
         try:
             cache_dir.mkdir(parents=True, exist_ok=True)
             out, side = _cache_paths()

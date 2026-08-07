@@ -252,6 +252,27 @@ def test_crop_url_404_builds_source_pdf_fallback(tmp_path):
     d.close()
 
 
+def test_prefer_source_pdf_skips_crop_url_request(tmp_path):
+    """Autonomous retrieval uses exact local geometry before stale crop URLs."""
+    source_pdf = tmp_path / "source.pdf"
+    _make_source_pdf(source_pdf)
+    block = _grsh_block_404([100, 100, 500, 400])
+    block["id"] = "LOCAL-FIRST"
+
+    def should_not_fetch(_url):
+        raise AssertionError("crop_url must not be fetched when local geometry is usable")
+
+    src = bps.resolve_block_pdf_source(
+        block,
+        cache_dir=tmp_path / "cache",
+        http_get=should_not_fetch,
+        source_pdf_path=source_pdf,
+        prefer_source_pdf=True,
+    )
+
+    assert src.ok and src.source == "source_pdf"
+
+
 def test_source_pdf_fallback_is_cached(tmp_path):
     """Test A.3: the source-PDF block is written to cache (with a .src sidecar)."""
     src_pdf = _make_source_pdf(tmp_path / "src.pdf")
