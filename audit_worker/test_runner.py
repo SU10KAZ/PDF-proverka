@@ -12,9 +12,11 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
+import threading
 import sys
 import time
 from dataclasses import dataclass
@@ -125,6 +127,19 @@ class RunOutcome:
     steps_done: int
     steps_total: int
     failed_message: Optional[str] = None
+    stdout_lines: int = 0
+    stderr_lines: int = 0
+
+
+def command_fingerprint(argv: list[str]) -> str:
+    """Отпечаток запускаемой команды.
+
+    Нужен при рестарте агента: pid и время старта говорят «процесс жив», но не
+    «это НАШ процесс». Отпечаток фиксирует, что именно мы запускали, и после
+    перезапуска позволяет отличить свой тестовый процесс от чужого,
+    занявшего тот же pid.
+    """
+    return hashlib.sha256("\x00".join(argv).encode("utf-8")).hexdigest()[:32]
 
 
 def run_test_job(
@@ -134,13 +149,16 @@ def run_test_job(
     on_progress: Callable[[int, int, float, str], None],
     on_log: Callable[[str, str], None],
     on_pid: Optional[Callable[[int], None]] = None,
+    on_start: Optional[Callable[[int, str], None]] = None,
     cancel_check: Optional[Callable[[], bool]] = None,
 ) -> RunOutcome:
     """Запустить тестовый процесс, транслируя прогресс и логи через колбэки.
 
     `on_progress(step, total, elapsed_sec, message)` — только по достоверным
     числам от процесса: выдуманный процент нигде не появляется.
-    `on_log(level, line)` — построчный stdout/stderr.
+    `on_log(stream, level, line)` — построчно, с указанием потока
+    («stdout» / «stderr»): потоки читаются РАЗДЕЛЬНО, а не сливаются в один.
+    `on_start(pid, command_fingerprint)` — для реестра процессов.
     """
     result_dir = job_dir / "result"
     result_dir.mkdir(parents=True, exist_ok=True)
@@ -159,58 +177,91 @@ def run_test_job(
         cwd=str(job_dir),
         env=build_env(),
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        # Потоки РАЗДЕЛЕНЫ: слияние в один теряет различие stdout/stderr,
+        # а в логе оно нужно (по нему видно, что процесс ругался).
+        stderr=subprocess.PIPE,
         text=True,
         bufsize=1,
         shell=False,
     )
+    fingerprint = command_fingerprint(argv)
     if on_pid:
         on_pid(process.pid)
+    if on_start:
+        on_start(process.pid, fingerprint)
 
-    steps_done = 0
-    steps_total = params.steps
-    failed_message: Optional[str] = None
+    state = {
+        "steps_done": 0,
+        "steps_total": params.steps,
+        "failed_message": None,
+        "stdout_lines": 0,
+        "stderr_lines": 0,
+    }
+    lock = threading.Lock()
 
-    assert process.stdout is not None
-    for raw_line in process.stdout:
-        line = raw_line.rstrip("\n")
-        if not line:
-            continue
-        if line.startswith("{"):
-            try:
-                event = json.loads(line)
-            except ValueError:
-                on_log("info", line)
+    def pump(stream, name: str) -> None:
+        """Читать один поток целиком. Отдельный поток на каждый пайп.
+
+        Если читать пайпы по очереди, второй переполнится и процесс встанет.
+        """
+        for raw_line in stream:
+            line = raw_line.rstrip("\n")
+            if not line:
                 continue
-            kind = event.get("type")
-            if kind == "progress":
-                steps_done = int(event.get("step", steps_done))
-                steps_total = int(event.get("total", steps_total))
-                on_progress(
-                    steps_done,
-                    steps_total,
-                    float(event.get("elapsed_sec", time.time() - started)),
-                    str(event.get("message", "")),
-                )
-            elif kind == "failed":
-                failed_message = str(event.get("message", "тестовый процесс сообщил сбой"))
-                on_log("error", failed_message)
-            elif kind in ("started", "completed"):
-                on_log("info", line)
-            continue
-        on_log("error" if "СБОЙ" in line or "Traceback" in line else "info", line)
+            with lock:
+                state[f"{name}_lines"] += 1
+            if name == "stdout" and line.startswith("{"):
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    on_log(name, "info", line)
+                    continue
+                kind = event.get("type")
+                if kind == "progress":
+                    with lock:
+                        state["steps_done"] = int(event.get("step", state["steps_done"]))
+                        state["steps_total"] = int(event.get("total", state["steps_total"]))
+                        done, total = state["steps_done"], state["steps_total"]
+                    on_progress(
+                        done, total,
+                        float(event.get("elapsed_sec", time.time() - started)),
+                        str(event.get("message", "")),
+                    )
+                elif kind == "failed":
+                    with lock:
+                        state["failed_message"] = str(
+                            event.get("message", "тестовый процесс сообщил сбой")
+                        )
+                    on_log(name, "error", str(event.get("message", "")))
+                else:
+                    on_log(name, "info", line)
+                continue
+            # stderr всегда уровня error — это его смысл.
+            on_log(name, "error" if name == "stderr" else "info", line)
+            if cancel_check and cancel_check():
+                _terminate(process)
+                return
 
-        if cancel_check and cancel_check():
-            _terminate(process)
-            break
+    threads = [
+        threading.Thread(target=pump, args=(process.stdout, "stdout"),
+                         name="test-stdout", daemon=True),
+        threading.Thread(target=pump, args=(process.stderr, "stderr"),
+                         name="test-stderr", daemon=True),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
     process.wait()
     return RunOutcome(
         exit_code=process.returncode,
         duration_sec=time.time() - started,
-        steps_done=steps_done,
-        steps_total=steps_total,
-        failed_message=failed_message,
+        steps_done=int(state["steps_done"]),
+        steps_total=int(state["steps_total"]),
+        failed_message=state["failed_message"],
+        stdout_lines=int(state["stdout_lines"]),
+        stderr_lines=int(state["stderr_lines"]),
     )
 
 

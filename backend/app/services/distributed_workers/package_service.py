@@ -37,6 +37,11 @@ _HASH_CHUNK = 1024 * 1024
 # Потолки распаковки. Отдельно от размера архива: защита от «бомбы».
 DEFAULT_MAX_UNPACKED_BYTES = 8 * 1024 * 1024 * 1024
 DEFAULT_MAX_ENTRIES = 200_000
+# Потолок степени сжатия: архив, распаковывающийся в сотни раз больше своего
+# размера, — классическая «бомба». Легитимный tar.gz из JSON даёт ~10×, запас
+# до 200× оставлен намеренно широким, чтобы не отвергать нормальные пакеты.
+MAX_COMPRESSION_RATIO = 200
+
 
 
 class PackageError(RuntimeError):
@@ -280,6 +285,7 @@ def safe_extract(
     а dest_dir остаётся нетронутым — «наполовину распакованного» состояния нет.
     """
     comp = compression or detect_compression(archive)
+    compressed_size = archive.stat().st_size
     dest_dir = Path(dest_dir)
     staging = dest_dir.parent / f".{dest_dir.name}.staging-{os.getpid()}-{int(time.time()*1000)}"
     if staging.exists():
@@ -288,6 +294,7 @@ def safe_extract(
 
     total_bytes = 0
     count = 0
+    seen_names: set[str] = set()
     tar = open_read(archive, comp)
     try:
         for member in tar:
@@ -301,9 +308,20 @@ def safe_extract(
             if member.ischr() or member.isblk() or member.isfifo() or member.isdev():
                 raise PackageError(f"Спецфайл в архиве запрещён: {member.name!r}")
             safe_name = _assert_member_safe(member.name)
+            if safe_name in seen_names:
+                raise PackageError(f"Повторяющийся путь в архиве: {safe_name!r}")
+            seen_names.add(safe_name)
             total_bytes += max(0, member.size)
             if total_bytes > max_bytes:
                 raise PackageError(f"Распакованный объём превышает потолок ({max_bytes} байт)")
+            if (
+                compressed_size
+                and total_bytes / compressed_size > MAX_COMPRESSION_RATIO
+            ):
+                raise PackageError(
+                    f"Подозрительная степень сжатия "
+                    f"{total_bytes / compressed_size:.0f}× — архив отклонён"
+                )
             target = staging / safe_name
             # Двойная проверка: итоговый путь обязан лежать внутри staging.
             if not str(target.resolve()).startswith(str(staging.resolve())):

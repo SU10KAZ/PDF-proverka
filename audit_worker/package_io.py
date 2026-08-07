@@ -28,6 +28,11 @@ _CHUNK = 1024 * 1024
 
 MAX_UNPACKED_BYTES = 8 * 1024 * 1024 * 1024
 MAX_ENTRIES = 200_000
+# Потолок степени сжатия: архив, распаковывающийся в сотни раз больше своего
+# размера, — классическая «бомба». Легитимный tar.gz из JSON даёт ~10×, запас
+# до 200× оставлен намеренно широким, чтобы не отвергать нормальные пакеты.
+MAX_COMPRESSION_RATIO = 200
+
 
 
 class BundleError(RuntimeError):
@@ -136,6 +141,23 @@ def verify_and_unpack(
     declared_entries = int((manifest.get("archive") or {}).get("entries") or 0)
     if declared_entries > MAX_ENTRIES:
         raise BundleError(f"Число записей {declared_entries} превышает потолок")
+    compressed = archive.stat().st_size
+    if compressed and declared and declared / compressed > MAX_COMPRESSION_RATIO:
+        raise BundleError(
+            f"Подозрительная степень сжатия {declared / compressed:.0f}× "
+            f"(потолок {MAX_COMPRESSION_RATIO}×) — архив отклонён"
+        )
+
+    # Ожидаемые хэши по файлам: расхождение = подмена содержимого при
+    # совпавшем хэше архива невозможна, но манифест может лгать сам о себе —
+    # сверяем и его.
+    expected_hashes = {
+        str(item.get("path", "")): str(item.get("sha256", ""))
+        for item in (manifest.get("files") or [])
+        if item.get("sha256")
+    }
+    required_files = [str(x) for x in (manifest.get("required_files") or [])]
+    seen_names: set[str] = set()
 
     staging = work_dir.parent / f".{work_dir.name}.staging-{os.getpid()}-{int(time.time()*1000)}"
     shutil.rmtree(staging, ignore_errors=True)
@@ -154,6 +176,11 @@ def verify_and_unpack(
             if member.ischr() or member.isblk() or member.isfifo() or member.isdev():
                 raise BundleError(f"Спецфайл запрещён: {member.name!r}")
             safe = _safe_name(member.name)
+            if safe in seen_names:
+                # Повторяющийся путь: последняя запись «перекрывает» первую —
+                # классический способ протащить содержимое мимо проверок.
+                raise BundleError(f"Повторяющийся путь в архиве: {safe!r}")
+            seen_names.add(safe)
             if safe == MANIFEST_NAME:
                 continue
             if not safe.startswith(PAYLOAD_ROOT):
@@ -174,14 +201,36 @@ def verify_and_unpack(
             src = tar.extractfile(member)
             if src is None:
                 raise BundleError(f"Не удалось прочитать запись: {member.name!r}")
+            digest = hashlib.sha256()
             with target.open("wb") as out:
-                shutil.copyfileobj(src, out, _CHUNK)
+                while True:
+                    block = src.read(_CHUNK)
+                    if not block:
+                        break
+                    digest.update(block)
+                    out.write(block)
             os.chmod(target, 0o644)
+            expected = expected_hashes.get(safe)
+            if expected and digest.hexdigest() != normalize_hash(expected):
+                raise BundleError(
+                    f"SHA-256 файла не совпал с манифестом: {rel!r}"
+                )
     except Exception:
         shutil.rmtree(staging, ignore_errors=True)
         raise
     finally:
         _close(tar)
+
+    # Обязательные файлы источника: их отсутствие означает, что пакет собран
+    # не по контракту, и запускаться по нему нельзя.
+    missing = [
+        name for name in required_files
+        if not (staging / name[len(PAYLOAD_ROOT):]).is_file()
+        and not (staging / name).is_file()
+    ]
+    if missing:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise BundleError(f"В пакете нет обязательных файлов: {missing}")
 
     shutil.rmtree(work_dir, ignore_errors=True)
     work_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -189,31 +238,62 @@ def verify_and_unpack(
     return {"manifest": manifest, "files": count, "bytes": total_bytes}
 
 
+# Разделы результирующего пакета. `input/` — что получили, `work/` — как
+# считали, `result/` — что получилось. Без первых двух разбор инцидента
+# сводится к гаданию.
+RESULT_SECTIONS = ("input", "work", "result")
+# Что из рабочего каталога наружу не уходит: в параметрах нет секретов, но
+# принцип «в результат попадает только явно перечисленное» дешевле поддерживать,
+# чем каждый раз доказывать безопасность нового файла.
+_WORK_ALLOWLIST = {"test_params.json", "completed.marker"}
+
+
 def build_result_package(
     *,
     dest_path: Path,
-    result_dir: Path,
+    job_dir: Path,
     job_id: str,
     attempt_id: str,
     project_id: str,
     version_id: Optional[str],
+    worker_id: str,
     worker_version: str,
     protocol_version: int,
     manifest_version: int,
+    source_package_hash: Optional[str] = None,
+    exit_code: int = 0,
     compression: str = "gzip",
 ) -> dict[str, Any]:
-    """Собрать TAR результата из содержимого result_dir.
+    """Собрать TAR результата: input/ + work/ + result/.
 
     Архив материализуется на диск ДО уведомления центра — это и есть защита
     «готовый пакет не должен потеряться» (§11.8 техпроекта).
     """
+    result_dir = job_dir / "result"
     files: dict[str, bytes] = {}
+
+    # input/: описание задания из исходного пакета — что именно нам выдали.
+    source_job = job_dir / "work" / "job.json"
+    if source_job.is_file():
+        files["input/job.json"] = source_job.read_bytes()
+
+    # work/: только явно разрешённое.
+    work_dir = job_dir / "work"
+    if work_dir.is_dir():
+        for name in sorted(_WORK_ALLOWLIST):
+            candidate = work_dir / name
+            if candidate.is_file():
+                files[f"work/{name}"] = candidate.read_bytes()
+
+    # result/: всё, что произвёл процесс.
     for path in sorted(result_dir.rglob("*")):
         if not path.is_file():
             continue
-        rel = "result/" + path.relative_to(result_dir).as_posix()
-        files[rel] = path.read_bytes()
-    if not files:
+        if path.name.endswith(".tar.gz") or path.name.endswith(".tar.gz.tmp"):
+            continue          # сам архив внутрь себя не кладём
+        files["result/" + path.relative_to(result_dir).as_posix()] = path.read_bytes()
+
+    if not any(k.startswith("result/") for k in files):
         raise BundleError("Каталог результата пуст — собирать нечего")
 
     entries = []
@@ -239,10 +319,15 @@ def build_result_package(
         "version_id": version_id,
         "created_at": time.time(),
         "created_by": {"role": "worker"},
+        "worker_id": worker_id,
         "worker_version": worker_version,
         "protocol_version": protocol_version,
         "project_layout_version": 0,
         "compression": compression,
+        # Хэш исходного пакета: связывает результат с тем, из чего он получен.
+        "source_package_hash": normalize_hash(source_package_hash or "") or None,
+        "exit_code": exit_code,
+        "sections": list(RESULT_SECTIONS),
         "path_root": PAYLOAD_ROOT,
         "files": entries,
         "hardlink_groups": {},
