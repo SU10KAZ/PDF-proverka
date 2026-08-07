@@ -68,9 +68,11 @@ from backend.app.pipeline.stages.gemma_enrichment.gemma_enrichment_contract impo
 from backend.app.core.config import (
     CODEX_STAGE_MODEL_ID,
     PROMPTS_DIR as _PROMPTS_DIR,
+    STAGE01_ABORT_ON_LEG_FAILURE_ENABLED,
     STAGE01_DUAL_GAP_SEARCH_ENABLED,
     STAGE01_DUAL_REVIEW_ENABLED,
     STAGE01_DUAL_REVIEW_MODEL,
+    STAGE01_LEG_FAILURE_THRESHOLD,
     STAGE01_PROTECTION_TABLE_CHECK_ENABLED,
     STAGE02_DUAL_MODEL_ID,
     is_codex_model,
@@ -1973,6 +1975,16 @@ async def run_findings_only_for_project(
     completed_lock = asyncio.Lock()
     results: list[dict] = []
 
+    # ── Остановка стадии при выпадении ноги ансамбля ──────────────────────
+    # Отдельное событие, а НЕ cancel_event: отмена пользователем и аварийная
+    # остановка должны различаться на выходе (cancel → StageResult.cancel,
+    # выпавшая нога → StageResult.fail с текстом, какая именно упала).
+    # Проверяется в тех же двух точках, что и отмена: уже запущенные блоки
+    # доработают, новые не начнутся — это и есть «не продолжаем».
+    abort_event = asyncio.Event()
+    leg_failures: list[dict] = []
+    leg_failure_lock = asyncio.Lock()
+
     async def _one(item: dict, client: Optional[httpx.AsyncClient]) -> Optional[dict]:
         nonlocal completed_count
         if item["enrichment"] is None:
@@ -1986,10 +1998,35 @@ async def run_findings_only_for_project(
                     "completed": cur, "total": len(wanted),
                 })
             return None
+        async def _skip_after_abort() -> None:
+            """Отметить брошенный блок, чтобы прогресс не замер на месте.
+
+            Без этого счётчик «сделано N из M» останавливается и в интерфейсе
+            остановка неотличима от зависания.
+            """
+            nonlocal completed_count
+            async with completed_lock:
+                completed_count += 1
+                cur_ = completed_count
+            if on_progress:
+                on_progress({
+                    "type": "block_skip", "block_id": item["block_id"],
+                    "page": item["page"], "reason": "leg_failure_abort",
+                    "completed": cur_, "total": len(wanted),
+                })
+
         if cancel_event is not None and cancel_event.is_set():
+            return None
+        if abort_event.is_set():
+            await _skip_after_abort()
             return None
         async with sem:
             if cancel_event is not None and cancel_event.is_set():
+                return None
+            # Нога упала у соседнего блока, пока мы стояли за семафором —
+            # не начинаем ещё один платный вызов ради заведомо брошенной стадии.
+            if abort_event.is_set():
+                await _skip_after_abort()
                 return None
             block = by_id[item["block_id"]]
             # При включённом контексте листа берём его целиком: дефолтные 500 симв
@@ -2137,7 +2174,33 @@ async def run_findings_only_for_project(
                                 include_absence_caveat=include_caveat,
                             )
                         )
-                    _dispatch_results = await asyncio.gather(*_dispatch_calls)
+                    # return_exceptions обязателен: у ног есть НЕобёрнутые raise
+                    # (png_to_data_url на эвакуированном кропе — OSError;
+                    # resp.json() при 2xx с не-JSON телом от шлюза OpenRouter).
+                    # Без него исключение вылетало из _dispatch мимо ветки
+                    # TimeoutError, ловилось внешним gather и превращало блок в
+                    # «Unhandled single-block exception» БЕЗ detectors_failed —
+                    # то есть выпавшая нога переставала быть видна, а уже
+                    # оплаченный ответ соседней ноги выбрасывался.
+                    _dispatch_results = await asyncio.gather(
+                        *_dispatch_calls, return_exceptions=True
+                    )
+                    _normalized: list = []
+                    for _r in _dispatch_results:
+                        # CancelledError НЕ глушим: на нём держатся backstop-таймаут
+                        # блока (wait_for) и отмена аудита пользователем.
+                        if isinstance(_r, asyncio.CancelledError):
+                            raise _r
+                        if isinstance(_r, BaseException):
+                            _normalized.append({
+                                "ok": False,
+                                "error": f"{type(_r).__name__}: {_r}",
+                                "parse_error": "leg_exception",
+                                "elapsed_ms": 0,
+                            })
+                        else:
+                            _normalized.append(_r)
+                    _dispatch_results = _normalized
                     _detector_pairs = [
                         (DEFAULT_MODEL, _dispatch_results[0]),
                         (CODEX_STAGE_MODEL_ID, _dispatch_results[1]),
@@ -2286,11 +2349,18 @@ async def run_findings_only_for_project(
                 # keepalive), блок реально завис. wait_for уже отменил вложенный
                 # вызов (httpx-запрос/subprocess убит через CancelledError).
                 # Помечаем блок неудачным и продолжаем стадию, а не морозим батч.
+                # detectors_failed заполняем ЯВНО: без этого блок, где сдохли
+                # ВСЕ ноги, не вызывал остановку, а блок, потерявший одну, —
+                # вызывал. Инверсия строгости: молчим на тяжёлом случае и
+                # останавливаемся на лёгком.
                 res = {
                     "ok": False,
                     "error": f"block_hard_timeout_{block_hard_timeout_s}s",
                     "parse_error": "block_hard_timeout",
                     "elapsed_ms": block_hard_timeout_s * 1000,
+                    "detectors_ok": [],
+                    "detectors_failed": list(configured_detector_models),
+                    "partial": False,
                 }
 
             if not use_dual and protection_pair is not None:
@@ -2301,6 +2371,31 @@ async def run_findings_only_for_project(
                     [(model, res), protection_pair],
                     run_id=run_id,
                 )
+
+            # ── Нога ансамбля не ответила → останавливаем стадию ───────────
+            # Признак уже посчитан в combine_detector_results: непустой
+            # detectors_failed (он же partial). Городить новую детекцию не надо
+            # — надо перестать игнорировать то, что и так известно.
+            # У одномодельных режимов список пуст: ансамбля нет, падать нечему.
+            if STAGE01_ABORT_ON_LEG_FAILURE_ENABLED:
+                _failed_legs = list(res.get("detectors_failed") or [])
+                if _failed_legs:
+                    async with leg_failure_lock:
+                        leg_failures.append({
+                            "block_id": item["block_id"],
+                            # sheet (номер из штампа) и page (страница PDF) —
+                            # РАЗНЫЕ вещи (CLAUDE.md). Пишем оба: «лист 7» для
+                            # номера страницы дезинформирует инженера.
+                            "sheet": sheet_for_page(graph, block["page"]) or "",
+                            "page": block["page"],
+                            "failed_legs": _failed_legs,
+                            "error": (
+                                res.get("error") or res.get("parse_error") or ""
+                            )[:500],
+                        })
+                        _reached = len(leg_failures) >= STAGE01_LEG_FAILURE_THRESHOLD
+                    if _reached:
+                        abort_event.set()
 
             # Publication is evidence-first, but no candidate is destroyed:
             # deferred_findings stays in the per-block audit record.
@@ -2433,6 +2528,9 @@ async def run_findings_only_for_project(
             results.append(result)
 
     cancelled = cancel_event is not None and cancel_event.is_set()
+    # Аварийная остановка по выпавшей ноге — НЕ отмена пользователем: обёртка
+    # этапа обязана развести их и вернуть fail с текстом, а не cancel.
+    aborted_on_leg_failure = abort_event.is_set()
 
     # Build production-format 01_blocks_analysis.json
     finding_id_counter = [0]
@@ -2663,9 +2761,25 @@ async def run_findings_only_for_project(
             "blocks_crop_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
             "wall_clock_s": wall_clock_s,
             "cancelled": cancelled,
+            "aborted_on_leg_failure": aborted_on_leg_failure,
+            "leg_failures": leg_failures,
         },
         "block_analyses": block_analyses,
     }
+
+    if write_target and aborted_on_leg_failure:
+        # НЕ перезаписываем итог стадии огрызком аварийно оборванного прогона.
+        # Сценарий потери данных: полный аудит на 205 блоков есть → retry этапа
+        # 01 → на 6-м блоке выпала нога → сюда приходит output_doc из 6 блоков.
+        # Страховка .classic.bak.json не спасает: она пишется только `if not
+        # bak.exists()`, то есть относится к самому первому прогону.
+        # Результаты самого оборванного прогона не теряются — они лежат
+        # поблочно в run_dir/block_<id>.json.
+        write_target = False
+        logging.getLogger(__name__).warning(
+            "Stage 01 остановлен из-за выпавшей ноги: %s НЕ перезаписан, "
+            "прежний результат сохранён.", target_path.name,
+        )
 
     if write_target:
         if target_path.exists():
@@ -2758,6 +2872,10 @@ async def run_findings_only_for_project(
         "blocks_crop_dir": f"_output/{STAGE02_BLOCKS_DIRNAME}",
         "wall_clock_s": wall_clock_s,
         "cancelled": cancelled,
+        # Аварийная остановка по выпавшей ноге. leg_failures — что именно
+        # упало: обёртка этапа собирает из этого текст для пользователя.
+        "aborted_on_leg_failure": aborted_on_leg_failure,
+        "leg_failures": leg_failures,
         "detector_calls": sum(
             len(r["result"].get("detector_results") or []) or 1
             for r in results

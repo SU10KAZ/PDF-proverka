@@ -815,6 +815,63 @@ async def run_block_analysis_findings_only(
         )
         return StageResult.cancel()
 
+    # ── Нога ансамбля выпала → стадия провалена, аудит дальше не идёт ──────
+    # Требование Андрея Ивановича от 06.08.2026. Разбирается ДО проверки
+    # «все блоки упали»: там условие blocks_ok == 0, а при выпавшей ноге блоки
+    # как раз успешны (ok = хоть одна нога ответила) — и остановка бы не
+    # сработала. Ставится именно fail, а не cancel: cancel означает «отменил
+    # пользователь» и не считается сбоем.
+    if summary.get("aborted_on_leg_failure"):
+        leg_failures = summary.get("leg_failures") or []
+        # Какие модели выпали и сколько раз — это первое, что нужно знать:
+        # «упала нога codex/gpt-5.4» отвечает на вопрос сразу, номер блока — нет.
+        counts: dict[str, int] = {}
+        for entry in leg_failures:
+            for leg in entry.get("failed_legs") or []:
+                counts[str(leg)] = counts.get(str(leg), 0) + 1
+        legs_text = ", ".join(
+            f"{leg} ({n} бл.)" if n > 1 else str(leg)
+            for leg, n in sorted(counts.items(), key=lambda kv: -kv[1])
+        ) or "неизвестная модель"
+        first = leg_failures[0] if leg_failures else {}
+        reason = str(first.get("error") or "").strip()
+        # sheet (номер из штампа) ≠ page (страница PDF) — CLAUDE.md. Пишем лист,
+        # а страницу PDF в скобках: инженер ищет по листу.
+        if first:
+            _sheet = str(first.get("sheet") or "").strip()
+            _page = first.get("page")
+            where = (
+                f"лист {_sheet}, стр. PDF {_page}" if _sheet else f"стр. PDF {_page}"
+            ) + f", блок {first.get('block_id')}"
+        else:
+            where = "—"
+        # Имя ноги обязано попасть в первые 60 символов: панель очереди режет
+        # item.error по 60, значок «!» на плитке — по 77.
+        error = (
+            f"Упала нога {legs_text} — аудит остановлен. Первое падение: {where}."
+            + (f" Причина: {reason}" if reason else "")
+        )
+        # Пишем в ДВА места: pipeline_log даёт статус этапа в интерфейсе,
+        # ctx.log — строку в журнале аудита, который смотрят чаще.
+        ctx.update_pipeline_log("block_analysis", "error", error=error)
+        await ctx.log(f"  ✖ Аудит остановлен. {error}", "error")
+        await ctx.log(
+            f"  Обработано до остановки: {summary['blocks_ok']} из "
+            f"{summary['blocks_total']} блоков. Итог этапа НЕ перезаписан — "
+            f"результат прошлого полного прогона цел. Устраните причину и "
+            f"запустите этап 01 заново (поблочные записи оборванного прогона "
+            f"лежат в _stage01_findings_only_runs).",
+            "warn",
+        )
+        if ctx.record_block_analysis_usage:
+            # Потраченное до остановки всё равно списано — иначе стоимость
+            # прогона покажет $0 при реально сожжённых токенах.
+            try:
+                ctx.record_block_analysis_usage(summary)
+            except Exception as exc:  # noqa: BLE001
+                await ctx.log(f"  usage не записан: {exc}", "warn")
+        return StageResult.fail(f"Stage 01: {error}")
+
     if summary["blocks_failed"] > 0 and summary["blocks_ok"] == 0:
         error = f"Все {summary['blocks_failed']} блоков упали"
         ctx.update_pipeline_log("block_analysis", "error", error=error)
