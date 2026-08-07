@@ -85,6 +85,20 @@ async def subsystem_status() -> dict[str, Any]:
         settings.require_bootstrap_secret()
     except DistributedWorkersConfigError as exc:
         config_error = str(exc)
+    # Операторский контур мог не подняться из-за выключенной портальной
+    # авторизации — экран должен сказать об этом прямо, а не показывать
+    # пустые списки и загадочные 404.
+    from backend.app.core import portal_auth as _portal_auth
+
+    admin_available = (
+        _portal_auth.get_settings().enabled or settings.allow_insecure_admin
+    )
+    if not admin_available and not config_error:
+        config_error = (
+            "Операторский API не поднят: PORTAL_AUTH_ENABLED=false, а своей "
+            "аутентификации у него нет. Включите портальную защиту либо "
+            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN=true для локального пилота."
+        )
     return {
         "enabled": True,
         "protocol_version": settings.protocol_version,
@@ -94,6 +108,7 @@ async def subsystem_status() -> dict[str, Any]:
         "heartbeat_offline_sec": settings.heartbeat_offline_sec,
         "upload_chunk_bytes": settings.upload_chunk_bytes,
         "test_job_max_sec": settings.test_job_max_sec,
+        "admin_api_available": admin_available,
         "config_error": config_error,
     }
 
@@ -116,6 +131,11 @@ async def list_workers() -> dict[str, Any]:
             "online": online,
             "free_slots": free_slots,
             "active_jobs": sum(len(w["active_jobs"]) for w in workers),
+            # Заявки, ждущие решения оператора: их нельзя «не заметить» —
+            # до одобрения воркер вообще не получает токен.
+            "pending": sum(
+                1 for w in workers if w["registration_status"] == "pending"
+            ),
         },
         "server_time": now,
     }
@@ -152,6 +172,20 @@ async def approve_worker(
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_approved", worker_id=worker_id)
+    return {"worker": worker_registry.to_view(row)}
+
+
+@router.post("/{worker_id}/reject")
+async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
+    """Отклонить заявку. Claim-secret обесценивается, токен не выдаётся."""
+    settings = _settings_or_404()
+    try:
+        row = await database.run_db(
+            registration_service.reject_worker, worker_id=worker_id, settings=settings
+        )
+    except registration_service.RegistrationConflict as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    _audit(request, "worker_rejected", worker_id=worker_id)
     return {"worker": worker_registry.to_view(row)}
 
 
@@ -282,14 +316,17 @@ async def get_job_logs(
     row = await database.run_db(repositories.get_job, job_id, settings=settings)
     if row is None:
         raise HTTPException(status_code=404, detail="Задание не найдено.")
-    lines = await database.run_db(
-        event_service.read_log_lines,
-        job_id,
-        attempt or row["attempt_id"],
-        after_seq=after_seq,
-        limit=limit,
-        settings=settings,
-    )
+    try:
+        lines = await database.run_db(
+            event_service.read_log_lines,
+            job_id,
+            attempt or row["attempt_id"],
+            after_seq=after_seq,
+            limit=limit,
+            settings=settings,
+        )
+    except event_service.UnsafeIdentifier as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"lines": lines, "attempt_id": attempt or row["attempt_id"]}
 
 

@@ -30,6 +30,7 @@ from backend.app.services.distributed_workers.settings import (
 
 TOKEN_PREFIX = "wtk_"
 EXEC_TOKEN_PREFIX = "etk_"
+CLAIM_PREFIX = "clm_"
 
 
 def generate_token() -> str:
@@ -38,6 +39,11 @@ def generate_token() -> str:
 
 def generate_execution_token() -> str:
     return EXEC_TOKEN_PREFIX + secrets.token_urlsafe(24)
+
+
+def generate_claim_secret() -> str:
+    """Одноразовый секрет получения токена. Хранится на центре только хэшем."""
+    return CLAIM_PREFIX + secrets.token_urlsafe(32)
 
 
 def hash_token(token: str) -> str:

@@ -6,6 +6,7 @@ import platform
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import urlparse
 
 from audit_worker import PROTOCOL_VERSION, __version__
 
@@ -49,6 +50,9 @@ class WorkerConfig:
     test_max_steps: int = 100
     test_max_result_bytes: int = 8 * 1024 * 1024
     verify_tls: bool = True
+    # Dev-режим: разрешает http:// ТОЛЬКО для localhost. Глобального
+    # отключения проверки TLS не существует — см. validate_transport_security.
+    allow_insecure_localhost: bool = False
     extra_capabilities: dict = field(default_factory=dict)
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
@@ -106,7 +110,7 @@ def load_config(argv_root: str | None = None) -> WorkerConfig:
             "AUDIT_WORKER_DISPATCHER_URL не задан. Пример:\n"
             "  export AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.app"
         )
-    return WorkerConfig(
+    config = WorkerConfig(
         dispatcher_url=url,
         root=root,
         display_name=os.environ.get("AUDIT_WORKER_NAME", "").strip()
@@ -116,9 +120,53 @@ def load_config(argv_root: str | None = None) -> WorkerConfig:
         max_slots=max(1, min(5, _env_int("AUDIT_WORKER_MAX_SLOTS", 1))),
         request_timeout_sec=_env_float("AUDIT_WORKER_TIMEOUT_SEC", 60.0),
         test_max_total_sec=_env_float("AUDIT_WORKER_TEST_MAX_SEC", 300.0),
-        verify_tls=os.environ.get("AUDIT_WORKER_VERIFY_TLS", "true").lower()
-        not in {"0", "false", "no", "off"},
+        # verify_tls намеренно НЕ управляется переменной окружения: глобальный
+        # verify=false — это тихое отключение защиты канала. Единственная
+        # послабляющая настройка — dev-флаг для localhost (проверяется отдельно).
+        verify_tls=True,
+        allow_insecure_localhost=os.environ.get(
+            "AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST", "false"
+        ).lower() in {"1", "true", "yes", "on"},
     )
+    validate_transport_security(config)
+    return config
+
+
+class InsecureTransportError(SystemExit):
+    """Небезопасный транспорт: агент не стартует, а не работает молча по HTTP."""
+
+
+LOCALHOST_HOSTS = {"localhost", "127.0.0.1", "::1", "[::1]"}
+
+
+def validate_transport_security(config: "WorkerConfig") -> None:
+    """Прод обязан быть HTTPS. HTTP допустим только к localhost и только с флагом.
+
+    Ошибка отображается явным текстом при старте, а не превращается в тихую
+    работу открытым текстом по сети.
+    """
+    parsed = urlparse(config.dispatcher_url)
+    scheme = (parsed.scheme or "").lower()
+    host = (parsed.hostname or "").lower()
+
+    if scheme == "https":
+        return
+    if scheme != "http":
+        raise InsecureTransportError(
+            f"AUDIT_WORKER_DISPATCHER_URL: ожидается https:// (получено {scheme or 'без схемы'}://)"
+        )
+    if host not in LOCALHOST_HOSTS:
+        raise InsecureTransportError(
+            f"AUDIT_WORKER_DISPATCHER_URL={config.dispatcher_url}: HTTP запрещён для "
+            f"внешнего хоста {host!r}. Используйте https://. "
+            "HTTP допустим только к localhost и только с "
+            "AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true."
+        )
+    if not config.allow_insecure_localhost:
+        raise InsecureTransportError(
+            "HTTP к localhost требует явного AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true "
+            "(dev-режим). В проде используйте https://."
+        )
 
 
 def python_executable() -> str:

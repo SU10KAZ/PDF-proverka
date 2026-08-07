@@ -56,11 +56,38 @@ class WorkerStateStore:
         return self.token_path.read_text(encoding="utf-8").strip() or None
 
     def write_token(self, token: str) -> None:
-        self.token_path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self.token_path.with_suffix(".tmp")
-        tmp.write_text(token, encoding="utf-8")
-        os.chmod(tmp, 0o600)          # права ДО переименования: гонки нет
-        os.replace(tmp, self.token_path)
+        self._write_secret(self.token_path, token)
+
+    # ─── Одноразовый claim-secret ────────────────────────────────────────────
+    # Живёт между регистрацией и одобрением оператором. После обмена на токен
+    # удаляется: второй раз он всё равно не сработает.
+    @property
+    def claim_path(self) -> Path:
+        return self.token_path.with_name("claim_secret")
+
+    def read_claim_secret(self) -> Optional[str]:
+        if not self.claim_path.is_file():
+            return None
+        return self.claim_path.read_text(encoding="utf-8").strip() or None
+
+    def write_claim_secret(self, secret: str) -> None:
+        self._write_secret(self.claim_path, secret)
+
+    def drop_claim_secret(self) -> None:
+        self.claim_path.unlink(missing_ok=True)
+
+    @staticmethod
+    def _write_secret(path: Path, value: str) -> None:
+        """Записать секрет атомарно и с правами 0600.
+
+        chmod делается ДО переименования: иначе между replace и chmod файл
+        секунду доступен на чтение всем.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(value, encoding="utf-8")
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, path)
 
 
 class LocalJobStore:

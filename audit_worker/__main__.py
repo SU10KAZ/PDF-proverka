@@ -1,7 +1,9 @@
 """Точка входа агента: `python -m audit_worker`.
 
 Подкоманды:
-    register   — зарегистрироваться в центре (нужен bootstrap-секрет)
+    register   — заявка на регистрацию (нужен bootstrap-секрет), а после
+                 одобрения оператором — повторный вызов БЕЗ секрета, чтобы
+                 обменять одноразовый claim-secret на токен
     run        — основной цикл: heartbeat + приём заданий
     status     — что агент знает о себе и своих заданиях (офлайн, без сети)
     selftest   — прогнать тестовый процесс локально, без центра
@@ -12,7 +14,10 @@
     AUDIT_WORKER_NAME             отображаемое имя VPS
     AUDIT_WORKER_MAX_SLOTS        1..5
     AUDIT_WORKER_HEARTBEAT_SEC    период heartbeat, по умолчанию 30
-    AUDIT_WORKER_VERIFY_TLS       false отключает проверку TLS (только для тестов!)
+    AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST  разрешить http:// к localhost (dev)
+
+Проверка TLS-сертификата не отключается ничем: переменной для этого нет
+намеренно — иначе она рано или поздно окажется включённой в проде.
 """
 from __future__ import annotations
 
@@ -22,6 +27,7 @@ import sys
 from pathlib import Path
 
 from audit_worker import __version__
+from audit_worker.client import CenterError
 from audit_worker.config import load_config
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
 from audit_worker.registration import RegistrationRequired, ensure_registered
@@ -30,7 +36,26 @@ from audit_worker.registration import RegistrationRequired, ensure_registered
 def _cmd_register(args: argparse.Namespace) -> int:
     config = load_config(args.root)
     config.ensure_dirs()
-    identity = ensure_registered(config, bootstrap_secret=args.bootstrap_secret)
+    store = WorkerStateStore(config.state_path, config.token_path)
+    # Второй этап (обмен claim-secret на токен) секрета регистрации не требует:
+    # он уже лежит на диске. Требовать его снова — заставлять оператора
+    # держать bootstrap-secret под рукой дольше, чем нужно.
+    if not args.bootstrap_secret and not (
+        store.read_claim_secret() or store.read_token()
+    ):
+        print(
+            "Нужен --bootstrap-secret: на диске нет ни claim-secret, ни токена.",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        identity = ensure_registered(config, bootstrap_secret=args.bootstrap_secret)
+    except CenterError as exc:
+        print(f"Центр отклонил регистрацию: {exc}", file=sys.stderr)
+        return 2
+    except RegistrationRequired as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     print(json.dumps(
         {
             "worker_id": identity.get("worker_id"),
@@ -41,11 +66,14 @@ def _cmd_register(args: argparse.Namespace) -> int:
         },
         ensure_ascii=False, indent=2,
     ))
-    print(
-        "\nДальше: оператор одобряет воркер на экране «Аудит-воркеры» "
-        "(POST /api/workers/<worker_id>/approve), после чего запускайте "
-        "`python -m audit_worker run`."
-    )
+    if identity.get("token"):
+        print("\nТокен получен. Запускайте `python -m audit_worker run`.")
+    else:
+        print(
+            "\nДальше: оператор одобряет воркер на экране «Аудит-воркеры» "
+            "(POST /api/workers/<worker_id>/approve), после чего повторите "
+            "`python -m audit_worker register` уже БЕЗ --bootstrap-secret."
+        )
     return 0
 
 
@@ -58,6 +86,9 @@ def _cmd_run(args: argparse.Namespace) -> int:
         identity = ensure_registered(config, bootstrap_secret=args.bootstrap_secret)
     except RegistrationRequired as exc:
         print(str(exc), file=sys.stderr)
+        return 2
+    except CenterError as exc:
+        print(f"Центр отклонил регистрацию: {exc}", file=sys.stderr)
         return 2
     if not identity.get("token"):
         print("Токен воркера не найден. Выполните `register`.", file=sys.stderr)
@@ -122,7 +153,7 @@ def _cmd_selftest(args: argparse.Namespace) -> int:
         params=params,
         job_dir=root,
         on_progress=lambda s, t, e, m: print(f"  прогресс {s}/{t}: {m}"),
-        on_log=lambda level, line: print(f"  [{level}] {line}"),
+        on_log=lambda stream, level, line: print(f"  [{stream}/{level}] {line}"),
     )
     print(f"код возврата: {outcome.exit_code}, длительность {outcome.duration_sec:.2f} с")
     summary = root / "result" / "summary.json"
@@ -138,8 +169,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=__version__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p_reg = sub.add_parser("register", help="зарегистрироваться в центре")
-    p_reg.add_argument("--bootstrap-secret", required=True)
+    p_reg = sub.add_parser(
+        "register",
+        help="заявка на регистрацию, а после одобрения — получение токена",
+    )
+    p_reg.add_argument(
+        "--bootstrap-secret",
+        default=None,
+        help="секрет регистрации; не нужен при повторном вызове после одобрения",
+    )
     p_reg.set_defaults(func=_cmd_register)
 
     p_run = sub.add_parser("run", help="основной цикл агента")

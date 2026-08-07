@@ -78,6 +78,18 @@ def ensure_registered(
                     raise
         return {**state, "token": token}
 
+    # Заявка подана, токена ещё нет — пробуем забрать его claim-секретом.
+    # Это возможно только после одобрения оператором.
+    if state.get("worker_id") and store.read_claim_secret():
+        claimed = try_claim(config, state)
+        if claimed:
+            return claimed
+        if not bootstrap_secret:
+            raise RegistrationRequired(
+                "Регистрация подана, но ещё не одобрена оператором. "
+                "Одобрите воркер на экране «Аудит-воркеры» и запустите снова."
+            )
+
     if not bootstrap_secret:
         raise RegistrationRequired(
             "Воркер не зарегистрирован. Запустите с --bootstrap-secret "
@@ -111,9 +123,54 @@ def ensure_registered(
     state["chunk_size_bytes"] = response.get("chunk_size_bytes")
     store.save(state)
 
-    token = response.get("worker_token")
-    if token:
-        store.write_token(token)      # права 0600, единственное место хранения
-    else:
-        token = store.read_token()
-    return {**state, "token": token}
+    # Токен на этом шаге НЕ выдаётся: центр вернул одноразовый claim-secret,
+    # который сработает только после одобрения оператором.
+    claim_secret = response.get("claim_secret")
+    if claim_secret:
+        store.write_claim_secret(claim_secret)   # права 0600
+
+    claimed = try_claim(config, state)
+    if claimed:
+        return claimed
+    return {**state, "token": store.read_token()}
+
+
+def try_claim(config: WorkerConfig, state: dict[str, Any]) -> Optional[dict[str, Any]]:
+    """Попробовать обменять claim-secret на токен. None, если ещё не одобрено.
+
+    Не считается ошибкой: до одобрения оператором центр отвечает 409, и это
+    штатное состояние ожидания, а не сбой.
+    """
+    store = WorkerStateStore(config.state_path, config.token_path)
+    claim_secret = store.read_claim_secret()
+    if not claim_secret or not state.get("worker_id"):
+        return None
+
+    with CenterClient(
+        config.dispatcher_url,
+        instance_id=state["instance_id"],
+        timeout=config.request_timeout_sec,
+        verify=config.verify_tls,
+        transport=config.transport,
+    ) as client:
+        try:
+            response = client.claim(
+                {
+                    "worker_id": state["worker_id"],
+                    "instance_id": state["instance_id"],
+                    "claim_secret": claim_secret,
+                }
+            )
+        except CenterError as exc:
+            if exc.status == 409:
+                state["claim_status"] = str(exc.detail)
+                store.save(state)
+                return None
+            raise
+
+    store.write_token(response["worker_token"])
+    store.drop_claim_secret()        # одноразовый: больше не нужен
+    state["registration_status"] = response.get("registration_status")
+    state["claim_status"] = "claimed"
+    store.save(state)
+    return {**state, "token": response["worker_token"]}

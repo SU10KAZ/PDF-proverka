@@ -21,7 +21,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -198,7 +198,24 @@ CREATE TABLE IF NOT EXISTS resource_snapshots (
 CREATE INDEX IF NOT EXISTS ix_res_worker ON resource_snapshots(worker_id, at DESC);
 """
 
-MIGRATIONS: dict[int, str] = {1: _MIGRATION_1}
+# Миграция 2: двухэтапная выдача токена (регистрация → одобрение → claim).
+# Раньше worker_token выдавался прямо в ответе на /register, то есть ДО
+# одобрения оператором: секрет существовал у неодобренного воркера. Теперь
+# на регистрацию выдаётся одноразовый claim-secret, а сам токен — только
+# после одобрения и только один раз.
+#
+# Миграция аддитивная: ALTER TABLE ADD COLUMN не трогает существующие строки,
+# поэтому обновление идёт без удаления базы.
+_MIGRATION_2 = """
+ALTER TABLE workers ADD COLUMN claim_secret_sha256 TEXT;
+ALTER TABLE workers ADD COLUMN claim_issued_at REAL;
+ALTER TABLE workers ADD COLUMN claim_used_at REAL;
+ALTER TABLE workers ADD COLUMN rejected_at REAL;
+CREATE INDEX IF NOT EXISTS ix_workers_claim
+    ON workers(claim_secret_sha256) WHERE claim_secret_sha256 IS NOT NULL;
+"""
+
+MIGRATIONS: dict[int, str] = {1: _MIGRATION_1, 2: _MIGRATION_2}
 
 
 def apply_pragmas(conn: sqlite3.Connection) -> None:
