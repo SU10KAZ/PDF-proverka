@@ -1614,3 +1614,369 @@ def test_dangerous_values_reach_screen_as_text(admin, center_env):
     jobs = admin.get("/api/workers/jobs/list").json()["jobs"]
     assert any(job["project_id"] == payload for job in jobs)
     assert repositories.list_workers(settings=center_env)
+
+
+# ═══ §10 Правки по итогам состязательной проверки ════════════════════════════
+# Четыре независимые read-only проверки (§41 задания) нашли дефекты, часть из
+# которых лежала ровно на двухслотовом пути. Здесь закрепляется КАЖДОЕ
+# подтверждённое исправление — иначе следующая правка тихо вернёт всё назад.
+
+def test_terminal_queue_state_cannot_be_overwritten(tmp_path):
+    """Исход попытки записывается один раз. Второй поверх него — потеря."""
+    from audit_worker import local_db
+
+    db = local_db.LocalDB(tmp_path / "worker.db")
+    db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1", params={})
+    assert db.set_queue_state("a1", local_db.QUEUE_CANCELLED) is True
+    # Любая попытка «переехать» из терминального состояния отбивается.
+    for state in (local_db.QUEUE_RUNNING, local_db.QUEUE_FAILED,
+                  local_db.QUEUE_FINISHED, local_db.QUEUE_QUEUED):
+        assert db.set_queue_state("a1", state) is False, state
+    assert db.queue_item("a1")["state"] == local_db.QUEUE_CANCELLED
+
+
+def test_queue_state_write_can_require_the_state_it_observed(tmp_path):
+    """Условная запись закрывает окно «прочитал → решил → записал»."""
+    from audit_worker import local_db
+
+    db = local_db.LocalDB(tmp_path / "worker.db")
+    db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1", params={})
+    assert db.set_queue_state("a1", local_db.QUEUE_RUNNING,
+                              expect_states=(local_db.QUEUE_CLAIMED,)) is False
+    assert db.queue_item("a1")["state"] == local_db.QUEUE_QUEUED
+    assert db.set_queue_state("a1", local_db.QUEUE_RUNNING,
+                              expect_states=(local_db.QUEUE_QUEUED,)) is True
+
+
+def test_cancelled_attempt_never_starts_a_process(tmp_path, monkeypatch):
+    """Гонка отмены: центр уже считает попытку отменённой — процесс не стартует.
+
+    Сценарий из состязательной проверки: отмена застаёт попытку в `claimed`
+    (поток задания ещё готовится), ставит `cancelled` и отвечает центру
+    «локально не выполняется». Центр объявляет попытку отменённой и освобождает
+    слот. Если после этого поток задания запустит процесс, работа пойдёт в
+    контур отменённой попытки и сгорит молча.
+    """
+    from audit_worker import local_db, test_runner
+    from audit_worker.executor import Executor
+
+    executor = Executor(_worker_config(tmp_path, max_slots=2))
+    executor.db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1",
+                        params={"label": "x", "steps": 1, "step_seconds": 0.0})
+    item = executor.db.claim_next(executor.instance_id, capacity_limit=2)
+    assert item is not None
+    executor.jobs.create({"job_id": "j1", "attempt_id": "a1",
+                          "job_type": "test_pipeline_v1", "project_id": "p",
+                          "execution_token": "etk", "params": {}, "package": {}})
+
+    # Отмена успевает первой.
+    assert executor.db.set_queue_state("a1", local_db.QUEUE_CANCELLED) is True
+
+    launched: list[str] = []
+    monkeypatch.setattr(
+        test_runner, "run_test_job",
+        lambda *a, **k: launched.append("started"),
+    )
+    outcome = executor.run_attempt(item)
+    assert outcome["ok"] is False and outcome["reason"] == "superseded"
+    assert launched == [], "процесс запущен поверх отменённой попытки"
+    assert executor.db.queue_item("a1")["state"] == local_db.QUEUE_CANCELLED
+
+
+def test_cancel_that_lost_the_race_does_not_report_success(tmp_path):
+    """Проиграв гонку, отмена отвечает ошибкой, а не «отменено»."""
+    from audit_worker import local_db
+    from audit_worker.executor import Executor
+
+    executor = Executor(_worker_config(tmp_path, max_slots=1))
+    executor.db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1",
+                        params={})
+    executor.db.set_queue_state("a1", local_db.QUEUE_FINISHED)
+    result = executor._cancel_lost_race("a1", local_db.QUEUE_CLAIMED)
+    assert result["status"] == "error"
+    assert result["detail"]["outcome"] == "state_changed_concurrently"
+
+
+def test_process_row_is_closed_after_restart_packaging(tmp_path):
+    """После рестарта исполнителя запись процесса обязана перестать быть `running`.
+
+    Иначе удержание отказывается удалять попытку навсегда («процесс помечен
+    работающим»), и архивы копятся на диске молча.
+    """
+    from audit_worker.executor import Executor
+
+    executor = Executor(_worker_config(tmp_path, max_slots=1))
+    executor.db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1",
+                        params={})
+    executor.db.claim_next(executor.instance_id, capacity_limit=1)
+    executor.db.register_process(
+        job_id="j1", attempt_id="a1", executor_instance_id=executor.instance_id,
+        pid=os.getpid(), process_start_identity=1.0,
+        command_fingerprint="fp", process_group_id=os.getpgid(0),
+    )
+    meta = executor.jobs.create({"job_id": "j1", "attempt_id": "a1",
+                                 "job_type": "test_pipeline_v1", "project_id": "p",
+                                 "execution_token": "etk", "params": {}, "package": {}})
+    result_dir = executor.jobs.job_dir("j1", "a1") / "result"
+    result_dir.mkdir(parents=True, exist_ok=True)
+    (result_dir / "out.txt").write_text("готово", encoding="utf-8")
+    assert executor.db.process_row("a1")["status"] == "running"
+
+    item = executor.db.queue_item("a1")
+    executor._finish_from_marker(item, {**meta, "exit_code": 0})
+
+    row = executor.db.process_row("a1")
+    assert row["status"] == "exited", row
+    assert executor.db.queue_item("a1")["state"] == "finished"
+
+
+def test_adopt_claim_transfers_ownership_so_lease_renews(tmp_path):
+    """Подхват после рестарта переписывает владельца строки очереди на себя."""
+    from audit_worker import local_db
+
+    db = local_db.LocalDB(tmp_path / "worker.db")
+    db.enqueue(job_id="j1", attempt_id="a1", job_type="test_pipeline_v1", params={})
+    db.claim_next("executor-old", capacity_limit=1)
+    assert db.queue_item("a1")["claimed_by_executor"] == "executor-old"
+
+    assert db.adopt_claim("a1", "executor-new") is True
+    assert db.queue_item("a1")["claimed_by_executor"] == "executor-new"
+    # Терминальную попытку подхватывать нечем.
+    db.set_queue_state("a1", local_db.QUEUE_FINISHED)
+    assert db.adopt_claim("a1", "executor-third") is False
+
+
+def test_signal_is_never_sent_without_a_proven_process_group():
+    """Не доказана группа — не отправляется НИЧЕГО, даже по голому pid."""
+    from audit_worker import process_control
+
+    detail = process_control.terminate(
+        {"pid": os.getpid(), "process_group_id": None, "process_start_identity": None},
+        grace_period_sec=0.0,
+    )
+    assert detail["outcome"] == process_control.OUTCOME_AMBIGUOUS
+    assert "не отправлен" in detail["message"]
+    # Запасного пути «убить по pid» в модуле больше нет.
+    from audit_worker import process_registry
+
+    assert not hasattr(process_registry.ProcessRegistry, "terminate_job")
+
+
+def test_temp_file_name_is_unique_per_thread(tmp_path):
+    """Два потока одного процесса не должны писать в один временный файл."""
+    import threading as _threading
+
+    from audit_worker import local_store
+
+    names: list[str] = []
+    real_replace = os.replace
+
+    def spy(src, dst):
+        names.append(str(src))
+        return real_replace(src, dst)
+
+    original = local_store.os.replace
+    local_store.os.replace = spy
+    try:
+        threads = [
+            _threading.Thread(
+                target=local_store.atomic_write_json,
+                args=(tmp_path / "same.json", {"n": i}),
+            )
+            for i in range(4)
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+    finally:
+        local_store.os.replace = original
+    assert len(set(names)) == len(names), names
+
+
+def test_role_diagnostics_never_leak_the_subject_value():
+    """Диагностику ролей читает любой вошедший — чужого имени в ней быть не может."""
+    from backend.app.services.distributed_workers import authorization as az
+
+    config = az.load_role_config({az.ENV_ADMINS: "Андрей*,secret-admin"})
+    assert not config.ok
+    text = config.diagnostics() or ""
+    assert az.ENV_ADMINS in text, "переменную назвать надо — по ней ищут опечатку"
+    assert "Андрей" not in text and "secret-admin" not in text, text
+
+
+def test_every_operator_route_declares_a_permission():
+    """Право — не дисциплина автора, а свойство каждого маршрута.
+
+    Машинная перепись: у любого маршрута обоих операторских роутеров должна
+    быть зависимость `require_view/require_operator/require_admin`. Забытый
+    `Depends` на новой ручке иначе не ловится ничем.
+    """
+    from backend.app.api.routers import audit_workers_admin as mod
+
+    names = {"require_view", "require_operator", "require_admin"}
+    # Два маршрута без права — осознанное и закрытое исключение:
+    #   /api/workers/status — «включена ли подсистема и настроены ли роли»;
+    #   /api/workers/me     — «какие права у МЕНЯ», обязан отвечать и тому,
+    #                         у кого прав нет, иначе экран не объяснит отказ.
+    # Оба ничего чужого не отдают (см. test_role_diagnostics_never_leak...).
+    # Список именно закрытый: новая ручка сюда сама не попадёт.
+    allowed_without_permission = {"/api/workers/status", "/api/workers/me"}
+    seen_exceptions: set[str] = set()
+    for router in (mod.router, mod.status_router):
+        for route in router.routes:
+            deps = {
+                getattr(d.call, "__name__", "")
+                for d in getattr(route, "dependant", None).dependencies
+            } if getattr(route, "dependant", None) else set()
+            if route.path in allowed_without_permission:
+                seen_exceptions.add(route.path)
+                continue
+            assert deps & names, f"{route.path} без проверки права: {deps}"
+    assert seen_exceptions == allowed_without_permission, seen_exceptions
+
+
+def test_every_mutating_route_requires_the_intent_header(admin):
+    """CSRF-рубеж стоит на КАЖДОЙ изменяющей ручке, а не на выбранных."""
+    from backend.app.api.routers import audit_workers_admin as mod
+
+    checked = 0
+    for route in mod.router.routes:
+        methods = set(getattr(route, "methods", set())) - {"GET", "HEAD", "OPTIONS"}
+        if not methods:
+            continue
+        source = mod.__dict__.get(route.endpoint.__name__)
+        assert source is not None
+        import inspect
+
+        body = inspect.getsource(source)
+        assert "_require_intent_header" in body or "_require_operator_intent" in body, (
+            f"{route.path}: нет гейта намерения"
+        )
+        checked += 1
+    assert checked >= 9, checked
+
+
+def test_rotate_token_repeat_with_same_key_does_not_kill_the_new_token(admin):
+    """Повтор ротации по тому же ключу не гасит токен, который уже прописан."""
+    worker_id, _headers, _view = _approved_worker(admin)
+    key = _key()
+    first = admin.post(f"/api/workers/{worker_id}/rotate-token", headers=key)
+    assert first.status_code == 200, first.text
+    token = first.json()["worker_token"]
+
+    second = admin.post(f"/api/workers/{worker_id}/rotate-token", headers=key)
+    assert second.status_code == 409, second.text
+    assert "уже использован" in second.json()["detail"]
+
+    # Главное: выданный токен ПРОДОЛЖАЕТ работать.
+    probe = admin.post(
+        "/api/v1/worker/heartbeat",
+        json={"instance_id": "inst_gate_00001", "sent_at": time.time(),
+              "configured_max_slots": 1, "calculated_free_slots": 1},
+        headers={"Authorization": f"Bearer {token}", "X-Worker-Id": worker_id,
+                 "X-Protocol-Version": "1"},
+    )
+    assert probe.status_code == 200, probe.text
+
+
+def test_worker_capacity_hint_is_not_anchored_to_center_occupancy(admin, center_env):
+    """Подсказка воркера считается от ЕГО занятости, а не от занятости центра."""
+    from backend.app.services.distributed_workers import repositories
+
+    worker_id, _headers, _view = _approved_worker(admin, max_slots=2)
+    for index in range(2):
+        _create_job(admin, worker_id, project=f"ГЕЙТ/ёмкость {index}")
+
+    # Воркер заявляет собственную ёмкость: занято 0, возьму ещё 1. Оба числа
+    # из одного снимка, поэтому потолок = 1 и не зависит от того, что центр
+    # успел выдать в этом же окне. Раньше вторая выдача проходила: потолок
+    # пересчитывался как «занятость ЦЕНТРА + 1» и рос вместе с ней.
+    first = repositories.claim_next_job_for_worker(
+        worker_id, limit_override=2, worker_free_hint=1, worker_busy_hint=0,
+        settings=center_env,
+    )
+    assert first is not None
+    with pytest.raises(repositories.SlotLimitReached):
+        repositories.claim_next_job_for_worker(
+            worker_id, limit_override=2, worker_free_hint=1, worker_busy_hint=0,
+            settings=center_env,
+        )
+    # Старое поведение (подсказки занятости нет) на этом же месте выдавало
+    # второе задание — фиксируем разницу явно.
+    assert repositories.claim_next_job_for_worker(
+        worker_id, limit_override=2, worker_free_hint=1, settings=center_env
+    ) is not None
+
+
+def test_slot_mismatch_is_detected_in_both_directions():
+    """«Центр считает свободным, воркер — занятым» тоже расхождение."""
+    from backend.app.services.distributed_workers import slots
+
+    limit = slots.EffectiveLimit(value=2, binding="test", components={"test": 2})
+    usage = slots.SlotUsage(occupied=0, awaiting=0, unproven=1)
+
+    view = slots.build_slot_view({}, usage, limit, worker_claimed_free=0)
+    assert view["slot_count_mismatch"] is True
+    assert view["slot_count_mismatch_direction"] == "worker_claims_fewer"
+    assert "не начнётся" in view["slot_count_mismatch_hint"]
+
+    view2 = slots.build_slot_view({}, usage, limit, worker_claimed_free=5)
+    assert view2["slot_count_mismatch_direction"] == "worker_claims_more"
+
+    view3 = slots.build_slot_view({}, usage, limit, worker_claimed_free=2)
+    assert view3["slot_count_mismatch"] is False
+
+
+def test_agent_takes_no_work_when_the_local_database_is_unreadable(tmp_path):
+    """Не знаем занятость — не берём работу. Прежний запас ошибался в опасную сторону."""
+    from audit_worker.agent import WorkerAgent
+
+    agent = object.__new__(WorkerAgent)
+    agent._active = {}
+    agent._active_lock = __import__("threading").Lock()
+
+    class _Broken:
+        def claimed_attempt_count(self):
+            raise RuntimeError("база занята")
+
+        def live_process_count(self):
+            raise RuntimeError("база занята")
+
+    agent.db = _Broken()
+    counts = agent._busy_counts()
+    assert counts["db_ok"] is False
+    assert WorkerAgent._free_slots(agent) == 0
+
+
+def test_pending_delivery_covers_interrupted_upload_and_failure(tmp_path):
+    """Результат в `uploading` и провал при мёртвом агенте обязаны быть досланы."""
+    import threading as _threading
+
+    from audit_worker.agent import WorkerAgent
+    from audit_worker.local_store import LocalJobStore
+
+    agent = object.__new__(WorkerAgent)
+    agent._active = {}
+    agent._active_lock = _threading.Lock()
+    agent.jobs = LocalJobStore(tmp_path / "jobs")
+    for job_id, attempt_id, state in (
+        ("j1", "a1", "completed_locally"),
+        ("j2", "a2", "uploading"),
+        ("j3", "a3", "failed"),
+        ("j4", "a4", "running"),
+    ):
+        agent.jobs.create({"job_id": job_id, "attempt_id": attempt_id,
+                           "job_type": "test_pipeline_v1", "project_id": "p",
+                           "execution_token": "etk", "params": {}, "package": {}})
+        agent.jobs.update(job_id, attempt_id, local_state=state,
+                          result_hash="h" if state != "failed" else None)
+
+    uploaded: list[str] = []
+    flushed: list[str] = []
+    agent._resume_upload = lambda j, a: uploaded.append(a)
+    agent._flush_terminal_events = lambda meta: flushed.append(meta["attempt_id"])
+
+    WorkerAgent._deliver_pending_results(agent)
+    assert sorted(uploaded) == ["a1", "a2"], uploaded
+    assert flushed == ["a3"], flushed

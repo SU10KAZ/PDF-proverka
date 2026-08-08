@@ -1487,8 +1487,14 @@ def test_agent_sends_idempotency_key(tmp_path):
     client = Recorder("https://center.example", token="wtk_x", worker_id="wrk_x",
                       instance_id="inst_x")
     client.accept_job("job-1", {"attempt_id": "att_1"}, "etk_1")
-    client.create_upload({"job_id": "job-1", "attempt_id": "att_1", "sha256": "a" * 64},
-                         "etk_1")
+    # Поле называется `expected_hash` — именно так его шлёт uploader.py.
+    # Раньше здесь стояло `sha256`, которого в теле запроса нет вовсе, и тест
+    # закреплял дефект: ключ выходил одинаковым для ЛЮБОГО архива одной
+    # попытки, поэтому пересобранный архив получал сессию под чужой хэш.
+    client.create_upload(
+        {"job_id": "job-1", "attempt_id": "att_1", "expected_hash": "a" * 64},
+        "etk_1",
+    )
     client.close()
 
     keys = [c["headers"].get("Idempotency-Key") for c in sent]
