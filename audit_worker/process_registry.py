@@ -36,16 +36,66 @@ def process_start_time(pid: int) -> Optional[float]:
         return None
 
 
-def is_alive(pid: int, start_time: Optional[float]) -> bool:
-    """Жив ли ИМЕННО тот процесс (pid + метка старта), а не тёзка по pid."""
+def pid_exists(pid: int) -> bool:
+    """Существует ли процесс с таким pid. НЕ доказательство принадлежности."""
     if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True          # чужой процесс — но существует
+    except OSError:
+        return False
+    return True
+
+
+def is_alive(pid: int, start_time: Optional[float]) -> bool:
+    """Жив ли ИМЕННО тот процесс (pid + метка старта), а не тёзка по pid.
+
+    `start_time is None` означает «идентичность неизвестна». Раньше здесь
+    возвращалось True, то есть один голый pid признавался доказательством
+    живости — буквально запрещённый сценарий I-17. Теперь неизвестность
+    трактуется как «не доказано»: хуже застрявшая попытка, чем сигнал чужому
+    процессу.
+    """
+    if pid <= 0 or start_time is None:
         return False
     current = process_start_time(pid)
     if current is None:
         return False
-    if start_time is None:
-        return True
     return abs(current - start_time) < 1e-6
+
+
+def process_cmdline(pid: int) -> Optional[list[str]]:
+    """argv процесса из /proc/<pid>/cmdline. None, если прочитать нельзя."""
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as fh:
+            raw = fh.read()
+    except OSError:
+        return None
+    if not raw:
+        return None
+    parts = raw.split(b"\x00")
+    if parts and parts[-1] == b"":
+        parts = parts[:-1]
+    return [p.decode("utf-8", "replace") for p in parts]
+
+
+def live_command_fingerprint(pid: int) -> Optional[str]:
+    """Отпечаток команды ЖИВОГО процесса — независимая проверка (I-17).
+
+    Считается так же, как `test_runner.command_fingerprint`, но по данным
+    ядра, а не по нашей же записи. Сверка реестра с metadata.json — это
+    сверка двух копий одной записи; здесь спрашивают у самого процесса.
+    """
+    argv = process_cmdline(pid)
+    if not argv:
+        return None
+    import hashlib
+
+    return hashlib.sha256("\x00".join(argv).encode("utf-8")).hexdigest()[:32]
 
 
 class ProcessRegistry:

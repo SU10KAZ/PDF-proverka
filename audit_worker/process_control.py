@@ -7,8 +7,15 @@
   2. pid жив;
   3. тик старта из /proc совпадает с записанным — pid переиспользуется
      системой, и без этой проверки можно убить чужой процесс (I-17);
-  4. отпечаток команды совпадает — процесс запускали МЫ, и это тот самый
-     тестовый конвейер, а не что-то, случайно занявшее pid и время старта.
+  4. отпечаток команды ЖИВОГО процесса (/proc/<pid>/cmdline) совпадает с
+     записанным — процесс запускали МЫ, и это тот самый тестовый конвейер.
+
+Пункт 4 спрашивает у ядра, а не у второй копии нашей же записи: сверять
+`local_db` с `metadata.json` бессмысленно, оба поля пишет один и тот же вызов
+из одной переменной, и совпадение гарантировано независимо от реальности.
+
+Ни один из пунктов не «пропускается по умолчанию»: незаписанная метка старта
+или нечитаемый /proc означают «принадлежность не доказана» → сигнал не идёт.
 
 Дополнительно проверяется группа процессов: сигнал уходит группе, созданной
 нами (`setsid` в test_runner), а не «всем, кто похож». Никаких `pkill`,
@@ -30,7 +37,11 @@ import signal
 import time
 from typing import Any, Optional
 
-from audit_worker.process_registry import is_alive, process_start_time
+from audit_worker.process_registry import (
+    is_alive,
+    live_command_fingerprint,
+    process_start_time,
+)
 
 OUTCOME_CANCELLED = "cancelled"
 OUTCOME_ALREADY_COMPLETED = "already_completed"
@@ -55,11 +66,27 @@ def verify_ownership(
     pid = int(row.get("pid") or 0)
     if pid <= 0:
         return False, "pid не записан"
+    if row.get("process_start_identity") in (None, ""):
+        # Раньше отсутствие метки старта означало «проверку пропускаем», и
+        # доказательством становился один голый pid — ровно то, что запрещает
+        # I-17. Метка не записалась → принадлежность не доказана.
+        return False, "метка времени старта не записана — принадлежность не доказана"
     if not is_alive(pid, row.get("process_start_identity")):
         return False, "процесс с таким pid и временем старта не живёт"
-    fingerprint = expected_fingerprint or row.get("command_fingerprint")
-    if fingerprint and row.get("command_fingerprint") != fingerprint:
-        return False, "отпечаток команды не совпал"
+
+    recorded = row.get("command_fingerprint")
+    wanted = expected_fingerprint or recorded
+    if not wanted:
+        return False, "отпечаток команды не записан — принадлежность не доказана"
+    if recorded and expected_fingerprint and recorded != expected_fingerprint:
+        return False, "отпечаток команды не совпал с ожидаемым"
+    live = live_command_fingerprint(pid)
+    if live is None:
+        return False, "не удалось прочитать команду живого процесса"
+    if live != wanted:
+        # Ядро говорит, что под этим pid работает не наша команда.
+        # Сигнал не отправляется вовсе: чужой процесс дороже застрявшего.
+        return False, "команда живого процесса не совпала с записанной"
     return True, ""
 
 
