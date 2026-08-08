@@ -49,6 +49,18 @@ body {
 }
 .btn:hover { border-color: var(--accent); }
 .btn--primary { background: var(--accent); border-color: var(--accent); color: #06101f; font-weight: 600; }
+/* Кнопка без права: видна, но неактивна и объясняет причину в title.
+   Скрывать её нечестно — человек должен понимать, что действие существует,
+   просто не для него. Защищает при этом СЕРВЕР, а не этот стиль. */
+.btn--denied { opacity: .45; cursor: not-allowed; }
+
+/* Активные задания воркера — отдельными строками: «активных: 2» не говорит,
+   какие это проекты и сколько каждое идёт. */
+.slot-jobs { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.slot-job { display: grid; grid-template-columns: 80px 1fr; gap: 4px 8px;
+            padding: 6px 8px; border-radius: 6px; background: rgba(148,163,184,.10); }
+.slot-job .hint { grid-column: 1 / -1; }
+
 .btn--danger { border-color: var(--warn); color: var(--warn); }
 .btn--small { padding: 5px 10px; font-size: 13px; }
 .checkbox { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); }

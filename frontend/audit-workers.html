@@ -47,6 +47,11 @@
 
     <section id="configError" class="banner banner--error" hidden></section>
 
+    <!-- Права текущего пользователя. Экран НЕ является границей безопасности:
+         сервер проверяет право на каждом запросе независимо от того, что здесь
+         нарисовано. Блок нужен, чтобы человек понимал, почему кнопки нет. -->
+    <section id="permsBanner" class="banner banner--muted" hidden></section>
+
     <main id="content" hidden>
         <section class="summary" id="summary"></section>
 
@@ -79,7 +84,7 @@
         </section>
 
         <!-- Зона 3: выдача тестового задания -->
-        <section class="block">
+        <section class="block" id="createBlock">
             <h2>Отправить тестовое задание</h2>
             <form id="createForm" class="form-grid">
                 <label>Воркер
@@ -127,7 +132,7 @@
             <div id="attempts" class="attempts"></div>
         </section>
 
-        <!-- Зона 5: журнал операторских действий (только чтение) -->
+        <!-- Зона 5: журнал операторских действий (только чтение, только admin) -->
         <section class="block" id="actionsBlock" hidden>
             <h2>Журнал операторских действий</h2>
             <p class="hint">

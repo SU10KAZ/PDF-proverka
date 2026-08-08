@@ -32,7 +32,20 @@
   const state = {
     enabled: false, timer: null, workers: [], jobs: [],
     logsJobId: null, attemptsJobId: null,
+    // Права приходят С СЕРВЕРА на каждый цикл обновления и нигде не хранятся
+    // между сессиями. localStorage тут нет намеренно: правка локального
+    // хранилища не должна давать ни одной кнопки, а тем более права.
+    perms: { canView: false, canOperate: false, canAdmin: false,
+             subject: null, role: null, authenticated: false, diagnostics: null },
   };
+
+  const PERM = {
+    view: 'distributed_workers.view',
+    operate: 'distributed_workers.operate',
+    admin: 'distributed_workers.admin',
+  };
+
+  const DENIED_HINT = 'Недостаточно прав для этого действия';
 
   // Подтверждающие фразы обязаны совпадать с attempt_service на центре.
   const CONFIRM = {
@@ -72,6 +85,26 @@
       el('dt', { text: label }),
       el('dd', { text: value }),
     ]);
+  }
+
+  /** Кнопка опасного действия. Без права — отключена и объясняет почему.
+   *
+   * Отключённая кнопка НИЧЕГО не защищает: сервер проверяет право сам и
+   * ответит 403 на прямой HTTP-запрос. Она нужна только чтобы человек не
+   * гадал, куда делось действие.
+   */
+  function actionButton(options, allowed) {
+    const node = el('button', {
+      className: options.className || 'btn btn--small',
+      text: options.text,
+      dataset: allowed ? (options.dataset || {}) : {},
+      title: allowed ? (options.title || '') : DENIED_HINT,
+    });
+    if (!allowed) {
+      node.disabled = true;
+      node.classList.add('btn--denied');
+    }
+    return node;
   }
 
   function replaceChildren(container, nodes) {
@@ -216,6 +249,13 @@
       ]),
     ]);
 
+    const slotInfo = worker.slots || null;
+    const slotLine = slotInfo
+      ? `занято ${slotInfo.occupancy_label}`
+        + ` · центр насчитал свободных ${num(slotInfo.center_free_slots, 0)}`
+        + ` · воркер заявил ${num(slotInfo.worker_claimed_free_slots, 0)}`
+      : `свободно ${num(freeSlots, 0)} из ${num(worker.configured_max_slots, 1)}`;
+
     const list = el('dl', { className: 'kv' }, [
       kv('Регистрация', worker.registration_status),
       kv('Состояние', worker.worker_state),
@@ -224,7 +264,12 @@
       kv('RAM', `${num(ram.available_gb)} / ${num(ram.total_gb)} ГБ`),
       kv('CPU', `${num(cpu.cores)} ядер · LA5 ${num(cpu.la5)}`),
       kv('Диск', `${num(disk.free_gb)} / ${num(disk.total_gb)} ГБ`),
-      kv('Слоты', `свободно ${num(freeSlots, 0)} из ${num(worker.configured_max_slots, 1)}`),
+      kv('Слоты', slotLine,
+         slotInfo && slotInfo.slot_count_mismatch ? 'kv-critical' : ''),
+      kv('Лимит слотов', slotInfo
+        ? `${num(slotInfo.effective_limit, 1)} (ограничивает: ${slotInfo.limit_binding || '—'}`
+          + ` · доказанный максимум этапа ${num(slotInfo.max_verified_slots, 1)})`
+        : `${num(worker.configured_max_slots, 1)}`),
       kv('Активных заданий', (worker.active_jobs || []).length),
       kv('Исполнитель', [
         EXECUTOR_LABEL[executor.status] || executor.status,
@@ -245,21 +290,56 @@
       .filter((w) => w && typeof w === 'object')
       .map((w) => el('li', { className: 'warn', text: `⚠ ${w.message || w.code || ''}` }));
 
+    // Управление воркерами и токенами — административные действия (§9 задания).
+    const admin = state.perms.canAdmin;
     const actions = pending
       ? [
-        el('button', { className: 'btn btn--primary', text: 'Одобрить',
-          dataset: { approve: worker.worker_id } }),
-        el('button', { className: 'btn btn--danger', text: 'Отклонить',
-          dataset: { reject: worker.worker_id } }),
+        actionButton({ className: 'btn btn--primary', text: 'Одобрить',
+          dataset: { approve: worker.worker_id } }, admin),
+        actionButton({ className: 'btn btn--danger', text: 'Отклонить',
+          dataset: { reject: worker.worker_id } }, admin),
       ]
       : [
-        el('button', { className: 'btn', text: 'Отозвать',
-          dataset: { revoke: worker.worker_id } }),
+        actionButton({ className: 'btn', text: 'Отозвать',
+          dataset: { revoke: worker.worker_id } }, admin),
       ];
 
     const card = el('article', {
       className: `card${offline ? ' card--offline' : ''}${pending ? ' card--pending' : ''}`,
     }, [head, list]);
+
+    // Два активных проекта — ОТДЕЛЬНЫМИ строками: «активных заданий: 2» не
+    // говорит ни какие это проекты, ни сколько каждое идёт.
+    const active = (worker.active_jobs || []).filter((j) => j && typeof j === 'object');
+    if (active.length) {
+      card.appendChild(el('ul', { className: 'slot-jobs' }, active.map((job) => el(
+        'li', { className: 'slot-job' }, [
+          el('span', { className: 'mono small',
+            text: String(job.job_id || '').slice(0, 8) }),
+          el('span', { text: String(job.project_id || '—') }),
+          el('span', { className: 'hint',
+            text: `этап: ${job.stage || '—'} · событий: ${num(job.last_event_seq, 0)}`
+                + (job.started_at
+                  ? ` · идёт ${humanDuration((Date.now() / 1000) - job.started_at)}`
+                  : '') }),
+        ],
+      ))));
+    }
+    if (slotInfo && slotInfo.slot_count_mismatch) {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'slot_count_mismatch: воркер заявляет больше свободных слотов, чем '
+            + 'насчитал центр. Используется меньшее — лишнее задание не выдаётся.' }));
+    }
+    if (slotInfo && slotInfo.unproven_warning) {
+      card.appendChild(el('p', { className: 'warn', text: `⚠ ${slotInfo.unproven_warning}` }));
+    }
+    (slotInfo ? slotInfo.notices || [] : []).forEach((notice) => {
+      card.appendChild(el('p', { className: 'hint', text: `⚠ ${notice}` }));
+    });
+    if (slotInfo && slotInfo.blocked_reason) {
+      card.appendChild(el('p', { className: 'warn',
+        text: `Новые задания не выдаются: ${slotInfo.blocked_reason}` }));
+    }
 
     if (offline) {
       card.appendChild(el('p', { className: 'hint',
@@ -430,25 +510,30 @@
             + `(${action.actor}): ${action.reason || ''}` }));
     });
 
+    // Управление попытками — уровень operate. Наблюдатель видит те же строки,
+    // но кнопки у него отключены: право проверяет сервер, экран лишь честно
+    // показывает, что действие недоступно.
+    const canOperate = state.perms.canOperate;
     const actions = [];
     if (attempt.can_cancel) {
-      actions.push(el('button', { className: 'btn btn--small btn--danger',
-        text: 'Отменить', dataset: { cancel: attempt.attempt_id, job: jobId } }));
+      actions.push(actionButton({ className: 'btn btn--small btn--danger',
+        text: 'Отменить', dataset: { cancel: attempt.attempt_id, job: jobId } },
+        canOperate));
     }
     if (attempt.can_mark_lost) {
-      actions.push(el('button', { className: 'btn btn--small btn--danger',
+      actions.push(actionButton({ className: 'btn btn--small btn--danger',
         text: 'Признать попытку потерянной',
-        dataset: { marklost: attempt.attempt_id, job: jobId } }));
+        dataset: { marklost: attempt.attempt_id, job: jobId } }, canOperate));
     }
     if (!attempt.can_mark_lost) {
-      actions.push(el('button', { className: 'btn btn--small',
+      actions.push(actionButton({ className: 'btn btn--small',
         text: 'Создать новую попытку',
-        dataset: { newattempt: attempt.attempt_id, job: jobId } }));
+        dataset: { newattempt: attempt.attempt_id, job: jobId } }, canOperate));
     }
     if (attempt.result_acknowledged && !attempt.deleted_from_worker) {
-      actions.push(el('button', { className: 'btn btn--small',
+      actions.push(actionButton({ className: 'btn btn--small',
         text: 'Запросить удаление данных с VPS',
-        dataset: { deletedata: attempt.attempt_id, job: jobId } }));
+        dataset: { deletedata: attempt.attempt_id, job: jobId } }, canOperate));
     }
     if (actions.length) {
       nodes.push(el('footer', { className: 'attempt-actions' }, actions));
@@ -472,7 +557,13 @@
         $('attempts'),
         (data.attempts || []).map((a) => renderAttempt(a, jobId)),
       );
-      await loadAdminActions(jobId);
+      // Сводный журнал решений — административные сведения (§9). Наблюдателю
+      // и оператору сервер ответит 403, и дёргать его незачем.
+      if (state.perms.canAdmin) {
+        await loadAdminActions(jobId);
+      } else {
+        $('actionsBlock').hidden = true;
+      }
     } catch (error) {
       replaceChildren($('attempts'),
         el('p', { className: 'warn', text: `Не удалось загрузить попытки: ${error.message}` }));
@@ -499,6 +590,60 @@
     }
   }
 
+  // ─── Права текущего пользователя ───────────────────────────────────────────
+  const ROLE_LABEL = {
+    admin: 'администратор подсистемы',
+    operator: 'оператор заданий',
+    viewer: 'наблюдатель',
+  };
+
+  async function loadPermissions() {
+    let me = null;
+    try {
+      me = await api('/api/workers/me');
+    } catch (error) {
+      me = null;
+    }
+    const perms = new Set((me && me.permissions) || []);
+    state.perms = {
+      subject: me ? me.subject : null,
+      role: me ? me.role : null,
+      authenticated: !!(me && me.authenticated),
+      canView: perms.has(PERM.view),
+      canOperate: perms.has(PERM.operate),
+      canAdmin: perms.has(PERM.admin),
+      diagnostics: me ? me.diagnostics : null,
+    };
+    renderPermissionsBanner();
+    return state.perms;
+  }
+
+  function renderPermissionsBanner() {
+    const banner = $('permsBanner');
+    const p = state.perms;
+    const parts = [];
+    if (p.authenticated) {
+      parts.push(el('strong', { text: `Вы вошли как ${p.subject || '—'}` }));
+      parts.push(text(` · роль в подсистеме: ${ROLE_LABEL[p.role] || 'нет роли'}`));
+    } else {
+      parts.push(el('strong', { text: 'Сессия портала не найдена' }));
+    }
+    if (!p.canOperate) {
+      parts.push(el('p', { className: 'hint',
+        text: 'Управление заданиями недоступно: нужна роль оператора или '
+            + 'администратора. Экран работает только на просмотр.' }));
+    } else if (!p.canAdmin) {
+      parts.push(el('p', { className: 'hint',
+        text: 'Управление воркерами и токенами недоступно: это административные '
+            + 'действия.' }));
+    }
+    if (p.diagnostics) {
+      parts.push(el('p', { className: 'hint', text: p.diagnostics }));
+    }
+    replaceChildren(banner, parts);
+    banner.hidden = false;
+  }
+
   // ─── Загрузка данных ───────────────────────────────────────────────────────
   async function refresh() {
     try {
@@ -508,13 +653,30 @@
       $('content').hidden = !state.enabled;
       if (!state.enabled) {
         $('disabledReason').textContent = status.reason || '';
+        $('permsBanner').hidden = true;
         return;
+      }
+      await loadPermissions();
+      // Форма выдачи задания — уровень operate. Кнопка отключается, но это
+      // косметика: сервер и так вернёт 403 на прямой POST.
+      const submit = $('createForm').querySelector('button[type="submit"]');
+      if (submit) {
+        submit.disabled = !state.perms.canOperate;
+        submit.title = state.perms.canOperate ? '' : DENIED_HINT;
       }
       if (status.config_error) {
         $('configError').hidden = false;
         $('configError').textContent = status.config_error;
       } else {
         $('configError').hidden = true;
+      }
+      if (!state.perms.canView) {
+        // Без права просмотра списки всё равно вернут 403 — не мигаем ошибкой,
+        // а честно говорим, чего не хватает.
+        replaceChildren($('workers'), []);
+        replaceChildren($('jobs'), []);
+        replaceChildren($('summary'), []);
+        return;
       }
 
       const [workersData, jobsData] = await Promise.all([
@@ -528,7 +690,9 @@
       const summary = [
         el('span', {}, [text('VPS: '), el('strong', { text: num(s.total, 0) })]),
         el('span', {}, [text('онлайн: '), el('strong', { text: num(s.online, 0) })]),
-        el('span', {}, [text('свободных слотов: '),
+        // Свободные слоты — РАССЧИТАННЫЕ ЦЕНТРОМ. Сумма обещаний воркеров не то
+        // число, по которому назначают работу.
+        el('span', {}, [text('свободных слотов (расчёт центра): '),
           el('strong', { text: num(s.free_slots, 0) })]),
         el('span', {}, [text('активных заданий: '),
           el('strong', { text: num(s.active_jobs, 0) })]),
@@ -536,6 +700,11 @@
       if (s.pending) {
         summary.push(el('span', { className: 'warn' },
           [text('ждут одобрения: '), el('strong', { text: num(s.pending, 0) })]));
+      }
+      if (s.slot_mismatch) {
+        summary.push(el('span', { className: 'warn' },
+          [text('расхождение по слотам: '),
+           el('strong', { text: num(s.slot_mismatch, 0) })]));
       }
       replaceChildren($('summary'), summary);
 
@@ -553,12 +722,20 @@
       replaceChildren(select, state.workers
         .filter((w) => w.registration_status === 'approved')
         .map((w) => {
-          const ready = w.connection_status === 'online' && w.calculated_free_slots > 0;
+          const info = w.slots || {};
+          const online = w.connection_status === 'online';
+          const free = num(info.center_free_slots, 0);
+          // Занятость НЕ запрещает создать задание: оно встанет в очередь и
+          // уйдёт в работу после освобождения слота. Прятать эту возможность
+          // за disabled значило бы расходиться с сервером, который её даёт.
+          const suffix = !online
+            ? ' — нет связи'
+            : (free > 0 ? ` — свободно ${free}` : ' — слотов нет, встанет в очередь');
           const option = el('option', {
-            text: `${w.display_name || w.worker_id}${ready ? '' : ' — недоступен'}`,
+            text: `${w.display_name || w.worker_id}${suffix}`,
           });
           option.value = w.worker_id;
-          option.disabled = !ready;
+          option.disabled = !online;
           return option;
         }));
       if (previous) select.value = previous;
@@ -730,7 +907,8 @@
         },
       };
       const created = await dangerousPost('/api/workers/jobs', body);
-      $('createHint').textContent = `создано: ${created.job.job_id.slice(0, 8)}`;
+      $('createHint').textContent = `создано: ${created.job.job_id.slice(0, 8)}`
+        + (created.will_wait_for_slot ? ` · ${created.queue_note || 'ждёт слот'}` : '');
       await refresh();
     } catch (error) {
       $('createHint').textContent = `ошибка: ${error.message}`;
