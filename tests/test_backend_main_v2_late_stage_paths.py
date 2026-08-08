@@ -278,7 +278,7 @@ def test_read_findings_merge_blocks_v2_via_bind(v1_v2_with_artefacts):
     )
 
     with version_service.pinned_version("v2"):
-        raw = _read_findings_merge_blocks("M31A", compact_for_local=False)
+        raw = _read_findings_merge_blocks("M31A")
     assert '"V2"' in raw
     assert '"block_v2_a"' in raw
 

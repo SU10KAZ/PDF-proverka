@@ -484,32 +484,6 @@ def test_persisted_batch_queue_legacy_manual_run_stripped(isolated_paid_api, tmp
         getattr(pm._batch_queue.items[0], "manual_run_id", None) is None
 
 
-def test_local_models_bypass_guard(isolated_paid_api, monkeypatch):
-    """D4: Локальные модели (Chandra/local QWEN) не должны блокироваться —
-    они не отправляют данные во внешний платный API."""
-    from backend.app.services.llm import llm_runner
-    from backend.app.models.usage import LLMResult
-
-    async def fake_local(*args, **kwargs):
-        return LLMResult(text="local-ok", model="local-qwen-3.6-35b", cost_usd=0.0)
-
-    monkeypatch.setattr(llm_runner, "is_local_llm_model", lambda m: True)
-    monkeypatch.setattr(llm_runner, "_run_local_chandra_chat", fake_local)
-    monkeypatch.setattr(llm_runner, "_run_local_chat_completions", fake_local)
-
-    async def _run():
-        return await llm_runner.run_llm(
-            stage="findings_merge",
-            messages=[{"role": "user", "content": "t"}],
-            model_override="local-qwen-3.6-35b",
-            project_id="",
-        )
-
-    result = asyncio.run(_run())
-    assert result.text == "local-ok"
-    assert result.is_error is False
-
-
 def test_critic_v2_openrouter_provider_blocks_when_kill_switch_off(
     isolated_paid_api, monkeypatch
 ):

@@ -23,7 +23,6 @@ from backend.app.core.config import (
     get_block_batch_parallelism,
     get_stage_model,
     get_stage_batch_mode,
-    is_local_llm_model,
     RATE_LIMIT_THRESHOLD_PCT, RATE_LIMIT_CHECK_INTERVAL,
     RATE_LIMIT_MAX_WAIT, RATE_LIMIT_MAX_RETRIES,
     validate_current_stage_model_config,

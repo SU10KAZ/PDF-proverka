@@ -88,15 +88,15 @@ async def test_resources_are_independent(monkeypatch):
 async def test_reentrant_does_not_deadlock(monkeypatch):
     """Рекурсивный вход той же задачи обязан пройти без ожидания.
 
-    Локальные транспорты после перезагрузки модели вызывают сами себя; обычный
-    asyncio.Semaphore заклинил бы задачу на самой себе навсегда.
+    Рекурсивный повтор внутри уже занятого слота не должен заклинивать задачу
+    на самой себе — обычный asyncio.Semaphore это сделал бы.
     """
-    monkeypatch.setenv("BUDGET_LOCAL_LLM", "1")
+    monkeypatch.setenv("BUDGET_NORMS_MCP", "1")
     resource_budget.reset_for_tests()
 
     async def nested():
-        async with resource_budget.slot("local_llm"):
-            async with resource_budget.slot("local_llm"):
+        async with resource_budget.slot("norms_mcp"):
+            async with resource_budget.slot("norms_mcp"):
                 return "готово"
 
     result = await asyncio.wait_for(nested(), timeout=2.0)
@@ -163,4 +163,3 @@ def test_defaults_are_conservative_for_ram():
     """norms_mcp — про RAM: ~2,8 ГБ на сервер, дефолт не должен грозить OOM."""
     assert resource_budget.DEFAULTS["norms_mcp"] <= 2
     # Локальная модель на машине одна — параллелить её нечем.
-    assert resource_budget.DEFAULTS["local_llm"] == 1

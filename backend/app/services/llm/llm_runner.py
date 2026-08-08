@@ -1,11 +1,9 @@
 """
-Единый клиент LLM для OpenRouter и локального Chandra/LM Studio.
+Единый клиент LLM для OpenRouter.
 
-OpenRouter остаётся основным удалённым провайдером.
-Локальный QWEN использует два transport-режима:
-  - `/v1/chat/completions` для structured JSON-этапов;
-  - `/api/v1/chat` для свободного текста и multimodal block_batch.
-Старый Claude CLI пайплайн НЕ затрагивается.
+Локальные LLM-мощности (LM Studio за ngrok / 01.vibe) с платформы удалены —
+единственный сетевой транспорт здесь OpenRouter. Старый Claude CLI пайплайн
+НЕ затрагивается.
 """
 import asyncio
 import base64
@@ -16,7 +14,6 @@ import time
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
-import httpx
 
 # Ленивый импорт openai: модуль не должен падать при импорте, если пакет не
 # установлен (например, в окружениях, где Claude CLI используется без LLM-runner).
@@ -70,17 +67,9 @@ from backend.app.core.config import (
     OPENROUTER_SITE_URL, OPENROUTER_SITE_NAME,
     STAGE_MODELS_OPENROUTER, GEMINI_MAX_OUTPUT_TOKENS, GPT_MAX_OUTPUT_TOKENS,
     DEFAULT_TEMPERATURE, SCHEMAS_DIR,
-    CHANDRA_BASE_URL, CHANDRA_API_BASE_URL, CHANDRA_BASIC_USER, CHANDRA_BASIC_PASS,
-    CHANDRA_AUTH_MODE, CHANDRA_BEARER_TOKEN, CHANDRA_CHAT_TRANSPORT,
-    LMSTUDIO_AUTO_RELOAD_ENABLED,
-    LOCAL_GEMMA_CONTEXT_LENGTH, LOCAL_GEMMA_MAX_OUTPUT_TOKENS,
-    LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS,
-    is_local_llm_model,
     get_stage_model,
 )
 from backend.app.models.usage import LLMResult
-from backend.app.services.common import resource_budget
-from backend.app.services.llm import model_control_service
 from backend.app.services.llm.paid_api_guard import (
     PaidApiBlockedError,
     PaidApiContext,
@@ -94,19 +83,6 @@ logger = logging.getLogger(__name__)
 
 # Sentinel: "не задано" (отличает от явного None = "без формата")
 _UNSET = object()
-_LOCAL_CONTEXT_ERROR_RE = re.compile(r"n_keep:\s*(\d+)\s*>=\s*n_ctx:\s*(\d+)", re.I)
-_LOCAL_CONTEXT_LENGTH_TIERS = (4096, 8192, 16384, 32768, 65536, 98304, 131072, 262144)
-_LOCAL_MODEL_RELOAD_LOCKS: dict[str, asyncio.Lock] = {}
-_LOCAL_STRUCTURED_COMPLETION_STAGES = {
-    "text_analysis",
-    "findings_merge",
-    "findings_critic",
-    "findings_corrector",
-    "optimization",
-    "optimization_critic",
-    "optimization_corrector",
-}
-
 # Единый клиент -- создаётся лениво (чтобы не падать при импорте без ключа)
 _client: "AsyncOpenAI | None" = None
 
@@ -120,66 +96,6 @@ def _get_client() -> "AsyncOpenAI":
             api_key=OPENROUTER_API_KEY,
         )
     return _client
-
-
-def _build_chandra_headers() -> dict[str, str]:
-    """Заголовки авторизации к локальному LM Studio.
-
-    basic (legacy ngrok): Basic base64(user:pass) + ngrok-skip-browser-warning.
-    bearer (новый сервер): Authorization: Bearer <token>, без ngrok-заголовка.
-    Токен нигде не логируется.
-    """
-    if CHANDRA_AUTH_MODE == "bearer":
-        if not CHANDRA_BEARER_TOKEN:
-            raise RuntimeError(
-                "CHANDRA_AUTH_MODE=bearer, но токен не задан "
-                "(CHANDRA_BEARER_TOKEN / LMSTUDIO_API_KEY в .env)"
-            )
-        return {
-            "Authorization": f"Bearer {CHANDRA_BEARER_TOKEN}",
-            "content-type": "application/json",
-        }
-    token = base64.b64encode(
-        f"{CHANDRA_BASIC_USER}:{CHANDRA_BASIC_PASS}".encode("utf-8")
-    ).decode("ascii")
-    return {
-        "Authorization": f"Basic {token}",
-        "content-type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-    }
-
-
-def _local_auth_missing() -> str | None:
-    """Настроена ли авторизация к локальному LM Studio.
-
-    bearer: нужен CHANDRA_BEARER_TOKEN/LMSTUDIO_API_KEY.
-    basic:  нужны NGROK_AUTH_USER/NGROK_AUTH_PASS.
-    Возвращает текст ошибки, если чего-то не хватает; иначе None.
-    """
-    if CHANDRA_AUTH_MODE == "bearer":
-        if not CHANDRA_BEARER_TOKEN:
-            return "CHANDRA_BEARER_TOKEN/LMSTUDIO_API_KEY не задан (bearer)"
-        return None
-    if not CHANDRA_BASIC_USER or not CHANDRA_BASIC_PASS:
-        return "NGROK_AUTH_USER/NGROK_AUTH_PASS не заданы"
-    return None
-
-
-def _coerce_message_content(content: Any) -> str:
-    """Нормализовать content из OpenAI-compatible ответа в строку."""
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        parts: list[str] = []
-        for item in content:
-            if isinstance(item, dict):
-                text = item.get("text")
-                if isinstance(text, str):
-                    parts.append(text)
-            elif isinstance(item, str):
-                parts.append(item)
-        return "\n".join(part for part in parts if part)
-    return str(content or "")
 
 
 def _try_parse_json_content(content: str) -> dict | list | None:
@@ -207,676 +123,6 @@ def _try_parse_json_content(content: str) -> dict | list | None:
             pass
 
     return None
-
-
-def _usage_value(usage: dict[str, Any] | Any, key: str) -> int:
-    """Безопасно взять integer usage field из dict/object."""
-    if isinstance(usage, dict):
-        return int(usage.get(key, 0) or 0)
-    return int(getattr(usage, key, 0) or 0)
-
-
-def _extract_local_message_text(message: dict[str, Any]) -> tuple[str, str]:
-    """Достать content и reasoning_content из local OpenAI-compatible ответа."""
-    content = _coerce_message_content(message.get("content", ""))
-    reasoning = _coerce_message_content(message.get("reasoning_content", ""))
-    return content, reasoning
-
-
-def _local_chat_input_item(text: str) -> dict[str, str]:
-    return {"type": "text", "content": text}
-
-
-def _convert_local_chat_content(content: Any) -> list[dict[str, str]]:
-    """Преобразовать OpenAI-style content в LM Studio /api/v1/chat input."""
-    if isinstance(content, str):
-        return [_local_chat_input_item(content)]
-
-    items: list[dict[str, str]] = []
-    if isinstance(content, list):
-        for item in content:
-            if isinstance(item, str):
-                items.append(_local_chat_input_item(item))
-                continue
-            if not isinstance(item, dict):
-                items.append(_local_chat_input_item(str(item)))
-                continue
-
-            item_type = item.get("type")
-            if item_type == "text":
-                text = item.get("text")
-                if isinstance(text, str) and text:
-                    items.append(_local_chat_input_item(text))
-                continue
-            if item_type == "image_url":
-                image_url = item.get("image_url") or {}
-                data_url = image_url.get("url")
-                if isinstance(data_url, str) and data_url:
-                    items.append({"type": "image", "data_url": data_url})
-                continue
-
-            text = item.get("text")
-            if isinstance(text, str) and text:
-                items.append(_local_chat_input_item(text))
-
-    return items
-
-
-def _build_local_chat_payload(
-    *,
-    model: str,
-    messages: list[dict],
-    max_tokens: int,
-    temperature: float,
-) -> dict[str, Any]:
-    """Собрать payload для нативного Chandra /api/v1/chat."""
-    system_parts: list[str] = []
-    input_items: list[dict[str, str]] = []
-
-    for message in messages:
-        role = str(message.get("role") or "user")
-        content = message.get("content", "")
-        if role == "system":
-            system_text = _coerce_message_content(content)
-            if system_text:
-                system_parts.append(system_text)
-            continue
-
-        converted = _convert_local_chat_content(content)
-        if role != "user":
-            input_items.append(_local_chat_input_item(f"[{role.upper()}]"))
-        input_items.extend(converted)
-
-    input_payload: str | list[dict[str, str]]
-    if not input_items:
-        input_payload = ""
-    elif len(input_items) == 1 and input_items[0].get("type") == "text":
-        input_payload = input_items[0]["content"]
-    else:
-        input_payload = input_items
-
-    return {
-        "model": model,
-        "system_prompt": "\n\n".join(part for part in system_parts if part).strip(),
-        "input": input_payload,
-        "temperature": temperature,
-        "max_output_tokens": max_tokens,
-        "store": False,
-    }
-
-
-def _build_local_chat_completions_payload(
-    *,
-    model: str,
-    messages: list[dict],
-    max_tokens: int,
-    temperature: float,
-    response_format: dict[str, Any] | None,
-) -> dict[str, Any]:
-    """Собрать payload для OpenAI-compatible `/v1/chat/completions`."""
-    payload: dict[str, Any] = {
-        "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": temperature,
-    }
-    if response_format is not None:
-        payload["response_format"] = response_format
-    return payload
-
-
-def _extract_local_chat_output(data: dict[str, Any]) -> tuple[str, str]:
-    """Извлечь финальный текст и reasoning из /api/v1/chat ответа."""
-    output_items = data.get("output") or []
-    messages: list[str] = []
-    reasoning: list[str] = []
-    for item in output_items:
-        if not isinstance(item, dict):
-            continue
-        item_type = item.get("type")
-        content = str(item.get("content") or "")
-        if item_type == "message":
-            messages.append(content)
-        elif item_type == "reasoning":
-            reasoning.append(content)
-    return "\n".join(part for part in messages if part).strip(), "\n".join(part for part in reasoning if part).strip()
-
-
-def _extract_local_error_message(data: Any, fallback_text: str = "") -> str:
-    """Извлечь удобочитаемое сообщение об ошибке из ответа local endpoint."""
-    if isinstance(data, dict):
-        error = data.get("error")
-        if isinstance(error, dict):
-            return str(error.get("message") or error.get("type") or error)
-        if error:
-            return str(error)
-    return fallback_text[:400]
-
-
-_LOCAL_SCHEMA_STAGE_MAP = {
-    "text_analysis": "text_analysis",
-    "block_batch": "block_batch",
-    "findings_merge": "findings",
-    "findings_critic": "findings_review",
-    "findings_corrector": "findings",
-    "optimization": "optimization",
-    "optimization_critic": "optimization_review",
-    "optimization_corrector": "optimization",
-}
-
-
-def _sanitize_json_schema(node: Any) -> Any:
-    """Убрать ключи, которые LM Studio/structured outputs часто отвергают."""
-    if isinstance(node, dict):
-        cleaned: dict[str, Any] = {}
-        for key, value in node.items():
-            if key in {"$schema", "format", "default"}:
-                continue
-            cleaned[key] = _sanitize_json_schema(value)
-        return cleaned
-    if isinstance(node, list):
-        return [_sanitize_json_schema(item) for item in node]
-    return node
-
-
-def _build_local_response_format(stage_key: str) -> dict[str, Any] | None:
-    """Подготовить response_format для локального Chandra endpoint."""
-    schema_stage = _LOCAL_SCHEMA_STAGE_MAP.get(stage_key)
-    if not schema_stage:
-        return {"type": "text"}
-    schema = load_schema(schema_stage)
-    if not schema:
-        return {"type": "text"}
-    return {
-        "type": "json_schema",
-        "json_schema": {
-            "name": schema_stage,
-            "schema": _sanitize_json_schema(schema),
-        },
-    }
-
-
-def _extract_local_context_error(error_text: str) -> tuple[int, int] | None:
-    """Извлечь n_keep/n_ctx из LM Studio ошибки про слишком маленький контекст."""
-    match = _LOCAL_CONTEXT_ERROR_RE.search(error_text or "")
-    if not match:
-        return None
-    return int(match.group(1)), int(match.group(2))
-
-
-def _recommended_local_context_length(prompt_tokens: int, max_tokens: int) -> int:
-    """Подобрать следующий разумный context_length для локального QWEN."""
-    required = max(
-        LOCAL_GEMMA_CONTEXT_LENGTH,
-        prompt_tokens + max(1024, max_tokens),
-    )
-    for tier in _LOCAL_CONTEXT_LENGTH_TIERS:
-        if tier >= required:
-            return tier
-    return _LOCAL_CONTEXT_LENGTH_TIERS[-1]
-
-
-def _get_local_max_output_tokens(stage_key: str) -> int:
-    """Stage-aware max_output_tokens для локального QWEN."""
-    if stage_key == "findings_merge":
-        return max(LOCAL_GEMMA_MAX_OUTPUT_TOKENS, LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS)
-    return LOCAL_GEMMA_MAX_OUTPUT_TOKENS
-
-
-def _get_local_model_reload_lock(model: str) -> asyncio.Lock:
-    lock = _LOCAL_MODEL_RELOAD_LOCKS.get(model)
-    if lock is None:
-        lock = asyncio.Lock()
-        _LOCAL_MODEL_RELOAD_LOCKS[model] = lock
-    return lock
-
-
-def _format_model_control_error(result: dict[str, Any]) -> str:
-    error = result.get("error")
-    if isinstance(error, dict):
-        return str(error.get("message") or error.get("type") or error)
-    if error:
-        return str(error)
-    response = result.get("response")
-    if isinstance(response, dict):
-        nested = response.get("error")
-        if isinstance(nested, dict):
-            return str(nested.get("message") or nested.get("type") or nested)
-        if nested:
-            return str(nested)
-    return "unknown model-control error"
-
-
-def _load_kwargs_from_status(status: dict[str, Any], model: str) -> dict[str, Any]:
-    for item in status.get("loaded_instances", []) or []:
-        if item.get("model_key") != model:
-            continue
-        config = item.get("config") or {}
-        return {
-            "flash_attention": bool(config.get("flash_attention", True)),
-            "offload_kv_cache_to_gpu": bool(config.get("offload_kv_cache_to_gpu", True)),
-            "eval_batch_size": config.get("eval_batch_size"),
-            "num_experts": config.get("num_experts"),
-        }
-    return {
-        "flash_attention": True,
-        "offload_kv_cache_to_gpu": True,
-        "eval_batch_size": None,
-        "num_experts": None,
-    }
-
-
-async def _reload_local_model_with_context(model: str, target_context_length: int) -> tuple[bool, str]:
-    """Оставить один instance модели с нужным context_length."""
-    async with _get_local_model_reload_lock(model):
-        status = await asyncio.to_thread(model_control_service.get_status)
-        load_kwargs = _load_kwargs_from_status(status, model)
-        loaded_instances = [
-            item for item in (status.get("loaded_instances", []) or [])
-            if item.get("model_key") == model
-        ]
-
-        unload_failures: list[str] = []
-        for item in loaded_instances:
-            instance_id = item.get("instance_id")
-            if not instance_id:
-                continue
-            unload_result = await asyncio.to_thread(
-                model_control_service.unload_instance,
-                instance_id=instance_id,
-            )
-            if not unload_result.get("ok"):
-                unload_failures.append(
-                    f"{instance_id}: {_format_model_control_error(unload_result)}"
-                )
-
-        if unload_failures:
-            logger.warning(
-                "Failed to unload some local model instances for %s: %s",
-                model,
-                "; ".join(unload_failures),
-            )
-
-        load_result = await asyncio.to_thread(
-            model_control_service.load_model,
-            model=model,
-            context_length=target_context_length,
-            flash_attention=bool(load_kwargs.get("flash_attention", True)),
-            offload_kv_cache_to_gpu=bool(load_kwargs.get("offload_kv_cache_to_gpu", True)),
-            eval_batch_size=load_kwargs.get("eval_batch_size"),
-            num_experts=load_kwargs.get("num_experts"),
-        )
-        if load_result.get("ok"):
-            return True, f"context_length={target_context_length}"
-        return False, _format_model_control_error(load_result)
-
-
-def _context_mismatch_disabled_message(
-    *,
-    model: str,
-    prompt_tokens: int,
-    loaded_context: int,
-    target_context: int,
-) -> str:
-    logger.warning(
-        "LM Studio context mismatch detected, auto-reload disabled: "
-        "model=%s n_keep=%s n_ctx=%s suggested_context_length=%s",
-        model,
-        prompt_tokens,
-        loaded_context,
-        target_context,
-    )
-    return (
-        "LM Studio context mismatch detected, auto-reload disabled "
-        f"(model={model}, n_keep={prompt_tokens}, n_ctx={loaded_context}, "
-        f"suggested_context_length={target_context}); "
-        "reload the model manually in LM Studio with a larger context window"
-    )
-
-
-def _is_local_structured_truncation(
-    *,
-    finish_reason: str,
-    json_data: Any,
-    expects_json: bool,
-    out_tokens: int,
-    max_tokens: int,
-) -> bool:
-    """#74: structured-этап локальной модели вернул усечённый ответ без валидного JSON.
-
-    Только для structured-этапов (expects_json) — plain-text ответы не трогаем.
-    Признак усечения: явный finish_reason='length' ИЛИ упор в max_tokens (chandra
-    `/api/v1/chat` может не отдавать finish_reason='length').
-    """
-    if json_data is not None or not expects_json:
-        return False
-    if finish_reason == "length":
-        return True
-    return bool(max_tokens and out_tokens and out_tokens >= max_tokens)
-
-
-async def _run_local_chandra_chat(
-    *,
-    model: str,
-    messages: list[dict],
-    max_tokens: int,
-    temperature: float,
-    timeout: int,
-    response_format: dict | None,
-    _allow_context_reload: bool = True,
-) -> LLMResult:
-    """Запуск локальной модели через Chandra OpenAI-compatible endpoint."""
-    if not CHANDRA_BASE_URL:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message="CHANDRA_BASE_URL не задан",
-            model=model,
-            cost_source="local",
-        )
-    _auth_err = _local_auth_missing()
-    if _auth_err:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=_auth_err,
-            model=model,
-            cost_source="local",
-        )
-
-    payload = _build_local_chat_payload(
-        model=model,
-        messages=messages,
-        max_tokens=max_tokens,
-        temperature=temperature,
-    )
-
-    started = time.monotonic()
-    try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                f"{CHANDRA_BASE_URL}/api/v1/chat",
-                headers=_build_chandra_headers(),
-                json=payload,
-            )
-    except httpx.TimeoutException as exc:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model timeout: {exc}",
-            model=model,
-            cost_source="local",
-        )
-    except Exception as exc:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model error: {exc}",
-            model=model,
-            cost_source="local",
-        )
-
-    elapsed_ms = int((time.monotonic() - started) * 1000)
-
-    try:
-        data = response.json()
-    except Exception:
-        data = {"raw_text": response.text[:4000]}
-
-    if response.status_code >= 400:
-        error = _extract_local_error_message(data, response.text)
-
-        context_error = _extract_local_context_error(error)
-        if context_error and _allow_context_reload:
-            prompt_tokens, loaded_context = context_error
-            target_context = _recommended_local_context_length(prompt_tokens, max_tokens)
-            if LMSTUDIO_AUTO_RELOAD_ENABLED:
-                logger.warning(
-                    "Local model context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
-                    model,
-                    prompt_tokens,
-                    loaded_context,
-                    target_context,
-                )
-                reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
-                if reloaded:
-                    return await _run_local_chandra_chat(
-                        model=model,
-                        messages=messages,
-                        max_tokens=max_tokens,
-                        temperature=temperature,
-                        timeout=timeout,
-                        response_format=response_format,
-                        _allow_context_reload=False,
-                    )
-                error = (
-                    f"{error} | auto-reload failed for context_length={target_context}: "
-                    f"{reload_message}"
-                )
-            else:
-                error = (
-                    f"{error} | "
-                    f"{_context_mismatch_disabled_message(model=model, prompt_tokens=prompt_tokens, loaded_context=loaded_context, target_context=target_context)}"
-                )
-
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model HTTP {response.status_code}: {error}",
-            model=model,
-            duration_ms=elapsed_ms,
-            cost_source="local",
-        )
-
-    content = ""
-    reasoning_content = ""
-    json_data = None
-    stats = data.get("stats", {}) if isinstance(data, dict) else {}
-    if isinstance(data, dict):
-        content, reasoning_content = _extract_local_chat_output(data)
-        json_data = _try_parse_json_content(content)
-        if json_data is None and reasoning_content:
-            reasoning_json = _try_parse_json_content(reasoning_content)
-            if reasoning_json is not None:
-                content = reasoning_content
-                json_data = reasoning_json
-        if not content and reasoning_content:
-            content = reasoning_content
-
-    # #74: детекция усечения для /api/v1/chat. Раньше finish_reason здесь всегда
-    # был 'stop' при наличии content → усечённый JSON на structured-этапах
-    # проходил как успех. Извлекаем реальный finish_reason; на structured-этапах
-    # (есть response_format) при отсутствии валидного JSON и признаке усечения
-    # (finish_reason='length' ИЛИ упор в max_tokens) помечаем is_error.
-    finish_reason = ""
-    if isinstance(data, dict):
-        finish_reason = str(data.get("finish_reason") or stats.get("finish_reason") or "")
-    out_tokens = _usage_value(stats, "total_output_tokens")
-    truncated_no_json = _is_local_structured_truncation(
-        finish_reason=finish_reason,
-        json_data=json_data,
-        expects_json=response_format is not None,
-        out_tokens=out_tokens,
-        max_tokens=max_tokens,
-    )
-
-    return LLMResult(
-        text=content,
-        json_data=json_data,
-        input_tokens=_usage_value(stats, "input_tokens"),
-        output_tokens=out_tokens,
-        cost_usd=0.0,
-        duration_ms=elapsed_ms,
-        model=model,
-        reasoning_tokens=_usage_value(stats, "reasoning_output_tokens"),
-        cost_source="local",
-        response_id=(data.get("model_instance_id", "") if isinstance(data, dict) else "") or "",
-        finish_reason=finish_reason or ("stop" if content else ""),
-        is_error=bool(truncated_no_json),
-        error_message=(
-            "Local model output truncated before valid JSON was completed (/api/v1/chat)"
-            if truncated_no_json else ""
-        ),
-    )
-
-
-async def _run_local_chat_completions(
-    *,
-    model: str,
-    messages: list[dict],
-    max_tokens: int,
-    temperature: float,
-    timeout: int,
-    response_format: dict[str, Any] | None,
-    _allow_context_reload: bool = True,
-) -> LLMResult:
-    """Запуск локальной модели через OpenAI-compatible `/v1/chat/completions`."""
-    if not CHANDRA_BASE_URL:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message="CHANDRA_BASE_URL не задан",
-            model=model,
-            cost_source="local",
-        )
-    _auth_err = _local_auth_missing()
-    if _auth_err:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=_auth_err,
-            model=model,
-            cost_source="local",
-        )
-
-    payload = _build_local_chat_completions_payload(
-        model=model,
-        messages=messages,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        response_format=response_format,
-    )
-
-    started = time.monotonic()
-    try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                f"{CHANDRA_BASE_URL}/v1/chat/completions",
-                headers=_build_chandra_headers(),
-                json=payload,
-            )
-    except httpx.TimeoutException as exc:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model timeout: {exc}",
-            model=model,
-            cost_source="local",
-        )
-    except Exception as exc:
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model error: {exc}",
-            model=model,
-            cost_source="local",
-        )
-
-    elapsed_ms = int((time.monotonic() - started) * 1000)
-
-    try:
-        data = response.json()
-    except Exception:
-        data = {"raw_text": response.text[:4000]}
-
-    if response.status_code >= 400:
-        error = _extract_local_error_message(data, response.text)
-
-        context_error = _extract_local_context_error(error)
-        if context_error and _allow_context_reload:
-            prompt_tokens, loaded_context = context_error
-            target_context = _recommended_local_context_length(prompt_tokens, max_tokens)
-            if LMSTUDIO_AUTO_RELOAD_ENABLED:
-                logger.warning(
-                    "Local chat.completions context overflow for %s: n_keep=%s n_ctx=%s; reloading with %s",
-                    model,
-                    prompt_tokens,
-                    loaded_context,
-                    target_context,
-                )
-                reloaded, reload_message = await _reload_local_model_with_context(model, target_context)
-                if reloaded:
-                    return await _run_local_chat_completions(
-                        model=model,
-                        messages=messages,
-                        max_tokens=max_tokens,
-                        temperature=temperature,
-                        timeout=timeout,
-                        response_format=response_format,
-                        _allow_context_reload=False,
-                    )
-                error = (
-                    f"{error} | auto-reload failed for context_length={target_context}: "
-                    f"{reload_message}"
-                )
-            else:
-                error = (
-                    f"{error} | "
-                    f"{_context_mismatch_disabled_message(model=model, prompt_tokens=prompt_tokens, loaded_context=loaded_context, target_context=target_context)}"
-                )
-
-        return LLMResult(
-            text="",
-            is_error=True,
-            error_message=f"Local model HTTP {response.status_code}: {error}",
-            model=model,
-            duration_ms=elapsed_ms,
-            cost_source="local",
-        )
-
-    message: dict[str, Any] = {}
-    usage = {}
-    finish_reason = ""
-    if isinstance(data, dict):
-        choices = data.get("choices") or []
-        if choices and isinstance(choices[0], dict):
-            choice0 = choices[0]
-            message = choice0.get("message") or {}
-            finish_reason = str(choice0.get("finish_reason") or "")
-        usage = data.get("usage") or {}
-
-    content, reasoning_content = _extract_local_message_text(message)
-    json_data = _try_parse_json_content(content)
-    if json_data is None and reasoning_content:
-        reasoning_json = _try_parse_json_content(reasoning_content)
-        if reasoning_json is not None:
-            content = reasoning_content
-            json_data = reasoning_json
-    if not content and reasoning_content:
-        content = reasoning_content
-
-    return LLMResult(
-        text=content,
-        json_data=json_data,
-        input_tokens=_usage_value(usage, "prompt_tokens"),
-        output_tokens=_usage_value(usage, "completion_tokens"),
-        cost_usd=0.0,
-        duration_ms=elapsed_ms,
-        model=model,
-        reasoning_tokens=_usage_value(
-            usage.get("completion_tokens_details", {}) if isinstance(usage, dict) else {},
-            "reasoning_tokens",
-        ),
-        cost_source="local",
-        response_id=(data.get("id", "") if isinstance(data, dict) else "") or "",
-        finish_reason=finish_reason or ("stop" if content else ""),
-        is_error=bool(finish_reason == "length" and json_data is None),
-        error_message=(
-            "Local model output truncated before valid JSON was completed"
-            if finish_reason == "length" and json_data is None
-            else ""
-        ),
-    )
 
 
 # Цены моделей OpenRouter ($/1M токенов) — обновлять при изменении
@@ -983,7 +229,7 @@ async def run_llm(
     job_id: str = "",
     source: str = "llm_runner",
 ) -> LLMResult:
-    """Единый вызов LLM через OpenRouter или локальный Chandra.
+    """Единый вызов LLM через OpenRouter.
 
     Args:
         stage: ключ этапа конвейера (text_analysis, block_batch, findings_merge и т.д.)
@@ -1008,8 +254,6 @@ async def run_llm(
     model = model_override or get_stage_model(stage_key)
     if max_tokens_override is not None:
         max_tokens = max_tokens_override
-    elif is_local_llm_model(model):
-        max_tokens = _get_local_max_output_tokens(stage_key)
     else:
         max_tokens = (
             GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
@@ -1033,71 +277,8 @@ async def run_llm(
             else response_format  # None или явный dict
         )
 
-    if is_local_llm_model(model):
-        # Local path:
-        # - text-only structured stages -> /v1/chat/completions (json_schema)
-        # - multimodal/freeform stages -> /api/v1/chat (native) ИЛИ
-        #   /v1/chat/completions (openai_completions, новый LM Studio)
-        local_format = _build_local_response_format(stage_key)
-        if (
-            stage_key in _LOCAL_STRUCTURED_COMPLETION_STAGES
-            and isinstance(local_format, dict)
-            and local_format.get("type") == "json_schema"
-        ):
-            # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
-            # (common/resource_budget.py). Иначе второй проект с другим
-            # context_length инициирует перезагрузку, которая выгружает ВСЕ
-            # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
-            # параллели. slot() реентерабелен: рекурсивный retry после reload
-            # повторно слот не берёт.
-            async with resource_budget.slot("local_llm"):
-                return await _run_local_chat_completions(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    temperature=temp,
-                    timeout=timeout,
-                    response_format=local_format,
-                )
-        if CHANDRA_CHAT_TRANSPORT == "openai_completions":
-            # Новый сервер: native /api/v1/chat отсутствует → шлём в OpenAI
-            # /v1/chat/completions. messages уже в OpenAI-формате (text + image_url).
-            # response_format не форсируем (модель может не поддерживать json_schema;
-            # отдаёт голый JSON — парсер _run_local_chat_completions вытащит).
-            # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
-            # (common/resource_budget.py). Иначе второй проект с другим
-            # context_length инициирует перезагрузку, которая выгружает ВСЕ
-            # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
-            # параллели. slot() реентерабелен: рекурсивный retry после reload
-            # повторно слот не берёт.
-            async with resource_budget.slot("local_llm"):
-                return await _run_local_chat_completions(
-                    model=model,
-                    messages=messages,
-                    max_tokens=max_tokens,
-                    temperature=temp,
-                    timeout=timeout,
-                    response_format=None,
-                )
-        # Локальная модель на машине одна: бюджет строго 1 на весь бэкенд
-        # (common/resource_budget.py). Иначе второй проект с другим
-        # context_length инициирует перезагрузку, которая выгружает ВСЕ
-        # instance'ы и обрывает inflight-запросы соседей — пинг-понг вместо
-        # параллели. slot() реентерабелен: рекурсивный retry после reload
-        # повторно слот не берёт.
-        async with resource_budget.slot("local_llm"):
-            return await _run_local_chandra_chat(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temp,
-                timeout=timeout,
-                response_format=local_format,
-            )
-
     # ─── Paid API guard: проверка ДО network request ────────────────────
-    # Локальные модели (is_local_llm_model) выше — guard их не трогает.
-    # Сюда попадают только внешние платные провайдеры (OpenRouter и т.п.).
+    # Все вызовы идут во внешних платных провайдеров (OpenRouter и т.п.).
     paid_ctx = PaidApiContext(
         source=source or "llm_runner",
         model=model,
@@ -1254,9 +435,9 @@ async def run_llm(
             cost = _estimate_cost(model, input_tokens, output_tokens)
             cost_source = "estimated"
 
-        # Учёт платных вызовов (OpenRouter возвращает actual cost; local LLM cost=0).
-        # Локальная Chandra/Gemma и Claude CLI не идут через этот путь, поэтому
-        # каждый ненулевой cost здесь — реальный платный API.
+        # Учёт платных вызовов (OpenRouter возвращает actual cost).
+        # Claude CLI не идёт через этот путь, поэтому каждый ненулевой cost
+        # здесь — реальный платный API.
         # Единый helper paid_cost_tracker.record_paid гарантирует, что paid_cost.json
         # и paid_cost_events.jsonl увеличиваются вместе. Раньше эти две записи
         # были независимыми вызовами, что привело к расхождению 9 vs 15 в инциденте.
@@ -1331,10 +512,6 @@ async def run_llm_stream(
         {"type": "error", "message": "..."} — в т.ч. paid_api_blocked
     """
     model = model_override
-    if is_local_llm_model(model):
-        yield {"type": "error", "message": "Local QWEN streaming is not supported in this UI yet"}
-        return
-
     # ─── Paid API guard: проверка ДО network request ────────────────────
     max_tokens = (
         GEMINI_MAX_OUTPUT_TOKENS if "gemini" in model
@@ -1437,8 +614,8 @@ def make_image_content(
         image_path: путь к PNG-файлу
         detail: уровень детализации ("high" или "low")
         scale: множитель ресайза (0<scale<=1). При scale<1 PNG перед base64
-            уменьшается (LANCZOS) — используется как fallback для локального
-            QWEN, который отвергает слишком большие изображения.
+            уменьшается (LANCZOS) — fallback для моделей, отвергающих
+            слишком большие изображения.
     """
     if scale >= 0.999:
         raw = Path(image_path).read_bytes()
@@ -1472,7 +649,8 @@ def build_interleaved_content(
 ) -> list[dict]:
     """Interleaved text<->PNG по страницам.
 
-    image_scale<1.0 — ресайз PNG блоков перед base64 (fallback для QWEN).
+    image_scale<1.0 — ресайз PNG блоков перед base64 (fallback для моделей
+    с ограничением на размер изображения).
     """
     content: list[dict] = []
     current_page = None

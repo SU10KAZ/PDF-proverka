@@ -26,16 +26,6 @@ if TYPE_CHECKING:
 
 STAGE_LABEL = "Block Value Grounding"
 SUMMARY_NAME = "block_grounding_summary.json"
-_qwen_lock: asyncio.Lock | None = None
-
-
-def _get_qwen_lock() -> asyncio.Lock:
-    global _qwen_lock
-    if _qwen_lock is None:
-        _qwen_lock = asyncio.Lock()
-    return _qwen_lock
-
-
 def _find_result_json(project_dir: Path, output_dir: Optional[Path]) -> Optional[Path]:
     """Найти result.json (Chandra) с per-block ocr_text/pdfplumber_text."""
     candidates = [
@@ -61,23 +51,6 @@ def _find_source_pdf(project_dir: Path) -> Optional[Path]:
         if hits:
             return hits[0]
     return None
-
-
-def _select_qwen_blocks(candidates: list, *, tile_min: int, crop_min: int, max_blocks: int) -> list:
-    """Выбрать блоки Phase 2: крупные (тайлинг) приоритетно, затем средние (кроп). Cap = max_blocks.
-
-    ``mode`` проставляется по ширине. ``crop_min<=0`` → режим crop выключен (только тайлинг крупных).
-    Чистая функция (без I/O) — тестируется отдельно.
-    """
-    tiled = sorted((dict(c, mode="tiled") for c in candidates
-                    if c.get("width", 0) >= tile_min),
-                   key=lambda c: -c.get("width", 0))
-    medium = []
-    if crop_min and crop_min > 0:
-        medium = sorted((dict(c, mode="crop") for c in candidates
-                         if crop_min <= c.get("width", 0) < tile_min),
-                        key=lambda c: -c.get("width", 0))
-    return (tiled + medium)[:max_blocks]
 
 
 def _iter_blocks(result: dict):
@@ -115,7 +88,6 @@ def run_block_grounding(project_dir: Path, output_dir: Path) -> dict:
             doc_classes |= extract_concrete_classes(pp)
 
     blocks_out = []
-    qwen_candidates = []  # image-блоки без годного вектора → кандидаты на Phase 2 (qwen)
     n_total = n_image = n_vector = n_corrected = 0
     field_counter: Counter = Counter()
     recalls = []
@@ -138,15 +110,6 @@ def run_block_grounding(project_dir: Path, output_dir: Path) -> dict:
         bid = b.get("id") or b.get("block_id")
         if g["corrections"] or g["vector_usable"]:
             blocks_out.append({"block_id": bid, "page": pn, "block_type": btype, **g})
-        # кандидат Phase 2: image без годного вектора, есть координаты/размер страницы
-        co = b.get("coords_px")
-        if (btype == "image" and not g["vector_usable"] and co and pn and ppx[0] and ppx[1]):
-            width = co[2] - co[0]
-            qwen_candidates.append({
-                "block_id": bid, "page": pn, "coords_px": co,
-                "page_px": [ppx[0], ppx[1]], "width": width,
-                "mode": "tiled",  # фактический mode (tiled/crop) выберет стадия по порогу
-            })
 
     avg_recall = round(sum(recalls) / len(recalls), 3) if recalls else None
     summary = {
@@ -166,40 +129,7 @@ def run_block_grounding(project_dir: Path, output_dir: Path) -> dict:
     (output_dir / SUMMARY_NAME).write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     summary["status"] = "done"
-    summary["qwen_candidates"] = qwen_candidates  # для Phase 2 (в файл не пишем)
     return summary
-
-
-def _augment_summary_with_qwen(output_dir: Path, qwen_results: list) -> None:
-    """Дописать результаты Phase 2 (qwen) в block_grounding_summary.json."""
-    p = output_dir / SUMMARY_NAME
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return
-    by_id = {b.get("block_id"): b for b in data.get("blocks", [])}
-    n_filled = 0
-    for r in qwen_results:
-        if r.get("error") or not r.get("values"):
-            continue
-        n_filled += 1
-        rec = by_id.get(r["block_id"])
-        gv = {"qwen_values": r["values"], "qwen_tiles": r.get("tiles")}
-        if rec is None:
-            data.setdefault("blocks", []).append({
-                "block_id": r["block_id"], "block_type": "image",
-                "value_source": r["source"], "value_confidence": "medium",
-                "grounded_values": gv, "corrections": [],
-            })
-        else:
-            rec["value_source"] = r["source"]
-            rec.setdefault("grounded_values", {}).update(gv)
-    data["qwen_phase2"] = {
-        "blocks_attempted": len(qwen_results),
-        "blocks_filled": n_filled,
-        "errors": sum(1 for r in qwen_results if r.get("error")),
-    }
-    p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 async def run_block_grounding_stage(ctx: "PipelineStageContext", *, force: bool = False) -> StageResult:
@@ -236,49 +166,12 @@ async def run_block_grounding_stage(ctx: "PipelineStageContext", *, force: bool 
            f"({summary.get('corrections_by_field') or {}})")
     await ctx.log(f"  ✓ {msg}")
 
-    # ── Phase 2 (qwen-тайлинг для КРУПНЫХ no-vector блоков) — gated, дорого/ngrok ──
-    qwen_filled = 0
-    from backend.app.core.config import (
-        BLOCK_VALUE_GROUNDING_QWEN_ENABLED, BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH,
-        BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH, BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS,
-        BLOCK_VALUE_GROUNDING_QWEN_MODEL,
-    )
-    selected = _select_qwen_blocks(
-        summary.get("qwen_candidates") or [],
-        tile_min=BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH,
-        crop_min=BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH,
-        max_blocks=BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS)
-    if BLOCK_VALUE_GROUNDING_QWEN_ENABLED and selected:
-        try:
-            from backend.app.pipeline.stages.block_grounding.qwen_grounding import run_qwen_grounding
-            pdf = _find_source_pdf(project_dir)
-            if pdf is None:
-                await ctx.log("  Phase 2: исходный PDF не найден — пропуск qwen", "warn")
-            else:
-                n_tiled = sum(1 for c in selected if c.get("mode") == "tiled")
-                n_crop = len(selected) - n_tiled
-                await ctx.log(f"  Phase 2 (qwen): {len(selected)} no-vector блоков "
-                              f"(тайлинг {n_tiled}, кроп {n_crop})")
-                render_dir = Path(output_dir) / "block_grounding_qwen_tiles"
-                # Qwen остаётся opt-in и сериализуется своим независимым lock.
-                async with _get_qwen_lock():
-                    qres = await run_qwen_grounding(
-                        selected, pdf, model=BLOCK_VALUE_GROUNDING_QWEN_MODEL,
-                        max_blocks=BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS, render_dir=render_dir)
-                await asyncio.to_thread(_augment_summary_with_qwen, Path(output_dir), qres)
-                qwen_filled = sum(1 for r in qres if r.get("values"))
-                await ctx.log(f"  ✓ Phase 2: заполнено {qwen_filled}/{len(qres)} блоков qwen-значениями")
-        except Exception as exc:  # fail-soft
-            await ctx.log(f"  Phase 2 (qwen) пропущен (soft): {exc}", "warn")
-
     ctx.update_pipeline_log("block_value_grounding", "done", message=msg, detail={
         "blocks_total": summary["blocks_total"],
         "blocks_vector_grounded": summary["blocks_vector_grounded"],
         "blocks_with_corrections": summary["blocks_with_corrections"],
-        "qwen_blocks_filled": qwen_filled,
     })
     return StageResult.ok(status="done", **{
         "blocks_total": summary["blocks_total"],
         "blocks_corrected": summary["blocks_with_corrections"],
-        "qwen_blocks_filled": qwen_filled,
     })

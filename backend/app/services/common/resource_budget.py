@@ -56,15 +56,10 @@ from typing import AsyncIterator, Optional
 #   сессия после первого semantic_search держит 5,6 ГБ (multilingual-e5-large
 #   1,19 + bge-reranker-v2-m3 1,25 mmap + 0,83 heap) и НЕ выгружает их до конца
 #   сессии. Считать так: свободная RAM / 5,6, с запасом на всё остальное.
-# local_llm: модель на машине одна; больше 1 — это не параллель, а пинг-понг
-#   перезагрузок контекста, рвущий чужие запросы. ОГОВОРКА: сейчас ручка
-#   недостижима — все три точки захвата стоят под `if is_local_llm_model(model)`,
-#   а LOCAL_LLM_MODELS (config.py) объявлен пустым множеством.
 DEFAULTS: dict[str, int] = {
     "claude_cli": 6,
     "codex_cli": 6,
     "norms_mcp": 2,
-    "local_llm": 1,
 }
 
 # Имена переменных окружения записаны литералами намеренно: реестр флагов
@@ -75,7 +70,6 @@ ENV_KEYS: dict[str, str] = {
     "claude_cli": "BUDGET_CLAUDE_CLI",
     "codex_cli": "BUDGET_CODEX_CLI",
     "norms_mcp": "BUDGET_NORMS_MCP",
-    "local_llm": "BUDGET_LOCAL_LLM",
 }
 
 # Семафоры привязаны к event loop: asyncio.Semaphore, созданный в одном loop,

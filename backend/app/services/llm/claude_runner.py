@@ -49,17 +49,9 @@ from backend.app.core.config import (
     CLAUDE_TEXT_ANALYSIS_TIMEOUT, CLAUDE_FINDINGS_MERGE_TIMEOUT,
     CLAUDE_NORM_VERIFY_TIMEOUT, CLAUDE_NORM_FIX_TIMEOUT, CLAUDE_NORM_REQUOTE_TIMEOUT,
     CLAUDE_OPTIMIZATION_TIMEOUT,
-    get_stage_model, is_claude_stage, is_codex_model, is_codex_stage, is_local_llm_model,
+    get_stage_model, is_claude_stage, is_codex_model, is_codex_stage,
 )
 
-# Локальный GEMMA иногда отвергает слишком большие PNG ("Invalid image detected").
-# На ошибке повторяем тот же single-block запрос с последовательно уменьшенными
-# копиями картинки. scale = target_dpi / GEMMA_CROP_DPI (источник = 300 DPI).
-_LOCAL_GEMMA_BLOCK_DPI_FALLBACKS: list[tuple[int, float]] = [
-    (300, 1.0),
-    (200, 200 / 300),
-    (100, 100 / 300),
-]
 from backend.app.services.common import audit_scope, resource_budget
 from backend.app.services.common.cli_utils import (
     is_cancelled, is_timeout, is_rate_limited,
@@ -1486,39 +1478,23 @@ async def run_block_batch(
 
         return exit_code, raw_text, gd_result
 
-    # OpenRouter / local-GEMMA path
+    # OpenRouter path
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
     import backend.app.services.llm.llm_runner as llm_runner
 
-    local_gemma = is_local_llm_model(model)
-    dpi_tiers = _LOCAL_GEMMA_BLOCK_DPI_FALLBACKS if local_gemma else [(0, 1.0)]
-
-    result = None
-    for attempt_idx, (dpi, scale) in enumerate(dpi_tiers):
-        with _scoped_audit_paths(
-            output_dir=output_dir, version_dir=version_dir,
-            project_id=project_id, version_id=version_id,
-        ):
-            messages = prompt_builder.build_block_batch_messages(
-                batch_data, project_info, project_id, total_batches,
-                image_scale=scale,
-            )
-        result = await llm_runner.run_llm(
-            stage=stage_key,
-            messages=messages,
-            timeout=600,
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_block_batch_messages(
+            batch_data, project_info, project_id, total_batches,
+            image_scale=1.0,
         )
-        if not result.is_error:
-            break
-        if local_gemma and attempt_idx + 1 < len(dpi_tiers):
-            next_dpi = dpi_tiers[attempt_idx + 1][0]
-            err_snippet = (result.error_message or "no details").strip()[:160]
-            if on_output:
-                await on_output(
-                    f"[{stage_key}] DPI {dpi} → ошибка ({err_snippet}); повтор на DPI {next_dpi}"
-                )
-            continue
-        break
+    result = await llm_runner.run_llm(
+        stage=stage_key,
+        messages=messages,
+        timeout=600,
+    )
 
     if result.json_data and not result.is_error:
         output_path = _resolve_output_dir(project_id, output_dir=output_dir) / f"block_batch_{batch_id:03d}.json"

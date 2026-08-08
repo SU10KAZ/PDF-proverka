@@ -29,7 +29,7 @@ from backend.app.core.config import (
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
     OPTIMIZATION_CRITIC_TASK_TEMPLATE, OPTIMIZATION_CORRECTOR_TASK_TEMPLATE,
-    get_stage_model, is_codex_model, is_local_llm_model,
+    get_stage_model, is_codex_model,
 )
 from backend.app.pipeline.stages.prepare.task_builder import (
     load_template_for_llm,
@@ -214,15 +214,13 @@ def _read_json_file(project_id: str, filename: str) -> str:
         return f"(ошибка чтения {filename}: {e})"
 
 
-def _read_findings_merge_blocks(
-    project_id: str, *, compact_for_local: bool, force_compact: bool = False,
-) -> str:
+def _read_findings_merge_blocks(project_id: str, *, force_compact: bool = False) -> str:
     """Прочитать 01_blocks_analysis.json для merge.
 
-    Для локального GEMMA (а также при `force_compact`, когда сырой payload не
-    влезает в жёсткий лимит входа Codex CLI) резко уменьшаем payload: оставляем
-    только поля, которые реально нужны, чтобы не терять свод замечаний из-за
-    переполнения контекста и невалидного ответа.
+    При `force_compact` (сырой payload не влезает в жёсткий лимит входа Codex
+    CLI) резко уменьшаем payload: оставляем только поля, которые реально нужны,
+    чтобы не терять свод замечаний из-за переполнения контекста и невалидного
+    ответа.
     """
     file_path = resolve_existing(_version_output_dir(project_id), BLOCKS_ANALYSIS_FILENAME)
     if not file_path.exists():
@@ -233,7 +231,7 @@ def _read_findings_merge_blocks(
     except OSError as e:
         return f"(ошибка чтения 01_blocks_analysis.json: {e})"
 
-    if not compact_for_local and not force_compact:
+    if not force_compact:
         return raw_text
 
     try:
@@ -517,11 +515,10 @@ def build_text_analysis_messages(
     model = get_stage_model("text_analysis")
 
     # Подгрузить нормативную базу дисциплины inline там, где контекст позволяет.
-    # Для local GEMMA держим prompt компактнее: актуальность норм всё равно финально
-    # проверяется отдельным stage 04 через MCP norms. include_norms=False —
-    # Tier 1 разгрузки промпта на больших проектах (та же мотивация).
+    # Актуальность норм всё равно финально проверяется отдельным stage 04 через
+    # MCP norms. include_norms=False — Tier 1 разгрузки промпта на больших проектах.
     norms_text = _read_norms_reference(project_info)
-    if include_norms and norms_text and not is_local_llm_model(model):
+    if include_norms and norms_text:
         system_prompt += f"\n\n## Normative Reference (discipline norms database)\n\n{norms_text}"
     else:
         system_prompt += (
@@ -748,27 +745,23 @@ def build_findings_merge_messages(
 
     text_analysis = _read_json_file(project_id, TEXT_ANALYSIS_FILENAME)
     merge_model = get_stage_model("findings_merge")
-    local_gemma_mode = is_local_llm_model(merge_model)
-    blocks_analysis = _read_findings_merge_blocks(
-        project_id,
-        compact_for_local=local_gemma_mode,
-    )
+    blocks_analysis = _read_findings_merge_blocks(project_id)
 
     # Codex CLI жёстко отклоняет ход, чей вход превышает 1 048 576 символов
     # (turn/start: input_too_large). На крупных проектах сырой
     # 01_blocks_analysis.json раздувает merge-промпт за лимит, и свод падает за
     # ~1 сек после thread.started (диагностировано на 133-23-ГК-АИ1: 1.61М симв.).
-    # Падаем на ту же компактную проекцию, что и локальный GEMMA — она сохраняет
+    # Падаем на компактную проекцию — она сохраняет
     # findings/severity/category/norm/value_found/highlight_regions и привязку к
     # листу (для 133-23-ГК-АИ1: 1.59М → 0.49М симв., полный промпт ~0.51М).
     codex_compacted = False
-    if not local_gemma_mode and is_codex_model(merge_model):
+    if is_codex_model(merge_model):
         approx_chars = (
             len(system_prompt) + len(str(text_analysis)) + len(blocks_analysis) + 256
         )
         if approx_chars > _CODEX_MERGE_INPUT_BUDGET:
             blocks_analysis = _read_findings_merge_blocks(
-                project_id, compact_for_local=False, force_compact=True,
+                project_id, force_compact=True,
             )
             codex_compacted = True
             logger.warning(
@@ -782,7 +775,7 @@ def build_findings_merge_messages(
         f"## 01_blocks_analysis.json:\n\n{blocks_analysis}"
     )
 
-    if local_gemma_mode or codex_compacted:
+    if codex_compacted:
         user_text += (
             "\n\n## Merge note:\n\n"
             "This payload is a compact projection of 01_blocks_analysis.json. "
