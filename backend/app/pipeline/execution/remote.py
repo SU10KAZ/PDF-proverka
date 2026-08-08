@@ -489,6 +489,10 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             package_hash=attempt.get("result_package_hash"),
             returned_artifacts=list(report.get("applied_paths") or []),
             resume_stage=report.get("resume_stage"),
+            # Подсказка воркера едет ОТДЕЛЬНЫМ полем от решения центра.
+            # Слитые в одно, они превращали сверку «воркер сказал / центр
+            # решил» в сравнение центра с самим собой.
+            resume_hint=report.get("resume_hint"),
             usage_report=report.get("usage_report"),
             error=report.get("error"),
         )

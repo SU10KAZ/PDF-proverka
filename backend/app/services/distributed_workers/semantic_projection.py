@@ -56,7 +56,7 @@ VOLATILE_KEYS: frozenset[str] = frozenset(
         # время и длительность
         "generated_at", "created_at", "finished_at", "started_at", "completed_at",
         "updated_at", "timestamp", "date", "duration_sec", "duration_ms",
-        "elapsed", "elapsed_sec", "wall_clock_sec",
+        "elapsed", "elapsed_sec", "wall_clock_sec", "wall_clock_s",
         # идентификаторы прогона и транспорта
         "job_id", "attempt_id", "run_id", "package_id", "worker_id",
         "correlation_id", "instance_id", "pid", "process_group_id",
@@ -83,6 +83,16 @@ PROTECTED_KEYS: frozenset[str] = frozenset(
         "references", "related_block_ids", "severity", "category", "sheet",
         "page", "status", "id", "schema_version", "stages", "summary",
         "value_found", "highlight_regions", "meta", "_meta",
+    }
+)
+
+#: Предметное ядро защищённого: то, ради чего аудит вообще делается. Из
+#: `PROTECTED_KEYS` эти имена не могут исчезнуть, и волатильными объявлены быть
+#: не могут — иначе «расхождений нет» перестаёт что-либо означать.
+_PROTECTED_CORE: frozenset[str] = frozenset(
+    {
+        "discipline_id", "findings", "problem", "recommendation", "norm",
+        "norm_quote", "severity", "category", "sheet", "page", "stages",
     }
 )
 
@@ -115,6 +125,26 @@ def assert_contract_is_sane() -> None:
     if overlap:
         raise SemanticContractError(
             "Ключи одновременно волатильны и защищены: " + ", ".join(sorted(overlap))
+        )
+    # Непересечение — необходимое, но не достаточное условие. Способ незаметно
+    # «починить» красный diff, который непересечением не ловится: вынести
+    # предметный ключ из PROTECTED_KEYS и добавить его в VOLATILE_KEYS. Список
+    # защищённого поэтому зафиксирован по составу: его изменение обязано быть
+    # осознанным, а не побочным эффектом отладки.
+    missing = _PROTECTED_CORE - PROTECTED_KEYS
+    if missing:
+        raise SemanticContractError(
+            "Из защищённых ключей исчезло предметное ядро: " + ", ".join(sorted(missing))
+        )
+    volatile_core = _PROTECTED_CORE & VOLATILE_KEYS
+    if volatile_core:
+        raise SemanticContractError(
+            "Предметное ядро объявлено волатильным: " + ", ".join(sorted(volatile_core))
+        )
+    if not REQUIRED_ARTIFACTS or not set(CENTRAL_ARTIFACTS) <= set(REQUIRED_ARTIFACTS):
+        raise SemanticContractError(
+            "Центральные артефакты выпали из списка обязательных — "
+            "хвост перестал бы проверяться вовсе"
         )
 
 
@@ -219,6 +249,72 @@ def _norm_text(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value)).strip()
 
 
+#: Поля записи этапа, которые НЕ являются результатом аудита. `message` —
+#: человеческая диагностика, в которую конвейер вклеивает длительность и
+#: стоимость («OK (2/2 блоков, 1s, 2 findings, ~$0.000)»); сравнивать её значит
+#: объявлять расхождением то, что на другой машине заняло на полсекунды больше.
+#: Семантика этапа — его СТАТУС, и он сравнивается.
+_STAGE_DIAGNOSTIC_KEYS: frozenset[str] = frozenset(
+    {"message", "detail", "error", "duration_sec", "started_at", "completed_at",
+     "input_tokens", "output_tokens", "model", "cost_usd", "interrupted_at"}
+)
+
+
+def stage_order_invariants(stages: Any) -> dict[str, Any]:
+    """Утверждения о ПОРЯДКЕ, одинаково верные для обеих ног.
+
+    «Нормы после свода» и «нормы до свода» дают разные замечания — это
+    настоящее расхождение. А то, в каком порядке легли в журнал ветви
+    параллельной оптимизации, расхождением не является ни при каком исходе.
+    """
+    if not isinstance(stages, dict):
+        return {}
+    order = [str(name) for name in stages]
+    index = {name: i for i, name in enumerate(order)}
+
+    def after(later: str, earlier: str) -> Optional[bool]:
+        if later not in index or earlier not in index:
+            return None
+        return index[later] > index[earlier]
+
+    return {
+        "norm_verify_after_findings_merge": after("norm_verify", "findings_merge"),
+        "text_analysis_after_block_analysis": after("text_analysis", "block_analysis"),
+        "findings_merge_after_text_analysis": after("findings_merge", "text_analysis"),
+        "excel_is_last": (order[-1] == "excel") if order else None,
+    }
+
+
+def pipeline_log_projection(payload: Any) -> Any:
+    """Проекция журнала этапов: состав и статусы, без диагностики.
+
+    Сохраняется главное — КАКИЕ этапы выполнялись и с каким исходом. Именно
+    по нему видно, что удалённая нога прошла свою часть, а центр — свою, и
+    что ни одна запись истории не потерялась.
+    """
+    if not isinstance(payload, dict):
+        return project(payload)
+    stages = payload.get("stages")
+    if not isinstance(stages, dict):
+        return project(payload)
+    return {
+        # Порядок этапов — часть результата, но СЫРОЙ порядок сравнивать
+        # нельзя: у удалённой ноги центральные этапы дописываются в конец по
+        # построению, а параллельная ветка оптимизации всякий раз ложится в
+        # журнал по-разному. Сравниваются инварианты, а не тайминг.
+        "order_invariants": stage_order_invariants(stages),
+        "stages": {
+            str(name): {
+                key: value
+                for key, value in sorted((entry or {}).items())
+                if key not in _STAGE_DIAGNOSTIC_KEYS
+            }
+            for name, entry in sorted(stages.items())
+            if isinstance(entry, dict)
+        },
+    }
+
+
 def stage_completion_map(pipeline_log: Any) -> dict[str, str]:
     if not isinstance(pipeline_log, dict):
         return {}
@@ -265,17 +361,55 @@ def excel_projection(version_dir: Path) -> dict[str, Any]:
             "sheets": dict(sorted(sheets.items()))}
 
 
+#: Каталог прогона в пути артефакта. Его имя — идентификатор задания, то есть
+#: волатильно по построению: `runs/local-baseline` против `runs/<uuid>`.
+_RUN_DIR_RE = re.compile(r"(^|/)runs/[^/]+/")
+
+_ISO_TS_ANYWHERE = re.compile(
+    r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?"
+)
+#: Абсолютный путь — только начинающийся с НАСТОЯЩЕГО корня файловой системы.
+#: Прежний шаблон `/(?:[\w.\-]+/){2,}` совпадал с любой последовательностью из
+#: трёх слэшей, а в текстах замечаний это обычная запись: «расход л/с/этаж»,
+#: «И/ИЛИ/НЕ», «230/400/690 В». Нормализатор съедал предметный текст и делал
+#: расхождение в нём невидимым — то есть ровно то, ради чего он не нужен.
+_FS_ROOTS = ("tmp", "home", "var", "opt", "srv", "mnt", "data", "root", "usr", "etc")
+_ABS_PATH_ANYWHERE = re.compile(
+    r"/(?:" + "|".join(_FS_ROOTS) + r")/(?:[^\s\"'<>|]+)"
+)
+
+
+def _normalize_markdown(text: str, version_dir: Optional[Path] = None) -> str:
+    """Убрать отметки времени и абсолютные пути, сохранив предметный текст."""
+    without_ts = _ISO_TS_ANYWHERE.sub("<timestamp>", text)
+    if version_dir is not None:
+        # Точное вхождение каталога версии убирается первым и целиком: он
+        # заведомо абсолютный и заведомо разный у двух сторон.
+        without_ts = without_ts.replace(str(Path(version_dir)), "<version>")
+    without_paths = _ABS_PATH_ANYWHERE.sub("<path>", without_ts)
+    return _norm_text(without_paths)
+
+
 def markdown_projection(version_dir: Path) -> dict[str, Any]:
-    """Обязательный Markdown отчёта: наличие и нормализованный текст."""
+    """Обязательный Markdown отчёта: наличие и нормализованный текст.
+
+    Ключ — путь с ОБЕЗЛИЧЕННЫМ каталогом прогона: иначе один и тот же файл на
+    двух сторонах выглядит как «есть только слева» и «есть только справа».
+    Отметки времени и абсолютные пути внутри текста нормализуются по значению —
+    так же, как в JSON.
+    """
     out: dict[str, Any] = {}
     for path in sorted(Path(version_dir).rglob("*.md")):
         rel = path.relative_to(version_dir).as_posix()
         if rel.startswith(("01_input/", "02_work/")):
             continue                               # исходники, не результат
+        key = _RUN_DIR_RE.sub(r"\1runs/<run>/", rel)
         try:
-            out[rel] = _norm_text(path.read_text(encoding="utf-8"))
+            out[key] = _normalize_markdown(
+                path.read_text(encoding="utf-8"), version_dir
+            )
         except OSError:
-            out[rel] = "<unreadable>"
+            out[key] = "<unreadable>"
     return out
 
 
@@ -322,7 +456,19 @@ def collect_projection(
             artifacts[name] = None
             missing.append(name)
             continue
-        artifacts[name] = project(_read_json(path))
+        raw = _read_json(path)
+        if raw is None:
+            # Файл есть, но не читается как JSON. Считать его присутствующим
+            # значило бы принять битый артефакт за выполненный этап: обе
+            # стороны получили бы `None`, проекции совпали бы, а результата
+            # нет. Обязательный артефакт — это ЧИТАЕМЫЙ артефакт.
+            artifacts[name] = {"_unreadable": str(path.name)}
+            missing.append(name)
+            continue
+        artifacts[name] = (
+            pipeline_log_projection(raw) if name == "pipeline_log.json"
+            else project(raw)
+        )
 
     findings_path = _find("03_findings.json", dirs)
     findings_raw = _read_json(findings_path) if findings_path else None

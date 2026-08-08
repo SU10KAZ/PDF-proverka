@@ -6341,7 +6341,13 @@ class PipelineManager:
         """
         from backend.app.pipeline.execution import registry as execution_registry
 
-        if execution_registry.central_handoff_state(handle) == "completed":
+        # Чтение оси идёт в поток: под ним синхронный sqlite, а блокировка
+        # event loop в этом проекте кончается тем, что вотчдог считает бэкенд
+        # мёртвым и снимает его вместе с живым аудитом.
+        state_now = await asyncio.to_thread(
+            execution_registry.central_handoff_state, handle
+        )
+        if state_now == "completed":
             # Рестарт центра ПОСЛЕ завершённого хвоста. Импорт идемпотентен сам
             # по себе, а нормативный этап и Excel — нет: они стоят денег и
             # перезаписывают финальные артефакты. Второй COMPLETED-переход не
@@ -6353,7 +6359,7 @@ class PipelineManager:
             job.status = JobStatus.COMPLETED
             return
         await self._log(job, "Результат воркера принят — центральные этапы", "info")
-        self._handoff_advance(handle, "central_resume_running")
+        await self._handoff_advance(handle, "central_resume_running")
         # Артефакты приехали в версию проекта, а run dir этого job'а пуст:
         # без засева норм-этап ответил бы «03_findings.json не найден».
         try:
@@ -6367,14 +6373,16 @@ class PipelineManager:
         # центре, и доверять ей означало бы позволить воркеру назначать себе
         # следующий этап.
         detected = await asyncio.to_thread(self._detect_central_resume_stage, job)
-        hint = getattr(result, "resume_stage", None) or getattr(
-            result, "resume_hint", None
-        )
+        # Именно `resume_hint` — то, что посчитал ВОРКЕР и привёз в манифесте.
+        # `result.resume_stage` заполняет сам центр (импортёр), и сверка с ним
+        # была бы сверкой центра с самим собой: расхождение недостижимо, а
+        # предупреждение — мёртвым.
+        hint = getattr(result, "resume_hint", None)
         if detected:
             await self._log(
                 job, f"Центральный детектор возобновления: {detected}", "info",
             )
-            self._handoff_advance(
+            await self._handoff_advance(
                 handle, "central_resume_running", resume_stage=detected,
             )
         if hint and detected and str(hint) != str(detected):
@@ -6392,7 +6400,7 @@ class PipelineManager:
         if not norms_after_merge:
             await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
             if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                self._handoff_advance(
+                await self._handoff_advance(
                     handle, "failed",
                     detail={"stage": "norm_verify", "error": job.error_message},
                 )
@@ -6402,7 +6410,7 @@ class PipelineManager:
         if norms_after_merge:
             await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
             if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
-                self._handoff_advance(
+                await self._handoff_advance(
                     handle, "failed",
                     detail={"stage": "norm_verify", "error": job.error_message},
                 )
@@ -6421,10 +6429,50 @@ class PipelineManager:
         self._promote_completed_audit_v2(job)
         # COMPLETED ставится ровно один раз и ТОЛЬКО здесь — после
         # нормативного этапа, контроля долгов, переноса вердиктов и Excel.
-        self._handoff_advance(
-            handle, "completed",
-            detail={"final_stage": "excel", "excel_ok": bool(_xls.success)},
-        )
+        #
+        # Но не по факту «дошли до этой строки»: при `standalone=False`
+        # провалившаяся верификация норм НЕ ставит job'у FAILED (статус общего
+        # job'а мутировать нельзя — его делят critic и оптимизация), она только
+        # пишет в лог. Хвост доезжал до конца, ось получала `completed`, и
+        # гейт рестарта после этого навсегда запрещал повтор — по аудиту без
+        # `norm_checks.json`. Признаком завершённости считается артефакт, а не
+        # достигнутая строка кода.
+        produced = await asyncio.to_thread(self._central_tail_artifacts, job)
+        # Обязателен `norm_checks.json` — ради него хвост и существует. Судьба
+        # второго файла фиксируется в детали, но незавершённым хвост не делает:
+        # новых ложных `failed` этап не вводит.
+        missing = [name for name in ("norm_checks.json",) if not produced.get(name)]
+        detail = {"final_stage": "excel", "excel_ok": bool(_xls.success),
+                  "central_artifacts": produced}
+        if missing:
+            await self._log(
+                job,
+                "Центральные артефакты не созданы: " + ", ".join(missing)
+                + " — хвост помечен как незавершённый и может быть повторён",
+                "warn",
+            )
+            await self._handoff_advance(
+                handle, "failed", detail=dict(detail, missing_artifacts=missing),
+            )
+            return
+        await self._handoff_advance(handle, "completed", detail=detail)
+
+    def _central_tail_artifacts(self, job: AuditJob) -> dict[str, bool]:
+        """Какие артефакты центрального хвоста реально появились на диске.
+
+        Список именно центральный: это ровно то, чего у результата воркера
+        быть не может, и ровно то, ради чего хвост выполняется.
+        """
+        names = ("norm_checks.json", "03a_norms_verified.json")
+        try:
+            _root, project_dir, output_dir = self._resolve_job_paths(job)
+        except Exception:                     # noqa: BLE001 — проверка не блокер
+            return {name: True for name in names}
+        latest_dir = project_dir / "03_analysis" / "latest"
+        return {
+            name: (output_dir / name).is_file() or (latest_dir / name).is_file()
+            for name in names
+        }
 
     def _detect_central_resume_stage(self, job: AuditJob) -> Optional[str]:
         """Спросить СУЩЕСТВУЮЩИЙ детектор, с какого этапа продолжать.
@@ -6442,7 +6490,7 @@ class PipelineManager:
         except Exception:                          # noqa: BLE001 — детектор не блокер
             return None
 
-    def _handoff_advance(
+    async def _handoff_advance(
         self,
         handle: Any,
         state: str,
@@ -6455,12 +6503,17 @@ class PipelineManager:
         Менеджер не знает ни одной детали подсистемы воркеров — это машинно
         проверяемая граница, — поэтому отметка идёт тем же путём, что и всё
         остальное удалённое: через `backend.app.pipeline.execution`.
+
+        Запись синхронная и идёт в sqlite, поэтому выполняется в потоке:
+        блокировка event loop в этом проекте заканчивается тем, что вотчдог
+        признаёт бэкенд мёртвым и снимает его вместе с живым аудитом (ADR-007).
         """
         if handle is None:
             return
         from backend.app.pipeline.execution import registry as execution_registry
 
-        execution_registry.note_central_handoff(
+        await asyncio.to_thread(
+            execution_registry.note_central_handoff,
             handle, state, detail=detail, resume_stage=resume_stage,
         )
 

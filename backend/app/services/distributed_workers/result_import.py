@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import shutil
 import time
@@ -38,6 +39,8 @@ from backend.app.services.distributed_workers import (
     repositories,
 )
 from backend.app.services.distributed_workers.settings import DistributedWorkersSettings
+
+logger = logging.getLogger(__name__)
 
 #: Пути внутри версии, которые воркер менять НЕ вправе.
 SOURCE_IMMUTABLE_PREFIXES: tuple[str, ...] = (
@@ -182,7 +185,13 @@ def _resolve_version_dir(attempt: dict[str, Any]) -> Path:
 # ─── Проверки и применение ───────────────────────────────────────────────────
 def classify_path(rel: str) -> str:
     """Куда относится путь: source | worker | central | unknown."""
-    clean = rel.replace("\\", "/").lstrip("./")
+    # `lstrip("./")` снимает МНОЖЕСТВО символов, а не префикс: у пути
+    # «.03_analysis/latest/03_findings.json» он съедал точку и делал из него
+    # обычный рабочий артефакт, а «..99_service/…» превращал в «99_service/…»,
+    # проскакивая мимо запрета на исходники.
+    clean = rel.replace("\\", "/")
+    while clean.startswith("./"):
+        clean = clean[2:]
     if clean in SOURCE_IMMUTABLE_FILES:
         return "source"
     if any(clean.startswith(p) for p in SOURCE_IMMUTABLE_PREFIXES):
@@ -327,6 +336,12 @@ def apply_result_package(
         settings.result_staging_dir, attempt["job_id"], attempt_id, allow_legacy=True
     )
     if staging_root.exists():
+        # Журнал предыдущего применения — единственный способ вернуть версию
+        # проекта в исходное состояние. Рестарт центра посреди применения
+        # оставлял его здесь, а повторный импорт первым делом сносил каталог
+        # целиком — вместе с журналом и бэкапами. Незавершённое применение
+        # сначала откатывается, и только потом staging переиспользуется.
+        _recover_interrupted_apply(staging_root)
         shutil.rmtree(staging_root, ignore_errors=True)
     staging_root.mkdir(parents=True, exist_ok=True)
     unpacked = staging_root / "unpacked"
@@ -369,9 +384,15 @@ def apply_result_package(
             + "; ".join(unsafe_relative[:5])
         )
 
-    plan = build_change_plan(staged_project, version_dir) if staged_project.is_dir() else {
-        "apply": [], "rejected": [], "skipped_source": [], "skipped_central": []
-    }
+    if not staged_project.is_dir():
+        # Пустой план вместо отказа означал бы «применили ноль файлов, всё
+        # хорошо»: попытка получила бы `applied`, центральный хвост пошёл бы
+        # по НЕ обновлённой версии, а причина — отсутствие `payload/project`
+        # в пакете — не осталась бы нигде.
+        raise ResultImportError(
+            "В пакете результата нет каталога payload/project — применять нечего"
+        )
+    plan = build_change_plan(staged_project, version_dir)
     if plan["rejected"]:
         _write_rejection(settings, attempt, plan, manifest)
         raise ResultImportError(
@@ -417,10 +438,20 @@ def apply_result_package(
             applied.append(rel)
             _dump(journal_path, journal)
     except Exception as exc:                      # noqa: BLE001 — откат обязателен
-        rollback_applied(journal_path)
-        journal["state"] = "rolled_back"
+        # Результат отката читается, а не выбрасывается: «откачено» и «откат
+        # не смог вернуть N файлов» — разные состояния версии проекта, и
+        # второе обязано быть видно оператору в тексте ошибки.
+        rollback = rollback_applied(journal_path)
+        journal = _loads_path(journal_path)
+        journal["state"] = "rolled_back" if not rollback.get("failed") else "rollback_failed"
         journal["error"] = str(exc)
         _dump(journal_path, journal)
+        if rollback.get("failed"):
+            raise ResultImportError(
+                f"Применение прервано, ОТКАТ НЕПОЛНЫЙ: {exc}. "
+                f"Не восстановлено: {'; '.join(rollback['failed'][:5])}. "
+                f"Staging сохранён: {staging_root}"
+            ) from exc
         raise ResultImportError(
             f"Применение прервано и откачено: {exc}. Staging сохранён: {staging_root}"
         ) from exc
@@ -445,6 +476,31 @@ def apply_result_package(
         "discipline_profile_hash": manifest.get("discipline_profile_hash"),
         "path_normalization": path_report.as_dict(),
     }
+
+
+def _recover_interrupted_apply(staging_root: Path) -> Optional[dict[str, Any]]:
+    """Докатить назад применение, прерванное падением или рестартом центра.
+
+    Журнал остаётся в состоянии `applying`, если процесс умер посреди цикла.
+    Версия проекта при этом наполовину перезаписана, а бэкапы лежат рядом с
+    журналом — здесь единственное место, где их ещё можно использовать.
+    """
+    journal_path = staging_root / "apply_journal.json"
+    if not journal_path.is_file():
+        return None
+    journal = _loads_path(journal_path)
+    if str(journal.get("state") or "") not in {"in_progress", ""}:
+        return None
+    if not (journal.get("entries") or []):
+        return None
+    rollback = rollback_applied(journal_path)
+    logger.warning(
+        "Найдено незавершённое применение результата (%s): откачено "
+        "восстановлено=%s удалено=%s, не удалось=%s",
+        journal_path, rollback.get("restored"), rollback.get("removed"),
+        len(rollback.get("failed") or []),
+    )
+    return rollback
 
 
 def rollback_applied(journal_path: Path) -> dict[str, Any]:

@@ -93,6 +93,17 @@ _FROM_JOB_STATE: dict[str, HandoffState] = {
     "result_received": HandoffState.RESULT_RECEIVED,
     "validating": HandoffState.RESULT_VALIDATING,
     "completed": HandoffState.RESULT_VALIDATED,
+    # Исходы, после которых хвоста не будет. Без них попытка, снятая
+    # оператором, вытесненная повторной или признанная потерянной, показывала
+    # оператору «Идёт на воркере» — то есть предлагала ждать того, чего не
+    # произойдёт: `current()` для неизвестного состояния отдаёт WORKER_RUNNING.
+    "cancelled": HandoffState.FAILED,
+    "failed": HandoffState.FAILED,
+    "superseded": HandoffState.FAILED,
+    "superseded_result_received": HandoffState.FAILED,
+    "lost": HandoffState.FAILED,
+    "operator_declared_lost": HandoffState.FAILED,
+    "expired": HandoffState.FAILED,
 }
 
 
@@ -149,23 +160,33 @@ def advance(
     if row is None:
         raise HandoffError(f"Попытка {attempt_id} не найдена")
     now = current(row)
+    stalled = False
     if not allow_regress and state is not HandoffState.FAILED:
-        if index_of(state) < index_of(now):
-            # Движение назад молча — это способ повторить уже сделанный шаг.
-            return {"state": now.value, "changed": False, "reason": "already_ahead"}
-        if state is now:
-            return {"state": now.value, "changed": False, "reason": "already_there"}
-    fields: dict[str, Any] = {
-        "central_handoff_state": state.value,
-        "central_handoff_at": time.time(),
-    }
+        if index_of(state) < index_of(now) or state is now:
+            # Само СОСТОЯНИЕ назад не двигается и повторно не пишется. Но
+            # сопутствующие поля — не состояние: вердикт центрального
+            # детектора приходит уже ПОСЛЕ перехода в `central_resume_running`,
+            # и ранний выход отсюда терял его навсегда. В базу тогда попадала
+            # только догадка импортёра, а решение, по которому центр реально
+            # продолжил аудит, не сохранялось нигде.
+            if resume_stage is None and detail is None:
+                reason = "already_there" if state is now else "already_ahead"
+                return {"state": now.value, "changed": False, "reason": reason}
+            stalled = True
+    fields: dict[str, Any] = {}
+    if not stalled:
+        fields["central_handoff_state"] = state.value
+        fields["central_handoff_at"] = time.time()
     if detail is not None:
         fields["central_handoff_detail"] = json.dumps(detail, ensure_ascii=False)
     if resume_stage is not None:
         fields["central_resume_stage"] = str(resume_stage)
-    if state is HandoffState.COMPLETED:
+    if state is HandoffState.COMPLETED and not stalled:
         fields["central_completed_at"] = time.time()
     repositories.update_attempt_fields(attempt_id, fields, settings=settings)
+    if stalled:
+        return {"state": now.value, "changed": False, "reason": "fields_only",
+                "fields": sorted(fields)}
     return {"state": state.value, "changed": True, "previous": now.value}
 
 

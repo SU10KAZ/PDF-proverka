@@ -8,8 +8,11 @@ backend, ровно как раньше**. Включение подсистем
 """
 from __future__ import annotations
 
+import logging
 import os
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from backend.app.pipeline.execution.contracts import (
     AuditExecutionOptions,
@@ -229,8 +232,15 @@ def note_central_handoff(
             resume_stage=resume_stage,
             allow_regress=(state == central_handoff.HandoffState.FAILED.value),
         )
-    except Exception:                      # noqa: BLE001 — ось не блокер
-        pass
+    except Exception as exc:               # noqa: BLE001 — ось не блокер
+        # Fail-soft, но не молча. Непрошедшая запись `completed` означает, что
+        # после рестарта гейт не увидит завершённого хвоста и прогонит
+        # нормативный этап и Excel второй раз — а это деньги и перезапись
+        # финальных артефактов. Единственный след такого исхода — эта строка.
+        logger.warning(
+            "Ось центрального хвоста не записана (попытка %s, состояние %s): %s",
+            attempt_id, state, exc,
+        )
 
 
 def central_handoff_state(handle: Any) -> Optional[str]:
