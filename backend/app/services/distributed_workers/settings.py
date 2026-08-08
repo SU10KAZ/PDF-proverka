@@ -78,6 +78,16 @@ class DistributedWorkersSettings:
         return self.data_dir / "rejected_results"
 
     @property
+    def superseded_results_dir(self) -> Path:
+        """Результаты ОТОЗВАННЫХ попыток. Отдельный корень — не «архив ошибок».
+
+        Такой результат может быть совершенно корректным: попытку отозвал
+        оператор, а воркер честно доработал. Держать его вперемешку с
+        отвергнутой валидацией значило бы стереть это различие.
+        """
+        return self.data_dir / "superseded_results"
+
+    @property
     def job_logs_dir(self) -> Path:
         return self.data_dir / "job_logs"
 

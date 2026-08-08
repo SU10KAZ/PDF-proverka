@@ -11,7 +11,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 # ─── Закрытые перечисления ───────────────────────────────────────────────────
@@ -136,13 +136,48 @@ FILE_ONLY_EVENT_TYPES: frozenset[str] = frozenset({WorkerEventType.LOG_LINE.valu
 class WorkerCommandType(str, Enum):
     """Закрытый набор команд центра.
 
-    Значения `run_shell` / `exec` / `eval` здесь нет и быть не может (I-10).
-    На этапе 0 реализованы только те, что нужны вертикальному срезу.
+    Значений `run_shell` / `exec` / `eval` / `script` / `argv` здесь нет и быть
+    не может (I-10). Этап 3.5 добавляет ровно два адресных типа — отмену
+    попытки и удаление её локальных данных.
     """
 
+    CANCEL_ATTEMPT = "cancel_attempt"
+    DELETE_ATTEMPT_DATA = "delete_attempt_data"
+    # Историческое имя отмены из этапа 0. Читается ради совместимости со
+    # старыми строками worker_commands; новые команды им не создаются.
     CANCEL_JOB = "cancel_job"
     DRAIN = "drain"
     UNDRAIN = "undrain"
+
+
+ACTIVE_COMMAND_TYPES: frozenset[str] = frozenset(
+    {WorkerCommandType.CANCEL_ATTEMPT.value, WorkerCommandType.DELETE_ATTEMPT_DATA.value}
+)
+
+
+class CancelAttemptPayload(BaseModel):
+    """Полезная нагрузка отмены. `extra="forbid"`: лишнее поле — отказ."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    job_id: str = Field(min_length=1, max_length=64)
+    attempt_id: str = Field(min_length=1, max_length=64)
+    grace_period_sec: int = Field(default=30, ge=0, le=600)
+    reason: str = Field(default="", max_length=500)
+
+
+class DeleteAttemptDataPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    job_id: str = Field(min_length=1, max_length=64)
+    attempt_id: str = Field(min_length=1, max_length=64)
+    reason: str = Field(default="", max_length=500)
+
+
+COMMAND_PAYLOAD_MODELS: dict[str, type[BaseModel]] = {
+    WorkerCommandType.CANCEL_ATTEMPT.value: CancelAttemptPayload,
+    WorkerCommandType.DELETE_ATTEMPT_DATA.value: DeleteAttemptDataPayload,
+}
 
 
 # ─── Регистрация ─────────────────────────────────────────────────────────────
@@ -234,6 +269,39 @@ class ActiveJobRef(BaseModel):
     started_at: Optional[float] = None
 
 
+class ExecutorSnapshot(BaseModel):
+    """Состояние ЛОКАЛЬНОГО исполнителя, отдельного от сетевого агента.
+
+    Агент онлайн ≠ VPS работает: процессы держит executor, и его молчание —
+    самостоятельная новость, которую экран обязан показать отдельно (§16.6).
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    executor_instance_id: Optional[str] = None
+    status: str = "unknown"          # online | stale | offline | unknown
+    last_heartbeat_at: Optional[float] = None
+    version: Optional[str] = None
+    running_processes: int = 0
+    ambiguous_processes: int = 0
+
+
+class DiskSnapshot(BaseModel):
+    """Диск воркера в разрезе, который нужен для решения об удалении (§12.5)."""
+
+    model_config = ConfigDict(extra="allow")
+
+    total_bytes: Optional[float] = None
+    used_bytes: Optional[float] = None
+    free_bytes: Optional[float] = None
+    jobs_bytes: Optional[float] = None
+    confirmed_results_bytes: Optional[float] = None
+    unconfirmed_results_bytes: Optional[float] = None
+    cleanup_candidates_bytes: Optional[float] = None
+    cleanup_candidates: int = 0
+    level: str = "ok"                 # ok | warning | critical
+
+
 class HeartbeatRequest(BaseModel):
     instance_id: str = Field(min_length=4, max_length=128)
     sent_at: float
@@ -243,6 +311,10 @@ class HeartbeatRequest(BaseModel):
     active_jobs: list[ActiveJobRef] = Field(default_factory=list)
     resource_snapshot: Optional[ResourceSnapshot] = None
     warnings: list[dict[str, Any]] = Field(default_factory=list)
+    # Агент отчитывается и за СЕБЯ, и за наблюдаемый им executor. Если
+    # executor молчит, а агент онлайн — это отдельная новость, а не «всё ок».
+    executor: Optional[ExecutorSnapshot] = None
+    disk: Optional[DiskSnapshot] = None
 
 
 class CursorAck(BaseModel):
@@ -415,6 +487,15 @@ class WorkerCommandOut(BaseModel):
     payload: dict[str, Any] = Field(default_factory=dict)
     created_at: float
     idempotency_key: str
+    job_id: Optional[str] = None
+    attempt_id: Optional[str] = None
+    expires_at: Optional[float] = None
+
+
+class CommandsNextRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    wait_sec: int = Field(default=0, ge=0, le=60)
 
 
 class CommandAckRequest(BaseModel):
@@ -431,6 +512,15 @@ class ReconcileKnownJob(BaseModel):
     last_acked_seq: int = 0
     result_ready: bool = False
     result_hash: Optional[str] = None
+    # Этап 3.5: воркер отчитывается о своём взгляде на попытку и процессы.
+    # Поля объявлены явно — pydantic молча выбрасывает необъявленные.
+    local_disposition: Optional[str] = None
+    process_status: Optional[str] = None
+    completed_marker: Optional[dict[str, Any]] = None
+    pending_local_commands: int = 0
+    result_acknowledged: bool = False
+    deleted_from_worker: bool = False
+    executor_instance_id: Optional[str] = None
     # Поля ниже объявлены явно: pydantic молча выбрасывает необъявленные, и
     # присланное воркером «процесс мёртв» иначе не доезжает до решения центра.
     pipeline_stage: Optional[str] = None
@@ -448,6 +538,10 @@ class ReconcileRequest(BaseModel):
     previous_instance_id: Optional[str] = None
     restarted_at: float
     known_jobs: list[ReconcileKnownJob] = Field(default_factory=list)
+    agent_instance_id: Optional[str] = None
+    executor: Optional[ExecutorSnapshot] = None
+    pending_central_commands: int = 0
+    disk: Optional[dict[str, Any]] = None
 
 
 class ReconcileJobVerdict(BaseModel):
@@ -468,6 +562,18 @@ class ReconcileJobVerdict(BaseModel):
     # разрешено заводить таймер удаления.
     result_accepted: bool = False
     retention_until: Optional[float] = None
+    # Этап 3.5: попытка может быть НЕ текущей, но всё ещё иметь право сдать
+    # свои события и результат в собственный контур (I-07).
+    attempt_disposition: Optional[str] = None
+    current_attempt_id: Optional[str] = None
+    assignment_generation: int = 1
+    # Разрешён ли обычный приём событий этой попытки. Для отозванной — да,
+    # но они уходят в историю СТАРОЙ попытки и прогресс новой не трогают.
+    event_ingestion_allowed: bool = True
+    # Запрет повторного запуска: центр прямо говорит, что стартовать процесс
+    # заново нельзя. Решение о повторе принимает только оператор.
+    restart_forbidden: bool = True
+    deletion_status: Optional[str] = None
 
 
 class ReconcileResponse(BaseModel):
@@ -513,11 +619,71 @@ class ApproveRequest(BaseModel):
 
 class CreateTestJobRequest(BaseModel):
     worker_id: str
-    project_id: str = Field(default="test-project", min_length=1, max_length=120,
-                            pattern=r"^[A-Za-z0-9._\- ]+$")
-    version_id: Optional[str] = Field(default=None, max_length=40,
-                                      pattern=r"^[A-Za-z0-9._-]*$")
+    # Внешний код проекта: кириллица, пробелы, кавычки и «/» допустимы —
+    # реальные коды выглядят как «13АВ/РД-АР3-К7». Компонентом пути он не
+    # становится никогда (I-11), поэтому запрещать «/» здесь незачем; запрещены
+    # только NUL и управляющие символы (см. identifiers.normalize_external_id).
+    project_id: str = Field(default="test-project", min_length=1, max_length=200)
+    project_display_name: str = Field(default="", max_length=300)
+    version_id: Optional[str] = Field(default=None, max_length=200)
     params: TestJobParams = Field(default_factory=TestJobParams)
+
+    @field_validator("project_id")
+    @classmethod
+    def _check_project_id(cls, value: str) -> str:
+        from backend.app.services.distributed_workers import identifiers
+
+        try:
+            return identifiers.normalize_external_id(value, field="project_id")
+        except identifiers.UnsafeIdentifier as exc:
+            raise ValueError(str(exc)) from exc
+
+    @field_validator("version_id")
+    @classmethod
+    def _check_version_id(cls, value: Optional[str]) -> Optional[str]:
+        from backend.app.services.distributed_workers import identifiers
+
+        if value is None or not value.strip():
+            return None
+        try:
+            return identifiers.normalize_external_id(value, field="version_id")
+        except identifiers.UnsafeIdentifier as exc:
+            raise ValueError(str(exc)) from exc
+
+
+# ─── Операторское управление попытками (этап 3.5) ────────────────────────────
+class CancelAttemptRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reason: str = Field(min_length=1, max_length=1000)
+    # Совпадает с CONFIRM_CANCEL в attempt_service. Не галочка: фразу вводят.
+    confirmation: str = Field(min_length=1, max_length=64)
+    grace_period_sec: int = Field(default=30, ge=0, le=600)
+
+
+class MarkAttemptLostRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mandatory_reason: str = Field(min_length=1, max_length=1000)
+    typed_confirmation: str = Field(min_length=1, max_length=64)
+    observed_worker_state: str = Field(default="", max_length=200)
+    optional_operator_note: str = Field(default="", max_length=1000)
+
+
+class CreateAttemptRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    worker_id: str = Field(min_length=1, max_length=64)
+    reason: str = Field(min_length=1, max_length=1000)
+    source_attempt_id: Optional[str] = Field(default=None, max_length=64)
+    confirmation: str = Field(min_length=1, max_length=64)
+
+
+class RequestDeletionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reason: str = Field(min_length=1, max_length=1000)
+    confirmation: str = Field(min_length=1, max_length=64)
 
 
 class JobView(BaseModel):

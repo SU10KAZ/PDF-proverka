@@ -885,7 +885,8 @@ def test_center_catches_up_when_archive_arrives_before_events(client, center_env
     job_id, attempt_id, _ = _running_job(client, center_env)
     assert repositories.get_job(job_id, settings=center_env)["state"] == "running"
 
-    job = job_service.catch_up_to_result_received(job_id=job_id, settings=center_env)
+    job = job_service.catch_up_to_result_received(
+        attempt_id=attempt_id, settings=center_env)
     assert job["state"] == JobState.RESULT_RECEIVED.value
     states = [t["to_state"] for t in
               repositories.list_transitions(job_id, settings=center_env)]
@@ -910,7 +911,7 @@ def test_result_of_failed_attempt_is_stored_not_published(client, center_env, tm
 
     assert stored["state"] == JobState.SUPERSEDED_RESULT_RECEIVED.value
     assert stored["retention_until"] is not None      # воркеру есть что чистить
-    kept = center_env.rejected_results_dir / job_id / attempt_id
+    kept = center_env.superseded_results_dir / job_id / attempt_id
     assert (kept / "late.tar.gz").is_file()
     reason = json.loads((kept / "unpublished_reason.json").read_text())
     assert reason["published"] is False
@@ -932,7 +933,8 @@ def test_migration_2_upgrades_existing_database(tmp_path):
     schema.apply_pragmas(conn)
 
     # Ставим ТОЛЬКО первую миграцию — имитируем базу, созданную до claim-потока.
-    conn.executescript(schema.MIGRATIONS[1])
+    for statement in schema.MIGRATIONS[1]:
+        conn.execute(statement)
     conn.execute(
         "CREATE TABLE IF NOT EXISTS schema_migrations "
         "(version INTEGER PRIMARY KEY, applied_at REAL NOT NULL)"
@@ -952,7 +954,7 @@ def test_migration_2_upgrades_existing_database(tmp_path):
 
     version = schema.migrate(conn)
 
-    assert version == schema.SCHEMA_VERSION == 2
+    assert version == schema.SCHEMA_VERSION == 3
     columns = {r["name"] for r in conn.execute("PRAGMA table_info(workers)")}
     assert {"claim_secret_sha256", "claim_issued_at", "claim_used_at",
             "rejected_at"} <= columns
@@ -960,7 +962,7 @@ def test_migration_2_upgrades_existing_database(tmp_path):
     row = conn.execute("SELECT display_name FROM workers WHERE worker_id='wrk_old'").fetchone()
     assert row["display_name"] == "старый"
     # Повторный прогон миграций ничего не ломает.
-    assert schema.migrate(conn) == 2
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION
     conn.close()
 
 
@@ -1179,8 +1181,9 @@ def test_foreign_ack_does_not_swallow_the_command(client, center_env):
 
     owner_id, owner_headers = _approved_worker(client)
     command = repositories.enqueue_command(
-        worker_id=owner_id, command_type="drain", payload={},
-        idempotency_key="drain-1", settings=center_env,
+        worker_id=owner_id, command_type="cancel_attempt",
+        payload={"job_id": "j-1", "attempt_id": "a-1"},
+        idempotency_key="cancel-1", settings=center_env,
     )
     command_id = command["command_id"]
 
@@ -1336,7 +1339,8 @@ def test_finalize_survives_center_restart_inside_validation(client, center_env, 
         job_service.transition(job_id=job_id, to_state=JobState(state), actor=actor,
                                reason="тест", settings=center_env)
     # Центр «перезапустился» ровно здесь. Догон обязан не падать...
-    job = job_service.catch_up_to_result_received(job_id=job_id, settings=center_env)
+    job = job_service.catch_up_to_result_received(
+        attempt_id=attempt_id, settings=center_env)
     assert job["state"] == "validating"
 
     # ...и повторная финализация обязана пройти, а не упереться в 409 навсегда.

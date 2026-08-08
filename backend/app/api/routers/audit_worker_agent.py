@@ -22,10 +22,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse
 
 from backend.app.models.distributed_workers import (
+    COMMAND_PAYLOAD_MODELS,
     AcceptRequest,
     ClaimRequest,
     ClaimResponse,
     CommandAckRequest,
+    CommandsNextRequest,
     ConnectivityState,
     EventBatchRequest,
     EventBatchResponse,
@@ -50,8 +52,10 @@ from backend.app.models.distributed_workers import (
     UploadCreateRequest,
     UploadSessionInfo,
     WorkerCommandOut,
+    WorkerCommandType,
 )
 from backend.app.services.distributed_workers import (
+    attempt_service,
     auth,
     database,
     event_service,
@@ -151,18 +155,64 @@ async def _idempotent(
     return result
 
 
+async def _resolve_attempt(
+    job_id: str,
+    principal: auth.WorkerPrincipal,
+    execution_token: Optional[str],
+) -> tuple[dict[str, Any], bool]:
+    """Найти ПОПЫТКУ, от имени которой пришёл воркер.
+
+    Раньше опознавали задание, а токен сверяли с текущей попыткой — из-за
+    этого вернувшийся старый воркер получал 409 и деть готовый результат было
+    некуда. Теперь попытка ищется ПО ХЭШУ ТОКЕНА: у каждой свой, и старый
+    воркер попадает в контур собственной попытки.
+
+    Второй элемент кортежа — «попытка активна». Неактивной (отменённой,
+    признанной потерянной, вытесненной) разрешено сдать события и архив в
+    СВОЮ историю, но менять актуальное состояние задания она не может (I-07).
+    """
+    settings = principal.settings
+    attempt: Optional[dict[str, Any]] = None
+    if execution_token:
+        attempt = await database.run_db(
+            repositories.find_attempt_by_token_hash,
+            job_id,
+            auth.hash_token(execution_token.strip()),
+            settings=settings,
+        )
+    if attempt is None:
+        job = await database.run_db(repositories.get_job, job_id, settings=settings)
+        if job is None:
+            raise HTTPException(status_code=404, detail="Задание не найдено.")
+        if job.get("assigned_worker_id") != principal.worker_id:
+            raise HTTPException(
+                status_code=403, detail="Задание закреплено за другим воркером."
+            )
+        auth.require_execution_token(job, execution_token)
+        attempt = job
+    if attempt.get("assigned_worker_id") != principal.worker_id:
+        raise HTTPException(
+            status_code=403, detail="Попытка закреплена за другим воркером."
+        )
+    return attempt, (attempt.get("attempt_disposition") or "active") == "active"
+
+
 async def _load_job_for_worker(
     job_id: str, principal: auth.WorkerPrincipal, execution_token: Optional[str]
 ) -> dict[str, Any]:
-    job = await database.run_db(
-        repositories.get_job, job_id, settings=principal.settings
-    )
-    if job is None:
-        raise HTTPException(status_code=404, detail="Задание не найдено.")
-    if job.get("assigned_worker_id") != principal.worker_id:
-        raise HTTPException(status_code=403, detail="Задание закреплено за другим воркером.")
-    auth.require_execution_token(job, execution_token)
-    return job
+    """Активная попытка задания. Неактивная → 409 «попытка отозвана»."""
+    attempt, active = await _resolve_attempt(job_id, principal, execution_token)
+    if not active:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "attempt_superseded",
+                "message": "Попытка отозвана оператором",
+                "attempt_disposition": attempt.get("attempt_disposition"),
+                "current_attempt": attempt.get("current_attempt_id"),
+            },
+        )
+    return attempt
 
 
 # ─── Регистрация ─────────────────────────────────────────────────────────────
@@ -299,6 +349,8 @@ async def heartbeat(
         if payload.resource_snapshot
         else None,
         warnings=payload.warnings,
+        executor=payload.executor.model_dump() if payload.executor else None,
+        disk=payload.disk.model_dump() if payload.disk else None,
         settings=settings,
     )
     cursors = await database.run_db(
@@ -310,6 +362,10 @@ async def heartbeat(
     has_work = await database.run_db(
         repositories.has_assigned_job, principal.worker_id, settings=settings
     )
+    # Критическая нехватка диска блокирует ВЫДАЧУ новых заданий. Текущие
+    # продолжают работать, ничего не удаляется (§12.5).
+    if has_work and payload.disk and payload.disk.level == "critical":
+        has_work = False
     # ВАЖНО: выборка именно по наличию retention_until, а не «нетерминальные».
     # Срок хранения проставляется ВМЕСТЕ с переходом в терминальное состояние,
     # поэтому прежний фильтр гарантированно давал пустой список.
@@ -378,6 +434,15 @@ async def jobs_next(
     settings = principal.settings
     if payload.free_slots <= 0:
         raise HTTPException(status_code=409, detail="Нет свободных слотов у воркера.")
+    # Тот же гейт, что и при создании задания. Проверяется здесь ещё раз,
+    # потому что воркер опрашивает центр сам и мог не посмотреть на ответ
+    # heartbeat: критический диск не должен получать новую работу (§12.5).
+    fresh = await database.run_db(
+        repositories.get_worker, principal.worker_id, settings=settings
+    )
+    ok, why = worker_registry.can_receive_jobs(fresh or principal.row)
+    if not ok and "диск" in why.lower():
+        raise HTTPException(status_code=409, detail=why)
 
     key = (request.headers.get("Idempotency-Key") or "").strip()
     if key:
@@ -586,8 +651,13 @@ async def post_events(
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
 ) -> EventBatchResponse:
-    """Приём непрерывного пакета событий. Разрыв → 409 с ожидаемым seq."""
-    job = await _load_job_for_worker(payload.job_id, principal, x_execution_token)
+    """Приём непрерывного пакета событий. Разрыв → 409 с ожидаемым seq.
+
+    События принимаются и от ОТОЗВАННОЙ попытки: они уходят в её собственную
+    историю и не трогают актуальную (I-07). Отказать здесь означало бы
+    потерять диагностику именно там, где она нужнее всего.
+    """
+    job, _active = await _resolve_attempt(payload.job_id, principal, x_execution_token)
     if payload.attempt_id != job["attempt_id"]:
         raise HTTPException(
             status_code=409,
@@ -650,7 +720,9 @@ async def _create_upload_impl(
     principal: auth.WorkerPrincipal,
     x_execution_token: Optional[str],
 ) -> UploadSessionInfo:
-    job = await _load_job_for_worker(payload.job_id, principal, x_execution_token)
+    # Отозванная попытка тоже вправе передать готовый архив — он ляжет в
+    # superseded_results и не станет результатом задания (§5.5).
+    job, _active = await _resolve_attempt(payload.job_id, principal, x_execution_token)
     if payload.attempt_id != job["attempt_id"]:
         raise HTTPException(
             status_code=409,
@@ -672,7 +744,7 @@ async def _create_upload_impl(
     if job["state"] == JobState.COMPLETED_LOCALLY.value:
         await database.run_db(
             job_service.transition,
-            job_id=job["job_id"],
+            attempt_id=job["attempt_id"],
             to_state=JobState.RESULT_UPLOADING,
             actor="worker",
             reason="создана upload-сессия",
@@ -695,11 +767,13 @@ async def get_upload(
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
     # Соседние ручки эту проверку делают, а эта её не делала: чужой воркер
-    # читал состояние чужой выгрузки, зная только upload_id.
-    job = await database.run_db(
-        repositories.get_job, session["job_id"], settings=principal.settings
+    # читал состояние чужой выгрузки, зная только upload_id. Привязка идёт к
+    # ПОПЫТКЕ сессии, а не к текущей попытке задания: у отозванной попытки своя
+    # выгрузка, и её владелец — прежний воркер.
+    attempt = await database.run_db(
+        repositories.get_attempt, session["attempt_id"], settings=principal.settings
     )
-    if job is None or job.get("assigned_worker_id") != principal.worker_id:
+    if attempt is None or attempt.get("assigned_worker_id") != principal.worker_id:
         raise HTTPException(status_code=403, detail="Сессия принадлежит другому воркеру.")
     info = await database.run_db(
         upload_service.session_info, session, settings=principal.settings
@@ -722,9 +796,16 @@ async def put_chunk(
     )
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
-    # Через _load_job_for_worker — так же, как все остальные ручки по заданию:
-    # здесь не хватало проверки актуальности попытки (I-05).
-    job = await _load_job_for_worker(session["job_id"], principal, x_execution_token)
+    # Через _resolve_attempt — так же, как все остальные ручки по заданию:
+    # здесь не хватало ни привязки к принципалу, ни проверки попытки.
+    job, _active = await _resolve_attempt(
+        session["job_id"], principal, x_execution_token
+    )
+    if session["attempt_id"] != job["attempt_id"]:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": "attempt_superseded", "current_attempt": job["attempt_id"]},
+        )
 
     body = await request.body()
     if len(body) > settings.upload_chunk_bytes + 1024:
@@ -762,12 +843,19 @@ async def complete_upload(
     )
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
-    job = await _load_job_for_worker(session["job_id"], principal, x_execution_token)
+    job, active = await _resolve_attempt(
+        session["job_id"], principal, x_execution_token
+    )
+    if session["attempt_id"] != job["attempt_id"]:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": "attempt_superseded", "current_attempt": job["attempt_id"]},
+        )
 
     # Повторный complete: результат уже принят — возвращаем то же самое.
     if session.get("status") == "verified":
         fresh = await database.run_db(
-            repositories.get_job, job["job_id"], settings=settings
+            repositories.get_attempt, job["attempt_id"], settings=settings
         )
         return UploadCompleteResponse(
             state=JobState(fresh["state"]),
@@ -803,14 +891,20 @@ async def complete_upload(
         )
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    # Попытка уже провалена или отменена: результат принимаем на ХРАНЕНИЕ,
-    # но не публикуем. Иначе готовый архив некуда деть и он висит на воркере.
-    if job["state"] in (JobState.FAILED.value, JobState.CANCELLED.value):
+    # Попытка не публикуется (провалена, отменена или отозвана оператором):
+    # результат принимаем на ХРАНЕНИЕ. Иначе готовый архив некуда деть, и он
+    # висит на воркере как retention_unconfirmed навсегда.
+    if not active or job["state"] in (JobState.FAILED.value, JobState.CANCELLED.value):
         stored = await database.run_db(
             job_service.store_unpublished_result,
             job=job,
             archive=archive,
             settings=settings,
+            reason=(
+                "результат отозванной попытки"
+                if not active
+                else "результат получен после провала/отмены попытки"
+            ),
         )
         await database.run_db(
             repositories.update_upload_session,
@@ -824,7 +918,10 @@ async def complete_upload(
             validation={
                 "published": False,
                 "stored_only": True,
-                "reason": "попытка уже завершена как неуспешная — результат не публикуется",
+                "storage_class": "superseded",
+                "reason": (
+                    "Результат устаревшей попытки — автоматически не используется"
+                ),
             },
             server_time=time.time(),
             retention_until=stored.get("retention_until"),
@@ -833,7 +930,7 @@ async def complete_upload(
     try:
         job = await database.run_db(
             job_service.catch_up_to_result_received,
-            job_id=job["job_id"],
+            attempt_id=job["attempt_id"],
             settings=settings,
         )
     except job_service.JobError as exc:
@@ -880,27 +977,89 @@ async def complete_upload(
 
 
 # ─── Команды ─────────────────────────────────────────────────────────────────
-@router.get("/commands")
-async def get_commands(
-    principal: auth.WorkerPrincipal = Depends(auth.require_worker),
-) -> dict[str, Any]:
+def _serialize_commands(
+    items: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[tuple[str, str]]]:
+    """Отдать только те команды, чья нагрузка проходит строгую схему.
+
+    Валидация повторяется здесь, хотя центр проверял её при постановке: если
+    в таблицу когда-нибудь попадёт строка с чужим типом или лишним полем,
+    воркер её не увидит вовсе. Каждый рубеж держит оборону сам (I-10).
+
+    Второй элемент — команды, которые исполнять нельзя. Их НЕ бросаем молча:
+    молча отброшенная команда висела бы в очереди вечно, а `has_pending_commands`
+    навсегда остался бы true. Вызывающий гасит их машинным ответом.
+    """
+    out: list[dict[str, Any]] = []
+    rejected: list[tuple[str, str]] = []
+    for item in items:
+        ctype = item.get("command_type")
+        model = COMMAND_PAYLOAD_MODELS.get(str(ctype))
+        raw = json.loads(item.get("payload") or "{}")
+        if model is None:
+            rejected.append((item["command_id"], "unsupported_command_type"))
+            continue
+        try:
+            payload = model(**raw).model_dump()
+        except Exception:  # noqa: BLE001 — негодная команда не выдаётся
+            rejected.append((item["command_id"], "invalid_command_payload"))
+            continue
+        out.append(
+            WorkerCommandOut(
+                command_id=item["command_id"],
+                command_type=ctype,
+                payload=payload,
+                created_at=item["created_at"],
+                idempotency_key=item["idempotency_key"],
+                job_id=item.get("job_id"),
+                attempt_id=item.get("attempt_id"),
+                expires_at=item.get("expires_at"),
+            ).model_dump()
+        )
+    return out, rejected
+
+
+async def _deliverable_commands(
+    principal: auth.WorkerPrincipal,
+) -> list[dict[str, Any]]:
     items = await database.run_db(
         repositories.pending_commands,
         principal.worker_id,
         mark_delivered=True,
         settings=principal.settings,
     )
-    commands = [
-        WorkerCommandOut(
-            command_id=i["command_id"],
-            command_type=i["command_type"],
-            payload=json.loads(i.get("payload") or "{}"),
-            created_at=i["created_at"],
-            idempotency_key=i["idempotency_key"],
-        ).model_dump()
-        for i in items
-    ]
-    return {"commands": commands}
+    commands, rejected = _serialize_commands(items)
+    for command_id, code in rejected:
+        await database.run_db(
+            repositories.ack_command,
+            command_id,
+            {"status": "error", "detail": {"outcome": code, "actor": "center"}},
+            settings=principal.settings,
+        )
+    return commands
+
+
+@router.get("/commands")
+async def get_commands(
+    principal: auth.WorkerPrincipal = Depends(auth.require_worker),
+) -> dict[str, Any]:
+    """Исторический синоним POST /commands/next (этап 0). Оставлен для совместимости."""
+    return {"commands": await _deliverable_commands(principal)}
+
+
+@router.post("/commands/next")
+async def commands_next(
+    payload: CommandsNextRequest,
+    principal: auth.WorkerPrincipal = Depends(auth.require_worker),
+) -> dict[str, Any]:
+    """Long-poll за командами. Воркер получает ТОЛЬКО свои и только живые."""
+    settings = principal.settings
+    deadline = time.monotonic() + min(payload.wait_sec, settings.long_poll_sec)
+    while True:
+        commands = await _deliverable_commands(principal)
+        if commands or time.monotonic() >= deadline:
+            return {"commands": commands, "server_time": time.time()}
+        await asyncio.sleep(1.0)
 
 
 @router.post("/commands/{command_id}/ack")
@@ -911,17 +1070,42 @@ async def ack_command(
 ) -> dict[str, Any]:
     # Порядок важен: раньше запись шла ПЕРВОЙ, и чужой воркер, получив 403,
     # успевал погасить команду — настоящий адресат не видел её никогда.
+    settings = principal.settings
     existing = await database.run_db(
-        repositories.get_command, command_id, settings=principal.settings
+        repositories.get_command, command_id, settings=settings
     )
     if not existing:
         raise HTTPException(status_code=404, detail="Команда не найдена.")
     if existing.get("worker_id") != principal.worker_id:
         raise HTTPException(status_code=403, detail="Команда адресована другому воркеру.")
-    item, replayed = await database.run_db(
-        repositories.ack_command, command_id, payload.result, settings=principal.settings
-    )
-    return {"result": payload.result, "replayed": replayed}
+    try:
+        item, replayed = await database.run_db(
+            repositories.ack_command, command_id, payload.result, settings=settings
+        )
+    except repositories.CommandAckConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    # Последствия подтверждения применяет ЦЕНТР, а не воркер: только он вправе
+    # менять состояние попытки. Отмена становится `cancelled` лишь тогда, когда
+    # воркер доказал, что исполнять больше нечего (§10, критерий готовности 6).
+    new_state: Optional[str] = None
+    if not replayed:
+        ctype = existing.get("command_type")
+        if ctype == WorkerCommandType.CANCEL_ATTEMPT.value:
+            new_state = await database.run_db(
+                attempt_service.apply_cancel_ack,
+                command=existing,
+                result=payload.result,
+                settings=settings,
+            )
+        elif ctype == WorkerCommandType.DELETE_ATTEMPT_DATA.value:
+            await database.run_db(
+                attempt_service.apply_deletion_ack,
+                command=existing,
+                result=payload.result,
+                settings=settings,
+            )
+    return {"result": payload.result, "replayed": replayed, "attempt_state": new_state}
 
 
 # ─── Обновление воркера (контракт; на этапе 0 обновлений нет) ────────────────
@@ -962,26 +1146,66 @@ async def reconcile(
     )
 
     for known in payload.known_jobs:
-        job = await database.run_db(
-            repositories.get_job, known.job_id, settings=settings
+        # Ищем ИМЕННО ту попытку, о которой говорит воркер, а не текущую
+        # попытку задания: у отозванной попытки своя судьба, свои события и
+        # свой результат — и их нельзя ни потерять, ни выдать за актуальные.
+        attempt = await database.run_db(
+            repositories.get_attempt, known.attempt_id, settings=settings
         )
-        if job is None or job.get("assigned_worker_id") != principal.worker_id:
-            unknown.append(known.job_id)
+        if attempt is not None and (
+            attempt["job_id"] != known.job_id
+            or attempt.get("assigned_worker_id") != principal.worker_id
+        ):
+            attempt = None
+        if attempt is None:
+            # Попытки центр не знает. Различаем два случая: задание известно —
+            # значит попытка вытеснена (остановить, но НЕ выбрасывать данные);
+            # задания нет вовсе — только тогда «забудь».
+            job_row = await database.run_db(
+                repositories.get_job, known.job_id, settings=settings
+            )
+            if job_row is None or job_row.get("assigned_worker_id") != principal.worker_id:
+                unknown.append(known.job_id)
+                continue
+            superseded.append(known.job_id)
+            cursor = await database.run_db(
+                repositories.get_cursor, known.job_id, known.attempt_id, settings=settings
+            )
+            verdicts.append(
+                ReconcileJobVerdict(
+                    job_id=known.job_id,
+                    attempt_id=known.attempt_id,
+                    center_state=None,
+                    attempt_valid=False,
+                    expected_next_seq=cursor + 1,
+                    action="stop_superseded",
+                    execution_token_valid=False,
+                    attempt_disposition="unknown",
+                    current_attempt_id=job_row.get("attempt_id"),
+                    event_ingestion_allowed=False,
+                    restart_forbidden=True,
+                )
+            )
             continue
-        attempt_valid = job["attempt_id"] == known.attempt_id
+        job = attempt
+        disposition = job.get("attempt_disposition") or "active"
+        attempt_valid = disposition == "active"
         cursor = await database.run_db(
             repositories.get_cursor, job["job_id"], job["attempt_id"], settings=settings
         )
         is_terminal = job["state"] in terminal_states
+        has_result = known.result_ready or job["state"] in (
+            JobState.COMPLETED_LOCALLY.value,
+            JobState.RESULT_UPLOADING.value,
+        )
         if not attempt_valid:
-            action = "stop_superseded"
+            # Отозванная попытка: процессы остановить, но если результат уже
+            # готов — сначала сдать его в контур СВОЕЙ попытки (§5.5).
+            action = "upload_result" if (has_result and not is_terminal) else "stop_superseded"
             superseded.append(known.job_id)
         elif is_terminal:
             action = "await_operator"
-        elif known.result_ready or job["state"] in (
-            JobState.COMPLETED_LOCALLY.value,
-            JobState.RESULT_UPLOADING.value,
-        ):
+        elif has_result:
             action = "upload_result"
         elif known.local_state == "running" and not known.processes_alive:
             # Процесс не пережил рестарт. Сказать «continue» нечестно: продолжать
@@ -1009,8 +1233,13 @@ async def reconcile(
         # Результат принят — сообщаем retention_until даже если воркер был
         # офлайн в момент приёма и пропустил retention_update в heartbeat.
         # Без этого пакет остаётся retention_unconfirmed навсегда (I-08).
-        result_accepted = job["state"] == JobState.COMPLETED.value and bool(
-            job.get("validated_at")
+        result_accepted = (
+            job["state"] == JobState.COMPLETED.value and bool(job.get("validated_at"))
+        ) or (
+            # Результат отозванной попытки тоже «принят»: он лежит в центре, и
+            # воркеру пора заводить срок хранения, иначе пакет вечный.
+            job["state"] == JobState.SUPERSEDED_RESULT_RECEIVED.value
+            and bool(job.get("result_acknowledged_at"))
         )
 
         verdicts.append(
@@ -1025,6 +1254,16 @@ async def reconcile(
                 execution_token_valid=attempt_valid and not is_terminal,
                 result_accepted=result_accepted,
                 retention_until=job.get("retention_until") if result_accepted else None,
+                attempt_disposition=disposition,
+                current_attempt_id=job.get("current_attempt_id"),
+                assignment_generation=int(job.get("assignment_generation") or 1),
+                # События принимаются всегда: молчание отозванной попытки
+                # означало бы потерю диагностики. Они уходят в её историю.
+                event_ingestion_allowed=True,
+                # Повторный запуск процесса запрещён при любом вердикте:
+                # решение о повторе принимает только оператор (§14).
+                restart_forbidden=True,
+                deletion_status=job.get("retention_state"),
             )
         )
 

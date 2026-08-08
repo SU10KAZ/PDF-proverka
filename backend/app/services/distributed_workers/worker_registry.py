@@ -47,6 +47,8 @@ def record_heartbeat(
     resource_snapshot: Optional[dict[str, Any]],
     warnings: list[dict[str, Any]],
     settings: DistributedWorkersSettings,
+    executor: Optional[dict[str, Any]] = None,
+    disk: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     now = time.time()
     fields: dict[str, Any] = {
@@ -60,8 +62,12 @@ def record_heartbeat(
     }
     if resource_snapshot is not None:
         clean = sanitize_resource_snapshot(resource_snapshot)
+        # executor и disk приходят от того же полу-доверенного источника, что
+        # и остальной снимок, и попадают на экран: чистятся так же.
+        clean["executor"] = sanitize_executor(executor, now=now)
+        clean["disk_report"] = sanitize_disk(disk)
         fields["resource_snapshot"] = json.dumps(
-            {**clean, "warnings": warnings}, ensure_ascii=False
+            {**clean, "warnings": _sanitize_warnings(warnings)}, ensure_ascii=False
         )
     repositories.update_worker_fields(worker_id, fields, settings=settings)
     if resource_snapshot is not None:
@@ -69,6 +75,84 @@ def record_heartbeat(
             worker_id, clean, settings=settings
         )
     return repositories.get_worker(worker_id, settings=settings) or {}
+
+
+_EXECUTOR_STATUSES = ("online", "stale", "offline", "unknown", "interrupted")
+_DISK_LEVELS = ("ok", "warning", "critical")
+_DISK_NUMERIC = (
+    "total_bytes", "used_bytes", "free_bytes", "jobs_bytes",
+    "confirmed_results_bytes", "unconfirmed_results_bytes",
+    "cleanup_candidates_bytes",
+)
+
+
+def sanitize_executor(
+    executor: Optional[dict[str, Any]], *, now: Optional[float] = None
+) -> dict[str, Any]:
+    """Состояние executor из закрытого набора значений и чисел."""
+    if not isinstance(executor, dict):
+        return {"status": "unknown"}
+    status = executor.get("status")
+    heartbeat = executor.get("last_heartbeat_at")
+    instance = executor.get("executor_instance_id")
+    version = executor.get("version")
+    return {
+        "status": status if status in _EXECUTOR_STATUSES else "unknown",
+        "executor_instance_id": (
+            instance[:64] if isinstance(instance, str) else None
+        ),
+        "version": version[:32] if isinstance(version, str) else None,
+        "last_heartbeat_at": (
+            float(heartbeat) if isinstance(heartbeat, (int, float)) else None
+        ),
+        "running_processes": _int_or_zero(executor.get("running_processes")),
+        "ambiguous_processes": _int_or_zero(executor.get("ambiguous_processes")),
+        "seen_at": now if now is not None else time.time(),
+    }
+
+
+def sanitize_disk(disk: Optional[dict[str, Any]]) -> dict[str, Any]:
+    if not isinstance(disk, dict):
+        return {"level": "unknown"}
+    level = disk.get("level")
+    out: dict[str, Any] = {
+        "level": level if level in _DISK_LEVELS else "unknown",
+        "cleanup_candidates": _int_or_zero(disk.get("cleanup_candidates")),
+    }
+    for key in _DISK_NUMERIC:
+        value = disk.get(key)
+        out[key] = float(value) if isinstance(value, (int, float)) and not isinstance(
+            value, bool
+        ) else None
+    return out
+
+
+def _int_or_zero(value: Any) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return 0
+    return max(0, int(value))
+
+
+def _sanitize_warnings(warnings: Any) -> list[dict[str, Any]]:
+    """Предупреждения воркера — короткие строки и ничего больше.
+
+    Они рисуются на экране оператора; произвольный объект отсюда уходил в
+    innerHTML без единого ограничения по длине.
+    """
+    if not isinstance(warnings, list):
+        return []
+    out = []
+    for item in warnings[:20]:
+        if not isinstance(item, dict):
+            continue
+        out.append(
+            {
+                "code": str(item.get("code", ""))[:64],
+                "severity": str(item.get("severity", "warn"))[:16],
+                "message": str(item.get("message", ""))[:300],
+            }
+        )
+    return out
 
 
 # Поля снимка ресурсов, которые ДОЛЖНЫ быть числами. Всё остальное в этих
@@ -138,8 +222,25 @@ def to_view(row: dict[str, Any], *, now: Optional[float] = None) -> dict[str, An
     snapshot = _loads(row.get("resource_snapshot"), None)
     warnings = list((snapshot or {}).get("warnings") or [])
     last_seen = row.get("last_seen_at")
+    executor = dict((snapshot or {}).get("executor") or {"status": "unknown"})
+    disk_report = (snapshot or {}).get("disk_report") or {"level": "unknown"}
+    # Свежесть executor считает ЦЕНТР по своим порогам: воркер мог прислать
+    # «online» и замолчать. Агент онлайн ≠ executor жив (§16.6).
+    seen = executor.get("last_heartbeat_at") or executor.get("seen_at")
+    if executor.get("status") in ("online", "stale") and seen:
+        age = stamp - float(seen)
+        if age > 180:
+            executor["status"] = "offline"
+        elif age > 90:
+            executor["status"] = "stale"
+    if row.get("connection_status") == ConnectivityState.OFFLINE.value:
+        # Об executor мы узнаём только через агента. Агент офлайн — значит
+        # свежих сведений нет; рисовать «online» было бы враньём.
+        executor["status"] = "unknown"
     return {
         "worker_id": row["worker_id"],
+        "executor": executor,
+        "disk": disk_report,
         "display_name": row.get("display_name") or row["worker_id"],
         "instance_id": row.get("instance_id"),
         "registration_status": row.get("registration_status", RegistrationStatus.PENDING.value),
@@ -174,6 +275,12 @@ def can_receive_jobs(row: dict[str, Any]) -> tuple[bool, str]:
         return False, f"Состояние воркера: {row.get('worker_state')}"
     if row.get("connection_status") != ConnectivityState.ONLINE.value:
         return False, f"Связь: {row.get('connection_status')}"
+    snapshot = _loads(row.get("resource_snapshot"), {}) or {}
+    if (snapshot.get("disk_report") or {}).get("level") == "critical":
+        # Критическая нехватка диска блокирует НОВЫЕ задания. Текущие при этом
+        # не убиваются и данные не удаляются: освобождать место, стирая
+        # неподтверждённый результат, запрещено (§12.5, I-12).
+        return False, "Критически мало места на диске воркера"
     return True, ""
 
 

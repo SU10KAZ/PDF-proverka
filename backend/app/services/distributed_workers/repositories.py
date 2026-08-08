@@ -184,9 +184,93 @@ def revoke_tokens(worker_id: str, *, settings: DistributedWorkersSettings | None
         return cur.rowcount
 
 
-# ─── Задания ─────────────────────────────────────────────────────────────────
+# ─── Задания и попытки ───────────────────────────────────────────────────────
 class ActiveJobExists(RuntimeError):
     """Уже есть активное задание на (project_id, version_id) — индекс не дал вставить."""
+
+
+class ActiveAttemptExists(RuntimeError):
+    """У задания уже есть активная попытка — частичный уникальный индекс не дал вставить."""
+
+
+# Проекция строки попытки в форму, привычную остальному коду (та же, что даёт
+# представление remote_jobs). Единственное отличие: сюда попадает ЛЮБАЯ
+# попытка, а не только текущая — это нужно вернувшемуся старому воркеру.
+ATTEMPT_PROJECTION = """
+SELECT
+    a.job_id                 AS job_id,
+    j.job_type               AS job_type,
+    j.project_external_id    AS project_id,
+    j.project_external_id    AS project_external_id,
+    j.project_display_name   AS project_display_name,
+    j.project_version_id     AS version_id,
+    a.attempt_id             AS attempt_id,
+    a.attempt_number         AS attempt_no,
+    a.assignment_generation  AS assignment_generation,
+    a.execution_token_hash   AS execution_token_sha256,
+    a.assigned_worker_id     AS assigned_worker_id,
+    'remote'                 AS execution_mode,
+    a.execution_state        AS state,
+    a.attempt_disposition    AS attempt_disposition,
+    a.connectivity_state     AS connectivity_state,
+    a.retention_state        AS retention_state,
+    j.payload                AS payload,
+    a.package_id             AS package_id,
+    a.source_package_hash    AS source_package_hash,
+    a.result_package_hash    AS result_package_hash,
+    a.result_storage_class   AS result_storage_class,
+    a.created_at             AS created_at,
+    j.created_at             AS job_created_at,
+    a.assigned_at            AS assigned_at,
+    a.accepted_at            AS accepted_at,
+    a.started_at             AS started_at,
+    a.completed_locally_at   AS completed_locally_at,
+    a.result_received_at     AS returned_at,
+    a.validated_at           AS validated_at,
+    a.cancel_requested_at    AS cancel_requested_at,
+    a.cancelled_at           AS cancelled_at,
+    a.declared_lost_at       AS declared_lost_at,
+    a.superseded_at          AS superseded_at,
+    a.result_acknowledged_at AS result_acknowledged_at,
+    a.deleted_from_worker_at AS deleted_from_worker_at,
+    a.retention_until        AS retention_until,
+    a.last_event_seq         AS last_event_seq,
+    a.error_json             AS error,
+    a.progress_json          AS progress_snapshot,
+    a.superseded_by_attempt  AS superseded_by_attempt,
+    j.overall_state          AS overall_state,
+    j.current_attempt_id     AS current_attempt_id
+FROM job_attempts a
+JOIN logical_jobs j ON j.job_id = a.job_id
+"""
+
+# Исторические имена колонок остались во всём коде этапа 0 (fields={"returned_at":…}).
+# Переименовывать их по всему репозиторию — лишний риск ради косметики, поэтому
+# трансляция сосредоточена в одном месте.
+_ATTEMPT_FIELD_ALIASES = {
+    "state": "execution_state",
+    "error": "error_json",
+    "progress_snapshot": "progress_json",
+    "returned_at": "result_received_at",
+    "execution_token_sha256": "execution_token_hash",
+    "attempt_no": "attempt_number",
+    "project_id": None,          # поле логического задания: попытке не принадлежит
+    "version_id": None,
+    "job_type": None,
+    "payload": None,
+}
+
+
+def _attempt_columns(fields: dict[str, Any]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, value in fields.items():
+        column = _ATTEMPT_FIELD_ALIASES.get(key, key)
+        if column is None:
+            raise ValueError(
+                f"Поле {key!r} принадлежит логическому заданию, а не попытке"
+            )
+        out[column] = value
+    return out
 
 
 def create_job(
@@ -195,21 +279,40 @@ def create_job(
     project_id: str,
     version_id: Optional[str],
     payload: dict[str, Any],
+    display_name: str = "",
+    created_by: str = "center",
     settings: DistributedWorkersSettings | None = None,
 ) -> dict[str, Any]:
+    """Создать логическое задание и его ПЕРВУЮ попытку.
+
+    `project_id` здесь — внешний код проекта: кириллица, пробелы и «/»
+    допустимы. Идентификаторы хранения (`job_id`, `attempt_id`) — UUID, и
+    только они попадают в файловые пути (I-11).
+    """
     now = time.time()
     job_id = str(uuid.uuid4())
-    attempt_id = new_id("att")
+    attempt_id = str(uuid.uuid4())
     try:
         with database.write_txn(settings) as conn:
             conn.execute(
-                "INSERT INTO remote_jobs (job_id, job_type, project_id, version_id, "
-                "attempt_id, attempt_no, state, connectivity_state, retention_state, "
-                "payload, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO logical_jobs (job_id, project_external_id, "
+                "project_display_name, project_version_id, job_type, payload, "
+                "current_attempt_id, overall_state, created_at, created_by, updated_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                 (
-                    job_id, job_type, project_id, version_id, attempt_id, 1,
-                    JobState.CREATED.value, ConnectivityState.ONLINE.value,
-                    "retained", json.dumps(payload, ensure_ascii=False), now,
+                    job_id, project_id, display_name or project_id, version_id,
+                    job_type, json.dumps(payload, ensure_ascii=False),
+                    attempt_id, "active", now, created_by, now,
+                ),
+            )
+            conn.execute(
+                "INSERT INTO job_attempts (attempt_id, job_id, attempt_number, "
+                "assignment_generation, execution_state, attempt_disposition, "
+                "connectivity_state, retention_state, created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    attempt_id, job_id, 1, 1, JobState.CREATED.value, "active",
+                    ConnectivityState.ONLINE.value, "retained", now,
                 ),
             )
             conn.execute(
@@ -220,17 +323,145 @@ def create_job(
             )
     except sqlite3.IntegrityError as exc:
         raise ActiveJobExists(
-            f"На {project_id}/{version_id or '-'} уже есть активное задание"
+            f"На «{project_id}»/{version_id or '-'} уже есть активное задание"
         ) from exc
     return get_job(job_id, settings=settings)  # type: ignore[return-value]
+
+
+def create_next_attempt(
+    *,
+    job_id: str,
+    worker_id: str,
+    settings: DistributedWorkersSettings | None = None,
+) -> dict[str, Any]:
+    """Завести НОВУЮ попытку логического задания.
+
+    Старая попытка не перезаписывается и не удаляется: у неё остаются свои
+    результат, события, журнал и disposition. Новая получает следующий номер,
+    новое поколение назначения и собственный execution_token (выдаётся выше).
+
+    Отказ по частичному уникальному индексу означает, что активная попытка ещё
+    есть, — это I-05, и обходить его нельзя.
+    """
+    now = time.time()
+    attempt_id = str(uuid.uuid4())
+    try:
+        with database.write_txn(settings) as conn:
+            row = conn.execute(
+                "SELECT MAX(attempt_number) AS n, MAX(assignment_generation) AS g "
+                "FROM job_attempts WHERE job_id = ?",
+                (job_id,),
+            ).fetchone()
+            number = int((row["n"] if row else 0) or 0) + 1
+            generation = int((row["g"] if row else 0) or 0) + 1
+            conn.execute(
+                "INSERT INTO job_attempts (attempt_id, job_id, attempt_number, "
+                "assignment_generation, assigned_worker_id, execution_state, "
+                "attempt_disposition, connectivity_state, retention_state, created_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (
+                    attempt_id, job_id, number, generation, worker_id,
+                    JobState.CREATED.value, "active",
+                    ConnectivityState.ONLINE.value, "retained", now,
+                ),
+            )
+            conn.execute(
+                "UPDATE logical_jobs SET current_attempt_id = ?, overall_state = 'active', "
+                "updated_at = ? WHERE job_id = ?",
+                (attempt_id, now, job_id),
+            )
+            conn.execute(
+                "INSERT INTO job_state_transitions "
+                "(job_id, attempt_id, from_state, to_state, actor, reason, at) "
+                "VALUES (?,?,?,?,?,?,?)",
+                (job_id, attempt_id, None, JobState.CREATED.value, "center",
+                 f"новая попытка №{number}", now),
+            )
+    except sqlite3.IntegrityError as exc:
+        raise ActiveAttemptExists(
+            "У задания уже есть активная попытка: сначала отмените её либо "
+            "признайте потерянной"
+        ) from exc
+    return get_attempt(attempt_id, settings=settings)  # type: ignore[return-value]
 
 
 def get_job(
     job_id: str, *, settings: DistributedWorkersSettings | None = None
 ) -> Optional[dict[str, Any]]:
+    """Текущая попытка задания в исторической форме строки remote_jobs."""
     with database.read_conn(settings) as conn:
         row = conn.execute("SELECT * FROM remote_jobs WHERE job_id = ?", (job_id,)).fetchone()
     return row_to_dict(row)
+
+
+def get_logical_job(
+    job_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> Optional[dict[str, Any]]:
+    with database.read_conn(settings) as conn:
+        row = conn.execute(
+            "SELECT * FROM logical_jobs WHERE job_id = ?", (job_id,)
+        ).fetchone()
+    return row_to_dict(row)
+
+
+def get_attempt(
+    attempt_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> Optional[dict[str, Any]]:
+    """Любая попытка (в т. ч. отозванная) в той же форме, что и get_job."""
+    with database.read_conn(settings) as conn:
+        row = conn.execute(
+            f"{ATTEMPT_PROJECTION} WHERE a.attempt_id = ?", (attempt_id,)
+        ).fetchone()
+    return row_to_dict(row)
+
+
+def list_attempts(
+    job_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> list[dict[str, Any]]:
+    """История попыток задания, от первой к последней."""
+    with database.read_conn(settings) as conn:
+        rows = conn.execute(
+            f"{ATTEMPT_PROJECTION} WHERE a.job_id = ? ORDER BY a.attempt_number ASC",
+            (job_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def find_attempt_by_token_hash(
+    job_id: str,
+    token_sha256: str,
+    *,
+    settings: DistributedWorkersSettings | None = None,
+) -> Optional[dict[str, Any]]:
+    """Найти попытку по хэшу её execution-токена.
+
+    Так вернувшийся старый воркер попадает в контур СВОЕЙ попытки, а не
+    получает 409 «попытка отозвана» и не трогает актуальную (I-07).
+    """
+    with database.read_conn(settings) as conn:
+        row = conn.execute(
+            f"{ATTEMPT_PROJECTION} WHERE a.job_id = ? AND a.execution_token_hash = ?",
+            (job_id, token_sha256),
+        ).fetchone()
+    return row_to_dict(row)
+
+
+def update_logical_job(
+    job_id: str,
+    fields: dict[str, Any],
+    *,
+    settings: DistributedWorkersSettings | None = None,
+) -> None:
+    if not fields:
+        return
+    fields = dict(fields)
+    fields["updated_at"] = time.time()
+    assignments = ", ".join(f"{k} = ?" for k in fields)
+    with database.write_txn(settings) as conn:
+        conn.execute(
+            f"UPDATE logical_jobs SET {assignments} WHERE job_id = ?",
+            (*fields.values(), job_id),
+        )
 
 
 def list_jobs(
@@ -278,8 +509,8 @@ def claim_next_job_for_worker(
             return None
         job = dict(row)
         conn.execute(
-            "UPDATE remote_jobs SET state = ? WHERE job_id = ?",
-            (JobState.SOURCE_UPLOADING.value, job["job_id"]),
+            "UPDATE job_attempts SET execution_state = ? WHERE attempt_id = ?",
+            (JobState.SOURCE_UPLOADING.value, job["attempt_id"]),
         )
         conn.execute(
             "INSERT INTO job_state_transitions "
@@ -309,13 +540,34 @@ def update_job_fields(
     *,
     settings: DistributedWorkersSettings | None = None,
 ) -> None:
+    """Обновить поля ТЕКУЩЕЙ попытки задания (историческое имя функции)."""
     if not fields:
         return
-    assignments = ", ".join(f"{k} = ?" for k in fields)
+    columns = _attempt_columns(fields)
+    assignments = ", ".join(f"{k} = ?" for k in columns)
     with database.write_txn(settings) as conn:
         conn.execute(
-            f"UPDATE remote_jobs SET {assignments} WHERE job_id = ?",
-            (*fields.values(), job_id),
+            f"UPDATE job_attempts SET {assignments} WHERE attempt_id = "
+            "(SELECT current_attempt_id FROM logical_jobs WHERE job_id = ?)",
+            (*columns.values(), job_id),
+        )
+
+
+def update_attempt_fields(
+    attempt_id: str,
+    fields: dict[str, Any],
+    *,
+    settings: DistributedWorkersSettings | None = None,
+) -> None:
+    """Обновить поля КОНКРЕТНОЙ попытки — в том числе уже отозванной."""
+    if not fields:
+        return
+    columns = _attempt_columns(fields)
+    assignments = ", ".join(f"{k} = ?" for k in columns)
+    with database.write_txn(settings) as conn:
+        conn.execute(
+            f"UPDATE job_attempts SET {assignments} WHERE attempt_id = ?",
+            (*columns.values(), attempt_id),
         )
 
 
@@ -398,13 +650,32 @@ def jobs_with_retention(
     `completed`/`superseded_result_received`), поэтому выборка «нетерминальных»
     их не видела и канал retention_updates в heartbeat всегда был пуст —
     воркер узнавал срок только из ответа на complete или из reconcile.
+
+    Выборка идёт по ПОПЫТКАМ, а не по текущим заданиям: у отозванной попытки
+    тоже есть свой срок хранения, и без него её пакет остался бы на воркере
+    навсегда как retention_unconfirmed.
     """
     with database.read_conn(settings) as conn:
         rows = conn.execute(
-            "SELECT * FROM remote_jobs WHERE assigned_worker_id = ?"
-            " AND retention_until IS NOT NULL"
-            " ORDER BY validated_at DESC, returned_at DESC LIMIT ?",
+            f"{ATTEMPT_PROJECTION} WHERE a.assigned_worker_id = ?"
+            " AND a.retention_until IS NOT NULL"
+            " ORDER BY a.validated_at DESC, a.result_received_at DESC LIMIT ?",
             (worker_id, limit),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def attempts_for_worker_nonterminal(
+    worker_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> list[dict[str, Any]]:
+    """Все НЕзавершённые попытки воркера, включая уже не текущие."""
+    terminal = tuple(s.value for s in TERMINAL_JOB_STATES)
+    placeholders = ",".join("?" for _ in terminal)
+    with database.read_conn(settings) as conn:
+        rows = conn.execute(
+            f"{ATTEMPT_PROJECTION} WHERE a.assigned_worker_id = ? "
+            f"AND a.execution_state NOT IN ({placeholders})",
+            (worker_id, *terminal),
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -494,8 +765,8 @@ def apply_event_batch(
             (job_id, attempt_id, last_seen, now),
         )
         conn.execute(
-            "UPDATE remote_jobs SET last_event_seq = ? WHERE job_id = ?",
-            (last_seen, job_id),
+            "UPDATE job_attempts SET last_event_seq = ? WHERE attempt_id = ?",
+            (last_seen, attempt_id),
         )
     return last_seen, accepted, skipped
 
@@ -657,23 +928,41 @@ def received_size(
 
 
 # ─── Команды ─────────────────────────────────────────────────────────────────
+COMMAND_TTL_SEC = 7 * 86400
+
+
+class CommandAckConflict(RuntimeError):
+    """Повторный ACK с ДРУГИМ результатом. Первый ответ остаётся в силе."""
+
+
 def enqueue_command(
     *,
     worker_id: str,
     command_type: str,
     payload: dict[str, Any],
     idempotency_key: str,
+    job_id: Optional[str] = None,
+    attempt_id: Optional[str] = None,
+    ttl_sec: int = COMMAND_TTL_SEC,
     settings: DistributedWorkersSettings | None = None,
 ) -> dict[str, Any]:
+    """Поставить команду в очередь воркера. Персистентно, переживает рестарт.
+
+    Команда адресна: она относится к конкретной ПОПЫТКЕ, и после смены попытки
+    исполнять её уже нельзя (I-07). Повтор по idempotency_key возвращает
+    существующую команду, а не создаёт вторую.
+    """
     now = time.time()
     command_id = new_id("cmd")
     try:
         with database.write_txn(settings) as conn:
             conn.execute(
                 "INSERT INTO worker_commands (command_id, worker_id, command_type, "
-                "payload, created_at, idempotency_key) VALUES (?,?,?,?,?,?)",
+                "payload, created_at, idempotency_key, job_id, attempt_id, status, "
+                "expires_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (command_id, worker_id, command_type,
-                 json.dumps(payload, ensure_ascii=False), now, idempotency_key),
+                 json.dumps(payload, ensure_ascii=False), now, idempotency_key,
+                 job_id, attempt_id, "pending", now + ttl_sec),
             )
     except sqlite3.IntegrityError:
         # Идемпотентность по ключу: повтор возвращает уже существующую команду.
@@ -696,14 +985,48 @@ def get_command(
     return row_to_dict(row)
 
 
+def commands_for_job(
+    job_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> list[dict[str, Any]]:
+    with database.read_conn(settings) as conn:
+        rows = conn.execute(
+            "SELECT * FROM worker_commands WHERE job_id = ? ORDER BY created_at ASC",
+            (job_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def expire_stale_commands(
+    *, now: Optional[float] = None,
+    settings: DistributedWorkersSettings | None = None,
+) -> int:
+    """Пометить просроченные команды. Истёкшая команда не исполняется."""
+    stamp = now if now is not None else time.time()
+    with database.write_txn(settings) as conn:
+        cur = conn.execute(
+            "UPDATE worker_commands SET status = 'expired' "
+            "WHERE acknowledged_at IS NULL AND status != 'expired' "
+            "AND expires_at IS NOT NULL AND expires_at < ?",
+            (stamp,),
+        )
+        return cur.rowcount
+
+
 def pending_commands(
     worker_id: str, *, mark_delivered: bool = False,
     settings: DistributedWorkersSettings | None = None,
 ) -> list[dict[str, Any]]:
+    """Неподтверждённые и НЕ просроченные команды воркера.
+
+    Уже доставленные (`delivered`) остаются в выборке намеренно: доставка не
+    равна исполнению, ответ мог не дойти, и повторная выдача обязана быть
+    безопасной (§7, I-09). Выпадает команда только по ACK или по сроку.
+    """
+    expire_stale_commands(settings=settings)
     with database.read_conn(settings) as conn:
         rows = conn.execute(
             "SELECT * FROM worker_commands WHERE worker_id = ? AND acknowledged_at IS NULL "
-            "ORDER BY created_at ASC",
+            "AND status != 'expired' ORDER BY created_at ASC",
             (worker_id,),
         ).fetchall()
     items = [dict(r) for r in rows]
@@ -713,10 +1036,12 @@ def pending_commands(
             for item in items:
                 if item.get("delivered_at") is None:
                     conn.execute(
-                        "UPDATE worker_commands SET delivered_at = ? WHERE command_id = ?",
+                        "UPDATE worker_commands SET delivered_at = ?, status = 'delivered' "
+                        "WHERE command_id = ?",
                         (now, item["command_id"]),
                     )
                     item["delivered_at"] = now
+                    item["status"] = "delivered"
     return items
 
 
@@ -726,7 +1051,13 @@ def ack_command(
     *,
     settings: DistributedWorkersSettings | None = None,
 ) -> tuple[dict[str, Any], bool]:
-    """Подтвердить команду. Возвращает (команда, replayed)."""
+    """Подтвердить команду. Возвращает (команда, replayed).
+
+    Повторный ACK с тем же результатом безопасен (I-09). Повторный ACK с
+    ДРУГИМ результатом — конфликт: переписать историю исполнения нельзя,
+    иначе «отменено» задним числом превратилось бы в «уже завершено».
+    """
+    canonical = json.dumps(result, ensure_ascii=False, sort_keys=True)
     with database.write_txn(settings) as conn:
         row = conn.execute(
             "SELECT * FROM worker_commands WHERE command_id = ?", (command_id,)
@@ -735,14 +1066,116 @@ def ack_command(
             return {}, False
         item = dict(row)
         if item.get("acknowledged_at") is not None:
+            prior = item.get("result") or "{}"
+            try:
+                same = json.loads(prior) == json.loads(canonical)
+            except ValueError:
+                same = prior == canonical
+            if not same:
+                raise CommandAckConflict(
+                    "Команда уже подтверждена другим результатом — "
+                    "перезаписать историю исполнения нельзя"
+                )
             return item, True
+        now = time.time()
         conn.execute(
-            "UPDATE worker_commands SET acknowledged_at = ?, result = ? WHERE command_id = ?",
-            (time.time(), json.dumps(result, ensure_ascii=False), command_id),
+            "UPDATE worker_commands SET acknowledged_at = ?, result = ?, "
+            "status = 'acknowledged' WHERE command_id = ?",
+            (now, canonical, command_id),
         )
-        item["acknowledged_at"] = time.time()
-        item["result"] = json.dumps(result, ensure_ascii=False)
+        item["acknowledged_at"] = now
+        item["result"] = canonical
+        item["status"] = "acknowledged"
     return item, False
+
+
+# ─── Журнал операторских действий (append-only) ──────────────────────────────
+def record_admin_action(
+    *,
+    actor_id: str,
+    actor_display_name: str = "",
+    action_type: str,
+    worker_id: Optional[str] = None,
+    job_id: Optional[str] = None,
+    attempt_id: Optional[str] = None,
+    previous_state: Optional[dict[str, Any]] = None,
+    requested_state: Optional[dict[str, Any]] = None,
+    reason: str = "",
+    idempotency_key: Optional[str] = None,
+    request_id: Optional[str] = None,
+    source_ip: Optional[str] = None,
+    user_agent: Optional[str] = None,
+    result_status: str = "ok",
+    result: Optional[dict[str, Any]] = None,
+    settings: DistributedWorkersSettings | None = None,
+) -> dict[str, Any]:
+    """Записать операторское действие. Функции удаления записей нет намеренно.
+
+    Повтор идемпотентного действия (тот же action_type + idempotency_key) не
+    создаёт вторую запись: иначе журнал показывал бы два разных изменения
+    состояния там, где было одно.
+    """
+    action_id = new_id("act", 12)
+    now = time.time()
+    try:
+        with database.write_txn(settings) as conn:
+            conn.execute(
+                "INSERT INTO worker_admin_actions (action_id, actor_id, "
+                "actor_display_name, action_type, worker_id, job_id, attempt_id, "
+                "previous_state_json, requested_state_json, reason, idempotency_key, "
+                "request_id, source_ip, user_agent, created_at, result_status, "
+                "result_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    action_id, actor_id, actor_display_name, action_type, worker_id,
+                    job_id, attempt_id,
+                    json.dumps(previous_state, ensure_ascii=False) if previous_state else None,
+                    json.dumps(requested_state, ensure_ascii=False) if requested_state else None,
+                    reason, idempotency_key, request_id, source_ip, user_agent, now,
+                    result_status,
+                    json.dumps(result, ensure_ascii=False) if result else None,
+                ),
+            )
+    except sqlite3.IntegrityError:
+        with database.read_conn(settings) as conn:
+            row = conn.execute(
+                "SELECT * FROM worker_admin_actions WHERE action_type = ? "
+                "AND idempotency_key = ?",
+                (action_type, idempotency_key),
+            ).fetchone()
+        return dict(row) if row else {}
+    return {"action_id": action_id, "created_at": now}
+
+
+def list_admin_actions(
+    *,
+    job_id: Optional[str] = None,
+    worker_id: Optional[str] = None,
+    limit: int = 200,
+    settings: DistributedWorkersSettings | None = None,
+) -> list[dict[str, Any]]:
+    sql = "SELECT * FROM worker_admin_actions"
+    where: list[str] = []
+    args: list[Any] = []
+    if job_id:
+        where.append("job_id = ?")
+        args.append(job_id)
+    if worker_id:
+        where.append("worker_id = ?")
+        args.append(worker_id)
+    if where:
+        sql += " WHERE " + " AND ".join(where)
+    sql += " ORDER BY created_at DESC LIMIT ?"
+    args.append(limit)
+    with database.read_conn(settings) as conn:
+        rows = conn.execute(sql, args).fetchall()
+    out = []
+    for row in rows:
+        item = dict(row)
+        item["previous_state"] = _loads(item.pop("previous_state_json", None), None)
+        item["requested_state"] = _loads(item.pop("requested_state_json", None), None)
+        item["result"] = _loads(item.pop("result_json", None), None)
+        out.append(item)
+    return out
 
 
 # ─── Идемпотентность HTTP ────────────────────────────────────────────────────

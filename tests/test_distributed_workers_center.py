@@ -541,9 +541,18 @@ def test_command_enum_has_no_shell(settings):
     from backend.app.models.distributed_workers import WorkerCommandType
 
     values = {c.value for c in WorkerCommandType}
-    assert values == {"cancel_job", "drain", "undrain"}
-    forbidden = {"run_shell", "exec", "eval", "shell", "run", "command"}
+    # Этап 3.5 добавил две адресные команды. Набор остался закрытым.
+    assert values == {
+        "cancel_attempt", "delete_attempt_data", "cancel_job", "drain", "undrain",
+    }
+    forbidden = {"run_shell", "exec", "eval", "shell", "run", "command",
+                 "script", "argv", "install", "update"}
     assert not (values & forbidden)
+    # Исполняются только те, у которых есть строгая схема нагрузки.
+    from backend.app.models.distributed_workers import (
+        ACTIVE_COMMAND_TYPES, COMMAND_PAYLOAD_MODELS,
+    )
+    assert set(COMMAND_PAYLOAD_MODELS) == set(ACTIVE_COMMAND_TYPES)
 
 
 def test_job_type_enum_is_closed(settings):

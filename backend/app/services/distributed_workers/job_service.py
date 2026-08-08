@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from backend.app.models.distributed_workers import (
+    TERMINAL_JOB_STATES,
     ConnectivityState,
     JobState,
     JobType,
@@ -30,6 +31,7 @@ from backend.app.models.distributed_workers import (
 from backend.app.services.distributed_workers import (
     auth,
     database,
+    identifiers,
     package_service,
     repositories,
     worker_registry,
@@ -55,6 +57,12 @@ class IllegalTransition(JobError):
 # from_state -> {to_state: (кто вправе инициировать, ...)}
 _W, _C, _O = "worker", "center", "operator"
 
+# Ребро «сдать результат на хранение без публикации». Доступно почти из любого
+# состояния, потому что отозванную попытку оператор мог застать где угодно —
+# но ТОЛЬКО для попытки, чей disposition уже не 'active' (проверка в
+# transition()). Публикации на этом ребре нет по построению.
+_STORE_ONLY = {JobState.SUPERSEDED_RESULT_RECEIVED: ("worker",)}
+
 ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
     JobState.CREATED: {
         # Таблица §10.3 техпроекта называет инициатором центр (preflight +
@@ -62,12 +70,15 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         # ровно ту же последовательность одним действием, поэтому роль
         # operator допущена явно. Роль worker сюда не допущена никогда.
         JobState.ASSIGNED: (_C, _O),
+        JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
     },
     JobState.ASSIGNED: {
         JobState.SOURCE_UPLOADING: (_W,),
         JobState.FAILED: (_C, _O),
+        JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.SOURCE_UPLOADING: {
         JobState.SOURCE_READY: (_W,),
@@ -78,19 +89,24 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         # знает вовсе, значит выполнять его некому.
         JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
+        JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.SOURCE_READY: {
         JobState.ACCEPTED_BY_WORKER: (_W,),
         JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
+        JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.ACCEPTED_BY_WORKER: {
         JobState.RUNNING: (_W,),
         JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCEL_REQUESTED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.RUNNING: {
         JobState.RUNNING: (_W,),
@@ -99,21 +115,29 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         # по молчанию — этого ребра для center здесь нет намеренно.
         JobState.FAILED: (_W, _O),
         JobState.CANCEL_REQUESTED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.CANCEL_REQUESTED: {
+        # `cancelled` ставит ТОЛЬКО воркер, подтвердивший, что исполнять
+        # больше нечего. Роли center здесь нет: офлайн-VPS не должен
+        # превращаться в «отменено» по молчанию (критерий готовности 6).
         JobState.CANCELLED: (_W,),
         JobState.COMPLETED_LOCALLY: (_W,),   # гонка: воркер успел закончить
         JobState.CANCEL_REQUESTED: (_O,),
-        JobState.FAILED: (_O,),
+        JobState.FAILED: (_W, _O),
+        **_STORE_ONLY,
     },
     JobState.COMPLETED_LOCALLY: {
         JobState.RESULT_UPLOADING: (_W,),
         JobState.FAILED: (_W, _O),
+        JobState.CANCEL_REQUESTED: (_O,),
+        **_STORE_ONLY,
     },
     JobState.RESULT_UPLOADING: {
         JobState.RESULT_UPLOADING: (_W,),
         JobState.RESULT_RECEIVED: (_W,),
         JobState.FAILED: (_C, _O),
+        **_STORE_ONLY,
     },
     JobState.RESULT_RECEIVED: {
         JobState.VALIDATING: (_C,),
@@ -125,19 +149,39 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
     },
     # Терминальные: выходов нет. «Повторить» = НОВАЯ попытка (новый attempt_id).
     JobState.COMPLETED: {},
-    JobState.CANCELLED: {},
+    JobState.CANCELLED: {
+        # Отменённая попытка тоже может вернуться с готовым архивом: работа
+        # была сделана до того, как отмена доехала. Результат сохраняем.
+        **_STORE_ONLY,
+    },
     JobState.FAILED: {
-        # Единственное ребро из failed: вернувшийся старый воркер сдаёт
-        # результат отозванной попытки на хранение. Публикации нет.
-        JobState.SUPERSEDED_RESULT_RECEIVED: (_W,),
+        # Вернувшийся старый воркер сдаёт результат отозванной попытки на
+        # хранение. Публикации нет.
+        **_STORE_ONLY,
     },
     JobState.SUPERSEDED_RESULT_RECEIVED: {},
 }
 
 
+# Терминальное состояние исполнения → «расположение» попытки, если оператор
+# ещё не распорядился ей сам. Ось disposition ортогональна execution_state:
+# `failed` — это законченная своим ходом попытка, а не «отозванная».
+_TERMINAL_DISPOSITION: dict[JobState, str] = {
+    JobState.COMPLETED: "completed",
+    JobState.FAILED: "completed",
+    JobState.CANCELLED: "cancelled",
+    JobState.SUPERSEDED_RESULT_RECEIVED: "superseded",
+}
+
+# Расположения, назначенные ОПЕРАТОРОМ. Их автоматика не перебивает: иначе
+# «признана потерянной» превратилось бы в «завершена» задним числом.
+OPERATOR_DISPOSITIONS = frozenset({"operator_declared_lost", "cancelled", "superseded"})
+
+
 def transition(
     *,
-    job_id: str,
+    job_id: Optional[str] = None,
+    attempt_id: Optional[str] = None,
     to_state: JobState,
     actor: str,
     reason: str = "",
@@ -145,18 +189,32 @@ def transition(
     event_seq: Optional[int] = None,
     settings: DistributedWorkersSettings,
 ) -> dict[str, Any]:
-    """Единственная точка смены состояния задания.
+    """Единственная точка смены состояния ПОПЫТКИ.
+
+    `job_id` означает «текущая попытка задания», `attempt_id` — конкретную,
+    в том числе уже отозванную (её события и результат продолжают жить своей
+    жизнью, но актуальную попытку не трогают, I-07).
 
     `actor` — 'worker' | 'center' | 'operator:<login>'. Роль извлекается до
     двоеточия: журнал хранит конкретного оператора, а таблица проверяет роль.
     """
+    if not job_id and not attempt_id:
+        raise JobError("transition требует job_id или attempt_id")
     role = actor.split(":", 1)[0]
     with database.write_txn(settings) as conn:
-        row = conn.execute(
-            "SELECT * FROM remote_jobs WHERE job_id = ?", (job_id,)
-        ).fetchone()
+        if attempt_id:
+            row = conn.execute(
+                f"{repositories.ATTEMPT_PROJECTION} WHERE a.attempt_id = ?",
+                (attempt_id,),
+            ).fetchone()
+            missing = f"Попытка {attempt_id} не найдена"
+        else:
+            row = conn.execute(
+                "SELECT * FROM remote_jobs WHERE job_id = ?", (job_id,)
+            ).fetchone()
+            missing = f"Задание {job_id} не найдено"
         if row is None:
-            raise JobError(f"Задание {job_id} не найдено")
+            raise JobError(missing)
         job = dict(row)
         current = JobState(job["state"])
         allowed = ALLOWED_TRANSITIONS.get(current, {})
@@ -169,16 +227,45 @@ def transition(
                 f"Переход {current.value} → {to_state.value} недоступен роли {role!r} "
                 f"(разрешено: {', '.join(allowed[to_state])})"
             )
+        if (
+            to_state is JobState.SUPERSEDED_RESULT_RECEIVED
+            and (job.get("attempt_disposition") or "active") == "active"
+        ):
+            # Машинный запрет: «результат отозванной попытки» у АКТИВНОЙ
+            # попытки невозможен. Иначе этим широким ребром можно было бы
+            # похоронить нормальный результат текущей работы.
+            raise IllegalTransition(
+                "Складывать результат без публикации можно только у попытки, "
+                "которая уже не активна"
+            )
         payload = dict(fields or {})
         payload["state"] = to_state.value
-        assignments = ", ".join(f"{k} = ?" for k in payload)
+
+        disposition = job.get("attempt_disposition") or "active"
+        if to_state in _TERMINAL_DISPOSITION and disposition not in OPERATOR_DISPOSITIONS:
+            payload["attempt_disposition"] = _TERMINAL_DISPOSITION[to_state]
+        if to_state is JobState.CANCELLED and not job.get("cancelled_at"):
+            payload.setdefault("cancelled_at", time.time())
+
+        columns = repositories._attempt_columns(payload)  # noqa: SLF001 — общий словарь алиасов
+        assignments = ", ".join(f"{k} = ?" for k in columns)
         conn.execute(
-            f"UPDATE remote_jobs SET {assignments} WHERE job_id = ?",
-            (*payload.values(), job_id),
+            f"UPDATE job_attempts SET {assignments} WHERE attempt_id = ?",
+            (*columns.values(), job["attempt_id"]),
         )
+        # Сводное состояние логического задания ведём только по ТЕКУЩЕЙ попытке:
+        # хвост отозванной попытки не вправе объявить задание завершённым (I-07).
+        if job.get("current_attempt_id") == job["attempt_id"]:
+            overall = _overall_for(to_state, payload.get("attempt_disposition", disposition))
+            if overall:
+                conn.execute(
+                    "UPDATE logical_jobs SET overall_state = ?, updated_at = ? "
+                    "WHERE job_id = ?",
+                    (overall, time.time(), job["job_id"]),
+                )
         repositories.insert_transition(
             conn,
-            job_id=job_id,
+            job_id=job["job_id"],
             attempt_id=job["attempt_id"],
             from_state=current.value,
             to_state=to_state.value,
@@ -190,7 +277,30 @@ def transition(
     return job
 
 
+def _overall_for(state: JobState, disposition: str) -> Optional[str]:
+    """Сводное состояние логического задания по состоянию текущей попытки."""
+    if state is JobState.COMPLETED:
+        return "completed"
+    if state in TERMINAL_JOB_STATES or disposition in OPERATOR_DISPOSITIONS:
+        return "needs_operator"
+    return None
+
+
 # ─── Создание тестового задания ──────────────────────────────────────────────
+def worker_capabilities(worker: dict[str, Any]) -> dict[str, Any]:
+    return _loads(worker.get("capabilities"), {}) or {}
+
+
+def job_params(logical_job: dict[str, Any]) -> TestJobParams:
+    """Параметры задания из полезной нагрузки логического задания.
+
+    Нужны при создании НОВОЙ попытки: исходный пакет собирается заново, но с
+    теми же параметрами и новым attempt_id в манифесте.
+    """
+    payload = _loads(logical_job.get("payload"), {}) or {}
+    return TestJobParams(**(payload.get("params") or {}))
+
+
 def create_test_job(
     *,
     worker_id: str,
@@ -198,6 +308,7 @@ def create_test_job(
     version_id: Optional[str],
     params: TestJobParams,
     actor: str,
+    display_name: str = "",
     settings: DistributedWorkersSettings,
 ) -> dict[str, Any]:
     """Создать и сразу закрепить за воркером безопасное тестовое задание.
@@ -212,7 +323,7 @@ def create_test_job(
     if not ok:
         raise JobError(f"Воркер не может принять задание: {why}")
 
-    caps = _loads(worker.get("capabilities"), {})
+    caps = worker_capabilities(worker)
     supported = caps.get("job_types") or [JobType.TEST_PIPELINE_V1.value]
     if JobType.TEST_PIPELINE_V1.value not in supported:
         raise JobError(
@@ -226,11 +337,21 @@ def create_test_job(
             f"{settings.test_job_max_sec} с (DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC)"
         )
 
+    external_id = identifiers.normalize_external_id(project_id, field="project_id")
+    external_version = (
+        identifiers.normalize_external_id(version_id, field="version_id")
+        if version_id
+        else None
+    )
     job = repositories.create_job(
         job_type=JobType.TEST_PIPELINE_V1.value,
-        project_id=project_id,
-        version_id=version_id,
+        project_id=external_id,
+        version_id=external_version,
         payload={"params": params.model_dump()},
+        display_name=identifiers.normalize_display_name(
+            display_name, fallback=external_id
+        ),
+        created_by=actor,
         settings=settings,
     )
 
@@ -278,7 +399,9 @@ def build_source_package(
     job_id = job["job_id"]
     attempt_id = job["attempt_id"]
     package_id = repositories.new_id("pkg")
-    dest_dir = settings.source_packages_dir / job_id / attempt_id
+    # Путь строится ТОЛЬКО из UUID. Внешний код проекта («13АВ/РД-АР3-К7»)
+    # сюда не попадает и попасть не может: identifiers отвергнет не-UUID (I-11).
+    dest_dir = identifiers.attempt_dir(settings.source_packages_dir, job_id, attempt_id)
     dest_path = dest_dir / f"{package_id}{package_service.archive_suffix(compression)}"
 
     job_descriptor = {
@@ -333,29 +456,48 @@ def build_source_package(
     )
 
 
+def _archive_in(directory: Path, *, skip: tuple[str, ...]) -> Optional[Path]:
+    if not directory.is_dir():
+        return None
+    for candidate in sorted(directory.iterdir()):
+        if candidate.is_file() and candidate.name not in skip:
+            return candidate
+    return None
+
+
 def result_package_path(
     job: dict[str, Any], *, settings: DistributedWorkersSettings
 ) -> Optional[Path]:
     """Принятый (провалидированный) архив результата, если он есть на диске."""
-    directory = settings.validated_results_dir / job["job_id"] / job["attempt_id"]
-    if not directory.is_dir():
-        return None
-    for candidate in sorted(directory.iterdir()):
-        if candidate.is_file() and candidate.name != "validation_report.json":
-            return candidate
-    return None
+    return _archive_in(
+        identifiers.attempt_dir(
+            settings.validated_results_dir, job["job_id"], job["attempt_id"]
+        ),
+        skip=("validation_report.json", package_service.MANIFEST_NAME),
+    )
+
+
+def superseded_result_path(
+    job: dict[str, Any], *, settings: DistributedWorkersSettings
+) -> Optional[Path]:
+    """Архив ОТОЗВАННОЙ попытки. Актуальным результатом задания не является."""
+    return _archive_in(
+        identifiers.attempt_dir(
+            settings.superseded_results_dir, job["job_id"], job["attempt_id"]
+        ),
+        skip=("unpublished_reason.json", package_service.MANIFEST_NAME),
+    )
 
 
 def source_package_path(
     job: dict[str, Any], *, settings: DistributedWorkersSettings
 ) -> Optional[Path]:
-    directory = settings.source_packages_dir / job["job_id"] / job["attempt_id"]
-    if not directory.is_dir():
-        return None
-    for candidate in sorted(directory.iterdir()):
-        if candidate.is_file() and candidate.name != package_service.MANIFEST_NAME:
-            return candidate
-    return None
+    return _archive_in(
+        identifiers.attempt_dir(
+            settings.source_packages_dir, job["job_id"], job["attempt_id"]
+        ),
+        skip=(package_service.MANIFEST_NAME,),
+    )
 
 
 # Состояния «задание выдано, но работа ещё не начиналась». Из них безопасно
@@ -406,7 +548,7 @@ def reoffer_unknown_jobs(
 
 
 def catch_up_to_result_received(
-    *, job_id: str, settings: DistributedWorkersSettings
+    *, attempt_id: str, settings: DistributedWorkersSettings
 ) -> dict[str, Any]:
     """Догнать состояние до `result_received`, когда события отстали от пакета.
 
@@ -432,9 +574,9 @@ def catch_up_to_result_received(
     # RESULT_RECEIVED и VALIDATING обрабатываются отдельно: перехода в
     # result_received из них нет и не нужно — финализацию надо просто
     # повторить (см. finalize_result, он идемпотентен по состоянию).
-    job = repositories.get_job(job_id, settings=settings)
+    job = repositories.get_attempt(attempt_id, settings=settings)
     if job is None:
-        raise JobError(f"Задание {job_id} не найдено")
+        raise JobError(f"Попытка {attempt_id} не найдена")
     current = JobState(job["state"])
     if current in (JobState.RESULT_RECEIVED, JobState.VALIDATING):
         # Центр упал посреди финализации. Раньше отсюда выхода не было вовсе:
@@ -446,14 +588,14 @@ def catch_up_to_result_received(
         return job
     for step in path[current]:
         job = transition(
-            job_id=job_id,
+            attempt_id=attempt_id,
             to_state=step,
             actor="worker",
             reason="догон состояния: архив результата получен раньше событий",
             settings=settings,
         )
     return transition(
-        job_id=job_id,
+        attempt_id=attempt_id,
         to_state=JobState.RESULT_RECEIVED,
         actor="worker",
         reason="архив собран, sha256 сошёлся",
@@ -467,41 +609,62 @@ def store_unpublished_result(
     job: dict[str, Any],
     archive: Path,
     settings: DistributedWorkersSettings,
+    reason: str = "результат получен после провала/отмены попытки",
 ) -> dict[str, Any]:
-    """Принять на ХРАНЕНИЕ результат попытки, которая уже провалена/отменена.
+    """Принять на ХРАНЕНИЕ результат попытки, которая уже не публикуется.
 
-    Ребро `failed → superseded_result_received` в таблице §10.3 было, но им
-    никто не пользовался, и такой архив ронял приём с HTTP 500. Публикации
-    здесь нет и быть не может: результат складывается отдельно и помечается
-    как «результат отозванной попытки». Зато он не теряется, и воркеру есть
-    что подтвердить — иначе пакет вечно висел бы в retention_unconfirmed.
+    Три случая ведут сюда: попытка провалена, отменена или отозвана оператором
+    (§5.5, §15.2). Общее у них одно — публикации быть не может, а терять
+    готовую работу нельзя: пакет складывается в отдельное хранилище с явной
+    пометкой «не является актуальным результатом», и воркеру есть что
+    подтвердить — иначе он вечно висел бы в retention_unconfirmed (I-08).
+
+    Автоматического сравнения со свежим результатом и продвижения в актуальный
+    здесь НЕТ и на этом этапе не планируется.
     """
-    target_dir = settings.rejected_results_dir / job["job_id"] / job["attempt_id"]
+    target_dir = identifiers.attempt_dir(
+        settings.superseded_results_dir, job["job_id"], job["attempt_id"]
+    )
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / archive.name
     archive.replace(target)
     (target_dir / "unpublished_reason.json").write_text(
         json.dumps(
             {
-                "reason": "результат получен после провала/отмены попытки",
+                "reason": reason,
                 "state_before": job["state"],
+                "attempt_disposition": job.get("attempt_disposition"),
+                "attempt_no": job.get("attempt_no"),
                 "stored_at": time.time(),
                 "published": False,
+                "note": "Результат устаревшей попытки — автоматически не используется",
             },
             ensure_ascii=False,
             indent=2,
         ),
         encoding="utf-8",
     )
+    now = time.time()
+    fields = {
+        "returned_at": now,
+        "retention_until": now + RETENTION_DAYS * 86400,
+        "result_storage_class": "superseded",
+        "result_package_path": str(target),
+        "result_acknowledged_at": now,
+    }
+    current = JobState(job["state"])
+    if current is JobState.SUPERSEDED_RESULT_RECEIVED:
+        # Повторная доставка того же архива: состояние уже конечное.
+        repositories.update_attempt_fields(
+            job["attempt_id"], fields, settings=settings
+        )
+        return {**job, **fields}
     return transition(
-        job_id=job["job_id"],
+        attempt_id=job["attempt_id"],
         to_state=JobState.SUPERSEDED_RESULT_RECEIVED,
         actor="worker",
         reason="результат принят на хранение без публикации",
-        fields={
-            "returned_at": time.time(),
-            "retention_until": time.time() + RETENTION_DAYS * 86400,
-        },
+        fields=fields,
         settings=settings,
     )
 
@@ -521,7 +684,7 @@ def finalize_result(
 
     if job.get("state") != JobState.VALIDATING.value:
         transition(
-            job_id=job_id,
+            attempt_id=attempt_id,
             to_state=JobState.VALIDATING,
             actor="center",
             reason="запуск проверки результата",
@@ -538,7 +701,9 @@ def finalize_result(
     )
 
     if not report.ok:
-        target_dir = settings.rejected_results_dir / job_id / attempt_id
+        target_dir = identifiers.attempt_dir(
+            settings.rejected_results_dir, job_id, attempt_id
+        )
         target_dir.mkdir(parents=True, exist_ok=True)
         target = target_dir / archive.name
         archive.replace(target)
@@ -546,20 +711,24 @@ def finalize_result(
             json.dumps(report.as_dict(), ensure_ascii=False, indent=2), encoding="utf-8"
         )
         updated = transition(
-            job_id=job_id,
+            attempt_id=attempt_id,
             to_state=JobState.FAILED,
             actor="center",
             reason=f"валидация не пройдена: {report.error}",
             fields={
                 "error": json.dumps(
                     {"code": report.error, "checks": report.checks}, ensure_ascii=False
-                )
+                ),
+                "result_storage_class": "rejected",
+                "result_package_path": str(target),
             },
             settings=settings,
         )
         return updated, report
 
-    target_dir = settings.validated_results_dir / job_id / attempt_id
+    target_dir = identifiers.attempt_dir(
+        settings.validated_results_dir, job_id, attempt_id
+    )
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / archive.name
     archive.replace(target)
@@ -573,7 +742,7 @@ def finalize_result(
 
     now = time.time()
     updated = transition(
-        job_id=job_id,
+        attempt_id=attempt_id,
         to_state=JobState.COMPLETED,
         actor="center",
         reason="результат принят и проверен",
@@ -585,6 +754,10 @@ def finalize_result(
             "retention_until": now + RETENTION_DAYS * 86400,
             "retention_state": RetentionState.RETAINED.value,
             "result_package_hash": package_service.normalize_hash(expected_hash),
+            "result_storage_class": "validated",
+            "result_package_path": str(target),
+            # Момент, с которого у воркера начинает течь срок хранения (§12.1).
+            "result_acknowledged_at": now,
         },
         settings=settings,
     )
@@ -594,7 +767,9 @@ def finalize_result(
 def validated_result_path(
     job: dict[str, Any], *, settings: DistributedWorkersSettings
 ) -> Optional[Path]:
-    directory = settings.validated_results_dir / job["job_id"] / job["attempt_id"]
+    directory = identifiers.attempt_dir(
+        settings.validated_results_dir, job["job_id"], job["attempt_id"]
+    )
     if not directory.is_dir():
         return None
     for candidate in sorted(directory.iterdir()):
@@ -662,6 +837,25 @@ def to_view(
     result_path = result_package_path(job, settings=settings)
     view["result_package_size"] = result_path.stat().st_size if result_path else None
     view["result_package_name"] = result_path.name if result_path else None
+
+    # Результат ОТОЗВАННОЙ попытки — отдельная сущность и отдельная подпись:
+    # автоматически он не используется никогда (§5.5).
+    superseded = superseded_result_path(job, settings=settings)
+    view["superseded_result"] = (
+        {
+            "name": superseded.name,
+            "size": superseded.stat().st_size,
+            "sha256": job.get("result_package_hash"),
+            "stored_at": job.get("returned_at"),
+            "warning": "Результат устаревшей попытки — автоматически не используется",
+        }
+        if superseded
+        else None
+    )
+    view["result_storage_class"] = job.get("result_storage_class") or "none"
+    view["attempt_disposition"] = job.get("attempt_disposition")
+    view["result_acknowledged"] = bool(job.get("result_acknowledged_at"))
+    view["deleted_from_worker"] = bool(job.get("deleted_from_worker_at"))
     view.pop("execution_token_sha256", None)
     return view
 

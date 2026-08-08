@@ -245,13 +245,17 @@ def _apply_side_effects(
     *,
     settings: DistributedWorkersSettings,
 ) -> None:
-    """Отразить события в состоянии задания и снимке прогресса.
+    """Отразить события в состоянии ПОПЫТКИ и её снимке прогресса.
 
     Переходы идут через job_service.transition() — единственного писателя
     состояния. Недопустимый переход не роняет приём событий: событие уже
     сохранено, а расхождение видно в журнале переходов.
+
+    Всё адресуется по attempt_id, а не по job_id. Это и есть I-07: события
+    вернувшейся отозванной попытки меняют ЕЁ состояние и ЕЁ прогресс, а
+    актуальную попытку задания не трогают вовсе.
     """
-    job_id = job["job_id"]
+    attempt_id = job["attempt_id"]
     progress: Optional[dict[str, Any]] = None
     fields: dict[str, Any] = {}
 
@@ -292,13 +296,13 @@ def _apply_side_effects(
             )
 
         try:
-            current = repositories.get_job(job_id, settings=settings) or job
+            current = repositories.get_attempt(attempt_id, settings=settings) or job
             if current.get("state") == target.value:
                 if extra:
-                    repositories.update_job_fields(job_id, extra, settings=settings)
+                    repositories.update_attempt_fields(attempt_id, extra, settings=settings)
                 continue
             job_service.transition(
-                job_id=job_id,
+                attempt_id=attempt_id,
                 to_state=target,
                 actor="worker",
                 reason=f"событие {etype}",
@@ -314,4 +318,4 @@ def _apply_side_effects(
     if progress is not None:
         fields["progress_snapshot"] = json.dumps(progress, ensure_ascii=False)
     if fields:
-        repositories.update_job_fields(job_id, fields, settings=settings)
+        repositories.update_attempt_fields(attempt_id, fields, settings=settings)

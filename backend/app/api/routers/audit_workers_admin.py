@@ -18,12 +18,18 @@ from fastapi.responses import FileResponse
 from backend.app.core import action_log
 from backend.app.models.distributed_workers import (
     ApproveRequest,
+    CancelAttemptRequest,
+    CreateAttemptRequest,
     CreateTestJobRequest,
     JobState,
+    MarkAttemptLostRequest,
+    RequestDeletionRequest,
 )
 from backend.app.services.distributed_workers import (
+    attempt_service,
     database,
     event_service,
+    identifiers,
     job_service,
     progress_service,
     registration_service,
@@ -43,8 +49,45 @@ status_router = APIRouter(prefix="/api/workers", tags=["audit-workers-admin"])
 
 
 def _actor(request: Request) -> str:
+    """Кто действует. Берётся ИЗ АУТЕНТИФИКАЦИИ, а не из тела запроса (§6)."""
     user = getattr(request.state, "portal_user", None)
     return f"operator:{user}" if user else "operator:anonymous"
+
+
+def _audit_meta(request: Request) -> dict[str, Any]:
+    client = request.client.host if request.client else None
+    return {
+        "actor_display_name": getattr(request.state, "portal_user", None) or "anonymous",
+        "request_id": request.headers.get("X-Request-Id"),
+        "source_ip": request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        or client,
+        "user_agent": (request.headers.get("User-Agent") or "")[:300],
+    }
+
+
+# Заголовок «это осознанный вызов из нашего интерфейса». Вместе с
+# SameSite=lax у портальной cookie (см. core/portal_auth) он и есть та самая
+# CSRF-защита: простой межсайтовый POST не может выставить произвольный
+# заголовок, а запрос с ним становится preflight'ным и отбивается CORS.
+INTENT_HEADER = "X-Requested-With"
+INTENT_VALUE = "audit-workers"
+
+
+def _require_operator_intent(request: Request) -> str:
+    """Опасное действие: проверить намерение и обязательный ключ идемпотентности."""
+    if (request.headers.get(INTENT_HEADER) or "").strip() != INTENT_VALUE:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Требуется заголовок {INTENT_HEADER}: {INTENT_VALUE}",
+        )
+    key = (request.headers.get("Idempotency-Key") or "").strip()
+    if not key:
+        raise HTTPException(
+            status_code=400,
+            detail="Требуется заголовок Idempotency-Key: повтор действия должен "
+                   "быть безопасным (I-09).",
+        )
+    return key[:128]
 
 
 def _settings_or_404():
@@ -59,12 +102,55 @@ def _settings_or_404():
 
 
 def _audit(request: Request, action: str, **extra: Any) -> None:
+    """Сквозной журнал действий портала (logs/actions/*.jsonl)."""
     try:
         action_log.log_event(
             "worker", event=action, actor=_actor(request).split(":", 1)[-1], **extra
         )
     except Exception:  # noqa: BLE001 — журнал не должен ронять действие
         pass
+
+
+async def _record_admin_action(
+    request: Request,
+    *,
+    action_type: str,
+    settings: Any,
+    worker_id: Optional[str] = None,
+    job_id: Optional[str] = None,
+    attempt_id: Optional[str] = None,
+    reason: str = "",
+    idempotency_key: Optional[str] = None,
+    previous_state: Optional[dict[str, Any]] = None,
+    requested_state: Optional[dict[str, Any]] = None,
+    result: Optional[dict[str, Any]] = None,
+    result_status: str = "ok",
+) -> None:
+    """Неизменяемый журнал операторских действий (таблица worker_admin_actions).
+
+    Отличается от `_audit` тем, что живёт в БД подсистемы и доступен на экране:
+    сквозной журнал портала — про запросы, этот — про решения оператора (I-15).
+    """
+    meta = _audit_meta(request)
+    await database.run_db(
+        repositories.record_admin_action,
+        actor_id=_actor(request),
+        actor_display_name=str(meta["actor_display_name"]),
+        action_type=action_type,
+        worker_id=worker_id,
+        job_id=job_id,
+        attempt_id=attempt_id,
+        previous_state=previous_state,
+        requested_state=requested_state,
+        reason=reason,
+        idempotency_key=idempotency_key,
+        request_id=meta.get("request_id"),
+        source_ip=meta.get("source_ip"),
+        user_agent=meta.get("user_agent"),
+        result_status=result_status,
+        result=result,
+        settings=settings,
+    )
 
 
 @status_router.get("/status")
@@ -172,6 +258,9 @@ async def approve_worker(
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_approved", worker_id=worker_id)
+    await _record_admin_action(
+        request, action_type="approve_worker", worker_id=worker_id, settings=settings
+    )
     return {"worker": worker_registry.to_view(row)}
 
 
@@ -186,6 +275,9 @@ async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_rejected", worker_id=worker_id)
+    await _record_admin_action(
+        request, action_type="reject_worker", worker_id=worker_id, settings=settings
+    )
     return {"worker": worker_registry.to_view(row)}
 
 
@@ -199,12 +291,22 @@ async def revoke_worker(worker_id: str, request: Request) -> dict[str, Any]:
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_revoked", worker_id=worker_id)
+    await _record_admin_action(
+        request, action_type="revoke_worker", worker_id=worker_id, settings=settings
+    )
     return {"worker": worker_registry.to_view(row)}
 
 
 @router.post("/{worker_id}/rotate-token")
 async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
+    """Выдать новый токен. Опасно: токен показывается один раз и открытым текстом.
+
+    Поэтому здесь стоит тот же гейт намерения, что и на операторских действиях
+    по попыткам: XSS-скрипт в сессии оператора не сможет тихо дёрнуть ручку
+    простым запросом и вытащить токен.
+    """
     settings = _settings_or_404()
+    _require_operator_intent(request)
     try:
         row, token = await database.run_db(
             registration_service.rotate_token, worker_id=worker_id, settings=settings
@@ -212,6 +314,11 @@ async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_token_rotated", worker_id=worker_id)
+    await _record_admin_action(
+        request, action_type="rotate_worker_token", worker_id=worker_id,
+        settings=settings,
+        result={"note": "старый токен отозван атомарно, новый показан один раз"},
+    )
     return {
         "worker": worker_registry.to_view(row),
         "worker_token": token,
@@ -257,10 +364,13 @@ async def create_test_job(payload: CreateTestJobRequest, request: Request) -> di
             version_id=payload.version_id,
             params=payload.params,
             actor=_actor(request),
+            display_name=payload.project_display_name,
             settings=settings,
         )
     except repositories.ActiveJobExists as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except identifiers.UnsafeIdentifier as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except job_service.JobError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -270,6 +380,12 @@ async def create_test_job(payload: CreateTestJobRequest, request: Request) -> di
         worker_id=payload.worker_id,
         job_id=job["job_id"],
         project=payload.project_id,
+    )
+    await _record_admin_action(
+        request, action_type="create_job", worker_id=payload.worker_id,
+        job_id=job["job_id"], attempt_id=job["attempt_id"],
+        requested_state={"project_external_id": payload.project_id},
+        settings=settings,
     )
     view = job_service.to_view(job, settings=settings)
     # execution_token наружу оператору не отдаём — он предназначен только воркеру.
@@ -348,3 +464,197 @@ async def download_result(job_id: str):
     return FileResponse(
         path=str(archive), media_type="application/octet-stream", filename=archive.name
     )
+
+
+# ─── Попытки ─────────────────────────────────────────────────────────────────
+@router.get("/jobs/{job_id}/attempts")
+async def list_attempts(job_id: str) -> dict[str, Any]:
+    """История попыток задания: что было, кем и чем закончилось."""
+    settings = _settings_or_404()
+    logical = await database.run_db(
+        repositories.get_logical_job, job_id, settings=settings
+    )
+    if logical is None:
+        raise HTTPException(status_code=404, detail="Задание не найдено.")
+    attempts = await database.run_db(
+        attempt_service.attempts_view, job_id=job_id, settings=settings
+    )
+    return {
+        "job": {
+            "job_id": logical["job_id"],
+            "project_external_id": logical["project_external_id"],
+            "project_display_name": logical.get("project_display_name"),
+            "project_version_id": logical.get("project_version_id"),
+            "overall_state": logical.get("overall_state"),
+            "current_attempt_id": logical.get("current_attempt_id"),
+            "created_by": logical.get("created_by"),
+            "created_at": logical.get("created_at"),
+        },
+        "attempts": attempts,
+        "server_time": time.time(),
+    }
+
+
+@router.post("/jobs/{job_id}/attempts/{attempt_id}/cancel")
+async def cancel_attempt(
+    job_id: str, attempt_id: str, payload: CancelAttemptRequest, request: Request
+) -> dict[str, Any]:
+    """Запросить отмену попытки. Не обещает мгновенной остановки (§5.1)."""
+    settings = _settings_or_404()
+    key = _require_operator_intent(request)
+    try:
+        result = await database.run_db(
+            attempt_service.request_cancel,
+            job_id=job_id,
+            attempt_id=attempt_id,
+            reason=payload.reason,
+            confirmation=payload.confirmation,
+            grace_period_sec=payload.grace_period_sec,
+            actor=_actor(request),
+            idempotency_key=key,
+            audit=_audit_meta(request),
+            settings=settings,
+        )
+    except attempt_service.ConfirmationRequired as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except attempt_service.OperatorError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    _audit(request, "attempt_cancel_requested", job_id=job_id, attempt_id=attempt_id)
+    return result
+
+
+@router.post("/jobs/{job_id}/attempts/{attempt_id}/mark-lost")
+async def mark_attempt_lost(
+    job_id: str, attempt_id: str, payload: MarkAttemptLostRequest, request: Request
+) -> dict[str, Any]:
+    """Признать попытку потерянной. НЕ утверждает, что процесс остановлен (I-06)."""
+    settings = _settings_or_404()
+    key = _require_operator_intent(request)
+    try:
+        result = await database.run_db(
+            attempt_service.mark_lost,
+            job_id=job_id,
+            attempt_id=attempt_id,
+            reason=payload.mandatory_reason,
+            typed_confirmation=payload.typed_confirmation,
+            observed_worker_state=payload.observed_worker_state,
+            operator_note=payload.optional_operator_note,
+            actor=_actor(request),
+            idempotency_key=key,
+            audit=_audit_meta(request),
+            settings=settings,
+        )
+    except attempt_service.ConfirmationRequired as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except attempt_service.OperatorError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    _audit(request, "attempt_marked_lost", job_id=job_id, attempt_id=attempt_id)
+    return result
+
+
+@router.post("/jobs/{job_id}/attempts")
+async def create_attempt(
+    job_id: str, payload: CreateAttemptRequest, request: Request
+) -> dict[str, Any]:
+    """Создать новую попытку. Поверх работающей — нельзя (I-05)."""
+    settings = _settings_or_404()
+    key = _require_operator_intent(request)
+    try:
+        result = await database.run_db(
+            attempt_service.create_attempt,
+            job_id=job_id,
+            worker_id=payload.worker_id,
+            reason=payload.reason,
+            source_attempt_id=payload.source_attempt_id,
+            confirmation=payload.confirmation,
+            actor=_actor(request),
+            idempotency_key=key,
+            audit=_audit_meta(request),
+            settings=settings,
+        )
+    except attempt_service.ConfirmationRequired as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except repositories.ActiveAttemptExists as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except attempt_service.OperatorError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    _audit(request, "attempt_created", job_id=job_id, worker_id=payload.worker_id)
+    return result
+
+
+@router.post("/jobs/{job_id}/attempts/{attempt_id}/request-deletion")
+async def request_attempt_deletion(
+    job_id: str, attempt_id: str, payload: RequestDeletionRequest, request: Request
+) -> dict[str, Any]:
+    """Попросить воркер удалить локальные данные попытки. Центральная копия остаётся."""
+    settings = _settings_or_404()
+    key = _require_operator_intent(request)
+    try:
+        result = await database.run_db(
+            attempt_service.request_data_deletion,
+            job_id=job_id,
+            attempt_id=attempt_id,
+            reason=payload.reason,
+            confirmation=payload.confirmation,
+            actor=_actor(request),
+            idempotency_key=key,
+            audit=_audit_meta(request),
+            settings=settings,
+        )
+    except attempt_service.ConfirmationRequired as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except attempt_service.OperatorError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    _audit(request, "worker_data_deletion_requested", job_id=job_id, attempt_id=attempt_id)
+    return result
+
+
+@router.get("/jobs/{job_id}/attempts/{attempt_id}/result")
+async def download_attempt_result(job_id: str, attempt_id: str):
+    """Скачать пакет КОНКРЕТНОЙ попытки — в том числе устаревшей.
+
+    Файл открывается по UUID из БД; человекочитаемое имя уходит только в
+    заголовок (I-11). Устаревший результат подписан явно и никогда не
+    выдаётся за актуальный.
+    """
+    settings = _settings_or_404()
+    attempt = await database.run_db(
+        repositories.get_attempt, attempt_id, settings=settings
+    )
+    if attempt is None or attempt["job_id"] != job_id:
+        raise HTTPException(status_code=404, detail="Попытка не найдена.")
+    archive = job_service.validated_result_path(attempt, settings=settings)
+    prefix = ""
+    if archive is None:
+        archive = job_service.superseded_result_path(attempt, settings=settings)
+        prefix = "УСТАРЕВШАЯ-ПОПЫТКА_"
+    if archive is None or not archive.is_file():
+        raise HTTPException(status_code=404, detail="Файл результата не найден.")
+    filename = identifiers.safe_download_filename(
+        f"{prefix}{attempt.get('project_display_name') or ''}"
+        f"_попытка{attempt.get('attempt_no')}",
+        fallback=f"attempt_{attempt_id}",
+        suffix="".join(archive.suffixes[-2:]),
+    )
+    return FileResponse(
+        path=str(archive), media_type="application/octet-stream", filename=filename
+    )
+
+
+# ─── Журнал операторских действий ────────────────────────────────────────────
+@router.get("/admin-actions")
+async def admin_actions(
+    job_id: Optional[str] = Query(default=None),
+    worker_id: Optional[str] = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> dict[str, Any]:
+    """Журнал только для чтения. Эндпоинта удаления записей нет намеренно (I-15)."""
+    settings = _settings_or_404()
+    items = await database.run_db(
+        repositories.list_admin_actions,
+        job_id=job_id,
+        worker_id=worker_id,
+        limit=limit,
+        settings=settings,
+    )
+    return {"actions": items, "server_time": time.time()}

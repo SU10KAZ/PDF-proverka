@@ -13,12 +13,13 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import sqlite3
 import threading
 from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Optional, TypeVar
 
 from backend.app.services.distributed_workers import schema
 from backend.app.services.distributed_workers.settings import (
@@ -58,6 +59,7 @@ def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
         st.result_staging_dir,
         st.validated_results_dir,
         st.rejected_results_dir,
+        st.superseded_results_dir,
         st.job_logs_dir,
     ):
         directory.mkdir(parents=True, exist_ok=True)
@@ -69,11 +71,49 @@ def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
         if key not in _migrated:
             conn = _connect(st.db_path)
             try:
+                _backup_before_migration(conn, st.db_path)
                 schema.migrate(conn)
             finally:
                 conn.close()
             _migrated.add(key)
     return st.db_path
+
+
+def _backup_before_migration(conn: sqlite3.Connection, db_path: Path) -> Optional[Path]:
+    """Снять копию базы ПЕРЕД применением миграций. Возвращает путь копии.
+
+    Миграция 3 перестраивает хранение заданий и удаляет таблицу remote_jobs.
+    Forward-only миграция без копии означала бы «откатиться нечем»; копия
+    снимается через VACUUM INTO — это согласованный снимок, а не cp файла
+    рядом с живым WAL.
+
+    Копия НЕ снимается, если мигрировать нечего или база ещё пуста: плодить
+    файлы на каждом старте незачем.
+    """
+    pending = schema.pending_migrations(conn)
+    if not pending:
+        return None
+    row = conn.execute(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view')"
+        " AND name NOT LIKE 'sqlite_%'"
+    ).fetchone()
+    if not row or int(row[0]) <= 1:      # только schema_migrations → новая база
+        return None
+    version = schema.current_version(conn)
+    target = db_path.with_name(f"{db_path.name}.before_v{version}_to_v{max(pending)}")
+    if target.exists():
+        return target
+    try:
+        conn.execute("VACUUM INTO ?", (str(target),))
+    except sqlite3.Error:
+        # Резервная копия — страховка, а не условие работы. Отсутствие места
+        # или старый SQLite не должны блокировать запуск подсистемы; факт
+        # неудачи виден в логе, а миграция всё равно транзакционная.
+        logging.getLogger(__name__).warning(
+            "Не удалось снять резервную копию %s перед миграцией", db_path
+        )
+        return None
+    return target
 
 
 def _thread_conn(path: Path) -> sqlite3.Connection:
