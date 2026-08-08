@@ -151,6 +151,67 @@ def build_request(item: Any, job: Any, *, default_action: str,
     )
 
 
+def note_central_handoff(
+    handle: Any,
+    state: str,
+    *,
+    detail: Optional[dict] = None,
+    resume_stage: Optional[str] = None,
+) -> None:
+    """Отметить этап ЦЕНТРАЛЬНОГО хвоста удалённой попытки.
+
+    Живёт здесь, а не в `PipelineManager`, ровно по той же причине, по которой
+    здесь живёт выбор backend'а: менеджер не знает о подсистеме воркеров, и это
+    машинно проверяемая граница. Локальному исполнению отмечать нечего —
+    вызов для него просто ничего не делает.
+
+    Fail-soft: ось хвоста — диагностика и точка восстановления после рестарта,
+    а не условие завершения аудита. Её отказ не должен превращать выполненный
+    центральный хвост в проваленный.
+    """
+    attempt_id = getattr(handle, "attempt_id", None)
+    if not attempt_id:
+        return
+    try:
+        from backend.app.services.distributed_workers import central_handoff
+        from backend.app.services.distributed_workers.settings import get_settings
+
+        central_handoff.advance(
+            str(attempt_id),
+            central_handoff.HandoffState(state),
+            settings=get_settings(),
+            detail=detail,
+            resume_stage=resume_stage,
+            allow_regress=(state == central_handoff.HandoffState.FAILED.value),
+        )
+    except Exception:                      # noqa: BLE001 — ось не блокер
+        pass
+
+
+def central_handoff_state(handle: Any) -> Optional[str]:
+    """Где сейчас центральный хвост этой попытки (или None).
+
+    Нужно ровно для одного решения: рестарт центра НЕ должен прогонять
+    нормативный этап и Excel второй раз по уже завершённому аудиту. Импорт
+    идемпотентен сам по себе, а центральные этапы — нет: они стоят денег и
+    перезаписывают финальные артефакты.
+    """
+    attempt_id = getattr(handle, "attempt_id", None)
+    if not attempt_id:
+        return None
+    try:
+        from backend.app.services.distributed_workers import central_handoff, repositories
+        from backend.app.services.distributed_workers.settings import get_settings
+
+        settings = get_settings()
+        row = repositories.get_attempt(str(attempt_id), settings=settings)
+        if row is None:
+            return None
+        return central_handoff.current(row).value
+    except Exception:                      # noqa: BLE001 — диагностика не блокер
+        return None
+
+
 def handle_from_item(item: Any) -> Optional[ExecutionHandle]:
     """Восстановить ссылку на исполнение из персистентного элемента очереди."""
     raw = getattr(item, "execution_handle", None)

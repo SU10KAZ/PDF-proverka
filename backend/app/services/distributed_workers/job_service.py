@@ -16,9 +16,12 @@ ALLOWED_TRANSITIONS. Правила, которые обеспечиваются
 from __future__ import annotations
 
 import json
+import logging
 import time
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from backend.app.models.distributed_workers import (
     TERMINAL_JOB_STATES,
@@ -646,7 +649,7 @@ def catch_up_to_result_received(
             reason="догон состояния: архив результата получен раньше событий",
             settings=settings,
         )
-    return transition(
+    updated = transition(
         attempt_id=attempt_id,
         to_state=JobState.RESULT_RECEIVED,
         actor="worker",
@@ -654,6 +657,8 @@ def catch_up_to_result_received(
         fields={"returned_at": time.time()},
         settings=settings,
     )
+    _advance_handoff(attempt_id, "result_received", settings=settings)
+    return updated
 
 
 def store_unpublished_result(
@@ -787,13 +792,20 @@ def finalize_result(
             reason="запуск проверки результата",
             settings=settings,
         )
+    _advance_handoff(attempt_id, "result_validating", settings=settings)
+    # Список обязательных артефактов — ПО ТИПУ задания. Хардкод тестового
+    # списка означал буквально «результат реального аудита не публикуется
+    # никогда»: у него нет ни `result/summary.json`, ни `result/run_log.txt`,
+    # и проверка 4 отвергала КАЖДЫЙ удалённый аудит с `missing_artifacts`.
+    # Дефект не видел ни один тест: `finalize_result` вызывался только с
+    # тестовыми пакетами, а сквозной прогон центрального хвоста не делался.
     report = package_service.validate_result_package(
         archive=archive,
         expected_hash=expected_hash,
         expected_size=expected_size,
         job_id=job_id,
         attempt_id=attempt_id,
-        required_artifacts=TEST_JOB_REQUIRED_ARTIFACTS,
+        required_artifacts=required_artifacts_for(job),
         max_bytes=settings.max_package_bytes,
     )
 
@@ -820,6 +832,10 @@ def finalize_result(
                 "result_package_path": str(target),
             },
             settings=settings,
+        )
+        _advance_handoff(
+            attempt_id, "failed", settings=settings,
+            detail={"stage": "result_validation", "error": report.error},
         )
         return updated, report
 
@@ -858,7 +874,40 @@ def finalize_result(
         },
         settings=settings,
     )
+    # Архив принят и проверен. Центральный хвост при этом ещё НЕ начинался —
+    # ровно эту разницу и хранит отдельная ось: `JobState.COMPLETED` здесь
+    # означает «воркер отработал», а не «аудит завершён».
+    _advance_handoff(attempt_id, "result_validated", settings=settings)
     return updated, report
+
+
+def _advance_handoff(
+    attempt_id: str,
+    state: str,
+    *,
+    settings: DistributedWorkersSettings,
+    detail: Optional[dict[str, Any]] = None,
+) -> None:
+    """Продвинуть ось центрального хвоста, не роняя приём результата.
+
+    Ось диагностическая и восстановительная: её отказ не должен превращать
+    успешно принятый архив в потерянный. Поэтому fail-soft — но с записью в
+    лог, а не молча.
+    """
+    try:
+        from backend.app.services.distributed_workers import central_handoff
+
+        central_handoff.advance(
+            attempt_id,
+            central_handoff.HandoffState(state),
+            settings=settings,
+            detail=detail,
+        )
+    except Exception as exc:                       # noqa: BLE001 — ось не блокер
+        logger.warning(
+            "Ось центрального хвоста не продвинулась (%s → %s): %s",
+            attempt_id, state, exc,
+        )
 
 
 def validated_result_path(
@@ -951,6 +1000,16 @@ def to_view(
     view["attempt_disposition"] = job.get("attempt_disposition")
     view["result_acknowledged"] = bool(job.get("result_acknowledged_at"))
     view["deleted_from_worker"] = bool(job.get("deleted_from_worker_at"))
+    # Фактический этап ЦЕНТРАЛЬНОГО хвоста. Без него оператор видит «завершено»
+    # уже в момент приёма архива, тогда как нормативный этап и Excel впереди —
+    # то есть общий `running`/`completed` вводит в заблуждение ровно там, где
+    # цена ошибки максимальна.
+    try:
+        from backend.app.services.distributed_workers import central_handoff
+
+        view.update(central_handoff.describe(job))
+    except Exception:                              # noqa: BLE001 — экран не блокер
+        pass
     view.pop("execution_token_sha256", None)
     return view
 

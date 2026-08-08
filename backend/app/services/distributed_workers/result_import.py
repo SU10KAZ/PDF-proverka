@@ -29,9 +29,11 @@ from typing import Any, Optional
 from backend.app.models.distributed_workers import JobType
 from backend.app.services.distributed_workers import (
     audit_job_service,
+    central_handoff,
     identifiers,
     job_service,
     package_service,
+    portable_paths,
     project_package,
     repositories,
 )
@@ -111,12 +113,23 @@ def import_result_for_attempt(
             "Провалидированный архив результата не найден на центре"
         )
     target = Path(version_dir) if version_dir else _resolve_version_dir(attempt)
-    report = apply_result_package(
-        archive=archive,
-        attempt=attempt,
-        version_dir=target,
-        settings=settings,
+    central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.RESULT_IMPORTING, settings=settings,
     )
+    try:
+        report = apply_result_package(
+            archive=archive,
+            attempt=attempt,
+            version_dir=target,
+            settings=settings,
+        )
+    except Exception as exc:                       # noqa: BLE001 — ось обязана видеть провал
+        central_handoff.advance(
+            attempt_id, central_handoff.HandoffState.FAILED, settings=settings,
+            detail={"stage": "result_import", "error": str(exc)[:500]},
+            allow_regress=True,
+        )
+        raise
     repositories.update_attempt_fields(
         attempt_id,
         {
@@ -139,6 +152,16 @@ def import_result_for_attempt(
         )
     except Exception as exc:                       # noqa: BLE001 — учёт не блокирует приём
         usage_applied = {"applied": False, "reason": f"error: {type(exc).__name__}"}
+    # Импорт зафиксирован. Центральные этапы ещё НЕ шли — состояние
+    # `central_resume_pending` и есть точка, с которой их подхватывает рестарт.
+    central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.RESULT_IMPORTED, settings=settings,
+        detail={"applied_paths": len(report.get("applied_paths") or [])},
+    )
+    central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.CENTRAL_RESUME_PENDING,
+        settings=settings, resume_stage=report.get("resume_stage") or "",
+    )
     return {**report, "applied": True, "replayed": False, "usage_applied": usage_applied}
 
 
@@ -243,6 +266,52 @@ def validate_result_manifest(
         stages = manifest.get("stage_completion") or {}
         if not isinstance(stages, dict) or not stages:
             raise ResultImportError("В манифесте нет карты завершённых этапов")
+        _validate_discipline(manifest=manifest, attempt=attempt)
+
+
+def expected_discipline(attempt: dict[str, Any]) -> tuple[str, str]:
+    """Что центр ОТПРАВЛЯЛ: (discipline_id, discipline_profile_hash).
+
+    Читается из нагрузки логического задания — то есть из того же документа,
+    по которому собирался пакет. Самоотчёт воркера здесь не участвует: именно
+    его мы и проверяем.
+    """
+    payload = _loads(attempt.get("payload"))
+    params = payload.get("params") if isinstance(payload, dict) else {}
+    params = params if isinstance(params, dict) else {}
+    return (
+        str(params.get("discipline_id") or ""),
+        str(params.get("discipline_profile_hash") or ""),
+    )
+
+
+def _validate_discipline(
+    *, manifest: dict[str, Any], attempt: dict[str, Any]
+) -> None:
+    """Сверить дисциплину и хэш профиля результата с отправленными.
+
+    Без этой сверки «аудит прошёл профилем ЭОМ вместо ВК» выглядит как
+    успешный приём: артефакты на месте, этапы завершены, хэши пакета сходятся.
+    Отличается только КАЧЕСТВО замечаний, и заметить это по транспорту нельзя.
+    """
+    want_id, want_hash = expected_discipline(attempt)
+    got_id = str(manifest.get("discipline_id") or "")
+    got_hash = str(manifest.get("discipline_profile_hash") or "")
+    if want_id and got_id != want_id:
+        raise ResultImportError(
+            f"Дисциплина результата {got_id or '—'!r} не совпадает с "
+            f"отправленной {want_id!r}: аудит выполнен не тем профилем"
+        )
+    if want_hash and got_hash != want_hash:
+        raise ResultImportError(
+            "Хэш применённого профиля дисциплины не совпадает с отправленным: "
+            f"ожидался {want_hash[:23]}…, пришёл {(got_hash or '—')[:23]}…"
+        )
+    if want_id and not got_hash:
+        raise ResultImportError(
+            "Манифест результата не сообщает хэш применённого профиля "
+            "дисциплины — проверить, каким профилем шёл прогон, нечем"
+        )
 
 
 def apply_result_package(
@@ -270,6 +339,36 @@ def apply_result_package(
 
     payload = unpacked / "payload"
     staged_project = payload / "project"
+    # Нормализация путей ВНУТРИ артефактов — до построения плана и до единой
+    # записи в дерево проекта. Работает только по staging: если она отвергнет
+    # пакет, проект заказчика не тронут ни одним байтом.
+    path_report = portable_paths.normalize_staged_tree(
+        staged_project, version_id=str(attempt.get("version_id") or "") or None,
+    )
+    if path_report.violations:
+        _write_path_rejection(settings, attempt, path_report, manifest)
+        raise ResultImportError(
+            "В артефактах пакета абсолютные пути воркера, которые контракт не "
+            "описывает: "
+            + "; ".join(
+                f"{v['file']}:{v['field']}={v['value']}"
+                for v in path_report.violations[:5]
+            )
+        )
+    residual = portable_paths.residual_absolute_paths(staged_project)
+    if residual:
+        _write_path_rejection(settings, attempt, path_report, manifest, residual=residual)
+        raise ResultImportError(
+            "После нормализации в артефактах остались абсолютные пути: "
+            + "; ".join(f"{r['file']}:{r['field']}" for r in residual[:5])
+        )
+    unsafe_relative = portable_paths.relative_paths_are_safe(staged_project)
+    if unsafe_relative:
+        raise ResultImportError(
+            "В артефактах относительные пути с обходом каталога: "
+            + "; ".join(unsafe_relative[:5])
+        )
+
     plan = build_change_plan(staged_project, version_dir) if staged_project.is_dir() else {
         "apply": [], "rejected": [], "skipped_source": [], "skipped_central": []
     }
@@ -295,7 +394,12 @@ def apply_result_package(
 
     applied: list[str] = []
     try:
-        for rel in plan["apply"]:
+        for index, rel in enumerate(plan["apply"]):
+            # Точка инъекции отказа для доказательства отката. Хук существует
+            # ТОЛЬКО ради теста §13 и по умолчанию None: доказывать откат,
+            # выдёргивая диск, невозможно, а доказывать его надо.
+            if _APPLY_FAULT_HOOK is not None:
+                _APPLY_FAULT_HOOK(index, rel, applied)
             src = staged_project / rel
             dst = Path(version_dir) / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -335,7 +439,11 @@ def apply_result_package(
         "staging": str(staging_root),
         "usage_report": usage_report,
         "resume_stage": resume_stage,
+        "resume_hint": manifest.get("resume_hint"),
         "stage_completion": manifest.get("stage_completion") or {},
+        "discipline_id": manifest.get("discipline_id"),
+        "discipline_profile_hash": manifest.get("discipline_profile_hash"),
+        "path_normalization": path_report.as_dict(),
     }
 
 
@@ -461,6 +569,38 @@ def _read_usage(payload: Path) -> dict[str, Any]:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
+
+
+#: Хук инъекции отказа посреди применения. Значение всегда None вне теста:
+#: `apply_result_package` — единственный писатель в дерево проекта, и отдавать
+#: ему поведение из окружения было бы хуже, чем не проверять откат вовсе.
+_APPLY_FAULT_HOOK = None
+
+
+def _write_path_rejection(
+    settings: DistributedWorkersSettings,
+    attempt: dict[str, Any],
+    report: "portable_paths.NormalizationReport",
+    manifest: dict[str, Any],
+    *,
+    residual: Optional[list[dict[str, Any]]] = None,
+) -> None:
+    """Отчёт об отказе по путям. Пакет сохраняется, проект не тронут."""
+    target = identifiers.attempt_dir(
+        settings.rejected_results_dir, attempt["job_id"], attempt["attempt_id"],
+        allow_legacy=True,
+    )
+    target.mkdir(parents=True, exist_ok=True)
+    _dump(
+        target / "path_rejection.json",
+        {
+            "at": time.time(),
+            "reason": "non_portable_paths",
+            "report": report.as_dict(),
+            "residual": (residual or [])[:200],
+            "manifest_version": manifest.get("manifest_version"),
+        },
+    )
 
 
 def _write_rejection(

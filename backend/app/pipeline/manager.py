@@ -6314,16 +6314,19 @@ class PipelineManager:
             extra={"actor": (item.extra_params or {}).get("remote_actor") or "unknown"},
         )
         result = await backend.run(request, ctx)
+        handle = execution_registry.handle_from_item(item)
         if result.cancelled:
             job.status = JobStatus.CANCELLED
         elif result.success:
-            await self._run_central_tail_after_remote(job, result)
+            await self._run_central_tail_after_remote(job, result, handle=handle)
         else:
             job.status = JobStatus.FAILED
             job.error_message = result.error or job.error_message
         job.completed_at = datetime.now().isoformat()
 
-    async def _run_central_tail_after_remote(self, job: AuditJob, result: Any) -> None:
+    async def _run_central_tail_after_remote(
+        self, job: AuditJob, result: Any, *, handle: Any = None
+    ) -> None:
         """Достроить аудит на центре после приёма результата с воркера.
 
         Воркер выполняет только этапы профиля; нормативный этап, контроль
@@ -6336,7 +6339,21 @@ class PipelineManager:
         `PIPELINE_NORMS_AFTER_MERGE_ENABLED`: своей второй версии порядка
         этапов здесь нет и быть не должно.
         """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        if execution_registry.central_handoff_state(handle) == "completed":
+            # Рестарт центра ПОСЛЕ завершённого хвоста. Импорт идемпотентен сам
+            # по себе, а нормативный этап и Excel — нет: они стоят денег и
+            # перезаписывают финальные артефакты. Второй COMPLETED-переход не
+            # выполняется, элемент очереди просто закрывается.
+            await self._log(
+                job, "Центральный хвост уже выполнен ранее — повтор не требуется",
+                "info",
+            )
+            job.status = JobStatus.COMPLETED
+            return
         await self._log(job, "Результат воркера принят — центральные этапы", "info")
+        self._handoff_advance(handle, "central_resume_running")
         # Артефакты приехали в версию проекта, а run dir этого job'а пуст:
         # без засева норм-этап ответил бы «03_findings.json не найден».
         try:
@@ -6344,16 +6361,51 @@ class PipelineManager:
         except Exception as exc:                       # noqa: BLE001 — засев fail-soft
             await self._log(job, f"Засев run dir не выполнен: {exc}", "warn")
 
+        # Источник истины о том, с какого этапа продолжать, — ЦЕНТРАЛЬНЫЙ
+        # детектор. `resume_hint` из пакета остаётся подсказкой воркера: он
+        # считал её на СВОЁМ дереве, до нормализации путей и до применения на
+        # центре, и доверять ей означало бы позволить воркеру назначать себе
+        # следующий этап.
+        detected = await asyncio.to_thread(self._detect_central_resume_stage, job)
+        hint = getattr(result, "resume_stage", None) or getattr(
+            result, "resume_hint", None
+        )
+        if detected:
+            await self._log(
+                job, f"Центральный детектор возобновления: {detected}", "info",
+            )
+            self._handoff_advance(
+                handle, "central_resume_running", resume_stage=detected,
+            )
+        if hint and detected and str(hint) != str(detected):
+            # Расхождение не аварийное: подсказка считалась на другом дереве.
+            # Но оно ОБЯЗАНО быть видимым — иначе «воркер сказал одно, центр
+            # сделал другое» разбирается только по логам двух машин.
+            await self._log(
+                job,
+                f"Подсказка воркера ({hint}) не совпала с центральным "
+                f"детектором ({detected}); выполняется решение центра",
+                "warn",
+            )
+
         norms_after_merge = self._norms_after_merge_enabled()
         if not norms_after_merge:
             await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
             if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                self._handoff_advance(
+                    handle, "failed",
+                    detail={"stage": "norm_verify", "error": job.error_message},
+                )
                 return
 
         await self._run_debt_control(job)
         if norms_after_merge:
             await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
             if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                self._handoff_advance(
+                    handle, "failed",
+                    detail={"stage": "norm_verify", "error": job.error_message},
+                )
                 return
         await self._run_decision_carryover(job)
 
@@ -6367,9 +6419,50 @@ class PipelineManager:
 
         job.status = JobStatus.COMPLETED
         self._promote_completed_audit_v2(job)
-        hint = getattr(result, "resume_stage", None)
-        if hint:
-            await self._log(job, f"Подсказка воркера по возобновлению: {hint}", "info")
+        # COMPLETED ставится ровно один раз и ТОЛЬКО здесь — после
+        # нормативного этапа, контроля долгов, переноса вердиктов и Excel.
+        self._handoff_advance(
+            handle, "completed",
+            detail={"final_stage": "excel", "excel_ok": bool(_xls.success)},
+        )
+
+    def _detect_central_resume_stage(self, job: AuditJob) -> Optional[str]:
+        """Спросить СУЩЕСТВУЮЩИЙ детектор, с какого этапа продолжать.
+
+        Своей логики «какой этап следующий» здесь нет: она уже написана и
+        используется локальным конвейером. Отдельный вызов нужен потому, что
+        подсказку в пакете считал ВОРКЕР — на своём дереве и до применения
+        результата на центре.
+        """
+        try:
+            from backend.app.pipeline.resume_detector import detect_resume_stage
+
+            info = detect_resume_stage(job.project_id, version_id=job.version_id)
+            return info.get("stage") if isinstance(info, dict) else None
+        except Exception:                          # noqa: BLE001 — детектор не блокер
+            return None
+
+    def _handoff_advance(
+        self,
+        handle: Any,
+        state: str,
+        *,
+        detail: Optional[dict] = None,
+        resume_stage: Optional[str] = None,
+    ) -> None:
+        """Отметить этап центрального хвоста через абстракцию исполнения.
+
+        Менеджер не знает ни одной детали подсистемы воркеров — это машинно
+        проверяемая граница, — поэтому отметка идёт тем же путём, что и всё
+        остальное удалённое: через `backend.app.pipeline.execution`.
+        """
+        if handle is None:
+            return
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        execution_registry.note_central_handoff(
+            handle, state, detail=detail, resume_stage=resume_stage,
+        )
 
     def _remote_items(
         self,
