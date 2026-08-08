@@ -47,7 +47,7 @@
     const node = document.createElement(tag);
     if (options.className) node.className = options.className;
     if (options.title) node.title = String(options.title);
-    // ВСЕГДА textContent: никакого innerHTML для данных.
+    // ВСЕГДА textContent: разметку из данных не собираем.
     if (options.text !== undefined && options.text !== null) {
       node.textContent = String(options.text);
     }
@@ -679,21 +679,19 @@
       if (reject) {
         if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
           + 'claim-secret будет погашен, воркер токен не получит.')) return;
-        await api(`/api/workers/${encodeURIComponent(reject.dataset.reject)}/reject`,
-          { method: 'POST' });
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(reject.dataset.reject)}/reject`, {});
         await refresh();
       } else if (approve) {
-        await api(`/api/workers/${encodeURIComponent(approve.dataset.approve)}/approve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ configured_max_slots: 1 }),
-        });
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(approve.dataset.approve)}/approve`,
+          { configured_max_slots: 1 });
         await refresh();
       } else if (revoke) {
         if (!window.confirm('Отозвать доступ воркера? Токен будет погашен, '
           + 'новые задания выдаваться не будут.')) return;
-        await api(`/api/workers/${encodeURIComponent(revoke.dataset.revoke)}/revoke`,
-          { method: 'POST' });
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(revoke.dataset.revoke)}/revoke`, {});
         await refresh();
       } else if (logs) {
         await loadLogs(logs.dataset.logs);
@@ -731,11 +729,7 @@
           result_bytes: Number($('jobResultBytes').value),
         },
       };
-      const created = await api('/api/workers/jobs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      const created = await dangerousPost('/api/workers/jobs', body);
       $('createHint').textContent = `создано: ${created.job.job_id.slice(0, 8)}`;
       await refresh();
     } catch (error) {
