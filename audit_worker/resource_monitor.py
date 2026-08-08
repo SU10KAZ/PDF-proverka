@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -69,6 +70,13 @@ class ResourceMonitor:
         self._last_value: Optional[int] = None
         self._pending_value: Optional[int] = None
         self._pending_since: float = 0.0
+        # Монитор один на агента, а зовут его из ДВУХ потоков: сердцебиение и
+        # главный цикл. Состояние гистерезиса — три обычных поля, и без замка
+        # два потока переписывали их вперемешку: «рост только после периода
+        # стабильности» превращался в лотерею, а показанное оператору число
+        # слотов начинало мигать ровно там, где гистерезис и должен был это
+        # мигание убрать.
+        self._hysteresis_lock = threading.Lock()
 
     # ─── Снимок ──────────────────────────────────────────────────────────────
     def snapshot(self, *, active_jobs: int = 0, live_processes: int = 0) -> dict[str, Any]:
@@ -205,6 +213,10 @@ class ResourceMonitor:
         Без этого одно освободившееся ядро вызывает мигание «1 / 0» и дёргает
         планировщик.
         """
+        with self._hysteresis_lock:
+            return self._apply_hysteresis_locked(value, now=now)
+
+    def _apply_hysteresis_locked(self, value: int, *, now: Optional[float] = None) -> int:
         stamp = now or time.time()
         if self._last_value is None:
             self._last_value = value

@@ -53,6 +53,12 @@ from audit_worker.uploader import upload_result
 #: Как часто агент спрашивает центр о командах в цикле ожидания.
 _COMMAND_POLL_SEC = 1.0
 
+#: Как часто агент сверяет своё состояние с центром на ходу (не только на
+#: старте). Пять минут — компромисс: реже, чем heartbeat, потому что сверка
+#: тяжелее, но достаточно часто, чтобы застрявший из-за потерянного ответа
+#: слот освобождался сам, без перезапуска агента.
+RECONCILE_INTERVAL_SEC = 300.0
+
 class UploadDeferred(RuntimeError):
     """Результат готов, но канал недоступен: передача отложена, НЕ провал."""
 
@@ -101,12 +107,17 @@ class WorkerAgent:
         self._stop = threading.Event()
         self._sender_thread: Optional[threading.Thread] = None
         self._command_thread: Optional[threading.Thread] = None
-        self._active: dict[str, dict[str, Any]] = {}     # job_id → runtime-контекст
+        # Ключ — attempt_id, а НЕ job_id. У задания попыток может быть
+        # несколько, и в момент подмены (оператор признал попытку
+        # потерянной и создал новую) обе живут одновременно: по job_id
+        # вторая затирала первую в учёте — слот считался свободным, а
+        # снятие первой выкидывало из `_active` контекст ВТОРОЙ.
+        self._active: dict[str, dict[str, Any]] = {}   # attempt_id → контекст
         self._active_lock = threading.Lock()
         # Потоки заданий. С двумя слотами агент ведёт до двух заданий сразу, и
         # цикл больше не блокируется первым из них: ошибка задания A не вправе
         # остановить работу задания B (§19 задания).
-        self._job_threads: dict[str, threading.Thread] = {}
+        self._job_threads: dict[str, threading.Thread] = {}  # attempt_id → поток
         # Отправку журнала ведут несколько потоков (потоки заданий и
         # отправитель). Без лока каждый читал свой пакет от одного и того же
         # last_acked_seq и слал центру дубли.
@@ -116,6 +127,7 @@ class WorkerAgent:
         # опроса и двойное подтверждение одной команды.
         self._command_lock = threading.Lock()
         self._max_slots = config.max_slots
+        self._last_reconcile_at = 0.0
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
@@ -137,6 +149,7 @@ class WorkerAgent:
 
         started = 0
         delays = backoff_delays()
+        self._last_reconcile_at = time.time()
         try:
             while not self._stop.is_set():
                 self._reap_job_threads()
@@ -148,6 +161,12 @@ class WorkerAgent:
                     continue
                 try:
                     self._deliver_pending_results()
+                    if (
+                        time.time() - self._last_reconcile_at
+                        >= RECONCILE_INTERVAL_SEC
+                    ):
+                        self._reconcile_with_center()
+                    counts = self._busy_counts()
                     free = self._free_slots()
                     if free <= 0:
                         # Слотов нет — за заданием не ходим вовсе. Забрать
@@ -157,6 +176,7 @@ class WorkerAgent:
                         continue
                     assignment = self.poller.poll(
                         free_slots=free,
+                        busy_slots=counts["busy"],
                         compressions=["gzip", "none"],
                         executor_status=str(
                             self.db.executor_snapshot().get("status") or ""
@@ -179,8 +199,8 @@ class WorkerAgent:
 
     def _reap_job_threads(self) -> None:
         with self._active_lock:
-            for job_id in [j for j, t in self._job_threads.items() if not t.is_alive()]:
-                self._job_threads.pop(job_id, None)
+            for key in [k for k, t in self._job_threads.items() if not t.is_alive()]:
+                self._job_threads.pop(key, None)
 
     def _start_job_thread(self, assignment: dict[str, Any]) -> None:
         """Занять слот и отдать задание отдельному потоку.
@@ -198,7 +218,7 @@ class WorkerAgent:
             daemon=True,
         )
         with self._active_lock:
-            self._job_threads[assignment["job_id"]] = thread
+            self._job_threads[assignment["attempt_id"]] = thread
         thread.start()
 
     def _run_job_guarded(self, assignment: dict[str, Any], ctx: dict[str, Any]) -> None:
@@ -217,7 +237,11 @@ class WorkerAgent:
         # продолжится без нас. Ждём их недолго и только чтобы дописать журнал.
         for thread in list(self._job_threads.values()):
             thread.join(timeout=5)
-        self._flush_all_outboxes()
+        # Последняя отправка идёт с force: `_flush_outbox_locked` крутится в
+        # цикле `while ... and not self._stop.is_set()`, а `_stop` к этому
+        # моменту уже взведён — без флага финальный сброс не отправлял ни
+        # одного события, то есть был чистой видимостью.
+        self._flush_all_outboxes(force=True)
         self.client.close()
 
     def _startup_reconcile(self) -> None:
@@ -227,7 +251,23 @@ class WorkerAgent:
                 f"задание {meta['job_id'][:8]} пережило рестарт агента "
                 f"(процессы живы) — не трогаю"
             )
+        self._adopt_surviving_attempts(survived)
         self._report_interrupted_attempts()
+        self._reconcile_with_center()
+
+    def _reconcile_with_center(self) -> None:
+        """Сверить локальное состояние с центром и выполнить его вердикты.
+
+        Зовётся не только на старте, но и периодически из главного цикла.
+        Причина в застревающем слоте: если ответ `/jobs/next` потерялся в сети,
+        центр уже перевёл попытку в состояние, ЗАНИМАЮЩЕЕ слот, а воркер о ней
+        не знает и никогда не спросит. Единственный, кто это разбирает, —
+        `reoffer_unknown_jobs` на стороне центра, а он срабатывает только по
+        нашему запросу сверки. Пока сверка была лишь стартовой, слот держался
+        занятым до перезапуска агента, и центр честно показывал «занято»,
+        не умея назвать причину.
+        """
+        self._last_reconcile_at = time.time()
         verdict = reconciliation.reconcile(
             self.client,
             self.jobs,
@@ -274,6 +314,75 @@ class WorkerAgent:
             elif item["action"] == "upload_result":
                 self._resume_upload(item["job_id"], item["attempt_id"])
 
+    def _adopt_surviving_attempts(self, survived: list[dict[str, Any]]) -> None:
+        """Взять под наблюдение попытки, чьи процессы пережили рестарт агента.
+
+        Раньше рестарт агента только ПЕЧАТАЛ «не трогаю»: контекст в `_active`
+        не заводился, поток наблюдения не поднимался. Последствия были не
+        косметические.
+
+        * События обеих попыток лежали на диске до самого конца работы —
+          отправитель ходит только по `_active`. Оператор видел замерший
+          прогресс и не мог отличить это от зависшего аудита.
+        * Занятость считалась мимо них, и центр показывал свободные слоты у
+          воркера, на котором в этот момент шло два процесса.
+
+        Процесс НЕ перезапускается и не трогается: работа принадлежит
+        исполнителю (I-02/I-03). Мы только возвращаем себе роль наблюдателя —
+        досылаем журнал, а когда исполнитель допишет исход, обычный проход
+        `_deliver_pending_results` заберёт готовый архив.
+        """
+        for meta in survived:
+            job_id, attempt_id = meta["job_id"], meta["attempt_id"]
+            with self._active_lock:
+                if attempt_id in self._active:
+                    continue
+            ctx = {
+                "job_id": job_id,
+                "attempt_id": attempt_id,
+                "project_id": meta.get("project_id", ""),
+                "execution_token": meta.get("execution_token") or "",
+                "outbox": self._outbox_for(
+                    job_id, attempt_id,
+                    execution_token=meta.get("execution_token") or "",
+                ),
+                "stage": "running",
+                "started_at": meta.get("started_at") or time.time(),
+                "adopted": True,
+            }
+            with self._active_lock:
+                self._active[attempt_id] = ctx
+            thread = threading.Thread(
+                target=self._observe_adopted, args=(ctx,),
+                name=f"adopt-{attempt_id[:8]}", daemon=True,
+            )
+            with self._active_lock:
+                self._job_threads[attempt_id] = thread
+            thread.start()
+            _log(f"задание {job_id[:8]}: взято под наблюдение после рестарта агента")
+
+    def _observe_adopted(self, ctx: dict[str, Any]) -> None:
+        """Досылать журнал подхваченной попытки, пока исполнитель её не закончит."""
+        job_id, attempt_id = ctx["job_id"], ctx["attempt_id"]
+        try:
+            while not self._stop.is_set():
+                try:
+                    self._flush_outbox(ctx)
+                except Exception:  # noqa: BLE001 — отправка повторится
+                    pass
+                item = self.db.queue_item(attempt_id) or {}
+                if item.get("state") in local_db.TERMINAL_QUEUE_STATES:
+                    break
+                self._stop.wait(_COMMAND_POLL_SEC)
+        finally:
+            with self._active_lock:
+                self._active.pop(attempt_id, None)
+            try:
+                self._flush_outbox(ctx)
+            except Exception:  # noqa: BLE001 — досылка повторится проходом доставки
+                pass
+            _log(f"задание {job_id[:8]}: наблюдение после рестарта завершено")
+
     def _report_interrupted_attempts(self) -> None:
         """Досылать диагностику о попытках, которые исполнитель признал прерванными.
 
@@ -290,19 +399,29 @@ class WorkerAgent:
             outbox = self._outbox_for(
                 job_id, attempt_id, execution_token=meta.get("execution_token") or ""
             )
-            self.jobs.update(job_id, attempt_id, interrupt_reported=True)
             _log(
                 f"задание {job_id[:8]}: исполнитель сообщил о прерывании — "
                 f"передаю диагностику, повтор не запускаю"
             )
-            self._flush_outbox(
-                {
-                    "job_id": job_id,
-                    "attempt_id": attempt_id,
-                    "outbox": outbox,
-                    "execution_token": meta.get("execution_token"),
-                }
-            )
+            # Признак ставится ПОСЛЕ успешной отправки. Раньше он писался до
+            # неё: если центр в этот момент был недоступен, диагностика
+            # оставалась на диске, а попытка навсегда считалась «уже
+            # сообщённой» и не попадала сюда больше никогда.
+            try:
+                self._flush_outbox(
+                    {
+                        "job_id": job_id,
+                        "attempt_id": attempt_id,
+                        "outbox": outbox,
+                        "execution_token": meta.get("execution_token"),
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001 — попробуем на следующем проходе
+                _log(f"задание {job_id[:8]}: диагностику отправить не удалось: {exc}")
+                continue
+            if outbox.has_pending:
+                continue
+            self.jobs.update(job_id, attempt_id, interrupt_reported=True)
 
     # ─── Слоты и heartbeat ───────────────────────────────────────────────────
     def _free_slots(self) -> int:
@@ -313,18 +432,45 @@ class WorkerAgent:
         Берётся худшее — иначе агент забирал бы работу, которую исполнитель
         всё равно не запустит, и она висела бы у воркера вместо очереди центра.
         """
+        counts = self._busy_counts()
+        if not counts["db_ok"]:
+            # Занятость неизвестна — работу не берём. Прежний запасной путь
+            # («считаем по своему учёту») ошибался в ОПАСНУЮ сторону: сразу
+            # после рестарта агента `_active` пуст, процессы при этом живы, и
+            # агент забирал задание, которое исполнитель принять не может, —
+            # оно повисало у воркера вместо очереди центра. Пропуск одного
+            # оборота стоит секунды.
+            return 0
+        snapshot = self.monitor.snapshot(
+            active_jobs=counts["busy"], live_processes=counts["live"]
+        )
+        return int(snapshot["slots"]["calculated_free"])
+
+    def _busy_counts(self) -> dict[str, Any]:
+        """Единственный ответ на вопрос «сколько слотов занято».
+
+        Раньше их было два: `_free_slots` брал худшее из трёх чисел, а
+        heartbeat считал занятость только по `len(self._active)`. После
+        рестарта агента это расходилось до противоположного: агент докладывал
+        центру свободный слот, которым сам же не мог воспользоваться, — центр
+        показывал оператору доступную ёмкость и ждал запроса, которого не
+        будет.
+        """
         with self._active_lock:
             active = len(self._active)
         try:
             claimed = self.db.claimed_attempt_count()
             live = self.db.live_process_count()
-        except Exception:  # noqa: BLE001 — база занята: считаем по своему учёту
-            claimed = live = active
-        busy = max(active, claimed, live)
-        snapshot = self.monitor.snapshot(
-            active_jobs=busy, live_processes=live
-        )
-        return int(snapshot["slots"]["calculated_free"])
+            db_ok = True
+        except Exception:  # noqa: BLE001 — база занята: честно говорим «не знаю»
+            claimed, live, db_ok = active, active, False
+        return {
+            "active": active,
+            "claimed": claimed,
+            "live": live,
+            "busy": max(active, claimed, live),
+            "db_ok": db_ok,
+        }
 
     def _heartbeat_payload(self) -> dict[str, Any]:
         with self._active_lock:
@@ -339,8 +485,11 @@ class WorkerAgent:
                 }
                 for ctx in self._active.values()
             ]
+        # Занятость считается ТЕМ ЖЕ способом, что и в `_free_slots`: иначе
+        # центр получает одно число, а решение агент принимает по другому.
+        counts = self._busy_counts()
         snapshot = self.monitor.snapshot(
-            active_jobs=len(active), live_processes=self.registry.live_count()
+            active_jobs=counts["busy"], live_processes=counts["live"]
         )
         warnings: list[dict[str, Any]] = []
         unconfirmed = self.jobs.retention_unconfirmed()
@@ -353,7 +502,7 @@ class WorkerAgent:
                     "message": "Центр не подтвердил приём — автоматическое удаление запрещено",
                 }
             )
-        if snapshot["slots"]["calculated_free"] == 0 and not active:
+        if snapshot["slots"]["calculated_free"] == 0 and not counts["busy"]:
             warnings.append(
                 {
                     "code": "no_free_slots",
@@ -387,17 +536,29 @@ class WorkerAgent:
                     ),
                 }
             )
-        try:
-            claimed = self.db.claimed_attempt_count()
-            live = self.db.live_process_count()
-        except Exception:  # noqa: BLE001 — база занята: не врём, отдаём известное
-            claimed, live = len(active), int(executor.get("running_processes") or 0)
+        claimed, live = counts["claimed"], counts["live"]
+        if not counts["db_ok"]:
+            warnings.append(
+                {
+                    "code": "local_db_unavailable",
+                    "severity": "warn",
+                    "message": (
+                        "Локальная база воркера не прочиталась: числа занятости "
+                        "ниже приведены по собственному учёту агента и могут "
+                        "быть занижены. Новые задания агент в этом состоянии "
+                        "не берёт."
+                    ),
+                }
+            )
         return {
             "instance_id": self.instance_id,
             "sent_at": time.time(),
-            "worker_state": "busy" if active else "idle",
+            "worker_state": "busy" if counts["busy"] else "idle",
             "configured_max_slots": self.config.max_slots,
-            "calculated_free_slots": int(snapshot["slots"]["calculated_free"]),
+            "calculated_free_slots": (
+                0 if not counts["db_ok"]
+                else int(snapshot["slots"]["calculated_free"])
+            ),
             "active_jobs": active,
             "resource_snapshot": snapshot,
             "warnings": warnings,
@@ -406,7 +567,7 @@ class WorkerAgent:
             # Что ПРОВЕРЕНО сборкой воркера, а не что пожелал оператор.
             "max_verified_slots": worker_slots.MAX_VERIFIED_SLOTS,
             # Диагностика для сверки с расчётом центра (slot_count_mismatch).
-            "active_local_jobs": len(active),
+            "active_local_jobs": counts["active"],
             "running_processes": live,
             "locally_reserved_slots": claimed,
         }
@@ -534,7 +695,7 @@ class WorkerAgent:
             "started_at": time.time(),
         }
         with self._active_lock:
-            self._active[job_id] = ctx
+            self._active[attempt_id] = ctx
         return ctx
 
     def execute_job(
@@ -583,7 +744,7 @@ class WorkerAgent:
             return {"ok": False, "reason": str(exc)}
         finally:
             with self._active_lock:
-                self._active.pop(job_id, None)
+                self._active.pop(attempt_id, None)
             self._flush_outbox(ctx)
 
     def _download_and_verify(
@@ -842,13 +1003,43 @@ class WorkerAgent:
         with self._active_lock:
             busy = set(self._active)
         for meta in self.jobs.iter_all():
-            if meta.get("local_state") != "completed_locally":
+            if meta["attempt_id"] in busy:
                 continue
-            if not meta.get("result_hash"):
+            state = meta.get("local_state")
+            if state in ("completed_locally", "uploading") and meta.get("result_hash"):
+                # `uploading` сюда добавлено осознанно: обрыв посреди передачи
+                # оставлял попытку именно в этом состоянии, и её не подбирал
+                # НИКТО — проход требовал строго `completed_locally`, а сверка
+                # выполняется только на старте агента. Загрузка возобновляемая
+                # и идемпотентная, а активные попытки отсечены выше по `busy`.
+                self._resume_upload(meta["job_id"], meta["attempt_id"])
                 continue
-            if meta["job_id"] in busy:
-                continue
-            self._resume_upload(meta["job_id"], meta["attempt_id"])
+            if state in ("failed", "rejected", "cancelled", "executor_interrupted"):
+                # Провал, случившийся при мёртвом агенте, тоже надо ДОВЕЗТИ.
+                # Раньше его исход (`job_failed` в outbox) не отправлял никто:
+                # проход доставки требовал успешного результата, отчёт о
+                # прерывании — состояния `executor_interrupted`, а сверка
+                # событий не шлёт. Центр держал попытку в `running` вечно,
+                # то есть слот не освобождался до вмешательства оператора.
+                self._flush_terminal_events(meta)
+
+    def _flush_terminal_events(self, meta: dict[str, Any]) -> None:
+        """Дослать журнал попытки, закончившейся без успешного результата."""
+        job_id, attempt_id = meta["job_id"], meta["attempt_id"]
+        outbox = self._outbox_for(
+            job_id, attempt_id, execution_token=meta.get("execution_token") or ""
+        )
+        outbox.reload()
+        if not outbox.has_pending:
+            return
+        _log(f"задание {job_id[:8]}: досылаю исход попытки ({meta.get('local_state')})")
+        try:
+            self._flush_outbox({
+                "job_id": job_id, "attempt_id": attempt_id, "outbox": outbox,
+                "execution_token": meta.get("execution_token"),
+            })
+        except Exception as exc:  # noqa: BLE001 — повторим на следующем проходе
+            _log(f"задание {job_id[:8]}: исход отправить не удалось: {exc}")
 
     def _resume_upload(self, job_id: str, attempt_id: str) -> None:
         meta = self.jobs.load(job_id, attempt_id)
@@ -920,26 +1111,26 @@ class WorkerAgent:
             self._flush_all_outboxes()
             self._stop.wait(self.config.event_flush_interval_sec)
 
-    def _flush_all_outboxes(self) -> None:
+    def _flush_all_outboxes(self, *, force: bool = False) -> None:
         with self._active_lock:
             contexts = list(self._active.values())
         for ctx in contexts:
             try:
-                self._flush_outbox(ctx)
+                self._flush_outbox(ctx, force=force)
             except Exception:  # noqa: BLE001 — отправка повторится
                 continue
 
-    def _flush_outbox(self, ctx: dict[str, Any]) -> None:
+    def _flush_outbox(self, ctx: dict[str, Any], *, force: bool = False) -> None:
         """Отправить накопленное. При обрыве просто выходим — outbox копит дальше."""
         with self._flush_lock:
-            self._flush_outbox_locked(ctx)
+            self._flush_outbox_locked(ctx, force=force)
 
-    def _flush_outbox_locked(self, ctx: dict[str, Any]) -> None:
+    def _flush_outbox_locked(self, ctx: dict[str, Any], *, force: bool = False) -> None:
         outbox: EventOutbox = ctx["outbox"]
         # Журнал наполняет ИСПОЛНИТЕЛЬ — другой процесс. Без перечитывания
         # позиций с диска агент вечно считал бы, что отправлять нечего.
         outbox.reload()
-        while outbox.has_pending and not self._stop.is_set():
+        while outbox.has_pending and (force or not self._stop.is_set()):
             batch = outbox.pending_batch(limit=self.config.event_batch_max)
             if not batch:
                 return

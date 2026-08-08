@@ -163,9 +163,13 @@ class CenterClient:
     def heartbeat(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self.request("POST", "/api/v1/worker/heartbeat", json_body=payload)
 
-    def next_job(self, payload: dict[str, Any]) -> Optional[dict[str, Any]]:
+    def next_job(
+        self, payload: dict[str, Any], *, idempotency_key: Optional[str] = None
+    ) -> Optional[dict[str, Any]]:
+        headers = {"Idempotency-Key": idempotency_key} if idempotency_key else None
         return self.request(
-            "POST", "/api/v1/worker/jobs/next", json_body=payload, expect_204=True
+            "POST", "/api/v1/worker/jobs/next", json_body=payload,
+            headers=headers, expect_204=True,
         )
 
     def accept_job(
@@ -249,9 +253,13 @@ class CenterClient:
             headers={
                 "X-Execution-Token": execution_token,
                 # По хэшу архива: тот же архив — та же сессия загрузки.
+                # Поле именно `expected_hash` — так оно называется в теле
+                # запроса. Раньше здесь стояло `sha256`, которого в теле нет,
+                # и ключ вырождался в один и тот же для любого архива попытки.
                 "Idempotency-Key": (
                     f"upload:{payload.get('job_id', '')}:"
-                    f"{payload.get('attempt_id', '')}:{payload.get('sha256', '')}"
+                    f"{payload.get('attempt_id', '')}:"
+                    f"{payload.get('expected_hash', '')}"
                 ),
             },
         )

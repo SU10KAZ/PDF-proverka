@@ -269,6 +269,19 @@ class EventOutbox:
         """
         if self._db is None:
             return []
+        # Лечение идёт под ТЕМ ЖЕ замком, что и обычная запись. Без него
+        # оставалась гонка между процессами: исполнитель выдал номер N и застрял
+        # между выдачей и записью строки дольше `older_than`; агент в это время
+        # звал `reload()` (а он делает это каждые 0.2 с), не находил N в
+        # сегменте и дописывал на его место филлер. Через мгновение исполнитель
+        # дописывал НАСТОЯЩУЮ строку с тем же номером — в сегментах оказывались
+        # две записи с одним seq, и одна из них терялась молча при дедупликации
+        # на центре. Под общим замком выдача и лечение больше не пересекаются.
+        with self._lock, self._interprocess_lock():
+            return self._heal_locked(older_than)
+
+    def _heal_locked(self, older_than: float) -> list[int]:
+        assert self._db is not None
         try:
             stale = self._db.unwritten_events(
                 job_id=self.job_id, attempt_id=self.attempt_id, older_than=older_than
