@@ -50,9 +50,11 @@ def run(spec: dict[str, Any]) -> int:
     from backend.app.models.audit import AuditJob, BatchQueueItem, JobStatus
     from backend.app.pipeline.manager import pipeline_manager
     from backend.app.pipeline.remote_audit_runner import (
+        collect_usage,
         emit,
         publish_deliverables,
         write_process_exit,
+        write_usage_report,
     )
 
     project_id = str(spec.get("project_id") or "")
@@ -93,6 +95,10 @@ def run(spec: dict[str, Any]) -> int:
         }
     )
     stages, resume_hint = publish_deliverables(spec, job)
+    # Отчёт о расходе пишется ТЕМ ЖЕ сборщиком, что и на воркере. Без него
+    # сравнение расхода двух сторон читало один и тот же файл (а точнее — не
+    # находило ни одного) и было зелёным по построению.
+    write_usage_report(spec, collect_usage(project_id))
     paths = spec.get("paths") or {}
     Path(paths.get("result") or ".").mkdir(parents=True, exist_ok=True)
     (Path(paths.get("result") or ".") / "audit_manifest.json").write_text(

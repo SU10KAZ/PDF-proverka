@@ -50,6 +50,12 @@ from typing import Any, Callable, Optional
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
+# ДО первого импорта из `backend`: `config` при импорте зовёт `load_dotenv()`,
+# который ищет `.env` вверх по дереву и находит его в установленном
+# репозитории. Иначе продовые флаги оказываются в `os.environ` смоука и
+# наследуются процессами стенда.
+os.environ.setdefault("AUDIT_DISABLE_DOTENV", "1")
+
 PY = sys.executable or "python3"
 
 _CHECKS: list[tuple[str, bool, str]] = []
@@ -170,6 +176,12 @@ class Stand:
         self.executor: Optional[subprocess.Popen] = None
         self.extra_pids: list[int] = []
         self.cleanup: list[Callable[[], None]] = []
+        #: Снимок `git status --short` ДО прогона. Чистота дерева проверяется
+        #: разницей с ним, а не списком известных подстрок.
+        self.git_status_before: list[str] = subprocess.run(   # noqa: S603
+            ["git", "status", "--short"], cwd=str(REPO_ROOT),
+            capture_output=True, text=True, timeout=120,
+        ).stdout.splitlines()
         for path in (
             self.central_v2, self.central_legacy, self.central_data,
             self.central_app_data, self.central_workers, self.local_case,
@@ -566,7 +578,12 @@ def start_backend(stand: Stand, *, env: dict[str, str], tag: str) -> subprocess.
     log_path = stand.evidence / f"backend_{tag}.log"
     with log_path.open("ab") as fh:
         proc = subprocess.Popen(                                # noqa: S603
-            [PY, "-u", "-m", "uvicorn", "backend.app.main:app",
+            # Приложение — НАСТОЯЩЕЕ `backend.app.main:app`; модуль
+            # `center_app` только реэкспортирует объект. Разные argv нужны
+            # потому, что продовый вотчдог машины убивает всё, что совпадает с
+            # `pgrep -f "uvicorn.*backend.app.main"`: стенд, запущенный
+            # каноническим argv, умирал молча посреди прогона.
+            [PY, "-u", "-m", "uvicorn", "tests.distributed_audit_e2e.center_app:app",
              "--host", "127.0.0.1", "--port", str(stand.port), "--log-level", "warning"],
             cwd=str(REPO_ROOT), env=env, stdout=fh, stderr=subprocess.STDOUT,
             shell=False, start_new_session=True,
@@ -624,12 +641,21 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         return _finish()
     from backend.app.services.distributed_workers import semantic_projection as sp
 
+    # Каждая ось контракта берётся из СВОИХ данных этой стороны. Подставленные
+    # с обеих сторон одинаковые константы (дисциплина, хэши, финальный статус)
+    # и один и тот же файл расхода делали четыре оси сравнения зелёными по
+    # построению: расхождение по ним было недостижимо в принципе.
+    local_manifest = _read_json(
+        stand.local_case / "attempt" / "result" / "audit_manifest.json"
+    ) or {}
     local_projection = sp.collect_projection(
         version_dir=local_version_dir,
-        final_status="completed",
-        discipline_id=DISCIPLINE_SECTION,
-        discipline_profile_hash=None,
-        source_tree_hash=None,
+        final_status=_final_status_of(local_version_dir),
+        discipline_id=discipline_identity.resolve_from_version_dir(
+            local_fx.version_dir
+        ).code,
+        discipline_profile_hash=local_manifest.get("discipline_profile_hash"),
+        source_tree_hash=fx.source_tree_hash(local_fx.version_dir),
         usage_report=_read_json(
             stand.local_case / "attempt" / "usage" / "usage_report.json"
         ),
@@ -650,15 +676,33 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         json.dumps(central_env, ensure_ascii=False, indent=2, sort_keys=True),
         encoding="utf-8",
     )
-    check(not any(key in central_env for key in
-                  ("OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN")),
-          "в окружении центра нет ключей провайдеров")
+    # Утверждение проверяемое, а не тавтологичное: перечислять имена, которые
+    # сам же фильтр и удаляет, бессмысленно. Проверяется ЗНАЧЕНИЕ — ни одна
+    # переменная окружения центра не содержит секрета машины.
+    machine_secrets = {
+        value for key, value in os.environ.items()
+        if len(str(value)) >= 16 and any(
+            marker in key.upper()
+            for marker in ("API_KEY", "TOKEN", "SECRET", "PASSWORD", "OAUTH")
+        )
+    }
+    leaked_values = sorted(
+        key for key, value in central_env.items() if value in machine_secrets
+    )
+    check(not leaked_values,
+          "ни одно значение-секрет машины не попало в окружение центра",
+          f"секретов на машине {len(machine_secrets)}"
+          + (f"; просочилось: {', '.join(leaked_values)}" if leaked_values else ""))
     # Первый backend стартует С точкой остановки: рестарт центра между
     # «результат проверен» и «импорт начат» иначе не воспроизводим — окно между
     # ними доли секунды, и попадание в него по таймеру доказательством не
     # является.
     paused_env = dict(central_env)
     paused_env["AUDIT_HANDOFF_TEST_PAUSE_AT"] = "before_import"
+    from tests.distributed_audit_e2e import center_app
+
+    check(center_app.app_is_production_object(),
+          "приложение стенда — тот же объект, что отдаёт продовый main.py")
     stand.backend = start_backend(stand, env=paused_env, tag="first")
     if not check(_wait_for(lambda: backend_ready(stand), timeout=120),
                  "настоящий backend/app/main.py поднялся под uvicorn",
@@ -916,16 +960,31 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
           str(row.get("central_resume_stage")))
 
     # ── 13. Финальные артефакты и семантика ─────────────────────────────────
+    # Удалённая сторона: дисциплина — из метаданных ПРИНЯТОЙ попытки в
+    # workers.db, хэш профиля — оттуда же, расход — из отчёта, приехавшего с
+    # воркера, статус — из журнала этапов версии. Ни одна ось не берётся из
+    # локального эталона и ни одна не подставляется константой.
+    remote_payload = _job_payload(row)
     remote_projection = sp.collect_projection(
         version_dir=remote_fx.version_dir,
-        final_status="completed",
-        discipline_id=DISCIPLINE_SECTION,
-        discipline_profile_hash=None,
-        source_tree_hash=None,
-        usage_report=_read_json(
-            stand.local_case / "attempt" / "usage" / "usage_report.json"
-        ),
+        final_status=_final_status_of(remote_fx.version_dir),
+        discipline_id=remote_payload.get("discipline_id"),
+        discipline_profile_hash=remote_payload.get("discipline_profile_hash"),
+        source_tree_hash=fx.source_tree_hash(remote_fx.version_dir),
+        usage_report=_remote_usage_report(stand, row),
     )
+    check(
+        remote_projection["discipline_id"] == local_projection["discipline_id"]
+        and remote_projection["discipline_id"] == DISCIPLINE_SECTION,
+        "дисциплина обеих сторон прочитана независимо и совпала",
+        f"local={local_projection['discipline_id']!r} "
+        f"remote={remote_projection['discipline_id']!r}",
+    )
+    check((local_projection.get("usage_totals") or {}).get("calls")
+          and (remote_projection.get("usage_totals") or {}).get("calls"),
+          "расход прочитан НЕЗАВИСИМО и непуст с ОБЕИХ сторон",
+          f"local={(local_projection.get('usage_totals') or {}).get('calls')} "
+          f"remote={(remote_projection.get('usage_totals') or {}).get('calls')}")
     (stand.evidence / "remote_projection.json").write_text(
         json.dumps(remote_projection, ensure_ascii=False, indent=2), encoding="utf-8"
     )
@@ -939,8 +998,21 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
     (stand.evidence / "semantic_diff.json").write_text(
         json.dumps(diff, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    # Объём сравнения печатается всегда: «различий нет» на пустом множестве —
+    # не результат, и отличить один случай от другого можно только по числам.
+    scope = (
+        f"артефактов {len(sp.REQUIRED_ARTIFACTS)}, "
+        f"замечаний {remote_projection['findings_count']}, "
+        f"этапов {len(remote_projection.get('stage_completion') or {})}, "
+        f"md-файлов {len(remote_projection.get('markdown') or {})}, "
+        f"листов Excel {len((remote_projection.get('excel') or {}).get('sheets') or {})}"
+    )
     check(not diff, "семантическая проекция local ↔ remote совпала",
-          "; ".join(diff[:5]))
+          "; ".join(diff[:5]) if diff else scope)
+    check(remote_projection["findings_count"] > 0
+          and len(remote_projection.get("stage_completion") or {}) >= 5,
+          "сравнение было СОДЕРЖАТЕЛЬНЫМ, а не сравнением пустого с пустым",
+          scope)
 
     # ── 14. Неизменность исходников ─────────────────────────────────────────
     check(fx.source_tree_hash(remote_fx.version_dir) == source_hash_before,
@@ -969,13 +1041,29 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
     # неправдой; проверяемое утверждение другое и более сильное: настоящий CLI
     # центру НЕДОСТИЖИМ — переменные резолва указывают на подделки, а сами
     # подделки помечены маркером.
+    # Сравнивать `central_env` с константами, которые сам же скрипт туда и
+    # положил, — тавтология. Проверяется ФАКТ на диске: по каждому пути
+    # резолва лежит файл с маркером подделки, а в PATH процесса центра нет ни
+    # одного каталога, где живут настоящие CLI.
     central_calls = _read_jsonl(stand.evidence / "central_provider_calls.jsonl")
+    resolved = [central_env.get("CLAUDE_CLI_BIN", ""),
+                central_env.get("AUDIT_CODEX_CLI_PATH", "")]
+    from backend.app.pipeline.execution import fake_providers as _fp
+
+    fake_marker_ok = all(
+        Path(p).is_file() and _fp.looks_like_fake_dir(Path(p).parent)
+        for p in resolved if p
+    )
+    real_cli_dirs = [
+        d for d in central_env.get("PATH", "").split(os.pathsep)
+        if d and d != str(stand.providers)
+        and ((Path(d) / "claude").exists() or (Path(d) / "codex").exists())
+    ]
     check(
-        central_env["CLAUDE_CLI_BIN"].startswith(str(stand.providers))
-        and central_env["AUDIT_CODEX_CLI_PATH"].startswith(str(stand.providers))
-        and central_env["PATH"].split(os.pathsep)[0] == str(stand.providers),
-        "настоящий CLI недостижим и центру: резолв связан с подделками",
-        f"вызовов подделок на центре: {len(central_calls)}",
+        bool(resolved[0]) and bool(resolved[1]) and fake_marker_ok and not real_cli_dirs,
+        "настоящий CLI недостижим и центру: по путям резолва лежат подделки",
+        f"вызовов подделок на центре: {len(central_calls)}"
+        + (f"; настоящие CLI в PATH: {real_cli_dirs[:2]}" if real_cli_dirs else ""),
     )
     check(not (Path(stand.home) / ".claude").exists()
           and not (Path(stand.home) / ".codex").exists(),
@@ -986,10 +1074,12 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         ["git", "status", "--short"], cwd=str(REPO_ROOT),
         capture_output=True, text=True, timeout=120,
     ).stdout
-    junk = [line for line in dirty.splitlines()
-            if any(mark in line for mark in
-                   ("workers.db", "worker.db", ".tar.gz", "evidence", "comparison/"))]
-    check(not junk, "runtime-мусор в рабочем дереве не появился", "; ".join(junk[:3]))
+    # Сравнивается СОСТОЯНИЕ ДО и ПОСЛЕ, а не список из пяти подстрок: прогон
+    # писал в дерево `scripts/_ch_idempotency_probe.py`, и фильтр по подстрокам
+    # этого не видел — «мусора нет» означало «мусор не той формы».
+    appeared = sorted(set(dirty.splitlines()) - set(stand.git_status_before))
+    check(not appeared, "рабочее дерево git не изменилось прогоном",
+          "; ".join(appeared[:5]))
     return _finish()
 
 
@@ -1000,9 +1090,14 @@ def _idempotency_checks(stand: Stand, operator: Operator, row: dict[str, Any]) -
     на копии: идемпотентность, доказанная в вакууме, ничего не говорит о
     состоянии, которое накопил живой прогон.
     """
-    env = dict(os.environ)
+    # Окружение — стендовое, не окружение машины: проба ходит в НАСТОЯЩУЮ
+    # `workers.db` центра, и подмешивать туда ambient-переменные оператора
+    # значит проверять чужую конфигурацию. Сам файл пробы пишется в стенд:
+    # исполняемый файл в рабочем дереве git — это ровно тот «runtime-мусор»,
+    # отсутствие которого сценарий утверждает двадцатью строками ниже.
+    env = stand.base_env()
     env.update(getattr(stand, "backend_env", {}))
-    probe = REPO_ROOT / "scripts" / "_ch_idempotency_probe.py"
+    probe = stand.evidence / "idempotency_probe.py"
     payload = {
         "attempt_id": row.get("attempt_id"),
         "job_id": row.get("job_id"),
@@ -1061,6 +1156,75 @@ def _read_json(path: Path) -> dict[str, Any]:
     except (OSError, ValueError):
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _final_status_of(version_dir: Path) -> str:
+    """Исход прогона по ЖУРНАЛУ ЭТАПОВ этой стороны, а не по константе.
+
+    Сравнивать две одинаковые строки, вписанные самим сценарием, — способ
+    получить зелёную ось, по которой расхождение недостижимо.
+    """
+    log = _read_json(Path(version_dir) / "03_analysis" / "latest" / "pipeline_log.json")
+    stages = log.get("stages")
+    if not isinstance(stages, dict) or not stages:
+        return "unknown"
+    statuses = {
+        str((entry or {}).get("status")) for entry in stages.values()
+        if isinstance(entry, dict)
+    }
+    if "error" in statuses or "failed" in statuses:
+        return "failed"
+    if "running" in statuses:
+        return "running"
+    return "completed"
+
+
+def _job_payload(row: dict[str, Any]) -> dict[str, Any]:
+    """Параметры логического задания из `workers.db` (не из локального стенда).
+
+    Параметры аудита лежат внутри `payload.params` — разворачиваются здесь, а
+    не у вызывающего: `payload["discipline_id"]` молча даёт None, и сравнение
+    дисциплины двух сторон превращается в сравнение с пустотой.
+    """
+    raw = (row or {}).get("payload")
+    if isinstance(raw, dict):
+        data = raw
+    elif not raw:
+        return {}
+    else:
+        try:
+            parsed = json.loads(raw)
+        except (TypeError, ValueError):
+            return {}
+        data = parsed if isinstance(parsed, dict) else {}
+    params = data.get("params")
+    merged = dict(data)
+    if isinstance(params, dict):
+        merged.update(params)
+    return merged
+
+
+def _remote_usage_report(stand: "Stand", row: dict[str, Any]) -> dict[str, Any]:
+    """Отчёт о расходе, ПРИЕХАВШИЙ с воркера и записанный импортёром центра."""
+    raw = (row or {}).get("result_import_report")
+    report: dict[str, Any] = raw if isinstance(raw, dict) else {}
+    if not report and raw:
+        try:
+            parsed = json.loads(raw)
+            report = parsed if isinstance(parsed, dict) else {}
+        except (TypeError, ValueError):
+            report = {}
+    usage = report.get("usage_report")
+    if isinstance(usage, dict) and usage:
+        return usage
+    # Запасной источник — тот же файл, но в распакованном пакете НА ЦЕНТРЕ.
+    for path in sorted(Path(stand.root).rglob("result/usage/usage_report.json")):
+        if str(stand.local_case) in str(path):
+            continue
+        data = _read_json(path)
+        if data:
+            return data
+    return {}
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
