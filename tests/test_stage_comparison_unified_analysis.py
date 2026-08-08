@@ -620,75 +620,28 @@ def test_unified_preflight_when_enriched_ready(tmp_path, monkeypatch):
     assert pre.will_run_enrichment is False
 
 
-# 7. unified run_pair вызывает enrichment, затем compare.
+# 7. unified run_pair без enriched MD: распознавание графики удалено с
+#    платформы, поэтому пара честно падает в enriched_md_missing.
 @pytest.mark.asyncio
-async def test_unified_run_pair_runs_enrichment_then_compare(tmp_path, monkeypatch):
-    """run_pair: нет enriched MD → enrichment → ставим enriched MD руками →
-    compare запускается через mock-провайдер.
-    """
+async def test_unified_run_pair_without_enriched_md_fails_cleanly(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import unified_analysis as ua
-    from backend.app.services.stage_comparison import md_image_enrichment as md_mod
     from backend.app.services.stage_comparison import enriched_comparison as ec
-    from backend.app.services.stage_comparison.graphic_llm_local import LocalGraphicLLMConfig
 
     monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
     _make_pair("sess_run", "p1",
                left_md=_write_md(tmp_path / "L.md", "left text"),
                right_md=_write_md(tmp_path / "R.md", "right text"))
 
-    enrichment_calls = []
-
-    async def fake_enrich_side(session_id, pair_id, side, **kw):
-        enrichment_calls.append((session_id, pair_id, side, kw.get("run_model"), kw.get("force")))
-        # имитируем успешный enrichment без image-блоков
-        _write_enriched(session_id, pair_id, side, f"{side.upper()}_ENRICHED")
-        from backend.app.services.stage_comparison.md_image_enrichment import EnrichSideSummary
-        return EnrichSideSummary(
-            side=side, status="done",
-            md_path=str(kw.get("md_path") or ""),
-            md_exists=True,
-            enriched_md_path=str(md_mod.paths_mod.text_enrichment_md_path(
-                session_id, pair_id, side
-            )),
-            image_blocks=0, described=0, errors=0, pending=0,
-        )
-
-    payload = {
-        "status": "done",
-        "summary": "no changes",
-        "changes": [{
-            "id": "x", "source": "text", "type": "added",
-            "category": "general", "severity": "low",
-            "title": "demo", "summary": "demo",
-            "old_value": "", "new_value": "",
-            "construction_impact": "", "cost_impact": "none",
-            "requires_human_review": False, "confidence": 0.5,
-            "evidence_left": {}, "evidence_right": {},
-        }],
-        "warnings": [],
-    }
-
+    payload = {"status": "done", "summary": "", "changes": [], "warnings": []}
     fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
-
-    # 1) Patch md_mod.enrich_side
-    monkeypatch.setattr(md_mod, "enrich_side", fake_enrich_side)
-    # 2) Patch enriched_comparison provider lookup → возвращаем наш mock.
-    monkeypatch.setattr(
-        ec, "_REGISTRY", {"claude_code": lambda: fake_provider},
-    )
-    # _REGISTRY у нас dict[str, type]; в run_enriched_comparison делается cls() —
-    # lambda без аргументов вернёт provider. Это безопасно.
+    monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
 
     res = await ua.run_pair("sess_run", "p1", force_enrichment=False, force_compare=False)
-    assert res.status == "done", f"status={res.status} error={res.error}"
-    assert res.enrichment_status == "done"
-    assert res.comparison_status == "done"
-    assert res.changes_count == 1
-    # Enrichment был вызван для обеих сторон
-    sides_called = {c[2] for c in enrichment_calls}
-    assert sides_called == {"left", "right"}
-    # И compare-провайдер тоже был вызван
-    assert len(fake_provider.invoke_calls) == 1
+    assert res.status == "failed"
+    assert res.error == "enriched_md_missing"
+    assert res.enrichment_status == "skipped"
+    # Opus не звали — сравнивать нечего
+    assert not fake_provider.invoke_calls
 
 
 # 8. Если enriched MD есть — enrichment skipped.
@@ -705,30 +658,22 @@ async def test_unified_run_pair_skips_enrichment_if_ready(tmp_path, monkeypatch)
     _write_enriched("sess_skip", "p1", "left",  "LEFT_ENRICHED")
     _write_enriched("sess_skip", "p1", "right", "RIGHT_ENRICHED")
 
-    enrichment_calls = []
-
-    async def fake_enrich_side(*args, **kw):
-        enrichment_calls.append((args, kw))
-        raise AssertionError("enrichment should not be called when enriched MD exists")
-
     payload = {"status": "done", "summary": "", "changes": [], "warnings": []}
     fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
 
-    monkeypatch.setattr(md_mod, "enrich_side", fake_enrich_side)
     monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
 
     res = await ua.run_pair("sess_skip", "p1",
                             force_enrichment=False, force_compare=False)
     assert res.enrichment_status == "skipped"
     assert res.status == "done"
-    assert not enrichment_calls
 
 
-# 9. force_enrichment=True перезапускает enrichment.
+# 9. force_enrichment=True больше ничего не запускает: enrichment удалён,
+#    прогон идёт по уже готовым enriched MD.
 @pytest.mark.asyncio
-async def test_unified_run_pair_force_enrichment(tmp_path, monkeypatch):
+async def test_unified_run_pair_force_enrichment_is_noop(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import unified_analysis as ua
-    from backend.app.services.stage_comparison import md_image_enrichment as md_mod
     from backend.app.services.stage_comparison import enriched_comparison as ec
 
     monkeypatch.setenv("STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED", "true")
@@ -738,27 +683,13 @@ async def test_unified_run_pair_force_enrichment(tmp_path, monkeypatch):
     _write_enriched("sess_fe", "p1", "left",  "LEFT")
     _write_enriched("sess_fe", "p1", "right", "RIGHT")
 
-    enrich_count = []
-
-    async def fake_enrich_side(session_id, pair_id, side, **kw):
-        enrich_count.append(side)
-        from backend.app.services.stage_comparison.md_image_enrichment import EnrichSideSummary
-        return EnrichSideSummary(
-            side=side, status="done",
-            md_path=str(kw.get("md_path") or ""), md_exists=True,
-            enriched_md_path=str(md_mod.paths_mod.text_enrichment_md_path(
-                session_id, pair_id, side)),
-            image_blocks=0, described=0,
-        )
-
     payload = {"status": "done", "summary": "", "changes": [], "warnings": []}
     fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
-    monkeypatch.setattr(md_mod, "enrich_side", fake_enrich_side)
     monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
 
     res = await ua.run_pair("sess_fe", "p1", force_enrichment=True, force_compare=False)
-    assert res.enrichment_status == "done"
-    assert sorted(enrich_count) == ["left", "right"]
+    assert res.enrichment_status == "skipped"
+    assert res.status == "done"
 
 
 # 10. force_compare=True перезапускает comparison.
@@ -787,9 +718,6 @@ async def test_unified_run_pair_force_compare(tmp_path, monkeypatch):
     payload = {"status": "done", "summary": "NEW", "changes": [], "warnings": []}
     fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
 
-    async def fake_enrich_side(*a, **kw):
-        raise AssertionError("enrichment should be skipped")
-    monkeypatch.setattr(md_mod, "enrich_side", fake_enrich_side)
     monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
 
     res = await ua.run_pair("sess_fc", "p1",
@@ -838,10 +766,6 @@ async def test_unified_job_session_multiple_pairs(tmp_path, monkeypatch):
     payload = {"status": "done", "summary": "", "changes": [], "warnings": []}
     fake_provider = _AvailableProvider(raw_response=json.dumps(payload), status="done")
     monkeypatch.setattr(ec, "_REGISTRY", {"claude_code": lambda: fake_provider})
-
-    async def no_enrich(*a, **kw):
-        raise AssertionError("enrichment should not run (skipped)")
-    monkeypatch.setattr(md_mod, "enrich_side", no_enrich)
 
     job = jobs.create_unified_job(session_id, scope="session", confirm=True)
     assert job["status"] == "queued"
@@ -1470,17 +1394,6 @@ another image
     assert d["enrichment"]["image_blocks_right"] == 2
     # image_blocks_source = parsed_md (а не cache)
     assert d["image_blocks_source"] == "parsed_md"
-
-
-# 11. .env.example содержит рекомендованный default для MAX_TOKENS под v4_compact.
-def test_env_example_recommends_max_tokens_default():
-    from pathlib import Path
-    p = Path(__file__).resolve().parent.parent / ".env.example"
-    text = p.read_text(encoding="utf-8")
-    # Default может быть 4000 или 5500 (production-cutover 2026-05-26 под v4_compact);
-    # главное — не legacy 1800 и не вообще отсутствует.
-    assert "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=" in text
-    assert "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=1800" not in text
 
 
 # 12. Никаких live model calls (защита: дефолтное состояние pipeline disabled).

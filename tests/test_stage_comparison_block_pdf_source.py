@@ -184,17 +184,6 @@ def test_normalize_blocks_preserves_pdf_fields(tmp_path):
     assert "crop_url" not in by_id["X2"]["raw"]
 
 
-def test_enrichment_block_pdf_flag_off_by_default(monkeypatch):
-    """case 11: block-PDF source path is OFF by default → ordinary page-crop flow intact."""
-    monkeypatch.delenv("STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED", raising=False)
-    from backend.app.services.stage_comparison import md_image_enrichment as mie
-    assert mie.block_pdf_source_enabled() is False
-    # helper returns None for a block with no crop_url/image_file/pdfplumber_text
-    out = mie.resolve_block_pdf_for_enrichment(
-        "sid", "pid", "left", {"id": "B", "raw": {}}, render_target_long_side=1200)
-    assert out is None
-
-
 # ─── Source-PDF fallback for expired/404 crop_url (2026-06-06) ─────────────
 
 

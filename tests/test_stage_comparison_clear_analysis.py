@@ -25,7 +25,7 @@ import pytest
 from backend.app.services.stage_comparison import paths as paths_mod
 from backend.app.services.stage_comparison import store as store_mod
 from backend.app.services.stage_comparison import expert_review as er_mod
-from backend.app.services.stage_comparison import pipeline_queue as pq_mod
+from backend.app.services.stage_comparison import unified_analysis_jobs as uaj_mod
 from backend.app.services.stage_comparison import clear_analysis as ca_mod
 
 SID = "sess1"
@@ -47,7 +47,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setattr(store_mod, "get_session",
                         lambda s: session if s == SID else None)
     # no active jobs by default
-    monkeypatch.setattr(pq_mod, "list_jobs", lambda s: [])
+    monkeypatch.setattr(uaj_mod, "find_active_session_job", lambda s: None)
     return tmp_path
 
 
@@ -153,8 +153,8 @@ def test_8_preserves_pdf_and_enriched_md(env):
 
 def test_9_skips_pair_with_running_job(env, monkeypatch):
     p = _seed_pair("p1")
-    monkeypatch.setattr(pq_mod, "list_jobs", lambda s: [
-        {"status": "running", "items": [{"pair_id": "p1"}]}])
+    monkeypatch.setattr(uaj_mod, "find_active_session_job",
+                        lambda s: {"status": "running", "items": [{"pair_id": "p1"}]})
     out = ca_mod.clear_pairs_analysis(SID, ["p1"])
     assert out["cleared_pairs"] == 0
     assert out["skipped"] == [{"pair_id": "p1",

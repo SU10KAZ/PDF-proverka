@@ -393,51 +393,6 @@ def test_disabled_by_default():
     assert cfg.skip_qwen is False
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-# Integration: observe-mode hook in md_enrichment_jobs (no Qwen needed)
-# ═══════════════════════════════════════════════════════════════════════════
-
-
-@pytest.mark.asyncio
-async def test_job_hook_attaches_diagnostics_when_enabled(monkeypatch):
-    from backend.app.services.stage_comparison import md_enrichment_jobs as mdj
-
-    monkeypatch.setenv("STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED", "true")
-    monkeypatch.setenv("STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_MODE", "observe")
-
-    store: dict[str, dict] = {}
-
-    def fake_read(_sid, _jid):
-        return store.get("job")
-
-    def fake_write(_sid, job):
-        store["job"] = job
-
-    calls: list[str] = []
-
-    def fake_precheck(_sid, pid, *, cfg=None):
-        calls.append(pid)
-        return {"enabled": True, "mode": "observe", "skip_qwen": False,
-                "potential_qwen_saved": 0, "identical_text": 0}
-
-    monkeypatch.setattr(mdj, "_read_job", fake_read)
-    monkeypatch.setattr(mdj, "_write_job", fake_write)
-    monkeypatch.setattr(mdj.block_eq_mod, "run_pair_precheck", fake_precheck)
-
-    job = {"id": "j1", "status": "running", "items": [
-        {"pair_id": "pA", "side": "left"}, {"pair_id": "pA", "side": "right"},
-        {"pair_id": "pB", "side": "left"}]}
-    store["job"] = job
-
-    await mdj._maybe_run_block_equivalence_precheck("sid", "j1", job)
-
-    # distinct pairs only, each prechecked once
-    assert calls == ["pA", "pB"]
-    assert job["block_equivalence"]["mode"] == "observe"
-    assert job["block_equivalence"]["skip_qwen"] is False
-    assert set(job["block_equivalence"]["pairs"]) == {"pA", "pB"}
-
-
 def test_page_pairs_from_alignment_nested_and_flat(monkeypatch):
     from backend.app.services.stage_comparison import store as store_mod
     # store.get_alignment вкладывает items в ключ "alignment"
@@ -455,44 +410,6 @@ def test_page_pairs_from_alignment_nested_and_flat(monkeypatch):
     # ошибка → None (identity fallback)
     monkeypatch.setattr(store_mod, "get_alignment", lambda s, p: (_ for _ in ()).throw(RuntimeError()))
     assert be._page_pairs_from_alignment("s", "p") is None
-
-
-@pytest.mark.asyncio
-async def test_job_hook_noop_when_disabled(monkeypatch):
-    from backend.app.services.stage_comparison import md_enrichment_jobs as mdj
-
-    monkeypatch.setenv("STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED", "false")
-    called = {"n": 0}
-
-    def fake_precheck(*a, **k):
-        called["n"] += 1
-        return {}
-
-    monkeypatch.setattr(mdj.block_eq_mod, "run_pair_precheck", fake_precheck)
-    job = {"id": "j1", "status": "running", "items": [{"pair_id": "pA", "side": "left"}]}
-    await mdj._maybe_run_block_equivalence_precheck("sid", "j1", job)
-    assert called["n"] == 0
-    assert "block_equivalence" not in job
-
-
-@pytest.mark.asyncio
-async def test_job_hook_failsoft_on_precheck_error(monkeypatch):
-    from backend.app.services.stage_comparison import md_enrichment_jobs as mdj
-
-    monkeypatch.setenv("STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED", "true")
-    store: dict[str, dict] = {}
-    monkeypatch.setattr(mdj, "_read_job", lambda *a: store.get("job"))
-    monkeypatch.setattr(mdj, "_write_job", lambda _s, j: store.__setitem__("job", j))
-
-    def boom(*a, **k):
-        raise RuntimeError("precheck blew up")
-
-    monkeypatch.setattr(mdj.block_eq_mod, "run_pair_precheck", boom)
-    job = {"id": "j1", "status": "running", "items": [{"pair_id": "pA", "side": "left"}]}
-    store["job"] = job
-    # must not raise — observe never breaks enrichment
-    await mdj._maybe_run_block_equivalence_precheck("sid", "j1", job)
-    assert "block_equivalence" not in job  # no results → not attached
 
 
 def test_text_pair_report_identical_is_skip_candidate():

@@ -16,10 +16,11 @@ NO network and NO LLM calls anywhere in this file.
 """
 from __future__ import annotations
 
+import copy
+
 import pytest
 
 from backend.app.services.stage_comparison import graphic_profiles as gp
-from backend.app.services.stage_comparison import grsh_feeder_extraction as gfe
 from backend.app.services.stage_comparison import block_pdf_source as bps
 
 
@@ -99,21 +100,118 @@ def test_all_eight_plus_general_profiles_have_field_groups():
 # ─── case 5 + 7: electrical_singleline structured output + field_state ─────
 
 
+# Статическая фикстура page-level merge: раньше строилась через
+# grsh_feeder_extraction.merge_tile_feeders (модуль удалён вместе с локальными
+# LLM-мощностями). Значения зафиксированы с последнего живого прогона — профиль
+# electrical_singleline и field_state тестируются по тому же входу.
+MERGED_FIXTURE = {
+    "sheet_kind": "grsh_singleline",
+    "feeders": [
+        {
+            "consumer": "ВРУ1",
+            "designation": "ГРЩ1-РП1-1",
+            "designation_norm": "ГРЩ1-РП1-1",
+            "source_panel": None,
+            "breaker": "1QF1",
+            "breaker_rating": "3P 800A",
+            "breaking_capacity": None,
+            "cable_mark": "ППГнг(А)-HF",
+            "cable_section": "5х150",
+            "p_calc_kw": 449.3,
+            "i_calc_a": 717.3,
+            "ct_ratio": None,
+            "metering": None,
+            "field_state": {},
+            "_tiles": [
+                "r0_c0"
+            ],
+            "anchor_status": "verified"
+        },
+        {
+            "consumer": "ВРУ4",
+            "designation": "ГРЩ1-РП1-4",
+            "designation_norm": "ГРЩ1-РП1-4",
+            "source_panel": None,
+            "breaker": None,
+            "breaker_rating": "630A",
+            "breaking_capacity": None,
+            "cable_mark": None,
+            "cable_section": None,
+            "p_calc_kw": None,
+            "i_calc_a": None,
+            "ct_ratio": None,
+            "metering": None,
+            "field_state": {},
+            "_tiles": [
+                "r0_c0"
+            ],
+            "anchor_status": "verified"
+        },
+        {
+            "consumer": "ПРИЗРАК",
+            "designation": "ВЫДУМКА-9",
+            "designation_norm": "ВЫДУМКА-9",
+            "source_panel": None,
+            "breaker": None,
+            "breaker_rating": None,
+            "breaking_capacity": None,
+            "cable_mark": None,
+            "cable_section": None,
+            "p_calc_kw": None,
+            "i_calc_a": None,
+            "ct_ratio": None,
+            "metering": None,
+            "field_state": {},
+            "_tiles": [
+                "r0_c0"
+            ],
+            "anchor_status": "visual_unverified"
+        }
+    ],
+    "connections": [
+        {
+            "from": "ТП1",
+            "to": "ГРЩ1 РП1"
+        }
+    ],
+    "equipment": [
+        {
+            "name": "ГЗШ",
+            "kind": "earthing",
+            "detail": "шина заземления"
+        },
+        {
+            "name": "АУКРМ №1",
+            "kind": "compensation",
+            "detail": "200 кВАр"
+        }
+    ],
+    "diagnostics": {
+        "chandra_expected_designations": 2,
+        "chandra_expected_consumers": 2,
+        "feeders_extracted": 3,
+        "designation_recall": 1.0,
+        "consumer_recall": 1.0,
+        "matched_consumers": [
+            "ВРУ1",
+            "ВРУ4"
+        ],
+        "missing_consumers": [],
+        "missing_text_layer_anchors": [],
+        "rejected_artificial_series": [
+            "ВЫДУМКА-9"
+        ],
+        "connections_count": 1,
+        "equipment_count": 2,
+        "tile_failures": 0,
+        "raw_feeder_rows": 3,
+        "meets_min_recall": True
+    }
+}
+
+
 def _synthetic_merged():
-    anchors = gfe.extract_text_layer_anchors("ВРУ1 ГРЩ1-РП1-1 ВРУ4 ГРЩ1-РП1-4")
-    tile_results = {"render_size": [100, 100], "n_tiles": 1, "tiles": [
-        {"tile_id": "r0_c0", "status": "done", "parsed": {"feeders": [
-            {"consumer": "ВРУ1", "designation": "ГРЩ1-РП1-1", "breaker": "1QF1",
-             "breaker_rating": "3P 800A", "cable_mark": "ППГнг(А)-HF", "cable_section": "5х150",
-             "p_calc_kw": 449.3, "i_calc_a": 717.3},
-            {"consumer": "ВРУ4", "designation": "ГРЩ1-РП1-4", "breaker_rating": "630A"},
-            # visual-only feeder NOT in anchors → visual_unverified, must be kept
-            {"consumer": "ПРИЗРАК", "designation": "ВЫДУМКА-9"},
-        ], "connections": [{"from": "ТП1", "to": "ГРЩ1 РП1"}],
-            "equipment": [{"name": "ГЗШ", "kind": "earthing", "detail": "шина заземления"},
-                          {"name": "АУКРМ №1", "kind": "compensation", "detail": "200 кВАр"}]}},
-    ]}
-    return gfe.merge_tile_feeders(tile_results, anchors)
+    return copy.deepcopy(MERGED_FIXTURE)
 
 
 def test_electrical_singleline_structured_first_profile():

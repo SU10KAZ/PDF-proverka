@@ -343,22 +343,20 @@ def test_v2_unknown_pair_404(session_with_two_pairs):
     assert r.status_code == 404
 
 
-# ─── 11. Никаких Qwen/Opus вызовов ───────────────────────────────────────
+# ─── 11. Никаких Opus-вызовов ────────────────────────────────────────────
 
 
 def test_v2_does_not_invoke_llm_providers(session_with_two_pairs, monkeypatch):
-    """V2 read-only: ни локальный Qwen, ни Opus-provider не дёргаются."""
+    """V2 read-only: Opus-provider не дёргается."""
     s = session_with_two_pairs
 
     from backend.app.services.stage_comparison import enriched_comparison as ec
-    from backend.app.services.stage_comparison import graphic_llm_local as gl
 
     def _boom(*a, **k):
         raise AssertionError("LLM provider must NOT be called by V2 read flow")
 
-    # Любая попытка реально сравнить/описать через модель = провал теста.
+    # Любая попытка реально сравнить через модель = провал теста.
     monkeypatch.setattr(ec, "run_enriched_comparison", _boom, raising=False)
-    monkeypatch.setattr(gl, "describe_image_local", _boom, raising=False)
 
     client = _client()
     assert client.get(f"{_v2_base(s['sid'], s['p1'])}/changes").status_code == 200
@@ -665,13 +663,11 @@ def test_ui_no_column_shows_source_and_cost_direction():
 def test_v2_impact_filter_no_llm(session_mixed_impact, monkeypatch):
     s = session_mixed_impact
     from backend.app.services.stage_comparison import enriched_comparison as ec
-    from backend.app.services.stage_comparison import graphic_llm_local as gl
 
     def _boom(*a, **k):
         raise AssertionError("LLM must NOT be called by V2 impact filter")
 
     monkeypatch.setattr(ec, "run_enriched_comparison", _boom, raising=False)
-    monkeypatch.setattr(gl, "describe_image_local", _boom, raising=False)
     client = _client()
     assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes").status_code == 200
     assert client.get(f"{_v2_base(s['sid'], s['pid'])}/changes?include_excluded=true").status_code == 200

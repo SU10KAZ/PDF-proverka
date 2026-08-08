@@ -21,11 +21,11 @@ project-root/
   # CLI wrappers (остаются в корне для совместимости)
   process_project.py     ← подготовка проекта
   blocks.py              ← crop/batches/merge блоков
-  gemma_enrich.py        ← Gemma OCR enrichment
+  gemma_enrich.py        ← legacy-алиас подготовки контекста блоков
   generate_excel_report.py ← Excel-отчёт
   graph_builder.py       ← builder для document graph
   block_markdown.py      ← парсер MD-блоков
-  gemma_enrichment_contract.py ← контракт Gemma
+  gemma_enrichment_contract.py ← контракт артефактов блоков
   gemma_findings_only.py ← Stage 02 findings
 ```
 
@@ -76,8 +76,6 @@ backend/
         discussions.py   ← /api/discussions/*
         knowledge_base.py← /api/knowledge_base/*
         objects.py       ← /api/objects/*
-        model_control.py ← /api/model-control/*
-        lms.py           ← /api/lms/*
     models/              ← Pydantic-модели (audit, findings, project, usage и др.)
     schemas/             ← JSON Schemas для structured output LLM
     ws/
@@ -98,9 +96,6 @@ backend/
         claude_runner.py    ← Claude CLI runner
         gemini_direct_runner.py ← прямой Gemini API
         openrouter_block_batch.py ← Stage 02 batch (OR)
-        lms_service.py      ← LM Studio API
-        lmstudio_lifecycle_service.py ← lifecycle (unload/reload)
-        model_control_service.py ← управление моделями из UI
       findings/          ← Сервисы замечаний
         findings_service.py  ← CRUD + enrichment замечаний
         finding_quality.py   ← оценка качества
@@ -119,14 +114,14 @@ backend/
         prepare/         ← Этап 00: подготовка проекта
           process_project.py   ← построение document_graph.json
           graph_builder.py     ← Document Knowledge Graph
-          prepare_service.py   ← queue для crop + Gemma enrichment
+          prepare_service.py   ← queue для crop + контекста блоков
           task_builder.py      ← builder задач для Claude
           prompt_builder.py    ← builder промптов
         crop_blocks/     ← Этап: кропинг блоков
           blocks.py            ← crop/batches/merge/recrop
           block_markdown.py    ← парсер MD-блоков
-        gemma_enrichment/← Этап: Gemma OCR enrichment
-          gemma_enrich.py           ← base 100 DPI + high-detail 300 DPI
+        gemma_enrichment/← Этап: legacy-алиас подготовки контекста блоков
+          gemma_enrich.py           ← делегирует block_context
           gemma_enrichment_contract.py ← контракт (профили, маркеры, summary)
           gemma_gate.py             ← gate readiness validation
         block_analysis/  ← Этап 02: визуальный анализ блоков
