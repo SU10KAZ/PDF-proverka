@@ -697,3 +697,216 @@ class TestResultPackage:
             assert not entry["path"].endswith(".py")
             assert not entry["path"].endswith(".env")
             assert not entry["path"].startswith("/")
+
+
+# ═══ 21.7. Находки адверсариальных проверок ═════════════════════════════════
+class TestAdversarialFindings:
+    """Каждый тест закрепляет ПОДТВЕРЖДЁННУЮ находку, а не гипотезу."""
+
+    def test_layout_2_requires_v2_primary_write_mode(self):
+        """Проверка 1: раскладка 2 резолвится ТОЛЬКО в projects_v2_primary.
+
+        В `legacy`/`dual_write_shadow` `_resolve_job_paths` уходит в legacy-ветку,
+        а `resolve_project_dir` без `must_exist` возвращает ФАНТОМНЫЙ путь — и
+        прогон падает часами позже как «нет PDF».
+        """
+        for mode in ("legacy", "dual_write_shadow"):
+            snap = _snapshot(projects_v2_write_mode=mode)
+            with pytest.raises(runtime_config.RuntimeConfigError, match="projects_v2_primary"):
+                runtime_config.assert_compatible(
+                    snap, supported_profiles=("remote_audit_pilot_v1",),
+                    supported_layout_versions=frozenset({2}), allow_real_llm=False)
+        runtime_config.assert_compatible(
+            _snapshot(), supported_profiles=("remote_audit_pilot_v1",),
+            supported_layout_versions=frozenset({2}), allow_real_llm=False)
+
+    @pytest.mark.parametrize("payload,expected_key", [
+        ({"sources": ["/home/coder/secret.pdf"]}, "sources[0]"),
+        ({"a": [{"b": ["/root/.ssh/id_rsa"]}]}, "a[0].b[0]"),
+        ({"legacy_path": "/home/coder/x"}, "legacy_path"),
+    ])
+    def test_sanitizer_sees_every_string_node(self, payload, expected_key):
+        """Проверка 1: раньше проверялись только ПРЯМЫЕ значения словаря."""
+        _out, cleared = project_package.sanitize_metadata_blob(
+            json.dumps(payload, ensure_ascii=False).encode("utf-8"), source="t")
+        assert cleared == [f"t:{expected_key}"]
+
+    def test_sanitizer_keeps_engineering_data(self):
+        _out, cleared = project_package.sanitize_metadata_blob(
+            json.dumps({"power_kw": 12.5, "name": "ЩР-1"}).encode("utf-8"), source="t")
+        assert cleared == []
+
+    def test_write_guard_covers_pathlib_and_io(self, tmp_path):
+        """Проверка 2 (HIGH): `Path.write_text` — доминирующий примитив записи.
+
+        Сторож ловил только `builtins.open`, а `pathlib` зовёт `io.open` —
+        ОТДЕЛЬНУЮ ссылку на ту же функцию. Самопроверка при этом проходила,
+        потому что пробовала ровно тот примитив, который перехвачен.
+        """
+        from tests.distributed_audit_e2e import isolation
+
+        isolation.install_netguard(tmp_path / "g")
+        allowed = tmp_path / "allowed"
+        allowed.mkdir()
+        env = {"PATH": os.environ.get("PATH", ""),
+               "PYTHONPATH": str(tmp_path / "g"),
+               "E2E_WRITEGUARD": "1",
+               "E2E_WRITEGUARD_LOG": str(tmp_path / "wg.log"),
+               "E2E_WRITEGUARD_ALLOW": str(allowed)}
+        outside = tmp_path / "escape.txt"
+        for code in (
+            "from pathlib import Path; Path(%r).write_text('x')" % str(outside),
+            "from pathlib import Path; Path(%r).open('w').write('x')" % str(outside),
+            "import io; io.open(%r,'w').write('x')" % str(outside),
+            "open(%r,'w').write('x')" % str(outside),
+        ):
+            proc = subprocess.run(                              # noqa: S603
+                [sys.executable, "-c", code], env=env,
+                capture_output=True, timeout=120)
+            assert proc.returncode == 96, code
+            assert not outside.exists()
+        ok = subprocess.run(                                    # noqa: S603
+            [sys.executable, "-c",
+             "from pathlib import Path; Path(%r).write_text('x')" % str(allowed / "ok")],
+            env=env, capture_output=True, timeout=120)
+        assert ok.returncode == 0, "сторож ломает разрешённую запись"
+
+    def test_dotenv_kill_switch_covers_every_call_site(self):
+        """Проверка 2: второй, негейтованный `load_dotenv` в model_control."""
+        source = (REPO_ROOT / "backend" / "app" / "services" / "llm"
+                  / "model_control_service.py").read_text(encoding="utf-8")
+        assert "AUDIT_DISABLE_DOTENV" in source
+        # Разбор AST, а не текстовый поиск: `load_dotenv()` встречается и в
+        # docstring'ах, и такой тест ловил бы упоминание вместо вызова.
+        import ast
+
+        offenders = []
+        for path in (REPO_ROOT / "backend").rglob("*.py"):
+            if "tests" in path.parts or "scripts" in path.parts:
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            try:
+                tree = ast.parse(text)
+            except SyntaxError:
+                continue
+            calls = [
+                node for node in ast.walk(tree)
+                if isinstance(node, ast.Call)
+                and getattr(node.func, "id", getattr(node.func, "attr", ""))
+                == "load_dotenv"
+            ]
+            if calls and "AUDIT_DISABLE_DOTENV" not in text:
+                offenders.append(str(path.relative_to(REPO_ROOT)))
+        assert not offenders, offenders
+
+    def test_en_prompts_follow_the_verified_snapshot(self):
+        """Проверка 2 (HIGH): текст в модель брался из УСТАНОВЛЕННОГО кода.
+
+        `verify_snapshot` сверял `prompt_bundle_hash` и рапортовал совпадение,
+        которого для английской половины шаблонов не было.
+        """
+        from backend.app.core import config
+        from backend.app.pipeline.stages.prepare import task_builder
+
+        assert task_builder._EN_DIR == Path(config.PROMPTS_DIR) / "pipeline" / "en"
+        # И они действительно попадают в снимок, чей хэш сверяется.
+        snapshot = project_package.collect_prompt_snapshot(Path(config.PROMPTS_DIR))
+        assert any(name.startswith("prompts/pipeline/en/") for name in snapshot)
+
+    def test_snapshot_provider_mode_beats_worker_spec(self, tmp_path, monkeypatch):
+        """Проверка 2: режим провайдеров из снимка ОБЯЗЫВАЕТ.
+
+        Воркер с `AUDIT_WORKER_ALLOW_REAL_LLM=true` мог исполнить настоящими
+        моделями задание, заказанное как `fake`, — а в манифест уехало бы
+        `provider_mode` из снимка, то есть «fake».
+        """
+        from backend.app.pipeline import remote_audit_runner
+
+        job_dir = tmp_path / "job"
+        (job_dir / "runtime").mkdir(parents=True)
+        (job_dir / "metadata").mkdir(parents=True)
+        snap = _snapshot(provider_mode="fake")
+        (job_dir / "runtime" / "runtime_config.json").write_bytes(snap.to_package_bytes())
+        monkeypatch.setenv("AUDIT_PROJECTS_V2_WRITE_MODE", "legacy")
+        spec = {
+            "paths": {"runtime": str(job_dir / "runtime"),
+                      "metadata": str(job_dir / "metadata")},
+            "runtime_snapshot_hash": snap.snapshot_hash(),
+            "provider_mode": "real",          # воркер заявил настоящие модели
+            "allow_real_llm": True,
+        }
+        evidence = remote_audit_runner.apply_runtime_snapshot(spec)
+        assert spec["provider_mode"] == "fake", "снимок не переопределил режим"
+        assert evidence["provider_mode_forced_by_snapshot"] is True
+        assert evidence["applied_write_mode"] == "projects_v2_primary"
+
+    def test_spec_paths_are_contained(self, tmp_path):
+        """Проверка 2: проверялся только `paths.project`."""
+        from audit_worker import audit_runner as ar
+        from backend.app.pipeline import remote_audit_runner
+
+        job_dir = tmp_path / "jobs" / "j" / "a"
+        (job_dir / "project" / "objects").mkdir(parents=True)
+        env = ar.isolated_roots(job_dir)
+        for name, value in env.items():
+            os.environ[name] = str(value)
+        try:
+            spec = {"paths": {"project": str(job_dir / "project"),
+                              "result": "/tmp/наружу"}}
+            with pytest.raises(SystemExit, match="paths.result"):
+                remote_audit_runner.apply_runtime_paths(spec)
+        finally:
+            for name in env:
+                os.environ.pop(name, None)
+
+    def test_forbidden_stage_check_ignores_inherited_central_status(self, tmp_path):
+        """Проверка 4 (HIGH): `pipeline_log.json` НАКОПИТЕЛЬНЫЙ.
+
+        У версии, которую центр уже аудировал, там лежит `norm_verify: done` с
+        прошлого раза — и безупречный многочасовой прогон обвинялся в том, что
+        сделал центр месяцем раньше.
+        """
+        from backend.app.pipeline import remote_audit_runner
+
+        work = tmp_path / "work"
+        work.mkdir()
+        (work / "pipeline_log.json").write_text(json.dumps({"stages": {
+            "findings_merge": {"status": "done"},
+            "norm_verify": {"status": "done"},      # приехало из пакета
+        }}), encoding="utf-8")
+        inherited = {"norm_verify": "done"}
+        history = remote_audit_runner.audit_stage_history(
+            {"paths": {"work": str(work)}}, before=inherited)
+        assert history["violations"] == []
+        assert set(history["forbidden_stages_not_run"]) == set(
+            remote_audit_runner.FORBIDDEN_STAGES)
+        assert history["completed_stages"] == ["findings_merge"]
+
+    def test_forbidden_stage_check_still_catches_a_fresh_run(self, tmp_path):
+        from backend.app.pipeline import remote_audit_runner
+
+        work = tmp_path / "work"
+        work.mkdir()
+        (work / "pipeline_log.json").write_text(json.dumps({"stages": {
+            "norm_verify": {"status": "done"},
+        }}), encoding="utf-8")
+        history = remote_audit_runner.audit_stage_history(
+            {"paths": {"work": str(work)}}, before={"norm_verify": "deferred"})
+        assert history["violations"] == ["norm_verify=done"]
+
+    def test_result_manifest_measures_absolute_paths(self, tmp_path):
+        """Проверка 4: поле утверждало False безусловно."""
+        job_dir = tmp_path / "job"
+        for name in ("result", "work", "usage", "logs"):
+            (job_dir / name).mkdir(parents=True)
+        (job_dir / "result" / "03_findings.json").write_text(
+            json.dumps({"artifacts_dir": str(job_dir / "work")}), encoding="utf-8")
+        manifest = package_io.build_result_package(
+            dest_path=job_dir / "result" / "r.tar.gz", job_dir=job_dir,
+            job_id="j", attempt_id="a", project_id="p", version_id="v001",
+            worker_id="w", worker_version="1", protocol_version=1,
+            manifest_version=1, job_type="test_pipeline_v1")
+        assert manifest["path_rules"]["absolute_paths_present"] is True
+        assert manifest["path_rules"]["absolute_path_files"]
+        # И «не измерялось» отличается от «измерено и ноль».
+        assert manifest["external_network_attempts"] is None

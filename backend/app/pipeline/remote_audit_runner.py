@@ -160,6 +160,21 @@ def apply_runtime_paths(spec: dict[str, Any]) -> None:
             raise SystemExit(
                 f"{name}={value} указывает вне каталога попытки {job_dir}"
             )
+    # Остальные пути спеки тоже пишутся конвейером, и проверялись только
+    # `project`. Смысл функции — «процесс, запущенный руками с неполным
+    # окружением, не должен писать в чужие каталоги»; для env-корней это
+    # выполнялось, для путей спеки — нет.
+    for name in ("result", "work", "usage", "metadata", "snapshot", "runtime",
+                 "logs", "comparison"):
+        raw = paths.get(name)
+        if not raw:
+            continue
+        resolved = Path(raw).resolve()
+        if job_dir not in resolved.parents and resolved != job_dir:
+            raise SystemExit(
+                f"paths.{name}={raw} указывает вне каталога попытки {job_dir}"
+            )
+
     # ROOT_DIR/BASE_DIR воркер не выставляет, а `.env` мог бы — после
     # AUDIT_DISABLE_DOTENV не может, но проверка дешёвая и явная.
     for name in ("AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
@@ -229,8 +244,20 @@ def apply_runtime_snapshot(spec: dict[str, Any]) -> dict[str, Any]:
             f"{snapshot.projects_v2_write_mode!r}, фасад видит {applied!r}"
         )
 
+    # Режим провайдеров — тоже часть снимка, и он ОБЯЗЫВАЕТ. Раньше подделки
+    # включались только по спеке, которую пишет сам воркер: воркер с
+    # `AUDIT_WORKER_ALLOW_REAL_LLM=true` мог выполнить задание, заказанное как
+    # `fake`, настоящими моделями — а в манифест результата уехало бы
+    # `provider_mode` из снимка, то есть «fake». Ужесточение одностороннее:
+    # снимок может потребовать подделок, но не может потребовать настоящих.
+    if snapshot.provider_mode == "fake" and str(spec.get("provider_mode")) != "fake":
+        spec["provider_mode"] = "fake"
+
     evidence = runtime_config.describe_applied(snapshot, applied_write_mode=applied)
     evidence["host_write_mode_overridden"] = host_value
+    evidence["provider_mode_forced_by_snapshot"] = (
+        snapshot.provider_mode == "fake"
+    )
     metadata_dir = Path(paths.get("metadata") or runtime_dir)
     metadata_dir.mkdir(parents=True, exist_ok=True)
     (metadata_dir / "applied_runtime_config.json").write_text(

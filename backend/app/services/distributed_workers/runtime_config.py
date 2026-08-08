@@ -263,6 +263,21 @@ def assert_compatible(
         )
     if snapshot.include_norms is not False:
         raise RuntimeConfigError("include_norms=true недопустим на воркере")
+    # Переносимая раскладка 2 резолвится ТОЛЬКО через `resolve_v2_job_paths`,
+    # то есть только в режиме `projects_v2_primary`. В двух других режимах
+    # `_resolve_job_paths` уходит в legacy-ветку, а `resolve_project_dir` без
+    # `must_exist` возвращает ФАНТОМНЫЙ путь вместо ошибки — и прогон падает
+    # часами позже как «нет PDF», а не как «проекта нет в пакете».
+    # Класс дефекта в этом репозитории известен и повторялся трижды.
+    if snapshot.project_layout_version >= 2 and (
+        snapshot.projects_v2_write_mode != "projects_v2_primary"
+    ):
+        raise RuntimeConfigError(
+            f"Раскладка {snapshot.project_layout_version} требует режима записи "
+            f"'projects_v2_primary', а снимок объявляет "
+            f"{snapshot.projects_v2_write_mode!r}: переносимое дерево в этом "
+            "режиме не резолвится вовсе"
+        )
     if snapshot.provider_mode == "real" and not allow_real_llm:
         raise RuntimeConfigError(
             "Снимок требует настоящих провайдеров, а воркер их не разрешает "

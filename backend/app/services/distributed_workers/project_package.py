@@ -328,7 +328,17 @@ def sanitize_metadata_blob(raw: bytes, *, source: str) -> tuple[bytes, list[str]
         return raw, []
     cleared: list[str] = []
 
-    def walk(node: Any, path: str) -> Any:
+    def _is_host_path(value: Any) -> bool:
+        return isinstance(value, str) and value.startswith("/") and len(value) > 1
+
+    def walk(node: Any, path: str, *, key_name: str = "") -> Any:
+        """Проверяется КАЖДЫЙ строковый узел, где бы он ни лежал.
+
+        Прежняя версия смотрела только на ПРЯМЫЕ значения словаря, поэтому
+        `{"sources": ["/home/coder/…"]}` и вложенные структуры проходили
+        насквозь — а манифест при этом честно сообщал `cleared_absolute_paths: []`,
+        то есть измерением не был.
+        """
         if isinstance(node, dict):
             out: dict[str, Any] = {}
             for key, value in node.items():
@@ -337,14 +347,13 @@ def sanitize_metadata_blob(raw: bytes, *, source: str) -> tuple[bytes, list[str]
                     cleared.append(f"{source}:{where}")
                     out[key] = None
                     continue
-                if isinstance(value, str) and value.startswith("/") and len(value) > 1:
-                    cleared.append(f"{source}:{where}")
-                    out[key] = None
-                    continue
-                out[key] = walk(value, where)
+                out[key] = walk(value, where, key_name=str(key))
             return out
         if isinstance(node, list):
             return [walk(item, f"{path}[{i}]") for i, item in enumerate(node)]
+        if _is_host_path(node):
+            cleared.append(f"{source}:{path}")
+            return None
         return node
 
     if not cleared and not isinstance(data, (dict, list)):

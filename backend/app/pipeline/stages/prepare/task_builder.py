@@ -25,7 +25,7 @@ from backend.app.pipeline.stages.optimization.prescan import build_optimization_
 logger = logging.getLogger(__name__)
 
 from backend.app.core.config import (
-    BASE_DIR, PROJECTS_DIR,
+    BASE_DIR, PROJECTS_DIR, PROMPTS_DIR,
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE, NORM_REQUOTE_TASK_TEMPLATE,
     OPTIMIZATION_NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
@@ -106,7 +106,13 @@ def _version_project_dir(project_id: str) -> Path:
 
 # ─── Dual-language templates (RU/EN) ───
 
-_EN_DIR = BASE_DIR / "prompts" / "pipeline" / "en"
+# Якорь — PROMPTS_DIR, а не BASE_DIR. На центре это тот же путь
+# (`DATA_DIR` по умолчанию равен `ROOT_DIR`), поэтому поведение не меняется. На
+# воркере разница решающая: `AUDIT_PROMPTS_DIR` указывает на СНИМОК промптов из
+# пакета, чей хэш центр сверяет. С прежним якорем текст, уходящий в модель,
+# брался из установленного кода воркера — то есть `verify_snapshot` рапортовал
+# о совпадении промптов, которого не было.
+_EN_DIR = PROMPTS_DIR / "pipeline" / "en"
 _SYNC_FILE = _EN_DIR / "_sync.json"
 
 # Полный маппинг ВСЕХ шаблонов (включая critic/corrector/norm)

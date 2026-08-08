@@ -22,6 +22,12 @@ from backend.app.core.config import ROOT_DIR
 
 
 def _load_env() -> None:
+    # Тот же kill-switch, что и в config.py. Без него запрет `.env` был
+    # свойством ОДНОЙ точки вызова, а не процесса: один импорт этого модуля
+    # возвращал в окружение конвейера ключи платных провайдеров и
+    # PAID_API_ENABLED, которые белый список воркера намеренно не пропускал.
+    if os.environ.get("AUDIT_DISABLE_DOTENV", "").strip().lower() in ("1", "true", "yes"):
+        return
     load_dotenv(ROOT_DIR / ".env")
 
 

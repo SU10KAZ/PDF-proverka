@@ -512,6 +512,21 @@ def build_result_package(
 
     # Сканирование СОДЕРЖИМОГО на абсолютные пути хоста. Дёшево (артефакты —
     # JSON), и превращает поле манифеста из обещания в измерение.
+    # Маркеры выводятся из ФАКТИЧЕСКОГО каталога попытки, а не из фиксированного
+    # списка `/home,/var,/opt,…`: воркер с корнем `/data` или `/mnt` проходил бы
+    # проверку, продолжая утекать. Список остаётся как дополнение — он ловит
+    # чужие пути, а не только свои.
+    attempt_prefix = str(Path(job_dir).resolve())
+    markers = [attempt_prefix]
+    for parent in Path(attempt_prefix).parents:
+        text_parent = str(parent)
+        if text_parent in ("/", ""):
+            break
+        markers.append(text_parent)
+        if len(markers) >= 4:
+            break
+    markers += ["/home/", "/var/", "/opt/", "/tmp/", "/root/", "/srv/", "/mnt/", "/data/"]
+
     absolute_path_hits: list[str] = []
     for rel, data in sorted(files.items()):
         if not rel.endswith((".json", ".jsonl", ".txt", ".md")):
@@ -520,11 +535,10 @@ def build_result_package(
             text = data.decode("utf-8")
         except UnicodeDecodeError:
             continue
-        if '"/' in text or "'/" in text.replace("'/'", ""):
-            for marker in ('"/home/', '"/var/', '"/opt/', '"/tmp/', '"/root/', '"/srv/'):
-                if marker in text:
-                    absolute_path_hits.append(rel)
-                    break
+        for marker in markers:
+            if marker and marker in text:
+                absolute_path_hits.append(rel)
+                break
 
     entries = []
     uncompressed = 0

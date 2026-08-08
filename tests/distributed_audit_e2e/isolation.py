@@ -189,17 +189,6 @@ if _WRITEGUARD_ARMED and _WRITEGUARD_ALLOW:
     _wg_real_link = os.link
     _wg_real_symlink = os.symlink
 
-    def _wg_open(file, mode="r", *args, **kwargs):
-        if any(ch in str(mode) for ch in ("w", "a", "x", "+")):
-            if not _wg_allowed(file):
-                _wg_deny("open:" + str(mode), _wg_abs(file))
-        return _wg_real_open(file, mode, *args, **kwargs)
-
-    def _wg_os_open(path, flags, *args, **kwargs):
-        if flags & _W_FLAGS and not _wg_allowed(path):
-            _wg_deny("os.open", _wg_abs(path))
-        return _wg_real_os_open(path, flags, *args, **kwargs)
-
     def _wg_unary(name, real):
         def guarded(path, *args, **kwargs):
             if not _wg_allowed(path):
@@ -214,7 +203,54 @@ if _WRITEGUARD_ARMED and _WRITEGUARD_ALLOW:
             return real(src, dst, *args, **kwargs)
         return guarded
 
+    def _wg_open(file, mode="r", *args, **kwargs):
+        if any(ch in str(mode) for ch in ("w", "a", "x", "+")):
+            if not _wg_allowed(file):
+                _wg_deny("open:" + str(mode), _wg_abs(file))
+        return _wg_real_open(file, mode, *args, **kwargs)
+
+    def _wg_os_open(path, flags, *args, **kwargs):
+        if flags & _W_FLAGS and not _wg_allowed(path):
+            _wg_deny("os.open", _wg_abs(path))
+        return _wg_real_os_open(path, flags, *args, **kwargs)
+
     builtins.open = _wg_open
+    # `io.open` — ОТДЕЛЬНАЯ ссылка на ту же функцию, и `pathlib.Path.open`
+    # зовёт именно её. Патч одного `builtins.open` оставлял невидимым
+    # `Path.write_text` — доминирующий примитив записи в этом репозитории, то
+    # есть сторож самозаверялся как взведённый и пропускал почти всё.
+    import io as _wg_io
+
+    _wg_io.open = _wg_open
+    # `Path.write_text`/`write_bytes` в части версий CPython идут мимо
+    # `Path.open`, поэтому перекрываются отдельно.
+    import pathlib as _wg_pathlib
+
+    _wg_real_path_open = _wg_pathlib.Path.open
+
+    def _wg_path_open(self, mode="r", *args, **kwargs):
+        if any(ch in str(mode) for ch in ("w", "a", "x", "+")):
+            if not _wg_allowed(self):
+                _wg_deny("Path.open:" + str(mode), _wg_abs(self))
+        return _wg_real_path_open(self, mode, *args, **kwargs)
+
+    def _wg_write_text(self, data, *args, **kwargs):
+        if not _wg_allowed(self):
+            _wg_deny("Path.write_text", _wg_abs(self))
+        with _wg_real_path_open(self, "w", *args, **kwargs) as fh:
+            return fh.write(data)
+
+    def _wg_write_bytes(self, data):
+        if not _wg_allowed(self):
+            _wg_deny("Path.write_bytes", _wg_abs(self))
+        with _wg_real_path_open(self, "wb") as fh:
+            return fh.write(data)
+
+    _wg_pathlib.Path.open = _wg_path_open
+    _wg_pathlib.Path.write_text = _wg_write_text
+    _wg_pathlib.Path.write_bytes = _wg_write_bytes
+    _wg_pathlib.Path.mkdir = _wg_unary("Path.mkdir", _wg_pathlib.Path.mkdir)
+    _wg_pathlib.Path.unlink = _wg_unary("Path.unlink", _wg_pathlib.Path.unlink)
     os.open = _wg_os_open
     os.mkdir = _wg_unary("mkdir", _wg_real_mkdir)
     os.makedirs = _wg_unary("makedirs", _wg_real_makedirs)

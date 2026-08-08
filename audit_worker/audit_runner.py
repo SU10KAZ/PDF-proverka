@@ -396,6 +396,11 @@ def run_audit_job(
         "runtime_snapshot_hash": params.runtime_snapshot_hash,
         "required_result_artifacts": list(params.required_result_artifacts),
         "provider_mode": "fake" if provider_dir is not None else "real",
+        # Разрешение воркера на настоящие модели. Раньше поле не писалось
+        # вовсе, поэтому `assert_compatible` всегда получал False и снимок с
+        # `provider_mode="real"` отвергался безусловно — то есть настройка
+        # `AUDIT_WORKER_ALLOW_REAL_LLM` не работала ни в одну сторону.
+        "allow_real_llm": bool(getattr(config, "allow_real_llm", False)),
         "paths": {key: str(value) for key, value in layout.items()},
     }
     spec_path.write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
