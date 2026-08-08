@@ -440,13 +440,16 @@ class AuditPipelineParams(BaseModel):
     #: Нормативный этап на воркере не выполняется НИКОГДА (E-19). Тип Literal,
     #: а не bool: «случайно передать true» невозможно.
     include_norms: Literal[False] = False
-    project_layout_version: int = Field(default=1, ge=1, le=100)
+    project_layout_version: int = Field(default=2, ge=1, le=100)
     pipeline_revision: str = Field(min_length=1, max_length=200)
     #: Ожидаемые хэши. Воркер сверяет их с тем, что реально распаковал.
     expected_source_tree_hash: str = Field(min_length=8, max_length=128)
     prompt_bundle_hash: str = Field(min_length=8, max_length=128)
     model_config_hash: str = Field(min_length=8, max_length=128)
     feature_flags_hash: str = Field(min_length=8, max_length=128)
+    #: Хэш снимка runtime-конфигурации. Обязателен: без него режим записи
+    #: хранилища взялся бы с ХОСТА воркера, и результат зависел бы от машины.
+    runtime_snapshot_hash: str = Field(min_length=8, max_length=128)
     #: Обязательные артефакты результата. Список фиксирован центром, но воркер
     #: сверяет его со своим встроенным — расширить его заданием нельзя.
     required_result_artifacts: list[str] = Field(default_factory=list, max_length=64)

@@ -34,6 +34,7 @@ from backend.app.services.distributed_workers import (
     package_service,
     project_package,
     repositories,
+    runtime_config,
     slots,
     worker_registry,
 )
@@ -224,6 +225,59 @@ def build_snapshot(*, feature_flags: Optional[dict[str, Any]] = None) -> dict[st
     }
 
 
+def build_runtime_snapshot(
+    *,
+    snapshot: dict[str, Any],
+    revision: str,
+    settings: DistributedWorkersSettings,
+    provider_mode: str = "fake",
+) -> runtime_config.AuditRuntimeConfigSnapshot:
+    """Снимок runtime-конфигурации попытки.
+
+    **Режим записи хранилища читается ЯВНО у фасада центра.** До этого этапа он
+    не передавался вовсе, воркер дефолтил в `legacy`, а центр работает в
+    `projects_v2_primary`: раскладка результата зависела от машины, на которой
+    шёл прогон. Значение берётся здесь и один раз — на момент создания попытки;
+    смена конфигурации центра позже на эту попытку уже не влияет.
+
+    `provider_mode` — свойство ЗАДАНИЯ, но окончательное решение остаётся за
+    воркером: снимок с `real` на воркере без `AUDIT_WORKER_ALLOW_REAL_LLM`
+    отвергается (`runtime_config.assert_compatible`), а не тихо понижается.
+    """
+    from backend.app.core import config
+    from backend.app.services.storage import storage_write_facade
+
+    stage_models: dict[str, str] = {}
+    try:
+        stage_models = {
+            str(k): str(v)
+            for k, v in (getattr(config, "STAGE_MODEL_CONFIG", {}) or {}).items()
+        }
+    except Exception:                                # noqa: BLE001 — снимок не блокер
+        stage_models = {}
+
+    return runtime_config.build_snapshot(
+        pipeline_revision=revision,
+        protocol_version=settings.protocol_version,
+        package_manifest_version=settings.manifest_version,
+        execution_profile=REMOTE_AUDIT_PILOT_V1,
+        project_layout_version=project_package.PROJECT_LAYOUT_VERSION,
+        projects_v2_write_mode=storage_write_facade.get_write_mode(),
+        provider_mode=provider_mode,
+        stage_model_mapping=stage_models,
+        prompt_bundle_hash=snapshot["prompt_bundle_hash"],
+        model_config_hash=snapshot["model_config_hash"],
+        feature_flags=snapshot["feature_flags"],
+        feature_flags_hash=snapshot["feature_flags_hash"],
+        output_schema_versions={
+            "package_manifest": settings.manifest_version,
+            "project_layout": project_package.PROJECT_LAYOUT_VERSION,
+            "runtime_snapshot": runtime_config.RUNTIME_SNAPSHOT_VERSION,
+        },
+        created_at=time.time(),
+    )
+
+
 # ─── Создание задания ────────────────────────────────────────────────────────
 def create_audit_job(
     *,
@@ -268,6 +322,12 @@ def create_audit_job(
 
     snapshot = build_snapshot(feature_flags=feature_flags)
     revision = center_pipeline_revision()
+    # Снимок runtime-конфигурации строится ДО задания: его хэш — обязательное
+    # поле нагрузки, а само значение режима записи берётся у ЦЕНТРА явным
+    # чтением, а не «как-нибудь на воркере».
+    runtime_snapshot = build_runtime_snapshot(
+        snapshot=snapshot, revision=revision, settings=settings,
+    )
     params = AuditPipelineParams(
         execution_profile=REMOTE_AUDIT_PILOT_V1,
         action=action if action in ("full", "audit", "resume") else "full",
@@ -280,6 +340,7 @@ def create_audit_job(
         prompt_bundle_hash=snapshot["prompt_bundle_hash"],
         model_config_hash=snapshot["model_config_hash"],
         feature_flags_hash=snapshot["feature_flags_hash"],
+        runtime_snapshot_hash=runtime_snapshot.snapshot_hash(),
         required_result_artifacts=list(AUDIT_REQUIRED_ARTIFACTS),
     )
 
@@ -307,6 +368,7 @@ def create_audit_job(
         version_dir=Path(version_dir),
         params=params,
         snapshot=snapshot,
+        runtime_snapshot=runtime_snapshot,
         compression=compression,
         settings=settings,
     )
@@ -350,6 +412,7 @@ def build_audit_source_package(
     snapshot: dict[str, Any],
     compression: str,
     settings: DistributedWorkersSettings,
+    runtime_snapshot: Optional[runtime_config.AuditRuntimeConfigSnapshot] = None,
 ) -> dict[str, Any]:
     """Собрать переносимый пакет версии проекта."""
     package_id = repositories.new_id("pkg")
@@ -400,6 +463,7 @@ def build_audit_source_package(
             }
         ),
         "required_inputs": list(AUDIT_REQUIRED_ARTIFACTS),
+        "runtime_snapshot_hash": params.runtime_snapshot_hash,
         "limits": {
             "max_package_bytes": settings.max_package_bytes,
         },
@@ -429,5 +493,8 @@ def build_audit_source_package(
         manifest_base=manifest_base,
         snapshot_files=snapshot_files,
         feature_flags=snapshot["feature_flags"],
+        runtime_config=(
+            runtime_snapshot.to_package_bytes() if runtime_snapshot is not None else None
+        ),
         compression=compression,
     )
