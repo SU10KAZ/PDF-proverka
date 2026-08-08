@@ -3414,6 +3414,36 @@ const app = createApp({
             return !(p.findings_count > 0);
         }
 
+        // Проект отработан экспертом полностью — обе галочки на карточке.
+        // expert_review_status оставлен как fallback: на части путей приходят
+        // только раздельные findings_/optimization_review_status.
+        function isProjectExpertChecked(p) {
+            if (!p) return false;
+            if (p.expert_review_status === 'complete') return true;
+            return p.findings_review_status === 'complete'
+                && p.optimization_review_status === 'complete';
+        }
+
+        // Порядок карточек в разделе: 0 — проверенные экспертом, 1 — обработанные
+        // (аудит прошёл, вердиктов ещё нет), 2 — те, на которых аудит не запускался.
+        function projectOrderRank(p) {
+            if (isProjectExpertChecked(p)) return 0;
+            return isProjectUnanalyzed(p) ? 2 : 1;
+        }
+
+        // numeric: true — чтобы «АР1-2» шёл перед «АР1-10», а не после.
+        const _projectNameCollator = new Intl.Collator('ru', { numeric: true, sensitivity: 'base' });
+
+        // Сортировка проектов раздела: сначала по статусу, внутри статуса —
+        // по имени по алфавиту.
+        function sortSectionProjects(list) {
+            return list.slice().sort((a, b) => {
+                const byRank = projectOrderRank(a) - projectOrderRank(b);
+                if (byRank !== 0) return byRank;
+                return _projectNameCollator.compare(a.name || a.project_id || '', b.name || b.project_id || '');
+            });
+        }
+
         // Необработанные проекты раздела ('__all__' — по всем разделам сразу).
         function unanalyzedPids(sectionCode) {
             return projects.value
@@ -5122,19 +5152,21 @@ const app = createApp({
 
             // Если групп нет — одна виртуальная без заголовка
             if (groups.length === 0) {
-                return [{ id: '__ungrouped__', name: '', order: 0, project_ids: [], projects: sectionProjects, isVirtual: true, noHeader: true }];
+                return [{ id: '__ungrouped__', name: '', order: 0, project_ids: [], projects: sortSectionProjects(sectionProjects), isVirtual: true, noHeader: true }];
             }
 
             const assignedIds = new Set(groups.flatMap(g => g.project_ids || []));
             const result = groups.map(g => ({
                 ...g,
-                projects: (g.project_ids || []).map(id => sectionProjects.find(p => p.project_id === id)).filter(Boolean),
+                projects: sortSectionProjects(
+                    (g.project_ids || []).map(id => sectionProjects.find(p => p.project_id === id)).filter(Boolean)
+                ),
                 isVirtual: false,
             }));
 
             const ungrouped = sectionProjects.filter(p => !assignedIds.has(p.project_id));
             if (ungrouped.length > 0) {
-                result.push({ id: '__ungrouped__', name: 'Без группы', order: 99999, project_ids: [], projects: ungrouped, isVirtual: true });
+                result.push({ id: '__ungrouped__', name: 'Без группы', order: 99999, project_ids: [], projects: sortSectionProjects(ungrouped), isVirtual: true });
             }
 
             return result;
