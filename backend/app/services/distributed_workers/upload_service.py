@@ -21,7 +21,11 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-from backend.app.services.distributed_workers import package_service, repositories
+from backend.app.services.distributed_workers import (
+    identifiers,
+    package_service,
+    repositories,
+)
 from backend.app.services.distributed_workers.settings import DistributedWorkersSettings
 
 UPLOAD_TTL_SEC = 24 * 3600
@@ -160,7 +164,15 @@ def assemble(
         missing = [i for i in range(total) if i not in set(have)]
         raise UploadError(f"Загрузка неполная: не хватает чанков {missing[:20]}")
 
-    staging = settings.result_staging_dir / session["job_id"] / session["attempt_id"]
+    # Через identifiers, как и все прочие пути подсистемы: правило «сегмент
+    # пути строится только здесь» не должно иметь исключений, даже когда
+    # источник значений сейчас доверенный (UUID из БД).
+    staging = identifiers.attempt_dir(
+        settings.result_staging_dir,
+        session["job_id"],
+        session["attempt_id"],
+        allow_legacy=True,
+    )
     staging.mkdir(parents=True, exist_ok=True)
     suffix = ".tar.gz"
     archive = staging / f"{session['package_type']}{suffix}"

@@ -347,6 +347,20 @@ def create_next_attempt(
     attempt_id = str(uuid.uuid4())
     try:
         with database.write_txn(settings) as conn:
+            # Явная проверка внутри той же транзакции: частичный индекс всё
+            # равно страхует от гонки, но без этой ветки ЛЮБАЯ IntegrityError
+            # (например, несуществующий worker_id по внешнему ключу)
+            # маскировалась бы под «активная попытка уже есть».
+            busy = conn.execute(
+                "SELECT attempt_id FROM job_attempts WHERE job_id = ? "
+                "AND attempt_disposition = 'active'",
+                (job_id,),
+            ).fetchone()
+            if busy is not None:
+                raise ActiveAttemptExists(
+                    "У задания уже есть активная попытка: сначала отмените её "
+                    "либо признайте потерянной"
+                )
             row = conn.execute(
                 "SELECT MAX(attempt_number) AS n, MAX(assignment_generation) AS g "
                 "FROM job_attempts WHERE job_id = ?",
@@ -378,10 +392,24 @@ def create_next_attempt(
                  f"новая попытка №{number}", now),
             )
     except sqlite3.IntegrityError as exc:
-        raise ActiveAttemptExists(
-            "У задания уже есть активная попытка: сначала отмените её либо "
-            "признайте потерянной"
-        ) from exc
+        # Сюда попадает только гонка по частичному индексу: остальные нарушения
+        # целостности (чужой worker_id, отсутствующее задание) — это дефект
+        # вызывающего, и прятать его под «занято» нельзя.
+        text = str(exc)
+        if "ux_attempts_one_active" in text:
+            raise ActiveAttemptExists(
+                "У задания уже есть активная попытка: сначала отмените её либо "
+                "признайте потерянной"
+            ) from exc
+        if "ux_logical_jobs_active_project" in text:
+            # Новая попытка возвращает логическое задание в 'active', а на паре
+            # (проект, версия) активное задание может быть только одно. Это
+            # тоже конфликт оператора, а не дефект кода: 409, а не 500.
+            raise ActiveAttemptExists(
+                "По этому проекту и версии уже есть активное задание: "
+                "сначала завершите или отмените его"
+            ) from exc
+        raise
     return get_attempt(attempt_id, settings=settings)  # type: ignore[return-value]
 
 
@@ -500,8 +528,13 @@ def claim_next_job_for_worker(
     """
     now = time.time()
     with database.write_txn(settings) as conn:
+        # attempt_disposition = 'active' обязателен. Без него признанная
+        # потерянной попытка (mark_lost не трогает execution_state) оставалась
+        # текущей строкой представления и выдавалась воркеру ПОВТОРНО — вместе
+        # со свежим execution-токеном. Это ре-назначение работы, I-03.
         row = conn.execute(
             "SELECT * FROM remote_jobs WHERE assigned_worker_id = ? AND state = ? "
+            "AND attempt_disposition = 'active' "
             "ORDER BY created_at ASC LIMIT 1",
             (worker_id, JobState.ASSIGNED.value),
         ).fetchone()
@@ -615,6 +648,10 @@ def jobs_for_worker_nonterminal(
     return [dict(r) for r in rows]
 
 
+# Сколько сборка архива может молчать, прежде чем сессию разрешено занять
+# заново. Больше самой долгой распаковки, меньше терпения оператора.
+ASSEMBLY_LEASE_SEC = 30 * 60
+
 def claim_upload_for_assembly(
     upload_id: str, *, settings: DistributedWorkersSettings | None = None
 ) -> Optional[str]:
@@ -625,18 +662,29 @@ def claim_upload_for_assembly(
     уже выставленный `verified` статусом `failed` — задание после этого было
     не доставить вообще.
     """
+    now = time.time()
     with database.write_txn(settings) as conn:
         row = conn.execute(
-            "SELECT status FROM upload_sessions WHERE upload_id = ?", (upload_id,)
+            "SELECT status, assembly_started_at FROM upload_sessions "
+            "WHERE upload_id = ?",
+            (upload_id,),
         ).fetchone()
         if row is None:
             return None
         status = row["status"]
         if status == "assembling":
-            return None          # уже собирает кто-то другой
+            # Аренда: сборщик мог умереть вместе с процессом, и тогда
+            # try/finally ничего бы не вернул. По истечении аренды сессию
+            # разрешено занять заново — иначе готовый результат не сдать
+            # никогда (409 «сборка уже идёт» по кругу).
+            started = row["assembly_started_at"]
+            if started is not None and now - float(started) < ASSEMBLY_LEASE_SEC:
+                return None      # уже собирает кто-то живой
+            status = "open"
         conn.execute(
-            "UPDATE upload_sessions SET status = 'assembling' WHERE upload_id = ?",
-            (upload_id,),
+            "UPDATE upload_sessions SET status = 'assembling', "
+            "assembly_started_at = ? WHERE upload_id = ?",
+            (now, upload_id),
         )
     return status
 

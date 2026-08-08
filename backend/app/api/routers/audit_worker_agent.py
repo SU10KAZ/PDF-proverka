@@ -23,6 +23,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from backend.app.models.distributed_workers import (
     COMMAND_PAYLOAD_MODELS,
+    TERMINAL_JOB_STATES,
     AcceptRequest,
     ClaimRequest,
     ClaimResponse,
@@ -364,8 +365,13 @@ async def heartbeat(
     )
     # Критическая нехватка диска блокирует ВЫДАЧУ новых заданий. Текущие
     # продолжают работать, ничего не удаляется (§12.5).
-    if has_work and payload.disk and payload.disk.level == "critical":
-        has_work = False
+    if has_work:
+        fresh = await database.run_db(
+            repositories.get_worker, principal.worker_id, settings=settings
+        )
+        allowed, _why = worker_registry.can_receive_jobs(fresh or principal.row)
+        if not allowed:
+            has_work = False
     # ВАЖНО: выборка именно по наличию retention_until, а не «нетерминальные».
     # Срок хранения проставляется ВМЕСТЕ с переходом в терминальное состояние,
     # поэтому прежний фильтр гарантированно давал пустой список.
@@ -403,17 +409,24 @@ async def post_resources(
     snapshot: dict[str, Any],
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
 ) -> dict[str, Any]:
-    """Внеочередной снимок ресурсов (обычно едет внутри heartbeat)."""
+    """Внеочередной снимок ресурсов (обычно едет внутри heartbeat).
+
+    Снимок обязательно проходит тот же санитайзер, что и в heartbeat. Без него
+    воркер мог записать в колонку любой мусор (`{"executor": "PWNED"}`), а
+    операторский экран падал на нём 500-й — и не для одного воркера, а для
+    всего списка, потому что `to_view` вызывается в цикле.
+    """
+    clean = worker_registry.sanitize_resource_snapshot(snapshot)
     await database.run_db(
         repositories.record_resource_snapshot,
         principal.worker_id,
-        snapshot,
+        clean,
         settings=principal.settings,
     )
     await database.run_db(
         repositories.update_worker_fields,
         principal.worker_id,
-        {"resource_snapshot": json.dumps(snapshot, ensure_ascii=False)},
+        {"resource_snapshot": json.dumps(clean, ensure_ascii=False)},
         settings=principal.settings,
     )
     return {"accepted": True, "server_time": time.time()}
@@ -456,11 +469,42 @@ async def jobs_next(
             # Токен попытки в кэше НЕ хранится (иначе он лежал бы в БД
             # открытым текстом, обесценивая хранение только хэша) — на повторе
             # выпускаем свежий и переписываем хэш: задание то же самое.
+            #
+            # Переписывать хэш можно ТОЛЬКО у той самой попытки, что лежит в
+            # кэше, и только пока она жива и принадлежит этому воркеру. Раньше
+            # запись шла по job_id, то есть в «текущую попытку задания»: воркер,
+            # чью попытку признали потерянной, повтором старого ключа
+            # перевыпускал токен НОВОЙ попытки — её законный исполнитель
+            # получал 409 на всех ручках и не мог сдать готовый результат.
             cached = json.loads(prior["response_json"])
+            cached_attempt = str(cached.get("attempt_id") or "")
+            row = (
+                await database.run_db(
+                    repositories.get_attempt, cached_attempt, settings=settings
+                )
+                if cached_attempt
+                else None
+            )
+            if (
+                row is None
+                or row.get("attempt_disposition") != "active"
+                or row.get("assigned_worker_id") != principal.worker_id
+                or row.get("execution_state") in {s.value for s in TERMINAL_JOB_STATES}
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "error": "idempotency_key_stale",
+                        "message": (
+                            "Задание этого ключа больше не принадлежит воркеру. "
+                            "Повторите запрос с новым Idempotency-Key."
+                        ),
+                    },
+                )
             replay_token = auth.generate_execution_token()
             await database.run_db(
-                repositories.update_job_fields,
-                cached["job_id"],
+                repositories.update_attempt_fields,
+                cached_attempt,
                 {"execution_token_sha256": auth.hash_token(replay_token)},
                 settings=settings,
             )
@@ -593,10 +637,14 @@ async def _accept_job_impl(
     if job["state"] == JobState.ACCEPTED_BY_WORKER.value:
         return {"state": job["state"], "event_start_seq": 1, "replayed": True,
                 "server_time": time.time()}
+    # Переходы адресуются ПОПЫТКОЙ, а не заданием. Авторизация здесь идёт по
+    # токену попытки, а запись по job_id уходила в «текущую попытку»: если
+    # между проверкой и записью оператор успевал признать попытку потерянной и
+    # создать новую, старый воркер менял состояние ЧУЖОЙ активной попытки.
     if job["state"] == JobState.SOURCE_UPLOADING.value:
         job = await database.run_db(
             job_service.transition,
-            job_id=job_id,
+            attempt_id=job["attempt_id"],
             to_state=JobState.SOURCE_READY,
             actor="worker",
             reason="sha256 исходного пакета сошёлся",
@@ -605,7 +653,7 @@ async def _accept_job_impl(
     try:
         job = await database.run_db(
             job_service.transition,
-            job_id=job_id,
+            attempt_id=job["attempt_id"],
             to_state=JobState.ACCEPTED_BY_WORKER,
             actor="worker",
             reason="манифест проверен, дерево распаковано",
@@ -627,7 +675,7 @@ async def reject_job(
     try:
         job = await database.run_db(
             job_service.transition,
-            job_id=job_id,
+            attempt_id=job["attempt_id"],
             to_state=JobState.FAILED,
             actor="worker",
             reason=f"воркер отказался: {payload.reason}",
@@ -905,6 +953,8 @@ async def complete_upload(
                 if not active
                 else "результат получен после провала/отмены попытки"
             ),
+            expected_hash=payload.sha256,
+            expected_size=payload.total_size,
         )
         await database.run_db(
             repositories.update_upload_session,
@@ -951,6 +1001,37 @@ async def complete_upload(
             expected_hash=payload.sha256,
             expected_size=payload.total_size,
             settings=settings,
+        )
+    except job_service.AttemptNoLongerActive:
+        # Оператор отозвал попытку, пока центр собирал её архив. Публиковать
+        # такой результат нельзя, но и терять готовую работу тоже: кладём на
+        # хранение — ровно как для попытки, отозванной до начала приёмки.
+        stored = await database.run_db(
+            job_service.store_unpublished_result,
+            job=job,
+            archive=archive,
+            settings=settings,
+            reason="попытка отозвана оператором во время приёмки результата",
+            expected_hash=payload.sha256,
+            expected_size=payload.total_size,
+        )
+        await database.run_db(
+            repositories.update_upload_session,
+            upload_id,
+            {"status": "verified", "finalized_at": time.time()},
+            settings=settings,
+        )
+        await database.run_db(upload_service.cleanup_chunks, upload_id, settings=settings)
+        return UploadCompleteResponse(
+            state=JobState(stored["state"]),
+            validation={
+                "published": False,
+                "stored_only": True,
+                "storage_class": "superseded",
+                "reason": "Попытка отозвана во время приёмки — результат сохранён",
+            },
+            server_time=time.time(),
+            retention_until=stored.get("retention_until"),
         )
     except job_service.JobError as exc:
         await database.run_db(
@@ -1088,23 +1169,28 @@ async def ack_command(
     # Последствия подтверждения применяет ЦЕНТР, а не воркер: только он вправе
     # менять состояние попытки. Отмена становится `cancelled` лишь тогда, когда
     # воркер доказал, что исполнять больше нечего (§10, критерий готовности 6).
+    #
+    # Эффект применяется и на ПОВТОРНОМ подтверждении тоже. Раньше стоял гард
+    # `if not replayed`, и падение центра между записью ACK и применением
+    # эффекта оставляло попытку в `cancel_requested` навсегда: воркер отмену
+    # подтвердил, повтор возвращал replayed=True, эффект не наступал никогда.
+    # Обе функции идемпотентны по состоянию, повтор для них безопасен.
     new_state: Optional[str] = None
-    if not replayed:
-        ctype = existing.get("command_type")
-        if ctype == WorkerCommandType.CANCEL_ATTEMPT.value:
-            new_state = await database.run_db(
-                attempt_service.apply_cancel_ack,
-                command=existing,
-                result=payload.result,
-                settings=settings,
-            )
-        elif ctype == WorkerCommandType.DELETE_ATTEMPT_DATA.value:
-            await database.run_db(
-                attempt_service.apply_deletion_ack,
-                command=existing,
-                result=payload.result,
-                settings=settings,
-            )
+    ctype = existing.get("command_type")
+    if ctype == WorkerCommandType.CANCEL_ATTEMPT.value:
+        new_state = await database.run_db(
+            attempt_service.apply_cancel_ack,
+            command=existing,
+            result=payload.result,
+            settings=settings,
+        )
+    elif ctype == WorkerCommandType.DELETE_ATTEMPT_DATA.value:
+        await database.run_db(
+            attempt_service.apply_deletion_ack,
+            command=existing,
+            result=payload.result,
+            settings=settings,
+        )
     return {"result": payload.result, "replayed": replayed, "attempt_state": new_state}
 
 

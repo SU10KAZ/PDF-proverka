@@ -261,10 +261,17 @@ class ResourceSnapshot(BaseModel):
 
 
 class ActiveJobRef(BaseModel):
-    job_id: str
-    attempt_id: str
-    project_id: str = ""
-    stage: str = ""
+    """Ссылка на активное задание в heartbeat.
+
+    Длины ограничены: строка целиком уходит в колонку `workers.active_jobs`,
+    и воркер (пусть и одобренный) не должен иметь возможности раздувать БД
+    центра мегабайтными «идентификаторами».
+    """
+
+    job_id: str = Field(max_length=64)
+    attempt_id: str = Field(max_length=64)
+    project_id: str = Field(default="", max_length=200)
+    stage: str = Field(default="", max_length=64)
     last_event_seq: int = 0
     started_at: Optional[float] = None
 
@@ -278,12 +285,16 @@ class ExecutorSnapshot(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    executor_instance_id: Optional[str] = None
-    status: str = "unknown"          # online | stale | offline | unknown
-    last_heartbeat_at: Optional[float] = None
-    version: Optional[str] = None
-    running_processes: int = 0
-    ambiguous_processes: int = 0
+    # Типы намеренно свободные: блок приходит от полу-доверенного воркера, и
+    # мусор в одном поле не должен ронять ВЕСЬ heartbeat 422-й ошибкой — иначе
+    # воркер выглядит офлайн из-за кривой строки. Приведение и отбраковка —
+    # в worker_registry.sanitize_executor.
+    executor_instance_id: Optional[Any] = None
+    status: Any = "unknown"          # online | stale | offline | unknown
+    last_heartbeat_at: Optional[Any] = None
+    version: Optional[Any] = None
+    running_processes: Any = 0
+    ambiguous_processes: Any = 0
 
 
 class DiskSnapshot(BaseModel):
@@ -291,15 +302,17 @@ class DiskSnapshot(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    total_bytes: Optional[float] = None
-    used_bytes: Optional[float] = None
-    free_bytes: Optional[float] = None
-    jobs_bytes: Optional[float] = None
-    confirmed_results_bytes: Optional[float] = None
-    unconfirmed_results_bytes: Optional[float] = None
-    cleanup_candidates_bytes: Optional[float] = None
-    cleanup_candidates: int = 0
-    level: str = "ok"                 # ok | warning | critical
+    # Как и у ExecutorSnapshot: типы свободные, приведение — в sanitize_disk.
+    # Кривое число от воркера не должно превращать heartbeat в 422.
+    total_bytes: Optional[Any] = None
+    used_bytes: Optional[Any] = None
+    free_bytes: Optional[Any] = None
+    jobs_bytes: Optional[Any] = None
+    confirmed_results_bytes: Optional[Any] = None
+    unconfirmed_results_bytes: Optional[Any] = None
+    cleanup_candidates_bytes: Optional[Any] = None
+    cleanup_candidates: Any = 0
+    level: Any = "ok"                 # ok | warning | critical
 
 
 class HeartbeatRequest(BaseModel):
@@ -308,9 +321,11 @@ class HeartbeatRequest(BaseModel):
     worker_state: WorkerState = WorkerState.IDLE
     configured_max_slots: int = Field(default=1, ge=0, le=5)
     calculated_free_slots: int = Field(default=0, ge=0, le=5)
-    active_jobs: list[ActiveJobRef] = Field(default_factory=list)
+    # Слотов не больше 5, значит и активных заданий столько же. Список без
+    # верхней границы принимался целиком в колонку `workers.active_jobs`.
+    active_jobs: list[ActiveJobRef] = Field(default_factory=list, max_length=16)
     resource_snapshot: Optional[ResourceSnapshot] = None
-    warnings: list[dict[str, Any]] = Field(default_factory=list)
+    warnings: list[dict[str, Any]] = Field(default_factory=list, max_length=64)
     # Агент отчитывается и за СЕБЯ, и за наблюдаемый им executor. Если
     # executor молчит, а агент онлайн — это отдельная новость, а не «всё ок».
     executor: Optional[ExecutorSnapshot] = None

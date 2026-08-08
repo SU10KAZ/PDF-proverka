@@ -49,6 +49,16 @@ class JobError(RuntimeError):
     """Ошибка бизнес-правила задания (не 500)."""
 
 
+class AttemptNoLongerActive(JobError):
+    """Попытку отозвали, пока центр собирал и проверял её архив.
+
+    Между «проверили, что попытка активна» и «записали результат» проходят
+    минуты: распаковка и валидация многосотмегабайтного пакета. Оператор
+    успевает нажать «признать потерянной». Без этой проверки результат
+    отозванной попытки публиковался как актуальный (нарушение I-07).
+    """
+
+
 class IllegalTransition(JobError):
     """Переход не описан в машине состояний."""
 
@@ -73,11 +83,15 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
     },
+    # ВНИМАНИЕ: начиная с `assigned` прямого операторского ребра `→cancelled`
+    # больше нет. Пакет уже у воркера (или едет к нему), и «отменено» без
+    # подтверждения исполнителя — это ровно то враньё, которое запрещает
+    # критерий готовности 6 и I-16. Путь один: `cancel_requested` → команда →
+    # ACK воркера. Ребро осталось только у `created`, где исполнителя нет.
     JobState.ASSIGNED: {
         JobState.SOURCE_UPLOADING: (_W,),
         JobState.FAILED: (_C, _O),
         JobState.CANCEL_REQUESTED: (_O,),
-        JobState.CANCELLED: (_O,),
         **_STORE_ONLY,
     },
     JobState.SOURCE_UPLOADING: {
@@ -90,7 +104,6 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCEL_REQUESTED: (_O,),
-        JobState.CANCELLED: (_O,),
         **_STORE_ONLY,
     },
     JobState.SOURCE_READY: {
@@ -98,7 +111,6 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         JobState.ASSIGNED: (_C,),
         JobState.FAILED: (_W, _O),
         JobState.CANCEL_REQUESTED: (_O,),
-        JobState.CANCELLED: (_O,),
         **_STORE_ONLY,
     },
     JobState.ACCEPTED_BY_WORKER: {
@@ -456,8 +468,18 @@ def build_source_package(
     )
 
 
-def _archive_in(directory: Path, *, skip: tuple[str, ...]) -> Optional[Path]:
-    if not directory.is_dir():
+def _read_dir(root: Path, job: dict[str, Any]) -> Optional[Path]:
+    """Каталог попытки ДЛЯ ЧТЕНИЯ. Мигрированные ключи этапа 0 допускаются."""
+    try:
+        return identifiers.attempt_dir(
+            root, job["job_id"], job["attempt_id"], allow_legacy=True
+        )
+    except identifiers.UnsafeIdentifier:
+        return None
+
+
+def _archive_in(directory: Optional[Path], *, skip: tuple[str, ...]) -> Optional[Path]:
+    if directory is None or not directory.is_dir():
         return None
     for candidate in sorted(directory.iterdir()):
         if candidate.is_file() and candidate.name not in skip:
@@ -470,9 +492,7 @@ def result_package_path(
 ) -> Optional[Path]:
     """Принятый (провалидированный) архив результата, если он есть на диске."""
     return _archive_in(
-        identifiers.attempt_dir(
-            settings.validated_results_dir, job["job_id"], job["attempt_id"]
-        ),
+        _read_dir(settings.validated_results_dir, job),
         skip=("validation_report.json", package_service.MANIFEST_NAME),
     )
 
@@ -482,9 +502,7 @@ def superseded_result_path(
 ) -> Optional[Path]:
     """Архив ОТОЗВАННОЙ попытки. Актуальным результатом задания не является."""
     return _archive_in(
-        identifiers.attempt_dir(
-            settings.superseded_results_dir, job["job_id"], job["attempt_id"]
-        ),
+        _read_dir(settings.superseded_results_dir, job),
         skip=("unpublished_reason.json", package_service.MANIFEST_NAME),
     )
 
@@ -493,9 +511,7 @@ def source_package_path(
     job: dict[str, Any], *, settings: DistributedWorkersSettings
 ) -> Optional[Path]:
     return _archive_in(
-        identifiers.attempt_dir(
-            settings.source_packages_dir, job["job_id"], job["attempt_id"]
-        ),
+        _read_dir(settings.source_packages_dir, job),
         skip=(package_service.MANIFEST_NAME,),
     )
 
@@ -533,9 +549,14 @@ def reoffer_unknown_jobs(
         ):
             if job["job_id"] in known_job_ids:
                 continue
+            if (job.get("attempt_disposition") or "active") != "active":
+                # Попытку уже забрал оператор (отмена, «потеряна», вытеснение).
+                # Возвращать её в очередь — значит выдать заново то, чем
+                # оператор распорядился вручную.
+                continue
             try:
                 transition(
-                    job_id=job["job_id"],
+                    attempt_id=job["attempt_id"],
                     to_state=JobState.ASSIGNED,
                     actor="center",
                     reason="воркер на сверке не знает о задании — возврат в очередь",
@@ -570,6 +591,13 @@ def catch_up_to_result_received(
         ],
         JobState.COMPLETED_LOCALLY: [JobState.RESULT_UPLOADING],
         JobState.RESULT_UPLOADING: [],
+        # Гонка отмены: команда доехала, а воркер уже закончил работу. Ребро
+        # `cancel_requested → completed_locally` заведено в таблице именно под
+        # этот случай, но раньше догон им не пользовался — и готовый результат
+        # не доставлялся вообще (409 по кругу).
+        JobState.CANCEL_REQUESTED: [
+            JobState.COMPLETED_LOCALLY, JobState.RESULT_UPLOADING,
+        ],
     }
     # RESULT_RECEIVED и VALIDATING обрабатываются отдельно: перехода в
     # result_received из них нет и не нужно — финализацию надо просто
@@ -610,6 +638,8 @@ def store_unpublished_result(
     archive: Path,
     settings: DistributedWorkersSettings,
     reason: str = "результат получен после провала/отмены попытки",
+    expected_hash: Optional[str] = None,
+    expected_size: Optional[int] = None,
 ) -> dict[str, Any]:
     """Принять на ХРАНЕНИЕ результат попытки, которая уже не публикуется.
 
@@ -622,12 +652,41 @@ def store_unpublished_result(
     Автоматического сравнения со свежим результатом и продвижения в актуальный
     здесь НЕТ и на этом этапе не планируется.
     """
+    # allow_legacy: этап 0 выдавал attempt_id вида `att_1a2b3c4d`, миграция 3
+    # перенесла их как есть. Без послабления на ПУТИ ЗАПИСИ любое мигрированное
+    # незавершённое задание не могло сдать результат вообще — UnsafeIdentifier
+    # это ValueError, его не ловил даже `except JobError` в роутере (HTTP 500).
     target_dir = identifiers.attempt_dir(
-        settings.superseded_results_dir, job["job_id"], job["attempt_id"]
+        settings.superseded_results_dir,
+        job["job_id"],
+        job["attempt_id"],
+        allow_legacy=True,
     )
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / archive.name
+    # Содержимое проверяется и на этом пути тоже. Публикации оно не даёт, но
+    # воркеру разрешают удалить локальную копию — значит центр обязан знать,
+    # что именно он сохранил, а не только что sha256 передачи сошёлся.
+    stored_report: Optional[dict[str, Any]] = None
+    if expected_hash is not None and expected_size is not None:
+        try:
+            probe = package_service.validate_result_package(
+                archive=archive,
+                expected_hash=expected_hash,
+                expected_size=expected_size,
+                job_id=job["job_id"],
+                attempt_id=job["attempt_id"],
+                required_artifacts=TEST_JOB_REQUIRED_ARTIFACTS,
+                max_bytes=settings.max_package_bytes,
+            )
+            stored_report = probe.as_dict()
+        except Exception as exc:                      # noqa: BLE001 — fail-soft
+            stored_report = {"ok": False, "error": f"проверка не выполнена: {exc}"}
     archive.replace(target)
+    if stored_report is not None:
+        (target_dir / "stored_validation_report.json").write_text(
+            json.dumps(stored_report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     (target_dir / "unpublished_reason.json").write_text(
         json.dumps(
             {
@@ -637,6 +696,7 @@ def store_unpublished_result(
                 "attempt_no": job.get("attempt_no"),
                 "stored_at": time.time(),
                 "published": False,
+                "content_valid": None if stored_report is None else stored_report.get("ok"),
                 "note": "Результат устаревшей попытки — автоматически не используется",
             },
             ensure_ascii=False,
@@ -682,6 +742,19 @@ def finalize_result(
     job_id = job["job_id"]
     attempt_id = job["attempt_id"]
 
+    # Перепроверка НЕПОСРЕДСТВЕННО перед записью, а не только на входе в
+    # обработчик: сборка архива занимает минуты, и решение оператора,
+    # принятое в это время, обязано перевесить.
+    fresh = repositories.get_attempt(attempt_id, settings=settings)
+    if fresh is None:
+        raise JobError(f"Попытка {attempt_id} исчезла во время приёмки результата")
+    if (fresh.get("attempt_disposition") or "active") != "active":
+        raise AttemptNoLongerActive(
+            "Попытка отозвана оператором во время приёмки результата "
+            f"({fresh.get('attempt_disposition')})"
+        )
+    job = fresh
+
     if job.get("state") != JobState.VALIDATING.value:
         transition(
             attempt_id=attempt_id,
@@ -702,7 +775,7 @@ def finalize_result(
 
     if not report.ok:
         target_dir = identifiers.attempt_dir(
-            settings.rejected_results_dir, job_id, attempt_id
+            settings.rejected_results_dir, job_id, attempt_id, allow_legacy=True
         )
         target_dir.mkdir(parents=True, exist_ok=True)
         target = target_dir / archive.name
@@ -727,7 +800,7 @@ def finalize_result(
         return updated, report
 
     target_dir = identifiers.attempt_dir(
-        settings.validated_results_dir, job_id, attempt_id
+        settings.validated_results_dir, job_id, attempt_id, allow_legacy=True
     )
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / archive.name
@@ -767,10 +840,8 @@ def finalize_result(
 def validated_result_path(
     job: dict[str, Any], *, settings: DistributedWorkersSettings
 ) -> Optional[Path]:
-    directory = identifiers.attempt_dir(
-        settings.validated_results_dir, job["job_id"], job["attempt_id"]
-    )
-    if not directory.is_dir():
+    directory = _read_dir(settings.validated_results_dir, job)
+    if directory is None or not directory.is_dir():
         return None
     for candidate in sorted(directory.iterdir()):
         if candidate.is_file() and candidate.suffix not in (".json",):

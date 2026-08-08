@@ -276,6 +276,14 @@ def _apply_side_effects(
         if target is None:
             continue
 
+        # `job_failed` с причиной `cancelled` — это НЕ провал, а подтверждение
+        # остановки по команде оператора. Без этой ветки попытка уезжала в
+        # `failed` раньше, чем доходил ACK команды, и `cancelled` не
+        # выставлялось уже никогда: apply_cancel_ack ждёт cancel_requested.
+        fallback: Optional[JobState] = None
+        if target is JobState.FAILED and payload.get("reason") == "cancelled":
+            target, fallback = JobState.CANCELLED, JobState.FAILED
+
         extra: dict[str, Any] = {}
         if target is JobState.RUNNING:
             extra["started_at"] = ev["occurred_at"]
@@ -283,6 +291,8 @@ def _apply_side_effects(
             extra["completed_locally_at"] = ev["occurred_at"]
             if payload.get("result_hash"):
                 extra["result_package_hash"] = str(payload["result_hash"])
+        elif target is JobState.CANCELLED:
+            extra["cancelled_at"] = ev["occurred_at"]
         elif target is JobState.FAILED:
             extra["error"] = json.dumps(
                 {
@@ -295,25 +305,29 @@ def _apply_side_effects(
                 ensure_ascii=False,
             )
 
-        try:
-            current = repositories.get_attempt(attempt_id, settings=settings) or job
-            if current.get("state") == target.value:
-                if extra:
-                    repositories.update_attempt_fields(attempt_id, extra, settings=settings)
-                continue
-            job_service.transition(
-                attempt_id=attempt_id,
-                to_state=target,
-                actor="worker",
-                reason=f"событие {etype}",
-                fields=extra,
-                event_seq=ev["sequence"],
-                settings=settings,
-            )
-        except job_service.JobError:
-            # Расхождение состояний не должно ронять приём событий: они уже
-            # записаны, а несогласованность видна в журнале переходов.
+        current = repositories.get_attempt(attempt_id, settings=settings) or job
+        if current.get("state") == target.value:
+            if extra:
+                repositories.update_attempt_fields(attempt_id, extra, settings=settings)
             continue
+        for candidate in (target, fallback):
+            if candidate is None:
+                continue
+            try:
+                job_service.transition(
+                    attempt_id=attempt_id,
+                    to_state=candidate,
+                    actor="worker",
+                    reason=f"событие {etype}",
+                    fields=extra if candidate is target else {},
+                    event_seq=ev["sequence"],
+                    settings=settings,
+                )
+                break
+            except job_service.JobError:
+                # Расхождение состояний не должно ронять приём событий: они уже
+                # записаны, а несогласованность видна в журнале переходов.
+                continue
 
     if progress is not None:
         fields["progress_snapshot"] = json.dumps(progress, ensure_ascii=False)
