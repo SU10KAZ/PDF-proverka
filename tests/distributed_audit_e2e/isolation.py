@@ -1,0 +1,298 @@
+"""Изоляция прогона: пустой HOME, вычищенные секреты, свой PATH, сетевой guard.
+
+Требование §9 задания формулируется просто: сквозной E2E должен быть
+**физически неспособен** потратить подписку или платный API. «Мы не вызываем
+настоящие модели» — не гарантия; гарантией является отсутствие того, чем их
+можно вызвать.
+
+Рубежи (каждый держит оборону сам):
+
+  1. `AUDIT_WORKER_ALLOW_REAL_LLM=false` — воркер отказывается от настоящих CLI;
+  2. пустой `HOME` — ambient-авторизации Claude/Codex там нет;
+  3. отсутствие `~/.claude` и `~/.codex` — нечего и подхватывать;
+  4. вычистка из окружения всего, что похоже на ключ/токен/секрет;
+  5. свой `PATH` — настоящих `claude`/`codex` в нём нет;
+  6. поддельные бинари только из контролируемого каталога с маркером;
+  7. `AUDIT_DISABLE_DOTENV=1` — `.env` установленного репозитория не читается;
+  8. **сетевой guard**: любое соединение вне loopback убивает процесс.
+
+Восьмой рубеж — единственный, который ловит то, что не ловят остальные семь:
+HTTP-ногу, которая ходит в OpenRouter напрямую и никакого CLI не запускает.
+"""
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import sys
+from pathlib import Path
+from typing import Iterable, Optional
+
+#: Подстроки в ИМЕНИ переменной, при которых значение до прогона не доезжает.
+SECRET_NAME_MARKERS: tuple[str, ...] = (
+    "API_KEY", "TOKEN", "SECRET", "PASSWORD", "PASSWD", "CREDENTIAL", "COOKIE",
+    "OPENROUTER", "ANTHROPIC", "OPENAI", "CLAUDE", "CODEX", "GEMINI", "GOOGLE_API",
+    "DEEPSEEK", "QWEN", "HUGGINGFACE", "HF_TOKEN", "AWS_", "GITHUB_",
+)
+
+#: Переменные, которые ОБЯЗАНЫ отсутствовать. Проверяется отдельно от фильтра
+#: по маркерам: список ниже — это то, чем в этом репозитории реально платят.
+FORBIDDEN_ENV: tuple[str, ...] = (
+    "OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
+    "GOOGLE_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY", "QWEN_API_KEY",
+    "CLAUDE_CODE_OAUTH_TOKEN", "CLAUDE_CLI_BIN", "AUDIT_CODEX_CLI_PATH",
+    "CODEX_CLI_PATH", "PORTAL_SESSION_SECRET", "PORTAL_AUTH_USERS",
+)
+
+#: Минимальный PATH: интерпретатор и стандартные утилиты, но НИ ОДНОГО каталога
+#: пользователя (`~/.local/bin`, расширения VS Code — там живут настоящие CLI).
+SAFE_PATH_DIRS: tuple[str, ...] = ("/usr/local/bin", "/usr/bin", "/bin")
+
+
+# ─── Сетевой guard ───────────────────────────────────────────────────────────
+#: Внедряется как `sitecustomize.py` в изолированный `PYTHONPATH`. Python
+#: импортирует его автоматически при старте ЛЮБОГО процесса — то есть guard
+#: попадает и в backend, и в агент, и в исполнитель, и в дочерний процесс
+#: конвейера, и в поддельные провайдеры, без единой правки боевого кода.
+_NETGUARD_SOURCE = '''"""Тестовый сетевой guard E2E-стенда. В production-коде его нет."""
+import os
+import socket
+import sys
+
+_ALLOW = {"127.0.0.1", "::1", "localhost", ""}
+_LOG = os.environ.get("E2E_NETGUARD_LOG") or ""
+_ARMED = os.environ.get("E2E_NETGUARD") == "1"
+
+
+def _record(kind, target):
+    line = "%s\\t%s\\t%s\\t%s\\n" % (os.getpid(), sys.argv[0], kind, target)
+    if _LOG:
+        try:
+            with open(_LOG, "a", encoding="utf-8") as fh:
+                fh.write(line)
+                fh.flush()
+        except OSError:
+            pass
+    sys.stderr.write("E2E-NETGUARD " + line)
+    sys.stderr.flush()
+
+
+def _deny(kind, target):
+    _record(kind, target)
+    # Немедленная смерть, а не исключение: исключение поймал бы fail-soft
+    # `except Exception` конвейера, и внешний вызов остался бы незамеченным.
+    os._exit(97)
+
+
+def _host_allowed(host):
+    return str(host) in _ALLOW
+
+
+if _ARMED:
+    _real_connect = socket.socket.connect
+    _real_connect_ex = socket.socket.connect_ex
+    _real_getaddrinfo = socket.getaddrinfo
+
+    def _guarded_connect(self, address, *args, **kwargs):
+        if isinstance(address, tuple) and address:
+            if not _host_allowed(address[0]):
+                _deny("connect", repr(address))
+        return _real_connect(self, address, *args, **kwargs)
+
+    def _guarded_connect_ex(self, address, *args, **kwargs):
+        if isinstance(address, tuple) and address:
+            if not _host_allowed(address[0]):
+                _deny("connect_ex", repr(address))
+        return _real_connect_ex(self, address, *args, **kwargs)
+
+    def _guarded_getaddrinfo(host, *args, **kwargs):
+        if not _host_allowed(host):
+            _deny("dns", repr(host))
+        return _real_getaddrinfo(host, *args, **kwargs)
+
+    socket.socket.connect = _guarded_connect
+    socket.socket.connect_ex = _guarded_connect_ex
+    socket.getaddrinfo = _guarded_getaddrinfo
+'''
+
+
+def install_netguard(target_dir: Path) -> Path:
+    """Положить guard в каталог, который будет первым в `PYTHONPATH`."""
+    target_dir = Path(target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    path = target_dir / "sitecustomize.py"
+    path.write_text(_NETGUARD_SOURCE, encoding="utf-8")
+    return path
+
+
+def netguard_hits(log_path: Path) -> list[str]:
+    """Что guard зафиксировал. Пустой список = внешних соединений не было.
+
+    Пустой файл сам по себе доказательством НЕ является — доказательством
+    является связка «guard взведён» + «его самопроверка сработала» (см.
+    `selfcheck_netguard`).
+    """
+    path = Path(log_path)
+    if not path.is_file():
+        return []
+    return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def selfcheck_netguard(python: str, env: dict[str, str]) -> bool:
+    """Убедиться, что guard в ЭТОМ окружении действительно убивает процесс.
+
+    Без самопроверки «в логе пусто» означало бы что угодно, в том числе
+    «guard не подхватился». Проверка стоит доли секунды и выполняется ДО
+    прогона.
+    """
+    import subprocess
+
+    probe = "import socket; socket.getaddrinfo('example.invalid', 443)"
+    proc = subprocess.run(                                  # noqa: S603
+        [python, "-c", probe], env=env, capture_output=True, timeout=60,
+    )
+    return proc.returncode == 97
+
+
+# ─── Окружение ───────────────────────────────────────────────────────────────
+def scrub_environment(base: Optional[dict[str, str]] = None) -> dict[str, str]:
+    """Вернуть окружение без единого секрета и без путей пользователя."""
+    source = dict(base if base is not None else os.environ)
+    clean: dict[str, str] = {}
+    for key, value in source.items():
+        upper = key.upper()
+        if any(marker in upper for marker in SECRET_NAME_MARKERS):
+            continue
+        clean[key] = value
+    for name in FORBIDDEN_ENV:
+        clean.pop(name, None)
+    clean["PATH"] = os.pathsep.join(SAFE_PATH_DIRS)
+    return clean
+
+
+def assert_environment_clean(env: dict[str, str]) -> list[str]:
+    """Проверить окружение перед запуском. Пустой список = чисто."""
+    problems: list[str] = []
+    for name in FORBIDDEN_ENV:
+        if name in env:
+            problems.append(f"в окружении осталась переменная {name}")
+    for key in env:
+        upper = key.upper()
+        if any(marker in upper for marker in SECRET_NAME_MARKERS):
+            problems.append(f"в окружении осталась подозрительная переменная {key}")
+    for entry in env.get("PATH", "").split(os.pathsep):
+        if not entry:
+            continue
+        home = env.get("HOME", "")
+        if home and entry.startswith(home) and "fake" not in entry:
+            problems.append(f"PATH содержит каталог HOME: {entry}")
+    return problems
+
+
+def prepare_home(root: Path) -> Path:
+    """Пустой HOME без `~/.claude` и `~/.codex`.
+
+    Каталоги не просто отсутствуют — их появление тоже отслеживается
+    (`assert_home_clean`): интерактивный логин посреди прогона был бы ровно
+    тем, чего задание запрещает.
+    """
+    home = Path(root)
+    home.mkdir(parents=True, exist_ok=True)
+    for name in (".claude", ".codex", ".config", ".aws", ".ssh"):
+        shutil.rmtree(home / name, ignore_errors=True)
+    return home
+
+
+def assert_home_clean(home: Path) -> list[str]:
+    problems: list[str] = []
+    for name in (".claude", ".codex"):
+        if (Path(home) / name).exists():
+            problems.append(f"в изолированном HOME появился {name}")
+    return problems
+
+
+def build_process_env(
+    *,
+    repo_root: Path,
+    home: Path,
+    tmp_dir: Path,
+    netguard_dir: Path,
+    netguard_log: Path,
+    extra: Optional[dict[str, str]] = None,
+    path_prefix: Iterable[Path] = (),
+) -> dict[str, str]:
+    """Собрать окружение для НАСТОЯЩЕГО процесса стенда."""
+    env = scrub_environment()
+    env["HOME"] = str(home)
+    env["TMPDIR"] = str(tmp_dir)
+    env["LANG"] = env.get("LANG", "C.UTF-8")
+    env["LC_ALL"] = env.get("LC_ALL", "C.UTF-8")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONUNBUFFERED"] = "1"
+    # sitecustomize обязан быть ПЕРВЫМ: иначе его перекроет системный.
+    env["PYTHONPATH"] = os.pathsep.join(
+        [str(netguard_dir), str(repo_root)] + [p for p in env.get("PYTHONPATH", "").split(os.pathsep) if p]
+    )
+    env["E2E_NETGUARD"] = "1"
+    env["E2E_NETGUARD_LOG"] = str(netguard_log)
+    env["AUDIT_DISABLE_DOTENV"] = "1"
+    prefix = [str(Path(p)) for p in path_prefix]
+    if prefix:
+        env["PATH"] = os.pathsep.join(prefix + [env["PATH"]])
+    if extra:
+        env.update({str(k): str(v) for k, v in extra.items()})
+    return env
+
+
+# ─── Контроль дерева процессов ───────────────────────────────────────────────
+_REAL_CLI_RE = re.compile(r"(^|/)(claude|codex)(\s|$)")
+
+
+def process_tree_report(pids: Iterable[int]) -> dict[str, object]:
+    """Снимок дерева процессов прогона: argv каждого потомка.
+
+    Нужен, чтобы утверждение «настоящие CLI не запускались» было проверяемым
+    фактом, а не отсутствием записей в логе.
+    """
+    import subprocess
+
+    roots = [str(int(p)) for p in pids]
+    if not roots:
+        return {"processes": [], "suspicious": []}
+    try:
+        out = subprocess.run(                               # noqa: S603
+            ["ps", "-eo", "pid,ppid,args"], capture_output=True, text=True, timeout=60,
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return {"processes": [], "suspicious": ["ps недоступен"]}
+
+    rows: list[tuple[int, int, str]] = []
+    for line in out.splitlines()[1:]:
+        parts = line.strip().split(None, 2)
+        if len(parts) < 3:
+            continue
+        try:
+            rows.append((int(parts[0]), int(parts[1]), parts[2]))
+        except ValueError:
+            continue
+
+    wanted = {int(p) for p in roots}
+    changed = True
+    while changed:
+        changed = False
+        for pid, ppid, _args in rows:
+            if ppid in wanted and pid not in wanted:
+                wanted.add(pid)
+                changed = True
+
+    processes = [
+        {"pid": pid, "ppid": ppid, "args": args}
+        for pid, ppid, args in rows
+        if pid in wanted
+    ]
+    suspicious: list[str] = []
+    for entry in processes:
+        args = str(entry["args"])
+        if _REAL_CLI_RE.search(args) and "fake_providers" not in args and "/fake/" not in args:
+            suspicious.append(args)
+    return {"processes": processes, "suspicious": suspicious}
