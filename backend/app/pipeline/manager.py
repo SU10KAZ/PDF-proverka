@@ -273,6 +273,34 @@ BATCH_MAX_PARALLEL_CAP = 8
 _SKIPPED_CENTRAL_STAGE = _StageResult(success=True, data={"skipped": "central_only"})
 
 
+def _stage01_model_spends_paid_api(model: str | None) -> bool:
+    """Пойдёт ли Stage 01 с этой моделью в ПЛАТНЫЙ HTTP-провайдер.
+
+    Смысл различения. Пре-флайт гейт `paid_api_guard` устроен так, что при
+    `PAID_API_ENABLED=false` он блокирует ЛЮБОЙ вызов, не глядя на модель
+    (`_assert_basic` → `paid_api_disabled`). Для ноги, которая ходит в
+    OpenRouter, это правильно. Для конфигурации, где Stage 01 целиком идёт
+    через CLI (`claude-*` / `codex/*`) и платного API не касается вовсе, — это
+    ложное срабатывание: денег такой прогон не тратит, а этап падает.
+
+    Практическое следствие, из-за которого функция и появилась: удалённая нога
+    аудита ОБЯЗАНА гасить платный API (`remote_audit_runner.enforce_fake_providers`),
+    иначе подделка двух CLI ничего не закрывает. С прежней безусловной проверкой
+    удалённый прогон падал на Stage 01 всегда.
+
+    Прод не меняется: там `block_batch = ensemble/gpt-codex`, у него есть
+    GPT-нога через OpenRouter, значит функция вернёт True и гейт отработает как
+    прежде. Неизвестная модель тоже считается платной — сторона ошибки выбрана
+    в пользу защиты кошелька.
+    """
+    raw = str(model or "").strip()
+    if not raw:
+        return True
+    if raw.startswith("claude-") or raw.startswith("codex/"):
+        return False
+    return True
+
+
 def batch_max_parallel() -> int:
     """Число одновременно обрабатываемых проектов (BATCH_MAX_PARALLEL)."""
     raw = (os.environ.get("BATCH_MAX_PARALLEL") or "").strip()
@@ -2420,6 +2448,15 @@ class PipelineManager:
         # Stage 01 block analysis идёт в OpenRouter напрямую и
         # тратит реальные деньги. Блокируем только если глобальный kill-switch
         # PAID_API_ENABLED=false или превышен daily limit.
+        #
+        # Модель берётся по ключу `block_batch` — по нему её резолвит САМ Stage 01
+        # (`block_analysis/runner.py: ui_model = get_stage_model("block_batch")`).
+        # Ключа `block_analysis` в `STAGE_MODEL_CONFIG` нет вовсе, поэтому прежний
+        # вызов всегда получал литеральный фолбэк `openai/gpt-5.4` и проверял
+        # модель, которая могла не иметь отношения к прогону. На проде это было
+        # незаметно (`PAID_API_ENABLED=true`), а на удалённой ноге с поддельными
+        # провайдерами — фатально: `enforce_fake_providers` намеренно гасит
+        # платный API, и этап падал ВСЕГДА, ещё до первого блока.
         try:
             from backend.app.services.llm.paid_api_guard import (
                 PaidApiBlockedError,
@@ -2427,15 +2464,16 @@ class PipelineManager:
                 assert_paid_api_allowed,
             )
             from backend.app.core.config import get_stage_model
-            stage01_model = get_stage_model("block_analysis") or "openai/gpt-5.4"
-            assert_paid_api_allowed(PaidApiContext(
-                source="manager.stage01.orchestrator",
-                model=stage01_model,
-                project_id=pid,
-                version_id=getattr(job, "version_id", None) or "",
-                stage="block_analysis",
-                job_id=getattr(job, "job_id", "") or "",
-            ))
+            stage01_model = get_stage_model("block_batch") or "openai/gpt-5.4"
+            if _stage01_model_spends_paid_api(stage01_model):
+                assert_paid_api_allowed(PaidApiContext(
+                    source="manager.stage01.orchestrator",
+                    model=stage01_model,
+                    project_id=pid,
+                    version_id=getattr(job, "version_id", None) or "",
+                    stage="block_analysis",
+                    job_id=getattr(job, "job_id", "") or "",
+                ))
         except PaidApiBlockedError as _e:
             await self._log(
                 job,
