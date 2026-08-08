@@ -50,8 +50,6 @@ from backend.app.api.routers import (
     knowledge_base,
     objects,
     users,
-    model_control,
-    lms,
     critic_v2_ui,
     critic_v2_assisted_round1,
     migrated_findings,
@@ -221,8 +219,6 @@ app.include_router(knowledge_base.router)
 app.include_router(objects.router)
 app.include_router(users.router)
 app.include_router(schedule.router)
-app.include_router(model_control.router)
-app.include_router(lms.router)
 app.include_router(critic_v2_ui.router)
 app.include_router(critic_v2_assisted_round1.router)
 app.include_router(external_register.router)
@@ -333,7 +329,7 @@ async def api_info():
 
 
 # ─── Static Files & SPA ────────────────────────────────────
-# HTML-страницы берём из frontend/ (рядом с index.html / model-control.html).
+# HTML-страницы берём из frontend/ (рядом с index.html).
 # /static монтируем из frontend/static/ (js/ и css/ лежат там).
 _frontend_dir = ROOT_DIR / "frontend"
 _frontend_static_dir = _frontend_dir / "static"
@@ -391,21 +387,6 @@ async def serve_spa():
     # SPA-точка входа не должна кэшироваться: иначе браузер держит старый index.html
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.
-    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
-
-
-@app.get("/model-control")
-async def serve_model_control():
-    """Отдать страницу управления моделями."""
-    page_path = _html_dir / "model-control.html"
-    if not page_path.exists():
-        return {"message": "Model control page not found"}
-    css_path = (_static_mount_dir / "css" / "model-control.css") if _static_mount_dir else None
-    js_path = (_static_mount_dir / "js" / "model-control.js") if _static_mount_dir else None
-    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
-    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
-    html = page_path.read_text(encoding="utf-8")
-    html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 

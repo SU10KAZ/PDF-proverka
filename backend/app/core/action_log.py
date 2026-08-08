@@ -158,8 +158,6 @@ _NOISE_PATTERNS = [
     r"/resume-info$",
     r"/health$",
     r"^/api/usage/",         # виджеты расхода токенов опрашиваются постоянно
-    r"^/api/lms/models/loaded$",
-    r"^/api/model-control/server-profiles/probe$",
     r"^/api/audit/prepare-data/queue$",
     r"^/api/audit/.+/log$",  # live-лог аудита тянется в цикле
     r"^/api/document/.+/page/",              # рендер страниц при листании PDF
@@ -171,7 +169,6 @@ _NOISE_PATTERNS = [
     r"/run-active$",
     r"/run-status/",
     r"/comparison-statuses$",
-    r"^/api/model-control/remote-status$",
     r"/pairs/[^/]+/(page-image|block-image)$",  # картинки пар stage-comparison
 ]
 
