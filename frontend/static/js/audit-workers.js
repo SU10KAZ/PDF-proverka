@@ -37,6 +37,10 @@
     // хранилища не должна давать ни одной кнопки, а тем более права.
     perms: { canView: false, canOperate: false, canAdmin: false,
              subject: null, role: null, authenticated: false, diagnostics: null },
+    // Готовность воркеров к РЕАЛЬНОМУ аудиту: worker_id → отчёт совместимости.
+    // Считает центр; экран его только показывает.
+    auditTargets: {},
+    auditRemote: { enabled: false, reason: '', profile: '', revision: null },
   };
 
   const PERM = {
@@ -217,6 +221,95 @@
   }
 
   // ─── Карточка VPS ──────────────────────────────────────────────────────────
+  /**
+   * Панель ручного запуска реального аудита.
+   *
+   * Разметка строится только DOM-API: createElement + textContent. Сборка
+   * HTML из строк здесь запрещена и проверяется тестом: в панель попадают коды
+   * проектов и имена воркеров, то есть данные из чужого источника.
+   */
+  function renderRemoteAuditPanel() {
+    const block = $('remoteAuditBlock');
+    if (!block) return;
+    const info = $('remoteAuditInfo');
+    const select = $('remoteAuditWorker');
+    const submit = $('remoteAuditSubmit');
+    if (!info || !select || !submit) return;
+
+    if (!state.auditRemote.enabled) {
+      block.hidden = false;
+      info.textContent = state.auditRemote.reason
+        || 'Удалённое исполнение аудита выключено.';
+      replaceChildren(select, []);
+      select.disabled = true;
+      submit.disabled = true;
+      submit.title = state.auditRemote.reason || '';
+      return;
+    }
+    block.hidden = false;
+    const compatible = Object.values(state.auditTargets)
+      .filter((target) => target && target.compatible);
+    info.textContent = [
+      `Профиль ${state.auditRemote.profile}.`,
+      'Нормативный этап и финальная сборка выполняются на ЦЕНТРЕ.',
+      state.auditRemote.revision
+        ? `Ревизия центра: ${state.auditRemote.revision}.`
+        : 'Ревизия центра не задана — удалённый запуск запрещён.',
+      'Аудит занимает воркер целиком: одновременно не более одного.',
+    ].join(' ');
+
+    replaceChildren(select, compatible.map((target) => el('option', {
+      value: target.worker_id,
+      text: `${target.display_name || target.worker_id}`
+        + ` · ${target.provider_mode === 'real' ? 'НАСТОЯЩИЕ модели' : 'поддельные модели'}`
+        + ` · слот ${target.audit_slot_label}`,
+    })));
+    const canLaunch = state.perms.canOperate && compatible.length > 0;
+    select.disabled = compatible.length === 0;
+    submit.disabled = !canLaunch;
+    submit.title = state.perms.canOperate
+      ? (compatible.length ? '' : 'Нет ни одного совместимого воркера')
+      : DENIED_HINT;
+  }
+
+  /** Строка про реальный аудит: capability, режим провайдеров, слот. */
+  function remoteAuditLine(worker) {
+    const caps = worker.capabilities || {};
+    const jobTypes = Array.isArray(caps.job_types) ? caps.job_types : [];
+    const supported = jobTypes.indexOf('audit_pipeline_v1') !== -1;
+    if (!supported) {
+      return 'не поддерживается этой сборкой воркера '
+        + '(AUDIT_WORKER_AUDIT_PIPELINE_ENABLED=false)';
+    }
+    const real = caps.real_llm_enabled === true;
+    const target = state.auditTargets[worker.worker_id] || null;
+    const parts = [
+      'поддерживается',
+      real
+        ? '· провайдеры: НАСТОЯЩИЕ Claude/Codex'
+        : '· провайдеры: поддельные (тестовый режим)',
+      `· слот аудита ${target ? target.audit_slot_label : `0/${1}`}`,
+    ];
+    if (caps.pipeline_revision) {
+      parts.push(`· ревизия ${String(caps.pipeline_revision)}`);
+    }
+    if (target && !target.compatible) {
+      const reasons = (target.reasons || [])
+        .map((r) => r && r.message)
+        .filter(Boolean)
+        .join('; ');
+      parts.push(`· НЕ готов: ${reasons}`);
+    }
+    return parts.join(' ');
+  }
+
+  function remoteAuditWarning(worker) {
+    const target = state.auditTargets[worker.worker_id] || null;
+    if (target && !target.compatible) return true;
+    const caps = worker.capabilities || {};
+    return caps.real_llm_enabled === true;
+  }
+
   function renderWorker(worker) {
     const conn = worker.connection_status;
     const offline = conn === 'offline';
@@ -271,6 +364,11 @@
           + ` · доказанный максимум этапа ${num(slotInfo.max_verified_slots, 1)})`
         : `${num(worker.configured_max_slots, 1)}`),
       kv('Активных заданий', (worker.active_jobs || []).length),
+      // Реальный аудит — отдельная строка, а не «ещё один тип задания»: у него
+      // свой слот, свой лимит и свой режим провайдеров, и оператор обязан
+      // видеть разницу между «поддельные CLI» и «настоящая подписка».
+      kv('Реальный аудит', remoteAuditLine(worker),
+         remoteAuditWarning(worker) ? 'kv-critical' : ''),
       kv('Исполнитель', [
         EXECUTOR_LABEL[executor.status] || executor.status,
         executor.last_heartbeat_at ? `· ${humanStamp(executor.last_heartbeat_at)}` : '',
@@ -679,12 +777,32 @@
         return;
       }
 
-      const [workersData, jobsData] = await Promise.all([
+      const [workersData, jobsData, auditData] = await Promise.all([
         api('/api/workers'),
         api('/api/workers/jobs/list?limit=50'),
+        // Готовность к реальному аудиту приходит отдельной ручкой: она читает
+        // ревизию кода и занятость слота аудита, которых нет в общем списке.
+        // Ошибка здесь не должна ронять экран — подсистема воркеров работает
+        // и без удалённого исполнения.
+        api('/api/workers/audit/targets').catch(() => null),
       ]);
       state.workers = workersData.workers || [];
       state.jobs = jobsData.jobs || [];
+      state.auditTargets = {};
+      if (auditData) {
+        (auditData.workers || []).forEach((target) => {
+          if (target && target.worker_id) {
+            state.auditTargets[target.worker_id] = target;
+          }
+        });
+        state.auditRemote = {
+          enabled: !!auditData.remote_execution_enabled,
+          reason: auditData.disabled_reason || '',
+          profile: auditData.profile || '',
+          revision: auditData.center_pipeline_revision || null,
+        };
+      }
+      renderRemoteAuditPanel();
 
       const s = workersData.summary || {};
       const summary = [
@@ -914,6 +1032,48 @@
       $('createHint').textContent = `ошибка: ${error.message}`;
     }
   });
+
+  const remoteAuditForm = $('remoteAuditForm');
+  if (remoteAuditForm) {
+    remoteAuditForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const hint = $('remoteAuditHint');
+      const workerId = $('remoteAuditWorker').value;
+      const projectId = $('remoteAuditProject').value.trim();
+      const versionId = $('remoteAuditVersion').value.trim();
+      const target = state.auditTargets[workerId] || {};
+      // Подтверждение говорит правду о том, что произойдёт: где выполнится
+      // работа, какие провайдеры включены и что нормативный этап останется на
+      // центре. Без этого «отправить на воркер» — кнопка с неизвестным эффектом.
+      const warning = [
+        `Проект: ${projectId}${versionId ? ` (${versionId})` : ''}`,
+        `Воркер: ${target.display_name || workerId}`,
+        `Профиль: ${state.auditRemote.profile}`,
+        target.provider_mode === 'real'
+          ? 'ВНИМАНИЕ: на воркере включены НАСТОЯЩИЕ Claude/Codex — будет израсходована подписка.'
+          : 'Провайдеры поддельные: настоящие Claude/Codex вызваны не будут.',
+        'Нормативный этап и финальная сборка выполнятся на центре.',
+        'Пакет проекта соберётся при старте элемента очереди.',
+      ].join('\n');
+      if (!askConfirmation('Отправить аудит на воркер?', warning, 'ОТПРАВИТЬ')) {
+        hint.textContent = 'отменено оператором';
+        return;
+      }
+      hint.textContent = 'отправка…';
+      try {
+        const created = await dangerousPost('/api/workers/audit/launch', {
+          worker_id: workerId,
+          project_id: projectId,
+          version_id: versionId || null,
+          action: $('remoteAuditAction').value,
+        });
+        hint.textContent = `поставлено в очередь: ${created.notice || ''}`;
+        await refresh();
+      } catch (error) {
+        hint.textContent = `ошибка: ${error.message}`;
+      }
+    });
+  }
 
   $('refreshBtn').addEventListener('click', refresh);
   $('autoRefresh').addEventListener('change', (event) => {

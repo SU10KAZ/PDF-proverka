@@ -123,6 +123,46 @@
             </p>
         </section>
 
+        <!-- Зона 3б: ручной запуск РЕАЛЬНОГО аудита на выбранном воркере.
+             Автоматического выбора воркера нет намеренно (§3.2 задания этапа
+             ExecutionBackend): пока нет ни квот подписок, ни модели «у кого
+             скоро сгорит лимит», выбор делает человек. -->
+        <section class="block" id="remoteAuditBlock" hidden>
+            <h2>Отправить РЕАЛЬНЫЙ аудит на воркер</h2>
+            <p class="hint" id="remoteAuditInfo"></p>
+            <form id="remoteAuditForm" class="form-grid">
+                <label>Воркер
+                    <select id="remoteAuditWorker" class="input" required></select>
+                </label>
+                <label>Код проекта
+                    <input id="remoteAuditProject" class="input" maxlength="300" required>
+                </label>
+                <label>Версия
+                    <input id="remoteAuditVersion" class="input" maxlength="64"
+                           placeholder="например v002">
+                </label>
+                <label>Действие
+                    <select id="remoteAuditAction" class="input">
+                        <option value="full">полный аудит</option>
+                        <option value="audit">аудит без оптимизации</option>
+                        <option value="resume">продолжить с места обрыва</option>
+                    </select>
+                </label>
+                <div class="form-actions">
+                    <button type="submit" id="remoteAuditSubmit"
+                            class="btn btn--danger">Отправить на воркер</button>
+                    <span id="remoteAuditHint" class="hint"></span>
+                </div>
+            </form>
+            <p class="hint">
+                Пакет проекта собирается центром при старте элемента очереди и
+                уходит на воркер целиком. Нормативный этап, перенос вердиктов и
+                финальная сборка выполняются ТОЛЬКО на центре. Одновременно на
+                одном воркере выполняется не более одного реального аудита;
+                тестовые задания с ним не смешиваются.
+            </p>
+        </section>
+
         <!-- Зона 4: история попыток выбранного задания.
              Строится безопасными DOM-API (textContent), а не innerHTML:
              сюда попадают данные с полу-доверенного воркера. -->
