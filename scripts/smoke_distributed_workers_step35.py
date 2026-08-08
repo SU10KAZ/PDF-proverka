@@ -518,8 +518,17 @@ def _scenario(s: Smoke) -> None:  # noqa: C901 — сценарий линейн
         check(False, "локальная копия удалена")
 
     step("43. Центральная копия результата НЕ удалена")
-    validated = s.center_dir / "validated_results" / target["job_id"] / target["attempt_id"]
-    check(validated.is_dir() and any(validated.iterdir()),
+    # Смотреть только в validated_results нельзя: `confirmed[0]` выбирается по
+    # порядку каталогов (UUID), и им может оказаться попытка, признанная
+    # потерянной, — её центральная копия лежит в superseded_results. Проверка
+    # I-14 звучит как «удаление локальной копии не трогает ЦЕНТРАЛЬНУЮ», а не
+    # «результат обязан быть опубликован», поэтому ищем в обоих хранилищах.
+    central = [
+        root / target["job_id"] / target["attempt_id"]
+        for root in (s.center_dir / "validated_results",
+                     s.center_dir / "superseded_results")
+    ]
+    check(any(path.is_dir() and any(path.iterdir()) for path in central),
           "центральный пакет результата на месте (I-14)")
 
     step("44-46. Перезапустить центр, агента и исполнителя")
