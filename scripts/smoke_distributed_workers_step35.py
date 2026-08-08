@@ -51,6 +51,14 @@ PY = sys.executable or "python3"
 BOOTSTRAP = "smoke-bootstrap-secret-0123456789abcdef"
 INTENT = {"X-Requested-With": "audit-workers"}
 
+# С пред-пайплайнового этапа операторские действия закрыты РОЛЯМИ, и режим
+# «портальная аутентификация выключена» больше не открывает изменяющие ручки
+# даже с DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN. Smoke ходит настоящей
+# сессией администратора — как настоящий оператор.
+SMOKE_USER = "smoke-step35-admin"
+SMOKE_PASSWORD = "smoke-step35-password"
+SMOKE_SESSION_SECRET = "smoke-step35-session-secret-0123456789ab"
+
 PROJECT_CODE = "13АВ/РД-АР3-К7"
 
 _STEP = 0
@@ -112,13 +120,41 @@ class Smoke:
         self.center: subprocess.Popen | None = None
         self.agent: subprocess.Popen | None = None
         self.executor: subprocess.Popen | None = None
-        self.admin = httpx.Client(
-            base_url=self.url, timeout=20.0,
-            headers={"X-Requested-With": "audit-workers"},
-        )
+        self._password_hash = ""
+        self.admin = self._admin_client()
         self.worker_id = ""
         self.log_dir = root / "logs"
         self.log_dir.mkdir(parents=True, exist_ok=True)
+
+    # ─── Портальная сессия администратора ────────────────────────────────────
+    def password_hash(self) -> str:
+        if not self._password_hash:
+            from backend.app.core import portal_auth
+
+            self._password_hash = portal_auth.hash_password(SMOKE_PASSWORD)
+        return self._password_hash
+
+    def role_env(self) -> dict[str, str]:
+        from backend.app.services.distributed_workers import authorization as az
+
+        return {
+            "PORTAL_AUTH_ENABLED": "true",
+            "PORTAL_AUTH_USERS": f"{SMOKE_USER}:{self.password_hash()}",
+            "PORTAL_SESSION_SECRET": SMOKE_SESSION_SECRET,
+            az.ENV_ADMINS: SMOKE_USER,
+        }
+
+    def _admin_client(self) -> httpx.Client:
+        from backend.app.core import portal_auth
+
+        for key, value in self.role_env().items():
+            os.environ[key] = value
+        settings = portal_auth.get_settings()
+        client = httpx.Client(base_url=self.url, timeout=20.0, headers=INTENT)
+        client.cookies.set(
+            settings.cookie_name, portal_auth.issue_token(SMOKE_USER, settings)
+        )
+        return client
 
     # ─── Процессы ────────────────────────────────────────────────────────────
     def center_env(self) -> dict[str, str]:
@@ -130,8 +166,8 @@ class Smoke:
             "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": BOOTSTRAP,
             "DISTRIBUTED_WORKERS_LONG_POLL_SEC": "2",
             "DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES": "65536",
-            "PORTAL_AUTH_ENABLED": "false",
-            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "true",
+            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "false",
+            **self.role_env(),
         })
         return env
 
