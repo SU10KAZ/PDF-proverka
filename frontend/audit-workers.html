@@ -17,7 +17,7 @@
 <div class="shell">
     <header class="topbar">
         <div>
-            <p class="eyebrow">Этап 0 — вертикальный срез</p>
+            <p class="eyebrow">Этап 3.5 — усиление вертикального среза</p>
             <h1>Аудит-воркеры</h1>
             <p class="lead">
                 Сторонние VPS, выполняющие задания платформы. На этом этапе доступен
@@ -85,9 +85,12 @@
                 <label>Воркер
                     <select id="jobWorker" class="input" required></select>
                 </label>
-                <label>Идентификатор проекта
+                <label>Код проекта
+                    <!-- Кириллица, пробелы, кавычки и «/» допустимы: реальные
+                         коды выглядят как «13АВ/РД-АР3-К7». В файловый путь
+                         этот код не попадает никогда. -->
                     <input id="jobProject" class="input" value="test-project"
-                           pattern="[A-Za-z0-9._\- ]+" required>
+                           maxlength="200" required>
                 </label>
                 <label>Метка
                     <input id="jobLabel" class="input" value="smoke"
@@ -115,7 +118,26 @@
             </p>
         </section>
 
-        <!-- Зона 4: логи выбранного задания -->
+        <!-- Зона 4: история попыток выбранного задания.
+             Строится безопасными DOM-API (textContent), а не innerHTML:
+             сюда попадают данные с полу-доверенного воркера. -->
+        <section class="block" id="attemptsBlock" hidden>
+            <h2>История попыток <span id="attemptsJobId" class="mono"></span></h2>
+            <p class="hint" id="attemptsJobTitle"></p>
+            <div id="attempts" class="attempts"></div>
+        </section>
+
+        <!-- Зона 5: журнал операторских действий (только чтение) -->
+        <section class="block" id="actionsBlock" hidden>
+            <h2>Журнал операторских действий</h2>
+            <p class="hint">
+                Журнал неизменяемый: эндпоинта удаления записей нет ни в API,
+                ни в интерфейсе.
+            </p>
+            <div id="adminActions" class="actions-log"></div>
+        </section>
+
+        <!-- Зона 6: логи выбранного задания -->
         <section class="block" id="logsBlock" hidden>
             <h2>Логи задания <span id="logsJobId" class="mono"></span></h2>
             <pre id="logs" class="logs"></pre>

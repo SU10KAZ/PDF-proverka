@@ -1,4 +1,4 @@
-/* Экран «Аудит-воркеры» (этап 0).
+/* Экран «Аудит-воркеры» (этапы 0 и 3.5).
  *
  * Самодостаточная страница по образцу model-control.js: без бандлера и без
  * правок 19-тысячестрочного app.js — так экран не может сломать основной SPA.
@@ -6,12 +6,22 @@
  * Правила отображения, взятые из техпроекта:
  *   * состояние СВЯЗИ и состояние ИСПОЛНЕНИЯ показываются раздельно; молчание
  *     воркера никогда не рисуется как ошибка задания;
+ *   * агент и исполнитель показываются ОТДЕЛЬНО: «агент онлайн» ещё не значит,
+ *     что VPS способен работать;
  *   * процент прогресса рисуется ТОЛЬКО при percent_reliable, иначе —
  *     неопределённый индикатор, длительность и последний лог;
  *   * при потере связи метрики ресурсов сереют с отметкой времени, но НЕ
  *     обнуляются (обнулить = соврать), а свободные слоты обнуляются, потому
  *     что назначать вслепую нельзя;
- *   * результат без подтверждения приёма помечается retention_unconfirmed.
+ *   * результат без подтверждения приёма помечается retention_unconfirmed;
+ *   * результат устаревшей попытки подписывается явно и никогда не выдаётся
+ *     за актуальный.
+ *
+ * Безопасность разметки. Данные приходят с ПОЛУ-ДОВЕРЕННОГО воркера и от
+ * оператора (причины, заметки). Карточки и списки строятся DOM-API
+ * (createElement + textContent), а не склейкой строк: один забытый esc() в
+ * шаблоне давал исполнение чужого скрипта в аутентифицированной сессии
+ * оператора — с доступом к ротации токена.
  */
 (() => {
   'use strict';
@@ -19,13 +29,58 @@
   const REFRESH_MS = 5000;
   const $ = (id) => document.getElementById(id);
 
-  const state = { enabled: false, timer: null, workers: [], jobs: [], logsJobId: null };
+  const state = {
+    enabled: false, timer: null, workers: [], jobs: [],
+    logsJobId: null, attemptsJobId: null,
+  };
 
-  // ─── Утилиты ───────────────────────────────────────────────────────────────
-  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
+  // Подтверждающие фразы обязаны совпадать с attempt_service на центре.
+  const CONFIRM = {
+    cancel: 'ОТМЕНИТЬ',
+    markLost: 'ПОПЫТКА ПОТЕРЯНА',
+    newAttempt: 'НОВАЯ ПОПЫТКА',
+    deleteData: 'УДАЛИТЬ ДАННЫЕ',
+  };
 
+  // ─── Безопасное построение DOM ─────────────────────────────────────────────
+  function el(tag, options = {}, children = []) {
+    const node = document.createElement(tag);
+    if (options.className) node.className = options.className;
+    if (options.title) node.title = String(options.title);
+    // ВСЕГДА textContent: никакого innerHTML для данных.
+    if (options.text !== undefined && options.text !== null) {
+      node.textContent = String(options.text);
+    }
+    if (options.dataset) {
+      Object.entries(options.dataset).forEach(([k, v]) => {
+        node.dataset[k] = String(v);
+      });
+    }
+    if (options.attrs) {
+      Object.entries(options.attrs).forEach(([k, v]) => node.setAttribute(k, String(v)));
+    }
+    (Array.isArray(children) ? children : [children])
+      .filter(Boolean)
+      .forEach((child) => node.appendChild(child));
+    return node;
+  }
+
+  const text = (value) => document.createTextNode(String(value ?? ''));
+
+  function kv(label, value, extraClass) {
+    return el('div', { className: extraClass || '' }, [
+      el('dt', { text: label }),
+      el('dd', { text: value }),
+    ]);
+  }
+
+  function replaceChildren(container, nodes) {
+    container.textContent = '';
+    (Array.isArray(nodes) ? nodes : [nodes]).filter(Boolean)
+      .forEach((n) => container.appendChild(n));
+  }
+
+  // ─── Форматирование ────────────────────────────────────────────────────────
   function humanAge(seconds) {
     if (seconds === null || seconds === undefined) return '—';
     const s = Math.max(0, Math.round(seconds));
@@ -42,18 +97,18 @@
     return `${Math.floor(s / 3600)} ч ${Math.floor((s % 3600) / 60)} мин`;
   }
 
-  // Данные ресурсов приходят с ПОЛУ-ДОВЕРЕННОГО воркера и попадают в innerHTML.
-  // Не число — значит не показываем: экранирования мало, потому что число здесь
-  // единственный осмысленный тип, а строка в этом месте — всегда чужая затея.
+  // Данные ресурсов приходят с ПОЛУ-ДОВЕРЕННОГО воркера. Не число — значит не
+  // показываем: число здесь единственный осмысленный тип.
   function num(value, fallback = '—') {
     return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
   }
 
   function humanBytes(bytes) {
-    if (bytes === null || bytes === undefined) return '—';
+    if (typeof bytes !== 'number' || !Number.isFinite(bytes)) return '—';
     if (bytes < 1024) return `${bytes} Б`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
-    return `${(bytes / 1024 / 1024).toFixed(2)} МБ`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} МБ`;
+    return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} ГБ`;
   }
 
   function humanStamp(epochSeconds) {
@@ -66,6 +121,29 @@
     offline: '● связь потеряна', reconnecting: '● догоняет события',
   };
 
+  const EXECUTOR_LABEL = {
+    online: '● исполнитель работает',
+    stale: '● исполнитель молчит',
+    offline: '● исполнитель остановлен',
+    interrupted: '● исполнитель прерван',
+    unknown: '● исполнитель неизвестен',
+  };
+
+  const DISK_LABEL = {
+    ok: 'диск в норме', warning: 'мало места', critical: 'критически мало места',
+    unknown: 'нет данных о диске',
+  };
+
+  // ─── HTTP ──────────────────────────────────────────────────────────────────
+  function idempotencyKey() {
+    // Ключ на КЛИК: повтор того же запроса (двойной клик, ретрай) не должен
+    // выполнять действие второй раз.
+    const rnd = (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    return `ui-${rnd}`;
+  }
+
   async function api(path, options) {
     const response = await fetch(path, options);
     let body = null;
@@ -77,6 +155,34 @@
     return body;
   }
 
+  /** Опасное операторское действие: заголовок намерения + ключ идемпотентности. */
+  async function dangerousPost(path, body) {
+    return api(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Вместе с SameSite=lax у портальной cookie это и есть CSRF-защита:
+        // межсайтовый простой запрос такого заголовка не поставит.
+        'X-Requested-With': 'audit-workers',
+        'Idempotency-Key': idempotencyKey(),
+      },
+      body: JSON.stringify(body || {}),
+    });
+  }
+
+  /** Диалог опасного действия: причина + подтверждающая фраза. */
+  function askConfirmation(title, warning, phrase) {
+    const reason = window.prompt(`${title}\n\n${warning}\n\nПричина (обязательно):`, '');
+    if (reason === null || !reason.trim()) return null;
+    const typed = window.prompt(
+      `Для подтверждения введите ровно: ${phrase}`, '');
+    if (typed === null || typed.trim() !== phrase) {
+      if (typed !== null) window.alert('Подтверждающая фраза не совпала — действие отменено.');
+      return null;
+    }
+    return { reason: reason.trim(), confirmation: phrase };
+  }
+
   // ─── Карточка VPS ──────────────────────────────────────────────────────────
   function renderWorker(worker) {
     const conn = worker.connection_status;
@@ -86,116 +192,311 @@
     const cpu = snapshot.cpu || {};
     const disk = snapshot.disk || {};
     const slots = snapshot.slots || {};
-    // Свободные слоты обнуляются при потере связи: назначать вслепую нельзя.
+    const executor = worker.executor || { status: 'unknown' };
+    const diskReport = worker.disk || { level: 'unknown' };
     const freeSlots = offline ? 0 : (worker.calculated_free_slots ?? 0);
-
     const pending = worker.registration_status === 'pending';
-    const warnings = (worker.warnings || []).map(
-      (w) => `<li class="warn">⚠ ${esc(w.message || w.code)}</li>`).join('');
 
-    // Ожидающему одобрения нужна и вторая кнопка: заявка могла прийти от кого
-    // угодно, знающего bootstrap-secret, и «просто не одобрять» — не решение.
+    const head = el('header', { className: 'card-head' }, [
+      el('div', {}, [
+        el('h3', { text: worker.display_name || worker.worker_id }),
+        el('p', { className: 'mono small', text: worker.worker_id }),
+      ]),
+      el('div', { className: 'card-status' }, [
+        el('span', { className: `status status--${conn}`,
+          text: `${CONNECTION_LABEL[conn] || conn}, ${humanAge(worker.seconds_since_seen)}` }),
+        // Отдельная строка про исполнителя: агент онлайн ≠ VPS работает.
+        el('span', {
+          className: `status status--exec status--exec-${executor.status}`,
+          text: EXECUTOR_LABEL[executor.status] || EXECUTOR_LABEL.unknown,
+          title: executor.executor_instance_id
+            ? `executor_instance_id: ${executor.executor_instance_id}`
+            : 'исполнитель ещё не отчитывался',
+        }),
+      ]),
+    ]);
+
+    const list = el('dl', { className: 'kv' }, [
+      kv('Регистрация', worker.registration_status),
+      kv('Состояние', worker.worker_state),
+      kv('Версия агента', worker.worker_version || '—'),
+      kv('Протокол', `v${num(worker.protocol_version, 1)}`),
+      kv('RAM', `${num(ram.available_gb)} / ${num(ram.total_gb)} ГБ`),
+      kv('CPU', `${num(cpu.cores)} ядер · LA5 ${num(cpu.la5)}`),
+      kv('Диск', `${num(disk.free_gb)} / ${num(disk.total_gb)} ГБ`),
+      kv('Слоты', `свободно ${num(freeSlots, 0)} из ${num(worker.configured_max_slots, 1)}`),
+      kv('Активных заданий', (worker.active_jobs || []).length),
+      kv('Исполнитель', [
+        EXECUTOR_LABEL[executor.status] || executor.status,
+        executor.last_heartbeat_at ? `· ${humanStamp(executor.last_heartbeat_at)}` : '',
+        `· процессов: ${num(executor.running_processes, 0)}`,
+        executor.ambiguous_processes ? `· неоднозначных: ${executor.ambiguous_processes}` : '',
+      ].filter(Boolean).join(' ')),
+      kv('Хранение', [
+        DISK_LABEL[diskReport.level] || DISK_LABEL.unknown,
+        `· свободно ${humanBytes(diskReport.free_bytes)}`,
+        `· кандидатов на очистку ${num(diskReport.cleanup_candidates, 0)}`,
+        `(${humanBytes(diskReport.cleanup_candidates_bytes)})`,
+        `· неподтверждённых ${humanBytes(diskReport.unconfirmed_results_bytes)}`,
+      ].join(' '), diskReport.level === 'critical' ? 'kv-critical' : ''),
+    ]);
+
+    const warnings = (worker.warnings || [])
+      .filter((w) => w && typeof w === 'object')
+      .map((w) => el('li', { className: 'warn', text: `⚠ ${w.message || w.code || ''}` }));
+
     const actions = pending
-      ? `<button class="btn btn--primary" data-approve="${esc(worker.worker_id)}">Одобрить</button>
-         <button class="btn btn--danger" data-reject="${esc(worker.worker_id)}">Отклонить</button>`
-      : `<button class="btn" data-revoke="${esc(worker.worker_id)}">Отозвать</button>`;
+      ? [
+        el('button', { className: 'btn btn--primary', text: 'Одобрить',
+          dataset: { approve: worker.worker_id } }),
+        el('button', { className: 'btn btn--danger', text: 'Отклонить',
+          dataset: { reject: worker.worker_id } }),
+      ]
+      : [
+        el('button', { className: 'btn', text: 'Отозвать',
+          dataset: { revoke: worker.worker_id } }),
+      ];
 
-    return `
-      <article class="card ${offline ? 'card--offline' : ''} ${pending ? 'card--pending' : ''}">
-        <header class="card-head">
-          <div>
-            <h3>${esc(worker.display_name)}</h3>
-            <p class="mono small">${esc(worker.worker_id)}</p>
-          </div>
-          <span class="status status--${esc(conn)}">
-            ${CONNECTION_LABEL[conn] || esc(conn)}, ${humanAge(worker.seconds_since_seen)}
-          </span>
-        </header>
-        <dl class="kv">
-          <div><dt>Регистрация</dt><dd>${esc(worker.registration_status)}</dd></div>
-          <div><dt>Состояние</dt><dd>${esc(worker.worker_state)}</dd></div>
-          <div><dt>Версия агента</dt><dd>${esc(worker.worker_version || '—')}</dd></div>
-          <div><dt>Протокол</dt><dd>v${esc(worker.protocol_version)}</dd></div>
-          <div><dt>RAM</dt><dd>${num(ram.available_gb)} / ${num(ram.total_gb)} ГБ${
-            ram.swap_used_gb ? ` · своп ${num(ram.swap_used_gb)} ГБ` : ''}</dd></div>
-          <div><dt>CPU</dt><dd>${num(cpu.cores)} ядер · LA5 ${num(cpu.la5)}</dd></div>
-          <div><dt>Диск</dt><dd>${num(disk.free_gb)} / ${num(disk.total_gb)} ГБ</dd></div>
-          <div><dt>Слоты</dt><dd>
-            свободно ${freeSlots} из ${esc(worker.configured_max_slots)}
-            ${slots.binding_constraint
-              ? `<span class="hint" title="${esc(slots.explanation || '')}">ⓘ ограничивает ${esc(slots.binding_constraint)}</span>`
-              : ''}
-          </dd></div>
-          <div><dt>Активных заданий</dt><dd>${(worker.active_jobs || []).length}</dd></div>
-        </dl>
-        ${offline ? '<p class="hint">Метрики — последние известные, на момент связи.</p>' : ''}
-        ${warnings ? `<ul class="warnings">${warnings}</ul>` : ''}
-        <footer class="card-actions">${actions}</footer>
-      </article>`;
+    const card = el('article', {
+      className: `card${offline ? ' card--offline' : ''}${pending ? ' card--pending' : ''}`,
+    }, [head, list]);
+
+    if (offline) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Метрики — последние известные, на момент связи.' }));
+    }
+    if (executor.status !== 'online' && !pending) {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'Локальный исполнитель не работает — новые задания выполняться не будут.' }));
+    }
+    if (diskReport.level === 'critical') {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'Критически мало места: новые задания не выдаются. Текущие продолжают '
+            + 'работу, неподтверждённые результаты не удаляются.' }));
+    }
+    if (warnings.length) card.appendChild(el('ul', { className: 'warnings' }, warnings));
+    card.appendChild(el('footer', { className: 'card-actions' }, actions));
+    return card;
   }
 
   // ─── Строка задания ────────────────────────────────────────────────────────
   function renderProgress(progress) {
-    if (!progress) return '';
+    if (!progress) return null;
     if (progress.percent_reliable && progress.percent !== null) {
-      return `
-        <div class="progress">
-          <div class="progress-bar"><span style="width:${num(progress.percent, 0)}%"></span></div>
-          <span class="mono">${num(progress.processed)} / ${num(progress.total)} ${esc(progress.unit || '')}
-            (${num(progress.percent)}%)</span>
-        </div>`;
+      const bar = el('div', { className: 'progress-bar' }, [el('span')]);
+      bar.firstChild.style.width = `${num(progress.percent, 0)}%`;
+      return el('div', { className: 'progress' }, [
+        bar,
+        el('span', { className: 'mono',
+          text: `${num(progress.processed)} / ${num(progress.total)} `
+              + `${progress.unit || ''} (${num(progress.percent)}%)` }),
+      ]);
     }
-    // Достоверного процента нет — показываем неопределённый индикатор,
-    // длительность, последний лог и число завершённых операций.
-    return `
-      <div class="progress">
-        <div class="progress-bar progress-bar--indeterminate"><span></span></div>
-        <span class="hint">
-          прогресс не оценивается · ${humanDuration(progress.elapsed_sec)} ·
-          операций: ${num(progress.completed_operations, 0)}
-        </span>
-      </div>`;
+    return el('div', { className: 'progress' }, [
+      el('div', { className: 'progress-bar progress-bar--indeterminate' }, [el('span')]),
+      el('span', { className: 'hint',
+        text: `прогресс не оценивается · ${humanDuration(progress.elapsed_sec)} · `
+            + `операций: ${num(progress.completed_operations, 0)}` }),
+    ]);
   }
 
   function renderJob(job) {
     const progress = job.progress || null;
-    const eta = progress && progress.eta_sec
-      ? ` · осталось ~${humanDuration(progress.eta_sec)}`
-      : '';
-    const last = progress && progress.last_significant_event
-      ? `<p class="hint">последнее: ${esc(progress.last_significant_event)}</p>` : '';
-    const unconfirmed = job.retention_unconfirmed
-      ? `<p class="warn">⚠ ${esc(job.retention_warning || 'Центр не подтвердил приём')}</p>` : '';
-    const canDownload = job.state === 'completed';
-    // Реквизиты принятого пакета: без них «завершено» ничем не подтверждено.
-    const accepted = job.validated_at
-      ? `<dl class="kv kv--result">
-           <div><dt>SHA-256</dt><dd class="mono small">${esc(job.result_package_hash || '—')}</dd></div>
-           <div><dt>Размер</dt><dd>${humanBytes(job.result_package_size)}</dd></div>
-           <div><dt>Принят</dt><dd>${humanStamp(job.validated_at)}</dd></div>
-           <div><dt>Хранится до</dt><dd>${humanStamp(job.retention_until)}</dd></div>
-         </dl>` : '';
-    return `
-      <article class="job job--${esc(job.state)}">
-        <header>
-          <div>
-            <strong>${esc(job.project_id)}</strong>
-            <span class="mono small">${esc(job.job_id.slice(0, 8))} · попытка ${esc(job.attempt_no)}</span>
-          </div>
-          <span class="badge">${esc(job.display_status)}</span>
-        </header>
-        ${renderProgress(progress)}
-        ${eta ? `<p class="hint">${eta.slice(3)}</p>` : ''}
-        ${last}
-        ${accepted}
-        ${unconfirmed}
-        <footer class="job-actions">
-          <button class="btn btn--small" data-logs="${esc(job.job_id)}">Логи</button>
-          ${canDownload
-            ? `<a class="btn btn--small" href="/api/workers/jobs/${esc(job.job_id)}/result">Скачать результат</a>`
-            : ''}
-        </footer>
-      </article>`;
+    const nodes = [];
+
+    nodes.push(el('header', {}, [
+      el('div', {}, [
+        el('strong', { text: job.project_display_name || job.project_id }),
+        el('span', { className: 'mono small',
+          text: `${String(job.job_id).slice(0, 8)} · попытка ${num(job.attempt_no, 1)}` }),
+      ]),
+      el('span', { className: 'badge', text: job.display_status || job.state }),
+    ]));
+
+    const bar = renderProgress(progress);
+    if (bar) nodes.push(bar);
+    if (progress && progress.eta_sec) {
+      nodes.push(el('p', { className: 'hint',
+        text: `осталось ~${humanDuration(progress.eta_sec)}` }));
+    }
+    if (progress && progress.last_significant_event) {
+      nodes.push(el('p', { className: 'hint',
+        text: `последнее: ${progress.last_significant_event}` }));
+    }
+    if (job.validated_at) {
+      nodes.push(el('dl', { className: 'kv kv--result' }, [
+        kv('SHA-256', job.result_package_hash || '—'),
+        kv('Размер', humanBytes(job.result_package_size)),
+        kv('Принят', humanStamp(job.validated_at)),
+        kv('Хранится до', humanStamp(job.retention_until)),
+      ]));
+    }
+    if (job.retention_unconfirmed) {
+      nodes.push(el('p', { className: 'warn',
+        text: `⚠ ${job.retention_warning || 'Центр не подтвердил приём'}` }));
+    }
+
+    const actions = [
+      el('button', { className: 'btn btn--small', text: 'Логи',
+        dataset: { logs: job.job_id } }),
+      el('button', { className: 'btn btn--small', text: 'Попытки',
+        dataset: { attempts: job.job_id } }),
+    ];
+    if (job.state === 'completed') {
+      const link = el('a', { className: 'btn btn--small', text: 'Скачать результат' });
+      link.href = `/api/workers/jobs/${encodeURIComponent(job.job_id)}/result`;
+      actions.push(link);
+    }
+    nodes.push(el('footer', { className: 'job-actions' }, actions));
+    return el('article', { className: `job job--${job.state}` }, nodes);
+  }
+
+  // ─── История попыток ───────────────────────────────────────────────────────
+  function renderAttempt(attempt, jobId) {
+    const disposition = attempt.attempt_disposition || 'active';
+    const nodes = [];
+
+    nodes.push(el('header', { className: 'attempt-head' }, [
+      el('div', {}, [
+        el('strong', { text: `Попытка №${num(attempt.attempt_number, 1)}` }),
+        el('span', { className: 'mono small', text: attempt.attempt_id }),
+      ]),
+      el('span', {
+        className: `badge badge--${disposition}`,
+        text: attempt.is_current
+          ? `текущая · ${attempt.disposition_label || disposition}`
+          : `устаревшая · ${attempt.disposition_label || disposition}`,
+      }),
+    ]));
+
+    nodes.push(el('dl', { className: 'kv' }, [
+      kv('VPS', attempt.assigned_worker_id || '—'),
+      kv('Состояние исполнения', attempt.display_status || attempt.state),
+      kv('Расположение', attempt.disposition_label || disposition),
+      kv('Начата', humanStamp(attempt.started_at || attempt.assigned_at)),
+      kv('Длительность', attempt.progress
+        ? humanDuration(attempt.progress.elapsed_sec) : '—'),
+      kv('Поколение назначения', num(attempt.assignment_generation, 1)),
+      kv('Результат', attempt.result_storage_class || 'none'),
+      kv('SHA-256', attempt.result_package_hash || '—'),
+      kv('Приём подтверждён', attempt.result_acknowledged ? 'да' : 'нет'),
+      kv('Хранится до', humanStamp(attempt.retention_until)),
+      kv('Удалено с воркера', attempt.deleted_from_worker ? 'да' : 'нет'),
+    ]));
+
+    if (attempt.retention_unconfirmed) {
+      nodes.push(el('p', { className: 'warn',
+        text: '⚠ Центр не подтвердил приём — автоматическое удаление запрещено.' }));
+    }
+    if (attempt.error && attempt.error.message) {
+      nodes.push(el('p', { className: 'warn', text: `Ошибка: ${attempt.error.message}` }));
+    }
+
+    if (attempt.superseded_result) {
+      const sr = attempt.superseded_result;
+      const link = el('a', { className: 'btn btn--small',
+        text: 'Скачать пакет устаревшей попытки' });
+      link.href = `/api/workers/jobs/${encodeURIComponent(jobId)}`
+        + `/attempts/${encodeURIComponent(attempt.attempt_id)}/result`;
+      nodes.push(el('div', { className: 'superseded' }, [
+        el('p', { className: 'warn',
+          text: '⚠ Не является актуальным результатом задания. '
+              + 'Результат устаревшей попытки — автоматически не используется.' }),
+        el('dl', { className: 'kv' }, [
+          kv('SHA-256', sr.sha256 || '—'),
+          kv('Размер', humanBytes(sr.size)),
+          kv('Сохранён', humanStamp(sr.stored_at)),
+        ]),
+        link,
+      ]));
+    }
+
+    (attempt.commands || []).forEach((command) => {
+      const result = command.result && typeof command.result === 'object'
+        ? (command.result.detail && command.result.detail.outcome)
+          || command.result.status || ''
+        : '';
+      nodes.push(el('p', { className: 'hint',
+        text: `Команда ${command.command_type}: ${command.status || '—'}`
+            + ` · создана ${humanStamp(command.created_at)}`
+            + ` · доставлена ${humanStamp(command.delivered_at)}`
+            + ` · подтверждена ${humanStamp(command.acknowledged_at)}`
+            + (result ? ` · результат: ${result}` : '') }));
+    });
+
+    (attempt.operator_actions || []).forEach((action) => {
+      nodes.push(el('p', { className: 'hint',
+        text: `${humanStamp(action.at)} — ${action.action_type} `
+            + `(${action.actor}): ${action.reason || ''}` }));
+    });
+
+    const actions = [];
+    if (attempt.can_cancel) {
+      actions.push(el('button', { className: 'btn btn--small btn--danger',
+        text: 'Отменить', dataset: { cancel: attempt.attempt_id, job: jobId } }));
+    }
+    if (attempt.can_mark_lost) {
+      actions.push(el('button', { className: 'btn btn--small btn--danger',
+        text: 'Признать попытку потерянной',
+        dataset: { marklost: attempt.attempt_id, job: jobId } }));
+    }
+    if (!attempt.can_mark_lost) {
+      actions.push(el('button', { className: 'btn btn--small',
+        text: 'Создать новую попытку',
+        dataset: { newattempt: attempt.attempt_id, job: jobId } }));
+    }
+    if (attempt.result_acknowledged && !attempt.deleted_from_worker) {
+      actions.push(el('button', { className: 'btn btn--small',
+        text: 'Запросить удаление данных с VPS',
+        dataset: { deletedata: attempt.attempt_id, job: jobId } }));
+    }
+    if (actions.length) {
+      nodes.push(el('footer', { className: 'attempt-actions' }, actions));
+    }
+    return el('article', {
+      className: `attempt attempt--${disposition}${attempt.is_current ? ' attempt--current' : ''}`,
+    }, nodes);
+  }
+
+  async function loadAttempts(jobId) {
+    state.attemptsJobId = jobId;
+    $('attemptsBlock').hidden = false;
+    $('attemptsJobId').textContent = String(jobId).slice(0, 8);
+    try {
+      const data = await api(`/api/workers/jobs/${encodeURIComponent(jobId)}/attempts`);
+      const job = data.job || {};
+      $('attemptsJobTitle').textContent =
+        `${job.project_display_name || job.project_external_id || ''}`
+        + ` · сводно: ${job.overall_state || '—'}`;
+      replaceChildren(
+        $('attempts'),
+        (data.attempts || []).map((a) => renderAttempt(a, jobId)),
+      );
+      await loadAdminActions(jobId);
+    } catch (error) {
+      replaceChildren($('attempts'),
+        el('p', { className: 'warn', text: `Не удалось загрузить попытки: ${error.message}` }));
+    }
+  }
+
+  async function loadAdminActions(jobId) {
+    $('actionsBlock').hidden = false;
+    try {
+      const data = await api(
+        `/api/workers/admin-actions?job_id=${encodeURIComponent(jobId)}&limit=100`);
+      const rows = (data.actions || []).map((action) => el('div', { className: 'action-row' }, [
+        el('span', { className: 'mono small', text: humanStamp(action.created_at) }),
+        el('span', { className: 'badge', text: action.action_type }),
+        el('span', { text: action.actor_display_name || action.actor_id }),
+        el('span', { text: action.reason || '' }),
+        el('span', { className: 'mono small', text: action.result_status || '' }),
+      ]));
+      replaceChildren($('adminActions'),
+        rows.length ? rows : el('p', { className: 'hint', text: 'Действий пока не было.' }));
+    } catch (error) {
+      replaceChildren($('adminActions'),
+        el('p', { className: 'warn', text: `Журнал недоступен: ${error.message}` }));
+    }
   }
 
   // ─── Загрузка данных ───────────────────────────────────────────────────────
@@ -224,37 +525,46 @@
       state.jobs = jobsData.jobs || [];
 
       const s = workersData.summary || {};
-      $('summary').innerHTML = `
-        <span>VPS: <strong>${s.total ?? 0}</strong></span>
-        <span>онлайн: <strong>${s.online ?? 0}</strong></span>
-        <span>свободных слотов: <strong>${s.free_slots ?? 0}</strong></span>
-        <span>активных заданий: <strong>${s.active_jobs ?? 0}</strong></span>
-        ${s.pending ? `<span class="warn">ждут одобрения: <strong>${s.pending}</strong></span>` : ''}`;
+      const summary = [
+        el('span', {}, [text('VPS: '), el('strong', { text: num(s.total, 0) })]),
+        el('span', {}, [text('онлайн: '), el('strong', { text: num(s.online, 0) })]),
+        el('span', {}, [text('свободных слотов: '),
+          el('strong', { text: num(s.free_slots, 0) })]),
+        el('span', {}, [text('активных заданий: '),
+          el('strong', { text: num(s.active_jobs, 0) })]),
+      ];
+      if (s.pending) {
+        summary.push(el('span', { className: 'warn' },
+          [text('ждут одобрения: '), el('strong', { text: num(s.pending, 0) })]));
+      }
+      replaceChildren($('summary'), summary);
 
-      // Ожидающие одобрения — отдельной секцией сверху: заявка без решения
-      // оператора не должна теряться среди работающих карточек.
       const pendingWorkers = state.workers.filter((w) => w.registration_status === 'pending');
       const activeWorkers = state.workers.filter((w) => w.registration_status !== 'pending');
       $('pendingBlock').hidden = pendingWorkers.length === 0;
-      $('pending').innerHTML = pendingWorkers.map(renderWorker).join('');
-      $('workers').innerHTML = activeWorkers.map(renderWorker).join('');
+      replaceChildren($('pending'), pendingWorkers.map(renderWorker));
+      replaceChildren($('workers'), activeWorkers.map(renderWorker));
       $('workersEmpty').hidden = activeWorkers.length > 0;
-      $('jobs').innerHTML = state.jobs.map(renderJob).join('');
+      replaceChildren($('jobs'), state.jobs.map(renderJob));
       $('jobsEmpty').hidden = state.jobs.length > 0;
 
       const select = $('jobWorker');
       const previous = select.value;
-      select.innerHTML = state.workers
+      replaceChildren(select, state.workers
         .filter((w) => w.registration_status === 'approved')
         .map((w) => {
           const ready = w.connection_status === 'online' && w.calculated_free_slots > 0;
-          return `<option value="${esc(w.worker_id)}" ${ready ? '' : 'disabled'}>
-            ${esc(w.display_name)}${ready ? '' : ' — недоступен'}
-          </option>`;
-        }).join('');
+          const option = el('option', {
+            text: `${w.display_name || w.worker_id}${ready ? '' : ' — недоступен'}`,
+          });
+          option.value = w.worker_id;
+          option.disabled = !ready;
+          return option;
+        }));
       if (previous) select.value = previous;
 
       if (state.logsJobId) await loadLogs(state.logsJobId);
+      if (state.attemptsJobId) await loadAttempts(state.attemptsJobId);
     } catch (error) {
       $('configError').hidden = false;
       $('configError').textContent = `Не удалось обновить: ${error.message}`;
@@ -264,44 +574,143 @@
   async function loadLogs(jobId) {
     state.logsJobId = jobId;
     $('logsBlock').hidden = false;
-    $('logsJobId').textContent = jobId.slice(0, 8);
+    $('logsJobId').textContent = String(jobId).slice(0, 8);
     try {
-      const data = await api(`/api/workers/jobs/${jobId}/logs?limit=500`);
+      const data = await api(
+        `/api/workers/jobs/${encodeURIComponent(jobId)}/logs?limit=500`);
       const lines = (data.lines || []).map(
-        (l) => `[${String(l.seq).padStart(4, '0')}] ${l.level.toUpperCase()} ${l.message}`);
+        (l) => `[${String(l.seq).padStart(4, '0')}] `
+             + `${String(l.level || '').toUpperCase()} ${l.message}`);
       $('logs').textContent = lines.length ? lines.join('\n') : '(лога пока нет)';
     } catch (error) {
       $('logs').textContent = `Ошибка загрузки логов: ${error.message}`;
     }
   }
 
-  // ─── Действия ──────────────────────────────────────────────────────────────
+  // ─── Операторские действия ─────────────────────────────────────────────────
+  async function doCancel(jobId, attemptId) {
+    const answer = askConfirmation(
+      'Отменить попытку?',
+      'Мгновенная остановка НЕ гарантируется. Если VPS сейчас офлайн, команда '
+      + 'будет доставлена после восстановления связи. Уже готовый результат '
+      + 'не уничтожается.',
+      CONFIRM.cancel);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/cancel`,
+      { reason: answer.reason, confirmation: answer.confirmation, grace_period_sec: 30 });
+    window.alert(result.message || 'Отмена запрошена.');
+  }
+
+  async function doMarkLost(jobId, attemptId) {
+    const worker = (state.workers || [])[0] || {};
+    const answer = askConfirmation(
+      'Признать попытку потерянной?',
+      'Удалённый процесс может продолжать работу. После создания новой попытки '
+      + 'результаты старой будут считаться устаревшими.\n'
+      + `Последняя связь с VPS: ${humanAge(worker.seconds_since_seen)}.`,
+      CONFIRM.markLost);
+    if (!answer) return;
+    const observed = window.prompt(
+      'Что наблюдалось на стороне VPS (необязательно)?', '') || '';
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/mark-lost`,
+      {
+        mandatory_reason: answer.reason,
+        typed_confirmation: answer.confirmation,
+        observed_worker_state: observed.slice(0, 200),
+        optional_operator_note: '',
+      });
+    window.alert(result.message || 'Попытка признана потерянной.');
+  }
+
+  async function doNewAttempt(jobId, sourceAttemptId) {
+    const workerId = $('jobWorker').value;
+    if (!workerId) {
+      window.alert('Выберите VPS в форме выдачи задания — новая попытка уйдёт на него.');
+      return;
+    }
+    const answer = askConfirmation(
+      `Создать новую попытку на ${workerId}?`,
+      'Старая попытка сохраняется целиком: её события, результат и журнал '
+      + 'остаются доступны. Автоматически её результат использован не будет.',
+      CONFIRM.newAttempt);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}/attempts`,
+      {
+        worker_id: workerId,
+        reason: answer.reason,
+        source_attempt_id: sourceAttemptId,
+        confirmation: answer.confirmation,
+      });
+    window.alert(`Создана попытка №${result.attempt_number}.`);
+  }
+
+  async function doRequestDeletion(jobId, attemptId) {
+    const answer = askConfirmation(
+      'Запросить удаление локальных данных попытки?',
+      'Удаляется только копия НА ВОРКЕРЕ. Центральная копия результата '
+      + 'остаётся. Неподтверждённый результат не удаляется даже этой командой.',
+      CONFIRM.deleteData);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/request-deletion`,
+      { reason: answer.reason, confirmation: answer.confirmation });
+    window.alert(result.message || 'Команда удаления поставлена в очередь.');
+  }
+
   document.addEventListener('click', async (event) => {
-    const approve = event.target.closest('[data-approve]');
-    const reject = event.target.closest('[data-reject]');
-    const revoke = event.target.closest('[data-revoke]');
-    const logs = event.target.closest('[data-logs]');
+    const target = event.target;
+    if (!target || !target.closest) return;
+    const approve = target.closest('[data-approve]');
+    const reject = target.closest('[data-reject]');
+    const revoke = target.closest('[data-revoke]');
+    const logs = target.closest('[data-logs]');
+    const attempts = target.closest('[data-attempts]');
+    const cancel = target.closest('[data-cancel]');
+    const markLost = target.closest('[data-marklost]');
+    const newAttempt = target.closest('[data-newattempt]');
+    const deleteData = target.closest('[data-deletedata]');
     try {
       if (reject) {
         if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
           + 'claim-secret будет погашен, воркер токен не получит.')) return;
-        await api(`/api/workers/${reject.dataset.reject}/reject`, { method: 'POST' });
+        await api(`/api/workers/${encodeURIComponent(reject.dataset.reject)}/reject`,
+          { method: 'POST' });
         await refresh();
       } else if (approve) {
-        await api(`/api/workers/${approve.dataset.approve}/approve`, {
+        await api(`/api/workers/${encodeURIComponent(approve.dataset.approve)}/approve`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ configured_max_slots: 1 }),
         });
         await refresh();
       } else if (revoke) {
-        // Отзыв — опасное действие: подтверждаем явно.
         if (!window.confirm('Отозвать доступ воркера? Токен будет погашен, '
           + 'новые задания выдаваться не будут.')) return;
-        await api(`/api/workers/${revoke.dataset.revoke}/revoke`, { method: 'POST' });
+        await api(`/api/workers/${encodeURIComponent(revoke.dataset.revoke)}/revoke`,
+          { method: 'POST' });
         await refresh();
       } else if (logs) {
         await loadLogs(logs.dataset.logs);
+      } else if (attempts) {
+        await loadAttempts(attempts.dataset.attempts);
+      } else if (cancel) {
+        await doCancel(cancel.dataset.job, cancel.dataset.cancel);
+        await refresh();
+      } else if (markLost) {
+        await doMarkLost(markLost.dataset.job, markLost.dataset.marklost);
+        await refresh();
+      } else if (newAttempt) {
+        await doNewAttempt(newAttempt.dataset.job, newAttempt.dataset.newattempt);
+        await refresh();
+      } else if (deleteData) {
+        await doRequestDeletion(deleteData.dataset.job, deleteData.dataset.deletedata);
+        await refresh();
       }
     } catch (error) {
       window.alert(`Не удалось выполнить действие: ${error.message}`);
