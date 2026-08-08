@@ -3562,14 +3562,33 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
+        // Единый критерий «проект не обработан» (аудит не проводился): нет ни
+        // одного замечания. Им пользуются и кнопка «Выделить необработанные»,
+        // и столбцы «Необработаны»/«Обработаны» на главной — чтобы цифра в
+        // столбце и число выделяемых по клику проектов не разъезжались.
+        function isProjectUnanalyzed(p) {
+            return !(p.findings_count > 0);
+        }
+
         // Выделить все НЕпроанализированные (findings_count == 0) проекты раздела,
         // добавляя их к текущему выделению.
         function selectUnanalyzedInSection(sectionCode) {
             const pids = projects.value
-                .filter(p => (p.section || 'OTHER') === sectionCode && !(p.findings_count > 0))
+                .filter(p => (p.section || 'OTHER') === sectionCode && isProjectUnanalyzed(p))
                 .map(p => p.project_id);
             const s = new Set(selectedProjects.value);
             for (const id of pids) s.add(id);
+            selectedProjects.value = s;
+            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
+        }
+
+        // То же самое, но по всем разделам сразу — клик по цифре «Необработаны»
+        // в строке «Итого» таблицы «Разделы проекта».
+        function selectUnanalyzedInAllSections() {
+            const s = new Set(selectedProjects.value);
+            for (const p of projects.value) {
+                if (isProjectUnanalyzed(p)) s.add(p.project_id);
+            }
             selectedProjects.value = s;
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
@@ -4864,26 +4883,31 @@ const app = createApp({
 
         // Сводка по разделу для «Главной». Определения совпадают с галочками
         // на карточке проекта в разделе:
-        //   checked  — эксперт отработал проект ПОЛНОСТЬЮ (обе галочки:
-        //              замечания + оптимизации) → expert_review_status==='complete';
-        //   waiting  — нет ни одной отметки эксперта → expert_review_status пуст;
-        //   (частично отработанные, expert_review_status==='partial', не попадают
-        //    ни в checked, ни в waiting — у них одна галочка/точка).
-        //   total    — общее число проектов раздела;
-        //   findings — суммарно замечаний.
+        //   unanalyzed — аудит НЕ проводился (isProjectUnanalyzed) — те же
+        //                проекты, что выделяет «Выделить необработанные»;
+        //   analyzed   — аудит проводился (total - unanalyzed);
+        //   checked    — эксперт отработал проект ПОЛНОСТЬЮ (обе галочки:
+        //                замечания + оптимизации) → expert_review_status==='complete';
+        //   total      — общее число проектов раздела;
+        //   findings   — суммарно замечаний.
         // Ключуется тем же группированием, что projectsBySection, чтобы цифры
         // совпадали с items.length и с карточками раздела.
         const sectionStatsMap = computed(() => {
             const m = {};
             for (const [code, items] of projectsBySection.value) {
-                let checked = 0, waiting = 0, findings = 0;
+                let checked = 0, unanalyzed = 0, findings = 0;
                 for (const p of items) {
-                    const rs = p.expert_review_status;
-                    if (rs === 'complete') checked++;
-                    else if (!rs) waiting++;
+                    if (p.expert_review_status === 'complete') checked++;
+                    if (isProjectUnanalyzed(p)) unanalyzed++;
                     findings += (p.findings_count || 0);
                 }
-                m[code] = { total: items.length, checked, waiting, findings };
+                m[code] = {
+                    total: items.length,
+                    unanalyzed,
+                    analyzed: items.length - unanalyzed,
+                    checked,
+                    findings,
+                };
             }
             return m;
         });
@@ -4891,11 +4915,12 @@ const app = createApp({
         // Итого по всем разделам — сумма каждого числового столбца для
         // строки «Итого» внизу таблицы «Разделы проекта».
         const sectionStatsTotals = computed(() => {
-            const t = { checked: 0, waiting: 0, total: 0, findings: 0 };
+            const t = { unanalyzed: 0, analyzed: 0, checked: 0, total: 0, findings: 0 };
             for (const code in sectionStatsMap.value) {
                 const s = sectionStatsMap.value[code];
+                t.unanalyzed += s.unanalyzed;
+                t.analyzed += s.analyzed;
                 t.checked += s.checked;
-                t.waiting += s.waiting;
                 t.total += s.total;
                 t.findings += s.findings;
             }
@@ -4913,7 +4938,7 @@ const app = createApp({
             const sec = sidebarFilterSection.value;
             if (!sec || sec === '__all__') return false;
             return projects.value.some(
-                p => (p.section || 'OTHER') === sec && !(p.findings_count > 0)
+                p => (p.section || 'OTHER') === sec && isProjectUnanalyzed(p)
             );
         });
 
@@ -18990,6 +19015,7 @@ const app = createApp({
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
+            selectUnanalyzedInAllSections,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,

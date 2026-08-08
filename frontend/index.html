@@ -567,8 +567,9 @@
                 <div class="dash-sections-head">
                     <span class="dash-sections-head__name">Раздел</span>
                     <div class="dash-section-row__stats">
+                        <span class="dash-stat__head" title="Проектов без аудита — нажмите на цифру в строке, чтобы выделить их">Необработаны</span>
+                        <span class="dash-stat__head" title="Проектов, по которым аудит уже проводился">Обработаны</span>
                         <span class="dash-stat__head" title="Проектов полностью отработано экспертом (обе галочки: замечания + оптимизации)">Проверено</span>
-                        <span class="dash-stat__head" title="Проектов без единой отметки эксперта (нет галочек)">Ждёт</span>
                         <span class="dash-stat__head" title="Всего проектов в разделе">Всего</span>
                         <span class="dash-stat__head" title="Суммарно замечаний по разделу">Замечаний</span>
                     </div>
@@ -581,8 +582,14 @@
                         <span class="dash-section-row__badge" :style="disciplineBadgeStyle(code)">{{ code }}</span>
                         <span class="dash-section-row__name">{{ disciplineLabel(code) }}</span>
                         <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--todo"
+                                  :class="{ 'dash-stat--clickable': sectionStatsMap[code].unanalyzed > 0 }"
+                                  @click.stop="sectionStatsMap[code].unanalyzed > 0 && selectUnanalyzedInSection(code)"
+                                  :title="sectionStatsMap[code].unanalyzed > 0
+                                          ? 'Проектов без аудита — нажмите, чтобы выделить их (как «Выделить необработанные»)'
+                                          : 'Необработанных проектов нет'">{{ sectionStatsMap[code].unanalyzed }}</span>
+                            <span class="dash-stat dash-stat--proc" title="Проектов, по которым аудит уже проводился">{{ sectionStatsMap[code].analyzed }}</span>
                             <span class="dash-stat dash-stat--done" title="Полностью отработано экспертом (обе галочки)">{{ sectionStatsMap[code].checked }}</span>
-                            <span class="dash-stat dash-stat--wait" title="Без единой отметки эксперта (нет галочек)">{{ sectionStatsMap[code].waiting }}</span>
                             <span class="dash-stat dash-stat--total" title="Всего проектов в разделе">{{ sectionStatsMap[code].total }}</span>
                             <span class="dash-stat dash-stat--find" title="Суммарно замечаний по разделу">{{ sectionStatsMap[code].findings }}</span>
                         </div>
@@ -592,8 +599,14 @@
                         <span class="dash-section-row__badge dash-section-row__badge--total">Σ</span>
                         <span class="dash-section-row__name">Итого</span>
                         <div class="dash-section-row__stats">
+                            <span class="dash-stat dash-stat--todo"
+                                  :class="{ 'dash-stat--clickable': sectionStatsTotals.unanalyzed > 0 }"
+                                  @click.stop="sectionStatsTotals.unanalyzed > 0 && selectUnanalyzedInAllSections()"
+                                  :title="sectionStatsTotals.unanalyzed > 0
+                                          ? 'Всего проектов без аудита — нажмите, чтобы выделить их во всех разделах'
+                                          : 'Необработанных проектов нет'">{{ sectionStatsTotals.unanalyzed }}</span>
+                            <span class="dash-stat dash-stat--proc" title="Всего проектов, по которым аудит уже проводился">{{ sectionStatsTotals.analyzed }}</span>
                             <span class="dash-stat dash-stat--done" title="Всего полностью отработано экспертом">{{ sectionStatsTotals.checked }}</span>
-                            <span class="dash-stat dash-stat--wait" title="Всего без единой отметки эксперта">{{ sectionStatsTotals.waiting }}</span>
                             <span class="dash-stat dash-stat--total" title="Всего проектов">{{ sectionStatsTotals.total }}</span>
                             <span class="dash-stat dash-stat--find" title="Всего замечаний">{{ sectionStatsTotals.findings }}</span>
                         </div>

@@ -2874,24 +2874,36 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 11px; font-weight: 700; text-transform: uppercase;
 }
 .dash-section-row__name { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; min-width: 0; }
-/* Группа из 4 выровненных по столбцам мини-метрик */
+/* Группа из 5 выровненных по столбцам мини-метрик */
 .dash-section-row__stats { display: flex; gap: 12px; flex-shrink: 0; }
 .dash-stat {
-    width: 76px; text-align: center; font-size: 15px; font-weight: 700;
+    width: 96px; text-align: center; font-size: 15px; font-weight: 700;
     color: var(--text); font-variant-numeric: tabular-nums;
 }
+.dash-stat--todo  { color: var(--amber); }
+.dash-stat--proc  { color: var(--teal); }
 .dash-stat--done  { color: var(--green); }
-.dash-stat--wait  { color: var(--amber); }
 .dash-stat--total { color: var(--text2); }
 .dash-stat--find  { color: var(--red); }
+/* Цифра-кнопка: клик по «Необработаны» выделяет проекты без аудита
+   (тот же набор, что даёт кнопка «Выделить необработанные»). */
+.dash-stat--clickable {
+    cursor: pointer; border-radius: 6px; padding: 2px 0;
+    text-decoration: underline dotted; text-underline-offset: 3px;
+    transition: background .15s, box-shadow .15s;
+}
+.dash-stat--clickable:hover {
+    background: var(--amber-light); box-shadow: inset 0 0 0 1px var(--amber);
+}
 /* Шапка столбцов — те же ширины, что у .dash-stat, чтобы цифры стояли в колонку */
 .dash-sections-head {
     display: flex; align-items: center; gap: 12px; padding: 2px 16px 6px;
 }
 .dash-sections-head__name { flex: 1; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .03em; }
 .dash-stat__head {
-    width: 76px; text-align: center; font-size: 11px; font-weight: 600;
+    width: 96px; text-align: center; font-size: 11px; font-weight: 600;
     color: var(--text3); text-transform: uppercase; letter-spacing: .02em;
+    white-space: nowrap;
 }
 .dash-sections-head__arrow { width: 16px; flex-shrink: 0; }
 .dash-section-row__arrow { color: var(--text3); flex-shrink: 0; }
