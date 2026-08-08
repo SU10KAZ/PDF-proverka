@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import io
 import json
+import threading
 import os
 import sys
 import tarfile
@@ -59,7 +60,9 @@ def client(center_env):
     from tests.distributed_workers_helpers import SyncASGITransport, make_center_app
 
     return httpx.Client(
-        transport=SyncASGITransport(make_center_app()), base_url="http://center"
+        transport=SyncASGITransport(make_center_app()),
+        base_url="http://center",
+        headers={"X-Requested-With": "audit-workers"},
     )
 
 
@@ -783,7 +786,8 @@ def test_result_details_exposed_after_acceptance(client, center_env, tmp_path):
 def test_ui_offers_reject_for_pending_only():
     """Кнопка «Отклонить» рисуется рядом с «Одобрить» и бьёт в /reject."""
     js = (_ROOT / "frontend/static/js/audit-workers.js").read_text(encoding="utf-8")
-    assert "data-reject=" in js
+    # Экран строится DOM-API, поэтому ищем не атрибут в шаблоне, а привязку.
+    assert "dataset: { reject:" in js
     assert "/reject" in js
     # Отклонение и отзыв — оба через подтверждение.
     assert js.count("window.confirm") >= 2
@@ -1056,6 +1060,7 @@ def test_reconnect_event_is_sent_in_the_same_pass(tmp_path):
             return {"last_seen_seq": batch[-1]["seq"]}
 
     instance = object.__new__(WorkerAgent)
+    instance._flush_lock = threading.Lock()
     instance.client = FakeClient()
     instance.instance_id = "inst_zzz00000001"
     instance._stop = __import__("threading").Event()

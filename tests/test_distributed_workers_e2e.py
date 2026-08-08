@@ -61,7 +61,11 @@ def transport(center):
 
 @pytest.fixture()
 def admin(transport):
-    return httpx.Client(transport=transport, base_url="http://center")
+    return httpx.Client(
+        transport=transport,
+        base_url="http://center",
+        headers={"X-Requested-With": "audit-workers"},
+    )
 
 
 def _make_worker_config(tmp_path, transport):
@@ -341,7 +345,8 @@ def test_offline_run_then_late_delivery(tmp_path, transport, admin):
 
 def test_worker_api_requires_token(transport):
     """Контуры аутентификации разделены: без bearer-токена воркерский API закрыт."""
-    client = httpx.Client(transport=transport, base_url="http://center")
+    client = httpx.Client(transport=transport, base_url="http://center",
+                         headers={"X-Requested-With": "audit-workers"})
     response = client.post(
         "/api/v1/worker/heartbeat",
         json={"instance_id": "inst_x", "sent_at": 0.0},
