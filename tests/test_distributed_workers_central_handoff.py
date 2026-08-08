@@ -30,6 +30,26 @@ if str(_ROOT) not in sys.path:
 
 httpx = pytest.importorskip("httpx")
 
+from types import SimpleNamespace  # noqa: E402 — после настройки sys.path
+
+
+@pytest.fixture
+def _restore_tail_neighbours():
+    """Вернуть на место всё, что подменяет `_tail_manager`.
+
+    Подмены модульные (их читает сам код хвоста через локальный импорт), и
+    протечь в соседний тест им нельзя.
+    """
+    import backend.app.pipeline.execution.registry as registry_module
+    import backend.app.pipeline.stages.report.runner as report_runner
+
+    saved = (registry_module.central_handoff_state, report_runner.run_excel_report)
+    yield
+    registry_module.central_handoff_state = saved[0]
+    report_runner.run_excel_report = saved[1]
+
+
+
 BOOTSTRAP = "central-handoff-bootstrap-secret-0123456789"
 INTENT = {"X-Requested-With": "audit-workers"}
 REVISION = "rev-central-handoff"
@@ -863,18 +883,113 @@ def test_central_resume_uses_real_detector():
     assert "from backend.app.pipeline.resume_detector import detect_resume_stage" in source
 
 
-def test_resume_hint_is_only_a_hint():
-    """Подсказка воркера не назначает этап: решение принимает центр."""
-    source = (_ROOT / "backend/app/pipeline/manager.py").read_text(encoding="utf-8")
-    assert "выполняется решение центра" in source
-    assert "Подсказка воркера" in source
+def _tail_job():
+    """Минимальный job для прогона центрального хвоста."""
+    from backend.app.pipeline import manager as manager_module
+
+    return SimpleNamespace(
+        project_id="P", version_id="v001", job_id="J",
+        status=manager_module.JobStatus.RUNNING,
+        stage=None, error_message=None, completed_at=None,
+    )
 
 
-def test_completed_tail_is_not_repeated_after_restart():
-    """CH-29: второй COMPLETED-переход по уже завершённому хвосту не делается."""
-    source = (_ROOT / "backend/app/pipeline/manager.py").read_text(encoding="utf-8")
-    assert 'central_handoff_state(handle) == "completed"' in source
-    assert "Центральный хвост уже выполнен ранее" in source
+def _tail_manager(manager_module, calls, *, handoff_state=None,
+                  detected="norm_verify", artifacts=None):
+    """`PipelineManager` с заглушенными соседями, но НАСТОЯЩИМ хвостом.
+
+    Заглушено ровно окружение: логирование, засев, стадии, Excel. Сам
+    `_run_central_tail_after_remote` — рабочий, иначе тест проверял бы заглушки.
+    """
+    import backend.app.pipeline.execution.registry as registry_module
+    import backend.app.pipeline.stages.report.runner as report_runner
+
+    mgr = object.__new__(manager_module.PipelineManager)
+
+    async def _log(job, message, level="info", **kwargs):
+        calls.append(("log", str(message)))
+
+    async def _handoff(handle, state, **kwargs):
+        calls.append(("handoff", state))
+
+    async def _seed(job, *, reason):
+        return 0
+
+    def _stage(name):
+        async def _run(job, *args, **kwargs):
+            calls.append(("stage", name))
+        return _run
+
+    mgr._log = _log
+    mgr._handoff_advance = _handoff
+    mgr._seed_run_dir_from_latest = _seed
+    mgr._detect_central_resume_stage = lambda job: detected
+    mgr._norms_after_merge_enabled = lambda: True
+    mgr._run_norm_verification = _stage("norm_verify")
+    mgr._run_debt_control = _stage("debt_control")
+    mgr._run_decision_carryover = _stage("decision_carryover")
+    mgr._reset_job_progress = lambda job: None
+    mgr._make_stage_context = lambda job: None
+    mgr._promote_completed_audit_v2 = lambda job: None
+    mgr._central_tail_artifacts = lambda job: (
+        artifacts if artifacts is not None
+        else {"norm_checks.json": True, "03a_norms_verified.json": True}
+    )
+
+    registry_module.central_handoff_state = lambda handle: handoff_state
+
+    async def _excel(ctx):
+        calls.append(("stage", "excel"))
+        return SimpleNamespace(success=True, error=None)
+
+    report_runner.run_excel_report = _excel
+    return mgr
+
+
+def test_resume_hint_is_only_a_hint(_restore_tail_neighbours):
+    """Подсказка воркера не назначает этап: решение принимает центр.
+
+    Проверяется ПОВЕДЕНИЕМ. Прежняя версия грепала исходник на фразу из лога —
+    такой тест зелен для любого кода, лишь бы комментарий не тронули, и он
+    молча пережил дефект, когда подсказка бралась из поля, которое заполняет
+    сам центр (сверка центра с собой).
+    """
+    import asyncio
+
+    from backend.app.pipeline import manager as manager_module
+
+    calls: list[tuple[str, Any]] = []
+    mgr = _tail_manager(manager_module, calls)
+    result = SimpleNamespace(resume_hint="text_analysis", resume_stage="findings_merge")
+    asyncio.run(mgr._run_central_tail_after_remote(
+        _tail_job(), result, handle=SimpleNamespace(attempt_id="A"),
+    ))
+    logged = [text for kind, text in calls if kind == "log"]
+    assert any("Подсказка воркера (text_analysis)" in t for t in logged), logged
+    # Значение, которое кладёт сам центр, подсказкой не считается.
+    assert not any("findings_merge)" in t and "Подсказка воркера" in t for t in logged)
+
+
+def test_completed_tail_is_not_repeated_after_restart(_restore_tail_neighbours):
+    """CH-29: по уже завершённому хвосту центральные этапы не выполняются.
+
+    Тоже поведением: греп по исходнику не отличает «гейт есть» от «гейт есть,
+    но не срабатывает».
+    """
+    import asyncio
+
+    from backend.app.pipeline import manager as manager_module
+
+    calls: list[tuple[str, Any]] = []
+    mgr = _tail_manager(manager_module, calls, handoff_state="completed")
+    job = _tail_job()
+    asyncio.run(mgr._run_central_tail_after_remote(
+        job, SimpleNamespace(resume_hint=None), handle=SimpleNamespace(attempt_id="A"),
+    ))
+    assert [kind for kind, _ in calls if kind == "stage"] == []
+    assert job.status == manager_module.JobStatus.COMPLETED
+    # И ось второй раз в completed не переводится.
+    assert [state for kind, state in calls if kind == "handoff"] == []
 
 
 def test_worker_cannot_run_central_stages(tmp_path):
@@ -1054,3 +1169,241 @@ def test_source_package_carries_discipline_profile(center_env, tmp_path, project
     assert "discipline_profile/profile_manifest.json" in entries
     assert any("prompts/disciplines/VK/role.md" in name for name in entries)
     assert not any("/EOM/" in name for name in entries)
+
+
+# ─── §23. Дефекты, найденные адверсариальной проверкой ───────────────────────
+def test_axis_persists_resume_stage_when_state_unchanged(center_env):
+    """Вердикт центрального детектора приходит ПОСЛЕ перехода в это состояние.
+
+    Ранний выход по «уже здесь» терял его навсегда: в базе оставалась только
+    догадка импортёра, а решение, по которому центр реально продолжил аудит,
+    не сохранялось нигде.
+    """
+    from backend.app.services.distributed_workers import central_handoff, repositories
+
+    settings = center_env
+    attempt_id = _attempt(settings)["attempt_id"]
+    first = central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.CENTRAL_RESUME_RUNNING,
+        settings=settings,
+    )
+    assert first["changed"] is True
+    second = central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.CENTRAL_RESUME_RUNNING,
+        settings=settings, resume_stage="norm_verify",
+    )
+    assert second["changed"] is False and second["reason"] == "fields_only"
+    row = repositories.get_attempt(attempt_id, settings=settings)
+    assert row["central_resume_stage"] == "norm_verify"
+    assert row["central_handoff_state"] == "central_resume_running"
+
+
+def test_axis_without_new_fields_stays_a_noop(center_env):
+    """Повтор без новых данных по-прежнему не пишет ничего."""
+    from backend.app.services.distributed_workers import central_handoff
+
+    settings = center_env
+    attempt_id = _attempt(settings)["attempt_id"]
+    central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.RESULT_RECEIVED, settings=settings,
+    )
+    again = central_handoff.advance(
+        attempt_id, central_handoff.HandoffState.RESULT_RECEIVED, settings=settings,
+    )
+    assert again == {"state": "result_received", "changed": False,
+                     "reason": "already_there"}
+
+
+def test_tail_without_norm_artifact_is_not_completed(_restore_tail_neighbours):
+    """`completed` ставится по АРТЕФАКТУ, а не по достигнутой строке кода.
+
+    При `standalone=False` провалившаяся верификация норм не ставит job'у
+    FAILED (общий статус делят critic и оптимизация) — она только пишет в лог.
+    Хвост доезжал до конца, ось получала `completed`, и гейт рестарта навсегда
+    запрещал повтор по аудиту без `norm_checks.json`.
+    """
+    import asyncio
+
+    from backend.app.pipeline import manager as manager_module
+
+    calls: list[tuple[str, Any]] = []
+    mgr = _tail_manager(
+        manager_module, calls,
+        artifacts={"norm_checks.json": False, "03a_norms_verified.json": False},
+    )
+    asyncio.run(mgr._run_central_tail_after_remote(
+        _tail_job(), SimpleNamespace(resume_hint=None),
+        handle=SimpleNamespace(attempt_id="A"),
+    ))
+    states = [state for kind, state in calls if kind == "handoff"]
+    assert "completed" not in states
+    assert states[-1] == "failed"
+
+
+def test_tail_with_norm_artifact_is_completed(_restore_tail_neighbours):
+    """Обратная сторона: артефакт есть — хвост завершён ровно один раз."""
+    import asyncio
+
+    from backend.app.pipeline import manager as manager_module
+
+    calls: list[tuple[str, Any]] = []
+    mgr = _tail_manager(manager_module, calls)
+    asyncio.run(mgr._run_central_tail_after_remote(
+        _tail_job(), SimpleNamespace(resume_hint=None),
+        handle=SimpleNamespace(attempt_id="A"),
+    ))
+    states = [state for kind, state in calls if kind == "handoff"]
+    assert states.count("completed") == 1
+    assert [name for kind, name in calls if kind == "stage"] == [
+        "debt_control", "norm_verify", "decision_carryover", "excel",
+    ]
+
+
+def test_prompt_without_section_does_not_become_eom():
+    """Проект без раздела аудируется НЕЙТРАЛЬНО, а не профилем электрики."""
+    from backend.app.pipeline.stages.prepare import task_builder
+    from backend.app.services.common import discipline_service
+
+    template = "РОЛЬ: {DISCIPLINE_ROLE}\nЧЕК-ЛИСТ: {DISCIPLINE_CHECKLIST}"
+    out = task_builder._inject_discipline(template, {})
+    assert discipline_service.UNKNOWN_DISCIPLINE_NOTE in out
+    eom = discipline_service.load_discipline("EOM")
+    assert eom.role[:200] not in out
+
+
+def test_stage02_categories_path_is_built_from_registry():
+    """Сегмент пути берётся из реестра, а не из пользовательской строки."""
+    from backend.app.pipeline.stages.block_analysis import gemma_findings_only as g
+
+    assert g.load_categories_for_section("../../etc") == ""
+    assert g.load_categories_for_section("") == ""
+    # Кириллический код раздела каталога с таким именем не имеет — и раньше
+    # молча давал пустые категории; теперь он нормализуется.
+    latin = g.load_categories_for_section("VK")
+    assert g.load_categories_for_section("ВК") == latin
+
+
+def test_markdown_normalizer_keeps_domain_text():
+    """Нормализатор не трогает предметный текст с несколькими слэшами."""
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    text = "Напряжение 230/400/690 В, расход 12/с, режим И/ИЛИ/НЕ."
+    assert sp._normalize_markdown(text) == sp._norm_text(text)
+    with_path = "см. /tmp/run_1/03_analysis/latest/report.md"
+    assert "<path>" in sp._normalize_markdown(with_path)
+
+
+def test_corrupted_required_artifact_counts_as_missing(tmp_path):
+    """Битый JSON — не «артефакт есть»: обе стороны дали бы None и совпали."""
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    latest = tmp_path / "03_analysis" / "latest"
+    latest.mkdir(parents=True)
+    for name in sp.REQUIRED_ARTIFACTS:
+        (latest / name).write_text("{}", encoding="utf-8")
+    (latest / "norm_checks.json").write_text("{битый", encoding="utf-8")
+    projection = sp.collect_projection(version_dir=tmp_path)
+    assert "norm_checks.json" in projection["missing_artifacts"]
+
+
+def test_stand_environment_drops_machine_pipeline_flags():
+    """Флаги конвейера с машины не доезжают до процессов стенда."""
+    from tests.distributed_audit_e2e import isolation
+
+    dirty = {
+        "BLOCK_VALUE_GROUNDING_ENABLED": "true",
+        "CRITIC_V2_ENABLED": "true",
+        "PAID_API_ENABLED": "true",
+        "AUDIT_STORAGE_BACKEND": "projects_v2",
+        "LANG": "C.UTF-8",
+    }
+    clean = isolation.scrub_environment(dirty)
+    assert "LANG" in clean
+    assert not [k for k in dirty if k != "LANG" and k in clean]
+    assert set(isolation.inherited_project_env(dirty)) == set(dirty) - {"LANG"}
+
+
+def test_classify_path_does_not_strip_dots_as_charset():
+    """`lstrip("./")` снимал множество символов и пускал исходники."""
+    from backend.app.services.distributed_workers import result_import as ri
+
+    assert ri.classify_path(".03_analysis/latest/03_findings.json") == "unknown"
+    assert ri.classify_path("..99_service/x.json") == "unknown"
+    assert ri.classify_path("./03_analysis/latest/03_findings.json") == "worker"
+    assert ri.classify_path("01_input/document.pdf") == "source"
+    assert ri.classify_path("03_analysis/latest/norm_checks.json") == "central"
+
+
+def test_absolute_path_predicate_ignores_diagnostics():
+    """Диагностика с двоеточиями — не путь, и пакет из-за неё не отклоняется."""
+    from backend.app.services.distributed_workers import portable_paths as pp
+
+    assert pp.looks_like_absolute_path("/bin/bash: line 1: rg: command not found") is False
+    assert pp.looks_like_absolute_path("/tmp/run/03_analysis/latest") is True
+    assert pp.looks_like_absolute_path("/home/coder/projects/PDF-proverka") is True
+
+
+def test_handoff_shows_terminal_states_as_failed():
+    """Отменённая, вытесненная и потерянная попытка — не «идёт на воркере»."""
+    from backend.app.services.distributed_workers import central_handoff as ch
+
+    for state in ("cancelled", "failed", "superseded",
+                  "superseded_result_received", "operator_declared_lost"):
+        assert ch.current({"state": state}) is ch.HandoffState.FAILED
+    assert ch.current({"state": "running"}) is ch.HandoffState.WORKER_RUNNING
+
+
+def test_contract_selfcheck_notices_gutted_protection(monkeypatch):
+    """Вынести предметный ключ из защиты в волатильные больше нельзя молча."""
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    monkeypatch.setattr(sp, "PROTECTED_KEYS", sp.PROTECTED_KEYS - {"findings"})
+    with pytest.raises(sp.SemanticContractError):
+        sp.assert_contract_is_sane()
+
+
+def test_pipeline_log_projection_keeps_order_invariants():
+    """Сравнивается инвариант порядка, а не тайминг параллельных ветвей."""
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    a = {"stages": {"findings_merge": {"status": "done"},
+                    "norm_verify": {"status": "done"}}}
+    b = {"stages": {"norm_verify": {"status": "done"},
+                    "findings_merge": {"status": "done"}}}
+    assert sp.pipeline_log_projection(a) != sp.pipeline_log_projection(b)
+    # А перестановка ветвей оптимизации расхождением НЕ является.
+    c = {"stages": {"findings_merge": {"status": "done"},
+                    "optimization": {"status": "done"},
+                    "optimization_critic": {"status": "done"},
+                    "norm_verify": {"status": "done"}}}
+    d = {"stages": {"findings_merge": {"status": "done"},
+                    "optimization_critic": {"status": "done"},
+                    "optimization": {"status": "done"},
+                    "norm_verify": {"status": "done"}}}
+    assert sp.pipeline_log_projection(c) == sp.pipeline_log_projection(d)
+
+
+def test_interrupted_apply_is_rolled_back_before_reuse(tmp_path):
+    """Рестарт посреди применения не уничтожает журнал отката."""
+    import json as _json
+
+    from backend.app.services.distributed_workers import result_import as ri
+
+    staging = tmp_path / "staging"
+    (staging).mkdir()
+    version = tmp_path / "version"
+    (version / "03_analysis" / "latest").mkdir(parents=True)
+    target = version / "03_analysis" / "latest" / "03_findings.json"
+    backup = staging / "backup.json"
+    backup.write_text('{"findings": ["исходное"]}', encoding="utf-8")
+    target.write_text('{"findings": ["перезаписанное"]}', encoding="utf-8")
+    (staging / "apply_journal.json").write_text(_json.dumps({
+        "state": "in_progress",
+        "version_dir": str(version),
+        "entries": [{"path": "03_analysis/latest/03_findings.json",
+                     "existed": True, "backup": str(backup)}],
+    }), encoding="utf-8")
+
+    rollback = ri._recover_interrupted_apply(staging)
+    assert rollback and rollback["restored"] == 1
+    assert "исходное" in target.read_text(encoding="utf-8")
