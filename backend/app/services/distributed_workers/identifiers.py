@@ -77,22 +77,42 @@ def is_storage_key(value: str) -> bool:
     return True
 
 
-def require_storage_key(value: str, *, field: str) -> str:
+# Идентификаторы этапа 0 («att_1a2b3c4d»). UUID они не являются, но выданы
+# самим центром и по построению безопасны как сегмент пути. Допускаются
+# ТОЛЬКО при чтении уже существующих каталогов — новые ключи всегда UUID.
+_LEGACY_KEY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+
+
+def is_legacy_key(value: str) -> bool:
+    text = str(value or "").strip()
+    return bool(_LEGACY_KEY_RE.match(text)) and text not in (".", "..")
+
+
+def require_storage_key(value: str, *, field: str, allow_legacy: bool = False) -> str:
     """Проверить, что значение годится как СЕГМЕНТ ПУТИ.
 
-    Единственный допустимый вид — UUID. Ни внешний код проекта, ни имя
-    воркера, ни имя теста сюда попасть не могут: у них нет формы UUID, и
-    проверка отвергнет их до того, как строка окажется в Path.
+    Единственный допустимый вид для НОВЫХ ключей — UUID. Ни внешний код
+    проекта, ни имя воркера, ни имя теста сюда попасть не могут: у них нет
+    формы UUID, и проверка отвергнет их до того, как строка окажется в Path.
+
+    `allow_legacy` нужен только для ЧТЕНИЯ каталогов, созданных этапом 0 с
+    ключами вида `att_1a2b3c4d`. Такие значения выдал сам центр, «/» и «..»
+    в них невозможны, а без послабления результат мигрированного задания
+    стал бы недоступен.
     """
     text = str(value or "").strip()
-    if not is_storage_key(text):
-        raise UnsafeIdentifier(
-            f"{field}: ключом хранения может быть только UUID (получено {text[:64]!r})"
-        )
-    return text
+    if is_storage_key(text):
+        return text
+    if allow_legacy and is_legacy_key(text):
+        return text
+    raise UnsafeIdentifier(
+        f"{field}: ключом хранения может быть только UUID (получено {text[:64]!r})"
+    )
 
 
-def attempt_dir(root: Path, job_id: str, attempt_id: str) -> Path:
+def attempt_dir(
+    root: Path, job_id: str, attempt_id: str, *, allow_legacy: bool = False
+) -> Path:
     """jobs/<job_uuid>/<attempt_uuid> — единственный способ строить путь.
 
     Никаких project_external_id, display_name, version_external_id, имён
@@ -100,8 +120,8 @@ def attempt_dir(root: Path, job_id: str, attempt_id: str) -> Path:
     """
     return (
         Path(root)
-        / require_storage_key(job_id, field="job_id")
-        / require_storage_key(attempt_id, field="attempt_id")
+        / require_storage_key(job_id, field="job_id", allow_legacy=allow_legacy)
+        / require_storage_key(attempt_id, field="attempt_id", allow_legacy=allow_legacy)
     )
 
 
@@ -116,7 +136,10 @@ def safe_download_filename(display: str, *, fallback: str, suffix: str = "") -> 
     даже в заголовке `../` — лишний повод для сюрприза у клиента.
     """
     text = unicodedata.normalize("NFC", str(display or "")).strip()
-    text = _FILENAME_BAD.sub("_", text).strip(". ")
+    text = _FILENAME_BAD.sub("_", text)
+    # Схлопываем точки: «..» в имени файла даже в заголовке — лишний повод
+    # для сюрприза у клиента, который решит сохранить его по этому пути.
+    text = re.sub(r"\.{2,}", ".", text).strip(". ")
     if not text:
         text = fallback
     return (text[:120] + suffix) if suffix else text[:120]

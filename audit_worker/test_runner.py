@@ -172,25 +172,37 @@ def run_test_job(
 
     argv = build_argv(params_path)
     started = time.time()
-    process = subprocess.Popen(  # noqa: S603 — argv фиксирован, shell=False
-        argv,
-        cwd=str(job_dir),
-        env=build_env(),
-        stdout=subprocess.PIPE,
-        # Потоки РАЗДЕЛЕНЫ: слияние в один теряет различие stdout/stderr,
-        # а в логе оно нужно (по нему видно, что процесс ругался).
-        stderr=subprocess.PIPE,
-        text=True,
-        bufsize=1,
-        shell=False,
-        # Своя сессия и своя группа процессов. Две причины:
-        #  * отмену можно адресовать ИМЕННО этой группе, не задев соседей на
-        #    общем VPS (§10) — никаких pkill по имени команды;
-        #  * Ctrl+C и сигналы, прилетевшие исполнителю, не расходятся по
-        #    дереву автоматически: остановка процесса аудита должна быть
-        #    осознанным действием, а не побочным эффектом.
-        start_new_session=True,
-    )
+
+    # Процесс пишет ПРЯМО В ФАЙЛЫ, а не в пайпы наблюдателя. Это не стилистика:
+    # пока stdout/stderr держал исполнитель, его смерть закрывала пайпы, и
+    # процесс аудита падал от SIGPIPE на первой же строке вывода — то есть
+    # рестарт исполнителя убивал работу, ровно как раньше это делал агент
+    # (I-02). С файлами дескрипторы принадлежат самому процессу.
+    logs_dir = job_dir / "logs"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    stdout_path = logs_dir / "stdout.log"
+    stderr_path = logs_dir / "stderr.log"
+    stdout_from = stdout_path.stat().st_size if stdout_path.exists() else 0
+    stderr_from = stderr_path.stat().st_size if stderr_path.exists() else 0
+
+    with stdout_path.open("ab") as out_fh, stderr_path.open("ab") as err_fh:
+        process = subprocess.Popen(  # noqa: S603 — argv фиксирован, shell=False
+            argv,
+            cwd=str(job_dir),
+            env=build_env(),
+            stdout=out_fh,
+            # Потоки РАЗДЕЛЕНЫ: слияние в один теряет различие stdout/stderr,
+            # а в логе оно нужно (по нему видно, что процесс ругался).
+            stderr=err_fh,
+            shell=False,
+            # Своя сессия и своя группа процессов. Две причины:
+            #  * отмену можно адресовать ИМЕННО этой группе, не задев соседей на
+            #    общем VPS (§10) — никаких pkill по имени команды;
+            #  * Ctrl+C и сигналы, прилетевшие исполнителю, не расходятся по
+            #    дереву автоматически: остановка процесса аудита должна быть
+            #    осознанным действием, а не побочным эффектом.
+            start_new_session=True,
+        )
     fingerprint = command_fingerprint(argv)
     if on_pid:
         on_pid(process.pid)
@@ -206,61 +218,81 @@ def run_test_job(
     }
     lock = threading.Lock()
 
-    def pump(stream, name: str) -> None:
-        """Читать один поток целиком. Отдельный поток на каждый пайп.
-
-        Если читать пайпы по очереди, второй переполнится и процесс встанет.
-        """
-        for raw_line in stream:
-            line = raw_line.rstrip("\n")
-            if not line:
-                continue
-            with lock:
-                state[f"{name}_lines"] += 1
-            if name == "stdout" and line.startswith("{"):
-                try:
-                    event = json.loads(line)
-                except ValueError:
-                    on_log(name, "info", line)
-                    continue
-                kind = event.get("type")
-                if kind == "progress":
-                    with lock:
-                        state["steps_done"] = int(event.get("step", state["steps_done"]))
-                        state["steps_total"] = int(event.get("total", state["steps_total"]))
-                        done, total = state["steps_done"], state["steps_total"]
-                    on_progress(
-                        done, total,
-                        float(event.get("elapsed_sec", time.time() - started)),
-                        str(event.get("message", "")),
-                    )
-                elif kind == "failed":
-                    with lock:
-                        state["failed_message"] = str(
-                            event.get("message", "тестовый процесс сообщил сбой")
-                        )
-                    on_log(name, "error", str(event.get("message", "")))
-                else:
-                    on_log(name, "info", line)
-                continue
-            # stderr всегда уровня error — это его смысл.
-            on_log(name, "error" if name == "stderr" else "info", line)
-            if cancel_check and cancel_check():
-                _terminate(process)
+    def handle(name: str, line: str) -> None:
+        with lock:
+            state[f"{name}_lines"] += 1
+        if name == "stdout" and line.startswith("{"):
+            try:
+                event = json.loads(line)
+            except ValueError:
+                on_log(name, "info", line)
                 return
+            kind = event.get("type")
+            if kind == "progress":
+                with lock:
+                    state["steps_done"] = int(event.get("step", state["steps_done"]))
+                    state["steps_total"] = int(event.get("total", state["steps_total"]))
+                    done, total = state["steps_done"], state["steps_total"]
+                on_progress(
+                    done, total,
+                    float(event.get("elapsed_sec", time.time() - started)),
+                    str(event.get("message", "")),
+                )
+            elif kind == "failed":
+                with lock:
+                    state["failed_message"] = str(
+                        event.get("message", "тестовый процесс сообщил сбой")
+                    )
+                on_log(name, "error", str(event.get("message", "")))
+            else:
+                on_log(name, "info", line)
+            return
+        # stderr всегда уровня error — это его смысл.
+        on_log(name, "error" if name == "stderr" else "info", line)
+
+    finished = threading.Event()
+
+    def follow(path: Path, name: str, offset: int) -> None:
+        """Читать файл потока по мере наполнения.
+
+        Наблюдение, а не владение: файл принадлежит процессу, и уход
+        наблюдателя на него не влияет.
+        """
+        pending = ""
+        with path.open("r", encoding="utf-8", errors="replace") as fh:
+            fh.seek(offset)
+            while True:
+                chunk = fh.read(65536)
+                if chunk:
+                    pending += chunk
+                    *lines, pending = pending.split("\n")
+                    for line in lines:
+                        if line.strip():
+                            handle(name, line.rstrip("\r"))
+                    continue
+                if finished.is_set():
+                    if pending.strip():
+                        handle(name, pending.strip())
+                    return
+                if cancel_check and cancel_check():
+                    _terminate(process)
+                time.sleep(0.05)
 
     threads = [
-        threading.Thread(target=pump, args=(process.stdout, "stdout"),
+        threading.Thread(target=follow, args=(stdout_path, "stdout", stdout_from),
                          name="test-stdout", daemon=True),
-        threading.Thread(target=pump, args=(process.stderr, "stderr"),
+        threading.Thread(target=follow, args=(stderr_path, "stderr", stderr_from),
                          name="test-stderr", daemon=True),
     ]
     for thread in threads:
         thread.start()
-    for thread in threads:
-        thread.join()
 
     process.wait()
+    # Даём наблюдателям дочитать хвост, дописанный перед выходом.
+    time.sleep(0.15)
+    finished.set()
+    for thread in threads:
+        thread.join(timeout=10)
     return RunOutcome(
         exit_code=process.returncode,
         duration_sec=time.time() - started,

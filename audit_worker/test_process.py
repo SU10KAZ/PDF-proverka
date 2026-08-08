@@ -10,6 +10,12 @@
 
 Процесс печатает в stdout построчный JSONL с прогрессом и обычные текстовые
 строки — на них воркер строит события stage_progress и log_line.
+
+Последним действием процесс пишет `work/process_exit.json` — собственную
+отметку «я закончил и вот с каким кодом». Она нужна потому, что наблюдатель
+может не дожить до этого момента: если исполнитель перезапустят посреди
+работы, единственный, кто достоверно знает исход, — сам процесс. Без этой
+отметки готовая работа выглядела бы как «процесс исчез».
 """
 from __future__ import annotations
 
@@ -41,6 +47,7 @@ def main(argv: list[str]) -> int:
     except (OSError, ValueError) as exc:
         print(f"не удалось прочитать параметры: {exc}", file=sys.stderr)
         return 2
+    exit_marker = params_path.parent / "process_exit.json"
 
     # Третий рубеж зажима: воркер уже проверил, центр уже проверил — но
     # процесс не обязан верить ни тому, ни другому.
@@ -67,6 +74,7 @@ def main(argv: list[str]) -> int:
                 emit("failed", step=step, message=f"смоделирован сбой на шаге {step}")
                 print(f"[test_pipeline_v1] СБОЙ на шаге {step}", file=sys.stderr)
                 log.write(f"FAILED at step {step}\n")
+                _write_exit(exit_marker, 3, started, step, steps)
                 return 3
             elapsed = time.time() - started
             emit(
@@ -106,7 +114,38 @@ def main(argv: list[str]) -> int:
     )
     emit("completed", duration_sec=round(duration, 3), steps=steps)
     print(f"[test_pipeline_v1] завершено за {duration:.2f} с")
+    _write_exit(exit_marker, 0, started, steps, steps)
     return 0
+
+
+def _write_exit(path: Path, code: int, started: float, done: int, total: int) -> None:
+    """Отметка процесса о собственном завершении. Пишется атомарно.
+
+    Читает её тот, кто наблюдает за процессом со стороны, — в том числе
+    исполнитель, поднявшийся уже ПОСЛЕ старта этого процесса.
+    """
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(
+            json.dumps(
+                {
+                    "exit_code": code,
+                    "pid": os.getpid(),
+                    "duration_sec": round(time.time() - started, 3),
+                    "steps_done": done,
+                    "steps_total": total,
+                    "finished_at": time.time(),
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        os.replace(tmp, path)
+    except OSError:
+        # Отметка — страховка, а не условие работы. Её отсутствие означает
+        # «исход неизвестен», и наблюдатель обязан сказать это честно.
+        pass
 
 
 if __name__ == "__main__":

@@ -78,8 +78,30 @@ class RetentionManager:
         self._last_scan = now
         return self.sweep()
 
+    def purge_trash(self) -> int:
+        """Дочистить корзину после обрыва между переименованием и стиранием.
+
+        Каталог в корзине уже не на рабочем пути, но место занимает. Без этого
+        прохода сбой посреди удаления оставлял бы мусор навсегда — то есть
+        «удаление освободило место» оказывалось бы неправдой.
+        """
+        removed = 0
+        if not self.config.trash_dir.is_dir():
+            return 0
+        for item in list(self.config.trash_dir.iterdir()):
+            try:
+                if item.is_dir() and not item.is_symlink():
+                    shutil.rmtree(item, ignore_errors=True)
+                else:
+                    item.unlink(missing_ok=True)
+                removed += 1
+            except OSError:
+                continue
+        return removed
+
     def sweep(self) -> dict[str, Any]:
         """Найти кандидатов и — если разрешено — удалить их."""
+        self.purge_trash()
         candidates = self.candidates()
         report: dict[str, Any] = {
             "at": time.time(),
@@ -206,6 +228,10 @@ class RetentionManager:
                     ),
                 },
             }
+        # Снимок метаданных снимается ДО удаления: metadata.json лежит
+        # внутри удаляемого каталога, и после стирания читать уже нечего —
+        # tombstone остался бы без hash, ради которого он и заводится.
+        meta_snapshot = self.jobs.load(job_id, attempt_id) or {}
         try:
             self._safe_remove(job_dir, job_id=job_id, attempt_id=attempt_id)
         except DeletionRefused as exc:
@@ -213,7 +239,6 @@ class RetentionManager:
                     "detail": {"outcome": "refused", "reason": str(exc),
                                "attempt_id": attempt_id}}
 
-        meta_snapshot = self.jobs.load(job_id, attempt_id) or {}
         self._record_tombstone(job_id, attempt_id, meta_snapshot)
         return {
             "status": "ok",
@@ -238,7 +263,10 @@ class RetentionManager:
             # ушло бы за пределы каталога данных.
             job_dir.unlink()
             return
-        if root not in target.parents and target != root:
+        # `target == root` было в РАЗРЕШАЮЩЕЙ части условия: симлинк вида
+        # `jobs/X -> ..` вместе с ключами `job_id=X, attempt_id=jobs` давал
+        # target == jobs_dir, и в корзину уезжал весь каталог заданий.
+        if target == root or root not in target.parents:
             raise DeletionRefused(
                 f"путь {target} вне {root} — удаление отклонено"
             )

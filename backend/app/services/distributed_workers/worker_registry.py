@@ -60,15 +60,17 @@ def record_heartbeat(
         "calculated_free_slots": max(0, min(5, calculated_free_slots)),
         "active_jobs": json.dumps(active_jobs, ensure_ascii=False),
     }
-    if resource_snapshot is not None:
-        clean = sanitize_resource_snapshot(resource_snapshot)
-        # executor и disk приходят от того же полу-доверенного источника, что
-        # и остальной снимок, и попадают на экран: чистятся так же.
-        clean["executor"] = sanitize_executor(executor, now=now)
-        clean["disk_report"] = sanitize_disk(disk)
-        fields["resource_snapshot"] = json.dumps(
-            {**clean, "warnings": _sanitize_warnings(warnings)}, ensure_ascii=False
-        )
+    # Снимок пишется, даже если ресурсов в этом heartbeat нет: состояние
+    # исполнителя и разрез диска — самостоятельные сведения, и терять их из-за
+    # отсутствия соседнего блока нельзя (иначе гейт по диску не сработает).
+    clean = sanitize_resource_snapshot(resource_snapshot or {})
+    # executor и disk приходят от того же полу-доверенного источника, что и
+    # остальной снимок, и попадают на экран: чистятся так же.
+    clean["executor"] = sanitize_executor(executor, now=now)
+    clean["disk_report"] = sanitize_disk(disk)
+    fields["resource_snapshot"] = json.dumps(
+        {**clean, "warnings": _sanitize_warnings(warnings)}, ensure_ascii=False
+    )
     repositories.update_worker_fields(worker_id, fields, settings=settings)
     if resource_snapshot is not None:
         repositories.record_resource_snapshot(
