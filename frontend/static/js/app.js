@@ -3570,24 +3570,39 @@ const app = createApp({
             return !(p.findings_count > 0);
         }
 
+        // Необработанные проекты раздела ('__all__' — по всем разделам сразу).
+        function unanalyzedPids(sectionCode) {
+            return projects.value
+                .filter(p => (sectionCode === '__all__' || (p.section || 'OTHER') === sectionCode)
+                             && isProjectUnanalyzed(p))
+                .map(p => p.project_id);
+        }
+
         // Выделить все НЕпроанализированные (findings_count == 0) проекты раздела,
         // добавляя их к текущему выделению.
         function selectUnanalyzedInSection(sectionCode) {
-            const pids = projects.value
-                .filter(p => (p.section || 'OTHER') === sectionCode && isProjectUnanalyzed(p))
-                .map(p => p.project_id);
             const s = new Set(selectedProjects.value);
-            for (const id of pids) s.add(id);
+            for (const id of unanalyzedPids(sectionCode)) s.add(id);
             selectedProjects.value = s;
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
-        // То же самое, но по всем разделам сразу — клик по цифре «Необработаны»
-        // в строке «Итого» таблицы «Разделы проекта».
-        function selectUnanalyzedInAllSections() {
+        // Все ли необработанные проекты уже выделены — состояние цифры-кнопки
+        // «Необработаны» (подсветка + направление переключателя).
+        function isUnanalyzedSelected(sectionCode) {
+            const pids = unanalyzedPids(sectionCode);
+            return pids.length > 0 && pids.every(id => selectedProjects.value.has(id));
+        }
+
+        // Клик по цифре «Необработаны»: первый — выделяет, повторный — снимает
+        // выделение с тех же проектов. sectionCode === '__all__' — строка «Итого».
+        function toggleUnanalyzedSelection(sectionCode) {
+            const pids = unanalyzedPids(sectionCode);
+            if (!pids.length) return;
             const s = new Set(selectedProjects.value);
-            for (const p of projects.value) {
-                if (isProjectUnanalyzed(p)) s.add(p.project_id);
+            const allSelected = pids.every(id => s.has(id));
+            for (const id of pids) {
+                if (allSelected) s.delete(id); else s.add(id);
             }
             selectedProjects.value = s;
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
@@ -19015,7 +19030,7 @@ const app = createApp({
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
-            selectUnanalyzedInAllSections,
+            toggleUnanalyzedSelection, isUnanalyzedSelected,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,

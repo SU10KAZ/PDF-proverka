@@ -2895,6 +2895,12 @@ tr.row-rejected td.sc-cell-goto {
 .dash-stat--clickable:hover {
     background: var(--amber-light); box-shadow: inset 0 0 0 1px var(--amber);
 }
+/* Необработанные этого раздела (или все — в строке «Итого») уже выделены:
+   следующий клик по цифре снимет выделение. */
+.dash-stat--picked {
+    background: var(--amber-light); box-shadow: inset 0 0 0 1px var(--amber);
+    text-decoration: none;
+}
 /* Шапка столбцов — те же ширины, что у .dash-stat, чтобы цифры стояли в колонку */
 .dash-sections-head {
     display: flex; align-items: center; gap: 12px; padding: 2px 16px 6px;
