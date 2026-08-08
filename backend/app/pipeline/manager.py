@@ -566,6 +566,12 @@ class PipelineManager:
         for cur in self._current_batch_item_pids():
             if has_live_processes(cur):
                 return True
+        # Удалённое исполнение: локальных сигналов у него нет ПО ОПРЕДЕЛЕНИЮ —
+        # ни дочерних процессов, ни своего таска. Считать такой элемент
+        # мёртвым только потому, что на центре нечего наблюдать, — это ровно
+        # тот дефект, из-за которого resume стирал 03_findings.json.
+        if self._remote_items():
+            return True
         return False
 
     def _protected_pids(self) -> set[str]:
@@ -581,6 +587,11 @@ class PipelineManager:
             # При параллельной обработке выполняющихся проектов несколько —
             # защищаем все, иначе соседние слоты снимаются как зомби.
             protected.update(self._current_batch_item_pids())
+        # Удалённые задания защищены ВСЕГДА, независимо от живости batch-worker:
+        # локальных признаков работы у них нет и быть не может, а «нет
+        # признаков» ≠ «остановлено» (E-07, E-08). Решение об их судьбе
+        # принимает backend через liveness(), а не таймаут heartbeat.
+        protected.update(self._remote_items())
         return protected
 
     def get_batch_diagnostics(self) -> dict:
@@ -1185,10 +1196,16 @@ class PipelineManager:
         now = datetime.now()
         # pid, которые нельзя трогать пока жив batch-worker / есть живые процессы.
         protected = self._protected_pids()
+        remote = self._remote_items()
         zombies = []
         for pid, job in list(self.active_jobs.items()):
             if pid in protected:
                 continue  # живой worker / текущий проект — не зомби
+            if pid in remote:
+                # Дублирующая защита к `_protected_pids`. Держим её здесь
+                # отдельно намеренно: если кто-то однажды изменит состав
+                # protected, remote-задание не должно молча стать зомби.
+                continue
             # __BATCH__ судим по живости таска, а не по heartbeat (его нет).
             if pid == "__BATCH__":
                 if not self._batch_worker_alive():
@@ -1334,6 +1351,14 @@ class PipelineManager:
         Для pending — удаляет item из очереди (без убийства, т.к. ничего не
         запущено).
         """
+        # Удалённое исполнение отменяется АДРЕСНО: командой воркеру, а не
+        # убийством локальных процессов, которых на центре нет. Маршрутизация
+        # идёт до всего остального — `kill_all_processes` для remote-задания
+        # ничего не убьёт, но снимет job с учёта и создаст видимость отмены.
+        remote_item = self._remote_items().get(project_id)
+        if remote_item is not None:
+            return await self._cancel_remote_item(remote_item)
+
         job = self.active_jobs.get(project_id)
         if job:
             job.status = JobStatus.CANCELLED
@@ -1374,6 +1399,37 @@ class PipelineManager:
                     await self._broadcast_batch_progress(self._batch_queue)
                     return True
         return False
+
+    async def _cancel_remote_item(self, item: "BatchQueueItem") -> bool:
+        """Отменить удалённое исполнение через его backend.
+
+        Локальные артефакты и уже собранные результаты при этом НЕ удаляются:
+        отмена — это просьба остановиться, а не приказ уничтожить работу.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        handle = execution_registry.handle_from_item(item)
+        if handle is None:
+            # Задание ещё не создано на стороне подсистемы — отменять нечего,
+            # достаточно снять элемент с очереди.
+            item.status = "cancelled"
+            item.error = "Остановлено пользователем до отправки на воркер"
+            item.finished_at = time.time()
+            self._persist_queue()
+            return True
+        backend = execution_registry.select_backend(self, item)
+        ok = await backend.cancel(handle, reason="отмена оператором из очереди")
+        await ws_manager.broadcast_to_project(
+            item.project_id,
+            WSMessage.log(
+                item.project_id,
+                "Запрошена отмена удалённого аудита. Если VPS сейчас офлайн, "
+                "команда доставится после восстановления связи — мгновенная "
+                "остановка не гарантируется.",
+                "warn",
+            ),
+        )
+        return ok
 
     def _cleanup(self, project_id: str):
         self._stop_heartbeat(project_id)
@@ -5875,8 +5931,15 @@ class PipelineManager:
                             "Элемент был прерван рестартом — продолжаю с места обрыва",
                             "info",
                         )
-                    await self._dispatch_action(
-                        item, job, default_action=queue.action,
+                    # ЕДИНСТВЕННАЯ точка врезки ExecutionBackend. Выбор
+                    # происходит ДО фактического вызова `_dispatch_action`, и
+                    # для локального режима вся ветка сводится к тому же
+                    # вызову с теми же аргументами (LocalExecutionBackend.run).
+                    # Удалённый backend `_dispatch_action` не зовёт вовсе —
+                    # это инвариант E-02.
+                    await self._execute_item(
+                        item, job,
+                        default_action=queue.action,
                         action_override=_action_override,
                     )
 
@@ -5993,6 +6056,76 @@ class PipelineManager:
             await ws_manager.broadcast_global(
                 WSMessage.log("__BATCH__", f"✗ Слот очереди упал: {e}", "error")
             )
+
+    # ─── Выбор способа исполнения ──────────────────────────────────────
+    async def _execute_item(
+        self,
+        item: BatchQueueItem,
+        job: AuditJob,
+        *,
+        default_action: str = "full",
+        action_override: Optional[str] = None,
+    ) -> None:
+        """Исполнить элемент очереди выбранным backend'ом.
+
+        Локально это ровно прежний `_dispatch_action` — обёртка не добавляет
+        ни одного шага. Удалённо — durable-задание в подсистеме воркеров,
+        которое переживает рестарт центра и подхватывается по сохранённой
+        ссылке `item.execution_handle`.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+        from backend.app.pipeline.execution.contracts import (
+            ExecutionContext,
+            ExecutionMode,
+        )
+
+        mode = execution_registry.item_execution_mode(item)
+        if mode is ExecutionMode.LOCAL:
+            # Быстрый путь без единого нового объекта: поведение прежнее.
+            await self._dispatch_action(
+                item, job, default_action=default_action,
+                action_override=action_override,
+            )
+            return
+
+        backend = execution_registry.select_backend(self, item)
+        request = execution_registry.build_request(
+            item, job, default_action=default_action, action_override=action_override,
+        )
+        ctx = ExecutionContext(
+            item=item, job=job,
+            default_action=default_action, action_override=action_override,
+        )
+        result = await backend.run(request, ctx)
+        if result.cancelled:
+            job.status = JobStatus.CANCELLED
+        elif result.success:
+            job.status = JobStatus.COMPLETED
+        else:
+            job.status = JobStatus.FAILED
+            job.error_message = result.error or job.error_message
+        job.completed_at = datetime.now().isoformat()
+
+    def _remote_items(self) -> dict[str, "BatchQueueItem"]:
+        """Элементы очереди, исполняющиеся УДАЛЁННО, по project_id.
+
+        Нужны там, где локальные сигналы живости неприменимы по определению:
+        у remote-задания на центре нет ни дочерних процессов, ни своего
+        asyncio-таска, и судить о нём прежними правилами нельзя (§10.2
+        первого аудита — самый опасный класс дефекта всей затеи).
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+        from backend.app.pipeline.execution.contracts import ExecutionMode
+
+        queue = self._batch_queue
+        if queue is None:
+            return {}
+        return {
+            it.project_id: it
+            for it in queue.items
+            if it.status in ("pending", "running")
+            and execution_registry.item_execution_mode(it) is ExecutionMode.REMOTE_WORKER
+        }
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(

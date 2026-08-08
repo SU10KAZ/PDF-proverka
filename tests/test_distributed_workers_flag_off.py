@@ -120,21 +120,32 @@ def test_status_reports_config_error_when_secret_missing(tmp_path, monkeypatch):
 
 
 # ─── Существующий конвейер не затронут ───────────────────────────────────────
-def test_pipeline_manager_untouched():
-    """Точек врезки в PipelineManager на этапе 0 быть не должно.
+def test_pipeline_manager_knows_nothing_about_the_worker_subsystem():
+    """Граница врезки: менеджер знает про `pipeline.execution` и больше ни про что.
 
-    Задача §3.2 прямо запрещает трогать _dispatch_action, _batch_slot_worker,
-    cleanup_zombies и resume. Проверяем грепом, а не на слово.
+    До этапа ExecutionBackend проверка была строже — «manager.py не должен
+    упоминать ExecutionBackend вовсе», потому что врезки не существовало. Теперь
+    она есть, и запрет переехал туда, где он по-прежнему содержателен:
+
+      * менеджер НЕ импортирует подсистему воркеров напрямую — иначе
+        локальный конвейер начал бы зависеть от её включённости;
+      * менеджер НЕ импортирует пакет `audit_worker` — это код чужого VPS;
+      * менеджер не строит команд и argv для удалённого исполнения.
+
+    Слово «ExecutionBackend» в комментарии точки врезки допустимо и полезно:
+    именно оно объясняет, почему вызов идёт через `_execute_item`.
     """
     source = (_ROOT / "backend/app/pipeline/manager.py").read_text(encoding="utf-8")
     for marker in (
         "distributed_workers",
         "audit_worker",
-        "ExecutionBackend",
-        "RemoteWorkerExecutionBackend",
         "DISTRIBUTED_WORKERS",
+        "RemoteWorkerExecutionBackend",
     ):
         assert marker not in source, f"manager.py не должен знать о {marker}"
+    # Врезка существует и идёт через абстракцию, а не через прямой вызов.
+    assert "_execute_item" in source
+    assert "backend.app.pipeline.execution" in source
 
 
 def test_no_llm_invocation_in_worker_package():

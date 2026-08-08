@@ -1271,6 +1271,31 @@ DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN = _env_bool(
     "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", False
 )
 
+# ─── Удалённое исполнение аудита (этап ExecutionBackend) ────────────────────
+# Отдельный флаг: включение подсистемы воркеров НЕ включает реальный аудит.
+# Пока он false, единственный активный backend — LocalExecutionBackend, и
+# поведение платформы полностью прежнее.
+DISTRIBUTED_AUDIT_EXECUTION_ENABLED = _env_bool(
+    "DISTRIBUTED_AUDIT_EXECUTION_ENABLED", False
+)
+# Профиль пилотного удалённого аудита. Фиксированный, один: несколько почти
+# одинаковых профилей — верный способ получить расхождение поведения.
+REMOTE_AUDIT_PROFILE = "remote_audit_pilot_v1"
+# Ревизия кода конвейера. Центр и воркер обязаны совпасть, иначе одинаковые
+# входные данные дадут разные артефакты. Пусто = «не объявлена», и тогда
+# удалённый запуск запрещён.
+AUDIT_PIPELINE_REVISION = os.environ.get("AUDIT_PIPELINE_REVISION", "").strip()
+# Сколько НАСТОЯЩИХ аудитов один воркер выполняет одновременно. Доказанный
+# максимум этапа — 1. Значение больше зажимается: два тестовых задания на
+# одном VPS ничего не говорят о двух реальных аудитах.
+AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS = min(
+    1, max(0, _env_int("AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS", 1))
+)
+# Разрешены ли НАСТОЯЩИЕ Claude/Codex на воркере. Центр этот флаг только
+# читает из capability воркера и показывает оператору; включается он на самом
+# воркере. Здесь — значение для собственных проверок и тестов.
+AUDIT_WORKER_ALLOW_REAL_LLM = _env_bool("AUDIT_WORKER_ALLOW_REAL_LLM", False)
+
 # ─── Ограничение частоты заявок на регистрацию ──────────────────────────────
 # Эндпоинт /api/v1/worker/register публичный (воркер приходит сам), и до этого
 # этапа перебор bootstrap-секрета не ограничивался ничем. Счётчики живут в

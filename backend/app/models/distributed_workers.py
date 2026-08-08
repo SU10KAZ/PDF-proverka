@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -18,12 +18,43 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class JobType(str, Enum):
     """Типы заданий, которые центр вправе выдать.
 
-    На этапе 0 существует РОВНО ОДИН тип — безопасный тестовый конвейер.
-    Реальный аудит появится отдельным типом только после интеграции с
-    PipelineManager, которая в этот этап не входит.
+    Их РОВНО ДВА, и оба — фиксированные имена реализаций, установленных на
+    воркере. Ни одно из них не описывает, ЧТО выполнять: ни команды, ни argv,
+    ни пути, ни модуля. Воркер сопоставляет имя со своей встроенной
+    реализацией и отказывается от любого другого значения (I-10, E-10).
     """
 
     TEST_PIPELINE_V1 = "test_pipeline_v1"
+    #: Реальный аудит проекта. Появился на этапе ExecutionBackend.
+    AUDIT_PIPELINE_V1 = "audit_pipeline_v1"
+
+
+#: Профиль пилотного удалённого аудита. Один и фиксированный: несколько почти
+#: одинаковых профилей гарантированно разъедутся в поведении.
+REMOTE_AUDIT_PILOT_V1 = "remote_audit_pilot_v1"
+
+#: Этапы, которые профилю РАЗРЕШЕНО выполнять на воркере. Список живёт в коде,
+#: а не приходит произвольным JSON от центра (§5 задания). Нормативный этап и
+#: перенос вердиктов сюда не входят: оба пишут в общие центральные файлы.
+REMOTE_AUDIT_PILOT_STAGES: tuple[str, ...] = (
+    "crop_blocks",
+    "document_graph",
+    "block_context",
+    "block_analysis",
+    "text_analysis",
+    "findings_merge",
+    "findings_review",
+    "optimization",
+    "optimization_review",
+)
+
+#: Этапы, которые остаются на центре ВСЕГДА.
+CENTRAL_ONLY_STAGES: tuple[str, ...] = (
+    "norm_verify",
+    "debt_control",
+    "decision_carryover",
+    "excel",
+)
 
 
 class JobState(str, Enum):
@@ -390,6 +421,49 @@ class TestJobParams(BaseModel):
     fail_at_step: Optional[int] = Field(default=None, ge=1, le=100)
 
 
+class AuditPipelineParams(BaseModel):
+    """Полезная нагрузка `audit_pipeline_v1`. `extra="forbid"` — обязательно.
+
+    Что здесь ЗАПРЕЩЕНО по построению, а не по договорённости: command, argv,
+    executable, script, module, cwd, env, hook, tool list, любой путь. Поля
+    просто нет — значит его нельзя ни прислать, ни «случайно поддержать».
+    Реализацию выбирает воркер по имени типа задания.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    execution_profile: Literal["remote_audit_pilot_v1"] = REMOTE_AUDIT_PILOT_V1
+    #: Действие конвейера. Закрытый набор: произвольная строка сюда не пройдёт.
+    action: Literal["full", "audit", "resume"] = "full"
+    retry_stage: Optional[str] = Field(default=None, max_length=64)
+    include_optimization: bool = True
+    #: Нормативный этап на воркере не выполняется НИКОГДА (E-19). Тип Literal,
+    #: а не bool: «случайно передать true» невозможно.
+    include_norms: Literal[False] = False
+    project_layout_version: int = Field(default=1, ge=1, le=100)
+    pipeline_revision: str = Field(min_length=1, max_length=200)
+    #: Ожидаемые хэши. Воркер сверяет их с тем, что реально распаковал.
+    expected_source_tree_hash: str = Field(min_length=8, max_length=128)
+    prompt_bundle_hash: str = Field(min_length=8, max_length=128)
+    model_config_hash: str = Field(min_length=8, max_length=128)
+    feature_flags_hash: str = Field(min_length=8, max_length=128)
+    #: Обязательные артефакты результата. Список фиксирован центром, но воркер
+    #: сверяет его со своим встроенным — расширить его заданием нельзя.
+    required_result_artifacts: list[str] = Field(default_factory=list, max_length=64)
+
+    @field_validator("retry_stage")
+    @classmethod
+    def _check_stage(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        if value not in REMOTE_AUDIT_PILOT_STAGES:
+            raise ValueError(
+                f"Этап {value!r} не входит в профиль {REMOTE_AUDIT_PILOT_V1}. "
+                f"Разрешены: {', '.join(REMOTE_AUDIT_PILOT_STAGES)}"
+            )
+        return value
+
+
 class PackageRef(BaseModel):
     package_id: str
     package_type: Literal["source", "result", "superseded_result"]
@@ -410,7 +484,9 @@ class JobAssignment(BaseModel):
     job_type: JobType
     project_id: str
     version_id: Optional[str] = None
-    params: TestJobParams
+    # Порядок в объединении значим: обе модели с `extra="forbid"`, поэтому
+    # нагрузка реального аудита не может «сойти» за тестовую и наоборот.
+    params: Union[AuditPipelineParams, TestJobParams]
     package: PackageRef
     fingerprints: dict[str, Any] = Field(default_factory=dict)
     event_start_seq: int = 1

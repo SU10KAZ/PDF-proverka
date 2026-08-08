@@ -556,9 +556,19 @@ def test_command_enum_has_no_shell(settings):
 
 
 def test_job_type_enum_is_closed(settings):
+    """Enum закрыт двумя ИМЕНАМИ реализаций и не содержит ничего исполняемого.
+
+    На этапе ExecutionBackend добавился второй тип — `audit_pipeline_v1`.
+    Смысл проверки от этого не изменился: перечисление обязано оставаться
+    закрытым, а его значения — именами встроенных реализаций воркера, а не
+    описанием того, ЧТО и КАК запускать.
+    """
     from backend.app.models.distributed_workers import JobType
 
-    assert {t.value for t in JobType} == {"test_pipeline_v1"}
+    assert {t.value for t in JobType} == {"test_pipeline_v1", "audit_pipeline_v1"}
+    forbidden = ("shell", "exec", "eval", "script", "argv", "command", "python")
+    for value in (t.value for t in JobType):
+        assert not any(bad in value for bad in forbidden), value
 
 
 def test_token_stored_as_hash_only(settings, approved_worker):

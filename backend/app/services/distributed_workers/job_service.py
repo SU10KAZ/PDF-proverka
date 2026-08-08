@@ -41,6 +41,19 @@ from backend.app.services.distributed_workers.settings import DistributedWorkers
 # Артефакты, без которых результат тестового задания считается неполным.
 TEST_JOB_REQUIRED_ARTIFACTS = ["result/summary.json", "result/run_log.txt"]
 
+
+def required_artifacts_for(job: dict[str, Any]) -> list[str]:
+    """Обязательные артефакты результата — по ТИПУ задания.
+
+    Раньше список был один на всё. Для реального аудита он другой, и подстановка
+    тестового означала бы «пакет без 03_findings.json считается полным».
+    """
+    if str(job.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
+        from backend.app.services.distributed_workers import audit_job_service
+
+        return list(audit_job_service.AUDIT_REQUIRED_ARTIFACTS)
+    return list(TEST_JOB_REQUIRED_ARTIFACTS)
+
 ASSIGN_TTL_SEC = 1800
 RETENTION_DAYS = 30
 
@@ -687,7 +700,7 @@ def store_unpublished_result(
                 expected_size=expected_size,
                 job_id=job["job_id"],
                 attempt_id=job["attempt_id"],
-                required_artifacts=TEST_JOB_REQUIRED_ARTIFACTS,
+                required_artifacts=required_artifacts_for(job),
                 max_bytes=settings.max_package_bytes,
             )
             stored_report = probe.as_dict()
