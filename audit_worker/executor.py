@@ -138,6 +138,7 @@ class Executor:
         self.instance_id = self.db.register_executor(version=__version__)
         self._stop = threading.Event()
         self._heartbeat_thread: Optional[threading.Thread] = None
+        self._command_thread: Optional[threading.Thread] = None
         self._workers: list[threading.Thread] = []
         # Попытки, по которым отмена УЖЕ начата. Признак ставится до отправки
         # сигнала: иначе поток задания успевал увидеть «процесс вернул -15» и
@@ -165,6 +166,7 @@ class Executor:
         except Exception as exc:  # noqa: BLE001 — разбор прошлого не блокирует старт
             _log(f"восстановление после рестарта не удалось: {exc!r}")
         self._start_heartbeat()
+        self._start_command_worker()
         started_ref = [0]
         try:
             while not self._stop.is_set():
@@ -219,10 +221,39 @@ class Executor:
         free = max(0, limit - busy)
         return free, ("" if free else f"занято {busy} из {limit}")
 
+    def _start_command_worker(self) -> None:
+        """Отдельный поток под локальные команды.
+
+        Раньше команды разбирались прямо в `_tick`, то есть в главном цикле.
+        Отмена внутри своего гарантийного срока ждёт смерти процесса — до
+        `grace_period_sec`, а его верхняя граница на центре 600 с. Всё это
+        время главный цикл стоял: не считалась ёмкость, не захватывалась
+        следующая попытка (освободившийся слот простаивал), не работало
+        удержание, и ВТОРАЯ команда отмены ждала окончания первой. При двух
+        слотах это ровно тот сценарий, ради которого второй слот и заводился.
+
+        Поток один, поэтому команды по-прежнему исполняются строго по одной —
+        порядок и идемпотентность не меняются, меняется только то, что цикл
+        больше не стоит рядом.
+        """
+
+        def loop() -> None:
+            while not self._stop.is_set():
+                try:
+                    if not self.drain_local_commands():
+                        self._stop.wait(POLL_SEC)
+                except Exception as exc:  # noqa: BLE001 — поток обязан выжить
+                    _log(f"поток локальных команд: {exc!r} — продолжаю")
+                    self._stop.wait(POLL_SEC)
+
+        self._command_thread = threading.Thread(
+            target=loop, name="executor-commands", daemon=True
+        )
+        self._command_thread.start()
+
     def _tick(self, max_jobs: Optional[int], started_ref: list[int]) -> None:
         """Один оборот главного цикла. Исключение отсюда цикл не роняет."""
         started = started_ref[0]
-        self.drain_local_commands()
         self.retention.tick()
         free, _why = self.local_capacity()
         enough = max_jobs is not None and started >= max_jobs
@@ -268,6 +299,9 @@ class Executor:
         self._stop.set()
         if self._heartbeat_thread is not None:
             self._heartbeat_thread.join(timeout=5)
+        if self._command_thread is not None:
+            # Ждём дольше: поток мог стоять в гарантийном сроке отмены.
+            self._command_thread.join(timeout=10)
         # Процессы аудита НЕ трогаем: они в своих сессиях и переживают уход
         # исполнителя. Ждём только собственные потоки-наблюдатели.
         for thread in list(self._workers):
@@ -320,6 +354,9 @@ class Executor:
             if verdict == "running":
                 # Процесс пережил рестарт исполнителя — не трогаем и не
                 # перезапускаем; наблюдение подхватит следующий цикл.
+                # Владельца строки переписываем на себя: прошлое воплощение
+                # мертво, и без этого продление аренды не обновляло бы ничего.
+                self.db.adopt_claim(attempt_id, self.instance_id)
                 self.db.set_queue_state(attempt_id, local_db.QUEUE_RUNNING)
                 self._watch_survived(item, row or {})
                 outcomes.append({"attempt_id": attempt_id, "verdict": "running"})
@@ -392,6 +429,9 @@ class Executor:
             current = self.db.queue_item(item["attempt_id"]) or {}
             if current.get("state") in local_db.TERMINAL_QUEUE_STATES:
                 return
+            # Тот же долг, что и в упаковке: без явной отметки запись реестра
+            # остаётся `running` и вечно блокирует удержание.
+            self.db.update_process(item["attempt_id"], status="interrupted")
             self.db.set_queue_state(
                 item["attempt_id"],
                 local_db.QUEUE_INTERRUPTED,
@@ -427,7 +467,31 @@ class Executor:
                                          "message": str(exc)})
             return {"ok": False, "reason": "rejected"}
 
-        self.db.set_queue_state(attempt_id, local_db.QUEUE_RUNNING, executor_instance_id=self.instance_id)
+        # Последняя развилка перед запуском НАСТОЯЩЕГО процесса. Между
+        # `claim_next` и этой строкой проходит подготовка (разбор параметров,
+        # открытие outbox, лечение разрывов нумерации) — десятки миллисекунд и
+        # больше. За это время оператор успевает отменить попытку: отмена
+        # видит `claimed`, ставит `cancelled` и отвечает центру «локально не
+        # выполняется». Если после этого запустить процесс, центр будет считать
+        # попытку отменённой, слот — свободным, а на VPS будет идти работа,
+        # результат которой уже некуда девать.
+        #
+        # Условная запись «только из claimed» превращает это в честную гонку с
+        # одним победителем: не мы — значит попытка отменена, и стартовать
+        # нельзя.
+        started_running = self.db.set_queue_state(
+            attempt_id, local_db.QUEUE_RUNNING,
+            executor_instance_id=self.instance_id,
+            expect_states=(local_db.QUEUE_CLAIMED,),
+        )
+        if not started_running:
+            current = (self.db.queue_item(attempt_id) or {}).get("state")
+            _log(
+                f"попытка {attempt_id[:8]}: состояние сменилось на {current!r} "
+                f"до старта процесса — не запускаю"
+            )
+            self.jobs.update(job_id, attempt_id, local_state=str(current or "unknown"))
+            return {"ok": False, "reason": "superseded", "queue_state": current}
         self.jobs.update(job_id, attempt_id, local_state="running", started_at=time.time())
         outbox.append("job_started", {"stage": "test_pipeline_v1"})
         outbox.append("stage_started",
@@ -632,6 +696,18 @@ class Executor:
                 "deferred_stages": [],
             },
         )
+        # Отметка процесса ставится и здесь, а не только на штатном пути в
+        # `run_attempt`. Путь после рестарта исполнителя («процесс отработал,
+        # пока нас не было» и «выживший процесс закончил») до сюда доходит с
+        # записью реестра в статусе `running` — и оставлял её такой навсегда.
+        # Удержание в этом состоянии удалять попытку отказывается («процесс
+        # помечен работающим», retention.py), то есть архивы копились бы на
+        # диске молча и без единой ошибки в журнале.
+        self.db.update_process(
+            attempt_id,
+            status="exited" if int(meta.get("exit_code", 0) or 0) == 0 else "failed",
+            exit_code=int(meta.get("exit_code", 0) or 0),
+        )
         self.db.set_queue_state(
             attempt_id, local_db.QUEUE_FINISHED,
             result={"outcome": "finished", "result_hash": manifest["archive"]["sha256"]},
@@ -740,6 +816,30 @@ class Executor:
         return {"status": "error",
                 "detail": {"outcome": "unsupported_command", "received": ctype}}
 
+    def _cancel_lost_race(self, attempt_id: str, observed: str) -> dict[str, Any]:
+        """Состояние попытки сменилось между чтением и записью отмены.
+
+        Отвечаем ОШИБКОЙ, а не «отменено»: центр по ошибке состояние попытки не
+        меняет и слот не освобождает, а команда отмены останется невыполненной
+        и придёт снова. Повторять здесь же нельзя — в этот момент поток задания
+        как раз стартует процесс, и мы бы крутились в рекурсии вместо того,
+        чтобы дать ему дописать состояние.
+        """
+        current = (self.db.queue_item(attempt_id) or {}).get("state")
+        _log(
+            f"отмена {attempt_id[:8]}: состояние сменилось {observed!r} → "
+            f"{current!r} — отмена не применена, команда будет повторена"
+        )
+        return {
+            "status": "error",
+            "detail": {
+                "outcome": "state_changed_concurrently",
+                "observed_state": observed,
+                "current_state": current,
+                "reason": "попытка меняла состояние во время отмены; повторите команду",
+            },
+        }
+
     def cancel_attempt(
         self, *, job_id: str, attempt_id: str, grace_period_sec: float = 30.0
     ) -> dict[str, Any]:
@@ -762,8 +862,19 @@ class Executor:
         row = self.db.process_row(attempt_id)
         if row is None and marker is None:
             if queue is not None:
-                self.db.set_queue_state(attempt_id, local_db.QUEUE_CANCELLED,
-                                        result={"outcome": "not_running_locally"})
+                # Условие «состояние не менялось с момента чтения» обязательно:
+                # попытка могла быть в `claimed`, и прямо сейчас поток задания
+                # переводит её в `running` и запускает процесс. Проиграв эту
+                # гонку, мы не имеем права отвечать «локально не выполняется» —
+                # центр по такому ответу объявит попытку отменённой и отдаст
+                # слот, пока процесс работает.
+                observed = str(queue.get("state") or "")
+                if not self.db.set_queue_state(
+                    attempt_id, local_db.QUEUE_CANCELLED,
+                    result={"outcome": "not_running_locally"},
+                    expect_states=(observed,),
+                ):
+                    return self._cancel_lost_race(attempt_id, observed)
                 self.jobs.update(job_id, attempt_id, local_state="cancelled")
             return {"status": "ok",
                     "detail": {"outcome": process_control.OUTCOME_NOT_RUNNING}}
@@ -788,8 +899,13 @@ class Executor:
             if row and not process_registry.is_alive(
                 int(row.get("pid") or 0), row.get("process_start_identity")
             ):
-                self.db.set_queue_state(attempt_id, local_db.QUEUE_CANCELLED,
-                                        result={"outcome": "not_running_locally"})
+                observed = str((queue or {}).get("state") or "")
+                if observed and not self.db.set_queue_state(
+                    attempt_id, local_db.QUEUE_CANCELLED,
+                    result={"outcome": "not_running_locally"},
+                    expect_states=(observed,),
+                ):
+                    return self._cancel_lost_race(attempt_id, observed)
                 self.jobs.update(job_id, attempt_id, local_state="cancelled")
                 return {"status": "ok",
                         "detail": {"outcome": process_control.OUTCOME_NOT_RUNNING,

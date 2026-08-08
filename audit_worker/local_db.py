@@ -196,13 +196,22 @@ class LocalDB:
         with self._write_lock:
             conn = self._conn()
             conn.execute("BEGIN IMMEDIATE")
+            # COMMIT внутри try. Снаружи он оставлял транзакцию открытой на
+            # потоко-локальном соединении при любой своей ошибке (кончившийся
+            # диск, SQLITE_BUSY на коммите), а соединение кэшируется навсегда:
+            # поток после этого падал на КАЖДОЙ записи с «cannot start a
+            # transaction within a transaction». Лечение — закрыть соединение.
             try:
-                yield conn
-            except Exception:
-                conn.execute("ROLLBACK")
-                raise
-            else:
+                try:
+                    yield conn
+                except Exception:
+                    conn.execute("ROLLBACK")
+                    raise
                 conn.execute("COMMIT")
+            except Exception:
+                if conn.in_transaction:
+                    self.close()
+                raise
 
     def read(self) -> sqlite3.Connection:
         return self._conn()
@@ -407,6 +416,29 @@ class LocalDB:
             )
         return claimed
 
+    def adopt_claim(self, attempt_id: str, executor_instance_id: str) -> bool:
+        """Переписать владельца строки очереди на себя при подхвате после рестарта.
+
+        Без этого новый исполнитель наблюдал за выжившим процессом, но строка
+        очереди оставалась записана на МЁРТВОЕ воплощение: `renew_lease` с
+        условием `claimed_by_executor = ?` не обновлял ничего, аренда тихо
+        протухала, а `set_queue_state(..., executor_instance_id=...)` на путях,
+        где владелец проверяется, промахивался бы мимо строки.
+
+        Терминальные состояния не трогаются: попытку, у которой исход уже
+        записан, подхватывать нечем и незачем.
+        """
+        terminal = sorted(TERMINAL_QUEUE_STATES)
+        with self.write() as conn:
+            cur = conn.execute(
+                "UPDATE execution_queue SET claimed_by_executor = ?, "
+                "lease_expires_at = ?, updated_at = ? WHERE attempt_id = ? "
+                f"AND state NOT IN ({','.join('?' for _ in terminal)})",
+                [executor_instance_id, time.time() + LEASE_SEC, time.time(), attempt_id]
+                + terminal,
+            )
+            return cur.rowcount == 1
+
     def renew_lease(self, attempt_id: str, executor_instance_id: str) -> None:
         with self.write() as conn:
             conn.execute(
@@ -422,7 +454,27 @@ class LocalDB:
         *,
         executor_instance_id: Optional[str] = None,
         result: Optional[dict[str, Any]] = None,
-    ) -> None:
+        expect_states: Optional[tuple[str, ...]] = None,
+    ) -> bool:
+        """Перевести попытку в новое состояние. Возвращает, случилась ли запись.
+
+        Два условия ставятся на уровне SQL, а не на уровне дисциплины вызовов:
+
+        1. Из ТЕРМИНАЛЬНОГО состояния выйти нельзя. Без этого работала гонка:
+           отмена видела попытку в `claimed`, ставила `cancelled` и отвечала
+           центру «локально не выполняется» — центр объявлял попытку отменённой
+           и освобождал слот, — а поток задания в этот момент дописывал
+           `running` поверх и запускал настоящий процесс. Работа шла в контур
+           уже отменённой попытки и сгорала молча.
+        2. `expect_states` — условие «состояние не менялось с тех пор, как я его
+           прочитал». Нужно там, где между чтением и записью принимается
+           решение: сравнение внутри той же транзакции, что и запись, закрывает
+           окно целиком.
+
+        Возвращаемое значение обязано проверяться на путях, где отказ означает
+        «кто-то меня опередил», — прежде всего в `run_attempt` перед стартом
+        процесса.
+        """
         fields = ["state = ?", "updated_at = ?"]
         args: list[Any] = [state, time.time()]
         if result is not None:
@@ -430,11 +482,20 @@ class LocalDB:
             args.append(json.dumps(result, ensure_ascii=False))
         sql = f"UPDATE execution_queue SET {', '.join(fields)} WHERE attempt_id = ?"
         args.append(attempt_id)
+        # Гейт стоит ВСЕГДА, в том числе на переходе «терминальное →
+        # терминальное»: второй исход поверх первого — это тоже потеря.
+        terminal = sorted(TERMINAL_QUEUE_STATES)
+        sql += f" AND state NOT IN ({','.join('?' for _ in terminal)})"
+        args.extend(terminal)
+        if expect_states:
+            sql += f" AND state IN ({','.join('?' for _ in expect_states)})"
+            args.extend(expect_states)
         if executor_instance_id:
             sql += " AND claimed_by_executor = ?"
             args.append(executor_instance_id)
         with self.write() as conn:
-            conn.execute(sql, args)
+            cur = conn.execute(sql, args)
+            return cur.rowcount == 1
 
     def queue_item(self, attempt_id: str) -> Optional[dict[str, Any]]:
         row = self.read().execute(
@@ -523,13 +584,28 @@ class LocalDB:
         строку в `processing` навсегда: она больше не выдавалась
         `claim_local_command` и никогда не подтверждалась центру. Все локальные
         команды идемпотентны по построению, повторное исполнение безопасно.
+
+        Если жив ДРУГОЙ исполнитель, не делаем ничего: строка в `processing`
+        тогда, скорее всего, не сирота, а команда, которую он прямо сейчас
+        выполняет. Вернуть её в очередь — значит начать вторую отмену того же
+        процесса параллельно с первой, пока та ждёт свой гарантийный срок.
+        Сироты подождут: их разберёт тот, кто останется последним.
         """
+        if self.other_executor_alive():
+            return 0
         with self.write() as conn:
             cur = conn.execute(
                 "UPDATE local_commands SET status = 'pending', claimed_at = NULL "
                 "WHERE status = 'processing'"
             )
         return int(cur.rowcount or 0)
+
+    def other_executor_alive(self) -> bool:
+        """Есть ли ЖИВОЙ исполнитель, кроме нас."""
+        rows = self.read().execute(
+            "SELECT executor_instance_id FROM executor_instances WHERE status = 'online'"
+        ).fetchall()
+        return any(self.executor_alive(row["executor_instance_id"]) for row in rows)
 
     def release_claim(self, attempt_id: str) -> None:
         """Вернуть захваченную, но НЕ начатую попытку в очередь."""

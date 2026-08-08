@@ -117,12 +117,24 @@ def terminate(
     signalled: list[str] = []
 
     def _send(sig: int) -> None:
-        if pgid is not None:
-            os.killpg(pgid, sig)
-            signalled.append(f"pgid:{pgid}:{sig}")
-        else:
-            os.kill(pid, sig)
-            signalled.append(f"pid:{pid}:{sig}")
+        # Сигнал уходит ТОЛЬКО в доказанную группу. `_group_of` возвращает None
+        # ровно тогда, когда доказательство не сложилось: группы в записи нет,
+        # /proc не читается или процесс переехал в чужую группу. Прежний
+        # запасной путь бил голым `os.kill(pid)` — то есть именно в том случае,
+        # когда принадлежность НЕ доказана, и именно там, где pid уже мог быть
+        # переиспользован системой под чужой процесс.
+        os.killpg(pgid, sig)  # type: ignore[arg-type]
+        signalled.append(f"pgid:{pgid}:{sig}")
+
+    if pgid is None:
+        return {
+            "outcome": OUTCOME_AMBIGUOUS,
+            "message": (
+                "группа процесса не подтверждена (запись реестра и /proc "
+                "разошлись) — сигнал не отправлен ни по какому адресу"
+            ),
+            "pid": pid,
+        }
 
     try:
         _send(signal.SIGTERM)

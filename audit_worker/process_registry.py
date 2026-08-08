@@ -13,7 +13,6 @@
 from __future__ import annotations
 
 import os
-import signal
 import threading
 import time
 from pathlib import Path
@@ -181,26 +180,15 @@ class ProcessRegistry:
                 self._flush()
         return len(dead)
 
-    def terminate_job(self, job_id: str, attempt_id: str, *, grace_sec: float = 10.0) -> int:
-        """SIGTERM → пауза → SIGKILL. Возвращает число задетых процессов."""
-        targets = self.alive_for_job(job_id, attempt_id)
-        for item in targets:
-            try:
-                os.kill(int(item["pid"]), signal.SIGTERM)
-            except OSError:
-                continue
-        deadline = time.time() + grace_sec
-        while time.time() < deadline:
-            if not self.alive_for_job(job_id, attempt_id):
-                break
-            time.sleep(0.2)
-        for item in self.alive_for_job(job_id, attempt_id):
-            try:
-                os.kill(int(item["pid"]), signal.SIGKILL)
-            except OSError:
-                continue
-        self.prune_dead()
-        return len(targets)
+    # Метода `terminate_job` здесь больше нет. Он бил `os.kill` по голому pid,
+    # без единого доказательства принадлежности: ни сверки тика старта, ни
+    # отпечатка команды, ни группы процессов. В подсистеме, которая обещает
+    # «сигнал только своему процессу», такой запасной путь опасен сам по себе —
+    # достаточно одного вызова из будущего кода, чтобы обещание перестало
+    # действовать, а pid к тому моменту мог быть переиспользован системой.
+    # Единственная точка остановки процесса — process_control.terminate:
+    # доказанная группа, SIGTERM → пауза → SIGKILL. Вызовов у удалённого метода
+    # не было ни одного (проверено grep по репозиторию).
 
     def _flush(self) -> None:
         atomic_write_json(self.path, self._items)
