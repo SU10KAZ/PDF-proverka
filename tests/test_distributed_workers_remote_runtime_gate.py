@@ -626,8 +626,10 @@ class TestResultPackage:
         analysis = f.version_dir / "03_analysis" / "latest"
         analysis.mkdir(parents=True, exist_ok=True)
         (analysis / "03_findings.json").write_text('{"findings": []}', encoding="utf-8")
-        (job_dir / "result" / "03_findings.json").write_text(
-            '{"findings": []}', encoding="utf-8")
+        for name in ("03_findings.json", "01_blocks_analysis.json",
+                     "02_text_analysis.json"):
+            (job_dir / "result" / name).write_text('{"findings": []}',
+                                                  encoding="utf-8")
         (job_dir / "result" / "audit_manifest.json").write_text("{}", encoding="utf-8")
         (job_dir / "work" / "pipeline_log.json").write_text(
             '{"stages": {}}', encoding="utf-8")

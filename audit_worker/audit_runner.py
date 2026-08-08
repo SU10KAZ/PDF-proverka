@@ -41,9 +41,15 @@ SUPPORTED_ACTIONS = frozenset({"full", "audit", "resume"})
 
 #: Обязательные артефакты результата. Дублируют центральный список намеренно:
 #: каждый рубеж держит оборону сам.
+#: Текст ловит ~40 % замечаний, визуальный анализ — остальные 60 %. Прогон, в
+#: котором `03_findings.json` есть, а `01_blocks_analysis.json` нет, — это ровно
+#: форма известного инцидента «нога провайдера молча отвалилась»: пакет прошёл
+#: бы транспорт как успешный и уехал на центр аудитом наполовину.
 REQUIRED_RESULT_ARTIFACTS: tuple[str, ...] = (
     "work/pipeline_log.json",
     "result/03_findings.json",
+    "result/01_blocks_analysis.json",
+    "result/02_text_analysis.json",
     "result/audit_manifest.json",
     "usage/usage_report.json",
 )

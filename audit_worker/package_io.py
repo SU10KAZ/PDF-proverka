@@ -433,7 +433,7 @@ def build_result_package(
     completed_stages: Optional[list[str]] = None,
     forbidden_stages_not_run: Optional[list[str]] = None,
     provider_mode: Optional[str] = None,
-    external_network_attempts: int = 0,
+    external_network_attempts: Optional[int] = None,
     source_integrity: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Собрать TAR результата: input/ + work/ + result/ (+ project/usage/logs).
@@ -464,14 +464,18 @@ def build_result_package(
         usage_dir = job_dir / "usage"
         if usage_dir.is_dir():
             for path in sorted(usage_dir.rglob("*")):
-                if path.is_file():
+                # Симлинк пропускается ВЕЗДЕ, а не только в дереве проекта:
+                # этап или CLI модели с правом записи в каталог попытки мог бы
+                # положить ссылку и отправить центру байты её цели внутри
+                # пакета, который манифест объявляет чистым.
+                if path.is_file() and not path.is_symlink():
                     files["usage/" + path.relative_to(usage_dir).as_posix()] = (
                         path.read_bytes()
                     )
         logs_dir = job_dir / "logs"
         if logs_dir.is_dir():
             for path in sorted(logs_dir.rglob("*")):
-                if not path.is_file():
+                if not path.is_file() or path.is_symlink():
                     continue
                 blob = path.read_bytes()
                 if len(blob) > _MAX_LOG_BYTES:
@@ -497,7 +501,7 @@ def build_result_package(
 
     # result/: всё, что произвёл процесс.
     for path in sorted(result_dir.rglob("*")):
-        if not path.is_file():
+        if not path.is_file() or path.is_symlink():
             continue
         if path.name.endswith(".tar.gz") or path.name.endswith(".tar.gz.tmp"):
             continue          # сам архив внутрь себя не кладём
@@ -505,6 +509,22 @@ def build_result_package(
 
     if not any(k.startswith("result/") for k in files):
         raise BundleError("Каталог результата пуст — собирать нечего")
+
+    # Сканирование СОДЕРЖИМОГО на абсолютные пути хоста. Дёшево (артефакты —
+    # JSON), и превращает поле манифеста из обещания в измерение.
+    absolute_path_hits: list[str] = []
+    for rel, data in sorted(files.items()):
+        if not rel.endswith((".json", ".jsonl", ".txt", ".md")):
+            continue
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+        if '"/' in text or "'/" in text.replace("'/'", ""):
+            for marker in ('"/home/', '"/var/', '"/opt/', '"/tmp/', '"/root/', '"/srv/'):
+                if marker in text:
+                    absolute_path_hits.append(rel)
+                    break
 
     entries = []
     uncompressed = 0
@@ -548,7 +568,13 @@ def build_result_package(
         "completed_stages": list(completed_stages or []),
         "forbidden_stages_not_run": list(forbidden_stages_not_run or []),
         "provider_mode": provider_mode,
-        "external_network_attempts": int(external_network_attempts),
+        # None означает «не измерялось», а не «ноль». Ноль по умолчанию был
+        # аттестацией, которую не производит ни одна строка кода: читающий
+        # манифест на центре принимал её за измерение.
+        "external_network_attempts": (
+            None if external_network_attempts is None
+            else int(external_network_attempts)
+        ),
         "source_integrity": dict(source_integrity or {}),
         # Хэш исходного пакета: связывает результат с тем, из чего он получен.
         "source_package_hash": normalize_hash(source_package_hash or "") or None,
@@ -569,7 +595,17 @@ def build_result_package(
         "resume_hint": resume_hint,
         "excluded_artifacts": [],
         "excluded_recoverable": [],
-        "path_rules": {"absolute_paths_present": False, "rewrite_on_unpack": []},
+        # Раньше здесь стояло безусловное False. Это было УТВЕРЖДЕНИЕ, которого
+        # никто не проверял: имена записей действительно относительны, а вот
+        # СОДЕРЖИМОЕ артефактов несёт абсолютные пути каталога попытки
+        # (`pipeline_log.artifacts_dir`, `stage01_meta.runtime_plan_path`), и
+        # центр, построивший логику на этом поле, получал бы их в дерево
+        # проекта. Теперь поле вычисляется, а нарушители перечисляются.
+        "path_rules": {
+            "absolute_paths_present": bool(absolute_path_hits),
+            "absolute_path_files": absolute_path_hits[:200],
+            "rewrite_on_unpack": [],
+        },
         "tree_hash": "sha256:"
         + sha256_bytes(
             "\n".join(f"{e['path']}:{e['sha256']}" for e in entries).encode("utf-8")

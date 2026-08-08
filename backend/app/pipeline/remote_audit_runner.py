@@ -422,6 +422,8 @@ def run(spec: dict[str, Any]) -> int:
         job_id=job.job_id,
     )
 
+    # Снимок статусов ДО прогона: журнал накопительный и приезжает в пакете.
+    stages_before = snapshot_stage_statuses(spec)
     emit({"type": "stage_started", "stage": "pipeline", "stage_total": 1})
     started = time.time()
     try:
@@ -449,7 +451,7 @@ def run(spec: dict[str, Any]) -> int:
         }
     )
     stages, resume_hint = publish_deliverables(spec, job)
-    history = audit_stage_history(spec)
+    history = audit_stage_history(spec, before=stages_before)
     if history["violations"]:
         # Центральный этап ВЫПОЛНИЛСЯ на воркере. Пакет собирать нельзя: он
         # прошёл бы транспорт как успешный, а на центре его отверг бы импортёр
@@ -502,7 +504,55 @@ WORKER_STAGE_PLAN: tuple[str, ...] = (
 _NOT_RUN_STATUSES = frozenset({"", "deferred", "skipped", "pending", "blocked"})
 
 
-def audit_stage_history(spec: dict[str, Any]) -> dict[str, Any]:
+def _stage_statuses(log_path: Path) -> dict[str, str]:
+    """Статусы этапов из журнала. Отсутствие журнала — пустая карта."""
+    if not log_path.is_file():
+        return {}
+    try:
+        data = json.loads(log_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    stages = data.get("stages")
+    if not isinstance(stages, dict):
+        return {}
+    return {
+        str(name): str((entry or {}).get("status") or "").strip().lower()
+        for name, entry in stages.items()
+        if isinstance(entry, dict)
+    }
+
+
+def snapshot_stage_statuses(spec: dict[str, Any]) -> dict[str, str]:
+    """Снять статусы этапов ДО прогона.
+
+    `pipeline_log.json` НАКОПИТЕЛЬНЫЙ и приезжает на воркер внутри пакета: у
+    версии, которую центр уже аудировал, там лежит `norm_verify: done` с
+    прошлого раза. Без этого снимка проверка §14 обвиняла бы безупречный
+    многочасовой прогон в том, что сделал центр месяцем раньше, — и делала бы
+    это на последнем шаге, уже после всей работы.
+
+    Действие `resume` входит в профиль, то есть случай не гипотетический.
+    """
+    paths = spec.get("paths") or {}
+    project_root = Path(paths.get("project") or "")
+    before: dict[str, str] = {}
+    try:
+        from audit_worker import package_io                # noqa: PLC0415
+
+        version_dir = package_io.portable_version_dir(project_root)
+    except Exception:                                      # noqa: BLE001
+        return before
+    for candidate in (
+        version_dir / "03_analysis" / "latest" / "pipeline_log.json",
+        version_dir / "99_service" / "pipeline_log.json",
+    ):
+        before.update(_stage_statuses(candidate))
+    return before
+
+
+def audit_stage_history(
+    spec: dict[str, Any], *, before: Optional[dict[str, str]] = None
+) -> dict[str, Any]:
     """Проверить ФАКТИЧЕСКУЮ историю этапов после прогона.
 
     Третий рубеж границы, и единственный, который смотрит на РЕЗУЛЬТАТ, а не на
@@ -510,37 +560,41 @@ def audit_stage_history(spec: dict[str, Any]) -> dict[str, Any]:
     что этап не будет запущен; этот проверяет, что он не был запущен. Разница
     существенна: гейт стоит в четырёх местах менеджера, и пятое место, которое
     однажды появится, этой проверкой будет поймано, а теми двумя — нет.
+
+    Сравнивается ДЕЛЬТА к состоянию до прогона: унаследованный из пакета
+    `norm_verify: done` центрального происхождения нарушением не является.
     """
     paths = spec.get("paths") or {}
-    log_path = Path(paths.get("work") or ".") / "pipeline_log.json"
-    stages: dict[str, Any] = {}
-    if log_path.is_file():
-        try:
-            data = json.loads(log_path.read_text(encoding="utf-8"))
-            stages = data.get("stages") or {}
-        except (OSError, ValueError):
-            stages = {}
+    after = _stage_statuses(Path(paths.get("work") or ".") / "pipeline_log.json")
+    prior = dict(before or {})
+
+    violated: set[str] = set()
     violations: list[str] = []
     for name in FORBIDDEN_STAGES:
-        entry = stages.get(name)
-        if not isinstance(entry, dict):
+        status = after.get(name, "")
+        if not status or status in _NOT_RUN_STATUSES:
             continue
-        status = str(entry.get("status") or "").strip().lower()
-        if status not in _NOT_RUN_STATUSES:
-            violations.append(f"{name}={status}")
+        if prior.get(name, "") == status:
+            # Тот же статус, что был до прогона: этап выполнил ЦЕНТР, и запись
+            # просто приехала в пакете вместе с деревом версии.
+            continue
+        violated.add(name)
+        violations.append(f"{name}={status}")
+
     completed = sorted(
-        name
-        for name, entry in stages.items()
-        if isinstance(entry, dict)
-        and str(entry.get("status") or "").strip().lower() not in _NOT_RUN_STATUSES
+        name for name, status in after.items()
+        if status and status not in _NOT_RUN_STATUSES and prior.get(name, "") != status
     )
     return {
         "completed_stages": completed,
+        # Членство по МНОЖЕСТВУ, а не поиск подстроки в склеенной строке:
+        # строка давала верный ответ лишь по случайности текущих четырёх имён.
         "forbidden_stages_not_run": [
-            name for name in FORBIDDEN_STAGES if f"{name}=" not in " ".join(violations)
+            name for name in FORBIDDEN_STAGES if name not in violated
         ],
         "violations": violations,
         "worker_stage_plan": list(WORKER_STAGE_PLAN),
+        "inherited_stage_statuses": prior,
     }
 
 

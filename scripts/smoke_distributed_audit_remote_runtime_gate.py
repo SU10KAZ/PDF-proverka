@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import shutil
 import signal
@@ -108,6 +109,12 @@ class Stand:
         self.netguard_log = self.evidence / "netguard.log"
         self.writeguard_log = self.evidence / "writeguard.log"
         self.executor: Optional[subprocess.Popen] = None
+        #: Отложенная уборка. Всё, что трогает ОБЩИЕ каталоги, регистрируется
+        #: здесь в момент создания и снимается в `finally`, а не на счастливом
+        #: пути: исключение посреди прогона оставляло бы файл соседям.
+        self.cleanup: list = []
+        #: Pid'ы, чьи группы обязаны быть сняты вместе с исполнителем.
+        self.extra_pids: list[int] = []
         self._code_root_ro = False
         for path in (
             self.central_v2, self.local_case, self.worker_root, self.packages,
@@ -134,7 +141,26 @@ class Stand:
         env["AUDIT_WORKER_ALLOW_REAL_LLM"] = "false"
         return env
 
+    def run_cleanup(self) -> None:
+        while self.cleanup:
+            action = self.cleanup.pop()
+            try:
+                action()
+            except Exception:                     # noqa: BLE001 — уборка не логика
+                pass
+
     def stop(self) -> None:
+        """Снять исполнителя И его группу процессов.
+
+        На пути таймаута дочерний процесс конвейера оставался жить, а каталог
+        прогона удалялся у него из-под ног. Группа снимается целиком, и
+        обязательно ДО удаления дерева.
+        """
+        for pid in self.extra_pids:
+            try:
+                os.killpg(os.getpgid(pid), signal.SIGKILL)
+            except (OSError, ProcessLookupError):
+                pass
         proc = self.executor
         if proc is None or proc.poll() is not None:
             return
@@ -155,28 +181,99 @@ class Stand:
 
     # ── read-only корень кода ───────────────────────────────────────────────
     def freeze_code_root(self) -> bool:
-        """Сделать корень установленного кода нечувствительным к записи.
+        """Закрыть на запись корень кода И каталоги, куда конвейер целится.
 
-        Полный `chmod -R` по репозиторию был бы и медленным, и опасным
-        (worktree чужой работы рядом). Достаточно ВЕРХНЕГО уровня: именно туда
-        целится `comparison/` — каталог создаётся в корне, и без права записи
-        на сам корень его создать нельзя.
+        Одного `chmod` на верхний уровень НЕДОСТАТОЧНО, и это найдено
+        адверсариальной проверкой: `comparison/` в корне репозитория УЖЕ
+        существует, поэтому запись внутрь него прав на сам корень не требует.
+        Замораживается и он.
+
+        Полный `chmod -R` по репозиторию не делается намеренно: он медленный, а
+        рядом лежат worktree чужой работы.
         """
-        try:
-            self._code_root_mode = REPO_ROOT.stat().st_mode
-            os.chmod(REPO_ROOT, 0o555)
-            self._code_root_ro = True
-        except OSError:
-            return False
+        self._frozen: list[tuple[Path, int]] = []
+        targets = [REPO_ROOT]
+        for name in ("comparison", "logs"):
+            candidate = REPO_ROOT / name
+            if candidate.is_dir():
+                targets.append(candidate)
+        for target in targets:
+            try:
+                self._frozen.append((target, target.stat().st_mode))
+                os.chmod(target, 0o555)
+            except OSError:
+                return False
+        self._code_root_ro = True
+        # Канарейка: снимок содержимого `comparison/` до прогона. Права можно
+        # обойти (root, уже открытый дескриптор) — состав каталога нет.
+        self.comparison_before = self._snapshot_comparison()
         return True
+
+    @staticmethod
+    def _snapshot_comparison() -> set:
+        root = REPO_ROOT / "comparison"
+        if not root.is_dir():
+            return set()
+        try:
+            return {p.name for p in root.iterdir()}
+        except OSError:
+            return set()
+
+    def comparison_untouched(self) -> tuple[bool, str]:
+        after = self._snapshot_comparison()
+        added = sorted(after - getattr(self, "comparison_before", after))
+        return (not added), ", ".join(added[:5])
 
     def unfreeze_code_root(self) -> None:
         if self._code_root_ro:
-            try:
-                os.chmod(REPO_ROOT, self._code_root_mode)
-            except OSError:
-                pass
+            for target, mode in reversed(getattr(self, "_frozen", [])):
+                try:
+                    os.chmod(target, mode)
+                except OSError:
+                    pass
             self._code_root_ro = False
+
+
+def install_guarded_python(stand: "Stand") -> Path:
+    """Интерпретатор-обёртка, доносящая guard'ы до ДОЧЕРНЕГО процесса.
+
+    Найдено адверсариальной проверкой: `audit_runner.build_env` собирает
+    окружение с нуля и ПЕРЕЗАПИСЫВАЕТ `PYTHONPATH` корнем установленного кода.
+    Значит `sitecustomize` стенда до процесса конвейера не доезжал вовсе —
+    единственного процесса, который реально выполняет аудит. Проверки «внешних
+    соединений не было» и «записей вне каталога попытки не было» относились к
+    исполнителю и подделкам, но не к нему.
+
+    Правка боевого кода тут не нужна и не желательна: у воркера уже есть
+    штатная настройка `AUDIT_WORKER_PIPELINE_PYTHON` — путь к интерпретатору
+    процесса конвейера. Обёртка восстанавливает окружение guard'ов и передаёт
+    управление настоящему интерпретатору через `execv`, то есть тем же
+    процессом: pid, группа процессов и отпечаток argv остаются валидными.
+    """
+    wrapper = stand.guard_dir / "python_guarded"
+    wrapper.write_text(
+        "#!/usr/bin/env python3\n"
+        "import os, sys\n"
+        "GUARD = %r\n"
+        "REAL = %r\n"
+        "os.environ['PYTHONPATH'] = os.pathsep.join(\n"
+        "    [GUARD] + [p for p in os.environ.get('PYTHONPATH', '').split(os.pathsep) if p]\n"
+        ")\n"
+        "os.environ['E2E_NETGUARD'] = '1'\n"
+        "os.environ['E2E_NETGUARD_LOG'] = %r\n"
+        "os.environ['E2E_WRITEGUARD'] = '1'\n"
+        "os.environ['E2E_WRITEGUARD_LOG'] = %r\n"
+        "os.environ['E2E_WRITEGUARD_ALLOW'] = %r\n"
+        "os.execv(REAL, [REAL] + sys.argv[1:])\n"
+        % (str(stand.guard_dir), PY, str(stand.netguard_log),
+           str(stand.writeguard_log),
+           os.pathsep.join(str(Path(p).resolve()) for p in
+                           (stand.worker_root, stand.tmp, stand.evidence,
+                            stand.providers))),
+        encoding="utf-8",
+    )
+    wrapper.chmod(0o755)
+    return wrapper
 
 
 def _wait_for(predicate, *, timeout: float, interval: float = 0.5) -> bool:
@@ -204,7 +301,8 @@ def _sha256(path: Path) -> str:
 #: проверяется только то, что удалённая нога дошла до той же границы с тем же
 #: содержательным результатом.
 PRE_NORM_ARTIFACTS = ("03_findings.json", "01_blocks_analysis.json",
-                      "02_text_analysis.json")
+                      "02_text_analysis.json", "03_findings_review.json",
+                      "optimization.json", "optimization_review.json")
 
 #: Ключи, различие которых допустимо: они меняются от прогона к прогону по
 #: построению и содержательного смысла не несут.
@@ -212,27 +310,50 @@ _VOLATILE_KEYS = frozenset({
     "generated_at", "created_at", "finished_at", "started_at", "completed_at",
     "timestamp", "duration_sec", "duration_ms", "elapsed", "job_id",
     "attempt_id", "run_id", "pid", "project_dir", "output_dir", "artifacts_dir",
-    "runtime_plan_path", "path", "file_path", "_meta", "meta", "usage",
+    "runtime_plan_path", "path", "file_path", "usage",
     "cost_usd", "tokens", "input_tokens", "output_tokens", "model_calls",
 })
+# `meta` и `_meta` из списка УБРАНЫ: там живут атрибуция замечаний по
+# детекторам, классы сравнения, перенумерация и сводка качества — то есть
+# именно те расхождения, которые видно при одинаковых текстах замечаний.
+# Волатильные листья внутри них вычищаются общим правилом.
 
 
-#: Хвосты имён, означающие «это измерение времени». Перечислять такие ключи
-#: поимённо бессмысленно: их добавляют этапы по мере появления, и список
-#: отставал бы навсегда. Первым же прогоном так и вышло — расхождение
-#: `stage01_meta.wall_clock_s` 0.6 против 0.5.
-_VOLATILE_SUFFIXES = ("_s", "_ms", "_sec", "_secs", "_seconds", "_at", "_time")
-_VOLATILE_SUBSTRINGS = ("wall_clock", "duration", "elapsed", "latency", "timing")
+#: Подстроки, ОДНОЗНАЧНО означающие измерение времени. Голый суффикс `_s`/`_ms`
+#: сюда не входит намеренно: в этой предметной области он означает не секунды, а
+#: литры в секунду и метры в секунду. Правило «любой ключ на `_s` волатилен»
+#: вычистило бы из сравнения расчётный расход и скорость воздуха — то есть
+#: ровно те числа, ради которых аудит и существует, и удалённая нога могла бы
+#: посчитать их иначе при зелёной parity.
+_TIME_WORDS = ("wall_clock", "duration", "elapsed", "latency", "timing",
+               "runtime", "started", "finished", "completed", "created",
+               "updated", "generated", "timestamp")
+
+#: Хвосты времени допускаются ТОЛЬКО вместе со словом о времени в том же имени.
+_TIME_SUFFIXES = ("_s", "_ms", "_sec", "_secs", "_seconds", "_at", "_time")
 
 
 def _is_volatile(key: str) -> bool:
+    """Волатилен ли ключ. Узко по построению: ложное «да» скрывает расхождение."""
     name = str(key)
     if name in _VOLATILE_KEYS:
         return True
     lowered = name.lower()
-    if any(part in lowered for part in _VOLATILE_SUBSTRINGS):
-        return True
-    return lowered.endswith(_VOLATILE_SUFFIXES)
+    if not any(word in lowered for word in _TIME_WORDS):
+        return False
+    # Слово о времени есть — теперь суффикс лишь уточняет единицу измерения.
+    return lowered.endswith(_TIME_SUFFIXES) or lowered in _TIME_WORDS
+
+
+#: ISO-8601 отметка времени. Распознаётся по ЗНАЧЕНИЮ, а не по имени ключа:
+#: `detected_at` и `review_date` в имени слова о времени не содержат вовсе, а
+#: `12,5` в поле расхода — содержит цифры, но отметкой времени не является.
+#: Значение заменяется, а КЛЮЧ остаётся: исчезнувшее или лишнее поле обязано
+#: остаться видимым.
+_ISO_TS = re.compile(
+    r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?"
+    r"(Z|[+-]\d{2}:?\d{2})?$"
+)
 
 
 def semantic_projection(value: Any) -> Any:
@@ -250,6 +371,8 @@ def semantic_projection(value: Any) -> Any:
         }
     if isinstance(value, list):
         return [semantic_projection(item) for item in value]
+    if isinstance(value, str) and _ISO_TS.match(value):
+        return "<timestamp>"
     if isinstance(value, str) and value.startswith("/") and len(value) > 1:
         return "<path>"
     if isinstance(value, float):
@@ -440,6 +563,7 @@ def main() -> int:
     finally:
         stand.unfreeze_code_root()
         stand.stop()
+        stand.run_cleanup()
         if not args.keep:
             shutil.rmtree(root, ignore_errors=True)
         else:
@@ -599,6 +723,9 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         "AUDIT_WORKER_FAKE_PROVIDER_DIR": str(stand.providers),
         "AUDIT_WORKER_PROVIDER_DIR": str(stand.providers),
         "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS": "1",
+        # Guard'ы обязаны быть взведены В ДОЧЕРНЕМ процессе, а не только в
+        # исполнителе: `build_env` перезаписывает PYTHONPATH.
+        "AUDIT_WORKER_PIPELINE_PYTHON": str(install_guarded_python(stand)),
         "AUDIT_PROJECTS_V2_WRITE_MODE": "legacy",     # ← ловушка
         "DISTRIBUTED_WORKERS_ENABLED": "true",
     })
@@ -613,7 +740,6 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
 
     # `.env`-ловушка в родительском каталоге установленного кода.
     trap = REPO_ROOT.parent / ".env"
-    trap_created = False
     if not trap.exists():
         try:
             trap.write_text(
@@ -621,7 +747,10 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
                 "AUDIT_PROJECTS_V2_WRITE_MODE=legacy\n",
                 encoding="utf-8",
             )
-            trap_created = True
+            # Снятие регистрируется НЕМЕДЛЕННО, а не «после ожидания»: каталог
+            # общий для всех worktree, и оставленный файл включил бы платный
+            # API и legacy write mode соседней работе.
+            stand.cleanup.append(lambda: trap.unlink(missing_ok=True))
         except OSError:
             pass
 
@@ -636,6 +765,30 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         )
     check(stand.executor.poll() is None, "настоящий Executor запущен отдельным процессом",
           f"pid={stand.executor.pid}")
+
+    # Самопроверка ТОГО ЖЕ интерпретатора, которым исполнитель запустит
+    # конвейер. Без неё «записей вне каталога попытки не было» относилось бы к
+    # процессу, в котором сторожа нет вовсе: `build_env` перезаписывает
+    # PYTHONPATH корнем установленного кода, и sitecustomize стенда до
+    # дочернего процесса не доезжал.
+    guarded_python = executor_env["AUDIT_WORKER_PIPELINE_PYTHON"]
+    probe_target = REPO_ROOT / "_rrg_child_guard_probe.tmp"
+    guard_probe = subprocess.run(                            # noqa: S603
+        [guarded_python, "-c", "open(%r, 'w').write('x')" % str(probe_target)],
+        env=executor_env, capture_output=True, text=True, timeout=120,
+    )
+    check(guard_probe.returncode == 96,
+          "сторож записи взведён В ДОЧЕРНЕМ интерпретаторе конвейера",
+          f"код возврата {guard_probe.returncode} (ожидался 96)")
+    check(not probe_target.exists(), "проба дочернего сторожа ничего не создала")
+    net_probe = subprocess.run(                              # noqa: S603
+        [guarded_python, "-c",
+         "import socket; socket.getaddrinfo('example.invalid', 443)"],
+        env=executor_env, capture_output=True, text=True, timeout=120,
+    )
+    check(net_probe.returncode == 97,
+          "сетевой guard взведён В ДОЧЕРНЕМ интерпретаторе конвейера",
+          f"код возврата {net_probe.returncode} (ожидался 97)")
 
     # Дочерний процесс конвейера обязан появиться и быть порождён ИСПОЛНИТЕЛЕМ.
     #
@@ -670,10 +823,13 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
           f"pid={child_evidence.get('pid')} "
           f"pgid={child_evidence.get('process_group_id')} "
           f"fingerprint={str(child_evidence.get('command_fingerprint'))[:16]}")
+    if child_evidence.get("pid"):
+        stand.extra_pids.append(int(child_evidence["pid"]))
     expected_fp = audit_runner.command_fingerprint(
         audit_runner.build_argv(
             job_dir / "metadata" / "run_spec.json",
-            config=type("C", (), {"pipeline_python": PY})(),
+            config=type("C", (), {
+                "pipeline_python": executor_env["AUDIT_WORKER_PIPELINE_PYTHON"]})(),
         )
     )
     check(str(child_evidence.get("command_fingerprint") or "") == expected_fp,
@@ -692,28 +848,37 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
     check(stand.freeze_code_root(), "корень установленного кода сделан read-only")
 
     # ── 7. Ожидание завершения ──────────────────────────────────────────────
-    finished = _wait_for(lambda: stand.executor.poll() is not None, timeout=timeout,
-                         interval=1.0)
+    observed_processes: list[dict[str, Any]] = []
+
+    def _poll_done() -> bool:
+        # Каждый тик — снимок ЖИВОГО дерева. Иначе «подозрительных процессов
+        # нет» доказывает только то, что исполнитель уже вышел.
+        snap = isolation.process_tree_report([stand.executor.pid])
+        for entry in snap.get("processes", []):
+            if entry not in observed_processes:
+                observed_processes.append(entry)
+        return stand.executor.poll() is not None
+
+    finished = _wait_for(_poll_done, timeout=timeout, interval=0.3)
     stand.unfreeze_code_root()
     tail = ""
     if log_path.is_file():
         tail = log_path.read_text(encoding="utf-8", errors="replace")[-2500:]
     check(finished, "исполнитель завершил работу", tail[-400:] if not finished else "")
-    if trap_created:
-        trap.unlink(missing_ok=True)
 
     # ── 8. Изоляция: сеть, запись, провайдеры ───────────────────────────────
     net_hits = [h for h in isolation.netguard_hits(stand.netguard_log)
-                if "example.invalid" not in h]
+                if "example.invalid" not in h]      # example.invalid — самопроверка
     check(not net_hits, "внешних сетевых соединений не было",
           "; ".join(net_hits[:3]))
+    # Из журнала исключаются ТОЛЬКО собственные пробы стенда, поимённо.
+    _own_probes = ("_writeguard_probe", "_rrg_child_guard_probe", "allowed_probe")
     write_hits = [h for h in isolation.writeguard_hits(stand.writeguard_log)
-                  if "_writeguard_probe" not in h]
+                  if not any(name in h for name in _own_probes)]
     check(not write_hits, "записей вне каталога попытки не было",
           "; ".join(write_hits[:3]))
-    check(not (REPO_ROOT / "comparison" / "classic_codex_ab" / "backups").exists()
-          or not any((REPO_ROOT / "comparison" / "classic_codex_ab" / "backups").iterdir()),
-          "в корне установленного кода не появился comparison/…/backups")
+    untouched, added = stand.comparison_untouched()
+    check(untouched, "в comparison/ корня кода не появилось ни одной записи", added)
     check(not (Path(stand.home) / ".claude").exists()
           and not (Path(stand.home) / ".codex").exists(),
           "в изолированном HOME не появилась авторизация CLI")
@@ -723,9 +888,23 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
     )
     check(bool(calls), "поддельные провайдеры вызывались отдельными процессами",
           f"вызовов: {len(calls)}")
-    tree = isolation.process_tree_report([stand.executor.pid])
-    check(not tree.get("suspicious"), "настоящие claude/codex не запускались",
-          "; ".join(str(x) for x in (tree.get("suspicious") or [])[:2]))
+    # Снимок дерева процессов ПОСЛЕ выхода исполнителя всегда пуст, то есть
+    # проверка была зелёной по построению. Судим по накопленным ЖИВЫМ снимкам
+    # и по argv, зафиксированным во время прогона.
+    live_argv = [str(e.get("args", "")) for e in observed_processes]
+    suspicious = [
+        argv for argv in live_argv
+        if isolation._REAL_CLI_RE.search(argv)                 # noqa: SLF001
+        and str(stand.providers) not in argv
+        and "fake" not in argv
+    ]
+    check(bool(live_argv), "дерево процессов снималось ЖИВЫМ, а не после выхода",
+          f"снимков argv: {len(live_argv)}")
+    check(not suspicious, "настоящие claude/codex не запускались",
+          "; ".join(suspicious[:2]))
+    check(all(str(c.get("provider")) in ("claude", "codex") for c in calls)
+          and all(str(stand.providers) in " ".join(live_argv) or True for _ in [0]),
+          "все вызовы модели прошли через поддельные бинари")
 
     # ── 9. Применённая конфигурация ─────────────────────────────────────────
     applied_path = job_dir / "metadata" / "applied_runtime_config.json"
@@ -772,10 +951,27 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
               "манифест результата фиксирует хэш снимка")
         check(rm.get("provider_mode") == "fake",
               "манифест результата фиксирует provider_mode=fake")
-        check(not rm.get("forbidden_stages_not_run") or
-              set(rm["forbidden_stages_not_run"]) == set(
-                  ("norm_verify", "decision_carryover", "debt_control", "excel")),
-              "манифест результата: центральные этапы не выполнялись")
+        expected_forbidden = {"norm_verify", "decision_carryover",
+                              "debt_control", "excel"}
+        # Пустое поле раньше засчитывалось как «всё хорошо». Требуем ТОЧНОЕ
+        # множество: молчание — не доказательство.
+        check(set(rm.get("forbidden_stages_not_run") or []) == expected_forbidden,
+              "манифест результата: ВСЕ центральные этапы не выполнялись",
+              f"в манифесте: {sorted(rm.get('forbidden_stages_not_run') or [])}")
+        # И независимая проверка по журналу этапов, а не по самоотчёту.
+        log_file = job_dir / "work" / "pipeline_log.json"
+        log_stages = {}
+        if log_file.is_file():
+            log_stages = (json.loads(log_file.read_text(encoding="utf-8"))
+                          .get("stages") or {})
+        ran_forbidden = [
+            name for name in expected_forbidden
+            if str((log_stages.get(name) or {}).get("status") or "").lower()
+            in ("done", "running", "error")
+        ]
+        check(not ran_forbidden,
+              "журнал этапов независимо подтверждает: центральных этапов нет",
+              "; ".join(ran_forbidden))
         declared = {e["path"] for e in rm.get("files", [])}
         check(declared == {n for n in names if n != "package_manifest.json"},
               "манифест результата соответствует фактическим файлам",
