@@ -50,6 +50,11 @@ class DistributedWorkersSettings:
     protocol_version: int
     manifest_version: int
     allow_insecure_admin: bool = False
+    # Лимит частоты заявок на регистрацию. 0 в любом из порогов = этот порог
+    # выключен явной настройкой (обе нули — ограничителя нет вовсе).
+    registration_rate_window_sec: int = 3600
+    registration_rate_max_per_instance: int = 10
+    registration_rate_max_per_ip: int = 30
 
     # ─── Производные пути ───────────────────────────────────────────────────
     @property
@@ -159,4 +164,16 @@ def get_settings() -> DistributedWorkersSettings:
         ),
         protocol_version=config.DISTRIBUTED_WORKERS_PROTOCOL_VERSION,
         manifest_version=config.DISTRIBUTED_WORKERS_MANIFEST_VERSION,
+        registration_rate_window_sec=_env_int(
+            "DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC",
+            config.DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC,
+        ),
+        registration_rate_max_per_instance=_env_int(
+            "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE",
+            config.DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE,
+        ),
+        registration_rate_max_per_ip=_env_int(
+            "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP",
+            config.DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP,
+        ),
     )

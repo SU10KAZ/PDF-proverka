@@ -204,6 +204,13 @@ SELECT
     j.project_external_id    AS project_external_id,
     j.project_display_name   AS project_display_name,
     j.project_version_id     AS version_id,
+    j.execution_profile      AS execution_profile,
+    j.pipeline_revision      AS pipeline_revision,
+    a.result_import_state    AS result_import_state,
+    a.result_import_hash     AS result_import_hash,
+    a.result_import_at       AS result_import_at,
+    a.result_import_report   AS result_import_report,
+    a.usage_applied_at       AS usage_applied_at,
     a.attempt_id             AS attempt_id,
     a.attempt_number         AS attempt_no,
     a.assignment_generation  AS assignment_generation,
@@ -258,6 +265,8 @@ _ATTEMPT_FIELD_ALIASES = {
     "version_id": None,
     "job_type": None,
     "payload": None,
+    "execution_profile": None,
+    "pipeline_revision": None,
 }
 
 
@@ -549,12 +558,38 @@ def worker_slot_snapshot(
         return slots.usage_from_attempts(_attempts_for_slots(conn, worker_id))
 
 
+def worker_access_revoked(conn, worker_id: str) -> bool:
+    """True, если ВСЕ выданные воркеру токены отозваны.
+
+    Отзыв доступа (`revoke_worker`) гасит токены и меняет статус регистрации, но
+    между этими двумя записями и решением о выдаче задания раньше проходил
+    long-poll: до 60 секунд, в течение которых центр мог отдать работу воркеру,
+    доступ которого уже отозван. Проверка идёт в той же транзакции, что и
+    захват, и смотрит на ФАКТ (живой токен), а не на снимок статуса.
+
+    Воркер, которому токен НИКОГДА не выдавался, отозванным не считается: у него
+    нечего отзывать. Это не дыра — на живом пути он и не дойдёт сюда, потому что
+    `require_worker` пускает только по действующему токену; а прямые вызовы
+    (тесты, служебные сценарии) не должны получать ложное «доступ отозван».
+    """
+    row = conn.execute(
+        "SELECT COUNT(*) AS total, "
+        "SUM(CASE WHEN revoked_at IS NULL THEN 1 ELSE 0 END) AS alive "
+        "FROM worker_tokens WHERE worker_id = ?",
+        (worker_id,),
+    ).fetchone()
+    if row is None or not int(row["total"] or 0):
+        return False
+    return not int(row["alive"] or 0)
+
+
 def claim_next_job_for_worker(
     worker_id: str,
     *,
     limit_override: Optional[int] = None,
     worker_free_hint: Optional[int] = None,
     worker_busy_hint: Optional[int] = None,
+    executor_status_hint: Optional[str] = None,
     settings: DistributedWorkersSettings | None = None,
 ) -> Optional[dict[str, Any]]:
     """Атомарно взять одно задание, предназначенное этому воркеру.
@@ -582,7 +617,7 @@ def claim_next_job_for_worker(
     как «лимит один», видит одно занятое и отказывает. Подсказка воркера может
     лимит только ПОНИЗИТЬ.
     """
-    from backend.app.services.distributed_workers import slots
+    from backend.app.services.distributed_workers import slots, worker_registry
 
     now = time.time()
     with database.write_txn(settings) as conn:
@@ -602,6 +637,10 @@ def claim_next_job_for_worker(
 
         usage = slots.usage_from_attempts(_attempts_for_slots(conn, worker_id))
         if limit_override is not None:
+            # Осталось для тестов и вызывающих, которым нужен ровно заданный
+            # потолок. Боевой путь (`/jobs/next`) им НЕ пользуется: лимит,
+            # посчитанный до входа в цикл long-poll, к моменту выдачи мог
+            # устареть на всё окно ожидания (до 60 с).
             limit_value = int(limit_override)
             limit_obj = slots.EffectiveLimit(
                 value=limit_value, binding="caller", components={"caller": limit_value}
@@ -610,9 +649,30 @@ def claim_next_job_for_worker(
             worker_row = conn.execute(
                 "SELECT * FROM workers WHERE worker_id = ?", (worker_id,)
             ).fetchone()
+            fresh_worker = dict(worker_row) if worker_row is not None else {}
+            # Связь пересчитывается по ТЕКУЩЕМУ времени центра, а не берётся из
+            # колонки: колонку двигает только heartbeat, и «был онлайн минуту
+            # назад» — это не «онлайн сейчас».
+            if settings is not None and fresh_worker:
+                fresh_worker["connection_status"] = worker_registry.compute_connectivity(
+                    fresh_worker.get("last_seen_at"), settings=settings, now=now
+                ).value
+            if not fresh_worker or worker_access_revoked(conn, worker_id):
+                # Ни одного живого токена — доступ отозван. Возвращаем «слотов
+                # нет» с явной причиной, а не молчаливый None: воркер должен
+                # понять, почему работа перестала приходить.
+                raise SlotLimitReached(
+                    "Доступ воркера отозван: действующего токена нет",
+                    usage=usage,
+                    limit=slots.EffectiveLimit(
+                        value=0, binding="registration", components={"registration": 0},
+                        blocked_reason="Доступ воркера отозван",
+                    ),
+                )
             limit_obj = slots.effective_limit(
-                dict(worker_row) if worker_row is not None else {},
+                fresh_worker,
                 protocol_version=(settings.protocol_version if settings else None),
+                executor_status=executor_status_hint or None,
             )
             limit_value = limit_obj.value
         if worker_free_hint is not None:
@@ -647,11 +707,19 @@ def claim_next_job_for_worker(
                 limit=limit_obj,
             )
 
-        conn.execute(
+        applied = conn.execute(
             "UPDATE job_attempts SET execution_state = ? WHERE attempt_id = ? "
             "AND execution_state = ?",
             (JobState.SOURCE_UPLOADING.value, job["attempt_id"], JobState.ASSIGNED.value),
         )
+        if applied.rowcount != 1:
+            # Условие не выполнилось — состояние успели изменить (операторская
+            # отмена ещё не выданной попытки, §2.1 этапа ExecutionBackend).
+            # Раньше функция всё равно возвращала job со state=source_uploading
+            # и писала переход в журнал: воркер получал работу, которую центр
+            # уже считает отменённой. Внутри одной транзакции это недостижимо,
+            # но полагаться на «недостижимо» в месте выдачи работы нельзя.
+            return None
         conn.execute(
             "INSERT INTO job_state_transitions "
             "(job_id, attempt_id, from_state, to_state, actor, reason, at) "

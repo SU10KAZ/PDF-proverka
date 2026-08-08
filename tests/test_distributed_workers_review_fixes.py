@@ -245,18 +245,34 @@ def test_lost_attempt_is_never_offered_to_the_worker_again(client, center_env):
 
 
 def test_operator_cannot_declare_cancelled_once_worker_has_the_package(center_env):
-    """`assigned/source_*` → `cancelled` напрямую больше нет (критерий 6)."""
+    """`source_*` → `cancelled` напрямую нет (критерий 6).
+
+    Граница уточнена на этапе ExecutionBackend (§2.1 задания). Раньше в этот
+    список входило и `assigned`, но проверка была шире, чем обоснование:
+    «пакет уже у воркера» верно начиная с `source_uploading`, а `assigned`
+    означает «лежит в очереди центра». Единственный путь передачи работы —
+    `claim_next_job_for_worker`, и он атомарно уводит попытку из `assigned` в
+    той же транзакции, что и выборка. То есть попытка в `assigned` воркеру не
+    выдавалась ни разу: процесса нет, подтверждать нечего, а WorkerCommand,
+    который создавался раньше, был мусорным и держал слот (§32.1 п.24
+    отчёта 05 — «3/2»).
+    """
     from backend.app.models.distributed_workers import JobState
     from backend.app.services.distributed_workers import job_service
 
     allowed = job_service.ALLOWED_TRANSITIONS
-    for state in (JobState.ASSIGNED, JobState.SOURCE_UPLOADING, JobState.SOURCE_READY):
+    for state in (JobState.SOURCE_UPLOADING, JobState.SOURCE_READY):
         assert JobState.CANCELLED not in allowed[state], (
             f"{state.value} → cancelled без подтверждения воркера"
         )
         assert JobState.CANCEL_REQUESTED in allowed[state]
-    # У `created` исполнителя ещё нет — там прямая отмена законна.
+    # Пакет ещё не выдавался — прямая отмена законна и является фактом.
     assert JobState.CANCELLED in allowed[JobState.CREATED]
+    assert JobState.CANCELLED in allowed[JobState.ASSIGNED]
+    assert JobState.CANCEL_REQUESTED in allowed[JobState.ASSIGNED]
+    # Работающая попытка по-прежнему отменяется только через подтверждение.
+    assert JobState.CANCELLED not in allowed[JobState.RUNNING]
+    assert JobState.CANCELLED not in allowed[JobState.ACCEPTED_BY_WORKER]
 
 
 # ═══ §4 Центр: доставка результата ═══════════════════════════════════════════

@@ -83,15 +83,26 @@ ALLOWED_TRANSITIONS: dict[JobState, dict[JobState, tuple[str, ...]]] = {
         JobState.CANCEL_REQUESTED: (_O,),
         JobState.CANCELLED: (_O,),
     },
-    # ВНИМАНИЕ: начиная с `assigned` прямого операторского ребра `→cancelled`
-    # больше нет. Пакет уже у воркера (или едет к нему), и «отменено» без
+    # ВНИМАНИЕ: начиная с `source_uploading` прямого операторского ребра
+    # `→cancelled` нет. Пакет уже едет к воркеру, и «отменено» без
     # подтверждения исполнителя — это ровно то враньё, которое запрещает
     # критерий готовности 6 и I-16. Путь один: `cancel_requested` → команда →
-    # ACK воркера. Ребро осталось только у `created`, где исполнителя нет.
+    # ACK воркера.
+    #
+    # У `assigned` ребро ЕСТЬ и это не отступление от правила, а его точное
+    # применение. `assigned` означает «лежит в очереди центра»: единственный
+    # способ передать работу воркеру — `claim_next_job_for_worker`, а он
+    # атомарно переводит `assigned → source_uploading` в той же транзакции, что
+    # и выборка. Значит попытка в `assigned` воркеру НЕ выдавалась ни разу:
+    # процесса нет, команду посылать некому, и «отменено» здесь — факт, а не
+    # предположение. Гонка с `/jobs/next` разрешается транзакционно: обе
+    # стороны пишут под `BEGIN IMMEDIATE`, и проигравший видит уже изменённое
+    # состояние (см. attempt_service.request_cancel и §32.1 п.24 отчёта 05).
     JobState.ASSIGNED: {
         JobState.SOURCE_UPLOADING: (_W,),
         JobState.FAILED: (_C, _O),
         JobState.CANCEL_REQUESTED: (_O,),
+        JobState.CANCELLED: (_O,),
         **_STORE_ONLY,
     },
     JobState.SOURCE_UPLOADING: {

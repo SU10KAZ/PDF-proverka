@@ -52,6 +52,12 @@ CONFIRM_DELETE_DATA = "УДАЛИТЬ ДАННЫЕ"
 
 DEFAULT_CANCEL_GRACE_SEC = 30
 
+# Состояния, в которых работа ТОЧНО не передавалась воркеру. Отмена в них —
+# факт, а не просьба: команду посылать некому, слот занимать не за что.
+# Границу проводит `claim_next_job_for_worker`: он единственный выдаёт работу и
+# делает это атомарным переходом `assigned → source_uploading`.
+UNDISPATCHED_STATES = frozenset({JobState.CREATED, JobState.ASSIGNED})
+
 # Расположения, поверх которых разрешено заводить новую попытку (§5.3).
 RESUMABLE_DISPOSITIONS = frozenset(
     {"completed", "cancelled", "operator_declared_lost", "superseded"}
@@ -162,6 +168,33 @@ def request_cancel(
         )
         return result
 
+    if state in UNDISPATCHED_STATES:
+        # Попытка ещё НЕ выдавалась воркеру: `assigned` — это очередь центра, а
+        # выдача идёт единственным путём `claim_next_job_for_worker`, который
+        # атомарно переводит `assigned → source_uploading`. Процесса нет,
+        # команду посылать некому, слот держать не за что.
+        #
+        # Раньше отсюда шёл общий путь `cancel_requested` + WorkerCommand.
+        # Следствия были три: попытка занимала слот исполнения (состояние
+        # `cancel_requested` слот занимает — для ВЫДАННОЙ попытки это верно), на
+        # офлайн-воркере держала его до возвращения связи, а счётчик занятости
+        # мог показать «3/2». Команда при этом была мусорной: отменять нечего.
+        #
+        # Гонка с `/jobs/next` разрешается транзакционно, а не проверкой: обе
+        # стороны пишут под `BEGIN IMMEDIATE` через общий writer-лок. Если
+        # выдача успела раньше — состояние здесь уже не `assigned`, и мы уходим
+        # на обычный путь ниже. Если раньше успела отмена — условный UPDATE
+        # выдачи не находит строку в `assigned` и возвращает «нечего выдавать».
+        result = _cancel_undispatched(
+            attempt=attempt, reason=reason, actor=actor, settings=settings,
+        )
+        _log_action(
+            action_type="cancel_attempt", actor=actor, attempt=attempt, reason=reason,
+            idempotency_key=idempotency_key, audit=audit, result=result,
+            requested={"grace_period_sec": grace_period_sec}, settings=settings,
+        )
+        return result
+
     # Ключ команды: пока прежняя не подтверждена — переиспользуем её, чтобы
     # не плодить дубли. Если воркер уже ответил чем-то неразрешающим
     # (ownership_mismatch, ambiguous_not_running), оператору нужна ВОЗМОЖНОСТЬ
@@ -219,6 +252,50 @@ def request_cancel(
         requested={"grace_period_sec": grace_period_sec}, settings=settings,
     )
     return result
+
+
+def _cancel_undispatched(
+    *,
+    attempt: dict[str, Any],
+    reason: str,
+    actor: str,
+    settings: DistributedWorkersSettings,
+) -> dict[str, Any]:
+    """Отменить попытку, которую воркер ещё не получал. Команда не создаётся.
+
+    Идемпотентность: гонка двух отмен разрешается той же транзакцией — вторая
+    увидит уже `cancelled`, ребро из терминального состояния отсутствует, и
+    `transition` бросит `IllegalTransition`. Это не ошибка оператора: результат
+    уже достигнут, поэтому отвечаем тем же исходом.
+    """
+    now = time.time()
+    try:
+        job_service.transition(
+            attempt_id=attempt["attempt_id"],
+            to_state=JobState.CANCELLED,
+            actor=actor,
+            reason=f"отмена оператором до выдачи воркеру: {reason}",
+            fields={
+                "cancel_requested_at": now,
+                "cancel_reason": reason,
+                "cancelled_at": now,
+            },
+            settings=settings,
+        )
+    except job_service.IllegalTransition:
+        fresh = repositories.get_attempt(attempt["attempt_id"], settings=settings) or {}
+        if fresh.get("state") != JobState.CANCELLED.value:
+            raise
+    return {
+        "outcome": "cancelled_before_dispatch",
+        "state": JobState.CANCELLED.value,
+        "command_id": None,
+        "command_status": "not_required",
+        "message": (
+            "Попытка отменена. Воркер её не получал: процесс не запускался, "
+            "команда остановки не требуется, слот не занят."
+        ),
+    }
 
 
 def apply_cancel_ack(

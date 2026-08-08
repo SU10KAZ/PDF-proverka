@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -495,6 +495,100 @@ ALTER TABLE worker_admin_actions ADD COLUMN permission TEXT;
 """
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Миграция 5 (этап ExecutionBackend): персистентный лимит частоты регистрации
+# и учёт исполнения на стороне PipelineManager.
+#
+# `registration_rate_limit` — счётчики фиксированного окна. В памяти процесса
+# их держать нельзя: рестарт backend (его делает вотчдог) обнулял бы защиту, а
+# при нескольких воркерах uvicorn счётчик не был бы общим. Ключ — ХЭШ: в базе
+# не должно лежать ни IP, ни instance_id открытым текстом, иначе таблица сама
+# становится оракулом «существует ли такой воркер».
+#
+# `logical_jobs.execution_profile` и `job_attempts.result_import_*` — состояние
+# приёма результата реального аудита: центр обязан помнить, что именно он уже
+# применил, чтобы повторный приём того же пакета был идемпотентен, а чужой
+# hash для уже применённой попытки — конфликтом, а не тихой перезаписью.
+_MIGRATION_5 = """
+CREATE TABLE IF NOT EXISTS registration_rate_limit (
+    scope        TEXT NOT NULL,
+    key          TEXT NOT NULL,
+    window_start REAL NOT NULL,
+    count        INTEGER NOT NULL DEFAULT 0,
+    updated_at   REAL NOT NULL,
+    PRIMARY KEY (scope, key, window_start)
+);
+CREATE INDEX IF NOT EXISTS ix_reg_rate_window
+    ON registration_rate_limit(window_start);
+
+ALTER TABLE logical_jobs ADD COLUMN execution_profile TEXT;
+ALTER TABLE logical_jobs ADD COLUMN pipeline_revision TEXT;
+ALTER TABLE job_attempts ADD COLUMN result_import_state TEXT;
+ALTER TABLE job_attempts ADD COLUMN result_import_hash TEXT;
+ALTER TABLE job_attempts ADD COLUMN result_import_at REAL;
+ALTER TABLE job_attempts ADD COLUMN result_import_report TEXT;
+ALTER TABLE job_attempts ADD COLUMN usage_applied_at REAL;
+
+-- Представление пересоздаётся, чтобы новые колонки были видны читателям,
+-- которые ходят через `SELECT * FROM remote_jobs` (claim, list_jobs). Запрет
+-- записи через представление при этом сохраняется — это по-прежнему VIEW.
+DROP VIEW IF EXISTS remote_jobs;
+CREATE VIEW remote_jobs AS
+SELECT
+    a.job_id                 AS job_id,
+    j.job_type               AS job_type,
+    j.project_external_id    AS project_id,
+    j.project_external_id    AS project_external_id,
+    j.project_display_name   AS project_display_name,
+    j.project_version_id     AS version_id,
+    j.execution_profile      AS execution_profile,
+    j.pipeline_revision      AS pipeline_revision,
+    a.attempt_id             AS attempt_id,
+    a.attempt_number         AS attempt_no,
+    a.assignment_generation  AS assignment_generation,
+    a.execution_token_hash   AS execution_token_sha256,
+    a.assigned_worker_id     AS assigned_worker_id,
+    'remote'                 AS execution_mode,
+    a.execution_state        AS state,
+    a.attempt_disposition    AS attempt_disposition,
+    a.connectivity_state     AS connectivity_state,
+    a.retention_state        AS retention_state,
+    j.payload                AS payload,
+    a.package_id             AS package_id,
+    a.source_package_hash    AS source_package_hash,
+    a.result_package_hash    AS result_package_hash,
+    a.result_storage_class   AS result_storage_class,
+    a.result_import_state    AS result_import_state,
+    a.result_import_hash     AS result_import_hash,
+    a.result_import_at       AS result_import_at,
+    a.result_import_report   AS result_import_report,
+    a.usage_applied_at       AS usage_applied_at,
+    a.created_at             AS created_at,
+    j.created_at             AS job_created_at,
+    a.assigned_at            AS assigned_at,
+    a.accepted_at            AS accepted_at,
+    a.started_at             AS started_at,
+    a.completed_locally_at   AS completed_locally_at,
+    a.result_received_at     AS returned_at,
+    a.validated_at           AS validated_at,
+    a.cancel_requested_at    AS cancel_requested_at,
+    a.cancelled_at           AS cancelled_at,
+    a.declared_lost_at       AS declared_lost_at,
+    a.superseded_at          AS superseded_at,
+    a.result_acknowledged_at AS result_acknowledged_at,
+    a.deleted_from_worker_at AS deleted_from_worker_at,
+    a.retention_until        AS retention_until,
+    a.last_event_seq         AS last_event_seq,
+    a.error_json             AS error,
+    a.progress_json          AS progress_snapshot,
+    a.superseded_by_attempt  AS superseded_by_attempt,
+    j.overall_state          AS overall_state,
+    j.current_attempt_id     AS current_attempt_id
+FROM logical_jobs j
+JOIN job_attempts a ON a.attempt_id = j.current_attempt_id;
+"""
+
+
 def _statements(script: str) -> tuple[str, ...]:
     """Разбить SQL-скрипт на отдельные операторы.
 
@@ -540,6 +634,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     2: _statements(_MIGRATION_2),
     3: _statements(_MIGRATION_3),
     4: _statements(_MIGRATION_4),
+    5: _statements(_MIGRATION_5),
 }
 
 

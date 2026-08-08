@@ -105,9 +105,36 @@ def _cmd_agent(args: argparse.Namespace) -> int:
     except CenterError as exc:
         print(f"Центр отклонил регистрацию: {exc}", file=sys.stderr)
         return 2
+    except Exception as exc:  # noqa: BLE001 — недоступный центр не повод падать
+        # Сюда попадает только случай «токена на диске нет»: с токеном
+        # ensure_registered уже не бросает сетевых ошибок. Без токена работать
+        # действительно нечем, но сообщение обязано отличать «сеть» от «отказ».
+        from audit_worker.registration import classify_center_failure
+
+        try:
+            reason = classify_center_failure(exc)
+        except BaseException:                       # noqa: BLE001 — чужая ошибка
+            raise
+        print(
+            f"Центр недоступен ({reason}: {exc}), а токена на диске нет — "
+            "работать нечем. Выполните `register` после восстановления связи.",
+            file=sys.stderr,
+        )
+        return 2
     if not identity.get("token"):
         print("Токен воркера не найден. Выполните `register`.", file=sys.stderr)
         return 2
+    center_state = identity.get("center_state")
+    if center_state and center_state != "online":
+        # Агент СТАРТУЕТ. Локальная база откроется, текущие задания найдутся,
+        # исполнитель продолжит работу; связь восстанавливается фоновым
+        # backoff'ом главного цикла. Крэш-лупа под systemd больше нет.
+        print(
+            f"[audit-worker] центр недоступен ({center_state}) — стартую в "
+            "деградированном режиме: локальные задания продолжаются, события "
+            "копятся, связь восстановлю сам.",
+            file=sys.stderr,
+        )
 
     child = None
     if getattr(args, "with_executor", False):

@@ -1271,6 +1271,25 @@ DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN = _env_bool(
     "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", False
 )
 
+# ─── Ограничение частоты заявок на регистрацию ──────────────────────────────
+# Эндпоинт /api/v1/worker/register публичный (воркер приходит сам), и до этого
+# этапа перебор bootstrap-секрета не ограничивался ничем. Счётчики живут в
+# workers.db, а не в памяти: рестарт backend делает вотчдог, и защита, которая
+# обнуляется рестартом, — это её отсутствие.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC", 3600
+)
+# На пару (IP, instance_id). Крэш-луп агента под systemd Restart=always с
+# RestartSec=10 даёт 360 попыток в час — но register вызывается один раз при
+# установке, а не на каждом старте, поэтому 10 хватает с запасом.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE", 10
+)
+# На IP целиком: защита от перебора секрета с меняющимся instance_id.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP", 30
+)
+
 # Версия протокола центр↔воркер. Целое; растёт при несовместимом изменении API.
 DISTRIBUTED_WORKERS_PROTOCOL_VERSION = 1
 # Версия схемы package_manifest.json.

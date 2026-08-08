@@ -62,6 +62,7 @@ from backend.app.services.distributed_workers import (
     event_service,
     job_service,
     package_service,
+    rate_limit,
     registration_service,
     repositories,
     slots,
@@ -221,10 +222,28 @@ async def _load_job_for_worker(
 @router.post("/register", response_model=RegisterResponse, status_code=201)
 async def register(
     payload: RegisterRequest,
+    request: Request,
     authorization: Optional[str] = Header(default=None),
 ) -> RegisterResponse:
     """Заявка на регистрацию. Требует bootstrap-секрет; одобряет оператор вручную."""
     settings = _settings()
+    # Ограничитель СПИСЫВАЕТСЯ ДО проверки секрета — иначе перебор секрета не
+    # ограничивался бы ничем. Адрес берётся из фактического соединения, а не из
+    # X-Forwarded-For: заголовок подконтролен тому, кого мы ограничиваем.
+    decision = await database.run_db(
+        rate_limit.check_and_consume,
+        source_ip=(request.client.host if request.client else None),
+        instance_id=payload.instance_id,
+        settings=settings,
+    )
+    if not decision.allowed:
+        # Текст одинаков для известного и неизвестного instance_id: ограничитель
+        # не должен подсказывать, существует ли конкретный воркер.
+        raise HTTPException(
+            status_code=429,
+            detail=decision.message,
+            headers={"Retry-After": str(decision.retry_after_sec)},
+        )
     auth.verify_bootstrap_secret(_bearer(authorization))
     if payload.protocol_version != settings.protocol_version:
         raise HTTPException(
@@ -536,9 +555,12 @@ async def jobs_next(
             cached["execution_token"] = replay_token
             return JSONResponse(status_code=int(prior["status_code"]), content=cached)
 
-    # Сколько центр готов держать на ЭТОМ воркере одновременно. Заявленный
-    # воркером `free_slots` — не лимит, а «сколько возьму ещё»: он уходит
-    # отдельной подсказкой и может лимит только понизить (S-15).
+    # Лимит СЧИТАЕТСЯ ВНУТРИ транзакции захвата, на каждой итерации ожидания.
+    # Этот снимок нужен только для диагностики в ответе 409 — решение по нему
+    # не принимается. Раньше он же был решением: посчитанный до входа в цикл,
+    # он доживал до конца long-poll (до 60 с), и отзыв регистрации, уход
+    # воркера в offline или критический диск, случившиеся внутри окна, текущий
+    # вызов не видел (§2.2 этапа ExecutionBackend, §32.1 п.26 отчёта 05).
     limit = slots.effective_limit(
         fresh or principal.row,
         protocol_version=settings.protocol_version,
@@ -553,9 +575,9 @@ async def jobs_next(
             job = await database.run_db(
                 repositories.claim_next_job_for_worker,
                 principal.worker_id,
-                limit_override=limit.value,
                 worker_free_hint=payload.free_slots,
                 worker_busy_hint=payload.busy_slots,
+                executor_status_hint=payload.executor_status or None,
                 settings=settings,
             )
             slot_block = None
@@ -570,13 +592,16 @@ async def jobs_next(
 
     if job is None:
         if slot_block is not None:
+            # Числа берём из САМОГО отказа: он посчитан внутри транзакции и
+            # свеж, а `limit` выше — снимок на момент входа в обработчик.
+            blocked_limit = getattr(slot_block, "limit", None) or limit
             return JSONResponse(
                 status_code=409,
                 content={
                     "error": "no_free_slots",
                     "message": str(slot_block),
-                    "effective_limit": limit.value,
-                    "limit_binding": limit.binding,
+                    "effective_limit": getattr(blocked_limit, "value", limit.value),
+                    "limit_binding": getattr(blocked_limit, "binding", limit.binding),
                     "occupied": getattr(slot_block.usage, "occupied", None),
                     "unproven_remote": getattr(slot_block.usage, "unproven", None),
                 },

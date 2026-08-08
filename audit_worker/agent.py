@@ -101,8 +101,12 @@ class WorkerAgent:
             interval_sec=config.heartbeat_interval_sec,
             build_payload=self._heartbeat_payload,
             on_response=self._on_heartbeat_response,
-            on_error=lambda exc: _log(f"heartbeat не прошёл: {exc}"),
+            on_error=self._on_center_error,
         )
+        # Диагностическое состояние связи с центром. TLS-, auth- и
+        # protocol-ошибки НЕ маскируются под «сеть моргнула»: по ним ожидание
+        # бессмысленно, и оператор должен видеть разницу (§2.3 задания).
+        self.center_state: str = str(identity.get("center_state") or "online")
 
         self._stop = threading.Event()
         self._sender_thread: Optional[threading.Thread] = None
@@ -128,6 +132,24 @@ class WorkerAgent:
         self._command_lock = threading.Lock()
         self._max_slots = config.max_slots
         self._last_reconcile_at = 0.0
+
+    def _on_center_error(self, exc: BaseException) -> None:
+        """Классифицировать отказ центра и запомнить его как состояние связи."""
+        from audit_worker.registration import classify_center_failure
+
+        try:
+            state = classify_center_failure(exc)
+        except BaseException:                    # noqa: BLE001 — чужая ошибка
+            state = "center_unreachable"
+        if state != self.center_state:
+            _log(f"состояние связи с центром: {self.center_state} → {state}")
+        self.center_state = state
+        _log(f"heartbeat не прошёл ({state}): {exc}")
+
+    def _on_center_ok(self) -> None:
+        if self.center_state != "online":
+            _log(f"связь с центром восстановлена (было {self.center_state})")
+        self.center_state = "online"
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
@@ -183,8 +205,14 @@ class WorkerAgent:
                         ),
                     )
                     delays = backoff_delays()
+                    self._on_center_ok()
                 except Exception as exc:  # noqa: BLE001 — центр недоступен
+                    self._on_center_error(exc)
                     _log(f"опрос заданий не удался: {exc}")
+                    # Ограниченный exponential backoff с джиттером. Процессы
+                    # аудита при этом не трогаются, EventOutbox не сбрасывается,
+                    # повторные задания не создаются — сверка выполнится, когда
+                    # центр вернётся (RECONCILE_INTERVAL_SEC).
                     self._stop.wait(next(delays))
                     continue
 

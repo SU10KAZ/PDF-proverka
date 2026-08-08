@@ -277,7 +277,12 @@ def test_operator_manages_attempts(operator, admin):
         headers=_key(),
     )
     assert cancel.status_code == 200, cancel.text
-    assert cancel.json()["state"] == "cancel_requested"
+    # Задание только что создано и воркеру ещё не выдавалось (`assigned`):
+    # отмена в этом состоянии — факт, а не просьба (§2.1 этапа
+    # ExecutionBackend). Раньше здесь было `cancel_requested` + WorkerCommand.
+    assert cancel.json()["state"] == "cancelled"
+    assert cancel.json()["outcome"] == "cancelled_before_dispatch"
+    assert cancel.json()["command_id"] is None
 
 
 def test_operator_cannot_administer_workers(operator, admin):
@@ -2019,16 +2024,17 @@ def test_configured_max_slots_column_never_stores_more_than_proven(admin, center
 
 
 def test_occupancy_counter_may_exceed_limit_but_only_conservatively(admin, operator, center_env):
-    """Счётчик занятости может показать «3/2» — и это НЕ третий процесс.
+    """Ложное «3/2» закрыто: отмена НЕвыданного задания слот больше не держит.
 
-    Отмена задания, которое воркеру ещё не выдали, переводит попытку в
-    `cancel_requested`, а это состояние слот ЗАНИМАЕТ (пока воркер не
-    подтвердил, процесс мог идти). Для попытки, до воркера не доехавшей,
-    процесса нет — но счётчик её считает. Ошибка идёт в БЕЗОПАСНУЮ сторону:
-    выдачу она блокирует, третий процесс породить не может.
+    Раньше отмена задания, которое воркеру ещё не выдали, переводила попытку в
+    `cancel_requested`, а это состояние слот занимает — для ВЫДАННОЙ попытки
+    справедливо (процесс мог идти, I-06), для невыданной нет. Три отмены на
+    воркере с лимитом 2 давали `occupancy_label == "3/2"` и нулевую выдачу до
+    возвращения офлайн-воркера (§32.1 п.24 отчёта 05).
 
-    Тест закрепляет фактическое поведение, а не желаемое: пока §32.1 п.24 не
-    закрыт, «3/2» на экране возможно, и молча это менять нельзя.
+    Теперь такая отмена сразу терминальна, поэтому занятость остаётся нулевой,
+    а следующее задание выдаётся штатно. Тест проверяет обе половины: и что
+    счётчик больше не врёт, и что выдача не заблокирована.
     """
     from backend.app.services.distributed_workers import repositories, slots
 
@@ -2043,21 +2049,26 @@ def test_occupancy_counter_may_exceed_limit_but_only_conservatively(admin, opera
             headers=_key(),
         )
         assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["state"] == "cancelled"
+        assert body["command_status"] == "not_required"
+
+    # Ни одной команды воркеру: отменять было нечего.
+    for job in jobs:
+        assert repositories.commands_for_job(job["job_id"], settings=center_env) == []
 
     usage = repositories.worker_slot_snapshot(worker_id, settings=center_env)
     row = repositories.get_worker(worker_id, settings=center_env)
     limit = slots.effective_limit(row)
     view = slots.build_slot_view(row, usage, limit)
 
-    assert usage.occupied == 3 and limit.value == 2
-    assert view["occupancy_label"] == "3/2"
-    # Главное: ошибка консервативна — свободных слотов ноль, не отрицательное
-    # число и не «есть место».
-    assert view["center_free_slots"] == 0
+    assert usage.occupied == 0 and limit.value == 2
+    assert view["occupancy_label"] == "0/2"
+    assert view["center_free_slots"] == 2
 
-    # И проверка не на словах: следующее задание воркеру НЕ выдаётся.
+    # И выдача не заблокирована: следующее задание уходит воркеру.
     _create_job(admin, worker_id, project="ГЕЙТ/пере 4")
-    with pytest.raises(repositories.SlotLimitReached):
-        repositories.claim_next_job_for_worker(
-            worker_id, limit_override=limit.value, settings=center_env
-        )
+    claimed = repositories.claim_next_job_for_worker(
+        worker_id, limit_override=limit.value, settings=center_env
+    )
+    assert claimed is not None and claimed["state"] == "source_uploading"

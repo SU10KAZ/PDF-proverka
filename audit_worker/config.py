@@ -73,6 +73,27 @@ class WorkerConfig:
     # Автозапуск локального исполнителя вместе с агентом. Только для dev:
     # в проде это два systemd-юнита, и рестарт агента не трогает исполнителя.
     dev_spawn_executor: bool = False
+    # ─── Реальный аудит (этап ExecutionBackend) ─────────────────────────────
+    # Отпечаток кода конвейера на этом VPS. Центр сверяет его со своим и не
+    # показывает несовместимый воркер как доступный: разные ревизии дают
+    # разные артефакты при одинаковых входных данных.
+    pipeline_revision: str | None = None
+    # Каталог с установленным кодом платформы (корень репозитория). Из него
+    # запускается фиксированный internal runner. Задаётся АДМИНИСТРАТОРОМ VPS,
+    # не центром: путь к исполняемому коду не может приходить из задания.
+    pipeline_root: Path | None = None
+    # Приём заданий типа audit_pipeline_v1. Включение подсистемы воркеров этого
+    # НЕ включает: реальный аудит требует отдельного осознанного решения.
+    audit_pipeline_enabled: bool = False
+    # Разрешение запускать НАСТОЯЩИЕ Claude/Codex. По умолчанию запрещено, и
+    # это независимо от audit_pipeline_enabled: тестовый прогон реального
+    # конвейера не должен тратить подписку.
+    allow_real_llm: bool = False
+    # Каталог поддельных CLI-провайдеров. Задаётся конфигурацией ВОРКЕРА и
+    # никогда полем задания (§17 задания).
+    fake_provider_dir: Path | None = None
+    # Жёсткий предел одновременных audit_pipeline_v1. Доказанный максимум — 1.
+    real_audit_max_slots: int = 1
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
     transport: object | None = None
@@ -128,10 +149,23 @@ class WorkerConfig:
     def capabilities(self) -> dict:
         from audit_worker import slots as _slots
 
+        job_types = ["test_pipeline_v1"]
+        if self.audit_pipeline_enabled:
+            job_types.append("audit_pipeline_v1")
         caps = {
-            "providers": [],           # этап 0: LLM не подключены намеренно
+            # Что воркер УМЕЕТ запускать. В тестовом режиме это поддельные CLI:
+            # центр обязан видеть разницу, иначе «аудит прошёл» ничего не значит.
+            "providers": (
+                ["claude_cli", "codex_cli"] if self.allow_real_llm
+                else ["fake_claude_cli", "fake_codex_cli"]
+            ),
+            "provider_mode": "real" if self.allow_real_llm else "fake",
+            "real_llm_enabled": self.allow_real_llm,
+            "audit_pipeline_enabled": self.audit_pipeline_enabled,
+            "real_audit_max_slots": self.real_audit_max_slots,
+            "pipeline_revision": self.pipeline_revision,
             "compressions": ["gzip", "none"],
-            "job_types": ["test_pipeline_v1"],
+            "job_types": job_types,
             # Сколько одновременных попыток ПРОВЕРЕНО этой сборкой воркера.
             # Не «сколько хочет оператор» — центр берёт минимум из обоих.
             "max_verified_slots": _slots.MAX_VERIFIED_SLOTS,
@@ -205,6 +239,26 @@ def load_config(
             "AUDIT_WORKER_DISK_CRITICAL_FREE_BYTES", 1 * 1024 * 1024 * 1024
         ),
         dev_spawn_executor=_env_bool("AUDIT_WORKER_DEV_SPAWN_EXECUTOR", False),
+        pipeline_revision=(
+            os.environ.get("AUDIT_WORKER_PIPELINE_REVISION", "").strip() or None
+        ),
+        pipeline_root=(
+            Path(os.environ["AUDIT_WORKER_PIPELINE_ROOT"]).expanduser().resolve()
+            if os.environ.get("AUDIT_WORKER_PIPELINE_ROOT", "").strip()
+            else None
+        ),
+        audit_pipeline_enabled=_env_bool("AUDIT_WORKER_AUDIT_PIPELINE_ENABLED", False),
+        allow_real_llm=_env_bool("AUDIT_WORKER_ALLOW_REAL_LLM", False),
+        fake_provider_dir=(
+            Path(os.environ["AUDIT_WORKER_FAKE_PROVIDER_DIR"]).expanduser().resolve()
+            if os.environ.get("AUDIT_WORKER_FAKE_PROVIDER_DIR", "").strip()
+            else None
+        ),
+        # Единица — не настройка, а доказанный предел этапа. Значение больше
+        # зажимается: заявлять больше без прогона нельзя.
+        real_audit_max_slots=min(
+            1, max(0, _env_int("AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS", 1))
+        ),
         # verify_tls намеренно НЕ управляется переменной окружения: глобальный
         # verify=false — это тихое отключение защиты канала. Единственная
         # послабляющая настройка — dev-флаг для localhost (проверяется отдельно).

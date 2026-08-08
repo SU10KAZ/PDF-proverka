@@ -21,6 +21,49 @@ class RegistrationRequired(RuntimeError):
     """Нужен bootstrap-секрет: воркер ещё не зарегистрирован."""
 
 
+#: Состояния связи с центром, отличимые друг от друга. Смешивать их нельзя:
+#: обычный сетевой обрыв — повод ждать, а протухший TLS, отозванный токен и
+#: несовместимый протокол ожиданием не лечатся и требуют человека.
+CENTER_OK = "online"
+CENTER_UNREACHABLE = "center_unreachable"     # DNS, connect, таймаут, 5xx
+CENTER_TLS_ERROR = "center_tls_error"         # сертификат, handshake
+CENTER_AUTH_ERROR = "center_auth_error"       # 401/403: токен отозван/не одобрен
+CENTER_PROTOCOL_ERROR = "center_protocol_error"  # 426 и прочие несовместимости
+
+
+def classify_center_failure(exc: BaseException) -> str:
+    """Отнести отказ центра к диагностическому состоянию.
+
+    Ошибки TLS, авторизации и протокола НЕ маскируются под «сеть моргнула»:
+    бесконечный backoff по ним означал бы воркер, который молча не работает
+    неделю, и никто не знает почему.
+    """
+    import ssl
+
+    import httpx
+
+    if isinstance(exc, CenterError):
+        status = getattr(exc, "status", 0) or 0
+        if status in (401, 403):
+            return CENTER_AUTH_ERROR
+        if status in (426, 400, 422):
+            return CENTER_PROTOCOL_ERROR
+        return CENTER_UNREACHABLE
+    if isinstance(exc, ssl.SSLError):
+        return CENTER_TLS_ERROR
+    if isinstance(exc, httpx.ConnectError):
+        # httpx заворачивает ошибку TLS в ConnectError; отличаем по причине.
+        cause = exc.__cause__ or exc.__context__
+        if isinstance(cause, ssl.SSLError) or "SSL" in str(exc).upper():
+            return CENTER_TLS_ERROR
+        return CENTER_UNREACHABLE
+    if isinstance(exc, httpx.HTTPError):
+        return CENTER_UNREACHABLE
+    if isinstance(exc, OSError):
+        return CENTER_UNREACHABLE
+    raise exc
+
+
 def new_instance_id() -> str:
     return f"inst_{uuid.uuid4().hex[:16]}"
 
@@ -49,6 +92,15 @@ def ensure_registered(
     token = store.read_token()
 
     if state.get("worker_id") and token:
+        # Личность и токен уже на диске. Обновление регистрации — вежливость, а
+        # не условие работы: центр может быть недоступен, а идущие на VPS
+        # процессы аудита от этого не зависят (I-01/I-02). Раньше
+        # `httpx.ConnectError` уходил наружу, процесс падал с traceback, и под
+        # systemd `Restart=always` это давало крэш-луп до возвращения центра —
+        # при живых процессах аудита и растущем журнале событий, которые никто
+        # не досылал (§32.10 отчёта 05).
+        center_state = CENTER_OK
+        last_error = None
         with CenterClient(
             config.dispatcher_url,
             token=token,
@@ -64,18 +116,21 @@ def ensure_registered(
                         "instance_id": state["instance_id"],
                         "worker_version": __version__,
                         "protocol_version": PROTOCOL_VERSION,
-                        "pipeline_revision": None,
+                        "pipeline_revision": config.pipeline_revision,
                         "capabilities": config.capabilities(),
                     }
                 )
-            except CenterError as exc:
-                if exc.status in (401, 403):
-                    # Токен отозван/не одобрен — это не повод регистрироваться
-                    # заново: новая заявка создала бы второго воркера.
-                    state["last_error"] = f"HTTP {exc.status}: {exc.detail}"
-                    store.save(state)
-                else:
-                    raise
+            except Exception as exc:  # noqa: BLE001 — классификатор пробросит чужое
+                center_state = classify_center_failure(exc)
+                last_error = (
+                    f"HTTP {exc.status}: {exc.detail}"
+                    if isinstance(exc, CenterError)
+                    else f"{type(exc).__name__}: {exc}"
+                )
+        state["center_state"] = center_state
+        if last_error is not None:
+            state["last_error"] = last_error
+        store.save(state)
         return {**state, "token": token}
 
     # Заявка подана, токена ещё нет — пробуем забрать его claim-секретом.
