@@ -554,6 +554,7 @@ def claim_next_job_for_worker(
     *,
     limit_override: Optional[int] = None,
     worker_free_hint: Optional[int] = None,
+    worker_busy_hint: Optional[int] = None,
     settings: DistributedWorkersSettings | None = None,
 ) -> Optional[dict[str, Any]]:
     """Атомарно взять одно задание, предназначенное этому воркеру.
@@ -615,10 +616,27 @@ def claim_next_job_for_worker(
             )
             limit_value = limit_obj.value
         if worker_free_hint is not None:
-            # Подсказка воркера переводится в АБСОЛЮТНЫЙ потолок: «занято сейчас
-            # + сколько он готов взять ещё». Понизить лимит она может, повысить
-            # выше расчёта центра — нет (S-15).
-            limit_value = min(limit_value, usage.reserved + max(0, int(worker_free_hint)))
+            # Подсказка воркера переводится в АБСОЛЮТНЫЙ потолок его СОБСТВЕННОЙ
+            # ёмкости: «сколько занято у меня» + «сколько возьму ещё». Оба числа
+            # приходят из одного снимка на стороне воркера, поэтому сумма не
+            # зависит от того, что центр успел выдать в этом же окне.
+            #
+            # Раньше вместо занятости воркера подставлялась занятость ЦЕНТРА
+            # (`usage.reserved`), а она читается в этой же транзакции и уже
+            # включает всё выданное. Два одновременных запроса с free_slots=1
+            # получали потолки 0+1 и 1+1 — то есть воркер, дважды сказавший
+            # «возьму ещё одно», получал два задания. Жёсткий предел системы при
+            # этом не превышался (limit_override уже зажат до 2), но заявленная
+            # воркером ёмкость переставала быть ограничением.
+            #
+            # Старый агент `busy_slots` не шлёт: для него сохраняется прежнее
+            # поведение — понизить лимит подсказка может, повысить нет.
+            base = (
+                max(0, int(worker_busy_hint))
+                if worker_busy_hint is not None
+                else usage.reserved
+            )
+            limit_value = min(limit_value, base + max(0, int(worker_free_hint)))
         if usage.reserved >= limit_value:
             raise SlotLimitReached(
                 (
@@ -1277,14 +1295,41 @@ def record_admin_action(
                 ),
             )
     except sqlite3.IntegrityError:
-        with database.read_conn(settings) as conn:
-            row = conn.execute(
-                "SELECT * FROM worker_admin_actions WHERE action_type = ? "
-                "AND idempotency_key = ?",
-                (action_type, idempotency_key),
-            ).fetchone()
-        return dict(row) if row else {}
+        # Ожидаемый конфликт ровно один — частичный уникальный индекс
+        # ux_admin_actions_idem (тот же action_type + idempotency_key). Если
+        # совпадения нет, значит нарушено какое-то ДРУГОЕ ограничение, и
+        # проглотить это молча нельзя: журнал заявлен append-only и
+        # доказательным, а тихо потерянная запись превращает его в решето.
+        row = find_admin_action_by_key(
+            action_type=action_type, idempotency_key=idempotency_key, settings=settings
+        )
+        if row is None:
+            raise
+        return row
     return {"action_id": action_id, "created_at": now}
+
+
+def find_admin_action_by_key(
+    *,
+    action_type: str,
+    idempotency_key: Optional[str],
+    settings: DistributedWorkersSettings | None = None,
+) -> Optional[dict[str, Any]]:
+    """Найти уже записанное действие по ключу идемпотентности.
+
+    Нужна там, где повтор нельзя «просто выполнить ещё раз»: ротация токена
+    гасит ВСЕ прежние токены, поэтому второй заход по тому же ключу обязан
+    остановиться до вызова rotate_token, а не после.
+    """
+    if not idempotency_key:
+        return None
+    with database.read_conn(settings) as conn:
+        row = conn.execute(
+            "SELECT * FROM worker_admin_actions WHERE action_type = ? "
+            "AND idempotency_key = ?",
+            (action_type, idempotency_key),
+        ).fetchone()
+    return dict(row) if row else None
 
 
 def list_admin_actions(

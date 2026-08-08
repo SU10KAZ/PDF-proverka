@@ -502,11 +502,19 @@ async def jobs_next(
                 if cached_attempt
                 else None
             )
+            # `assigned` в этот список входит намеренно. Оно означает «центр
+            # держит попытку в очереди и ещё никому её не выдавал»: именно
+            # туда попытку возвращает `reoffer_unknown_jobs` после того, как
+            # воркер сказал, что о ней не знает. Выдать по старому ключу токен
+            # на такую попытку — значит вручить воркеру работу, которую центр
+            # считает НЕ выданной: слот она не занимает, и центр вправе выдать
+            # ещё одну.
             if (
                 row is None
                 or row.get("attempt_disposition") != "active"
                 or row.get("assigned_worker_id") != principal.worker_id
                 or row.get("execution_state") in {s.value for s in TERMINAL_JOB_STATES}
+                or row.get("execution_state") == JobState.ASSIGNED.value
             ):
                 raise HTTPException(
                     status_code=409,
@@ -547,6 +555,7 @@ async def jobs_next(
                 principal.worker_id,
                 limit_override=limit.value,
                 worker_free_hint=payload.free_slots,
+                worker_busy_hint=payload.busy_slots,
                 settings=settings,
             )
             slot_block = None
@@ -575,9 +584,16 @@ async def jobs_next(
         return Response(status_code=204)
 
     token = auth.generate_execution_token()
+    # Пишем в КОНКРЕТНУЮ попытку, а не в «текущую попытку задания». Запись по
+    # job_id уходила в `current_attempt_id`, а между захватом (одна транзакция)
+    # и этой строкой (другая, с await между ними) оператор успевает признать
+    # попытку потерянной и создать новую: тогда хэш свежего токена лёг бы на
+    # НОВУЮ попытку, а воркеру вернулся бы attempt_id старой. Тот же дефект был
+    # признан и исправлен на ветке повтора выше — основной путь оставался на
+    # старом способе.
     await database.run_db(
-        repositories.update_job_fields,
-        job["job_id"],
+        repositories.update_attempt_fields,
+        job["attempt_id"],
         {"execution_token_sha256": auth.hash_token(token)},
         settings=settings,
     )
@@ -803,11 +819,20 @@ async def create_upload(
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
 ):
-    return await _idempotent(
-        principal=principal, request=request, endpoint="uploads",
-        body=payload.model_dump(),
-        compute=lambda: _create_upload_impl(payload, principal, x_execution_token),
-    )
+    # Кэш идемпотентности здесь снят СОЗНАТЕЛЬНО. Ручка идемпотентна сама по
+    # себе и сильнее: `open_or_create_session` ищет открытую сессию по тройке
+    # (задание, попытка, хэш архива) и возвращает её вместе с АКТУАЛЬНЫМ
+    # списком принятых чанков. Кэш же возвращал замороженный первый ответ —
+    # с `received_chunks` на момент создания сессии, то есть пустым. Из-за
+    # этого докачка после обрыва не работала никогда: воркер каждый раз
+    # получал «принято 0 чанков» и лил архив с нуля.
+    #
+    # Второй, более неприятный эффект: ключ строился клиентом из поля
+    # `sha256`, которого в теле запроса нет вовсе (воркер шлёт
+    # `expected_hash`). Ключ выходил одинаковым для ЛЮБОГО архива одной
+    # попытки, и пересобранный архив с другим хэшем получал в ответ кэш от
+    # старого — сессию под чужой хэш.
+    return await _create_upload_impl(payload, principal, x_execution_token)
 
 
 async def _create_upload_impl(

@@ -204,7 +204,7 @@ class RegisterRequest(BaseModel):
     protocol_version: int = 1
     pipeline_revision: Optional[str] = Field(default=None, max_length=200)
     capabilities: WorkerCapabilities = Field(default_factory=WorkerCapabilities)
-    configured_max_slots_hint: int = Field(default=1, ge=1, le=5)
+    configured_max_slots_hint: int = Field(default=1, ge=1, le=64)
 
 
 class RegisterResponse(BaseModel):
@@ -319,10 +319,15 @@ class HeartbeatRequest(BaseModel):
     instance_id: str = Field(min_length=4, max_length=128)
     sent_at: float
     worker_state: WorkerState = WorkerState.IDLE
-    configured_max_slots: int = Field(default=1, ge=0, le=5)
-    calculated_free_slots: int = Field(default=0, ge=0, le=5)
-    # Слотов не больше 5, значит и активных заданий столько же. Список без
-    # верхней границы принимался целиком в колонку `workers.active_jobs`.
+    configured_max_slots: int = Field(default=1, ge=0, le=64)
+    calculated_free_slots: int = Field(default=0, ge=0, le=64)
+    # Верхние границы здесь — санитарный предел против абсурдного ввода, а НЕ
+    # заявление о поддерживаемом числе слотов. Единственный потолок системы —
+    # slots.MAX_VERIFIED_SLOTS (=2), и он применяется зажимом с предупреждением
+    # в normalize_max_slots. Прежнее `le=5` делало из pydantic второго судью:
+    # 3-5 зажималось с объяснением, а 6 отбивалось голым 422, и OpenAPI-схема
+    # публично обещала пять слотов, которых нет.
+    # Список активных заданий — своя граница, не связанная со слотами.
     active_jobs: list[ActiveJobRef] = Field(default_factory=list, max_length=16)
     resource_snapshot: Optional[ResourceSnapshot] = None
     warnings: list[dict[str, Any]] = Field(default_factory=list, max_length=64)
@@ -334,7 +339,7 @@ class HeartbeatRequest(BaseModel):
     # Что сборка воркера ПРОВЕРИЛА, а не что оператор пожелал. Старый агент
     # поля не пришлёт — для него это 1, и это честный ответ: доказательств
     # двух слотов у его сборки нет.
-    max_verified_slots: int = Field(default=1, ge=0, le=5)
+    max_verified_slots: int = Field(default=1, ge=0, le=64)
     # Диагностика локального учёта. Центр решение принимает по СВОЕЙ базе, а
     # эти числа сравнивает со своими и при расхождении показывает
     # slot_count_mismatch (S-15) — доверять им как источнику истины нельзя.
@@ -413,7 +418,12 @@ class JobAssignment(BaseModel):
 
 
 class JobsNextRequest(BaseModel):
-    free_slots: int = Field(default=1, ge=0, le=5)
+    free_slots: int = Field(default=1, ge=0, le=64)
+    # Занятость НА СТОРОНЕ ВОРКЕРА в том же снимке, что и free_slots.
+    # Вместе они дают его собственную ёмкость, не зависящую от того,
+    # что центр успел выдать в этом же окне. Старый агент поля не шлёт —
+    # для него центр считает по-прежнему (см. claim_next_job_for_worker).
+    busy_slots: Optional[int] = Field(default=None, ge=0, le=64)
     accepts: dict[str, Any] = Field(default_factory=dict)
     wait_sec: int = Field(default=25, ge=0, le=60)
     # Состояние локального исполнителя НА МОМЕНТ ЗАПРОСА. Свежее, чем снимок из
@@ -645,7 +655,7 @@ class WorkerView(BaseModel):
 
 class ApproveRequest(BaseModel):
     display_name: Optional[str] = Field(default=None, max_length=200)
-    configured_max_slots: int = Field(default=1, ge=1, le=5)
+    configured_max_slots: int = Field(default=1, ge=1, le=64)
 
 
 class CreateTestJobRequest(BaseModel):

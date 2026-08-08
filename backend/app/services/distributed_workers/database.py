@@ -136,6 +136,18 @@ def read_conn(settings: DistributedWorkersSettings | None = None):
     yield _thread_conn(path)
 
 
+def _drop_thread_conn(path: Path) -> None:
+    """Выбросить потоко-локальное соединение: следующий вызов откроет новое."""
+    cache: dict[str, sqlite3.Connection] = getattr(_local, "conns", None) or {}
+    conn = cache.pop(str(path), None)
+    if conn is not None:
+        try:
+            conn.close()
+        except Exception:  # noqa: BLE001 — закрываем как получится
+            pass
+    _local.conns = cache
+
+
 @contextmanager
 def write_txn(settings: DistributedWorkersSettings | None = None):
     """Пишущая транзакция под глобальным локом.
@@ -149,13 +161,30 @@ def write_txn(settings: DistributedWorkersSettings | None = None):
     with _write_lock:
         conn = _thread_conn(path)
         conn.execute("BEGIN IMMEDIATE")
+            # COMMIT и ROLLBACK — внутри try, и оба умеют не сработать.
+            # Раньше COMMIT стоял в `else`, снаружи защиты: отказ на коммите
+            # (SQLITE_BUSY, кончившийся диск, ошибка ввода-вывода) оставлял
+            # транзакцию ОТКРЫТОЙ на потоко-локальном соединении, а лок при
+            # этом отпускался. Соединение кэшируется в threading.local и не
+            # пересоздаётся, поэтому каждая следующая запись в этом потоке
+            # падала с «cannot start a transaction within a transaction» —
+            # навсегда. В центре потоки берутся из пула asyncio.to_thread,
+            # то есть один отравленный поток ронял произвольные запросы.
+            #
+            # Лечение — закрыть соединение: следующий вызов откроет новое.
+            # ROLLBACK тоже завёрнут, иначе его собственная ошибка («no
+            # transaction is active») подменяла бы исходную причину сбоя.
         try:
-            yield conn
-        except Exception:
-            conn.execute("ROLLBACK")
-            raise
-        else:
+            try:
+                yield conn
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
             conn.execute("COMMIT")
+        except Exception:
+            if conn.in_transaction:
+                _drop_thread_conn(path)
+            raise
 
 
 async def run_db(fn: Callable[..., T], *args: Any, **kwargs: Any) -> T:

@@ -171,8 +171,11 @@ def attempt_awaiting_slot(attempt: dict[str, Any]) -> bool:
 def attempt_unproven_remote(attempt: dict[str, Any]) -> bool:
     """Попытка, которую оператор признал потерянной, а процесс мог остаться жив.
 
-    Центр НЕ вправе считать её остановленной (I-06), поэтому ёмкость она
-    продолжает резервировать — но новую попытку создать не мешает.
+    Центр НЕ вправе считать её остановленной (I-06), поэтому она попадает в
+    ОТДЕЛЬНЫЙ счётчик `unproven` и показывается оператору как «недоказанная».
+    В `reserved` она НЕ входит: иначе признание попытки потерянной навсегда
+    съедало бы слот и новую попытку было бы негде запустить. Цена решения —
+    процесс на VPS мог остаться жив, и об этом предупреждает `unproven_warning`.
     """
     return (
         _disposition(attempt) == "operator_declared_lost"
@@ -359,7 +362,19 @@ def build_slot_view(
     claimed = worker_claimed_free
     if claimed is None:
         claimed = int(worker.get("calculated_free_slots") or 0)
-    mismatch = claimed > center_free
+    # Расхождение считается в ОБЕ стороны. Односторонняя проверка
+    # («воркер обещает больше, чем есть у центра») пропускала ровно тот
+    # случай, который тише всего заканчивается тупиком: центр видит слот
+    # свободным, воркер — занятым. Так бывает после `mark-lost` на ОНЛАЙН-
+    # воркере: центр перестал считать попытку занимающей слот, процесс на VPS
+    # работает, локальная ёмкость съедена. Новая попытка висит в `assigned`,
+    # агент за ней не идёт, потому что у него занято, и никто не сообщает
+    # оператору, почему ничего не происходит.
+    mismatch = claimed != center_free
+    mismatch_direction = (
+        None if claimed == center_free
+        else ("worker_claims_more" if claimed > center_free else "worker_claims_fewer")
+    )
     return {
         "effective_limit": limit.value,
         "limit_binding": limit.binding,
@@ -374,6 +389,20 @@ def build_slot_view(
         # Центр использует МЕНЬШЕЕ из двух — безопасная сторона (S-15).
         "effective_free_slots": min(center_free, max(0, claimed)) if claimed >= 0 else 0,
         "slot_count_mismatch": mismatch,
+        "slot_count_mismatch_direction": mismatch_direction,
+        "slot_count_mismatch_hint": (
+            None if not mismatch
+            else (
+                "Воркер обещает больше свободных слотов, чем насчитал центр. "
+                "Назначаем по меньшему числу."
+                if claimed > center_free
+                else "Центр считает слот свободным, а воркер — занятым: на VPS "
+                     "могла остаться работа, которую центр перестал учитывать "
+                     "(например, после признания попытки потерянной). Новое "
+                     "задание встанет в очередь и не начнётся, пока воркер не "
+                     "освободится."
+            )
+        ),
         "notices": list(limit.notices),
         "blocked_reason": limit.blocked_reason,
         "occupancy_label": (
