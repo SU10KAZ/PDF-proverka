@@ -16,8 +16,46 @@ from audit_worker.local_store import LocalJobStore, read_json
 from audit_worker.process_registry import ProcessRegistry
 
 
+class LocalDbProcessView:
+    """Взгляд агента на процессы, которыми владеет ИСПОЛНИТЕЛЬ.
+
+    Агент больше не запускает процессы и не ведёт их реестр — он их только
+    наблюдает. Интерфейс намеренно совпадает с ProcessRegistry: код сверки
+    не должен знать, откуда пришли сведения.
+    """
+
+    def __init__(self, db: Any):
+        self.db = db
+
+    def alive_for_job(
+        self, job_id: str, attempt_id: str, *, command_fingerprint: Optional[str] = None
+    ) -> list[dict[str, Any]]:
+        from audit_worker.process_registry import is_alive
+
+        row = self.db.process_row(attempt_id)
+        if not row or row.get("job_id") != job_id:
+            return []
+        if not is_alive(int(row.get("pid") or 0), row.get("process_start_identity")):
+            return []
+        if command_fingerprint and row.get("command_fingerprint") not in (
+            None, command_fingerprint
+        ):
+            return []
+        return [row]
+
+    def live_count(self) -> int:
+        from audit_worker.process_registry import is_alive
+
+        return sum(
+            1
+            for row in self.db.list_processes()
+            if is_alive(int(row.get("pid") or 0), row.get("process_start_identity"))
+        )
+
+
 def collect_known_jobs(
-    store: LocalJobStore, jobs_dir, *, registry: Optional[ProcessRegistry] = None
+    store: LocalJobStore, jobs_dir, *, registry: Optional[Any] = None,
+    db: Any = None,
 ) -> list[dict[str, Any]]:
     known: list[dict[str, Any]] = []
     for meta in store.iter_all():
@@ -52,6 +90,19 @@ def collect_known_jobs(
                 "result_present": _has_files(job_dir / "result"),
                 "upload_id": meta.get("upload_id"),
                 "retention_until": meta.get("retention_until"),
+                # Этап 3.5: что воркер сам думает о судьбе попытки и процесса.
+                # Центр сверяет это со своей осью disposition (§14).
+                "local_disposition": meta.get("local_disposition"),
+                "process_status": meta.get("process_status"),
+                "completed_marker": read_json(
+                    job_dir / "work" / "completed.marker", None
+                ),
+                "pending_local_commands": (
+                    db.pending_local_command_count() if db is not None else 0
+                ),
+                "result_acknowledged": meta.get("retention_until") is not None,
+                "deleted_from_worker": bool(meta.get("deleted_from_worker")),
+                "executor_instance_id": meta.get("executor_instance_id"),
             }
         )
     return known
@@ -67,19 +118,26 @@ def reconcile(
     *,
     instance_id: str,
     previous_instance_id: Optional[str],
-    registry: Optional[ProcessRegistry] = None,
+    registry: Optional[Any] = None,
+    db: Any = None,
+    executor: Optional[dict[str, Any]] = None,
+    disk: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Спросить центр о судьбе локальных заданий.
 
     При недоступности центра возвращает пустой вердикт: агент продолжает
     работу по локальному состоянию (инвариант I-01).
     """
-    known = collect_known_jobs(store, store.jobs_dir, registry=registry)
+    known = collect_known_jobs(store, store.jobs_dir, registry=registry, db=db)
     payload = {
         "instance_id": instance_id,
+        "agent_instance_id": instance_id,
         "previous_instance_id": previous_instance_id,
         "restarted_at": time.time(),
         "known_jobs": known,
+        "executor": executor,
+        "disk": disk,
+        "pending_central_commands": 0,
     }
     try:
         return client.reconcile(payload)

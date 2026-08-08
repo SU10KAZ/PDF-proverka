@@ -197,8 +197,28 @@ def test_only_one_subprocess_spawn_point():
                         assert isinstance(kw.value, ast.Constant) and kw.value.value is False, (
                             f"shell=True в {path.name}:{node.lineno}"
                         )
-    assert len(found) == 1, f"точек запуска процесса должно быть ровно одна: {found}"
-    assert found[0].startswith("test_runner.py"), found
+    # Точек ровно две, и обе известны поимённо:
+    #   test_runner.py — единственный запуск ПРОЦЕССА АУДИТА;
+    #   __main__.py    — dev-режим `run`, поднимающий собственного исполнителя
+    #                    фиксированным argv `python -m audit_worker executor`.
+    files = sorted({entry.split(":", 1)[0] for entry in found})
+    assert files == ["__main__.py", "test_runner.py"], found
+    assert sum(1 for e in found if e.startswith("test_runner.py")) == 1, found
+
+    # Самозапуск исполнителя не должен уметь принимать чужой argv: элементы
+    # списка — только sys.executable и строковые литералы (I-10).
+    main_tree = ast.parse((_ROOT / "audit_worker" / "__main__.py").read_text("utf-8"))
+    spawn_calls = [
+        node for node in ast.walk(main_tree)
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "attr", None) == "Popen"
+    ]
+    assert len(spawn_calls) == 1, "в __main__ должен быть один самозапуск"
+    argv = spawn_calls[0].args[0]
+    assert isinstance(argv, ast.List), "argv обязан быть литеральным списком"
+    literals = [e.value for e in argv.elts if isinstance(e, ast.Constant)]
+    assert "-m" in literals and "audit_worker" in literals and "executor" in literals
+
 
 def test_no_arbitrary_command_execution_in_agent():
     """Ни одной ветки, где команда/argv приходят из задания."""

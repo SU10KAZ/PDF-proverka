@@ -15,9 +15,11 @@ Run: python -m pytest tests/test_distributed_workers_e2e.py -v
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import sys
+import threading
 from pathlib import Path
 
 import pytest
@@ -76,6 +78,29 @@ def _make_worker_config(tmp_path, transport):
         test_max_total_sec=60.0,
         transport=transport,
     )
+
+
+@contextlib.contextmanager
+def running_executor(config, *, max_jobs=1):
+    """Поднять ЛОКАЛЬНОГО исполнителя рядом с агентом.
+
+    Агент с этапа 3.5 процессы не запускает: он ставит попытку в worker.db,
+    а работу делает исполнитель. Здесь он живёт в отдельном потоке того же
+    процесса; настоящее разделение процессов проверяется в
+    tests/test_distributed_workers_executor.py.
+    """
+    from audit_worker.executor import Executor
+
+    executor = Executor(config)
+    thread = threading.Thread(
+        target=executor.run_forever, kwargs={"max_jobs": max_jobs}, daemon=True
+    )
+    thread.start()
+    try:
+        yield executor
+    finally:
+        executor.shutdown()
+        thread.join(timeout=15)
 
 
 def test_vertical_slice_full_cycle(tmp_path, transport, admin):
@@ -138,17 +163,21 @@ def test_vertical_slice_full_cycle(tmp_path, transport, admin):
     # Токен попытки наружу оператору не отдаётся.
     assert "_execution_token_plain" not in created.json()["job"]
 
-    # 6. Агент забирает и выполняет задание целиком.
+    # 6. Агент забирает задание, ИСПОЛНИТЕЛЬ его выполняет, агент передаёт.
     agent._start_sender()
     try:
-        assignment = agent.poller.poll(free_slots=2, compressions=["gzip"])
-        assert assignment is not None
-        assert assignment["job_type"] == "test_pipeline_v1"
-        assert assignment["package"]["sha256"]
-        outcome = agent.execute_job(assignment)
+        with running_executor(config, max_jobs=1):
+            assignment = agent.poller.poll(free_slots=2, compressions=["gzip"])
+            assert assignment is not None
+            assert assignment["job_type"] == "test_pipeline_v1"
+            assert assignment["package"]["sha256"]
+            outcome = agent.execute_job(assignment)
     finally:
         agent.shutdown()
     assert outcome["ok"], outcome
+    # Процесс аудита запускал ИСПОЛНИТЕЛЬ: запись о нём есть в его реестре.
+    process = agent.db.process_row(assignment["attempt_id"])
+    assert process is not None and process["executor_instance_id"]
 
     # 7. Центр: задание принято и проверено.
     final = admin.get(f"/api/workers/jobs/{job_id}").json()
@@ -277,11 +306,13 @@ def test_offline_run_then_late_delivery(tmp_path, transport, admin):
         "outbox": ctx_outbox, "stage": "run",
     }
     agent._accept(assignment, ctx)          # accept идёт отдельным вызовом (он ОК)
-    result = agent._run(assignment, ctx, config.job_dir(job_id, attempt_id))
+    with running_executor(config, max_jobs=1):
+        result = agent._dispatch_and_wait(assignment, ctx)
     assert result["ok"], result
     assert calls["n"] > 0, "должны были быть неудачные попытки отправки"
 
     # События целы на диске и ждут отправки.
+    ctx_outbox.reload()
     assert ctx_outbox.has_pending
     pending_before = ctx_outbox.last_written_seq - ctx_outbox.last_acked_seq
     assert pending_before >= 4

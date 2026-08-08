@@ -1,8 +1,14 @@
-"""WorkerAgent — супервизор агента.
+"""audit-worker-agent — СЕТЕВОЙ агент. Процессы аудита не запускает.
 
 Собирает вместе: регистрацию, heartbeat, long-poll задания, скачивание и
-проверку пакета, запуск безопасного тестового процесса, дисковый outbox
-событий, отправку событий пакетами и возобновляемую загрузку результата.
+проверку пакета, дисковый outbox событий, отправку событий пакетами,
+возобновляемую загрузку результата и приём команд центра.
+
+Чего здесь НЕТ с этапа 3.5 и не должно появиться: запуска тестового процесса.
+Работу выполняет отдельный процесс `python -m audit_worker executor`, а агент
+ставит попытку в локальную очередь worker.db и НАБЛЮДАЕТ. Причина ровно одна:
+пока запуск жил здесь, перезапуск сетевого агента убивал сделанную работу
+(I-02), а второй запуск агента порождал второй процесс аудита (I-03).
 
 Три свойства, ради которых всё и затевалось:
   * конвейер не имеет вызовов к центру на критическом пути — он пишет в
@@ -22,10 +28,9 @@ from typing import Any, Optional
 from audit_worker import (
     PROTOCOL_VERSION,
     __version__,
+    local_db,
     package_io,
-    process_registry,
     reconciliation,
-    test_runner,
 )
 from audit_worker.client import (
     AttemptSupersededError,
@@ -39,36 +44,9 @@ from audit_worker.event_outbox import EventOutbox
 from audit_worker.heartbeat import HeartbeatClient
 from audit_worker.job_poller import JobPullClient
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
-from audit_worker.process_registry import ProcessRegistry
 from audit_worker.resource_monitor import ResourceMonitor
+from audit_worker.retention import RetentionManager
 from audit_worker.uploader import upload_result
-
-
-def _write_completed_marker(job_dir: Path, outcome: "test_runner.RunOutcome") -> None:
-    """Маркер «процесс отработал» рядом с результатом.
-
-    Различает два неотличимых по pid состояния: процесс завершился штатно
-    против «процесс исчез». Без маркера рестарт агента не может понять,
-    надо ли что-то доделывать.
-    """
-    marker = job_dir / "work" / "completed.marker"
-    marker.parent.mkdir(parents=True, exist_ok=True)
-    marker.write_text(
-        json.dumps(
-            {
-                "exit_code": outcome.exit_code,
-                "duration_sec": round(outcome.duration_sec, 3),
-                "steps_done": outcome.steps_done,
-                "steps_total": outcome.steps_total,
-                "stdout_lines": outcome.stdout_lines,
-                "stderr_lines": outcome.stderr_lines,
-                "finished_at": time.time(),
-            },
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
 
 
 class UploadDeferred(RuntimeError):
@@ -90,7 +68,12 @@ class WorkerAgent:
         config.ensure_dirs()
         self.state_store = WorkerStateStore(config.state_path, config.token_path)
         self.jobs = LocalJobStore(config.jobs_dir)
-        self.registry = ProcessRegistry(config.runtime_dir)
+        # Общий стык с исполнителем. Агент сюда ПИШЕТ задания и команды, но
+        # процессами не владеет: реестр процессов ведёт исполнитель, агент его
+        # только читает.
+        self.db = local_db.LocalDB(config.local_db_path)
+        self.registry = reconciliation.LocalDbProcessView(self.db)
+        self.retention = RetentionManager(config, self.db, jobs=self.jobs)
         self.monitor = ResourceMonitor(config.root, configured_max_slots=config.max_slots)
 
         self.client = CenterClient(
@@ -169,14 +152,16 @@ class WorkerAgent:
                 f"задание {meta['job_id'][:8]} пережило рестарт агента "
                 f"(процессы живы) — не трогаю"
             )
-        self._package_finished_jobs()
-        self._report_lost_processes()
+        self._report_interrupted_attempts()
         verdict = reconciliation.reconcile(
             self.client,
             self.jobs,
             instance_id=self.instance_id,
             previous_instance_id=self.identity.get("previous_instance_id"),
             registry=self.registry,
+            db=self.db,
+            executor=self.db.executor_snapshot(),
+            disk=self.retention.disk_snapshot(),
         )
         if verdict.get("error"):
             _log(f"сверка с центром недоступна ({verdict['error']}) — продолжаю локально")
@@ -194,80 +179,49 @@ class WorkerAgent:
                     retention_until=item["retention_until"],
                 )
             if item["action"] == "stop_superseded":
-                self.registry.terminate_job(item["job_id"], item["attempt_id"])
+                # Останавливает ИСПОЛНИТЕЛЬ, а не агент: у агента нет права
+                # слать сигналы процессам, и проверки принадлежности (pid +
+                # время старта + отпечаток) живут там же, где реестр (I-17).
+                self.db.enqueue_local_command(
+                    command_type="cancel_attempt",
+                    job_id=item["job_id"],
+                    attempt_id=item["attempt_id"],
+                    payload={
+                        "job_id": item["job_id"],
+                        "attempt_id": item["attempt_id"],
+                        "reason": "попытка отозвана центром",
+                    },
+                )
                 self.jobs.update(
-                    item["job_id"], item["attempt_id"], local_state="superseded"
+                    item["job_id"], item["attempt_id"],
+                    local_state="superseded", local_disposition="superseded",
                 )
             elif item["action"] == "upload_result":
                 self._resume_upload(item["job_id"], item["attempt_id"])
 
-    def _package_finished_jobs(self) -> None:
-        """Доупаковать работу, завершённую до рестарта агента.
+    def _report_interrupted_attempts(self) -> None:
+        """Досылать диагностику о попытках, которые исполнитель признал прерванными.
 
-        Окно между выходом процесса и сборкой архива раньше стоило всей
-        сделанной работы: задание попадало в «процесс потерян» и объявлялось
-        провалом. Признак того, что работа сделана, — `completed.marker`
-        с нулевым кодом возврата.
+        Рестарт СЕТЕВОГО агента сюда не приводит: его перезапуск не убивает ни
+        исполнителя, ни процесс (I-02). Сюда попадает только то, что исполнитель
+        сам пометил `executor_interrupted` — процесс исчез без маркера. Агент
+        ничего не перезапускает: решение о повторе принимает оператор (§8.6).
         """
-        for meta in reconciliation.finished_but_unpackaged(self.jobs, self.registry):
-            job_id, attempt_id = meta["job_id"], meta["attempt_id"]
+        for item in self.db.list_queue(states=(local_db.QUEUE_INTERRUPTED,)):
+            job_id, attempt_id = item["job_id"], item["attempt_id"]
+            meta = self.jobs.load(job_id, attempt_id) or {}
+            if meta.get("interrupt_reported"):
+                continue
             job_dir = self.jobs.job_dir(job_id, attempt_id)
             outbox = EventOutbox(
                 job_dir / "events",
                 secret_literals=(self.token, meta.get("execution_token") or ""),
             )
-            ctx = {
-                "job_id": job_id,
-                "attempt_id": attempt_id,
-                "execution_token": meta.get("execution_token"),
-                "outbox": outbox,
-                "stage": "package",
-            }
-            assignment = {
-                "project_id": meta.get("project_id", ""),
-                "version_id": meta.get("version_id"),
-                "package": meta.get("package") or {"manifest_version": 1},
-            }
+            self.jobs.update(job_id, attempt_id, interrupt_reported=True)
             _log(
-                f"задание {job_id[:8]}: процесс отработал до рестарта — "
-                f"собираю результат и отправляю"
+                f"задание {job_id[:8]}: исполнитель сообщил о прерывании — "
+                f"передаю диагностику, повтор не запускаю"
             )
-            try:
-                self._package_and_upload(assignment, ctx, job_dir)
-            except UploadDeferred:
-                pass    # архив на диске, дошлём позже
-            except Exception as exc:  # noqa: BLE001 — одно задание не роняет агента
-                _log(f"не удалось собрать результат {job_id[:8]}: {exc}")
-
-    def _report_lost_processes(self) -> None:
-        """Сообщить о заданиях, чей процесс не пережил рестарт агента.
-
-        На этапе 0 возобновления нет (реальный конвейер и `resume` вне объёма),
-        поэтому честный исход — провал с явной причиной, а не вечное `running`.
-        """
-        for meta in reconciliation.lost_processes(self.jobs, self.registry):
-            job_id, attempt_id = meta["job_id"], meta["attempt_id"]
-            job_dir = self.jobs.job_dir(job_id, attempt_id)
-            outbox = EventOutbox(
-                job_dir / "events",
-                secret_literals=(self.token, meta.get("execution_token") or ""),
-            )
-            outbox.append(
-                "job_failed",
-                {
-                    "code": "process_lost_after_restart",
-                    "message": "Процесс задания не пережил рестарт агента",
-                    "reason": "error",
-                    "pid": meta.get("pid"),
-                },
-            )
-            self.jobs.update(
-                job_id, attempt_id,
-                local_state="failed",
-                process_status="lost",
-                error="process_lost_after_restart",
-            )
-            _log(f"задание {job_id[:8]}: процесс потерян при рестарте — отмечено провалом")
             self._flush_outbox(
                 {
                     "job_id": job_id,
@@ -321,6 +275,32 @@ class WorkerAgent:
                     "message": f"Слотов нет: ограничивает {snapshot['slots']['binding_constraint']}",
                 }
             )
+        executor = self.db.executor_snapshot()
+        if executor.get("status") not in ("online",):
+            # Агент онлайн ≠ VPS работает. Молчание исполнителя — отдельная
+            # новость, и экран обязан показать её отдельно (§16.6).
+            warnings.append(
+                {
+                    "code": "executor_not_online",
+                    "severity": "warn",
+                    "message": (
+                        f"Локальный исполнитель: {executor.get('status')}. "
+                        "Новые задания выполняться не будут."
+                    ),
+                }
+            )
+        disk = self.retention.disk_snapshot()
+        if disk["level"] != "ok":
+            warnings.append(
+                {
+                    "code": f"disk_{disk['level']}",
+                    "severity": "error" if disk["level"] == "critical" else "warn",
+                    "message": (
+                        f"Свободно {disk['free_bytes'] / (1024 ** 3):.1f} ГБ. "
+                        "Неподтверждённые результаты не удаляются автоматически."
+                    ),
+                }
+            )
         return {
             "instance_id": self.instance_id,
             "sent_at": time.time(),
@@ -330,6 +310,8 @@ class WorkerAgent:
             "active_jobs": active,
             "resource_snapshot": snapshot,
             "warnings": warnings,
+            "executor": executor,
+            "disk": disk,
         }
 
     def _on_heartbeat_response(self, response: dict[str, Any]) -> None:
@@ -343,32 +325,55 @@ class WorkerAgent:
             )
 
     # ─── Команды ─────────────────────────────────────────────────────────────
+    # Разрешённые типы. Агент их НЕ исполняет — он кладёт их в локальную
+    # очередь, а исполняет исполнитель либо RetentionManager. У агента нет и не
+    # должно быть кода, останавливающего процессы или стирающего каталоги.
+    _LOCAL_COMMANDS = ("cancel_attempt", "delete_attempt_data")
+
     def _drain_commands(self) -> None:
+        """Принять команды центра → положить в локальную очередь → отчитаться."""
         try:
             payload = self.client.get_commands()
         except Exception:  # noqa: BLE001 — команды подождут до следующего круга
-            return
+            payload = {"commands": []}
         for command in payload.get("commands", []):
             ctype = command.get("command_type")
-            result: dict[str, Any]
-            if ctype == "cancel_job":
-                job_id = (command.get("payload") or {}).get("job_id")
-                attempt_id = (command.get("payload") or {}).get("attempt_id")
-                self._cancelled.add(job_id)
-                killed = self.registry.terminate_job(job_id, attempt_id or "")
-                result = {"status": "ok", "detail": {"terminated": killed}}
-            elif ctype in ("drain", "undrain"):
-                result = {"status": "ok", "detail": {"applied": ctype}}
-            else:
-                # Закрытый enum: неизвестное не исполняем (инвариант I-11).
-                result = {
-                    "status": "error",
-                    "detail": {"code": "unsupported_command", "received": ctype},
-                }
+            body = command.get("payload") or {}
+            if ctype in self._LOCAL_COMMANDS:
+                self.db.enqueue_local_command(
+                    command_type=ctype,
+                    job_id=body.get("job_id") or command.get("job_id"),
+                    attempt_id=body.get("attempt_id") or command.get("attempt_id"),
+                    payload=body,
+                    central_command_id=command["command_id"],
+                )
+                if ctype == "cancel_attempt":
+                    self._cancelled.add(body.get("job_id"))
+                continue
+            # Закрытый набор: неизвестное не исполняем и честно говорим об этом.
+            self._ack_center(
+                command["command_id"],
+                {"status": "error",
+                 "detail": {"outcome": "unsupported_command", "received": ctype}},
+            )
+        self._report_local_command_results()
+
+    def _report_local_command_results(self) -> None:
+        """Передать центру результаты исполненных локальных команд."""
+        for item in self.db.finished_local_commands():
             try:
-                self.client.ack_command(command["command_id"], result)
-            except Exception:  # noqa: BLE001 — повторим при следующем опросе
-                pass
+                result = json.loads(item.get("result_json") or "{}")
+            except ValueError:
+                result = {"status": "error", "detail": {"outcome": "bad_result"}}
+            if self._ack_center(item["central_command_id"], result):
+                self.db.mark_command_reported(item["local_command_id"])
+
+    def _ack_center(self, command_id: str, result: dict[str, Any]) -> bool:
+        try:
+            self.client.ack_command(command_id, result)
+        except Exception:  # noqa: BLE001 — повторим при следующем опросе
+            return False
+        return True
 
     # ─── Исполнение задания ──────────────────────────────────────────────────
     def execute_job(self, assignment: dict[str, Any]) -> dict[str, Any]:
@@ -396,9 +401,9 @@ class WorkerAgent:
         try:
             self._download_and_verify(assignment, ctx, job_dir)
             self._accept(assignment, ctx)
-            outcome = self._run(assignment, ctx, job_dir)
+            outcome = self._dispatch_and_wait(assignment, ctx)
             if outcome["ok"]:
-                self._package_and_upload(assignment, ctx, job_dir)
+                self._upload_ready_result(assignment, ctx, job_dir)
             return outcome
         except AttemptSupersededError:
             _log(f"задание {job_id[:8]}: попытка отозвана — останавливаюсь")
@@ -475,158 +480,79 @@ class WorkerAgent:
         ctx["outbox"].append("job_accepted", {"planned_stages": ["test_pipeline_v1"]})
         self._flush_outbox(ctx)
 
-    def _run(
-        self, assignment: dict[str, Any], ctx: dict[str, Any], job_dir: Path
+    def _dispatch_and_wait(
+        self, assignment: dict[str, Any], ctx: dict[str, Any]
     ) -> dict[str, Any]:
+        """Поставить попытку в локальную очередь и НАБЛЮДАТЬ за исполнителем.
+
+        Агент здесь ничего не запускает. Это и есть I-02/I-03: если агента
+        убить в любой точке этого метода, процесс аудита продолжит работу под
+        исполнителем, а поднявшийся заново агент увидит попытку уже в очереди
+        и второй раз её не поставит (enqueue идемпотентен по attempt_id).
+        """
         job_id, attempt_id = ctx["job_id"], ctx["attempt_id"]
-        outbox: EventOutbox = ctx["outbox"]
-
-        try:
-            params = test_runner.validate_params(
-                assignment.get("params") or {},
-                max_total_sec=self.config.test_max_total_sec,
-            )
-        except test_runner.TestJobRejected as exc:
-            self.client.reject_job(
-                job_id, {"attempt_id": attempt_id, "reason": str(exc)},
-                ctx["execution_token"],
-            )
-            self.jobs.update(job_id, attempt_id, local_state="rejected", error=str(exc))
-            return {"ok": False, "reason": str(exc)}
-
-        ctx["stage"] = "test_pipeline_v1"
-        self.jobs.update(job_id, attempt_id, local_state="running", started_at=time.time())
-        outbox.append("job_started", {"stage": "test_pipeline_v1"})
-        outbox.append(
-            "stage_started",
-            {"stage": "test_pipeline_v1", "stage_index": 1, "stage_total": 1},
+        ctx["stage"] = "queued"
+        fresh = self.db.enqueue(
+            job_id=job_id,
+            attempt_id=attempt_id,
+            job_type=str(assignment.get("job_type") or "test_pipeline_v1"),
+            params=assignment.get("params") or {},
         )
+        if not fresh:
+            _log(f"задание {job_id[:8]}: уже в локальной очереди — не дублирую")
 
-        started = time.time()
-        last_progress = {"processed": 0, "at": started}
-
-        def on_progress(step: int, total: int, elapsed: float, message: str) -> None:
-            now = time.time()
-            window = max(1e-6, now - last_progress["at"])
-            delta = step - last_progress["processed"]
-            outbox.append(
-                "stage_progress",
-                {
-                    "stage": "test_pipeline_v1",
-                    "stage_index": 1,
-                    "stage_total": 1,
-                    "unit": "steps",
-                    "processed": step,
-                    "total": total,
-                    # percent_reliable=True только потому, что total достоверно
-                    # известен от самого процесса. Выдуманного процента нет.
-                    "percent": round(step / total * 100, 1) if total else None,
-                    "percent_reliable": bool(total),
-                    "elapsed_sec": round(elapsed, 2),
-                    "throughput_per_min": round(step / max(1e-6, now - started) * 60, 2),
-                    "delta_5min": {"processed": delta, "window_sec": round(window, 2)},
-                    "last_significant_event": message,
-                    "completed_operations": step,
-                },
-            )
-            last_progress["processed"] = step
-            last_progress["at"] = now
-
-        def on_log(stream: str, level: str, line: str) -> None:
-            # stdout и stderr различаются полем `source` — они читаются
-            # раздельными потоками и не сливаются в один.
-            outbox.append(
-                "log_line",
-                {"level": level, "stage": "test_pipeline_v1", "source": stream,
-                 "message": line},
+        executor = self.db.executor_snapshot()
+        if executor.get("status") != "online":
+            _log(
+                f"внимание: локальный исполнитель «{executor.get('status')}» — "
+                f"задание {job_id[:8]} будет ждать его запуска"
             )
 
-        def on_pid(pid: int) -> None:
-            self.jobs.update(job_id, attempt_id, pid=pid)
-
-        def on_start(pid: int, fingerprint: str) -> None:
-            self.registry.register(
-                pid, job_id=job_id, attempt_id=attempt_id,
-                command_fingerprint=fingerprint,
-            )
-            self.jobs.update(
-                job_id, attempt_id,
-                pid=pid,
-                command_fingerprint=fingerprint,
-                process_start_time=process_registry.process_start_time(pid),
-                process_status="running",
-            )
-
-        outcome = test_runner.run_test_job(
-            params=params,
-            job_dir=job_dir,
-            on_progress=on_progress,
-            on_log=on_log,
-            on_pid=on_pid,
-            on_start=on_start,
-            cancel_check=lambda: job_id in self._cancelled,
-        )
-        self.registry.prune_dead()
-        # Маркер завершения: по нему после рестарта агента видно, что процесс
-        # ОТРАБОТАЛ, а не «исчез». Без него мёртвый pid неотличим от убитого.
-        _write_completed_marker(job_dir, outcome)
-        self.jobs.update(job_id, attempt_id, process_status="exited",
-                         exit_code=outcome.exit_code)
-
-        if job_id in self._cancelled:
-            outbox.append("cancellation_received", {"job_id": job_id})
-            outbox.append("job_failed", {"code": "cancelled", "reason": "cancelled",
-                                         "message": "Отменено оператором"})
-            self.jobs.update(job_id, attempt_id, local_state="cancelled")
+        while not self._stop.is_set():
+            item = self.db.queue_item(attempt_id)
+            if item is None:
+                return {"ok": False, "reason": "queue_row_lost"}
+            state = item.get("state")
+            if state == local_db.QUEUE_RUNNING:
+                ctx["stage"] = "test_pipeline_v1"
+            if state in local_db.TERMINAL_QUEUE_STATES:
+                break
             self._flush_outbox(ctx)
-            return {"ok": False, "reason": "cancelled"}
+            self._drain_commands()
+            self._stop.wait(0.2)
+        else:
+            # Агента останавливают. Работу НЕ трогаем: она принадлежит
+            # исполнителю и продолжится без нас (I-01, I-02).
+            return {"ok": False, "reason": "agent_stopping"}
 
-        if outcome.exit_code != 0:
-            outbox.append(
-                "stage_completed",
-                {"stage": "test_pipeline_v1", "status": "error",
-                 "duration_sec": round(outcome.duration_sec, 2)},
-            )
-            outbox.append(
-                "job_failed",
-                {
-                    "code": "test_process_failed",
-                    "message": outcome.failed_message
-                    or f"тестовый процесс вернул код {outcome.exit_code}",
-                    "stage": "test_pipeline_v1",
-                    "reason": "error",
-                },
-            )
-            self.jobs.update(job_id, attempt_id, local_state="failed")
-            self._flush_outbox(ctx)
-            return {"ok": False, "reason": "test_process_failed"}
+        item = self.db.queue_item(attempt_id) or {}
+        self._flush_outbox(ctx)
+        state = item.get("state")
+        if state == local_db.QUEUE_FINISHED:
+            return {"ok": True, "queue_state": state}
+        return {"ok": False, "reason": state or "unknown", "queue_state": state}
 
-        outbox.append(
-            "stage_completed",
-            {"stage": "test_pipeline_v1", "status": "done",
-             "duration_sec": round(outcome.duration_sec, 2),
-             "stdout_lines": outcome.stdout_lines,
-             "stderr_lines": outcome.stderr_lines},
-        )
-        # Артефакты объявляются явно: центр должен знать, ЧТО создано, ещё до
-        # того, как получит архив.
-        for artifact in sorted((job_dir / "result").rglob("*")):
-            if not artifact.is_file():
-                continue
-            outbox.append(
-                "artifact_created",
-                {
-                    "name": artifact.relative_to(job_dir / "result").as_posix(),
-                    "path_rel": "result/" + artifact.relative_to(job_dir / "result").as_posix(),
-                    "bytes": artifact.stat().st_size,
-                    "sha256": package_io.sha256_file(artifact),
-                },
-            )
-        return {"ok": True, "outcome": outcome}
+    def _upload_ready_result(
+        self, assignment: dict[str, Any], ctx: dict[str, Any], job_dir: Path
+    ) -> None:
+        """Передать архив, собранный ИСПОЛНИТЕЛЕМ. Сборка — не дело агента."""
+        archive = job_dir / "result" / f"{ctx['attempt_id']}.tar.gz"
+        if not archive.is_file():
+            # Страховка на случай, когда исполнитель отработал, но архив не
+            # материализовался (например, ручной прогон без него). Обычный
+            # путь сюда не заходит.
+            self._package_and_upload(assignment, ctx, job_dir)
+            return
+        self._upload_archive(assignment, ctx, job_dir, archive)
 
     def _package_and_upload(
         self, assignment: dict[str, Any], ctx: dict[str, Any], job_dir: Path
     ) -> None:
+        """Резервный путь: собрать архив здесь и передать.
+
+        Обычно архив собирает ИСПОЛНИТЕЛЬ — он владеет файлами задания. Этот
+        метод остаётся для случая, когда архива на диске не оказалось.
+        """
         job_id, attempt_id = ctx["job_id"], ctx["attempt_id"]
         outbox: EventOutbox = ctx["outbox"]
         ctx["stage"] = "package"
@@ -665,6 +591,20 @@ class WorkerAgent:
              "deferred_stages": []},
         )
         self._flush_outbox(ctx)
+        self._upload_archive(assignment, ctx, job_dir, archive)
+
+    def _upload_archive(
+        self,
+        assignment: dict[str, Any],
+        ctx: dict[str, Any],
+        job_dir: Path,
+        archive: Path,
+    ) -> None:
+        """Передать готовый архив центру. Работа уже сделана и лежит на диске."""
+        job_id, attempt_id = ctx["job_id"], ctx["attempt_id"]
+        outbox: EventOutbox = ctx["outbox"]
+        meta = self.jobs.load(job_id, attempt_id) or {}
+        result_size = int(meta.get("result_size") or archive.stat().st_size)
 
         ctx["stage"] = "upload"
         outbox.append("result_upload_started", {"result_size": result_size})
@@ -819,6 +759,9 @@ class WorkerAgent:
     def _flush_outbox(self, ctx: dict[str, Any]) -> None:
         """Отправить накопленное. При обрыве просто выходим — outbox копит дальше."""
         outbox: EventOutbox = ctx["outbox"]
+        # Журнал наполняет ИСПОЛНИТЕЛЬ — другой процесс. Без перечитывания
+        # позиций с диска агент вечно считал бы, что отправлять нечего.
+        outbox.reload()
         while outbox.has_pending and not self._stop.is_set():
             batch = outbox.pending_batch(limit=self.config.event_batch_max)
             if not batch:

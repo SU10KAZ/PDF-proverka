@@ -41,11 +41,19 @@ class EventOutbox:
         self.dir = events_dir
         self.dir.mkdir(parents=True, exist_ok=True)
         self.cursor_path = self.dir / "cursor.json"
+        # Отметка подтверждения живёт ОТДЕЛЬНЫМ файлом. С этапа 3.5 в журнал
+        # пишет исполнитель, а подтверждает отправку агент — это разные
+        # процессы. Держи они один файл, каждый затирал бы чужое поле: агент
+        # откатывал бы last_written_seq, а исполнитель — last_acked_seq.
+        self.ack_path = self.dir / "ack.json"
         self._secrets = tuple(s for s in secret_literals if s)
         self._pending_since_sync = 0
         cursor = read_json(self.cursor_path, None) or {}
+        ack = read_json(self.ack_path, None) or {}
         self.last_written_seq: int = int(cursor.get("last_written_seq", 0))
-        self.last_acked_seq: int = int(cursor.get("last_acked_seq", 0))
+        self.last_acked_seq: int = int(
+            ack.get("last_acked_seq", cursor.get("last_acked_seq", 0))
+        )
         self.active_segment: int = int(cursor.get("active_segment", 1))
         self.truncating: bool = bool(cursor.get("truncating", False))
         self._info_counter = 0
@@ -85,7 +93,7 @@ class EventOutbox:
             self._save_cursor()
         if self.last_acked_seq > self.last_written_seq:
             self.last_acked_seq = self.last_written_seq
-            self._save_cursor()
+            self._save_ack()
 
     # ─── Сегменты ────────────────────────────────────────────────────────────
     def _segment_path(self, index: int) -> Path:
@@ -179,6 +187,8 @@ class EventOutbox:
         return self._info_counter % 20 != 0
 
     def _save_cursor(self) -> None:
+        """Состояние ПИСАТЕЛЯ. `last_acked_seq` дублируется только для чтения
+        глазами: источник истины для него — ack.json."""
         atomic_write_json(
             self.cursor_path,
             {
@@ -188,6 +198,31 @@ class EventOutbox:
                 "truncating": self.truncating,
             },
         )
+
+    def _save_ack(self) -> None:
+        """Состояние ЧИТАТЕЛЯ (агента). Отдельный файл — отдельный писатель."""
+        atomic_write_json(self.ack_path, {"last_acked_seq": self.last_acked_seq})
+
+    def reload(self) -> None:
+        """Перечитать позиции с диска.
+
+        Обязательно для агента: журнал наполняет ДРУГОЙ процесс, и объект в
+        памяти о новых событиях сам по себе не узнает — `has_pending` вечно
+        отвечал бы «нечего отправлять».
+        """
+        cursor = read_json(self.cursor_path, None) or {}
+        ack = read_json(self.ack_path, None) or {}
+        with self._lock:
+            self.last_written_seq = max(
+                self.last_written_seq, int(cursor.get("last_written_seq", 0))
+            )
+            self.active_segment = max(
+                self.active_segment, int(cursor.get("active_segment", 1))
+            )
+            self.last_acked_seq = max(
+                self.last_acked_seq,
+                int(ack.get("last_acked_seq", cursor.get("last_acked_seq", 0))),
+            )
 
     # ─── Чтение и подтверждение ──────────────────────────────────────────────
     def pending_batch(self, limit: int = 500) -> list[dict[str, Any]]:
@@ -223,13 +258,13 @@ class EventOutbox:
         if last_seen_seq <= self.last_acked_seq:
             return
         self.last_acked_seq = min(last_seen_seq, self.last_written_seq)
-        self._save_cursor()
+        self._save_ack()
         self._compact()
 
     def rewind_to(self, expected_seq: int) -> None:
         """Центр сообщил, с какого номера повторять (ответ 409 sequence_gap)."""
         self.last_acked_seq = max(0, expected_seq - 1)
-        self._save_cursor()
+        self._save_ack()
 
     def _compact(self) -> None:
         """Убрать сегменты, целиком лежащие ниже last_acked_seq."""

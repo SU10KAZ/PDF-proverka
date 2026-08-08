@@ -4,8 +4,15 @@
     register   — заявка на регистрацию (нужен bootstrap-секрет), а после
                  одобрения оператором — повторный вызов БЕЗ секрета, чтобы
                  обменять одноразовый claim-secret на токен
-    run        — основной цикл: heartbeat + приём заданий
-    status     — что агент знает о себе и своих заданиях (офлайн, без сети)
+    agent      — СЕТЕВОЙ агент: heartbeat, приём заданий, передача результатов.
+                 Процессы аудита не запускает
+    executor   — ЛОКАЛЬНЫЙ исполнитель: запускает работу, ведёт реестр
+                 процессов, исполняет отмену и удаление данных. Сети не знает
+    run        — DEV-ONLY: агент, который сам поднимает исполнителя рядом.
+                 В проде это ДВА systemd-юнита (см. документацию этапа 3.5):
+                 рестарт агента не должен трогать исполнителя
+    retention  — показать кандидатов на удаление (сухой прогон)
+    status     — что воркер знает о себе и своих заданиях (офлайн, без сети)
     selftest   — прогнать тестовый процесс локально, без центра
 
 Переменные окружения:
@@ -77,7 +84,8 @@ def _cmd_register(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_run(args: argparse.Namespace) -> int:
+def _cmd_agent(args: argparse.Namespace) -> int:
+    """Сетевой агент. Процессы аудита запускает ИСПОЛНИТЕЛЬ, не он."""
     from audit_worker.agent import WorkerAgent
 
     config = load_config(args.root)
@@ -94,12 +102,91 @@ def _cmd_run(args: argparse.Namespace) -> int:
         print("Токен воркера не найден. Выполните `register`.", file=sys.stderr)
         return 2
 
+    child = None
+    if getattr(args, "with_executor", False):
+        child = _spawn_executor(config)
     agent = WorkerAgent(config, identity)
     try:
         agent.run_forever(max_jobs=args.max_jobs)
     except KeyboardInterrupt:
         print("\nостановка по Ctrl+C", file=sys.stderr)
         agent.shutdown()
+    finally:
+        if child is not None:
+            child.terminate()
+    return 0
+
+
+def _cmd_executor(args: argparse.Namespace) -> int:
+    """Локальный исполнитель. Ни одного сетевого вызова к центру."""
+    from audit_worker.executor import Executor
+
+    config = load_config(args.root, require_dispatcher=False)
+    config.ensure_dirs()
+    executor = Executor(config)
+    try:
+        executor.run_forever(max_jobs=args.max_jobs)
+    except KeyboardInterrupt:
+        print("\nостановка по Ctrl+C", file=sys.stderr)
+        executor.shutdown()
+    return 0
+
+
+def _spawn_executor(config):
+    """DEV-ONLY: поднять исполнителя рядом с агентом.
+
+    В проде так делать нельзя: тогда рестарт агента унесёт с собой и работу,
+    ради разделения с которой всё и затевалось. Для прода — два systemd-юнита.
+    """
+    import os
+    import subprocess
+
+    env = dict(os.environ)
+    env["AUDIT_WORKER_ROOT"] = str(config.root)
+    print(
+        "[dev] запускаю локальный исполнитель отдельным процессом; "
+        "в проде используйте audit-worker-executor.service",
+        file=sys.stderr,
+    )
+    return subprocess.Popen(  # noqa: S603 — фиксированный argv, shell=False
+        [sys.executable, "-m", "audit_worker", "executor", "--root", str(config.root)],
+        env=env,
+        start_new_session=True,
+    )
+
+
+def _cmd_run(args: argparse.Namespace) -> int:
+    """DEV-ONLY совместимость: агент + исполнитель одной командой."""
+    print(
+        "ВНИМАНИЕ: `run` — режим разработки. Он поднимает исполнителя рядом с "
+        "агентом; в проде это ДВА отдельных systemd-юнита, иначе рестарт "
+        "агента остановит и работу.",
+        file=sys.stderr,
+    )
+    args.with_executor = True
+    return _cmd_agent(args)
+
+
+def _cmd_retention(args: argparse.Namespace) -> int:
+    """Сухой прогон менеджера хранения: что он СЧИТАЕТ кандидатами."""
+    from audit_worker.local_db import LocalDB
+    from audit_worker.retention import RetentionManager
+
+    config = load_config(args.root, require_dispatcher=False)
+    config.ensure_dirs()
+    manager = RetentionManager(config, LocalDB(config.local_db_path))
+    report = {
+        "delete_enabled": config.retention_delete_enabled,
+        "retention_days": config.retention_days,
+        "disk": manager.disk_snapshot(),
+        "candidates": manager.candidates(),
+    }
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    if not config.retention_delete_enabled:
+        print(
+            "\nФизическое удаление ВЫКЛЮЧЕНО "
+            "(AUDIT_WORKER_RETENTION_DELETE_ENABLED=false) — это сухой прогон."
+        )
     return 0
 
 
@@ -180,11 +267,37 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_reg.set_defaults(func=_cmd_register)
 
-    p_run = sub.add_parser("run", help="основной цикл агента")
+    p_agent = sub.add_parser(
+        "agent", help="сетевой агент (процессы аудита не запускает)"
+    )
+    p_agent.add_argument("--bootstrap-secret", default=None)
+    p_agent.add_argument("--max-jobs", type=int, default=None,
+                         help="остановиться после N заданий (для smoke-прогона)")
+    p_agent.add_argument(
+        "--with-executor", action="store_true",
+        help="DEV-ONLY: поднять исполнителя рядом (в проде — отдельный юнит)",
+    )
+    p_agent.set_defaults(func=_cmd_agent)
+
+    p_exec = sub.add_parser(
+        "executor", help="локальный исполнитель (сети не знает)"
+    )
+    p_exec.add_argument("--max-jobs", type=int, default=None,
+                        help="остановиться после N попыток (для smoke-прогона)")
+    p_exec.set_defaults(func=_cmd_executor)
+
+    p_run = sub.add_parser(
+        "run", help="DEV-ONLY: агент + исполнитель одной командой"
+    )
     p_run.add_argument("--bootstrap-secret", default=None)
     p_run.add_argument("--max-jobs", type=int, default=None,
                        help="остановиться после N заданий (для smoke-прогона)")
     p_run.set_defaults(func=_cmd_run)
+
+    p_ret = sub.add_parser(
+        "retention", help="кандидаты на удаление (сухой прогон, ничего не стирает)"
+    )
+    p_ret.set_defaults(func=_cmd_retention)
 
     p_status = sub.add_parser("status", help="локальное состояние (без сети)")
     p_status.set_defaults(func=_cmd_status)

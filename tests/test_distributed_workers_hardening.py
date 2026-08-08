@@ -541,7 +541,7 @@ def test_registry_rejects_foreign_pid_by_fingerprint(tmp_path):
 
 
 def test_completed_marker_written(tmp_path):
-    from audit_worker.agent import _write_completed_marker
+    from audit_worker.executor import write_completed_marker as _write_completed_marker
     from audit_worker.test_runner import RunOutcome
 
     job_dir = tmp_path / "job"
@@ -1418,7 +1418,7 @@ def test_outbox_repairs_cursor_ahead_of_segments(tmp_path):
 def test_finished_work_is_packaged_not_declared_lost(tmp_path):
     """Рестарт между выходом процесса и сборкой архива не уничтожает работу."""
     from audit_worker import reconciliation, test_runner
-    from audit_worker.agent import _write_completed_marker
+    from audit_worker.executor import write_completed_marker as _write_completed_marker
     from audit_worker.local_store import LocalJobStore
     from audit_worker.process_registry import ProcessRegistry
 

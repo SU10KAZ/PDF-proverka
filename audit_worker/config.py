@@ -23,6 +23,13 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _env_float(name: str, default: float) -> float:
     raw = os.environ.get(name)
     if raw is None or not raw.strip():
@@ -54,6 +61,18 @@ class WorkerConfig:
     # отключения проверки TLS не существует — см. validate_transport_security.
     allow_insecure_localhost: bool = False
     extra_capabilities: dict = field(default_factory=dict)
+    # ─── Хранение локальных данных (этап 3.5) ───────────────────────────────
+    # Сухой прогон по умолчанию: менеджер считает кандидатов и показывает
+    # ожидаемый выигрыш, но НИЧЕГО не стирает, пока удаление не включено явно.
+    retention_enabled: bool = True
+    retention_delete_enabled: bool = False
+    retention_days: int = 30
+    retention_scan_interval_sec: int = 3600
+    disk_warning_free_bytes: int = 5 * 1024 * 1024 * 1024
+    disk_critical_free_bytes: int = 1 * 1024 * 1024 * 1024
+    # Автозапуск локального исполнителя вместе с агентом. Только для dev:
+    # в проде это два systemd-юнита, и рестарт агента не трогает исполнителя.
+    dev_spawn_executor: bool = False
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
     transport: object | None = None
@@ -74,11 +93,32 @@ class WorkerConfig:
     def runtime_dir(self) -> Path:
         return self.root / "runtime"
 
+    @property
+    def local_db_path(self) -> Path:
+        """worker.db — общий транзакционный стык агента и исполнителя."""
+        return self.root / "worker.db"
+
+    @property
+    def trash_dir(self) -> Path:
+        """Локальная корзина: сюда каталог переезжает ДО стирания содержимого."""
+        return self.root / "trash"
+
+    @property
+    def tombstones_dir(self) -> Path:
+        """Следы удалённых попыток: hash и сроки остаются, данных нет."""
+        return self.runtime_dir / "tombstones"
+
     def job_dir(self, job_id: str, attempt_id: str) -> Path:
-        return self.jobs_dir / job_id / attempt_id
+        """Путь строится ТОЛЬКО из UUID (I-11): внешний код проекта сюда не попадает."""
+        from audit_worker.paths import attempt_dir
+
+        return attempt_dir(self.jobs_dir, job_id, attempt_id)
 
     def ensure_dirs(self) -> None:
-        for path in (self.root, self.jobs_dir, self.runtime_dir):
+        for path in (
+            self.root, self.jobs_dir, self.runtime_dir, self.trash_dir,
+            self.tombstones_dir,
+        ):
             path.mkdir(parents=True, exist_ok=True)
         try:
             os.chmod(self.root, 0o750)
@@ -100,12 +140,20 @@ class WorkerConfig:
         return caps
 
 
-def load_config(argv_root: str | None = None) -> WorkerConfig:
+def load_config(
+    argv_root: str | None = None, *, require_dispatcher: bool = True
+) -> WorkerConfig:
+    """Собрать конфигурацию.
+
+    `require_dispatcher=False` — для ИСПОЛНИТЕЛЯ: он к центру не ходит, и
+    требовать от него адрес центра значило бы намекать, что когда-нибудь
+    сходит. Проверка транспорта в этом случае тоже не выполняется.
+    """
     root = Path(
         argv_root or os.environ.get("AUDIT_WORKER_ROOT") or DEFAULT_ROOT
     ).expanduser().resolve()
     url = os.environ.get("AUDIT_WORKER_DISPATCHER_URL", "").strip().rstrip("/")
-    if not url:
+    if not url and require_dispatcher:
         raise SystemExit(
             "AUDIT_WORKER_DISPATCHER_URL не задан. Пример:\n"
             "  export AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.app"
@@ -120,6 +168,23 @@ def load_config(argv_root: str | None = None) -> WorkerConfig:
         max_slots=max(1, min(5, _env_int("AUDIT_WORKER_MAX_SLOTS", 1))),
         request_timeout_sec=_env_float("AUDIT_WORKER_TIMEOUT_SEC", 60.0),
         test_max_total_sec=_env_float("AUDIT_WORKER_TEST_MAX_SEC", 300.0),
+        retention_enabled=_env_bool("AUDIT_WORKER_RETENTION_ENABLED", True),
+        # По умолчанию ВЫКЛЮЧЕНО. Включать отдельно и осознанно: неверное
+        # правило удаления стоит дороже, чем занятое место.
+        retention_delete_enabled=_env_bool(
+            "AUDIT_WORKER_RETENTION_DELETE_ENABLED", False
+        ),
+        retention_days=max(1, _env_int("AUDIT_WORKER_RETENTION_DAYS", 30)),
+        retention_scan_interval_sec=max(
+            60, _env_int("AUDIT_WORKER_RETENTION_SCAN_INTERVAL_SEC", 3600)
+        ),
+        disk_warning_free_bytes=_env_int(
+            "AUDIT_WORKER_DISK_WARNING_FREE_BYTES", 5 * 1024 * 1024 * 1024
+        ),
+        disk_critical_free_bytes=_env_int(
+            "AUDIT_WORKER_DISK_CRITICAL_FREE_BYTES", 1 * 1024 * 1024 * 1024
+        ),
+        dev_spawn_executor=_env_bool("AUDIT_WORKER_DEV_SPAWN_EXECUTOR", False),
         # verify_tls намеренно НЕ управляется переменной окружения: глобальный
         # verify=false — это тихое отключение защиты канала. Единственная
         # послабляющая настройка — dev-флаг для localhost (проверяется отдельно).
@@ -128,7 +193,8 @@ def load_config(argv_root: str | None = None) -> WorkerConfig:
             "AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST", "false"
         ).lower() in {"1", "true", "yes", "on"},
     )
-    validate_transport_security(config)
+    if require_dispatcher:
+        validate_transport_security(config)
     return config
 
 
