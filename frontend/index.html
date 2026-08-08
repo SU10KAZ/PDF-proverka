@@ -95,13 +95,6 @@
                     База знаний
                     <span v-if="kbStats.total" class="nav-badge">{{ kbStats.total }}</span>
                 </div>
-                <div class="nav-item" :class="{active: currentView === 'model-control'}" @click="navigate('/model-control')">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="2" y="2" width="12" height="12" rx="2"/>
-                        <path d="M5 11V8M8 11V5M11 11V7"/>
-                    </svg>
-                    Локальные сервера
-                </div>
                 <div class="nav-item" :class="{active: currentView === 'stage-comparison'}" @click="navigate('/stage-comparison')" title="Сравнение двух стадий проектной документации">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1.5" y="2" width="5.5" height="12" rx="1"/>
@@ -1217,33 +1210,25 @@
                                 <span class="section-optimization-card__badge">СВОДНАЯ</span>
                             </div>
                         </div>
-                        <div class="project-card__badges-row section-optimization-card__row">
-                            <div class="severity-badges">
-                                <span class="sev-badge sev-opt-lifecycle">
-                                    {{ sectionOptimizationMeta.project_count ?? filteredSectionProjects.length }}
+                        <!-- Та же компактная строка, что и у обычных карточек:
+                             две пилюли вместо двух отдельных строк со счётчиками. -->
+                        <div class="project-card__stats section-optimization-card__stats">
+                            <button class="project-card__stat"
+                                    title="Проектов раздела / строк спецификации"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'specifications')">
+                                <span class="project-card__stat-label">Спецификация</span>
+                                <span class="project-card__stat-count">
+                                    {{ sectionOptimizationMeta.project_count ?? filteredSectionProjects.length }}&#183;{{ sectionOptimizationMeta.specification_rows ?? '…' }}
                                 </span>
-                                <span class="sev-badge sev-check">
-                                    {{ sectionOptimizationMeta.specification_rows ?? '…' }}
+                            </button>
+                            <button class="project-card__stat"
+                                    title="Принятых оптимизаций / групп кандидатов"
+                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'signals')">
+                                <span class="project-card__stat-label">Кандидаты</span>
+                                <span class="project-card__stat-count">
+                                    {{ sectionOptimizationMeta.accepted_optimizations ?? '…' }}&#183;{{ sectionOptimizationMeta.accepted_merge_candidates ?? '…' }}
                                 </span>
-                                <span class="findings-total">проектов / строк</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline"
-                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'specifications')">Спецификация</button>
-                            <span class="section-optimization-card__arrow">→</span>
-                        </div>
-                        <div class="project-card__badges-row section-optimization-card__row">
-                            <div class="severity-badges">
-                                <span class="sev-badge sev-opt-cheaper">
-                                    {{ sectionOptimizationMeta.accepted_optimizations ?? '…' }}
-                                </span>
-                                <span class="sev-badge sev-opt-lifecycle">
-                                    {{ sectionOptimizationMeta.accepted_merge_candidates ?? '…' }}
-                                </span>
-                                <span class="findings-total">принято / групп</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline"
-                                    @click.stop="navigateToSectionOptimization(sidebarFilterSection, 'signals')">Кандидаты</button>
-                            <span class="section-optimization-card__arrow">→</span>
+                            </button>
                         </div>
                     </div>
                     <div v-for="p in group.projects" :key="p.project_id"
@@ -1280,35 +1265,40 @@
                             <div class="spinner"></div>
                             <span class="status-text">{{ batchProgressText(p.project_id) }}</span>
                         </div>
-                        <div v-if="p.findings_count > 0" class="project-card__badges-row">
-                            <div class="severity-badges">
-                                <span v-for="(count, sev) in p.findings_by_severity" :key="sev"
-                                      class="sev-badge" :class="'sev-' + sevClass(sev)">{{ count }}</span>
-                                <span class="findings-total">= {{ p.findings_count }}</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/findings')">Замечания</button>
-                            <!-- Индикатор статуса по замечаниям. Рядом с кнопкой «Замечания». -->
-                            <span v-if="p.findings_review_status === 'complete'"
-                                  class="project-card__row-status project-card__row-status--findings"
-                                  title="Замечания отработаны">&#10003;</span>
-                            <span v-else-if="p.findings_review_status === 'partial'"
-                                  class="project-card__row-status project-card__row-status--partial"
-                                  title="Замечания отработаны частично">&middot;</span>
-                        </div>
-                        <div v-if="p.optimization_count > 0" class="project-card__badges-row">
-                            <div class="severity-badges opt-badges">
-                                <span v-for="(count, type) in p.optimization_by_type" :key="type"
-                                      class="sev-badge" :class="optTypeClass(type)">{{ count }}</span>
-                                <span class="findings-total">= {{ p.optimization_count }}</span>
-                            </div>
-                            <button class="btn btn-sm btn-outline" @click.stop="navigate('/project/' + p.project_id + '/optimization')">Оптимизация</button>
-                            <!-- Индикатор статуса по оптимизациям. Рядом с кнопкой «Оптимизация». -->
-                            <span v-if="p.optimization_review_status === 'complete'"
-                                  class="project-card__row-status project-card__row-status--opt"
-                                  title="Оптимизации отработаны">&#10003;</span>
-                            <span v-else-if="p.optimization_review_status === 'partial'"
-                                  class="project-card__row-status project-card__row-status--partial"
-                                  title="Оптимизации отработаны частично">&middot;</span>
+                        <!-- Компактная строка счётчиков: только итоговые цифры.
+                             Разбивка по severity/типам ушла в tooltip пилюли,
+                             галочка проработки — в клетку справа внутри пилюли. -->
+                        <div v-if="p.findings_count > 0 || p.optimization_count > 0" class="project-card__stats">
+                            <button v-if="p.findings_count > 0"
+                                    class="project-card__stat"
+                                    :title="findingsBreakdownTitle(p)"
+                                    @click.stop="navigate('/project/' + p.project_id + '/findings')">
+                                <span class="project-card__stat-label">Замечания</span>
+                                <span class="project-card__stat-count">{{ p.findings_count }}</span>
+                                <span class="project-card__stat-mark"
+                                      :class="{'project-card__stat-mark--done': p.findings_review_status === 'complete',
+                                               'project-card__stat-mark--partial': p.findings_review_status === 'partial'}"
+                                      :title="p.findings_review_status === 'complete' ? 'Замечания отработаны'
+                                              : (p.findings_review_status === 'partial' ? 'Замечания отработаны частично' : 'Замечания не отработаны')">
+                                    <template v-if="p.findings_review_status === 'complete'">&#10003;</template>
+                                    <template v-else-if="p.findings_review_status === 'partial'">&middot;</template>
+                                </span>
+                            </button>
+                            <button v-if="p.optimization_count > 0"
+                                    class="project-card__stat"
+                                    :title="optimizationBreakdownTitle(p)"
+                                    @click.stop="navigate('/project/' + p.project_id + '/optimization')">
+                                <span class="project-card__stat-label">Оптимизация</span>
+                                <span class="project-card__stat-count">{{ p.optimization_count }}</span>
+                                <span class="project-card__stat-mark"
+                                      :class="{'project-card__stat-mark--done': p.optimization_review_status === 'complete',
+                                               'project-card__stat-mark--partial': p.optimization_review_status === 'partial'}"
+                                      :title="p.optimization_review_status === 'complete' ? 'Оптимизации отработаны'
+                                              : (p.optimization_review_status === 'partial' ? 'Оптимизации отработаны частично' : 'Оптимизации не отработаны')">
+                                    <template v-if="p.optimization_review_status === 'complete'">&#10003;</template>
+                                    <template v-else-if="p.optimization_review_status === 'partial'">&middot;</template>
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -3419,12 +3409,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- ═══ Model Control (iframe — отдельное приложение) ═══ -->
-        <div v-if="currentView === 'model-control'" class="container model-control-host">
-            <iframe src="/model-control?embed=1" class="model-control-iframe"
-                    title="Локальные сервера"></iframe>
         </div>
 
         <!-- ═══ Blocks Viewer (OCR) ═══ -->
@@ -5624,7 +5608,7 @@
                         <span v-if="scConfirmAllError" style="color:#b91c1c">{{ scConfirmAllError }}</span>
                     </div>
 
-                    <!-- Qwen→Opus pipeline toolbar -->
+                    <!-- Opus pipeline toolbar -->
                     <div v-if="scPairs && scPairs.length" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; padding:8px 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:6px">
                         <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; font-weight:500">
                             <input type="checkbox" :checked="scQOAllSelected" @change="scQOToggleAll($event)"> Выбрать все
@@ -5632,93 +5616,20 @@
                         <button class="btn btn-sm btn-primary" :disabled="scQOSelectedCount===0 || scQORunning || scQOPreflighting" @click="scQOOpenConfirm()">
                             {{ scQOPreflighting ? 'Подготовка…' : ('Обработать выбранные (' + scQOSelectedCount + ')') }}
                         </button>
-                        <span style="font-size:11px; color:#6b7280">Qwen готовит enriched MD по очереди, Opus сравнивает готовые пары (Qwen не ждёт Opus).</span>
-                    </div>
-
-                    <!-- Pipeline status panel -->
-                    <div v-if="scQOJob" style="margin-bottom:10px; padding:10px 12px; background:linear-gradient(90deg,#f0fdf4,#fff); border:1px solid #bbf7d0; border-radius:8px; font-size:12px">
-                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-                            <strong>Pipeline Qwen→Opus</strong>
-                            <span style="color:#6b7280">job {{ scQOJob.job_id }} · {{ scQOJob.status }}</span>
-                            <span style="color:#374151; font-variant-numeric:tabular-nums" title="Общее время с момента старта">⏱ {{ formatDuration(scQOElapsedMs()) || '0с' }}</span>
-                            <span v-if="scQOEtaSec()!=null" style="color:#6b7280; font-variant-numeric:tabular-nums" title="Оценка оставшегося времени по средней длительности завершённых пар (медленная из двух дорожек)">· осталось ~{{ formatEta(scQOEtaSec()) }}</span>
-                            <button v-if="['running','queued'].includes(scQOJob.status)" class="btn btn-sm btn-secondary" @click="scQOCancel()" style="margin-left:auto">Остановить</button>
-                        </div>
-                        <div style="margin-top:6px; display:flex; gap:18px; flex-wrap:wrap">
-                            <span>🟦 Qwen: {{ scQOJob.qwen_worker.done }}/{{ scQOJob.qwen_worker.total }} done · {{ scQOJob.qwen_worker.failed }} fail<span v-if="scQOJob.qwen_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.qwen_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.qwen_worker.current_pair_id), 'qwen') }})</span></span></span>
-                            <span>🟪 Opus: {{ scQOJob.opus_worker.done }}/{{ scQOJob.opus_worker.total }} done · {{ scQOJob.opus_worker.failed }} fail<span v-if="scQOJob.opus_worker.current_pair_id"> · сейчас {{ scQOPairLabel(scQOJob.opus_worker.current_pair_id) }} <span style="color:#2563eb; font-variant-numeric:tabular-nums">({{ scQOItemLaneLabel(scQOItemFor(scQOJob.opus_worker.current_pair_id), 'opus') }})</span></span></span>
-                            <span>✅ {{ scQOJob.queues.completed.length }} · ❌ {{ scQOJob.queues.failed.length }}</span>
-                        </div>
-                        <!-- job-wide block total: how many blocks Qwen must process across all pairs, and how many done -->
-                        <div v-if="scQOBlocksOverall()" style="margin-top:6px; padding:5px 9px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; color:#166534; font-variant-numeric:tabular-nums" title="Всего графических блоков по всем парам прогона и сколько уже обработано Qwen (готовые пары целиком + текущая по блокам)">
-                            🧱 Блоки Qwen всего: <strong>{{ scQOBlocksOverall().done }}</strong> / {{ scQOBlocksOverall().total }}
-                            <span style="color:#15803d"> · пары {{ scQOBlocksOverall().pairsDone }} / {{ scQOBlocksOverall().pairsTotal }}</span>
-                        </div>
-                        <!-- live image-block detail of the Qwen lane current pair -->
-                        <div v-if="scQOCurrentBlock()" style="margin-top:6px; padding:5px 9px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; color:#1e40af; font-variant-numeric:tabular-nums">
-                            🧩 Блоки текущей пары: <strong>{{ scQOCurrentBlock().index }}</strong> / {{ scQOCurrentBlock().total }}
-                            <span v-if="scQOCurrentBlock().side"> · {{ scQOCurrentBlock().side==='left' ? 'слева' : 'справа' }}</span>
-                            <span v-if="scQOCurrentBlock().page"> · стр. {{ scQOCurrentBlock().page }}</span>
-                            <span v-if="scQOCurrentBlock().avg_sec"> · ~{{ scFormatDuration(scQOCurrentBlock().avg_sec) }}/блок</span>
-                            <span v-if="scQOCurrentBlock().eta_sec!=null" style="color:#3b82f6"> · пара ~{{ formatEta(scQOCurrentBlock().eta_sec) }}</span>
-                            <span v-if="scQOCurrentBlock().message" style="color:#60a5fa"> · {{ scQOCurrentBlock().message }}</span>
-                        </div>
-                        <!-- per-pair live timeline (dynamics) -->
-                        <div style="margin-top:8px">
-                            <a href="#" @click.prevent="scQODetailsOpen=!scQODetailsOpen" style="font-size:11px; color:#2563eb; text-decoration:none">
-                                {{ scQODetailsOpen ? '▾' : '▸' }} Динамика по парам ({{ scQOJob.items.length }})
-                            </a>
-                            <div v-if="scQODetailsOpen" style="margin-top:5px; max-height:240px; overflow:auto; border:1px solid #e5e7eb; border-radius:6px; background:#fff">
-                                <table style="width:100%; border-collapse:collapse; font-size:11px; font-variant-numeric:tabular-nums">
-                                    <thead>
-                                        <tr style="background:#f9fafb; color:#6b7280; position:sticky; top:0">
-                                            <th style="text-align:left; padding:4px 8px; font-weight:600">Пара</th>
-                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟦 Qwen</th>
-                                            <th style="text-align:center; padding:4px 8px; font-weight:600">🟪 Opus</th>
-                                            <th style="text-align:center; padding:4px 8px; font-weight:600" title="Полное время пары (обе дорожки)">Σ</th>
-                                            <th style="text-align:right; padding:4px 8px; font-weight:600" title="Найдено изменений">изм.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="it in scQOJob.items" :key="it.pair_id"
-                                            :style="{borderTop:'1px solid #f1f5f9', background: (it.status==='qwen_running'||it.status==='opus_running') ? '#fffbeb' : 'transparent'}">
-                                            <td style="padding:3px 8px; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" :title="scQOPairLabel(it.pair_id)">{{ scQOPairLabel(it.pair_id) }}</td>
-                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'qwen')}">{{ scQOLaneCell(it,'qwen') }}</td>
-                                            <td style="padding:3px 8px; text-align:center" :style="{color: scQOLaneColor(it,'opus')}">{{ scQOLaneCell(it,'opus') }}</td>
-                                            <td style="padding:3px 8px; text-align:center; color:#374151">{{ scQOItemTotalLabel(it) }}</td>
-                                            <td style="padding:3px 8px; text-align:right; color:#16a34a">{{ it.opus_status==='done' ? it.changes_count : '' }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <span style="font-size:11px; color:#6b7280">Opus сравнивает пары по уже готовым enriched MD.</span>
                     </div>
 
                     <!-- Confirm modal -->
                     <div v-if="scQOConfirm" class="retry-dialog-overlay" @click.self="scQOConfirm=null">
                         <div class="retry-dialog" @click.stop>
-                            <h3 class="retry-dialog__title">Запустить обработку Qwen→Opus</h3>
+                            <h3 class="retry-dialog__title">Запустить сравнение Opus</h3>
                             <div style="font-size:12px; color:var(--text2); margin-bottom:10px; line-height:1.7">
-                                Выбрано пар: <strong>{{ scQOConfirm.total_pairs }}</strong><br>
-                                Image-блоков: {{ scQOConfirm.image_blocks }} · dense_grsh: {{ scQOConfirm.dense_grsh }} · large-sheet страниц: {{ scQOConfirm.large_sheet_pages }} (готово {{ scQOConfirm.existing_large_sheet_artifacts }})<br>
-                                Оценка Qwen: ~{{ Math.round(scQOConfirm.estimated_qwen_duration_sec/60) }} мин · Opus: ~{{ Math.round(scQOConfirm.estimated_opus_duration_sec/60) }} мин<br>
-                                <span v-if="scQOConfirm.too_large_pairs.length">too_large пар: {{ scQOConfirm.too_large_pairs.length }}<br></span>
+                                Выбрано пар: <strong>{{ scQOConfirm.pairs }}</strong><br>
                                 <span v-for="r in scQOConfirm.risks" :key="r" style="color:#b45309; display:block">⚠ {{ r }}</span>
-                                <span v-if="scQOConfirm.health && scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#16a34a">✓ LLM/ngrok доступен (модель загружена, ctx ok)</span>
-                                <span v-if="scQOConfirm.health && !scQOConfirm.health.ok" style="display:block; margin-top:4px; color:#dc2626; font-weight:600">✗ LLM/ngrok недоступен: {{ scQOConfirm.health.reason }} — старт заблокирован. Восстановите туннель/модель.</span>
-                                <span v-if="scQOMode !== 'opus_only' && scQOMode !== 'clear_result_opus_only'" style="display:block; margin-top:6px; color:#6b7280">Будет сделан backup артефактов пар. Запустятся Qwen (локально) и Opus (Claude Code).</span>
-                                <span v-else style="display:block; margin-top:6px; color:#6b7280">Только Opus по уже готовым enriched MD. Qwen / распознавание графики повторно НЕ запускаются.</span>
+                                <span style="display:block; margin-top:6px; color:#6b7280">Opus (Claude Code) сравнит уже готовые enriched MD. Распознавание графики удалено с платформы — пары без enriched MD будут пропущены.</span>
                             </div>
                             <div style="font-size:12px; margin:2px 0 10px; padding:8px 10px; background:#fff7ed; border:1px solid #fed7aa; border-radius:6px">
                                 <div style="font-weight:600; margin-bottom:6px">Режим запуска:</div>
-                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
-                                    <input type="radio" value="normal" v-model="scQOMode" style="margin-top:2px">
-                                    <span>Обычная обработка (Qwen → Opus)</span>
-                                </label>
-                                <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
-                                    <input type="radio" value="clear_and_run" v-model="scQOMode" style="margin-top:2px">
-                                    <span>Очистить анализ и запустить заново (Qwen → Opus)</span>
-                                </label>
                                 <label style="display:flex; align-items:flex-start; gap:7px; cursor:pointer; margin:3px 0">
                                     <input type="radio" value="opus_only" v-model="scQOMode" style="margin-top:2px">
                                     <span>Запустить <strong>только Opus</strong> по выбранным парам</span>
@@ -5727,26 +5638,18 @@
                                     <input type="radio" value="clear_result_opus_only" v-model="scQOMode" style="margin-top:2px">
                                     <span>Очистить результат сравнения и запустить <strong>только Opus</strong></span>
                                 </label>
-                                <div v-if="scQOMode==='clear_and_run'" style="margin-top:6px; color:#9a3412; line-height:1.6">
-                                    Будут удалены найденные расхождения и ручные отметки проверки по выбранным парам.
-                                    Исходные PDF, OCR, Qwen-cache и page_enriched.json не удаляются. Перед очисткой — backup.
-                                </div>
-                                <div v-else-if="scQOMode==='opus_only'" style="margin-top:6px; color:#1e40af; line-height:1.6">
-                                    Будет запущено только сравнение Opus по уже готовым enriched MD.
-                                    Qwen и распознавание графики повторно запускаться не будут.
+                                <div v-if="scQOMode==='opus_only'" style="margin-top:6px; color:#1e40af; line-height:1.6">
+                                    Сравнение Opus по уже готовым enriched MD.
                                     Если enriched MD отсутствует, такая пара будет пропущена с предупреждением.
                                 </div>
                                 <div v-else-if="scQOMode==='clear_result_opus_only'" style="margin-top:6px; color:#9a3412; line-height:1.6">
-                                    Будет удалён текущий comparison_result.json (с backup), затем запущен только Opus.
-                                    Ручные отметки expert_review / v2_review_status не удаляются, если не выбрана полная очистка анализа.
-                                </div>
-                                <div v-else style="margin-top:6px; color:#6b7280; line-height:1.5">
-                                    По умолчанию — обработка без очистки: Qwen (локально) + Opus (Claude Code). Перед запуском — backup артефактов пар.
+                                    Будет удалён текущий comparison_result.json (с backup), затем запущено сравнение Opus.
+                                    Ручные отметки expert_review / v2_review_status не удаляются.
                                 </div>
                             </div>
                             <div class="retry-dialog__buttons">
                                 <button class="btn btn-secondary" @click="scQOConfirm=null" :disabled="scQOClearing">Отмена</button>
-                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing || (scQOConfirm.health && !scQOConfirm.health.ok)" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='opus_only' ? 'Запустить только Opus' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : (scQOMode==='clear_and_run' ? 'Очистить и запустить' : 'Запустить обработку'))) }}</button>
+                                <button class="btn btn-primary" :disabled="scQORunning || scQOClearing" @click="scQOStartConfirmed()">{{ scQOClearing ? 'Очистка…' : (scQOMode==='clear_result_opus_only' ? 'Очистить результат и запустить Opus' : 'Запустить Opus') }}</button>
                             </div>
                         </div>
                     </div>
@@ -5760,7 +5663,6 @@
                                 <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">PDF слева</th>
                                 <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb">PDF справа</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Блоки (L+R): всего / готово (вкл. salvage/partial) / упало">Блоки<br><span style="font-weight:400; font-size:10px; color:#9ca3af">всего/готово/упало</span></th>
-                                <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время обработки Qwen этой пары (текущего/последнего прогона)">🟦 Qwen</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Время сравнения Opus этой пары (текущего/последнего прогона)">🟪 Opus</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Статус Opus-сравнения пары">Сравнение</th>
                                 <th style="text-align:center; padding:8px; border-bottom:1px solid #e5e7eb" title="Эксперт разметил каждое расхождение (✓/✗) на этапе «3. Расхождения»">Проверено<br><span style="font-weight:400; font-size:10px; color:#9ca3af">экспертом</span></th>
@@ -5880,9 +5782,6 @@
                                     </div>
                                 </td>
                                 <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
-                                    :style="{color: scQOLaneColor(scQOItemFor(p.id),'qwen')}"
-                                    :title="'Qwen (обогащение enriched MD): ' + scQOLaneCell(scQOItemFor(p.id),'qwen')">{{ scQOLaneCell(scQOItemFor(p.id),'qwen') }}</td>
-                                <td style="padding:8px; text-align:center; font-variant-numeric:tabular-nums; white-space:nowrap"
                                     :style="{color: scQOLaneColor(scQOItemFor(p.id),'opus')}"
                                     :title="'Opus (сравнение стадий): ' + scQOLaneCell(scQOItemFor(p.id),'opus')">{{ scQOLaneCell(scQOItemFor(p.id),'opus') }}</td>
                                 <td style="padding:8px; text-align:center">
@@ -5902,7 +5801,7 @@
                                     <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
                                           :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
                                     <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning || scQOPreflighting"
-                                            @click="scQOProcessPair(p.id)" title="Запустить Qwen→Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
+                                            @click="scQOProcessPair(p.id)" title="Запустить сравнение Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
                                     <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
                                     <button class="btn btn-sm"
                                             :class="scPv2RunState(p.id)==='idle' ? 'btn-secondary' : ''"
@@ -5930,7 +5829,7 @@
                                     <li>Будет запущен <b>backend Pipeline V2</b> (offline dry-run). Это <b>не read-only</b> операция.</li>
                                     <li>Операция может занять время; артефакты пишутся в
                                         <code>comparison/sessions/&lt;sid&gt;/pairs/{{ scPv2RunModal.pair_id }}/pipeline_v2/</code>.</li>
-                                    <li>По умолчанию модели (Qwen/Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
+                                    <li>По умолчанию модели (Opus/Claude) <b>не вызываются</b>; если stage-runner'ы их используют — это будет отражено в manifest.</li>
                                     <li v-if="scPv2RunModal.is_rerun" style="color:#b45309">
                                         ⚠ Существующие артефакты будут сохранены в
                                         <code>pipeline_v2_backup_before_ui_run_&lt;TS&gt;</code> перед перезаписью.</li>
@@ -6003,7 +5902,7 @@
                             :class="{'btn-warning': scAnalysisMode==='concept_no_block_links', 'btn-secondary': scAnalysisMode!=='concept_no_block_links'}"
                             :disabled="scAnalysisModeSaving"
                             @click="scToggleAnalysisMode()"
-                            :title="scAnalysisMode==='concept_no_block_links' ? 'Сейчас: концептуальный анализ без связей блоков. Клик вернёт обычный режим.' : 'Отключить block-to-block matching: анализ будет выполнен по enriched MD целиком (Qwen→Opus)'">
+                            :title="scAnalysisMode==='concept_no_block_links' ? 'Сейчас: концептуальный анализ без связей блоков. Клик вернёт обычный режим.' : 'Отключить block-to-block matching: анализ будет выполнен по enriched MD целиком (Opus)'">
                         {{ scAnalysisMode==='concept_no_block_links' ? '✓ Блоки без связей' : 'Блоки без связей' }}
                     </button>
                     <button class="btn btn-secondary" @click="scSuggestByStamp()" :disabled="scStampLoading"
@@ -7223,7 +7122,7 @@
                             <div v-else-if="scMdView[side] && !scMdView[side].exists"
                                  style="padding:24px; text-align:center; color:#9ca3af; font-size:13px; line-height:1.5">
                                 Файл <code>{{ side }}_enriched.md</code> ещё не создан.<br>
-                                Запустите MD enrichment (Qwen-распознавание графики) для этой пары.
+                                Для этой пары нет enriched MD: распознавание графики удалено с платформы.
                             </div>
                             <div v-else-if="scMdView[side] && scMdRenderMode==='html'" class="sc-md-rendered" v-html="scMdRenderHtml(scMdView[side].content)"></div>
                             <div v-else-if="scMdView[side]" class="sc-md-content" v-html="scMdHighlightHtml(scMdView[side].content)"></div>
@@ -7371,7 +7270,7 @@
             <!-- Tab 3: Diffs -->
             <div v-if="scTab==='diffs' && scActivePair">
                 <div class="sc-subtabs" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; align-items:center">
-                    <!-- Unified (primary) — единый pipeline: Qwen enrichment + Opus comparison.
+                    <!-- Unified (primary) — Opus comparison по готовым enriched MD.
                          Кнопка-переключатель «Расхождения» убрана из UI; unified
                          остаётся дефолтным subtab'ом. -->
                     <!-- Legacy debug-subtabs: текст и графика отдельно. Скрыты от
@@ -7962,19 +7861,12 @@
                              style="background:#fee2e2; color:#991b1b; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px">{{ scUnifiedPreflightError }}</div>
                         <template v-else-if="scUnifiedPreflight">
                             <div style="font-size:12px; line-height:1.55; opacity:.85; margin-bottom:8px">
-                                Будут выполнены два этапа: <strong>Qwen enrichment</strong> (локальная VLM через LM Studio + ngrok)
-                                и <strong>Opus comparison</strong> (Claude Code subscription). Внешние платные API не вызываются.
+                                Будет выполнен <strong>Opus comparison</strong> (Claude Code subscription) по уже готовым
+                                enriched MD. Распознавание графики удалено с платформы; внешние платные API не вызываются.
                             </div>
                             <div v-if="scUnifiedPreflightScope==='pair'"
                                  style="font-size:13px; line-height:1.6; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:6px 14px">
                                 <div><strong>PDF-пара:</strong> {{ scUnifiedPreflight.pair_label }}</div>
-                                <div><strong>Image/imagine-блоков L/R:</strong>
-                                    {{ scUnifiedPreflight.enrichment?.image_blocks_left ?? 0 }} /
-                                    {{ scUnifiedPreflight.enrichment?.image_blocks_right ?? 0 }}</div>
-                                <div><strong>Cache hits L/R:</strong>
-                                    {{ scUnifiedPreflight.enrichment?.cache_hits_left ?? 0 }} /
-                                    {{ scUnifiedPreflight.enrichment?.cache_hits_right ?? 0 }}</div>
-                                <div><strong>Вызовов Qwen:</strong> {{ scUnifiedPreflight.enrichment?.qwen_calls_estimated ?? 0 }}</div>
                                 <div><strong>Enriched MD готов:</strong> {{ scUnifiedPreflight.enrichment?.ready ? 'да' : 'нет' }}</div>
                                 <div><strong>Вызовов Opus:</strong> {{ scUnifiedPreflight.will_run_comparison ? 1 : 0 }}</div>
                                 <div><strong>Опросный объём enriched MD:</strong> {{ scUnifiedPreflight.comparison?.enriched_total_chars ?? 0 }} символов</div>
@@ -8044,19 +7936,9 @@
                             </strong>
                             <span v-if="!(scMdEnrichmentSummary && (scMdEnrichmentSummary.left||{}).status==='done' && (scMdEnrichmentSummary.right||{}).status==='done')"
                                   style="color:#92400e">
-                                Перейдите на этап «1. Загрузка документации», выберите пары и нажмите <strong>«Обработать выбранные»</strong>, чтобы Qwen сформировал enriched MD.
+                                Распознавание графики удалено с платформы: сравнение работает только по уже подготовленным enriched MD.
                             </span>
                             <div style="flex:1"></div>
-                            <button class="btn btn-sm btn-secondary"
-                                    :disabled="scMdEnrichmentLoading"
-                                    @click="scMdEnrichmentDryRun()"
-                                    title="Проверить image/imagine-блоки без вызова модели">Проверить блоки (dry-run)</button>
-                            <button class="btn btn-sm btn-secondary"
-                                    :disabled="scMdEnrichmentLoading || scMdEnrichmentRunning"
-                                    @click="scMdEnrichmentRequestConfirm()"
-                                    title="Manual retry: запустить Qwen только для этой пары. Основной сценарий — «Обработать выбранные» на этапе 1.">
-                                Перезапустить для пары
-                            </button>
                         </div>
                         <div v-if="scMdEnrichmentSummary" style="margin-top:8px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:6px 14px; font-size:12px">
                             <template v-for="side in ['left','right']" :key="side">
@@ -8092,72 +7974,7 @@
                         <div v-if="scMdEnrichmentError"
                              style="margin-top:6px; background:#fee2e2; color:#991b1b; padding:6px 8px; border-radius:6px">
                             {{ scMdEnrichmentError }}
-                            <button v-if="scMdEnrichmentJobTimedOut || (scMdEnrichmentJob && scMdEnrichmentJob.id)"
-                                    class="btn btn-sm btn-secondary"
-                                    style="margin-left:8px"
-                                    @click="scRefreshMdEnrichmentJob()"
-                                    title="Запросить актуальный статус задачи у сервера">Обновить статус</button>
-                        </div>
-
-                        <!-- Background job progress (block-level) -->
-                        <div v-if="scMdEnrichmentJob && scMdEnrichmentJob.id"
-                             style="margin-top:8px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:8px 10px; font-size:12px">
-                            <div style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap">
-                                <strong>Qwen job:</strong>
-                                <code>{{ scMdEnrichmentJob.id }}</code>
-                                · status: <code>{{ scMdEnrichmentJob.status }}</code>
-                                · сторон: {{ (scMdEnrichmentJob.progress||{}).total ?? 0 }}
-                                · done: {{ (scMdEnrichmentJob.progress||{}).done ?? 0 }}
-                                · failed: {{ (scMdEnrichmentJob.progress||{}).failed ?? 0 }}
-                                · skipped: {{ (scMdEnrichmentJob.progress||{}).skipped ?? 0 }}
-                                <div style="flex:1"></div>
-                                <button v-if="['queued','running'].includes(scMdEnrichmentJob.status)"
-                                        class="btn btn-sm btn-secondary"
-                                        @click="scCancelMdEnrichmentJob()"
-                                        title="Отменить выполнение задачи">Отменить</button>
-                            </div>
-                            <div v-if="scMdEnrichmentJob.items && scMdEnrichmentJob.items.length"
-                                 style="margin-top:6px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:4px 14px">
-                                <div v-for="(it, idx) in scMdEnrichmentJob.items" :key="idx">
-                                    <strong>{{ it.side === 'left' ? 'Левая' : 'Правая' }}</strong>
-                                    · <code>{{ it.status }}</code>
-                                    <span v-if="it.current && it.current.total">
-                                        · блок {{ it.current.block_index }}/{{ it.current.total }}
-                                        <span v-if="it.current.page != null"> · стр. {{ it.current.page }}</span>
-                                        <span v-if="it.current.last_status"> · {{ it.current.last_status }}</span>
-                                    </span>
-                                    <span v-else-if="it.described != null">
-                                        · описано {{ it.described }}/{{ it.image_blocks }}
-                                        <span v-if="it.errors"> · ошибок {{ it.errors }}</span>
-                                    </span>
-                                    <div v-if="it.error" style="opacity:.8; color:#991b1b">{{ it.error }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Confirm dialog для model-run -->
-                    <div v-if="scMdEnrichmentConfirmOpen"
-                         class="sc-modal-overlay"
-                         style="position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px"
-                         @click.self="scMdEnrichmentConfirmOpen=false">
-                        <div class="sc-modal"
-                             style="background:#fff; border-radius:8px; padding:20px 22px; max-width:520px; width:100%; box-shadow:0 10px 30px rgba(0,0,0,.18)">
-                            <h3 style="margin:0 0 8px 0; font-size:16px">Запустить локальный Qwen?</h3>
-                            <div style="font-size:13px; line-height:1.55; opacity:.85">
-                                Будет вызвана локальная VLM-модель через LM Studio + ngrok. Внешние платные API не используются.
-                            </div>
-                            <ul style="font-size:13px; line-height:1.6; margin:10px 0">
-                                <li>Левая сторона: image/imagine-блоков ≈ {{ (scMdEnrichmentSummary?.left||{}).image_blocks ?? '—' }}</li>
-                                <li>Правая сторона: image/imagine-блоков ≈ {{ (scMdEnrichmentSummary?.right||{}).image_blocks ?? '—' }}</li>
-                                <li>Источник: оригинальный MD не изменяется.</li>
-                            </ul>
-                            <div style="display:flex; gap:8px; justify-content:flex-end">
-                                <button class="btn btn-secondary" @click="scMdEnrichmentConfirmOpen=false">Отмена</button>
-                                <button class="btn btn-primary" @click="scMdEnrichmentRunModel()">Запустить Qwen</button>
-                            </div>
-                        </div>
-                    </div>
+                                        </div>
 
                     <!-- Provider availability / config note -->
                     <div v-if="scTextLLMConfig && (!scTextLLMConfig.enabled || !scTextLLMConfig.available)"

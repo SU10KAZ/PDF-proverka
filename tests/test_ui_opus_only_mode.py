@@ -1,8 +1,8 @@
-"""Static smoke: режим «Только Opus» в диалоге «Обработать выбранные».
+"""Static smoke: диалог «Обработать выбранные» после удаления локальных LLM.
 
-В диалог добавлен mode-селектор (scQOMode) с 4 режимами; «Только Opus» вызывает
-endpoint /pairs/opus-only (без Qwen). Обычный Qwen→Opus и clear-and-run работают
-как раньше.
+Распознавание графики (Qwen) удалено с платформы, поэтому в mode-селекторе
+(scQOMode) остались только Opus-режимы, а запуск идёт через endpoint
+/pairs/opus-only по уже готовым enriched MD.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ HTML = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
 
 
 def test_mode_ref_and_function_exist():
-    assert "const scQOMode = ref('normal')" in JS
+    assert "const scQOMode = ref('opus_only')" in JS
     assert "async function scQOStartOpusOnly(" in JS
     assert "scQOMode, scQOClearing" in JS  # exposed в setup return
 
@@ -23,41 +23,37 @@ def test_opus_only_calls_dedicated_endpoint():
     sc = JS[JS.index("async function scQOStartOpusOnly("):]
     sc = sc[: sc.index("\n        async function ", 1)] if "\n        async function " in sc else sc[:4000]
     assert "/pairs/opus-only" in sc
-    # без Qwen: запрос не должен слать force_qwen/prebuild_large_sheets.
     assert "force_qwen" not in sc
     assert "prebuild_large_sheets" not in sc
     assert "clear_comparison_result" in sc
 
 
-def test_start_confirmed_branches_on_mode():
+def test_start_confirmed_runs_opus_only():
     sc = JS[JS.index("async function scQOStartConfirmed("):]
     sc = sc[: sc.index("async function scQOStartOpusOnly(")]
     assert "scQOMode.value" in sc
-    assert "'opus_only'" in sc
     assert "'clear_result_opus_only'" in sc
-    assert "'clear_and_run'" in sc
-    # обычный путь по-прежнему зовёт scQOStart (Qwen→Opus).
-    assert "scQOStart(ids)" in sc
+    assert "await scQOStartOpusOnly(" in sc
 
 
-def test_dialog_has_four_mode_radios():
-    for val in ("normal", "clear_and_run", "opus_only", "clear_result_opus_only"):
+def test_dialog_has_only_opus_mode_radios():
+    for val in ("opus_only", "clear_result_opus_only"):
         assert f'value="{val}" v-model="scQOMode"' in HTML, val
+    for gone in ("normal", "clear_and_run"):
+        assert f'value="{gone}" v-model="scQOMode"' not in HTML, gone
 
 
-def test_opus_only_warning_says_no_qwen():
-    # предупреждение режима «Только Opus» явно говорит, что Qwen не запускается.
-    assert "только сравнение Opus по уже готовым enriched MD" in HTML
-    assert "Qwen и распознавание графики повторно запускаться не будут" in HTML
+def test_opus_only_copy_mentions_ready_enriched_md():
+    assert "Сравнение Opus по уже готовым enriched MD" in HTML
 
 
 def test_button_label_adapts_to_mode():
-    assert "Запустить только Opus" in HTML
-    # обычная подпись сохранена.
-    assert "Запустить обработку" in HTML
+    assert "Запустить Opus" in HTML
+    assert "Очистить результат и запустить Opus" in HTML
 
 
-def test_normal_and_clear_modes_preserved():
-    # обычный pipeline-запуск (Qwen→Opus) и clear-analysis не удалены.
-    assert "/pipeline-qwen-opus" in JS
+def test_local_llm_endpoints_are_gone():
+    assert "/pipeline-qwen-opus" not in JS
+    assert "/md-enrichment-jobs" not in JS
+    # clear-analysis остаётся — он не про локальные модели
     assert "/pairs/clear-analysis" in JS

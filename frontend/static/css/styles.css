@@ -714,7 +714,10 @@ body {
 .section-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.05em; vertical-align: middle; }
 
 /* Projects Grid */
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 8px; padding: 6px 0 4px; }
+/* Карточка ровно по содержимому (строка пилюль 203px + поля 28px + запас),
+   а не растянута на всю колонку: свободное место уходит в промежутки.
+   Уже 242px начинают резаться подписи «Замечания»/«Оптимизация» и имена. */
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(242px, 242px)); justify-content: space-evenly; gap: 8px; padding: 6px 0 4px; }
 .projects-grid--in-group { padding: 6px 0 8px; }
 
 /* Project Groups */
@@ -741,7 +744,7 @@ body {
 
 /* Сводная оптимизация — первая карточка в обычной сетке проектов. */
 .project-card.section-optimization-card {
-  min-height: 86px; border-color: rgba(142,68,173,.48);
+  border-color: rgba(142,68,173,.48);
   background: linear-gradient(145deg, rgba(142,68,173,.09), var(--card-bg) 58%);
   box-shadow: 0 6px 20px rgba(89,46,145,.10);
 }
@@ -759,9 +762,10 @@ body {
   padding: 2px 5px; border-radius: 4px; border: 1px solid rgba(142,68,173,.28);
   background: rgba(142,68,173,.10); color: #8e44ad; font-size: 8px; font-weight: 800; letter-spacing: .04em;
 }
-.section-optimization-card__row .severity-badges { flex-wrap: nowrap; }
-.section-optimization-card__row .findings-total { overflow: hidden; text-overflow: ellipsis; font-size: 9px; }
-.section-optimization-card__arrow { width: 16px; color: #8e44ad; font-size: 14px; font-weight: 800; text-align: center; }
+/* Пилюли сводной карточки — в фиолетовой гамме раздела, а не бирюзовой. */
+.section-optimization-card__stats .project-card__stat { border-color: rgba(142,68,173,.28); }
+.section-optimization-card__stats .project-card__stat:hover { background: rgba(142,68,173,.12); border-color: #8e44ad; }
+.section-optimization-card__stats .project-card__stat-count { border-color: rgba(142,68,173,.28); }
 
 .section-optimization-page__header {
   display: flex; align-items: center; gap: 11px; margin-bottom: 10px; padding: 4px 2px;
@@ -1073,7 +1077,10 @@ body {
 .project-card__row-status--opt { color: #22c55e; text-shadow: 0 0 1px #22c55e; }
 .project-card__row-status--partial { color: #94a3b8; opacity: 0.75; }
 .project-card__checkbox { position: static; }
-.project-card__checkbox input { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
+/* Ширина = клетке галочки в пилюле (14px), сдвиг на правый padding+border
+   пилюли (3px) — чекбокс встаёт ровно над клеткой «Оптимизация». */
+.project-card__checkbox { margin-right: 3px; }
+.project-card__checkbox input { accent-color: var(--teal); width: 14px; height: 14px; cursor: pointer; display: block; }
 .project-card__header { margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
 .project-card__header h3 { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; margin: 0; }
 .project-card__name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
@@ -1158,6 +1165,40 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .project-card__badges-row .btn-sm { padding: 2px 6px; font-size: 10px; line-height: 1.3; border-radius: 5px; width: 74px; text-align: center; }
 .project-card__badges-row .project-card__row-status { width: 16px; text-align: center; margin-left: 0; }
 .opt-type-badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+/* Компактная строка счётчиков карточки проекта: две пилюли «Замечания» /
+   «Оптимизация» в ОДНУ строку вместо двух строк с разбивкой по severity.
+   Разбивка не потеряна — она в tooltip пилюли (findingsBreakdownTitle). */
+/* Пилюли прижаты вправо: правый край клетки галочки «Оптимизация» совпадает
+   с правым краем чекбокса выбора в шапке — квадратик выбора стоит ровно над ней. */
+.project-card__stats { display: flex; align-items: stretch; justify-content: flex-end; gap: 3px; margin-top: 6px; }
+/* Пилюли по содержимому (flex: 0 1 auto), не растягиваются на всю карточку:
+   между подписью и счётчиком остаётся зазор в пробел, а не пустая полоса. */
+.project-card__stat {
+  flex: 0 1 auto; min-width: 0; display: flex; align-items: center; gap: 2px;
+  padding: 2px 2px 2px 2px; border: 1px solid var(--teal-border); border-radius: 6px;
+  background: transparent; color: var(--text); font-size: 9.5px; font-weight: 700; line-height: 1.3;
+  font-family: inherit; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.project-card__stat:hover { background: var(--teal-light); border-color: var(--teal); }
+.project-card__stat-label { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.project-card__stat-count {
+  flex-shrink: 0; min-width: 16px; padding: 0 2px; border: 1px solid var(--teal-border);
+  border-radius: 4px; background: transparent; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: -0.02em;
+  text-align: center; white-space: nowrap;
+}
+/* Клетка отметки рендерится всегда — пилюли одинаковой ширины при любом
+   статусе, а пустая рамка читается как «не отработано». */
+.project-card__stat-mark {
+  flex-shrink: 0; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--teal-border); border-radius: 4px; font-size: 11px; font-weight: 900; line-height: 1;
+}
+.project-card__stat-mark--done { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.45); color: #16a34a; }
+.project-card__stat-mark--partial { color: var(--text3); }
+/* Токены --teal-light/--text сами разворачиваются в тёмной теме, отдельный
+   override фона не нужен: в dark фон становится приглушённым бирюзовым,
+   а текст — светлым. */
 
 /* ══════════════════════════════════════════════════════════════
    PROJECT DETAIL
@@ -2984,89 +3025,6 @@ tr.row-rejected td.sc-cell-goto {
     opacity: .6;
     font-size: 12px;
 }
-
-/* ─── LM Studio Management view ─────────────────────────────── */
-.lms-section { margin-top: 16px; }
-.lms-section-title {
-    font-size: 14px; font-weight: 600;
-    color: var(--text); margin: 0 0 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-}
-.lms-table {
-    width: 100%; border-collapse: collapse; font-size: 13px;
-}
-.lms-table th {
-    text-align: left; padding: 8px 10px;
-    color: var(--text2); font-weight: 600;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px; text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-.lms-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    vertical-align: middle;
-}
-.lms-table .text-muted { color: var(--text3); }
-.lms-row-loaded { background: rgba(34,197,94,0.06); }
-.lms-table code { background: rgba(255,255,255,0.04); padding: 2px 5px; border-radius: 3px; }
-.badge-success {
-    background: rgba(34,197,94,0.15); color: #22c55e;
-    padding: 2px 8px; border-radius: 4px; font-size: 11px;
-    font-weight: 600;
-}
-.lms-message--error { background: rgba(239,68,68,0.12); color: #ef4444; }
-.lms-message--ok { background: rgba(34,197,94,0.12); color: #22c55e; }
-
-/* ─── Model Control iframe host ─── */
-.model-control-host {
-    padding: 0 !important;
-    max-width: 100% !important;
-    height: calc(100vh - var(--header-height, 56px));
-    overflow: hidden;
-}
-.model-control-iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: transparent;
-}
-
-/* ─── LM Studio health indicator ───────────────────────────────── */
-.lms-status-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-left: 6px;
-    background: #6b7280;  /* unknown — серый */
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
-    flex-shrink: 0;
-}
-.lms-status-dot--lg { width: 12px; height: 12px; margin-left: 0; margin-right: 4px; }
-.lms-status-dot--ok       { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
-.lms-status-dot--busy     { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.6); animation: lms-pulse 1.4s ease-in-out infinite; }
-.lms-status-dot--error    { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.6); }
-.lms-status-dot--unloaded { background: #6b7280; }
-.lms-status-dot--unknown  { background: #6b7280; opacity: 0.5; }
-
-@keyframes lms-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.5; transform: scale(1.3); }
-}
-
-.lms-health-banner {
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 16px;
-    border-left: 3px solid #6b7280;
-    background: rgba(255,255,255,0.03);
-}
-.lms-health-banner--ok       { border-left-color: #22c55e; background: rgba(34,197,94,0.05); }
-.lms-health-banner--busy     { border-left-color: #f59e0b; background: rgba(245,158,11,0.06); }
-.lms-health-banner--error    { border-left-color: #ef4444; background: rgba(239,68,68,0.06); }
-.lms-health-banner--unloaded { border-left-color: #6b7280; }
-.lms-health-banner__row { display: flex; align-items: center; flex-wrap: wrap; }
 
 /* ─── Prepare-bar (лаконичный статус в очереди) ────────────── */
 .prepare-bar {

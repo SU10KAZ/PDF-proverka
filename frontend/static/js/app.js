@@ -2122,124 +2122,6 @@ const app = createApp({
             } catch (e) { console.error('prepareCancel:', e); }
         }
 
-        // ─── LM Studio remote management ───────────────────────────────
-        function _lmsSetMsg(kind, text) {
-            lmsMessage.value = { kind, text };
-            setTimeout(() => { if (lmsMessage.value && lmsMessage.value.text === text) lmsMessage.value = null; }, 6000);
-        }
-
-        async function lmsRefresh() {
-            lmsLoading.value = true;
-            try {
-                const [r1, r2] = await Promise.all([
-                    fetch('/api/lms/models/loaded'),
-                    fetch('/api/lms/models/all'),
-                ]);
-                if (!r1.ok || !r2.ok) {
-                    const err = await r1.json().catch(() => ({}));
-                    _lmsSetMsg('error', err.detail || 'Ошибка получения списка моделей');
-                    return;
-                }
-                const d1 = await r1.json();
-                const d2 = await r2.json();
-                lmsLoaded.value = d1.loaded || [];
-                lmsAll.value = d2.models || [];
-                // Заполнить дефолты context_length для каждой модели
-                for (const m of lmsAll.value) {
-                    if (lmsLoadCtx.value[m.id] === undefined) {
-                        lmsLoadCtx.value[m.id] = m.loaded_context_length || 16384;
-                    }
-                }
-            } catch (e) {
-                _lmsSetMsg('error', `Сеть: ${e.message}`);
-            } finally {
-                lmsLoading.value = false;
-            }
-        }
-
-        async function lmsLoad(modelId) {
-            const ctx = parseInt(lmsLoadCtx.value[modelId] || 16384, 10);
-            if (!ctx || ctx < 256) { _lmsSetMsg('error', 'Некорректный context_length'); return; }
-            lmsLoading.value = true;
-            try {
-                const r = await fetch('/api/lms/models/load', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({model_key: modelId, context_length: ctx}),
-                });
-                const data = await r.json();
-                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
-                _lmsSetMsg('ok', `Загружено: ${data.identifier} (ctx=${data.context_length})`);
-                await lmsRefresh();
-            } catch (e) {
-                _lmsSetMsg('error', `Сеть: ${e.message}`);
-            } finally { lmsLoading.value = false; }
-        }
-
-        async function lmsUnload(identifier) {
-            if (!confirm(`Выгрузить ${identifier}?`)) return;
-            lmsLoading.value = true;
-            try {
-                const r = await fetch('/api/lms/models/unload', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({identifier}),
-                });
-                const data = await r.json();
-                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
-                _lmsSetMsg('ok', `Выгружено: ${identifier}`);
-                await lmsRefresh();
-            } catch (e) {
-                _lmsSetMsg('error', `Сеть: ${e.message}`);
-            } finally { lmsLoading.value = false; }
-        }
-
-        async function lmsReload(modelId) {
-            const ctx = parseInt(lmsLoadCtx.value[modelId] || 16384, 10);
-            if (!ctx || ctx < 256) { _lmsSetMsg('error', 'Некорректный context_length'); return; }
-            if (!confirm(`Выгрузить ВСЕ instance'ы ${modelId} и загрузить заново с context=${ctx}?`)) return;
-            lmsLoading.value = true;
-            try {
-                const r = await fetch(`/api/lms/models/${encodeURIComponent(modelId)}/reload?context_length=${ctx}`, {method: 'POST'});
-                const data = await r.json();
-                if (!r.ok) { _lmsSetMsg('error', data.detail || `HTTP ${r.status}`); return; }
-                _lmsSetMsg('ok', `Reload: выгружено ${data.unloaded}, загружено ${data.identifier} (ctx=${data.context_length})`);
-                await lmsRefresh();
-            } catch (e) {
-                _lmsSetMsg('error', `Сеть: ${e.message}`);
-            } finally { lmsLoading.value = false; }
-        }
-
-        function lmsApplyPresetCtx(ctx) {
-            // Применить пресет ко всем моделям в форме (заполнит inputs)
-            for (const m of lmsAll.value) {
-                lmsLoadCtx.value[m.id] = ctx;
-            }
-            _lmsSetMsg('ok', `Применён context=${ctx} ко всем формам. Нажмите «Загрузить» у нужной модели.`);
-        }
-
-        async function lmsCheckHealth() {
-            try {
-                const r = await fetch('/api/lms/health');
-                if (!r.ok) {
-                    lmsHealth.value = null;
-                    return;
-                }
-                lmsHealth.value = await r.json();
-                lmsHealthCheckedAt.value = Date.now();
-            } catch (e) {
-                lmsHealth.value = null;
-            }
-        }
-
-        function startLmsHealthPolling() {
-            if (lmsHealthTimer) return;
-            lmsCheckHealth();  // immediate
-            lmsHealthTimer = setInterval(lmsCheckHealth, 30000);  // every 30s
-        }
-
-        function stopLmsHealthPolling() {
-            if (lmsHealthTimer) { clearInterval(lmsHealthTimer); lmsHealthTimer = null; }
-        }
-
         const currentProjectUsage = computed(() => {
             if (!currentProject.value) return null;
             const u = projectUsage.value[currentProject.value.project_id];
@@ -2750,9 +2632,6 @@ const app = createApp({
                 refreshBatchQueue();
                 fetchPrepareQueue();   // подгрузить prepare-data queue
                 refreshProjects();  // для списка добавления
-            } else if (hash === '/model-control') {
-                currentView.value = 'model-control';
-                connectGlobalWS();
             } else if (hash === '/schedule') {
                 currentView.value = 'schedule';
                 connectGlobalWS();
@@ -2872,41 +2751,6 @@ const app = createApp({
         const batchRunning = ref(false);
         const batchQueue = ref(null);
         const prepareQueue = ref(null);  // block-context queue (см. prepare_service.py)
-        // ─── LM Studio remote management ───
-        const lmsLoaded = ref([]);       // загруженные сейчас instance'ы
-        const lmsAll = ref([]);          // все скачанные модели
-        const lmsLoadCtx = ref({});      // {model_id: ctx_value} — для inputs в таблице
-        const lmsLoading = ref(false);
-        const lmsMessage = ref(null);    // {kind: 'error'|'ok', text}
-        const lmsHealth = ref(null);     // {health: {alive, latency_ms, ...}, inflight: {...}, loaded_count}
-        const lmsHealthCheckedAt = ref(null);  // timestamp ms последней проверки
-        let lmsHealthTimer = null;       // setInterval handle для periodic poll
-
-        const lmsHealthStatus = computed(() => {
-            const h = lmsHealth.value;
-            if (!h) return 'unknown';
-            if (!h.loaded_count || h.loaded_count === 0) return 'unloaded';
-            if (h.health && h.health.alive === false) return 'error';
-            if (h.inflight && h.inflight.total_active > 0) return 'busy';
-            if (h.health && h.health.alive === true) return 'ok';
-            return 'unknown';
-        });
-
-        const lmsHealthTitle = computed(() => {
-            const h = lmsHealth.value;
-            if (!h) return 'LM Studio: проверка...';
-            const status = lmsHealthStatus.value;
-            if (status === 'ok') {
-                return `LM Studio: работает (${h.health.latency_ms} ms)`;
-            } else if (status === 'busy') {
-                return `LM Studio: занята (${h.inflight.total_active} активных запросов)`;
-            } else if (status === 'unloaded') {
-                return 'LM Studio: нет загруженной модели';
-            } else if (status === 'error') {
-                return `LM Studio: ${h.health.error || 'не отвечает'}`;
-            }
-            return 'LM Studio: статус неизвестен';
-        });
         const showBatchModal = ref(false);
         const batchMode = ref('audit');   // audit
         const batchScope = ref('audit');     // audit | optimization | both
@@ -9791,6 +9635,32 @@ const app = createApp({
             return 'check';
         }
 
+        // Подсказки для компактных пилюль на карточке проекта: сама карточка
+        // показывает только итог, а разбивка по severity/типам живёт в tooltip.
+        function findingsBreakdownTitle(project) {
+            if (!project) return '';
+            const by = project.findings_by_severity || {};
+            const parts = Object.keys(by)
+                .filter(sev => by[sev])
+                .map(sev => `${sev}: ${by[sev]}`);
+            const lines = [`Замечания — всего: ${project.findings_count || 0}`];
+            if (parts.length) lines.push(parts.join(' · '));
+            lines.push('Нажмите, чтобы открыть список замечаний');
+            return lines.join('\n');
+        }
+
+        function optimizationBreakdownTitle(project) {
+            if (!project) return '';
+            const by = project.optimization_by_type || {};
+            const parts = Object.keys(by)
+                .filter(type => by[type])
+                .map(type => `${optTypeLabel(type)}: ${by[type]}`);
+            const lines = [`Оптимизация — всего: ${project.optimization_count || 0}`];
+            if (parts.length) lines.push(parts.join(' · '));
+            lines.push('Нажмите, чтобы открыть предложения по оптимизации');
+            return lines.join('\n');
+        }
+
         function findingDetectorBadge(finding) {
             if (!finding) return null;
             const provenance = finding.provenance || {};
@@ -11768,7 +11638,6 @@ const app = createApp({
             window.removeEventListener('click', closeHeaderPopovers);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
-            stopLmsHealthPolling();
         });
 
         // ───────────────────────────────────────────────────────────────
@@ -12111,17 +11980,15 @@ const app = createApp({
         //   'clear_and_run'          — clear-analysis, затем Qwen → Opus;
         //   'opus_only'              — только Opus по готовым enriched MD (без Qwen);
         //   'clear_result_opus_only' — очистить comparison_result, затем только Opus.
-        const scQOMode = ref('normal');
+        const scQOMode = ref('opus_only');
         const scQOClearing = ref(false);              // clear-analysis request in flight
         let scQOPollTimer = null;
         const scQOClock = ref(Date.now());            // 1s tick → live elapsed timers
         let scQOClockTimer = null;
-        const scQOActiveRecog = ref(null);            // live md-enrichment aggregate of the running Qwen pair
-        // Latest persisted Qwen/Opus timing per pair (from qopipe job files).
-        // Survives F5: in-memory scQOJob теряется после refresh, а колонки
-        // 🟦/🟪 должны показывать времена завершённого прогона. Грузится на
-        // загрузке сессии через /pipeline-qwen-opus/pair-timings.
-        const scQOPairTimings = ref({});              // pairId → {qwen_*, opus_*, status,…}
+        const scQOActiveRecog = ref(null);            // legacy-заглушка (очередь распознавания удалена)
+        // Тайминги полос прогона: очередь Qwen→Opus удалена вместе с локальными
+        // LLM-мощностями, карта остаётся пустой → колонка 🟪 показывает «—».
+        const scQOPairTimings = ref({});              // pairId → {opus_*, status,…}
         const scQODetailsOpen = ref(true);            // expand per-pair live timeline
         const scQOSelectedCount = computed(() => scPairs.value.filter(p => scQOSelected[p.id]).length);
         const scQOAllSelected = computed(() => {
@@ -12731,13 +12598,10 @@ const app = createApp({
         // qopipe job-файлов (read-only, маленькие json). Вызывается на загрузке
         // сессии и после завершения прогона, чтобы колонки 🟦/🟪 показывали
         // времена и ПОСЛЕ refresh.
+        // Тайминги полосы Qwen→Opus удалены вместе с локальными LLM-мощностями:
+        // очереди больше нет, читать нечего — таблица показывает «—».
         async function scQOLoadPairTimings() {
-            if (!scSession.value || !scSession.value.id) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/pair-timings`;
-                const data = await fetch(url).then(r => r.json());
-                scQOPairTimings.value = (data && data.timings) || {};
-            } catch (_) { /* fail-soft: остаётся прежняя карта / пусто → «—» */ }
+            scQOPairTimings.value = {};
         }
         // Overall job elapsed: from the first Qwen start (else created_at) to now
         // while live, frozen at updated_at once terminal.
@@ -12908,41 +12772,30 @@ const app = createApp({
             const eta = Math.max(laneRemain('qwen', avg('qwen')), laneRemain('opus', avg('opus')));
             return eta > 0 ? Math.round(eta) : null;
         }
+        // Живой агрегат md-enrichment job'а больше не существует (Qwen удалён).
         async function scQORefreshActiveRecog() {
-            // Pull the running internal md-enrichment job for live image-block
-            // detail. Merge ONLY the active pair's status into scRecogJob so the
-            // "Блоки" column stays live for the running pair without dropping the
-            // already-recognised pairs (the active job is pair-scoped).
-            if (!scSession.value || !scSession.value.id) return;
-            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/active`;
-            const data = await fetch(url).then(r => r.json());
-            const job = data && data.job;
-            if (!job) return;
-            scQOActiveRecog.value = job;
-            const agg = job.aggregate;
-            if (!agg || !agg.pair_statuses) return;
-            if (!scRecogJob.value || !scRecogJob.value.aggregate) {
-                scRecogJob.value = job;
-                return;
-            }
-            const merged = { ...(scRecogJob.value.aggregate.pair_statuses || {}), ...agg.pair_statuses };
-            scRecogJob.value = {
-                ...scRecogJob.value,
-                aggregate: { ...scRecogJob.value.aggregate, pair_statuses: merged },
-            };
+            scQOActiveRecog.value = null;
         }
 
+        // Preflight-эндпоинт очереди Qwen→Opus удалён вместе с локальными
+        // LLM-мощностями. Сводку для модалки собираем локально, без сети.
         async function scQOPreflight(pairIds) {
-            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/preflight`;
-            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true }) });
-            return await r.json();
+            const ids = pairIds || [];
+            return {
+                pair_ids: ids,
+                pairs: ids.length,
+                health: null,
+                risks: [],
+                estimated_qwen_calls: 0,
+                estimated_qwen_duration_sec: 0,
+                estimated_opus_duration_sec: 0,
+            };
         }
         async function scQOOpenConfirm() {
             const ids = scPairs.value.filter(p => scQOSelected[p.id]).map(p => p.id);
             if (!ids.length || scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
-            scQOMode.value = 'normal';         // safe default each open
+            scQOMode.value = 'opus_only';      // единственный оставшийся путь
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight(ids); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -12951,7 +12804,7 @@ const app = createApp({
         async function scQOProcessPair(pid) {
             if (scQOPreflighting.value) return;
             scQOClearBeforeRun.value = false;  // safe default each open
-            scQOMode.value = 'normal';         // safe default each open
+            scQOMode.value = 'opus_only';      // единственный оставшийся путь
             scQOPreflighting.value = true;
             try { scQOConfirm.value = await scQOPreflight([pid]); }
             catch (e) { alert('Не удалось подготовить прогон (preflight): ' + ((e && e.message) || e)); }
@@ -12971,16 +12824,10 @@ const app = createApp({
         async function scQOStartConfirmed() {
             const ids = (scQOConfirm.value && scQOConfirm.value.pair_ids) || [];
             if (!ids.length) { scQOConfirm.value = null; return; }
-            const mode = scQOMode.value || 'normal';
-            // Режимы «Только Opus»: unified-analysis по готовым enriched MD без Qwen.
-            if (mode === 'opus_only' || mode === 'clear_result_opus_only') {
-                await scQOStartOpusOnly(ids, mode === 'clear_result_opus_only');
-                scQOMode.value = 'normal';
-                scQOConfirm.value = null;
-                return;
-            }
-            // Режим «Очистить и запустить»: 1) clear-analysis, 2) обычный pipeline.
-            // Очистка молча НЕ идёт.
+            // Остались только Opus-режимы: распознавание графики локальной VLM
+            // удалено с платформы, новые enriched MD не производятся.
+            const mode = scQOMode.value || 'opus_only';
+            const clearFirst = (mode === 'clear_result_opus_only');
             if (mode === 'clear_and_run') {
                 scQOClearing.value = true;
                 try {
@@ -12991,9 +12838,8 @@ const app = createApp({
                         scQOClearing.value = false;
                         alert('Очистка пропущена для пар с активным прогоном: ' + blocked.join(', ') +
                             '.\nОстановите job и повторите.');
-                        return;  // не запускаем — пусть пользователь разрулит
+                        return;
                     }
-                    // cleared пары должны выглядеть как непроверенные
                     if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
                     if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
                 } catch (e) {
@@ -13003,9 +12849,9 @@ const app = createApp({
                 }
                 scQOClearing.value = false;
             }
-            await scQOStart(ids);
+            await scQOStartOpusOnly(ids, clearFirst);
             scQOClearBeforeRun.value = false;
-            scQOMode.value = 'normal';
+            scQOMode.value = 'opus_only';
             scQOConfirm.value = null;
         }
         // Запустить ТОЛЬКО Opus по выбранным парам (без Qwen) через endpoint
@@ -13040,30 +12886,8 @@ const app = createApp({
                 scQORunning.value = false;
             }
         }
-        async function scQOStart(pairIds) {
-            if (!scSession.value || !scSession.value.id) return;
-            scQORunning.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus`;
-                const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scope: 'selected', pair_ids: pairIds, force_qwen: true, force_opus: true, prebuild_large_sheets: true, confirm: true }) });
-                const job = await r.json();
-                // Health-gate: backend заблокировал старт (LLM/ngrok недоступен).
-                if (job && job.status === 'rejected_llm_unavailable') {
-                    scQORunning.value = false;
-                    alert('Запуск заблокирован: локальный LLM/ngrok недоступен (' +
-                        (job.reason || 'unknown') + ').\nВосстановите ngrok-туннель и загрузите модель в LM Studio, затем повторите.');
-                    return;
-                }
-                scQOJob.value = job;
-                if (job && job.job_id) { scQORemember(job.job_id); scQOPollJob(job.job_id); }
-                else scQORunning.value = false;
-            } catch (e) { scQORunning.value = false; }
-        }
-        // Persist the running pipeline job id per-session so an F5 / tab reopen
-        // can re-attach to it (the panel state lives only in memory otherwise,
-        // so without this a reload makes the whole "Pipeline Qwen→Opus" box
-        // vanish even though the backend job keeps running).
+        // Ключ localStorage остался только для того, чтобы подчистить след
+        // старой очереди Qwen→Opus после её удаления.
         function scQOJobKey() {
             return scSession.value && scSession.value.id ? ('sc_qo_job:' + scSession.value.id) : null;
         }
@@ -13075,67 +12899,20 @@ const app = createApp({
             const k = scQOJobKey();
             if (k) { try { localStorage.removeItem(k); } catch (_) {} }
         }
-        // Re-attach to a still-running pipeline job after a page reload. Called
-        // from scLoadSession. Frontend-only: reads the remembered job id and
-        // resumes polling via the existing status endpoint.
         async function scQORestoreActive() {
-            const k = scQOJobKey();
-            if (!k) return;
-            let jobId = null;
-            try { jobId = localStorage.getItem(k); } catch (_) {}
-            if (!jobId) return;
-            const terminal = ['done', 'partial', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'];
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
-                const r = await fetch(url);
-                if (!r.ok) { scQOForget(); return; }
-                const job = await r.json();
-                if (!job || !job.job_id) { scQOForget(); return; }
-                scQOJob.value = job;
-                if (terminal.includes(job.status)) {
-                    // finished while the page was closed — show the last run once,
-                    // then stop tracking it so it doesn't keep re-appearing.
-                    scQOForget();
-                } else {
-                    scQOPollJob(job.job_id);  // resume live polling
-                }
-            } catch (_) { /* keep pointer; transient network error */ }
+            // Восстанавливать нечего: очередь Qwen→Opus удалена. Чистим след.
+            scQOForget();
         }
-        function scQOPollJob(jobId) {
+        function scQOPollJob(_jobId) {
+            // Фоновой очереди Qwen→Opus больше нет — опрашивать нечего.
             if (scQOPollTimer) { clearTimeout(scQOPollTimer); scQOPollTimer = null; }
-            const terminal = ['done', 'partial', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'];
-            const tick = async () => {
-                try {
-                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(jobId)}`;
-                    const job = await fetch(url).then(r => r.json());
-                    scQOJob.value = job;
-                    // live image-block detail while Qwen is enriching a pair
-                    if (job.qwen_worker && job.qwen_worker.current_pair_id) {
-                        try { await scQORefreshActiveRecog(); } catch (e) {}
-                    }
-                    if (terminal.includes(job.status)) {
-                        scQORunning.value = false;
-                        scQOClockStop();
-                        scQOActiveRecog.value = null;
-                        scQOForget();
-                        // Закешировать времена завершённого прогона, чтобы они
-                        // пережили последующий refresh (scQOJob будет очищен).
-                        if (typeof scQOLoadPairTimings === 'function') { try { await scQOLoadPairTimings(); } catch (e) {} }
-                        if (typeof scLoadPairCompareStatuses === 'function') { try { await scLoadPairCompareStatuses(); } catch (e) {} }
-                        if (typeof scLoadUnifiedFlat === 'function') { try { await scLoadUnifiedFlat(); } catch (e) {} }
-                        return;
-                    }
-                    scQOPollTimer = setTimeout(tick, 3000);
-                } catch (e) { scQOPollTimer = setTimeout(tick, 5000); }
-            };
-            scQORunning.value = true;
-            scQOClockStart();
-            tick();
+            scQORunning.value = false;
+            scQOClockStop();
         }
         async function scQOCancel() {
-            if (!scQOJob.value || !scQOJob.value.job_id) return;
-            const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pipeline-qwen-opus/${encodeURIComponent(scQOJob.value.job_id)}/cancel`;
-            try { await fetch(url, { method: 'POST' }); } catch (e) {}
+            scQOJob.value = null;
+            scQORunning.value = false;
+            scQOClockStop();
         }
 
         // ─── Pipeline V2 controlled run («Запустить V2» в «Связь блоков») ──
@@ -15199,182 +14976,14 @@ const app = createApp({
                 scMdEnrichmentSummary.value = await r.json();
             } catch (e) { /* silent */ }
         }
-        async function scMdEnrichmentDryRun() {
-            if (!scSession.value || !scActivePair.value) return;
-            scMdEnrichmentError.value = '';
-            scMdEnrichmentLoading.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/md-enrichment`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({side: 'both', force: false, run_model: false}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                await scLoadMdEnrichmentSummary();
-            } catch (e) {
-                scMdEnrichmentError.value = 'Dry-run не выполнен: ' + e;
-            } finally {
-                scMdEnrichmentLoading.value = false;
-            }
-        }
-        function scMdEnrichmentRequestConfirm() {
-            scMdEnrichmentConfirmOpen.value = true;
-        }
-        async function scMdEnrichmentRunModel() {
-            // Запуск Qwen перенесён на background job — sync endpoint с
-            // run_model=true давал HTTP 524 на ngrok/Cloudflare при ≥7 image
-            // блоках (~50–60 с на блок). Теперь UI всегда идёт через job +
-            // polling и видит block-level прогресс.
-            scMdEnrichmentConfirmOpen.value = false;
-            if (!scSession.value || !scActivePair.value) return;
-            scMdEnrichmentError.value = '';
-            scMdEnrichmentJobTimedOut.value = false;
-            scMdEnrichmentRunning.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        scope: 'pair',
-                        pair_id: scActivePair.value.id,
-                        side: 'both',
-                        force: false,
-                        confirm: true,
-                    }),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const msg = (j && j.detail && (j.detail.message || j.detail)) || ('HTTP ' + r.status);
-                    if (r.status === 524 || r.status === 504 || r.status === 408) {
-                        // job всё равно мог стартовать на сервере
-                        scMdEnrichmentJobTimedOut.value = true;
-                    }
-                    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                }
-                const job = await r.json();
-                scMdEnrichmentJob.value = job;
-                if (job && job.id && (job.status === 'queued' || job.status === 'running')) {
-                    scPollMdEnrichmentJob(job.id);
-                } else {
-                    // job done/failed/rejected моментально (например, rejected_no_confirm)
-                    await scLoadMdEnrichmentSummary();
-                }
-            } catch (e) {
-                if (e && (e.name === 'TypeError' || /timeout|abort|fetch/i.test(String(e)))) {
-                    // network / fetch fail — job могла стартовать
-                    scMdEnrichmentJobTimedOut.value = true;
-                }
-                scMdEnrichmentError.value = scMdEnrichmentJobTimedOut.value
-                    ? 'Запрос был прерван по таймауту. Проверьте статус задачи — обработка могла продолжиться на сервере.'
-                    : 'Запуск Qwen не удался: ' + e;
-            } finally {
-                // running остаётся true пока polling не закончится; здесь сбрасываем
-                // только если job не запустился.
-                if (!scMdEnrichmentJob.value || !scMdEnrichmentJob.value.id) {
-                    scMdEnrichmentRunning.value = false;
-                }
-            }
-        }
-        async function scPollMdEnrichmentJob(jobId) {
-            if (!scSession.value || !jobId) return;
-            if (scMdEnrichmentJobPolling.value) return;
-            scMdEnrichmentJobPolling.value = true;
-            try {
-                while (true) {
-                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(jobId)}`;
-                    let r;
-                    try {
-                        r = await fetch(url);
-                    } catch (_) {
-                        // transient network — попробуем снова через интервал
-                        await new Promise(res => setTimeout(res, 3000));
-                        continue;
-                    }
-                    if (!r.ok) break;
-                    const job = await r.json();
-                    scMdEnrichmentJob.value = job;
-                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm'].includes(job.status)) break;
-                    await new Promise(res => setTimeout(res, 3000));
-                }
-                try { await scLoadMdEnrichmentSummary(); } catch (_) {}
-            } finally {
-                scMdEnrichmentJobPolling.value = false;
-                scMdEnrichmentRunning.value = false;
-            }
-        }
-        async function scCancelMdEnrichmentJob() {
-            const job = scMdEnrichmentJob.value;
-            if (!job || !job.id || !scSession.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(job.id)}/cancel`;
-                const r = await fetch(url, {method: 'POST'});
-                if (r.ok) scMdEnrichmentJob.value = await r.json();
-            } catch (_) { /* silent */ }
-        }
-        async function scRefreshMdEnrichmentJob() {
-            // Вручную обновить статус — нужно когда стартовый POST оборвался
-            // (524/504/timeout) и job всё ещё может крутиться на сервере.
-            scMdEnrichmentError.value = '';
-            scMdEnrichmentJobTimedOut.value = false;
-            const job = scMdEnrichmentJob.value;
-            if (job && job.id) {
-                if (!scMdEnrichmentJobPolling.value) {
-                    scPollMdEnrichmentJob(job.id);
-                }
-                return;
-            }
-            // Если job_id не получили — обновим summary; пользователь увидит,
-            // что enrichment мог завершиться/частично завершиться.
-            try { await scLoadMdEnrichmentSummary(); } catch (_) {}
-        }
-
-        async function scRecogPoll(jobId) {
-            if (!scSession.value || !jobId) return;
-            if (scRecogPolling.value) return;
-            scRecogPolling.value = true;
-            try {
-                while (true) {
-                    const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/${encodeURIComponent(jobId)}`;
-                    let r;
-                    try {
-                        r = await fetch(url);
-                    } catch (_) {
-                        await new Promise(res => setTimeout(res, 3000));
-                        continue;
-                    }
-                    if (!r.ok) break;
-                    const job = await r.json();
-                    scRecogJob.value = job;
-                    if (['done', 'failed', 'cancelled', 'rejected_no_confirm', 'failed_interrupted'].includes(job.status)) break;
-                    await new Promise(res => setTimeout(res, 3000));
-                }
-            } finally {
-                scRecogPolling.value = false;
-            }
+        // Job'ов распознавания графики больше нет (Qwen удалён) — опрос снят.
+        async function scRecogPoll(_jobId) {
+            scRecogPolling.value = false;
         }
 
         async function scRecogRestoreActive() {
-            // Подтянуть последнюю активную (или вообще последнюю) job сессии,
-            // чтобы UI при возврате на этап 1 показал актуальный прогресс.
-            if (!scSession.value || !scSession.value.id) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/md-enrichment-jobs/active`;
-                const r = await fetch(url);
-                if (!r.ok) return;
-                const data = await r.json();
-                const job = data && data.job;
-                if (!job) return;
-                scRecogJob.value = job;
-                if (job.id && (job.status === 'queued' || job.status === 'running') && !scRecogPolling.value) {
-                    scRecogStartedAtClient.value = Date.now();
-                    scRecogPoll(job.id);
-                }
-            } catch (_) { /* silent */ }
+            // Восстанавливать нечего: очередь распознавания графики удалена.
+            scRecogJob.value = null;
         }
 
         // Per-pair status lookup для рендера таблицы пар на этапе 1.
@@ -18977,6 +18586,7 @@ const app = createApp({
             formatETA, heartbeatStatusText, isClaudeStage, getRunningStage,
             // Methods
             navigate, refreshProjects, stepClass, combinedCriticStatus, sevClass, sevIcon, findingDetectorBadge,
+            findingsBreakdownTitle, optimizationBreakdownTitle,
             debounceSearch, clearLog, copyLog,
             // Prompts
             promptsProjectId, templates, promptsLoading,
@@ -19159,9 +18769,6 @@ const app = createApp({
             cropBatchBlocks, batchCropLoading, batchCropProgress,
             prepareQueue, clearPrepareQueue, formatEta, fetchPrepareQueue,
             preparePause, prepareResume, prepareCancel,
-            lmsLoaded, lmsAll, lmsLoadCtx, lmsLoading, lmsMessage,
-            lmsRefresh, lmsLoad, lmsUnload, lmsReload, lmsApplyPresetCtx,
-            lmsHealth, lmsHealthCheckedAt, lmsHealthStatus, lmsHealthTitle, lmsCheckHealth,
             chatAttachedImage, handleChatFileSelect, handleChatPaste,
             resolvedFindingsCount, allDiscussionsResolved, resolvedFindingsLoading, downloadResolvedFindings,
             editingMessageIdx, editingMessageText,
@@ -19350,9 +18957,7 @@ const app = createApp({
             scMdEnrichmentSummary, scMdEnrichmentLoading, scMdEnrichmentRunning,
             scMdEnrichmentError, scMdEnrichmentConfirmOpen,
             scMdEnrichmentJob, scMdEnrichmentJobPolling, scMdEnrichmentJobTimedOut,
-            scLoadMdEnrichmentSummary, scMdEnrichmentDryRun,
-            scMdEnrichmentRequestConfirm, scMdEnrichmentRunModel,
-            scPollMdEnrichmentJob, scCancelMdEnrichmentJob, scRefreshMdEnrichmentJob,
+            scLoadMdEnrichmentSummary,
             // Stage 1: «Распознать графику» (session-level Qwen enrichment job)
             scRecogJob, scRecogPolling, scRecogStarting, scRecogError,
             scRecogRestoreActive, scRecogPairStatus, scRecogPairBadge,
@@ -19444,7 +19049,7 @@ const app = createApp({
             scQOSelected, scQOJob, scQOConfirm, scQORunning, scQOPreflighting, scQOSelectedCount, scQOAllSelected,
             scQOClearBeforeRun, scQOMode, scQOClearing, scQOClearAnalysis, scQOStartOpusOnly,
             scQOToggleAll, scQOPairLabel, scQOPairBadge, scQOOpenConfirm, scQOProcessPair,
-            scQOStartConfirmed, scQOStart, scQOCancel,
+            scQOStartConfirmed, scQOCancel,
             scPv2RunByPair, scPv2RunModal, scPv2RunState, scPv2RunBtnLabel,
             scPv2RunBtnTitle, scPv2RunErrorFor, scPv2RunOpenModal, scPv2RunSubmit,
             scQODetailsOpen, scQOElapsedMs, scQOEtaSec, scQOItemFor, scQOItemLaneLabel,
