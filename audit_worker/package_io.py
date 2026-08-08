@@ -33,10 +33,83 @@ MAX_ENTRIES = 200_000
 # до 200× оставлен намеренно широким, чтобы не отвергать нормальные пакеты.
 MAX_COMPRESSION_RATIO = 200
 
+#: Раскладки пакета проекта, которые воркер умеет исполнять. ДВОЙНИК константы
+#: `project_package.SUPPORTED_PROJECT_LAYOUT_VERSIONS` — намеренный: пакет
+#: `audit_worker` ставится на чужой VPS отдельно и `backend.app` не импортирует.
+#: Версия 1 (плоское `payload/project/<содержимое версии>`) отвергается: на ней
+#: `resolve_v2_job_paths` возвращает None, а `resolve_project_dir` доходит до
+#: fallback'а по `.pdf` и возвращает ФАЙЛ вместо каталога проекта.
+SUPPORTED_PROJECT_LAYOUT_VERSIONS: frozenset[int] = frozenset({2})
+
+#: Секции архива реального аудита → каталоги попытки. `projects_v2` становится
+#: `project/`: имя каталога историческое, содержимое — переносимый корень
+#: `projects_v2`, и именно на него указывает `AUDIT_PROJECTS_V2_DIR`.
+AUDIT_PACKAGE_SECTIONS: tuple[tuple[str, str], ...] = (
+    ("projects_v2", "project"),
+    ("snapshot", "snapshot"),
+    ("runtime", "runtime"),
+)
+
+#: Минимальная форма переносимого дерева. Проверяется ПОСЛЕ распаковки: манифест
+#: может обещать что угодно, а исполняется то, что лежит на диске.
+_REQUIRED_TREE_MARKERS: tuple[str, ...] = ("objects",)
 
 
 class BundleError(RuntimeError):
     """Пакет не прошёл проверку — задание принимать нельзя."""
+
+
+def require_portable_layout(manifest: dict[str, Any], unpacked_root: Path) -> dict[str, Any]:
+    """Отвергнуть пакет, чью раскладку воркер исполнить не сможет.
+
+    Отказ здесь стоит одну строку в логе. Отсутствие отказа стоит многочасового
+    прогона, который упадёт на резолве путей уже после приёма задания, — ровно
+    то, что случилось с плоской раскладкой версии 1 (Б-3 отчёта 07).
+    """
+    layout = manifest.get("project_layout_version")
+    try:
+        layout_no = int(layout)
+    except (TypeError, ValueError):
+        raise BundleError(
+            f"В манифесте нет project_layout_version (получено {layout!r})"
+        ) from None
+    if layout_no not in SUPPORTED_PROJECT_LAYOUT_VERSIONS:
+        raise BundleError(
+            f"Раскладка пакета {layout_no} не поддерживается воркером "
+            f"(поддерживаются {sorted(SUPPORTED_PROJECT_LAYOUT_VERSIONS)})"
+        )
+
+    root = Path(unpacked_root) / "projects_v2"
+    if not root.is_dir():
+        raise BundleError(
+            "В пакете нет переносимого корня projects_v2/ — проект резолвиться "
+            "не будет"
+        )
+    for marker in _REQUIRED_TREE_MARKERS:
+        if not (root / marker).is_dir():
+            raise BundleError(f"В переносимом корне нет каталога {marker}/")
+
+    version_rel = str(manifest.get("version_relative_path") or "").strip()
+    if not version_rel:
+        raise BundleError("В манифесте нет version_relative_path")
+    if version_rel.startswith("/") or ".." in version_rel.split("/"):
+        raise BundleError(f"Небезопасный version_relative_path: {version_rel!r}")
+    version_dir = root / version_rel
+    if not version_dir.is_dir():
+        raise BundleError(
+            f"Каталог версии {version_rel} в распакованном дереве отсутствует"
+        )
+    project_rel = str(manifest.get("project_relative_path") or "").strip()
+    if not project_rel or not (root / project_rel / "document.json").is_file():
+        raise BundleError(
+            "В переносимом дереве нет document.json — адаптер projects_v2 "
+            "пропустит документ молча"
+        )
+    return {
+        "project_layout_version": layout_no,
+        "version_dir": str(version_dir),
+        "project_dir": str(root / project_rel),
+    }
 
 
 def sha256_file(path: Path) -> str:
@@ -285,7 +358,43 @@ _WORK_ALLOWLIST = {"test_params.json", "completed.marker", "pipeline_log.json",
 
 #: Что из дерева проекта возвращается центру. Всё остальное центр уже имеет:
 #: он сам это отправлял, и обратная перезапись исходников заказчика недопустима.
+#: Пути ОТНОСИТЕЛЬНЫ каталога версии — именно так их читает
+#: `result_import.classify_path`, и любой другой корень отправил бы весь пакет
+#: в `unknown`, то есть под отказ целиком.
 _PROJECT_RETURN_PREFIXES = ("03_analysis/", "99_service/")
+
+
+class PortableTreeError(BundleError):
+    """Переносимое дерево не имеет единственного каталога версии."""
+
+
+def portable_version_dir(project_root: Path, *, hint: Optional[str] = None) -> Path:
+    """Найти каталог версии внутри переносимого корня `projects_v2`.
+
+    Пакет по контракту содержит РОВНО ОДИН object/document/version. Поэтому
+    поиск детерминирован, а неоднозначность — ошибка, а не повод «взять
+    первый»: взяв не тот, воркер вернул бы центру артефакты чужой версии.
+    """
+    root = Path(project_root)
+    if hint:
+        clean = str(hint).replace("\\", "/").strip("/")
+        if clean and ".." not in clean.split("/"):
+            candidate = root / clean
+            if candidate.is_dir():
+                return candidate
+    matches = sorted(root.glob("objects/*/disciplines/*/documents/*/versions/*"))
+    matches = [p for p in matches if p.is_dir()]
+    if len(matches) == 1:
+        return matches[0]
+    if not matches:
+        raise PortableTreeError(
+            f"В переносимом корне {root} нет каталога версии "
+            "objects/*/disciplines/*/documents/*/versions/*"
+        )
+    raise PortableTreeError(
+        f"В переносимом корне {root} несколько каталогов версии: "
+        + ", ".join(str(p.relative_to(root)) for p in matches[:5])
+    )
 
 #: Разделы, которые собираются для реального аудита.
 _AUDIT_SECTIONS = ("project", "work", "result", "usage", "logs")
@@ -316,6 +425,16 @@ def build_result_package(
     stage_completion: Optional[dict[str, Any]] = None,
     resume_hint: Optional[str] = None,
     cancellation_state: Optional[str] = None,
+    project_version_rel: Optional[str] = None,
+    runtime_snapshot_hash: Optional[str] = None,
+    applied_write_mode: Optional[str] = None,
+    execution_profile: Optional[str] = None,
+    worker_stage_plan: Optional[list[str]] = None,
+    completed_stages: Optional[list[str]] = None,
+    forbidden_stages_not_run: Optional[list[str]] = None,
+    provider_mode: Optional[str] = None,
+    external_network_attempts: int = 0,
+    source_integrity: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Собрать TAR результата: input/ + work/ + result/ (+ project/usage/logs).
 
@@ -327,14 +446,18 @@ def build_result_package(
     is_audit = job_type == "audit_pipeline_v1"
 
     if is_audit:
-        # project/: ТОЛЬКО то, что произвёл конвейер. Исходники заказчика
-        # обратно не едут — центр их и отправлял, а перезапись PDF необратима.
-        project_dir = job_dir / "project"
-        if project_dir.is_dir():
-            for path in sorted(project_dir.rglob("*")):
+        # project/: ТОЛЬКО то, что произвёл конвейер, и ТОЛЬКО относительно
+        # каталога версии. Исходники заказчика обратно не едут — центр их и
+        # отправлял, а перезапись PDF необратима.
+        project_root = job_dir / "project"
+        if project_root.is_dir():
+            version_dir = portable_version_dir(
+                project_root, hint=project_version_rel
+            )
+            for path in sorted(version_dir.rglob("*")):
                 if not path.is_file() or path.is_symlink():
                     continue
-                rel = path.relative_to(project_dir).as_posix()
+                rel = path.relative_to(version_dir).as_posix()
                 if not rel.startswith(_PROJECT_RETURN_PREFIXES):
                     continue
                 files[f"project/{rel}"] = path.read_bytes()
@@ -409,10 +532,24 @@ def build_result_package(
         "worker_id": worker_id,
         "worker_version": worker_version,
         "protocol_version": protocol_version,
-        "project_layout_version": 1 if is_audit else 0,
+        "project_layout_version": (
+            max(SUPPORTED_PROJECT_LAYOUT_VERSIONS) if is_audit else 0
+        ),
         "job_type": job_type,
         "pipeline_revision": pipeline_revision,
         "compression": compression,
+        # Что ФАКТИЧЕСКИ применялось на воркере. Не повтор задания: центр
+        # обязан иметь возможность проверить, что попытка шла по той
+        # конфигурации, которую он отправлял, а не по локальной воркера.
+        "runtime_snapshot_hash": runtime_snapshot_hash,
+        "applied_write_mode": applied_write_mode,
+        "execution_profile": execution_profile,
+        "worker_stage_plan": list(worker_stage_plan or []),
+        "completed_stages": list(completed_stages or []),
+        "forbidden_stages_not_run": list(forbidden_stages_not_run or []),
+        "provider_mode": provider_mode,
+        "external_network_attempts": int(external_network_attempts),
+        "source_integrity": dict(source_integrity or {}),
         # Хэш исходного пакета: связывает результат с тем, из чего он получен.
         "source_package_hash": normalize_hash(source_package_hash or "") or None,
         "exit_code": exit_code,

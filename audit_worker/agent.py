@@ -806,15 +806,16 @@ class WorkerAgent:
             raise
         if is_audit:
             # Пакет реального аудита распаковывается в `unpack_staging`, а
-            # `project/` и `snapshot/` переносятся в каталог попытки, где их
-            # ждёт `audit_runner`. Распаковывать прямо в `job_dir` нельзя:
-            # `verify_and_unpack` очищает каталог назначения и снёс бы logs/,
-            # metadata/ и уже накопленный EventOutbox.
-            for name in ("project", "snapshot"):
-                source = unpack_target / name
+            # секции переносятся в каталог попытки, где их ждёт `audit_runner`.
+            # Распаковывать прямо в `job_dir` нельзя: `verify_and_unpack`
+            # очищает каталог назначения и снёс бы logs/, metadata/ и уже
+            # накопленный EventOutbox.
+            package_io.require_portable_layout(info["manifest"], unpack_target)
+            for source_name, dest_name in package_io.AUDIT_PACKAGE_SECTIONS:
+                source = unpack_target / source_name
                 if not source.is_dir():
                     continue
-                destination = job_dir / name
+                destination = job_dir / dest_name
                 shutil.rmtree(destination, ignore_errors=True)
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 os.replace(source, destination)

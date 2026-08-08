@@ -39,13 +39,34 @@ from typing import Any, Iterable, Optional
 from backend.app.services.distributed_workers import package_service
 
 #: Версия раскладки проекта внутри пакета. Растёт при несовместимом изменении.
-PROJECT_LAYOUT_VERSION = 1
+#:
+#: 1 — плоская раскладка `payload/project/<содержимое каталога версии>`. Она
+#:     несовместима с обоими режимами резолва проекта (`resolve_project_dir` и
+#:     `resolve_v2_job_paths`) и удалённый прогон на ней падал ДО первого этапа
+#:     (блокер Б-3 отчёта 07).
+#: 2 — переносимый корень `projects_v2` целиком:
+#:     `payload/projects_v2/objects/<obj>/disciplines/<Д>/documents/<код>/versions/<vid>/…`
+#:     плюс `object.json`, `document.json` и `current_version.txt` — то есть
+#:     ровно та форма дерева, которую перебирает `ProjectsV2Adapter`.
+PROJECT_LAYOUT_VERSION = 2
 
-#: Корень дерева проекта внутри архива (под общим `payload/`).
-PROJECT_ROOT = "project/"
+#: Раскладки, которые распаковщик воркера соглашается исполнять. Единица, а не
+#: диапазон: плоский пакет не «хуже поддерживается», он не работает вовсе.
+SUPPORTED_PROJECT_LAYOUT_VERSIONS: frozenset[int] = frozenset({2})
+
+#: Корень ПЕРЕНОСИМОГО дерева проектов внутри архива (под общим `payload/`).
+#: Значение станет `AUDIT_PROJECTS_V2_DIR` процесса конвейера на воркере.
+PROJECTS_ROOT = "projects_v2/"
+
+#: Историческая раскладка версии 1. Оставлена ИМЕНЕМ, чтобы распаковщик мог
+#: назвать причину отказа, а не молча не найти проект.
+LEGACY_FLAT_PROJECT_ROOT = "project/"
 
 #: Каталог снимков конфигурации внутри архива.
 SNAPSHOT_ROOT = "snapshot/"
+
+#: Каталог снимка runtime-конфигурации внутри архива.
+RUNTIME_ROOT = "runtime/"
 
 #: Что НИКОГДА не попадает в пакет. Проверяется по каждому сегменту пути.
 FORBIDDEN_NAMES: frozenset[str] = frozenset(
@@ -112,6 +133,231 @@ class ScanResult:
     total_bytes: int = 0
 
 
+# ─── Безопасные физические сегменты пути ─────────────────────────────────────
+#: Символы, которые не могут быть частью имени каталога внутри пакета. Список
+#: намеренно шире POSIX: пакет распаковывается на ЧУЖОЙ машине, и «у нас это
+#: работает» не является аргументом.
+_UNSAFE_SEGMENT_CHARS = set('/\\:*?"<>|\0')
+
+#: Зарезервированные имена Windows. Пакет туда не поедет, но проверка стоит
+#: одну строку, а отсутствие проверки однажды стоит дороже.
+_RESERVED_SEGMENTS = frozenset(
+    {"con", "prn", "aux", "nul"}
+    | {f"com{i}" for i in range(1, 10)}
+    | {f"lpt{i}" for i in range(1, 10)}
+)
+
+MAX_SEGMENT_LEN = 120
+
+
+def safe_path_segment(value: Any, *, field: str) -> str:
+    """Проверить значение как ФИЗИЧЕСКИЙ сегмент пути внутри пакета.
+
+    Ключевое требование этапа: внешний код проекта («ТЕСТ/РД-АР1 — корпус 1»)
+    содержит «/» и обязан остаться МЕТАДАННЫМИ, а не превратиться в подкаталог.
+    Поэтому сегмент не «санируется» (санация молча склеила бы два разных
+    проекта в один каталог), а ОТВЕРГАЕТСЯ — сборка падает до записи архива.
+    """
+    text = str(value if value is not None else "").strip()
+    if not text:
+        raise ProjectPackageError(f"{field}: пустой сегмент пути")
+    if len(text) > MAX_SEGMENT_LEN:
+        raise ProjectPackageError(
+            f"{field}: сегмент длиннее {MAX_SEGMENT_LEN} символов ({len(text)})"
+        )
+    if text in (".", ".."):
+        raise ProjectPackageError(f"{field}: сегмент {text!r} недопустим")
+    if text.startswith("~"):
+        raise ProjectPackageError(f"{field}: сегмент не может начинаться с '~'")
+    bad = sorted(_UNSAFE_SEGMENT_CHARS & set(text))
+    if bad:
+        raise ProjectPackageError(
+            f"{field}: недопустимые символы {bad!r} в сегменте {text!r} — "
+            "внешний код проекта путём не является"
+        )
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in text):
+        raise ProjectPackageError(f"{field}: управляющие символы в сегменте")
+    if text.split(".")[0].lower() in _RESERVED_SEGMENTS:
+        raise ProjectPackageError(f"{field}: зарезервированное имя {text!r}")
+    if text != text.strip(" ."):
+        raise ProjectPackageError(
+            f"{field}: сегмент не может начинаться/заканчиваться пробелом или точкой"
+        )
+    return text
+
+
+def safe_relative_path(value: Any, *, field: str) -> str:
+    """Проверить многосегментный относительный путь внутри пакета."""
+    text = str(value if value is not None else "").strip().replace("\\", "/")
+    if not text:
+        raise ProjectPackageError(f"{field}: пустой относительный путь")
+    if text.startswith("/"):
+        raise ProjectPackageError(f"{field}: абсолютный путь {text!r} недопустим")
+    parts = [p for p in text.split("/") if p]
+    if not parts:
+        raise ProjectPackageError(f"{field}: путь не содержит сегментов")
+    for part in parts:
+        if part in (".", ".."):
+            raise ProjectPackageError(f"{field}: обход каталога в {text!r}")
+    return "/".join(parts)
+
+
+# ─── Идентичность переносимого проекта ───────────────────────────────────────
+#: Ключи метаданных, которые несут АБСОЛЮТНЫЙ путь центрального хоста. Они
+#: очищаются при упаковке: их значение на воркере не просто бесполезно — оно
+#: рассказывает чужой машине о раскладке нашей.
+_HOST_PATH_KEYS = frozenset(
+    {"legacy_path", "legacy_folder_path", "legacy_project_path", "source_path",
+     "abs_path", "root_dir", "project_dir", "output_dir", "artifacts_dir"}
+)
+
+
+@dataclass(frozen=True)
+class PortableProjectIdentity:
+    """Физические сегменты переносимого дерева + внешние идентификаторы.
+
+    Физические сегменты — то, из чего строится путь В ПАКЕТЕ. Внешние
+    идентификаторы (`project_external_id`, отображаемое имя) путём не
+    становятся никогда и живут только в метаданных.
+    """
+
+    object_folder: str
+    discipline: str
+    document_code: str
+    version_id: str
+    object_id: Optional[str] = None
+    project_external_id: Optional[str] = None
+
+    @property
+    def project_relative_path(self) -> str:
+        return (
+            f"objects/{self.object_folder}/disciplines/{self.discipline}"
+            f"/documents/{self.document_code}"
+        )
+
+    @property
+    def version_relative_path(self) -> str:
+        return f"{self.project_relative_path}/versions/{self.version_id}"
+
+    def as_manifest(self) -> dict[str, Any]:
+        return {
+            "portable_projects_root": package_service.PAYLOAD_ROOT + PROJECTS_ROOT,
+            "object_folder": self.object_folder,
+            "object_id": self.object_id,
+            "discipline": self.discipline,
+            "document_id": self.document_code,
+            "document_code": self.document_code,
+            "version_id": self.version_id,
+            "project_relative_path": self.project_relative_path,
+            "version_relative_path": self.version_relative_path,
+            "project_external_id": self.project_external_id,
+        }
+
+
+def resolve_portable_identity(
+    version_dir: Path, *, project_external_id: Optional[str] = None
+) -> PortableProjectIdentity:
+    """Вывести идентичность из ФАКТИЧЕСКОГО положения каталога версии.
+
+    Сегменты не придумываются и не берутся из задания: они читаются с диска
+    центра. Это и есть гарантия «дерево в пакете совпадает с настоящим» —
+    придуманный `object_id` дал бы форму, которой у центра нет, и резолвер на
+    воркере снова не нашёл бы проект.
+
+    Ожидаемая форма (её же перебирает `ProjectsV2Adapter.list_documents`):
+    `objects/<obj>/disciplines/<Д>/documents/<код>/versions/<vid>`.
+    """
+    version_dir = Path(version_dir).resolve()
+    doc_dir = version_dir.parent.parent           # documents/<код>
+    versions_dir = version_dir.parent             # versions
+    if versions_dir.name != "versions":
+        raise ProjectPackageError(
+            f"Каталог версии не в раскладке projects_v2: ожидался .../versions/<vid>, "
+            f"получено {version_dir}"
+        )
+    documents_dir = doc_dir.parent                # documents
+    discipline_dir = documents_dir.parent         # <Д>
+    disciplines_dir = discipline_dir.parent       # disciplines
+    object_dir = disciplines_dir.parent           # <obj>
+    if documents_dir.name != "documents" or disciplines_dir.name != "disciplines":
+        raise ProjectPackageError(
+            "Каталог версии не в раскладке projects_v2: ожидалось "
+            f".../objects/<obj>/disciplines/<Д>/documents/<код>/versions/<vid>, "
+            f"получено {version_dir}"
+        )
+
+    document_json = doc_dir / "document.json"
+    if not document_json.is_file():
+        # Без него `ProjectsV2Adapter.list_documents` пропускает документ молча,
+        # и воркер получит пакет, в котором проекта «нет».
+        raise ProjectPackageError(
+            f"В {doc_dir} нет document.json — переносимое дерево собрать нельзя"
+        )
+    try:
+        doc_meta = json.loads(document_json.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ProjectPackageError(f"document.json нечитаем: {exc}") from exc
+    if not isinstance(doc_meta, dict):
+        raise ProjectPackageError("document.json не является объектом JSON")
+
+    return PortableProjectIdentity(
+        object_folder=safe_path_segment(object_dir.name, field="object_folder"),
+        discipline=safe_path_segment(discipline_dir.name, field="discipline"),
+        document_code=safe_path_segment(doc_dir.name, field="document_code"),
+        version_id=safe_path_segment(version_dir.name, field="version_id"),
+        object_id=(str(doc_meta.get("object_id")) if doc_meta.get("object_id") else None),
+        project_external_id=(
+            project_external_id
+            if project_external_id is not None
+            else doc_meta.get("external_id")
+        ),
+    )
+
+
+def sanitize_metadata_blob(raw: bytes, *, source: str) -> tuple[bytes, list[str]]:
+    """Убрать из метаданных абсолютные пути центрального хоста.
+
+    Возвращает `(очищенный блоб, список очищенных json-путей)`. Не-JSON и
+    неожиданная структура возвращаются как есть: молча ломать метаданные хуже,
+    чем оставить в них лишнее поле, а рубеж «в пакете нет абсолютных путей»
+    держится отдельной проверкой при сборке.
+    """
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return raw, []
+    cleared: list[str] = []
+
+    def walk(node: Any, path: str) -> Any:
+        if isinstance(node, dict):
+            out: dict[str, Any] = {}
+            for key, value in node.items():
+                where = f"{path}.{key}" if path else key
+                if key in _HOST_PATH_KEYS and isinstance(value, str) and value:
+                    cleared.append(f"{source}:{where}")
+                    out[key] = None
+                    continue
+                if isinstance(value, str) and value.startswith("/") and len(value) > 1:
+                    cleared.append(f"{source}:{where}")
+                    out[key] = None
+                    continue
+                out[key] = walk(value, where)
+            return out
+        if isinstance(node, list):
+            return [walk(item, f"{path}[{i}]") for i, item in enumerate(node)]
+        return node
+
+    if not cleared and not isinstance(data, (dict, list)):
+        return raw, []
+    cleaned = walk(data, "")
+    if not cleared:
+        return raw, []
+    return (
+        json.dumps(cleaned, ensure_ascii=False, indent=2).encode("utf-8"),
+        cleared,
+    )
+
+
 # ─── Классификация путей ─────────────────────────────────────────────────────
 def _is_forbidden(rel_parts: tuple[str, ...], name: str) -> Optional[str]:
     for part in rel_parts:
@@ -165,7 +411,12 @@ def scan_version_tree(
 
         for filename in sorted(filenames):
             abs_path = root_path / filename
-            rel_path = (rel_root / filename).as_posix().lstrip("./")
+            # `lstrip("./")` снимал НАБОР символов, а не префикс: файл
+            # `.gitkeep` в корне версии уезжал в пакет как `gitkeep`, то есть
+            # переименовывался молча. Относительный путь строится явно.
+            rel_path = (rel_root / filename).as_posix()
+            if rel_path.startswith("./"):
+                rel_path = rel_path[2:]
             if abs_path.is_symlink():
                 result.excluded.append(f"{rel_path} (симлинк)")
                 continue
@@ -278,6 +529,52 @@ def _tar_add_bytes(tar: tarfile.TarFile, name: str, data: bytes, mtime: int) -> 
     tar.addfile(info, io.BytesIO(data))
 
 
+def _collect_tree_metadata(
+    version_dir: Path, identity: PortableProjectIdentity
+) -> tuple[dict[str, bytes], list[str]]:
+    """Метаданные выше каталога версии: object.json, document.json, current_version.
+
+    Они лежат ВНЕ `version_dir`, поэтому сканер дерева версии их не видит, — а
+    без `document.json` `ProjectsV2Adapter` документ пропускает молча. Именно
+    поэтому переносимое дерево собирается отдельным шагом, а не «тем же
+    обходом».
+    """
+    version_dir = Path(version_dir).resolve()
+    doc_dir = version_dir.parent.parent
+    # parents: [0]=documents, [1]=<дисциплина>, [2]=disciplines, [3]=<объект>.
+    object_dir = doc_dir.parents[3]
+    out: dict[str, bytes] = {}
+    cleared: list[str] = []
+
+    def take(path: Path, rel: str, *, required: bool) -> None:
+        if not path.is_file() or path.is_symlink():
+            if required:
+                raise ProjectPackageError(f"Обязательный файл дерева отсутствует: {path}")
+            return
+        raw = path.read_bytes()
+        if path.suffix.lower() == ".json":
+            raw, dropped = sanitize_metadata_blob(raw, source=rel)
+            cleared.extend(dropped)
+        out[rel] = raw
+
+    take(
+        object_dir / "object.json",
+        f"objects/{identity.object_folder}/object.json",
+        required=False,
+    )
+    take(
+        doc_dir / "document.json",
+        f"{identity.project_relative_path}/document.json",
+        required=True,
+    )
+    take(
+        doc_dir / "current_version.txt",
+        f"{identity.project_relative_path}/current_version.txt",
+        required=False,
+    )
+    return out, cleared
+
+
 def build_project_source_package(
     *,
     dest_path: Path,
@@ -285,10 +582,24 @@ def build_project_source_package(
     manifest_base: dict[str, Any],
     snapshot_files: dict[str, bytes],
     feature_flags: dict[str, Any],
+    runtime_config: Optional[bytes] = None,
+    identity: Optional[PortableProjectIdentity] = None,
     compression: str = "gzip",
     limits: Optional[PackageLimits] = None,
 ) -> dict[str, Any]:
-    """Собрать пакет из ФАКТИЧЕСКОГО дерева версии.
+    """Собрать пакет из ФАКТИЧЕСКОГО дерева версии в ПЕРЕНОСИМОЙ раскладке.
+
+    Внутри архива воспроизводится корень `projects_v2` целиком:
+
+        payload/projects_v2/objects/<obj>/object.json
+        payload/projects_v2/objects/<obj>/disciplines/<Д>/documents/<код>/document.json
+        payload/projects_v2/objects/<obj>/disciplines/<Д>/documents/<код>/current_version.txt
+        payload/projects_v2/objects/<obj>/…/documents/<код>/versions/<vid>/<файлы версии>
+
+    Это не украшение раскладки. Плоский `payload/project/<содержимое версии>`
+    не находил ни `resolve_project_dir`, ни `resolve_v2_job_paths`: первый
+    доходил до fallback'а по суффиксу `.pdf` и возвращал ФАЙЛ вместо каталога,
+    второй возвращал `None`. Удалённый прогон падал до первого этапа (Б-3).
 
     Хардлинки сохраняются: первый файл каждого инода кладётся как обычный, все
     последующие — записью типа `link`. Карта групп уезжает в манифест, чтобы
@@ -297,6 +608,13 @@ def build_project_source_package(
     scan = scan_version_tree(version_dir, limits=limits)
     if not scan.files:
         raise ProjectPackageError(f"В версии {version_dir} нет ни одного файла")
+
+    ident = identity or resolve_portable_identity(
+        version_dir,
+        project_external_id=manifest_base.get("project_external_id"),
+    )
+    tree_meta, cleared_paths = _collect_tree_metadata(version_dir, ident)
+    version_prefix = ident.version_relative_path + "/"
 
     dest_path = Path(dest_path)
     dest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -315,8 +633,14 @@ def build_project_source_package(
             "package_type": "source",
             "project_layout_version": PROJECT_LAYOUT_VERSION,
             "path_root": package_service.PAYLOAD_ROOT,
-            "project_root": PROJECT_ROOT,
+            "project_root": PROJECTS_ROOT,
             "snapshot_root": SNAPSHOT_ROOT,
+            "runtime_root": RUNTIME_ROOT,
+            # Внешний идентификатор версии сохраняется отдельным полем: путь
+            # строится ТОЛЬКО по физическому `version_id` из `ident`.
+            "version_external_id": manifest_base.get("version_id"),
+            **ident.as_manifest(),
+            "cleared_absolute_paths": sorted(set(cleared_paths)),
             "compression": compression,
             "created_at": time.time(),
             # Потолки объявляются в манифесте ВСЕГДА: приёмная сторона обязана
@@ -332,8 +656,26 @@ def build_project_source_package(
 
     tar = package_service._open_write(tmp_path, compression)   # noqa: SLF001
     try:
+        # Метаданные дерева идут ПЕРВЫМИ: без `document.json` каталог версии на
+        # воркере — просто набор файлов, который адаптер не видит.
+        for rel_meta, blob in sorted(tree_meta.items()):
+            arc_name = package_service.PAYLOAD_ROOT + PROJECTS_ROOT + safe_relative_path(
+                rel_meta, field="tree_metadata"
+            )
+            _tar_add_bytes(tar, arc_name, blob, mtime)
+            file_entries.append(
+                {
+                    "path": arc_name,
+                    "bytes": len(blob),
+                    "sha256": package_service.sha256_bytes(blob),
+                }
+            )
+            uncompressed += len(blob)
+
         for abs_path, rel_path in scan.files:
-            arc_name = package_service.PAYLOAD_ROOT + PROJECT_ROOT + rel_path
+            arc_name = (
+                package_service.PAYLOAD_ROOT + PROJECTS_ROOT + version_prefix + rel_path
+            )
             stat = abs_path.stat()
             key = (stat.st_dev, stat.st_ino)
             if stat.st_nlink > 1 and key in inode_first:
@@ -386,6 +728,36 @@ def build_project_source_package(
             }
         )
         uncompressed += len(flags_blob)
+
+        if runtime_config is not None:
+            runtime_name = (
+                package_service.PAYLOAD_ROOT + RUNTIME_ROOT + "runtime_config.json"
+            )
+            _tar_add_bytes(tar, runtime_name, runtime_config, mtime)
+            file_entries.append(
+                {
+                    "path": runtime_name,
+                    "bytes": len(runtime_config),
+                    "sha256": package_service.sha256_bytes(runtime_config),
+                }
+            )
+            uncompressed += len(runtime_config)
+
+        # Рубеж RRG-07: ни одно имя внутри архива не является абсолютным и не
+        # содержит обхода каталога. Проверяется по ФАКТИЧЕСКОМУ списку записей,
+        # а не по намерению сборщика.
+        bad_names = [
+            e["path"]
+            for e in file_entries
+            if e["path"].startswith("/")
+            or "\\" in e["path"]
+            or ".." in e["path"].split("/")
+            or not e["path"].startswith(package_service.PAYLOAD_ROOT)
+        ]
+        if bad_names:
+            raise ProjectPackageError(
+                "В пакете абсолютные или небезопасные пути: " + ", ".join(bad_names[:5])
+            )
 
         tree_source = "\n".join(
             f"{e['path']}:{e.get('sha256') or e.get('hardlink_to')}"
