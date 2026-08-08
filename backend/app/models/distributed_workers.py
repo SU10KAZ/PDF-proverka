@@ -802,6 +802,21 @@ class CreateAttemptRequest(BaseModel):
     accept_capacity_risk: bool = False
 
 
+class RemoteAuditLaunchRequest(BaseModel):
+    """Ручной запуск реального аудита на выбранном воркере.
+
+    Полей ровно четыре, и ни одно не описывает СПОСОБ исполнения. Воркер
+    выбирает оператор: автовыбора на этом этапе нет намеренно (§3.2).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    worker_id: str = Field(min_length=1, max_length=64)
+    project_id: str = Field(min_length=1, max_length=300)
+    version_id: Optional[str] = Field(default=None, max_length=64)
+    action: Literal["full", "audit", "resume"] = "full"
+
+
 class RequestDeletionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

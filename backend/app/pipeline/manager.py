@@ -4929,6 +4929,51 @@ class PipelineManager:
     start_standard_audit = start_audit
     start_pro_audit = start_audit
 
+    async def start_remote_audit(
+        self,
+        project_id: str,
+        *,
+        worker_id: str,
+        version_id: Optional[str] = None,
+        action: str = "full",
+    ) -> AuditJob:
+        """Запустить аудит проекта на выбранном ОПЕРАТОРОМ audit-worker.
+
+        Только одиночный запуск. Групповая очередь остаётся локальной: смешивать
+        автоматическую диспетчеризацию с удалённым исполнением на этом этапе
+        нельзя — автовыбора воркера нет, а «раскидать батч по VPS» без него
+        означает раскидать всё на один и тот же.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        allowed, reason = execution_registry.remote_execution_available()
+        if not allowed:
+            raise RuntimeError(reason)
+        if not worker_id:
+            raise RuntimeError(
+                "Удалённый запуск требует явно выбранного воркера: "
+                "автоматического выбора на этом этапе нет"
+            )
+        if self.is_project_in_active_batch(project_id):
+            raise RuntimeError(
+                f"Проект {project_id} участвует в активной групповой очереди. "
+                "Групповая очередь исполняется локально; дождитесь её завершения "
+                "или уберите проект из очереди."
+            )
+        self._assert_stage_model_config_ready()
+        from backend.app.core import config as _config
+
+        return await self._enqueue_single(
+            project_id,
+            action=action,
+            version_id=version_id,
+            execution_mode="remote_worker",
+            worker_id=worker_id,
+            execution_profile=getattr(
+                _config, "REMOTE_AUDIT_PROFILE", "remote_audit_pilot_v1"
+            ),
+        )
+
     async def _run_block_retry(
         self,
         job: AuditJob,
@@ -6446,6 +6491,9 @@ class PipelineManager:
         retry_stage: Optional[str] = None,
         extra_params: Optional[dict] = None,
         version_id: Optional[str] = None,
+        execution_mode: str = "local",
+        worker_id: Optional[str] = None,
+        execution_profile: Optional[str] = None,
     ) -> AuditJob:
         """Поставить single-project задачу в общую очередь.
 
@@ -6510,6 +6558,9 @@ class PipelineManager:
                 extra_params=extra_params or {},
                 status="pending",
                 job_id=job_id,
+                execution_mode=execution_mode,
+                worker_id=worker_id,
+                execution_profile=execution_profile,
             )
 
             queue = self._ensure_batch_worker(action_for_label=action)

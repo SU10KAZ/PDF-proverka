@@ -208,13 +208,18 @@ def test_only_one_subprocess_spawn_point():
                         assert isinstance(kw.value, ast.Constant) and kw.value.value is False, (
                             f"shell=True в {path.name}:{node.lineno}"
                         )
-    # Точек ровно две, и обе известны поимённо:
-    #   test_runner.py — единственный запуск ПРОЦЕССА АУДИТА;
-    #   __main__.py    — dev-режим `run`, поднимающий собственного исполнителя
-    #                    фиксированным argv `python -m audit_worker executor`.
+    # Точек ровно три, и все известны поимённо:
+    #   test_runner.py  — запуск ТЕСТОВОГО процесса;
+    #   audit_runner.py — запуск РЕАЛЬНОГО аудита (этап ExecutionBackend);
+    #   __main__.py     — dev-режим `run`, поднимающий собственного исполнителя
+    #                     фиксированным argv `python -m audit_worker executor`.
+    # Третья добавлена осознанно: реальный аудит не мог использовать точку
+    # тестового процесса — у него другой argv и другое окружение. Гарантия при
+    # этом сохранена: обе точки строят argv САМИ, из констант своего модуля.
     files = sorted({entry.split(":", 1)[0] for entry in found})
-    assert files == ["__main__.py", "test_runner.py"], found
+    assert files == ["__main__.py", "audit_runner.py", "test_runner.py"], found
     assert sum(1 for e in found if e.startswith("test_runner.py")) == 1, found
+    assert sum(1 for e in found if e.startswith("audit_runner.py")) == 1, found
 
     # Самозапуск исполнителя не должен уметь принимать чужой argv: элементы
     # списка — только sys.executable и строковые литералы (I-10).

@@ -171,10 +171,45 @@ def verify_and_unpack(
             count += 1
             if count > MAX_ENTRIES:
                 raise BundleError("Слишком много записей в архиве")
-            if member.issym() or member.islnk():
-                raise BundleError(f"Ссылки в архиве запрещены: {member.name!r}")
+            if member.issym():
+                # СИМВОЛИЧЕСКИЕ ссылки запрещены полностью: их цель
+                # разыменовывается при чтении и может указывать куда угодно.
+                raise BundleError(f"Символические ссылки запрещены: {member.name!r}")
             if member.ischr() or member.isblk() or member.isfifo() or member.isdev():
                 raise BundleError(f"Спецфайл запрещён: {member.name!r}")
+            if member.islnk():
+                # ЖЁСТКИЕ ссылки разрешены и обязаны быть: 18 % файлов корпуса
+                # (34 932 кропа блоков) — хардлинки, и запрет на них раздувал бы
+                # пакет проекта на 40 %. Опасность у них другая, чем у symlink:
+                # цель обязана быть УЖЕ распакованной записью внутри payload/.
+                # Ссылку «вперёд» или «наружу» tar создать не сможет.
+                safe = _safe_name(member.name)
+                link_target = _safe_name(member.linkname or "")
+                if link_target not in seen_names:
+                    raise BundleError(
+                        f"Жёсткая ссылка на неизвестную запись: {member.name!r} → "
+                        f"{member.linkname!r}"
+                    )
+                if not link_target.startswith(PAYLOAD_ROOT):
+                    raise BundleError(
+                        f"Жёсткая ссылка ведёт вне payload/: {member.linkname!r}"
+                    )
+                if safe in seen_names:
+                    raise BundleError(f"Повторяющийся путь в архиве: {safe!r}")
+                seen_names.add(safe)
+                rel = safe[len(PAYLOAD_ROOT):]
+                target = staging / rel
+                if not str(target.resolve()).startswith(str(staging.resolve())):
+                    raise BundleError(f"Путь выходит за staging: {member.name!r}")
+                source = staging / link_target[len(PAYLOAD_ROOT):]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    os.link(source, target)
+                except OSError:
+                    # Разные файловые системы или лимит nlink — копируем.
+                    # Данные важнее экономии места.
+                    shutil.copy2(source, target)
+                continue
             safe = _safe_name(member.name)
             if safe in seen_names:
                 # Повторяющийся путь: последняя запись «перекрывает» первую —
@@ -245,7 +280,19 @@ RESULT_SECTIONS = ("input", "work", "result")
 # Что из рабочего каталога наружу не уходит: в параметрах нет секретов, но
 # принцип «в результат попадает только явно перечисленное» дешевле поддерживать,
 # чем каждый раз доказывать безопасность нового файла.
-_WORK_ALLOWLIST = {"test_params.json", "completed.marker"}
+_WORK_ALLOWLIST = {"test_params.json", "completed.marker", "pipeline_log.json",
+                   "process_exit.json"}
+
+#: Что из дерева проекта возвращается центру. Всё остальное центр уже имеет:
+#: он сам это отправлял, и обратная перезапись исходников заказчика недопустима.
+_PROJECT_RETURN_PREFIXES = ("03_analysis/", "99_service/")
+
+#: Разделы, которые собираются для реального аудита.
+_AUDIT_SECTIONS = ("project", "work", "result", "usage", "logs")
+
+#: Потолок объёма логов в пакете: полный stdout многочасового аудита — сотни
+#: мегабайт, и центру он нужен как диагностика, а не как архив.
+_MAX_LOG_BYTES = 8 * 1024 * 1024
 
 
 def build_result_package(
@@ -263,14 +310,54 @@ def build_result_package(
     source_package_hash: Optional[str] = None,
     exit_code: int = 0,
     compression: str = "gzip",
+    job_type: str = "test_pipeline_v1",
+    required_artifacts: Optional[list[str]] = None,
+    pipeline_revision: Optional[str] = None,
+    stage_completion: Optional[dict[str, Any]] = None,
+    resume_hint: Optional[str] = None,
+    cancellation_state: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Собрать TAR результата: input/ + work/ + result/.
+    """Собрать TAR результата: input/ + work/ + result/ (+ project/usage/logs).
 
     Архив материализуется на диск ДО уведомления центра — это и есть защита
     «готовый пакет не должен потеряться» (§11.8 техпроекта).
     """
     result_dir = job_dir / "result"
     files: dict[str, bytes] = {}
+    is_audit = job_type == "audit_pipeline_v1"
+
+    if is_audit:
+        # project/: ТОЛЬКО то, что произвёл конвейер. Исходники заказчика
+        # обратно не едут — центр их и отправлял, а перезапись PDF необратима.
+        project_dir = job_dir / "project"
+        if project_dir.is_dir():
+            for path in sorted(project_dir.rglob("*")):
+                if not path.is_file() or path.is_symlink():
+                    continue
+                rel = path.relative_to(project_dir).as_posix()
+                if not rel.startswith(_PROJECT_RETURN_PREFIXES):
+                    continue
+                files[f"project/{rel}"] = path.read_bytes()
+        usage_dir = job_dir / "usage"
+        if usage_dir.is_dir():
+            for path in sorted(usage_dir.rglob("*")):
+                if path.is_file():
+                    files["usage/" + path.relative_to(usage_dir).as_posix()] = (
+                        path.read_bytes()
+                    )
+        logs_dir = job_dir / "logs"
+        if logs_dir.is_dir():
+            for path in sorted(logs_dir.rglob("*")):
+                if not path.is_file():
+                    continue
+                blob = path.read_bytes()
+                if len(blob) > _MAX_LOG_BYTES:
+                    # Обрезка ВИДНА: молчаливо укороченный лог хуже отсутствующего.
+                    blob = (
+                        b"[...journal truncated by worker: keeping the tail...]\n"
+                        + blob[-_MAX_LOG_BYTES:]
+                    )
+                files["logs/" + path.relative_to(logs_dir).as_posix()] = blob
 
     # input/: описание задания из исходного пакета — что именно нам выдали.
     source_job = job_dir / "work" / "job.json"
@@ -322,16 +409,28 @@ def build_result_package(
         "worker_id": worker_id,
         "worker_version": worker_version,
         "protocol_version": protocol_version,
-        "project_layout_version": 0,
+        "project_layout_version": 1 if is_audit else 0,
+        "job_type": job_type,
+        "pipeline_revision": pipeline_revision,
         "compression": compression,
         # Хэш исходного пакета: связывает результат с тем, из чего он получен.
         "source_package_hash": normalize_hash(source_package_hash or "") or None,
         "exit_code": exit_code,
-        "sections": list(RESULT_SECTIONS),
+        "cancellation_state": cancellation_state,
+        "sections": list(_AUDIT_SECTIONS if is_audit else RESULT_SECTIONS),
         "path_root": PAYLOAD_ROOT,
         "files": entries,
+        "hardlinks": {},
         "hardlink_groups": {},
-        "required_artifacts": ["result/summary.json", "result/run_log.txt"],
+        "required_artifacts": list(
+            required_artifacts
+            if required_artifacts is not None
+            else ["result/summary.json", "result/run_log.txt"]
+        ),
+        "generated_artifacts": sorted(files),
+        "stage_completion": dict(stage_completion or {}),
+        "resume_hint": resume_hint,
+        "excluded_artifacts": [],
         "excluded_recoverable": [],
         "path_rules": {"absolute_paths_present": False, "rewrite_on_unpack": []},
         "tree_hash": "sha256:"

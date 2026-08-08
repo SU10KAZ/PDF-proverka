@@ -20,6 +20,8 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import threading
 import time
 from pathlib import Path
@@ -784,6 +786,8 @@ class WorkerAgent:
             package.get("compression", "gzip"), ".tar"
         )
         dest = job_dir / "source" / f"{package['package_id']}{suffix}"
+        is_audit = str(assignment.get("job_type") or "") == "audit_pipeline_v1"
+        unpack_target = (job_dir / "unpack_staging") if is_audit else (job_dir / "work")
 
         self.jobs.update(job_id, attempt_id, local_state="downloading")
         ctx["stage"] = "download"
@@ -793,13 +797,27 @@ class WorkerAgent:
             info = package_io.verify_and_unpack(
                 archive=dest,
                 expected_sha256=package["sha256"],
-                work_dir=job_dir / "work",
+                work_dir=unpack_target,
                 compression=package.get("compression"),
             )
         except package_io.BundleError as exc:
             ctx["outbox"].append("source_invalid", {"message": str(exc)})
             self._flush_outbox(ctx)
             raise
+        if is_audit:
+            # Пакет реального аудита распаковывается в `unpack_staging`, а
+            # `project/` и `snapshot/` переносятся в каталог попытки, где их
+            # ждёт `audit_runner`. Распаковывать прямо в `job_dir` нельзя:
+            # `verify_and_unpack` очищает каталог назначения и снёс бы logs/,
+            # metadata/ и уже накопленный EventOutbox.
+            for name in ("project", "snapshot"):
+                source = unpack_target / name
+                if not source.is_dir():
+                    continue
+                destination = job_dir / name
+                shutil.rmtree(destination, ignore_errors=True)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                os.replace(source, destination)
 
         ctx["outbox"].append(
             "source_verified",

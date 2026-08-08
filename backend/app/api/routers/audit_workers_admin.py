@@ -30,6 +30,7 @@ from backend.app.models.distributed_workers import (
     CreateTestJobRequest,
     JobState,
     MarkAttemptLostRequest,
+    RemoteAuditLaunchRequest,
     RequestDeletionRequest,
 )
 from backend.app.services.distributed_workers import (
@@ -355,6 +356,102 @@ async def list_workers(actor: Actor = Depends(require_view)) -> dict[str, Any]:
         "max_verified_slots": slots.MAX_VERIFIED_SLOTS,
         "permissions": sorted(actor.permissions),
         "server_time": now,
+    }
+
+
+@router.get("/audit/targets")
+async def audit_targets(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    """Куда можно отправить РЕАЛЬНЫЙ аудит и почему нельзя во всё остальное.
+
+    Несовместимый воркер не просто «не показывается» — он показывается с точной
+    причиной. Молчаливое «недоступен» оператор не может ни понять, ни исправить.
+    """
+    from backend.app.pipeline.execution import registry as execution_registry
+    from backend.app.services.distributed_workers import audit_job_service
+
+    settings = _settings_or_404()
+    enabled, reason = execution_registry.remote_execution_available()
+    targets = await database.run_db(
+        audit_job_service.list_compatible_workers, settings=settings
+    )
+    return {
+        "remote_execution_enabled": enabled,
+        "disabled_reason": None if enabled else reason,
+        "profile": audit_job_service.REMOTE_AUDIT_PILOT_V1,
+        "center_pipeline_revision": audit_job_service.center_pipeline_revision() or None,
+        "audit_slot_limit": audit_job_service.REAL_AUDIT_MAX_SLOTS,
+        # Правда, а не пожелание: нормативный этап на воркере не выполняется.
+        "norm_stage_location": "center",
+        "workers": targets,
+        "permissions": sorted(actor.permissions),
+        "server_time": time.time(),
+    }
+
+
+@router.post("/audit/launch")
+async def audit_launch(
+    payload: RemoteAuditLaunchRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
+) -> dict[str, Any]:
+    """Отправить проект на выбранный audit-worker. Ручной режим, без автовыбора."""
+    from backend.app.pipeline.manager import pipeline_manager
+    from backend.app.services.distributed_workers import audit_job_service
+
+    settings = _settings_or_404()
+    _require_operator_intent(request)
+    worker = await database.run_db(
+        repositories.get_worker, payload.worker_id, settings=settings
+    )
+    if worker is None:
+        raise HTTPException(status_code=404, detail="Воркер не найден")
+    attempts = await database.run_db(
+        repositories.attempts_for_worker_nonterminal, payload.worker_id,
+        settings=settings,
+    )
+    report = audit_job_service.compatibility_report(
+        worker, settings=settings, active_attempts=attempts
+    )
+    if not report["compatible"]:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": "worker_incompatible",
+                "reasons": report["reasons"],
+            },
+        )
+    try:
+        job = await pipeline_manager.start_remote_audit(
+            payload.project_id,
+            worker_id=payload.worker_id,
+            version_id=payload.version_id,
+            action=payload.action,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    _audit(request, "remote_audit_launched", worker_id=payload.worker_id)
+    return {
+        "status": "queued",
+        "job": job.model_dump(),
+        "worker": {
+            "worker_id": report["worker_id"],
+            "display_name": report["display_name"],
+            "provider_mode": report["provider_mode"],
+            "real_llm_enabled": report["real_llm_enabled"],
+            "audit_slot_label": report["audit_slot_label"],
+        },
+        "profile": audit_job_service.REMOTE_AUDIT_PILOT_V1,
+        "norm_stage_location": "center",
+        "notice": (
+            "Пакет проекта соберётся при старте элемента очереди. Нормативный "
+            "этап и финальная сборка выполняются на центре. "
+            + (
+                "Внимание: на воркере включены НАСТОЯЩИЕ Claude/Codex."
+                if report["real_llm_enabled"]
+                else "На воркере настоящие Claude/Codex отключены — работают "
+                     "поддельные провайдеры тестового режима."
+            )
+        ),
     }
 
 

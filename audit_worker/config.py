@@ -82,6 +82,9 @@ class WorkerConfig:
     # запускается фиксированный internal runner. Задаётся АДМИНИСТРАТОРОМ VPS,
     # не центром: путь к исполняемому коду не может приходить из задания.
     pipeline_root: Path | None = None
+    # Интерпретатор, которым запускается конвейер. Пусто = тот же, что у
+    # исполнителя. Задаётся администратором VPS, не центром.
+    pipeline_python: str | None = None
     # Приём заданий типа audit_pipeline_v1. Включение подсистемы воркеров этого
     # НЕ включает: реальный аудит требует отдельного осознанного решения.
     audit_pipeline_enabled: bool = False
@@ -246,6 +249,9 @@ def load_config(
             Path(os.environ["AUDIT_WORKER_PIPELINE_ROOT"]).expanduser().resolve()
             if os.environ.get("AUDIT_WORKER_PIPELINE_ROOT", "").strip()
             else None
+        ),
+        pipeline_python=(
+            os.environ.get("AUDIT_WORKER_PIPELINE_PYTHON", "").strip() or None
         ),
         audit_pipeline_enabled=_env_bool("AUDIT_WORKER_AUDIT_PIPELINE_ENABLED", False),
         allow_real_llm=_env_bool("AUDIT_WORKER_ALLOW_REAL_LLM", False),

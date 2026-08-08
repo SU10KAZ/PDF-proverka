@@ -509,3 +509,1686 @@ def test_registration_rate_limit_does_not_double_charge_one_request(center_env, 
     # Ровно одна корзина пары и ровно одно списание: отказ по IP не должен
     # оставлять «съеденную» квоту instance_id.
     assert per_instance == [1]
+
+
+# ═══ §2 Контракт ExecutionBackend ════════════════════════════════════════════
+CONTRACT_METHODS = (
+    "prepare", "start", "status", "wait", "cancel", "liveness", "reattach",
+    "collect_result",
+)
+
+
+def test_contract_declares_eight_operations():
+    from backend.app.pipeline.execution.contracts import ExecutionBackend
+
+    for name in CONTRACT_METHODS:
+        assert callable(getattr(ExecutionBackend, name, None)), name
+
+
+def test_both_backends_implement_the_contract():
+    from backend.app.pipeline.execution.local import LocalExecutionBackend
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+
+    for cls in (LocalExecutionBackend, RemoteWorkerExecutionBackend):
+        for name in CONTRACT_METHODS:
+            own = getattr(cls, name, None)
+            base = getattr(
+                __import__(
+                    "backend.app.pipeline.execution.contracts",
+                    fromlist=["ExecutionBackend"],
+                ).ExecutionBackend,
+                name,
+            )
+            assert own is not base, f"{cls.__name__}.{name} не реализован"
+
+
+def test_request_forbids_command_and_path_fields():
+    """Через контракт нельзя передать команду, argv, env или путь."""
+    import pydantic
+
+    from backend.app.pipeline.execution.contracts import ExecutionRequest
+
+    for field in ("command", "argv", "env", "cwd", "executable", "script", "module"):
+        with pytest.raises(pydantic.ValidationError):
+            ExecutionRequest(project_id="p", job_id="j", **{field: "x"})
+
+
+def test_audit_options_forbid_unknown_fields():
+    import pydantic
+
+    from backend.app.pipeline.execution.contracts import AuditExecutionOptions
+
+    with pytest.raises(pydantic.ValidationError):
+        AuditExecutionOptions(action="full", shell="rm -rf /")
+
+
+class _FakeJob:
+    def __init__(self):
+        from backend.app.models.audit import AuditStage, JobStatus
+
+        self.job_id = "job-1"
+        self.project_id = "ПРО/ект 1"
+        self.version_id = "v002"
+        self.object_id = None
+        self.status = JobStatus.COMPLETED
+        self.stage = AuditStage.PREPARE
+        self.progress_current = 0
+        self.progress_total = 0
+        self.error_message = None
+        self.completed_at = None
+
+
+class _RecordingManager:
+    """Минимальный двойник менеджера: фиксирует, чем его позвали."""
+
+    def __init__(self):
+        self.calls: list[dict] = []
+        self.active_jobs: dict = {}
+        self._tasks: dict = {}
+        self._batch_queue = None
+
+    async def _dispatch_action(self, item, job, *, default_action="full",
+                               action_override=None):
+        self.calls.append(
+            {
+                "item": item, "job": job,
+                "default_action": default_action,
+                "action_override": action_override,
+            }
+        )
+
+    def _persist_queue(self):
+        return None
+
+    async def cancel(self, project_id):
+        self.calls.append({"cancel": project_id})
+        return True
+
+
+def test_local_backend_delegates_with_identical_arguments():
+    """LocalExecutionBackend вызывает прежний `_dispatch_action` один раз и как раньше."""
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionContext,
+        ExecutionRequest,
+    )
+    from backend.app.pipeline.execution.local import LocalExecutionBackend
+
+    manager = _RecordingManager()
+    backend = LocalExecutionBackend(manager)
+    item = BatchQueueItem(project_id="ПРО/ект 1", version_id="v002", action="full")
+    job = _FakeJob()
+    ctx = ExecutionContext(item=item, job=job, default_action="audit",
+                           action_override="resume")
+    request = ExecutionRequest(project_id=job.project_id, version_id="v002",
+                               job_id=job.job_id)
+
+    result = asyncio.run(backend.run(request, ctx))
+
+    assert len(manager.calls) == 1
+    call = manager.calls[0]
+    assert call["item"] is item and call["job"] is job
+    assert call["default_action"] == "audit"
+    assert call["action_override"] == "resume"
+    assert result.success is True and result.cancelled is False
+
+
+def test_local_backend_prepare_has_no_side_effects():
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionContext,
+        ExecutionMode,
+        ExecutionRequest,
+    )
+    from backend.app.pipeline.execution.local import LocalExecutionBackend
+
+    manager = _RecordingManager()
+    backend = LocalExecutionBackend(manager)
+    item = BatchQueueItem(project_id="p")
+    ctx = ExecutionContext(item=item, job=_FakeJob())
+    handle = asyncio.run(
+        backend.prepare(ExecutionRequest(project_id="p", job_id="j"), ctx)
+    )
+    assert handle.backend_type is ExecutionMode.LOCAL
+    assert manager.calls == []
+    assert item.execution_handle == {}
+
+
+def test_local_backend_reattach_is_noop():
+    import asyncio
+
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionHandle,
+        ExecutionMode,
+    )
+    from backend.app.pipeline.execution.local import LocalExecutionBackend
+
+    backend = LocalExecutionBackend(_RecordingManager())
+    handle = ExecutionHandle(
+        backend_type=ExecutionMode.LOCAL, handle_id="j", project_id="p"
+    )
+    assert asyncio.run(backend.reattach(handle)) is None
+
+
+def test_remote_backend_never_calls_local_dispatch():
+    """E-02 машинно: в remote.py нет ВЫЗОВА `_dispatch_action` и запуска процессов.
+
+    Проверяется дерево разбора, а не текст: упоминание в докстринге («этот
+    backend не зовёт `_dispatch_action`») — это объяснение границы, а не её
+    нарушение, и текстовый греп на нём ложно срабатывал.
+    """
+    import ast
+
+    tree = ast.parse(
+        (_ROOT / "backend" / "app" / "pipeline" / "execution" / "remote.py")
+        .read_text(encoding="utf-8")
+    )
+    banned_attrs = {"_dispatch_action", "system", "Popen", "run_script"}
+    banned_names = {"subprocess", "paramiko", "pexpect"}
+    offenders: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and node.attr in banned_attrs:
+            offenders.append(f"{node.lineno}: .{node.attr}")
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            names = [a.name.split(".")[0] for a in (node.names or [])]
+            module = (getattr(node, "module", "") or "").split(".")[0]
+            for candidate in [*names, module]:
+                if candidate in banned_names:
+                    offenders.append(f"{node.lineno}: import {candidate}")
+    assert not offenders, offenders
+    # Токен воркера remote backend не читает: этим занимается только агент.
+    for banned in ("read_token", "worker_token", "claim_secret"):
+        assert banned not in ast.dump(tree), banned
+
+
+def test_remote_backend_reuses_existing_handle(center_env, admin, monkeypatch):
+    """Повторный prepare не создаёт второе задание (E-04, E-05)."""
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionContext,
+        ExecutionHandle,
+        ExecutionMode,
+        ExecutionRequest,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+    from backend.app.services.distributed_workers import repositories
+
+    monkeypatch.setenv("DISTRIBUTED_AUDIT_EXECUTION_ENABLED", "true")
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_reuse")
+    job = _create_job(admin, worker_id, project="ИСП/повторный prepare")
+
+    item = BatchQueueItem(
+        project_id="ИСП/повторный prepare",
+        execution_mode="remote_worker",
+        worker_id=worker_id,
+        execution_handle=ExecutionHandle(
+            backend_type=ExecutionMode.REMOTE_WORKER,
+            handle_id=job["attempt_id"],
+            project_id="ИСП/повторный prepare",
+            attempt_id=job["attempt_id"],
+            remote_job_id=job["job_id"],
+            worker_id=worker_id,
+        ).model_dump(),
+    )
+    backend = RemoteWorkerExecutionBackend(_RecordingManager())
+    ctx = ExecutionContext(item=item, job=_FakeJob())
+    handle = asyncio.run(
+        backend.prepare(
+            ExecutionRequest(
+                project_id="ИСП/повторный prepare", job_id="job-1",
+                execution_mode=ExecutionMode.REMOTE_WORKER,
+                assigned_worker_id=worker_id,
+            ),
+            ctx,
+        )
+    )
+    assert handle.attempt_id == job["attempt_id"]
+    assert len(repositories.list_jobs(worker_id=worker_id, settings=center_env)) == 1
+
+
+def test_remote_backend_requires_explicit_worker(center_env, monkeypatch):
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionContext,
+        ExecutionError,
+        ExecutionMode,
+        ExecutionRequest,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+
+    monkeypatch.setenv("DISTRIBUTED_AUDIT_EXECUTION_ENABLED", "true")
+    backend = RemoteWorkerExecutionBackend(_RecordingManager())
+    ctx = ExecutionContext(item=BatchQueueItem(project_id="p"), job=_FakeJob())
+    with pytest.raises(ExecutionError):
+        asyncio.run(
+            backend.prepare(
+                ExecutionRequest(
+                    project_id="p", job_id="j",
+                    execution_mode=ExecutionMode.REMOTE_WORKER,
+                ),
+                ctx,
+            )
+        )
+
+
+def test_remote_liveness_never_reports_dead_on_offline(center_env, admin):
+    """E-08: потеря связи не превращается в «мертво»."""
+    import asyncio
+
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionHandle,
+        ExecutionMode,
+        Liveness,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+    from backend.app.services.distributed_workers import repositories
+
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_live")
+    job = _create_job(admin, worker_id, project="ИСП/живость")
+    repositories.claim_next_job_for_worker(worker_id, settings=center_env)
+    repositories.update_attempt_fields(
+        job["attempt_id"], {"connectivity_state": "offline"}, settings=center_env
+    )
+    handle = ExecutionHandle(
+        backend_type=ExecutionMode.REMOTE_WORKER,
+        handle_id=job["attempt_id"], project_id="ИСП/живость",
+        attempt_id=job["attempt_id"], remote_job_id=job["job_id"],
+        worker_id=worker_id,
+    )
+    backend = RemoteWorkerExecutionBackend(_RecordingManager())
+    verdict = asyncio.run(backend.liveness(handle))
+    assert verdict.state is Liveness.UNKNOWN
+    assert not verdict.may_be_reclaimed
+
+
+def test_remote_liveness_dead_only_on_terminal_state(center_env, admin, operator):
+    import asyncio
+
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionHandle,
+        ExecutionMode,
+        Liveness,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_live2")
+    job = _create_job(admin, worker_id, project="ИСП/терминал")
+    assert _cancel(operator, job).status_code == 200
+    handle = ExecutionHandle(
+        backend_type=ExecutionMode.REMOTE_WORKER,
+        handle_id=job["attempt_id"], project_id="ИСП/терминал",
+        attempt_id=job["attempt_id"], remote_job_id=job["job_id"],
+        worker_id=worker_id,
+    )
+    verdict = asyncio.run(
+        RemoteWorkerExecutionBackend(_RecordingManager()).liveness(handle)
+    )
+    assert verdict.state is Liveness.DEAD and verdict.may_be_reclaimed
+
+
+def test_remote_reattach_finds_attempt_and_creates_nothing(center_env, admin):
+    import asyncio
+
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionHandle,
+        ExecutionMode,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+    from backend.app.services.distributed_workers import repositories
+
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_reattach")
+    job = _create_job(admin, worker_id, project="ИСП/переподключение")
+    handle = ExecutionHandle(
+        backend_type=ExecutionMode.REMOTE_WORKER,
+        handle_id=job["attempt_id"], project_id="ИСП/переподключение",
+        attempt_id=job["attempt_id"], remote_job_id=job["job_id"],
+        worker_id=worker_id,
+    )
+    before = len(repositories.list_jobs(worker_id=worker_id, settings=center_env))
+    snapshot = asyncio.run(
+        RemoteWorkerExecutionBackend(_RecordingManager()).reattach(handle)
+    )
+    after = len(repositories.list_jobs(worker_id=worker_id, settings=center_env))
+    assert snapshot is not None
+    assert before == after == 1
+
+
+def test_remote_reattach_returns_none_for_missing_attempt(center_env):
+    import asyncio
+
+    from backend.app.pipeline.execution.contracts import (
+        ExecutionHandle,
+        ExecutionMode,
+    )
+    from backend.app.pipeline.execution.remote import RemoteWorkerExecutionBackend
+
+    handle = ExecutionHandle(
+        backend_type=ExecutionMode.REMOTE_WORKER, handle_id="нет",
+        project_id="p", attempt_id="00000000-0000-4000-8000-000000000000",
+        remote_job_id="00000000-0000-4000-8000-000000000001",
+    )
+    assert asyncio.run(
+        RemoteWorkerExecutionBackend(_RecordingManager()).reattach(handle)
+    ) is None
+
+
+# ═══ §3 Интеграция с PipelineManager ═════════════════════════════════════════
+def test_local_path_goes_straight_to_dispatch_action():
+    """Локальный режим не создаёт ни одного объекта backend'а.
+
+    `_execute_item` для локального элемента вызывает прежний `_dispatch_action`
+    напрямую — это и есть «поведение прежнее», а не «эквивалентное».
+    """
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.manager import PipelineManager
+
+    manager = object.__new__(PipelineManager)
+    calls: list[dict] = []
+
+    async def fake_dispatch(item, job, *, default_action="full", action_override=None):
+        calls.append({"default_action": default_action,
+                      "action_override": action_override})
+
+    manager._dispatch_action = fake_dispatch          # type: ignore[assignment]
+    item = BatchQueueItem(project_id="p")
+    job = _FakeJob()
+    asyncio.run(
+        manager._execute_item(item, job, default_action="full", action_override=None)
+    )
+    assert calls == [{"default_action": "full", "action_override": None}]
+
+
+def test_remote_item_without_flag_is_refused_not_run_locally(monkeypatch):
+    """E-03: remote-элемент при выключенном флаге НЕ исполняется локально."""
+    import asyncio
+
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution.contracts import ExecutionError
+    from backend.app.pipeline.manager import PipelineManager
+
+    monkeypatch.setenv("DISTRIBUTED_AUDIT_EXECUTION_ENABLED", "false")
+    manager = object.__new__(PipelineManager)
+    called: list[str] = []
+
+    async def fake_dispatch(item, job, **kwargs):
+        called.append("dispatch")
+
+    manager._dispatch_action = fake_dispatch          # type: ignore[assignment]
+    item = BatchQueueItem(
+        project_id="p", execution_mode="remote_worker", worker_id="wrk_1"
+    )
+    with pytest.raises(ExecutionError):
+        asyncio.run(manager._execute_item(item, _FakeJob(), default_action="full"))
+    assert called == [], "remote-элемент исполнился локально — это двойной запуск"
+
+
+def test_remote_mode_without_worker_falls_back_to_local():
+    """Персистентный элемент без воркера трактуется как локальный, а не падает."""
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution import registry
+    from backend.app.pipeline.execution.contracts import ExecutionMode
+
+    item = BatchQueueItem(project_id="p", execution_mode="remote_worker")
+    assert registry.item_execution_mode(item) is ExecutionMode.LOCAL
+
+
+def test_old_queue_json_reads_as_local():
+    """Старый batch_queue.json без новых полей — локальный (совместимость)."""
+    from backend.app.models.audit import BatchQueueStatus
+    from backend.app.pipeline.execution import registry
+    from backend.app.pipeline.execution.contracts import ExecutionMode
+
+    legacy = {
+        "queue_id": "q1", "action": "full", "current_index": 0, "total": 1,
+        "items": [{"project_id": "ПРО/ект", "action": "full", "status": "pending"}],
+    }
+    queue = BatchQueueStatus(**legacy)
+    item = queue.items[0]
+    assert registry.item_execution_mode(item) is ExecutionMode.LOCAL
+    assert item.execution_handle == {}
+    assert item.worker_id is None
+
+
+def test_queue_item_roundtrips_execution_handle(tmp_path):
+    """Ссылка на удалённое исполнение переживает сериализацию очереди (E-05)."""
+    from backend.app.models.audit import BatchQueueItem, BatchQueueStatus
+    from backend.app.pipeline.execution import registry
+
+    item = BatchQueueItem(
+        project_id="ПРО/ект",
+        execution_mode="remote_worker",
+        worker_id="wrk_abcd1234",
+        execution_profile="remote_audit_pilot_v1",
+        execution_handle={
+            "backend_type": "remote_worker",
+            "handle_id": "att-1",
+            "project_id": "ПРО/ект",
+            "attempt_id": "att-1",
+            "remote_job_id": "job-1",
+            "worker_id": "wrk_abcd1234",
+        },
+    )
+    queue = BatchQueueStatus(queue_id="q", items=[item], total=1)
+    blob = json.dumps(queue.model_dump(), ensure_ascii=False)
+    restored = BatchQueueStatus(**json.loads(blob))
+    handle = registry.handle_from_item(restored.items[0])
+    assert handle is not None
+    assert handle.attempt_id == "att-1" and handle.remote_job_id == "job-1"
+
+
+def test_broken_handle_does_not_break_the_queue():
+    from backend.app.models.audit import BatchQueueItem
+    from backend.app.pipeline.execution import registry
+
+    item = BatchQueueItem(project_id="p", execution_handle={"garbage": True})
+    assert registry.handle_from_item(item) is None
+
+
+def test_cleanup_zombies_never_touches_remote_items():
+    """E-07: у remote-задания нет локального процесса, и это не делает его зомби."""
+    from backend.app.models.audit import (
+        AuditJob,
+        BatchQueueItem,
+        BatchQueueStatus,
+        JobStatus,
+    )
+    from backend.app.pipeline.manager import PipelineManager
+
+    manager = object.__new__(PipelineManager)
+    manager.active_jobs = {}
+    manager._tasks = {}
+    manager._heartbeat_tasks = {}
+    manager._batch_queue = BatchQueueStatus(
+        queue_id="q",
+        items=[
+            BatchQueueItem(
+                project_id="ПРО/удалённый", status="running",
+                execution_mode="remote_worker", worker_id="wrk_1",
+            )
+        ],
+        total=1,
+    )
+    stale = AuditJob(
+        job_id="j", project_id="ПРО/удалённый", status=JobStatus.RUNNING,
+        started_at="2000-01-01T00:00:00", last_heartbeat="2000-01-01T00:00:00",
+    )
+    manager.active_jobs["ПРО/удалённый"] = stale
+
+    assert "ПРО/удалённый" in manager._protected_pids()
+    manager.cleanup_zombies()
+    assert "ПРО/удалённый" in manager.active_jobs, (
+        "удалённое задание снято как зомби по локальному таймауту"
+    )
+    # И очередь не демотирована в interrupted.
+    assert manager._batch_queue.items[0].status == "running"
+
+
+def test_local_zombie_detection_still_works():
+    """Обратная сторона: локальный протухший job по-прежнему снимается."""
+    from backend.app.models.audit import AuditJob, BatchQueueStatus, JobStatus
+    from backend.app.pipeline.manager import PipelineManager
+
+    manager = object.__new__(PipelineManager)
+    manager.active_jobs = {}
+    manager._tasks = {}
+    manager._heartbeat_tasks = {}
+    manager._batch_queue = BatchQueueStatus(queue_id="q", items=[], total=0)
+    manager.active_jobs["ПРО/локальный"] = AuditJob(
+        job_id="j", project_id="ПРО/локальный", status=JobStatus.RUNNING,
+        started_at="2000-01-01T00:00:00", last_heartbeat="2000-01-01T00:00:00",
+    )
+    manager.cleanup_zombies()
+    assert "ПРО/локальный" not in manager.active_jobs
+
+
+def test_batch_stays_local_only(monkeypatch):
+    """§9: batch-очередь остаётся локальной, remote — только одиночный запуск."""
+    import inspect
+
+    from backend.app.pipeline.manager import PipelineManager
+
+    source = inspect.getsource(PipelineManager.add_to_batch)
+    assert "execution_mode" not in source
+    assert "worker_id" not in source
+    # А одиночный удалённый запуск существует и требует воркера.
+    signature = inspect.signature(PipelineManager.start_remote_audit)
+    assert "worker_id" in signature.parameters
+
+
+# ═══ §4 Исходный пакет проекта и снимки ══════════════════════════════════════
+def _make_version_tree(root: Path) -> Path:
+    """Правдоподобное дерево версии projects_v2 с хардлинком и мусором."""
+    version = root / "versions" / "v002"
+    (version / "01_input").mkdir(parents=True)
+    (version / "02_work").mkdir(parents=True)
+    (version / "03_analysis" / "latest" / "blocks_stage02_100").mkdir(parents=True)
+    (version / "99_service").mkdir(parents=True)
+    (version / "01_input" / "document.pdf").write_bytes(b"%PDF-1.7 fake\n" * 10)
+    (version / "01_input" / "input_manifest.json").write_text('{"files": []}')
+    (version / "02_work" / "document.pdf").write_bytes(b"%PDF-1.7 fake\n" * 10)
+    (version / "02_work" / "document.md").write_text("# Лист 1\n", encoding="utf-8")
+    (version / "03_analysis" / "latest" / "03_findings.json").write_text(
+        '{"findings": []}', encoding="utf-8"
+    )
+    (version / "99_service" / "pipeline_log.json").write_text(
+        '{"stages": {}}', encoding="utf-8"
+    )
+    (version / "version.json").write_text('{"version_id": "v002"}', encoding="utf-8")
+    # Хардлинк: два пути, один инод — ровно то, из-за чего выбран TAR.
+    crop = version / "03_analysis" / "latest" / "blocks_stage02_100" / "block_a.png"
+    crop.write_bytes(b"\x89PNG fake crop")
+    linked = version / "03_analysis" / "latest" / "block_a_dup.png"
+    os_link(crop, linked)
+    # То, что не должно попасть в пакет ни при каких обстоятельствах.
+    (version / ".env").write_text("PORTAL_SESSION_SECRET=xxx\n", encoding="utf-8")
+    (version / "token").write_text("wtk_abcdefghijklmnopqrstuvwxyz012345", encoding="utf-8")
+    (version / "runtime.pid").write_text("123", encoding="utf-8")
+    (version / ".git").mkdir()
+    (version / ".git" / "config").write_text("[core]\n", encoding="utf-8")
+    (version / "_stage02_paid_response_cache").mkdir()
+    (version / "_stage02_paid_response_cache" / "c.json").write_text("{}")
+    return version
+
+
+def os_link(src: Path, dst: Path) -> None:
+    import os as _os
+
+    _os.link(src, dst)
+
+
+def test_package_scan_excludes_secrets_and_regenerables(tmp_path):
+    from backend.app.services.distributed_workers import project_package
+
+    version = _make_version_tree(tmp_path)
+    scan = project_package.scan_version_tree(version)
+    names = {rel for _abs, rel in scan.files}
+
+    assert "01_input/document.pdf" in names
+    assert "02_work/document.md" in names
+    assert "03_analysis/latest/03_findings.json" in names
+    assert "99_service/pipeline_log.json" in names
+    assert "version.json" in names
+
+    for forbidden in (".env", "token", "runtime.pid", ".git/config",
+                      "_stage02_paid_response_cache/c.json"):
+        assert forbidden not in names, forbidden
+    assert any(".env" in entry for entry in scan.excluded)
+
+
+def test_package_preserves_hardlinks(tmp_path):
+    """TAR обязан сохранять жёсткие ссылки: иначе пакет раздувается на 40 %."""
+    import tarfile
+
+    from backend.app.services.distributed_workers import project_package
+
+    version = _make_version_tree(tmp_path)
+    dest = tmp_path / "pkg.tar.gz"
+    manifest = project_package.build_project_source_package(
+        dest_path=dest,
+        version_dir=version,
+        manifest_base={"manifest_version": 1, "package_id": "pkg_1",
+                       "job_id": "j", "attempt_id": "a"},
+        snapshot_files={},
+        feature_flags={},
+    )
+    assert manifest["hardlink_groups"] >= 1
+    with tarfile.open(dest, "r:gz") as tar:
+        links = [m for m in tar.getmembers() if m.islnk()]
+    assert links, "хардлинков в архиве нет — они были потеряны"
+    assert all(m.linkname.startswith("payload/project/") for m in links)
+
+
+def test_package_manifest_has_required_fields(tmp_path):
+    from backend.app.services.distributed_workers import project_package
+
+    version = _make_version_tree(tmp_path)
+    manifest = project_package.build_project_source_package(
+        dest_path=tmp_path / "pkg.tar.gz",
+        version_dir=version,
+        manifest_base={
+            "manifest_version": 1, "package_id": "pkg_1", "job_id": "j",
+            "attempt_id": "a", "project_id": "ПРО/ект", "version_id": "v002",
+            "execution_profile": "remote_audit_pilot_v1",
+            "pipeline_revision": "rev-1",
+            "prompt_bundle_hash": "sha256:aa", "model_config_hash": "sha256:bb",
+        },
+        snapshot_files={"stage_models.json": b"{}"},
+        feature_flags={"AUDIT_X": "1"},
+    )
+    for field in (
+        "manifest_version", "package_id", "package_type", "job_id", "attempt_id",
+        "project_id", "version_id", "execution_profile", "pipeline_revision",
+        "project_layout_version", "created_at", "compression", "source_tree_hash",
+        "prompt_bundle_hash", "model_config_hash", "feature_flags_hash",
+        "excluded_regenerable_paths", "files", "hardlinks", "total_size",
+        "uncompressed_size", "limits", "archive",
+    ):
+        assert field in manifest, field
+    assert manifest["package_type"] == "source"
+
+
+def test_package_rejects_symlinks(tmp_path):
+    from backend.app.services.distributed_workers import project_package
+
+    version = _make_version_tree(tmp_path)
+    (version / "outside.txt").symlink_to("/etc/passwd")
+    scan = project_package.scan_version_tree(version)
+    names = {rel for _abs, rel in scan.files}
+    assert "outside.txt" not in names
+    assert any("симлинк" in entry for entry in scan.excluded)
+
+
+def test_feature_flags_snapshot_drops_secrets():
+    from backend.app.services.distributed_workers import project_package
+
+    flags = project_package.collect_feature_flags_snapshot(
+        {
+            "AUDIT_CROP_CACHE_SOURCE": "local_pdf",
+            "AUDIT_WORKER_TOKEN": "wtk_secret",
+            "PAID_API_ENABLED": "true",
+            "AUDIT_BOOTSTRAP_SECRET": "s3cr3t",
+            "OPENROUTER_API_KEY": "sk-xxx",
+            "HOME": "/root",
+        }
+    )
+    assert flags == {"AUDIT_CROP_CACHE_SOURCE": "local_pdf",
+                     "PAID_API_ENABLED": "true"}
+
+
+def test_secret_scanner_catches_known_forms():
+    from backend.app.services.distributed_workers import project_package
+
+    hits = project_package.find_secrets_in_files(
+        [
+            ("a.md", "текст без секретов".encode("utf-8")),
+            ("b.env", b"PORTAL_SESSION_SECRET=abc"),
+            ("c.json", b'{"t": "wtk_abcdefghijklmnopqrstuvwx"}'),
+            ("d.txt", b"pbkdf2_sha256$29000$xyz"),
+        ]
+    )
+    assert len(hits) == 3
+    assert all(name in "b.env c.json d.txt" for name in (h.split(":")[0] for h in hits))
+
+
+def test_prompt_snapshot_hash_is_stable_and_content_sensitive(tmp_path):
+    from backend.app.services.distributed_workers import project_package
+
+    prompts = tmp_path / "prompts"
+    (prompts / "pipeline" / "ru").mkdir(parents=True)
+    target = prompts / "pipeline" / "ru" / "task.md"
+    target.write_text("шаблон", encoding="utf-8")
+
+    first = project_package.collect_prompt_snapshot(prompts)
+    hash_first = project_package.hash_files(first)
+    assert project_package.hash_files(
+        project_package.collect_prompt_snapshot(prompts)
+    ) == hash_first
+
+    target.write_text("другой шаблон", encoding="utf-8")
+    assert project_package.hash_files(
+        project_package.collect_prompt_snapshot(prompts)
+    ) != hash_first
+
+
+# ═══ §5 Строгий audit_pipeline_v1 на воркере ══════════════════════════════════
+def _worker_config(tmp_path, **overrides):
+    from audit_worker.config import WorkerConfig
+
+    pipeline_root = tmp_path / "platform"
+    pipeline_root.mkdir(parents=True, exist_ok=True)
+    defaults = dict(
+        dispatcher_url="https://center.example",
+        root=tmp_path / "worker",
+        display_name="vps-test",
+        pipeline_revision="rev-abc123",
+        pipeline_root=pipeline_root,
+        audit_pipeline_enabled=True,
+        allow_real_llm=False,
+    )
+    defaults.update(overrides)
+    config = WorkerConfig(**defaults)
+    config.ensure_dirs()
+    return config
+
+
+def _audit_params(**overrides):
+    payload = {
+        "execution_profile": "remote_audit_pilot_v1",
+        "action": "full",
+        "include_optimization": True,
+        "include_norms": False,
+        "pipeline_revision": "rev-abc123",
+        "expected_source_tree_hash": "sha256:" + "a" * 64,
+        "prompt_bundle_hash": "sha256:" + "b" * 64,
+        "model_config_hash": "sha256:" + "c" * 64,
+        "feature_flags_hash": "sha256:" + "d" * 64,
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_worker_rejects_unknown_fields(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    with pytest.raises(audit_runner.AuditJobRejected) as excinfo:
+        audit_runner.validate_params(
+            _audit_params(command="rm -rf /"), config=config
+        )
+    assert "command" in str(excinfo.value)
+
+
+def test_worker_rejects_norms_on_worker(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    with pytest.raises(audit_runner.AuditJobRejected):
+        audit_runner.validate_params(
+            _audit_params(include_norms=True), config=config
+        )
+
+
+def test_worker_rejects_unknown_profile_and_action(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    for payload in (
+        _audit_params(execution_profile="anything_else"),
+        _audit_params(action="delete_everything"),
+    ):
+        with pytest.raises(audit_runner.AuditJobRejected):
+            audit_runner.validate_params(payload, config=config)
+
+
+def test_worker_rejects_revision_mismatch(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    with pytest.raises(audit_runner.AuditJobRejected) as excinfo:
+        audit_runner.validate_params(
+            _audit_params(pipeline_revision="rev-other"), config=config
+        )
+    assert "Ревизия" in str(excinfo.value)
+
+
+def test_worker_refuses_audit_when_capability_disabled(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path, audit_pipeline_enabled=False)
+    with pytest.raises(audit_runner.AuditJobRejected):
+        audit_runner.validate_params(_audit_params(), config=config)
+
+
+def test_worker_refuses_without_installed_platform(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path, pipeline_root=None)
+    with pytest.raises(audit_runner.AuditJobRejected):
+        audit_runner.validate_params(_audit_params(), config=config)
+
+
+def test_worker_cannot_shrink_required_artifacts(tmp_path):
+    """Задание не может сократить список обязательных артефактов."""
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    params = audit_runner.validate_params(
+        _audit_params(required_result_artifacts=["result/anything.json"]),
+        config=config,
+    )
+    assert set(audit_runner.REQUIRED_RESULT_ARTIFACTS) <= set(
+        params.required_result_artifacts
+    )
+    assert "result/anything.json" not in params.required_result_artifacts
+
+
+def test_worker_builds_fixed_argv(tmp_path):
+    """argv фиксирован: интерпретатор + -u + -m + константный модуль + спека."""
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    argv = audit_runner.build_argv(tmp_path / "spec.json", config=config)
+    assert len(argv) == 5
+    assert argv[1] == "-u" and argv[2] == "-m"
+    assert argv[3] == audit_runner.PIPELINE_ENTRYPOINT_MODULE
+    assert argv[4].endswith("spec.json")
+
+
+def test_worker_env_is_an_allowlist_and_points_inside_job_dir(tmp_path, monkeypatch):
+    from audit_worker import audit_runner
+
+    monkeypatch.setenv("SECRET_LEAK", "must-not-pass")
+    monkeypatch.setenv("AUDIT_WORKER_TOKEN", "wtk_leak")
+    config = _worker_config(tmp_path)
+    job_dir = tmp_path / "jobs" / "j" / "a"
+    job_dir.mkdir(parents=True)
+    env = audit_runner.build_env(config=config, job_dir=job_dir, provider_dir=None)
+
+    assert "SECRET_LEAK" not in env
+    assert "AUDIT_WORKER_TOKEN" not in env
+    assert env["AUDIT_ROLE"] == "worker"
+    for key in ("AUDIT_DATA_DIR", "AUDIT_APP_DATA_DIR", "AUDIT_PROJECTS_V2_DIR",
+                "AUDIT_PROMPTS_DIR", "TMPDIR"):
+        assert str(job_dir) in env[key], key
+
+
+def test_worker_env_wires_fake_providers(tmp_path):
+    from audit_worker import audit_runner
+
+    config = _worker_config(tmp_path)
+    provider_dir = tmp_path / "fakes"
+    provider_dir.mkdir()
+    env = audit_runner.build_env(
+        config=config, job_dir=tmp_path / "jd", provider_dir=provider_dir
+    )
+    assert env["AUDIT_WORKER_PROVIDER_MODE"] == "fake"
+    assert env["PATH"].startswith(str(provider_dir))
+
+
+def test_fake_providers_are_marked_and_executable(tmp_path):
+    import subprocess
+
+    from backend.app.pipeline.execution import fake_providers
+
+    target = fake_providers.materialize(tmp_path / "fakes")
+    assert fake_providers.looks_like_fake_dir(target)
+    for name in fake_providers.FAKE_BINARIES:
+        binary = target / name
+        assert binary.is_file()
+        result = subprocess.run(
+            [sys.executable, str(binary)], input="привет",
+            capture_output=True, text=True, timeout=30,
+        )
+        assert result.returncode == 0
+        payload = json.loads(result.stdout)
+        assert payload["provider"] == name
+        assert payload["is_error"] is False
+
+
+def test_fake_providers_can_simulate_failures(tmp_path):
+    import subprocess
+
+    from backend.app.pipeline.execution import fake_providers
+
+    target = fake_providers.materialize(tmp_path / "fakes")
+    binary = target / fake_providers.FAKE_BINARIES[0]
+    for behaviour, expect_code in (("rate_limit", 1), ("auth_error", 1)):
+        result = subprocess.run(
+            [sys.executable, str(binary)], input="x", capture_output=True, text=True,
+            env={**{"PATH": "/usr/bin:/bin"},
+                 fake_providers.BEHAVIOUR_ENV: behaviour},
+            timeout=30,
+        )
+        assert result.returncode == expect_code, behaviour
+    broken = subprocess.run(
+        [sys.executable, str(binary)], input="x", capture_output=True, text=True,
+        env={**{"PATH": "/usr/bin:/bin"},
+             fake_providers.BEHAVIOUR_ENV: "broken_json"},
+        timeout=30,
+    )
+    with pytest.raises(ValueError):
+        json.loads(broken.stdout)
+
+
+def test_executor_fails_closed_without_fake_providers(tmp_path):
+    """Настоящие модели запрещены, подделок нет → задание отвергается."""
+    from audit_worker import audit_runner, local_db
+    from audit_worker.executor import Executor
+
+    config = _worker_config(tmp_path, fake_provider_dir=None, allow_real_llm=False)
+    executor = Executor(config, db=local_db.LocalDB(config.local_db_path))
+    with pytest.raises(audit_runner.AuditJobRejected):
+        executor._provider_dir()
+
+
+def test_executor_uses_real_providers_only_when_allowed(tmp_path):
+    from audit_worker import local_db
+    from audit_worker.executor import Executor
+
+    config = _worker_config(tmp_path, allow_real_llm=True)
+    executor = Executor(config, db=local_db.LocalDB(config.local_db_path))
+    assert executor._provider_dir() is None
+
+
+def test_real_audit_and_test_jobs_never_mix(tmp_path):
+    """E-22, E-23, E-24: один аудит на воркер и никакого смешивания с тестами."""
+    from audit_worker import local_db
+    from audit_worker.executor import Executor
+
+    config = _worker_config(tmp_path)
+    db = local_db.LocalDB(config.local_db_path)
+    executor = Executor(config, db=db)
+
+    audit_a = str(uuid.uuid4())
+    audit_b = str(uuid.uuid4())
+    test_c = str(uuid.uuid4())
+    job = str(uuid.uuid4())
+    db.enqueue(job_id=job, attempt_id=audit_a, job_type="audit_pipeline_v1", params={})
+    db.enqueue(job_id=job, attempt_id=audit_b, job_type="audit_pipeline_v1", params={})
+    db.enqueue(job_id=job, attempt_id=test_c, job_type="test_pipeline_v1", params={})
+    db.set_queue_state(audit_a, local_db.QUEUE_RUNNING)
+
+    # Второй реальный аудит не стартует.
+    assert executor.audit_slot_conflict(audit_b) is not None
+    # Тестовое задание при идущем аудите тоже ждёт.
+    assert executor.test_slot_conflict(test_c) is not None
+    # А когда аудит закончился — оба свободны.
+    db.set_queue_state(audit_a, local_db.QUEUE_FINISHED)
+    assert executor.audit_slot_conflict(audit_b) is None
+    assert executor.test_slot_conflict(test_c) is None
+
+
+def test_running_test_job_blocks_real_audit(tmp_path):
+    from audit_worker import local_db
+    from audit_worker.executor import Executor
+
+    config = _worker_config(tmp_path)
+    db = local_db.LocalDB(config.local_db_path)
+    executor = Executor(config, db=db)
+    job = str(uuid.uuid4())
+    test_a = str(uuid.uuid4())
+    audit_b = str(uuid.uuid4())
+    db.enqueue(job_id=job, attempt_id=test_a, job_type="test_pipeline_v1", params={})
+    db.enqueue(job_id=job, attempt_id=audit_b, job_type="audit_pipeline_v1", params={})
+    db.set_queue_state(test_a, local_db.QUEUE_RUNNING)
+    conflict = executor.audit_slot_conflict(audit_b)
+    assert conflict is not None and "тестовые" in conflict
+
+
+def test_executor_rejects_unknown_job_type(tmp_path):
+    from audit_worker import local_db
+    from audit_worker.executor import Executor
+
+    config = _worker_config(tmp_path)
+    db = local_db.LocalDB(config.local_db_path)
+    executor = Executor(config, db=db)
+    job, attempt = str(uuid.uuid4()), str(uuid.uuid4())
+    db.enqueue(job_id=job, attempt_id=attempt, job_type="run_shell", params={})
+    outcome = executor.run_attempt(
+        {"job_id": job, "attempt_id": attempt, "job_type": "run_shell",
+         "params_json": "{}"}
+    )
+    assert outcome["ok"] is False and outcome["reason"] == "unknown_job_type"
+
+
+def test_worker_job_layout_is_inside_attempt_dir(tmp_path):
+    from audit_worker import audit_runner
+
+    job_dir = tmp_path / "jobs" / "job" / "attempt"
+    layout = audit_runner.prepare_job_dir(job_dir)
+    for path in layout.values():
+        assert job_dir in path.parents or path == job_dir
+
+
+def test_worker_reports_provider_mode_in_capabilities(tmp_path):
+    config_fake = _worker_config(tmp_path / "a")
+    config_real = _worker_config(tmp_path / "b", allow_real_llm=True)
+    caps_fake = config_fake.capabilities()
+    caps_real = config_real.capabilities()
+    assert caps_fake["provider_mode"] == "fake"
+    assert caps_fake["real_llm_enabled"] is False
+    assert caps_real["provider_mode"] == "real"
+    assert "audit_pipeline_v1" in caps_fake["job_types"]
+    assert caps_fake["real_audit_max_slots"] == 1
+
+
+def test_worker_without_audit_flag_hides_capability(tmp_path):
+    config = _worker_config(tmp_path, audit_pipeline_enabled=False)
+    assert "audit_pipeline_v1" not in config.capabilities()["job_types"]
+
+
+def test_runner_refuses_norms_and_unknown_profile(tmp_path):
+    from backend.app.pipeline import remote_audit_runner
+
+    spec = tmp_path / "spec.json"
+    spec.write_text(json.dumps({"profile": "remote_audit_pilot_v1",
+                                "include_norms": True}), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        remote_audit_runner.load_spec(spec)
+
+    spec.write_text(json.dumps({"profile": "other"}), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        remote_audit_runner.load_spec(spec)
+
+
+def test_runner_refuses_central_only_stage(tmp_path):
+    from backend.app.pipeline import remote_audit_runner
+
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps({"profile": "remote_audit_pilot_v1", "include_norms": False,
+                    "retry_stage": "norm_verify"}),
+        encoding="utf-8",
+    )
+    with pytest.raises(SystemExit):
+        remote_audit_runner.load_spec(spec)
+
+
+def test_runner_refuses_paths_outside_attempt_dir(tmp_path, monkeypatch):
+    from backend.app.pipeline import remote_audit_runner
+
+    job_dir = tmp_path / "jobs" / "j" / "a"
+    (job_dir / "project").mkdir(parents=True)
+    spec = {"paths": {"project": str(job_dir / "project")}}
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", "/etc")
+    monkeypatch.setenv("AUDIT_DATA_DIR", str(job_dir / "work"))
+    monkeypatch.setenv("AUDIT_APP_DATA_DIR", str(job_dir / "work"))
+    with pytest.raises(SystemExit):
+        remote_audit_runner.apply_runtime_paths(spec)
+
+
+def test_runner_accepts_paths_inside_attempt_dir(tmp_path, monkeypatch):
+    from backend.app.pipeline import remote_audit_runner
+
+    job_dir = tmp_path / "jobs" / "j" / "a"
+    (job_dir / "project").mkdir(parents=True)
+    spec = {"paths": {"project": str(job_dir / "project")}}
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(job_dir / "project"))
+    monkeypatch.setenv("AUDIT_DATA_DIR", str(job_dir / "work" / "data"))
+    monkeypatch.setenv("AUDIT_APP_DATA_DIR", str(job_dir / "work" / "app_data"))
+    remote_audit_runner.apply_runtime_paths(spec)      # не бросает
+
+
+def test_runner_detects_snapshot_tampering(tmp_path):
+    from backend.app.pipeline import remote_audit_runner
+
+    snapshot = tmp_path / "snapshot"
+    (snapshot / "prompts").mkdir(parents=True)
+    (snapshot / "prompts" / "task.md").write_text("шаблон", encoding="utf-8")
+    spec = {
+        "paths": {"snapshot": str(snapshot)},
+        "prompt_bundle_hash": "sha256:" + "0" * 64,
+    }
+    with pytest.raises(SystemExit) as excinfo:
+        remote_audit_runner.verify_snapshot(spec)
+    assert "Снимок" in str(excinfo.value)
+
+
+# ═══ §6 Приём результата: staging, откат, идемпотентность ═════════════════════
+def _build_result_archive(
+    tmp_path: Path,
+    *,
+    job_id: str,
+    attempt_id: str,
+    source_hash: str = "sha256:" + "1" * 64,
+    revision: str = "rev-abc123",
+    extra_project_files: dict[str, str] | None = None,
+    omit_findings: bool = False,
+) -> Path:
+    """Собрать НАСТОЯЩИЙ пакет результата воркерским сборщиком."""
+    from audit_worker import package_io
+
+    job_dir = tmp_path / "jobs" / job_id / attempt_id
+    for sub in ("project/03_analysis/latest", "work", "result", "usage", "logs"):
+        (job_dir / sub).mkdir(parents=True, exist_ok=True)
+    findings = '{"findings": [{"id": "F-001"}]}'
+    if not omit_findings:
+        (job_dir / "result" / "03_findings.json").write_text(findings, encoding="utf-8")
+    (job_dir / "result" / "audit_manifest.json").write_text(
+        json.dumps({"pipeline_revision": revision,
+                    "stage_completion": {"findings_merge": "done"},
+                    "resume_hint": "norm_verify"}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    (job_dir / "work" / "pipeline_log.json").write_text(
+        '{"stages": {"findings_merge": {"status": "done"}}}', encoding="utf-8"
+    )
+    (job_dir / "usage" / "usage_report.json").write_text(
+        json.dumps({"entries": [{"stage": "findings_merge", "model": "fake",
+                                 "input_tokens": 10, "output_tokens": 5}]}),
+        encoding="utf-8",
+    )
+    (job_dir / "logs" / "stdout.log").write_text("работа шла\n", encoding="utf-8")
+    (job_dir / "project" / "03_analysis" / "latest" / "03_findings.json").write_text(
+        findings, encoding="utf-8"
+    )
+    for rel, content in (extra_project_files or {}).items():
+        target = job_dir / "project" / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+    archive = tmp_path / f"result-{attempt_id[:8]}.tar.gz"
+    package_io.build_result_package(
+        dest_path=archive,
+        job_dir=job_dir,
+        job_id=job_id,
+        attempt_id=attempt_id,
+        project_id="ПРО/ект",
+        version_id="v002",
+        worker_id="wrk_1",
+        worker_version="0.0.1",
+        protocol_version=1,
+        manifest_version=1,
+        source_package_hash=source_hash,
+        exit_code=0,
+        job_type="audit_pipeline_v1",
+        required_artifacts=list(
+            __import__("audit_worker.audit_runner", fromlist=["x"])
+            .REQUIRED_RESULT_ARTIFACTS
+        ),
+        pipeline_revision=revision,
+        stage_completion={"findings_merge": "done"},
+        resume_hint="norm_verify",
+    )
+    return archive
+
+
+def _center_attempt(center_env, tmp_path, *, source_hash="sha256:" + "1" * 64):
+    """Создать в workers.db попытку реального аудита."""
+    from backend.app.services.distributed_workers import repositories
+
+    job = repositories.create_job(
+        job_type="audit_pipeline_v1",
+        project_id="ПРО/ект",
+        version_id="v002",
+        payload={"params": {}},
+        display_name="ПРО/ект",
+        created_by="operator:test",
+        settings=center_env,
+    )
+    repositories.update_attempt_fields(
+        job["attempt_id"], {"source_package_hash": source_hash}, settings=center_env
+    )
+    return repositories.get_attempt(job["attempt_id"], settings=center_env)
+
+
+def _version_dir(tmp_path: Path) -> Path:
+    version = tmp_path / "center_project" / "versions" / "v002"
+    (version / "01_input").mkdir(parents=True, exist_ok=True)
+    (version / "03_analysis" / "latest").mkdir(parents=True, exist_ok=True)
+    (version / "01_input" / "document.pdf").write_bytes(b"%PDF original")
+    (version / "03_analysis" / "latest" / "03_findings.json").write_text(
+        '{"findings": []}', encoding="utf-8"
+    )
+    return version
+
+
+def test_result_import_applies_only_generated_paths(center_env, tmp_path, monkeypatch):
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    import importlib
+
+    from backend.app.core import config as core_config
+    importlib.reload(core_config)
+
+    attempt = _center_attempt(center_env, tmp_path)
+    archive = _build_result_archive(
+        tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"]
+    )
+    version = _version_dir(tmp_path)
+    original_pdf = (version / "01_input" / "document.pdf").read_bytes()
+
+    report = result_import.apply_result_package(
+        archive=archive, attempt=attempt, version_dir=version, settings=center_env
+    )
+
+    assert "03_analysis/latest/03_findings.json" in report["applied_paths"]
+    applied = json.loads(
+        (version / "03_analysis" / "latest" / "03_findings.json").read_text("utf-8")
+    )
+    assert applied["findings"][0]["id"] == "F-001"
+    # E-15: исходный PDF не тронут.
+    assert (version / "01_input" / "document.pdf").read_bytes() == original_pdf
+    assert Path(report["journal"]).is_file()
+
+
+def test_worker_package_never_returns_source_files(tmp_path):
+    """Первый рубеж: сборщик воркера физически не кладёт исходники в пакет."""
+    import tarfile
+
+    archive = _build_result_archive(
+        tmp_path, job_id=str(uuid.uuid4()), attempt_id=str(uuid.uuid4()),
+        extra_project_files={"01_input/document.pdf": "ПОДМЕНА",
+                             "02_work/document.md": "ПОДМЕНА"},
+    )
+    with tarfile.open(archive, "r:gz") as tar:
+        names = tar.getnames()
+    assert not any("project/01_input/" in n for n in names)
+    assert not any("project/02_work/" in n for n in names)
+    assert any("project/03_analysis/" in n for n in names)
+
+
+def test_center_plan_skips_source_and_rejects_unknown(tmp_path):
+    """Второй рубеж: даже если исходник придёт, план его не применит."""
+    from backend.app.services.distributed_workers import result_import
+
+    staged = tmp_path / "staged"
+    for rel in ("01_input/document.pdf", "02_work/document.md",
+                "04_review/expert_review.json", "version.json",
+                "03_analysis/latest/03_findings.json",
+                "99_service/pipeline_log.json"):
+        target = staged / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("x", encoding="utf-8")
+    plan = result_import.build_change_plan(staged, tmp_path / "version")
+    assert set(plan["apply"]) == {
+        "03_analysis/latest/03_findings.json", "99_service/pipeline_log.json"
+    }
+    assert set(plan["skipped_source"]) == {
+        "01_input/document.pdf", "02_work/document.md",
+        "04_review/expert_review.json", "version.json",
+    }
+    assert plan["rejected"] == []
+
+    (staged / "чужое.json").write_text("x", encoding="utf-8")
+    plan2 = result_import.build_change_plan(staged, tmp_path / "version")
+    assert [r["path"] for r in plan2["rejected"]] == ["чужое.json"]
+
+
+def test_result_import_rejects_central_only_artifact(center_env, tmp_path, monkeypatch):
+    """E-19: норм-артефакт из пакета воркера отклоняет ВЕСЬ пакет."""
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    attempt = _center_attempt(center_env, tmp_path)
+    archive = _build_result_archive(
+        tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"],
+        extra_project_files={
+            "03_analysis/latest/norm_checks.json": '{"checks": []}'
+        },
+    )
+    version = _version_dir(tmp_path)
+    before = (version / "03_analysis" / "latest" / "03_findings.json").read_text("utf-8")
+
+    with pytest.raises(result_import.ResultImportError):
+        result_import.apply_result_package(
+            archive=archive, attempt=attempt, version_dir=version, settings=center_env
+        )
+    # Проект не тронут ни на один файл.
+    assert (version / "03_analysis" / "latest" / "03_findings.json").read_text(
+        "utf-8"
+    ) == before
+
+
+def test_result_import_rejects_wrong_source_package(center_env, tmp_path, monkeypatch):
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    attempt = _center_attempt(center_env, tmp_path, source_hash="sha256:" + "1" * 64)
+    archive = _build_result_archive(
+        tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"],
+        source_hash="sha256:" + "9" * 64,
+    )
+    with pytest.raises(result_import.ResultImportError) as excinfo:
+        result_import.apply_result_package(
+            archive=archive, attempt=attempt,
+            version_dir=_version_dir(tmp_path), settings=center_env,
+        )
+    assert "исходном пакете" in str(excinfo.value)
+
+
+def test_result_import_rejects_revision_mismatch(center_env, tmp_path, monkeypatch):
+    import importlib
+
+    from backend.app.core import config as core_config
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-center")
+    importlib.reload(core_config)
+    try:
+        attempt = _center_attempt(center_env, tmp_path)
+        archive = _build_result_archive(
+            tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"],
+            revision="rev-worker",
+        )
+        with pytest.raises(result_import.ResultImportError) as excinfo:
+            result_import.apply_result_package(
+                archive=archive, attempt=attempt,
+                version_dir=_version_dir(tmp_path), settings=center_env,
+            )
+        assert "Ревизия" in str(excinfo.value)
+    finally:
+        monkeypatch.delenv("AUDIT_PIPELINE_REVISION", raising=False)
+        importlib.reload(core_config)
+
+
+def test_result_import_is_idempotent_and_detects_conflict(center_env, tmp_path, monkeypatch):
+    """Тот же пакет — `already_applied`; другой hash — конфликт (E-17)."""
+    from backend.app.services.distributed_workers import repositories, result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    attempt = _center_attempt(center_env, tmp_path)
+    repositories.update_attempt_fields(
+        attempt["attempt_id"],
+        {
+            "result_import_state": "applied",
+            "result_import_hash": "a" * 64,
+            "result_package_hash": "a" * 64,
+            "result_import_report": json.dumps({"applied_paths": ["x"]}),
+        },
+        settings=center_env,
+    )
+    fresh = repositories.get_attempt(attempt["attempt_id"], settings=center_env)
+    replayed = result_import.import_result_for_attempt(
+        attempt=fresh, settings=center_env, version_dir=_version_dir(tmp_path)
+    )
+    assert replayed["replayed"] is True and replayed["applied"] is True
+
+    repositories.update_attempt_fields(
+        attempt["attempt_id"], {"result_package_hash": "b" * 64}, settings=center_env
+    )
+    conflicting = repositories.get_attempt(attempt["attempt_id"], settings=center_env)
+    with pytest.raises(result_import.ResultImportConflict):
+        result_import.import_result_for_attempt(
+            attempt=conflicting, settings=center_env,
+            version_dir=_version_dir(tmp_path),
+        )
+
+
+def test_result_import_rolls_back_on_failure(center_env, tmp_path, monkeypatch):
+    """Сбой посреди применения откатывает ВСЁ и оставляет staging."""
+    import shutil as _shutil
+
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    attempt = _center_attempt(center_env, tmp_path)
+    archive = _build_result_archive(
+        tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"],
+        extra_project_files={
+            "03_analysis/latest/a.json": "{}",
+            "03_analysis/latest/b.json": "{}",
+            "03_analysis/latest/c.json": "{}",
+        },
+    )
+    version = _version_dir(tmp_path)
+    before = (version / "03_analysis" / "latest" / "03_findings.json").read_text("utf-8")
+
+    calls = {"n": 0}
+    real_copy = _shutil.copy2
+
+    def flaky_copy(src, dst, *args, **kwargs):
+        # Ломаем ТОЛЬКО применение (копирование из staging). Восстановление из
+        # резервной копии должно работать — иначе тест проверял бы не откат.
+        if "unpacked" in str(src):
+            calls["n"] += 1
+            if calls["n"] > 2:
+                raise OSError("диск кончился")
+        return real_copy(src, dst, *args, **kwargs)
+
+    monkeypatch.setattr(result_import.shutil, "copy2", flaky_copy)
+    with pytest.raises(result_import.ResultImportError) as excinfo:
+        result_import.apply_result_package(
+            archive=archive, attempt=attempt, version_dir=version,
+            settings=center_env,
+        )
+    assert "откачено" in str(excinfo.value)
+    monkeypatch.undo()
+    # Исходное состояние восстановлено, новых файлов не осталось.
+    assert (version / "03_analysis" / "latest" / "03_findings.json").read_text(
+        "utf-8"
+    ) == before
+    for name in ("a.json", "b.json", "c.json"):
+        assert not (version / "03_analysis" / "latest" / name).exists(), name
+
+
+def test_result_import_records_resume_stage_and_usage(center_env, tmp_path, monkeypatch):
+    from backend.app.services.distributed_workers import result_import
+
+    monkeypatch.setenv("AUDIT_PIPELINE_REVISION", "rev-abc123")
+    attempt = _center_attempt(center_env, tmp_path)
+    archive = _build_result_archive(
+        tmp_path, job_id=attempt["job_id"], attempt_id=attempt["attempt_id"]
+    )
+    report = result_import.apply_result_package(
+        archive=archive, attempt=attempt, version_dir=_version_dir(tmp_path),
+        settings=center_env,
+    )
+    assert report["usage_report"]["entries"][0]["stage"] == "findings_merge"
+    assert report["stage_completion"] == {"findings_merge": "done"}
+
+
+def test_usage_report_applies_exactly_once(center_env, tmp_path):
+    from backend.app.services.distributed_workers import repositories, result_import
+
+    attempt = _center_attempt(center_env, tmp_path)
+    usage = {"entries": [{"stage": "s", "model": "fake",
+                          "input_tokens": 1, "output_tokens": 1}]}
+    first = result_import.apply_usage_report(
+        attempt=attempt, usage_report=usage, settings=center_env
+    )
+    fresh = repositories.get_attempt(attempt["attempt_id"], settings=center_env)
+    second = result_import.apply_usage_report(
+        attempt=fresh, usage_report=usage, settings=center_env
+    )
+    assert first["applied"] is True
+    assert second["applied"] is False and second["reason"] == "already_applied"
+
+
+def test_worker_package_omitting_required_artifact_is_not_successful(tmp_path):
+    """Пакет без обязательного артефакта не считается полным (§24)."""
+    from audit_worker import audit_runner
+
+    job_dir = tmp_path / "jobs" / "j" / "a"
+    audit_runner.prepare_job_dir(job_dir)
+    (job_dir / "work" / "pipeline_log.json").write_text("{}", encoding="utf-8")
+    missing = audit_runner.missing_required_artifacts(
+        job_dir, audit_runner.REQUIRED_RESULT_ARTIFACTS
+    )
+    assert "result/03_findings.json" in missing
+    assert "work/pipeline_log.json" not in missing
+
+
+def test_path_classification_matches_the_contract():
+    from backend.app.services.distributed_workers import result_import
+
+    assert result_import.classify_path("01_input/document.pdf") == "source"
+    assert result_import.classify_path("02_work/document.md") == "source"
+    assert result_import.classify_path("04_review/expert_review.json") == "source"
+    assert result_import.classify_path("version.json") == "source"
+    assert result_import.classify_path("03_analysis/latest/03_findings.json") == "worker"
+    assert result_import.classify_path("99_service/pipeline_log.json") == "worker"
+    assert result_import.classify_path("03_analysis/latest/norm_checks.json") == "central"
+    assert result_import.classify_path("что_то_чужое/файл.json") == "unknown"
+
+
+# ═══ §7 Безопасность ══════════════════════════════════════════════════════════
+def test_source_package_contains_no_secrets(tmp_path):
+    """E-25: собранный пакет проверяется сканером секретов побайтово."""
+    import tarfile
+
+    from backend.app.services.distributed_workers import project_package
+
+    version = _make_version_tree(tmp_path)
+    dest = tmp_path / "pkg.tar.gz"
+    project_package.build_project_source_package(
+        dest_path=dest,
+        version_dir=version,
+        manifest_base={"manifest_version": 1, "package_id": "p", "job_id": "j",
+                       "attempt_id": "a"},
+        snapshot_files={},
+        feature_flags=project_package.collect_feature_flags_snapshot(
+            {"AUDIT_X": "1", "AUDIT_SECRET_TOKEN": "wtk_leak"}
+        ),
+    )
+    blobs: list[tuple[str, bytes]] = []
+    with tarfile.open(dest, "r:gz") as tar:
+        for member in tar.getmembers():
+            if not member.isfile():
+                continue
+            fh = tar.extractfile(member)
+            if fh is not None:
+                blobs.append((member.name, fh.read()))
+    assert project_package.find_secrets_in_files(blobs) == []
+
+
+def test_result_package_extraction_rejects_traversal(tmp_path):
+    """TAR с `..` отвергается до записи единого байта."""
+    import io
+    import tarfile
+
+    from backend.app.services.distributed_workers import package_service
+
+    archive = tmp_path / "evil.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        data = b"pwn"
+        info = tarfile.TarInfo("payload/../../../etc/evil")
+        info.size = len(data)
+        tar.addfile(info, io.BytesIO(data))
+    with pytest.raises(package_service.PackageError):
+        package_service.safe_extract(archive, tmp_path / "out")
+    assert not (tmp_path / "out").exists()
+
+
+def test_result_package_extraction_rejects_symlink(tmp_path):
+    import tarfile
+
+    from backend.app.services.distributed_workers import package_service
+
+    archive = tmp_path / "link.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        info = tarfile.TarInfo("payload/link")
+        info.type = tarfile.SYMTYPE
+        info.linkname = "/etc/passwd"
+        tar.addfile(info)
+    with pytest.raises(package_service.PackageError):
+        package_service.safe_extract(archive, tmp_path / "out")
+
+
+def test_worker_unpacker_allows_hardlinks_but_only_inside_payload(tmp_path):
+    """Хардлинки нужны (18 % корпуса), но только на уже распакованные записи."""
+    import io
+    import tarfile
+
+    from audit_worker import package_io
+
+    archive = tmp_path / "bad_link.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        manifest = json.dumps({"manifest_version": 1, "files": [],
+                               "archive": {"uncompressed_bytes": 10,
+                                           "entries": 2}}).encode()
+        info = tarfile.TarInfo("package_manifest.json")
+        info.size = len(manifest)
+        tar.addfile(info, io.BytesIO(manifest))
+        link = tarfile.TarInfo("payload/link")
+        link.type = tarfile.LNKTYPE
+        link.linkname = "payload/never_seen"
+        tar.addfile(link)
+    with pytest.raises(package_io.BundleError) as excinfo:
+        package_io.verify_and_unpack(
+            archive=archive,
+            expected_sha256=package_io.sha256_file(archive),
+            work_dir=tmp_path / "out",
+        )
+    assert "ссылка" in str(excinfo.value).lower()
+
+
+def test_worker_token_gives_no_operator_rights_on_audit_routes(center_env, admin):
+    """Машинный контур не открывает операторские маршруты аудита."""
+    worker_id, headers = _approved_worker(admin, instance_id="inst_exec_sec")
+    from tests.distributed_workers_helpers import SyncASGITransport, make_center_app
+
+    client = httpx.Client(
+        transport=SyncASGITransport(make_center_app()),
+        base_url="http://center",
+        headers={**headers, **INTENT},
+    )
+    assert client.get("/api/workers/audit/targets").status_code in (401, 403)
+    assert client.post(
+        "/api/workers/audit/launch",
+        json={"worker_id": worker_id, "project_id": "p"},
+        headers={**headers, **_key()},
+    ).status_code in (401, 403)
+
+
+def test_audit_launch_requires_operator_and_intent(center_env, admin, operator):
+    """Право `operate`, гейт намерения и Idempotency-Key — все три обязательны."""
+    from tests.distributed_workers_helpers import SyncASGITransport, make_center_app, session_cookie
+    from backend.app.core import portal_auth
+    from tests.distributed_workers_helpers import OPERATOR_USER, VIEWER_USER
+
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_launch")
+    body = {"worker_id": worker_id, "project_id": "ПРО/ект", "action": "full"}
+
+    # Наблюдателю запрещено при любых заголовках.
+    viewer = _client(VIEWER_USER)
+    assert viewer.post(
+        "/api/workers/audit/launch", json=body, headers=_key()
+    ).status_code == 403
+
+    # Оператор БЕЗ заголовка намерения (клиент собран без него намеренно).
+    bare = httpx.Client(
+        transport=SyncASGITransport(make_center_app()), base_url="http://center"
+    )
+    bare.cookies.set(
+        portal_auth.get_settings().cookie_name, session_cookie(OPERATOR_USER)
+    )
+    assert bare.post(
+        "/api/workers/audit/launch", json=body,
+        headers={"Idempotency-Key": "k1"},
+    ).status_code == 403
+    # С намерением, но без ключа идемпотентности.
+    assert bare.post(
+        "/api/workers/audit/launch", json=body, headers=INTENT
+    ).status_code == 400
+
+
+def test_audit_targets_explains_incompatibility(center_env, admin, monkeypatch):
+    monkeypatch.setenv("DISTRIBUTED_AUDIT_EXECUTION_ENABLED", "true")
+    _approved_worker(admin, instance_id="inst_exec_targets")
+    response = admin.get("/api/workers/audit/targets")
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["profile"] == "remote_audit_pilot_v1"
+    assert body["norm_stage_location"] == "center"
+    assert body["audit_slot_limit"] == 1
+    worker = body["workers"][0]
+    assert worker["compatible"] is False
+    codes = {r["code"] for r in worker["reasons"]}
+    # Воркер тестового контура не объявляет audit_pipeline_v1 — причина названа.
+    assert "missing_capability" in codes
+
+
+def test_audit_launch_rejects_incompatible_worker(center_env, admin, operator, monkeypatch):
+    monkeypatch.setenv("DISTRIBUTED_AUDIT_EXECUTION_ENABLED", "true")
+    worker_id, _ = _approved_worker(admin, instance_id="inst_exec_incompat")
+    response = operator.post(
+        "/api/workers/audit/launch",
+        json={"worker_id": worker_id, "project_id": "ПРО/ект"},
+        headers=_key(),
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"]["error"] == "worker_incompatible"
+
+
+def test_launch_model_forbids_extra_fields():
+    import pydantic
+
+    from backend.app.models.distributed_workers import RemoteAuditLaunchRequest
+
+    with pytest.raises(pydantic.ValidationError):
+        RemoteAuditLaunchRequest(
+            worker_id="w", project_id="p", command="rm -rf /"
+        )
+
+
+def test_audit_params_model_forbids_execution_fields():
+    import pydantic
+
+    from backend.app.models.distributed_workers import AuditPipelineParams
+
+    base = dict(
+        pipeline_revision="rev", expected_source_tree_hash="sha256:" + "a" * 64,
+        prompt_bundle_hash="sha256:" + "b" * 64,
+        model_config_hash="sha256:" + "c" * 64,
+        feature_flags_hash="sha256:" + "d" * 64,
+    )
+    AuditPipelineParams(**base)          # базовая форма валидна
+    for field in ("command", "argv", "executable", "script", "module", "cwd", "env"):
+        with pytest.raises(pydantic.ValidationError):
+            AuditPipelineParams(**base, **{field: "x"})
+    with pytest.raises(pydantic.ValidationError):
+        AuditPipelineParams(**{**base, "include_norms": True})
+    with pytest.raises(pydantic.ValidationError):
+        AuditPipelineParams(**{**base, "retry_stage": "norm_verify"})

@@ -308,6 +308,14 @@ def build_project_source_package(
             "snapshot_root": SNAPSHOT_ROOT,
             "compression": compression,
             "created_at": time.time(),
+            # Потолки объявляются в манифесте ВСЕГДА: приёмная сторона обязана
+            # знать, по каким границам пакет собирался, а не догадываться.
+            "limits": dict(
+                manifest_base.get("limits") or {},
+                max_files=(limits or PackageLimits()).max_files,
+                max_total_bytes=(limits or PackageLimits()).max_total_bytes,
+                max_file_bytes=MAX_FILE_BYTES,
+            ),
         }
     )
 

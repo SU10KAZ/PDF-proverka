@@ -32,6 +32,7 @@ from typing import Any, Optional
 from audit_worker import (
     PROTOCOL_VERSION,
     __version__,
+    audit_runner,
     local_db,
     package_io,
     process_control,
@@ -46,6 +47,13 @@ from audit_worker.retention import RetentionManager
 
 HEARTBEAT_SEC = 15.0
 POLL_SEC = 1.0
+
+#: Имена типов заданий. Именно ИМЕНА: реализацию по ним выбирает исполнитель.
+AUDIT_JOB_TYPE_TEST = "test_pipeline_v1"
+AUDIT_JOB_TYPE_REAL = "audit_pipeline_v1"
+
+#: Реальный аудит занимает VPS целиком. Доказанный максимум — один.
+REAL_AUDIT_MAX_SLOTS = 1
 
 
 #: Верхняя граница паузы между SIGTERM и SIGKILL. Центр валидирует поле на
@@ -456,6 +464,24 @@ class Executor:
 
     # ─── Исполнение попытки ──────────────────────────────────────────────────
     def run_attempt(self, item: dict[str, Any]) -> dict[str, Any]:
+        """Развилка по типу задания. Реализацию выбирает ВОРКЕР, а не центр.
+
+        Тип задания — имя, а не описание того, что запускать. Неизвестное имя
+        отвергается: канала «выполни произвольное» нет и появиться не может.
+        """
+        job_type = str(item.get("job_type") or AUDIT_JOB_TYPE_TEST)
+        if job_type == AUDIT_JOB_TYPE_REAL:
+            return self.run_audit_attempt(item)
+        if job_type != AUDIT_JOB_TYPE_TEST:
+            self.db.set_queue_state(
+                item["attempt_id"], local_db.QUEUE_FAILED,
+                result={"outcome": "rejected",
+                        "message": f"неизвестный тип задания {job_type!r}"},
+            )
+            return {"ok": False, "reason": "unknown_job_type"}
+        return self._run_test_attempt(item)
+
+    def _run_test_attempt(self, item: dict[str, Any]) -> dict[str, Any]:
         job_id, attempt_id = item["job_id"], item["attempt_id"]
         job_dir = self.jobs.job_dir(job_id, attempt_id)
         meta = self.jobs.load(job_id, attempt_id) or {}
@@ -488,6 +514,14 @@ class Executor:
         # Условная запись «только из claimed» превращает это в честную гонку с
         # одним победителем: не мы — значит попытка отменена, и стартовать
         # нельзя.
+        conflict = self.test_slot_conflict(attempt_id)
+        if conflict:
+            # Пока идёт реальный аудит, тестовые задания не стартуют: они
+            # делят с ним CPU-пул и память (§28 задания). Попытка ждёт в
+            # очереди, в failed не переводится.
+            self.db.set_queue_state(attempt_id, local_db.QUEUE_QUEUED)
+            _log(f"тестовое задание {attempt_id[:8]} ждёт слот: {conflict}")
+            return {"ok": False, "reason": "waiting_for_slot", "detail": conflict}
         started_running = self.db.set_queue_state(
             attempt_id, local_db.QUEUE_RUNNING,
             executor_instance_id=self.instance_id,
@@ -625,6 +659,230 @@ class Executor:
         self._package(item, meta, outbox)
         return {"ok": True, "outcome": outcome}
 
+    # ─── Реальный аудит ──────────────────────────────────────────────────────
+    def audit_slot_conflict(self, attempt_id: str) -> Optional[str]:
+        """Почему реальный аудит стартовать нельзя. None = можно.
+
+        Два правила, оба жёсткие: одновременно идёт не больше одного реального
+        аудита, и он не смешивается с тестовыми заданиями. Обоснование не
+        «осторожность», а измеримое: реальный аудит занимает VPS целиком
+        (CPU-пул, память, диск под кропы), и вывод «два test_pipeline_v1
+        работают» на него не переносится.
+        """
+        rows = self.db.list_queue(
+            states=(local_db.QUEUE_CLAIMED, local_db.QUEUE_RUNNING)
+        )
+        others = [r for r in rows if r.get("attempt_id") != attempt_id]
+        audits = [r for r in others if r.get("job_type") == AUDIT_JOB_TYPE_REAL]
+        tests = [r for r in others if r.get("job_type") != AUDIT_JOB_TYPE_REAL]
+        if len(audits) >= REAL_AUDIT_MAX_SLOTS:
+            return (
+                f"на воркере уже идёт реальный аудит "
+                f"({len(audits)}/{REAL_AUDIT_MAX_SLOTS})"
+            )
+        if tests:
+            return (
+                f"на воркере идут тестовые задания ({len(tests)}) — реальный "
+                "аудит стартует только после их завершения"
+            )
+        return None
+
+    def test_slot_conflict(self, attempt_id: str) -> Optional[str]:
+        """Обратная сторона того же правила: пока идёт аудит, тесты не стартуют."""
+        rows = self.db.list_queue(
+            states=(local_db.QUEUE_CLAIMED, local_db.QUEUE_RUNNING)
+        )
+        audits = [
+            r for r in rows
+            if r.get("attempt_id") != attempt_id
+            and r.get("job_type") == AUDIT_JOB_TYPE_REAL
+        ]
+        if audits:
+            return "на воркере идёт реальный аудит — тестовые задания ждут"
+        return None
+
+    def _provider_dir(self) -> Optional[Path]:
+        """Каталог поддельных провайдеров либо None для настоящих.
+
+        Fail-closed: если настоящие модели не разрешены, а подделок нет —
+        задание отвергается. Молча уйти к настоящему CLI нельзя.
+        """
+        if getattr(self.config, "allow_real_llm", False):
+            return None
+        configured = getattr(self.config, "fake_provider_dir", None)
+        if configured is None:
+            raise audit_runner.AuditJobRejected(
+                "Настоящие модели запрещены (AUDIT_WORKER_ALLOW_REAL_LLM=false), "
+                "а каталог поддельных провайдеров не задан "
+                "(AUDIT_WORKER_FAKE_PROVIDER_DIR)"
+            )
+        path = Path(configured)
+        if not path.is_dir():
+            raise audit_runner.AuditJobRejected(
+                f"Каталог поддельных провайдеров не найден: {path}"
+            )
+        return path
+
+    def run_audit_attempt(self, item: dict[str, Any]) -> dict[str, Any]:
+        """Выполнить `audit_pipeline_v1` в изолированном каталоге попытки."""
+        job_id, attempt_id = item["job_id"], item["attempt_id"]
+        job_dir = self.jobs.job_dir(job_id, attempt_id)
+        meta = self.jobs.load(job_id, attempt_id) or {}
+        outbox = self._outbox(item)
+
+        try:
+            params = audit_runner.validate_params(
+                json.loads(item.get("params_json") or "{}"), config=self.config
+            )
+            provider_dir = self._provider_dir()
+            conflict = self.audit_slot_conflict(attempt_id)
+            if conflict:
+                # Не провал: попытка возвращается в очередь и ждёт слот.
+                self.db.set_queue_state(attempt_id, local_db.QUEUE_QUEUED)
+                _log(f"аудит {attempt_id[:8]} ждёт слот: {conflict}")
+                return {"ok": False, "reason": "waiting_for_slot", "detail": conflict}
+        except audit_runner.AuditJobRejected as exc:
+            self.db.set_queue_state(
+                attempt_id, local_db.QUEUE_FAILED,
+                result={"outcome": "rejected", "message": str(exc)},
+            )
+            self.jobs.update(job_id, attempt_id, local_state="rejected", error=str(exc))
+            outbox.append("job_failed", {"code": "params_rejected", "reason": "error",
+                                         "message": str(exc)})
+            return {"ok": False, "reason": "rejected"}
+
+        started_running = self.db.set_queue_state(
+            attempt_id, local_db.QUEUE_RUNNING,
+            executor_instance_id=self.instance_id,
+            expect_states=(local_db.QUEUE_CLAIMED,),
+        )
+        if not started_running:
+            current = (self.db.queue_item(attempt_id) or {}).get("state")
+            _log(f"аудит {attempt_id[:8]}: состояние сменилось на {current!r} — не запускаю")
+            return {"ok": False, "reason": "superseded", "queue_state": current}
+
+        self.jobs.update(job_id, attempt_id, local_state="running", started_at=time.time())
+        outbox.append("job_started", {"stage": AUDIT_JOB_TYPE_REAL,
+                                      "profile": params.execution_profile,
+                                      "provider_mode":
+                                          "fake" if provider_dir else "real"})
+
+        def on_progress(event: dict[str, Any]) -> None:
+            kind = str(event.get("type") or "")
+            outbox.append(
+                "stage_progress" if kind == "stage_progress" else kind,
+                {k: v for k, v in event.items() if k != "type"},
+            )
+            self.db.renew_lease(attempt_id, self.instance_id)
+
+        def on_log(stream: str, level: str, line: str) -> None:
+            outbox.append(
+                "log_line",
+                {"level": level, "stage": AUDIT_JOB_TYPE_REAL, "source": stream,
+                 "message": line},
+            )
+
+        def on_start(pid: int, fingerprint: str) -> None:
+            try:
+                pgid = os.getpgid(pid)
+            except OSError:
+                pgid = 0
+            self.db.register_process(
+                job_id=job_id,
+                attempt_id=attempt_id,
+                executor_instance_id=self.instance_id,
+                pid=pid,
+                process_start_identity=process_registry.process_start_time(pid),
+                command_fingerprint=fingerprint,
+                process_group_id=pgid,
+            )
+            self.jobs.update(
+                job_id, attempt_id,
+                pid=pid, command_fingerprint=fingerprint,
+                process_start_time=process_registry.process_start_time(pid),
+                process_group_id=pgid, process_status="running",
+                executor_instance_id=self.instance_id,
+            )
+
+        outcome = audit_runner.run_audit_job(
+            params=params,
+            job_dir=job_dir,
+            job_id=job_id,
+            attempt_id=attempt_id,
+            project_id=str(meta.get("project_id") or ""),
+            version_id=meta.get("version_id"),
+            config=self.config,
+            provider_dir=provider_dir,
+            on_progress=on_progress,
+            on_log=on_log,
+            on_start=on_start,
+        )
+        write_completed_marker(
+            job_dir,
+            test_runner.RunOutcome(
+                exit_code=outcome.exit_code,
+                duration_sec=outcome.duration_sec,
+                steps_done=outcome.stages_done,
+                steps_total=outcome.stages_total,
+                failed_message=outcome.failed_message,
+                stdout_lines=outcome.stdout_lines,
+                stderr_lines=outcome.stderr_lines,
+            ),
+        )
+        self.db.update_process(
+            attempt_id,
+            status="exited" if outcome.exit_code == 0 else "failed",
+            exit_code=outcome.exit_code,
+        )
+        self.jobs.update(job_id, attempt_id, process_status="exited",
+                         exit_code=outcome.exit_code)
+
+        if self._was_cancelled(attempt_id):
+            outbox.append("cancellation_received", {"job_id": job_id})
+            outbox.append("job_failed", {"code": "cancelled", "reason": "cancelled",
+                                         "message": "Отменено оператором"})
+            self.jobs.update(job_id, attempt_id, local_state="cancelled")
+            self.db.set_queue_state(attempt_id, local_db.QUEUE_CANCELLED,
+                                    result={"outcome": "cancelled"})
+            return {"ok": False, "reason": "cancelled"}
+
+        missing = audit_runner.missing_required_artifacts(
+            job_dir, params.required_result_artifacts
+        )
+        if outcome.exit_code != 0 or missing:
+            # Пакет НЕ помечается успешным при отсутствии обязательного
+            # артефакта: «успех без 03_findings.json» — худший из исходов,
+            # потому что он проходит все проверки транспорта.
+            message = outcome.failed_message or (
+                f"нет обязательных артефактов: {', '.join(missing)}" if missing
+                else f"конвейер вернул код {outcome.exit_code}"
+            )
+            outbox.append("stage_completed", {"stage": AUDIT_JOB_TYPE_REAL,
+                                              "status": "error",
+                                              "duration_sec": round(outcome.duration_sec, 2)})
+            outbox.append("job_failed", {"code": "audit_pipeline_failed",
+                                         "message": message,
+                                         "stage": AUDIT_JOB_TYPE_REAL,
+                                         "reason": "error",
+                                         "missing_artifacts": missing})
+            self.jobs.update(job_id, attempt_id, local_state="failed")
+            self.db.set_queue_state(attempt_id, local_db.QUEUE_FAILED,
+                                    result={"outcome": "failed",
+                                            "exit_code": outcome.exit_code,
+                                            "missing_artifacts": missing})
+            return {"ok": False, "reason": "audit_pipeline_failed", "missing": missing}
+
+        outbox.append(
+            "stage_completed",
+            {"stage": AUDIT_JOB_TYPE_REAL, "status": "done",
+             "duration_sec": round(outcome.duration_sec, 2),
+             "stdout_lines": outcome.stdout_lines,
+             "stderr_lines": outcome.stderr_lines},
+        )
+        self._announce_artifacts(job_dir, outbox)
+        self._package(item, meta, outbox)
+        return {"ok": True, "outcome": outcome}
+
     def _finish_from_marker(self, item: dict[str, Any], marker: dict[str, Any]) -> None:
         """Доупаковать работу, завершённую до рестарта.
 
@@ -676,6 +934,10 @@ class Executor:
         job_dir = self.jobs.job_dir(job_id, attempt_id)
         archive = job_dir / "result" / f"{attempt_id}.tar.gz"
         package = meta.get("package") or {}
+        job_type = str(item.get("job_type") or meta.get("job_type")
+                       or AUDIT_JOB_TYPE_TEST)
+        is_audit = job_type == AUDIT_JOB_TYPE_REAL
+        audit_manifest = read_json(job_dir / "result" / "audit_manifest.json") or {}
         manifest = package_io.build_result_package(
             dest_path=archive,
             job_dir=job_dir,
@@ -689,6 +951,17 @@ class Executor:
             manifest_version=int(package.get("manifest_version", 1) or 1),
             source_package_hash=package.get("sha256"),
             exit_code=int(meta.get("exit_code", 0) or 0),
+            job_type=job_type,
+            required_artifacts=(
+                list(audit_runner.REQUIRED_RESULT_ARTIFACTS) if is_audit else None
+            ),
+            pipeline_revision=(
+                audit_manifest.get("pipeline_revision") if is_audit else None
+            ),
+            stage_completion=(
+                audit_manifest.get("stage_completion") if is_audit else None
+            ),
+            resume_hint=(audit_manifest.get("resume_hint") if is_audit else None),
         )
         self.jobs.update(
             job_id, attempt_id,
