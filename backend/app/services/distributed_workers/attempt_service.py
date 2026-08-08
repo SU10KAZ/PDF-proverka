@@ -32,6 +32,7 @@ from typing import Any, Optional
 
 from backend.app.models.distributed_workers import (
     TERMINAL_JOB_STATES,
+    ConnectivityState,
     JobState,
     WorkerCommandType,
 )
@@ -339,6 +340,42 @@ def mark_lost(
 
 
 # ─── Новая попытка ───────────────────────────────────────────────────────────
+def _require_capacity_risk_accepted(
+    *,
+    previous: dict[str, Any],
+    worker: dict[str, Any],
+    accept_capacity_risk: bool,
+) -> None:
+    """Не назначать повтор на воркер, где старый процесс мог остаться живым.
+
+    Единственный случай, где нужно явное «я понимаю риск» (§34 задания):
+      * прошлая попытка признана ПОТЕРЯННОЙ (`operator_declared_lost`) —
+        значит центр НЕ знает, остановился ли её процесс (I-06);
+      * её состояние исполнения всё ещё «работа у воркера»;
+      * и связи с этим воркером сейчас НЕТ, то есть спросить некого и
+        отправить команду отмены тоже некому.
+
+    В таком сочетании новая попытка на том же VPS может дать там два
+    одновременных процесса, о втором из которых центр не узнает. Это решение
+    оператора, а не автоматики — но принять его он должен осознанно.
+    """
+    from backend.app.services.distributed_workers import slots
+
+    if accept_capacity_risk:
+        return
+    if not slots.attempt_unproven_remote(previous):
+        return
+    if worker.get("connection_status") == ConnectivityState.ONLINE.value:
+        return
+    raise OperatorError(
+        "Прошлая попытка признана потерянной, её процесс мог не остановиться, "
+        f"а связи с воркером нет (связь: {worker.get('connection_status')}). "
+        "Новая попытка на том же VPS может дать там два одновременных процесса. "
+        "Если риск принят осознанно — повторите запрос с accept_capacity_risk=true "
+        "либо назначьте попытку на другой воркер."
+    )
+
+
 def create_attempt(
     *,
     job_id: str,
@@ -349,6 +386,7 @@ def create_attempt(
     actor: str,
     idempotency_key: Optional[str] = None,
     audit: Optional[dict[str, Any]] = None,
+    accept_capacity_risk: bool = False,
     settings: DistributedWorkersSettings,
 ) -> dict[str, Any]:
     """Создать НОВУЮ попытку задания. Старая сохраняется целиком."""
@@ -382,6 +420,11 @@ def create_attempt(
 
     worker = repositories.get_worker(worker_id, settings=settings)
     _require(worker is not None, "Воркер не найден")
+    _require_capacity_risk_accepted(
+        previous=previous,
+        worker=worker or {},
+        accept_capacity_risk=accept_capacity_risk,
+    )
 
     attempt = repositories.create_next_attempt(
         job_id=job_id, worker_id=worker_id, settings=settings
@@ -562,6 +605,8 @@ def _log_action(
     repositories.record_admin_action(
         actor_id=actor,
         actor_display_name=str(meta.get("actor_display_name") or actor.split(":", 1)[-1]),
+        actor_role=meta.get("actor_role"),
+        permission=meta.get("permission"),
         action_type=action_type,
         worker_id=attempt.get("assigned_worker_id"),
         job_id=attempt.get("job_id"),

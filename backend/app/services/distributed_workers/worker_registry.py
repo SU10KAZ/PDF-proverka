@@ -16,7 +16,7 @@ from backend.app.models.distributed_workers import (
     RegistrationStatus,
     WorkerState,
 )
-from backend.app.services.distributed_workers import repositories
+from backend.app.services.distributed_workers import repositories, slots
 from backend.app.services.distributed_workers.settings import DistributedWorkersSettings
 
 
@@ -49,15 +49,37 @@ def record_heartbeat(
     settings: DistributedWorkersSettings,
     executor: Optional[dict[str, Any]] = None,
     disk: Optional[dict[str, Any]] = None,
+    max_verified_slots: Optional[int] = None,
+    active_local_jobs: Optional[int] = None,
+    running_processes: Optional[int] = None,
+    locally_reserved_slots: Optional[int] = None,
 ) -> dict[str, Any]:
     now = time.time()
+    reported = slots.normalize_max_slots(configured_max_slots, source="воркер")
+    verified = slots.normalize_max_slots(
+        max_verified_slots if max_verified_slots is not None else 1,
+        source="capability воркера",
+    )
     fields: dict[str, Any] = {
         "instance_id": instance_id,
         "last_seen_at": now,
         "connection_status": ConnectivityState.ONLINE.value,
         "worker_state": worker_state,
-        "configured_max_slots": max(0, min(5, configured_max_slots)),
-        "calculated_free_slots": max(0, min(5, calculated_free_slots)),
+        # ВНИМАНИЕ: `configured_max_slots` больше НЕ перезаписывается воркером.
+        # Это настройка оператора (approve). Что о себе сообщает воркер, живёт
+        # в отдельной колонке — иначе ограничиваемая сторона задавала бы лимит.
+        "worker_reported_max_slots": reported.value,
+        "max_verified_slots": verified.value,
+        "calculated_free_slots": max(0, min(slots.MAX_VERIFIED_SLOTS, calculated_free_slots)),
+        "active_local_jobs": _int_or_zero(
+            active_local_jobs if active_local_jobs is not None else len(active_jobs)
+        ),
+        "running_processes": _int_or_zero(
+            running_processes
+            if running_processes is not None
+            else (executor or {}).get("running_processes")
+        ),
+        "locally_reserved_slots": _int_or_zero(locally_reserved_slots),
         "active_jobs": json.dumps(active_jobs, ensure_ascii=False),
     }
     # Снимок пишется, даже если ресурсов в этом heartbeat нет: состояние
@@ -218,8 +240,18 @@ def refresh_connectivity(
     return workers
 
 
-def to_view(row: dict[str, Any], *, now: Optional[float] = None) -> dict[str, Any]:
-    """Плоское представление записи воркера для API оператора."""
+def to_view(
+    row: dict[str, Any],
+    *,
+    now: Optional[float] = None,
+    usage: Optional[Any] = None,
+) -> dict[str, Any]:
+    """Плоское представление записи воркера для API оператора.
+
+    `usage` — занятость, посчитанная ЦЕНТРОМ по своей базе. Если её передали,
+    в ответе появляется блок `slots`: заявленное воркером и рассчитанное
+    центром показываются РАЗДЕЛЬНО, а расхождение помечается явно (§29).
+    """
     stamp = now or time.time()
     snapshot = _loads(row.get("resource_snapshot"), None)
     warnings = list((snapshot or {}).get("warnings") or [])
@@ -239,10 +271,25 @@ def to_view(row: dict[str, Any], *, now: Optional[float] = None) -> dict[str, An
         # Об executor мы узнаём только через агента. Агент офлайн — значит
         # свежих сведений нет; рисовать «online» было бы враньём.
         executor["status"] = "unknown"
+    limit = slots.effective_limit(
+        row,
+        executor_status=executor.get("status"),
+        disk_level=str(disk_report.get("level") or "unknown"),
+    )
+    slot_view = slots.build_slot_view(row, usage, limit) if usage is not None else None
     return {
         "worker_id": row["worker_id"],
         "executor": executor,
         "disk": disk_report,
+        "slots": slot_view,
+        "worker_reported_max_slots": row.get("worker_reported_max_slots"),
+        "max_verified_slots": row.get("max_verified_slots", 1),
+        "active_local_jobs": row.get("active_local_jobs", 0),
+        "running_processes": row.get("running_processes", 0),
+        "locally_reserved_slots": row.get("locally_reserved_slots", 0),
+        "effective_max_slots": limit.value,
+        "slot_limit_binding": limit.binding,
+        "slot_limit_notices": list(limit.notices),
         "display_name": row.get("display_name") or row["worker_id"],
         "instance_id": row.get("instance_id"),
         "registration_status": row.get("registration_status", RegistrationStatus.PENDING.value),

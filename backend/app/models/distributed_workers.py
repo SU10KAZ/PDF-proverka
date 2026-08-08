@@ -330,6 +330,17 @@ class HeartbeatRequest(BaseModel):
     # executor молчит, а агент онлайн — это отдельная новость, а не «всё ок».
     executor: Optional[ExecutorSnapshot] = None
     disk: Optional[DiskSnapshot] = None
+    # ─── Слоты (пред-пайплайновый этап) ─────────────────────────────────────
+    # Что сборка воркера ПРОВЕРИЛА, а не что оператор пожелал. Старый агент
+    # поля не пришлёт — для него это 1, и это честный ответ: доказательств
+    # двух слотов у его сборки нет.
+    max_verified_slots: int = Field(default=1, ge=0, le=5)
+    # Диагностика локального учёта. Центр решение принимает по СВОЕЙ базе, а
+    # эти числа сравнивает со своими и при расхождении показывает
+    # slot_count_mismatch (S-15) — доверять им как источнику истины нельзя.
+    active_local_jobs: int = Field(default=0, ge=0, le=64)
+    running_processes: int = Field(default=0, ge=0, le=64)
+    locally_reserved_slots: int = Field(default=0, ge=0, le=64)
 
 
 class CursorAck(BaseModel):
@@ -405,6 +416,11 @@ class JobsNextRequest(BaseModel):
     free_slots: int = Field(default=1, ge=0, le=5)
     accepts: dict[str, Any] = Field(default_factory=dict)
     wait_sec: int = Field(default=25, ge=0, le=60)
+    # Состояние локального исполнителя НА МОМЕНТ ЗАПРОСА. Свежее, чем снимок из
+    # heartbeat: между ударами проходит до 30 секунд, и «исполнитель был офлайн
+    # полминуты назад» — плохое основание отказать в работе, которую уже есть
+    # кому делать. Если поле не пришло (старый агент), центр берёт heartbeat.
+    executor_status: Optional[str] = Field(default=None, max_length=32)
 
 
 class SourceVerification(BaseModel):
@@ -692,6 +708,12 @@ class CreateAttemptRequest(BaseModel):
     reason: str = Field(min_length=1, max_length=1000)
     source_attempt_id: Optional[str] = Field(default=None, max_length=64)
     confirmation: str = Field(min_length=1, max_length=64)
+    # Явное признание риска превышения ёмкости. Требуется в одном случае:
+    # предыдущая попытка признана потерянной, её процесс мог остаться жив, а
+    # связи с VPS нет — то есть центр не может ни увидеть чужой процесс, ни
+    # попросить его остановиться (§34 задания). Во всех остальных случаях поле
+    # не нужно и ни на что не влияет.
+    accept_capacity_risk: bool = False
 
 
 class RequestDeletionRequest(BaseModel):

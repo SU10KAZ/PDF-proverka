@@ -517,15 +517,63 @@ def list_jobs(
     return [dict(r) for r in rows]
 
 
-def claim_next_job_for_worker(
+class SlotLimitReached(RuntimeError):
+    """Слотов у воркера нет. Задание остаётся `assigned` и ждёт освобождения."""
+
+    def __init__(self, message: str, *, usage: Any = None, limit: Any = None):
+        super().__init__(message)
+        self.usage = usage
+        self.limit = limit
+
+
+def _attempts_for_slots(conn, worker_id: str) -> list[dict[str, Any]]:
+    """Нетерминальные попытки воркера — сырьё для предикатов занятости слота."""
+    terminal = tuple(s.value for s in TERMINAL_JOB_STATES)
+    placeholders = ",".join("?" for _ in terminal)
+    rows = conn.execute(
+        "SELECT attempt_id, execution_state AS state, attempt_disposition "
+        f"FROM job_attempts WHERE assigned_worker_id = ? "
+        f"AND execution_state NOT IN ({placeholders})",
+        (worker_id, *terminal),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def worker_slot_snapshot(
     worker_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> Any:
+    """Занятость воркера, посчитанная ЦЕНТРОМ по своей базе (не по heartbeat)."""
+    from backend.app.services.distributed_workers import slots
+
+    with database.read_conn(settings) as conn:
+        return slots.usage_from_attempts(_attempts_for_slots(conn, worker_id))
+
+
+def claim_next_job_for_worker(
+    worker_id: str,
+    *,
+    limit_override: Optional[int] = None,
+    settings: DistributedWorkersSettings | None = None,
 ) -> Optional[dict[str, Any]]:
     """Атомарно взять одно задание, предназначенное этому воркеру.
 
     Задание уже закреплено оператором (assigned_worker_id проставлен при
     создании), поэтому «взять» = перевести assigned → source_uploading и
     отметить факт выдачи. BEGIN IMMEDIATE не даёт двум запросам забрать одно.
+
+    Начиная с пред-пайплайнового этапа здесь же проверяется ЁМКОСТЬ: сколько
+    попыток воркер уже держит, считает центр по собственной базе, а не по
+    полю `calculated_free_slots` из heartbeat (S-15). Чтение занятости, сверка
+    с лимитом и захват идут одной транзакцией `BEGIN IMMEDIATE` — два
+    одновременных `/jobs/next` физически не могут перескочить лимит: SQLite
+    сериализует писателей, и проигравший увидит уже обновлённую занятость.
+
+    Превышение лимита — не ошибка задания: оно остаётся `assigned` и ждёт
+    (§18 задания, S-02). Вызывающий отличает «нечего выдавать» (None) от
+    «слотов нет» (SlotLimitReached).
     """
+    from backend.app.services.distributed_workers import slots
+
     now = time.time()
     with database.write_txn(settings) as conn:
         # attempt_disposition = 'active' обязателен. Без него признанная
@@ -541,9 +589,36 @@ def claim_next_job_for_worker(
         if row is None:
             return None
         job = dict(row)
+
+        usage = slots.usage_from_attempts(_attempts_for_slots(conn, worker_id))
+        if limit_override is not None:
+            limit_value = int(limit_override)
+            limit_obj = slots.EffectiveLimit(
+                value=limit_value, binding="caller", components={"caller": limit_value}
+            )
+        else:
+            worker_row = conn.execute(
+                "SELECT * FROM workers WHERE worker_id = ?", (worker_id,)
+            ).fetchone()
+            limit_obj = slots.effective_limit(
+                dict(worker_row) if worker_row is not None else {},
+                protocol_version=(settings.protocol_version if settings else None),
+            )
+            limit_value = limit_obj.value
+        if usage.reserved >= limit_value:
+            raise SlotLimitReached(
+                (
+                    f"Свободных слотов нет: занято {usage.reserved} из {limit_value}"
+                    + (f" ({limit_obj.blocked_reason})" if limit_obj.blocked_reason else "")
+                ),
+                usage=usage,
+                limit=limit_obj,
+            )
+
         conn.execute(
-            "UPDATE job_attempts SET execution_state = ? WHERE attempt_id = ?",
-            (JobState.SOURCE_UPLOADING.value, job["attempt_id"]),
+            "UPDATE job_attempts SET execution_state = ? WHERE attempt_id = ? "
+            "AND execution_state = ?",
+            (JobState.SOURCE_UPLOADING.value, job["attempt_id"], JobState.ASSIGNED.value),
         )
         conn.execute(
             "INSERT INTO job_state_transitions "
@@ -1155,6 +1230,8 @@ def record_admin_action(
     user_agent: Optional[str] = None,
     result_status: str = "ok",
     result: Optional[dict[str, Any]] = None,
+    actor_role: Optional[str] = None,
+    permission: Optional[str] = None,
     settings: DistributedWorkersSettings | None = None,
 ) -> dict[str, Any]:
     """Записать операторское действие. Функции удаления записей нет намеренно.
@@ -1172,7 +1249,8 @@ def record_admin_action(
                 "actor_display_name, action_type, worker_id, job_id, attempt_id, "
                 "previous_state_json, requested_state_json, reason, idempotency_key, "
                 "request_id, source_ip, user_agent, created_at, result_status, "
-                "result_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "result_json, actor_role, permission) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     action_id, actor_id, actor_display_name, action_type, worker_id,
                     job_id, attempt_id,
@@ -1181,6 +1259,7 @@ def record_admin_action(
                     reason, idempotency_key, request_id, source_ip, user_agent, now,
                     result_status,
                     json.dumps(result, ensure_ascii=False) if result else None,
+                    actor_role, permission,
                 ),
             )
     except sqlite3.IntegrityError:

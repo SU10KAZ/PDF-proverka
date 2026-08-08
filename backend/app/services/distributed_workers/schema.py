@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -460,6 +460,41 @@ JOIN job_attempts a ON a.attempt_id = j.current_attempt_id;
 """
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Миграция 4 (пред-пайплайновый гейт): раздельный учёт слотов.
+#
+# Проблема, которую она закрывает. Колонка `configured_max_slots` служила
+# ДВУМ хозяевам сразу: её выставлял оператор при одобрении воркера и её же
+# перезаписывал каждый heartbeat значением, которое воркер сообщал о себе.
+# Пока слот был один, совпадение было случайно-верным; на двух слотах это
+# означало бы, что настройку оператора молча затирает сам воркер — то есть
+# лимит задаёт та сторона, которую он и должен ограничивать.
+#
+# Теперь:
+#   configured_max_slots       — настройка ОПЕРАТОРА (центр), пишется approve;
+#   worker_reported_max_slots  — что воркер сообщает о себе (heartbeat);
+#   max_verified_slots         — capability его СБОРКИ (сколько проверено);
+#   active_local_jobs / running_processes / locally_reserved_slots — что воркер
+#     насчитал у себя. Это ДИАГНОСТИКА: решение центр принимает по своей базе,
+#     а расхождение показывает как slot_count_mismatch (S-15).
+#
+# Аддитивная миграция: ALTER TABLE ADD COLUMN не трогает существующие строки.
+_MIGRATION_4 = """
+ALTER TABLE workers ADD COLUMN worker_reported_max_slots INTEGER;
+ALTER TABLE workers ADD COLUMN max_verified_slots INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE workers ADD COLUMN active_local_jobs INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE workers ADD COLUMN running_processes INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE workers ADD COLUMN locally_reserved_slots INTEGER NOT NULL DEFAULT 0;
+UPDATE workers SET worker_reported_max_slots = configured_max_slots;
+
+-- Журнал операторских решений получает РОЛЬ и РАЗРЕШЕНИЕ, по которому действие
+-- было пропущено. Без них запись отвечает на «кто», но не на «на каком
+-- основании» — а при разборе инцидента нужно именно второе (§13 задания).
+ALTER TABLE worker_admin_actions ADD COLUMN actor_role TEXT;
+ALTER TABLE worker_admin_actions ADD COLUMN permission TEXT;
+"""
+
+
 def _statements(script: str) -> tuple[str, ...]:
     """Разбить SQL-скрипт на отдельные операторы.
 
@@ -504,6 +539,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
     3: _statements(_MIGRATION_3),
+    4: _statements(_MIGRATION_4),
 }
 
 

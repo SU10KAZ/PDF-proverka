@@ -64,6 +64,7 @@ from backend.app.services.distributed_workers import (
     package_service,
     registration_service,
     repositories,
+    slots,
     upload_service,
     worker_registry,
 )
@@ -352,6 +353,10 @@ async def heartbeat(
         warnings=payload.warnings,
         executor=payload.executor.model_dump() if payload.executor else None,
         disk=payload.disk.model_dump() if payload.disk else None,
+        max_verified_slots=payload.max_verified_slots,
+        active_local_jobs=payload.active_local_jobs,
+        running_processes=payload.running_processes,
+        locally_reserved_slots=payload.locally_reserved_slots,
         settings=settings,
     )
     cursors = await database.run_db(
@@ -365,6 +370,9 @@ async def heartbeat(
     )
     # Критическая нехватка диска блокирует ВЫДАЧУ новых заданий. Текущие
     # продолжают работать, ничего не удаляется (§12.5).
+    #
+    # Здесь же гасится «работа есть» при исчерпанных слотах: иначе агент ходил
+    # бы за заданием, которое центр отдать не может, и получал 409 по кругу.
     if has_work:
         fresh = await database.run_db(
             repositories.get_worker, principal.worker_id, settings=settings
@@ -372,6 +380,15 @@ async def heartbeat(
         allowed, _why = worker_registry.can_receive_jobs(fresh or principal.row)
         if not allowed:
             has_work = False
+        else:
+            usage = await database.run_db(
+                repositories.worker_slot_snapshot, principal.worker_id, settings=settings
+            )
+            limit = slots.effective_limit(
+                fresh or principal.row, protocol_version=settings.protocol_version
+            )
+            if usage.reserved >= limit.value:
+                has_work = False
     # ВАЖНО: выборка именно по наличию retention_until, а не «нетерминальные».
     # Срок хранения проставляется ВМЕСТЕ с переходом в терминальное состояние,
     # поэтому прежний фильтр гарантированно давал пустой список.
@@ -511,20 +528,51 @@ async def jobs_next(
             cached["execution_token"] = replay_token
             return JSONResponse(status_code=int(prior["status_code"]), content=cached)
 
+    # Сколько центр готов отдать ЭТОМУ воркеру прямо сейчас. Заявленный
+    # воркером `free_slots` — только верхняя граница пожелания: доверять ему
+    # как источнику истины нельзя (S-15), поэтому берётся минимум с
+    # собственным расчётом центра.
+    limit = slots.effective_limit(
+        fresh or principal.row,
+        protocol_version=settings.protocol_version,
+        executor_status=payload.executor_status or None,
+    )
+    allowed_limit = min(limit.value, max(0, payload.free_slots))
+
     deadline = time.monotonic() + min(payload.wait_sec, settings.long_poll_sec)
     job: Optional[dict[str, Any]] = None
+    slot_block: Optional[repositories.SlotLimitReached] = None
     while True:
-        job = await database.run_db(
-            repositories.claim_next_job_for_worker,
-            principal.worker_id,
-            settings=settings,
-        )
+        try:
+            job = await database.run_db(
+                repositories.claim_next_job_for_worker,
+                principal.worker_id,
+                limit_override=allowed_limit,
+                settings=settings,
+            )
+            slot_block = None
+        except repositories.SlotLimitReached as exc:
+            # Задание есть, но слотов нет. Это НЕ ошибка задания: оно остаётся
+            # `assigned` и уйдёт в работу после освобождения слота (§18).
+            job, slot_block = None, exc
         if job is not None or time.monotonic() >= deadline:
             break
         # Пауза вне транзакции: длинное ожидание не держит БД (§19.6).
         await asyncio.sleep(1.0)
 
     if job is None:
+        if slot_block is not None:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "error": "no_free_slots",
+                    "message": str(slot_block),
+                    "effective_limit": limit.value,
+                    "limit_binding": limit.binding,
+                    "occupied": getattr(slot_block.usage, "occupied", None),
+                    "unproven_remote": getattr(slot_block.usage, "unproven", None),
+                },
+            )
         return Response(status_code=204)
 
     token = auth.generate_execution_token()

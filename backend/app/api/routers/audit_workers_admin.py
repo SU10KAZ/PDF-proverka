@@ -3,8 +3,15 @@
 Контур оператора: обычная портальная cookie-сессия (PortalAuthMiddleware).
 Токен воркера сюда доступа НЕ даёт — контуры разделены намеренно (§20.2).
 
+Права проверяются на КАЖДОМ маршруте зависимостью из
+`services/distributed_workers/authorization.py`: три уровня — `view`,
+`operate`, `admin`. UI границей безопасности не является (R-01): скрытая
+кнопка не защищает ничего, а прямой HTTP-запрос обязан получить 401/403
+независимо от того, что нарисовано на экране.
+
 Все опасные действия (одобрение, отзыв, ротация токена, выдача задания)
-пишутся в сквозной журнал действий с kind="worker".
+пишутся в сквозной журнал действий с kind="worker", а решения оператора —
+ещё и в таблицу worker_admin_actions с actor'ом ИЗ СЕССИИ.
 """
 from __future__ import annotations
 
@@ -12,7 +19,7 @@ import json
 import time
 from typing import Any, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 
 from backend.app.core import action_log
@@ -27,6 +34,7 @@ from backend.app.models.distributed_workers import (
 )
 from backend.app.services.distributed_workers import (
     attempt_service,
+    authorization,
     database,
     event_service,
     identifiers,
@@ -34,7 +42,14 @@ from backend.app.services.distributed_workers import (
     progress_service,
     registration_service,
     repositories,
+    slots,
     worker_registry,
+)
+from backend.app.services.distributed_workers.authorization import (
+    Actor,
+    require_admin,
+    require_operator,
+    require_view,
 )
 from backend.app.services.distributed_workers.settings import (
     DistributedWorkersConfigError,
@@ -49,15 +64,23 @@ status_router = APIRouter(prefix="/api/workers", tags=["audit-workers-admin"])
 
 
 def _actor(request: Request) -> str:
-    """Кто действует. Берётся ИЗ АУТЕНТИФИКАЦИИ, а не из тела запроса (§6)."""
-    user = getattr(request.state, "portal_user", None)
-    return f"operator:{user}" if user else "operator:anonymous"
+    """Кто действует. Берётся ИЗ АУТЕНТИФИКАЦИИ, а не из тела запроса (§6).
+
+    Источник — `authorization.resolve_actor`, то есть подписанная портальная
+    cookie. `request.state.portal_user` тут больше не читается напрямую:
+    единственная точка определения субъекта должна быть одна, иначе роутер и
+    журнал однажды разойдутся в том, кто именно нажал кнопку.
+    """
+    return authorization.actor_of(request).audit_id()
 
 
-def _audit_meta(request: Request) -> dict[str, Any]:
+def _audit_meta(request: Request, *, permission: Optional[str] = None) -> dict[str, Any]:
     client = request.client.host if request.client else None
+    actor = authorization.actor_of(request)
     return {
-        "actor_display_name": getattr(request.state, "portal_user", None) or "anonymous",
+        "actor_display_name": actor.display_name or "anonymous",
+        "actor_role": actor.role,
+        "permission": permission,
         "request_id": request.headers.get("X-Request-Id"),
         "source_ip": request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
         or client,
@@ -127,6 +150,7 @@ async def _record_admin_action(
     request: Request,
     *,
     action_type: str,
+    permission: str,
     settings: Any,
     worker_id: Optional[str] = None,
     job_id: Optional[str] = None,
@@ -144,10 +168,13 @@ async def _record_admin_action(
     сквозной журнал портала — про запросы, этот — про решения оператора (I-15).
     """
     meta = _audit_meta(request)
+    actor = authorization.actor_of(request)
     await database.run_db(
         repositories.record_admin_action,
         actor_id=_actor(request),
         actor_display_name=str(meta["actor_display_name"]),
+        actor_role=actor.role,
+        permission=permission,
         action_type=action_type,
         worker_id=worker_id,
         job_id=job_id,
@@ -197,6 +224,12 @@ async def subsystem_status() -> dict[str, Any]:
             "аутентификации у него нет. Включите портальную защиту либо "
             "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN=true для локального пилота."
         )
+    # Диагностика ролей: САМ факт настройки, без единого имени субъекта.
+    # Список пользователей на фронте — это утечка, а не удобство (§7 задания).
+    role_config = authorization.load_role_config()
+    roles_error = role_config.diagnostics()
+    if roles_error and not config_error:
+        config_error = roles_error
     return {
         "enabled": True,
         "protocol_version": settings.protocol_version,
@@ -207,8 +240,29 @@ async def subsystem_status() -> dict[str, Any]:
         "upload_chunk_bytes": settings.upload_chunk_bytes,
         "test_job_max_sec": settings.test_job_max_sec,
         "admin_api_available": admin_available,
+        "portal_auth_enabled": _portal_auth.get_settings().enabled,
+        "roles_configured": role_config.configured and role_config.ok,
+        "roles_error": roles_error,
+        "max_verified_slots": slots.MAX_VERIFIED_SLOTS,
         "config_error": config_error,
     }
+
+
+@status_router.get("/me")
+async def whoami(
+    actor: Actor = Depends(authorization.current_actor),
+) -> dict[str, Any]:
+    """Кто я и что мне позволено в подсистеме.
+
+    Единственный эндпоинт, отвечающий БЕЗ прав: экран обязан уметь честно
+    сказать «недостаточно прав», а для этого ответ должен приходить и тому, у
+    кого прав нет. Ответ содержит только собственные разрешения вызывающего —
+    ни чужих субъектов, ни списков, ни токенов (R-01, §12).
+    """
+    settings = get_settings()
+    view = actor.as_view()
+    view["subsystem_enabled"] = settings.enabled
+    return view
 
 
 # ─── Журнал операторских действий ────────────────────────────────────────────
@@ -217,8 +271,16 @@ async def admin_actions(
     job_id: Optional[str] = Query(default=None),
     worker_id: Optional[str] = Query(default=None),
     limit: int = Query(default=100, ge=1, le=500),
+    actor: Actor = Depends(require_admin),
 ) -> dict[str, Any]:
-    """Журнал только для чтения. Эндпоинта удаления записей нет намеренно (I-15)."""
+    """Полный журнал операторских решений — только администратору (§9).
+
+    Оператору и наблюдателю по-прежнему видны действия ПО КОНКРЕТНОЙ попытке
+    (они приходят внутри истории попыток), но сводный журнал по всем воркерам
+    и всем субъектам — административные сведения.
+
+    Эндпоинта удаления записей нет намеренно (I-15).
+    """
     settings = _settings_or_404()
     items = await database.run_db(
         repositories.list_admin_actions,
@@ -231,16 +293,30 @@ async def admin_actions(
 
 
 # ─── Воркеры ─────────────────────────────────────────────────────────────────
+async def _worker_view(row: dict[str, Any], settings: Any, *, now: Optional[float] = None):
+    """Карточка воркера вместе с занятостью слотов, посчитанной ЦЕНТРОМ."""
+    usage = await database.run_db(
+        repositories.worker_slot_snapshot, row["worker_id"], settings=settings
+    )
+    return worker_registry.to_view(row, now=now, usage=usage)
+
+
 @router.get("")
-async def list_workers() -> dict[str, Any]:
+async def list_workers(actor: Actor = Depends(require_view)) -> dict[str, Any]:
     settings = _settings_or_404()
     rows = await database.run_db(
         worker_registry.refresh_connectivity, settings=settings
     )
     now = time.time()
-    workers = [worker_registry.to_view(r, now=now) for r in rows]
+    workers = [await _worker_view(r, settings, now=now) for r in rows]
     online = sum(1 for w in workers if w["connection_status"] == "online")
-    free_slots = sum(w["calculated_free_slots"] for w in workers if w["connection_status"] == "online")
+    # Свободные слоты в сводке — РАССЧИТАННЫЕ ЦЕНТРОМ, а не заявленные
+    # воркером: сумма чужих обещаний не то число, по которому назначают работу.
+    free_slots = sum(
+        (w.get("slots") or {}).get("center_free_slots", 0)
+        for w in workers
+        if w["connection_status"] == "online"
+    )
     return {
         "workers": workers,
         "summary": {
@@ -248,18 +324,25 @@ async def list_workers() -> dict[str, Any]:
             "online": online,
             "free_slots": free_slots,
             "active_jobs": sum(len(w["active_jobs"]) for w in workers),
+            "slot_mismatch": sum(
+                1 for w in workers if (w.get("slots") or {}).get("slot_count_mismatch")
+            ),
             # Заявки, ждущие решения оператора: их нельзя «не заметить» —
             # до одобрения воркер вообще не получает токен.
             "pending": sum(
                 1 for w in workers if w["registration_status"] == "pending"
             ),
         },
+        "max_verified_slots": slots.MAX_VERIFIED_SLOTS,
+        "permissions": sorted(actor.permissions),
         "server_time": now,
     }
 
 
 @router.get("/{worker_id}")
-async def get_worker(worker_id: str) -> dict[str, Any]:
+async def get_worker(
+    worker_id: str, actor: Actor = Depends(require_view)
+) -> dict[str, Any]:
     settings = _settings_or_404()
     row = await database.run_db(repositories.get_worker, worker_id, settings=settings)
     if row is None:
@@ -268,36 +351,53 @@ async def get_worker(worker_id: str) -> dict[str, Any]:
         repositories.list_jobs, worker_id=worker_id, settings=settings
     )
     return {
-        "worker": worker_registry.to_view(row),
+        "worker": await _worker_view(row, settings),
         "jobs": [job_service.to_view(j, settings=settings) for j in jobs],
     }
 
 
 @router.post("/{worker_id}/approve")
 async def approve_worker(
-    worker_id: str, payload: ApproveRequest, request: Request
+    worker_id: str,
+    payload: ApproveRequest,
+    request: Request,
+    actor: Actor = Depends(require_admin),
 ) -> dict[str, Any]:
     settings = _settings_or_404()
     _require_intent_header(request)
+    limit = slots.normalize_max_slots(
+        payload.configured_max_slots, source="настройка оператора"
+    )
     try:
         row = await database.run_db(
             registration_service.approve_worker,
             worker_id=worker_id,
             display_name=payload.display_name,
-            configured_max_slots=payload.configured_max_slots,
+            configured_max_slots=limit.value,
             settings=settings,
         )
     except registration_service.RegistrationConflict as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_approved", worker_id=worker_id)
     await _record_admin_action(
-        request, action_type="approve_worker", worker_id=worker_id, settings=settings
+        request, action_type="approve_worker", permission=authorization.PERM_ADMIN,
+        worker_id=worker_id, settings=settings,
+        requested_state={"configured_max_slots": payload.configured_max_slots},
+        result={"configured_max_slots": limit.value, "notice": limit.notice},
     )
-    return {"worker": worker_registry.to_view(row)}
+    return {
+        "worker": await _worker_view(row, settings),
+        "configured_max_slots": limit.value,
+        # Молчаливое зажатие «5 → 2» оставило бы оператора в уверенности, что у
+        # него пять слотов. Предупреждение возвращается прямо в ответе.
+        "slot_limit_notice": limit.notice,
+    }
 
 
 @router.post("/{worker_id}/reject")
-async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
+async def reject_worker(
+    worker_id: str, request: Request, actor: Actor = Depends(require_admin)
+) -> dict[str, Any]:
     """Отклонить заявку. Claim-secret обесценивается, токен не выдаётся."""
     settings = _settings_or_404()
     _require_intent_header(request)
@@ -309,13 +409,16 @@ async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_rejected", worker_id=worker_id)
     await _record_admin_action(
-        request, action_type="reject_worker", worker_id=worker_id, settings=settings
+        request, action_type="reject_worker", permission=authorization.PERM_ADMIN,
+        worker_id=worker_id, settings=settings,
     )
-    return {"worker": worker_registry.to_view(row)}
+    return {"worker": await _worker_view(row, settings)}
 
 
 @router.post("/{worker_id}/revoke")
-async def revoke_worker(worker_id: str, request: Request) -> dict[str, Any]:
+async def revoke_worker(
+    worker_id: str, request: Request, actor: Actor = Depends(require_admin)
+) -> dict[str, Any]:
     settings = _settings_or_404()
     _require_intent_header(request)
     try:
@@ -326,13 +429,16 @@ async def revoke_worker(worker_id: str, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_revoked", worker_id=worker_id)
     await _record_admin_action(
-        request, action_type="revoke_worker", worker_id=worker_id, settings=settings
+        request, action_type="revoke_worker", permission=authorization.PERM_ADMIN,
+        worker_id=worker_id, settings=settings,
     )
-    return {"worker": worker_registry.to_view(row)}
+    return {"worker": await _worker_view(row, settings)}
 
 
 @router.post("/{worker_id}/rotate-token")
-async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
+async def rotate_token(
+    worker_id: str, request: Request, actor: Actor = Depends(require_admin)
+) -> dict[str, Any]:
     """Выдать новый токен. Опасно: токен показывается один раз и открытым текстом.
 
     Поэтому здесь стоит тот же гейт намерения, что и на остальных меняющих
@@ -351,12 +457,12 @@ async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     _audit(request, "worker_token_rotated", worker_id=worker_id)
     await _record_admin_action(
-        request, action_type="rotate_worker_token", worker_id=worker_id,
-        settings=settings,
+        request, action_type="rotate_worker_token", permission=authorization.PERM_ADMIN,
+        worker_id=worker_id, settings=settings,
         result={"note": "старый токен отозван атомарно, новый показан один раз"},
     )
     return {
-        "worker": worker_registry.to_view(row),
+        "worker": await _worker_view(row, settings),
         "worker_token": token,
         "note": "Старый токен отозван немедленно. Пропишите новый на воркере "
                 "и перезапустите его.",
@@ -368,6 +474,7 @@ async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
 async def list_jobs(
     worker_id: Optional[str] = Query(default=None),
     limit: int = Query(default=100, ge=1, le=500),
+    actor: Actor = Depends(require_view),
 ) -> dict[str, Any]:
     settings = _settings_or_404()
     rows = await database.run_db(
@@ -385,11 +492,20 @@ async def list_jobs(
 
 
 @router.post("/jobs")
-async def create_test_job(payload: CreateTestJobRequest, request: Request) -> dict[str, Any]:
+async def create_test_job(
+    payload: CreateTestJobRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
+) -> dict[str, Any]:
     """Ручная выдача БЕЗОПАСНОГО тестового задания конкретному воркеру.
 
     Единственный доступный тип — test_pipeline_v1. Ни команды, ни argv, ни
     путей в задании нет: воркер строит фиксированный argv сам (§4 задания).
+
+    Создание разрешено и при занятых слотах: задание остаётся `assigned` и
+    ждёт освобождения. Ответ честно говорит, пойдёт оно в работу сразу или
+    встанет в очередь (§31 задания) — «кнопка неактивна» скрыла бы от
+    оператора то, что система и так умеет.
     """
     settings = _settings_or_404()
     _require_intent_header(request)
@@ -419,7 +535,8 @@ async def create_test_job(payload: CreateTestJobRequest, request: Request) -> di
         project=payload.project_id,
     )
     await _record_admin_action(
-        request, action_type="create_job", worker_id=payload.worker_id,
+        request, action_type="create_job", permission=authorization.PERM_OPERATE,
+        worker_id=payload.worker_id,
         job_id=job["job_id"], attempt_id=job["attempt_id"],
         requested_state={"project_external_id": payload.project_id},
         settings=settings,
@@ -428,11 +545,32 @@ async def create_test_job(payload: CreateTestJobRequest, request: Request) -> di
     # execution_token наружу оператору не отдаём — он предназначен только воркеру.
     view.pop("_execution_token_plain", None)
     view.pop("_manifest", None)
-    return {"job": view}
+
+    worker_row = await database.run_db(
+        repositories.get_worker, payload.worker_id, settings=settings
+    )
+    usage = await database.run_db(
+        repositories.worker_slot_snapshot, payload.worker_id, settings=settings
+    )
+    limit = slots.effective_limit(
+        worker_row or {}, protocol_version=settings.protocol_version
+    )
+    waiting = usage.reserved >= limit.value
+    return {
+        "job": view,
+        "slots": slots.build_slot_view(worker_row or {}, usage, limit),
+        "will_wait_for_slot": waiting,
+        "queue_note": (
+            f"Свободных слотов нет ({usage.reserved} из {limit.value}) — задание "
+            "встанет в очередь и уйдёт в работу после освобождения слота."
+            if waiting
+            else None
+        ),
+    }
 
 
 @router.get("/jobs/{job_id}")
-async def get_job(job_id: str) -> dict[str, Any]:
+async def get_job(job_id: str, actor: Actor = Depends(require_view)) -> dict[str, Any]:
     settings = _settings_or_404()
     row = await database.run_db(repositories.get_job, job_id, settings=settings)
     if row is None:
@@ -450,6 +588,7 @@ async def get_job_events(
     job_id: str,
     after_seq: int = Query(default=0, ge=0),
     limit: int = Query(default=200, ge=1, le=1000),
+    actor: Actor = Depends(require_view),
 ) -> dict[str, Any]:
     settings = _settings_or_404()
     events = await database.run_db(
@@ -464,6 +603,7 @@ async def get_job_logs(
     attempt: Optional[str] = Query(default=None),
     after_seq: int = Query(default=0, ge=0),
     limit: int = Query(default=500, ge=1, le=5000),
+    actor: Actor = Depends(require_view),
 ) -> dict[str, Any]:
     settings = _settings_or_404()
     row = await database.run_db(repositories.get_job, job_id, settings=settings)
@@ -484,7 +624,7 @@ async def get_job_logs(
 
 
 @router.get("/jobs/{job_id}/result")
-async def download_result(job_id: str):
+async def download_result(job_id: str, actor: Actor = Depends(require_view)):
     """Скачать провалидированный пакет результата."""
     settings = _settings_or_404()
     row = await database.run_db(repositories.get_job, job_id, settings=settings)
@@ -505,7 +645,9 @@ async def download_result(job_id: str):
 
 # ─── Попытки ─────────────────────────────────────────────────────────────────
 @router.get("/jobs/{job_id}/attempts")
-async def list_attempts(job_id: str) -> dict[str, Any]:
+async def list_attempts(
+    job_id: str, actor: Actor = Depends(require_view)
+) -> dict[str, Any]:
     """История попыток задания: что было, кем и чем закончилось."""
     settings = _settings_or_404()
     logical = await database.run_db(
@@ -534,7 +676,11 @@ async def list_attempts(job_id: str) -> dict[str, Any]:
 
 @router.post("/jobs/{job_id}/attempts/{attempt_id}/cancel")
 async def cancel_attempt(
-    job_id: str, attempt_id: str, payload: CancelAttemptRequest, request: Request
+    job_id: str,
+    attempt_id: str,
+    payload: CancelAttemptRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
 ) -> dict[str, Any]:
     """Запросить отмену попытки. Не обещает мгновенной остановки (§5.1)."""
     settings = _settings_or_404()
@@ -549,7 +695,7 @@ async def cancel_attempt(
             grace_period_sec=payload.grace_period_sec,
             actor=_actor(request),
             idempotency_key=key,
-            audit=_audit_meta(request),
+            audit=_audit_meta(request, permission=authorization.PERM_OPERATE),
             settings=settings,
         )
     except attempt_service.ConfirmationRequired as exc:
@@ -562,7 +708,11 @@ async def cancel_attempt(
 
 @router.post("/jobs/{job_id}/attempts/{attempt_id}/mark-lost")
 async def mark_attempt_lost(
-    job_id: str, attempt_id: str, payload: MarkAttemptLostRequest, request: Request
+    job_id: str,
+    attempt_id: str,
+    payload: MarkAttemptLostRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
 ) -> dict[str, Any]:
     """Признать попытку потерянной. НЕ утверждает, что процесс остановлен (I-06)."""
     settings = _settings_or_404()
@@ -578,7 +728,7 @@ async def mark_attempt_lost(
             operator_note=payload.optional_operator_note,
             actor=_actor(request),
             idempotency_key=key,
-            audit=_audit_meta(request),
+            audit=_audit_meta(request, permission=authorization.PERM_OPERATE),
             settings=settings,
         )
     except attempt_service.ConfirmationRequired as exc:
@@ -591,7 +741,10 @@ async def mark_attempt_lost(
 
 @router.post("/jobs/{job_id}/attempts")
 async def create_attempt(
-    job_id: str, payload: CreateAttemptRequest, request: Request
+    job_id: str,
+    payload: CreateAttemptRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
 ) -> dict[str, Any]:
     """Создать новую попытку. Поверх работающей — нельзя (I-05)."""
     settings = _settings_or_404()
@@ -606,7 +759,8 @@ async def create_attempt(
             confirmation=payload.confirmation,
             actor=_actor(request),
             idempotency_key=key,
-            audit=_audit_meta(request),
+            audit=_audit_meta(request, permission=authorization.PERM_OPERATE),
+            accept_capacity_risk=payload.accept_capacity_risk,
             settings=settings,
         )
     except attempt_service.ConfirmationRequired as exc:
@@ -621,7 +775,11 @@ async def create_attempt(
 
 @router.post("/jobs/{job_id}/attempts/{attempt_id}/request-deletion")
 async def request_attempt_deletion(
-    job_id: str, attempt_id: str, payload: RequestDeletionRequest, request: Request
+    job_id: str,
+    attempt_id: str,
+    payload: RequestDeletionRequest,
+    request: Request,
+    actor: Actor = Depends(require_operator),
 ) -> dict[str, Any]:
     """Попросить воркер удалить локальные данные попытки. Центральная копия остаётся."""
     settings = _settings_or_404()
@@ -635,7 +793,7 @@ async def request_attempt_deletion(
             confirmation=payload.confirmation,
             actor=_actor(request),
             idempotency_key=key,
-            audit=_audit_meta(request),
+            audit=_audit_meta(request, permission=authorization.PERM_OPERATE),
             settings=settings,
         )
     except attempt_service.ConfirmationRequired as exc:
@@ -647,7 +805,9 @@ async def request_attempt_deletion(
 
 
 @router.get("/jobs/{job_id}/attempts/{attempt_id}/result")
-async def download_attempt_result(job_id: str, attempt_id: str):
+async def download_attempt_result(
+    job_id: str, attempt_id: str, actor: Actor = Depends(require_view)
+):
     """Скачать пакет КОНКРЕТНОЙ попытки — в том числе устаревшей.
 
     Файл открывается по UUID из БД; человекочитаемое имя уходит только в
