@@ -18,6 +18,12 @@ Environment=AUDIT_WORKER_ROOT=/var/lib/audit-worker
 # с явным AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true (dev).
 Environment=AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.example
 Environment=AUDIT_WORKER_NAME=%H
+# Число слотов ставится в ОБОИХ юнитах и должно совпадать. С этапа
+# пред-пайплайнового гейта агент отдаёт своё значение центру в heartbeat, а
+# центр берёт минимум из «что одобрил оператор» и «что заявила сборка
+# воркера». Если здесь оставить 1, а у исполнителя поставить 2 — эффективным
+# лимитом станет 1, и второй слот будет недостижим при внешне верной
+# настройке. Доказанный потолок — 2 (см. 05_pre_pipeline_gate.md).
 Environment=AUDIT_WORKER_MAX_SLOTS=1
 
 # Секреты — ТОЛЬКО агенту и только файлами. В командной строке их нет:
