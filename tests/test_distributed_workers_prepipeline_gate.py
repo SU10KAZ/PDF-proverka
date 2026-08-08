@@ -1763,7 +1763,14 @@ def test_signal_is_never_sent_without_a_proven_process_group():
 
 
 def test_temp_file_name_is_unique_per_thread(tmp_path):
-    """Два потока одного процесса не должны писать в один временный файл."""
+    """Каждая атомарная запись берёт СВОЁ временное имя.
+
+    Проверяется сильнее, чем «уникально среди живых потоков»: имена не должны
+    совпадать и у потоков, разнесённых во времени. Причина — `get_ident()`
+    переиспользуется после смерти потока, и первая версия этого теста из-за
+    этого мигала в общем прогоне (в изоляции проходила, в наборе падала).
+    Лечили не тест, а запись: в имя добавлен случайный суффикс.
+    """
     import threading as _threading
 
     from audit_worker import local_store
@@ -1980,3 +1987,77 @@ def test_pending_delivery_covers_interrupted_upload_and_failure(tmp_path):
     WorkerAgent._deliver_pending_results(agent)
     assert sorted(uploaded) == ["a1", "a2"], uploaded
     assert flushed == ["a3"], flushed
+
+
+def test_configured_max_slots_column_never_stores_more_than_proven(admin, center_env):
+    """В БД не должно оседать значение выше доказанного максимума.
+
+    Воркер сам предлагает число слотов при регистрации, а оператор — при
+    одобрении. Прежний зажим был литеральной «5», и колонка могла хранить 3-5.
+    Действующий лимит это не ломало (`effective_limit` нормализует заново), но
+    операторский экран в фолбэк-ветке рисует ИМЕННО эту колонку как лимит
+    воркера — то есть показывал слоты, которых не существует.
+    """
+    from backend.app.services.distributed_workers import repositories, slots
+
+    registered = admin.post(
+        "/api/v1/worker/register",
+        json={"instance_id": "inst_gate_cap001", "protocol_version": 1,
+              "display_name_hint": "VPS-cap", "configured_max_slots_hint": 5},
+        headers={"Authorization": f"Bearer {BOOTSTRAP}", "X-Protocol-Version": "1"},
+    ).json()
+    worker_id = registered["worker_id"]
+    row = repositories.get_worker(worker_id, settings=center_env)
+    assert row["configured_max_slots"] == slots.MAX_VERIFIED_SLOTS, row
+
+    approved = admin.post(f"/api/workers/{worker_id}/approve",
+                          json={"configured_max_slots": 4})
+    assert approved.status_code == 200, approved.text
+    row = repositories.get_worker(worker_id, settings=center_env)
+    assert row["configured_max_slots"] == slots.MAX_VERIFIED_SLOTS, row
+    assert approved.json().get("slot_limit_notice"), "зажатие обязано быть объяснено"
+
+
+def test_occupancy_counter_may_exceed_limit_but_only_conservatively(admin, operator, center_env):
+    """Счётчик занятости может показать «3/2» — и это НЕ третий процесс.
+
+    Отмена задания, которое воркеру ещё не выдали, переводит попытку в
+    `cancel_requested`, а это состояние слот ЗАНИМАЕТ (пока воркер не
+    подтвердил, процесс мог идти). Для попытки, до воркера не доехавшей,
+    процесса нет — но счётчик её считает. Ошибка идёт в БЕЗОПАСНУЮ сторону:
+    выдачу она блокирует, третий процесс породить не может.
+
+    Тест закрепляет фактическое поведение, а не желаемое: пока §32.1 п.24 не
+    закрыт, «3/2» на экране возможно, и молча это менять нельзя.
+    """
+    from backend.app.services.distributed_workers import repositories, slots
+
+    worker_id, headers, _ = _approved_worker(
+        admin, instance_id="inst_gate_ovf001", max_slots=2
+    )
+    jobs = [_create_job(admin, worker_id, project=f"ГЕЙТ/пере {i}") for i in range(3)]
+    for job in jobs:
+        response = operator.post(
+            f"/api/workers/jobs/{job['job_id']}/attempts/{job['attempt_id']}/cancel",
+            json={"reason": "проба", "confirmation": "ОТМЕНИТЬ"},
+            headers=_key(),
+        )
+        assert response.status_code == 200, response.text
+
+    usage = repositories.worker_slot_snapshot(worker_id, settings=center_env)
+    row = repositories.get_worker(worker_id, settings=center_env)
+    limit = slots.effective_limit(row)
+    view = slots.build_slot_view(row, usage, limit)
+
+    assert usage.occupied == 3 and limit.value == 2
+    assert view["occupancy_label"] == "3/2"
+    # Главное: ошибка консервативна — свободных слотов ноль, не отрицательное
+    # число и не «есть место».
+    assert view["center_free_slots"] == 0
+
+    # И проверка не на словах: следующее задание воркеру НЕ выдаётся.
+    _create_job(admin, worker_id, project="ГЕЙТ/пере 4")
+    with pytest.raises(repositories.SlotLimitReached):
+        repositories.claim_next_job_for_worker(
+            worker_id, limit_override=limit.value, settings=center_env
+        )

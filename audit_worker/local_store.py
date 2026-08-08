@@ -18,6 +18,7 @@ import json
 import os
 import threading
 import time
+import uuid
 from pathlib import Path
 from typing import Any, Iterator, Optional
 
@@ -25,14 +26,21 @@ from typing import Any, Iterator, Optional
 def atomic_write_json(path: Path, data: Any) -> None:
     """Запись через временный файл и `os.replace` — читатель видит либо старое, либо новое.
 
-    Имя временного файла включает и pid, И идентификатор потока. С одним лишь
-    pid два потока одного процесса (а с двумя слотами их теперь именно два)
-    писали в ОДИН и тот же tmp: содержимое перемешивалось, и в metadata.json
-    попытки уезжал наполовину чужой JSON. Внутри процесса имена потоков
-    уникальны, между процессами — pid, поэтому пара закрывает оба случая.
+    Имя временного файла уникально на КАЖДЫЙ вызов: pid + идентификатор потока +
+    случайный суффикс. С одним лишь pid два потока одного процесса (а с двумя
+    слотами их теперь именно два) писали в ОДИН и тот же tmp: содержимое
+    перемешивалось, и в metadata.json попытки уезжал наполовину чужой JSON.
+
+    Одного `get_ident()` мало: он уникален только среди ЖИВЫХ потоков и
+    переиспользуется после смерти потока. Для основного случая (два потока
+    пишут одновременно) этого хватило бы, но остаётся хвост: поток умер между
+    записью tmp и `os.replace`, его номер достался новому потоку — и новый
+    пишет поверх чужого мусора. Случайный суффикс закрывает и это.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + f".tmp.{os.getpid()}.{threading.get_ident()}")
+    tmp = path.with_suffix(
+        f"{path.suffix}.tmp.{os.getpid()}.{threading.get_ident()}.{uuid.uuid4().hex[:8]}"
+    )
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     os.replace(tmp, path)
 
@@ -93,7 +101,9 @@ class WorkerStateStore:
         секунду доступен на чтение всем.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(f".tmp.{os.getpid()}.{threading.get_ident()}")
+        tmp = path.with_suffix(
+            f".tmp.{os.getpid()}.{threading.get_ident()}.{uuid.uuid4().hex[:8]}"
+        )
         tmp.write_text(value, encoding="utf-8")
         os.chmod(tmp, 0o600)
         os.replace(tmp, path)

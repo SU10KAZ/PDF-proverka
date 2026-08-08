@@ -17,7 +17,7 @@ from backend.app.models.distributed_workers import (
     RegistrationStatus,
     WorkerState,
 )
-from backend.app.services.distributed_workers import auth, database, repositories
+from backend.app.services.distributed_workers import auth, database, repositories, slots
 from backend.app.services.distributed_workers.settings import DistributedWorkersSettings
 
 
@@ -94,7 +94,16 @@ def register_worker(
         protocol_version=protocol_version,
         pipeline_revision=pipeline_revision,
         capabilities=capabilities,
-        configured_max_slots=max(1, min(5, configured_max_slots_hint)),
+        # Через normalize_max_slots, а не через литеральную «5». Прежний зажим
+        # оставлял в колонке 3-5 — воркер сам предлагает значение при
+        # регистрации, и оно попадало в БД непроверенным. Действующий лимит это
+        # не ломало (effective_limit нормализует заново), но операторский экран
+        # в фолбэк-ветке рисует ИМЕННО эту колонку как лимит воркера — то есть
+        # показывал «5 слотов», которых не существует. Единственный потолок
+        # системы должен применяться в ОДНОМ месте.
+        configured_max_slots=slots.normalize_max_slots(
+            configured_max_slots_hint, source="заявка воркера"
+        ).value,
         settings=settings,
     )
     claim_secret = auth.generate_claim_secret()
@@ -227,7 +236,11 @@ def approve_worker(
     fields: dict[str, Any] = {
         "registration_status": RegistrationStatus.APPROVED.value,
         "worker_state": WorkerState.IDLE.value,
-        "configured_max_slots": max(1, min(5, configured_max_slots)),
+        # Тот же зажим, что и при регистрации: в колонку не должно попадать
+        # значение выше доказанного максимума (см. комментарий в register).
+        "configured_max_slots": slots.normalize_max_slots(
+            configured_max_slots, source="настройка оператора"
+        ).value,
     }
     if display_name:
         fields["display_name"] = display_name.strip()
