@@ -3578,24 +3578,18 @@ const app = createApp({
                 .map(p => p.project_id);
         }
 
-        // Выделить все НЕпроанализированные (findings_count == 0) проекты раздела,
-        // добавляя их к текущему выделению.
-        function selectUnanalyzedInSection(sectionCode) {
-            const s = new Set(selectedProjects.value);
-            for (const id of unanalyzedPids(sectionCode)) s.add(id);
-            selectedProjects.value = s;
-            selectAllChecked.value = s.size === projects.value.length && s.size > 0;
-        }
-
         // Все ли необработанные проекты уже выделены — состояние цифры-кнопки
-        // «Необработаны» (подсветка + направление переключателя).
+        // «Необработаны» и кнопки «Выделить необработанные» (подсветка/подпись
+        // + направление переключателя).
         function isUnanalyzedSelected(sectionCode) {
             const pids = unanalyzedPids(sectionCode);
             return pids.length > 0 && pids.every(id => selectedProjects.value.has(id));
         }
 
-        // Клик по цифре «Необработаны»: первый — выделяет, повторный — снимает
-        // выделение с тех же проектов. sectionCode === '__all__' — строка «Итого».
+        // Переключатель выделения необработанных — цифра «Необработаны» на
+        // главной и кнопка «Выделить необработанные» в разделе: первый клик
+        // выделяет, повторный снимает выделение с тех же проектов.
+        // sectionCode === '__all__' — строка «Итого» (все разделы сразу).
         function toggleUnanalyzedSelection(sectionCode) {
             const pids = unanalyzedPids(sectionCode);
             if (!pids.length) return;
@@ -4948,7 +4942,7 @@ const app = createApp({
         });
 
         // Есть ли в текущем разделе необработанные (без аудита) проекты —
-        // критерий тот же, что у selectUnanalyzedInSection: findings_count == 0.
+        // критерий тот же, что у isProjectUnanalyzed: findings_count == 0.
         const sectionHasUnanalyzed = computed(() => {
             const sec = sidebarFilterSection.value;
             if (!sec || sec === '__all__') return false;
@@ -19029,7 +19023,7 @@ const app = createApp({
             startAuditDirect,
             modelConfigPendingProjectId,
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
-            isSectionSelected, toggleSectionSelection, selectUnanalyzedInSection,
+            isSectionSelected, toggleSectionSelection,
             toggleUnanalyzedSelection, isUnanalyzedSelected,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
