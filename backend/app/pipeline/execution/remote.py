@@ -469,6 +469,15 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
                 success=False,
                 error=f"удалённое исполнение завершилось состоянием {state}",
             )
+        # Детерминированная точка остановки стенда. Вне стенда переменная не
+        # задана и вызов ничего не делает.
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        await asyncio.to_thread(
+            execution_registry.handoff_test_pause,
+            "before_import",
+            detail={"attempt_id": handle.attempt_id, "job_id": handle.remote_job_id},
+        )
         report = await database.run_db(
             result_import.import_result_for_attempt,
             attempt=attempt,

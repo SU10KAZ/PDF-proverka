@@ -208,7 +208,7 @@ def test_step0_database_migrates_without_data_loss(tmp_path):
     schema.apply_pragmas(conn)
     assert schema.current_version(conn) == 2
 
-    assert schema.migrate(conn) == schema.SCHEMA_VERSION == 5
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION == 6
 
     logical = conn.execute(
         "SELECT * FROM logical_jobs WHERE job_id = ?", (job_id,)
@@ -249,8 +249,8 @@ def test_migration_is_idempotent(tmp_path):
     conn.row_factory = sqlite3.Row
     schema.apply_pragmas(conn)
     schema.migrate(conn)
-    assert schema.migrate(conn) == 5
-    assert schema.migrate(conn) == 5
+    assert schema.migrate(conn) == 6
+    assert schema.migrate(conn) == 6
     assert conn.execute("SELECT COUNT(*) FROM job_attempts").fetchone()[0] == 1
     assert conn.execute("SELECT COUNT(*) FROM logical_jobs").fetchone()[0] == 1
     conn.close()

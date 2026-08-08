@@ -212,15 +212,19 @@ def build_snapshot(*, feature_flags: Optional[dict[str, Any]] = None) -> dict[st
     models = project_package.collect_model_config_snapshot(
         Path(getattr(config, "STAGE_MODELS_FILE", "stage_models.json"))
     )
+    dropped: list[str] = []
     flags = (
         feature_flags
         if feature_flags is not None
-        else project_package.collect_feature_flags_snapshot()
+        else project_package.collect_feature_flags_snapshot(dropped_paths=dropped)
     )
     files = {**prompts, **models}
     return {
         "files": files,
         "feature_flags": flags,
+        # Имена флагов, отброшенных как пути центра. Факт виден в манифесте:
+        # «снимок неполон» и «снимок полон» — разные утверждения.
+        "feature_flags_dropped_paths": sorted(dropped),
         "prompt_bundle_hash": project_package.hash_files(prompts),
         "model_config_hash": project_package.hash_files(models),
         "feature_flags_hash": project_package.hash_json(flags),
@@ -523,6 +527,9 @@ def build_audit_source_package(
         "discipline_id": params.discipline_id,
         "discipline_profile_hash": params.discipline_profile_hash,
         "discipline_source": (discipline.source if discipline is not None else None),
+        "feature_flags_dropped_paths": list(
+            snapshot.get("feature_flags_dropped_paths") or []
+        ),
         "limits": {
             "max_package_bytes": settings.max_package_bytes,
         },

@@ -25,6 +25,7 @@ from backend.app.models.distributed_workers import (
     COMMAND_PAYLOAD_MODELS,
     TERMINAL_JOB_STATES,
     AcceptRequest,
+    AuditPipelineParams,
     ClaimRequest,
     ClaimResponse,
     CommandAckRequest,
@@ -640,7 +641,13 @@ async def jobs_next(
         job_type=JobType(job["job_type"]),
         project_id=job["project_id"],
         version_id=job.get("version_id"),
-        params=TestJobParams(**(payload_obj.get("params") or {})),
+        # Модель нагрузки — ПО ТИПУ задания. Жёсткий `TestJobParams` означал
+        # буквально «реальный аудит не выдаётся воркеру никогда»: обе модели
+        # объявлены с `extra="forbid"`, и нагрузка `audit_pipeline_v1` роняла
+        # обработчик пятнадцатью ошибками валидации ещё до ответа. Дефект не
+        # видел ни один тест: `/jobs/next` проверялся только тестовыми
+        # заданиями, а сквозного прогона удалённого аудита не было.
+        params=_assignment_params(job, payload_obj),
         package=PackageRef(
             package_id=manifest["package_id"],
             package_type="source",
@@ -674,6 +681,19 @@ async def jobs_next(
             settings=settings,
         )
     return assignment
+
+
+def _assignment_params(job: dict[str, Any], payload_obj: dict[str, Any]):
+    """Разобрать нагрузку задания моделью ЕГО типа.
+
+    Обе модели с `extra="forbid"`, поэтому «попробуем одну, потом другую» здесь
+    не догадка, а точный разбор: нагрузка реального аудита не может сойти за
+    тестовую и наоборот. Тип задания при этом ведущий — он записан в базе.
+    """
+    raw = payload_obj.get("params") or {}
+    if str(job.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
+        return AuditPipelineParams(**raw)
+    return TestJobParams(**raw)
 
 
 @router.get("/jobs/{job_id}/source")

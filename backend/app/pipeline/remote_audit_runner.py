@@ -64,6 +64,11 @@ _ISOLATED_ROOT_ENV = (
 #: Профили, которые ЭТА точка входа умеет исполнять.
 SUPPORTED_PROFILES = ("remote_audit_pilot_v1",)
 
+#: Имя переменной строгого режима профиля дисциплины. ДУБЛИКАТ
+#: `discipline_identity.STRICT_PROFILE_ENV` — намеренный: `harden_process_env`
+#: обязан отработать ДО первого импорта `backend.app.core.config`.
+DISCIPLINE_STRICT_ENV = "AUDIT_DISCIPLINE_PROFILE_STRICT"
+
 
 def harden_process_env() -> None:
     """Закрыть каналы, которые возвращают процессу окружение центра.
@@ -82,9 +87,13 @@ def harden_process_env() -> None:
     # профиля здесь недопустима. На центре такой аудит виден в логе оператора,
     # на воркере лог остаётся на чужой машине — и «раздел ВК аудирован
     # профилем ЭОМ» узнать неоткуда.
-    from backend.app.services.common.discipline_identity import STRICT_PROFILE_ENV
-
-    os.environ[STRICT_PROFILE_ENV] = "1"
+    #
+    # Имя переменной ЛИТЕРАЛ, а не импорт: `discipline_identity` тянет
+    # `backend.app.core.config`, а конфигурация читает и `AUDIT_DISABLE_DOTENV`,
+    # и запрет центральных этапов НА ИМПОРТЕ. Импортировать что-либо из
+    # `backend.app` внутри этой функции значит зафиксировать порядок, который
+    # следующая правка сломает молча. Совпадение константы проверяется тестом.
+    os.environ[DISCIPLINE_STRICT_ENV] = "1"
 
 
 def emit(event: dict[str, Any]) -> None:

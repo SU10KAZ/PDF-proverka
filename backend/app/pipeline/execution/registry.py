@@ -151,6 +151,51 @@ def build_request(item: Any, job: Any, *, default_action: str,
     )
 
 
+#: Точка детерминированной остановки центрального хвоста. ТОЛЬКО для стенда:
+#: по умолчанию переменная не задана и функция ничего не делает.
+#:
+#: Доказать «рестарт центра между приёмом результата и импортом не создаёт
+#: второе задание» иначе нельзя: окно между этими шагами — доли секунды, и
+#: попадание в него по таймеру не воспроизводится. Единственная альтернатива —
+#: ждать «повезёт», а это не доказательство.
+HANDOFF_TEST_PAUSE_ENV = "AUDIT_HANDOFF_TEST_PAUSE_AT"
+HANDOFF_TEST_PAUSE_DIR_ENV = "AUDIT_HANDOFF_TEST_PAUSE_DIR"
+
+
+def handoff_test_pause(stage: str, *, detail: Optional[dict] = None) -> None:
+    """Остановиться в названной точке хвоста и ждать снаружи.
+
+    Пишет маркер (по нему стенд узнаёт, что точка достигнута) и блокируется.
+    Процесс снимается извне — ровно так, как его снял бы вотчдог или оператор.
+    Исключение здесь не годится: оно пометило бы элемент очереди провалившимся,
+    то есть проверялся бы не рестарт, а обработка ошибки.
+    """
+    import time as _time
+
+    wanted = (os.environ.get(HANDOFF_TEST_PAUSE_ENV) or "").strip()
+    if not wanted or wanted != stage:
+        return
+    marker_dir = (os.environ.get(HANDOFF_TEST_PAUSE_DIR_ENV) or "").strip()
+    if marker_dir:
+        import json as _json
+        from pathlib import Path as _Path
+
+        target = _Path(marker_dir)
+        try:
+            target.mkdir(parents=True, exist_ok=True)
+            (target / f"paused_{stage}.json").write_text(
+                _json.dumps(
+                    {"stage": stage, "pid": os.getpid(), "detail": detail or {}},
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+        except OSError:
+            pass
+    while True:                                    # снимается извне
+        _time.sleep(0.2)
+
+
 def note_central_handoff(
     handle: Any,
     state: str,

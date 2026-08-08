@@ -245,7 +245,7 @@ def excel_projection(version_dir: Path) -> dict[str, Any]:
     try:
         from openpyxl import load_workbook
     except Exception:                              # noqa: BLE001 — библиотека опциональна
-        return {"present": True, "files": [p.name for p in candidates],
+        return {"present": True, "files_count": len(candidates),
                 "structure": "openpyxl_unavailable"}
     sheets: dict[str, int] = {}
     for path in candidates:
@@ -254,9 +254,14 @@ def excel_projection(version_dir: Path) -> dict[str, Any]:
         except Exception:                          # noqa: BLE001
             continue
         for sheet in book.worksheets:
-            sheets[f"{path.name}:{sheet.title}"] = int(sheet.max_row or 0)
+            # Ключ — ИМЯ ЛИСТА, а не имя файла: имя файла содержит job_id
+            # (`audit_report_<код>_<job_id>.xlsx`), то есть отличается по
+            # построению. Сравнивать по нему значило бы объявлять расхождением
+            # идентификатор прогона — ровно то, что §17.2 относит к допустимым
+            # различиям.
+            sheets[str(sheet.title)] = int(sheet.max_row or 0)
         book.close()
-    return {"present": True, "files": sorted(p.name for p in candidates),
+    return {"present": True, "files_count": len(candidates),
             "sheets": dict(sorted(sheets.items()))}
 
 

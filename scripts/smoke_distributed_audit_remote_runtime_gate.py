@@ -461,7 +461,24 @@ def build_config_snapshot(stand: Stand) -> dict[str, Any]:
     }
 
 
-def build_runtime_snapshot(revision: str, config_snapshot: dict[str, Any]):
+def build_discipline_snapshot(fixture, revision: str):
+    """Снимок профиля дисциплины попытки — тем же кодом, что и на центре."""
+    from backend.app.services.common import discipline_identity
+    from backend.app.services.distributed_workers import discipline_profile
+
+    ident = discipline_identity.resolve_from_version_dir(fixture.version_dir)
+    profile = discipline_profile.collect_profile_snapshot(
+        ident,
+        prompts_dir=REPO_ROOT / "prompts",
+        app_data_dir=REPO_ROOT / "backend" / "app" / "data",
+        source_revision=revision,
+        created_at=1.0,
+    )
+    return ident, profile
+
+
+def build_runtime_snapshot(revision: str, config_snapshot: dict[str, Any],
+                           *, discipline_id: str, discipline_profile_hash: str):
     from backend.app.services.distributed_workers import project_package, runtime_config
 
     return runtime_config.build_snapshot(
@@ -474,6 +491,8 @@ def build_runtime_snapshot(revision: str, config_snapshot: dict[str, Any]):
         # будет выставлено в legacy. Победить обязан пакет.
         projects_v2_write_mode="projects_v2_primary",
         provider_mode="fake",
+        discipline_id=discipline_id,
+        discipline_profile_hash=discipline_profile_hash,
         stage_model_mapping=config_snapshot["stage_models"],
         prompt_bundle_hash=config_snapshot["prompt_bundle_hash"],
         model_config_hash=config_snapshot["model_config_hash"],
@@ -484,10 +503,12 @@ def build_runtime_snapshot(revision: str, config_snapshot: dict[str, Any]):
 
 
 def build_source_package(stand: Stand, fixture, snapshot, config_snapshot,
-                         *, job_id, attempt_id) -> dict:
+                         *, job_id, attempt_id, profile=None) -> dict:
     from backend.app.services.distributed_workers import project_package
 
     dest = stand.packages / f"src_{attempt_id}.tar.gz"
+    if profile is None:
+        _ident, profile = build_discipline_snapshot(fixture, snapshot.pipeline_revision)
     return project_package.build_project_source_package(
         dest_path=dest,
         version_dir=fixture.version_dir,
@@ -503,10 +524,13 @@ def build_source_package(stand: Stand, fixture, snapshot, config_snapshot,
             "execution_profile": "remote_audit_pilot_v1",
             "pipeline_revision": snapshot.pipeline_revision,
             "runtime_snapshot_hash": snapshot.snapshot_hash(),
+            "discipline_id": snapshot.discipline_id,
+            "discipline_profile_hash": snapshot.discipline_profile_hash,
         },
         snapshot_files=dict(config_snapshot["files"]),
         feature_flags=dict(config_snapshot["feature_flags"]),
         runtime_config=snapshot.to_package_bytes(),
+        discipline_profile_entries=profile.package_entries(),
     )
 
 
@@ -592,14 +616,20 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
     central, local, no_service = build_fixtures(stand)
     revision = "git:" + "0" * 40
     config_snapshot = build_config_snapshot(stand)
-    snapshot = build_runtime_snapshot(revision, config_snapshot)
+    ident, profile = build_discipline_snapshot(central, revision)
+    check(ident.code != "EOM", "дисциплина фикстуры определена и не EOM", ident.code)
+    snapshot = build_runtime_snapshot(
+        revision, config_snapshot,
+        discipline_id=ident.code, discipline_profile_hash=profile.tree_hash,
+    )
     check(snapshot.snapshot_hash().startswith("sha256:"),
           "снимок runtime-конфигурации собран", snapshot.snapshot_hash()[:23] + "…")
 
     # ── 3. Пакет и его раскладка ────────────────────────────────────────────
     job_id, attempt_id = str(uuid.uuid4()), str(uuid.uuid4())
     manifest = build_source_package(stand, central, snapshot, config_snapshot,
-                                    job_id=job_id, attempt_id=attempt_id)
+                                    job_id=job_id, attempt_id=attempt_id,
+                                    profile=profile)
     archive = stand.packages / f"src_{attempt_id}.tar.gz"
     check(manifest["project_layout_version"] == 2,
           "манифест объявляет переносимую раскладку 2")
@@ -690,6 +720,8 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         "model_config_hash": config_snapshot["model_config_hash"],
         "feature_flags_hash": config_snapshot["feature_flags_hash"],
         "runtime_snapshot_hash": snapshot.snapshot_hash(),
+        "discipline_id": ident.code,
+        "discipline_profile_hash": profile.tree_hash,
         "required_result_artifacts": list(audit_runner.REQUIRED_RESULT_ARTIFACTS),
     }
     from audit_worker.local_store import LocalJobStore
@@ -983,7 +1015,8 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
               "в пакете результата нет исходников заказчика")
 
     # ── 11. Локальный baseline и узкая parity ───────────────────────────────
-    local_out = run_local_baseline(stand, local, snapshot, config_snapshot, revision)
+    local_out = run_local_baseline(stand, local, snapshot, config_snapshot, revision,
+                                   profile=profile, ident=ident)
     if local_out is not None:
         remote_projection = load_projection(worker_out)
         if all(v is None for v in remote_projection.values()):
@@ -1029,7 +1062,7 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
 
 
 def run_local_baseline(stand: Stand, fixture, snapshot, config_snapshot,
-                       revision: str) -> Optional[Path]:
+                       revision: str, *, profile=None, ident=None) -> Optional[Path]:
     """Локальный pre-norm прогон в тех же условиях — для узкой parity.
 
     Тот же runner, тот же снимок, те же поддельные провайдеры и тот же
@@ -1040,7 +1073,7 @@ def run_local_baseline(stand: Stand, fixture, snapshot, config_snapshot,
 
     job_dir = stand.local_case / "attempt"
     for name in ("project", "snapshot", "runtime", "work", "result", "logs",
-                 "metadata", "usage", "comparison"):
+                 "metadata", "usage", "comparison", "discipline_profile"):
         (job_dir / name).mkdir(parents=True, exist_ok=True)
     # `project/` локального случая — тот же переносимый корень.
     shutil.rmtree(job_dir / "project", ignore_errors=True)
@@ -1053,6 +1086,15 @@ def run_local_baseline(stand: Stand, fixture, snapshot, config_snapshot,
     (job_dir / "runtime" / "runtime_config.json").write_bytes(
         snapshot.to_package_bytes()
     )
+    if profile is None or ident is None:
+        ident, profile = build_discipline_snapshot(fixture, revision)
+    profile_root = job_dir / "discipline_profile"
+    (profile_root / "files").mkdir(parents=True, exist_ok=True)
+    (profile_root / "profile_manifest.json").write_bytes(profile.manifest_bytes())
+    for rel, blob in profile.files.items():
+        target = profile_root / "files" / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(blob)
 
     spec = {
         "job_id": "local-baseline", "attempt_id": "local-attempt",
@@ -1065,9 +1107,12 @@ def run_local_baseline(stand: Stand, fixture, snapshot, config_snapshot,
         "model_config_hash": config_snapshot["model_config_hash"],
         "feature_flags_hash": config_snapshot["feature_flags_hash"],
         "runtime_snapshot_hash": snapshot.snapshot_hash(),
+        "discipline_id": ident.code,
+        "discipline_profile_hash": profile.tree_hash,
         "provider_mode": "fake",
         "paths": {
             "project": str(job_dir / "project"),
+            "discipline_profile": str(profile_root),
             "snapshot": str(job_dir / "snapshot"),
             "runtime": str(job_dir / "runtime"),
             "work": str(job_dir / "work"),

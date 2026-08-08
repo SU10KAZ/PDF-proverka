@@ -481,6 +481,12 @@ _SECRET_KEY_RE = re.compile(
 #:
 #: Исключение симметрично: и центр, и воркер считают хэш одной функцией,
 #: поэтому порядок «разложить профиль ↔ сверить снимок» на результат не влияет.
+#:
+#: Исключаются именно КАТАЛОГИ профилей, а не весь `disciplines/`: сам
+#: `_registry.json` — закрытый список дисциплин, по которому код нормализует
+#: `section` и проверяет имя каталога профиля. Без него воркер не опознаёт
+#: НИ ОДНУ дисциплину («известные коды: » пусто) и в строгом режиме отказывает
+#: даже правильному профилю, который лежит рядом. Найдено живым прогоном.
 PROMPT_SNAPSHOT_EXCLUDED_TOP_DIRS: frozenset[str] = frozenset({"disciplines"})
 
 
@@ -499,7 +505,7 @@ def collect_prompt_snapshot(prompts_dir: Path) -> dict[str, bytes]:
         parts = rel.split("/")
         if any(part in FORBIDDEN_NAMES for part in parts):
             continue
-        if parts[0] in PROMPT_SNAPSHOT_EXCLUDED_TOP_DIRS:
+        if parts[0] in PROMPT_SNAPSHOT_EXCLUDED_TOP_DIRS and len(parts) > 2:
             continue
         out[f"prompts/{rel}"] = path.read_bytes()
     return out
@@ -513,12 +519,32 @@ def collect_model_config_snapshot(stage_models_file: Path) -> dict[str, bytes]:
     return {"stage_models.json": path.read_bytes()}
 
 
-def collect_feature_flags_snapshot(env: Optional[dict[str, str]] = None) -> dict[str, Any]:
-    """Профиль флагов БЕЗ секретов.
+def collect_feature_flags_snapshot(
+    env: Optional[dict[str, str]] = None,
+    *,
+    dropped_paths: Optional[list[str]] = None,
+) -> dict[str, Any]:
+    """Профиль флагов БЕЗ секретов и БЕЗ путей центрального хоста.
 
-    Берутся только переменные из известных префиксов, и каждая проходит через
-    фильтр по имени: ключ, похожий на секрет, не попадает в снимок ни при
+    Берутся только переменные из известных префиксов, и каждая проходит два
+    фильтра.
+
+    Первый — по имени: ключ, похожий на секрет, не попадает в снимок ни при
     каких обстоятельствах (E-25).
+
+    Второй — по ЗНАЧЕНИЮ: переменная, чьё значение является абсолютным путём,
+    отбрасывается. Под префикс `AUDIT_` попадают не только флаги, но и корни
+    данных центра (`AUDIT_DATA_DIR`, `AUDIT_APP_DATA_DIR`, `AUDIT_PROMPTS_DIR`,
+    `AUDIT_CODEX_CLI_PATH` …), и они бессмысленны на чужой машине по
+    построению: там все корни вычисляются от каталога попытки. Хуже того,
+    `runtime_config.assert_no_secrets` такие значения ОТВЕРГАЕТ — то есть
+    сборщик и валидатор противоречили друг другу, и на любом центре, где корни
+    заданы через окружение (а в проде они заданы именно так), создание
+    удалённого задания падало с «снимок содержит недопустимое». Дефект не
+    видели тесты: они передают `feature_flags` явным словарём.
+
+    Отброшенные имена возвращаются через `dropped_paths` — молча терять факт
+    нельзя, он уезжает в манифест пакета.
     """
     source = env if env is not None else os.environ
     prefixes = (
@@ -531,7 +557,12 @@ def collect_feature_flags_snapshot(env: Optional[dict[str, str]] = None) -> dict
             continue
         if _SECRET_KEY_RE.search(key):
             continue
-        flags[key] = str(value)
+        text = str(value)
+        if text.startswith("/") and len(text) > 1:
+            if dropped_paths is not None:
+                dropped_paths.append(key)
+            continue
+        flags[key] = text
     return flags
 
 

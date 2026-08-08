@@ -1317,6 +1317,9 @@ def _audit_params(**overrides):
         "model_config_hash": "sha256:" + "c" * 64,
         "feature_flags_hash": "sha256:" + "d" * 64,
         "runtime_snapshot_hash": "sha256:" + "e" * 64,
+        # Дисциплина и хэш её профиля обязательны с этапа CENTRAL HANDOFF E2E.
+        "discipline_id": "VK",
+        "discipline_profile_hash": "sha256:" + "f" * 64,
     }
     payload.update(overrides)
     return payload
@@ -2260,6 +2263,8 @@ def test_audit_params_model_forbids_execution_fields():
         model_config_hash="sha256:" + "c" * 64,
         feature_flags_hash="sha256:" + "d" * 64,
         runtime_snapshot_hash="sha256:" + "e" * 64,
+        # Обязательные поля дисциплины: без них задание не собирается вовсе.
+        discipline_id="VK", discipline_profile_hash="sha256:" + "f" * 64,
     )
     AuditPipelineParams(**base)          # базовая форма валидна
     for field in ("command", "argv", "executable", "script", "module", "cwd", "env"):
@@ -2790,6 +2795,7 @@ def test_feature_flags_blob_is_scanned_for_secrets(center_env, admin, tmp_path, 
         model_config_hash="sha256:" + "1" * 64,
         feature_flags_hash="sha256:" + "2" * 64,
         runtime_snapshot_hash="sha256:" + "3" * 64,
+        discipline_id="VK", discipline_profile_hash="sha256:" + "4" * 64,
     )
     snapshot = {
         "files": {"prompts/task.md": "шаблон".encode("utf-8")},

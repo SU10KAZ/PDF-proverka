@@ -38,6 +38,10 @@ def _snapshot(**overrides) -> runtime_config.AuditRuntimeConfigSnapshot:
         project_layout_version=project_package.PROJECT_LAYOUT_VERSION,
         projects_v2_write_mode="projects_v2_primary",
         provider_mode="fake",
+        # Дисциплина и хэш её профиля стали обязательными полями снимка
+        # (этап CENTRAL HANDOFF E2E): без них воркер выбирал бы профиль сам.
+        discipline_id="VK",
+        discipline_profile_hash="sha256:" + "d" * 64,
         stage_model_mapping={"block_batch": "codex/gpt-5.4"},
         prompt_bundle_hash="sha256:" + "a" * 64,
         model_config_hash="sha256:" + "b" * 64,
