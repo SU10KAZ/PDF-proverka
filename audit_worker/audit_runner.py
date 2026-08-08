@@ -48,9 +48,48 @@ REQUIRED_RESULT_ARTIFACTS: tuple[str, ...] = (
     "usage/usage_report.json",
 )
 
-#: Переменные окружения, которые получает процесс конвейера. Всё, чего здесь
-#: нет, до него не доходит — включая токены, адрес центра и секреты воркера.
-_ENV_WHITELIST = ("PATH", "LANG", "LC_ALL", "HOME", "TMPDIR", "TZ")
+#: Переменные окружения, которые НАСЛЕДУЮТСЯ у процесса воркера. Всё, чего
+#: здесь нет, до конвейера не доходит — включая токены, адрес центра, секреты
+#: воркера и `AUDIT_PROJECTS_V2_WRITE_MODE` хоста.
+#:
+#: `HOME` и `TMPDIR` из списка УБРАНЫ намеренно: их значения вычисляются от
+#: каталога попытки. Наследованный `HOME` означал бы `~/.claude`, `~/.codex` и
+#: `~/.claude/projects` чужой машины, то есть и запись вне изоляции, и
+#: ambient-авторизацию настоящих CLI.
+_ENV_WHITELIST = ("PATH", "LANG", "LC_ALL", "TZ")
+
+#: Дополнительные системные переменные, без которых интерпретатор на некоторых
+#: VPS не стартует вовсе. Секретов среди них нет, значения не путь к данным.
+_ENV_SYSTEM_OPTIONAL = ("LD_LIBRARY_PATH", "SSL_CERT_FILE", "SSL_CERT_DIR")
+
+#: Корни данных, каждый ВНУТРИ каталога попытки. Порядок и состав дублируются
+#: проверкой `remote_audit_runner.apply_runtime_paths`: воркер их выставляет,
+#: код платформы — проверяет.
+def isolated_roots(job_dir: Path) -> dict[str, str]:
+    """Все корни данных и записи процесса конвейера, от каталога попытки.
+
+    Единственное место, где эта карта задаётся. Раньше часть путей не имела
+    override вовсе (`comparison/` под корнем установленного кода), а часть
+    наследовалась у хоста (`HOME`, `TMPDIR`) — и то и другое означало запись
+    мимо каталога попытки.
+    """
+    job_dir = Path(job_dir)
+    return {
+        "AUDIT_DATA_DIR": str(job_dir / "work" / "data"),
+        "AUDIT_APP_DATA_DIR": str(job_dir / "work" / "app_data"),
+        # `project/` — переносимый корень `projects_v2` целиком:
+        # objects/<obj>/disciplines/<Д>/documents/<код>/versions/<vid>/…
+        "AUDIT_PROJECTS_DIR": str(job_dir / "project"),
+        "AUDIT_PROJECTS_V2_DIR": str(job_dir / "project"),
+        "AUDIT_PROMPTS_DIR": str(job_dir / "snapshot" / "prompts"),
+        "AUDIT_ACTION_LOG_DIR": str(job_dir / "logs" / "actions"),
+        "COMPARISON_ROOT": str(job_dir / "comparison"),
+        "AUDIT_CLEAN_CWD_ROOT": str(job_dir / "work" / "tmp" / "clean_cwd"),
+        "AUDIT_CODEX_WORKDIR": str(job_dir / "work" / "codex"),
+        "AUDIT_BLOCK_CROP_CACHE_DIR": str(job_dir / "work" / "cache" / "block_crops"),
+        "HOME": str(job_dir / "work" / "home"),
+        "TMPDIR": str(job_dir / "work" / "tmp"),
+    }
 
 TERMINATE_GRACE_SEC = 30.0
 
@@ -71,6 +110,7 @@ class SafeAuditParams:
     prompt_bundle_hash: str
     model_config_hash: str
     feature_flags_hash: str
+    runtime_snapshot_hash: str
     required_result_artifacts: tuple[str, ...]
 
     def as_dict(self) -> dict[str, Any]:
@@ -85,6 +125,7 @@ class SafeAuditParams:
             "prompt_bundle_hash": self.prompt_bundle_hash,
             "model_config_hash": self.model_config_hash,
             "feature_flags_hash": self.feature_flags_hash,
+            "runtime_snapshot_hash": self.runtime_snapshot_hash,
             "required_result_artifacts": list(self.required_result_artifacts),
         }
 
@@ -93,7 +134,7 @@ _ALLOWED_FIELDS = {
     "execution_profile", "action", "retry_stage", "include_optimization",
     "include_norms", "project_layout_version", "pipeline_revision",
     "expected_source_tree_hash", "prompt_bundle_hash", "model_config_hash",
-    "feature_flags_hash", "required_result_artifacts",
+    "feature_flags_hash", "runtime_snapshot_hash", "required_result_artifacts",
 }
 
 
@@ -147,6 +188,16 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         if not retry_stage.replace("_", "").isalnum() or len(retry_stage) > 64:
             raise AuditJobRejected(f"Недопустимое имя этапа: {retry_stage!r}")
 
+    # Хэш снимка runtime-конфигурации обязателен. Пустое значение означало бы
+    # «примени что найдёшь», а найдёт процесс окружение ХОСТА — то есть режим
+    # записи хранилища определяла бы машина, а не центр.
+    runtime_hash = str(data.get("runtime_snapshot_hash") or "").strip()
+    if len(runtime_hash) < 8:
+        raise AuditJobRejected(
+            "runtime_snapshot_hash отсутствует или слишком короток — задание "
+            "без снимка runtime-конфигурации не исполняется"
+        )
+
     required = data.get("required_result_artifacts") or list(REQUIRED_RESULT_ARTIFACTS)
     if not isinstance(required, list) or not all(isinstance(x, str) for x in required):
         raise AuditJobRejected("required_result_artifacts: ожидается список строк")
@@ -164,6 +215,7 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         prompt_bundle_hash=str(data.get("prompt_bundle_hash") or ""),
         model_config_hash=str(data.get("model_config_hash") or ""),
         feature_flags_hash=str(data.get("feature_flags_hash") or ""),
+        runtime_snapshot_hash=runtime_hash,
         required_result_artifacts=merged,
     )
 
@@ -213,21 +265,21 @@ def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> di
     Ни одна переменная не приходит из задания. Секретов воркера здесь нет:
     исполнитель их и не знает — токен читает только агент.
     """
+    # Окружение строится С НУЛЯ, а не копированием `os.environ` с последующей
+    # чисткой: чистка знает только то, что в неё внесли, и любой новый секрет в
+    # окружении воркера доехал бы до конвейера по умолчанию.
     env = {k: os.environ[k] for k in _ENV_WHITELIST if k in os.environ}
+    for name in _ENV_SYSTEM_OPTIONAL:
+        if name in os.environ:
+            env[name] = os.environ[name]
     root = Path(getattr(config, "pipeline_root"))
     env["PYTHONPATH"] = str(root)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["AUDIT_ROLE"] = "worker"
-    # Все корни данных уводятся ВНУТРЬ каталога попытки. Обращение к путям
-    # центра невозможно не потому, что «мы так не делаем», а потому что их
-    # значения указывают в другое место.
-    env["AUDIT_DATA_DIR"] = str(job_dir / "work" / "data")
-    env["AUDIT_APP_DATA_DIR"] = str(job_dir / "work" / "app_data")
-    env["AUDIT_PROJECTS_DIR"] = str(job_dir / "project")
-    env["AUDIT_PROJECTS_V2_DIR"] = str(job_dir / "project")
-    env["AUDIT_PROMPTS_DIR"] = str(job_dir / "snapshot" / "prompts")
-    env["AUDIT_ACTION_LOG_DIR"] = str(job_dir / "logs" / "actions")
-    env["TMPDIR"] = str(job_dir / "work" / "tmp")
+    # Все корни данных и записи уводятся ВНУТРЬ каталога попытки. Обращение к
+    # путям центра невозможно не потому, что «мы так не делаем», а потому что
+    # их значения указывают в другое место.
+    env.update(isolated_roots(job_dir))
     # Белый список бесполезен, если процесс восстановит окружение сам:
     # конфигурация платформы на импорте вызывает `load_dotenv()`, а тот ищет
     # `.env` вверх от файла и находит его в корне УСТАНОВЛЕННОГО кода. Оттуда
@@ -279,10 +331,20 @@ def prepare_job_dir(job_dir: Path) -> dict[str, Path]:
         "metadata": job_dir / "metadata",
         "package_output": job_dir / "package_output",
         "usage": job_dir / "usage",
+        # Снимок runtime-конфигурации из пакета: он определяет режим записи
+        # хранилища, и без него запуск запрещён.
+        "runtime": job_dir / "runtime",
+        # `comparison/` раньше не имела каталога вовсе и уезжала в корень
+        # установленного кода (Б-4).
+        "comparison": job_dir / "comparison",
     }
     for path in layout.values():
         path.mkdir(parents=True, exist_ok=True)
-    (job_dir / "work" / "tmp").mkdir(parents=True, exist_ok=True)
+    # Каталоги, вычисляемые `isolated_roots`, но не входящие в раскладку
+    # разделов: без них процесс создаёт их сам — а `HOME`, созданный процессом
+    # позже, успевает побыть несуществующим и часть библиотек падает.
+    for extra in isolated_roots(job_dir).values():
+        Path(extra).mkdir(parents=True, exist_ok=True)
     return layout
 
 
@@ -318,6 +380,7 @@ def run_audit_job(
         "prompt_bundle_hash": params.prompt_bundle_hash,
         "model_config_hash": params.model_config_hash,
         "feature_flags_hash": params.feature_flags_hash,
+        "runtime_snapshot_hash": params.runtime_snapshot_hash,
         "required_result_artifacts": list(params.required_result_artifacts),
         "provider_mode": "fake" if provider_dir is not None else "real",
         "paths": {key: str(value) for key, value in layout.items()},

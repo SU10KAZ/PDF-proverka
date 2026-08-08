@@ -119,7 +119,10 @@ CLAUDE_CLI_BIN = os.environ.get("CLAUDE_CLI_BIN", str(Path.home() / ".local" / "
 # clean_cwd: запуск `claude -p` из чистой папки + урезанным env, чтобы не подгружать
 # CLAUDE.md проекта, .claude/settings.json, hooks, project memory, skills manifest.
 # Эмпирически даёт −44% input/блок и −52% cli_cost для Stage 01.
-_CLEAN_CWD_PATH = "/tmp/sonnet_clean"
+def _clean_cwd_root() -> str:
+    """Корень «чистых» каталогов запуска. См. config.clean_cli_cwd_root."""
+    from backend.app.core.config import clean_cli_cwd_root
+    return clean_cli_cwd_root()
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 

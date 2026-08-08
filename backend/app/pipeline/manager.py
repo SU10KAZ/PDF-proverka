@@ -2850,8 +2850,17 @@ class PipelineManager:
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         version_id = getattr(job, "version_id", None) or "v1"
         project_key = self._safe_backup_name(job.project_id)
+        # Корень `comparison/` берётся из настраиваемого пути, а НЕ из BASE_DIR.
+        # Прежний `BASE_DIR / "comparison"` был единственной записью конвейера
+        # вне всех `AUDIT_*`-корней: на воркере снимок уезжал в каталог
+        # УСТАНОВЛЕННОГО КОДА (блокер Б-4 отчёта 07). Путь сюда идёт из
+        # `_dispatch_action`, то есть ровно тем маршрутом, которым работает
+        # удалённая нога. На центре поведение не меняется: без `COMPARISON_ROOT`
+        # функция возвращает тот же `ROOT_DIR / "comparison"`.
+        from backend.app.services.stage_comparison.paths import comparison_root_path
+
         backup_dir = (
-            BASE_DIR / "comparison" / "classic_codex_ab" / "backups" /
+            comparison_root_path() / "classic_codex_ab" / "backups" /
             project_key / f"{version_id}_{action}_{timestamp}"
         )
         backup_dir.mkdir(parents=True, exist_ok=True)

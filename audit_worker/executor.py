@@ -973,6 +973,37 @@ class Executor:
                 audit_manifest.get("stage_completion") if is_audit else None
             ),
             resume_hint=(audit_manifest.get("resume_hint") if is_audit else None),
+            # Что ФАКТИЧЕСКИ применялось. Источник — манифест, который написал
+            # сам процесс конвейера: исполнитель тут ничего не додумывает, он
+            # переносит факт в пакет, чтобы центр мог его проверить.
+            project_version_rel=(
+                (meta.get("package") or {}).get("version_relative_path")
+                if is_audit else None
+            ),
+            runtime_snapshot_hash=(
+                (audit_manifest.get("applied_runtime_config") or {}).get(
+                    "runtime_snapshot_hash"
+                ) if is_audit else None
+            ),
+            applied_write_mode=(
+                (audit_manifest.get("applied_runtime_config") or {}).get(
+                    "applied_write_mode"
+                ) if is_audit else None
+            ),
+            execution_profile=(audit_manifest.get("profile") if is_audit else None),
+            worker_stage_plan=(
+                audit_manifest.get("worker_stage_plan") if is_audit else None
+            ),
+            completed_stages=(
+                audit_manifest.get("completed_stages") if is_audit else None
+            ),
+            forbidden_stages_not_run=(
+                audit_manifest.get("forbidden_stages_not_run") if is_audit else None
+            ),
+            provider_mode=(audit_manifest.get("provider_mode") if is_audit else None),
+            source_integrity=(
+                audit_manifest.get("source_integrity") if is_audit else None
+            ),
         )
         self.jobs.update(
             job_id, attempt_id,

@@ -46,13 +46,23 @@ _CLI_PATH_ENV = {
     "CODEX_CLI_PATH": "codex",
 }
 
-#: Корни данных, которые ОБЯЗАНЫ указывать внутрь каталога попытки. Раньше
-#: проверялись только три из них, а рабочей для legacy-раскладки является как
-#: раз `AUDIT_PROJECTS_DIR`.
+#: Корни данных и записи, которые ОБЯЗАНЫ указывать внутрь каталога попытки.
+#:
+#: Список рос дважды и оба раза по факту пропущенной записи: сперва
+#: `AUDIT_PROJECTS_DIR` (рабочий корень legacy-раскладки), затем `COMPARISON_ROOT`,
+#: `HOME`, `TMPDIR`, каталог «чистой» cwd для `claude -p` и рабочий каталог
+#: `codex exec`. Последние пять — это ровно те записи, которых не было ни в
+#: одном `AUDIT_*`-корне: снимок уезжал в каталог установленного кода, а
+#: `/tmp/sonnet_clean` и `~/.claude` были общими для всех заданий машины.
 _ISOLATED_ROOT_ENV = (
     "AUDIT_PROJECTS_DIR", "AUDIT_PROJECTS_V2_DIR", "AUDIT_DATA_DIR",
     "AUDIT_APP_DATA_DIR", "AUDIT_PROMPTS_DIR", "AUDIT_ACTION_LOG_DIR",
+    "COMPARISON_ROOT", "AUDIT_CLEAN_CWD_ROOT", "AUDIT_CODEX_WORKDIR",
+    "AUDIT_BLOCK_CROP_CACHE_DIR", "HOME", "TMPDIR",
 )
+
+#: Профили, которые ЭТА точка входа умеет исполнять.
+SUPPORTED_PROFILES = ("remote_audit_pilot_v1",)
 
 
 def harden_process_env() -> None:
@@ -129,6 +139,17 @@ def apply_runtime_paths(spec: dict[str, Any]) -> None:
     project_root = Path(paths.get("project") or "")
     if not project_root.is_dir():
         raise SystemExit(f"Каталог проекта не найден: {project_root}")
+    # Переносимый корень обязан быть корнем `projects_v2`, а не «каталогом с
+    # файлами версии». Проверка здесь, а не только в распаковщике: процесс,
+    # запущенный руками по чужой спеке, не должен доходить до первого этапа с
+    # деревом, которое не резолвится.
+    if not (project_root / "objects").is_dir():
+        raise SystemExit(
+            f"{project_root} не является переносимым корнем projects_v2: нет "
+            "каталога objects/ (плоская раскладка пакета версии 1 не "
+            "поддерживается — на ней resolve_v2_job_paths возвращает None, "
+            "а resolve_project_dir отдаёт файл вместо каталога)"
+        )
     job_dir = project_root.parent.resolve()
     for name in _ISOLATED_ROOT_ENV:
         value = os.environ.get(name, "")
@@ -144,6 +165,78 @@ def apply_runtime_paths(spec: dict[str, Any]) -> None:
     for name in ("AUDIT_ROOT_DIR", "AUDIT_BASE_DIR"):
         if os.environ.get(name):
             raise SystemExit(f"{name} не должна быть задана при удалённом исполнении")
+
+
+def apply_runtime_snapshot(spec: dict[str, Any]) -> dict[str, Any]:
+    """Прочитать снимок runtime-конфигурации из пакета и ПРИМЕНИТЬ его.
+
+    Это и есть закрытие ограничения 4 отчёта 06: до сих пор
+    `AUDIT_PROJECTS_V2_WRITE_MODE` на воркер не передавался вовсе, а
+    `storage_write_facade.get_write_mode()` читал `os.environ` ВОРКЕРА и
+    fail-safe дефолтил в `legacy` — тогда как центр работает в
+    `projects_v2_primary`. Результат прогона зависел от машины.
+
+    Порядок обязателен и не переставляется:
+
+      1. снимок обязан существовать — иначе отказ ДО запуска конвейера;
+      2. структура (неизвестное поле — отказ, отсутствующее обязательное — отказ);
+      3. хэш сверяется с заявленным в задании;
+      4. семантическая совместимость с ЭТИМ воркером;
+      5. и только потом значение попадает в окружение процесса.
+
+    Значение из пакета побеждает значение хоста ПО ПОСТРОЕНИЮ: `build_env`
+    воркера переменную не наследует вовсе (её нет в белом списке), поэтому в
+    момент вызова её в окружении просто нет — а если процесс запущен руками и
+    она там оказалась, она перезаписывается здесь и факт перезаписи попадает в
+    evidence.
+    """
+    from backend.app.services.distributed_workers import project_package, runtime_config
+
+    paths = spec.get("paths") or {}
+    runtime_dir = Path(paths.get("runtime") or "")
+    source = runtime_dir / "runtime_config.json"
+    if not source.is_file():
+        raise SystemExit(
+            f"Снимок runtime-конфигурации не найден: {source}. Запуск без него "
+            "запрещён: режим записи хранилища взялся бы с ХОСТА воркера."
+        )
+    try:
+        snapshot = runtime_config.load_snapshot(
+            source.read_bytes(),
+            expected_hash=spec.get("runtime_snapshot_hash") or None,
+        )
+        runtime_config.assert_compatible(
+            snapshot,
+            supported_profiles=SUPPORTED_PROFILES,
+            supported_layout_versions=project_package.SUPPORTED_PROJECT_LAYOUT_VERSIONS,
+            allow_real_llm=bool(spec.get("allow_real_llm")),
+        )
+    except runtime_config.RuntimeConfigError as exc:
+        raise SystemExit(f"Снимок runtime-конфигурации отвергнут: {exc}") from exc
+
+    host_value = os.environ.get("AUDIT_PROJECTS_V2_WRITE_MODE")
+    os.environ["AUDIT_PROJECTS_V2_WRITE_MODE"] = snapshot.projects_v2_write_mode
+
+    # Фактически применённое значение читается ОБРАТНО у фасада, а не
+    # переписывается из снимка: «мы выставили переменную» и «фасад считает так
+    # же» — разные утверждения, и evidence обязан содержать второе.
+    from backend.app.services.storage import storage_write_facade
+
+    applied = storage_write_facade.get_write_mode()
+    if applied != snapshot.projects_v2_write_mode:
+        raise SystemExit(
+            f"Режим записи не применился: снимок требует "
+            f"{snapshot.projects_v2_write_mode!r}, фасад видит {applied!r}"
+        )
+
+    evidence = runtime_config.describe_applied(snapshot, applied_write_mode=applied)
+    evidence["host_write_mode_overridden"] = host_value
+    metadata_dir = Path(paths.get("metadata") or runtime_dir)
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    (metadata_dir / "applied_runtime_config.json").write_text(
+        json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return evidence
 
 
 def apply_model_snapshot(spec: dict[str, Any]) -> Optional[Path]:
@@ -356,9 +449,26 @@ def run(spec: dict[str, Any]) -> int:
         }
     )
     stages, resume_hint = publish_deliverables(spec, job)
+    history = audit_stage_history(spec)
+    if history["violations"]:
+        # Центральный этап ВЫПОЛНИЛСЯ на воркере. Пакет собирать нельзя: он
+        # прошёл бы транспорт как успешный, а на центре его отверг бы импортёр
+        # по артефакту — то есть многочасовой прогон выбрасывался бы целиком,
+        # и причина была бы видна только там.
+        message = "На воркере выполнились центральные этапы: " + ", ".join(
+            history["violations"]
+        )
+        emit({"type": "failed", "message": message})
+        sys.stderr.write(message + "\n")
+        write_process_exit(spec, 1, error=message)
+        return 1
     write_result_manifest(
         spec,
         {
+            "worker_stage_plan": history["worker_stage_plan"],
+            "completed_stages": history["completed_stages"],
+            "forbidden_stages_not_run": history["forbidden_stages_not_run"],
+            "applied_runtime_config": spec.get("_applied_runtime_config") or {},
             "job_id": spec.get("job_id"),
             "attempt_id": spec.get("attempt_id"),
             "project_id": project_id,
@@ -377,6 +487,61 @@ def run(spec: dict[str, Any]) -> int:
     write_usage_report(spec, collect_usage(project_id))
     write_process_exit(spec, 0 if ok else 1, error=job.error_message)
     return 0 if ok else 1
+
+
+#: Этапы, которые удалённый профиль ОБЯЗАН уметь выполнять. Список — контракт
+#: границы, а не пожелание: он же уезжает в манифест результата, и центр по
+#: нему видит, докуда дошла удалённая нога.
+WORKER_STAGE_PLAN: tuple[str, ...] = (
+    "crop_blocks", "block_context", "block_analysis", "text_analysis",
+    "findings_merge", "findings_review", "optimization", "optimization_review",
+)
+
+#: Статусы, при которых этап считается НЕ выполнявшимся. `deferred` — штатный
+#: маркер «отложено на центр», который ставит процессный гейт.
+_NOT_RUN_STATUSES = frozenset({"", "deferred", "skipped", "pending", "blocked"})
+
+
+def audit_stage_history(spec: dict[str, Any]) -> dict[str, Any]:
+    """Проверить ФАКТИЧЕСКУЮ историю этапов после прогона.
+
+    Третий рубеж границы, и единственный, который смотрит на РЕЗУЛЬТАТ, а не на
+    намерение. Первые два (валидатор `retry_stage` и процессный гейт) проверяют,
+    что этап не будет запущен; этот проверяет, что он не был запущен. Разница
+    существенна: гейт стоит в четырёх местах менеджера, и пятое место, которое
+    однажды появится, этой проверкой будет поймано, а теми двумя — нет.
+    """
+    paths = spec.get("paths") or {}
+    log_path = Path(paths.get("work") or ".") / "pipeline_log.json"
+    stages: dict[str, Any] = {}
+    if log_path.is_file():
+        try:
+            data = json.loads(log_path.read_text(encoding="utf-8"))
+            stages = data.get("stages") or {}
+        except (OSError, ValueError):
+            stages = {}
+    violations: list[str] = []
+    for name in FORBIDDEN_STAGES:
+        entry = stages.get(name)
+        if not isinstance(entry, dict):
+            continue
+        status = str(entry.get("status") or "").strip().lower()
+        if status not in _NOT_RUN_STATUSES:
+            violations.append(f"{name}={status}")
+    completed = sorted(
+        name
+        for name, entry in stages.items()
+        if isinstance(entry, dict)
+        and str(entry.get("status") or "").strip().lower() not in _NOT_RUN_STATUSES
+    )
+    return {
+        "completed_stages": completed,
+        "forbidden_stages_not_run": [
+            name for name in FORBIDDEN_STAGES if f"{name}=" not in " ".join(violations)
+        ],
+        "violations": violations,
+        "worker_stage_plan": list(WORKER_STAGE_PLAN),
+    }
 
 
 def write_process_exit(spec: dict[str, Any], code: int, *, error: Any = None) -> Path:
@@ -482,6 +647,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     harden_process_env()
     spec = load_spec(Path(args[0]))
     apply_runtime_paths(spec)
+    # Снимок применяется ДО провайдеров и моделей: он задаёт режим записи
+    # хранилища, а значит и то, куда лягут артефакты всех последующих шагов.
+    applied_runtime = apply_runtime_snapshot(spec)
+    spec["_applied_runtime_config"] = applied_runtime
     providers = enforce_fake_providers(spec)
     models_path = apply_model_snapshot(spec)
     snapshot = verify_snapshot(spec)
@@ -492,6 +661,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "snapshot": snapshot,
             "providers": providers,
             "model_config_applied": bool(models_path),
+            "runtime_config": applied_runtime,
         }
     )
     return run(spec)

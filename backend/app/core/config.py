@@ -1332,3 +1332,37 @@ DISTRIBUTED_WORKERS_MANIFEST_VERSION = 1
 
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR
+
+
+def clean_cli_cwd_root() -> str:
+    """Корень «чистых» рабочих каталогов для запуска `claude -p` вне репозитория.
+
+    Раньше путь был литералом `/tmp/sonnet_clean` в ТРЁХ местах. На центральном
+    хосте это безобидно, а на воркере — запись мимо каталога попытки: общий
+    `/tmp` виден всем заданиям и переживает попытку целиком.
+
+    `tempfile.gettempdir()` читает `TMPDIR`, который воркер уже уводит внутрь
+    каталога попытки, поэтому изоляция получается без нового рубежа. На центре
+    `TMPDIR` обычно не задан → `/tmp/sonnet_clean`, то есть прежний путь
+    буквально. `AUDIT_CLEAN_CWD_ROOT` оставлен явным override для случаев,
+    когда `TMPDIR` менять нельзя.
+    """
+    import tempfile
+
+    raw = (os.environ.get("AUDIT_CLEAN_CWD_ROOT") or "").strip()
+    if raw:
+        return raw
+    return os.path.join(tempfile.gettempdir(), "sonnet_clean")
+
+
+def codex_workdir() -> str:
+    """Рабочий каталог (`-C` и `cwd`) процесса `codex exec`.
+
+    Значение по умолчанию сохраняет прежнее поведение — корень установленного
+    кода. Но песочница Codex по умолчанию `workspace-write`, то есть рабочий
+    каталог ЗАПИСЫВАЕМ агентом; на чужом VPS это означало бы право писать в
+    каталог установленного кода. `AUDIT_CODEX_WORKDIR` уводит его внутрь
+    каталога попытки, ничего не меняя на центре.
+    """
+    raw = (os.environ.get("AUDIT_CODEX_WORKDIR") or "").strip()
+    return raw or str(ROOT_DIR)

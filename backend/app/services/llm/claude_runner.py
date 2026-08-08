@@ -214,7 +214,11 @@ def _build_cmd(tools: str, model: str | None = None) -> list[str]:
 # Эмпирически (КЖ5.1, 25 блоков) даёт −42% input/блок и −36% cli_cost при +35% findings —
 # Sonnet работает прицельнее без harness'а Claude Code в качестве distractor'а.
 # См. ideas.md (Идея 6) и memory/feedback_subscription_only.md.
-_CLEAN_CWD_PATH = "/tmp/sonnet_clean"
+#: Корень «чистых» каталогов. Вычисляется, а не задан литералом: на воркере
+#: он обязан лежать внутри каталога попытки (см. config.clean_cli_cwd_root).
+def _clean_cwd_root() -> str:
+    from backend.app.core.config import clean_cli_cwd_root
+    return clean_cli_cwd_root()
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 
@@ -231,7 +235,7 @@ def _ensure_clean_cwd() -> str:
     каждый вызов. Общий путь остаётся корнем для них, чтобы не плодить мусор
     по всему /tmp и чтобы старая уборка по этому пути продолжала работать.
     """
-    root = _CLEAN_CWD_PATH
+    root = _clean_cwd_root()
     os.makedirs(root, exist_ok=True)
     _sweep_stale_run_dirs(root)
     return tempfile.mkdtemp(prefix="run_", dir=root)
@@ -268,7 +272,7 @@ def _sweep_stale_run_dirs(root: str) -> None:
 
 def _release_clean_cwd(path: str | None) -> None:
     """Удалить каталог одного запуска. Ошибки глушим: это уборка, не логика."""
-    if not path or not path.startswith(_CLEAN_CWD_PATH):
+    if not path or not path.startswith(_clean_cwd_root()):
         return
     try:
         shutil.rmtree(path, ignore_errors=True)
