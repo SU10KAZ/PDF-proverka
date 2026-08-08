@@ -29,10 +29,7 @@ from typing import Callable, Optional
 from . import paths as paths_mod
 from . import store as store_mod
 from . import expert_review as expert_review_mod
-from . import pipeline_queue as pipeline_queue_mod
-from . import md_enrichment_jobs as md_enrichment_jobs_mod
 from . import unified_analysis_jobs as unified_jobs_mod
-from . import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 
 _ACTIVE_STATUSES = ("running", "queued")
 _RUNNING_JOB_REASON = "pair has running job, cancel first"
@@ -60,34 +57,16 @@ def _add_job_pairs(acc: set[str], job: Optional[dict]) -> None:
 
 def active_pair_ids(session_id: str) -> set[str]:
     """Множество pair_id, по которым прямо сейчас есть running/queued job
-    (любого из четырёх типов: pipeline Qwen→Opus, md-enrichment, unified
-    Opus, large-sheet). Каждый источник обёрнут в try/except (fail-soft):
-    сбой одного детектора не блокирует чтение остальных."""
+    (unified Opus — единственный оставшийся тип после удаления локальных
+    LLM-мощностей). Детектор обёрнут в try/except (fail-soft): его сбой не
+    блокирует очистку."""
     active: set[str] = set()
 
     try:
-        for job in pipeline_queue_mod.list_jobs(session_id):
-            if (job.get("status") or "") in _ACTIVE_STATUSES:
-                _add_job_pairs(active, job)
+        job = unified_jobs_mod.find_active_session_job(session_id)
+        if job and (job.get("status") or "") in _ACTIVE_STATUSES:
+            _add_job_pairs(active, job)
     except Exception:  # noqa: BLE001 — детектор не должен ронять очистку
-        pass
-
-    for finder in (
-        md_enrichment_jobs_mod.find_active_session_job,
-        unified_jobs_mod.find_active_session_job,
-    ):
-        try:
-            job = finder(session_id)
-            if job and (job.get("status") or "") in _ACTIVE_STATUSES:
-                _add_job_pairs(active, job)
-        except Exception:  # noqa: BLE001
-            pass
-
-    try:
-        for job in large_sheet_jobs_mod.list_jobs(session_id):
-            if (job.get("status") or "") in _ACTIVE_STATUSES:
-                _add_job_pairs(active, job)
-    except Exception:  # noqa: BLE001
         pass
 
     return active

@@ -443,9 +443,6 @@ def set_stage_batch_mode(stage: str, mode: str) -> bool:
     return True
 
 
-# Stage-модели больше не маршрутизируются в локальный OCR runtime.
-LOCAL_LLM_MODELS: set[str] = set()
-
 # Codex exec transport for classic agent stages. Stage model IDs use the
 # `codex/<model>` namespace so they do not collide with OpenRouter model IDs.
 CODEX_MODEL_DEFAULT = os.environ.get("AUDIT_CODEX_MODEL", "gpt-5.4").strip() or "gpt-5.4"
@@ -647,10 +644,6 @@ def is_codex_stage(stage: str) -> bool:
     return is_codex_model(get_stage_model(stage))
 
 
-def is_local_llm_model(model: str) -> bool:
-    """True для локальных моделей через Chandra/LM Studio."""
-    return model in LOCAL_LLM_MODELS
-
 def get_claude_model() -> str:
     """Модель по умолчанию (для обратной совместимости)."""
     return _current_model
@@ -682,7 +675,6 @@ MAX_PARALLEL_BATCHES = 2
 
 CLAUDE_BLOCK_BATCH_PARALLELISM_DEFAULT = 3
 CLAUDE_BLOCK_BATCH_PARALLELISM_CAP = 3
-LOCAL_BLOCK_BATCH_PARALLELISM_DEFAULT = 1
 
 
 def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = None) -> int:
@@ -702,17 +694,6 @@ def get_block_batch_parallelism(stage: str = "block_batch", model: str | None = 
             except ValueError:
                 pass
         return min(max(1, value), CLAUDE_BLOCK_BATCH_PARALLELISM_CAP)
-    if is_local_llm_model(model):
-        value = LOCAL_BLOCK_BATCH_PARALLELISM_DEFAULT
-        env_val = os.environ.get("LOCAL_BLOCK_BATCH_PARALLELISM")
-        if env_val:
-            try:
-                parsed = int(env_val)
-                if parsed >= 1:
-                    value = parsed
-            except ValueError:
-                pass
-        return max(1, value)
     if model == STAGE02_DUAL_MODEL_ID or is_codex_model(model):
         return 1
     return MAX_PARALLEL_BATCHES
@@ -782,7 +763,6 @@ CHANDRA_BEARER_TOKEN = os.environ.get("CHANDRA_BEARER_TOKEN") or os.environ.get(
 #   "openai_completions"→ POST /v1/chat/completions с OpenAI vision (стандартный LM Studio)
 CHANDRA_CHAT_TRANSPORT = os.environ.get("CHANDRA_CHAT_TRANSPORT", "native").strip().lower()
 
-LMSTUDIO_AUTO_RELOAD_ENABLED = _env_bool("LMSTUDIO_AUTO_RELOAD_ENABLED", False)
 # Value Grounding (усиление предобработки графики): сверка значений gemma с векторным
 # текст-слоем (pdfplumber) и фиксация глифовых ошибок (В4.0→В40). Phase 1 — офлайн, 0 токенов.
 # OFF по умолчанию: стадия становится no-op (полная обратная совместимость).
@@ -915,8 +895,6 @@ VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED = _env_bool("VECTOGRAF_POLYGON_TEXT_ONLY_ENA
 # текст-слое блока (не слать повторно) и какие уникальны. Аддитивное поле, разметку не трогает.
 # ON по умолчанию (безопасно: только доп. инфо в ответе, поведение Stage 02 не меняется).
 NEIGHBOR_TEXT_BLOCKS_ENABLED = _env_bool("NEIGHBOR_TEXT_BLOCKS_ENABLED", True)
-# Phase 2 (qwen тайлинг/точечный кроп для блоков без вектор-слоя) — отдельный флаг, дорого/ngrok.
-BLOCK_VALUE_GROUNDING_QWEN_ENABLED = _env_bool("BLOCK_VALUE_GROUNDING_QWEN_ENABLED", False)
 # Разворот порядка конвейера: блоки (Stage 01, GPT) идут ПЕРЕД текстом (Stage 02, Opus).
 # Новый порядок: gemma → block_analysis → block_retry → text_analysis → findings_merge.
 # Текст становится финальным синтезатором: читает компактный view блоков (01_blocks_for_text.json)
@@ -955,21 +933,7 @@ OPTIMIZATION_CRITIC_DETERMINISTIC = _env_bool("OPTIMIZATION_CRITIC_DETERMINISTIC
 # Потолок savings_pct для вердикта unrealistic_savings: корректор режет до него,
 # сохраняя исходное значение в savings_pct_original + corrector_note.
 OPTIMIZATION_SAVINGS_CAP_PCT = int(os.environ.get("OPTIMIZATION_SAVINGS_CAP_PCT", "50"))
-# Жёсткий gate Phase 2: только КРУПНЫЕ no-vector блоки (тайлинг оправдан), с cap на прогон.
-BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MIN_WIDTH", "6000"))
-# Точечный high-res кроп для СРЕДНИХ no-vector блоков (ниже порога тайлинга, но не мелочь).
-# 0 = режим crop выключен (только тайлинг крупных). Общий бюджет — MAX_BLOCKS на оба режима.
-BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_CROP_MIN_WIDTH", "0"))
-BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS = int(os.environ.get("BLOCK_VALUE_GROUNDING_QWEN_MAX_BLOCKS", "12"))
-BLOCK_VALUE_GROUNDING_QWEN_MODEL = os.environ.get(
-    "BLOCK_VALUE_GROUNDING_QWEN_MODEL",
-    os.environ.get("STAGE_COMPARISON_GRAPHIC_LLM_MODEL", "qwen/qwen3.6-35b-a3b"))
 GPT_MODEL = "openai/gpt-5.4"
-LOCAL_GEMMA_CONTEXT_LENGTH = int(os.environ.get("LOCAL_GEMMA_CONTEXT_LENGTH", "98304"))
-LOCAL_GEMMA_MAX_OUTPUT_TOKENS = int(os.environ.get("LOCAL_GEMMA_MAX_OUTPUT_TOKENS", "8192"))
-LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS = int(
-    os.environ.get("LOCAL_GEMMA_FINDINGS_MAX_OUTPUT_TOKENS", "16384")
-)
 
 GEMINI_DIRECT_API_KEY: str = (
     os.environ.get("GEMINI_DIRECT_API_KEY", "")

@@ -33,7 +33,6 @@ from typing import Any, Optional
 from . import paths as paths_mod
 from . import store as store_mod
 from . import findings as findings_mod
-from . import graphic_llm_local as graphic_local_mod
 
 logger = logging.getLogger(__name__)
 
@@ -263,15 +262,9 @@ def create_graphic_llm_job(
                 skipped += 1
             prepared.append(w)
 
-        # Default-модель зависит от активного provider'а: для local provider
-        # — primary из конфига, иначе — старый default OpenRouter.
-        local_cfg = graphic_local_mod.load_local_graphic_llm_config()
-        if local_cfg.is_active:
-            default_model = local_cfg.model or "qwen/qwen3.6-35b-a3b"
-            job_provider = local_cfg.provider
-        else:
-            default_model = "google/gemini-3.1-pro-preview"
-            job_provider = "existing"
+        # Локальный provider удалён с платформы — остался только OpenRouter.
+        default_model = "google/gemini-3.1-pro-preview"
+        job_provider = "existing"
 
         job_id = _new_job_id()
         now = _utc_now()
@@ -430,37 +423,11 @@ async def _run_job_inner(session_id: str, job_id: str, *, auto_rebuild_findings:
     job["updated_at"] = _utc_now()
     _write_job(session_id, job)
 
-    # ── Выбор provider'а
-    local_cfg = graphic_local_mod.load_local_graphic_llm_config()
-    use_local = local_cfg.is_active
-    if use_local:
-        model = (job.get("model") or local_cfg.model or "").strip()
-        job["provider"] = local_cfg.provider
-    else:
-        model = job.get("model") or "google/gemini-3.1-pro-preview"
-        job["provider"] = "existing"
+    # ── Provider: только OpenRouter (локальный удалён с платформы)
+    model = job.get("model") or "google/gemini-3.1-pro-preview"
+    job["provider"] = "existing"
     job["model"] = model
     _write_job(session_id, job)
-
-    # ── Для local provider — попробуем один раз загрузить primary/fallback
-    local_model_used = model
-    local_fallback_used = False
-    local_provider_unavailable_reason: Optional[str] = None
-    local_pre_snapshot: list = []
-    if use_local:
-        ok, reason = graphic_local_mod.check_local_graphic_llm_available(local_cfg)
-        if not ok:
-            local_provider_unavailable_reason = f"local_graphic_llm_unavailable:{reason}"
-        else:
-            # Snapshot до load — для последующего restore protect-моделей.
-            local_pre_snapshot = await graphic_local_mod.snapshot_loaded_models(local_cfg)
-            load_res = await graphic_local_mod.ensure_lmstudio_model_loaded(
-                model, cfg=local_cfg, allow_fallback=True,
-            )
-            local_model_used = load_res.get("model_used") or model
-            local_fallback_used = bool(load_res.get("fallback_used"))
-            # Если load_endpoint недоступен — мы всё равно попробуем chat completion
-            # (JIT load или модель уже загружена в LM Studio руками оператора).
 
     items = job.get("items") or []
     for i, it in enumerate(items):
@@ -472,23 +439,6 @@ async def _run_job_inner(session_id: str, job_id: str, *, auto_rebuild_findings:
 
         if it.get("status") in ("done", "skipped", "failed", "cancelled"):
             continue
-
-        # Если local provider вообще не сконфигурирован — на старте job стопаем
-        if use_local and local_provider_unavailable_reason and i == 0:
-            store_mod.add_graphic_diff_result(
-                session_id, it["pair_id"], it["left_block_id"], it["right_block_id"],
-                status="provider_unavailable", summary="",
-                error=local_provider_unavailable_reason, model=model,
-                extra={"provider": local_cfg.provider, "model_used": "",
-                        "fallback_used": False},
-            )
-            it["status"] = "failed"
-            it["error"] = local_provider_unavailable_reason
-            job["progress"]["failed"] += 1
-            job["status"] = "failed"
-            job["updated_at"] = _utc_now()
-            _write_job(session_id, job)
-            break
 
         it["status"] = "running"
         job["updated_at"] = _utc_now()
@@ -503,60 +453,21 @@ async def _run_job_inner(session_id: str, job_id: str, *, auto_rebuild_findings:
             left_png = store_mod.render_block_crop(session_id, pid, "left", lid)
             right_png = store_mod.render_block_crop(session_id, pid, "right", rid)
             # 2. LLM
-            if use_local:
-                result = await graphic_local_mod.compare_images_local(
-                    left_png, right_png,
-                    model=model, cfg=local_cfg,
-                    model_used_hint=local_model_used,
-                    fallback_used_hint=local_fallback_used,
-                )
-                # Сохранить результат для любого статуса
-                store_mod.add_graphic_diff_result(
-                    session_id, pid, lid, rid,
-                    status=result.status,
-                    summary=result.summary,
-                    raw_response=(json.dumps(result.parsed, ensure_ascii=False) if result.parsed else None),
-                    model=model, cost_usd=None, error=result.error,
-                    extra=result.to_entry_dict(),
-                )
-                it["duration_sec"] = round(result.duration_sec, 3)
-                it["model_used"] = result.model_used
-                it["fallback_used"] = result.fallback_used
-                if result.status == "done":
-                    it["status"] = "done"
-                    it["graphic_diff_id"] = f"{lid}->{rid}"
-                    it["error"] = ""
-                    job["progress"]["done"] += 1
-                elif result.status == "provider_unavailable":
-                    # Глобально нерабочий provider — стоп всего job
-                    it["status"] = "failed"
-                    it["error"] = result.error or "provider_unavailable"
-                    job["progress"]["failed"] += 1
-                    job["status"] = "failed"
-                    job["updated_at"] = _utc_now()
-                    _write_job(session_id, job)
-                    break
-                else:
-                    # invalid_json / timeout / error — item failed, продолжаем job
-                    it["status"] = "failed"
-                    it["error"] = result.error or result.status
-                    job["progress"]["failed"] += 1
-            else:
-                summary, cost, raw_text = await _call_llm_for_pair(
-                    model, left_png, right_png, session_id, pid, lid, rid,
-                )
-                store_mod.add_graphic_diff_result(
-                    session_id, pid, lid, rid,
-                    status="done", summary=summary, raw_response=raw_text,
-                    model=model, cost_usd=cost,
-                    extra={"provider": "existing"},
-                )
-                it["status"] = "done"
-                it["graphic_diff_id"] = f"{lid}->{rid}"
-                it["error"] = ""
-                job["progress"]["done"] += 1
+            summary, cost, raw_text = await _call_llm_for_pair(
+                model, left_png, right_png, session_id, pid, lid, rid,
+            )
+            store_mod.add_graphic_diff_result(
+                session_id, pid, lid, rid,
+                status="done", summary=summary, raw_response=raw_text,
+                model=model, cost_usd=cost,
+                extra={"provider": "existing"},
+            )
+            it["status"] = "done"
+            it["graphic_diff_id"] = f"{lid}->{rid}"
+            it["error"] = ""
+            job["progress"]["done"] += 1
         except _BatchLLMError as exc:
-            # Только existing-провайдер; для local provider мы не бросаем эту ошибку
+            # Единственный provider — OpenRouter.
             store_mod.add_graphic_diff_result(
                 session_id, pid, lid, rid,
                 status=("blocked" if exc.is_paid_blocked else "error"),
@@ -589,30 +500,6 @@ async def _run_job_inner(session_id: str, job_id: str, *, auto_rebuild_findings:
         job["status"] = "done"
     job["updated_at"] = _utc_now()
     _write_job(session_id, job)
-
-    # Cleanup для local provider: при включённом UNLOAD_AFTER_BATCH выгружаем
-    # primary/fallback (но НЕ protect-list); затем восстанавливаем protected
-    # модели, если они пропали. Не падаем — пишем warning'и в job.json.
-    if use_local:
-        try:
-            cleanup_info = await graphic_local_mod.cleanup_local_graphic_llm(
-                local_cfg, local_pre_snapshot, scope="batch",
-            )
-            job["cleanup"] = {
-                "unloaded": cleanup_info.get("unloaded") or [],
-                "restored": cleanup_info.get("restored") or [],
-                "protected_kept": cleanup_info.get("protected_kept") or [],
-                "warnings": cleanup_info.get("warnings") or [],
-                "skipped_unload": cleanup_info.get("skipped_unload", False),
-            }
-            if cleanup_info.get("warnings"):
-                job["warnings"] = (job.get("warnings") or []) + [
-                    f"cleanup:{w}" for w in cleanup_info["warnings"]
-                ]
-            job["updated_at"] = _utc_now()
-            _write_job(session_id, job)
-        except Exception:  # noqa: BLE001
-            logger.exception("local graphic LLM cleanup failed for job %s", job_id)
 
     # Auto-rebuild findings (graphic_changed теперь обновится по LLM-summary)
     if auto_rebuild_findings:

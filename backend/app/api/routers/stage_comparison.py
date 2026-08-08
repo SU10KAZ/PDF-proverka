@@ -39,19 +39,14 @@ from backend.app.services.stage_comparison import text_llm_provider as text_llm_
 from backend.app.services.stage_comparison import text_llm_preflight as text_llm_preflight_mod
 from backend.app.services.stage_comparison import text_llm_flat as text_llm_flat_mod
 from backend.app.services.stage_comparison import pair_template as pair_template_mod
-from backend.app.services.stage_comparison import graphic_llm_local as graphic_local_mod
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
-from backend.app.services.stage_comparison import md_enrichment_jobs as md_enrichment_jobs_mod
-from backend.app.services.stage_comparison import large_sheet_enrichment as large_sheet_mod
 from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
 from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
 from backend.app.services.stage_comparison import pipeline_v2_controlled_enforce_state as pipeline_v2_ce_state_mod
 from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
 from backend.app.services.stage_comparison import pipeline_v2_run_jobs as pipeline_v2_run_jobs_mod
-from backend.app.services.stage_comparison import large_sheet_enrichment_jobs as large_sheet_jobs_mod
 from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
-from backend.app.services.stage_comparison import pipeline_queue as pipeline_queue_mod
 from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
 from backend.app.services.stage_comparison import opus_only as opus_only_mod
 from backend.app.services.stage_comparison import enriched_comparison as enriched_compare_mod
@@ -1262,20 +1257,6 @@ async def text_llm_config_endpoint(session_id: str):
 # ─── MD enrichment (Qwen image descriptions для enriched MD) ─────────────
 
 
-class MdEnrichmentRequest(BaseModel):
-    side: str = Field("both", pattern="^(left|right|both)$")
-    force: bool = False
-    run_model: bool = False
-
-
-class CreateMdEnrichmentJobRequest(BaseModel):
-    scope: str = Field(..., pattern="^(pair|session|selected)$")
-    pair_id: Optional[str] = None
-    pair_ids: Optional[list[str]] = None
-    side: str = Field("both", pattern="^(left|right|both)$")
-    force: bool = False
-    confirm: bool = False
-    skip_done: bool = True
 
 
 def _md_enrichment_pair_payload(
@@ -1412,369 +1393,10 @@ async def get_enriched_md_content_endpoint(
     }
 
 
-@router.post("/sessions/{session_id}/pairs/{pair_id}/md-enrichment")
-async def run_md_enrichment_endpoint(
-    session_id: str, pair_id: str, req: MdEnrichmentRequest,
-):
-    """Запуск enrichment для одной пары.
-
-    `run_model=False` — dry-run, никаких сетевых вызовов к LM Studio.
-    `run_model=True`  — реально вызывает Qwen для каждого image-блока.
-    """
-    session = store.get_session(session_id)
-    if session is None:
-        raise HTTPException(404, "Сессия не найдена")
-    pair = next((p for p in session.get("pairs") or [] if p.get("id") == pair_id), None)
-    if pair is None:
-        raise HTTPException(404, "Пара не найдена")
-
-    sides = ("left", "right") if req.side == "both" else (req.side,)
-    cfg = graphic_local_mod.load_local_graphic_llm_config()
-
-    if req.run_model:
-        ok, reason = graphic_local_mod.check_local_graphic_llm_available(cfg)
-        if not ok:
-            raise HTTPException(
-                422,
-                {
-                    "code": "local_vlm_unavailable",
-                    "message": "Локальный VLM-провайдер не сконфигурирован.",
-                    "reason": reason,
-                },
-            )
-
-    results: dict[str, Any] = {}
-    for s in sides:
-        side_obj = (pair.get(s) or {})
-        md_path = side_obj.get("md_path")
-        rjp = side_obj.get("result_json_path")
-
-        def _render(block_id: str, _sid=session_id, _pid=pair_id, _side=s):
-            try:
-                return store.render_block_crop(_sid, _pid, _side, block_id)
-            except Exception:  # noqa: BLE001
-                return None
-
-        try:
-            summary = await md_enrichment_mod.enrich_side(
-                session_id, pair_id, s,
-                md_path=md_path, result_json_path=rjp,
-                render_crop=_render,
-                run_model=bool(req.run_model),
-                force=bool(req.force),
-                cfg=cfg,
-            )
-        except ValueError as exc:
-            raise HTTPException(400, str(exc)) from exc
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("md-enrichment failed")
-            raise HTTPException(500, f"md-enrichment ошибка: {exc}") from exc
-
-        results[s] = {
-            "side": s,
-            "status": summary.status,
-            "image_blocks": summary.image_blocks,
-            "described": summary.described,
-            "from_cache": summary.from_cache,
-            "errors": summary.errors,
-            "pending": summary.pending,
-            "warnings": summary.warnings,
-            "enriched_md_path": summary.enriched_md_path,
-            "md_path": md_path,
-        }
-
-    return {"pair_id": pair_id, "ran_model": bool(req.run_model), **results}
 
 
-# ─── Large Sheet Enrichment (page-level tile-first для огромных листов) ─────
 
 
-class LargeSheetRequest(BaseModel):
-    side: str = Field("left", pattern="^(left|right)$")
-    page: int = Field(..., ge=1)
-    force: bool = False
-    run_model: bool = False
-    confirm: bool = False
-    tile_size: Optional[int] = Field(None, ge=256, le=8000)
-    overlap: Optional[float] = Field(None, ge=0.0, le=0.6)
-
-
-def _require_pair(session_id: str, pair_id: str) -> dict:
-    session = store.get_session(session_id)
-    if session is None:
-        raise HTTPException(404, "Сессия не найдена")
-    pair = next((p for p in session.get("pairs") or [] if p.get("id") == pair_id), None)
-    if pair is None:
-        raise HTTPException(404, "Пара не найдена")
-    return pair
-
-
-@router.get("/sessions/{session_id}/pairs/{pair_id}/large-sheet-enrichment")
-async def get_large_sheet_enrichment_endpoint(
-    session_id: str, pair_id: str,
-    side: str = Query("left", pattern="^(left|right)$"),
-    page: Optional[int] = Query(None, ge=1),
-):
-    """Статус/сводка large-sheet enrichment.
-
-    * `page` задан  → сводка по конкретной странице (или `not_run`).
-    * `page` опущен → дешёвый detection-скан стороны (без Qwen, без рендера):
-      список страниц, распознанных как большие/плотные листы.
-    """
-    _require_pair(session_id, pair_id)
-    if page is not None:
-        return large_sheet_mod.read_large_sheet_summary(session_id, pair_id, side, page)
-    try:
-        return await asyncio.to_thread(
-            large_sheet_mod.scan_pair_side_for_large_sheets, session_id, pair_id, side
-        )
-    except (FileNotFoundError, KeyError) as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/large-sheet-enrichment")
-async def run_large_sheet_enrichment_endpoint(
-    session_id: str, pair_id: str, req: LargeSheetRequest,
-):
-    """Сформировать large-sheet артефакты страницы.
-
-    `run_model=False` (default) — dry-run: render/words/zones/tiles/diagnostics,
-    Qwen НЕ вызывается.
-
-    `run_model=True` — в этой итерации live-model путь не реализован. Без
-    `confirm=true` → 400 (confirm_required). С `confirm=true` → 200 со
-    `status="rejected"`: Qwen НЕ вызывается ни при каком значении флагов.
-    """
-    _require_pair(session_id, pair_id)
-
-    if req.run_model:
-        if not req.confirm:
-            raise HTTPException(400, {
-                "code": "confirm_required",
-                "message": "run_model=true требует confirm=true.",
-            })
-        # Live tile→Qwen потенциально долгий → выполняется только через job.
-        # Direct endpoint Qwen не вызывает: возвращает указатель на job endpoint.
-        return {
-            "status": "use_job_endpoint",
-            "message": ("Live tile→Qwen запускается только через job: "
-                        "POST /api/stage-comparison/sessions/{sid}/large-sheet-enrichment-jobs "
-                        "с confirm=true."),
-            "ran_model": False,
-            "job_endpoint": f"/api/stage-comparison/sessions/{session_id}/large-sheet-enrichment-jobs",
-            "side": req.side, "page": req.page,
-        }
-
-    try:
-        result = await asyncio.to_thread(
-            large_sheet_mod.run_large_sheet_enrichment,
-            session_id, pair_id, req.side, req.page,
-            force=bool(req.force), run_model=False,
-            tile_size=req.tile_size, overlap=req.overlap,
-        )
-    except (FileNotFoundError, KeyError) as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("large-sheet enrichment failed")
-        raise HTTPException(500, f"large-sheet ошибка: {exc}") from exc
-
-    return {"pair_id": pair_id, "ran_model": False, **result}
-
-
-# ─── Large Sheet Enrichment jobs (live tile→Qwen, фоном) ────────────────────
-
-
-class LargeSheetJobItem(BaseModel):
-    pair_id: str
-    side: str = Field("left", pattern="^(left|right)$")
-    page: int = Field(..., ge=1)
-
-
-class LargeSheetJobRequest(BaseModel):
-    scope: str = Field("page", pattern="^(page|selected)$")
-    pair_id: Optional[str] = None
-    side: Optional[str] = Field(None, pattern="^(left|right)$")
-    page: Optional[int] = Field(None, ge=1)
-    items: Optional[list[LargeSheetJobItem]] = None
-    force: bool = False
-    confirm: bool = False
-
-
-@router.post("/sessions/{session_id}/large-sheet-enrichment-jobs")
-async def create_large_sheet_job_endpoint(session_id: str, req: LargeSheetJobRequest):
-    """Создать live tile→Qwen job. Без confirm=true → rejected_no_confirm.
-
-    Только с confirm=true job уходит в фон (asyncio task) и реально вызывает
-    Qwen. Direct (синхронный) live-прогон не поддерживается.
-    """
-    items = [it.model_dump() for it in (req.items or [])] if req.items else None
-    try:
-        job = large_sheet_jobs_mod.create_job(
-            session_id, scope=req.scope, items=items,
-            pair_id=req.pair_id, side=req.side, page=req.page,
-            force=bool(req.force), confirm=bool(req.confirm),
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-    if job.get("status") == "rejected_no_confirm":
-        return job
-    if job.get("status") == "queued":
-        large_sheet_jobs_mod.start_job_in_background(session_id, job["id"])
-    return large_sheet_jobs_mod.get_job(session_id, job["id"]) or job
-
-
-@router.get("/sessions/{session_id}/large-sheet-enrichment-jobs/{job_id}")
-async def get_large_sheet_job_endpoint(session_id: str, job_id: str):
-    job = large_sheet_jobs_mod.get_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
-
-
-@router.post("/sessions/{session_id}/large-sheet-enrichment-jobs/{job_id}/cancel")
-async def cancel_large_sheet_job_endpoint(session_id: str, job_id: str):
-    job = large_sheet_jobs_mod.cancel_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
-
-
-# ─── Qwen→Opus pipeline queue (1 Qwen worker + 1 Opus worker, decoupled) ─────
-
-
-class QwenOpusPreflightRequest(BaseModel):
-    scope: str = Field("selected", pattern="^(selected|session|pair)$")
-    pair_ids: Optional[list[str]] = None
-    force_qwen: bool = True
-    force_opus: bool = True
-
-
-class QwenOpusStartRequest(BaseModel):
-    scope: str = Field("selected", pattern="^(selected|session|pair)$")
-    pair_ids: Optional[list[str]] = None
-    force_qwen: bool = True
-    force_opus: bool = True
-    prebuild_large_sheets: bool = True
-    run_v2: bool = False
-    confirm: bool = False
-    # Health gate: по умолчанию старт блокируется, если локальный Qwen/ngrok
-    # недоступен (нет загруженной модели, ctx мал, или ping вернул HTML ngrok 404).
-    # Оператор может явно обойти проверку (на свой риск).
-    skip_health_check: bool = False
-
-
-@router.post("/sessions/{session_id}/pipeline-qwen-opus/preflight")
-async def qwen_opus_preflight_endpoint(session_id: str, req: QwenOpusPreflightRequest):
-    """Сводка перед запуском Qwen→Opus pipeline (без запуска моделей).
-
-    preflight() — синхронный файловый проход; на 21 паре он раньше блокировал
-    event loop (>30 c), из-за чего /api/info переставал отвечать и watchdog
-    убивал процесс. Выносим в threadpool, чтобы loop оставался отзывчивым."""
-    try:
-        pf = await asyncio.to_thread(
-            pipeline_queue_mod.preflight,
-            session_id, scope=req.scope, pair_ids=req.pair_ids,
-            force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    # Health gate (advisory in preflight): показать оператору, доступен ли
-    # локальный Qwen/ngrok, ДО подтверждения запуска. can_run учитывает здоровье.
-    health = await pipeline_queue_mod.qwen_health_gate()
-    pf["health"] = health
-    if not health.get("ok"):
-        pf["health_reason"] = health.get("reason")
-        pf["can_run"] = False
-        risks = pf.get("risks")
-        if isinstance(risks, list):
-            risks.append(
-                f"LLM/ngrok недоступен ({health.get('reason')}) — запуск заблокирован "
-                "до восстановления туннеля/модели."
-            )
-    return pf
-
-
-@router.post("/sessions/{session_id}/pipeline-qwen-opus")
-async def qwen_opus_start_endpoint(session_id: str, req: QwenOpusStartRequest):
-    """Запустить Qwen→Opus pipeline по ВЫБРАННЫМ парам. Без confirm=true —
-    rejected (в фон не уходит). scope=session требует явного pair-выбора в UI."""
-    # Health gate (ENFORCED): не запускать тяжёлый прогон, если локальный Qwen/
-    # ngrok сейчас недоступен — иначе все пары упадут на transport-сбоях. Обойти
-    # можно явным skip_health_check (оператор берёт риск на себя).
-    if not req.skip_health_check:
-        health = await pipeline_queue_mod.qwen_health_gate()
-        if not health.get("ok"):
-            return {
-                "status": "rejected_llm_unavailable",
-                "reason": health.get("reason"),
-                "health": health,
-                "message": "LLM/ngrok transport недоступен — старт заблокирован. "
-                           "Восстановите туннель/модель и повторите "
-                           "(или skip_health_check=true на свой риск).",
-            }
-    # #67: single-flight guard — не запускать второй Qwen→Opus pipeline той же
-    # сессии, пока активен предыдущий (один LM Studio инстанс).
-    active = await asyncio.to_thread(
-        pipeline_queue_mod.find_active_pipeline_job, session_id
-    )
-    if active is not None:
-        return {
-            "status": "already_running",
-            "active_job_id": active.get("job_id"),
-            "message": "Qwen→Opus pipeline уже выполняется для этой сессии — "
-                       "дождитесь завершения или отмените текущий job.",
-        }
-    try:
-        job = await asyncio.to_thread(
-            pipeline_queue_mod.create_job,
-            session_id, scope=req.scope, pair_ids=req.pair_ids,
-            force_qwen=bool(req.force_qwen), force_opus=bool(req.force_opus),
-            prebuild_large_sheets=bool(req.prebuild_large_sheets),
-            run_v2=bool(req.run_v2), confirm=bool(req.confirm),
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    if job.get("status") == "rejected_no_confirm":
-        return job
-    if job.get("status") == "queued":
-        pipeline_queue_mod.start_job_in_background(session_id, job["job_id"])
-    return pipeline_queue_mod.get_job(session_id, job["job_id"]) or job
-
-
-@router.get("/sessions/{session_id}/pipeline-qwen-opus/pair-timings")
-async def qwen_opus_pair_timings_endpoint(session_id: str):
-    """Latest Qwen/Opus timing по каждой паре из персистентных qopipe job-файлов.
-
-    Нужен, чтобы колонки 🟦 Qwen / 🟪 Opus в таблице пар показывали времена
-    ПОСЛЕ refresh страницы (in-memory job на фронте теряется). Read-only,
-    только маленькие job-json, без тяжёлых Qwen/tile-артефактов. Объявлен ДО
-    `/{job_id}`, чтобы `pair-timings` не попал в path-параметр job_id."""
-    return {"timings": pipeline_queue_mod.latest_pair_timings(session_id)}
-
-
-@router.get("/sessions/{session_id}/pipeline-qwen-opus/{job_id}")
-async def qwen_opus_status_endpoint(session_id: str, job_id: str):
-    job = pipeline_queue_mod.get_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
-
-
-@router.post("/sessions/{session_id}/pipeline-qwen-opus/{job_id}/cancel")
-async def qwen_opus_cancel_endpoint(session_id: str, job_id: str):
-    """Graceful cancel: новых пар не начинать; Qwen завершает текущую страницу/
-    блок, Opus — текущую пару."""
-    job = pipeline_queue_mod.cancel_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
 
 
 class ClearAnalysisRequest(BaseModel):
@@ -1858,84 +1480,8 @@ async def opus_only_endpoint(session_id: str, req: OpusOnlyRequest):
             "skipped": prep.get("skipped") or [], "backups": prep.get("backups") or {}}
 
 
-@router.post("/sessions/{session_id}/md-enrichment-jobs")
-async def create_md_enrichment_job_endpoint(
-    session_id: str, req: CreateMdEnrichmentJobRequest,
-):
-    """Batch enrichment. Без confirm=true создаём rejected-job (для истории)."""
-    if not req.confirm:
-        try:
-            job = md_enrichment_jobs_mod.create_md_enrichment_job(
-                session_id, scope=req.scope, pair_id=req.pair_id,
-                pair_ids=req.pair_ids, side=req.side,
-                force=bool(req.force), confirm=False,
-                skip_done=bool(req.skip_done),
-            )
-        except KeyError as exc:
-            raise HTTPException(404, str(exc)) from exc
-        return md_enrichment_jobs_mod.get_job_with_progress(session_id, job["id"]) or job
-
-    cfg = graphic_local_mod.load_local_graphic_llm_config()
-    ok, reason = graphic_local_mod.check_local_graphic_llm_available(cfg)
-    if not ok:
-        raise HTTPException(
-            422,
-            {
-                "code": "local_vlm_unavailable",
-                "message": "Локальный VLM-провайдер не сконфигурирован.",
-                "reason": reason,
-            },
-        )
-
-    try:
-        job = md_enrichment_jobs_mod.create_md_enrichment_job(
-            session_id, scope=req.scope, pair_id=req.pair_id,
-            pair_ids=req.pair_ids, side=req.side,
-            force=bool(req.force), confirm=True,
-            skip_done=bool(req.skip_done),
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    if job.get("status") == "queued":
-        md_enrichment_jobs_mod.start_job_in_background(session_id, job["id"])
-    return md_enrichment_jobs_mod.get_job_with_progress(session_id, job["id"]) or job
 
 
-@router.get("/sessions/{session_id}/md-enrichment-jobs/active")
-async def get_active_md_enrichment_job_endpoint(session_id: str):
-    """Самая свежая job (running, иначе любая) — для resume в UI.
-
-    Возвращает 204-подобный пустой объект, если jobs ещё не было.
-    """
-    session = store.get_session(session_id)
-    if session is None:
-        raise HTTPException(404, "Сессия не найдена")
-    job = md_enrichment_jobs_mod.find_active_session_job(session_id)
-    return {"job": job}
-
-
-@router.get("/sessions/{session_id}/md-enrichment-jobs/{job_id}")
-async def get_md_enrichment_job_endpoint(session_id: str, job_id: str):
-    # Горячий polling-эндпоинт: get_job_with_progress делает синхронный disk-I/O
-    # (aggregate по парам) → в event loop это блокировка и риск watchdog-kill.
-    # Выносим в threadpool (reserc.md #69).
-    job = await run_in_threadpool(
-        md_enrichment_jobs_mod.get_job_with_progress, session_id, job_id
-    )
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
-
-
-@router.post("/sessions/{session_id}/md-enrichment-jobs/{job_id}/cancel")
-async def cancel_md_enrichment_job_endpoint(session_id: str, job_id: str):
-    job = md_enrichment_jobs_mod.cancel_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return md_enrichment_jobs_mod.get_job_with_progress(session_id, job_id) or job
-
-
-# ─── Unified analysis: Qwen enrichment + Opus comparison ────────────────
 
 
 class UnifiedAnalysisPreflightRequest(BaseModel):
@@ -3105,134 +2651,6 @@ async def _call_graphic_llm(
     return text, cost, result.text
 
 
-# Кеш model_used_hint между вызовами одной сессии (внутри одного процесса).
-# Чтобы не звать /api/v1/models/load каждый раз при single graphic-diff после
-# того как первый запрос уже загрузил primary/fallback.
-_LOCAL_MODEL_LOAD_CACHE: dict[str, dict] = {}
-
-
-async def _ensure_local_model_loaded_once(
-    cfg, primary_model: str,
-) -> tuple[str, bool, dict]:
-    """Возвращает (model_used, fallback_used, debug_dict). Кеширует решение
-    по ключу (base_url, primary_model) внутри процесса."""
-    if not cfg.enable_model_load:
-        return primary_model, False, {"messages": ["model_load_disabled_via_env"]}
-    key = f"{cfg.base_url}::{primary_model}"
-    cached = _LOCAL_MODEL_LOAD_CACHE.get(key)
-    if cached and cached.get("ok"):
-        return cached["model_used"], cached["fallback_used"], cached
-    res = await graphic_local_mod.ensure_lmstudio_model_loaded(
-        primary_model, cfg=cfg, allow_fallback=True,
-    )
-    if res.get("ok"):
-        _LOCAL_MODEL_LOAD_CACHE[key] = res
-    return res.get("model_used") or primary_model, bool(res.get("fallback_used")), res
-
-
-async def _graphic_diff_via_local(
-    *,
-    session_id: str,
-    pair_id: str,
-    req: "GraphicDiffRequest",
-    left_png: Path,
-    right_png: Path,
-    left_url: str,
-    right_url: str,
-    cfg,
-) -> dict:
-    """Платный single graphic-diff через local provider.
-
-    paid_api_guard не вызывается для local provider — это локальная модель,
-    не внешний платный API. Согласие пользователя выражается через run_paid=true.
-    """
-    available, reason = graphic_local_mod.check_local_graphic_llm_available(cfg)
-    if not available:
-        entry = store.add_graphic_diff_result(
-            session_id, pair_id, req.left_block_id, req.right_block_id,
-            status="provider_unavailable",
-            summary="",
-            raw_response=None,
-            model=(req.model or cfg.model),
-            cost_usd=None,
-            error=f"local_graphic_llm_unavailable:{reason}",
-            extra={"provider": cfg.provider, "model_used": "", "fallback_used": False},
-        )
-        return {
-            "status": "provider_unavailable",
-            "left_block_id": req.left_block_id,
-            "right_block_id": req.right_block_id,
-            "left_image_url": left_url,
-            "right_image_url": right_url,
-            "error": f"local_graphic_llm_unavailable:{reason}",
-            "provider": cfg.provider,
-            "model": (req.model or cfg.model),
-            "entry": entry,
-        }
-
-    primary_model = (req.model or cfg.model).strip()
-
-    # Snapshot LM Studio до load — нужен, чтобы restore'ить protected модели
-    # если они пропадут после нашего load.
-    pre_snapshot = await graphic_local_mod.snapshot_loaded_models(cfg)
-
-    model_used, fallback_used, _load_debug = await _ensure_local_model_loaded_once(
-        cfg, primary_model,
-    )
-
-    result = await graphic_local_mod.compare_images_local(
-        left_png, right_png,
-        model=primary_model,
-        cfg=cfg,
-        model_used_hint=model_used,
-        fallback_used_hint=fallback_used,
-    )
-
-    # Cleanup: если unload_after_request=true — выгружаем primary/fallback
-    # (но НЕ protect-list); затем проверяем что protected всё ещё loaded.
-    cleanup_info = await graphic_local_mod.cleanup_local_graphic_llm(
-        cfg, pre_snapshot, scope="request",
-    )
-    if cleanup_info.get("unloaded"):
-        # Cache становится невалидным — следующий запрос должен снова ensure_load.
-        _LOCAL_MODEL_LOAD_CACHE.clear()
-
-    entry = store.add_graphic_diff_result(
-        session_id, pair_id, req.left_block_id, req.right_block_id,
-        status=result.status,
-        summary=result.summary,
-        raw_response=result.parsed and json.dumps(result.parsed, ensure_ascii=False),
-        model=primary_model,
-        cost_usd=None,
-        error=result.error,
-        extra=result.to_entry_dict(),
-    )
-    return {
-        "status": result.status,
-        "left_block_id": req.left_block_id,
-        "right_block_id": req.right_block_id,
-        "left_image_url": left_url,
-        "right_image_url": right_url,
-        "summary": result.summary,
-        "llm_summary": result.summary,
-        "provider": result.provider,
-        "model": primary_model,
-        "model_used": result.model_used,
-        "fallback_used": result.fallback_used,
-        "has_significant_difference": result.has_significant_difference,
-        "differences": result.differences,
-        "confidence": result.confidence,
-        "duration_sec": round(result.duration_sec, 3),
-        "raw_response_excerpt": result.raw_response_excerpt,
-        "error": result.error,
-        "cleanup": {
-            "unloaded": cleanup_info.get("unloaded") or [],
-            "restored": cleanup_info.get("restored") or [],
-            "protected_kept": cleanup_info.get("protected_kept") or [],
-            "warnings": cleanup_info.get("warnings") or [],
-        },
-        "entry": entry,
-    }
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/graphic-diff")
@@ -3269,11 +2687,6 @@ async def graphic_diff_endpoint(
     left_url = f"{base_url}?side=left&block_id={req.left_block_id}"
     right_url = f"{base_url}?side=right&block_id={req.right_block_id}"
 
-    # Determine provider: local_openai_compatible или existing (старое
-    # OpenRouter/Gemini поведение через run_llm).
-    local_cfg = graphic_local_mod.load_local_graphic_llm_config()
-    use_local = local_cfg.is_active
-
     if not req.run_paid:
         return {
             "status": "prepared",
@@ -3281,25 +2694,12 @@ async def graphic_diff_endpoint(
             "right_block_id": req.right_block_id,
             "left_image_url": left_url,
             "right_image_url": right_url,
-            "prompt": (graphic_local_mod.GRAPHIC_DIFF_LOCAL_PROMPT if use_local else GRAPHIC_DIFF_PROMPT),
-            "provider": (local_cfg.provider if use_local else "existing"),
+            "prompt": GRAPHIC_DIFF_PROMPT,
+            "provider": "existing",
             "note": "Crop'ы подготовлены. Для запуска сравнения вызовите этот endpoint с run_paid=true.",
         }
 
-    # 2. Платный путь
-    if use_local:
-        return await _graphic_diff_via_local(
-            session_id=session_id,
-            pair_id=pair_id,
-            req=req,
-            left_png=left_png,
-            right_png=right_png,
-            left_url=left_url,
-            right_url=right_url,
-            cfg=local_cfg,
-        )
-
-    # 2b. existing провайдер (OpenRouter/Gemini) — через paid_api_guard
+    # 2. Платный путь: OpenRouter/Gemini через paid_api_guard
     model = req.model or "google/gemini-3.1-pro-preview"
 
     try:
@@ -3385,39 +2785,20 @@ async def graphic_diff_endpoint(
 
 @router.get("/graphic-llm-config")
 async def graphic_llm_config_endpoint():
-    """Безопасная инфо-ручка для UI / диагностики: какой provider активен,
-    какие модели сконфигурированы, доступен ли local provider.
+    """Инфо-ручка для UI / диагностики: какой provider активен.
 
-    Не возвращает пароль или полные credentials. Для external провайдеров
-    (existing/openrouter/gemini) — совместимый минимальный ответ.
+    Локальные LLM-мощности удалены с платформы — остался единственный внешний
+    provider (OpenRouter/Gemini). Никаких credentials не возвращает.
     """
-    cfg = graphic_local_mod.load_local_graphic_llm_config()
-    if cfg.is_active:
-        info = graphic_local_mod.config_info_for_endpoint(cfg)
-        # Add live LM Studio diagnostics (loaded_models / ctx). Без падений:
-        # если endpoint LM Studio недоступен — поля заполняются дефолтами.
-        try:
-            diag = await graphic_local_mod.loaded_models_diagnostics(cfg)
-        except Exception:  # noqa: BLE001
-            diag = {
-                "endpoint_available": False,
-                "loaded_models": [],
-                "desired_context_length": cfg.load_context_length,
-                "primary_loaded_ctx": None,
-                "primary_context_ok": False,
-            }
-        info.update(diag)
-        return info
-    # External-провайдер (existing/openrouter/gemini) — нечего проверять локально
     return {
-        "provider": cfg.provider,
+        "provider": "existing",
         "base_url_present": False,
         "model": "",
         "fallback_model": "",
         "auth": "",
         "auth_configured": True,
         "model_load_enabled": False,
-        "available": True,                # internal/external — каждый сам по себе
+        "available": True,
         "reason": None,
     }
 

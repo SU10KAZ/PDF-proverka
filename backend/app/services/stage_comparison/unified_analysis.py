@@ -1,23 +1,14 @@
-"""Unified Stage Comparison Analysis: Qwen enrichment → Opus enriched comparison.
+"""Unified Stage Comparison Analysis: Opus-сравнение по готовым enriched MD.
 
-Один пользовательский сценарий: «Проанализировать и сравнить» для PDF-пары
-запускает цепочку:
+Локальное распознавание графики (Qwen через LM Studio) с платформы удалено,
+поэтому здесь остался единственный этап: `enriched_comparison` (Claude Opus
+через Claude Code subscription) поверх УЖЕ подготовленных enriched MD.
 
-    1. Если enriched MD для left/right нет (или force_enrichment) — запускается
-       md_image_enrichment (через Qwen via LM Studio + ngrok).
-    2. Затем запускается enriched_comparison (через Claude Opus via Claude Code
-       subscription) поверх enriched MD.
-    3. Результат сохраняется в comparison_result.json и далее агрегируется в
-       unified_diff_flat / unified_findings.
+Если enriched MD для пары нет, анализ честно завершается статусом
+`enriched_md_missing` — новых описаний графики платформа не производит.
 
 Никакой автоматический live run без подтверждения. Здесь — детерминированные
 функции preflight/run, остальное берёт на себя unified_analysis_jobs.
-
-Этот модуль НЕ вызывает напрямую сетевые API; он лишь координирует:
-    - md_image_enrichment.enrich_side (Qwen)
-    - enriched_comparison.run_enriched_comparison (Opus)
-
-Каждый из них уже умеет «disabled / provider_not_available / dry-run».
 """
 from __future__ import annotations
 
@@ -28,7 +19,6 @@ from typing import Any, Optional
 
 from . import analysis_profile as analysis_profile_mod
 from . import enriched_comparison as enriched_mod
-from . import graphic_llm_local as graphic_local_mod
 from . import md_image_enrichment as md_enrich_mod
 from . import paths as paths_mod
 from . import store as store_mod
@@ -260,14 +250,15 @@ def preflight_pair(
     need_enrichment = force_enrichment or not out.enrichment_ready
     out.will_run_enrichment = need_enrichment
 
-    # Qwen availability — только если планируем enrichment.
+    # Распознавание графики локальной VLM удалено с платформы: enrichment
+    # больше не запускается, работаем только по готовым enriched MD.
     if need_enrichment:
-        cfg = graphic_local_mod.load_local_graphic_llm_config()
-        ok, reason = graphic_local_mod.check_local_graphic_llm_available(cfg)
-        out.qwen_provider_available = bool(ok)
-        out.qwen_provider_reason = reason
-        if not ok:
-            out.warnings.append(f"Локальный VLM-провайдер недоступен: {reason or 'unknown'}")
+        out.qwen_provider_available = False
+        out.qwen_provider_reason = "локальные LLM-мощности удалены с платформы"
+        out.warnings.append(
+            "Enriched MD отсутствует, а распознавание графики удалено с платформы — "
+            "сравнение возможно только по уже подготовленным enriched MD."
+        )
 
     # --- Opus comparison readiness
     cfg = enriched_mod.load_config()
@@ -487,55 +478,9 @@ async def _run_pair_impl(
         res.warnings.append("Markdown отсутствует на одной из сторон.")
         return res
 
-    # --- Phase 1: enrichment
-    enriched_status = enriched_mod.enriched_md_status(session_id, pair_id)
-    need_enrichment = force_enrichment or not enriched_status.get("ready")
-    if need_enrichment:
-        res.status = "enriching"
-        if progress_cb:
-            try:
-                progress_cb(res)
-            except Exception:  # noqa: BLE001
-                pass
-        cfg_local = graphic_local_mod.load_local_graphic_llm_config()
-        enrichment_statuses: list[str] = []
-        for side in ("left", "right"):
-            side_obj = pair.get(side) or {}
-            md_path = side_obj.get("md_path")
-            rjp = side_obj.get("result_json_path")
-
-            def _render(block_id: str, _sid=session_id, _pid=pair_id, _side=side):
-                try:
-                    return store_mod.render_block_crop(_sid, _pid, _side, block_id)
-                except Exception:  # noqa: BLE001
-                    return None
-
-            try:
-                summary = await md_enrich_mod.enrich_side(
-                    session_id, pair_id, side,
-                    md_path=md_path, result_json_path=rjp,
-                    render_crop=_render,
-                    run_model=True,
-                    force=bool(force_enrichment),
-                    cfg=cfg_local,
-                )
-                enrichment_statuses.append(summary.status)
-                if summary.enriched_md_path:
-                    res.enriched_paths[side] = summary.enriched_md_path
-                res.warnings.extend(summary.warnings or [])
-            except Exception as exc:  # noqa: BLE001
-                logger.exception("unified_analysis: enrichment %s failed", side)
-                enrichment_statuses.append("error")
-                res.warnings.append(f"{side}_enrichment_exception:{type(exc).__name__}:{exc}")
-
-        if all(s == "done" for s in enrichment_statuses):
-            res.enrichment_status = "done"
-        elif any(s == "done" for s in enrichment_statuses) or any(s == "partial" for s in enrichment_statuses):
-            res.enrichment_status = "partial"
-        else:
-            res.enrichment_status = "error"
-    else:
-        res.enrichment_status = "skipped"
+    # --- Phase 1: enrichment УДАЛЁН вместе с локальными LLM-мощностями.
+    # Работаем только по готовым enriched MD; новых описаний графики нет.
+    res.enrichment_status = "skipped"
 
     # --- Phase 2: enriched comparison
     enriched_status = enriched_mod.enriched_md_status(session_id, pair_id)
@@ -544,11 +489,14 @@ async def _run_pair_impl(
         res.status = "failed"
         res.error = "enriched_md_missing"
         res.comparison_status = "not_ready"
-        res.warnings.append("Enriched MD одной из сторон отсутствует после enrichment.")
+        res.warnings.append(
+            "Enriched MD одной из сторон отсутствует. Распознавание графики "
+            "удалено с платформы — подготовить enriched MD заново нечем."
+        )
         res.duration_sec = _time.monotonic() - started
         return res
 
-    # Auto-rebuild outdated enriched.md в replacement format (без повторного Qwen).
+    # Auto-rebuild outdated enriched.md в replacement format (офлайн, по сохранённым описаниям).
     if enriched_status.get("outdated_format"):
         outdated_sides = enriched_status.get("outdated_sides") or []
         for _side in outdated_sides:
