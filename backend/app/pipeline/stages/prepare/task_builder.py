@@ -384,9 +384,17 @@ def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
 
 
 def _inject_discipline(template: str, project_info: dict) -> str:
-    """Инъекция дисциплинарного контента в шаблон."""
-    section = (project_info or {}).get("section", "EOM")
-    profile = discipline_service.load_discipline(section)
+    """Инъекция дисциплинарного контента в шаблон.
+
+    Умолчания `"EOM"` здесь нет намеренно. Оно означало, что проект без
+    заполненного `section` — а таких приезжает с портала достаточно —
+    аудировался ролью, чек-листом и нормативным справочником электрики, и
+    отличить такой прогон от настоящего ЭОМ по артефактам было нельзя. Ответ
+    даёт `discipline_identity`: он либо называет дисциплину, либо честно
+    отвечает «не опознана», и тогда в шаблон уезжает НЕЙТРАЛЬНЫЙ профиль.
+    """
+    section = (project_info or {}).get("section")
+    profile = discipline_service.load_discipline(section) if section else None
     return discipline_service.inject_discipline(template, profile)
 
 

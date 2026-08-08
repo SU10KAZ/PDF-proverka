@@ -253,8 +253,22 @@ _EXTENDED_HEADER = """
 
 
 def load_categories_for_section(section: str) -> str:
-    """Подгрузить prompts/disciplines/<SECTION>/finding_categories.md (или пусто, если нет)."""
-    path = _PROMPTS_DIR / "disciplines" / section / "finding_categories.md"
+    """Подгрузить `finding_categories.md` профиля дисциплины (или пусто).
+
+    Сегмент пути берётся не из аргумента, а из реестра: `section` приходит из
+    `project_info` пользователя и может быть чем угодно — кириллическим кодом,
+    для которого каталога с таким именем нет вовсе, или сегментом пути.
+    """
+    from backend.app.services.common import discipline_identity as _identity
+
+    try:
+        code = _identity.normalize_discipline_code(section)
+        if code is None:
+            return ""
+        profile_dir = _identity.profile_dir_name(code)
+    except _identity.DisciplineError:
+        return ""
+    path = _PROMPTS_DIR / "disciplines" / profile_dir / "finding_categories.md"
     if path.exists():
         return path.read_text(encoding="utf-8").strip()
     return ""

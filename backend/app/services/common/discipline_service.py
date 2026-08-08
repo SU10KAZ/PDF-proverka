@@ -299,8 +299,33 @@ def get_supported_codes() -> list[str]:
     return list(registry.get("disciplines", {}).keys())
 
 
-def inject_discipline(template: str, profile: DisciplineProfile) -> str:
-    """Заменить плейсхолдеры в шаблоне на содержимое профиля дисциплины."""
+#: Что подставляется вместо профиля, когда дисциплина не названа. Пустая
+#: строка не годится: шаблон тогда выглядит как «требований нет», и модель
+#: достраивает их сама. Текст ниже — единственный честный ответ.
+UNKNOWN_DISCIPLINE_NOTE = (
+    "Дисциплина проекта не определена. Профиль (роль, чек-лист, справочник "
+    "норм) не подставлен. Не додумывай требования отсутствующего раздела: "
+    "опирайся только на то, что есть в самом документе."
+)
+
+
+def inject_discipline(template: str, profile: Optional[DisciplineProfile]) -> str:
+    """Заменить плейсхолдеры в шаблоне на содержимое профиля дисциплины.
+
+    `profile=None` — законный случай: дисциплина не опознана. Раньше вызывающая
+    сторона в этой ситуации подставляла `"EOM"`, и проект без раздела молча
+    аудировался профилем электрики.
+    """
+    if profile is None:
+        for placeholder in (
+            "{DISCIPLINE_ROLE}", "{DISCIPLINE_CHECKLIST}",
+            "{DISCIPLINE_TRIAGE_TABLE}", "{DISCIPLINE_PROJECT_PARAMS}",
+            "{DISCIPLINE_TEXT_ANALYSIS}", "{DISCIPLINE_DRAWING_TYPES}",
+            "{DISCIPLINE_FINDING_CATEGORIES}", "{DISCIPLINE_COMPACT_STRATEGY}",
+            "{DISCIPLINE_PROJECT_PARAMS_JSON}",
+        ):
+            template = template.replace(placeholder, UNKNOWN_DISCIPLINE_NOTE)
+        return template.replace("{DISCIPLINE_NORMS_FILE}", "")
     replacements = {
         "{DISCIPLINE_ROLE}": profile.role,
         "{DISCIPLINE_CHECKLIST}": profile.checklist,
