@@ -292,6 +292,13 @@ def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> di
         env["PATH"] = f"{provider_dir}:{env.get('PATH', '')}"
         env["AUDIT_WORKER_PROVIDER_MODE"] = "fake"
         env["AUDIT_WORKER_FAKE_PROVIDER_DIR"] = str(provider_dir)
+        # Журнал вызовов подделок. Он и есть доказательство «модель звали, но
+        # звали подделку»: без него «внешних соединений не было» неотличимо от
+        # «этап до модели не дошёл вовсе». Файл лежит ВНУТРИ каталога попытки и
+        # уезжает в пакет результата вместе с остальными логами.
+        env["AUDIT_WORKER_FAKE_CALL_LOG"] = str(
+            job_dir / "logs" / "fake_provider_calls.jsonl"
+        )
         # Точки резолва, которые обходят PATH и берут путь из своей переменной,
         # а также платный HTTP-путь (подделкой CLI он не закрывается вовсе)
         # перекрываются НА СТОРОНЕ КОДА ПЛАТФОРМЫ, в

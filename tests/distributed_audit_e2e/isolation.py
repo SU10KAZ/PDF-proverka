@@ -113,6 +113,114 @@ if _ARMED:
     socket.socket.connect = _guarded_connect
     socket.socket.connect_ex = _guarded_connect_ex
     socket.getaddrinfo = _guarded_getaddrinfo
+
+
+# ─── Сторож записи ───────────────────────────────────────────────────────────
+# Поиск файлов ПОСЛЕ прогона доказывает только то, что файл остался лежать.
+# Запись во временный путь, запись с последующим удалением и запись в чужой
+# каталог, который потом подмели, поиском не ловятся вовсе. Поэтому запись
+# перехватывается в момент совершения.
+_WRITEGUARD_ARMED = os.environ.get("E2E_WRITEGUARD") == "1"
+_WRITEGUARD_LOG = os.environ.get("E2E_WRITEGUARD_LOG") or ""
+_WRITEGUARD_ALLOW = tuple(
+    p for p in (os.environ.get("E2E_WRITEGUARD_ALLOW") or "").split(os.pathsep) if p
+)
+
+if _WRITEGUARD_ARMED and _WRITEGUARD_ALLOW:
+    import builtins
+    import errno
+
+    _W_FLAGS = (
+        os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_TRUNC
+        | getattr(os, "O_EXCL", 0)
+    )
+
+    def _wg_abs(path):
+        try:
+            text = os.fspath(path)
+        except TypeError:
+            return None
+        if isinstance(text, bytes):
+            text = text.decode("utf-8", "replace")
+        if not isinstance(text, str) or not text:
+            return None
+        return os.path.abspath(text)
+
+    def _wg_allowed(path):
+        resolved = _wg_abs(path)
+        if resolved is None:
+            return True                     # дескриптор/имя не путь — не наше дело
+        # /dev и /proc: без них не стартует ни интерпретатор, ни subprocess.
+        if resolved.startswith(("/dev/", "/proc/", "/sys/")):
+            return True
+        for allowed in _WRITEGUARD_ALLOW:
+            if resolved == allowed or resolved.startswith(allowed.rstrip("/") + "/"):
+                return True
+        return False
+
+    def _wg_deny(op, path):
+        line = "%s\\t%s\\t%s\\t%s\\n" % (os.getpid(), sys.argv[0], op, path)
+        if _WRITEGUARD_LOG:
+            try:
+                with open(_WRITEGUARD_LOG, "a", encoding="utf-8") as fh:
+                    fh.write(line)
+                    fh.flush()
+            except OSError:
+                pass
+        sys.stderr.write("E2E-WRITEGUARD " + line)
+        sys.stderr.flush()
+        # Как и сетевой guard — смерть, а не исключение: fail-soft
+        # `except OSError` конвейера проглотил бы исключение, и запись за
+        # пределы каталога попытки осталась бы незамеченной.
+        os._exit(96)
+
+    _wg_real_open = builtins.open
+    _wg_real_os_open = os.open
+    _wg_real_mkdir = os.mkdir
+    _wg_real_makedirs = os.makedirs
+    _wg_real_rename = os.rename
+    _wg_real_replace = os.replace
+    _wg_real_remove = os.remove
+    _wg_real_rmdir = os.rmdir
+    _wg_real_link = os.link
+    _wg_real_symlink = os.symlink
+
+    def _wg_open(file, mode="r", *args, **kwargs):
+        if any(ch in str(mode) for ch in ("w", "a", "x", "+")):
+            if not _wg_allowed(file):
+                _wg_deny("open:" + str(mode), _wg_abs(file))
+        return _wg_real_open(file, mode, *args, **kwargs)
+
+    def _wg_os_open(path, flags, *args, **kwargs):
+        if flags & _W_FLAGS and not _wg_allowed(path):
+            _wg_deny("os.open", _wg_abs(path))
+        return _wg_real_os_open(path, flags, *args, **kwargs)
+
+    def _wg_unary(name, real):
+        def guarded(path, *args, **kwargs):
+            if not _wg_allowed(path):
+                _wg_deny(name, _wg_abs(path))
+            return real(path, *args, **kwargs)
+        return guarded
+
+    def _wg_binary(name, real):
+        def guarded(src, dst, *args, **kwargs):
+            if not _wg_allowed(dst):
+                _wg_deny(name, _wg_abs(dst))
+            return real(src, dst, *args, **kwargs)
+        return guarded
+
+    builtins.open = _wg_open
+    os.open = _wg_os_open
+    os.mkdir = _wg_unary("mkdir", _wg_real_mkdir)
+    os.makedirs = _wg_unary("makedirs", _wg_real_makedirs)
+    os.remove = _wg_unary("remove", _wg_real_remove)
+    os.unlink = os.remove
+    os.rmdir = _wg_unary("rmdir", _wg_real_rmdir)
+    os.rename = _wg_binary("rename", _wg_real_rename)
+    os.replace = _wg_binary("replace", _wg_real_replace)
+    os.link = _wg_binary("link", _wg_real_link)
+    os.symlink = _wg_binary("symlink", _wg_real_symlink)
 '''
 
 
@@ -136,6 +244,47 @@ def netguard_hits(log_path: Path) -> list[str]:
     if not path.is_file():
         return []
     return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def writeguard_hits(log_path: Path) -> list[str]:
+    """Что сторож записи зафиксировал. Пустой список = записей вне корней не было."""
+    path = Path(log_path)
+    if not path.is_file():
+        return []
+    return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def selfcheck_writeguard(python: str, env: dict[str, str], *, forbidden: Path) -> bool:
+    """Убедиться, что сторож записи в ЭТОМ окружении действительно убивает процесс.
+
+    Тот же довод, что и у сетевого guard: «в логе пусто» без самопроверки
+    означает что угодно, включая «сторож не подхватился». Проверка пишет в
+    заведомо запрещённый путь и ожидает код 96.
+    """
+    import subprocess
+
+    probe = (
+        "open(%r, 'w').write('x')" % (str(forbidden),)
+    )
+    proc = subprocess.run(                                  # noqa: S603
+        [python, "-c", probe], env=env, capture_output=True, timeout=60,
+    )
+    return proc.returncode == 96
+
+
+def selfcheck_writeguard_allows(python: str, env: dict[str, str], *, allowed: Path) -> bool:
+    """Обратная сторона: сторож не должен ломать разрешённую запись.
+
+    Без этой проверки «прогон упал» и «сторож слишком строг» неразличимы, а
+    зелёный smoke на сломанном стороже не стоит ничего.
+    """
+    import subprocess
+
+    probe = "open(%r, 'w').write('x')" % (str(allowed),)
+    proc = subprocess.run(                                  # noqa: S603
+        [python, "-c", probe], env=env, capture_output=True, timeout=60,
+    )
+    return proc.returncode == 0
 
 
 def selfcheck_netguard(python: str, env: dict[str, str]) -> bool:

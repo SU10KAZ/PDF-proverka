@@ -589,26 +589,42 @@ def publish_deliverables(spec: dict[str, Any], job: Any) -> tuple[dict[str, Any]
     work_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        _root, _version_dir, output_dir = pipeline_manager._resolve_job_paths(job)  # noqa: SLF001
+        _root, version_dir, output_dir = pipeline_manager._resolve_job_paths(job)  # noqa: SLF001
     except Exception:                              # noqa: BLE001 — диагностика ниже
         return {}, None
     output_dir = Path(output_dir)
 
-    for name, target in (
-        ("03_findings.json", result_dir / "03_findings.json"),
-        ("03_findings_review.json", result_dir / "03_findings_review.json"),
-        ("optimization.json", result_dir / "optimization.json"),
-        ("optimization_review.json", result_dir / "optimization_review.json"),
-        ("01_blocks_analysis.json", result_dir / "01_blocks_analysis.json"),
-        ("02_text_analysis.json", result_dir / "02_text_analysis.json"),
-    ):
-        source = output_dir / name
-        if source.is_file():
-            shutil.copy2(source, target)
+    # Раскладка неоднородна, и это не теория: на projects_v2 артефакты этапов
+    # ложатся в `03_analysis/runs/<run_id>`, а `pipeline_log.json` пишет
+    # `audit_logger` — и он кладёт его в `03_analysis/latest`. Поиск только по
+    # per-run каталогу давал УСПЕШНЫЙ прогон, который исполнитель объявлял
+    # провалившимся по «нет обязательных артефактов: work/pipeline_log.json».
+    # Порядок кандидатов значим: per-run каталог свежее и приоритетнее.
+    candidates = [output_dir]
+    if version_dir is not None:
+        latest = Path(version_dir) / "03_analysis" / "latest"
+        if latest.resolve() != output_dir.resolve():
+            candidates.append(latest)
 
-    log_path = output_dir / "pipeline_log.json"
+    def _find(name: str) -> Optional[Path]:
+        for directory in candidates:
+            candidate = directory / name
+            if candidate.is_file():
+                return candidate
+        return None
+
+    for name in (
+        "03_findings.json", "03_findings_review.json",
+        "optimization.json", "optimization_review.json",
+        "01_blocks_analysis.json", "02_text_analysis.json",
+    ):
+        source = _find(name)
+        if source is not None:
+            shutil.copy2(source, result_dir / name)
+
+    log_path = _find("pipeline_log.json")
     stages: dict[str, Any] = {}
-    if log_path.is_file():
+    if log_path is not None:
         shutil.copy2(log_path, work_dir / "pipeline_log.json")
         try:
             data = json.loads(log_path.read_text(encoding="utf-8"))

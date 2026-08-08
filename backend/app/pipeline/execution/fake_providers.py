@@ -113,35 +113,81 @@ def _write_targets(prompt):
     return out
 
 
+def _finding(idx, source):
+    """Одно ДЕТЕРМИНИРОВАННОЕ замечание.
+
+    Ни одного случайного значения, ни времени, ни счётчика процесса: два
+    независимых прогона обязаны дать побайтово одно и то же, иначе сравнение
+    local/remote проверяет генератор случайных чисел, а не конвейер.
+    """
+    return {{
+        "id": "FAKE-%02d" % idx,
+        "severity": "Критическое" if idx == 1 else "Рекомендательное",
+        "category": "cable",
+        "problem": "Поддельное замечание %d (источник %s)" % (idx, source),
+        "description": (
+            "Детерминированная запись стенда. Расчётная мощность щита ЩР-1 "
+            "указана 12,5 кВт при сечении кабеля 5х6."
+        ),
+        "solution": "Проверить соответствие сечения расчётной нагрузке.",
+        "risk": "Перегрев питающей линии при длительной нагрузке.",
+        "norm": "СП 256.1325800.2016",
+        "norm_clause": "7.1.%d" % idx,
+        "sheet": str(idx),
+        "page": idx,
+        "source": source,
+    }}
+
+
 def _payload_for(name):
     """Минимальный, но СХЕМНО ВАЛИДНЫЙ ответ этапа — по ИМЕНИ артефакта.
 
     По имени файла, а не по ключевым словам промпта: имя однозначно, а
     формулировки промптов правятся из UI и разъезжаются молча.
 
-    Пустые коллекции выбраны намеренно: E2E проверяет транспорт, изоляцию и
-    приём результата, а не качество аудита. Выдуманные замечания сделали бы
-    семантическое сравнение local/remote проверкой генератора случайных чисел.
+    **Почему коллекции непустые.** Первая версия подделок возвращала пустые
+    списки с доводом «E2E проверяет транспорт, а не качество аудита». Для
+    узкой parity довод неверен: при нуле замечаний вся содержательная часть
+    конвейера — дедуп в `findings_merge`, критик, корректор, подписи блоков,
+    обогащение листом и страницей — не выполняется НИ НА ОДНОЙ стороне, и
+    совпадение проекции доказывает лишь то, что обе стороны ничего не делали.
+    Значения при этом остаются детерминированными, так что сравнение
+    по-прежнему сравнивает конвейер, а не случайность.
     """
     base = os.path.basename(name or "")
     if base == "02_text_analysis.json":
         return {{
-            "text_findings": [],
-            "project_params": {{}},
-            "normative_refs_found": [],
+            "text_findings": [_finding(1, "text")],
+            "project_params": {{"voltage": "380/220 В", "power_kw": 12.5}},
+            "normative_refs_found": ["СП 256.1325800.2016"],
             "items_verified_from_blocks": [],
         }}
     if base == "03_findings.json":
-        return {{"findings": []}}
+        return {{"findings": [_finding(1, "text"), _finding(2, "block")]}}
     if base == "03_findings_review.json":
-        return {{"verdicts": [], "findings": []}}
+        return {{
+            "verdicts": [{{"id": "FAKE-01", "verdict": "confirmed",
+                          "reason": "Детерминированный вердикт стенда"}}],
+            "findings": [_finding(1, "text"), _finding(2, "block")],
+        }}
     if base == "optimization.json":
-        return {{"optimizations": []}}
+        return {{"optimizations": [{{
+            "id": "OPT-01",
+            "title": "Поддельное предложение стенда",
+            "description": "Детерминированная запись.",
+            "effect": "Снижение стоимости прокладки.",
+            "norm": "",
+        }}]}}
     if base == "optimization_review.json":
-        return {{"verdicts": [], "optimizations": []}}
+        return {{
+            "verdicts": [{{"id": "OPT-01", "verdict": "confirmed",
+                          "reason": "Детерминированный вердикт стенда"}}],
+            "optimizations": [{{"id": "OPT-01",
+                               "title": "Поддельное предложение стенда"}}],
+        }}
     if base.startswith("block_batch_"):
-        return {{"findings": []}}
-    return {{"findings": []}}
+        return {{"findings": [_finding(2, "block")]}}
+    return {{"findings": [_finding(2, "block")]}}
 
 
 def _classify(prompt):
