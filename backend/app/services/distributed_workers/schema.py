@@ -355,7 +355,13 @@ ALTER TABLE worker_commands ADD COLUMN status TEXT NOT NULL DEFAULT 'pending';
 ALTER TABLE worker_commands ADD COLUMN expires_at REAL;
 CREATE INDEX IF NOT EXISTS ix_cmd_attempt ON worker_commands(attempt_id);
 
-INSERT OR IGNORE INTO logical_jobs
+-- Аренда на сборку архива. Раньше сессия, чей сборщик умер (упал бэкенд,
+-- вотчдог, необработанное исключение), навсегда оставалась в 'assembling':
+-- повторный complete получал 409 «сборка уже идёт», и готовый результат
+-- было не сдать. try/finally тут не помог бы — процесс может умереть целиком.
+ALTER TABLE upload_sessions ADD COLUMN assembly_started_at REAL;
+
+INSERT INTO logical_jobs
     (job_id, project_external_id, project_display_name, project_version_id,
      job_type, payload, current_attempt_id, overall_state,
      created_at, created_by, updated_at)
@@ -370,7 +376,7 @@ SELECT
     created_at, 'center:migration_3', created_at
 FROM remote_jobs;
 
-INSERT OR IGNORE INTO job_attempts
+INSERT INTO job_attempts
     (attempt_id, job_id, attempt_number, assignment_generation,
      assigned_worker_id, execution_token_hash, execution_state,
      attempt_disposition, connectivity_state, retention_state, package_id,
