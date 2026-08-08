@@ -73,13 +73,25 @@ INTENT_HEADER = "X-Requested-With"
 INTENT_VALUE = "audit-workers"
 
 
-def _require_operator_intent(request: Request) -> str:
-    """Опасное действие: проверить намерение и обязательный ключ идемпотентности."""
+def _require_intent_header(request: Request) -> None:
+    """Только CSRF-рубеж, без ключа идемпотентности.
+
+    Стоит на действиях, повтор которых не создаёт второго эффекта (одобрить,
+    отклонить, отозвать, создать задание — второе активное задание на пару
+    «проект+версия» отбивает уникальный индекс). Раньше эти четыре ручки
+    вообще не имели гейта: отозвать все воркеры можно было без него, а
+    ротировать токен — нет.
+    """
     if (request.headers.get(INTENT_HEADER) or "").strip() != INTENT_VALUE:
         raise HTTPException(
             status_code=403,
             detail=f"Требуется заголовок {INTENT_HEADER}: {INTENT_VALUE}",
         )
+
+
+def _require_operator_intent(request: Request) -> str:
+    """Опасное действие: проверить намерение и обязательный ключ идемпотентности."""
+    _require_intent_header(request)
     key = (request.headers.get("Idempotency-Key") or "").strip()
     if not key:
         raise HTTPException(
@@ -199,6 +211,25 @@ async def subsystem_status() -> dict[str, Any]:
     }
 
 
+# ─── Журнал операторских действий ────────────────────────────────────────────
+@router.get("/admin-actions")
+async def admin_actions(
+    job_id: Optional[str] = Query(default=None),
+    worker_id: Optional[str] = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> dict[str, Any]:
+    """Журнал только для чтения. Эндпоинта удаления записей нет намеренно (I-15)."""
+    settings = _settings_or_404()
+    items = await database.run_db(
+        repositories.list_admin_actions,
+        job_id=job_id,
+        worker_id=worker_id,
+        limit=limit,
+        settings=settings,
+    )
+    return {"actions": items, "server_time": time.time()}
+
+
 # ─── Воркеры ─────────────────────────────────────────────────────────────────
 @router.get("")
 async def list_workers() -> dict[str, Any]:
@@ -247,6 +278,7 @@ async def approve_worker(
     worker_id: str, payload: ApproveRequest, request: Request
 ) -> dict[str, Any]:
     settings = _settings_or_404()
+    _require_intent_header(request)
     try:
         row = await database.run_db(
             registration_service.approve_worker,
@@ -268,6 +300,7 @@ async def approve_worker(
 async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
     """Отклонить заявку. Claim-secret обесценивается, токен не выдаётся."""
     settings = _settings_or_404()
+    _require_intent_header(request)
     try:
         row = await database.run_db(
             registration_service.reject_worker, worker_id=worker_id, settings=settings
@@ -284,6 +317,7 @@ async def reject_worker(worker_id: str, request: Request) -> dict[str, Any]:
 @router.post("/{worker_id}/revoke")
 async def revoke_worker(worker_id: str, request: Request) -> dict[str, Any]:
     settings = _settings_or_404()
+    _require_intent_header(request)
     try:
         row = await database.run_db(
             registration_service.revoke_worker, worker_id=worker_id, settings=settings
@@ -301,9 +335,11 @@ async def revoke_worker(worker_id: str, request: Request) -> dict[str, Any]:
 async def rotate_token(worker_id: str, request: Request) -> dict[str, Any]:
     """Выдать новый токен. Опасно: токен показывается один раз и открытым текстом.
 
-    Поэтому здесь стоит тот же гейт намерения, что и на операторских действиях
-    по попыткам: XSS-скрипт в сессии оператора не сможет тихо дёрнуть ручку
-    простым запросом и вытащить токен.
+    Поэтому здесь стоит тот же гейт намерения, что и на остальных меняющих
+    состояние ручках. Что он даёт честно: межсайтовый запрос (форма с чужого
+    сайта, «простой» POST) заголовки не поставит. Чего он НЕ даёт: защиты от
+    XSS в самой странице — same-origin скрипт выставит любые заголовки. От
+    XSS защищает только то, что страница нигде не собирает HTML из данных.
     """
     settings = _settings_or_404()
     _require_operator_intent(request)
@@ -356,6 +392,7 @@ async def create_test_job(payload: CreateTestJobRequest, request: Request) -> di
     путей в задании нет: воркер строит фиксированный argv сам (§4 задания).
     """
     settings = _settings_or_404()
+    _require_intent_header(request)
     try:
         job = await database.run_db(
             job_service.create_test_job,
@@ -639,22 +676,3 @@ async def download_attempt_result(job_id: str, attempt_id: str):
     return FileResponse(
         path=str(archive), media_type="application/octet-stream", filename=filename
     )
-
-
-# ─── Журнал операторских действий ────────────────────────────────────────────
-@router.get("/admin-actions")
-async def admin_actions(
-    job_id: Optional[str] = Query(default=None),
-    worker_id: Optional[str] = Query(default=None),
-    limit: int = Query(default=100, ge=1, le=500),
-) -> dict[str, Any]:
-    """Журнал только для чтения. Эндпоинта удаления записей нет намеренно (I-15)."""
-    settings = _settings_or_404()
-    items = await database.run_db(
-        repositories.list_admin_actions,
-        job_id=job_id,
-        worker_id=worker_id,
-        limit=limit,
-        settings=settings,
-    )
-    return {"actions": items, "server_time": time.time()}

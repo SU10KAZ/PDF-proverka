@@ -57,6 +57,10 @@ RESUMABLE_DISPOSITIONS = frozenset(
 )
 
 
+# Сколько последних записей журнала просматривается при поиске повтора.
+_IDEMPOTENCY_WINDOW = 500
+
+
 class OperatorError(RuntimeError):
     """Нарушение правила операторского действия (422/409, не 500)."""
 
@@ -82,16 +86,33 @@ def load_attempt(
 def _prior_action(
     *, action_type: str, idempotency_key: Optional[str],
     settings: DistributedWorkersSettings,
+    job_id: Optional[str] = None,
+    attempt_id: Optional[str] = None,
 ) -> Optional[dict[str, Any]]:
-    """Ранее выполненное действие с тем же ключом (защита от двойного клика)."""
+    """Ранее выполненное действие с тем же ключом (защита от двойного клика).
+
+    Ключ сверяется ВМЕСТЕ с адресом действия. Раньше искали только по паре
+    (тип, ключ): повтор того же ключа на ДРУГОЙ попытке возвращал результат
+    первой, ничего не выполняя, — и ответ выглядел успешным.
+
+    Окно поиска ограничено: за его пределами повтор перестаёт распознаваться и
+    действие выполнится заново. Это осознанно — все три действия защищены ещё
+    и проверками состояния, а бесконечный скан журнала на каждый клик дороже.
+    """
     if not idempotency_key:
         return None
-    for item in repositories.list_admin_actions(limit=500, settings=settings):
-        if (
-            item.get("action_type") == action_type
-            and item.get("idempotency_key") == idempotency_key
-        ):
-            return item
+    for item in repositories.list_admin_actions(
+        limit=_IDEMPOTENCY_WINDOW, settings=settings
+    ):
+        if item.get("action_type") != action_type:
+            continue
+        if item.get("idempotency_key") != idempotency_key:
+            continue
+        if attempt_id is not None and item.get("attempt_id") != attempt_id:
+            continue
+        if job_id is not None and item.get("job_id") != job_id:
+            continue
+        return item
     return None
 
 
@@ -116,7 +137,8 @@ def request_cancel(
         ConfirmationRequired,
     )
     prior = _prior_action(
-        action_type="cancel_attempt", idempotency_key=idempotency_key, settings=settings
+        action_type="cancel_attempt", idempotency_key=idempotency_key, settings=settings,
+        job_id=job_id, attempt_id=attempt_id,
     )
     if prior:
         return {**(prior.get("result") or {}), "replayed": True}
@@ -139,7 +161,21 @@ def request_cancel(
         )
         return result
 
-    command_key = f"cancel:{attempt_id}"
+    # Ключ команды: пока прежняя не подтверждена — переиспользуем её, чтобы
+    # не плодить дубли. Если воркер уже ответил чем-то неразрешающим
+    # (ownership_mismatch, ambiguous_not_running), оператору нужна ВОЗМОЖНОСТЬ
+    # попросить ещё раз — иначе попытка навсегда застревает в cancel_requested.
+    prior_cancels = [
+        c for c in repositories.commands_for_job(job_id, settings=settings)
+        if c.get("attempt_id") == attempt_id
+        and c.get("command_type") == WorkerCommandType.CANCEL_ATTEMPT.value
+    ]
+    unfinished = [c for c in prior_cancels if c.get("acknowledged_at") is None]
+    command_key = (
+        unfinished[0]["idempotency_key"]
+        if unfinished
+        else f"cancel:{attempt_id}:{len(prior_cancels) + 1}"
+    )
     if state is not JobState.CANCEL_REQUESTED:
         job_service.transition(
             attempt_id=attempt_id,
@@ -244,7 +280,8 @@ def mark_lost(
         ConfirmationRequired,
     )
     prior = _prior_action(
-        action_type="mark_attempt_lost", idempotency_key=idempotency_key, settings=settings
+        action_type="mark_attempt_lost", idempotency_key=idempotency_key, settings=settings,
+        job_id=job_id, attempt_id=attempt_id,
     )
     if prior:
         return {**(prior.get("result") or {}), "replayed": True}
@@ -322,7 +359,8 @@ def create_attempt(
         ConfirmationRequired,
     )
     prior = _prior_action(
-        action_type="create_attempt", idempotency_key=idempotency_key, settings=settings
+        action_type="create_attempt", idempotency_key=idempotency_key, settings=settings,
+        job_id=job_id, attempt_id=source_attempt_id,
     )
     if prior:
         return {**(prior.get("result") or {}), "replayed": True}
@@ -425,6 +463,7 @@ def request_data_deletion(
     prior = _prior_action(
         action_type="request_worker_data_deletion",
         idempotency_key=idempotency_key, settings=settings,
+        job_id=job_id, attempt_id=attempt_id,
     )
     if prior:
         return {**(prior.get("result") or {}), "replayed": True}
@@ -441,11 +480,26 @@ def request_data_deletion(
     worker_id = attempt.get("assigned_worker_id")
     _require(bool(worker_id), "Попытка не закреплена за воркером")
 
+    # Ключ со счётчиком — как у отмены. С фиксированным ключом повторный заказ
+    # удаления возвращал СТАРУЮ строку (в том числе протухшую или уже
+    # отвеченную), но рапортовал «команда поставлена в очередь»: воркер при
+    # этом не получал ничего.
+    prior_deletes = [
+        c for c in repositories.commands_for_job(job_id, settings=settings)
+        if c.get("attempt_id") == attempt_id
+        and c.get("command_type") == WorkerCommandType.DELETE_ATTEMPT_DATA.value
+    ]
+    unfinished = [c for c in prior_deletes if c.get("acknowledged_at") is None]
+    command_key = (
+        unfinished[0]["idempotency_key"]
+        if unfinished
+        else f"delete:{attempt_id}:{len(prior_deletes) + 1}"
+    )
     command = repositories.enqueue_command(
         worker_id=str(worker_id),
         command_type=WorkerCommandType.DELETE_ATTEMPT_DATA.value,
         payload={"job_id": job_id, "attempt_id": attempt_id, "reason": reason[:500]},
-        idempotency_key=f"delete:{attempt_id}",
+        idempotency_key=command_key,
         job_id=job_id,
         attempt_id=attempt_id,
         settings=settings,
@@ -478,6 +532,9 @@ def apply_deletion_ack(
     outcome = str(detail.get("outcome") or "")
     if outcome not in ("deleted", "already_deleted"):
         return
+    current = repositories.get_attempt(attempt_id, settings=settings)
+    if current and current.get("retention_state") == "deleted_from_worker":
+        return                      # повтор ACK не должен двигать отметку времени
     repositories.update_attempt_fields(
         attempt_id,
         {
