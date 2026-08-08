@@ -384,6 +384,27 @@ def _save_stage_model_config():
 
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
+
+def reload_stage_model_config() -> dict[str, str]:
+    """Перечитать `stage_models.json` В ТОТ ЖЕ словарь.
+
+    Конфиг моделей читается ОДИН РАЗ на импорте модуля, и это верно для
+    центра: файл там появляется задолго до старта backend. Для удалённой ноги
+    это не так — снимок `stage_models.json` кладётся в `AUDIT_APP_DATA_DIR`
+    уже ПОСЛЕ старта процесса, и попадёт он в конфигурацию только если модуль
+    ещё не был импортирован. То есть применение снимка зависело от порядка
+    импортов: добавление любого нового шага, который трогает конфигурацию
+    раньше, молча возвращало прогон на дефолты кода — в том числе на
+    `ensemble/gpt-codex`, который ходит в OpenRouter по HTTPS.
+
+    Обновление идёт МУТАЦИЕЙ существующего словаря: часть модулей держит на
+    него прямую ссылку, и переприсваивание имени их бы не затронуло.
+    """
+    fresh = _load_stage_model_config()
+    STAGE_MODEL_CONFIG.clear()
+    STAGE_MODEL_CONFIG.update(fresh)
+    return dict(STAGE_MODEL_CONFIG)
+
 BLOCK_BATCH_MODE_FINDINGS_ONLY = "findings_only_block_context"
 _LEGACY_STAGE_BATCH_MODES = {
     "block_batch": {"findings_only_gemma_pair": BLOCK_BATCH_MODE_FINDINGS_ONLY},

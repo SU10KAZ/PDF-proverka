@@ -68,6 +68,10 @@ SNAPSHOT_ROOT = "snapshot/"
 #: Каталог снимка runtime-конфигурации внутри архива.
 RUNTIME_ROOT = "runtime/"
 
+#: Каталог снимка профиля дисциплины внутри архива. Раздел отдельный именно
+#: потому, что у него собственный хэш и собственный контракт проверки.
+DISCIPLINE_PROFILE_ROOT = "discipline_profile/"
+
 #: Что НИКОГДА не попадает в пакет. Проверяется по каждому сегменту пути.
 FORBIDDEN_NAMES: frozenset[str] = frozenset(
     {
@@ -466,6 +470,20 @@ _SECRET_KEY_RE = re.compile(
 )
 
 
+#: Каталоги внутри `prompts/`, которые в ОБЩИЙ снимок промптов не входят.
+#:
+#: `disciplines/` — это четырнадцать профилей разных разделов. Их отправка
+#: целиком означала три вещи сразу: на воркер уезжал в том числе профиль EOM
+#: (то есть «аудит пошёл не тем профилем» нельзя отличить от «своим»),
+#: `prompt_bundle_hash` менялся от правки постороннего раздела, и отдельного
+#: хэша ПРИМЕНЁННОГО профиля не существовало. Нужный профиль едет отдельным
+#: разделом пакета — `discipline_profile/` — со своим `tree_hash`.
+#:
+#: Исключение симметрично: и центр, и воркер считают хэш одной функцией,
+#: поэтому порядок «разложить профиль ↔ сверить снимок» на результат не влияет.
+PROMPT_SNAPSHOT_EXCLUDED_TOP_DIRS: frozenset[str] = frozenset({"disciplines"})
+
+
 def collect_prompt_snapshot(prompts_dir: Path) -> dict[str, bytes]:
     """Снимок промптов. Только текстовые шаблоны, только относительные пути."""
     out: dict[str, bytes] = {}
@@ -478,7 +496,10 @@ def collect_prompt_snapshot(prompts_dir: Path) -> dict[str, bytes]:
         if path.suffix.lower() not in (".md", ".txt", ".json"):
             continue
         rel = path.relative_to(prompts_dir).as_posix()
-        if any(part in FORBIDDEN_NAMES for part in rel.split("/")):
+        parts = rel.split("/")
+        if any(part in FORBIDDEN_NAMES for part in parts):
+            continue
+        if parts[0] in PROMPT_SNAPSHOT_EXCLUDED_TOP_DIRS:
             continue
         out[f"prompts/{rel}"] = path.read_bytes()
     return out
@@ -592,6 +613,7 @@ def build_project_source_package(
     snapshot_files: dict[str, bytes],
     feature_flags: dict[str, Any],
     runtime_config: Optional[bytes] = None,
+    discipline_profile_entries: Optional[dict[str, bytes]] = None,
     identity: Optional[PortableProjectIdentity] = None,
     compression: str = "gzip",
     limits: Optional[PackageLimits] = None,
@@ -645,6 +667,7 @@ def build_project_source_package(
             "project_root": PROJECTS_ROOT,
             "snapshot_root": SNAPSHOT_ROOT,
             "runtime_root": RUNTIME_ROOT,
+            "discipline_profile_root": DISCIPLINE_PROFILE_ROOT,
             # Внешний идентификатор версии сохраняется отдельным полем: путь
             # строится ТОЛЬКО по физическому `version_id` из `ident`.
             "version_external_id": manifest_base.get("version_id"),
@@ -737,6 +760,29 @@ def build_project_source_package(
             }
         )
         uncompressed += len(flags_blob)
+
+        # Профиль дисциплины. Пути уже проверены сборщиком снимка
+        # (`discipline_profile._safe_relative`), здесь — второй рубеж: имя
+        # записи в архиве строится только из проверенного относительного пути.
+        for rel_profile, blob in sorted((discipline_profile_entries or {}).items()):
+            arc_name = package_service.PAYLOAD_ROOT + safe_relative_path(
+                rel_profile, field="discipline_profile"
+            )
+            if not arc_name.startswith(
+                package_service.PAYLOAD_ROOT + DISCIPLINE_PROFILE_ROOT
+            ):
+                raise ProjectPackageError(
+                    f"Запись профиля вне {DISCIPLINE_PROFILE_ROOT}: {rel_profile!r}"
+                )
+            _tar_add_bytes(tar, arc_name, blob, mtime)
+            file_entries.append(
+                {
+                    "path": arc_name,
+                    "bytes": len(blob),
+                    "sha256": package_service.sha256_bytes(blob),
+                }
+            )
+            uncompressed += len(blob)
 
         if runtime_config is not None:
             runtime_name = (

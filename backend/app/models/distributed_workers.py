@@ -450,6 +450,12 @@ class AuditPipelineParams(BaseModel):
     #: Хэш снимка runtime-конфигурации. Обязателен: без него режим записи
     #: хранилища взялся бы с ХОСТА воркера, и результат зависел бы от машины.
     runtime_snapshot_hash: str = Field(min_length=8, max_length=128)
+    #: Дисциплина попытки в КАНОНИЧЕСКОЙ форме и хэш снимка её профиля.
+    #: Оба обязательны: задание без них означало бы «выбери профиль сам», а
+    #: выбирал воркер из дерева установленного кода — и при кириллическом
+    #: `section` молча брал EOM.
+    discipline_id: str = Field(min_length=1, max_length=32, pattern=r"^[^/\\\s]+$")
+    discipline_profile_hash: str = Field(min_length=8, max_length=128)
     #: Обязательные артефакты результата. Список фиксирован центром, но воркер
     #: сверяет его со своим встроенным — расширить его заданием нельзя.
     required_result_artifacts: list[str] = Field(default_factory=list, max_length=64)

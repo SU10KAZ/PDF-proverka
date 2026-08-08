@@ -48,6 +48,10 @@ AUDIT_PACKAGE_SECTIONS: tuple[tuple[str, str], ...] = (
     ("projects_v2", "project"),
     ("snapshot", "snapshot"),
     ("runtime", "runtime"),
+    # Профиль дисциплины — отдельный раздел со своим `tree_hash`. Раскладывает
+    # его в рабочие каталоги код платформы (`remote_audit_runner`), а не агент:
+    # агент не знает ни о `PROMPTS_DIR`, ни о `APP_DATA_DIR`.
+    ("discipline_profile", "discipline_profile"),
 )
 
 #: Минимальная форма переносимого дерева. Проверяется ПОСЛЕ распаковки: манифест
@@ -105,6 +109,17 @@ def require_portable_layout(manifest: dict[str, Any], unpacked_root: Path) -> di
             "В переносимом дереве нет document.json — адаптер projects_v2 "
             "пропустит документ молча"
         )
+    # Снимок профиля дисциплины обязателен для реального аудита: без него
+    # процесс конвейера выбрал бы профиль сам, из дерева установленного кода.
+    if str(manifest.get("job_type") or "") == "audit_pipeline_v1":
+        profile_manifest = Path(unpacked_root) / "discipline_profile" / "profile_manifest.json"
+        if not profile_manifest.is_file():
+            raise BundleError(
+                "В пакете нет снимка профиля дисциплины "
+                "(payload/discipline_profile/profile_manifest.json)"
+            )
+        if not str(manifest.get("discipline_id") or "").strip():
+            raise BundleError("В манифесте пакета нет discipline_id")
     return {
         "project_layout_version": layout_no,
         "version_dir": str(version_dir),
@@ -435,6 +450,8 @@ def build_result_package(
     provider_mode: Optional[str] = None,
     external_network_attempts: Optional[int] = None,
     source_integrity: Optional[dict[str, Any]] = None,
+    discipline_id: Optional[str] = None,
+    discipline_profile_hash: Optional[str] = None,
 ) -> dict[str, Any]:
     """Собрать TAR результата: input/ + work/ + result/ (+ project/usage/logs).
 
@@ -582,6 +599,10 @@ def build_result_package(
         "completed_stages": list(completed_stages or []),
         "forbidden_stages_not_run": list(forbidden_stages_not_run or []),
         "provider_mode": provider_mode,
+        # Дисциплина и хэш ПРИМЕНЁННОГО профиля. Центр сверяет их с тем, что
+        # отправлял: расхождение означает аудит чужим профилем.
+        "discipline_id": discipline_id,
+        "discipline_profile_hash": discipline_profile_hash,
         # None означает «не измерялось», а не «ноль». Ноль по умолчанию был
         # аттестацией, которую не производит ни одна строка кода: читающий
         # манифест на центре принимал её за измерение.

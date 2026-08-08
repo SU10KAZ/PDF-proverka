@@ -78,6 +78,13 @@ def harden_process_env() -> None:
     )
 
     os.environ[CENTRAL_STAGES_DISABLED_ENV] = "1"
+    # Строгий режим профиля дисциплины: подстановка EOM вместо отсутствующего
+    # профиля здесь недопустима. На центре такой аудит виден в логе оператора,
+    # на воркере лог остаётся на чужой машине — и «раздел ВК аудирован
+    # профилем ЭОМ» узнать неоткуда.
+    from backend.app.services.common.discipline_identity import STRICT_PROFILE_ENV
+
+    os.environ[STRICT_PROFILE_ENV] = "1"
 
 
 def emit(event: dict[str, Any]) -> None:
@@ -165,7 +172,7 @@ def apply_runtime_paths(spec: dict[str, Any]) -> None:
     # окружением, не должен писать в чужие каталоги»; для env-корней это
     # выполнялось, для путей спеки — нет.
     for name in ("result", "work", "usage", "metadata", "snapshot", "runtime",
-                 "logs", "comparison"):
+                 "logs", "comparison", "discipline_profile"):
         raw = paths.get(name)
         if not raw:
             continue
@@ -266,6 +273,87 @@ def apply_runtime_snapshot(spec: dict[str, Any]) -> dict[str, Any]:
     return evidence
 
 
+def apply_discipline_profile(spec: dict[str, Any]) -> dict[str, Any]:
+    """Разложить снимок профиля дисциплины и ПОДТВЕРДИТЬ, что он применился.
+
+    Три отдельных утверждения, и каждое проверяется своим шагом:
+
+      1. пакет содержит снимок профиля, его состав и хэши сходятся, а его
+         `discipline_id`/`tree_hash` совпадают с заявленными в задании;
+      2. файлы разложены в те каталоги, откуда конвейер читает профиль
+         (`AUDIT_PROMPTS_DIR/disciplines/<dir>` и
+         `AUDIT_APP_DATA_DIR/discipline_checklists*`);
+      3. `discipline_service.load_discipline(discipline_id)` возвращает ИМЕННО
+         эту дисциплину — то есть профиль не просто лежит на диске, а
+         действительно выбирается.
+
+    Третий шаг существен: первые два выполнялись бы и в мире, где
+    `load_discipline` продолжал бы молча подставлять EOM. «Файл на месте» и
+    «профиль применён» — разные утверждения.
+    """
+    from backend.app.services.common import discipline_identity, discipline_service
+    from backend.app.services.distributed_workers import discipline_profile
+
+    paths = spec.get("paths") or {}
+    profile_root = Path(paths.get("discipline_profile") or "")
+    expected_id = str(spec.get("discipline_id") or "").strip()
+    expected_hash = str(spec.get("discipline_profile_hash") or "").strip()
+    if not profile_root.is_dir():
+        raise SystemExit(
+            f"Снимок профиля дисциплины не найден: {profile_root}. Запуск без "
+            "него запрещён: профиль взялся бы из дерева установленного кода."
+        )
+    prompts_dir = Path(os.environ.get("AUDIT_PROMPTS_DIR") or "")
+    app_data_dir = Path(os.environ.get("AUDIT_APP_DATA_DIR") or "")
+    if not prompts_dir or not app_data_dir:
+        raise SystemExit(
+            "AUDIT_PROMPTS_DIR/AUDIT_APP_DATA_DIR не заданы — раскладывать "
+            "профиль некуда"
+        )
+    try:
+        applied = discipline_profile.materialize_profile(
+            profile_root,
+            prompts_dir=prompts_dir,
+            app_data_dir=app_data_dir,
+            expected_discipline=expected_id or None,
+            expected_tree_hash=expected_hash or None,
+        )
+    except discipline_profile.DisciplineProfileSnapshotError as exc:
+        raise SystemExit(f"Снимок профиля дисциплины отвергнут: {exc}") from exc
+
+    # Кэш профилей мог быть прогрет импортом до раскладки файлов.
+    discipline_service.invalidate_cache()
+    try:
+        profile = discipline_service.load_discipline(expected_id)
+    except (
+        discipline_identity.DisciplineError,
+        discipline_service.DisciplineProfileMissing,
+    ) as exc:
+        raise SystemExit(
+            f"Профиль дисциплины {expected_id!r} не загружается после "
+            f"раскладки: {exc}"
+        ) from exc
+    if profile.code != expected_id:
+        raise SystemExit(
+            f"Конвейер выбрал профиль {profile.code!r} вместо {expected_id!r} — "
+            "подстановка чужого профиля запрещена"
+        )
+    if not profile.role.strip() or not profile.checklist.strip():
+        raise SystemExit(
+            f"Профиль {expected_id!r} загружен пустым (role/checklist) — "
+            "аудит без ролевого профиля не запускается"
+        )
+    applied["role_chars"] = len(profile.role)
+    applied["checklist_chars"] = len(profile.checklist)
+    applied["loaded_code"] = profile.code
+    metadata_dir = Path(paths.get("metadata") or profile_root)
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    (metadata_dir / "applied_discipline_profile.json").write_text(
+        json.dumps(applied, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return applied
+
+
 def apply_model_snapshot(spec: dict[str, Any]) -> Optional[Path]:
     """Положить снимок `stage_models.json` туда, где конвейер его читает.
 
@@ -284,6 +372,21 @@ def apply_model_snapshot(spec: dict[str, Any]) -> Optional[Path]:
     target = Path(app_data) / "stage_models.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target)
+    # Копирования НЕДОСТАТОЧНО: `STAGE_MODEL_CONFIG` читается один раз на
+    # импорте `backend.app.core.config`, и если конфигурация уже импортирована
+    # (а её тянет почти любой шаг подготовки), снимок не применится — прогон
+    # молча уедет на дефолты кода, включая `ensemble/gpt-codex` с ногой в
+    # OpenRouter по HTTPS. Раньше это «работало» только потому, что импорт
+    # случался позже; порядок импортов гарантией быть не может.
+    from backend.app.core import config as _config
+
+    applied = _config.reload_stage_model_config()
+    stage01 = applied.get("block_batch")
+    if not stage01:
+        raise SystemExit(
+            "Снимок stage_models.json применён, но модель этапа block_batch не "
+            "определена — прогон пошёл бы на дефолте кода"
+        )
     return target
 
 
@@ -498,6 +601,9 @@ def run(spec: dict[str, Any]) -> int:
             "completed_stages": history["completed_stages"],
             "forbidden_stages_not_run": history["forbidden_stages_not_run"],
             "applied_runtime_config": spec.get("_applied_runtime_config") or {},
+            "applied_discipline_profile": spec.get("_applied_discipline_profile") or {},
+            "discipline_id": spec.get("discipline_id"),
+            "discipline_profile_hash": spec.get("discipline_profile_hash"),
             "job_id": spec.get("job_id"),
             "attempt_id": spec.get("attempt_id"),
             "project_id": project_id,
@@ -748,6 +854,23 @@ def main(argv: Optional[list[str]] = None) -> int:
     # хранилища, а значит и то, куда лягут артефакты всех последующих шагов.
     applied_runtime = apply_runtime_snapshot(spec)
     spec["_applied_runtime_config"] = applied_runtime
+    # Дисциплина берётся из СНИМКА, а не из спеки: спеку пишет воркер, снимок
+    # подписан хэшем центра. Расхождение — отказ, а не «доверимся воркеру».
+    snapshot_discipline = str(applied_runtime.get("discipline_id") or "")
+    if snapshot_discipline and str(spec.get("discipline_id") or "") != snapshot_discipline:
+        raise SystemExit(
+            f"discipline_id задания {spec.get('discipline_id')!r} не совпадает "
+            f"со снимком центра {snapshot_discipline!r}"
+        )
+    snapshot_profile_hash = str(applied_runtime.get("discipline_profile_hash") or "")
+    if snapshot_profile_hash and str(
+        spec.get("discipline_profile_hash") or ""
+    ) != snapshot_profile_hash:
+        raise SystemExit(
+            "discipline_profile_hash задания не совпадает со снимком центра"
+        )
+    applied_profile = apply_discipline_profile(spec)
+    spec["_applied_discipline_profile"] = applied_profile
     providers = enforce_fake_providers(spec)
     models_path = apply_model_snapshot(spec)
     snapshot = verify_snapshot(spec)
@@ -759,6 +882,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "providers": providers,
             "model_config_applied": bool(models_path),
             "runtime_config": applied_runtime,
+            "discipline_profile": applied_profile,
         }
     )
     return run(spec)

@@ -117,6 +117,8 @@ class SafeAuditParams:
     model_config_hash: str
     feature_flags_hash: str
     runtime_snapshot_hash: str
+    discipline_id: str
+    discipline_profile_hash: str
     required_result_artifacts: tuple[str, ...]
 
     def as_dict(self) -> dict[str, Any]:
@@ -132,6 +134,8 @@ class SafeAuditParams:
             "model_config_hash": self.model_config_hash,
             "feature_flags_hash": self.feature_flags_hash,
             "runtime_snapshot_hash": self.runtime_snapshot_hash,
+            "discipline_id": self.discipline_id,
+            "discipline_profile_hash": self.discipline_profile_hash,
             "required_result_artifacts": list(self.required_result_artifacts),
         }
 
@@ -140,7 +144,8 @@ _ALLOWED_FIELDS = {
     "execution_profile", "action", "retry_stage", "include_optimization",
     "include_norms", "project_layout_version", "pipeline_revision",
     "expected_source_tree_hash", "prompt_bundle_hash", "model_config_hash",
-    "feature_flags_hash", "runtime_snapshot_hash", "required_result_artifacts",
+    "feature_flags_hash", "runtime_snapshot_hash", "discipline_id",
+    "discipline_profile_hash", "required_result_artifacts",
 }
 
 
@@ -204,6 +209,24 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
             "без снимка runtime-конфигурации не исполняется"
         )
 
+    # Дисциплина и хэш её профиля обязательны и проверяются как СКАЛЯРЫ: имя
+    # каталога из них не строится нигде на воркере — раскладку профиля делает
+    # код платформы по своему проверенному манифесту.
+    discipline = str(data.get("discipline_id") or "").strip()
+    if not discipline or len(discipline) > 32 or any(
+        ch in discipline for ch in "/\\ \t\r\n"
+    ):
+        raise AuditJobRejected(
+            f"discipline_id={discipline!r} отсутствует или имеет недопустимую "
+            "форму — задание без дисциплины не исполняется"
+        )
+    profile_hash = str(data.get("discipline_profile_hash") or "").strip()
+    if len(profile_hash) < 8:
+        raise AuditJobRejected(
+            "discipline_profile_hash отсутствует — проверить, каким профилем "
+            "пойдёт прогон, было бы нечем"
+        )
+
     required = data.get("required_result_artifacts") or list(REQUIRED_RESULT_ARTIFACTS)
     if not isinstance(required, list) or not all(isinstance(x, str) for x in required):
         raise AuditJobRejected("required_result_artifacts: ожидается список строк")
@@ -222,6 +245,8 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         model_config_hash=str(data.get("model_config_hash") or ""),
         feature_flags_hash=str(data.get("feature_flags_hash") or ""),
         runtime_snapshot_hash=runtime_hash,
+        discipline_id=discipline,
+        discipline_profile_hash=profile_hash,
         required_result_artifacts=merged,
     )
 
@@ -347,6 +372,9 @@ def prepare_job_dir(job_dir: Path) -> dict[str, Path]:
         # Снимок runtime-конфигурации из пакета: он определяет режим записи
         # хранилища, и без него запуск запрещён.
         "runtime": job_dir / "runtime",
+        # Снимок профиля дисциплины из пакета. Раскладывает его в рабочие
+        # каталоги код платформы, а не агент.
+        "discipline_profile": job_dir / "discipline_profile",
         # `comparison/` раньше не имела каталога вовсе и уезжала в корень
         # установленного кода (Б-4).
         "comparison": job_dir / "comparison",
@@ -394,6 +422,8 @@ def run_audit_job(
         "model_config_hash": params.model_config_hash,
         "feature_flags_hash": params.feature_flags_hash,
         "runtime_snapshot_hash": params.runtime_snapshot_hash,
+        "discipline_id": params.discipline_id,
+        "discipline_profile_hash": params.discipline_profile_hash,
         "required_result_artifacts": list(params.required_result_artifacts),
         "provider_mode": "fake" if provider_dir is not None else "real",
         # Разрешение воркера на настоящие модели. Раньше поле не писалось

@@ -31,10 +31,16 @@ from typing import Any, Literal, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 #: Версия схемы снимка. Растёт при несовместимом изменении состава полей.
-RUNTIME_SNAPSHOT_VERSION = 1
+#:
+#: 1 — без профиля дисциплины. Прогон по такому снимку выбирал профиль из
+#:     установленного на воркере дерева и при кириллическом `section` молча
+#:     уходил в EOM.
+#: 2 — `discipline_id` и `discipline_profile_hash` обязательны.
+RUNTIME_SNAPSHOT_VERSION = 2
 
-#: Версии схемы, которые воркер соглашается исполнять.
-SUPPORTED_SNAPSHOT_VERSIONS: frozenset[int] = frozenset({1})
+#: Версии схемы, которые воркер соглашается исполнять. Единица, а не диапазон:
+#: снимок версии 1 не «хуже», он не описывает, каким профилем идти.
+SUPPORTED_SNAPSHOT_VERSIONS: frozenset[int] = frozenset({2})
 
 #: Режимы записи хранилища. Закрытый набор — «неизвестное значение» на этом
 #: рубеже недопустимо: `get_write_mode()` fail-safe дефолтит в `legacy`, и
@@ -79,6 +85,11 @@ class AuditRuntimeConfigSnapshot(BaseModel):
     projects_v2_write_mode: Literal["legacy", "dual_write_shadow", "projects_v2_primary"]
     include_norms: Literal[False]
     provider_mode: Literal["fake", "real"]
+    # Дисциплина попытки и хэш ЕЁ профиля. Оба обязательны и оба без
+    # умолчаний: умолчание здесь означало бы «воркер выберет профиль сам», а
+    # выбирает он из дерева ЧУЖОЙ машины.
+    discipline_id: str
+    discipline_profile_hash: str
     stage_model_mapping: dict[str, str] = Field(default_factory=dict)
     prompt_bundle_hash: str
     model_config_hash: str
@@ -154,6 +165,8 @@ def build_snapshot(
     project_layout_version: int,
     projects_v2_write_mode: str,
     provider_mode: str,
+    discipline_id: str,
+    discipline_profile_hash: str,
     stage_model_mapping: dict[str, str],
     prompt_bundle_hash: str,
     model_config_hash: str,
@@ -183,6 +196,8 @@ def build_snapshot(
         projects_v2_write_mode=mode,                  # type: ignore[arg-type]
         include_norms=False,
         provider_mode=provider_mode,                  # type: ignore[arg-type]
+        discipline_id=str(discipline_id or ""),
+        discipline_profile_hash=str(discipline_profile_hash or ""),
         stage_model_mapping={str(k): str(v) for k, v in (stage_model_mapping or {}).items()},
         prompt_bundle_hash=str(prompt_bundle_hash or ""),
         model_config_hash=str(model_config_hash or ""),
@@ -195,6 +210,16 @@ def build_snapshot(
     )
     if not snapshot.pipeline_revision:
         raise RuntimeConfigError("pipeline_revision пуст — сверять ревизии нечем")
+    # Пустая дисциплина и пустой хэш профиля — это ровно «воркер, разберись
+    # сам»: на кириллическом `section` он разбирался подстановкой EOM.
+    if not snapshot.discipline_id:
+        raise RuntimeConfigError(
+            "discipline_id пуст — удалённый прогон выбрал бы профиль сам"
+        )
+    if not snapshot.discipline_profile_hash:
+        raise RuntimeConfigError(
+            "discipline_profile_hash пуст — проверить применённый профиль нечем"
+        )
     assert_no_secrets(snapshot)
     return snapshot
 
@@ -297,6 +322,8 @@ def describe_applied(
         "declared_write_mode": snapshot.projects_v2_write_mode,
         "applied_write_mode": applied_write_mode,
         "provider_mode": snapshot.provider_mode,
+        "discipline_id": snapshot.discipline_id,
+        "discipline_profile_hash": snapshot.discipline_profile_hash,
         "include_norms": snapshot.include_norms,
         "project_layout_version": snapshot.project_layout_version,
         "path_policy_version": snapshot.path_policy_version,

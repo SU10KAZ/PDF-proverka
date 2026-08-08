@@ -1001,6 +1001,15 @@ class Executor:
                 audit_manifest.get("forbidden_stages_not_run") if is_audit else None
             ),
             provider_mode=(audit_manifest.get("provider_mode") if is_audit else None),
+            # Дисциплина и хэш ФАКТИЧЕСКИ применённого профиля. Источник —
+            # манифест процесса конвейера: исполнитель переносит факт, а не
+            # повторяет задание.
+            discipline_id=(audit_manifest.get("discipline_id") if is_audit else None),
+            discipline_profile_hash=(
+                (audit_manifest.get("applied_discipline_profile") or {}).get(
+                    "discipline_profile_hash"
+                ) if is_audit else None
+            ),
             source_integrity=(
                 audit_manifest.get("source_integrity") if is_audit else None
             ),

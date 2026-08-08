@@ -35,6 +35,13 @@ DEFAULT_OBJECT_ID = "obj-e2e-0001"
 DEFAULT_DISCIPLINE = "АР"
 DEFAULT_VERSION_ID = "v001"
 
+#: Дисциплина в АВТОРИТЕТНЫХ метаданных (`project_info.section`). Она НЕ обязана
+#: совпадать с именем физического каталога `disciplines/<Д>`: имя каталога
+#: приходит из legacy-раскладки и совпадает с дисциплиной только по соглашению.
+#: Фикстура разводит их намеренно — иначе «дисциплина взята из метаданных» и
+#: «дисциплина угадана по имени папки» неразличимы.
+DEFAULT_SECTION = "АР"
+
 
 @dataclass(frozen=True)
 class ProjectFixture:
@@ -49,6 +56,7 @@ class ProjectFixture:
     object_folder: str
     discipline: str
     version_id: str
+    section: str = ""
 
     @property
     def project_id(self) -> str:
@@ -206,17 +214,24 @@ def build_project_fixture(
     object_id: str = DEFAULT_OBJECT_ID,
     discipline: str = DEFAULT_DISCIPLINE,
     version_id: str = DEFAULT_VERSION_ID,
+    section: Optional[str] = None,
 ) -> ProjectFixture:
-    """Создать проект `projects_v2` целиком, без единого реального документа."""
+    """Создать проект `projects_v2` целиком, без единого реального документа.
+
+    `discipline` — имя ФИЗИЧЕСКОГО каталога раздела, `section` — дисциплина в
+    метаданных. Разные параметры намеренно: авторитетным источником является
+    второе, и тест обязан уметь их развести.
+    """
     v2_root = Path(v2_root)
+    section = section if section is not None else discipline
     doc_dir = (
         v2_root / "objects" / object_folder / "disciplines" / discipline
         / "documents" / document_code
     )
     version_dir = doc_dir / "versions" / version_id
 
-    pdf = _pdf_bytes(document_code, discipline)
-    md = _MD_TEMPLATE.format(code=document_code, discipline=discipline)
+    pdf = _pdf_bytes(document_code, section)
+    md = _MD_TEMPLATE.format(code=document_code, discipline=section)
     result = _result_json(document_code)
     blocks = _blocks_json(document_code)
 
@@ -230,7 +245,7 @@ def build_project_fixture(
         {
             "project_id": document_code,
             "name": document_code,
-            "section": discipline,
+            "section": section,
             "description": "Синтетический проект E2E-стенда",
             "pdf_file": f"{document_code}.pdf",
             "md_file": f"{document_code}_document.md",
@@ -273,7 +288,7 @@ def build_project_fixture(
             "created_at": 0.0,
             "project_info": {
                 "project_id": document_code,
-                "section": discipline,
+                "section": section,
                 "external_id": external_id,
             },
         },
@@ -290,7 +305,7 @@ def build_project_fixture(
             "schema_version": 1,
             "document_code": document_code,
             "object_id": object_id,
-            "discipline": discipline,
+            "discipline": section,
             "external_id": external_id,
             "current_version": version_id,
             "versions": [{"version_id": version_id, "version_no": 1}],
@@ -312,6 +327,7 @@ def build_project_fixture(
         object_folder=object_folder,
         discipline=discipline,
         version_id=version_id,
+        section=section,
     )
 
 
@@ -334,6 +350,7 @@ def clone_fixture(source: ProjectFixture, target_root: Path) -> ProjectFixture:
         object_folder=source.object_folder,
         discipline=source.discipline,
         version_id=source.version_id,
+        section=source.section,
     )
 
 

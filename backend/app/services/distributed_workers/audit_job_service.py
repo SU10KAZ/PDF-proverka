@@ -27,8 +27,10 @@ from backend.app.models.distributed_workers import (
     JobState,
     JobType,
 )
+from backend.app.services.common import discipline_identity
 from backend.app.services.distributed_workers import (
     auth,
+    discipline_profile,
     identifiers,
     job_service,
     package_service,
@@ -225,11 +227,40 @@ def build_snapshot(*, feature_flags: Optional[dict[str, Any]] = None) -> dict[st
     }
 
 
+def build_discipline_snapshot(
+    version_dir: Path, *, revision: str = ""
+) -> tuple[discipline_identity.DisciplineId, discipline_profile.DisciplineProfileSnapshot]:
+    """Определить дисциплину попытки и собрать снимок ЕЁ профиля.
+
+    Дисциплина читается из АВТОРИТЕТНЫХ метаданных версии
+    (`01_input/project_info.json` → `version.json` → `document.json`), а не из
+    имени каталога и не из внешнего кода проекта: имя каталога совпадает с
+    дисциплиной только по соглашению, а внешний код содержит что угодно,
+    включая сегменты пути.
+
+    Неопознанная дисциплина и отсутствующий профиль — исключения ЗДЕСЬ, до
+    создания задания: иначе воркер отработал бы многочасовой прогон профилем
+    EOM и вернул замечания, найденные не тем экспертом.
+    """
+    from backend.app.core import config
+
+    discipline = discipline_identity.resolve_from_version_dir(Path(version_dir))
+    profile = discipline_profile.collect_profile_snapshot(
+        discipline,
+        prompts_dir=Path(config.PROMPTS_DIR),
+        app_data_dir=Path(config.APP_DATA_DIR),
+        source_revision=revision,
+    )
+    return discipline, profile
+
+
 def build_runtime_snapshot(
     *,
     snapshot: dict[str, Any],
     revision: str,
     settings: DistributedWorkersSettings,
+    discipline_id: str,
+    discipline_profile_hash: str,
     provider_mode: str = "fake",
 ) -> runtime_config.AuditRuntimeConfigSnapshot:
     """Снимок runtime-конфигурации попытки.
@@ -264,6 +295,8 @@ def build_runtime_snapshot(
         project_layout_version=project_package.PROJECT_LAYOUT_VERSION,
         projects_v2_write_mode=storage_write_facade.get_write_mode(),
         provider_mode=provider_mode,
+        discipline_id=discipline_id,
+        discipline_profile_hash=discipline_profile_hash,
         stage_model_mapping=stage_models,
         prompt_bundle_hash=snapshot["prompt_bundle_hash"],
         model_config_hash=snapshot["model_config_hash"],
@@ -322,11 +355,24 @@ def create_audit_job(
 
     snapshot = build_snapshot(feature_flags=feature_flags)
     revision = center_pipeline_revision()
+    # Дисциплина и её профиль определяются ДО всего остального: если профиля
+    # нет либо дисциплина не опознана, задание не создаётся вовсе (CH-04).
+    try:
+        discipline, profile_snapshot = build_discipline_snapshot(
+            Path(version_dir), revision=revision
+        )
+    except (
+        discipline_identity.DisciplineError,
+        discipline_profile.DisciplineProfileSnapshotError,
+    ) as exc:
+        raise AuditJobError(f"Дисциплина проекта не определена: {exc}") from exc
     # Снимок runtime-конфигурации строится ДО задания: его хэш — обязательное
     # поле нагрузки, а само значение режима записи берётся у ЦЕНТРА явным
     # чтением, а не «как-нибудь на воркере».
     runtime_snapshot = build_runtime_snapshot(
         snapshot=snapshot, revision=revision, settings=settings,
+        discipline_id=discipline.code,
+        discipline_profile_hash=profile_snapshot.tree_hash,
     )
     params = AuditPipelineParams(
         execution_profile=REMOTE_AUDIT_PILOT_V1,
@@ -341,6 +387,8 @@ def create_audit_job(
         model_config_hash=snapshot["model_config_hash"],
         feature_flags_hash=snapshot["feature_flags_hash"],
         runtime_snapshot_hash=runtime_snapshot.snapshot_hash(),
+        discipline_id=discipline.code,
+        discipline_profile_hash=profile_snapshot.tree_hash,
         required_result_artifacts=list(AUDIT_REQUIRED_ARTIFACTS),
     )
 
@@ -369,6 +417,8 @@ def create_audit_job(
         params=params,
         snapshot=snapshot,
         runtime_snapshot=runtime_snapshot,
+        profile_snapshot=profile_snapshot,
+        discipline=discipline,
         compression=compression,
         settings=settings,
     )
@@ -413,6 +463,8 @@ def build_audit_source_package(
     compression: str,
     settings: DistributedWorkersSettings,
     runtime_snapshot: Optional[runtime_config.AuditRuntimeConfigSnapshot] = None,
+    profile_snapshot: Optional[discipline_profile.DisciplineProfileSnapshot] = None,
+    discipline: Optional[discipline_identity.DisciplineId] = None,
 ) -> dict[str, Any]:
     """Собрать переносимый пакет версии проекта."""
     package_id = repositories.new_id("pkg")
@@ -430,6 +482,8 @@ def build_audit_source_package(
             "project_id": job["project_id"],
             "version_id": job.get("version_id"),
             "execution_profile": REMOTE_AUDIT_PILOT_V1,
+            "discipline_id": params.discipline_id,
+            "discipline_profile_hash": params.discipline_profile_hash,
             "params": params.model_dump(),
             "required_result_artifacts": list(AUDIT_REQUIRED_ARTIFACTS),
             "forbidden_result_artifacts": list(AUDIT_FORBIDDEN_ARTIFACTS),
@@ -464,6 +518,11 @@ def build_audit_source_package(
         ),
         "required_inputs": list(AUDIT_REQUIRED_ARTIFACTS),
         "runtime_snapshot_hash": params.runtime_snapshot_hash,
+        # Дисциплина попытки едет в манифесте ИСХОДНОГО пакета, чтобы центр мог
+        # сверить её с манифестом РЕЗУЛЬТАТА, не доверяя самоотчёту воркера.
+        "discipline_id": params.discipline_id,
+        "discipline_profile_hash": params.discipline_profile_hash,
+        "discipline_source": (discipline.source if discipline is not None else None),
         "limits": {
             "max_package_bytes": settings.max_package_bytes,
         },
@@ -495,6 +554,9 @@ def build_audit_source_package(
         feature_flags=snapshot["feature_flags"],
         runtime_config=(
             runtime_snapshot.to_package_bytes() if runtime_snapshot is not None else None
+        ),
+        discipline_profile_entries=(
+            profile_snapshot.package_entries() if profile_snapshot is not None else None
         ),
         compression=compression,
     )
