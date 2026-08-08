@@ -44,6 +44,31 @@ FORBIDDEN_ENV: tuple[str, ...] = (
     "CODEX_CLI_PATH", "PORTAL_SESSION_SECRET", "PORTAL_AUTH_USERS",
 )
 
+#: Префиксы имён, которыми конфигурируется САМ конвейер. Их значение обязано
+#: приходить из снимка runtime-конфигурации прогона, а не с машины, где стенд
+#: запущен.
+#:
+#: Рубеж появился по факту: `backend.app.core.config` при импорте зовёт
+#: `load_dotenv()`, который ищет `.env` ВВЕРХ по дереву и из worktree находит
+#: `.env` установленного репозитория. Стоит смоук-скрипту импортировать
+#: что-нибудь из `backend`, и в его `os.environ` оказываются продовые флаги
+#: (`BLOCK_VALUE_GROUNDING_ENABLED`, `CRITIC_V2_ENABLED`, `PAID_API_*`, …).
+#: Дальше они наследуются процессами, которым стенд отдаёт `base_env`, — но НЕ
+#: дочерним процессом конвейера воркера, где окружение собирается по строгому
+#: allowlist'у. Итог: локальный baseline выполнял на три этапа больше, чем
+#: воркер, и parity ловил не «локальный ≠ удалённый», а «машина ≠ стенд».
+#:
+#: Порядок важен: фильтр срабатывает ДО того, как стенд выставит свои
+#: `AUDIT_*`/`E2E_*` — те добавляются поверх и не страдают.
+PROJECT_ENV_PREFIXES: tuple[str, ...] = (
+    "AUDIT_", "PIPELINE_", "STAGE_", "STAGE01_", "STAGE02_", "BLOCK_",
+    "BLOCKS_", "FINDING_", "FINDINGS_", "CRITIC_", "OPTIMIZATION_", "NORM_",
+    "NORMS_", "PAID_API_", "BATCH_", "BUDGET_", "PORTAL_", "THREAD_POOL_",
+    "SINGLELINE_", "VECTOGRAF_", "KNOWLEDGE_", "ACTION_LOG_", "DEBT_",
+    "DECISION_", "EXPERT_", "DISTRIBUTED_WORKERS_", "WORKER_", "LLM_",
+    "GEMMA_", "EVIDENCE_", "GRSH_", "REMOTE_AUDIT_",
+)
+
 #: Минимальный PATH: интерпретатор и стандартные утилиты, но НИ ОДНОГО каталога
 #: пользователя (`~/.local/bin`, расширения VS Code — там живут настоящие CLI).
 SAFE_PATH_DIRS: tuple[str, ...] = ("/usr/local/bin", "/usr/bin", "/bin")
@@ -345,18 +370,39 @@ def selfcheck_netguard(python: str, env: dict[str, str]) -> bool:
 
 # ─── Окружение ───────────────────────────────────────────────────────────────
 def scrub_environment(base: Optional[dict[str, str]] = None) -> dict[str, str]:
-    """Вернуть окружение без единого секрета и без путей пользователя."""
+    """Вернуть окружение без секретов, без путей пользователя и без флагов машины.
+
+    Третье слагаемое — не косметика. Конфигурация конвейера, просочившаяся с
+    машины, меняет СОСТАВ выполняемых этапов, а значит и артефакты; сравнение
+    «локально ↔ удалённо» после этого сравнивает разные конвейеры. См.
+    `PROJECT_ENV_PREFIXES`.
+    """
     source = dict(base if base is not None else os.environ)
     clean: dict[str, str] = {}
     for key, value in source.items():
         upper = key.upper()
         if any(marker in upper for marker in SECRET_NAME_MARKERS):
             continue
+        if upper.startswith(PROJECT_ENV_PREFIXES):
+            continue
         clean[key] = value
     for name in FORBIDDEN_ENV:
         clean.pop(name, None)
     clean["PATH"] = os.pathsep.join(SAFE_PATH_DIRS)
     return clean
+
+
+def inherited_project_env(base: Optional[dict[str, str]] = None) -> dict[str, str]:
+    """Что стенд НЕ пустил внутрь: флаги конвейера, унаследованные с машины.
+
+    Возвращается ради проверяемости: смоук печатает этот список и утверждает,
+    что ни одна из переменных до процессов прогона не доехала.
+    """
+    source = dict(base if base is not None else os.environ)
+    return {
+        key: value for key, value in source.items()
+        if key.upper().startswith(PROJECT_ENV_PREFIXES)
+    }
 
 
 def assert_environment_clean(env: dict[str, str]) -> list[str]:

@@ -52,6 +52,13 @@ from typing import Any, Optional
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
+# ДО первого импорта из `backend`: иначе `config` позовёт `load_dotenv()`, тот
+# найдёт `.env` установленного репозитория (поиск идёт ВВЕРХ по дереву, из
+# worktree он доходит до основного каталога) и заполнит `os.environ` продовыми
+# флагами. Дальше они уезжают в процессы стенда — и прогон измеряет машину, а
+# не код.
+os.environ.setdefault("AUDIT_DISABLE_DOTENV", "1")
+
 PY = sys.executable or "python3"
 
 # Точки проверки. Печатаются в порядке выполнения; первая же провалившаяся
@@ -394,6 +401,30 @@ def load_projection(directory: Path) -> dict[str, Any]:
     return out
 
 
+def stage_statuses(directory: Path) -> dict[str, str]:
+    """Какие этапы конвейера реально выполнялись и с каким исходом.
+
+    Сравнение артефактов ловит расхождение только там, где этап успел что-то
+    записать. Отсутствующий этап артефакта не оставляет вовсе — и разница
+    «локально этап был, удалённо его не было» проходит мимо проекции. Состав
+    этапов сравнивается отдельно и раньше.
+    """
+    path = Path(directory) / "pipeline_log.json"
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    stages = data.get("stages") if isinstance(data, dict) else None
+    if not isinstance(stages, dict):
+        return {}
+    return {
+        key: str(value.get("status")) if isinstance(value, dict) else str(value)
+        for key, value in stages.items()
+    }
+
+
 def findings_count(directory: Path) -> int:
     path = Path(directory) / "03_findings.json"
     if not path.is_file():
@@ -611,6 +642,15 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
               PY, probe_env, allowed=stand.evidence / "allowed_probe.tmp"),
           "сторож записи НЕ ломает разрешённую запись")
     check(not forbidden.exists(), "запрещённая проба ничего не создала")
+    # Что стенд ставит сам (после вычистки) — его право; проверяется ровно то,
+    # что НЕ переживает вычистку: конфигурация конвейера, унаследованная с
+    # машины. Иначе состав этапов у локального и удалённого прогона разный.
+    inherited = isolation.inherited_project_env()
+    leaked = sorted(k for k in inherited if k in isolation.scrub_environment())
+    check(not leaked,
+          "флаги конвейера с машины в окружение стенда не попали",
+          f"отфильтровано {len(inherited)}"
+          + (f"; просочилось: {', '.join(leaked)}" if leaked else ""))
 
     # ── 2. Фикстуры и снимок ────────────────────────────────────────────────
     central, local, no_service = build_fixtures(stand)
@@ -1022,6 +1062,28 @@ def run(stand: Stand, *, timeout: float) -> int:      # noqa: C901 — сцен�
         if all(v is None for v in remote_projection.values()):
             remote_projection = load_projection(version_dir / "03_analysis" / "latest")
         local_projection = load_projection(local_out)
+        # Журнал этапов лежит рядом с артефактами прогона, но при раскладке
+        # `runs/<id>` копия остаётся только в `latest` — молча пустой словарь
+        # превратил бы проверку в «сравнили ничего с ничем».
+        local_stages = (stage_statuses(local_out)
+                        or stage_statuses(local_out.parent.parent / "latest"))
+        worker_stages = (stage_statuses(worker_out)
+                         or stage_statuses(worker_out.parent.parent / "latest")
+                         or stage_statuses(version_dir / "03_analysis" / "latest"))
+        stage_diff = sorted(
+            key for key in set(local_stages) | set(worker_stages)
+            if local_stages.get(key) != worker_stages.get(key)
+        )
+        (stand.evidence / "stage_parity.json").write_text(
+            json.dumps({"local": local_stages, "worker": worker_stages,
+                        "diff": stage_diff}, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        check(bool(local_stages) and not stage_diff,
+              "состав и исход этапов совпали (local ↔ worker)",
+              "; ".join(f"{k}: local={local_stages.get(k, '—')} "
+                        f"worker={worker_stages.get(k, '—')}" for k in stage_diff)
+              if stage_diff else ("журнал этапов пуст" if not local_stages else ""))
         diff = [
             name for name in PRE_NORM_ARTIFACTS
             if local_projection.get(name) != remote_projection.get(name)
