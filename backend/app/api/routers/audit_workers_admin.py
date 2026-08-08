@@ -74,6 +74,26 @@ def _actor(request: Request) -> str:
     return authorization.actor_of(request).audit_id()
 
 
+def _source_ip(request: Request, client: Optional[str]) -> Optional[str]:
+    """Адрес источника для неизменяемого журнала решений.
+
+    Раньше в поле уезжал первый элемент `X-Forwarded-For`, то есть значение,
+    полностью подконтрольное тому, чьи действия журнал и фиксирует: оператор
+    с правом `operate` мог подписать своё действие чужим адресом. Списка
+    доверенных прокси в приложении нет и завести его тут нечем.
+
+    Поэтому в поле идёт РЕАЛЬНЫЙ адрес соединения, а заявленный клиентом —
+    рядом и с явной пометкой «заявлено». Портал ходит через cloudflared, где
+    peer почти всегда 127.0.0.1, так что выбросить заголовок совсем нельзя:
+    он остаётся единственной подсказкой о настоящем источнике — но подсказкой,
+    а не свидетельством.
+    """
+    claimed = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+    if not claimed or claimed == client:
+        return client
+    return f"{client or '?'} (заявлено X-Forwarded-For: {claimed[:64]})"
+
+
 def _audit_meta(request: Request, *, permission: Optional[str] = None) -> dict[str, Any]:
     client = request.client.host if request.client else None
     actor = authorization.actor_of(request)
@@ -82,8 +102,7 @@ def _audit_meta(request: Request, *, permission: Optional[str] = None) -> dict[s
         "actor_role": actor.role,
         "permission": permission,
         "request_id": request.headers.get("X-Request-Id"),
-        "source_ip": request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
-        or client,
+        "source_ip": _source_ip(request, client),
         "user_agent": (request.headers.get("User-Agent") or "")[:300],
     }
 
@@ -448,7 +467,27 @@ async def rotate_token(
     XSS защищает только то, что страница нигде не собирает HTML из данных.
     """
     settings = _settings_or_404()
-    _require_operator_intent(request)
+    idempotency_key = _require_operator_intent(request)
+    # Ключ здесь обязан РАБОТАТЬ, а не просто требоваться. Ротация гасит все
+    # прежние токены разом, поэтому «ответ потерялся, клиент повторил запрос»
+    # (таймаут прокси, вотчдог, двойной клик) убило бы токен, который админ
+    # уже прописал на VPS: воркер ушёл бы в 401. Повтор по тому же ключу
+    # останавливаем ДО rotate_token. Показать токен второй раз нельзя — он
+    # нигде не хранится в открытом виде, и это правильно.
+    already = await database.run_db(
+        repositories.find_admin_action_by_key,
+        action_type="rotate_worker_token",
+        idempotency_key=idempotency_key,
+        settings=settings,
+    )
+    if already:
+        raise HTTPException(
+            status_code=409,
+            detail="Этот Idempotency-Key уже использован для ротации токена "
+                   "(действие " + str(already.get("action_id") or "?") + "). "
+                   "Токен показывается один раз и повторно не выдаётся. Если "
+                   "он потерян — повторите ротацию с НОВЫМ ключом.",
+        )
     try:
         row, token = await database.run_db(
             registration_service.rotate_token, worker_id=worker_id, settings=settings
@@ -458,7 +497,7 @@ async def rotate_token(
     _audit(request, "worker_token_rotated", worker_id=worker_id)
     await _record_admin_action(
         request, action_type="rotate_worker_token", permission=authorization.PERM_ADMIN,
-        worker_id=worker_id, settings=settings,
+        worker_id=worker_id, settings=settings, idempotency_key=idempotency_key,
         result={"note": "старый токен отозван атомарно, новый показан один раз"},
     )
     return {
