@@ -26,7 +26,7 @@ import time
 import uuid
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional  # noqa: F401 — Any нужен для sequence_db
 
 try:                                     # pragma: no cover — только POSIX
     import fcntl
@@ -43,10 +43,31 @@ FSYNC_EVERY = 64
 
 
 class EventOutbox:
-    def __init__(self, events_dir: Path, *, secret_literals: Iterable[str] = ()):
+    """Журнал событий попытки на диске.
+
+    Номер события (`seq`) выдаёт SQLite воркера, если он передан
+    (`sequence_db` + `job_id` + `attempt_id`). Это единственный способ,
+    выдерживающий ДВА ПРОЦЕССА-писателя: агент и исполнитель пишут в один
+    каталог, и потоковый лок им не помогает, а `flock` есть не везде.
+    Без базы объект работает по-старому (файловый счётчик под `flock`) — это
+    режим для одиночных вызовов и тестов, а не для двухслотового прода.
+    """
+
+    def __init__(
+        self,
+        events_dir: Path,
+        *,
+        secret_literals: Iterable[str] = (),
+        sequence_db: Any = None,
+        job_id: Optional[str] = None,
+        attempt_id: Optional[str] = None,
+    ):
         self.dir = events_dir
         self.dir.mkdir(parents=True, exist_ok=True)
         self.cursor_path = self.dir / "cursor.json"
+        self._db = sequence_db if (sequence_db and job_id and attempt_id) else None
+        self.job_id = job_id
+        self.attempt_id = attempt_id
         # Отметка подтверждения живёт ОТДЕЛЬНЫМ файлом. С этапа 3.5 в журнал
         # пишет исполнитель, а подтверждает отправку агент — это разные
         # процессы. Держи они один файл, каждый затирал бы чужое поле: агент
@@ -76,6 +97,19 @@ class EventOutbox:
         # выдавали одному номеру два события, и второе терялось молча.
         self._lock_path = self.dir / ".seq.lock"
         self._repair_cursor_against_segments()
+        if self._db is not None:
+            # База — источник истины для НОМЕРА. Файлы могут уйти вперёд только
+            # у попыток, созданных прошлой версией воркера: их события есть в
+            # сегментах, а строки счётчика ещё нет. Поднимаем счётчик до них.
+            try:
+                high = self._db.raise_event_sequence_floor(
+                    job_id=self.job_id, attempt_id=self.attempt_id,
+                    floor=self.last_written_seq,
+                )
+                self.last_written_seq = max(self.last_written_seq, high)
+            except Exception:  # noqa: BLE001 — журнал не должен ронять запуск
+                pass
+            self.heal_allocation_gaps()
 
     @contextmanager
     def _interprocess_lock(self):
@@ -185,10 +219,23 @@ class EventOutbox:
         if self._should_drop(event_type):
             return None
         self._rotate_if_needed()
-        seq = self.last_written_seq + 1
+        event_id = f"ev_{uuid.uuid4().hex[:16]}"
+        if self._db is not None:
+            # Транзакция SQLite: инкремент счётчика и запись «номер выдан» —
+            # атомарно. Дубль между процессами невозможен по схеме, а не по
+            # дисциплине кода.
+            seq = self._db.allocate_event_sequence(
+                job_id=self.job_id,
+                attempt_id=self.attempt_id,
+                event_id=event_id,
+                event_type=event_type,
+                floor=self.last_written_seq,
+            )
+        else:
+            seq = self.last_written_seq + 1
         record = {
             "seq": seq,
-            "event_id": f"ev_{uuid.uuid4().hex[:16]}",
+            "event_id": event_id,
             "event_type": event_type,
             "occurred_at": occurred_at if occurred_at is not None else time.time(),
             "schema_version": 1,
@@ -202,9 +249,86 @@ class EventOutbox:
                 fh.flush()
                 os.fsync(fh.fileno())
                 self._pending_since_sync = 0
-        self.last_written_seq = seq
+        if self._db is not None:
+            self._db.mark_event_written(
+                job_id=self.job_id, attempt_id=self.attempt_id, sequence=seq
+            )
+        self.last_written_seq = max(self.last_written_seq, seq)
         self._save_cursor()
         return seq
+
+    # ─── Дыры между «номер выдан» и «строка записана» ────────────────────────
+    def heal_allocation_gaps(self, *, older_than: float = 5.0) -> list[int]:
+        """Закрыть номера, выданные базой, но не попавшие в сегмент.
+
+        Такая дыра возможна только при смерти процесса ровно между двумя
+        соседними операциями. Оставить её нельзя: `pending_batch` требует
+        НЕПРЕРЫВНЫЙ диапазон и остановился бы на пропавшем номере навсегда.
+        Заполняем явным `events_truncated` с объяснением: потеря обязана быть
+        видимой, а не замазанной (§21 задания).
+        """
+        if self._db is None:
+            return []
+        try:
+            stale = self._db.unwritten_events(
+                job_id=self.job_id, attempt_id=self.attempt_id, older_than=older_than
+            )
+        except Exception:  # noqa: BLE001 — лечение не должно ронять поток
+            return []
+        healed: list[int] = []
+        for row in stale:
+            seq = int(row["sequence"])
+            if self._segment_contains(seq):
+                self._db.mark_event_written(
+                    job_id=self.job_id, attempt_id=self.attempt_id, sequence=seq
+                )
+                continue
+            record = {
+                "seq": seq,
+                "event_id": row.get("event_id") or f"ev_gap_{seq}",
+                "event_type": "events_truncated",
+                "occurred_at": float(row.get("allocated_at") or time.time()),
+                "schema_version": 1,
+                "payload": {
+                    "reason": "allocated_but_not_written",
+                    "lost_event_type": row.get("event_type"),
+                    "sequence": seq,
+                    "policy": "номер был выдан, но событие не дошло до диска — "
+                              "потеря показана явно, поток не останавливается",
+                },
+            }
+            path = self._segment_path(self.active_segment)
+            with path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+            self._db.mark_event_written(
+                job_id=self.job_id, attempt_id=self.attempt_id, sequence=seq
+            )
+            self.last_written_seq = max(self.last_written_seq, seq)
+            healed.append(seq)
+        if healed:
+            self._save_cursor()
+        return healed
+
+    def _segment_contains(self, seq: int) -> bool:
+        for path in list(self.dir.glob("outbox-*.jsonl")) + list(
+            (self.dir / "acked").glob("outbox-*.jsonl")
+            if (self.dir / "acked").is_dir()
+            else []
+        ):
+            try:
+                with path.open("r", encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            if int(json.loads(line).get("seq", 0)) == seq:
+                                return True
+                        except (ValueError, TypeError):
+                            continue
+            except OSError:
+                continue
+        return False
 
     def _should_drop(self, event_type: str) -> bool:
         """Прореживание при переполнении: структурные события не теряем никогда."""
@@ -254,6 +378,9 @@ class EventOutbox:
         Обязательно для агента: журнал наполняет ДРУГОЙ процесс, и объект в
         памяти о новых событиях сам по себе не узнает — `has_pending` вечно
         отвечал бы «нечего отправлять».
+
+        При наличии базы номеров она и есть источник истины о том, что уже
+        выдано: `cursor.json` пишут оба процесса, и его значение может отстать.
         """
         cursor = read_json(self.cursor_path, None) or {}
         ack = read_json(self.ack_path, None) or {}
@@ -268,6 +395,18 @@ class EventOutbox:
                 self.last_acked_seq,
                 int(ack.get("last_acked_seq", cursor.get("last_acked_seq", 0))),
             )
+            if self._db is not None:
+                try:
+                    self.last_written_seq = max(
+                        self.last_written_seq,
+                        self._db.allocated_event_high(
+                            job_id=self.job_id, attempt_id=self.attempt_id
+                        ),
+                    )
+                except Exception:  # noqa: BLE001 — чтение позиций не критично
+                    pass
+        if self._db is not None:
+            self.heal_allocation_gaps()
 
     # ─── Чтение и подтверждение ──────────────────────────────────────────────
     def pending_batch(self, limit: int = 500) -> list[dict[str, Any]]:

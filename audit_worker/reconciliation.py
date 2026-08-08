@@ -62,7 +62,14 @@ def collect_known_jobs(
         if meta.get("local_state") in ("finished", "superseded", "rejected"):
             continue
         job_dir = store.job_dir(meta["job_id"], meta["attempt_id"])
-        outbox = EventOutbox(job_dir / "events")
+        # Счётчик из базы, если она передана: файловый курсор мог отстать от
+        # того, что реально выдано (пишут два процесса).
+        outbox = EventOutbox(
+            job_dir / "events",
+            sequence_db=db,
+            job_id=meta["job_id"],
+            attempt_id=meta["attempt_id"],
+        )
         alive = bool(
             registry
             and registry.alive_for_job(

@@ -38,6 +38,7 @@ from audit_worker import (
     process_registry,
     test_runner,
 )
+from audit_worker import slots as worker_slots
 from audit_worker.config import WorkerConfig
 from audit_worker.event_outbox import EventOutbox
 from audit_worker.local_store import LocalJobStore, read_json
@@ -181,21 +182,60 @@ class Executor:
         finally:
             self.shutdown()
 
+    def slot_limit(self) -> int:
+        """Доказанный потолок одновременных попыток этого исполнителя."""
+        return worker_slots.normalize_max_slots(self.config.max_slots).value
+
+    def local_capacity(self) -> tuple[int, str]:
+        """Сколько попыток исполнитель готов начать ПРЯМО СЕЙЧАС и что мешает.
+
+        Считается по четырём независимым источникам, берётся худший:
+      * потоки-наблюдатели этого воплощения;
+      * попытки, захваченные локальной очередью (`claimed`/`running`);
+      * ДОКАЗАННО живые процессы реестра (pid + тик старта);
+      * лимит конфигурации, зажатый доказанным максимумом этапа.
+
+        Это второй, независимый от центра рубеж (S-16): даже если центр по
+        ошибке выдаст третье задание, третий процесс здесь не стартует.
+        Критический диск обнуляет ёмкость, но НЕ трогает уже идущие процессы.
+        """
+        limit = self.slot_limit()
+        self._workers = [t for t in self._workers if t.is_alive()]
+        try:
+            claimed = self.db.claimed_attempt_count()
+            live = self.db.live_process_count()
+        except Exception:  # noqa: BLE001 — база занята: считаем по своим потокам
+            claimed = live = len(self._workers)
+        busy = max(len(self._workers), claimed, live)
+        try:
+            disk = self.retention.disk_snapshot()
+        except Exception:  # noqa: BLE001 — разрез диска не обязан быть доступен
+            disk = {"level": "unknown"}
+        if disk.get("level") == "critical":
+            return 0, (
+                "критически мало места на диске: новые попытки не запускаются, "
+                "текущие продолжают работу"
+            )
+        free = max(0, limit - busy)
+        return free, ("" if free else f"занято {busy} из {limit}")
+
     def _tick(self, max_jobs: Optional[int], started_ref: list[int]) -> None:
         """Один оборот главного цикла. Исключение отсюда цикл не роняет."""
         started = started_ref[0]
         self.drain_local_commands()
         self.retention.tick()
-        self._workers = [t for t in self._workers if t.is_alive()]
-        busy = len(self._workers) >= max(1, self.config.max_slots)
+        free, _why = self.local_capacity()
         enough = max_jobs is not None and started >= max_jobs
         if enough and not self._workers:
             _log(f"выполнено попыток: {started} — останавливаюсь по max_jobs")
             raise _StopLoop
-        if busy or enough:
+        if free <= 0 or enough:
             self._stop.wait(POLL_SEC)
             return
-        item = self.db.claim_next(self.instance_id)
+        # Ёмкость передаётся в захват: проверка и захват идут ОДНОЙ транзакцией,
+        # иначе между ними два исполнителя (или два оборота цикла) успели бы
+        # взять по попытке сверх лимита.
+        item = self.db.claim_next(self.instance_id, capacity_limit=self.slot_limit())
         if item is None:
             self._stop.wait(POLL_SEC)
             return
@@ -623,9 +663,17 @@ class Executor:
             meta = self.jobs.load(item["job_id"], attempt_id) or {}
             # Секреты вычищаются ПРИ ЗАПИСИ (I-12). Исполнителю известен только
             # токен попытки — worker-token ему не передают вовсе.
+            #
+            # Номер события выдаёт worker.db: в этот каталог пишет ещё и агент,
+            # а он — ДРУГОЙ процесс. Файловый счётчик под flock для двух
+            # процессов ненадёжен, и на двух слотах это перестаёт быть редкой
+            # гонкой (см. local_db, миграция 2).
             outbox = EventOutbox(
                 job_dir / "events",
                 secret_literals=(meta.get("execution_token") or "",),
+                sequence_db=self.db,
+                job_id=item["job_id"],
+                attempt_id=attempt_id,
             )
             self._outboxes[attempt_id] = outbox
             return outbox

@@ -126,10 +126,15 @@ class WorkerConfig:
             pass
 
     def capabilities(self) -> dict:
+        from audit_worker import slots as _slots
+
         caps = {
             "providers": [],           # этап 0: LLM не подключены намеренно
             "compressions": ["gzip", "none"],
             "job_types": ["test_pipeline_v1"],
+            # Сколько одновременных попыток ПРОВЕРЕНО этой сборкой воркера.
+            # Не «сколько хочет оператор» — центр берёт минимум из обоих.
+            "max_verified_slots": _slots.MAX_VERIFIED_SLOTS,
             "python": platform.python_version(),
             "os": f"{platform.system()} {platform.release()}",
             "cores": os.cpu_count() or 1,
@@ -138,6 +143,21 @@ class WorkerConfig:
         }
         caps.update(self.extra_capabilities)
         return caps
+
+
+def _max_slots_from_env() -> int:
+    """Число слотов из окружения, зажатое доказанным максимумом этапа.
+
+    Предупреждение печатается: молчаливое «5 → 2» оставило бы оператора в
+    уверенности, что у него пять слотов, и он списал бы простой на что угодно,
+    кроме настройки.
+    """
+    from audit_worker import slots as _slots
+
+    limit = _slots.normalize_max_slots(os.environ.get("AUDIT_WORKER_MAX_SLOTS"))
+    if limit.notice:
+        print(f"[audit-worker] ВНИМАНИЕ: {limit.notice}", file=sys.stderr)
+    return limit.value
 
 
 def load_config(
@@ -165,7 +185,7 @@ def load_config(
         or f"{platform.node()}",
         heartbeat_interval_sec=_env_float("AUDIT_WORKER_HEARTBEAT_SEC", 30.0),
         poll_wait_sec=_env_int("AUDIT_WORKER_POLL_WAIT_SEC", 25),
-        max_slots=max(1, min(5, _env_int("AUDIT_WORKER_MAX_SLOTS", 1))),
+        max_slots=_max_slots_from_env(),
         request_timeout_sec=_env_float("AUDIT_WORKER_TIMEOUT_SEC", 60.0),
         test_max_total_sec=_env_float("AUDIT_WORKER_TEST_MAX_SEC", 300.0),
         retention_enabled=_env_bool("AUDIT_WORKER_RETENTION_ENABLED", True),

@@ -28,7 +28,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Optional
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 PRAGMAS = (
     "PRAGMA journal_mode = WAL",
@@ -113,7 +113,51 @@ CREATE TABLE IF NOT EXISTS process_registry (
 );
 """
 
-MIGRATIONS: dict[int, str] = {1: _MIGRATION_1}
+# ─────────────────────────────────────────────────────────────────────────────
+# Миграция 2 (пред-пайплайновый гейт): номер события выдаёт БАЗА, а не файл.
+#
+# Что было. Счётчик `seq` жил в `cursor.json` рядом с сегментами журнала, а от
+# гонки двух ПРОЦЕССОВ (агент пишет `worker_reconnected`, исполнитель — события
+# конвейера) защищал `flock`. Это работает на Linux и деградирует до потокового
+# лока везде, где `fcntl` недоступен или ФС его не поддерживает: два процесса
+# снова выдают двум событиям один номер, а центр дедуплицирует по
+# (job, attempt, seq) — второе теряется МОЛЧА. На одном слоте это было редкой
+# гонкой, на двух становится штатным режимом.
+#
+# Что стало. Номер выдаётся транзакцией `BEGIN IMMEDIATE` в SQLite:
+# инкремент счётчика и вставка строки журнала идут ОДНОЙ транзакцией, а
+# PRIMARY KEY(job_id, attempt_id, sequence) делает дубль физически невозможным.
+# Пары (job, attempt) независимы: своя строка счётчика у каждой.
+#
+# `written` отличает «номер выдан» от «строка легла в сегмент». Разрыв между
+# ними — окно в доли секунды, но если процесс умрёт именно в нём, в файлах
+# останется дыра. Она НЕ прячется: `EventOutbox.heal_allocation_gaps` дописывает
+# на это место явное событие `events_truncated` с объяснением. Потеря видима, а
+# поток событий не встаёт навсегда на ожидании пропавшего номера.
+_MIGRATION_2 = """
+CREATE TABLE IF NOT EXISTS event_sequences (
+    job_id     TEXT NOT NULL,
+    attempt_id TEXT NOT NULL,
+    next_seq   INTEGER NOT NULL,
+    updated_at REAL NOT NULL,
+    PRIMARY KEY (job_id, attempt_id)
+);
+
+CREATE TABLE IF NOT EXISTS event_journal (
+    job_id       TEXT NOT NULL,
+    attempt_id   TEXT NOT NULL,
+    sequence     INTEGER NOT NULL,
+    event_id     TEXT NOT NULL,
+    event_type   TEXT NOT NULL,
+    allocated_at REAL NOT NULL,
+    written      INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (job_id, attempt_id, sequence)
+);
+CREATE INDEX IF NOT EXISTS ix_event_journal_unwritten
+    ON event_journal(job_id, attempt_id) WHERE written = 0;
+"""
+
+MIGRATIONS: dict[int, str] = {1: _MIGRATION_1, 2: _MIGRATION_2}
 
 
 class LocalDB:
@@ -310,15 +354,32 @@ class LocalDB:
             )
         return True
 
-    def claim_next(self, executor_instance_id: str) -> Optional[dict[str, Any]]:
+    def claim_next(
+        self,
+        executor_instance_id: str,
+        *,
+        capacity_limit: Optional[int] = None,
+    ) -> Optional[dict[str, Any]]:
         """Атомарно захватить одну попытку.
 
         Захват — условный UPDATE под BEGIN IMMEDIATE. Два одновременно
         запущенных исполнителя не могут получить одну строку: проигравший
         увидит rowcount == 0 (§8.4).
+
+        `capacity_limit` — АБСОЛЮТНЫЙ потолок одновременных попыток. Подсчёт
+        занятых идёт ВНУТРИ той же транзакции: снаружи он давал бы окно, в
+        котором два захвата успевают проскочить мимо лимита. Отказ по ёмкости —
+        не ошибка попытки: строка остаётся `queued` и ждёт слот (§18 задания).
         """
         now = time.time()
         with self.write() as conn:
+            if capacity_limit is not None:
+                busy = conn.execute(
+                    "SELECT COUNT(*) AS n FROM execution_queue WHERE state IN (?, ?)",
+                    (QUEUE_CLAIMED, QUEUE_RUNNING),
+                ).fetchone()
+                if int(busy["n"]) >= int(capacity_limit):
+                    return None
             row = conn.execute(
                 "SELECT * FROM execution_queue WHERE state = ? "
                 "ORDER BY created_at ASC LIMIT 1",
@@ -570,3 +631,117 @@ class LocalDB:
             "SELECT * FROM process_registry ORDER BY started_at DESC LIMIT 1"
         ).fetchone()
         return dict(row) if row else None
+
+    def live_process_count(self) -> int:
+        """Сколько процессов реестра ДОКАЗАННО живы (pid + тик старта)."""
+        from audit_worker import process_registry as procinfo
+
+        return sum(
+            1
+            for row in self.list_processes()
+            if row.get("status") == "running"
+            and procinfo.is_alive(
+                int(row.get("pid") or 0), row.get("process_start_identity")
+            )
+        )
+
+    def claimed_attempt_count(self) -> int:
+        """Сколько попыток локально захвачено (claimed или running)."""
+        row = self.read().execute(
+            "SELECT COUNT(*) AS n FROM execution_queue WHERE state IN (?, ?)",
+            (QUEUE_CLAIMED, QUEUE_RUNNING),
+        ).fetchone()
+        return int(row["n"]) if row else 0
+
+    # ─── Счётчик событий (межпроцессный, транзакционный) ─────────────────────
+    def allocate_event_sequence(
+        self,
+        *,
+        job_id: str,
+        attempt_id: str,
+        event_id: str,
+        event_type: str,
+        floor: int = 0,
+    ) -> int:
+        """Выдать следующий `seq` попытки. Атомарно и межпроцессно.
+
+        Инкремент счётчика и вставка строки журнала — одна транзакция под
+        `BEGIN IMMEDIATE`. PRIMARY KEY(job_id, attempt_id, sequence) страхует
+        схемой: два процесса физически не могут получить один номер.
+
+        `floor` — уже занятые номера, найденные в файлах журнала. Нужен при
+        первом обращении к попытке, созданной прошлой версией воркера (её
+        события есть в сегментах, а строки счётчика ещё нет).
+        """
+        now = time.time()
+        with self.write() as conn:
+            row = conn.execute(
+                "SELECT next_seq FROM event_sequences WHERE job_id = ? AND attempt_id = ?",
+                (job_id, attempt_id),
+            ).fetchone()
+            current = int(row["next_seq"]) if row is not None else 1
+            seq = max(current, int(floor or 0) + 1)
+            conn.execute(
+                "INSERT INTO event_sequences (job_id, attempt_id, next_seq, updated_at) "
+                "VALUES (?,?,?,?) ON CONFLICT(job_id, attempt_id) DO UPDATE SET "
+                "next_seq = excluded.next_seq, updated_at = excluded.updated_at",
+                (job_id, attempt_id, seq + 1, now),
+            )
+            conn.execute(
+                "INSERT INTO event_journal (job_id, attempt_id, sequence, event_id, "
+                "event_type, allocated_at, written) VALUES (?,?,?,?,?,?,0)",
+                (job_id, attempt_id, seq, event_id, event_type, now),
+            )
+        return seq
+
+    def mark_event_written(self, *, job_id: str, attempt_id: str, sequence: int) -> None:
+        with self.write() as conn:
+            conn.execute(
+                "UPDATE event_journal SET written = 1 "
+                "WHERE job_id = ? AND attempt_id = ? AND sequence = ?",
+                (job_id, attempt_id, sequence),
+            )
+
+    def raise_event_sequence_floor(
+        self, *, job_id: str, attempt_id: str, floor: int
+    ) -> int:
+        """Поднять счётчик до `floor + 1`, если файлы ушли вперёд базы.
+
+        Опустить счётчик эта функция не может ни при каких данных: номер,
+        однажды выданный, переиспользовать нельзя — центр отбросит повтор как
+        дубль, и событие исчезнет молча.
+        """
+        with self.write() as conn:
+            row = conn.execute(
+                "SELECT next_seq FROM event_sequences WHERE job_id = ? AND attempt_id = ?",
+                (job_id, attempt_id),
+            ).fetchone()
+            current = int(row["next_seq"]) if row is not None else 1
+            target = max(current, int(floor or 0) + 1)
+            if target != current or row is None:
+                conn.execute(
+                    "INSERT INTO event_sequences (job_id, attempt_id, next_seq, updated_at) "
+                    "VALUES (?,?,?,?) ON CONFLICT(job_id, attempt_id) DO UPDATE SET "
+                    "next_seq = excluded.next_seq, updated_at = excluded.updated_at",
+                    (job_id, attempt_id, target, time.time()),
+                )
+        return target - 1
+
+    def allocated_event_high(self, *, job_id: str, attempt_id: str) -> int:
+        """Наибольший ВЫДАННЫЙ номер попытки (0, если не выдавали)."""
+        row = self.read().execute(
+            "SELECT next_seq FROM event_sequences WHERE job_id = ? AND attempt_id = ?",
+            (job_id, attempt_id),
+        ).fetchone()
+        return int(row["next_seq"]) - 1 if row is not None else 0
+
+    def unwritten_events(
+        self, *, job_id: str, attempt_id: str, older_than: float = 0.0
+    ) -> list[dict[str, Any]]:
+        """Номера, которые выданы, но так и не легли в сегмент журнала."""
+        rows = self.read().execute(
+            "SELECT * FROM event_journal WHERE job_id = ? AND attempt_id = ? "
+            "AND written = 0 AND allocated_at <= ? ORDER BY sequence ASC",
+            (job_id, attempt_id, time.time() - max(0.0, older_than)),
+        ).fetchall()
+        return [dict(r) for r in rows]

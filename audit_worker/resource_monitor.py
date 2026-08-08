@@ -20,7 +20,9 @@ try:
 except ImportError:  # psutil опционален: без него отдаём то, что даёт stdlib
     psutil = None  # type: ignore[assignment]
 
-HARD_CAP = 5
+#: Потолок расчёта слотов. Совпадает с ДОКАЗАННЫМ максимумом этапа: считать
+#: пять там, где проверены два, значило бы обещать неизвестное (см. slots.py).
+HARD_CAP = 2
 
 RAM_RESERVE_GB = 2.0            # ОС + сам агент; без норм-базы резерв скромный
 RAM_PER_JOB_LIGHT_GB = 1.0      # профиль этапа 0: тестовый процесс
@@ -160,10 +162,21 @@ class ResourceMonitor:
 
         components["s_cfg"] = self.configured_max_slots
 
-        binding = min(components, key=lambda k: components[k])
+        # При равных значениях «связывающим» называем настройку оператора: она
+        # осмысленный ответ на вопрос «почему столько», а s_la = HARD_CAP — это
+        # «ограничения нет». Раньше ничья решалась порядком ключей в словаре.
+        _PRIORITY = ("s_cfg", "s_ram", "s_disk", "s_cpu", "s_la")
+        binding = min(
+            components, key=lambda k: (components[k], _PRIORITY.index(k))
+        )
         raw = min(HARD_CAP, min(components.values()))
-        free = max(0, raw - active_jobs)
-        free = self._apply_hysteresis(free, now=now)
+        # Гистерезис применяется к ЁМКОСТИ, а не к числу свободных слотов.
+        # Иначе освобождение слота (задание закончилось) считалось бы «ростом»
+        # и ждало две минуты стабильности: третье задание не стартовало бы
+        # сразу после второго, хотя ресурсы для него уже есть. Сглаживать надо
+        # мигание ресурсов, а не факт занятости.
+        capacity = self._apply_hysteresis(raw, now=now)
+        free = max(0, capacity - active_jobs)
 
         explanation = {
             "s_ram": f"RAM: ({ram_available_gb:.1f} − {RAM_RESERVE_GB}) / "
