@@ -264,6 +264,13 @@ def main():
         return 0
 
     # Путь claude: JSON-конверт целиком на stdout.
+    if BEHAVIOUR == "broken_json":
+        # Обрывается САМ конверт, а не только содержимое поля `result`:
+        # настоящий сбой CLI выглядит как усечённый вывод, и потребитель
+        # спотыкается на первом же `json.loads(stdout)`.
+        sys.stdout.write('{{"type": "result", "subtype": "success", "result": "')
+        sys.stdout.flush()
+        return 0
     sys.stdout.write(json.dumps({{
         "type": "result",
         "subtype": "success",
