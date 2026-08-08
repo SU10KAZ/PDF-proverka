@@ -2851,7 +2851,7 @@ class PipelineManager:
         version_id = getattr(job, "version_id", None) or "v1"
         project_key = self._safe_backup_name(job.project_id)
         # Корень `comparison/` берётся из настраиваемого пути, а НЕ из BASE_DIR.
-        # Прежний `BASE_DIR / "comparison"` был единственной записью конвейера
+        # Прежняя привязка к корню кода была единственной записью конвейера
         # вне всех `AUDIT_*`-корней: на воркере снимок уезжал в каталог
         # УСТАНОВЛЕННОГО КОДА (блокер Б-4 отчёта 07). Путь сюда идёт из
         # `_dispatch_action`, то есть ровно тем маршрутом, которым работает

@@ -1082,9 +1082,37 @@ def test_batch_stays_local_only(monkeypatch):
 
 
 # ═══ §4 Исходный пакет проекта и снимки ══════════════════════════════════════
+#: Физические сегменты переносимого дерева. Раскладка стала обязательной:
+#: плоский `versions/<vid>` резолвером не находится (Б-3, отчёт 08).
+_OBJ, _DISC, _DOC, _VID = "ОБЪЕКТ-1", "АР", "ПРОЕКТ-К1", "v002"
+_PROJECT_REL = f"objects/{_OBJ}/disciplines/{_DISC}/documents/{_DOC}"
+_VERSION_REL = f"{_PROJECT_REL}/versions/{_VID}"
+
+
+def _make_v2_root(root: Path) -> Path:
+    """Метаданные объекта и документа. Без document.json адаптер молчит."""
+    doc_dir = root / _PROJECT_REL
+    doc_dir.mkdir(parents=True, exist_ok=True)
+    (doc_dir / "document.json").write_text(
+        json.dumps({"schema_version": 1, "document_code": _DOC,
+                    "object_id": "obj-1", "discipline": _DISC,
+                    "current_version": _VID,
+                    "versions": [{"version_id": _VID, "version_no": 2}]},
+                   ensure_ascii=False),
+        encoding="utf-8")
+    (doc_dir / "current_version.txt").write_text(_VID, encoding="utf-8")
+    obj_dir = root / "objects" / _OBJ
+    (obj_dir / "object.json").write_text(
+        json.dumps({"schema_version": 1, "object_id": "obj-1", "name": _OBJ},
+                   ensure_ascii=False),
+        encoding="utf-8")
+    return doc_dir
+
+
 def _make_version_tree(root: Path) -> Path:
     """Правдоподобное дерево версии projects_v2 с хардлинком и мусором."""
-    version = root / "versions" / "v002"
+    _make_v2_root(root)
+    version = root / _VERSION_REL
     (version / "01_input").mkdir(parents=True)
     (version / "02_work").mkdir(parents=True)
     (version / "03_analysis" / "latest" / "blocks_stage02_100").mkdir(parents=True)
@@ -1161,7 +1189,7 @@ def test_package_preserves_hardlinks(tmp_path):
     with tarfile.open(dest, "r:gz") as tar:
         links = [m for m in tar.getmembers() if m.islnk()]
     assert links, "хардлинков в архиве нет — они были потеряны"
-    assert all(m.linkname.startswith("payload/project/") for m in links)
+    assert all(m.linkname.startswith("payload/projects_v2/") for m in links)
 
 
 def test_package_manifest_has_required_fields(tmp_path):
@@ -1288,6 +1316,7 @@ def _audit_params(**overrides):
         "prompt_bundle_hash": "sha256:" + "b" * 64,
         "model_config_hash": "sha256:" + "c" * 64,
         "feature_flags_hash": "sha256:" + "d" * 64,
+        "runtime_snapshot_hash": "sha256:" + "e" * 64,
     }
     payload.update(overrides)
     return payload
@@ -1594,7 +1623,7 @@ def test_runner_refuses_paths_outside_attempt_dir(tmp_path, monkeypatch):
     from backend.app.pipeline import remote_audit_runner
 
     job_dir = tmp_path / "jobs" / "j" / "a"
-    (job_dir / "project").mkdir(parents=True)
+    (job_dir / "project" / "objects").mkdir(parents=True)
     spec = {"paths": {"project": str(job_dir / "project")}}
     monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", "/etc")
     monkeypatch.setenv("AUDIT_DATA_DIR", str(job_dir / "work"))
@@ -1607,19 +1636,15 @@ def test_runner_accepts_paths_inside_attempt_dir(tmp_path, monkeypatch):
     from backend.app.pipeline import remote_audit_runner
 
     job_dir = tmp_path / "jobs" / "j" / "a"
-    (job_dir / "project").mkdir(parents=True)
+    (job_dir / "project" / "objects").mkdir(parents=True)
     spec = {"paths": {"project": str(job_dir / "project")}}
-    # Проверяются ВСЕ корни данных, а не три из шести: рабочей для
-    # legacy-раскладки является как раз `AUDIT_PROJECTS_DIR`, и раньше она
-    # проверку не проходила вовсе.
-    for name, value in (
-        ("AUDIT_PROJECTS_DIR", job_dir / "project"),
-        ("AUDIT_PROJECTS_V2_DIR", job_dir / "project"),
-        ("AUDIT_DATA_DIR", job_dir / "work" / "data"),
-        ("AUDIT_APP_DATA_DIR", job_dir / "work" / "app_data"),
-        ("AUDIT_PROMPTS_DIR", job_dir / "snapshot" / "prompts"),
-        ("AUDIT_ACTION_LOG_DIR", job_dir / "logs" / "actions"),
-    ):
+    # Корни берутся из ЕДИНСТВЕННОГО их источника — `isolated_roots`. Список
+    # рос дважды (сначала `AUDIT_PROJECTS_DIR`, затем `COMPARISON_ROOT`, `HOME`,
+    # `TMPDIR` и каталоги «чистой» cwd и рабочего каталога агента модели), и
+    # перечисление их здесь копией означало бы, что тест отстаёт от кода.
+    from audit_worker import audit_runner
+
+    for name, value in audit_runner.isolated_roots(job_dir).items():
         monkeypatch.setenv(name, str(value))
     monkeypatch.delenv("AUDIT_ROOT_DIR", raising=False)
     monkeypatch.delenv("AUDIT_BASE_DIR", raising=False)
@@ -1631,7 +1656,7 @@ def test_runner_rejects_projects_dir_outside_attempt(tmp_path, monkeypatch):
     from backend.app.pipeline import remote_audit_runner
 
     job_dir = tmp_path / "jobs" / "j" / "a"
-    (job_dir / "project").mkdir(parents=True)
+    (job_dir / "project" / "objects").mkdir(parents=True)
     spec = {"paths": {"project": str(job_dir / "project")}}
     for name, value in (
         ("AUDIT_PROJECTS_DIR", tmp_path / "чужое" / "projects"),
@@ -1697,11 +1722,13 @@ def _build_result_archive(
         encoding="utf-8",
     )
     (job_dir / "logs" / "stdout.log").write_text("работа шла\n", encoding="utf-8")
-    (job_dir / "project" / "03_analysis" / "latest" / "03_findings.json").write_text(
+    worker_version_dir = job_dir / "project" / _VERSION_REL
+    (worker_version_dir / "03_analysis" / "latest").mkdir(parents=True, exist_ok=True)
+    (worker_version_dir / "03_analysis" / "latest" / "03_findings.json").write_text(
         findings, encoding="utf-8"
     )
     for rel, content in (extra_project_files or {}).items():
-        target = job_dir / "project" / rel
+        target = worker_version_dir / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
 
@@ -1751,7 +1778,8 @@ def _center_attempt(center_env, tmp_path, *, source_hash="sha256:" + "1" * 64):
 
 
 def _version_dir(tmp_path: Path) -> Path:
-    version = tmp_path / "center_project" / "versions" / "v002"
+    _make_v2_root(tmp_path / "center_project")
+    version = tmp_path / "center_project" / _VERSION_REL
     (version / "01_input").mkdir(parents=True, exist_ok=True)
     (version / "03_analysis" / "latest").mkdir(parents=True, exist_ok=True)
     (version / "01_input" / "document.pdf").write_bytes(b"%PDF original")
@@ -2231,6 +2259,7 @@ def test_audit_params_model_forbids_execution_fields():
         prompt_bundle_hash="sha256:" + "b" * 64,
         model_config_hash="sha256:" + "c" * 64,
         feature_flags_hash="sha256:" + "d" * 64,
+        runtime_snapshot_hash="sha256:" + "e" * 64,
     )
     AuditPipelineParams(**base)          # базовая форма валидна
     for field in ("command", "argv", "executable", "script", "module", "cwd", "env"):
@@ -2760,6 +2789,7 @@ def test_feature_flags_blob_is_scanned_for_secrets(center_env, admin, tmp_path, 
         prompt_bundle_hash="sha256:" + "0" * 64,
         model_config_hash="sha256:" + "1" * 64,
         feature_flags_hash="sha256:" + "2" * 64,
+        runtime_snapshot_hash="sha256:" + "3" * 64,
     )
     snapshot = {
         "files": {"prompts/task.md": "шаблон".encode("utf-8")},

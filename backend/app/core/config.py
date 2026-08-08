@@ -1352,7 +1352,11 @@ def clean_cli_cwd_root() -> str:
     raw = (os.environ.get("AUDIT_CLEAN_CWD_ROOT") or "").strip()
     if raw:
         return raw
-    return os.path.join(tempfile.gettempdir(), "sonnet_clean")
+    # `tempfile.gettempdir()` КЭШИРУЕТ результат первого вызова в
+    # `tempfile.tempdir`, поэтому один только он читал бы `TMPDIR`, каким тот
+    # был на импорте, — а воркер выставляет его позже.
+    base = (os.environ.get("TMPDIR") or "").strip() or tempfile.gettempdir()
+    return os.path.join(base, "sonnet_clean")
 
 
 def codex_workdir() -> str:

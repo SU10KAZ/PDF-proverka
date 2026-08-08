@@ -158,11 +158,16 @@ if _WRITEGUARD_ARMED and _WRITEGUARD_ALLOW:
                 return True
         return False
 
+    _wg_real_open = builtins.open
+
     def _wg_deny(op, path):
         line = "%s\\t%s\\t%s\\t%s\\n" % (os.getpid(), sys.argv[0], op, path)
         if _WRITEGUARD_LOG:
             try:
-                with open(_WRITEGUARD_LOG, "a", encoding="utf-8") as fh:
+                # ИМЕННО непатченный open: журнал сторожа лежит вне разрешённых
+                # корней, и запись через патченную обёртку уводила процесс в
+                # бесконечную рекурсию вместо диагностики.
+                with _wg_real_open(_WRITEGUARD_LOG, "a", encoding="utf-8") as fh:
                     fh.write(line)
                     fh.flush()
             except OSError:
@@ -174,7 +179,6 @@ if _WRITEGUARD_ARMED and _WRITEGUARD_ALLOW:
         # пределы каталога попытки осталась бы незамеченной.
         os._exit(96)
 
-    _wg_real_open = builtins.open
     _wg_real_os_open = os.open
     _wg_real_mkdir = os.mkdir
     _wg_real_makedirs = os.makedirs

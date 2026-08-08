@@ -85,7 +85,7 @@ def isolated_roots(job_dir: Path) -> dict[str, str]:
         "AUDIT_ACTION_LOG_DIR": str(job_dir / "logs" / "actions"),
         "COMPARISON_ROOT": str(job_dir / "comparison"),
         "AUDIT_CLEAN_CWD_ROOT": str(job_dir / "work" / "tmp" / "clean_cwd"),
-        "AUDIT_CODEX_WORKDIR": str(job_dir / "work" / "codex"),
+        "AUDIT_CODEX_WORKDIR": str(job_dir / "work" / "agent_workdir"),
         "AUDIT_BLOCK_CROP_CACHE_DIR": str(job_dir / "work" / "cache" / "block_crops"),
         "HOME": str(job_dir / "work" / "home"),
         "TMPDIR": str(job_dir / "work" / "tmp"),
