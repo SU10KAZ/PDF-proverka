@@ -44,6 +44,11 @@ def center_env(tmp_path, monkeypatch):
     monkeypatch.setenv("DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET", BOOTSTRAP)
     monkeypatch.setenv("DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES", "4096")
     monkeypatch.setenv("DISTRIBUTED_WORKERS_LONG_POLL_SEC", "1")
+    # С пред-пайплайнового этапа операторский контур закрыт ролями: анонимный
+    # клиент не может ничего изменить. Тесты ходят с НАСТОЯЩЕЙ сессией портала.
+    from tests.distributed_workers_helpers import enable_portal_roles
+
+    enable_portal_roles(monkeypatch)
 
     from backend.app.services.distributed_workers import database
     from backend.app.services.distributed_workers.settings import get_settings
@@ -57,13 +62,13 @@ def center_env(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def client(center_env):
-    from tests.distributed_workers_helpers import SyncASGITransport, make_center_app
-
-    return httpx.Client(
-        transport=SyncASGITransport(make_center_app()),
-        base_url="http://center",
-        headers={"X-Requested-With": "audit-workers"},
+    from tests.distributed_workers_helpers import (
+        ADMIN_USER,
+        make_center_app,
+        portal_client,
     )
+
+    return portal_client(make_center_app(), username=ADMIN_USER)
 
 
 def _register(client, instance_id="inst_hardening01"):
@@ -862,8 +867,14 @@ def test_pending_results_are_retried_without_restart(tmp_path, monkeypatch):
     from audit_worker.agent import WorkerAgent
     from audit_worker.local_store import LocalJobStore
 
+    import threading
+
     instance = object.__new__(WorkerAgent)
     instance.jobs = LocalJobStore(tmp_path / "jobs")
+    # Реестр ведущихся заданий: досылка обязана пропускать то, что прямо сейчас
+    # передаёт поток задания, иначе с двумя слотами один архив уехал бы дважды.
+    instance._active = {}
+    instance._active_lock = threading.Lock()
     tried: list[tuple[str, str]] = []
     instance._resume_upload = lambda j, a: tried.append((j, a))
 
@@ -958,7 +969,7 @@ def test_migration_2_upgrades_existing_database(tmp_path):
 
     version = schema.migrate(conn)
 
-    assert version == schema.SCHEMA_VERSION == 3
+    assert version == schema.SCHEMA_VERSION == 4
     columns = {r["name"] for r in conn.execute("PRAGMA table_info(workers)")}
     assert {"claim_secret_sha256", "claim_issued_at", "claim_used_at",
             "rejected_at"} <= columns

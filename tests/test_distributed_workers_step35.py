@@ -55,8 +55,12 @@ def center_env(tmp_path, monkeypatch):
     monkeypatch.setenv("DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET", BOOTSTRAP)
     monkeypatch.setenv("DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES", "4096")
     monkeypatch.setenv("DISTRIBUTED_WORKERS_LONG_POLL_SEC", "1")
-    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "false")
-    monkeypatch.setenv("DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", "true")
+    monkeypatch.setenv("DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", "false")
+    # Операторские действия закрыты ролями: тест обязан входить как настоящий
+    # пользователь портала, иначе он проверял бы обход, а не поведение.
+    from tests.distributed_workers_helpers import enable_portal_roles
+
+    enable_portal_roles(monkeypatch)
 
     from backend.app.services.distributed_workers import database
     from backend.app.services.distributed_workers.settings import get_settings
@@ -70,13 +74,13 @@ def center_env(tmp_path, monkeypatch):
 
 @pytest.fixture()
 def client(center_env):
-    from tests.distributed_workers_helpers import SyncASGITransport, make_center_app
-
-    return httpx.Client(
-        transport=SyncASGITransport(make_center_app()),
-        base_url="http://center",
-        headers={"X-Requested-With": "audit-workers"},
+    from tests.distributed_workers_helpers import (
+        ADMIN_USER,
+        make_center_app,
+        portal_client,
     )
+
+    return portal_client(make_center_app(), username=ADMIN_USER)
 
 
 def _approved_worker(client, instance_id="inst_step35_0001", name="VPS-35"):
@@ -204,7 +208,7 @@ def test_step0_database_migrates_without_data_loss(tmp_path):
     schema.apply_pragmas(conn)
     assert schema.current_version(conn) == 2
 
-    assert schema.migrate(conn) == schema.SCHEMA_VERSION == 3
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION == 4
 
     logical = conn.execute(
         "SELECT * FROM logical_jobs WHERE job_id = ?", (job_id,)
@@ -245,8 +249,8 @@ def test_migration_is_idempotent(tmp_path):
     conn.row_factory = sqlite3.Row
     schema.apply_pragmas(conn)
     schema.migrate(conn)
-    assert schema.migrate(conn) == 3
-    assert schema.migrate(conn) == 3
+    assert schema.migrate(conn) == 4
+    assert schema.migrate(conn) == 4
     assert conn.execute("SELECT COUNT(*) FROM job_attempts").fetchone()[0] == 1
     assert conn.execute("SELECT COUNT(*) FROM logical_jobs").fetchone()[0] == 1
     conn.close()

@@ -298,8 +298,10 @@ def test_real_main_registers_nothing_when_flag_off(tmp_path):
         "DISTRIBUTED_WORKERS_DATA_DIR": str(tmp_path / "off"),
     })
     assert routes["worker_api"] == []
-    # Единственное исключение — статус, он обязан отвечать всегда.
-    assert routes["admin_api"] == ["/api/workers/status"]
+    # Исключения — статус и «кто я». Оба обязаны отвечать всегда: без них экран
+    # не может ни сказать «функция отключена», ни честно показать «прав нет».
+    # Ни один из них ничего не меняет и ничего чужого не раскрывает.
+    assert sorted(routes["admin_api"]) == ["/api/workers/me", "/api/workers/status"]
     assert routes["page"] == ["/audit-workers"]
     assert routes["total"] > 100          # остальное приложение на месте
     assert not (tmp_path / "off").exists()
@@ -331,7 +333,7 @@ def test_admin_contour_not_exposed_without_portal_auth(tmp_path):
         "PORTAL_AUTH_ENABLED": "false",
         "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "false",
     })
-    assert routes["admin_api"] == ["/api/workers/status"]
+    assert sorted(routes["admin_api"]) == ["/api/workers/me", "/api/workers/status"]
     assert "/api/workers/jobs" not in routes["admin_api"]
     # Контур воркеров при этом работает: у него своя аутентификация по токену.
     assert "/api/v1/worker/register" in routes["worker_api"]

@@ -422,9 +422,20 @@ def test_executor_never_reads_worker_token():
 
 # ─── I-02 / I-03: рестарт СЕТЕВОГО агента ────────────────────────────────────
 @pytest.fixture()
-def live_center(tmp_path):
-    """Настоящий uvicorn с центром на свободном порту."""
+def live_center(tmp_path, monkeypatch):
+    """Настоящий uvicorn с центром на свободном порту.
+
+    Портальная аутентификация ВКЛЮЧЕНА: с этого этапа операторские ручки
+    закрыты ролями, и тест обязан ходить настоящей сессией. Те же переменные
+    выставляются и в процессе теста — иначе он не сможет подписать cookie тем
+    же секретом, что проверяет центр.
+    """
+    from tests.distributed_workers_helpers import portal_role_env
+
     port = _free_port()
+    role_env = portal_role_env()
+    for key, value in role_env.items():
+        monkeypatch.setenv(key, value)
     env = dict(os.environ)
     env.update({
         "PYTHONPATH": str(_ROOT),
@@ -433,8 +444,8 @@ def live_center(tmp_path):
         "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": BOOTSTRAP,
         "DISTRIBUTED_WORKERS_LONG_POLL_SEC": "2",
         "DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES": "65536",
-        "PORTAL_AUTH_ENABLED": "false",
-        "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "true",
+        "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "false",
+        **role_env,
     })
     process = subprocess.Popen(  # noqa: S603
         [PY, "-m", "uvicorn", "tests.worker_center_app:app",
@@ -454,6 +465,21 @@ def live_center(tmp_path):
         _stop(process)
 
 
+def _admin_client(url: str) -> "httpx.Client":
+    """Клиент оператора с настоящей портальной сессией администратора."""
+    from backend.app.core import portal_auth
+    from tests.distributed_workers_helpers import ADMIN_USER, session_cookie
+
+    client = httpx.Client(
+        base_url=url, timeout=10.0,
+        headers={"X-Requested-With": "audit-workers"},
+    )
+    client.cookies.set(
+        portal_auth.get_settings().cookie_name, session_cookie(ADMIN_USER)
+    )
+    return client
+
+
 def _ping(url: str) -> bool:
     try:
         return httpx.get(f"{url}/api/workers/status", timeout=1.0).status_code == 200
@@ -469,10 +495,7 @@ def test_killing_agent_does_not_stop_the_audit(tmp_path, live_center):
     root = tmp_path / "worker"
     root.mkdir(parents=True, exist_ok=True)
     env = _worker_env(root, url=live_center)
-    admin = httpx.Client(
-        base_url=live_center, timeout=10.0,
-        headers={"X-Requested-With": "audit-workers"},
-    )
+    admin = _admin_client(live_center)
 
     # 1. Регистрация настоящим агентом, 2. одобрение, 3. получение токена.
     register = subprocess.run(  # noqa: S603

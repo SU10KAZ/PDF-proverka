@@ -42,11 +42,11 @@ def center(tmp_path, monkeypatch):
     monkeypatch.setenv("DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET", BOOTSTRAP)
     monkeypatch.setenv("DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES", "4096")
     monkeypatch.setenv("DISTRIBUTED_WORKERS_LONG_POLL_SEC", "1")
-    monkeypatch.setenv("PORTAL_AUTH_ENABLED", "false")
 
     from backend.app.services.distributed_workers import database
-    from tests.distributed_workers_helpers import make_center_app
+    from tests.distributed_workers_helpers import enable_portal_roles, make_center_app
 
+    enable_portal_roles(monkeypatch)
     database.reset_state_for_tests()
     yield make_center_app()
     database.reset_state_for_tests()
@@ -61,11 +61,18 @@ def transport(center):
 
 @pytest.fixture()
 def admin(transport):
-    return httpx.Client(
+    from backend.app.core import portal_auth
+    from tests.distributed_workers_helpers import ADMIN_USER, session_cookie
+
+    client = httpx.Client(
         transport=transport,
         base_url="http://center",
         headers={"X-Requested-With": "audit-workers"},
     )
+    client.cookies.set(
+        portal_auth.get_settings().cookie_name, session_cookie(ADMIN_USER)
+    )
+    return client
 
 
 def _make_worker_config(tmp_path, transport):
@@ -171,6 +178,11 @@ def test_vertical_slice_full_cycle(tmp_path, transport, admin):
     agent._start_sender()
     try:
         with running_executor(config, max_jobs=1):
+            # Центр учитывает состояние ИСПОЛНИТЕЛЯ при расчёте ёмкости, а
+            # первый heartbeat уходил ещё до его запуска. Бьём ещё раз: пока
+            # центр считает исполнителя офлайновым, работу он не отдаёт — и это
+            # правильно, назначать процессы некому.
+            agent.heartbeat.beat_once()
             assignment = agent.poller.poll(free_slots=2, compressions=["gzip"])
             assert assignment is not None
             assert assignment["job_type"] == "test_pipeline_v1"

@@ -272,20 +272,44 @@ def test_slots_respect_hard_cap_and_config(tmp_path):
 
 
 def test_slots_hysteresis_shrinks_fast_grows_slow(tmp_path):
-    from audit_worker.resource_monitor import SLOT_GROW_STABLE_SEC, ResourceMonitor
+    """Гистерезис сглаживает РЕСУРСЫ: падение мгновенно, рост — после паузы."""
+    from audit_worker.resource_monitor import (
+        HARD_CAP,
+        SLOT_GROW_STABLE_SEC,
+        ResourceMonitor,
+    )
 
-    monitor = ResourceMonitor(tmp_path, configured_max_slots=5)
+    monitor = ResourceMonitor(tmp_path, configured_max_slots=HARD_CAP)
     good = dict(ram_available_gb=64, swap_used_gb=0, disk_free_gb=500,
                 cores=16, la5=0.0, active_jobs=0)
-    assert monitor.calculate_slots(**good, now=0.0).calculated_free == 5
-    # Сокращение — мгновенно.
-    assert monitor.calculate_slots(**{**good, "active_jobs": 4}, now=1.0).calculated_free == 1
-    # Рост — только после периода стабильности.
-    assert monitor.calculate_slots(**good, now=2.0).calculated_free == 1
-    assert monitor.calculate_slots(**good, now=3.0).calculated_free == 1
+    assert monitor.calculate_slots(**good, now=0.0).calculated_free == HARD_CAP
+    # Перегруженный процессор срезает ёмкость сразу.
+    loaded = {**good, "la5": 16 * 2.0}
+    assert monitor.calculate_slots(**loaded, now=1.0).calculated_free == 0
+    # Возврат ресурсов — только после периода стабильности.
+    assert monitor.calculate_slots(**good, now=2.0).calculated_free == 0
+    assert monitor.calculate_slots(**good, now=3.0).calculated_free == 0
     assert monitor.calculate_slots(
         **good, now=3.0 + SLOT_GROW_STABLE_SEC + 1
-    ).calculated_free == 5
+    ).calculated_free == HARD_CAP
+
+
+def test_finished_job_frees_slot_immediately(tmp_path):
+    """Освобождение слота — НЕ «рост ресурсов» и ждать стабильности не должно.
+
+    Гистерезис применяется к ЁМКОСТИ, а занятость вычитается после него. Пока
+    было наоборот, третье задание не могло стартовать сразу после второго: две
+    минуты «периода стабильности» на ровном месте.
+    """
+    from audit_worker.resource_monitor import HARD_CAP, ResourceMonitor
+
+    monitor = ResourceMonitor(tmp_path, configured_max_slots=HARD_CAP)
+    good = dict(ram_available_gb=64, swap_used_gb=0, disk_free_gb=500,
+                cores=16, la5=0.0)
+    assert monitor.calculate_slots(**good, active_jobs=0, now=0.0).calculated_free == HARD_CAP
+    assert monitor.calculate_slots(**good, active_jobs=2, now=1.0).calculated_free == 0
+    assert monitor.calculate_slots(**good, active_jobs=1, now=2.0).calculated_free == 1
+    assert monitor.calculate_slots(**good, active_jobs=0, now=3.0).calculated_free == HARD_CAP
 
 
 def test_snapshot_explains_binding_constraint(tmp_path):
