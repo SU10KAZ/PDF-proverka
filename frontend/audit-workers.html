@@ -144,7 +144,11 @@
                 <label>Действие
                     <select id="remoteAuditAction" class="input">
                         <option value="full">полный аудит</option>
-                        <option value="audit">аудит без оптимизации</option>
+                        <!-- «audit» на платформе тоже включает оптимизацию
+                             (_run_ocr_pipeline с include_optimization по
+                             умолчанию); подпись «без оптимизации» была бы
+                             неправдой. -->
+                        <option value="audit">аудит (действие audit)</option>
                         <option value="resume">продолжить с места обрыва</option>
                     </select>
                 </label>

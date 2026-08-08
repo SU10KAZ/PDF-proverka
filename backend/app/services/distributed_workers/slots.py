@@ -270,6 +270,15 @@ def effective_limit(
         components["disk"] = 0
         blocked = blocked or "Критически мало места на диске воркера"
 
+    # Состояние самого воркера. Раньше его знала только `can_receive_jobs`, чей
+    # вердикт применялся ТОЛЬКО если в причине встречалось слово «диск», — то
+    # есть воркер, плавно уходящий в останов (`draining`) или объявивший себя
+    # `degraded`, продолжал получать новую работу.
+    worker_state = str(worker.get("worker_state") or "").strip().lower()
+    if worker_state in ("draining", "drained", "degraded", "revoked"):
+        components["worker_state"] = 0
+        blocked = blocked or f"Воркер сообщил состояние «{worker_state}»"
+
     expected_proto = protocol_version
     if expected_proto is not None:
         worker_proto = int(worker.get("protocol_version") or 0)

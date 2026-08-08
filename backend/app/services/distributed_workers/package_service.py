@@ -430,7 +430,14 @@ def validate_result_package(
                 forbidden_hits.append(f"outside_payload:{safe_name}")
                 continue
             rel = safe_name[len(PAYLOAD_ROOT):]
-            if any(rel.startswith(p) for p in forbidden_prefixes):
+            # У пакета реального аудита раскладка вложенная
+            # (`payload/project/01_input/...`), поэтому сравнение только с
+            # началом `rel` не давало НИ ОДНОГО совпадения: первый рубеж был
+            # мёртв, и всё держалось на плане изменений импортёра.
+            probe = rel[len("project/"):] if rel.startswith("project/") else rel
+            if any(
+                rel.startswith(p) or probe.startswith(p) for p in forbidden_prefixes
+            ):
                 forbidden_hits.append(f"forbidden_path:{rel}")
                 continue
             if member.isfile() and member.size > 0:

@@ -62,6 +62,12 @@ CENTRAL_ONLY_ARTIFACTS: frozenset[str] = frozenset(
         "03a_norms_verified.json",
         "decision_carryover_report.json",
         "migrated_findings_report.json",
+        # Разметка эксперта: канонический путь — `04_review/expert_review.json`,
+        # но у неё есть вторая точка чтения `03_analysis/latest/expert_review.json`
+        # ВНУТРИ разрешённого воркеру префикса, и `save_expert_review` сливает
+        # её в канонический файл. Защита по префиксу этого не ловит — нужна по
+        # ИМЕНИ, иначе устаревшая копия с воркера возвращает снятые вердикты.
+        "expert_review.json",
     }
 )
 
@@ -121,7 +127,19 @@ def import_result_for_attempt(
         },
         settings=settings,
     )
-    return {**report, "applied": True, "replayed": False}
+    # Учёт расхода — часть приёма, а не отдельная кнопка. Пока вызова здесь не
+    # было, `apply_usage_report` не вызывался в проде НИ ОТКУДА: отчёт воркера
+    # доезжал до центра и выбрасывался, `usage_applied_at` оставался пустым.
+    usage_applied: dict[str, Any] = {"applied": False, "reason": "no_report"}
+    try:
+        usage_applied = apply_usage_report(
+            attempt={**attempt, "usage_applied_at": attempt.get("usage_applied_at")},
+            usage_report=report.get("usage_report") or {},
+            settings=settings,
+        )
+    except Exception as exc:                       # noqa: BLE001 — учёт не блокирует приём
+        usage_applied = {"applied": False, "reason": f"error: {type(exc).__name__}"}
+    return {**report, "applied": True, "replayed": False, "usage_applied": usage_applied}
 
 
 def _resolve_version_dir(attempt: dict[str, Any]) -> Path:
@@ -308,7 +326,7 @@ def apply_result_package(
     _dump(journal_path, journal)
 
     usage_report = _read_usage(payload)
-    resume_stage = _detect_resume_stage(version_dir)
+    resume_stage = _detect_resume_stage(attempt)
     return {
         "applied_paths": applied,
         "skipped_source": plan["skipped_source"],
@@ -366,39 +384,70 @@ def apply_usage_report(
     if not usage_report:
         return {"applied": False, "reason": "empty"}
 
+    from datetime import datetime
+
+    from backend.app.models.usage import UsageRecord
     from backend.app.services.common import usage_service
 
     entries = usage_report.get("entries") or []
     recorded = 0
+    failed: list[str] = []
+    stamp = datetime.now().isoformat()
+    project_id = str(attempt.get("project_id") or "")
     for entry in entries:
         try:
+            # record_usage принимает ОБЪЕКТ UsageRecord. Вызов по именованным
+            # аргументам давал TypeError, который глушился `except` — отчёт о
+            # расходе терялся молча, а `usage_applied_at` при этом ставился,
+            # то есть повторить применение было уже нельзя.
             usage_service.usage_tracker.record_usage(
-                project_id=str(attempt.get("project_id") or ""),
-                model=str(entry.get("model") or "unknown"),
-                input_tokens=int(entry.get("input_tokens") or 0),
-                output_tokens=int(entry.get("output_tokens") or 0),
-                stage=str(entry.get("stage") or ""),
+                UsageRecord(
+                    timestamp=stamp,
+                    project_id=project_id,
+                    stage=str(entry.get("stage") or ""),
+                    model=str(entry.get("model") or "unknown"),
+                    cost_usd=float(entry.get("cost_usd") or 0.0),
+                    cost_usd_notional=float(entry.get("cost_usd_notional") or 0.0),
+                    duration_ms=int(entry.get("duration_ms") or 0),
+                    api_calls=max(1, int(entry.get("calls") or 1)),
+                    input_tokens=int(entry.get("input_tokens") or 0),
+                    output_tokens=int(entry.get("output_tokens") or 0),
+                    cache_creation_tokens=int(entry.get("cache_creation_tokens") or 0),
+                    cache_read_tokens=int(entry.get("cache_read_tokens") or 0),
+                )
             )
             recorded += 1
-        except Exception:                          # noqa: BLE001 — учёт fail-soft
-            continue
+        except Exception as exc:                   # noqa: BLE001 — учёт fail-soft
+            failed.append(f"{entry.get('stage')}: {type(exc).__name__}")
+    if entries and not recorded:
+        # Ни одна запись не легла — это дефект, а не «пустой отчёт». Отметку
+        # НЕ ставим: иначе расход теряется навсегда без возможности повтора.
+        return {"applied": False, "reason": "record_failed", "errors": failed[:5]}
     repositories.update_attempt_fields(
         attempt["attempt_id"], {"usage_applied_at": time.time()}, settings=settings
     )
-    return {"applied": True, "entries": recorded}
+    return {"applied": True, "entries": recorded, "errors": failed[:5]}
 
 
 # ─── Вспомогательное ─────────────────────────────────────────────────────────
-def _detect_resume_stage(version_dir: Path) -> Optional[str]:
+def _detect_resume_stage(attempt: dict[str, Any]) -> Optional[str]:
     """Спросить СУЩЕСТВУЮЩИЙ детектор, что делать дальше.
 
     Своей логики «какой этап следующий» здесь нет и не должно быть: она уже
     написана и используется локальным конвейером.
+
+    Сигнатура детектора — `(project_id, *, version_id)`; он сам резолвит
+    каталог версии и знает про v2-раскладку. Раньше сюда передавался ПУТЬ
+    (`version_dir/_output`), из-за чего `resolve_project_dir` падал, исключение
+    глушилось, и подсказка ВСЕГДА была None.
     """
     try:
         from backend.app.pipeline.resume_detector import detect_resume_stage
 
-        info = detect_resume_stage(str(Path(version_dir) / "_output"))
+        info = detect_resume_stage(
+            str(attempt.get("project_id") or ""),
+            version_id=attempt.get("version_id"),
+        )
         return info.get("stage") if isinstance(info, dict) else None
     except Exception:                              # noqa: BLE001 — диагностика, не блокер
         return None

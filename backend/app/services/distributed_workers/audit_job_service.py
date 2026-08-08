@@ -405,7 +405,25 @@ def build_audit_source_package(
         },
     }
 
-    manifest = project_package.build_project_source_package(
+    # Рубеж, а не «на всякий случай»: пакет уезжает на чужой VPS. Проверка идёт
+    # ДО записи архива — иначе рядом остаётся sidecar-манифест уже удалённого
+    # пакета. Сканируется и блоб флагов: он попадает в архив отдельной записью,
+    # а фильтр `collect_feature_flags_snapshot` смотрит только на ИМЕНА ключей.
+    scan_targets = [(name, blob) for name, blob in snapshot_files.items()]
+    scan_targets.append(
+        (
+            "snapshot/feature_flags.json",
+            json.dumps(snapshot["feature_flags"], ensure_ascii=False).encode("utf-8"),
+        )
+    )
+    leaks = project_package.find_secrets_in_files(scan_targets)
+    if leaks:
+        raise AuditJobError(
+            "В снимке конфигурации найдены секреты — пакет не собран: "
+            + "; ".join(leaks[:5])
+        )
+
+    return project_package.build_project_source_package(
         dest_path=dest_path,
         version_dir=version_dir,
         manifest_base=manifest_base,
@@ -413,15 +431,3 @@ def build_audit_source_package(
         feature_flags=snapshot["feature_flags"],
         compression=compression,
     )
-
-    # Рубеж, а не «на всякий случай»: пакет уезжает на чужой VPS.
-    leaks = project_package.find_secrets_in_files(
-        [(name, blob) for name, blob in snapshot_files.items()]
-    )
-    if leaks:
-        dest_path.unlink(missing_ok=True)
-        raise AuditJobError(
-            "В снимке конфигурации найдены секреты — пакет не собран: "
-            + "; ".join(leaks[:5])
-        )
-    return manifest

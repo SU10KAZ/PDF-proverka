@@ -90,6 +90,47 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             return None
         return repositories.get_attempt(handle.attempt_id, settings=get_settings())
 
+    @staticmethod
+    def _handle_still_valid(attempt: dict[str, Any]) -> bool:
+        """Можно ли продолжать работать по сохранённой ссылке.
+
+        Существования строки недостаточно: `get_attempt` возвращает и
+        признанную потерянной, и заменённую (superseded) попытку. Продолжать по
+        такой ссылке значило бы вечно опрашивать мёртвую попытку и никогда не
+        импортировать результат новой.
+        """
+        if attempt.get("superseded_by_attempt"):
+            return False
+        return str(attempt.get("attempt_disposition") or "active") != "operator_declared_lost"
+
+    @staticmethod
+    def _connectivity(attempt: dict[str, Any]) -> str:
+        """Связь с воркером по ЕГО строке, а не по колонке попытки.
+
+        `job_attempts.connectivity_state` не пишет никто (проверено грепом по
+        backend: только чтения и дефолт `'online'` из схемы). Опираться на неё
+        значило бы всегда сообщать «связь есть», в том числе на VPS, молчащем
+        сутки. Реальный источник — `workers.last_seen_at`, пересчитанный по
+        текущему времени центра.
+        """
+        from backend.app.services.distributed_workers import repositories, worker_registry
+        from backend.app.services.distributed_workers.settings import get_settings
+
+        worker_id = str(attempt.get("assigned_worker_id") or "")
+        if not worker_id:
+            return str(attempt.get("connectivity_state") or "")
+        try:
+            settings = get_settings()
+            row = repositories.get_worker(worker_id, settings=settings)
+            if not row:
+                return "unknown"
+            state = worker_registry.compute_connectivity(
+                row.get("last_seen_at"), settings=settings,
+            )
+            return str(getattr(state, "value", state) or "unknown")
+        except Exception:                          # noqa: BLE001 — диагностика не блокер
+            return str(attempt.get("connectivity_state") or "")
+
     # ─── Контракт ────────────────────────────────────────────────────────────
     async def prepare(
         self, request: ExecutionRequest, ctx: ExecutionContext
@@ -113,8 +154,9 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             attempt = await database.run_db(
                 repositories.get_attempt, existing.attempt_id, settings=settings
             )
-            if attempt is not None:
-                # Попытка жива — переиспользуем её. Второго задания нет.
+            if attempt is not None and self._handle_still_valid(attempt):
+                # Попытка жива и актуальна — переиспользуем её. Второго
+                # задания нет.
                 return existing
 
         if not request.assigned_worker_id:
@@ -235,7 +277,7 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
                 Liveness.UNKNOWN,
                 "оператор признал попытку потерянной: процесс на VPS мог остаться жив",
             )
-        connectivity = str(attempt.get("connectivity_state") or "")
+        connectivity = await database.run_db(self._connectivity, attempt)
         if connectivity == "offline":
             return LivenessVerdict(
                 Liveness.UNKNOWN,
@@ -306,11 +348,28 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             last_seq = await self._relay_events(handle, last_seq, settings)
             if state in _TERMINAL:
                 break
-            if ctx.job is not None and getattr(ctx.job, "status", None) is not None:
-                # Оператор нажал «Остановить» — job уже помечен CANCELLED
-                # менеджером. Работу это не обрывает: воркеру уходит команда,
-                # а мы продолжаем ждать её подтверждения.
-                pass
+            # Вторая ось. `mark_lost` и `create_attempt` СОЗНАТЕЛЬНО не трогают
+            # execution_state (процесс на VPS мог остаться жив), поэтому по
+            # состоянию такая попытка «выполняется» вечно. Без этой проверки
+            # ожидание крутилось бы бесконечно, держа слот очереди, а результат
+            # НОВОЙ попытки не импортировал бы никто.
+            disposition = str(attempt.get("attempt_disposition") or "active")
+            if disposition == "operator_declared_lost":
+                return ExecutionResult(
+                    success=False,
+                    error=(
+                        "Оператор признал попытку потерянной. Процесс на VPS мог "
+                        "остаться жив; повторный запуск делается новой попыткой."
+                    ),
+                )
+            if attempt.get("superseded_by_attempt"):
+                return ExecutionResult(
+                    success=False,
+                    error=(
+                        "Попытка заменена новой (superseded) — результат этой "
+                        "попытки центром не применяется."
+                    ),
+                )
             await asyncio.sleep(POLL_INTERVAL_SEC)
 
         return await self.collect_result(handle)

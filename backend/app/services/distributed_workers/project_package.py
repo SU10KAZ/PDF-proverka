@@ -67,6 +67,17 @@ FORBIDDEN_FILENAMES: frozenset[str] = frozenset(
         ".credentials.json", "auth.json", "workers.db", "worker.db",
         "batch_queue.json", "paid_cost.json", "paid_cost_events.jsonl",
         "usage_data.json", "decisions_log.json", "norms_paragraphs.json",
+        # Центральные артефакты. Отправлять их воркеру нельзя не из-за
+        # секретности, а из-за АСИММЕТРИИ: сборщик пакета результата возвращает
+        # всё дерево `03_analysis/`, а импортёр отклоняет ВЕСЬ пакет, увидев
+        # центральный артефакт. На любом повторном аудите версии, где нормы уже
+        # проходили, многочасовой прогон выбрасывался целиком.
+        "norm_checks.json", "norm_checks_llm.json", "03a_norms_verified.json",
+        "decision_carryover_report.json", "migrated_findings_report.json",
+        # Разметка эксперта. У неё есть вторая каноническая точка ВНУТРИ
+        # разрешённого воркеру префикса (`03_analysis/latest/expert_review.json`),
+        # и вернувшаяся устаревшая копия «воскресила» бы снятые вердикты.
+        "expert_review.json",
     }
 )
 
@@ -438,10 +449,29 @@ def find_secrets_in_files(files: Iterable[tuple[str, bytes]]) -> list[str]:
         (re.compile(rb"wtk_[A-Za-z0-9_\-]{20,}"), "worker token"),
         (re.compile(rb"etk_[A-Za-z0-9_\-]{20,}"), "execution token"),
         (re.compile(rb"clm_[A-Za-z0-9_\-]{20,}"), "claim secret"),
-        (re.compile(rb"sk-[A-Za-z0-9]{20,}"), "api key"),
+        # Дефис сразу после префикса — норма современных ключей
+        # (`sk-ant-api03-…`, `sk-or-v1-…`, `sk-proj-…`), а прежний класс
+        # символов её не допускал: ни один реальный ключ не ловился.
+        (re.compile(rb"sk-[A-Za-z0-9_\-]{20,}"), "api key"),
+        (re.compile(rb"AKIA[0-9A-Z]{16}"), "aws access key"),
+        (re.compile(rb"AIza[0-9A-Za-z_\-]{30,}"), "google api key"),
+        (re.compile(rb"gh[pous]_[A-Za-z0-9]{20,}"), "github token"),
+        (re.compile(rb"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "private key"),
+        (re.compile(rb"eyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\."), "jwt"),
+        (re.compile(rb"[Aa]uthorization\s*[:=]\s*['\"]?Bearer\s"), "bearer header"),
+        (re.compile(rb"(?i)(postgres|mysql|redis|amqp)://[^\s:@]+:[^\s@]+@"), "dsn with password"),
         (re.compile(rb"PORTAL_SESSION_SECRET\s*="), "portal session secret"),
         (re.compile(rb"PORTAL_AUTH_USERS\s*="), "portal users"),
-        (re.compile(rb"OPENROUTER_API_KEY\s*="), "openrouter key"),
+        # Имена ключей провайдеров — и в env-форме (`KEY=`), и в JSON-форме
+        # (`"KEY":`): снимок флагов приезжает именно JSON'ом.
+        (
+            re.compile(
+                rb"(?i)(OPENROUTER|OPENAI|ANTHROPIC|GOOGLE|GEMINI|DEEPSEEK|QWEN)"
+                rb"_API_KEY[\"']?\s*[:=]"
+            ),
+            "provider api key",
+        ),
+        (re.compile(rb"(?i)DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET[\"']?\s*[:=]"), "bootstrap secret"),
         (re.compile(rb"pbkdf2_sha256\$"), "password hash"),
     )
     hits: list[str] = []

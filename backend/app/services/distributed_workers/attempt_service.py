@@ -58,6 +58,14 @@ DEFAULT_CANCEL_GRACE_SEC = 30
 # делает это атомарным переходом `assigned → source_uploading`.
 UNDISPATCHED_STATES = frozenset({JobState.CREATED, JobState.ASSIGNED})
 
+# Состояния «прогон закончен, идёт возврат результата». Ребра в
+# `cancel_requested` из них нет намеренно — останавливать уже нечего. Отмена в
+# этих состояниях отвечает `already_finishing`, а не роняет запрос: раньше
+# интерфейс показывал кнопку, а нажатие давало 500 без записи в журнал.
+FINISHING_STATES = frozenset(
+    {JobState.RESULT_UPLOADING, JobState.RESULT_RECEIVED, JobState.VALIDATING}
+)
+
 # Расположения, поверх которых разрешено заводить новую попытку (§5.3).
 RESUMABLE_DISPOSITIONS = frozenset(
     {"completed", "cancelled", "operator_declared_lost", "superseded"}
@@ -188,6 +196,48 @@ def request_cancel(
         result = _cancel_undispatched(
             attempt=attempt, reason=reason, actor=actor, settings=settings,
         )
+        if result is not None:
+            _log_action(
+                action_type="cancel_attempt", actor=actor, attempt=attempt, reason=reason,
+                idempotency_key=idempotency_key, audit=audit, result=result,
+                requested={"grace_period_sec": grace_period_sec}, settings=settings,
+            )
+            return result
+        # Выдача успела раньше нас. Ветка была выбрана по снимку, прочитанному
+        # ВНЕ транзакции, поэтому «уходим на обычный путь ниже» — не автоматика,
+        # а вот эта перечитка. Без неё оператор получал 500, отмена не
+        # выполнялась ни как факт, ни как просьба, и в журнале не было ничего.
+        attempt = load_attempt(job_id=job_id, attempt_id=attempt_id, settings=settings)
+        state = JobState(attempt["state"])
+        if state in TERMINAL_JOB_STATES:
+            result = {
+                "outcome": "already_final",
+                "state": state.value,
+                "message": "Попытка завершилась во время запроса отмены — результат сохранён",
+            }
+            _log_action(
+                action_type="cancel_attempt", actor=actor, attempt=attempt, reason=reason,
+                idempotency_key=idempotency_key, audit=audit, result=result,
+                requested={"grace_period_sec": grace_period_sec}, settings=settings,
+            )
+            return result
+
+    if state in FINISHING_STATES:
+        # Работа на воркере закончена, идёт возврат результата. Ребра в
+        # `cancel_requested` из этих состояний нет намеренно: останавливать
+        # нечего, а `transition` дал бы 500 при кнопке, которую интерфейс
+        # показывал. Отвечаем честно, вместо того чтобы ронять запрос.
+        result = {
+            "outcome": "already_finishing",
+            "state": state.value,
+            "command_id": None,
+            "command_status": "not_required",
+            "message": (
+                "Прогон на воркере уже закончен, идёт возврат результата — "
+                "останавливать нечего. Если результат не нужен, дождитесь "
+                "приёма и отклоните его."
+            ),
+        }
         _log_action(
             action_type="cancel_attempt", actor=actor, attempt=attempt, reason=reason,
             idempotency_key=idempotency_key, audit=audit, result=result,
@@ -204,7 +254,15 @@ def request_cancel(
         if c.get("attempt_id") == attempt_id
         and c.get("command_type") == WorkerCommandType.CANCEL_ATTEMPT.value
     ]
-    unfinished = [c for c in prior_cancels if c.get("acknowledged_at") is None]
+    # Протухшая команда (`status='expired'`) тоже не подтверждена, но
+    # переиспользовать её ключ нельзя: `enqueue_command` наткнётся на
+    # уникальный индекс и вернёт СТАРУЮ строку, которую `pending_commands`
+    # воркеру уже не отдаёт. Оператор увидел бы «команда будет доставлена», а
+    # доставлять было бы нечего.
+    unfinished = [
+        c for c in prior_cancels
+        if c.get("acknowledged_at") is None and c.get("status") != "expired"
+    ]
     command_key = (
         unfinished[0]["idempotency_key"]
         if unfinished
@@ -285,7 +343,10 @@ def _cancel_undispatched(
     except job_service.IllegalTransition:
         fresh = repositories.get_attempt(attempt["attempt_id"], settings=settings) or {}
         if fresh.get("state") != JobState.CANCELLED.value:
-            raise
+            # Состояние уехало вперёд (выдача успела первой) — это не ошибка, а
+            # проигранная гонка. Возвращаем None: вызывающий перечитает попытку
+            # и пойдёт обычным путём с командой воркеру.
+            return None
     return {
         "outcome": "cancelled_before_dispatch",
         "state": JobState.CANCELLED.value,
@@ -609,7 +670,11 @@ def request_data_deletion(
         if c.get("attempt_id") == attempt_id
         and c.get("command_type") == WorkerCommandType.DELETE_ATTEMPT_DATA.value
     ]
-    unfinished = [c for c in prior_deletes if c.get("acknowledged_at") is None]
+    # Протухшую команду не переиспользуем — см. пояснение в request_cancel.
+    unfinished = [
+        c for c in prior_deletes
+        if c.get("acknowledged_at") is None and c.get("status") != "expired"
+    ]
     command_key = (
         unfinished[0]["idempotency_key"]
         if unfinished
@@ -749,6 +814,7 @@ def attempts_view(
         view["can_cancel"] = (
             attempt.get("attempt_disposition") == "active"
             and JobState(attempt["state"]) not in TERMINAL_JOB_STATES
+            and JobState(attempt["state"]) not in FINISHING_STATES
             and attempt["state"] != JobState.CANCEL_REQUESTED.value
         )
         view["can_mark_lost"] = attempt.get("attempt_disposition") == "active"

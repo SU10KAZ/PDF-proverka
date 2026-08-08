@@ -52,6 +52,26 @@ def remote_execution_available() -> tuple[bool, str]:
     return True, ""
 
 
+CENTRAL_STAGES_DISABLED_ENV = "AUDIT_PIPELINE_CENTRAL_STAGES_DISABLED"
+
+
+def central_stages_disabled() -> bool:
+    """Запрещены ли в ЭТОМ процессе этапы, которые выполняются только на центре.
+
+    Единица запрета — процесс, а не элемент очереди, и это точно соответствует
+    реальности: процесс `remote_audit_runner` целиком является удалённой ногой
+    одного аудита. На центре переменная не выставлена никогда, поэтому обычный
+    локальный конвейер этой проверки не замечает.
+
+    Без такого гейта `_dispatch_action(action="full")` на воркере выполнял бы
+    `norm_verify`, `debt_control`, `decision_carryover` и Excel — то есть ровно
+    те четыре этапа, которые профиль `remote_audit_pilot_v1` объявляет
+    центральными. Проверка `FORBIDDEN_STAGES` в `remote_audit_runner` их не
+    ловит: она сверяет только явный `retry_stage`.
+    """
+    return _env_bool(CENTRAL_STAGES_DISABLED_ENV, False)
+
+
 def item_execution_mode(item: Any) -> ExecutionMode:
     """Режим исполнения элемента очереди. Источник истины — сам элемент.
 
@@ -63,11 +83,19 @@ def item_execution_mode(item: Any) -> ExecutionMode:
     try:
         mode = ExecutionMode(str(raw))
     except ValueError:
-        return ExecutionMode.LOCAL
+        mode = ExecutionMode.LOCAL
     if mode is ExecutionMode.REMOTE_WORKER and not getattr(item, "worker_id", None):
         # Удалённый режим без воркера бессмыслен. Молча исполнить локально
         # безопаснее, чем упасть: элемент попал сюда из персистентной очереди.
         return ExecutionMode.LOCAL
+    if mode is ExecutionMode.LOCAL and handle_from_item(item) is not None:
+        # У элемента есть ссылка на УЖЕ созданное удалённое исполнение, но
+        # режим/worker_id потерялись (ручная правка JSON, частичная запись,
+        # будущая правка кода). Локальный прогон здесь означал бы второе
+        # исполнение того же проекта поверх живой удалённой попытки — с
+        # `_clean_stage_files` в начале. Возвращаем удалённый режим: пусть
+        # `select_backend` честно откажет, если флаг выключен.
+        return ExecutionMode.REMOTE_WORKER
     return mode
 
 

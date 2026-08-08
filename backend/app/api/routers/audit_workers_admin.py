@@ -426,6 +426,9 @@ async def audit_launch(
             worker_id=payload.worker_id,
             version_id=payload.version_id,
             action=payload.action,
+            # Атрибуция запуска на чужой VPS — не косметика: она попадает в
+            # `logical_jobs.created_by` и в журнал переходов.
+            actor=actor.subject or actor.display_name or "operator",
         )
     except RuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc

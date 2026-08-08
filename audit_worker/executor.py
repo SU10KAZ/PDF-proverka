@@ -721,6 +721,17 @@ class Executor:
             raise audit_runner.AuditJobRejected(
                 f"Каталог поддельных провайдеров не найден: {path}"
             )
+        # Существующего каталога недостаточно. Пустой (или указанный на
+        # `~/.local/bin`) каталог префиксует PATH, ничего не перекрывая, — и
+        # `which("claude")` находит НАСТОЯЩИЙ CLI, пока воркер рапортует центру
+        # provider_mode="fake". Маркер каталога — единственное, что превращает
+        # это заявление в проверяемый факт.
+        if not audit_runner.provider_dir_is_fake(path):
+            raise audit_runner.AuditJobRejected(
+                f"Каталог {path} не помечен как поддельный (нет PROVIDERS.json "
+                "с mode=fake либо в нём нет нужных подделок). Настоящие модели "
+                "запрещены, поэтому задание отвергнуто."
+            )
         return path
 
     def run_audit_attempt(self, item: dict[str, Any]) -> dict[str, Any]:

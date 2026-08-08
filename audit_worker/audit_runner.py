@@ -168,6 +168,37 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
     )
 
 
+#: Имя файла-маркера, которым каталог провайдеров объявляет себя поддельным.
+#: Сами имена исполняемых файлов берутся ИЗ маркера — в пакете воркера их нет.
+PROVIDER_MARKER_FILE = "PROVIDERS.json"
+
+
+def provider_dir_is_fake(path: Path) -> bool:
+    """Подтвердить, что каталог содержит подделки, а не настоящие CLI.
+
+    Существования каталога недостаточно: пустой каталог (или указанный на
+    `~/.local/bin`) префиксует PATH, ничего не перекрывая, и настоящий бинарь
+    находится обычным резолвом — при том, что центру уже отрапортовано
+    `provider_mode="fake"`. Маркер превращает заявление в проверяемый факт.
+    """
+    marker = Path(path) / PROVIDER_MARKER_FILE
+    if not marker.is_file():
+        return False
+    try:
+        data = json.loads(marker.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(data, dict) or data.get("mode") != "fake":
+        return False
+    names = data.get("binaries")
+    if not isinstance(names, list) or not names:
+        return False
+    return all(
+        isinstance(name, str) and name and (Path(path) / name).is_file()
+        for name in names
+    )
+
+
 def build_argv(spec_path: Path, *, config: Any) -> list[str]:
     """Фиксированный argv. Переменная часть одна — путь к спецификации."""
     python = str(getattr(config, "pipeline_python", "") or "") or (
@@ -197,6 +228,11 @@ def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> di
     env["AUDIT_PROMPTS_DIR"] = str(job_dir / "snapshot" / "prompts")
     env["AUDIT_ACTION_LOG_DIR"] = str(job_dir / "logs" / "actions")
     env["TMPDIR"] = str(job_dir / "work" / "tmp")
+    # Белый список бесполезен, если процесс восстановит окружение сам:
+    # конфигурация платформы на импорте вызывает `load_dotenv()`, а тот ищет
+    # `.env` вверх от файла и находит его в корне УСТАНОВЛЕННОГО кода. Оттуда
+    # вернулись бы и ключи платных API, и `PAID_API_ENABLED=true`.
+    env["AUDIT_DISABLE_DOTENV"] = "1"
     if provider_dir is not None:
         # Поддельные провайдеры: путь и явные переменные, по которым конвейер
         # резолвит бинари. PATH тоже правится — часть путей резолва идёт через
@@ -204,6 +240,12 @@ def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> di
         env["PATH"] = f"{provider_dir}:{env.get('PATH', '')}"
         env["AUDIT_WORKER_PROVIDER_MODE"] = "fake"
         env["AUDIT_WORKER_FAKE_PROVIDER_DIR"] = str(provider_dir)
+        # Точки резолва, которые обходят PATH и берут путь из своей переменной,
+        # а также платный HTTP-путь (подделкой CLI он не закрывается вовсе)
+        # перекрываются НА СТОРОНЕ КОДА ПЛАТФОРМЫ, в
+        # backend/app/pipeline/remote_audit_runner.enforce_fake_providers: имена
+        # исполняемых файлов моделей в пакете воркера не упоминаются намеренно
+        # (проверяется тестом test_no_llm_invocation_in_worker_package).
     else:
         env["AUDIT_WORKER_PROVIDER_MODE"] = "real"
     return env

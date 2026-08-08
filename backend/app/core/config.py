@@ -8,7 +8,17 @@ import shutil
 from pathlib import Path
 
 from dotenv import load_dotenv
-load_dotenv()
+
+# AUDIT_DISABLE_DOTENV=1 — единственный способ запустить конвейер с окружением
+# ИЗ БЕЛОГО СПИСКА и никаким другим. Нужен удалённому исполнению на воркере:
+# `load_dotenv()` ищет `.env` вверх от этого файла и находит его в корне
+# установленного кода платформы, восстанавливая всё, что воркер намеренно не
+# передал — включая ключи платных API и `PAID_API_ENABLED`. Обычный запуск
+# центра переменную не выставляет, поэтому его поведение не меняется.
+if os.environ.get("AUDIT_DISABLE_DOTENV", "").strip().lower() not in {
+    "1", "true", "yes", "on",
+}:
+    load_dotenv()
 
 
 def _env_bool(name: str, default: bool) -> bool:
