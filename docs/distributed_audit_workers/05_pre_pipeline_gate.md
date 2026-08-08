@@ -49,8 +49,9 @@ WorkerCommand, журнал операторских действий, разд�
 RetentionManager, предупреждения по диску, безопасный экран без `innerHTML`, два
 systemd-юнита, 256 тестов и живой smoke.
 
-Гарантии этапа 3.5 сохранены целиком: все 256 его тестов зелёные и на этой ветке
-(с семью изменениями ожиданий, перечисленными и объяснёнными в §31).
+Гарантии этапа 3.5 сохранены целиком: все его тесты зелёные и на этой ветке
+(старые файлы дают 257 passed — 256 прежних плюс один добавленный;
+десять изменённых тестов перечислены и объяснены в §31).
 
 ---
 
@@ -982,24 +983,46 @@ I-14 звучит как «удаление локальной копии не �
 Прогон на этой ветке: **346 passed** (все файлы подсистемы, включая `slow`).
 На базовом `4cbc29eb` было **256 passed**. Новых падений нет.
 
-Изменены ожидания **семи** старых тестов (в четырёх файлах) — с обоснованием, а
-не «чтобы позеленело». Перечислены ВСЕ, включая изменения в теле теста:
+Изменены **десять** старых тестов в шести файлах — с обоснованием, а не «чтобы
+позеленело». Список получен машинно: для каждого изменённого ханка определена
+охватывающая функция в НОВОЙ версии файла (заголовок `@@ … @@ def …` называет
+предыдущую функцию и для этой цели непригоден). Ни один старый тест не удалён и
+не переименован — `git diff … | grep '^-def test_'` пуст.
 
-| Тест | Было | Стало | Почему |
+| Тест (файл) | Было | Стало | Почему |
 |---|---|---|---|
-| `test_migration_2_upgrades_existing_database`, `test_migration_is_idempotent` (`hardening`) | `SCHEMA_VERSION == 3` | `== 4` | добавлена миграция 4 |
-| `test_step0_database_migrates_without_data_loss` (`step35`) | `SCHEMA_VERSION == 3` | `== 4` | то же |
-| `test_slots_respect_hard_cap_and_config`, `test_slots_hysteresis_shrinks_fast_grows_slow` | ожидали 5 слотов | `HARD_CAP` (= 2), гистерезис проверяется через РЕСУРСЫ | потолок снижен до доказанного; гистерезис больше не применяется к занятости |
-| `test_pending_results_are_retried_without_restart` | `object.__new__(WorkerAgent)` без реестра | добавлены `_active` и `_active_lock` | досылка обязана пропускать задания, которые ведёт поток |
-| `test_real_main_registers_nothing_when_flag_off`, `test_admin_contour_not_exposed_without_portal_auth` | `admin_api == ["/api/workers/status"]` | плюс `/api/workers/me` | «кто я» обязан отвечать всегда, иначе экран не скажет «прав нет» |
-| `test_vertical_slice_full_cycle` (`e2e`) | в тело добавлен `agent.heartbeat.beat_once()` внутри `running_executor` | — | центр перестал отдавать работу при `executor status = offline`; тест поднимал исполнителя ПОСЛЕ первого удара сердца, и назначение не приходило. Это изменение ожидания ПОВЕДЕНИЯ, а не фикстуры |
-| `test_killing_agent_does_not_stop_the_audit` (`executor`) | клиент без сессии | `_admin_client` с настоящей портальной сессией | ролевой гейт |
+| `test_migration_2_upgrades_existing_database` (`hardening`) | `SCHEMA_VERSION == 3` | `== 4` | добавлена миграция 4 |
+| `test_step0_database_migrates_without_data_loss` (`step35`) | `== 3` | `== 4` | то же |
+| `test_migration_is_idempotent` (`step35`) | `== 3` дважды | `== 4` | то же |
+| `test_slots_hysteresis_shrinks_fast_grows_slow` (`agent`) | `configured_max_slots=5`, спад эмулировался ЗАНЯТОСТЬЮ | `HARD_CAP`, спад эмулируется перегрузкой CPU | гистерезис перенесён на ёмкость: занятость под него больше не попадает |
+| `test_pending_results_are_retried_without_restart` (`hardening`) | `object.__new__(WorkerAgent)` без реестра | добавлены `_active` и `_active_lock` | досылка обязана пропускать задания, которые ведёт поток |
+| `test_real_main_registers_nothing_when_flag_off` (`flag_off`) | `admin_api == ["/api/workers/status"]` | плюс `/api/workers/me` | «кто я» обязан отвечать всегда, иначе экран не скажет «прав нет» |
+| `test_admin_contour_not_exposed_without_portal_auth` (`flag_off`) | то же | то же | то же |
+| `test_vertical_slice_full_cycle` (`e2e`) | исполнитель поднимался ПОСЛЕ первого удара сердца | в тело добавлен `agent.heartbeat.beat_once()` внутри `running_executor` | центр перестал отдавать работу при `executor status = offline`; изменение ожидания ПОВЕДЕНИЯ, а не фикстуры |
+| `test_killing_agent_does_not_stop_the_audit` (`executor`) | анонимный клиент | `_admin_client` с настоящей портальной сессией | ролевой гейт |
 | `test_agent_sends_idempotency_key` (`hardening`) | тело запроса с полем `sha256` | `expected_hash` | тест закреплял дефект: поля `sha256` в теле нет вовсе, и ключ вырождался в одинаковый для любого архива попытки (§30.3, находка 23) |
 
-Фикстуры всех файлов подсистемы теперь входят настоящей портальной сессией
-администратора (`tests/distributed_workers_helpers.enable_portal_roles` +
-`portal_client`). Тестового обхода ролей нет намеренно — он и был бы той самой
-дырой, которую этап закрывает.
+Ранее в этой таблице значился `test_slots_respect_hard_cap_and_config` — он **не
+менялся**; в диффе он попадал лишь в заголовок ханка соседней функции. Ошибку
+нашла независимая сверка при подготовке итогового отчёта.
+
+Добавлен один тест вне нового файла — `test_finished_job_frees_slot_immediately`
+(`agent`): занятость вычитается ПОСЛЕ гистерезиса, поэтому освободившийся слот
+виден сразу, без «периода стабильности».
+
+Изменены также фикстуры четырёх файлов (`e2e`, `executor`, `hardening`,
+`step35`) и общий модуль `tests/distributed_workers_helpers.py` (+91 строка):
+все они переведены с анонимного доступа на настоящую портальную сессию.
+
+Тестового обхода ролей нет намеренно — он и был бы той самой дырой, которую
+этап закрывает. Проверено машинно: во всём `tests/` нет ни одного `monkeypatch`
+или мока на `require_permission` / `actor_of` / `resolve_actor`, нет
+`app.dependency_overrides`. Cookie в тестах подписывается ПРОДОВЫМ
+`portal_auth.issue_token`, пароли — продовым `hash_password`. Отрицательные
+проверки действительно отрицательны: аноним получает 401, а аутентифицированный
+пользователь без роли — 403 и на GET, и на POST. `ALLOW_INSECURE_ADMIN=true`
+встречается в тестах только там, где небезопасный режим ПРОВЕРЯЕТСЯ, а не
+используется для прохода.
 
 **PipelineManager и stage runners не изменены** — `git diff --stat` относительно
 `4cbc29eb` не содержит ни одного файла из `backend/app/pipeline/`, ни
