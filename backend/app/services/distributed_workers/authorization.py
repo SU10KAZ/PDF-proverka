@@ -274,6 +274,14 @@ def resolve_actor(request: Request) -> Actor:
         )
     role = config.role_for(subject)
     permissions = ROLE_PERMISSIONS.get(role or "", frozenset())
+    diagnostics: Optional[str] = None
+    if not permissions:
+        # Объяснение обязано быть всегда, когда прав нет: «кнопки исчезли» без
+        # причины — это заявка в поддержку, а не диагностика.
+        diagnostics = config.diagnostics() or (
+            f"Пользователь {subject!r} не перечислен ни в одном из списков ролей "
+            f"подсистемы ({ENV_VIEWERS} / {ENV_OPERATORS} / {ENV_ADMINS})."
+        )
     return Actor(
         subject=normalize_subject(subject),
         display_name=subject,
@@ -281,7 +289,7 @@ def resolve_actor(request: Request) -> Actor:
         role=role,
         permissions=permissions,
         auth_enabled=True,
-        diagnostics=config.diagnostics() if not permissions else None,
+        diagnostics=diagnostics,
     )
 
 

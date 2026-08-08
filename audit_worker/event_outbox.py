@@ -413,9 +413,16 @@ class EventOutbox:
         """Непрерывный диапазон, начиная с last_acked_seq + 1.
 
         Непрерывность — контракт центра (§11.6): пакет с дырой отбивается 409.
+
+        Порядок СТРОК в сегменте больше не равен порядку номеров: номер выдаёт
+        база, а строки дописывают два процесса, и заполнение пропущенного
+        номера уходит в конец файла. Поэтому события собираются в отображение
+        «номер → событие», а непрерывный префикс строится по номерам. Раньше
+        обход шёл по строкам, и любая перестановка обрывала пакет на первом же
+        «не следующий по порядку» — то есть навсегда.
         """
         want_from = self.last_acked_seq + 1
-        collected: list[dict[str, Any]] = []
+        found: dict[int, dict[str, Any]] = {}
         # Уплотнённые сегменты тоже просматриваются. Центр после 409
         # sequence_gap может попросить повторить с номера, который уже уехал в
         # acked/: без этого запрошенного события не нашлось бы нигде, и поток
@@ -425,25 +432,27 @@ class EventOutbox:
         if acked_dir.is_dir():
             segments = sorted(acked_dir.glob("outbox-*.jsonl")) + segments
         for segment in segments:
-            with segment.open("r", encoding="utf-8") as fh:
-                for line in fh:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        item = json.loads(line)
-                    except ValueError:
-                        continue
-                    seq = int(item.get("seq", 0))
-                    if seq < want_from:
-                        continue
-                    if collected and seq != collected[-1]["seq"] + 1:
-                        return collected           # дыра → отдаём префикс
-                    if not collected and seq != want_from:
-                        return collected           # начало не с ожидаемого
-                    collected.append(item)
-                    if len(collected) >= limit:
-                        return collected
+            try:
+                with segment.open("r", encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            item = json.loads(line)
+                        except ValueError:
+                            continue
+                        seq = int(item.get("seq", 0))
+                        if seq < want_from or seq in found:
+                            continue
+                        found[seq] = item
+            except OSError:
+                continue
+        collected: list[dict[str, Any]] = []
+        seq = want_from
+        while seq in found and len(collected) < limit:
+            collected.append(found[seq])
+            seq += 1
         return collected
 
     def ack(self, last_seen_seq: int) -> None:

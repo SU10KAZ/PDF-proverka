@@ -528,16 +528,14 @@ async def jobs_next(
             cached["execution_token"] = replay_token
             return JSONResponse(status_code=int(prior["status_code"]), content=cached)
 
-    # Сколько центр готов отдать ЭТОМУ воркеру прямо сейчас. Заявленный
-    # воркером `free_slots` — только верхняя граница пожелания: доверять ему
-    # как источнику истины нельзя (S-15), поэтому берётся минимум с
-    # собственным расчётом центра.
+    # Сколько центр готов держать на ЭТОМ воркере одновременно. Заявленный
+    # воркером `free_slots` — не лимит, а «сколько возьму ещё»: он уходит
+    # отдельной подсказкой и может лимит только понизить (S-15).
     limit = slots.effective_limit(
         fresh or principal.row,
         protocol_version=settings.protocol_version,
         executor_status=payload.executor_status or None,
     )
-    allowed_limit = min(limit.value, max(0, payload.free_slots))
 
     deadline = time.monotonic() + min(payload.wait_sec, settings.long_poll_sec)
     job: Optional[dict[str, Any]] = None
@@ -547,7 +545,8 @@ async def jobs_next(
             job = await database.run_db(
                 repositories.claim_next_job_for_worker,
                 principal.worker_id,
-                limit_override=allowed_limit,
+                limit_override=limit.value,
+                worker_free_hint=payload.free_slots,
                 settings=settings,
             )
             slot_block = None

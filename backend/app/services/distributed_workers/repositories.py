@@ -553,6 +553,7 @@ def claim_next_job_for_worker(
     worker_id: str,
     *,
     limit_override: Optional[int] = None,
+    worker_free_hint: Optional[int] = None,
     settings: DistributedWorkersSettings | None = None,
 ) -> Optional[dict[str, Any]]:
     """Атомарно взять одно задание, предназначенное этому воркеру.
@@ -571,6 +572,14 @@ def claim_next_job_for_worker(
     Превышение лимита — не ошибка задания: оно остаётся `assigned` и ждёт
     (§18 задания, S-02). Вызывающий отличает «нечего выдавать» (None) от
     «слотов нет» (SlotLimitReached).
+
+    `limit_override` — АБСОЛЮТНЫЙ потолок одновременных попыток.
+    `worker_free_hint` — сколько воркер готов взять ЕЩЁ. Это разные величины, и
+    путать их нельзя: сложение «лимит = свободные у воркера» вычитает занятость
+    дважды (центр уже посчитал её сам) и намертво запирает второй слот —
+    воркер, ведущий одно задание, сообщает «свободен один», центр понимает это
+    как «лимит один», видит одно занятое и отказывает. Подсказка воркера может
+    лимит только ПОНИЗИТЬ.
     """
     from backend.app.services.distributed_workers import slots
 
@@ -605,6 +614,11 @@ def claim_next_job_for_worker(
                 protocol_version=(settings.protocol_version if settings else None),
             )
             limit_value = limit_obj.value
+        if worker_free_hint is not None:
+            # Подсказка воркера переводится в АБСОЛЮТНЫЙ потолок: «занято сейчас
+            # + сколько он готов взять ещё». Понизить лимит она может, повысить
+            # выше расчёта центра — нет (S-15).
+            limit_value = min(limit_value, usage.reserved + max(0, int(worker_free_hint)))
         if usage.reserved >= limit_value:
             raise SlotLimitReached(
                 (
