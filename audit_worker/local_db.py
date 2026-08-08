@@ -192,6 +192,9 @@ class LocalDB:
             conn.close()
 
     # ─── Исполнители ─────────────────────────────────────────────────────────
+    #: Идентификатор ЭТОГО воплощения исполнителя (ставит register_executor).
+    instance_id_hint: Optional[str] = None
+
     def register_executor(self, *, version: str) -> str:
         from audit_worker import process_registry as procinfo
 
@@ -206,6 +209,7 @@ class LocalDB:
                 (instance_id, pid, procinfo.process_start_time(pid), version,
                  now, now, "online"),
             )
+        self.instance_id_hint = instance_id
         return instance_id
 
     def executor_heartbeat(self, instance_id: str, *, status: str = "online") -> None:
@@ -223,6 +227,28 @@ class LocalDB:
                 "WHERE executor_instance_id = ?",
                 (time.time(), instance_id),
             )
+
+    def executor_alive(self, instance_id: Optional[str]) -> bool:
+        """Жив ли ИМЕННО этот исполнитель (pid + тик старта из /proc).
+
+        Нужно, чтобы второй запущенный исполнитель не забрал попытки первого:
+        он стал бы вторым наблюдателем за тем же процессом и вторым сборщиком
+        того же архива. «Сам себя» живым здесь не считаем — восстановление
+        своей же прерванной работы законно.
+        """
+        if not instance_id or instance_id == self.instance_id_hint:
+            return False
+        from audit_worker import process_registry as procinfo
+
+        row = self.read().execute(
+            "SELECT * FROM executor_instances WHERE executor_instance_id = ?",
+            (instance_id,),
+        ).fetchone()
+        if row is None:
+            return False
+        return procinfo.is_alive(
+            int(row["process_pid"]), row["process_start_identity"]
+        )
 
     def latest_executor(self) -> Optional[dict[str, Any]]:
         """Самый свежий исполнитель. Живость решает вызывающий, а не флаг в БД."""
@@ -429,6 +455,30 @@ class LocalDB:
         item["status"] = "processing"
         return item
 
+    def requeue_orphan_commands(self) -> int:
+        """Вернуть в очередь команды, застрявшие в `processing`.
+
+        Исполнитель, умерший между захватом команды и её завершением, оставлял
+        строку в `processing` навсегда: она больше не выдавалась
+        `claim_local_command` и никогда не подтверждалась центру. Все локальные
+        команды идемпотентны по построению, повторное исполнение безопасно.
+        """
+        with self.write() as conn:
+            cur = conn.execute(
+                "UPDATE local_commands SET status = 'pending', claimed_at = NULL "
+                "WHERE status = 'processing'"
+            )
+        return int(cur.rowcount or 0)
+
+    def release_claim(self, attempt_id: str) -> None:
+        """Вернуть захваченную, но НЕ начатую попытку в очередь."""
+        with self.write() as conn:
+            conn.execute(
+                "UPDATE execution_queue SET state = ?, claimed_by_executor = NULL, "
+                "lease_expires_at = NULL, updated_at = ? WHERE attempt_id = ? AND state = ?",
+                (QUEUE_QUEUED, time.time(), attempt_id, QUEUE_CLAIMED),
+            )
+
     def complete_local_command(
         self, local_command_id: str, result: dict[str, Any], *, status: str = "done"
     ) -> None:
@@ -513,3 +563,10 @@ class LocalDB:
     def list_processes(self) -> list[dict[str, Any]]:
         rows = self.read().execute("SELECT * FROM process_registry").fetchall()
         return [dict(r) for r in rows]
+
+    def process_row_any(self) -> Optional[dict[str, Any]]:
+        """Любая запись реестра. Нужна наблюдателю, не знающему attempt_id."""
+        row = self.read().execute(
+            "SELECT * FROM process_registry ORDER BY started_at DESC LIMIT 1"
+        ).fetchone()
+        return dict(row) if row else None

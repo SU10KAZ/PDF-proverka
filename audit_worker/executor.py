@@ -47,6 +47,28 @@ HEARTBEAT_SEC = 15.0
 POLL_SEC = 1.0
 
 
+#: Верхняя граница паузы между SIGTERM и SIGKILL. Центр валидирует поле на
+#: выдаче (ge=0, le=600), но исполнитель обязан не зависеть от этого: с
+#: `grace_period_sec: 1e9` цикл ожидания встал бы навсегда, а вместе с ним и
+#: весь главный цикл — ни новых заданий, ни retention.
+MAX_GRACE_SEC = 600.0
+
+
+def _grace_period(value: Any) -> float:
+    """Пауза перед SIGKILL: число в границах, иначе значение по умолчанию."""
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return 30.0
+    if seconds != seconds or seconds in (float("inf"), float("-inf")):
+        return 30.0
+    return max(0.0, min(MAX_GRACE_SEC, seconds))
+
+
+class _StopLoop(Exception):
+    """Штатный выход из главного цикла (max_jobs). Не ошибка."""
+
+
 def _log(message: str) -> None:
     print(f"[executor {time.strftime('%H:%M:%S')}] {message}", flush=True)
 
@@ -79,8 +101,30 @@ def write_completed_marker(job_dir: Path, outcome: "test_runner.RunOutcome") -> 
 
 
 def read_completed_marker(job_dir: Path) -> Optional[dict[str, Any]]:
+    """Отметка о завершении процесса — своя или написанная им самим.
+
+    Два независимых источника, и это не избыточность:
+      * `completed.marker` пишет исполнитель, дождавшийся выхода процесса;
+      * `process_exit.json` пишет САМ процесс последним действием.
+
+    Второй источник и есть ответ на вопрос «что делать, если исполнителя
+    перезапустили посреди работы»: он единственный, кто знает исход
+    достоверно, и его отметка переживает смерть наблюдателя.
+    """
     data = read_json(job_dir / "work" / "completed.marker", None)
-    return data if isinstance(data, dict) else None
+    if isinstance(data, dict):
+        return data
+    own = read_json(job_dir / "work" / "process_exit.json", None)
+    if isinstance(own, dict):
+        return {
+            "exit_code": int(own.get("exit_code", 1)),
+            "duration_sec": own.get("duration_sec"),
+            "steps_done": own.get("steps_done"),
+            "steps_total": own.get("steps_total"),
+            "finished_at": own.get("finished_at"),
+            "source": "process_exit",
+        }
+    return None
 
 
 class Executor:
@@ -94,33 +138,100 @@ class Executor:
         self._stop = threading.Event()
         self._heartbeat_thread: Optional[threading.Thread] = None
         self._workers: list[threading.Thread] = []
+        # Попытки, по которым отмена УЖЕ начата. Признак ставится до отправки
+        # сигнала: иначе поток задания успевал увидеть «процесс вернул -15» и
+        # объявить обычный провал раньше, чем поток команды успевал записать
+        # отмену в очередь — и попытка навсегда застревала в `failed`.
+        self._cancelling: set[str] = set()
+        # По одному EventOutbox на попытку. Два объекта на один каталог вели
+        # каждый свой счётчик seq и выдавали двум событиям один номер: центр
+        # дедуплицирует по (job, attempt, seq), и второе терялось молча.
+        self._outboxes: dict[str, EventOutbox] = {}
+        self._outbox_lock = threading.Lock()
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
+        """Главный цикл.
+
+        Работа идёт в ОТДЕЛЬНОМ потоке, а цикл продолжает разбирать локальные
+        команды. Иначе отмена доходила бы только после завершения задания —
+        то есть не работала бы вовсе: команда лежала бы в очереди все те
+        минуты, ради прерывания которых её и отправили.
+        """
         _log(f"исполнитель запущен: {self.instance_id}, pid={os.getpid()}")
-        self.recover_after_restart()
+        try:
+            self.recover_after_restart()
+        except Exception as exc:  # noqa: BLE001 — разбор прошлого не блокирует старт
+            _log(f"восстановление после рестарта не удалось: {exc!r}")
         self._start_heartbeat()
-        done = 0
+        started_ref = [0]
         try:
             while not self._stop.is_set():
-                self.drain_local_commands()
-                self.retention.tick()
-                item = self.db.claim_next(self.instance_id)
-                if item is None:
-                    self._stop.wait(POLL_SEC)
-                    continue
-                self.run_attempt(item)
-                done += 1
-                if max_jobs is not None and done >= max_jobs:
-                    _log(f"выполнено попыток: {done} — останавливаюсь по max_jobs")
+                try:
+                    self._tick(max_jobs, started_ref)
+                except _StopLoop:
                     break
+                except Exception as exc:  # noqa: BLE001 — цикл обязан выжить
+                    # Повреждённый worker.db, кончившийся диск, битая команда —
+                    # всё это раньше валило исполнителя целиком, а вместе с ним
+                    # и наблюдение за живыми процессами аудита. Под systemd это
+                    # давало крэш-луп с Restart=always.
+                    _log(f"сбой в главном цикле: {exc!r} — продолжаю")
+                    self._stop.wait(POLL_SEC)
         finally:
             self.shutdown()
+
+    def _tick(self, max_jobs: Optional[int], started_ref: list[int]) -> None:
+        """Один оборот главного цикла. Исключение отсюда цикл не роняет."""
+        started = started_ref[0]
+        self.drain_local_commands()
+        self.retention.tick()
+        self._workers = [t for t in self._workers if t.is_alive()]
+        busy = len(self._workers) >= max(1, self.config.max_slots)
+        enough = max_jobs is not None and started >= max_jobs
+        if enough and not self._workers:
+            _log(f"выполнено попыток: {started} — останавливаюсь по max_jobs")
+            raise _StopLoop
+        if busy or enough:
+            self._stop.wait(POLL_SEC)
+            return
+        item = self.db.claim_next(self.instance_id)
+        if item is None:
+            self._stop.wait(POLL_SEC)
+            return
+        thread = threading.Thread(
+            target=self._run_guarded, args=(item,),
+            name=f"attempt-{item['attempt_id'][:8]}", daemon=True,
+        )
+        thread.start()
+        self._workers.append(thread)
+        started_ref[0] = started + 1
+
+    def _run_guarded(self, item: dict[str, Any]) -> None:
+        """Одна попытка не должна ронять исполнителя целиком."""
+        try:
+            self.run_attempt(item)
+        except Exception as exc:  # noqa: BLE001 — исполнитель обязан выжить
+            _log(f"попытка {item['attempt_id'][:8]} упала: {exc}")
+            self.db.set_queue_state(
+                item["attempt_id"], local_db.QUEUE_FAILED,
+                result={"outcome": "executor_exception", "message": str(exc)},
+            )
+        finally:
+            # Попытка закончена — держать её служебные объекты в памяти
+            # долгоживущего исполнителя незачем.
+            with self._outbox_lock:
+                self._outboxes.pop(item["attempt_id"], None)
+            self._cancelling.discard(item["attempt_id"])
 
     def shutdown(self) -> None:
         self._stop.set()
         if self._heartbeat_thread is not None:
             self._heartbeat_thread.join(timeout=5)
+        # Процессы аудита НЕ трогаем: они в своих сессиях и переживают уход
+        # исполнителя. Ждём только собственные потоки-наблюдатели.
+        for thread in list(self._workers):
+            thread.join(timeout=2)
         self.db.executor_stopped(self.instance_id)
 
     def _start_heartbeat(self) -> None:
@@ -146,8 +257,22 @@ class Executor:
         при любой неоднозначности НЕ запускаем — это прямой запрет §8.6.
         """
         outcomes: list[dict[str, Any]] = []
+        # Локальные команды, застрявшие в `processing` вместе с прошлым
+        # воплощением: без возврата в очередь они не исполнялись бы никогда и
+        # никогда не подтверждались бы центру. Исполнение идемпотентно.
+        requeued = self.db.requeue_orphan_commands()
+        if requeued:
+            _log(f"возвращено в очередь локальных команд: {requeued}")
+
         for item in self.db.list_queue(states=(local_db.QUEUE_CLAIMED, local_db.QUEUE_RUNNING)):
             attempt_id = item["attempt_id"]
+            if self.db.executor_alive(item.get("claimed_by_executor")):
+                # Попытку держит ДРУГОЙ живой исполнитель. Забрать её — значит
+                # завести второго наблюдателя за тем же процессом и второго
+                # сборщика того же архива.
+                _log(f"попытка {attempt_id[:8]} занята живым исполнителем — не трогаю")
+                outcomes.append({"attempt_id": attempt_id, "verdict": "owned_by_peer"})
+                continue
             job_dir = self.jobs.job_dir(item["job_id"], attempt_id)
             row = self.db.process_row(attempt_id)
             marker = read_completed_marker(job_dir)
@@ -163,6 +288,17 @@ class Executor:
                 _log(f"попытка {attempt_id[:8]}: процесс отработал до рестарта — доупаковываю")
                 self._finish_from_marker(item, marker or {})
                 outcomes.append({"attempt_id": attempt_id, "verdict": "exited"})
+                continue
+            if (
+                item.get("state") == local_db.QUEUE_CLAIMED
+                and row is None
+                and marker is None
+            ):
+                # Захвачено, но процесс так и не стартовал: терять тут нечего и
+                # сирот быть не может. Возврат в очередь — не «повтор работы»
+                # (I-03), потому что работа не начиналась.
+                self.db.release_claim(attempt_id)
+                outcomes.append({"attempt_id": attempt_id, "verdict": "requeued"})
                 continue
             # interrupted / unknown: диагностическое состояние, автоповтора нет.
             self.db.set_queue_state(
@@ -210,13 +346,18 @@ class Executor:
             )
             if marker is not None:
                 self._finish_from_marker(item, marker)
-            else:
-                self.db.set_queue_state(
-                    item["attempt_id"],
-                    local_db.QUEUE_INTERRUPTED,
-                    result={"outcome": "executor_interrupted",
-                            "message": "процесс исчез без маркера"},
-                )
+                return
+            # Процесс мог исчезнуть потому, что мы сами его отменили. Тогда
+            # исход уже записан, и «executor_interrupted» поверх него — ложь.
+            current = self.db.queue_item(item["attempt_id"]) or {}
+            if current.get("state") in local_db.TERMINAL_QUEUE_STATES:
+                return
+            self.db.set_queue_state(
+                item["attempt_id"],
+                local_db.QUEUE_INTERRUPTED,
+                result={"outcome": "executor_interrupted",
+                        "message": "процесс исчез без маркера"},
+            )
 
         thread = threading.Thread(
             target=loop, name=f"watch-{item['attempt_id'][:8]}", daemon=True
@@ -282,12 +423,14 @@ class Executor:
             self.db.renew_lease(attempt_id, self.instance_id)
 
         def on_log(stream: str, level: str, line: str) -> None:
+            # В файлы stdout.log/stderr.log пишет САМ процесс (test_runner
+            # отдаёт ему дескрипторы). Здесь только событие для центра —
+            # дублировать строку в файл значило бы записать её дважды.
             outbox.append(
                 "log_line",
                 {"level": level, "stage": "test_pipeline_v1", "source": stream,
                  "message": line},
             )
-            self._append_stream_file(job_dir, stream, line)
 
         def on_start(pid: int, fingerprint: str) -> None:
             try:
@@ -387,6 +530,21 @@ class Executor:
             return
         meta = self.jobs.load(job_id, attempt_id) or {}
         if meta.get("result_hash"):
+            # Архив собран прошлым воплощением. Само по себе это ещё не значит,
+            # что центр об этом знает: падение могло случиться между сборкой и
+            # событием. Событие повторяем — центр дедуплицирует по (job,
+            # attempt, seq), а вот его отсутствие оставило бы готовый архив
+            # незамеченным навсегда.
+            if meta.get("local_state") != "uploaded":
+                outbox.append(
+                    "job_completed_locally",
+                    {
+                        "result_hash": meta.get("result_hash"),
+                        "result_size": meta.get("result_size"),
+                        "deferred_stages": [],
+                    },
+                )
+            self.jobs.update(job_id, attempt_id, local_state="completed_locally")
             self.db.set_queue_state(attempt_id, local_db.QUEUE_FINISHED,
                                     result={"outcome": "already_packaged"})
             return
@@ -454,32 +612,36 @@ class Executor:
                 },
             )
 
-    @staticmethod
-    def _append_stream_file(job_dir: Path, stream: str, line: str) -> None:
-        """stdout/stderr пишутся В ФАЙЛЫ напрямую — этим владеет исполнитель.
-
-        Агент их не держит и не перехватывает: его перезапуск не должен рвать
-        трубы работающего процесса.
-        """
-        path = job_dir / "logs" / f"{'stderr' if stream == 'stderr' else 'stdout'}.log"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("a", encoding="utf-8") as fh:
-            fh.write(line + "\n")
-
     def _outbox(self, item: dict[str, Any]) -> EventOutbox:
-        job_dir = self.jobs.job_dir(item["job_id"], item["attempt_id"])
-        meta = self.jobs.load(item["job_id"], item["attempt_id"]) or {}
-        # Секреты вычищаются ПРИ ЗАПИСИ (I-12). Исполнителю известен только
-        # токен попытки — worker-token ему не передают вовсе.
-        return EventOutbox(
-            job_dir / "events",
-            secret_literals=(meta.get("execution_token") or "",),
-        )
+        """Единственный на попытку журнал событий (см. self._outboxes)."""
+        attempt_id = item["attempt_id"]
+        with self._outbox_lock:
+            existing = self._outboxes.get(attempt_id)
+            if existing is not None:
+                return existing
+            job_dir = self.jobs.job_dir(item["job_id"], attempt_id)
+            meta = self.jobs.load(item["job_id"], attempt_id) or {}
+            # Секреты вычищаются ПРИ ЗАПИСИ (I-12). Исполнителю известен только
+            # токен попытки — worker-token ему не передают вовсе.
+            outbox = EventOutbox(
+                job_dir / "events",
+                secret_literals=(meta.get("execution_token") or "",),
+            )
+            self._outboxes[attempt_id] = outbox
+            return outbox
 
     def _emit(self, item: dict[str, Any], event_type: str, payload: dict[str, Any]) -> None:
         self._outbox(item).append(event_type, payload)
 
     def _was_cancelled(self, attempt_id: str) -> bool:
+        """Была ли отмена — включая начатую, но ещё не записанную в очередь.
+
+        Проверять только очередь мало: поток команды ставит `cancelled` уже
+        ПОСЛЕ того, как процесс умер, а поток задания к этому моменту успевает
+        увидеть код возврата −15 и объявить обычный провал.
+        """
+        if attempt_id in self._cancelling:
+            return True
         row = self.db.queue_item(attempt_id)
         return bool(row and row.get("state") == local_db.QUEUE_CANCELLED)
 
@@ -491,18 +653,34 @@ class Executor:
             command = self.db.claim_local_command()
             if command is None:
                 return results
-            result = self.execute_local_command(command)
+            try:
+                result = self.execute_local_command(command)
+            except Exception as exc:  # noqa: BLE001 — команда не роняет цикл
+                # Негодная нагрузка (битый job_id, нечисловая пауза) раньше
+                # улетала из главного цикла и убивала исполнителя целиком.
+                # Каждый рубеж держит оборону сам: центр валидирует на выдаче,
+                # воркер — на приёме.
+                _log(f"локальная команда {command.get('command_type')} упала: {exc!r}")
+                result = {
+                    "status": "error",
+                    "detail": {"outcome": "command_failed", "message": str(exc)[:300]},
+                }
             self.db.complete_local_command(command["local_command_id"], result)
             results.append(result)
 
     def execute_local_command(self, command: dict[str, Any]) -> dict[str, Any]:
         ctype = command.get("command_type")
-        payload = json.loads(command.get("payload_json") or "{}")
+        try:
+            payload = json.loads(command.get("payload_json") or "{}")
+        except (TypeError, ValueError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
         if ctype == "cancel_attempt":
             return self.cancel_attempt(
                 job_id=str(payload.get("job_id") or command.get("job_id") or ""),
                 attempt_id=str(payload.get("attempt_id") or command.get("attempt_id") or ""),
-                grace_period_sec=float(payload.get("grace_period_sec", 30) or 30),
+                grace_period_sec=_grace_period(payload.get("grace_period_sec")),
             )
         if ctype == "delete_attempt_data":
             return self.retention.delete_attempt(
@@ -545,8 +723,15 @@ class Executor:
             return {"status": "ok",
                     "detail": {"outcome": process_control.OUTCOME_ALREADY_COMPLETED}}
 
+        # Отпечаток берём из ВТОРОГО, независимого источника — metadata.json
+        # попытки. Совпадение двух записей и есть доказательство «наш процесс»:
+        # сверять реестр сам с собой бессмысленно (§10, I-17).
+        meta = self.jobs.load(job_id, attempt_id) or {}
         owned, why = process_control.verify_ownership(
-            row, job_id=job_id, attempt_id=attempt_id
+            row,
+            job_id=job_id,
+            attempt_id=attempt_id,
+            expected_fingerprint=meta.get("command_fingerprint"),
         )
         if not owned:
             if marker is not None:
@@ -568,7 +753,13 @@ class Executor:
                                "reason": why}}
 
         assert row is not None
+        # Признак ставится ДО сигнала: между смертью процесса и записью
+        # состояния в очередь есть окно, и в нём поток задания не должен
+        # принять отмену за провал.
+        self._cancelling.add(attempt_id)
         detail = process_control.terminate(row, grace_period_sec=grace_period_sec)
+        if detail.get("outcome") != process_control.OUTCOME_CANCELLED:
+            self._cancelling.discard(attempt_id)
         if detail.get("outcome") == process_control.OUTCOME_CANCELLED:
             self.db.update_process(attempt_id, status="cancelled")
             self.db.set_queue_state(attempt_id, local_db.QUEUE_CANCELLED,

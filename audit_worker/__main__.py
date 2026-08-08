@@ -73,13 +73,20 @@ def _cmd_register(args: argparse.Namespace) -> int:
         },
         ensure_ascii=False, indent=2,
     ))
+    # Подсказки человеку идут в stderr: stdout остаётся машиночитаемым JSON,
+    # который парсят скрипты развёртывания и smoke-прогон.
     if identity.get("token"):
-        print("\nТокен получен. Запускайте `python -m audit_worker run`.")
+        print(
+            "\nТокен получен. Запускайте `python -m audit_worker agent` "
+            "(и отдельно `python -m audit_worker executor`).",
+            file=sys.stderr,
+        )
     else:
         print(
             "\nДальше: оператор одобряет воркер на экране «Аудит-воркеры» "
             "(POST /api/workers/<worker_id>/approve), после чего повторите "
-            "`python -m audit_worker register` уже БЕЗ --bootstrap-secret."
+            "`python -m audit_worker register` уже БЕЗ --bootstrap-secret.",
+            file=sys.stderr,
         )
     return 0
 
@@ -104,6 +111,12 @@ def _cmd_agent(args: argparse.Namespace) -> int:
 
     child = None
     if getattr(args, "with_executor", False):
+        print(
+            "ВНИМАНИЕ: --with-executor — режим разработки. Под systemd так "
+            "запускать НЕЛЬЗЯ: рестарт агента унесёт с собой работу. "
+            "В проде — два независимых юнита.",
+            file=sys.stderr,
+        )
         child = _spawn_executor(config)
     agent = WorkerAgent(config, identity)
     try:
@@ -137,9 +150,24 @@ def _spawn_executor(config):
 
     В проде так делать нельзя: тогда рестарт агента унесёт с собой и работу,
     ради разделения с которой всё и затевалось. Для прода — два systemd-юнита.
+
+    Если живой исполнитель уже есть, второй НЕ поднимается: рестарт агента под
+    systemd иначе плодил бы исполнителей, каждый со своими наблюдателями.
     """
     import os
     import subprocess
+
+    from audit_worker import local_db
+
+    db = local_db.LocalDB(config.local_db_path)
+    existing = db.latest_executor()
+    if existing and db.executor_alive(existing["executor_instance_id"]):
+        print(
+            "[dev] исполнитель уже запущен "
+            f"(pid={existing['process_pid']}) — второй не поднимаю",
+            file=sys.stderr,
+        )
+        return None
 
     env = dict(os.environ)
     env["AUDIT_WORKER_ROOT"] = str(config.root)
@@ -185,13 +213,14 @@ def _cmd_retention(args: argparse.Namespace) -> int:
     if not config.retention_delete_enabled:
         print(
             "\nФизическое удаление ВЫКЛЮЧЕНО "
-            "(AUDIT_WORKER_RETENTION_DELETE_ENABLED=false) — это сухой прогон."
+            "(AUDIT_WORKER_RETENTION_DELETE_ENABLED=false) — это сухой прогон.",
+            file=sys.stderr,
         )
     return 0
 
 
 def _cmd_status(args: argparse.Namespace) -> int:
-    config = load_config(args.root)
+    config = load_config(args.root, require_dispatcher=False)
     store = WorkerStateStore(config.state_path, config.token_path)
     jobs = LocalJobStore(config.jobs_dir)
     state = store.load()
@@ -219,7 +248,8 @@ def _cmd_status(args: argparse.Namespace) -> int:
     if unconfirmed:
         print(
             f"\n⚠ {len(unconfirmed)} результат(ов) без подтверждения приёма центром: "
-            "автоматическое удаление запрещено."
+            "автоматическое удаление запрещено.",
+            file=sys.stderr,
         )
     return 0
 
@@ -256,10 +286,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=__version__)
     sub = parser.add_subparsers(dest="command", required=True)
 
+    def add_root(sub_parser: argparse.ArgumentParser) -> None:
+        """Разрешить `--root` и ПОСЛЕ подкоманды.
+
+        systemd-юниты и скрипты пишут его именно так, а argparse по
+        умолчанию принимает верхнеуровневый флаг только перед подкомандой.
+        SUPPRESS нужен, чтобы отсутствующий флаг не затирал значение,
+        указанное до подкоманды.
+        """
+        sub_parser.add_argument(
+            "--root", default=argparse.SUPPRESS,
+            help="каталог состояния воркера",
+        )
+
     p_reg = sub.add_parser(
         "register",
         help="заявка на регистрацию, а после одобрения — получение токена",
     )
+    add_root(p_reg)
     p_reg.add_argument(
         "--bootstrap-secret",
         default=None,
@@ -270,18 +314,20 @@ def main(argv: list[str] | None = None) -> int:
     p_agent = sub.add_parser(
         "agent", help="сетевой агент (процессы аудита не запускает)"
     )
+    add_root(p_agent)
     p_agent.add_argument("--bootstrap-secret", default=None)
     p_agent.add_argument("--max-jobs", type=int, default=None,
                          help="остановиться после N заданий (для smoke-прогона)")
     p_agent.add_argument(
         "--with-executor", action="store_true",
-        help="DEV-ONLY: поднять исполнителя рядом (в проде — отдельный юнит)",
+        help=argparse.SUPPRESS,      # оставлено для совместимости, см. ниже
     )
     p_agent.set_defaults(func=_cmd_agent)
 
     p_exec = sub.add_parser(
         "executor", help="локальный исполнитель (сети не знает)"
     )
+    add_root(p_exec)
     p_exec.add_argument("--max-jobs", type=int, default=None,
                         help="остановиться после N попыток (для smoke-прогона)")
     p_exec.set_defaults(func=_cmd_executor)
@@ -289,6 +335,7 @@ def main(argv: list[str] | None = None) -> int:
     p_run = sub.add_parser(
         "run", help="DEV-ONLY: агент + исполнитель одной командой"
     )
+    add_root(p_run)
     p_run.add_argument("--bootstrap-secret", default=None)
     p_run.add_argument("--max-jobs", type=int, default=None,
                        help="остановиться после N заданий (для smoke-прогона)")
@@ -297,12 +344,15 @@ def main(argv: list[str] | None = None) -> int:
     p_ret = sub.add_parser(
         "retention", help="кандидаты на удаление (сухой прогон, ничего не стирает)"
     )
+    add_root(p_ret)
     p_ret.set_defaults(func=_cmd_retention)
 
     p_status = sub.add_parser("status", help="локальное состояние (без сети)")
+    add_root(p_status)
     p_status.set_defaults(func=_cmd_status)
 
     p_self = sub.add_parser("selftest", help="прогнать тестовый процесс локально")
+    add_root(p_self)
     p_self.add_argument("--steps", type=int, default=3)
     p_self.set_defaults(func=_cmd_selftest)
 

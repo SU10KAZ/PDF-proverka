@@ -24,8 +24,14 @@ import os
 import threading
 import time
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterable, Optional
+
+try:                                     # pragma: no cover — только POSIX
+    import fcntl
+except ImportError:                      # pragma: no cover
+    fcntl = None                         # type: ignore[assignment]
 
 from audit_worker import redaction
 from audit_worker.local_store import atomic_write_json, read_json
@@ -63,7 +69,30 @@ class EventOutbox:
         # один seq, и pending_batch навсегда обрывался на дубле — событие
         # (в том числе job_completed_locally) не уходило никогда.
         self._lock = threading.Lock()
+        # Межпроцессный замок. Потокового лока мало: с этапа 3.5 в один и тот
+        # же каталог пишет исполнитель (события конвейера) и агент
+        # (`worker_reconnected`, `job_failed` при обрыве загрузки). Это разные
+        # ПРОЦЕССЫ, у каждого свой `last_written_seq` в памяти — без замка оба
+        # выдавали одному номеру два события, и второе терялось молча.
+        self._lock_path = self.dir / ".seq.lock"
         self._repair_cursor_against_segments()
+
+    @contextmanager
+    def _interprocess_lock(self):
+        """flock на весь цикл «прочитать курсор → записать → сохранить курсор».
+
+        Если fcntl недоступен (не-Linux), деградируем до потокового лока:
+        хуже, чем ничего, но одна из двух причин дублей всё равно закрыта.
+        """
+        if fcntl is None:
+            yield
+            return
+        with self._lock_path.open("a+") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
     def _repair_cursor_against_segments(self) -> None:
         """Согласовать курсор с тем, что реально лежит в сегментах.
@@ -88,7 +117,11 @@ class EventOutbox:
                         highest = max(highest, seq)
             except OSError:
                 continue
-        if highest and highest < self.last_written_seq:
+        # Файлы — источник истины в ОБЕ стороны. Курсор впереди файлов ⇒
+        # ужимаем; курсор позади файлов (потерян cursor.json, а сегменты целы)
+        # ⇒ поднимаем, иначе следующая запись переиспользует занятые номера и
+        # центр молча отбросит их как дубли.
+        if highest and highest != self.last_written_seq:
             self.last_written_seq = highest
             self._save_cursor()
         if self.last_acked_seq > self.last_written_seq:
@@ -127,8 +160,20 @@ class EventOutbox:
         occurred_at: Optional[float] = None,
     ) -> Optional[int]:
         """Записать событие. Возвращает seq или None, если событие прорежено."""
-        with self._lock:
+        with self._lock, self._interprocess_lock():
+            # Курсор мог продвинуть ДРУГОЙ процесс, пока мы ждали замок.
+            self._refresh_writer_state()
             return self._append_locked(event_type, payload, occurred_at=occurred_at)
+
+    def _refresh_writer_state(self) -> None:
+        """Подтянуть состояние писателя с диска (под уже взятым замком)."""
+        cursor = read_json(self.cursor_path, None) or {}
+        disk_seq = int(cursor.get("last_written_seq", 0))
+        if disk_seq > self.last_written_seq:
+            self.last_written_seq = disk_seq
+            self.active_segment = max(
+                self.active_segment, int(cursor.get("active_segment", 1))
+            )
 
     def _append_locked(
         self,
@@ -232,7 +277,15 @@ class EventOutbox:
         """
         want_from = self.last_acked_seq + 1
         collected: list[dict[str, Any]] = []
-        for segment in sorted(self.dir.glob("outbox-*.jsonl")):
+        # Уплотнённые сегменты тоже просматриваются. Центр после 409
+        # sequence_gap может попросить повторить с номера, который уже уехал в
+        # acked/: без этого запрошенного события не нашлось бы нигде, и поток
+        # останавливался бы навсегда на «начало не с ожидаемого».
+        segments = sorted(self.dir.glob("outbox-*.jsonl"))
+        acked_dir = self.dir / "acked"
+        if acked_dir.is_dir():
+            segments = sorted(acked_dir.glob("outbox-*.jsonl")) + segments
+        for segment in segments:
             with segment.open("r", encoding="utf-8") as fh:
                 for line in fh:
                     line = line.strip()

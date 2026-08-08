@@ -97,7 +97,12 @@ class LocalJobStore:
         self.jobs_dir = jobs_dir
 
     def job_dir(self, job_id: str, attempt_id: str) -> Path:
-        return self.jobs_dir / job_id / attempt_id
+        # Через paths.attempt_dir, а не склейкой: правило I-11 «сегмент пути
+        # строится только из безопасного ключа» не должно иметь обходных
+        # дорожек. Внешний код проекта здесь не пройдёт ни при каких данных.
+        from audit_worker.paths import attempt_dir
+
+        return attempt_dir(self.jobs_dir, job_id, attempt_id)
 
     def meta_path(self, job_id: str, attempt_id: str) -> Path:
         return self.job_dir(job_id, attempt_id) / "metadata.json"
@@ -133,7 +138,15 @@ class LocalJobStore:
         return meta
 
     def save(self, meta: dict[str, Any]) -> None:
-        atomic_write_json(self.meta_path(meta["job_id"], meta["attempt_id"]), meta)
+        # 0600: в metadata.json лежит execution_token попытки. Каталог данных
+        # и так 0750, но полагаться на одни только права каталога для файла с
+        # секретом не стоит — worker-token и claim-secret пишутся так же.
+        path = self.meta_path(meta["job_id"], meta["attempt_id"])
+        atomic_write_json(path, meta)
+        try:
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
 
     def load(self, job_id: str, attempt_id: str) -> Optional[dict[str, Any]]:
         return read_json(self.meta_path(job_id, attempt_id), None)

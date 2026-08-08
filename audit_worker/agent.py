@@ -49,6 +49,9 @@ from audit_worker.retention import RetentionManager
 from audit_worker.uploader import upload_result
 
 
+#: Как часто агент спрашивает центр о командах в цикле ожидания.
+_COMMAND_POLL_SEC = 1.0
+
 class UploadDeferred(RuntimeError):
     """Результат готов, но канал недоступен: передача отложена, НЕ провал."""
 
@@ -98,7 +101,11 @@ class WorkerAgent:
         self._sender_thread: Optional[threading.Thread] = None
         self._active: dict[str, dict[str, Any]] = {}     # job_id → runtime-контекст
         self._active_lock = threading.Lock()
-        self._cancelled: set[str] = set()
+        # Отправку журнала ведут два потока (основной цикл задания и
+        # отправитель). Без лока оба читали свой пакет от одного и того же
+        # last_acked_seq и слали центру дубли.
+        self._flush_lock = threading.Lock()
+        self._last_command_poll = 0.0
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
@@ -347,8 +354,6 @@ class WorkerAgent:
                     payload=body,
                     central_command_id=command["command_id"],
                 )
-                if ctype == "cancel_attempt":
-                    self._cancelled.add(body.get("job_id"))
                 continue
             # Закрытый набор: неизвестное не исполняем и честно говорим об этом.
             self._ack_center(
@@ -406,9 +411,18 @@ class WorkerAgent:
                 self._upload_ready_result(assignment, ctx, job_dir)
             return outcome
         except AttemptSupersededError:
-            _log(f"задание {job_id[:8]}: попытка отозвана — останавливаюсь")
-            self.registry.terminate_job(job_id, attempt_id)
-            self.jobs.update(job_id, attempt_id, local_state="superseded")
+            _log(f"задание {job_id[:8]}: попытка отозвана — прошу исполнителя остановить")
+            # Останавливает ИСПОЛНИТЕЛЬ: только он вправе слать сигналы и
+            # только процессу с доказанной принадлежностью (§10, I-17).
+            self.db.enqueue_local_command(
+                command_type="cancel_attempt", job_id=job_id, attempt_id=attempt_id,
+                payload={"job_id": job_id, "attempt_id": attempt_id,
+                         "reason": "попытка отозвана центром"},
+            )
+            self.jobs.update(
+                job_id, attempt_id,
+                local_state="superseded", local_disposition="superseded",
+            )
             return {"ok": False, "reason": "superseded"}
         except UploadDeferred as exc:
             # Работа сделана, потерян только канал. Задание остаётся
@@ -518,7 +532,13 @@ class WorkerAgent:
             if state in local_db.TERMINAL_QUEUE_STATES:
                 break
             self._flush_outbox(ctx)
-            self._drain_commands()
+            # Команды опрашиваем не чаще раза в секунду. С шагом цикла 0,2 с
+            # это было пять запросов к центру в секунду на каждое задание —
+            # на канале VPS заметно, а быстрее отмена всё равно не доедет.
+            now = time.monotonic()
+            if now - self._last_command_poll >= _COMMAND_POLL_SEC:
+                self._last_command_poll = now
+                self._drain_commands()
             self._stop.wait(0.2)
         else:
             # Агента останавливают. Работу НЕ трогаем: она принадлежит
@@ -712,10 +732,18 @@ class WorkerAgent:
                 execution_token=meta.get("execution_token", ""),
                 uploads_dir=job_dir / "uploads",
             )
+            # Та же проверка, что и на основном пути: «finished» ставится
+            # только если центр ПОДТВЕРДИЛ приём (выдал retention_until).
+            # Безусловный «finished» здесь выводил невалидированный результат
+            # и из досылки, и из сверки — задание исчезало навсегда.
+            resumed_retention = response.get("retention_until")
             self.jobs.update(
-                job_id, attempt_id, local_state="finished",
-                retention_until=response.get("retention_until"),
+                job_id, attempt_id,
+                local_state="finished" if resumed_retention is not None
+                else "completed_locally",
+                retention_until=resumed_retention,
                 center_state=response.get("state"),
+                center_validation=response.get("validation"),
             )
             # Хвост журнала не должен отличаться от обычного пути: иначе в
             # истории задания просто нет отметки о завершении.
@@ -758,6 +786,10 @@ class WorkerAgent:
 
     def _flush_outbox(self, ctx: dict[str, Any]) -> None:
         """Отправить накопленное. При обрыве просто выходим — outbox копит дальше."""
+        with self._flush_lock:
+            self._flush_outbox_locked(ctx)
+
+    def _flush_outbox_locked(self, ctx: dict[str, Any]) -> None:
         outbox: EventOutbox = ctx["outbox"]
         # Журнал наполняет ИСПОЛНИТЕЛЬ — другой процесс. Без перечитывания
         # позиций с диска агент вечно считал бы, что отправлять нечего.
