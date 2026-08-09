@@ -50,6 +50,11 @@ from audit_worker import redaction
 from audit_worker.providers import auth_mode as auth_mode_mod
 from audit_worker.providers import errors
 from audit_worker.providers.identity import ProviderIdentity
+from audit_worker.providers.inference import (
+    STATUS_ERROR,
+    ProviderInferenceResult,
+    sha256_text,
+)
 from audit_worker.providers.paths import ProviderHome
 from audit_worker.providers.quota import ProviderQuotaSnapshot
 
@@ -252,6 +257,119 @@ class ProviderAdapter(abc.ABC):
     @abc.abstractmethod
     def minimal_probe(self, *, confirmed_by_operator: bool = False) -> ProbeResult:
         """Один минимальный запрос к модели. По умолчанию ЗАПРЕЩЁН."""
+
+    # ─── Рабочий вызов модели (этап 11C) ─────────────────────────────────────
+    @abc.abstractmethod
+    def structured_inference(
+        self,
+        prompt: str,
+        *,
+        purpose: str,
+        timeout_sec: Optional[float] = None,
+    ) -> ProviderInferenceResult:
+        """ОДИН рабочий вызов модели с ответом в виде JSON-объекта.
+
+        Отличие от `minimal_probe` не в «промпт другой», а в назначении: probe
+        проверяет КАНАЛ (фраза совпала — канал жив), а этот метод выполняет
+        РАБОТУ и обязан вернуть разобранный результат. Поэтому у него другой
+        тип возврата и своя проверка ответа.
+
+        Общее с probe остаётся полностью: те же три гейта (политика, разрешение
+        на инференс, подтверждение вызывающего), та же нейтрализация личного
+        контекста, тот же запуск через `run()` — своя сессия, окружение с нуля,
+        cwd в пустом каталоге, убийство группы по таймауту.
+
+        ПРОМПТ ПЕРЕДАЁТСЯ ЧЕРЕЗ STDIN, а не аргументом. Две причины, и обе
+        существенные:
+
+          * инвариант I-P5 («ни один argv не приходит извне») остаётся в силе
+            дословно: argv по-прежнему состоит ТОЛЬКО из констант модуля.
+            Промпт — данные задания, и в argv ему места нет. Иначе пришлось бы
+            ослаблять формулировку инварианта до «argv из констант, кроме
+            последнего элемента», а вариадические флаги CLI уже один раз
+            превратили такое послабление в незапланированный запрос к модели
+            (см. `claude_adapter._probe_argv`);
+          * argv видно в `ps` любому пользователю машины. Для контрольной фразы
+            это безразлично, для содержимого задания — нет.
+        """
+
+    def _inference_gate(
+        self, *, confirmed_by_caller: bool, purpose: str
+    ) -> Optional[ProviderInferenceResult]:
+        """Три гейта перед вызовом модели. `None` = путь открыт.
+
+        Выделено в общий метод намеренно: у Claude и Codex гейты обязаны быть
+        одинаковыми, а скопированный трижды `if` расходится на четвёртой правке.
+        """
+        if self.policy_blocked:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_POLICY_BLOCKED,
+                detail="провайдер отключён политикой на этом воркере",
+            )
+        if not self.inference_allowed:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_POLICY_BLOCKED,
+                detail="реальный вызов модели не разрешён на этом адаптере",
+            )
+        if not confirmed_by_caller:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_POLICY_BLOCKED,
+                detail=f"нет подтверждения на конкретный вызов ({purpose})",
+            )
+        return None
+
+    @staticmethod
+    def _first_json_object(text: str) -> Optional[dict[str, Any]]:
+        """Первый JSON-объект в тексте ответа модели.
+
+        Модель просят ответить одним объектом, но между «просили» и «получили»
+        стоит форматирование: CLI может обрамить ответ ```json-блоком, а модель
+        — добавить строку пояснения. Поиск по балансу скобок разбирает оба
+        случая и при этом НЕ занимается спасением сломанного JSON: не разобрали
+        — значит не разобрали, и проверка честно это покажет.
+        """
+        raw = text or ""
+        start = raw.find("{")
+        while start != -1:
+            depth = 0
+            in_string = False
+            escaped = False
+            for index in range(start, len(raw)):
+                char = raw[index]
+                if in_string:
+                    if escaped:
+                        escaped = False
+                    elif char == "\\":
+                        escaped = True
+                    elif char == '"':
+                        in_string = False
+                    continue
+                if char == '"':
+                    in_string = True
+                elif char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            parsed = json.loads(raw[start:index + 1])
+                        except ValueError:
+                            break
+                        if isinstance(parsed, dict):
+                            return parsed
+                        break
+            start = raw.find("{", start + 1)
+        return None
+
+    @staticmethod
+    def _prompt_digest(prompt: str) -> str:
+        return sha256_text(prompt)
 
     def classify_error(self, payload: Any) -> str:
         return errors.classify_text(errors.summarize(payload)) or errors.ERR_UNKNOWN

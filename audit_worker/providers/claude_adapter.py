@@ -56,6 +56,12 @@ from audit_worker.providers.base import (
     ProbeResult,
     ProviderAdapter,
 )
+from audit_worker.providers.inference import (
+    STATUS_ERROR,
+    STATUS_SUCCESS,
+    ProviderInferenceResult,
+    sha256_text,
+)
 from audit_worker.providers.identity import (
     AUTH_ERROR,
     AUTH_EXPIRED,
@@ -107,6 +113,37 @@ _PROBE_NEUTRALIZE_PERSONAL_CONTEXT = (
     # Ни одного слоя настроек: ни user, ни project, ни local.
     "--setting-sources=",
 )
+
+
+def _inference_argv() -> list[str]:
+    """argv РАБОЧЕГО вызова. Тоже только константы модуля (I-P5).
+
+    Отличие от `_probe_argv()` ровно одно: нет позиционного промпта. Промпт
+    уходит через stdin, поэтому argv здесь не содержит ни байта данных задания —
+    инвариант I-P5 выполняется дословно, а не «почти».
+
+    Всё остальное совпадает намеренно: нейтрализация личного контекста, полное
+    отключение инструментов и один ход. Рабочий вызов не имеет права быть
+    «мягче» контрольного — иначе доказанное на probe перестало бы что-то
+    говорить о боевом пути.
+
+    Модель НЕ задаётся флагом. Это не упущение, а следствие того же I-P5:
+    идентификатор модели пришёл бы из задания. Поэтому вызов идёт на модели
+    учётной записи по умолчанию, а фактически применённая модель ЧИТАЕТСЯ из
+    ответа и сверяется с требованием задания (проверка `provider_matches_task`
+    и поле `model` результата). Проверять сильнее, чем приказывать.
+    """
+    return [
+        *_PROBE_NEUTRALIZE_PERSONAL_CONTEXT,
+        "--tools=",
+        "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
+        "--permission-mode", "dontAsk",
+        "--max-turns", "1",
+        "--output-format", "json",
+        # Промпт НЕ позиционный: `claude -p` без позиционного аргумента читает
+        # его со стандартного ввода (docs → CLI reference, print mode).
+        "-p",
+    ]
 
 
 def _probe_argv() -> list[str]:
@@ -357,6 +394,110 @@ class ClaudeProviderAdapter(ProviderAdapter):
             error_code=None if result.ok else result.error_code(),
             detail=None if result.ok else "контрольный запрос завершился ошибкой",
         )
+
+    # ─── Рабочий вызов (этап 11C) ────────────────────────────────────────────
+    def structured_inference(
+        self,
+        prompt: str,
+        *,
+        purpose: str,
+        timeout_sec: Optional[float] = None,
+    ) -> ProviderInferenceResult:
+        blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
+        if blocked is not None:
+            return blocked
+        text = str(prompt or "")
+        if not text.strip():
+            # Пустой stdin у `claude -p` — не «пустой запрос», а зависание:
+            # CLI ждёт ввода. Отказ до запуска дешевле любого таймаута.
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail="пустой промпт: рабочий вызов не выполняется",
+            )
+        result = self.run(
+            _inference_argv(),
+            # Явный срок вызывающего ПОБЕЖДАЕТ. У контрольного запроса стоит
+            # пол в 120 с, потому что там срок ничей: команду даёт человек и
+            # бюджета этапа не существует. У рабочего вызова бюджет есть, его
+            # знает этап конвейера, и подменять его нижней границей значило бы
+            # держать процесс живым дольше, чем этап готов ждать.
+            timeout_sec=(
+                float(timeout_sec) if timeout_sec
+                else max(120.0, float(self.timeout_sec))
+            ),
+            stdin_text=text,
+            purpose=purpose,
+        )
+        duration_ms = int(result.duration_sec * 1000)
+        if result.timed_out:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                duration_ms=duration_ms, exit_code=result.exit_code,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_TIMEOUT,
+                detail="рабочий вызов не завершился вовремя",
+                raw_sha256=sha256_text(result.stdout or ""),
+                raw_bytes=len((result.stdout or "").encode("utf-8", "replace")),
+            )
+        envelope: Any = None
+        try:
+            envelope = result.json_stdout()
+        except (json.JSONDecodeError, ValueError):
+            envelope = None
+        answer_text = ""
+        usage: dict[str, Any] = {}
+        model: Optional[str] = None
+        if isinstance(envelope, dict):
+            answer_text = str(envelope.get("result") or "")
+            usage = _usage_from_payload(envelope)
+            model_usage = envelope.get("modelUsage")
+            if isinstance(model_usage, dict) and model_usage:
+                model = next(iter(model_usage))
+            if not model and isinstance(envelope.get("model"), str):
+                model = envelope["model"]
+        else:
+            # Конверт не разобран — работаем с сырым выводом. Это законный
+            # случай (например ошибка CLI текстом), и он обязан дойти до
+            # проверки как ошибка, а не как пустой успех.
+            answer_text = result.stdout or ""
+        payload = self._first_json_object(answer_text)
+        ok = result.ok and payload is not None
+        return ProviderInferenceResult(
+            provider=self.provider,
+            model=model,
+            status=STATUS_SUCCESS if ok else STATUS_ERROR,
+            result=payload or {},
+            usage=usage,
+            duration_ms=duration_ms,
+            exit_code=result.exit_code,
+            auth_mode=self.home.auth_mode,
+            error_code=(
+                None if ok
+                else (result.error_code() if not result.ok else errors.ERR_MALFORMED_STATUS)
+            ),
+            detail=(
+                None if ok
+                else (
+                    "CLI завершился ошибкой" if not result.ok
+                    else "ответ модели не содержит JSON-объекта"
+                )
+            ),
+            raw_sha256=sha256_text(answer_text),
+            raw_bytes=len(answer_text.encode("utf-8", "replace")),
+        )
+
+
+def _usage_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Числовой расход из конверта `--output-format json`."""
+    usage: dict[str, Any] = {}
+    raw = payload.get("usage")
+    if isinstance(raw, dict):
+        usage = {k: v for k, v in raw.items() if isinstance(v, (int, float))}
+    if isinstance(payload.get("total_cost_usd"), (int, float)):
+        usage["total_cost_usd"] = payload["total_cost_usd"]
+    if isinstance(payload.get("num_turns"), int):
+        usage["num_turns"] = payload["num_turns"]
+    return usage
 
 
 def _auth_from_payload(payload: dict[str, Any], *, exit_code: Optional[int]) -> AuthStatus:

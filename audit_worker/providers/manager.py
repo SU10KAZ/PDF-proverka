@@ -31,7 +31,13 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from audit_worker import redaction
-from audit_worker.providers import errors, probe_grant, quota
+from audit_worker.providers import (
+    errors,
+    inference_grant,
+    pipeline_status,
+    probe_grant,
+    quota,
+)
 from audit_worker.providers.auth_mode import AUTH_MODE_UNAVAILABLE, DEFAULT_AUTH_MODE
 from audit_worker.providers.base import ProbeResult, ProviderAdapter
 from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
@@ -71,6 +77,7 @@ class ProviderManager:
         policy_blocked: Optional[dict[str, bool]] = None,
         auth_modes: Optional[dict[str, str]] = None,
         inference_allowed: bool = False,
+        pipeline_bridge_enabled: bool = False,
         enabled: bool = True,
         executables: Optional[dict[str, Path]] = None,
         on_process: Optional[Callable[[int, str], None]] = None,
@@ -86,6 +93,10 @@ class ProviderManager:
         )
         self.stale_after_sec = max(60.0, float(stale_after_sec))
         self.low_threshold_pct = low_threshold_pct
+        # Разрешил ли АДМИНИСТРАТОР VPS конвейеру доходить до авторизованного
+        # CLI. Наблюдаемое значение: центр по нему видит, готов ли воркер к
+        # реальному аудиту, ещё до того, как задание будет поставлено.
+        self.pipeline_bridge_enabled = bool(pipeline_bridge_enabled)
         self._log = log or (lambda _m: None)
         self._lock = threading.Lock()
         self._identities: dict[str, ProviderIdentity] = {}
@@ -301,6 +312,35 @@ class ProviderManager:
             if isinstance(capability, dict):
                 capability["inference_probe_grant_remaining"] = (
                     probe_grant.read_state(self.worker_root, name).remaining
+                )
+                # Готовность КОНВЕЙЕРА (этап 11C), а не адаптера. Три поля, и
+                # каждое отвечает на свой вопрос оператора:
+                #   * канал вообще разрешён на этой машине?
+                #   * есть ли невыбранное разрешение под задание?
+                #   * когда конвейер последний раз звал модель?
+                # Ни одно из них не является разрешением: разрешение — файл,
+                # привязанный к конкретному заданию.
+                capability["pipeline_bridge_enabled"] = self.pipeline_bridge_enabled
+                grants = inference_grant.describe(self.worker_root, now=moment)
+                capability["pipeline_inference_grant"] = {
+                    "grant_file_present": grants.get("grant_file_present"),
+                    "error": grants.get("error"),
+                    "remaining_total": sum(
+                        1 for row in grants.get("grants", [])
+                        if row.get("provider") == name
+                        and not row.get("expired")
+                        and int(row.get("remaining") or 0) > 0
+                    ),
+                }
+                marker = pipeline_status.read(self.worker_root)
+                capability["last_pipeline_inference"] = (
+                    marker if marker and marker.get("provider") == name else None
+                )
+                # Прямой ответ на вопрос §20 задания. False по умолчанию и
+                # остаётся False, пока не совпадут ОБА условия.
+                capability["real_inference_allowed"] = bool(
+                    self.pipeline_bridge_enabled
+                    and capability["pipeline_inference_grant"]["remaining_total"] > 0
                 )
             out.append(payload)
         return out

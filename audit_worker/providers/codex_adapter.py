@@ -64,7 +64,31 @@ from audit_worker.providers.identity import (
     AUTH_LOGGED_OUT,
     AUTH_UNKNOWN,
 )
+from audit_worker.providers.inference import (
+    STATUS_ERROR,
+    STATUS_SUCCESS,
+    ProviderInferenceResult,
+    sha256_text,
+)
 from audit_worker.providers.paths import PROVIDER_CODEX
+
+#: Хвост argv рабочего вызова. ТОЛЬКО константы (I-P5): промпт уходит через
+#: stdin, а `-` — документированный способ Codex сказать «читай инструкции со
+#: стандартного ввода» (`codex exec --help`: «If not provided as an argument (or
+#: if `-` is used), instructions are read from stdin»).
+#:
+#: Набор флагов совпадает с контрольным запросом дословно и по той же причине,
+#: что у Claude: рабочий путь не имеет права быть мягче проверенного.
+_INFERENCE_ARGV: tuple[str, ...] = (
+    "exec",
+    "--json",
+    "--sandbox", "read-only",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--ignore-rules",
+    "--ignore-user-config",
+    "-",
+)
 
 #: Имя клиента в `initialize`. Документация просит идентифицировать интеграцию
 #: (`clientInfo.name`) — так на стороне провайдера видно, кто спрашивает.
@@ -372,6 +396,137 @@ class CodexProviderAdapter(ProviderAdapter):
             error_code=None if result.ok else result.error_code(),
             detail=None if result.ok else "контрольный запрос завершился ошибкой",
         )
+
+
+    # ─── Рабочий вызов (этап 11C) ────────────────────────────────────────────
+    def structured_inference(
+        self,
+        prompt: str,
+        *,
+        purpose: str,
+        timeout_sec: Optional[float] = None,
+    ) -> ProviderInferenceResult:
+        blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
+        if blocked is not None:
+            return blocked
+        text = str(prompt or "")
+        if not text.strip():
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail="пустой промпт: рабочий вызов не выполняется",
+            )
+        result = self.run(
+            list(_INFERENCE_ARGV),
+            # Явный срок вызывающего ПОБЕЖДАЕТ. У контрольного запроса стоит
+            # пол в 120 с, потому что там срок ничей: команду даёт человек и
+            # бюджета этапа не существует. У рабочего вызова бюджет есть, его
+            # знает этап конвейера, и подменять его нижней границей значило бы
+            # держать процесс живым дольше, чем этап готов ждать.
+            timeout_sec=(
+                float(timeout_sec) if timeout_sec
+                else max(120.0, float(self.timeout_sec))
+            ),
+            stdin_text=text,
+            purpose=purpose,
+        )
+        duration_ms = int(result.duration_sec * 1000)
+        if result.timed_out:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                duration_ms=duration_ms, exit_code=result.exit_code,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_TIMEOUT,
+                detail="рабочий вызов не завершился вовремя",
+                raw_sha256=sha256_text(result.stdout or ""),
+                raw_bytes=len((result.stdout or "").encode("utf-8", "replace")),
+            )
+        messages, usage, model = _collect_exec_stream(result.stdout or "")
+        payload = None
+        # Ответы перебираются С КОНЦА: последнее сообщение агента и есть его
+        # итог, а более ранние могут содержать рассуждение с примером JSON.
+        for candidate in reversed(messages):
+            payload = self._first_json_object(candidate)
+            if payload is not None:
+                break
+        answer_text = messages[-1] if messages else (result.stdout or "")
+        ok = result.ok and payload is not None
+        return ProviderInferenceResult(
+            provider=self.provider,
+            model=model,
+            status=STATUS_SUCCESS if ok else STATUS_ERROR,
+            result=payload or {},
+            usage=usage,
+            duration_ms=duration_ms,
+            exit_code=result.exit_code,
+            auth_mode=self.home.auth_mode,
+            error_code=(
+                None if ok
+                else (result.error_code() if not result.ok else errors.ERR_MALFORMED_STATUS)
+            ),
+            detail=(
+                None if ok
+                else (
+                    "CLI завершился ошибкой" if not result.ok
+                    else "ответ модели не содержит JSON-объекта"
+                )
+            ),
+            raw_sha256=sha256_text(answer_text),
+            raw_bytes=len(answer_text.encode("utf-8", "replace")),
+        )
+
+
+def _collect_exec_stream(stdout: str) -> tuple[list[str], dict[str, Any], Optional[str]]:
+    """Разобрать JSONL-поток `codex exec --json`.
+
+    Разбор ЗАЩИТНЫЙ, как и у квоты: контракт `exec --json` в самом CLI помечен
+    развивающимся, поэтому распознаются несколько известных форм сообщения
+    агента, а нераспознанное просто не мешает. Строки, не являющиеся JSON,
+    тоже попадают в кандидаты: часть версий печатает итог обычным текстом.
+    """
+    messages: list[str] = []
+    plain: list[str] = []
+    usage: dict[str, Any] = {}
+    model: Optional[str] = None
+    for line in (stdout or "").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except (json.JSONDecodeError, ValueError):
+            plain.append(line)
+            continue
+        if not isinstance(event, dict):
+            continue
+        kind = str(event.get("type") or "")
+        item = event.get("item")
+        if isinstance(item, dict):
+            item_type = str(item.get("type") or "")
+            if item_type in ("agent_message", "assistant_message", "message"):
+                value = item.get("text") or item.get("content")
+                if isinstance(value, str) and value.strip():
+                    messages.append(value)
+            if not model and isinstance(item.get("model"), str):
+                model = item["model"]
+        legacy = event.get("msg")
+        if isinstance(legacy, dict):
+            value = legacy.get("message") or legacy.get("text")
+            if isinstance(value, str) and value.strip():
+                messages.append(value)
+        if kind in ("turn.completed", "turn.failed"):
+            raw = event.get("usage")
+            if isinstance(raw, dict):
+                usage.update(
+                    {k: v for k, v in raw.items() if isinstance(v, (int, float))}
+                )
+        if not model:
+            for key in ("model", "model_slug"):
+                if isinstance(event.get(key), str):
+                    model = event[key]
+                    break
+    if not messages and plain:
+        messages.append("\n".join(plain))
+    return messages, usage, model
 
 
 # ─── Разбор ответов app-server ───────────────────────────────────────────────
