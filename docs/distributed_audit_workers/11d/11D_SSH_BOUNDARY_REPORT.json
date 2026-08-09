@@ -1,0 +1,49 @@
+{
+  "stage": "11D",
+  "rule": "§4 задания: SSH — ТОЛЬКО административный канал. Схема «центр → ssh worker → claude prompt → stdout назад» как способ inference запрещена.",
+  "ssh_used_for": [
+    "инвентаризация воркера (hostname, ОС, версии, статус авторизации CLI, состояние существующей установки)",
+    "создание отдельного 11D-рантайма ~/audit-worker-11d/",
+    "доставка артефакта развёртывания и манифеста (scp)",
+    "доставка снимка промптов и профиля дисциплины ЭОМ (scp)",
+    "доставка операторских инструментов: раннер 11D и сборщик доказательств (scp)",
+    "доставка ОДНОЙ копии входного Markdown (scp)",
+    "запись локальной политики моделей воркера",
+    "сверка sha256 артефакта на месте и распаковка релиза",
+    "определение точного идентификатора модели по бинарю CLI (grep, 0 обращений к модели)",
+    "снятие снимков состояния до прогона: продовые файлы документа, ~/.claude, существующая установка, контрольный файл",
+    "подготовка контрольного файла: touch -a на 2020 год, чтобы atime стал показательным при relatime",
+    "запуск процесса прогона и чтение его вывода",
+    "чтение диагностических логов и артефактов прогона после завершения"
+  ],
+  "ssh_never_used_for": [
+    "передачу промпта модели",
+    "получение ответа модели",
+    "любой шаг между процессом-раннером и Claude CLI"
+  ],
+  "runtime_topology": {
+    "described": "На .31: процесс раннера (python) → ProviderAdapter (в том же процессе) → subprocess локального Claude CLI → Anthropic → обратно в тот же процесс.",
+    "ssh_role": "SSH порождает процесс-раннер и читает его stdout. Дальше он в цепочке не участвует: вызов модели выполняет subprocess, порождённый самим раннером на той же машине."
+  },
+  "evidence_plan": {
+    "process_tree": "снимки ps --forest во время вызова, собранные ОТДЕЛЬНЫМ фоновым процессом на .31",
+    "executable": "/proc/<pid>/exe процесса CLI",
+    "cwd": "/proc/<pid>/cwd — обязан быть пустым runtime-каталогом внутри попытки",
+    "no_ssh_in_inference_path": "в дереве процессов между раннером и CLI не должно быть ssh/scp/rsync",
+    "code_level": "тест TestNoSshInference (набор 11C) параметризованно проверяет 10 рантайм-модулей на отсутствие импортов paramiko/fabric и литералов ssh/scp/rsync в argv"
+  },
+  "observed": {
+    "process_tree_during_the_real_call": "bash(884183) — процесс, порождённый SSH-сессией\n  └─ python(884186) — раннер 11D, /home/coder/audit-worker/venv/bin/python -B\n       └─ claude(884256) — /home/coder/.local/bin/claude --safe-mode … --model=claude-opus-5 --tools= … --max-turns 1 --output-format json -p",
+    "cli_is_direct_child_of_runner": true,
+    "ssh_scp_rsync_between_runner_and_cli": 0,
+    "grep_ssh_scp_rsync_in_all_snapshots": 0,
+    "runner_exe": "/usr/bin/python3.12",
+    "runner_cwd": "/home/coder",
+    "cli_executable_resolved": "/home/coder/.local/share/claude/versions/2.1.220 (ELF, нативный бинарь)",
+    "cli_cwd_expected": "<каталог попытки>/providers/claude/runtime (наблюдалось в репетиции тем же кодом)",
+    "evidence_file_on_worker": "~/audit-worker-11d/logs/proc_tree_11d-real-1.txt",
+    "gap_declared": "exe и cwd самого процесса CLI в снимки не попали: сборщик доказательств искал процессы по шаблону пути установленной версии, а cmdline содержит путь лаунчера (~/.local/bin/claude). Родство, argv и время старта зафиксированы строкой ps --forest; cwd того же кода наблюдался в репетиции. Заявление «cwd пуст» в боевом прогоне подтверждено косвенно, и это указано, а не сглажено.",
+    "conclusion": "SSH породил процесс и прочитал его stdout. Вызов модели выполнил subprocess, порождённый самим раннером на .31. Схемы «центр → ssh → claude prompt → stdout» в цепочке нет."
+  },
+  "note": "Поле observed заполняется после прогона фактическими снимками."
+}

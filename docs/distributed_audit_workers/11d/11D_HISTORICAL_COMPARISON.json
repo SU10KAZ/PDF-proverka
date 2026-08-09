@@ -1,0 +1,227 @@
+{
+  "kind": "sanity, НЕ эталон (§26 задания)",
+  "order_respected": "Исторический результат открыт ТОЛЬКО после завершения нового inference. До прогона из него взяты лишь счётчики и хэш для фиксации факта наличия (§15/§16).",
+  "old": {
+    "path_relative": "03_analysis/latest/02_text_analysis.json",
+    "sha256": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7"
+  },
+  "new": {
+    "sha256": "9e3a566d7f4674a87ff990ac77bce63e8aacf9110eefc7e6b5d0d439e5775a0f",
+    "bytes": 29208
+  },
+  "schema": {
+    "contract_keys": [
+      "stage",
+      "project_id",
+      "text_source",
+      "project_params",
+      "normative_refs_found",
+      "text_findings",
+      "items_verified_from_blocks"
+    ],
+    "present_in_new": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source"
+    ],
+    "present_in_old": [
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source"
+    ],
+    "missing_in_new_vs_contract": [],
+    "missing_in_old_vs_contract": [
+      "items_verified_from_blocks"
+    ],
+    "extra_keys_in_new": [
+      "timestamp"
+    ]
+  },
+  "text_source": {
+    "new": "md",
+    "old": "md",
+    "match": true
+  },
+  "findings": {
+    "new_count": 17,
+    "old_count": 11
+  },
+  "severities": {
+    "new": {
+      "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+      "ЭКОНОМИЧЕСКОЕ": 3,
+      "ЭКСПЛУАТАЦИОННОЕ": 3
+    },
+    "old": {
+      "КРИТИЧЕСКОЕ": 3,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 4,
+      "ЭКОНОМИЧЕСКОЕ": 1,
+      "ЭКСПЛУАТАЦИОННОЕ": 2
+    }
+  },
+  "normative_refs": {
+    "new_count": 5,
+    "old_count": 4,
+    "common": [
+      "ГОСТ 103",
+      "ГОСТ 6323-79",
+      "ПУЭ п.7.35",
+      "СП 76.13330.2016"
+    ],
+    "only_new": [
+      "ГОСТ 838-75 (не указан в проекте, требуется)"
+    ],
+    "only_old": []
+  },
+  "norm_docs_in_findings": {
+    "new": [
+      "ГОСТ 103-2006",
+      "ГОСТ 838-75 «Провода медные неизолированные.",
+      "ГОСТ Р 21.101-2020",
+      "ГОСТ Р 21.101-2020 (заполнение спецификации)",
+      "ГОСТ Р 21.101-2020 (общие указания и однозна",
+      "ГОСТ Р 21.101-2020 (соответствие графической",
+      "ГОСТ Р 21.101-2020 (соответствие спецификаци",
+      "ГОСТ Р 21.101-2020 (ссылки на другие докумен",
+      "ПУЭ-7",
+      "ПУЭ-7 п. 1.7.139",
+      "ПУЭ-7 п. 1.7.76 (заземление открытых провод",
+      "СП 256.1325800.2016",
+      "СП 76.13330.2016",
+      "СП 76.13330.2016 (монтаж заземляющих устро"
+    ],
+    "old": [
+      "ГОСТ 6323-79",
+      "ГОСТ Р 21.1101-2013",
+      "ПУЭ-7",
+      "СП 256.1325800.2016",
+      "СП 76.13330.2016"
+    ],
+    "common": [
+      "ПУЭ-7",
+      "СП 256.1325800.2016",
+      "СП 76.13330.2016"
+    ]
+  },
+  "source_references": {
+    "new_with_source": 17,
+    "old_with_source": 11
+  },
+  "absence_like_findings": {
+    "new": 7,
+    "old": 4
+  },
+  "theme_overlap": {
+    "shared_tokens": 81,
+    "old_tokens": 148,
+    "ratio_of_old_covered": 0.547
+  },
+  "project_params": {
+    "new_keys": [
+      "key_equipment",
+      "object_type",
+      "total_load_kw"
+    ],
+    "old_keys": [
+      "floors_info",
+      "grounding_resistance_ohm",
+      "grounding_type",
+      "key_equipment",
+      "note",
+      "object_type",
+      "total_load_kw",
+      "voltage_levels"
+    ],
+    "new_nonempty": true,
+    "old_nonempty": true
+  },
+  "verdict_contract": {
+    "production_contract_preserved": true,
+    "why": "Новый артефакт — НАДМНОЖЕСТВО исторического по схеме: все семь контрактных ключей на месте, у исторического отсутствовал items_verified_from_blocks. text_source=md у обоих. Все 17 замечаний имеют source и norm. Ни одно поле контракта не потеряно."
+  },
+  "substantive_differences": [
+    {
+      "what": "распределение severity",
+      "old": {
+        "КРИТИЧЕСКОЕ": 3,
+        "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1,
+        "РЕКОМЕНДАТЕЛЬНОЕ": 4,
+        "ЭКОНОМИЧЕСКОЕ": 1,
+        "ЭКСПЛУАТАЦИОННОЕ": 2
+      },
+      "new": {
+        "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+        "ЭКОНОМИЧЕСКОЕ": 3,
+        "ЭКСПЛУАТАЦИОННОЕ": 3
+      },
+      "note": "В новом прогоне НИ ОДНОГО КРИТИЧЕСКОГО против трёх исторических. Это самое заметное расхождение и главный сигнал для следующего этапа."
+    },
+    {
+      "what": "покрытие исторических КРИТИЧЕСКИХ тем",
+      "detail": [
+        {
+          "old_id": "T-001",
+          "тема": "несуществующий п. ПУЭ 7.35",
+          "в_новом": "T-001, та же тема",
+          "severity": "РЕКОМЕНДАТЕЛЬНОЕ вместо КРИТИЧЕСКОЕ"
+        },
+        {
+          "old_id": "T-004",
+          "тема": "отсутствие ОСУП/ДСУП",
+          "в_новом": "T-004, ГЗШ + ОСУП, п. 1.7.82 процитирован",
+          "severity": "ЭКСПЛУАТАЦИОННОЕ вместо КРИТИЧЕСКОЕ"
+        },
+        {
+          "old_id": "T-003",
+          "тема": "не указан тип системы заземления (TN-S/TN-C-S/TT/IT)",
+          "в_новом": "НЕ НАЙДЕНО — ни «TN-S», ни «система заземления» в новом артефакте нет",
+          "severity": "тема пропущена"
+        }
+      ],
+      "note": "Две темы из трёх покрыты по существу, но понижены в severity; одна пропущена."
+    },
+    {
+      "what": "project_params",
+      "old_keys": [
+        "floors_info",
+        "grounding_resistance_ohm",
+        "grounding_type",
+        "key_equipment",
+        "note",
+        "object_type",
+        "total_load_kw",
+        "voltage_levels"
+      ],
+      "new_keys": [
+        "key_equipment",
+        "object_type",
+        "total_load_kw"
+      ],
+      "note": "Исторический разбор параметров богаче: 8 ключей против 3 (в новом нет grounding_type, grounding_resistance_ohm, voltage_levels, floors_info). Содержательно часть этих данных ушла в текст object_type/key_equipment."
+    },
+    {
+      "what": "norm_quote",
+      "new": "заполнен у 4 из 17",
+      "note": "Контракт допускает null при неуверенности; этап 04 всё равно перепроверяет."
+    },
+    {
+      "what": "объём",
+      "note": "17 замечаний против 11; тематическое пересечение покрывает 55% лексики исторических формулировок."
+    }
+  ],
+  "plausible_causes_not_verified": [
+    "Иной блочный контекст: в 11D блоков нет вовсе, и модели это сказано прямо; исторический прогон шёл в полном конвейере.",
+    "Иная модель и иная её версия у исторического прогона (март 2026).",
+    "Отсутствие стража отсутствия: PIPELINE_ABSENCE_GUARD_ENABLED выключен по умолчанию и на воркере, где .env не разворачивается.",
+    "Калибровка severity в промпте одинакова, но модели калибруют её по-разному — это известный класс расхождений платформы."
+  ],
+  "verdict": "PASS по контракту, с зафиксированным содержательным расхождением по severity"
+}
