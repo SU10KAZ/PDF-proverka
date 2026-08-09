@@ -132,6 +132,25 @@ class WorkerConfig:
     # РАЗРЕШЕНИЕ НА НАСТОЯЩИЙ ВЫЗОВ МОДЕЛИ. Отдельно от allow_real_llm:
     # контрольный запрос этапа 11 и боевой аудит — разные решения.
     allow_real_provider_probe: bool = False
+    # ─── Мост «конвейер → ProviderAdapter» (этап 11C) ────────────────────────
+    # РАЗРЕШЕНИЕ МАШИНЫ на то, чтобы конвейер вообще мог дотянуться до
+    # авторизованного CLI. Третье, независимое от двух прежних решение, и
+    # порядок здесь важен: администратор VPS разрешает КАНАЛ (эта настройка),
+    # оператор разрешает КОНКРЕТНОЕ задание (файл `allow_synthetic_inference`),
+    # центр формулирует ТРЕБОВАНИЕ (`provider_requirement` в задании). Ни одно
+    # из трёх само по себе вызова модели не открывает.
+    pipeline_provider_bridge_enabled: bool = False
+    # Сколько попытка ЖДЁТ разрешения оператора, прежде чем быть отвергнутой.
+    # Ноль (умолчание) = прежняя строгость: нет разрешения — сразу отказ.
+    # Ненулевое значение делает «ждёт разрешения» отдельным состоянием, а не
+    # провалом, — ровно так же, как «ждёт слот». Смысл в том, что разрешение
+    # привязано к ЗАДАНИЮ (§9 этапа 11C), а значит выписать его можно только
+    # ПОСЛЕ того, как задание создано: до этого момента task_id не существует.
+    pipeline_provider_grant_wait_sec: float = 0.0
+    # Файл со значениями, которых не должно быть в ответе модели (контрольная
+    # строка канарейки и т.п.). Содержимое в репозитории не хранится намеренно:
+    # хранить контрольную строку в Git значит обесценить её проверку.
+    provider_forbidden_literals_file: Path | None = None
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
     transport: object | None = None
@@ -230,6 +249,10 @@ class WorkerConfig:
             # он вообще рассказать центру о состоянии установленных CLI.
             "provider_gate_enabled": self.provider_gate_enabled,
             "provider_probe_allowed": self.allow_real_provider_probe,
+            # Может ли конвейер этого воркера вообще дойти до авторизованного
+            # CLI. Отдельно от `provider_probe_allowed`: контрольный запрос и
+            # рабочий вызов из конвейера — разные каналы и разные решения.
+            "pipeline_provider_bridge_enabled": self.pipeline_provider_bridge_enabled,
         }
         caps.update(self.extra_capabilities)
         return caps
@@ -409,6 +432,20 @@ def load_config(
         # отдельно, иначе включение одного тихо включало бы второе.
         allow_real_provider_probe=_env_bool(
             "AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE", False
+        ),
+        pipeline_provider_bridge_enabled=_env_bool(
+            "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED", False
+        ),
+        pipeline_provider_grant_wait_sec=max(
+            0.0, _env_float("AUDIT_WORKER_PIPELINE_PROVIDER_GRANT_WAIT_SEC", 0.0)
+        ),
+        provider_forbidden_literals_file=(
+            Path(os.environ["AUDIT_WORKER_PROVIDER_FORBIDDEN_LITERALS_FILE"])
+            .expanduser().resolve()
+            if os.environ.get(
+                "AUDIT_WORKER_PROVIDER_FORBIDDEN_LITERALS_FILE", ""
+            ).strip()
+            else None
         ),
         # verify_tls намеренно НЕ управляется переменной окружения: глобальный
         # verify=false — это тихое отключение защиты канала. Единственная

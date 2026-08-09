@@ -103,6 +103,7 @@ class WorkerAgent:
             auth_modes=dict(config.provider_auth_modes or {}),
             executables=dict(config.provider_executables or {}),
             inference_allowed=config.allow_real_provider_probe,
+            pipeline_bridge_enabled=config.pipeline_provider_bridge_enabled,
             log=_log,
         )
         self._provider_thread: Optional[threading.Thread] = None

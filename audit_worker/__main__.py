@@ -290,6 +290,7 @@ def _cmd_providers(args: argparse.Namespace) -> int:
     выполняется ни при каких флагах: для него есть отдельная подкоманда с
     двумя независимыми разрешениями.
     """
+    from audit_worker.providers import pipeline_status
     from audit_worker.providers.manager import ProviderManager
 
     config = load_config(args.root, require_dispatcher=False)
@@ -308,9 +309,10 @@ def _cmd_providers(args: argparse.Namespace) -> int:
         # Сознательно False: команда наблюдения не имеет права разрешить
         # вызов модели, каким бы ни было окружение.
         inference_allowed=False,
+        pipeline_bridge_enabled=config.pipeline_provider_bridge_enabled,
         log=lambda message: print(f"[providers] {message}", file=sys.stderr),
     )
-    from audit_worker.providers import probe_grant
+    from audit_worker.providers import inference_grant, probe_grant
 
     manager.refresh(force=True)
     report = {
@@ -324,6 +326,12 @@ def _cmd_providers(args: argparse.Namespace) -> int:
             name: probe_grant.read_state(config.root, name).as_dict()
             for name in manager.adapters
         },
+        # Разрешение на РАБОЧИЙ вызов из конвейера — другой файл и другая
+        # единица (задание, а не провайдер). Показываются оба: оператор обязан
+        # видеть, какое именно разрешение у него открыто.
+        "pipeline_provider_bridge_enabled": config.pipeline_provider_bridge_enabled,
+        "pipeline_inference_grant": inference_grant.describe(config.root),
+        "last_pipeline_inference": pipeline_status.read(config.root),
         "auth_check_interval_sec": config.provider_auth_check_interval_sec,
         "quota_probe_interval_sec": config.provider_quota_probe_interval_sec,
         "providers": manager.heartbeat_payload(),

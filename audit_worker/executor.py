@@ -78,6 +78,16 @@ class _StopLoop(Exception):
     """Штатный выход из главного цикла (max_jobs). Не ошибка."""
 
 
+class _GrantPending(Exception):
+    """Разрешения оператора ещё нет — это ОЖИДАНИЕ, а не провал.
+
+    Отдельный тип, а не `AuditJobRejected`, потому что исход другой: попытка
+    возвращается в очередь и повторяется, как при занятом слоте. Разрешение
+    привязано к заданию и физически не может быть выписано раньше, чем задание
+    создано, — значит окно «задание есть, разрешения ещё нет» штатное.
+    """
+
+
 def _log(message: str) -> None:
     print(f"[executor {time.strftime('%H:%M:%S')}] {message}", flush=True)
 
@@ -158,6 +168,14 @@ class Executor:
         # дедуплицирует по (job, attempt, seq), и второе терялось молча.
         self._outboxes: dict[str, EventOutbox] = {}
         self._outbox_lock = threading.Lock()
+        # Какой провайдер привязан к какой попытке. Нужно ровно для отметки в
+        # heartbeat: сам факт вызова знает журнал попытки, а «кем» — привязка,
+        # и держать её в памяти дешевле, чем перечитывать файл после прогона.
+        self._bound_providers: dict[str, str] = {}
+        # Когда попытка ВПЕРВЫЕ упёрлась в отсутствие разрешения оператора.
+        # В памяти, а не на диске: это срок ожидания решения человека, и после
+        # перезапуска исполнителя ему честно начинаться заново.
+        self._grant_wait_since: dict[str, float] = {}
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
@@ -311,6 +329,7 @@ class Executor:
             with self._outbox_lock:
                 self._outboxes.pop(item["attempt_id"], None)
             self._cancelling.discard(item["attempt_id"])
+            self._bound_providers.pop(item["attempt_id"], None)
 
     def shutdown(self) -> None:
         self._stop.set()
@@ -734,12 +753,157 @@ class Executor:
             )
         return path
 
+    def _grant_wait_elapsed(self, attempt_id: str) -> float:
+        """Сколько попытка уже ждёт разрешения оператора."""
+        started = self._grant_wait_since.setdefault(attempt_id, time.time())
+        return max(0.0, time.time() - started)
+
+    def _forbidden_literals(self) -> tuple[str, ...]:
+        """Значения, которых не должно быть в ответе модели.
+
+        Читаются из файла оператора, а не из кода: контрольная строка, лежащая
+        в репозитории, превращает «в ответе её не нашли» в утверждение о
+        репозитории, а не о модели. Отсутствие файла — не ошибка: проверка
+        просто останется без литералов, и отчёт это покажет числом.
+        """
+        path = getattr(self.config, "provider_forbidden_literals_file", None)
+        if not path:
+            return ()
+        try:
+            text = Path(path).read_text(encoding="utf-8")
+        except OSError as exc:
+            _log(f"файл контрольных литералов не прочитан: {exc}")
+            return ()
+        return tuple(
+            line.strip() for line in text.splitlines()
+            if line.strip() and not line.startswith("#") and len(line.strip()) >= 8
+        )
+
+    def prepare_provider_binding(
+        self, item: dict[str, Any], params: "audit_runner.SafeAuditParams"
+    ) -> Optional[Path]:
+        """Выбрать провайдера, списать разрешение и выписать привязку.
+
+        Порядок обязателен и не переставляется:
+
+          1. рубеж машины — администратор VPS разрешил каналу существовать;
+          2. режим провайдеров — привязка не имеет смысла в fake-режиме, где
+             конвейер по построению ходит к подделкам;
+          3. РЕЗОЛВ — провайдер установлен, не заблокирован политикой и
+             авторизован. Отказ здесь ничего не стоит: разрешение ещё цело;
+          4. СПИСАНИЕ разрешения оператора — последним из проверок и ДО запуска
+             процесса. Дальше любое падение работает в безопасную сторону:
+             попытка засчитана, второго бесплатного прогона не будет;
+          5. запись привязки в каталог попытки.
+
+        Возвращает путь к привязке либо None, если задание модели не требует.
+        """
+        requirement_payload = params.provider_requirement
+        if not requirement_payload or int(requirement_payload.get("max_inferences") or 0) <= 0:
+            return None
+
+        # Импорт локальный: провайдерский слой не должен тянуться в исполнитель
+        # на путях, где модель не требуется вовсе.
+        from audit_worker.providers import inference_grant
+        from audit_worker.providers.manager import ProviderManager
+        from audit_worker.providers.resolver import (
+            ProviderRequirement,
+            ProviderResolutionError,
+            ProviderResolver,
+            ambient_root_for_attempt,
+        )
+
+        if not getattr(self.config, "pipeline_provider_bridge_enabled", False):
+            raise audit_runner.AuditJobRejected(
+                "задание требует вызова модели из конвейера, но канал не "
+                "разрешён администратором VPS "
+                "(AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED=false)"
+            )
+        if not getattr(self.config, "allow_real_llm", False):
+            raise audit_runner.AuditJobRejected(
+                "задание требует вызова модели, но настоящие модели на этом "
+                "воркере запрещены (AUDIT_WORKER_ALLOW_REAL_LLM=false)"
+            )
+
+        job_id, attempt_id = item["job_id"], item["attempt_id"]
+        job_dir = self.jobs.job_dir(job_id, attempt_id)
+        try:
+            requirement = ProviderRequirement.from_payload(requirement_payload)
+        except ProviderResolutionError as exc:
+            raise audit_runner.AuditJobRejected(str(exc)) from None
+        assert requirement is not None
+
+        manager = ProviderManager(
+            worker_root=self.config.root,
+            enabled=True,
+            timeout_sec=max(120.0, self.config.provider_timeout_sec),
+            account_groups=dict(self.config.provider_account_groups or {}),
+            policy_blocked=dict(self.config.provider_policy_blocked or {}),
+            auth_modes=dict(self.config.provider_auth_modes or {}),
+            executables=dict(self.config.provider_executables or {}),
+            # Менеджер строит адаптеры ДЛЯ НАБЛЮДЕНИЯ. Разрешение на вызов
+            # модели даёт только мост, и только по выписанной привязке.
+            inference_allowed=False,
+            log=lambda message: _log(f"provider: {message}"),
+        )
+        manager.refresh(force=True)
+        resolver = ProviderResolver(manager, worker_root=self.config.root)
+        provider_root = ambient_root_for_attempt(job_dir, requirement.provider)
+        try:
+            grant = inference_grant.consume(
+                self.config.root, provider=requirement.provider, task_id=str(job_id)
+            )
+        except inference_grant.InferenceGrantError as exc:
+            waited = self._grant_wait_elapsed(str(attempt_id))
+            limit = float(
+                getattr(self.config, "pipeline_provider_grant_wait_sec", 0.0) or 0.0
+            )
+            if waited < limit:
+                raise _GrantPending(
+                    f"ждёт разрешения оператора ({int(waited)}/{int(limit)} с): {exc}"
+                ) from None
+            raise audit_runner.AuditJobRejected(
+                f"нет разрешения оператора на вызов модели: {exc}"
+            ) from None
+        _log(
+            f"разрешение {grant.grant_id} списано: "
+            f"{grant.used}/{grant.max_uses} по {grant.provider}"
+        )
+        try:
+            binding = resolver.resolve(
+                requirement,
+                job_id=str(job_id),
+                attempt_id=str(attempt_id),
+                task_id=str(job_id),
+                grant_id=grant.grant_id,
+                provider_root=provider_root,
+                forbidden_literals=self._forbidden_literals(),
+            )
+        except ProviderResolutionError as exc:
+            # Разрешение уже списано и НЕ возвращается: единица тратится за
+            # попытку, а не за успех. Возврат сделал бы бесконечным цикл
+            # «попробовать ещё раз» на сломанной машине.
+            raise audit_runner.AuditJobRejected(
+                f"провайдер не выбран: {exc} (разрешение {grant.grant_id} "
+                "уже списано и не возвращается)"
+            ) from None
+        audit_runner.prepare_job_dir(job_dir)
+        path = binding.write(job_dir / "metadata")
+        self._grant_wait_since.pop(str(attempt_id), None)
+        self._bound_providers[str(attempt_id)] = binding.provider
+        _log(
+            f"привязка провайдера выписана: {binding.provider} "
+            f"({binding.auth_mode}), этапы {list(binding.allowed_stages)}"
+        )
+        return path
+
     def run_audit_attempt(self, item: dict[str, Any]) -> dict[str, Any]:
         """Выполнить `audit_pipeline_v1` в изолированном каталоге попытки."""
         job_id, attempt_id = item["job_id"], item["attempt_id"]
         job_dir = self.jobs.job_dir(job_id, attempt_id)
         meta = self.jobs.load(job_id, attempt_id) or {}
         outbox = self._outbox(item)
+        provider_binding: Optional[Path] = None
 
         try:
             params = audit_runner.validate_params(
@@ -749,9 +913,18 @@ class Executor:
             conflict = self.audit_slot_conflict(attempt_id)
             if conflict:
                 # Не провал: попытка возвращается в очередь и ждёт слот.
+                # ВАЖНО: проверка слота стоит ДО подготовки привязки — иначе
+                # ожидание слота списывало бы разрешение оператора.
                 self.db.set_queue_state(attempt_id, local_db.QUEUE_QUEUED)
                 _log(f"аудит {attempt_id[:8]} ждёт слот: {conflict}")
                 return {"ok": False, "reason": "waiting_for_slot", "detail": conflict}
+            provider_binding = self.prepare_provider_binding(item, params)
+        except _GrantPending as exc:
+            # Не провал: попытка возвращается в очередь ровно так же, как при
+            # занятом слоте, и ждёт решения человека.
+            self.db.set_queue_state(attempt_id, local_db.QUEUE_QUEUED)
+            _log(f"аудит {attempt_id[:8]}: {exc}")
+            return {"ok": False, "reason": "waiting_for_grant", "detail": str(exc)}
         except audit_runner.AuditJobRejected as exc:
             self.db.set_queue_state(
                 attempt_id, local_db.QUEUE_FAILED,
@@ -760,6 +933,7 @@ class Executor:
             self.jobs.update(job_id, attempt_id, local_state="rejected", error=str(exc))
             outbox.append("job_failed", {"code": "params_rejected", "reason": "error",
                                          "message": str(exc)})
+            self._grant_wait_since.pop(str(attempt_id), None)
             return {"ok": False, "reason": "rejected"}
 
         started_running = self.db.set_queue_state(
@@ -773,10 +947,15 @@ class Executor:
             return {"ok": False, "reason": "superseded", "queue_state": current}
 
         self.jobs.update(job_id, attempt_id, local_state="running", started_at=time.time())
-        outbox.append("job_started", {"stage": AUDIT_JOB_TYPE_REAL,
-                                      "profile": params.execution_profile,
-                                      "provider_mode":
-                                          "fake" if provider_dir else "real"})
+        outbox.append("job_started", {
+            "stage": AUDIT_JOB_TYPE_REAL,
+            "profile": params.execution_profile,
+            "action": params.action,
+            "provider_mode": "fake" if provider_dir else "real",
+            # Факт наличия привязки, а не её содержимое: путь к файлу и
+            # контрольные литералы оператора центру не нужны.
+            "provider_bridge": bool(provider_binding),
+        })
 
         def on_progress(event: dict[str, Any]) -> None:
             kind = str(event.get("type") or "")
@@ -824,6 +1003,7 @@ class Executor:
             version_id=meta.get("version_id"),
             config=self.config,
             provider_dir=provider_dir,
+            provider_binding=provider_binding,
             on_progress=on_progress,
             on_log=on_log,
             on_start=on_start,
@@ -860,6 +1040,9 @@ class Executor:
         missing = audit_runner.missing_required_artifacts(
             job_dir, params.required_result_artifacts
         )
+        # Журнал вызовов модели уезжает в пакет как evidence: без него
+        # «оплачен ровно один вызов» — заявление, а не факт.
+        self._announce_inference_ledger(job_dir, attempt_id, job_id, outbox)
         if outcome.exit_code != 0 or missing:
             # Пакет НЕ помечается успешным при отсутствии обязательного
             # артефакта: «успех без 03_findings.json» — худший из исходов,
@@ -964,7 +1147,11 @@ class Executor:
             exit_code=int(meta.get("exit_code", 0) or 0),
             job_type=job_type,
             required_artifacts=(
-                list(audit_runner.REQUIRED_RESULT_ARTIFACTS) if is_audit else None
+                list(
+                    audit_runner.required_artifacts_for(
+                        str(audit_manifest.get("action") or "")
+                    )
+                ) if is_audit else None
             ),
             pipeline_revision=(
                 audit_manifest.get("pipeline_revision") if is_audit else None
@@ -1045,6 +1232,54 @@ class Executor:
             attempt_id, local_db.QUEUE_FINISHED,
             result={"outcome": "finished", "result_hash": manifest["archive"]["sha256"]},
         )
+
+    def _announce_inference_ledger(
+        self, job_dir: Path, attempt_id: str, job_id: str, outbox: EventOutbox
+    ) -> None:
+        """Событие со СВОДКОЙ журнала вызовов модели. Без промптов и ответов.
+
+        В событие уходят только числа и состояния ключей: сырой ответ модели в
+        heartbeat и в EventOutbox не имеет права попасть (§6 задания), а
+        «сколько оплаченных вызовов сделала эта попытка» центр обязан видеть.
+        """
+        try:
+            from audit_worker.providers.inference_ledger import InferenceLedger
+
+            summary = InferenceLedger(
+                job_dir, attempt_id=attempt_id, job_id=job_id
+            ).summary()
+        except Exception as exc:                   # noqa: BLE001 — учёт не блокер
+            _log(f"свод журнала вызовов не собран: {exc!r}")
+            return
+        if not summary.get("keys"):
+            return
+        try:
+            from audit_worker.providers import pipeline_status
+
+            pipeline_status.record(
+                self.config.root,
+                provider=self._bound_providers.get(attempt_id, ""),
+                calls_started=int(summary.get("calls_started", 0)),
+                calls_completed=int(summary.get("calls_completed", 0)),
+            )
+        except Exception as exc:                   # noqa: BLE001 — отметка не блокер
+            _log(f"отметка о вызове конвейера не записана: {exc!r}")
+        outbox.append("stage_progress", {
+            "stage": AUDIT_JOB_TYPE_REAL,
+            "unit": "inference_calls",
+            "processed": int(summary.get("calls_completed", 0)),
+            "total": int(summary.get("calls_started", 0)),
+            "percent_reliable": False,
+            "last_significant_event": "журнал вызовов модели",
+            "inference_ledger": {
+                "calls_started": summary.get("calls_started"),
+                "calls_completed": summary.get("calls_completed"),
+                "keys": [
+                    {"key": row.get("key"), "state": row.get("state")}
+                    for row in summary.get("keys", [])
+                ],
+            },
+        })
 
     def _announce_artifacts(self, job_dir: Path, outbox: EventOutbox) -> None:
         for artifact in sorted((job_dir / "result").rglob("*")):

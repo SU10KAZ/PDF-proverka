@@ -37,7 +37,26 @@ PIPELINE_ENTRYPOINT_MODULE = "backend.app.pipeline.remote_audit_runner"
 SUPPORTED_PROFILE = "remote_audit_pilot_v1"
 
 #: Действия, которые профиль допускает.
-SUPPORTED_ACTIONS = frozenset({"full", "audit", "resume"})
+#:
+#: `provider_selfcheck` (этап 11C) — синтетическая проверка сквозного пути
+#: «задание → конвейер → ProviderAdapter → CLI». Это ПОЛНОЦЕННОЕ действие
+#: профиля, а не отладочный ключ: оно идёт тем же типом задания, тем же
+#: исполнителем, той же точкой входа конвейера, с теми же снимками центра и
+#: той же сборкой пакета. Отличается ровно тем, что делает: один вызов модели
+#: вместо восьми этапов аудита — и поэтому у него свой список обязательных
+#: артефактов.
+SUPPORTED_ACTIONS = frozenset({"full", "audit", "resume", "provider_selfcheck"})
+
+#: Действие синтетической проверки провайдера.
+ACTION_PROVIDER_SELFCHECK = "provider_selfcheck"
+
+#: Имя переменной, которой воркер сообщает процессу конвейера путь к привязке
+#: провайдера. ЛИТЕРАЛ, а не импорт из `audit_worker.providers`, и это не
+#: небрежность: модуль, который строит argv и окружение процесса конвейера,
+#: по-прежнему НИЧЕГО не знает о провайдерском слое — ему нужно только имя
+#: переменной. Совпадение литерала с `resolver.BINDING_ENV` проверяется тестом
+#: `test_binding_env_name_matches_provider_layer`.
+PROVIDER_BINDING_ENV = "AUDIT_WORKER_PROVIDER_BINDING"
 
 #: Обязательные артефакты результата. Дублируют центральный список намеренно:
 #: каждый рубеж держит оборону сам.
@@ -53,6 +72,23 @@ REQUIRED_RESULT_ARTIFACTS: tuple[str, ...] = (
     "result/audit_manifest.json",
     "usage/usage_report.json",
 )
+
+#: Обязательные артефакты СИНТЕТИЧЕСКОЙ проверки провайдера. Свой список, а не
+#: урезанный общий: требовать `03_findings.json` от прогона, который аудита не
+#: выполнял, значило бы либо завалить его всегда, либо подделать артефакт.
+SYNTHETIC_REQUIRED_RESULT_ARTIFACTS: tuple[str, ...] = (
+    "work/pipeline_log.json",
+    "result/provider_selfcheck.json",
+    "result/audit_manifest.json",
+    "usage/usage_report.json",
+)
+
+
+def required_artifacts_for(action: str) -> tuple[str, ...]:
+    """Какие артефакты обязательны для ЭТОГО действия."""
+    if str(action) == ACTION_PROVIDER_SELFCHECK:
+        return SYNTHETIC_REQUIRED_RESULT_ARTIFACTS
+    return REQUIRED_RESULT_ARTIFACTS
 
 #: Переменные окружения, которые НАСЛЕДУЮТСЯ у процесса воркера. Всё, чего
 #: здесь нет, до конвейера не доходит — включая токены, адрес центра, секреты
@@ -120,6 +156,9 @@ class SafeAuditParams:
     discipline_id: str
     discipline_profile_hash: str
     required_result_artifacts: tuple[str, ...]
+    #: Требование к провайдеру в виде обычного словаря скаляров. Разбирает его
+    #: резолвер исполнителя; здесь оно только переносится.
+    provider_requirement: Optional[dict[str, Any]] = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -137,6 +176,7 @@ class SafeAuditParams:
             "discipline_id": self.discipline_id,
             "discipline_profile_hash": self.discipline_profile_hash,
             "required_result_artifacts": list(self.required_result_artifacts),
+            "provider_requirement": self.provider_requirement,
         }
 
 
@@ -146,7 +186,66 @@ _ALLOWED_FIELDS = {
     "expected_source_tree_hash", "prompt_bundle_hash", "model_config_hash",
     "feature_flags_hash", "runtime_snapshot_hash", "discipline_id",
     "discipline_profile_hash", "required_result_artifacts",
+    # ЛОГИЧЕСКОЕ требование центра к провайдеру (этап 11C). Ни путей, ни
+    # учётных данных, ни токенов: только имя провайдера, ожидаемая модель,
+    # белый список этапов и потолок вызовов. Разбирает его резолвер на стороне
+    # исполнителя; здесь проверяется лишь форма — чтобы негодная нагрузка
+    # отвергалась там же, где и все остальные (§4 задания).
+    "provider_requirement",
 }
+
+#: Поля требования к провайдеру. Проверяются формально, без импорта
+#: провайдерского слоя (см. комментарий к PROVIDER_BINDING_ENV).
+_PROVIDER_REQUIREMENT_FIELDS = {
+    "provider", "model", "allowed_stages", "max_inferences",
+}
+
+
+def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
+    """Форма требования. Смысл — забота резолвера, форма — забота этого рубежа."""
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise AuditJobRejected("provider_requirement: ожидается объект")
+    unknown = set(raw) - _PROVIDER_REQUIREMENT_FIELDS
+    if unknown:
+        raise AuditJobRejected(
+            f"provider_requirement: недопустимые поля {sorted(unknown)}"
+        )
+    provider = str(raw.get("provider") or "").strip()
+    if not provider or len(provider) > 32 or not provider.isalpha():
+        raise AuditJobRejected(
+            f"provider_requirement.provider={provider!r} имеет недопустимую форму"
+        )
+    model = raw.get("model")
+    if model is not None and (not isinstance(model, str) or len(model) > 128):
+        raise AuditJobRejected("provider_requirement.model: строка не длиннее 128")
+    stages = raw.get("allowed_stages") or []
+    if not isinstance(stages, list) or not all(isinstance(x, str) for x in stages):
+        raise AuditJobRejected(
+            "provider_requirement.allowed_stages: ожидается список строк"
+        )
+    for stage in stages:
+        if not stage.replace("_", "").isalnum() or len(stage) > 64:
+            raise AuditJobRejected(
+                f"provider_requirement.allowed_stages: недопустимое имя {stage!r}"
+            )
+    try:
+        max_inferences = int(raw.get("max_inferences") or 0)
+    except (TypeError, ValueError):
+        raise AuditJobRejected(
+            "provider_requirement.max_inferences: ожидается целое число"
+        ) from None
+    if not 0 <= max_inferences <= 8:
+        raise AuditJobRejected(
+            f"provider_requirement.max_inferences={max_inferences} вне [0, 8]"
+        )
+    return {
+        "provider": provider.lower(),
+        "model": model or None,
+        "allowed_stages": list(stages),
+        "max_inferences": max_inferences,
+    }
 
 
 def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
@@ -227,11 +326,21 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
             "пойдёт прогон, было бы нечем"
         )
 
-    required = data.get("required_result_artifacts") or list(REQUIRED_RESULT_ARTIFACTS)
+    # Свой список зависит от ДЕЙСТВИЯ: синтетическая проверка провайдера не
+    # выполняет аудита и артефактов аудита не производит.
+    own = required_artifacts_for(action)
+    required = data.get("required_result_artifacts") or list(own)
     if not isinstance(required, list) or not all(isinstance(x, str) for x in required):
         raise AuditJobRejected("required_result_artifacts: ожидается список строк")
     # Расширить список заданием нельзя: берём пересечение со СВОИМ.
-    merged = tuple(sorted(set(REQUIRED_RESULT_ARTIFACTS) | (set(required) & set(REQUIRED_RESULT_ARTIFACTS))))
+    merged = tuple(sorted(set(own) | (set(required) & set(own))))
+
+    requirement = _validate_provider_requirement(data.get("provider_requirement"))
+    if action == ACTION_PROVIDER_SELFCHECK and requirement is None:
+        raise AuditJobRejected(
+            "действие provider_selfcheck без provider_requirement бессмысленно: "
+            "проверять нечего"
+        )
 
     return SafeAuditParams(
         execution_profile=profile,
@@ -248,6 +357,7 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         discipline_id=discipline,
         discipline_profile_hash=profile_hash,
         required_result_artifacts=merged,
+        provider_requirement=requirement,
     )
 
 
@@ -290,7 +400,13 @@ def build_argv(spec_path: Path, *, config: Any) -> list[str]:
     return [python, "-u", "-m", PIPELINE_ENTRYPOINT_MODULE, str(spec_path)]
 
 
-def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> dict[str, str]:
+def build_env(
+    *,
+    config: Any,
+    job_dir: Path,
+    provider_dir: Optional[Path],
+    provider_binding: Optional[Path] = None,
+) -> dict[str, str]:
     """Окружение из белого списка + корни данных, вычисленные от каталога попытки.
 
     Ни одна переменная не приходит из задания. Секретов воркера здесь нет:
@@ -338,6 +454,12 @@ def build_env(*, config: Any, job_dir: Path, provider_dir: Optional[Path]) -> di
         # (проверяется тестом test_no_llm_invocation_in_worker_package).
     else:
         env["AUDIT_WORKER_PROVIDER_MODE"] = "real"
+    if provider_binding is not None:
+        # Единственный канал, которым процесс конвейера узнаёт о провайдерском
+        # слое. Значение — путь к файлу ВНУТРИ каталога попытки; учётных данных
+        # и токенов в нём нет (см. `resolver.ProviderBinding`). Нет переменной —
+        # нет моста, и конвейер работает ровно как до этапа 11C.
+        env[PROVIDER_BINDING_ENV] = str(provider_binding)
     return env
 
 
@@ -399,6 +521,7 @@ def run_audit_job(
     version_id: Optional[str],
     config: Any,
     provider_dir: Optional[Path],
+    provider_binding: Optional[Path] = None,
     on_progress: Callable[[dict[str, Any]], None],
     on_log: Callable[[str, str, str], None],
     on_start: Optional[Callable[[int, str], None]] = None,
@@ -431,12 +554,20 @@ def run_audit_job(
         # `provider_mode="real"` отвергался безусловно — то есть настройка
         # `AUDIT_WORKER_ALLOW_REAL_LLM` не работала ни в одну сторону.
         "allow_real_llm": bool(getattr(config, "allow_real_llm", False)),
+        # Требование центра переносится в спеку КАК ЕСТЬ: код платформы обязан
+        # видеть, что именно было заказано, и сверять это с привязкой, которую
+        # исполнитель выписал по своему решению.
+        "provider_requirement": params.provider_requirement,
+        "provider_binding": str(provider_binding) if provider_binding else None,
         "paths": {key: str(value) for key, value in layout.items()},
     }
     spec_path.write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
 
     argv = build_argv(spec_path, config=config)
-    env = build_env(config=config, job_dir=job_dir, provider_dir=provider_dir)
+    env = build_env(
+        config=config, job_dir=job_dir, provider_dir=provider_dir,
+        provider_binding=provider_binding,
+    )
     fingerprint = command_fingerprint(argv)
     started = time.time()
 
