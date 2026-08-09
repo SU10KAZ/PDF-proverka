@@ -43,23 +43,64 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, Optional
 
-#: Чем заменяется абсолютный путь в инструкциях. Формулировка отвечает на
-#: вопрос, который иначе возник бы у модели: «а где же тогда данные».
-FILESYSTEM_PLACEHOLDER = "(inlined below; no filesystem access)"
+#: Чем заменяется абсолютный путь в инструкциях.
+#:
+#: Формулировка «inlined below» здесь БЫЛА и оказалась ложью: `{BLOCKS_ANALYSIS_PATH}`
+#: подставляется в шаги задачи, а сам анализ блоков в промпт НЕ вкладывается.
+#: Модель получала бы указание «данные ниже» на данные, которых нет, — и,
+#: не найдя их, приняла бы за них `[IMAGE]`-описания из MD, то есть заполнила
+#: бы `items_verified_from_blocks` ровно тем самовзаимоподтверждением, против
+#: которого написан HARD RULE шаблона. Плейсхолдер обязан говорить правду и
+#: ничего не обещать.
+FILESYSTEM_PLACEHOLDER = "(not available in this run)"
 
-#: Абсолютный POSIX-путь. Требование «слэш не после словесного символа»
-#: отсекает дроби и конструкции вроде `м3/ч`, `и/или`, `01/02/2026`: у них
-#: перед слэшем стоит буква или цифра. Требование «хотя бы один внутренний
-#: сегмент» отсекает одиночный корень и не трогает `/` как знак.
-_ABS_PATH_RE = re.compile(r"(?<![\w])/(?:[^\s/`'\"<>]+/)+[^\s/`'\"<>]*")
+#: Абсолютный POSIX-путь — ЯКОРНО, по известным корням и по расширениям
+#: артефактов.
+#:
+#: Прежняя, «широкая» форма `(?<![\w])/(?:[^\s/]+/)+[^\s/]*` отсекала дроби
+#: (`м3/ч`, `и/или`, `220/380`, `01/02/2026`) — у них перед слэшем словесный
+#: символ. Но она ловила слэш после ПУНКТУАЦИИ, кавычки и скобки, а такого в
+#: проектной документации полно: `тип н.з./н.о.`, `категории (А)/(Б)/(В)`,
+#: `режимы «ВКЛ»/«ОТКЛ»`, `блоки [TEXT]/[IMAGE]`, `https://docs.cntd.ru/...`.
+#: Зачистка применяется в том числе к inline норм-базе дисциплины и к секции
+#: pre-scan — то есть к инженерным данным, и молча портить их нельзя.
+#:
+#: Поэтому теперь совпадением считается только то, что действительно похоже на
+#: путь файловой системы: либо начинается с известного корня, либо оканчивается
+#: расширением артефакта конвейера. Схемы URL (`https://`) отсечены явно —
+#: слэшу не разрешено идти после двоеточия.
+_KNOWN_ROOTS = ("home", "srv", "opt", "var", "usr", "tmp", "mnt", "media", "root", "data")
+_ARTIFACT_SUFFIXES = (
+    "json", "md", "txt", "pdf", "png", "jpg", "jpeg", "html", "htm",
+    "py", "yaml", "yml", "csv", "xlsx", "log", "db", "sqlite",
+)
+_ABS_PATH_RE = re.compile(
+    r"(?<![\w:])/(?:"
+    # либо известный корень + хотя бы один сегмент
+    rf"(?:{'|'.join(_KNOWN_ROOTS)})/[^\s`'\"<>]*"
+    # либо произвольный путь, оканчивающийся расширением артефакта
+    rf"|(?:[^\s/`'\"<>]+/)+[^\s/`'\"<>]*\.(?:{'|'.join(_ARTIFACT_SUFFIXES)})\b"
+    r")"
+)
 
 #: Транспортный контракт, заменяющий блок B. Английский — как и весь боевой
 #: шаблон этапа; смешивать языки в одном промпте незачем.
+#:
+#: Формулировка «nothing to look up» отсюда УБРАНА. Она задумывалась как «у
+#: тебя нет инструментов», а читается как «проверять нечего» — и стоит
+#: последней в промпте, то есть с максимальной рецентностью. При этом шаг 2
+#: задачи прямо требует «Verify validity of each norm», а схема требует
+#: `status`/`edition` у каждой нормативной ссылки. Команда «не искать» глушила
+#: бы ровно эту работу. Ограничивать надо ТРАНСПОРТ, а не предмет анализа.
 TRANSPORT_CONTRACT = """## OUTPUT TRANSPORT
 
 You have NO tools in this run: no file reading, no file writing, no shell, no
-search. Everything you need is already inlined above — there is nothing to open
-and nothing to look up.
+web search. Do not ask for files and do not report that a file is missing.
+
+Everything this task needs is already inside this message: the full source
+document above, and the discipline normative reference in the instructions.
+Judge the validity of every norm you cite against that inlined normative
+reference — that is what it is there for.
 
 Return your result as ONE JSON object in your reply, matching the schema above.
 - no markdown code fences,
@@ -69,14 +110,45 @@ Return your result as ONE JSON object in your reply, matching the schema above.
 The pipeline itself parses your reply, validates it and persists it to the
 output file. Your only job in this run is the analysis and the JSON."""
 
+#: Точная справка «что подано на вход В ЭТОМ прогоне».
+#:
+#: Нужна потому, что `_clean_template_for_api` удаляет СТРОКИ с «Read tool», а
+#: в шаблоне это как раз строки-заголовки пунктов входных данных: «**MD file**
+#: (primary text source)», «**Normative reference**», «**Block analysis (Stage
+#: 02, compact view)**». Уезжают они целиком, вместе с инженерной
+#: квалификацией источников, и остаются висячие подпункты и сирота-фраза «If
+#: the file does not exist». Для ветки OpenRouter это давняя данность; для
+#: боевого этапа на воркере — потеря, которой на заменяемом CLI-пути не было.
+#:
+#: Блок вставляется ПЕРЕД покалеченным `## Input Data` и говорит ровно то, что
+#: соответствует действительности provider-режима.
+INPUT_DATA_NOTE = """## Input Data (this run)
+
+1. **Project MD file — the primary text source.** Its full text is inlined
+   below under `SOURCE DOCUMENT`. `[TEXT]` blocks are textual data; `[IMAGE]`
+   blocks are textual descriptions of drawings.
+2. **Discipline normative reference** — inlined in these instructions under
+   `Normative Reference`.
+3. **Stage 02 block analysis — NOT available in this run.** There is no block
+   context to cross-check against, so leave `items_verified_from_blocks` empty
+   (`[]`). Do not treat `[IMAGE]` descriptions from the MD as Stage 02 block
+   evidence: they are the same text source, not independent visual confirmation.
+
+The section below is the full task specification. Where it refers to reading a
+file, the content is already inlined as described above."""
+
 #: Поля, отсутствие которых делает артефакт непригодным дальше по конвейеру.
-#: Список короткий намеренно: сюда попадает только то, что реально читают
-#: следующие этапы и проверяет боевой раннер (`text_findings` он проверяет
-#: сам, отдельной строкой кода).
+#:
+#: Список короткий НАМЕРЕННО, и короче он стал по разбору: `project_params` и
+#: `normative_refs_found` из жёсткой части убраны. Промпт нигде не требует
+#: «выведи все ключи схемы, даже пустыми» — явная инструкция про пустой массив
+#: есть только у `items_verified_from_blocks`. Проект без единой нормативной
+#: ссылки — законный исход, модель законно опускает ключ, и жёсткая проверка
+#: превращала бы это в отказ этапа. Хуже: ответ уже записан в журнал вызовов,
+#: и любой повтор возвращал бы ту же ошибку — отказ становился бы вечным.
+#: Отсутствие этих полей теперь фиксируется в «мягкой» части отчёта.
 REQUIRED_RESULT_FIELDS: tuple[str, ...] = (
     "text_source",
-    "project_params",
-    "normative_refs_found",
     "text_findings",
 )
 
@@ -98,7 +170,10 @@ EXPECTED_SEMANTICS: dict[str, Any] = {
 #: Поля, чьё отсутствие фиксируется, но НЕ роняет этап. Они косметические:
 #: конвейер знает и проект, и имя этапа без модели. Тянуть их в жёсткий
 #: контракт значило бы превратить исправный аудит в отказ из-за подписи.
-SOFT_RESULT_FIELDS: tuple[str, ...] = ("stage", "project_id", "timestamp")
+SOFT_RESULT_FIELDS: tuple[str, ...] = (
+    "stage", "project_id", "timestamp",
+    "project_params", "normative_refs_found", "items_verified_from_blocks",
+)
 
 
 def strip_filesystem_references(text: str) -> tuple[str, int]:
@@ -153,6 +228,14 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
     """
     system_raw, user_text = split_messages(messages)
     system_text, stripped = strip_filesystem_references(system_raw)
+    # Справка о входных данных ставится ПЕРЕД покалеченным `## Input Data`
+    # шаблона, а если такого заголовка нет — в самое начало инструкций.
+    marker = "## Input Data"
+    if marker in system_text:
+        head, tail = system_text.split(marker, 1)
+        system_text = f"{head}{INPUT_DATA_NOTE}\n\n{marker}{tail}"
+    else:
+        system_text = f"{INPUT_DATA_NOTE}\n\n{system_text}"
     prompt = (
         f"{system_text}\n\n"
         "===== SOURCE DOCUMENT (inlined by the pipeline) =====\n\n"
@@ -162,6 +245,21 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
     )
     return {
         "prompt": prompt,
+        # `map` — то, что МОЖНО класть в отчёт. Сам `prompt` содержит документ
+        # заказчика целиком, и место ему только в stdin подпроцесса: отчёт о
+        # прогоне уезжает центру в пакете результата и попадает в разбор
+        # руками, то есть стал бы вторым экземпляром документа за пределами
+        # артефакта. Разделение сделано структурой, а не договорённостью
+        # «не забыть вырезать».
+        "map": {
+            "system_chars": len(system_text),
+            "document_chars": len(user_text),
+            "prompt_chars": len(prompt),
+            "filesystem_refs_stripped": stripped,
+            "absolute_paths_remaining_in_instructions": count_absolute_paths(system_text),
+            "input_data_note_applied": INPUT_DATA_NOTE.splitlines()[0] in prompt,
+            "transport_contract_applied": "OUTPUT TRANSPORT" in prompt,
+        },
         "system_chars": len(system_text),
         "document_chars": len(user_text),
         "prompt_chars": len(prompt),

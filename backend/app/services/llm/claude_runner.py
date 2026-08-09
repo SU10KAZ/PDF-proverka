@@ -36,8 +36,10 @@ from pathlib import Path
 from typing import Optional, Callable, Awaitable, Sequence, Union
 
 from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_FOR_TEXT_FILENAME,
     TEXT_ANALYSIS_FILENAME,
     TEXT_ANALYSIS_STAGE,
+    resolve_existing,
 )
 
 from backend.app.core.config import (
@@ -194,7 +196,12 @@ def _provider_bridge():
     """
     try:
         from audit_worker.providers import pipeline_bridge
-    except Exception:                                  # noqa: BLE001 — пакета нет
+    except ModuleNotFoundError:
+        # Пакета НЕТ — это центр, штатное состояние. Ловится именно
+        # `ModuleNotFoundError`, а не любое исключение: сломанный импорт
+        # внутри самого пакета (синтаксис, отсутствующая зависимость) на
+        # ВОРКЕРЕ раньше давал ровно тот же `None` — то есть тихий уход на
+        # прежний транспорт с файловыми инструментами и выходом в веб.
         return None
     return pipeline_bridge
 
@@ -851,6 +858,18 @@ def _assert_output_inside_attempt(output_path: Path, attempt_dir: Path) -> None:
         )
 
 
+#: Потолок промпта provider-режима, символов. Не оценка, а рубеж: планировщика
+#: бюджета (Tier 1 «снять норм-базу» / Tier 2 «нарезка по листам»), который есть
+#: у ветки codex, у provider-маршрута нет. Без потолка большой проект дал бы
+#: либо ошибку CLI, либо — что хуже — молчаливое усечение, при котором
+#: инструкция «Analyze the MD content COMPLETELY» осталась бы, а хвоста
+#: документа модель не увидела бы. Отказ ДО вызова бесплатен; усечённый аудит
+#: стоит оплаченного вызова и выглядит как настоящий.
+PROVIDER_PROMPT_MAX_CHARS = int(
+    os.environ.get("AUDIT_PROVIDER_TEXT_ANALYSIS_MAX_CHARS", "600000") or "600000"
+)
+
+
 async def _run_text_analysis_via_provider(
     project_info: dict,
     project_id: str,
@@ -859,6 +878,7 @@ async def _run_text_analysis_via_provider(
     output_dir: str | Path | None,
     version_dir: str | Path | None,
     version_id: str | None,
+    stage_key: str = "text_analysis",
 ) -> tuple[int, str, CLIResult]:
     """`text_analysis` через ProviderAdapter: модель только рассуждает (11D).
 
@@ -886,13 +906,64 @@ async def _run_text_analysis_via_provider(
     from backend.app.pipeline.stages.text_analysis import provider_transport
     import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
 
+    from backend.app.pipeline.stages.prepare.task_builder import _load_prompt_override
+
     with _scoped_audit_paths(
         output_dir=output_dir, version_dir=version_dir,
         project_id=project_id, version_id=version_id,
     ):
+        # Кастомный промпт проекта заменяемая CLI-ветка честно применяла
+        # (`prepare_text_analysis_task` начинается с него). Сборщик API-ветки
+        # про override не знает вовсе — для HTTP-транспорта это давняя данность,
+        # но на воркере молча откатиться к стоковому шаблону значит выполнить
+        # НЕ ТОТ аудит, о котором просил оператор, и не сказать об этом.
+        override = _load_prompt_override(project_id, "text_analysis")
+        if override:
+            detail = (
+                "для этапа text_analysis задан кастомный промпт проекта, а "
+                "provider-режим его не поддерживает. Прогон отменён: тихая "
+                "подмена промпта дала бы аудит по другим правилам"
+            )
+            await send_output(on_output, f"[text_analysis] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
         messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+        blocks_for_text = resolve_existing(
+            Path(_resolve_output_dir(project_id, output_dir=output_dir)),
+            BLOCKS_FOR_TEXT_FILENAME,
+        )
     built = provider_transport.build_provider_prompt(messages)
     prompt = built["prompt"]
+
+    # Проверки промпта — в РАНТАЙМЕ, а не только в тестах. Тест доказывает, что
+    # код умеет вычистить пути; артефакт прогона обязан доказать, что в ЭТОТ раз
+    # их не осталось. Между «умеет» и «сделал» помещается вся разница между
+    # проверкой и обещанием.
+    guard_problems: list[str] = []
+    if built["absolute_paths_remaining_in_instructions"]:
+        guard_problems.append(
+            f"в инструкциях остались абсолютные пути "
+            f"({built['absolute_paths_remaining_in_instructions']}): §14 запрещает "
+            "давать модели путь проекта"
+        )
+    if built["prompt_chars"] > PROVIDER_PROMPT_MAX_CHARS:
+        guard_problems.append(
+            f"промпт {built['prompt_chars']} симв. > потолка "
+            f"{PROVIDER_PROMPT_MAX_CHARS}: планировщика нарезки в provider-режиме "
+            "нет, а молчаливое усечение документа недопустимо"
+        )
+    if blocks_for_text is not None and Path(blocks_for_text).is_file():
+        # Блочный контекст существует, но provider-режим его НЕ вкладывает.
+        # Пройти мимо значило бы выполнить текстовый анализ вслепую там, где
+        # данные блоков есть, и записать результат как полноценный.
+        guard_problems.append(
+            f"есть блочный контекст ({Path(blocks_for_text).name}), а "
+            "provider-режим его не вкладывает: аудит вышел бы без данных, "
+            "которые уже собраны"
+        )
+    if guard_problems:
+        detail = "; ".join(guard_problems)
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
 
     await send_output(
         on_output,
@@ -906,9 +977,9 @@ async def _run_text_analysis_via_provider(
         outcome = await _asyncio.to_thread(
             lambda: pipeline_bridge.run_stage_inference(
                 job_dir=attempt_dir,
-                stage=TEXT_ANALYSIS_STAGE_KEY,
+                stage=stage_key,
                 prompt=prompt,
-                purpose=TEXT_ANALYSIS_STAGE_KEY,
+                purpose=stage_key,
                 required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
                 field_types=provider_transport.FIELD_TYPES,
                 expected_semantics=provider_transport.EXPECTED_SEMANTICS,
@@ -939,23 +1010,41 @@ async def _run_text_analysis_via_provider(
 
     validation = outcome.validation.as_dict() if outcome.validation else None
     payload = result.result if isinstance(result.result, dict) else {}
+    # Ни промпта, ни ответа модели в отчёте о прогоне. Оба — текст документа
+    # заказчика: промпт содержит его целиком, `provider_result.result` —
+    # замечания по нему. Отчёт уезжает центру в пакете результата
+    # (`03_analysis/` входит в возвращаемые префиксы) и разбирается руками, то
+    # есть каждая такая копия — это ещё один экземпляр документа за пределами
+    # артефакта. От результата остаются служебные поля и отпечаток; сам
+    # результат лежит там, где ему и место, — в `02_text_analysis.json`.
+    provider_facts = {
+        k: v for k, v in result.as_dict().items() if k != "result"
+    }
+    provider_facts["result_keys"] = sorted(payload.keys())
+    provider_facts["result_text_findings"] = len(payload.get("text_findings") or [])
     run_report = {
-        "stage": TEXT_ANALYSIS_STAGE_KEY,
+        "stage": stage_key,
         "transport": "provider_adapter",
-        "prompt_build": built,
+        "prompt_build": built["map"],
         "prompt_sha256": pipeline_bridge.sha256_text(prompt),
         "performed_now": bool(outcome.performed),
-        "provider_result": result.as_dict(),
+        "provider_result": provider_facts,
         "validation": validation,
         "ledger": outcome.ledger.as_dict(),
         "soft_contract": provider_transport.soft_contract_report(payload),
+        "content_excluded": (
+            "Промпт и ответ модели в отчёт не кладутся: это текст документа "
+            "заказчика. Отпечаток промпта — prompt_sha256, отпечаток ответа — "
+            "provider_result.raw_sha256."
+        ),
     }
 
     resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
     try:
-        _assert_output_inside_attempt(
-            resolved_output_dir / TEXT_ANALYSIS_FILENAME, attempt_dir
-        )
+        # Проверяется КАТАЛОГ, а не один файл в нём: этап пишет три вещи —
+        # артефакт, отчёт о прогоне и `audit_trail/`. Гейт на одном пути
+        # оставлял бы две записи без проверки.
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
     except ProviderOutputPathError as exc:
         detail = str(exc)
         await send_output(on_output, f"[text_analysis] {detail}")
@@ -967,11 +1056,24 @@ async def _run_text_analysis_via_provider(
 
     if not outcome.ok:
         failed = (validation or {}).get("failed") if validation else None
-        detail = (
-            f"provider_result.status={result.status!r} "
-            f"error_code={result.error_code!r} detail={result.detail!r} "
-            f"validation_failed={failed}"
-        )
+        if outcome.performed:
+            detail = (
+                f"provider_result.status={result.status!r} "
+                f"error_code={result.error_code!r} detail={result.detail!r} "
+                f"validation_failed={failed}"
+            )
+        else:
+            # ПОВТОР уже сохранённой неудачи. Код ошибки сюда НЕ подставляется
+            # намеренно: `rate_limited` в тексте распознаётся общим
+            # классификатором конвейера как свежий лимит, и раннер уходил бы в
+            # цикл ожидания сброса — который ничего не изменит, потому что
+            # журнал попытки будет отдавать тот же сохранённый ответ. Повтор
+            # обязан выглядеть тем, чем он является: невозможностью повтора.
+            detail = (
+                "повтор невозможен: результат этого вызова уже записан в журнал "
+                f"попытки и неуспешен (проверка: {failed}). Новая попытка "
+                "требует нового attempt_id и новой единицы разрешения"
+            )
         await send_output(on_output, f"[text_analysis] {detail}")
         # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
         # как выполненный этап.
@@ -1007,6 +1109,7 @@ async def run_text_analysis(
     output_dir: str | Path | None = None,
     version_dir: str | Path | None = None,
     version_id: str | None = None,
+    stage_key: str = "text_analysis",
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 02_text_analysis.json (динамический выбор провайдера)."""
     # Мост провайдеров воркера (этап 11D). Развилка стоит ВЫШЕ выбора
@@ -1021,6 +1124,7 @@ async def run_text_analysis(
         return await _run_text_analysis_via_provider(
             project_info, project_id, on_output,
             output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            stage_key=stage_key,
         )
 
     model = get_stage_model("text_analysis")
@@ -1982,8 +2086,15 @@ async def run_triage(
     version_dir: str | Path | None = None,
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
-    """Legacy: запускает text_analysis вместо триажа."""
+    """Legacy: запускает text_analysis вместо триажа.
+
+    `stage_key="triage"` существенен в provider-режиме: ключ вызова в журнале
+    попытки считается по (attempt, provider, purpose, prompt). С общим purpose
+    триаж и текстовый анализ в одной попытке делили бы одну запись, и второй
+    молча получил бы ответ первого как свой результат.
+    """
     return await run_text_analysis(
         project_info, project_id, on_output,
         output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+        stage_key="triage",
     )

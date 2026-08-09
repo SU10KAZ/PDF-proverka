@@ -53,6 +53,15 @@ if str(REPO_ROOT) not in sys.path:
 #: и вытянула бы чужие флаги в окружение прогона.
 os.environ.setdefault("AUDIT_DISABLE_DOTENV", "1")
 
+#: Прогон НЕ оставляет `.pyc` ни в развёрнутом релизе, ни в чужом venv.
+#: Боевой путь ставит эту переменную подпроцессу конвейера
+#: (`audit_runner.build_env`), а здесь конвейер — это МЫ САМИ: без неё импорт
+#: `backend.app.**` записал бы `__pycache__` внутрь артефакта, чей `tree_hash`
+#: зафиксирован в отчёте развёртывания, и в venv существующей установки,
+#: которую 11D обещал не трогать.
+os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
+sys.dont_write_bytecode = True
+
 STAGE = "text_analysis"
 CAPABILITY = "strong_audit"
 ARTIFACT = "02_text_analysis.json"
@@ -337,15 +346,21 @@ def build_stage_context(sandbox: dict, log_path: Path):
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="11D: боевой text_analysis через ProviderAdapter")
-    parser.add_argument("--mode", choices=("fake", "real"), required=True)
-    parser.add_argument("--sandbox-root", required=True)
+    parser.add_argument("--mode", choices=("fake", "real"), required=False)
+    parser.add_argument(
+        "--issue-grant", action="store_true",
+        help=("ОТДЕЛЬНЫЙ операторский шаг: выписать одно разрешение под задание "
+              "и выйти. Прогон разрешений себе не выписывает."),
+    )
+    parser.add_argument("--grant-ttl-sec", type=float, default=3600.0)
+    parser.add_argument("--sandbox-root", required=False)
     parser.add_argument("--worker-root", required=True,
                         help="корень данных 11D-рантайма: политика, разрешения")
-    parser.add_argument("--document-dir", required=True,
+    parser.add_argument("--document-dir", required=False,
                         help="каталог с ОДНОЙ разрешённой копией входного MD")
     parser.add_argument("--md-name", default=None)
-    parser.add_argument("--section", required=True)
-    parser.add_argument("--prompts-dir", required=True,
+    parser.add_argument("--section", required=False)
+    parser.add_argument("--prompts-dir", required=False,
                         help="снимок prompts/ (pipeline + disciplines)")
     parser.add_argument("--task-id", default=None)
     parser.add_argument("--canary", default="/home/coder/provider-auth-canary/DO_NOT_READ.txt")
@@ -362,15 +377,55 @@ def main() -> int:
 
     task_id = args.task_id or f"11d-{uuid.uuid4().hex[:8]}"
     attempt_id = f"{task_id}-a1"
+
+    if args.issue_grant:
+        # Операторский шаг. Отдельный запуск, отдельное решение человека.
+        from audit_worker.providers import inference_grant as _grant
+
+        record = _grant.issue(
+            Path(args.worker_root), grant_id=f"g-{task_id}", provider="claude",
+            task_id=task_id, ttl_sec=args.grant_ttl_sec, max_uses=1,
+            note=f"11D {STAGE} real_document",
+        )
+        print(json.dumps(record.as_public_dict(), ensure_ascii=False, indent=2))
+        return 0
+
+    missing = [
+        name for name, value in (
+            ("--mode", args.mode), ("--sandbox-root", args.sandbox_root),
+            ("--document-dir", args.document_dir), ("--section", args.section),
+            ("--prompts-dir", args.prompts_dir),
+        ) if not value
+    ]
+    if missing:
+        raise SystemExit(f"для прогона обязательны: {', '.join(missing)}")
     if args.mode == "real" and not args.i_confirm_one_real_inference:
         raise SystemExit(
             "режим real требует --i-confirm-one-real-inference: один настоящий "
             "вызов подписки не выполняется по умолчанию"
         )
 
-    worker_root = Path(args.worker_root)
+    worker_root = Path(args.worker_root).resolve()
     prompts_dir = Path(args.prompts_dir)
     canary = Path(args.canary)
+
+    # 11D живёт в СВОЁМ корне данных. Указать сюда корень существующей
+    # установки — опечатка ценой продового состояния: `ProviderManager` создаст
+    # там раскладку провайдеров с `chmod 0700`, а выписка разрешения оставит
+    # запись в её файле разрешений. Проверка дешевле разбора последствий.
+    for forbidden in (Path.home() / "audit-worker" / "data", Path.home() / "audit-worker"):
+        if worker_root == forbidden or forbidden in worker_root.parents:
+            raise SystemExit(
+                f"--worker-root={worker_root} ведёт в существующую установку "
+                f"воркера ({forbidden}). 11D обязан работать в отдельном корне"
+            )
+
+    if not canary.is_file():
+        raise SystemExit(
+            f"контрольный файл не найден: {canary}. Прогон без него запрещён: "
+            "иначе раздел «канарейка» отчёта заполнится зелёными сравнениями "
+            "двух отсутствий и будет выглядеть как проведённая проверка"
+        )
 
     sandbox = build_sandbox(
         root=Path(args.sandbox_root), task_id=task_id,
@@ -417,14 +472,28 @@ def main() -> int:
     )
     manager.refresh(force=True)
 
-    # ── Разрешение: выписывает оператор, списываем ДО вызова (§21) ───────────
+    # ── Разрешение: выписывает ОПЕРАТОР, прогон только списывает (§21) ───────
+    #
+    # Выписка вынесена в отдельный запуск (`--issue-grant`) намеренно. Пока
+    # `issue` и `consume` стояли рядом в одном прогоне, «разрешение оператора»
+    # было декорацией: скрипт выдавал его сам себе, и единственным человеческим
+    # рубежом оставался флаг подтверждения, который передаёт любая автоматика.
+    # Докстринг `inference_grant.issue` прямо запрещает звать её из кода
+    # воркера, и боевой `executor` её не зовёт — зовёт только `consume`.
     grant_id = f"g-{task_id}"
-    issued = inference_grant.issue(
-        worker_root, grant_id=grant_id, provider="claude", task_id=task_id,
-        ttl_sec=3600.0, max_uses=1,
-        note=f"11D {STAGE} real_document (mode={args.mode})",
-    )
+    existing = inference_grant.find(worker_root, provider="claude", task_id=task_id)
+    if existing is None:
+        raise SystemExit(
+            f"нет пригодного разрешения под задание {task_id!r}. Выпишите его "
+            f"ОТДЕЛЬНЫМ запуском:\n"
+            f"    {Path(__file__).name} --issue-grant --worker-root {worker_root} "
+            f"--task-id {task_id}\n"
+            "Прогон разрешения себе не выписывает."
+        )
+    if existing.grant_id != grant_id:
+        grant_id = existing.grant_id
     consumed = inference_grant.consume(worker_root, provider="claude", task_id=task_id)
+    issued = existing
     print(f"[11D] разрешение {grant_id}: осталось {consumed.remaining}", flush=True)
 
     provider_root = resolver.ambient_root_for_attempt(job_dir, "claude")
@@ -494,10 +563,18 @@ def main() -> int:
     input_copy = job_dir / "input" / Path(sandbox["md_path"]).name
     md_unchanged = sha256_file(input_copy) == sha256_file(sandbox["md_path"])
 
+    # Пустой список искомых строк дал бы `leak_scan.total = 0` без единого
+    # сравнения — «проверка», которая не может ничего найти. Отсутствие
+    # литерала — ошибка запуска, а не тихий ноль.
     leak_needles = {
         f"forbidden_literal_{i}": value
         for i, value in enumerate(args.forbidden_literal) if value
     }
+    if not leak_needles:
+        raise SystemExit(
+            "не передан ни один --forbidden-literal: сканирование на утечку "
+            "выродилось бы в отчёт «утечек 0» без единого сравнения"
+        )
     token = os.environ.get("AUDIT_WORKER_TOKEN", "")
     if token:
         leak_needles["own_token"] = token
@@ -597,11 +674,39 @@ def main() -> int:
     report_path = write_json(job_dir / "11D_RUN.json", report)
     print(f"[11D] отчёт прогона: {report_path}", flush=True)
 
-    ok = bool(stage_result.success) and artifact_path.is_file()
-    print(f"[11D] ИТОГ: {'PASS' if ok else 'FAIL'} "
+    # PASS — это НЕ «этап отработал». Успешный этап при двух оплаченных вызовах
+    # или при утечке контрольной строки — это провал 11D, а не успех, и
+    # объявлять его успехом по одному лишь `stage_result.success` значило бы
+    # мерить не то, ради чего этап затевался.
+    calls_started = int(ledger_summary.get("calls_started") or 0)
+    violations: list[str] = []
+    if not stage_result.success:
+        violations.append(f"этап не выполнен: {stage_result.error}")
+    if not artifact_path.is_file():
+        violations.append("артефакт 02_text_analysis.json не создан")
+    if calls_started > 1:
+        violations.append(f"вызовов модели {calls_started} вместо одного")
+    if not report["artifact"]["inside_attempt_dir"]:
+        violations.append("артефакт вне каталога попытки")
+    if report["leak_scan"]["total"]:
+        violations.append(f"утечки: {report['leak_scan']['hits']}")
+    if not md_unchanged:
+        violations.append("входной MD изменился за прогон")
+    canary_facts = report["canary"]
+    if canary_facts["before"].get("exists") and not (
+        canary_facts["size_unchanged"] and canary_facts["mtime_unchanged"]
+        and canary_facts["inode_unchanged"]
+    ):
+        violations.append("контрольный файл изменился")
+    report["verdict"] = {"pass": not violations, "violations": violations}
+    write_json(job_dir / "11D_RUN.json", report)
+
+    print(f"[11D] ИТОГ: {'PASS' if not violations else 'FAIL'} "
           f"(замечаний {report['artifact']['text_findings']}, "
-          f"вызовов модели {ledger_summary.get('calls_started')})", flush=True)
-    return 0 if ok else 1
+          f"вызовов модели {calls_started})", flush=True)
+    for v in violations:
+        print(f"[11D] НАРУШЕНИЕ: {v}", flush=True)
+    return 0 if not violations else 1
 
 
 if __name__ == "__main__":

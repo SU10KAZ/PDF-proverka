@@ -61,6 +61,7 @@ from audit_worker.providers.paths import (
 )
 from audit_worker.providers.resolver import (
     BINDING_ENV,
+    BINDING_FILENAME,
     ProviderBinding,
     ProviderResolutionError,
 )
@@ -78,12 +79,33 @@ def binding_path() -> Optional[Path]:
 def active() -> bool:
     """Активен ли мост в ЭТОМ процессе.
 
-    Проверяется наличие файла, а не только переменной: переменная, указывающая
-    в никуда, — это ошибка развёртывания, и она обязана быть заметной на первом
-    же вызове, а не превращаться в тихий возврат к прежнему пути.
+    Три исхода, и третий появился на 11D:
+
+      * переменной нет → `False`. Это центр, и поведение обязано остаться
+        прежним;
+      * переменная есть и файл на месте → `True`;
+      * переменная есть, а файла нет → **исключение**.
+
+    Третий случай раньше давал `False` — при том что докстринг обещал
+    «заметность на первом же вызове». Обещание не выполнялось: вызывающий
+    видел «мост неактивен» и уходил на прежний путь, то есть запускал
+    `claude -p` по PATH из-под изолированного HOME (неавторизованным) либо
+    платный HTTP. На синтетическом этапе 11C это было безобидно; на боевом
+    этапе это тихий обход провайдерского слоя, замаскированный под обычную
+    ошибку этапа. Ошибка развёртывания обязана падать, а не подменять
+    транспорт.
     """
-    path = binding_path()
-    return bool(path and path.is_file())
+    raw = os.environ.get(BINDING_ENV, "").strip()
+    if not raw:
+        return False
+    path = Path(raw)
+    if path.is_file():
+        return True
+    raise ProviderBridgeError(
+        f"{BINDING_ENV}={raw!r} задана, но файла привязки нет. Это ошибка "
+        "развёртывания. Тихий возврат к прежнему транспорту запрещён: он "
+        "означал бы вызов неавторизованного CLI из-под изолированного HOME."
+    )
 
 
 def load_binding() -> ProviderBinding:
@@ -247,6 +269,22 @@ def run_stage_inference(
             "без списанного разрешения оператора не выполняется"
         )
 
+    # Адаптер строится ДО заявки в журнале, и это порядок, а не стиль.
+    #
+    # Раньше он строился после `begin`, и всё, что могло сорваться при сборке
+    # (`resolve_ambient_home`, `ensure_dirs`, неизвестный провайдер), оставляло
+    # в журнале заявку-сироту: попытка навсегда «неизвестного исхода», хотя
+    # адаптер даже не был создан и модель заведомо не звали.
+    adapter = build_adapter(binding, on_process=on_process)
+    # То же и с гейтами, знать которые можно ЗАРАНЕЕ: провайдер отключён
+    # политикой, вызовы запрещены, CLI отсутствует, промпт пуст, модель
+    # назначена без списка допустимых. Все они означают «до модели не дошли»,
+    # а списанная заявка означала бы «дошли, но исход неизвестен» — то есть
+    # съеденную попытку и вечный replay ошибки при любом повторе.
+    unreachable = _preflight(adapter, binding, prompt)
+    if unreachable:
+        raise ProviderBridgeError(unreachable)
+
     claim = ledger.begin(
         key, provider=binding.provider, purpose=purpose,
         prompt_sha256=sha256_text(prompt),
@@ -267,7 +305,6 @@ def run_stage_inference(
             f"вызов {key} захвачен другим процессом: повтор запрещён (I-P9)"
         )
 
-    adapter = build_adapter(binding, on_process=on_process)
     try:
         result = adapter.structured_inference(
             prompt, purpose=purpose, timeout_sec=timeout_sec,
@@ -283,7 +320,21 @@ def run_stage_inference(
         # Помечаем явно и не даём повторить автоматически.
         ledger.mark_indeterminate(key, reason=f"{type(exc).__name__}: {exc}")
         raise
-    ledger.complete(key, result)
+    try:
+        ledger.complete(key, result)
+    except BaseException as exc:                    # noqa: BLE001
+        # Ответ получен и ОПЛАЧЕН, а записать его не вышло (диск полон, ФС
+        # только на чтение, каталог попытки снесён). Раньше эта строка стояла
+        # вне защиты: заявка оставалась без пометки, и попытка выглядела как
+        # «начата и брошена» — без единого слова о том, что результат вообще
+        # был. Пометка не спасает сам результат, но делает исход честным.
+        ledger.mark_indeterminate(
+            key,
+            reason=(
+                f"результат получен, но не сохранён: {type(exc).__name__}: {exc}"
+            ),
+        )
+        raise
     validation = _validate(
         result, binding=binding,
         required_result_fields=required_result_fields,
@@ -294,6 +345,47 @@ def run_stage_inference(
         provider_result=result, ledger=ledger.inspect(key),
         validation=validation, performed=True,
     )
+
+
+def _preflight(adapter, binding: ProviderBinding, prompt: str) -> str:
+    """Причина, по которой вызов НЕ СОСТОИТСЯ. Пустая строка — путь открыт.
+
+    Проверяется ровно то, что известно ДО запуска процесса. Смысл — отделить
+    «до модели не дошли» от «модель ответила ошибкой»: первое не должно стоить
+    ни списанной заявки, ни съеденного потолка, ни вечного replay при повторе.
+    """
+    if not binding.model:
+        # Вызов без НАЗНАЧЕННОЙ модели — это ровно та слепота 11C, ради
+        # устранения которой писалась локальная политика: argv уходит без
+        # `--model`, отвечает модель учётной записи по умолчанию, а обе сверки
+        # (в адаптере и в проверке результата) условны и молча пропускаются.
+        # Рабочий этап на непроверяемых условиях не выполняется.
+        return (
+            "в привязке нет назначенной модели: рабочий вызов без явной модели "
+            "не выполняется (иначе ответила бы модель учётной записи по "
+            "умолчанию, и ни одна проверка этого не заметила бы)"
+        )
+    if getattr(adapter, "policy_blocked", False):
+        return f"провайдер {binding.provider!r} отключён политикой на этом воркере"
+    if not getattr(adapter, "inference_allowed", False):
+        return f"рабочий вызов модели не разрешён на адаптере {binding.provider!r}"
+    if not str(prompt or "").strip():
+        return "пустой промпт: рабочий вызов не выполняется"
+    if binding.model and not binding.accepted_reported_models:
+        return (
+            f"модель {binding.model!r} назначена, но список допустимых "
+            "фактических идентификаторов пуст: сверять ответ не с чем"
+        )
+    try:
+        installed = adapter.installed()
+    except Exception:                                   # noqa: BLE001
+        installed = False
+    if not installed:
+        return (
+            f"CLI провайдера {binding.provider!r} не найден по пути привязки: "
+            "вызов невозможен"
+        )
+    return ""
 
 
 def _validate(
@@ -339,11 +431,24 @@ def attempt_dir() -> Path:
     попытки — родитель её родителя. Отдельного поля в привязке для этого нет
     намеренно: два источника одного пути расходятся ровно тогда, когда это
     дороже всего — при разборе чужого прогона.
+
+    ФОРМА ПУТИ ПРОВЕРЯЕТСЯ. Без проверки привязка, положенная в `/tmp/b.json`,
+    давала бы «каталог попытки» = `/`, и построенный на нём гейт «писать только
+    внутрь попытки» вырождался бы в тождественную истину: под `/` лежит всё.
+    Корень доверия обязан иметь ту же форму, что и раскладка, которая его
+    порождает.
     """
     path = binding_path()
     if path is None:
         raise ProviderBridgeError(f"{BINDING_ENV} не задана")
-    return path.resolve().parent.parent
+    resolved = path.resolve()
+    if resolved.name != BINDING_FILENAME or resolved.parent.name != "metadata":
+        raise ProviderBridgeError(
+            f"привязка лежит не по раскладке попытки: {resolved}. Ожидается "
+            f"<каталог попытки>/metadata/{BINDING_FILENAME} — иначе каталог "
+            "попытки определяется неверно и гейт записи теряет смысл"
+        )
+    return resolved.parent.parent
 
 
 def stored_outcome(

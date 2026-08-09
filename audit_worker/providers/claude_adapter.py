@@ -142,7 +142,12 @@ def _inference_argv(model: Optional[str] = None) -> list[str]:
     """
     argv: list[str] = [*_PROBE_NEUTRALIZE_PERSONAL_CONTEXT]
     if model:
-        argv += ["--model", str(model)]
+        # Форма с `=`, как у вариадических флагов ниже. `--model` не
+        # вариадический (проверено по объявлению CLI: `--model <model>`), то
+        # есть поглотить соседний токен он не может. Но форма с `=` снимает
+        # ещё и класс «значение начинается с дефиса и разбирается как флаг», а
+        # заодно не заставляет читателя помнить, какие флаги здесь какие.
+        argv += [f"--model={model}"]
     argv += [
         "--tools=",
         "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),

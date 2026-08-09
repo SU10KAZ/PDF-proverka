@@ -353,9 +353,43 @@ class TestStageRouting:
     def test_b2_binding_pointing_nowhere_is_a_loud_error(
         self, monkeypatch, tmp_path, project
     ):
-        """Переменная есть, файла нет — это ошибка развёртывания, не «как раньше»."""
+        """Переменная есть, файла нет — падение, а не тихий откат на legacy.
+
+        Раньше здесь стояло `assert active() is False` — и это закрепляло
+        дефект: «мост неактивен» уводило боевой этап на `claude -p` по PATH с
+        файловыми инструментами и выходом в веб, замаскировав обход
+        провайдерского слоя под обычную ошибку этапа.
+        """
         monkeypatch.setenv(resolver.BINDING_ENV, str(tmp_path / "нет-такого.json"))
-        assert pipeline_bridge.active() is False
+        with pytest.raises(pipeline_bridge.ProviderBridgeError):
+            pipeline_bridge.active()
+
+        # И этап тоже падает, а не уходит на прежний транспорт.
+        from backend.app.services.llm import claude_runner
+
+        called: list = []
+
+        async def _must_not_run(*a, **k):
+            called.append(1)
+            from backend.app.models.usage import CLIResult
+            return 0, "ok", CLIResult(result_text="ok")
+
+        monkeypatch.setattr(claude_runner, "_run_cli", _must_not_run)
+        with pytest.raises(pipeline_bridge.ProviderBridgeError):
+            _run_stage(project)
+        assert called == [], "прежний транспорт не имел права быть вызванным"
+
+    def test_b3_missing_binding_file_never_reaches_legacy_cli(
+        self, monkeypatch, tmp_path, project
+    ):
+        """То же на уровне `_run_cli`: перехват падает, а не пропускает дальше."""
+        monkeypatch.setenv(resolver.BINDING_ENV, str(tmp_path / "нет.json"))
+        from backend.app.services.llm import claude_runner
+
+        with pytest.raises(pipeline_bridge.ProviderBridgeError):
+            asyncio.run(
+                claude_runner._run_cli("промпт", "", 10, stage="text_analysis")
+            )
 
     def test_a2_stage_outside_whitelist_fails_without_fallback(
         self, monkeypatch, tmp_path, job_dir, project
@@ -425,8 +459,10 @@ class TestModelPolicy:
     def test_d_exact_model_passed_to_cli_explicitly(self):
         """Модель предъявляется CLI флагом, а не «подразумевается»."""
         argv = _inference_argv(_POLICY_MODEL)
-        assert "--model" in argv
-        assert argv[argv.index("--model") + 1] == _POLICY_MODEL
+        # Форма с `=`: значение неотделимо от флага, поэтому ни поглотить
+        # соседний токен, ни быть разобранным как отдельный флаг оно не может.
+        assert f"--model={_POLICY_MODEL}" in argv
+        assert "--model" not in argv
         # Порядок сохраняется: вариадические флаги по-прежнему в форме `=`,
         # а промпт-флаг `-p` остаётся последним.
         assert argv[-1] == "-p"
@@ -434,7 +470,7 @@ class TestModelPolicy:
 
     def test_d2_argv_without_model_is_unchanged_from_11c(self):
         """Без назначенной модели argv в точности прежний."""
-        assert "--model" not in _inference_argv(None)
+        assert not any(a.startswith("--model") for a in _inference_argv(None))
 
     def test_e_reported_model_mismatch_fails_closed(
         self, monkeypatch, tmp_path, job_dir, project
@@ -1131,6 +1167,195 @@ class TestCodexNotInvoked:
 
 
 # ═════════════ Рубеж формы требования центра ═════════════════════════════════
+class TestReviewFindings:
+    """Рубежи, добавленные по итогам состязательного разбора перед прогоном."""
+
+    def test_center_model_field_refused_outright(self):
+        """Точный идентификатор от центра не принимается ВООБЩЕ, даже без capability.
+
+        Раньше задание только с `model` проходило оба рубежа, и от попадания
+        произвольной строки центра в argv спасала лишь проверка тремя слоями
+        ниже. I-P5 не имеет права держаться на побочном эффекте чужой проверки.
+        """
+        with pytest.raises(resolver.ProviderResolutionError):
+            resolver.ProviderRequirement.from_payload({
+                "provider": "claude", "model": "claude-sonnet-5",
+                "allowed_stages": ["text_analysis"], "max_inferences": 1,
+            })
+
+    def test_binding_without_model_refuses_to_call(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Вызов без назначенной модели — отказ, а не слепота 11C."""
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe, model=None), job_dir)
+
+        code, text, _r = _run_stage(project)
+        assert code == 1
+        assert "нет назначенной модели" in text
+        assert _journal_text(journal) == "", "модель звать было нельзя"
+
+    def test_binding_model_string_is_validated_on_read(self, job_dir):
+        """Строка модели из ФАЙЛА проходит ту же проверку, что и из политики."""
+        payload = _binding(job_dir, executable=Path("/bin/true")).as_dict()
+        payload["model"] = "--dangerously-skip-permissions"
+        with pytest.raises(resolver.ProviderResolutionError):
+            resolver.ProviderBinding.from_dict(payload)
+
+    def test_model_id_rejects_leading_dash(self):
+        with pytest.raises(model_policy.ProviderPolicyError):
+            model_policy.validate_model_id("-opus", where="тест")
+
+    def test_attempt_dir_requires_metadata_layout(self, monkeypatch, tmp_path):
+        """Привязка вне раскладки попытки — отказ, иначе гейт записи вырождается."""
+        stray = tmp_path / "provider_binding.json"
+        stray.write_text("{}", encoding="utf-8")
+        monkeypatch.setenv(resolver.BINDING_ENV, str(stray))
+        with pytest.raises(pipeline_bridge.ProviderBridgeError):
+            pipeline_bridge.attempt_dir()
+
+    def test_grant_cannot_be_reissued_after_use(self, tmp_path):
+        """Перевыписка использованного разрешения не обнуляет счётчик."""
+        from audit_worker.providers import inference_grant
+
+        root = tmp_path / "worker"
+        inference_grant.issue(root, grant_id="g-1", provider="claude",
+                              task_id="t-1", ttl_sec=600.0, max_uses=1)
+        inference_grant.consume(root, provider="claude", task_id="t-1")
+        with pytest.raises(inference_grant.InferenceGrantError):
+            inference_grant.issue(root, grant_id="g-1", provider="claude",
+                                  task_id="t-1", ttl_sec=600.0, max_uses=1)
+
+    def test_unreachable_call_does_not_consume_the_ledger(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """«До модели не дошли» не съедает попытку и не залипает в журнале."""
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        missing = tmp_path / "bin" / "claude-которого-нет"
+        _activate(monkeypatch, _binding(job_dir, executable=missing), job_dir)
+
+        code, text, _r = _run_stage(project)
+        assert code == 1
+        assert "не найден" in text
+        summary = inference_ledger.InferenceLedger(
+            job_dir, attempt_id="attempt-1", job_id="job-11d"
+        ).summary()
+        assert summary["calls_started"] == 0, (
+            "несостоявшийся вызов не имеет права выглядеть как начатый"
+        )
+
+    def test_prompt_over_ceiling_refused_before_the_call(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Планировщика нарезки нет — значит нужен потолок, а не усечение."""
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+        monkeypatch.setattr(
+            "backend.app.services.llm.claude_runner.PROVIDER_PROMPT_MAX_CHARS", 100
+        )
+        code, text, _r = _run_stage(project)
+        assert code == 1
+        assert "потолка" in text
+        assert _journal_text(journal) == ""
+
+    def test_prompt_override_refuses_silent_substitution(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Кастомный промпт проекта не подменяется стоковым молча."""
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+        import backend.app.pipeline.stages.prepare.task_builder as task_builder
+
+        monkeypatch.setattr(
+            task_builder, "_load_prompt_override",
+            lambda project_id, stage: "мой особый промпт",
+        )
+        code, text, _r = _run_stage(project)
+        assert code == 1
+        assert "кастомный промпт" in text
+        assert _journal_text(journal) == ""
+
+    def test_existing_block_context_is_not_silently_dropped(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Собранный блочный контекст есть, а вложить его нечем — отказ."""
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+        from backend.app.services.storage.stage_artifacts import BLOCKS_FOR_TEXT_FILENAME
+
+        (project["output_dir"] / BLOCKS_FOR_TEXT_FILENAME).write_text(
+            json.dumps({"blocks": []}), encoding="utf-8"
+        )
+        code, text, _r = _run_stage(project)
+        assert code == 1
+        assert "блочный контекст" in text
+        assert _journal_text(journal) == ""
+
+    def test_run_report_carries_no_document_text(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Ни промпта, ни ответа модели в отчёте о прогоне."""
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+
+        _run_stage(project)
+        raw = (project["output_dir"] / "text_analysis_provider_run.json").read_text("utf-8")
+        assert "Насос P-1 подобран" not in raw, "тело документа уехало в отчёт"
+        assert "Расход насоса P-1 в тексте" not in raw, "ответ модели уехал в отчёт"
+        report = json.loads(raw)
+        assert "prompt" not in report["prompt_build"]
+        assert "result" not in report["provider_result"]
+        assert report["prompt_sha256"]
+        assert report["provider_result"]["raw_sha256"]
+
+    def test_input_data_note_replaces_the_mangled_section(self, project):
+        """Справка о входных данных говорит правду о Stage 02."""
+        built = provider_transport.build_provider_prompt(_build_messages(project))
+        prompt = built["prompt"]
+        assert "## Input Data (this run)" in prompt
+        assert "Stage 02 block analysis — NOT available in this run" in prompt
+        assert provider_transport.FILESYSTEM_PLACEHOLDER == "(not available in this run)"
+        assert "inlined below; no filesystem access" not in prompt
+
+    @pytest.mark.parametrize("text", [
+        "тип н.з./н.о./н.з.",
+        "см. https://docs.cntd.ru/document/1200084848",
+        "категории (А)/(Б)/(В) по СП 12.13130",
+        "режимы «ВКЛ»/«ОТКЛ»/«АВАРИЯ»",
+        "блоки [TEXT]/[IMAGE]/[TABLE]",
+        "воздухообмен, м3/ч /приток/вытяжка/",
+        "трубы Ду (25)/(32)/(40)",
+        "кабель ВВГнг(А)-LS 5х16, 220/380 В, L1/L2/L3/N/PE",
+        "п. 7.4.5/7.4.6 СП 256.1325800.2016",
+    ])
+    def test_path_stripper_leaves_engineering_text_intact(self, text):
+        """Зачистка путей не трогает инженерный текст со слэшами."""
+        cleaned, count = provider_transport.strip_filesystem_references(text)
+        assert count == 0, f"ложное срабатывание на {text!r} → {cleaned!r}"
+        assert cleaned == text
+
+    @pytest.mark.parametrize("text", [
+        "READ: /home/coder/projects/x/_output/01_blocks_for_text.json",
+        "см. /srv/audit/attempt/metadata/provider_binding.json",
+        "путь /opt/worker/data/worker.db",
+        "файл ./relative/../_output/02_text_analysis.json",
+    ])
+    def test_path_stripper_still_catches_real_paths(self, text):
+        cleaned, count = provider_transport.strip_filesystem_references(text)
+        assert count >= 1, f"путь не вычищен: {text!r}"
+        assert provider_transport.FILESYSTEM_PLACEHOLDER in cleaned
+
+
 class TestJobContract:
 
     def test_capability_accepted_at_job_boundary(self):

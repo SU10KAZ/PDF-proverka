@@ -121,8 +121,18 @@ class ProviderRequirement:
                 f"provider_requirement.max_inferences={max_inferences} вне [0, 8]"
             )
         model = payload.get("model")
-        if model is not None and (not isinstance(model, str) or len(model) > 128):
-            raise ProviderResolutionError("provider_requirement.model: строка ≤128")
+        if model is not None:
+            # Точный идентификатор модели от ЦЕНТРА не принимается вовсе
+            # (этап 11D). Раньше поле проходило как «строка ≤128» и уезжало в
+            # `binding.model`, а оттуда — в argv; от попадания туда произвольной
+            # строки центра спасала лишь проверка тремя слоями ниже («модель
+            # назначена, а список допустимых пуст → отказ»). Инвариант I-P5 не
+            # имеет права держаться на побочном эффекте чужой проверки.
+            raise ProviderResolutionError(
+                "provider_requirement.model больше не принимается: точную модель "
+                "выбирает ЛОКАЛЬНАЯ политика воркера по логической способности "
+                "(capability). Центру идентификатор модели не принадлежит"
+            )
         capability = payload.get("capability")
         if capability is not None:
             if not isinstance(capability, str) or not capability.strip():
@@ -135,19 +145,9 @@ class ProviderRequirement:
                     f"provider_requirement.capability={capability!r} неизвестна "
                     f"(известны: {list(model_policy.KNOWN_CAPABILITIES)})"
                 )
-            if model:
-                # Центру нельзя одновременно назвать способность и продиктовать
-                # строку модели: тогда неясно, кто из двоих решает, а «на всякий
-                # случай возьмём точный» вернуло бы центру распоряжение чужой
-                # подпиской ровно тем путём, который способность и закрывает.
-                raise ProviderResolutionError(
-                    "provider_requirement: capability и model взаимоисключимы — "
-                    "точную модель для способности выбирает локальная политика "
-                    "воркера, а не центр"
-                )
         return cls(
             provider=provider,
-            model=model or None,
+            model=None,
             allowed_stages=tuple(stages),
             max_inferences=max_inferences,
             capability=capability or None,
@@ -263,6 +263,26 @@ class ProviderBinding:
             raise ProviderResolutionError(
                 "привязка: accepted_reported_models не список"
             )
+        # Строка модели из ФАЙЛА проходит ту же валидацию, что и строка из
+        # политики. Инвариант «в argv только безопасные константы» иначе
+        # держался бы на честном слове: привязка лежит в каталоге попытки,
+        # которым процесс конвейера владеет целиком, и перечитывается на каждый
+        # вызов. Любой обход пути в любом этапе превращался бы в контроль над
+        # токеном argv следующего вызова.
+        try:
+            raw_model = data.get("model")
+            model_value = (
+                model_policy.validate_model_id(raw_model, where="привязка.model")
+                if raw_model else None
+            )
+            accepted_values = tuple(
+                model_policy.validate_model_id(
+                    item, where="привязка.accepted_reported_models"
+                )
+                for item in accepted
+            )
+        except model_policy.ProviderPolicyError as exc:
+            raise ProviderResolutionError(str(exc)) from None
         return cls(
             schema_version=int(version),
             provider=provider,
@@ -276,10 +296,10 @@ class ProviderBinding:
             grant_id=str(data.get("grant_id") or ""),
             max_inferences=int(data.get("max_inferences") or 0),
             allowed_stages=tuple(str(x) for x in stages),
-            model=(str(data["model"]) if data.get("model") else None),
+            model=model_value,
             forbidden_literals=tuple(str(x) for x in literals),
             capability=(str(data["capability"]) if data.get("capability") else None),
-            accepted_reported_models=tuple(str(x) for x in accepted),
+            accepted_reported_models=accepted_values,
         )
 
     def write(self, metadata_dir: Path) -> Path:

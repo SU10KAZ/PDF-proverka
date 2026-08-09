@@ -373,6 +373,20 @@ def issue(
     path.parent.mkdir(parents=True, exist_ok=True)
     with _FileLock(_lock_path(worker_root)):
         records = _parse(path.read_text(encoding="utf-8")) if path.exists() else []
+        # Перевыписать УЖЕ ИСПОЛЬЗОВАННОЕ разрешение под тем же идентификатором
+        # нельзя. Раньше строка ниже просто выбрасывала прежнюю запись, и
+        # `used` обнулялся — то есть повторный `issue` с тем же `grant_id`
+        # возвращал израсходованному заданию новую оплаченную попытку, минуя
+        # оба замка сразу (разрешение и, при новом каталоге попытки, журнал).
+        # Разрешение — единица расхода чужой подписки; «выписать заново» обязано
+        # означать НОВЫЙ идентификатор, а не сброс счётчика у старого.
+        previous = next((r for r in records if r.grant_id == str(grant_id)), None)
+        if previous is not None and previous.used > 0:
+            raise InferenceGrantError(
+                f"разрешение {grant_id!r} уже использовано "
+                f"({previous.used}/{previous.max_uses}) и не может быть выписано "
+                "повторно: для новой попытки нужен новый идентификатор"
+            )
         record = GrantRecord(
             grant_id=str(grant_id),
             provider=str(provider).strip().lower(),

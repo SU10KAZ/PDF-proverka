@@ -161,7 +161,14 @@ def _binding(job_dir: Path, *, executable: Path, provider: str = "claude",
         grant_id="g-test-0001",
         max_inferences=max_inferences,
         allowed_stages=tuple(stages),
-        model=None,
+        # Этап 11D: рабочий вызов без НАЗНАЧЕННОЙ модели больше не выполняется
+        # (иначе отвечала бы модель учётной записи по умолчанию, и ни одна
+        # проверка этого не заметила бы — ровно то расхождение, которое
+        # наблюдалось на боевом прогоне 11C). Привязка теперь всегда несёт
+        # модель локальной политики воркера и список её допустимых форм.
+        model="claude-opus-5",
+        capability="strong_audit",
+        accepted_reported_models=("claude-opus-5", "claude-opus-5[1m]"),
         forbidden_literals=tuple(literals),
     )
 
@@ -181,10 +188,17 @@ class TestPipelineRouting:
         monkeypatch.delenv(resolver.BINDING_ENV, raising=False)
         assert pipeline_bridge.active() is False
 
-    def test_binding_pointing_nowhere_is_not_active(self, monkeypatch, tmp_path):
-        """Переменная без файла — ошибка развёртывания, а не «мост активен»."""
+    def test_binding_pointing_nowhere_is_an_error(self, monkeypatch, tmp_path):
+        """Переменная без файла — ошибка развёртывания, и она ПАДАЕТ.
+
+        До 11D здесь возвращался `False`, и вызывающий тихо уходил на прежний
+        транспорт — то есть на неавторизованный `claude -p` из-под
+        изолированного HOME. Обещание докстринга «заметно на первом же вызове»
+        теперь выполняется буквально.
+        """
         monkeypatch.setenv(resolver.BINDING_ENV, str(tmp_path / "нет-такого.json"))
-        assert pipeline_bridge.active() is False
+        with pytest.raises(pipeline_bridge.ProviderBridgeError):
+            pipeline_bridge.active()
 
     @pytest.mark.asyncio
     async def test_run_cli_routes_through_the_adapter(self, monkeypatch, tmp_path,

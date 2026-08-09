@@ -143,7 +143,8 @@ def policy_path(worker_root: Optional[Path] = None) -> Optional[Path]:
     return Path(worker_root) / POLICY_FILENAME
 
 
-def _validate_model_id(value: Any, *, where: str) -> str:
+def validate_model_id(value: Any, *, where: str) -> str:
+    """Проверить идентификатор модели. Публичная: её зовёт и разбор привязки."""
     if not isinstance(value, str):
         raise ProviderPolicyError(f"{where}: ожидается строка")
     model = value.strip()
@@ -151,6 +152,15 @@ def _validate_model_id(value: Any, *, where: str) -> str:
         raise ProviderPolicyError(f"{where}: пустой идентификатор модели")
     if len(model) > 128:
         raise ProviderPolicyError(f"{where}: идентификатор длиннее 128 символов")
+    if model.startswith("-"):
+        # Ведущий дефис делает «идентификатор модели» ещё одним ФЛАГОМ CLI.
+        # Разбор опций отдаёт обязательному значению следующий токен
+        # безусловно, поэтому сегодня такая строка стала бы просто неизвестной
+        # моделью — но полагаться на разбор чужого CLI в вопросе «что попадёт
+        # в argv» нельзя.
+        raise ProviderPolicyError(
+            f"{where}: идентификатор не может начинаться с дефиса ({model!r})"
+        )
     # Закрытый набор символов: идентификатор уходит в argv, и «почти любая
     # строка» там нам не нужна. Скобки разрешены ради суффикса `[1m]`.
     allowed = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_[]")
@@ -160,6 +170,10 @@ def _validate_model_id(value: Any, *, where: str) -> str:
             f"{where}: недопустимые символы {bad} в идентификаторе модели"
         )
     return model
+
+
+#: Прежнее приватное имя. Оставлено, чтобы правка не разъехалась по файлу.
+_validate_model_id = validate_model_id
 
 
 @dataclass(frozen=True)
