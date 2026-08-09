@@ -41,6 +41,12 @@
     // Считает центр; экран его только показывает.
     auditTargets: {},
     auditRemote: { enabled: false, reason: '', profile: '', revision: null },
+    // Провайдеры (этап 11): worker_id → массив состояний Claude/Codex,
+    // и отдельно учётные записи подписок. Всё приходит с сервера; экран
+    // ничего не вычисляет сам, кроме форматирования.
+    workerProviders: {},
+    providerAccounts: [],
+    providerMeta: { lowThresholdPct: null, autoDispatch: false },
   };
 
   const PERM = {
@@ -207,6 +213,74 @@
     });
   }
 
+  /**
+   * Изменение ручных полей учётной записи (PUT, право `operate`).
+   *
+   * Заголовок намерения ставится тот же, что и на POST-действиях: CSRF-рубеж
+   * не зависит от метода. Ключа идемпотентности здесь нет намеренно — PUT
+   * идемпотентен по определению, повтор даёт то же состояние.
+   */
+  async function putAccount(accountId, body) {
+    return api(`/api/workers/providers/accounts/${encodeURIComponent(accountId)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'audit-workers',
+      },
+      body: JSON.stringify(body || {}),
+    });
+  }
+
+  /**
+   * Простой диалог правки учётной записи.
+   *
+   * Даты вводятся в формате `ГГГГ-ММ-ДД ЧЧ:ММ` и переводятся в unix-время
+   * браузером — то есть в ЛОКАЛЬНОЙ зоне пользователя. Именно поэтому рядом
+   * отдельно хранится `reset_timezone`: считать зону по браузеру означало бы
+   * молча приписать оператору чужой часовой пояс.
+   */
+  async function editAccount(accountId) {
+    const account = state.providerAccounts.find((a) => a.account_id === accountId);
+    if (!account) return;
+    const name = window.prompt('Название учётной записи:', account.display_name || '');
+    if (name === null) return;
+    const resetRaw = window.prompt(
+      'Ручная дата сброса лимита (ГГГГ-ММ-ДД ЧЧ:ММ).\n'
+      + 'Пустая строка — оставить как есть. Слово «нет» — стереть.',
+      account.manual_next_reset_at
+        ? new Date(account.manual_next_reset_at * 1000).toISOString().slice(0, 16).replace('T', ' ')
+        : '');
+    if (resetRaw === null) return;
+    const daysRaw = window.prompt(
+      'Пороги предупреждения в днях через запятую:',
+      (account.warning_days || []).join(', '));
+    if (daysRaw === null) return;
+    const notes = window.prompt('Заметки:', account.notes || '');
+    if (notes === null) return;
+    const unused = window.confirm(
+      'Отметить учётную запись как «лимит почти не использован»?\n\n'
+      + 'ОК — да (это включит предупреждение о сгорающем лимите даже при '
+      + 'неизвестном остатке).\nОтмена — нет.');
+
+    const body = { display_name: name.trim(), notes, operator_marked_unused: unused };
+    const trimmed = resetRaw.trim().toLowerCase();
+    if (trimmed === 'нет' || trimmed === 'no') {
+      body.clear_manual_reset = true;
+    } else if (resetRaw.trim()) {
+      const parsed = Date.parse(resetRaw.trim().replace(' ', 'T'));
+      if (Number.isNaN(parsed)) {
+        window.alert('Дата не разобрана. Ожидается ГГГГ-ММ-ДД ЧЧ:ММ.');
+        return;
+      }
+      body.manual_next_reset_at = parsed / 1000;
+      body.reset_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    }
+    const days = daysRaw.split(',').map((x) => parseInt(x.trim(), 10)).filter((x) => x > 0);
+    if (days.length) body.warning_days = days;
+    await putAccount(accountId, body);
+    await refresh();
+  }
+
   /** Диалог опасного действия: причина + подтверждающая фраза. */
   function askConfirmation(title, warning, phrase) {
     const reason = window.prompt(`${title}\n\n${warning}\n\nПричина (обязательно):`, '');
@@ -308,6 +382,193 @@
     if (target && !target.compatible) return true;
     const caps = worker.capabilities || {};
     return caps.real_llm_enabled === true;
+  }
+
+  // ─── Провайдеры (этап 11) ──────────────────────────────────────────────────
+  const PROVIDER_LABEL = { claude: 'Claude', codex: 'Codex' };
+
+  const INSTALL_LABEL = {
+    installed: 'установлен', missing: 'НЕ установлен', broken: 'повреждён',
+  };
+
+  const AUTH_LABEL = {
+    logged_in: 'вход выполнен', logged_out: 'вход НЕ выполнен',
+    expired: 'вход истёк', unknown: 'неизвестно', error: 'ошибка',
+  };
+
+  const QUOTA_LABEL = {
+    ready: 'готов', low: 'мало осталось', limited: 'лимит исчерпан',
+    cooldown: 'ожидание', auth_required: 'нужна авторизация',
+    unknown: 'неизвестно', stale: 'устарело', error: 'ошибка',
+    policy_blocked: 'запрещено политикой',
+  };
+
+  const SOURCE_LABEL = {
+    official_structured_api: 'официальный structured API',
+    official_app_server_rpc: 'официальный app-server (JSON-RPC)',
+    official_machine_readable: 'официальный машиночитаемый статус',
+    official_documented_text: 'документированный текстовый вывод',
+    observed_rate_limit_response: 'наблюдённый отказ по лимиту',
+    local_usage_statistics: 'собственная статистика вызовов',
+    operator_manual: 'ручной ввод оператора',
+    unavailable: 'официального источника нет',
+  };
+
+  const CONFIDENCE_LABEL = {
+    high: 'высокая', medium: 'средняя', low: 'низкая', none: 'нет',
+  };
+
+  const STABILITY_LABEL = {
+    stable: 'стабильный контракт',
+    experimental: '⚠ экспериментальный контракт',
+    undocumented: '⚠ недокументированный',
+    not_applicable: '',
+  };
+
+  /**
+   * Остаток лимита текстом.
+   *
+   * Ключевое правило §21 задания: неизвестный остаток пишется словом
+   * «неизвестен». Ни «0 %», ни «100 %», ни прочерк — они читаются как
+   * измеренные значения и по ним принимают решения.
+   */
+  function remainingText(pct) {
+    if (pct === null || pct === undefined || Number.isNaN(Number(pct))) {
+      return 'неизвестен';
+    }
+    return `${Number(pct).toFixed(0)}%`;
+  }
+
+  function daysText(days) {
+    if (days === null || days === undefined) return '—';
+    const value = Number(days);
+    if (Number.isNaN(value)) return '—';
+    if (value < 0) return 'прошёл';
+    if (value < 1) return `${Math.max(1, Math.round(value * 24))} ч`;
+    return `${Math.floor(value)} дн.`;
+  }
+
+  function providerRows(workerId) {
+    const items = state.workerProviders[workerId] || [];
+    if (!items.length) {
+      return [el('p', { className: 'hint',
+        text: 'Воркер ещё не сообщал о провайдерах (нужна версия агента с этапом 11).' })];
+    }
+    return items.map((item) => {
+      const quota = item.quota || {};
+      const installed = item.installation_status === 'installed';
+      const authOk = item.auth_state === 'logged_in';
+      const parts = [
+        el('span', { className: 'mono', text: PROVIDER_LABEL[item.provider] || item.provider }),
+        el('span', {
+          className: installed ? '' : 'warn',
+          text: `${INSTALL_LABEL[item.installation_status] || item.installation_status}`
+              + (item.cli_version ? ` ${item.cli_version}` : ''),
+        }),
+        el('span', {
+          className: authOk ? '' : 'warn',
+          text: AUTH_LABEL[item.auth_state] || item.auth_state,
+        }),
+        el('span', {
+          className: quota.quota_state === 'limited' ? 'warn' : '',
+          text: `лимит: ${QUOTA_LABEL[quota.quota_state] || quota.quota_state || 'неизвестно'}`
+              + ` · остаток ${remainingText(quota.estimated_remaining_pct)}`,
+        }),
+        el('span', { className: 'hint',
+          text: `источник: ${SOURCE_LABEL[quota.source] || quota.source || '—'}`
+              + ` · достоверность: ${CONFIDENCE_LABEL[quota.confidence] || quota.confidence || '—'}`
+              + ` · проверка: ${item.observed_at ? humanStamp(item.observed_at) : '—'}` }),
+      ];
+      const stability = STABILITY_LABEL[quota.source_stability];
+      if (stability) parts.push(el('span', { className: 'hint', text: stability }));
+      if (item.account_group_id) {
+        parts.push(el('span', { className: 'hint',
+          text: `учётная запись: ${item.account_group_id}` }));
+      }
+      if (item.credential_insecure) {
+        parts.push(el('span', { className: 'warn',
+          text: `⚠ файл учётных данных читается не только владельцем (${item.credential_mode || '?'})` }));
+      }
+      if (item.detail) parts.push(el('span', { className: 'hint', text: item.detail }));
+      return el('li', { className: 'provider-row' }, parts);
+    });
+  }
+
+  function renderAccount(account) {
+    const rec = account.reconciliation || {};
+    const unused = account.reset_soon_unused || {};
+    const rows = [
+      kv('Провайдер', PROVIDER_LABEL[account.provider] || account.provider),
+      kv('Группа (account_group_id)', account.account_group_id),
+      kv('Состояние', QUOTA_LABEL[account.quota_state] || account.quota_state,
+         account.quota_state === 'limited' ? 'kv-critical' : ''),
+      // Слово «неизвестен» — не заглушка, а значимый ответ: выдуманный процент
+      // на этом экране опаснее пустого места.
+      kv('Остаток', remainingText(account.observed_remaining_pct)),
+      kv('Источник', SOURCE_LABEL[account.quota_source] || account.quota_source || '—'),
+      kv('Достоверность',
+         CONFIDENCE_LABEL[account.quota_confidence] || account.quota_confidence || '—'),
+      kv('Наблюдаемый сброс', account.observed_next_reset_at
+        ? `${humanStamp(account.observed_next_reset_at)} (через ${daysText(account.days_to_observed_reset)})`
+        : 'неизвестен'),
+      kv('Ручной сброс', account.manual_next_reset_at
+        ? `${humanStamp(account.manual_next_reset_at)} (через ${daysText(account.days_to_manual_reset)})`
+          + (account.reset_timezone ? ` · ${account.reset_timezone}` : '')
+        : 'не задан'),
+      kv('Пороги предупреждения', (account.warning_days || []).join(' / ') + ' дн.'),
+      kv('Привязанные VPS', (account.attached_worker_ids || []).length),
+      kv('Комплаенс', account.policy_state || '—',
+         account.policy_state === 'policy_blocked' ? 'kv-critical' : ''),
+    ];
+    const card = el('article', { className: 'card' }, [
+      el('header', { className: 'card-head' }, [
+        el('div', {}, [
+          el('h3', { text: account.display_name || account.account_group_id }),
+          el('p', { className: 'mono small', text: account.account_id }),
+        ]),
+      ]),
+      el('dl', { className: 'kv' }, rows),
+    ]);
+
+    // Одна подписка на двух VPS — ОДИН ресурс. Показываем это явно, чтобы
+    // никто не сложил два остатка глазами.
+    if ((account.attached_worker_ids || []).length > 1) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Один лимит на несколько VPS: остатки НЕ складываются. '
+            + `Показан снимок воркера ${String(rec.chosen_worker_id || '—').slice(0, 8)} `
+            + '(правило: самый надёжный источник, затем самый свежий).' }));
+    }
+    if (account.reset_dates_disagree) {
+      card.appendChild(el('p', { className: 'warn',
+        text: '⚠ Ручная и наблюдаемая даты сброса расходятся. Показаны обе; '
+            + 'автоматика ручную дату не меняет.' }));
+    }
+    (account.warnings_triggered || []).forEach((w) => {
+      card.appendChild(el('p', { className: 'warn',
+        text: `⚠ До сброса ${daysText(w.days_left)} — сработал порог ${w.threshold_days} дн. `
+            + `(дата: ${w.source === 'manual' ? 'ручная' : 'наблюдаемая'})` }));
+    });
+    if (unused.active) {
+      card.appendChild(el('p', { className: 'warn',
+        text: `⚠ Лимит скоро сбросится неиспользованным: ${unused.reason}. `
+            + `Источник даты: ${unused.reset_source === 'manual' ? 'ручная' : 'наблюдаемая'}; `
+            + `источник остатка: ${unused.remaining_source === 'operator_manual'
+              ? 'отметка оператора' : 'наблюдение'}.` }));
+    } else if (unused.reason) {
+      card.appendChild(el('p', { className: 'hint', text: `Предупреждения нет: ${unused.reason}` }));
+    }
+    if (rec.stale) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Снимок устарел — показаны последние известные значения, не текущие.' }));
+    }
+    if (account.notes) {
+      card.appendChild(el('p', { className: 'hint', text: account.notes }));
+    }
+    card.appendChild(el('footer', { className: 'card-actions' }, [
+      actionButton({ className: 'btn', text: 'Изменить',
+        dataset: { editAccount: account.account_id } }, state.perms.canOperate),
+    ]));
+    return card;
   }
 
   function renderWorker(worker) {
@@ -453,6 +714,12 @@
             + 'работу, неподтверждённые результаты не удаляются.' }));
     }
     if (warnings.length) card.appendChild(el('ul', { className: 'warnings' }, warnings));
+    // Провайдеры — ОТДЕЛЬНЫЙ блок под карточкой. Их состояние не смешивается
+    // со статусом VPS: воркер остаётся online, даже когда провайдер сломан.
+    if (!pending) {
+      card.appendChild(el('h4', { className: 'card-subhead', text: 'Провайдеры моделей' }));
+      card.appendChild(el('ul', { className: 'providers' }, providerRows(worker.worker_id)));
+    }
     card.appendChild(el('footer', { className: 'card-actions' }, actions));
     return card;
   }
@@ -786,6 +1053,15 @@
         // и без удалённого исполнения.
         api('/api/workers/audit/targets').catch(() => null),
       ]);
+      // Провайдеры приходят отдельной ручкой и НЕ роняют экран при ошибке:
+      // подсистема воркеров работает и без наблюдения за подписками.
+      const providersData = await api('/api/workers/providers/overview').catch(() => null);
+      state.workerProviders = (providersData && providersData.worker_providers) || {};
+      state.providerAccounts = (providersData && providersData.accounts) || [];
+      state.providerMeta = {
+        lowThresholdPct: providersData ? providersData.low_threshold_pct : null,
+        autoDispatch: !!(providersData && providersData.auto_dispatch_enabled),
+      };
       state.workers = workersData.workers || [];
       state.jobs = jobsData.jobs || [];
       state.auditTargets = {};
@@ -832,6 +1108,14 @@
       replaceChildren($('pending'), pendingWorkers.map(renderWorker));
       replaceChildren($('workers'), activeWorkers.map(renderWorker));
       $('workersEmpty').hidden = activeWorkers.length > 0;
+      replaceChildren($('accounts'), state.providerAccounts.map(renderAccount));
+      $('accountsEmpty').hidden = state.providerAccounts.length > 0;
+      $('accountsHint').textContent = state.providerMeta.lowThresholdPct === null
+        ? 'Порог «мало осталось» не задан (DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT) — '
+          + 'состояние «мало» не вычисляется.'
+        : `Порог «мало осталось»: ${state.providerMeta.lowThresholdPct}%. `
+          + 'Автоматическая выдача заданий выключена.';
+
       replaceChildren($('jobs'), state.jobs.map(renderJob));
       $('jobsEmpty').hidden = state.jobs.length > 0;
 
@@ -970,8 +1254,11 @@
     const markLost = target.closest('[data-marklost]');
     const newAttempt = target.closest('[data-newattempt]');
     const deleteData = target.closest('[data-deletedata]');
+    const accountEdit = target.closest('[data-edit-account]');
     try {
-      if (reject) {
+      if (accountEdit) {
+        await editAccount(accountEdit.dataset.editAccount);
+      } else if (reject) {
         if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
           + 'claim-secret будет погашен, воркер токен не получит.')) return;
         await dangerousPost(
