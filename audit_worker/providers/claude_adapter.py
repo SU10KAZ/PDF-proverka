@@ -65,13 +65,79 @@ from audit_worker.providers.identity import (
 )
 from audit_worker.providers.paths import PROVIDER_CLAUDE
 
-#: Инструменты, которые контрольный запрос НЕ получает. Список явный, а не
-#: «всё, кроме»: новый инструмент в будущей версии CLI должен быть запрещён по
-#: умолчанию, поэтому вместе со списком идёт `--permission-mode dontAsk`.
+#: Инструменты, которые контрольный запрос НЕ получает ПОИМЁННО.
+#:
+#: Список остаётся, но главным барьером больше не является: `--tools=` ниже
+#: отключает встроенный набор целиком, и это качественно другая гарантия.
+#: Перечисление закрывает только известные имена, а новый инструмент в будущей
+#: версии CLI по умолчанию оказался бы РАЗРЕШЁН — то есть список защищает от
+#: прошлого, а не от будущего. Оставлен вторым рубежом на случай, если
+#: `--tools=` когда-нибудь сменит семантику.
 _PROBE_DISALLOWED_TOOLS = (
     "Bash", "Read", "Edit", "Write", "Glob", "Grep", "WebFetch", "WebSearch",
     "Task", "NotebookEdit", "TodoWrite", "AskUserQuestion",
 )
+
+#: Флаги, которыми контрольный запрос отключает ЛИЧНЫЙ контекст владельца
+#: машины. В ambient-режиме `HOME=/home/<user>`, и без этих флагов запрос
+#: получил бы вместе с авторизацией всё остальное содержимое чужого каталога.
+#:
+#: Измерено на пилотном воркере до включения (док 11b, находка 11):
+#: `~/.claude/settings.json` — 91 646 байт с хуком `Stop`, запускающим
+#: `python3 ~/.claude/hooks/export_session.py`; `~/.claude/CLAUDE.md` —
+#: инструкция вызывать навык `graphify`; `~/.claude/skills/` — сам навык;
+#: `settings.local.json` — ещё один слой разрешений. То есть «минимальный
+#: запрос с фиксированным промптом» без нейтрализации выполнял бы чужие
+#: команды и получал бы чужие инструкции — и результат зависел бы от машины.
+#:
+#: `--safe-mode`, а НЕ `--bare`: последний тоже выключает лишнее, но вместе с
+#: тем требует `ANTHROPIC_API_KEY`/`apiKeyHelper` и никогда не читает OAuth —
+#: то есть в ambient-режиме, где авторизация как раз OAuth-подписочная, он
+#: сделал бы контрольный запрос невозможным. Проверено на 2.1.220:
+#: `claude --safe-mode auth status` → `loggedIn: true`, `authMethod: claude.ai`.
+_PROBE_NEUTRALIZE_PERSONAL_CONTEXT = (
+    # CLAUDE.md, навыки, плагины, хуки, MCP-серверы, агенты, стили вывода.
+    # Авторизация, выбор модели и встроенные инструменты при этом работают.
+    "--safe-mode",
+    # Второй рубеж по MCP: брать серверы только из `--mcp-config`, которого нет.
+    "--strict-mcp-config",
+    "--disable-slash-commands",
+    # Не оставлять следов сессии в личном каталоге человека.
+    "--no-session-persistence",
+    # Ни одного слоя настроек: ни user, ни project, ни local.
+    "--setting-sources=",
+)
+
+
+def _probe_argv() -> list[str]:
+    """argv контрольного запроса. Только константы модуля (I-P5).
+
+    ПОРЯДОК И ФОРМА ЗАПИСИ ЗДЕСЬ — ЧАСТЬ КОНТРАКТА, а не стиль.
+
+    `--tools`, `--disallowed-tools`, `--allowedTools`, `--add-dir` объявлены в
+    CLI как ВАРИАДИЧЕСКИЕ (`<tools...>`): они забирают все последующие токены
+    до следующего флага. Записанные как `--tools ""` они съели бы соседний
+    аргумент, и промпт перестал бы быть промптом.
+
+    Это не гипотеза. При подготовке этого этапа команда `claude --tools ""
+    doctor` поглотила `doctor` как второе имя инструмента, осталась без
+    подкоманды, ушла в print-режим и прочитала промпт из stdin — то есть
+    выполнила НЕЗАПЛАНИРОВАННЫЙ запрос к модели (opus-5, 4224 входных и 732
+    выходных токена). Поэтому все вариадические флаги записываются
+    исключительно в форме `--флаг=значение`, а промпт стоит ПОСЛЕДНИМ.
+    """
+    return [
+        *_PROBE_NEUTRALIZE_PERSONAL_CONTEXT,
+        # Форма с `=` обязательна: см. докстринг.
+        "--tools=",
+        "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
+        "--permission-mode", "dontAsk",
+        "--max-turns", "1",
+        "--output-format", "json",
+        # `-p` — булев флаг печати; сам промпт идёт позиционным и ПОСЛЕДНИМ,
+        # чтобы его нечем было поглотить.
+        "-p", PROBE_PROMPT,
+    ]
 
 
 class ClaudeProviderAdapter(ProviderAdapter):
@@ -247,14 +313,7 @@ class ClaudeProviderAdapter(ProviderAdapter):
                 error_code=errors.ERR_POLICY_BLOCKED,
                 detail="нет подтверждения оператора на конкретный запуск",
             )
-        argv = [
-            "-p", PROBE_PROMPT,
-            "--output-format", "json",
-            "--max-turns", "1",
-            # Ничего не разрешено сверх явного списка; список пуст.
-            "--permission-mode", "dontAsk",
-            "--disallowed-tools", " ".join(_PROBE_DISALLOWED_TOOLS),
-        ]
+        argv = _probe_argv()
         started = time.time()
         result = self.run(argv, timeout_sec=max(60.0, self.timeout_sec), purpose="probe")
         duration = result.duration_sec

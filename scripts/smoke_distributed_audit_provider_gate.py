@@ -447,10 +447,16 @@ def step_center(report: Report, central_url: str, cookie: str,
 def step_inference_probe(ssh: Ssh, report: Report, worker_root: str, python: str,
                          app_dir: str, provider: str) -> None:
     report.section("10. КОНТРОЛЬНЫЙ ЗАПРОС К МОДЕЛИ (по явному разрешению)")
+    # Разрешение со стороны воркера СЮДА НЕ ПОДСТАВЛЯЕТСЯ (находка 9 дока 11b).
+    # Раньше здесь стояло `AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=true`, и оба
+    # «независимых» разрешения приходили из одной команды одного вызывающего:
+    # кто мог написать флаг, тот же писал и переменную. Теперь разрешение
+    # воркера — файл `<root>/config/allow_real_provider_probe` с ненулевым
+    # остатком, который создаёт человек с доступом к машине. Если файла нет,
+    # команда честно вернёт код 2 и ничего не потратит.
     command = (
         f"cd {_q(app_dir)} && "
         f"AUDIT_WORKER_ROOT={_q(worker_root)} "
-        f"AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=true "
         f"{_q(python)} -m audit_worker provider-probe {provider} "
         f"--i-confirm-single-real-request"
     )

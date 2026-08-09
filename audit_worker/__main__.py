@@ -310,11 +310,20 @@ def _cmd_providers(args: argparse.Namespace) -> int:
         inference_allowed=False,
         log=lambda message: print(f"[providers] {message}", file=sys.stderr),
     )
+    from audit_worker.providers import probe_grant
+
     manager.refresh(force=True)
     report = {
         "worker_root": str(config.root),
         "provider_gate_enabled": config.provider_gate_enabled,
-        "inference_probe_allowed_by_env": config.allow_real_provider_probe,
+        # Наблюдаемо, но на решение больше не влияет — см. `_cmd_provider_probe`.
+        "inference_probe_env_flag_deprecated": config.allow_real_provider_probe,
+        # Разрешение воркера: единственное, что теперь открывает контрольный
+        # запрос со стороны машины.
+        "inference_probe_grant": {
+            name: probe_grant.read_state(config.root, name).as_dict()
+            for name in manager.adapters
+        },
         "auth_check_interval_sec": config.provider_auth_check_interval_sec,
         "quota_probe_interval_sec": config.provider_quota_probe_interval_sec,
         "providers": manager.heartbeat_payload(),
@@ -335,30 +344,44 @@ def _cmd_provider_probe(args: argparse.Namespace) -> int:
     """ОДИН минимальный контрольный запрос к модели (§18 задания).
 
     Два независимых разрешения, и оба обязательны:
-      1. `AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=true` — решение администратора
-         VPS, живёт в конфигурации;
+      1. файл `<worker_root>/config/allow_real_provider_probe` с ненулевым
+         остатком — разрешение СО СТОРОНЫ ВОРКЕРА. Его нельзя приписать к
+         SSH-команде: он либо лежит на машине, либо нет;
       2. `--i-confirm-single-real-request` — решение оператора здесь и сейчас.
+
+    Переменной `AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE` первое разрешение БОЛЬШЕ
+    НЕ ЯВЛЯЕТСЯ (находка 9 дока 11b): её подставлял в ту же SSH-команду тот же
+    вызывающий, который писал и флаг, — два «независимых» голоса принадлежали
+    одному. Значение переменной осталось наблюдаемым в `providers`, но на
+    решение не влияет.
 
     Промпт фиксирован в коде и не содержит ни документов проекта, ни путей, ни
     репозитория. Инструменты запрещены, запись файлов запрещена.
     """
+    from audit_worker.providers import probe_grant
     from audit_worker.providers.manager import ProviderManager
 
     config = load_config(args.root, require_dispatcher=False)
-    if not config.allow_real_provider_probe:
-        print(
-            "Контрольный запрос запрещён: AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=false.\n"
-            "Это значение по умолчанию, и снимать его следует осознанно.",
-            file=sys.stderr,
-        )
-        return 2
     if not args.i_confirm_single_real_request:
         print(
             "Нужен явный флаг --i-confirm-single-real-request.\n"
-            "Переменная окружения разрешает возможность, флаг — конкретный запуск.",
+            "Файл разрешения даёт возможность, флаг — конкретный запуск.",
             file=sys.stderr,
         )
         return 2
+    # Списание — ДО построения менеджера и до вызова модели. Порядок важен:
+    # «сначала спросили, потом списали» дарит бесплатную попытку при любом
+    # падении в середине, а падение в середине как раз и означает, что запрос
+    # мог уйти.
+    try:
+        remaining = probe_grant.consume(config.root, args.provider)
+    except probe_grant.ProbeGrantError as exc:
+        print(f"Контрольный запрос запрещён.\n{exc}", file=sys.stderr)
+        return 2
+    print(
+        f"[probe] разрешение воркера списано: остаток по {args.provider} = {remaining}",
+        file=sys.stderr,
+    )
     manager = ProviderManager(
         worker_root=config.root,
         enabled=True,
