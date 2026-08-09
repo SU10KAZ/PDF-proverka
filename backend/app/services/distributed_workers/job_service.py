@@ -54,7 +54,17 @@ def required_artifacts_for(job: dict[str, Any]) -> list[str]:
     if str(job.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
         from backend.app.services.distributed_workers import audit_job_service
 
-        return list(audit_job_service.AUDIT_REQUIRED_ARTIFACTS)
+        # Список зависит не только от типа задания, но и от ДЕЙСТВИЯ: у
+        # `provider_selfcheck` нет и не может быть `03_findings.json`, потому
+        # что аудита он не выполняет. Подстановка общего списка означала бы
+        # «пакет синтетической проверки неполон всегда» — то есть проверка
+        # была бы обречена независимо от того, что произошло на воркере.
+        payload = job.get("payload")
+        if isinstance(payload, str):
+            payload = _loads(payload, {}) or {}
+        params = (payload or {}).get("params") if isinstance(payload, dict) else {}
+        action = str((params or {}).get("action") or "")
+        return audit_job_service.required_artifacts_for(action)
     return list(TEST_JOB_REQUIRED_ARTIFACTS)
 
 ASSIGN_TTL_SEC = 1800

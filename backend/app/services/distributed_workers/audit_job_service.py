@@ -51,6 +51,27 @@ AUDIT_REQUIRED_ARTIFACTS: list[str] = [
     "usage/usage_report.json",
 ]
 
+#: Действие синтетической проверки провайдера (этап 11C).
+ACTION_PROVIDER_SELFCHECK = "provider_selfcheck"
+
+#: Обязательные артефакты СИНТЕТИЧЕСКОЙ проверки. Отдельный список, а не
+#: урезанный общий: требовать `03_findings.json` от прогона, который аудита не
+#: выполнял, значит либо всегда его валить, либо подделывать артефакт. Как и
+#: основной, дублируется на воркере — каждый рубеж держит оборону сам.
+PROVIDER_SELFCHECK_REQUIRED_ARTIFACTS: list[str] = [
+    "work/pipeline_log.json",
+    "result/provider_selfcheck.json",
+    "result/audit_manifest.json",
+    "usage/usage_report.json",
+]
+
+
+def required_artifacts_for(action: str) -> list[str]:
+    """Обязательные артефакты ЭТОГО действия."""
+    if str(action) == ACTION_PROVIDER_SELFCHECK:
+        return list(PROVIDER_SELFCHECK_REQUIRED_ARTIFACTS)
+    return list(AUDIT_REQUIRED_ARTIFACTS)
+
 #: Артефакты, которые обязаны отсутствовать: их делает ТОЛЬКО центр.
 AUDIT_FORBIDDEN_ARTIFACTS: tuple[str, ...] = (
     "result/norm_checks.json",
@@ -325,6 +346,7 @@ def create_audit_job(
     action: str = "full",
     include_optimization: bool = True,
     retry_stage: Optional[str] = None,
+    provider_requirement: Optional[dict[str, Any]] = None,
     actor: str,
     display_name: str = "",
     settings: DistributedWorkersSettings,
@@ -373,14 +395,36 @@ def create_audit_job(
     # Снимок runtime-конфигурации строится ДО задания: его хэш — обязательное
     # поле нагрузки, а само значение режима записи берётся у ЦЕНТРА явным
     # чтением, а не «как-нибудь на воркере».
+    # Режим провайдеров — СЛЕДСТВИЕ требования, а не отдельная настройка.
+    # Задание, которое просит обращений к модели, по определению не может идти
+    # на подделках; задание без требования остаётся на прежнем умолчании
+    # (`fake`), и это не послабление, а сохранение поведения этапов до 11C.
+    #
+    # Окончательное решение всё равно за воркером: снимок с `real` на воркере
+    # без `AUDIT_WORKER_ALLOW_REAL_LLM` отвергается `assert_compatible`, а не
+    # тихо понижается.
+    wants_inference = bool(
+        provider_requirement
+        and int((provider_requirement or {}).get("max_inferences") or 0) > 0
+    )
     runtime_snapshot = build_runtime_snapshot(
         snapshot=snapshot, revision=revision, settings=settings,
         discipline_id=discipline.code,
         discipline_profile_hash=profile_snapshot.tree_hash,
+        provider_mode="real" if wants_inference else "fake",
     )
+    safe_action = (
+        action if action in ("full", "audit", "resume", ACTION_PROVIDER_SELFCHECK)
+        else "full"
+    )
+    if safe_action == ACTION_PROVIDER_SELFCHECK and not provider_requirement:
+        raise AuditJobError(
+            "действие provider_selfcheck без provider_requirement бессмысленно: "
+            "проверять нечего"
+        )
     params = AuditPipelineParams(
         execution_profile=REMOTE_AUDIT_PILOT_V1,
-        action=action if action in ("full", "audit", "resume") else "full",
+        action=safe_action,
         retry_stage=retry_stage,
         include_optimization=include_optimization,
         include_norms=False,
@@ -393,7 +437,8 @@ def create_audit_job(
         runtime_snapshot_hash=runtime_snapshot.snapshot_hash(),
         discipline_id=discipline.code,
         discipline_profile_hash=profile_snapshot.tree_hash,
-        required_result_artifacts=list(AUDIT_REQUIRED_ARTIFACTS),
+        required_result_artifacts=required_artifacts_for(safe_action),
+        provider_requirement=provider_requirement,
     )
 
     job = repositories.create_job(
@@ -489,7 +534,7 @@ def build_audit_source_package(
             "discipline_id": params.discipline_id,
             "discipline_profile_hash": params.discipline_profile_hash,
             "params": params.model_dump(),
-            "required_result_artifacts": list(AUDIT_REQUIRED_ARTIFACTS),
+            "required_result_artifacts": list(params.required_result_artifacts),
             "forbidden_result_artifacts": list(AUDIT_FORBIDDEN_ARTIFACTS),
             "central_only_stages": list(CENTRAL_ONLY_STAGES),
         },

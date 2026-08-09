@@ -439,6 +439,38 @@ class TestJobParams(BaseModel):
     fail_at_step: Optional[int] = Field(default=None, ge=1, le=100)
 
 
+class ProviderRequirementPayload(BaseModel):
+    """Логическое требование центра к провайдеру. `extra="forbid"`.
+
+    Умышленно бедная структура. Всё, что могло бы стать каналом «выполни
+    произвольное», здесь отсутствует по построению: нет пути к бинарю, нет
+    аргументов, нет окружения, нет промпта. Модель — ОЖИДАНИЕ, а не приказ:
+    воркер не подставляет её флагом (это нарушило бы I-P5), а сверяет с тем,
+    что фактически ответило.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: Literal["claude", "codex"]
+    #: Ожидаемая модель. Проверяется по факту, а не навязывается.
+    model: Optional[str] = Field(default=None, max_length=128)
+    #: Этапы, которым разрешено обращаться к модели. Пустой список означает
+    #: «никаким»: белый список, а не чёрный.
+    allowed_stages: list[str] = Field(default_factory=list, max_length=16)
+    #: Потолок оплачиваемых вызовов. Ноль — законное значение: «модель не звать».
+    #: Верхняя граница здесь — рубеж центра; фактический потолок задаёт
+    #: разрешение оператора на воркере, и оно всегда у́же.
+    max_inferences: int = Field(default=0, ge=0, le=8)
+
+    @field_validator("allowed_stages")
+    @classmethod
+    def _check_stage_names(cls, value: list[str]) -> list[str]:
+        for stage in value:
+            if not stage or len(stage) > 64 or not stage.replace("_", "").isalnum():
+                raise ValueError(f"недопустимое имя этапа: {stage!r}")
+        return value
+
+
 class AuditPipelineParams(BaseModel):
     """Полезная нагрузка `audit_pipeline_v1`. `extra="forbid"` — обязательно.
 
@@ -452,7 +484,10 @@ class AuditPipelineParams(BaseModel):
 
     execution_profile: Literal["remote_audit_pilot_v1"] = REMOTE_AUDIT_PILOT_V1
     #: Действие конвейера. Закрытый набор: произвольная строка сюда не пройдёт.
-    action: Literal["full", "audit", "resume"] = "full"
+    #: `provider_selfcheck` (этап 11C) — синтетическая проверка сквозного пути
+    #: к модели. Полноценное действие профиля: тот же тип задания, тот же
+    #: исполнитель, та же точка входа конвейера, та же сборка пакета.
+    action: Literal["full", "audit", "resume", "provider_selfcheck"] = "full"
     retry_stage: Optional[str] = Field(default=None, max_length=64)
     include_optimization: bool = True
     #: Нормативный этап на воркере не выполняется НИКОГДА (E-19). Тип Literal,
@@ -477,6 +512,16 @@ class AuditPipelineParams(BaseModel):
     #: Обязательные артефакты результата. Список фиксирован центром, но воркер
     #: сверяет его со своим встроенным — расширить его заданием нельзя.
     required_result_artifacts: list[str] = Field(default_factory=list, max_length=64)
+    #: ЛОГИЧЕСКОЕ требование к провайдеру (этап 11C). Центр передаёт ТОЛЬКО
+    #: смысл: какой провайдер, какая модель ожидается, каким этапам разрешено
+    #: обращаться к модели и сколько вызовов допускает политика. Ни путей, ни
+    #: учётных данных, ни токенов здесь нет и появиться не может — полей просто
+    #: не существует, как и в остальной нагрузке.
+    #:
+    #: Чем провайдер РАСПОЛАГАЕТ и авторизован ли он — знает воркер, и решение
+    #: принимает он же (`ProviderResolver`). Центр не выбирает исполнителя
+    #: вызова, он формулирует требование.
+    provider_requirement: Optional["ProviderRequirementPayload"] = None
 
     @field_validator("retry_stage")
     @classmethod
