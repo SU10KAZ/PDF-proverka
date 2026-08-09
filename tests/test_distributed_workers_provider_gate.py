@@ -635,6 +635,11 @@ class TestResilience:
             def minimal_probe(self, *, confirmed_by_operator=False):
                 raise RuntimeError("взрыв")
 
+            def structured_inference(self, prompt, *, purpose, timeout_sec=None):
+                # Добавлено этапом 11C: рабочий вызов модели — обязательная
+                # часть интерфейса адаптера, и заглушка обязана его иметь.
+                raise RuntimeError("взрыв")
+
             def provider_env(self):
                 return {}
 
