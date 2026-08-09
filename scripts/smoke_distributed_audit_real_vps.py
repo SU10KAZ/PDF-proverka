@@ -692,34 +692,52 @@ echo "LISTEN=$(ss -tlnH 2>/dev/null | awk '$4 !~ /127\\.0\\.0\\.1|\\[::1\\]/ {{p
     return info
 
 
-def phase_transport(worker: Worker, stand: Stand, *, central_url: str) -> dict:
+def phase_transport(
+    worker: Worker, stand: Stand, *, central_url: str, timeout: float = 240
+) -> dict:
     print("\n── Транспорт центр ↔ воркер ────────────────────────────────────")
     check(central_url.startswith("https://"),
           "адрес центра — HTTPS (verify_tls в воркере зашит константой)", central_url)
 
-    probe = worker.read(
-        f"""set +e
+    def _probe() -> dict[str, str]:
+        result = worker.read(
+            f"""set +e
 url={shlex.quote(central_url.rstrip('/'))}
 curl -s -o /dev/null -w "AGENT_PREFIX=%{{http_code}} TLS=%{{ssl_verify_result}} T=%{{time_total}}\\n" \\
      --max-time 25 "$url/api/v1/worker/jobs/next"
 curl -s -o /dev/null -w "PORTAL=%{{http_code}}\\n" --max-time 25 "$url/api/auth/me"
 """,
-        timeout=90,
-    )
-    values: dict[str, str] = {}
-    for token in probe.stdout.split():
-        if "=" in token:
-            key, value = token.split("=", 1)
-            values[key] = value
+            timeout=120,
+        )
+        values: dict[str, str] = {}
+        for token in result.stdout.split():
+            if "=" in token:
+                key, value = token.split("=", 1)
+                values[key] = value
+        return values
 
-    check(values.get("TLS") == "0",
-          "сертификат центра проверен воркером штатно (verify=0)",
-          f"ssl_verify_result={values.get('TLS')}")
-    check(values.get("AGENT_PREFIX") not in (None, "000"),
-          "агентский префикс /api/v1/worker/ достижим с воркера",
+    # Имя только что созданного туннеля не обязано резолвиться на воркере в ту
+    # же секунду: у него собственный DNS-резолвер, и однократная проба ловит
+    # не «сеть не работает», а «запись ещё не разошлась». Ждём, а не гадаем.
+    values: dict[str, str] = {}
+
+    def _reachable() -> bool:
+        values.clear()
+        values.update(_probe())
+        return values.get("AGENT_PREFIX") not in (None, "000")
+
+    reachable = _wait_for(_reachable, timeout=timeout, interval=10.0)
+
+    check(reachable, "агентский префикс /api/v1/worker/ достижим с воркера",
           f"HTTP {values.get('AGENT_PREFIX')}")
     check(values.get("PORTAL") not in (None, "000"),
           "портальный контур достижим с воркера", f"HTTP {values.get('PORTAL')}")
+    # Проверять сертификат имеет смысл ТОЛЬКО когда соединение состоялось:
+    # у curl `ssl_verify_result` остаётся нулём и тогда, когда до TLS дело не
+    # дошло вовсе, — и проверка молча подтверждала бы то, чего не было.
+    check(reachable and values.get("TLS") == "0",
+          "сертификат центра проверен воркером штатно (verify=0)",
+          f"ssl_verify_result={values.get('TLS')} при HTTP {values.get('AGENT_PREFIX')}")
     return values
 
 
