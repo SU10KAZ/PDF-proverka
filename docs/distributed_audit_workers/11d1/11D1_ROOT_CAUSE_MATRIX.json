@@ -1,0 +1,170 @@
+{
+  "kind": "классификация расхождения «3 КРИТИЧЕСКИХ (2026-03-26) → 0 КРИТИЧЕСКИХ (11D)» по категориям §23",
+  "inference_used": {"claude": 0, "codex": 0, "note": "все выводы — из кода, git-истории и уже существующих артефактов"},
+  "categories": [
+    {
+      "code": "A",
+      "name": "TRANSPORT_SEMANTIC_LOSS",
+      "verdict": "ЧАСТИЧНО ПОДТВЕРЖДЕНА — но не в тексте промпта",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "Посекционный нормализованный диф legacy(ветка B) ↔ provider: CONTENT_REMOVED = 0, CONTENT_CHANGED = 0. Все 5 отличающихся секций — транспортные (см. 11D1_PROMPT_SEMANTIC_DIFF.json).",
+        "Построчная проверка: 181 инженерная строка legacy-промпта, потеряно 0 (тест test_i_every_engineering_line_of_legacy_survives).",
+        "ПОТЕРЯ ЕСТЬ ВНЕ ТЕКСТА ПРОМПТА: определения пяти значений severity нигде в промпте не записаны; единственный их источник — корневой CLAUDE.md, который legacy-ветка подхватывала как проектную память CLI (cwd = корень репозитория, --setting-sources не передаётся), а ProviderAdapter подавляет намеренно (--safe-mode --setting-sources=, cwd = пустой каталог)."
+      ],
+      "fix_required": true,
+      "fix_applied": "SEVERITY_SEMANTICS перенесён в provider-промпт явным текстом; личный контекст НЕ возвращён",
+      "caveat": "Доказана асимметрия ВХОДА. Причинная связь с обвалом 3→0 НЕ доказана — см. категорию I."
+    },
+    {
+      "code": "B",
+      "name": "PROMPT_VERSION_DRIFT",
+      "verdict": "ПОДТВЕРЖДЕНА, но направление противоположно ожидаемому",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "git diff 3fb30eb3:.claude/en/text_analysis_task.md → 537c08a5:prompts/pipeline/en/text_analysis_task.md = +52/−2 строки.",
+        "Добавлено: ## Role/{DISCIPLINE_ROLE} (04-11), критерии «ПРОВЕРИТЬ ПО СМЕЖНЫМ» (06-20), шаг 8 + HARD RULE «inflate severity» (07-01), {ABSENCE_GUARD} (07-04, флаг OFF), секция md_prescan (07-11).",
+        "Перечень пяти значений severity и правило «ONLY one of the 5 values» идентичны марту.",
+        "Мартовский шаблон был вдвое короче и БЕЗ роли дисциплины, БЕЗ критериев severity, БЕЗ стража и БЕЗ пре-скана — и дал 3 КРИТИЧЕСКИХ."
+      ],
+      "fix_required": false,
+      "fix_applied": null,
+      "caveat": "Дрейф ужесточает и обогащает вход. Как объяснение потери КРИТИЧЕСКИХ не годится, но обязателен к учёту: сравнение «11D vs март» смешивает транспорт, четыре месяца правок промпта и смену модели."
+    },
+    {
+      "code": "C",
+      "name": "DISCIPLINE_PROFILE_DRIFT",
+      "verdict": "ОПРОВЕРГНУТА",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "Побайтовое сравнение 3fb30eb3:disciplines/EM/* и 537c08a5:prompts/disciplines/EOM/*: role.md, checklist.md, finding_categories.md, norms_reference.md, triage_table.md, project_params.md, drawing_types.md — все идентичны. Изменился только config.json (code EM→EOM).",
+        "Профиль подставляется одной и той же функцией discipline_service.inject_discipline в обоих путях.",
+        "strip_filesystem_references даёт 0 совпадений по всем файлам профиля — ничего не вырезано."
+      ],
+      "fix_required": false,
+      "fix_applied": null,
+      "note_symmetric_gap": "prompts/disciplines/EOM/project_params.md содержит поле grounding_system (TN-C-S/TN-S/TT), но плейсхолдера {DISCIPLINE_PROJECT_PARAMS} в шаблоне text_analysis нет — файл не доходит НИ ДО ОДНОГО пути и не доходил в марте. Симметричный пробел, не регресс 11D; кандидат на отдельную задачу."
+    },
+    {
+      "code": "D",
+      "name": "SEVERITY_MAPPING_DRIFT",
+      "verdict": "ОПРОВЕРГНУТА",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "Детерминированного post-processing severity в этапе нет ни в одном пути: md_prescan.augment_text_analysis_file только ДОБАВЛЯЕТ находки (для этого документа — 0) и бэкфиллит related_block_ids; severity существующих не трогает.",
+        "stages/text_analysis/runner.py severity не проверяет и не меняет.",
+        "provider_transport.FIELD_TYPES / EXPECTED_SEMANTICS и 13 проверок validate_inference severity не касаются.",
+        "absence_guard.enforce_absence_guard (единственное место, где severity понижается кодом) вызывается из этапа findings_verify поверх 03_findings.json — вне text_analysis.",
+        "Enum severity не менялся с марта."
+      ],
+      "fix_required": false,
+      "fix_applied": null
+    },
+    {
+      "code": "E",
+      "name": "DOCUMENT_INPUT_DIFFERENCE",
+      "verdict": "ОПРОВЕРГНУТА",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "MD побайтово тот же: sha256 4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284, 19418 байт / 11407 символов, utf-8, LF, без BOM. Копии 01_input/ и 02_work/ идентичны.",
+        "Provider вкладывает текст MD в промпт дословно и целиком (проверено вхождением полного текста и его последней строки).",
+        "Все точки возможного усечения проверены и не срабатывают: потолок 600 000 символов (промпт 31 175), чанкер codex (ветка недостижима), md_override (не передаётся), include_norms=False (не передаётся).",
+        "Зачистка путей к телу документа не применяется — плейсхолдер в теле отсутствует."
+      ],
+      "fix_required": false,
+      "fix_applied": null,
+      "note": "В отчётах 11D «11 544 символа» — длина USER-сообщения (137 символов служебной приставки + 11 407 MD), а не длина MD. На выводы не влияет."
+    },
+    {
+      "code": "F",
+      "name": "LEGACY_TOOL_HIDDEN_CONTEXT",
+      "verdict": "ПОДТВЕРЖДЕНА",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "Ветка B зовёт _run_cli без clean_cwd → cwd = корень репозитория (process_runner.py: work_dir = cwd or str(BASE_DIR)); в argv нет ни --setting-sources=, ни --safe-mode.",
+        "Комментарий самого репозитория (claude_runner.py:235-238): чистая cwd нужна, «чтобы не подгружались project CLAUDE.md / hooks / memory / skills»; для text_analysis она НЕ включена (включена только блочному этапу).",
+        "Тот же комментарий фиксирует эмпирику проекта: чистая cwd дала −42% input и +35% findings — то есть ambient-контекст материально меняет выход.",
+        "TEXT_ANALYSIS_TOOLS = Read,Write,Grep,Glob,WebSearch,WebFetch — модель могла читать репозиторий и ходить в сеть.",
+        "Исторический прогон: num_turns = 5, то есть ходов с инструментами было несколько. Содержимое ходов не сохранено — UNKNOWN, что именно она читала."
+      ],
+      "fix_required": true,
+      "fix_applied": "Инструменты и личный контекст НЕ возвращены (§17/§24 запрещают). Перенесена только одна инженерная инструкция, ехавшая на этом канале, — определения severity.",
+      "caveat": "Что ещё модель читала пятью ходами, установить нельзя: логи ходов не сохранялись."
+    },
+    {
+      "code": "G",
+      "name": "MODEL_VERSION_DIFFERENCE",
+      "verdict": "ПОДТВЕРЖДЕНА как факт; как причина — POSSIBLE_MODEL_VARIANCE",
+      "deterministic": true,
+      "confidence": "высокая (факт), низкая (причинность)",
+      "evidence": [
+        "Историческая модель — claude-opus-4-6, установлена тремя независимыми источниками: pipeline_log.json, audit_trail/01_text_analysis_2026-03-26T23-43-55.json, сырой modelUsage в audit_log.jsonl.",
+        "11D — claude-opus-5 (requested = reported).",
+        "Дельта — два поколения (4-6 → 4-7 → 5)."
+      ],
+      "fix_required": false,
+      "fix_applied": null,
+      "caveat": "Утверждать «разница из-за модели» без прогона нельзя — §14 задания это запрещает."
+    },
+    {
+      "code": "H",
+      "name": "NORMAL_LLM_VARIANCE",
+      "verdict": "ПОДТВЕРЖДЕНА ПРЯМЫМ НАБЛЮДЕНИЕМ",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "В том же audit_log.jsonl сохранился БОЛЕЕ РАННИЙ прогон того же документа тем же legacy-путём: 2026-03-17T12:23:11 → 12:27:40, 9 замечаний, КРИТИЧЕСКИХ 0.",
+        "Калибровка того прогона совпадает с 11D: «ПУЭ п.7.35» → Рекомендательное (11D: РЕКОМЕНДАТЕЛЬНОЕ); «Не указана система заземления (TN-C-S/TN-S/IT)» → Эксплуатационное; «Отсутствуют данные об ОСУП» → Эксплуатационное (11D: ЭКСПЛУАТАЦИОННОЕ).",
+        "То есть один и тот же конвейер, один и тот же MD, один и тот же ambient-контекст дали 0 и 3 КРИТИЧЕСКИХ с разницей в 9 дней."
+      ],
+      "fix_required": false,
+      "fix_applied": null
+    },
+    {
+      "code": "I",
+      "name": "HISTORICAL_BASELINE_UNCERTAIN",
+      "verdict": "ПОДТВЕРЖДЕНА — база сравнения не является эталоном",
+      "deterministic": true,
+      "confidence": "высокая",
+      "evidence": [
+        "Реальных исполнений text_analysis по документу было минимум ДВА (2026-03-17 и 2026-03-26); на диске сохранился только второй, первый перезаписан.",
+        "Каталог 03_analysis/runs/run_20260327T020723 — синтетический: имя выведено мигратором из mtime (scripts/projects_v2/v2lib.py::_run_id_for), внутри перемешаны артефакты обоих прогонов.",
+        "sha256 исторического артефакта пост-миграционный: 2026-07-11 мигратор rename_stage_artifacts.py переименовал 01_text_analysis.json → 02_text_analysis.json и переписал поле stage. Исходный хэш не сохранён.",
+        "Поле timestamp исторического артефакта = 2026-03-26T12:00:00Z — круглое и не совпадает с реальным 23:43:55: подпись поставила модель, а не конвейер.",
+        "Исторический артефакт содержит ключ specification_items, которого нет ни в шаблоне того времени, ни в текущей схеме (backend/app/schemas/text_analysis.json с additionalProperties: false) — сегодня он валидацию бы не прошёл."
+      ],
+      "fix_required": false,
+      "fix_applied": null
+    },
+    {
+      "code": "J",
+      "name": "UNKNOWN",
+      "verdict": "ОСТАЁТСЯ — пропажа темы «тип системы заземления»",
+      "deterministic": false,
+      "confidence": "—",
+      "evidence": [
+        "Тема C (TN-S/TN-C-S/TT/IT) в новом артефакте отсутствует полностью, при том что все входные условия для неё в provider-пути присутствовали в том же объёме, что и в legacy.",
+        "Детерминированной причины не найдено.",
+        "Кандидаты (гипотезы, прогоном не проверены): интонация «чего у тебя нет» в INPUT_DATA_NOTE + TRANSPORT_CONTRACT на позиции максимальной рецентности; обеднение project_params (3 ключа против 8, в историческом grounding_type был отдельным параметром); смена модели; обычная вариативность (в прогоне 2026-03-17 тема была не КРИТИЧЕСКОЙ, а Эксплуатационной)."
+      ],
+      "fix_required": false,
+      "fix_applied": "Профилактически уточнена одна фраза TRANSPORT_CONTRACT: ограничение «нет инструментов» явно объявлено касающимся ДОСТУПА, а не предмета аудита. Это не доказанный дефект, а снятие двусмысленности."
+    }
+  ],
+  "summary": {
+    "content_removed_in_prompt": 0,
+    "content_changed_in_prompt": 0,
+    "deterministic_input_asymmetry_found": 1,
+    "which": "определения пяти значений severity — присутствовали в рантайм-контексте legacy-ветки, отсутствовали в provider-промпте",
+    "root_cause_of_3_to_0_established": false,
+    "why_not": "Прямое наблюдение опровергает моно-причину: тот же документ, тот же legacy-путь, тот же ambient-контекст 2026-03-17 дал 0 КРИТИЧЕСКИХ. Расхождение объясняется совокупностью B+G+H+I, а не потерей входа на миграции.",
+    "fixes_applied": 2,
+    "fixes_validated_by_inference": false
+  }
+}

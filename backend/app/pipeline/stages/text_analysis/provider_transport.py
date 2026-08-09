@@ -92,10 +92,20 @@ _ABS_PATH_RE = re.compile(
 #: задачи прямо требует «Verify validity of each norm», а схема требует
 #: `status`/`edition` у каждой нормативной ссылки. Команда «не искать» глушила
 #: бы ровно эту работу. Ограничивать надо ТРАНСПОРТ, а не предмет анализа.
+#: Оговорка «This is about TOOL ACCESS only…» добавлена на 11D.1. Прежняя
+#: формулировка «do not report that a file is missing» задумывалась про
+#: инструменты, но читается шире — как «не сообщай о том, чего не хватает». Она
+#: стоит ПОСЛЕДНЕЙ в промпте, то есть с максимальной рецентностью, а самый
+#: чувствительный класс замечаний этого этапа — ровно «в документации не указано
+#: X» (в разобранном документе таковы обе темы: отсутствие ОСУП и отсутствие
+#: типа системы заземления). Ограничивать надо транспорт, а не предмет аудита;
+#: то же соображение уже стоило одной правки в 11D («nothing to look up»).
 TRANSPORT_CONTRACT = """## OUTPUT TRANSPORT
 
 You have NO tools in this run: no file reading, no file writing, no shell, no
-web search. Do not ask for files and do not report that a file is missing.
+web search. Do not ask for files and do not complain that you cannot open one.
+This restriction is about TOOL ACCESS ONLY. Data that the project documentation
+itself fails to state is a normal audit finding and must be reported as usual.
 
 Everything this task needs is already inside this message: the full source
 document above, and the discipline normative reference in the instructions.
@@ -136,6 +146,55 @@ INPUT_DATA_NOTE = """## Input Data (this run)
 
 The section below is the full task specification. Where it refers to reading a
 file, the content is already inlined as described above."""
+
+#: Смысл пяти значений `severity`. Перенесён в промпт на 11D.1.
+#:
+#: Почему это НЕ новое правило и не подгонка под один документ. В шаблоне этапа
+#: пять значений присутствуют РОВНО дважды и оба раза без определений: перечнем
+#: в JSON-схеме (`"severity": "КРИТИЧЕСКОЕ|…"`) и строкой правил
+#: («severity — ONLY one of the 5 values»). Развёрнут только один критерий — для
+#: «ПРОВЕРИТЬ ПО СМЕЖНЫМ». Что значит «КРИТИЧЕСКОЕ», не сказано ни в шаблоне, ни
+#: в одном из 15 профилей дисциплин (проверено grep'ом). Единственное место
+#: платформы, где эти определения записаны, — корневой `CLAUDE.md`.
+#:
+#: До 11D этап на центре шёл `claude -p` c `clean_cwd=False`, то есть из корня
+#: репозитория и без `--setting-sources=`; проектная память CLI, включая тот
+#: самый `CLAUDE.md`, попадала в контекст модели. Собственный комментарий
+#: `claude_runner._ensure_clean_cwd` описывает это дословно: чистый каталог
+#: нужен, «чтобы НЕ подгружались project CLAUDE.md / hooks / memory / skills».
+#: ProviderAdapter подавляет тот же слой намеренно и правильно (§14/§17 задания
+#: 11D) — но вместе с личным контекстом ушла и единственная копия инженерных
+#: определений severity.
+#:
+#: Возвращать личный контекст нельзя. Возвращается ровно одна вещь и явным
+#: текстом: смысл шкалы, которой этап обязан пользоваться. Формулировки взяты
+#: дословно из канонического раздела «Категории» проектного `CLAUDE.md`.
+#:
+#: Формулировка симметрична НАМЕРЕННО («не смягчай и не завышай»): проверить
+#: влияние правки прогоном на 11D.1 нельзя (реальные вызовы модели запрещены),
+#: поэтому текст не имеет права толкать оценку ни вверх, ни вниз.
+SEVERITY_SEMANTICS = """## Severity Semantics (what each value means)
+
+`severity` is a fixed five-value scale with fixed meanings. Use these:
+
+- **КРИТИЧЕСКОЕ** — it cannot be built as designed: a violation of ПУЭ / ГОСТ / СП.
+- **ЭКОНОМИЧЕСКОЕ** — money, volumes, wrong grade or quantity.
+- **ЭКСПЛУАТАЦИОННОЕ** — it will cause problems later, during operation.
+- **РЕКОМЕНДАТЕЛЬНОЕ** — typos and minor inconsistencies of the paperwork.
+- **ПРОВЕРИТЬ ПО СМЕЖНЫМ** — it needs data from an adjacent discipline
+  (see the detailed criteria at the end of these instructions).
+
+Pick the value whose definition the defect actually matches. Do not soften it and
+do not inflate it."""
+
+#: Куда ставится блок смысла severity — лестница якорей по убыванию точности.
+#: Место выбрано рядом с перечнем значений, а не в конец инструкций: определение
+#: обязано стоять там, где модель читает саму шкалу.
+_SEVERITY_ANCHORS: tuple[str, ...] = (
+    "## Output JSON Schema",
+    "## Finding Categories",
+    "## Rules",
+)
 
 #: Поля, отсутствие которых делает артефакт непригодным дальше по конвейеру.
 #:
@@ -218,6 +277,20 @@ def split_messages(messages: Iterable[dict]) -> tuple[str, str]:
     return "\n\n".join(system_parts), "\n\n".join(user_parts)
 
 
+def _insert_severity_semantics(system_text: str) -> tuple[str, str]:
+    """Поставить блок смысла severity рядом с перечнем значений.
+
+    Возвращает (текст, какой якорь сработал). Якорь пишется в карту сборки: если
+    шаблон однажды переименуют, отчёт покажет `end_of_instructions`, а не
+    промолчит о том, что блок уехал в хвост.
+    """
+    for anchor in _SEVERITY_ANCHORS:
+        if anchor in system_text:
+            head, tail = system_text.split(anchor, 1)
+            return f"{head}{SEVERITY_SEMANTICS}\n\n{anchor}{tail}", anchor
+    return f"{system_text}\n\n{SEVERITY_SEMANTICS}", "end_of_instructions"
+
+
 def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
     """Собрать один текст для stdin `claude -p` из боевых messages этапа.
 
@@ -236,6 +309,7 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
         system_text = f"{head}{INPUT_DATA_NOTE}\n\n{marker}{tail}"
     else:
         system_text = f"{INPUT_DATA_NOTE}\n\n{system_text}"
+    system_text, severity_anchor = _insert_severity_semantics(system_text)
     prompt = (
         f"{system_text}\n\n"
         "===== SOURCE DOCUMENT (inlined by the pipeline) =====\n\n"
@@ -259,6 +333,8 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
             "absolute_paths_remaining_in_instructions": count_absolute_paths(system_text),
             "input_data_note_applied": INPUT_DATA_NOTE.splitlines()[0] in prompt,
             "transport_contract_applied": "OUTPUT TRANSPORT" in prompt,
+            "severity_semantics_applied": SEVERITY_SEMANTICS.splitlines()[0] in prompt,
+            "severity_semantics_anchor": severity_anchor,
         },
         "system_chars": len(system_text),
         "document_chars": len(user_text),

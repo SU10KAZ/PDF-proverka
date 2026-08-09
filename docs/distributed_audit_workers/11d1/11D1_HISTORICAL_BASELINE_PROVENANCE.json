@@ -1,0 +1,88 @@
+{
+  "kind": "провенанс исторического 02_text_analysis.json, с которым сравнивали 11D",
+  "artifact": {
+    "path_relative": "03_analysis/latest/02_text_analysis.json",
+    "sha256": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7",
+    "keys": [
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "specification_items",
+      "stage",
+      "text_findings",
+      "text_source",
+      "timestamp"
+    ],
+    "text_findings": 11,
+    "severity_distribution": {
+      "КРИТИЧЕСКОЕ": 3,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 4,
+      "ЭКСПЛУАТАЦИОННОЕ": 2,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1,
+      "ЭКОНОМИЧЕСКОЕ": 1
+    }
+  },
+  "run": {
+    "analysis_run_id": "run_20260327T020723",
+    "text_analysis_started_at": "2026-03-26T23:41:29.382121",
+    "text_analysis_completed_at": "2026-03-26T23:43:55.097948",
+    "duration_ms": 140965,
+    "num_turns": 5,
+    "num_turns_evidence": "audit_log.jsonl, запись 2026-03-26T23:43:55, поле num_turns"
+  },
+  "model": {
+    "value": "claude-opus-4-6",
+    "evidence": [
+      "03_analysis/runs/run_20260327T020723/pipeline_log.json → stages.text_analysis.model",
+      "03_analysis/runs/run_20260327T020723/audit_trail/01_text_analysis_2026-03-26T23-43-55.json → model"
+    ],
+    "confidence": "ВЫСОКАЯ (два независимых артефакта прогона)"
+  },
+  "pipeline_code_version": {
+    "value": "3fb30eb3 (2026-03-25, «светлый дизайн и чат ИИ») — последний коммит репозитория до прогона",
+    "confidence": "СРЕДНЯЯ: коммит в артефактах прогона не зафиксирован, установлен по датам git-истории"
+  },
+  "prompt_version": {
+    "template_path_then": ".claude/en/text_analysis_task.md",
+    "template_path_now": "prompts/pipeline/en/text_analysis_task.md",
+    "template_lines_then": 114,
+    "template_lines_now": 164,
+    "confidence": "ВЫСОКАЯ (файл извлечён из git по коммиту 3fb30eb3)",
+    "differences": "см. 11D1_PROMPT_VERSION_HISTORY.md"
+  },
+  "transport": {
+    "value": "ветка B — Claude CLI с файловыми инструментами",
+    "evidence": [
+      "audit_log.jsonl: «ЭТАП 2: Текстовый анализ MD (Claude)»",
+      "результат в stdout — сводка «Файл `01_text_analysis.json` записан», то есть файл писала МОДЕЛЬ через Write",
+      "num_turns=5 — агентный прогон"
+    ],
+    "confidence": "ВЫСОКАЯ"
+  },
+  "same_md": {
+    "value": true,
+    "evidence": "MD версии v001 не менялся с момента миграции; sha256 совпадает с тем, что 11D скопировал на воркер (4ea96076…)",
+    "caveat": "sha256 MD на момент мартовского прогона нигде не зафиксирован — совпадение установлено косвенно (в артефактах версии одна копия MD, цитаты исторических замечаний дословно совпадают с её текстом)",
+    "confidence": "СРЕДНЯЯ-ВЫСОКАЯ"
+  },
+  "block_context_at_text_analysis": {
+    "value": false,
+    "evidence": "pipeline_log.json: text_analysis 23:41:29→23:43:55, block_analysis 23:43:55→23:46:48 — блочный анализ шёл ПОСЛЕ текстового",
+    "consequence": "Гипотеза 11D «исторический прогон шёл полным конвейером и видел блоки» ОПРОВЕРГНУТА: блочного контекста не было и у него.",
+    "note": "block_id в поле source исторических замечаний («блок 4FCJ-3AG7-TMD») взяты из САМОГО MD — заголовки «### BLOCK [TEXT]: <id>»."
+  },
+  "earlier_run_same_document": {
+    "date": "2026-03-17",
+    "where": "тот же audit_log.jsonl (202 записи за 2026-03-17)",
+    "transport": "ветка B, Claude CLI",
+    "findings": 9,
+    "criticals": 0,
+    "severity_of_the_three_topics": {
+      "ПУЭ 7.35": "Рекомендательное",
+      "система заземления TN-C-S/TN-S/IT": "Эксплуатационное",
+      "ОСУП": "Эксплуатационное"
+    },
+    "why_it_matters": "ЭТО ЖЕ ДОКУМЕНТ, ТОТ ЖЕ LEGACY-ПУТЬ, НА ДЕВЯТЬ ДНЕЙ РАНЬШЕ — и НОЛЬ КРИТИЧЕСКИХ, с ровно той калибровкой severity, которую дал 11D. Значит «3 критических» — не свойство legacy-пути, а один исход из нестабильного распределения."
+  },
+  "verdict": "Провенанс установлен по большинству полей. Исторический результат НЕЛЬЗЯ считать эталоном: у того же документа на том же пути есть более ранний прогон с 0 критических."
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "сверка нормативного контекста НА ВХОДЕ text_analysis (этап norm_verify не трогаем)",
+  "discipline_resolution": {
+    "source": "project_info.section → discipline_service.load_discipline",
+    "section_used_in_11D": "EOM",
+    "profile_dir": "prompts/disciplines/EOM",
+    "strict_mode_on_worker": "AUDIT_DISCIPLINE_PROFILE_STRICT=1",
+    "same_profile_in_both_paths": true,
+    "why": "_inject_discipline — общая функция обоих сборщиков (task_builder и prompt_builder)"
+  },
+  "norms_reference_file": {
+    "path_relative": "prompts/disciplines/EOM/norms_reference.md",
+    "bytes": 13046,
+    "chars": 8280,
+    "sha256": "83043fbd2ff89ef61efd37577b80b597529d4801fb63a5568027068d5ad2dedd"
+  },
+  "legacy_branch_b": {
+    "delivery": "путь в промпте ({DISCIPLINE_NORMS_FILE} → абсолютный путь) + Read моделью",
+    "guaranteed_delivered": false,
+    "why": "код не проверяет, что модель вызвала Read; факт чтения не фиксируется"
+  },
+  "provider_11d": {
+    "delivery": "inline, секция «## Normative Reference (discipline norms database)»",
+    "guaranteed_delivered": true,
+    "chars_inlined": 8280,
+    "truncated": false,
+    "stripped_by_filesystem_cleanup": 0
+  },
+  "other_normative_inputs": {
+    "norms_db.json": "НЕ подаётся на вход text_analysis ни в одном пути",
+    "norms_paragraphs.json": "НЕ подаётся на вход text_analysis ни в одном пути",
+    "MCP norms": "инструменты mcp__norms__* в TEXT_ANALYSIS_TOOLS отсутствуют"
+  },
+  "verdict": "Provider-путь доставляет нормативный контекст СТРОГО НЕ ХУЖЕ legacy: тот же файл, целиком, гарантированно, вместо «дай путь и понадейся на Read»."
+}
