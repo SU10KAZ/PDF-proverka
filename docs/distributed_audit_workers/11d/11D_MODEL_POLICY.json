@@ -1,0 +1,91 @@
+{
+  "stage": "11D",
+  "subject": "локальная политика моделей воркера 176.12.77.31",
+  "why_it_exists": "На 11C конфигурация центра называла для text_analysis модель claude-opus-5, а фактически ответила claude-opus-4-8[1m] — модель учётной записи по умолчанию. Причина не ошибка: claude_adapter._inference_argv() намеренно не передавал --model, потому что идентификатор модели пришёл бы из задания, а инвариант I-P5 запрещает данным задания попадать в argv. Для синтетической проверки канала это было безразлично; для рабочего аудита — нет.",
+
+  "decision": "Центр присылает ЛОГИЧЕСКУЮ способность. Точную модель назначает файл администратора машины. В argv попадает локальная константа, поэтому I-P5 сохраняется дословно.",
+
+  "policy_file": {
+    "path_on_worker": "/home/coder/audit-worker-11d/data/provider_policy.json",
+    "mode": "0600",
+    "schema_module": "audit_worker/providers/model_policy.py",
+    "policy_version": 1,
+    "env_override": "AUDIT_WORKER_PROVIDER_POLICY",
+    "content": {
+      "policy_version": 1,
+      "claude": {
+        "auth_mode": "ambient_user",
+        "capabilities": {
+          "strong_audit": {
+            "model": "claude-opus-5",
+            "accepted_reported_models": ["claude-opus-5", "claude-opus-5[1m]"]
+          }
+        }
+      }
+    }
+  },
+
+  "capability": {
+    "name": "strong_audit",
+    "known_capabilities": ["strong_audit"],
+    "closed_list": true,
+    "note": "Способность, которой нет в закрытом списке, отвергается на разборе требования центра, а не превращается в «модель по умолчанию»."
+  },
+
+  "model_identifier_resolution": {
+    "requested_model": "claude-opus-5",
+    "how_established": "grep -a по нативному бинарю Claude CLI 2.1.220 на самом воркере (/home/coder/.local/share/claude/versions/2.1.220)",
+    "inference_used_for_resolution": false,
+    "model_resolution_inference_count": 0,
+    "evidence": {
+      "opus_ids_found_in_binary": ["claude-opus-5", "claude-opus-4-8", "claude-opus-4-7", "claude-opus-4-6", "claude-opus-4-5", "claude-opus-4-1", "claude-opus-4-0"],
+      "long_context_variants_found": ["claude-opus-5[1m]", "claude-opus-4-8[1m]", "claude-opus-4-7[1m]", "claude-opus-4-6[1m]", "claude-sonnet-4-6[1m]"],
+      "cli_help": "--model <model>: алиас последней модели ('fable'|'opus'|'sonnet') либо полное имя (например 'claude-fable-5')",
+      "models_listing_subcommand": null
+    },
+    "why_this_model": "claude-opus-5 — старшая доступная модель поколения на этом CLI и та же, что назначена этапу text_analysis в конфигурации центра (stage_model_mapping из манифеста 11C). Воркер выбирает её сам; центр на выбор не влияет."
+  },
+
+  "accepted_reported_models": {
+    "values": ["claude-opus-5", "claude-opus-5[1m]"],
+    "default_rule": "model_policy.default_accepted_reported(model) → [model, model + \"[1m]\"]",
+    "justification": "Суффикс [1m] обозначает вариант ТОЙ ЖЕ модели с окном в миллион токенов: в бинаре CLI 2.1.220 присутствуют обе формы для каждой модели поколения. На 11C CLI вернул именно суффиксную форму (claude-opus-4-8[1m]) при модели учётной записи claude-opus-4-8. Это не послабление: любой другой идентификатор — отказ.",
+    "not_accepted_examples": ["claude-sonnet-5", "claude-opus-4-8", "claude-opus-4-8[1m]", "claude-opus-4-6", ""]
+  },
+
+  "enforcement": {
+    "argv": "claude_adapter._inference_argv(model) добавляет --model <exact> перед вариадическими флагами; --model не вариадический, значение — один аргумент",
+    "first_gate": {
+      "where": "claude_adapter.structured_inference",
+      "rule": "reported (modelUsage) ∉ accepted_reported_models ⇒ status=error, error_code=model_mismatch",
+      "missing_reported_model": "тоже несовпадение: «не знаем, кто ответил» ≠ «ответила назначенная»",
+      "empty_accepted_list": "отказ ДО запуска процесса — приказ без проверки не исполняется"
+    },
+    "second_gate": {
+      "where": "inference.validate_inference → именованная проверка model_matches_policy",
+      "source_of_truth": "ПРИВЯЗКА (её пишет исполнитель до запуска процесса), а не аргументы вызывающего",
+      "why_two": "адаптер знает, что он ПРИКАЗАЛ CLI; проверка берёт те же значения из независимо записанного документа. Совпадение двух источников делает запись «ответила назначенная модель» доказательством, а не самоотчётом адаптера."
+    },
+    "on_mismatch": "этап text_analysis FAILED, артефакт 02_text_analysis.json НЕ пишется, fallback на Sonnet или другое поколение Opus отсутствует"
+  },
+
+  "center_cannot_dictate_model": {
+    "rule": "provider_requirement.capability и provider_requirement.model взаимоисключимы",
+    "enforced_at": [
+      "audit_worker/audit_runner.py::_validate_provider_requirement (рубеж формы задания)",
+      "audit_worker/providers/resolver.py::ProviderRequirement.from_payload (рубеж смысла)"
+    ],
+    "tests": [
+      "test_c4_center_cannot_dictate_model_with_capability",
+      "test_c5_unknown_capability_refused_at_job_boundary",
+      "test_capability_accepted_at_job_boundary"
+    ]
+  },
+
+  "no_defaults": {
+    "missing_policy_file": "ProviderPolicyError — вызов не выполняется",
+    "unknown_capability": "ProviderPolicyError — вызов не выполняется",
+    "empty_policy": "ProviderPolicyError — пустая политика равносильна отсутствию",
+    "rationale": "Умолчание «возьмём какую-нибудь модель» — это ровно та тихая подмена, ради устранения которой политика и написана."
+  }
+}

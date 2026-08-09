@@ -1,0 +1,431 @@
+{
+  "stage": "11D",
+  "production_stage": "text_analysis",
+  "gate": "§23 задания: пре-инференс-тесты обязаны быть зелёными ДО реального вызова модели",
+  "test_file": "tests/test_distributed_workers_text_analysis_provider.py",
+  "command": "python -m pytest tests/test_distributed_workers_text_analysis_provider.py -v",
+  "real_model_calls_in_tests": 0,
+  "totals": {
+    "tests": 60,
+    "passed": 60,
+    "failed": 0
+  },
+  "requirement_coverage": [
+    {
+      "requirement": "A",
+      "title": "text_analysis ProviderAdapter routing",
+      "tests": [
+        "TestStageRouting::test_a_binding_routes_text_analysis_into_provider",
+        "TestStageRouting::test_a2_stage_outside_whitelist_fails_without_fallback"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "B",
+      "title": "legacy path unchanged",
+      "tests": [
+        "TestStageRouting::test_b_legacy_path_untouched_without_binding",
+        "TestStageRouting::test_b2_binding_pointing_nowhere_is_a_loud_error"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "C",
+      "title": "strong_audit resolves only locally",
+      "tests": [
+        "TestModelPolicy::test_c_capability_resolves_only_from_local_policy",
+        "TestModelPolicy::test_c2_missing_policy_is_refusal_not_default",
+        "TestModelPolicy::test_c3_unknown_capability_refused",
+        "TestModelPolicy::test_c4_center_cannot_dictate_model_with_capability",
+        "TestModelPolicy::test_c5_unknown_capability_refused_at_job_boundary"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "D",
+      "title": "exact model passed explicitly",
+      "tests": [
+        "TestModelPolicy::test_d_exact_model_passed_to_cli_explicitly",
+        "TestModelPolicy::test_d2_argv_without_model_is_unchanged_from_11c"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "E",
+      "title": "model mismatch → fail closed",
+      "tests": [
+        "TestModelPolicy::test_e_reported_model_mismatch_fails_closed",
+        "TestModelPolicy::test_e2_missing_reported_model_fails_closed",
+        "TestModelPolicy::test_e3_model_without_accepted_list_refused_before_call",
+        "TestModelPolicy::test_e4_validation_records_model_check_independently"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "F",
+      "title": "ambient auth preserved",
+      "tests": [
+        "TestFilesystemResponsibility::test_f_ambient_auth_preserved"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "G",
+      "title": "pipeline reads MD",
+      "tests": [
+        "TestFilesystemResponsibility::test_g_pipeline_reads_md_itself"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "H",
+      "title": "prompt contains inline document content",
+      "tests": [
+        "TestFilesystemResponsibility::test_h_prompt_carries_inline_document"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "I",
+      "title": "model gets no project input path dependency",
+      "tests": [
+        "TestFilesystemResponsibility::test_i_no_project_paths_in_instructions",
+        "TestFilesystemResponsibility::test_i2_document_body_is_never_rewritten",
+        "TestFilesystemResponsibility::test_i3_path_stripper_does_not_touch_engineering_text"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "J",
+      "title": "tools disabled",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "K",
+      "title": "no Read",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "L",
+      "title": "no Write",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "M",
+      "title": "no Bash",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "N",
+      "title": "no Grep",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "O",
+      "title": "no Glob",
+      "tests": [
+        "TestToolsDisabled::test_j_tools_switched_off_entirely",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Bash]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Glob]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Grep]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Read]",
+        "TestToolsDisabled::test_jno_tool_never_enabled[Write]"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "P",
+      "title": "engineering prompt content preserved",
+      "tests": [
+        "TestSemanticPreservation::test_p_engineering_payload_preserved"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "Q",
+      "title": "discipline profile preserved",
+      "tests": [
+        "TestSemanticPreservation::test_q_discipline_profile_preserved"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "R",
+      "title": "normative context preserved",
+      "tests": [
+        "TestSemanticPreservation::test_r_normative_context_preserved"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "S",
+      "title": "absence guard preserved",
+      "tests": [
+        "TestSemanticPreservation::test_s_absence_guard_parity",
+        "TestSemanticPreservation::test_s2_absence_guard_survives_when_enabled"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "T",
+      "title": "md_prescan semantics preserved",
+      "tests": [
+        "TestSemanticPreservation::test_t_prescan_semantics_preserved"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "U",
+      "title": "JSON schema preserved",
+      "tests": [
+        "TestSemanticPreservation::test_u_json_schema_preserved",
+        "TestSemanticPreservation::test_u2_transport_contract_replaces_shell"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "V",
+      "title": "valid JSON accepted",
+      "tests": [
+        "TestResultContract::test_v_valid_json_accepted_and_written_by_pipeline"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "W",
+      "title": "invalid JSON rejected/handled",
+      "tests": [
+        "TestResultContract::test_w_missing_required_field_rejected",
+        "TestResultContract::test_w2_non_json_reply_rejected",
+        "TestResultContract::test_w3_wrong_text_source_rejected",
+        "TestResultContract::test_w4_soft_fields_do_not_fail_the_stage"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "X",
+      "title": "timeout",
+      "tests": [
+        "TestTransportFailures::test_x_timeout_is_a_stage_failure"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "Y",
+      "title": "provider non-zero exit",
+      "tests": [
+        "TestTransportFailures::test_y_nonzero_exit_is_a_stage_failure"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "Z",
+      "title": "rate-limit classification",
+      "tests": [
+        "TestTransportFailures::test_z_rate_limit_classified"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AA",
+      "title": "grant exactly once",
+      "tests": [
+        "TestExactlyOnce::test_aa_grant_consumed_once",
+        "TestExactlyOnce::test_aa2_inference_cap_respected"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AB",
+      "title": "completed replay → no second model call",
+      "tests": [
+        "TestExactlyOnce::test_ab_replay_reports_not_performed"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AC",
+      "title": "crash-after-inference recovery policy",
+      "tests": [
+        "TestExactlyOnce::test_ac_crash_after_inference_is_not_auto_retried"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AD",
+      "title": "output only supplied output_dir",
+      "tests": [
+        "TestFilesystemResponsibility::test_ad_output_written_only_into_supplied_output_dir"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AE",
+      "title": "production output path denied",
+      "tests": [
+        "TestFilesystemResponsibility::test_ae_output_outside_attempt_is_denied"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AF",
+      "title": "credentials sanitized",
+      "tests": [
+        "TestSecretsAndCanary::test_af_credentials_never_reach_subprocess_or_artifacts",
+        "TestSecretsAndCanary::test_af2_credential_shape_never_reaches_artifacts",
+        "TestSecretsAndCanary::test_af3_private_path_in_answer_fails_validation"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AG",
+      "title": "canary unavailable to fake provider/model workspace",
+      "tests": [
+        "TestSecretsAndCanary::test_ag_canary_is_unreachable_for_the_subprocess",
+        "TestSecretsAndCanary::test_ag2_forbidden_literal_in_answer_fails_validation"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AH",
+      "title": "personal CLAUDE.md/settings/hooks do not influence worker prompt",
+      "tests": [
+        "TestToolsDisabled::test_ah_personal_context_neutralised",
+        "TestToolsDisabled::test_ah2_cwd_is_empty_runtime_dir"
+      ],
+      "covered": true,
+      "all_passed": true
+    },
+    {
+      "requirement": "AI",
+      "title": "Codex path not invoked",
+      "tests": [
+        "TestCodexNotInvoked::test_ai_codex_runner_never_called",
+        "TestCodexNotInvoked::test_ai2_codex_adapter_refuses_explicit_model"
+      ],
+      "covered": true,
+      "all_passed": true
+    }
+  ],
+  "uncovered_requirements": [],
+  "tests_outside_letter_map": [
+    "TestJobContract::test_capability_accepted_at_job_boundary",
+    "TestJobContract::test_unknown_field_still_refused"
+  ],
+  "regression_suites": {
+    "tests/test_distributed_workers_pipeline_provider.py + ssh_provider_prep + provider_gate": {
+      "passed": 216,
+      "failed": 0
+    },
+    "targeted (-k provider or text_analysis or claude_runner or distributed or prompt_builder or absence or prescan)": {
+      "passed": 1627,
+      "failed": 1,
+      "skipped": 2,
+      "known_failure": "backend/tests/test_benchmark_critic_v2_against_human.py::TestProviderUnavailableSafeguard::test_cli_with_max_candidates",
+      "attribution": "падает и на базовом коммите 11C bc1720f1 в том же worktree-окружении (нужны данные проектов, которых в worktree нет) — не регрессия 11D"
+    }
+  },
+  "ci_regression_gate": {
+    "new_failures_reported": [
+      "tests.test_alia_remaining_geometry",
+      "tests.test_alia_scheme_geometry",
+      "tests.test_architecture_geometry",
+      "tests.test_electrical_geometry",
+      "tests.test_general_plan_geometry",
+      "tests.test_hvac_geometry",
+      "tests.test_structural_geometry",
+      "tests.test_technology_geometry",
+      "tests.test_water_geometry"
+    ],
+    "attribution": "все девять — ОШИБКИ СБОРА (ValueError при вычислении id параметризации / FileNotFoundError), воспроизводятся на базовом коммите bc1720f1 в том же worktree с скопированными .env и stage_models.json. Класс «дрейф окружения worktree», не регрессия 11D.",
+    "verified_command": "python -m pytest tests/test_electrical_geometry.py tests/test_water_geometry.py -q (в worktree 11C) → те же 2 ошибки сбора"
+  },
+  "rehearsals_without_model": [
+    {
+      "where": "центр 176.12.77.128",
+      "mode": "fake",
+      "result": "PASS",
+      "model_calls": 0
+    },
+    {
+      "where": "воркер 176.12.77.31",
+      "mode": "fake",
+      "result": "PASS",
+      "model_calls": 0,
+      "detail": "боевой раннер этапа, боевой промпт (инструкции 18018 симв., документ 11544 симв., вычищено 2 файловые ссылки), подставной CLI"
+    }
+  ]
+}
