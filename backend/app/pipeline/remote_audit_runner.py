@@ -437,6 +437,79 @@ def enforce_fake_providers(spec: dict[str, Any]) -> dict[str, Any]:
     return {"mode": "fake", "secrets_removed": len(removed), "cli_bound": bound}
 
 
+def bind_providers(spec: dict[str, Any]) -> dict[str, Any]:
+    """Сверить привязку провайдера со спекой и объявить мост активным.
+
+    Переменную `AUDIT_WORKER_PROVIDER_BINDING` ставит ИСПОЛНИТЕЛЬ, а не этот
+    модуль: разрешение, которое процесс конвейера выписывает себе сам, не
+    является разрешением. Здесь только ПРОВЕРКА — и она нужна ровно по той же
+    причине, что и `apply_runtime_paths`: процесс, запущенный руками с чужой
+    спекой, не должен добраться до авторизованного CLI.
+
+    Три утверждения, каждое своим шагом:
+
+      1. fake-режим и привязка несовместимы. В fake-режиме конвейер обязан
+         ходить к подделкам, и «мост к настоящему CLI» рядом с ними — это либо
+         ошибка развёртывания, либо обход запрета. Отказ, а не выбор одного из
+         двух;
+      2. задание и попытка в привязке совпадают с заданием и попыткой в спеке.
+         Спеку и привязку пишет один исполнитель, но РАЗНЫМ кодом и из разных
+         полей строки очереди: совпадение двух записей — доказательство, что
+         привязка относится к этой попытке;
+      3. привязанный провайдер — тот, которого потребовал центр.
+    """
+    binding_env = os.environ.get("AUDIT_WORKER_PROVIDER_BINDING", "").strip()
+    requirement = spec.get("provider_requirement") or None
+    if not binding_env:
+        if requirement and int((requirement or {}).get("max_inferences") or 0) > 0:
+            raise SystemExit(
+                "задание требует вызова модели, но привязка провайдера не "
+                "передана процессу конвейера: исполнитель её не выписал"
+            )
+        return {"bridge": "inactive"}
+
+    if str(spec.get("provider_mode") or "") == "fake":
+        raise SystemExit(
+            "provider_mode=fake и привязка провайдера одновременно: в режиме "
+            "подделок мост к настоящему CLI недопустим"
+        )
+
+    from audit_worker.providers.resolver import (            # noqa: PLC0415
+        ProviderBinding,
+        ProviderResolutionError,
+    )
+
+    try:
+        binding = ProviderBinding.read(Path(binding_env))
+    except ProviderResolutionError as exc:
+        raise SystemExit(f"привязка провайдера отвергнута: {exc}") from None
+
+    if binding.job_id != str(spec.get("job_id") or ""):
+        raise SystemExit(
+            f"привязка провайдера относится к заданию {binding.job_id!r}, "
+            f"а спека — к {spec.get('job_id')!r}"
+        )
+    if binding.attempt_id != str(spec.get("attempt_id") or ""):
+        raise SystemExit(
+            f"привязка провайдера относится к попытке {binding.attempt_id!r}, "
+            f"а спека — к {spec.get('attempt_id')!r}"
+        )
+    if requirement and binding.provider != str(requirement.get("provider") or ""):
+        raise SystemExit(
+            f"привязан провайдер {binding.provider!r}, а задание требует "
+            f"{requirement.get('provider')!r}"
+        )
+    if not binding.grant_id:
+        raise SystemExit(
+            "в привязке нет идентификатора разрешения: вызов модели без "
+            "списанного разрешения оператора не выполняется"
+        )
+    spec["_provider_binding"] = binding
+    # В evidence уезжает ПУБЛИЧНЫЙ вид: без абсолютных путей и без контрольных
+    # литералов оператора.
+    return {"bridge": "active", **binding.as_public_dict()}
+
+
 def verify_snapshot(spec: dict[str, Any]) -> dict[str, Any]:
     """Сверить распакованные снимки с заявленными хэшами."""
     from backend.app.services.distributed_workers import project_package
@@ -539,12 +612,174 @@ def collect_usage(project_id: str) -> list[dict[str, Any]]:
     return entries
 
 
+def write_pipeline_log(spec: dict[str, Any], stages: dict[str, Any]) -> Path:
+    """Журнал этапов для действий, которые не идут через `_dispatch_action`.
+
+    На основном пути `pipeline_log.json` пишет `audit_logger`, и оттуда его
+    копирует `publish_deliverables`. Синтетическая проверка провайдера
+    менеджера не запускает вовсе, поэтому журнал пишется здесь — но пишется
+    НАСТОЯЩИЙ, в той же схеме: по нему работает проверка §14 (`audit_stage_history`),
+    и подделывать её вход было бы бессмысленно.
+    """
+    paths = spec.get("paths") or {}
+    target = Path(paths.get("work") or ".") / "pipeline_log.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
+        json.dumps(
+            {
+                "job_id": spec.get("job_id"),
+                "attempt_id": spec.get("attempt_id"),
+                "project_id": spec.get("project_id"),
+                "action": spec.get("action"),
+                "updated_at": time.time(),
+                "stages": stages,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return target
+
+
+def run_provider_selfcheck(spec: dict[str, Any]) -> int:
+    """Синтетическая проверка сквозного пути к модели (этап 11C).
+
+    Действие профиля, а не отладочный режим: те же снимки центра, та же
+    изоляция, та же сборка пакета. Разница только в объёме работы — один вызов
+    модели вместо восьми этапов аудита.
+    """
+    import asyncio
+
+    from backend.app.models.audit import AuditJob
+    from backend.app.pipeline.manager import pipeline_manager
+    from backend.app.pipeline.stages import provider_selfcheck as stage_mod
+
+    paths = spec.get("paths") or {}
+    project_id = str(spec.get("project_id") or "")
+    job = AuditJob(
+        job_id=str(spec.get("job_id") or "remote"),
+        project_id=project_id,
+        version_id=spec.get("version_id"),
+    )
+    emit({"type": "stage_started", "stage": stage_mod.STAGE_NAME,
+          "stage_index": 1, "stage_total": 1})
+    started = time.time()
+    try:
+        _root, version_dir, _output = pipeline_manager._resolve_job_paths(job)  # noqa: SLF001
+    except Exception as exc:                            # noqa: BLE001
+        message = f"каталог версии не резолвится: {type(exc).__name__}: {exc}"
+        emit({"type": "failed", "message": message})
+        write_pipeline_log(spec, {stage_mod.STAGE_NAME: {"status": "error",
+                                                         "error": message}})
+        write_process_exit(spec, 1, error=message)
+        return 1
+    if version_dir is None:
+        message = "каталог версии не определён — синтетическая проверка невозможна"
+        emit({"type": "failed", "message": message})
+        write_pipeline_log(spec, {stage_mod.STAGE_NAME: {"status": "error",
+                                                         "error": message}})
+        write_process_exit(spec, 1, error=message)
+        return 1
+
+    job_dir = Path(paths.get("project") or ".").parent.resolve()
+    try:
+        artifact = asyncio.run(
+            stage_mod.run_stage(
+                job_dir=job_dir,
+                version_dir=Path(version_dir),
+                result_dir=Path(paths.get("result") or "."),
+                project_id=project_id,
+                document_code=Path(project_id).name or None,
+                job_id=str(spec.get("job_id") or ""),
+                attempt_id=str(spec.get("attempt_id") or ""),
+            )
+        )
+    except Exception as exc:                            # noqa: BLE001
+        message = f"{type(exc).__name__}: {exc}"
+        emit({"type": "failed", "message": message})
+        traceback.print_exc(file=sys.stderr)
+        write_pipeline_log(spec, {stage_mod.STAGE_NAME: {"status": "error",
+                                                         "error": message}})
+        write_process_exit(spec, 1, error=message)
+        return 1
+
+    ok, problems = stage_mod.artifact_is_successful(artifact)
+    duration = round(time.time() - started, 2)
+    emit({
+        "type": "stage_completed",
+        "stage": stage_mod.STAGE_NAME,
+        "status": "done" if ok else "error",
+        "duration_sec": duration,
+        # В событие уходят только признаки и числа: ни промпта, ни ответа.
+        "validation_passed": bool((artifact.get("validation") or {}).get("passed")),
+        "inference_performed": bool(artifact.get("performed")),
+    })
+    write_pipeline_log(spec, {
+        stage_mod.STAGE_NAME: {
+            "status": "done" if ok else "error",
+            "duration_sec": duration,
+            "error": problems or None,
+        }
+    })
+    usage_entries = []
+    provider_result = artifact.get("provider_result") or {}
+    usage = provider_result.get("usage") or {}
+    if usage or provider_result.get("model"):
+        usage_entries.append({
+            "stage": stage_mod.STAGE_NAME,
+            "model": provider_result.get("model") or "",
+            "input_tokens": int(usage.get("input_tokens", 0) or 0),
+            "output_tokens": int(usage.get("output_tokens", 0) or 0),
+            "cache_creation_tokens": int(usage.get("cache_creation_input_tokens", 0) or 0),
+            "cache_read_tokens": int(usage.get("cache_read_input_tokens", 0) or 0),
+            "cost_usd": 0.0,
+            "cost_usd_notional": float(usage.get("total_cost_usd", 0.0) or 0.0),
+            "calls": 1 if artifact.get("performed") else 0,
+            "duration_ms": int(provider_result.get("duration_ms", 0) or 0),
+            "source": "worker_provider_bridge",
+        })
+    write_usage_report(spec, usage_entries)
+    write_result_manifest(spec, {
+        "worker_stage_plan": [stage_mod.STAGE_NAME],
+        "completed_stages": [stage_mod.STAGE_NAME] if ok else [],
+        "forbidden_stages_not_run": list(FORBIDDEN_STAGES),
+        "applied_runtime_config": spec.get("_applied_runtime_config") or {},
+        "applied_discipline_profile": spec.get("_applied_discipline_profile") or {},
+        "discipline_id": spec.get("discipline_id"),
+        "discipline_profile_hash": spec.get("discipline_profile_hash"),
+        "job_id": spec.get("job_id"),
+        "attempt_id": spec.get("attempt_id"),
+        "project_id": project_id,
+        "version_id": spec.get("version_id"),
+        "profile": spec.get("profile"),
+        "action": spec.get("action"),
+        "pipeline_revision": spec.get("pipeline_revision"),
+        "provider_mode": spec.get("provider_mode"),
+        "provider_bridge": (
+            spec["_provider_binding"].as_public_dict()
+            if spec.get("_provider_binding") is not None else None
+        ),
+        "status": "completed" if ok else "failed",
+        "error": problems or None,
+        "stage_completion": {stage_mod.STAGE_NAME: "done" if ok else "error"},
+        "resume_hint": None,
+        "central_only_stages": list(FORBIDDEN_STAGES),
+        "finished_at": time.time(),
+    })
+    write_process_exit(spec, 0 if ok else 1, error=problems or None)
+    return 0 if ok else 1
+
+
 def run(spec: dict[str, Any]) -> int:
     """Выполнить конвейер существующим кодом платформы."""
     import asyncio
 
     from backend.app.models.audit import AuditJob, BatchQueueItem, JobStatus
     from backend.app.pipeline.manager import pipeline_manager
+
+    if str(spec.get("action") or "") == "provider_selfcheck":
+        return run_provider_selfcheck(spec)
 
     project_id = str(spec.get("project_id") or "")
     version_id = spec.get("version_id")
@@ -618,8 +853,13 @@ def run(spec: dict[str, Any]) -> int:
             "project_id": project_id,
             "version_id": version_id,
             "profile": spec.get("profile"),
+            "action": spec.get("action"),
             "pipeline_revision": spec.get("pipeline_revision"),
             "provider_mode": spec.get("provider_mode"),
+            "provider_bridge": (
+                spec["_provider_binding"].as_public_dict()
+                if spec.get("_provider_binding") is not None else None
+            ),
             "status": getattr(job.status, "value", str(job.status)),
             "error": job.error_message,
             "stage_completion": stages or {"pipeline": "done" if ok else "error"},
@@ -881,6 +1121,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     applied_profile = apply_discipline_profile(spec)
     spec["_applied_discipline_profile"] = applied_profile
     providers = enforce_fake_providers(spec)
+    provider_bridge = bind_providers(spec)
     models_path = apply_model_snapshot(spec)
     snapshot = verify_snapshot(spec)
     emit(
@@ -889,6 +1130,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "stage": "verify_snapshot",
             "snapshot": snapshot,
             "providers": providers,
+            "provider_bridge": provider_bridge,
             "model_config_applied": bool(models_path),
             "runtime_config": applied_runtime,
             "discipline_profile": applied_profile,

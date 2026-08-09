@@ -184,6 +184,21 @@ __all__ = [
 # Claude CLI — вспомогательные функции
 # ═══════════════════════════════════════════════════════════════════════════
 
+def _provider_bridge():
+    """Мост провайдеров воркера, если пакет доступен в этом процессе.
+
+    Импорт локальный и мягкий: `audit_worker` устанавливается на ВОРКЕРЕ, а
+    этот модуль живёт и на центре, где пакета может не быть вовсе. Отсутствие
+    пакета — не ошибка и не повод для предупреждения: это штатное состояние
+    центральной установки.
+    """
+    try:
+        from audit_worker.providers import pipeline_bridge
+    except Exception:                                  # noqa: BLE001 — пакета нет
+        return None
+    return pipeline_bridge
+
+
 def _build_cmd(tools: str, model: str | None = None) -> list[str]:
     """Собрать команду запуска Claude CLI.
 
@@ -313,6 +328,39 @@ async def _run_cli(
     clean_cwd=True применяется только к Claude CLI. Для Codex exec рабочая папка
     должна оставаться корнем проекта, чтобы workspace-write sandbox видел output.
     """
+    # ─── Мост провайдеров воркера (этап 11C) ─────────────────────────────────
+    # ЕДИНСТВЕННАЯ развилка «claude или codex» во всём конвейере стоит ниже, и
+    # именно поэтому перехват сделан здесь: до неё. Когда исполнитель воркера
+    # выписал привязку провайдера, любой вызов CLI из конвейера обязан идти
+    # через `ProviderAdapter` — с авторизацией по режиму, окружением с нуля и
+    # отключёнными инструментами. Иначе конвейер нашёл бы бинарь по PATH и
+    # запустил бы его из-под изолированного HOME каталога попытки, то есть
+    # НЕавторизованным.
+    #
+    # На центре этой ветки не существует: `active()` смотрит на переменную
+    # `AUDIT_WORKER_PROVIDER_BINDING`, которую ставит только исполнитель воркера
+    # и только на время попытки. Без неё поведение ровно прежнее.
+    bridge = _provider_bridge()
+    if bridge is not None and bridge.active():
+        import asyncio as _asyncio
+
+        exit_code, text, usage = await _asyncio.to_thread(
+            bridge.route_cli_call, stage=stage, prompt=task_text, timeout_sec=timeout,
+        )
+        cli_result = CLIResult(
+            result_text=text,
+            is_error=exit_code != 0,
+            duration_ms=int(usage.get("duration_ms", 0) or 0),
+            input_tokens=int(usage.get("input_tokens", 0) or 0),
+            output_tokens=int(usage.get("output_tokens", 0) or 0),
+            cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+            cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+            cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+        )
+        if on_output:
+            await send_output(on_output, text)
+        return exit_code, text, cli_result
+
     if is_codex_model(model):
         from backend.app.services.llm.codex_runner import run_codex_exec
         return await run_codex_exec(
