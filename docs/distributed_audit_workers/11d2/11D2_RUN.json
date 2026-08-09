@@ -1,0 +1,154 @@
+{
+  "kind": "11D.2 §14 — единственный реальный вызов",
+  "mode": "real",
+  "performed_now": true,
+  "where": {
+    "hostname": "andrewuzun3.hlab.kz",
+    "ip": "176.12.77.31",
+    "runner_pid": 922066
+  },
+  "timestamps": {
+    "started_local": "2026-08-10T00:19:31+03:00",
+    "finished_local": "2026-08-10T00:24:44+03:00",
+    "completed_at_epoch": 1786310684.5462773
+  },
+  "process_tree_observed": {
+    "chain": "bash(922034) → timeout → python(922066, боевой раннер этапа) → claude(922161, CLI)",
+    "cli_exe": "/home/coder/.local/share/claude/versions/2.1.220 (нативный бинарь)",
+    "cli_cwd": "<попытка>/providers/claude/runtime",
+    "cli_argv": "--safe-mode --strict-mcp-config --disable-slash-commands --no-session-persistence --setting-sources= --model=claude-opus-5 --tools= --disallowed-tools=Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit,TodoWrite,AskUserQuestion --permission-mode dontAsk --max-turns 1 --output-format json -p",
+    "ssh_scp_rsync_in_tree": 0,
+    "snapshots_taken": 148,
+    "evidence_file_on_worker": "~/audit-worker-11d2/logs/proc_tree_11d2_real.txt",
+    "gap_from_11d_closed": "в 11D exe/cwd самого CLI в снимок не попали — сборщик искал pgrep по пути установленной версии, а в cmdline стоит путь лаунчера. Здесь CLI ловится по ИМЕНИ процесса, exe и cwd прочитаны"
+  },
+  "provider_adapter": "audit_worker.providers.claude_adapter.ClaudeProviderAdapter",
+  "transport": "provider_adapter",
+  "auth_mode": "ambient_user",
+  "requested_model": "claude-opus-5",
+  "reported_model": "claude-opus-5",
+  "model_match": true,
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 17559,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 22116,
+    "total_cost_usd": 0.7285,
+    "num_turns": 1
+  },
+  "duration_ms": 311256,
+  "stage_duration_sec": 311.607,
+  "exit_code": 0,
+  "status": "success",
+  "raw_answer_sha256": "eed7cb61402d53169e017e3b41f724c342248fbcf2fae69c15548b06dd5911d5",
+  "raw_answer_bytes": 28608,
+  "validation": {
+    "passed": true,
+    "failed": [],
+    "checks": [
+      {
+        "name": "exit_code",
+        "passed": true,
+        "detail": "код возврата CLI: 0"
+      },
+      {
+        "name": "status",
+        "passed": true,
+        "detail": "status='success' error_code=None"
+      },
+      {
+        "name": "json_parsed",
+        "passed": true,
+        "detail": "ответ модели разобран как JSON-объект"
+      },
+      {
+        "name": "required_fields",
+        "passed": true,
+        "detail": "все поля на месте"
+      },
+      {
+        "name": "field_types",
+        "passed": true,
+        "detail": "типы полей верны"
+      },
+      {
+        "name": "expected_semantics",
+        "passed": true,
+        "detail": "смысловые ожидания выполнены"
+      },
+      {
+        "name": "no_credential_like",
+        "passed": true,
+        "detail": "форм учётных данных нет"
+      },
+      {
+        "name": "no_private_paths",
+        "passed": true,
+        "detail": "абсолютных приватных путей нет"
+      },
+      {
+        "name": "no_forbidden_literals",
+        "passed": true,
+        "detail": "проверено запрещённых литералов: 1"
+      },
+      {
+        "name": "provider_matches_task",
+        "passed": true,
+        "detail": "провайдер 'claude', ожидался 'claude'"
+      },
+      {
+        "name": "auth_mode_matches_task",
+        "passed": true,
+        "detail": "режим авторизации 'ambient_user', ожидался 'ambient_user'"
+      },
+      {
+        "name": "identity_matches_claim",
+        "passed": true,
+        "detail": "task_id='text_analysis_11d2_semantic_live_check'/'text_analysis_11d2_semantic_live_check' attempt_id='text_analysis_11d2_semantic_live_check-a1'/'text_analysis_11d2_semantic_live_check-a1'"
+      },
+      {
+        "name": "model_matches_policy",
+        "passed": true,
+        "detail": "назначено 'claude-opus-5', фактически 'claude-opus-5', допустимые ['claude-opus-5', 'claude-opus-5[1m]']"
+      }
+    ]
+  },
+  "soft_contract": {
+    "present": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "timestamp"
+    ],
+    "missing": []
+  },
+  "ledger": {
+    "keys": [
+      {
+        "state": "replay",
+        "key": "text_analysis-657af1dca56027546ead4ef7986dcd22",
+        "claimed_at": null,
+        "detail": "результат уже сохранён",
+        "has_result": true,
+        "performed_by_pid": 922066,
+        "completed_at": 1786310684.5462773
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "prompt_sha256": "13fa40342b6f71f30cf22fadf7d85703c69e74fd4d4aefde1d6d140bf6760198",
+  "prompt_identity_vs_precheck": {
+    "precheck_dump_sha256": "a376d111c0cf85a21c01c29e48a47b529f9f103dcd5ea2f3b62a5a0737dc3a78",
+    "precheck_dump_chars": 31989,
+    "actually_sent_sha256": "13fa40342b6f71f30cf22fadf7d85703c69e74fd4d4aefde1d6d140bf6760198",
+    "actually_sent_chars": 31990,
+    "difference": "ровно один завершающий перевод строки",
+    "cause": "подделка CLI снимает stdin через `STDIN=$(cat)`, а подстановка команды в bash срезает хвостовые переводы строки; боевой промпт оканчивается на \\n",
+    "proof": "sha256(дамп + \\n) = 13fa40342b6f71f30cf22fadf7d85703c69e74fd4d4aefde1d6d140bf6760198 — совпало посимвольно; проверка детерминированная, модель не вызывалась",
+    "consequence": "все 48 проверок §8 относятся к тексту, реально ушедшему в stdin"
+  },
+  "downstream_stages_started": 0
+}

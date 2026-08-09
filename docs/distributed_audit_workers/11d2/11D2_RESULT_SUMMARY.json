@@ -1,0 +1,85 @@
+{
+  "kind": "11D.2 §15 — результат этапа и вердикт боевого валидатора",
+  "artifact": {
+    "path": "/home/coder/audit-worker-11d2/sandbox/text_analysis_11d2_semantic_live_check/project/doc/v1/_output/02_text_analysis.json",
+    "exists": true,
+    "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+    "bytes": 29088,
+    "inside_attempt_dir": true,
+    "text_findings": 19,
+    "normative_refs": 6,
+    "text_source": "md",
+    "keys": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source",
+      "timestamp"
+    ],
+    "written_by": "конвейер (_write_json в раннере этапа), НЕ модель",
+    "content_not_committed": "артефакт содержит замечания по документу заказчика; здесь только счётчики и хэши"
+  },
+  "other_files_in_output": {
+    "01_text_prescan.json": "0926dfbf5b090496129e6c29d63a21538dbb2ebb237260ee3cbb30d8d316b905",
+    "text_analysis_provider_run.json": "3012cb469bd990a6f65f652004cadb07d3e8cc7e26ed5a61e74c25062cfdef28",
+    "note": "ни одного артефакта последующих этапов — downstream не запускался (§22)"
+  },
+  "validated_by": [
+    "audit_worker.providers.inference.validate_inference — 13 именованных проверок, все passed",
+    "stages/text_analysis/runner.py — validate_and_repair_json + обязательный список text_findings",
+    "md_prescan.augment_text_analysis_file — детерминированное дообогащение"
+  ],
+  "schema_valid": true,
+  "validation_failed": [],
+  "required_keys_present": [
+    "text_source",
+    "text_findings"
+  ],
+  "soft_contract_missing": [],
+  "top_level_keys": [
+    "items_verified_from_blocks",
+    "normative_refs_found",
+    "project_id",
+    "project_params",
+    "stage",
+    "text_findings",
+    "text_source",
+    "timestamp"
+  ],
+  "text_source": "md",
+  "content_summary": {
+    "text_findings": 19,
+    "severity_distribution": {
+      "ЭКСПЛУАТАЦИОННОЕ": 6,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 6,
+      "ЭКОНОМИЧЕСКОЕ": 4,
+      "КРИТИЧЕСКОЕ": 2,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1
+    },
+    "unknown_severity_values": [],
+    "categories": {
+      "grounding": 10,
+      "documentation": 6,
+      "normative_refs": 2,
+      "cable": 1
+    },
+    "normative_refs_found": 6,
+    "findings_with_norm": 19,
+    "findings_with_norm_quote": 2,
+    "findings_with_source": 19,
+    "items_verified_from_blocks": 0,
+    "project_params_keys": [
+      "key_equipment",
+      "object_type",
+      "total_load_kw"
+    ],
+    "ids_unique": true,
+    "duplicate_ids": [],
+    "malformed_fields": [],
+    "stage": "02_text_analysis"
+  },
+  "repair_by_model": "не выполнялся и не мог быть выполнен: валидатор принял ответ с первого раза"
+}

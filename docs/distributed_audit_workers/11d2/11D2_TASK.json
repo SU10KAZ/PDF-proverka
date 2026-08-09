@@ -1,0 +1,76 @@
+{
+  "kind": "11D.2 — задание единственного реального прогона",
+  "production_stage": "text_analysis",
+  "artifact_written_by_pipeline": "02_text_analysis.json",
+  "where": {
+    "host": "andrewuzun3.hlab.kz",
+    "ip": "176.12.77.31",
+    "user": "coder",
+    "pid": 922066,
+    "attempt_dir": "/home/coder/audit-worker-11d2/sandbox/text_analysis_11d2_semantic_live_check"
+  },
+  "task_id": "text_analysis_11d2_semantic_live_check",
+  "attempt_id": "text_analysis_11d2_semantic_live_check-a1",
+  "purpose": "text_analysis_11d2_semantic_live_check",
+  "purpose_encoding": "цель закодирована в самом task_id/grant_id, а не только в отчёте: поле note раннера зашито в коде, а менять код до прогона запрещено §3",
+  "binding": {
+    "provider": "claude",
+    "auth_mode": "ambient_user",
+    "model": "claude-opus-5",
+    "capability": "strong_audit",
+    "accepted_reported_models": [
+      "claude-opus-5",
+      "claude-opus-5[1m]"
+    ],
+    "max_inferences": 1,
+    "allowed_stages": [
+      "text_analysis"
+    ],
+    "grant_id": "g-text_analysis_11d2_semantic_live_check"
+  },
+  "grant": {
+    "grant_id": "g-text_analysis_11d2_semantic_live_check",
+    "issued_max_uses": 1,
+    "remaining_after_consume": 0,
+    "reusable_grant_found_after_run": false
+  },
+  "document": {
+    "md_name": "133-23-ГК-ЭС_document.md",
+    "md_sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+    "md_chars": 11407,
+    "section": "EOM",
+    "unchanged_after_run": true
+  },
+  "prompt": {
+    "built_by": "prompt_builder.build_text_analysis_messages (боевой сборщик)",
+    "adapted_by": "stages/text_analysis/provider_transport.build_provider_prompt",
+    "system_chars": 19432,
+    "document_chars": 11544,
+    "prompt_chars": 31990,
+    "filesystem_refs_stripped": 2,
+    "absolute_paths_remaining_in_instructions": 0,
+    "input_data_note_applied": true,
+    "transport_contract_applied": true,
+    "severity_semantics_applied": true,
+    "severity_semantics_anchor": "## Output JSON Schema",
+    "prompt_sha256": "13fa40342b6f71f30cf22fadf7d85703c69e74fd4d4aefde1d6d140bf6760198",
+    "content_not_included": "промпт содержит документ заказчика целиком; в артефакт кладётся только отпечаток"
+  },
+  "result_contract": {
+    "required_fields": [
+      "text_source",
+      "text_findings"
+    ],
+    "expected_semantics": {
+      "text_source": "md"
+    },
+    "soft_fields": [
+      "stage",
+      "project_id",
+      "timestamp",
+      "project_params",
+      "normative_refs_found",
+      "items_verified_from_blocks"
+    ]
+  }
+}
