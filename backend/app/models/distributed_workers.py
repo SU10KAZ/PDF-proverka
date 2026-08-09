@@ -377,6 +377,24 @@ class HeartbeatRequest(BaseModel):
     active_local_jobs: int = Field(default=0, ge=0, le=64)
     running_processes: int = Field(default=0, ge=0, le=64)
     locally_reserved_slots: int = Field(default=0, ge=0, le=64)
+    # ─── Состояние провайдеров (этап 11) ────────────────────────────────────
+    # Тип намеренно максимально широкий (`Any`, не `dict`) — и это поведенческое
+    # решение, а не лень.
+    #
+    # Heartbeat — сигнал ЖИВОСТИ. Отбить его с 422 из-за одного неразобранного
+    # элемента в снимке провайдера значит превратить исправный воркер в «пропал
+    # со связи»: центр перестанет считать его онлайн, перестанет выдавать
+    # задания и покажет оператору аварию там, где сломалось наблюдение за
+    # подпиской. Цена несоразмерна поводу (§27 задания).
+    #
+    # `list[dict[str, Any]]` этой гарантии НЕ даёт: pydantic отвергает весь
+    # запрос, если хоть один элемент не объект. Проверено тестом
+    # `test_heartbeat_carries_providers_and_survives_bad_snapshot`.
+    #
+    # Строгую форму задаёт `provider_accounts.sanitize_provider_snapshot`: он
+    # ПЕРЕСОБИРАЕТ объект из разрешённых значений и молча отбрасывает мусор.
+    # Старый воркер поля не пришлёт вовсе — для него это пустой список.
+    providers: list[Any] = Field(default_factory=list, max_length=8)
 
 
 class CursorAck(BaseModel):
@@ -824,6 +842,53 @@ class RemoteAuditLaunchRequest(BaseModel):
     project_id: str = Field(min_length=1, max_length=300)
     version_id: Optional[str] = Field(default=None, max_length=64)
     action: Literal["full", "audit", "resume"] = "full"
+
+
+class SubscriptionAccountUpdate(BaseModel):
+    """Ручные поля учётной записи подписки (§13, §14, §22 задания).
+
+    Чего в модели НЕТ и не появится: токена, пароля, refresh-token, cookie и
+    API-ключа. Это не «мы решили не принимать» — поля отсутствуют, значит
+    прислать их некуда, и путь «секрет провайдера доехал до центра» не
+    существует структурно.
+
+    `exclude_unset` на стороне обработчика важен: незаполненное поле формы
+    означает «не трогать», а не «стереть». Для явного стирания даты сброса
+    есть отдельный флаг `clear_manual_reset` — иначе любая частичная правка
+    молча удаляла бы дату, которую оператор ставил руками.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    display_name: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    notes: Optional[str] = Field(default=None, max_length=4000)
+    manual_reset_label: Optional[str] = Field(default=None, max_length=120)
+    #: Unix-время в секундах. Диапазон проверяется в сервисе (2020..2100):
+    #: «сброс 12.03.1970» на экране хуже отсутствия даты.
+    manual_next_reset_at: Optional[float] = None
+    manual_reset_recurrence: Optional[str] = Field(default=None, max_length=32)
+    reset_timezone: Optional[str] = Field(default=None, max_length=64)
+    warning_days: Optional[list[int]] = Field(default=None, max_length=10)
+    #: «Лимит почти не использован» — утверждение ОПЕРАТОРА. Единственный
+    #: способ зажечь предупреждение о сгорающем лимите там, где остаток
+    #: объективно неизвестен (§23). Автоматика такого вывода не делает.
+    operator_marked_unused: Optional[bool] = None
+    policy_state: Optional[str] = Field(default=None, max_length=32)
+    account_kind: Optional[str] = Field(default=None, max_length=32)
+    clear_manual_reset: bool = False
+
+
+class WorkerProviderGroupUpdate(BaseModel):
+    """Привязка провайдера воркера к общей учётной записи (§15).
+
+    `None` и пустая строка означают «отвязать»: воркер продолжит показывать
+    состояние провайдера на своей карточке, но ни к какому аккаунту отнесён
+    не будет.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    account_group_id: Optional[str] = Field(default=None, max_length=64)
 
 
 class RequestDeletionRequest(BaseModel):

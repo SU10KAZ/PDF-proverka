@@ -1346,6 +1346,35 @@ DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP = _env_int(
     "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP", 30
 )
 
+# ─── Provider auth & quota gate (этап 11) ────────────────────────────────────
+# Порог «мало осталось». Значение по умолчанию КОНСЕРВАТИВНОЕ и намеренно
+# высокое: 25 % пятичасового окна Codex — это уже мало для полного аудита
+# раздела, и лучше предупредить рано, чем показать «готов» за десять минут до
+# упора в лимит. Состояние `low` без настроенного порога не вычисляется вовсе
+# (§12 задания): порог живёт здесь и только здесь.
+DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT", 25
+)
+# Через сколько снимок квоты на ЦЕНТРЕ считается протухшим. Больше воркерского
+# `stale_after`: heartbeat мог не дойти, а данные ещё не устарели по существу.
+DISTRIBUTED_WORKERS_QUOTA_STALE_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_STALE_SEC", 3600
+)
+# История квот. Ограничена и по времени, и по числу строк: без второго предела
+# сбойный воркер, шлющий меняющиеся значения, раздул бы таблицу за сутки.
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS", 120
+)
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT", 5000
+)
+# Минимальный интервал между записями истории для одной пары воркер+провайдер.
+# Запись всё равно происходит при СМЕНЕ состояния — интервал ограничивает
+# только повторы одного и того же (§24: не хранить каждую 30-секундную запись).
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC", 900
+)
+
 # Версия протокола центр↔воркер. Целое; растёт при несовместимом изменении API.
 DISTRIBUTED_WORKERS_PROTOCOL_VERSION = 1
 # Версия схемы package_manifest.json.

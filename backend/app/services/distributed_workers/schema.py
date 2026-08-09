@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -705,6 +705,118 @@ def _statements(script: str) -> tuple[str, ...]:
     return tuple(s.strip() for s in out if s.strip())
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Миграция 7 (этап 11): учётные записи подписок и наблюдение за лимитами.
+#
+# Три таблицы и по одной причине на каждую.
+#
+# `subscription_accounts` — то, чего в схеме не было вовсе: сама УЧЁТНАЯ ЗАПИСЬ
+# как объект. Раньше «Claude на VPS-A» и «Claude на VPS-B» были двумя
+# независимыми строками воркеров, и сложить их остатки было бы не просто
+# ошибкой округления, а удвоением несуществующего ресурса. Ключ
+# `(provider, account_group_id)` уникален: одна подписка — одна запись,
+# сколько бы воркеров к ней ни было привязано (§15 задания).
+#
+# ВАЖНО, чего в этой таблице НЕТ и не появится: ни колонки токена, ни пароля,
+# ни refresh-token, ни cookie. Их отсутствие — не «мы не стали хранить», а
+# структурное свойство: колонки нет, значит записать некуда.
+#
+# Две даты сброса живут ОТДЕЛЬНЫМИ колонками (`manual_next_reset_at` и
+# наблюдаемая — в `worker_provider_states`/`provider_quota_snapshots`).
+# Ручная не перетирается наблюдением, наблюдаемая не перетирается ручной:
+# расхождение между ними — самостоятельная новость для оператора (§13).
+#
+# `worker_provider_states` — последнее известное состояние провайдера на
+# КОНКРЕТНОМ воркере. Отдельно от `workers.resource_snapshot`, потому что у
+# провайдера свой ритм опроса и своё право сломаться, не трогая воркер (§27).
+#
+# `provider_quota_snapshots` — ограниченная история. Писать каждый heartbeat
+# сюда запрещено (§24): 2880 строк в сутки на воркер ради данных, которые
+# меняются раз в час. Запись идёт только при СМЕНЕ значимых полей либо по
+# истечении минимального интервала — решение принимает сервис, а не таблица.
+_MIGRATION_7 = """
+CREATE TABLE IF NOT EXISTS subscription_accounts (
+    account_id            TEXT PRIMARY KEY,
+    provider              TEXT NOT NULL,
+    display_name          TEXT NOT NULL,
+    account_group_id      TEXT NOT NULL,
+    notes                 TEXT,
+    -- Ручные сведения оператора. Наблюдение их НЕ перезаписывает.
+    manual_reset_label    TEXT,
+    manual_next_reset_at  REAL,
+    manual_reset_recurrence TEXT,
+    reset_timezone        TEXT,
+    warning_days          TEXT NOT NULL DEFAULT '[7, 3, 1]',
+    -- Оператор вручную отметил «лимит почти не использован». Нужен для
+    -- предупреждения reset_soon_unused там, где остаток объективно неизвестен
+    -- (§23): без этой отметки предупреждать не по чему, а выдумывать процент
+    -- запрещено.
+    operator_marked_unused INTEGER NOT NULL DEFAULT 0,
+    -- Комплаенс-решение оператора по этой учётной записи. Хранится здесь,
+    -- потому что оно про АККАУНТ, а не про машину.
+    policy_state          TEXT NOT NULL DEFAULT 'review_required',
+    account_kind          TEXT,
+    created_at            REAL NOT NULL,
+    updated_at            REAL NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_accounts_provider_group
+    ON subscription_accounts(provider, account_group_id);
+
+CREATE TABLE IF NOT EXISTS worker_provider_states (
+    worker_id            TEXT NOT NULL REFERENCES workers(worker_id) ON DELETE CASCADE,
+    provider             TEXT NOT NULL,
+    account_group_id     TEXT,
+    installation_status  TEXT NOT NULL DEFAULT 'missing',
+    cli_version          TEXT,
+    auth_state           TEXT NOT NULL DEFAULT 'unknown',
+    auth_method          TEXT,
+    plan_type            TEXT,
+    policy_state         TEXT NOT NULL DEFAULT 'allowed',
+    inference_allowed    INTEGER NOT NULL DEFAULT 0,
+    account_fingerprint  TEXT,
+    -- Права файла учётных данных: режим и признаки доступности. Содержимое
+    -- воркер не читает, и колонки для него здесь нет.
+    credential_present   INTEGER NOT NULL DEFAULT 0,
+    credential_mode      TEXT,
+    credential_insecure  INTEGER NOT NULL DEFAULT 0,
+    capability_json      TEXT NOT NULL DEFAULT '{}',
+    quota_json           TEXT,
+    quota_state          TEXT NOT NULL DEFAULT 'unknown',
+    quota_source         TEXT,
+    quota_confidence     TEXT,
+    remaining_pct        REAL,
+    observed_next_reset_at REAL,
+    error_code           TEXT,
+    detail               TEXT,
+    observed_at          REAL,
+    reported_at          REAL NOT NULL,
+    PRIMARY KEY (worker_id, provider)
+);
+CREATE INDEX IF NOT EXISTS ix_wps_group
+    ON worker_provider_states(provider, account_group_id);
+
+CREATE TABLE IF NOT EXISTS provider_quota_snapshots (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id       TEXT,
+    worker_id        TEXT NOT NULL,
+    provider         TEXT NOT NULL,
+    account_group_id TEXT,
+    observed_at      REAL NOT NULL,
+    state            TEXT NOT NULL,
+    remaining_pct    REAL,
+    reset_at         REAL,
+    source           TEXT NOT NULL,
+    confidence       TEXT NOT NULL,
+    snapshot_json    TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_pqs_account
+    ON provider_quota_snapshots(account_id, observed_at DESC);
+CREATE INDEX IF NOT EXISTS ix_pqs_worker
+    ON provider_quota_snapshots(worker_id, provider, observed_at DESC);
+CREATE INDEX IF NOT EXISTS ix_pqs_observed
+    ON provider_quota_snapshots(observed_at);
+"""
+
 MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
@@ -712,6 +824,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     4: _statements(_MIGRATION_4),
     5: _statements(_MIGRATION_5),
     6: _statements(_MIGRATION_6),
+    7: _statements(_MIGRATION_7),
 }
 
 

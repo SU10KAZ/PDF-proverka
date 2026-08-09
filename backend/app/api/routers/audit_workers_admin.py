@@ -32,6 +32,8 @@ from backend.app.models.distributed_workers import (
     MarkAttemptLostRequest,
     RemoteAuditLaunchRequest,
     RequestDeletionRequest,
+    SubscriptionAccountUpdate,
+    WorkerProviderGroupUpdate,
 )
 from backend.app.services.distributed_workers import (
     attempt_service,
@@ -41,6 +43,8 @@ from backend.app.services.distributed_workers import (
     identifiers,
     job_service,
     progress_service,
+    provider_accounts,
+    provider_view,
     registration_service,
     repositories,
     slots,
@@ -456,6 +460,196 @@ async def audit_launch(
             )
         ),
     }
+
+
+# ─── Провайдеры и учётные записи подписок (этап 11) ──────────────────────────
+# ВАЖНО про порядок регистрации: эти маршруты объявлены ДО `/{worker_id}`.
+# FastAPI сопоставляет пути в порядке объявления, и `/api/workers/providers`
+# ушло бы в `get_worker(worker_id="providers")`, вернув 404 «воркер не найден»
+# вместо списка провайдеров.
+@router.get("/providers/overview")
+async def providers_overview(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    """Провайдеры по воркерам + учётные записи подписок.
+
+    Только чтение. Ни одного обращения к провайдеру отсюда не происходит:
+    показываются последние снимки, присланные воркерами в heartbeat.
+    """
+    settings = _settings_or_404()
+    now = time.time()
+    states = await database.run_db(
+        provider_accounts.list_worker_provider_states, settings=settings
+    )
+    accounts = await database.run_db(
+        provider_view.accounts_overview, settings=settings, now=now
+    )
+    by_worker: dict[str, list[dict[str, Any]]] = {}
+    for state in states:
+        by_worker.setdefault(state["worker_id"], []).append(state)
+    return {
+        "worker_providers": by_worker,
+        "accounts": accounts,
+        "providers": list(provider_accounts.PROVIDERS),
+        "account_kinds": list(provider_accounts.ACCOUNT_KINDS),
+        "policy_states": list(provider_accounts.POLICY_STATES),
+        "recurrences": list(provider_accounts._RECURRENCE_ALLOWED),
+        "low_threshold_pct": (
+            settings.quota_low_threshold_pct
+            if settings.quota_low_threshold_pct > 0 else None
+        ),
+        "quota_stale_sec": settings.quota_stale_sec,
+        # Явно и проверяемо: автоматической выдачи заданий нет.
+        "auto_dispatch_enabled": False,
+        "permissions": sorted(actor.permissions),
+        "server_time": now,
+    }
+
+
+@router.get("/providers/accounts/{account_id}/history")
+async def provider_account_history(
+    account_id: str,
+    limit: int = Query(default=200, ge=1, le=2000),
+    actor: Actor = Depends(require_view),
+) -> dict[str, Any]:
+    """Ограниченная история снимков квоты учётной записи (§24)."""
+    settings = _settings_or_404()
+    account = await database.run_db(
+        provider_accounts.get_account, account_id, settings=settings
+    )
+    if account is None:
+        raise HTTPException(status_code=404, detail="Учётная запись не найдена.")
+    rows = await database.run_db(
+        provider_accounts.account_history, account_id, limit=limit, settings=settings
+    )
+    return {
+        "account_id": account_id,
+        "provider": account["provider"],
+        "account_group_id": account["account_group_id"],
+        "history": rows,
+        "retention_days": settings.quota_history_retention_days,
+        "server_time": time.time(),
+    }
+
+
+@router.put("/providers/accounts/{account_id}")
+async def update_provider_account(
+    account_id: str,
+    payload: SubscriptionAccountUpdate,
+    request: Request,
+    actor: Actor = Depends(require_operator),
+) -> dict[str, Any]:
+    """Ручные поля учётной записи. Право `operate`; viewer получает 403.
+
+    Что здесь НЕЛЬЗЯ изменить в принципе: токен, пароль, cookie. Их нет ни в
+    модели запроса, ни в таблице — записать некуда.
+    """
+    settings = _settings_or_404()
+    _require_intent_header(request)
+    account = await database.run_db(
+        provider_accounts.get_account, account_id, settings=settings
+    )
+    if account is None:
+        raise HTTPException(status_code=404, detail="Учётная запись не найдена.")
+    fields = payload.model_dump(exclude_unset=True)
+    try:
+        if fields.pop("clear_manual_reset", False):
+            # Стирание — отдельная операция: в upsert `None` означает «не
+            # трогать», иначе форма без поля молча удаляла бы ручную дату.
+            await database.run_db(
+                provider_accounts.clear_manual_reset, account_id, settings=settings
+            )
+        updated = await database.run_db(
+            provider_accounts.upsert_account,
+            provider=account["provider"],
+            account_group_id=account["account_group_id"],
+            settings=settings,
+            **fields,
+        )
+    except provider_accounts.ProviderAccountError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    changed = sorted(fields)
+    await _record_admin_action(
+        request,
+        action_type="provider_account_update",
+        permission=authorization.PERM_OPERATE,
+        settings=settings,
+        reason=f"поля: {', '.join(changed) or '—'}",
+        requested_state={"account_id": account_id, "changed_fields": changed},
+    )
+    _audit(request, "provider_account_update", account_id=account_id, fields=changed)
+    return {"account": updated, "server_time": time.time()}
+
+
+@router.put("/{worker_id}/providers/{provider}/account-group")
+async def bind_worker_provider_group(
+    worker_id: str,
+    provider: str,
+    payload: WorkerProviderGroupUpdate,
+    request: Request,
+    actor: Actor = Depends(require_operator),
+) -> dict[str, Any]:
+    """Привязать провайдера воркера к общей учётной записи (§15).
+
+    Делает это ОПЕРАТОР вручную. Автоматически связать два VPS «по одному и
+    тому же аккаунту» нельзя: для этого пришлось бы сверять секретные данные,
+    что прямо запрещено (§8).
+    """
+    settings = _settings_or_404()
+    _require_intent_header(request)
+    row = await database.run_db(repositories.get_worker, worker_id, settings=settings)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Воркер не найден.")
+    try:
+        result = await database.run_db(
+            provider_accounts.set_worker_provider_group,
+            worker_id=worker_id,
+            provider=provider,
+            account_group_id=payload.account_group_id,
+            settings=settings,
+        )
+    except provider_accounts.ProviderAccountError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    await _record_admin_action(
+        request,
+        action_type="provider_account_group_bind",
+        permission=authorization.PERM_OPERATE,
+        settings=settings,
+        worker_id=worker_id,
+        reason=f"{provider} → {result['account_group_id'] or 'без группы'}",
+        requested_state=result,
+    )
+    _audit(
+        request, "provider_account_group_bind",
+        worker_id=worker_id, provider=provider,
+        account_group_id=result["account_group_id"],
+    )
+    return {"binding": result, "server_time": time.time()}
+
+
+@router.get("/providers/ranking-preview")
+async def providers_ranking_preview(
+    provider: str = Query(...),
+    actor: Actor = Depends(require_view),
+) -> dict[str, Any]:
+    """Предпросмотр порядка воркеров под будущее задание (§26).
+
+    Ничего не назначает и назначить не может: автоматическая выдача заданий на
+    этом этапе выключена, а функция не имеет доступа к очереди.
+    """
+    settings = _settings_or_404()
+    rows = await database.run_db(repositories.list_workers, settings=settings)
+    now = time.time()
+    views = [await _worker_view(r, settings, now=now) for r in rows]
+    try:
+        return await database.run_db(
+            provider_view.rank_workers_for_future_job,
+            provider=provider,
+            settings=settings,
+            workers=views,
+            now=now,
+        )
+    except provider_accounts.ProviderAccountError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/{worker_id}")

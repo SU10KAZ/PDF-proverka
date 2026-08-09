@@ -55,6 +55,15 @@ class DistributedWorkersSettings:
     registration_rate_window_sec: int = 3600
     registration_rate_max_per_instance: int = 10
     registration_rate_max_per_ip: int = 30
+    # ─── Provider gate (этап 11) ────────────────────────────────────────────
+    # Порог `low`. 0 или отрицательное = состояние `low` не вычисляется вовсе.
+    # Это не «выключено по недосмотру»: §12 прямо запрещает вычислять `low`
+    # без настроенного порога, и ноль здесь означает осознанный отказ.
+    quota_low_threshold_pct: int = 25
+    quota_stale_sec: int = 3600
+    quota_history_retention_days: int = 120
+    quota_history_max_rows_per_account: int = 5000
+    quota_history_min_interval_sec: int = 900
 
     # ─── Производные пути ───────────────────────────────────────────────────
     @property
@@ -175,5 +184,25 @@ def get_settings() -> DistributedWorkersSettings:
         registration_rate_max_per_ip=_env_int(
             "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP",
             config.DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP,
+        ),
+        quota_low_threshold_pct=_env_int(
+            "DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT",
+            config.DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT,
+        ),
+        quota_stale_sec=_env_int(
+            "DISTRIBUTED_WORKERS_QUOTA_STALE_SEC",
+            config.DISTRIBUTED_WORKERS_QUOTA_STALE_SEC,
+        ),
+        quota_history_retention_days=_env_int(
+            "DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS",
+            config.DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS,
+        ),
+        quota_history_max_rows_per_account=_env_int(
+            "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT",
+            config.DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT,
+        ),
+        quota_history_min_interval_sec=_env_int(
+            "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC",
+            config.DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC,
         ),
     )

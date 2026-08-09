@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
 import time
 from typing import Any, Optional
 
@@ -63,6 +64,7 @@ from backend.app.services.distributed_workers import (
     event_service,
     job_service,
     package_service,
+    provider_accounts,
     rate_limit,
     registration_service,
     repositories,
@@ -76,6 +78,7 @@ from backend.app.services.distributed_workers.settings import (
 )
 
 router = APIRouter(prefix="/api/v1/worker", tags=["audit-worker-agent"])
+logger = logging.getLogger(__name__)
 
 HEARTBEAT_INTERVAL_SEC = 30
 
@@ -379,6 +382,23 @@ async def heartbeat(
         locally_reserved_slots=payload.locally_reserved_slots,
         settings=settings,
     )
+    # Состояние провайдеров пишется ОТДЕЛЬНЫМ вызовом и в отдельные таблицы.
+    # Обёрнуто намеренно: провайдерская новость не имеет права провалить
+    # heartbeat (§27 задания) — иначе сбой разбора снимка Codex превращал бы
+    # исправный воркер в «пропал со связи».
+    if payload.providers:
+        try:
+            await database.run_db(
+                provider_accounts.record_worker_providers,
+                worker_id=principal.worker_id,
+                snapshots=payload.providers,
+                settings=settings,
+            )
+        except Exception:                              # noqa: BLE001 — см. выше
+            logger.warning(
+                "не удалось сохранить состояние провайдеров воркера %s",
+                principal.worker_id, exc_info=True,
+            )
     cursors = await database.run_db(
         repositories.cursors_for_worker, principal.worker_id, settings=settings
     )
