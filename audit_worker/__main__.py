@@ -281,6 +281,109 @@ def _cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_providers(args: argparse.Namespace) -> int:
+    """Состояние провайдеров ЛОКАЛЬНО, без сети к центру.
+
+    Команда только читает: версия CLI, состояние авторизации, права файла
+    учётных данных (по `stat`, без открытия) и — там, где официальный способ
+    существует — остаток лимита. Контрольный запрос к модели отсюда НЕ
+    выполняется ни при каких флагах: для него есть отдельная подкоманда с
+    двумя независимыми разрешениями.
+    """
+    from audit_worker.providers.manager import ProviderManager
+
+    config = load_config(args.root, require_dispatcher=False)
+    manager = ProviderManager(
+        worker_root=config.root,
+        enabled=True,
+        auth_check_interval_sec=config.provider_auth_check_interval_sec,
+        quota_probe_interval_sec=config.provider_quota_probe_interval_sec,
+        stale_after_sec=config.provider_quota_stale_after_sec,
+        timeout_sec=config.provider_timeout_sec,
+        low_threshold_pct=config.provider_quota_low_threshold_pct,
+        account_groups=dict(config.provider_account_groups or {}),
+        policy_blocked=dict(config.provider_policy_blocked or {}),
+        executables=dict(config.provider_executables or {}),
+        # Сознательно False: команда наблюдения не имеет права разрешить
+        # вызов модели, каким бы ни было окружение.
+        inference_allowed=False,
+        log=lambda message: print(f"[providers] {message}", file=sys.stderr),
+    )
+    manager.refresh(force=True)
+    report = {
+        "worker_root": str(config.root),
+        "provider_gate_enabled": config.provider_gate_enabled,
+        "inference_probe_allowed_by_env": config.allow_real_provider_probe,
+        "auth_check_interval_sec": config.provider_auth_check_interval_sec,
+        "quota_probe_interval_sec": config.provider_quota_probe_interval_sec,
+        "providers": manager.heartbeat_payload(),
+        "warnings": manager.warnings(),
+    }
+    if args.local:
+        # Локальный разрез включает абсолютные пути — он для администратора
+        # ЭТОГО VPS и в центр не уходит.
+        report["local_detail"] = {
+            name: (identity.as_dict() if (identity := manager.identity(name)) else None)
+            for name in manager.adapters
+        }
+    print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+    return 0
+
+
+def _cmd_provider_probe(args: argparse.Namespace) -> int:
+    """ОДИН минимальный контрольный запрос к модели (§18 задания).
+
+    Два независимых разрешения, и оба обязательны:
+      1. `AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=true` — решение администратора
+         VPS, живёт в конфигурации;
+      2. `--i-confirm-single-real-request` — решение оператора здесь и сейчас.
+
+    Промпт фиксирован в коде и не содержит ни документов проекта, ни путей, ни
+    репозитория. Инструменты запрещены, запись файлов запрещена.
+    """
+    from audit_worker.providers.manager import ProviderManager
+
+    config = load_config(args.root, require_dispatcher=False)
+    if not config.allow_real_provider_probe:
+        print(
+            "Контрольный запрос запрещён: AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=false.\n"
+            "Это значение по умолчанию, и снимать его следует осознанно.",
+            file=sys.stderr,
+        )
+        return 2
+    if not args.i_confirm_single_real_request:
+        print(
+            "Нужен явный флаг --i-confirm-single-real-request.\n"
+            "Переменная окружения разрешает возможность, флаг — конкретный запуск.",
+            file=sys.stderr,
+        )
+        return 2
+    manager = ProviderManager(
+        worker_root=config.root,
+        enabled=True,
+        timeout_sec=max(120.0, config.provider_timeout_sec),
+        low_threshold_pct=config.provider_quota_low_threshold_pct,
+        account_groups=dict(config.provider_account_groups or {}),
+        policy_blocked=dict(config.provider_policy_blocked or {}),
+        executables=dict(config.provider_executables or {}),
+        inference_allowed=True,
+        log=lambda message: print(f"[probe] {message}", file=sys.stderr),
+    )
+    manager.refresh(force=True)
+    before = manager.quota(args.provider)
+    result = manager.minimal_probe(args.provider, confirmed_by_operator=True)
+    after = manager.quota(args.provider)
+    print(json.dumps(
+        {
+            "probe": result.as_dict(),
+            "quota_before": before.as_dict() if before else None,
+            "quota_after": after.as_dict() if after else None,
+        },
+        ensure_ascii=False, indent=2, default=str,
+    ))
+    return 0 if (result.performed and result.error_code is None) else 1
+
+
 def _cmd_selftest(args: argparse.Namespace) -> int:
     """Прогнать тестовый процесс локально — проверка окружения без центра."""
     from audit_worker import test_runner
@@ -377,6 +480,34 @@ def main(argv: list[str] | None = None) -> int:
     p_status = sub.add_parser("status", help="локальное состояние (без сети)")
     add_root(p_status)
     p_status.set_defaults(func=_cmd_status)
+
+    p_prov = sub.add_parser(
+        "providers",
+        help="состояние Claude/Codex на этом воркере (без сети к центру, без вызова модели)",
+    )
+    add_root(p_prov)
+    p_prov.add_argument(
+        "--local", action="store_true",
+        help="добавить локальный разрез с абсолютными путями (в центр не уходит)",
+    )
+    p_prov.set_defaults(func=_cmd_providers)
+
+    p_probe = sub.add_parser(
+        "provider-probe",
+        help="ОДИН минимальный контрольный запрос к модели (нужны два разрешения)",
+    )
+    add_root(p_probe)
+    # Список берётся из провайдерского пакета, а не пишется здесь литералами:
+    # имена настоящих CLI не должны встречаться в модулях воркера, через
+    # которые идёт КОНВЕЙЕР (см. test_no_llm_invocation_in_worker_package).
+    from audit_worker.providers.paths import SUPPORTED_PROVIDERS
+
+    p_probe.add_argument("provider", choices=SUPPORTED_PROVIDERS)
+    p_probe.add_argument(
+        "--i-confirm-single-real-request", action="store_true",
+        help="подтверждение оператора на ЭТОТ запуск (env-флага недостаточно)",
+    )
+    p_probe.set_defaults(func=_cmd_provider_probe)
 
     p_self = sub.add_parser("selftest", help="прогнать тестовый процесс локально")
     add_root(p_self)

@@ -47,6 +47,7 @@ from audit_worker.event_outbox import EventOutbox
 from audit_worker.heartbeat import HeartbeatClient
 from audit_worker.job_poller import JobPullClient
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
+from audit_worker.providers.manager import ProviderManager
 from audit_worker.resource_monitor import ResourceMonitor
 from audit_worker.retention import RetentionManager
 from audit_worker.uploader import upload_result
@@ -87,6 +88,23 @@ class WorkerAgent:
         self.registry = reconciliation.LocalDbProcessView(self.db)
         self.retention = RetentionManager(config, self.db, jobs=self.jobs)
         self.monitor = ResourceMonitor(config.root, configured_max_slots=config.max_slots)
+        # Наблюдение за провайдерами. Агент их только СПРАШИВАЕТ и пересказывает
+        # центру; ни одного вызова модели этот путь не делает.
+        self.providers = ProviderManager(
+            worker_root=config.root,
+            enabled=config.provider_gate_enabled,
+            auth_check_interval_sec=config.provider_auth_check_interval_sec,
+            quota_probe_interval_sec=config.provider_quota_probe_interval_sec,
+            stale_after_sec=config.provider_quota_stale_after_sec,
+            timeout_sec=config.provider_timeout_sec,
+            low_threshold_pct=config.provider_quota_low_threshold_pct,
+            account_groups=dict(config.provider_account_groups or {}),
+            policy_blocked=dict(config.provider_policy_blocked or {}),
+            executables=dict(config.provider_executables or {}),
+            inference_allowed=config.allow_real_provider_probe,
+            log=_log,
+        )
+        self._provider_thread: Optional[threading.Thread] = None
 
         self.client = CenterClient(
             config.dispatcher_url,
@@ -166,6 +184,7 @@ class WorkerAgent:
         self.heartbeat.start()
         self._start_sender()
         self._start_command_poller()
+        self._start_provider_poller()
         _log(
             f"агент запущен: worker_id={self.worker_id}, "
             f"центр={self.config.dispatcher_url}, слотов={self._max_slots}"
@@ -554,6 +573,13 @@ class WorkerAgent:
                     ),
                 }
             )
+        # Провайдеры — ОТДЕЛЬНЫЕ предупреждения, severity=warn. Ни одно из них
+        # не меняет worker_state: провайдер может быть не авторизован, а воркер
+        # при этом полностью работоспособен для тестовых заданий (§27 задания).
+        try:
+            warnings.extend(self.providers.warnings())
+        except Exception as exc:                       # noqa: BLE001 — см. §27
+            _log(f"предупреждения провайдеров не собраны: {exc}")
         disk = self.retention.disk_snapshot()
         if disk["level"] != "ok":
             warnings.append(
@@ -566,6 +592,11 @@ class WorkerAgent:
                     ),
                 }
             )
+        try:
+            provider_payload = self.providers.heartbeat_payload()
+        except Exception as exc:                       # noqa: BLE001 — см. §27
+            _log(f"снимок провайдеров не собран: {exc}")
+            provider_payload = []
         claimed, live = counts["claimed"], counts["live"]
         if not counts["db_ok"]:
             warnings.append(
@@ -600,6 +631,11 @@ class WorkerAgent:
             "active_local_jobs": counts["active"],
             "running_processes": live,
             "locally_reserved_slots": claimed,
+            # Состояние провайдеров: последний ИЗВЕСТНЫЙ снимок, без опроса в
+            # такте heartbeat. Секретов здесь нет по построению — payload
+            # собирается перечислением разрешённых полей (см.
+            # ProviderIdentity.as_center_payload).
+            "providers": provider_payload,
         }
 
     def _on_heartbeat_response(self, response: dict[str, Any]) -> None:
@@ -617,6 +653,43 @@ class WorkerAgent:
     # очередь, а исполняет исполнитель либо RetentionManager. У агента нет и не
     # должно быть кода, останавливающего процессы или стирающего каталоги.
     _LOCAL_COMMANDS = ("cancel_attempt", "delete_attempt_data")
+
+    def _start_provider_poller(self) -> None:
+        """Отдельный поток опроса провайдеров.
+
+        Отдельный — по той же причине, что и у команд: heartbeat обязан идти
+        каждые 30 секунд, а опрос провайдера поднимает процесс CLI и ходит в
+        сеть. Делать это в такте heartbeat значило бы держать 2880 запусков
+        CLI в сутки ради данных, которые меняются раз в час, и подвешивать
+        heartbeat на время каждого из них.
+        """
+        if not self.config.provider_gate_enabled:
+            _log("наблюдение за провайдерами выключено (AUDIT_WORKER_PROVIDER_GATE_ENABLED)")
+            return
+
+        def loop() -> None:
+            # Первый проход сразу: центр должен увидеть состояние провайдеров
+            # с первого heartbeat, а не через пять минут после старта.
+            first = True
+            while not self._stop.is_set():
+                try:
+                    self.providers.refresh(force=first)
+                except Exception as exc:               # noqa: BLE001 — см. §27
+                    _log(f"опрос провайдеров не удался: {exc}")
+                first = False
+                # Тик — минимальная из двух частот; сам менеджер решает,
+                # чему подошёл срок.
+                self._stop.wait(
+                    max(30.0, min(
+                        self.config.provider_auth_check_interval_sec,
+                        self.config.provider_quota_probe_interval_sec,
+                    ))
+                )
+
+        self._provider_thread = threading.Thread(
+            target=loop, name="provider-poller", daemon=True
+        )
+        self._provider_thread.start()
 
     def _start_command_poller(self) -> None:
         """Отдельный поток опроса команд.

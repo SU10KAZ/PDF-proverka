@@ -97,6 +97,33 @@ class WorkerConfig:
     fake_provider_dir: Path | None = None
     # Жёсткий предел одновременных audit_pipeline_v1. Доказанный максимум — 1.
     real_audit_max_slots: int = 1
+    # ─── Provider auth & quota gate (этап 11) ───────────────────────────────
+    # Наблюдение за установленными CLI провайдеров: версия, авторизация, лимит.
+    # Ноль обращений к моделям — включено по умолчанию именно поэтому.
+    provider_gate_enabled: bool = True
+    # Ритм опроса. Три РАЗНЫЕ частоты: heartbeat не опрашивает провайдеров
+    # вовсе, авторизация проверяется чаще лимита, лимит — реже (§17 задания).
+    provider_auth_check_interval_sec: float = 300.0
+    provider_quota_probe_interval_sec: float = 900.0
+    # Через сколько снимок лимита перестаёт считаться действующим. Показать
+    # вчерашние проценты как сегодняшние хуже, чем не показать ничего.
+    provider_quota_stale_after_sec: float = 1800.0
+    provider_timeout_sec: float = 60.0
+    # Порог «мало осталось». По умолчанию None: `low` не вычисляется, пока
+    # порог не задан явно (§12) — иначе он появился бы в двух местах сразу.
+    provider_quota_low_threshold_pct: float | None = None
+    # Ручная привязка провайдера воркера к общей учётной записи. Задаётся
+    # ОПЕРАТОРОМ; автоматически аккаунт по секретным данным не определяется.
+    provider_account_groups: dict = field(default_factory=dict)
+    # Запрет провайдера политикой на этом воркере (комплаенс-стоп).
+    provider_policy_blocked: dict = field(default_factory=dict)
+    # Явные пути к CLI, если администратор VPS поставил их не туда, куда
+    # кладёт официальный установщик. Поиска по PATH нет намеренно: в PATH
+    # воркера первым идёт каталог ПОДДЕЛЬНЫХ провайдеров.
+    provider_executables: dict = field(default_factory=dict)
+    # РАЗРЕШЕНИЕ НА НАСТОЯЩИЙ ВЫЗОВ МОДЕЛИ. Отдельно от allow_real_llm:
+    # контрольный запрос этапа 11 и боевой аудит — разные решения.
+    allow_real_provider_probe: bool = False
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
     transport: object | None = None
@@ -128,6 +155,16 @@ class WorkerConfig:
         return self.root / "trash"
 
     @property
+    def providers_dir(self) -> Path:
+        """Корень provider identity: `<root>/providers/<провайдер>/…`.
+
+        Лежит в каталоге ДАННЫХ, а не кода: обновление и откат релиза воркера
+        (`app/<релиз>/` + ссылка `current`) не должны стирать авторизацию.
+        Менеджер удержания сюда не заглядывает — он сканирует только `jobs/`.
+        """
+        return self.root / "providers"
+
+    @property
     def tombstones_dir(self) -> Path:
         """Следы удалённых попыток: hash и сроки остаются, данных нет."""
         return self.runtime_dir / "tombstones"
@@ -139,6 +176,9 @@ class WorkerConfig:
         return attempt_dir(self.jobs_dir, job_id, attempt_id)
 
     def ensure_dirs(self) -> None:
+        # `providers/` в этом списке намеренно НЕТ: его создаёт ProviderManager
+        # с режимом 0700. Общий 0750 остальных каталогов слишком широк для
+        # учётных данных провайдеров.
         for path in (
             self.root, self.jobs_dir, self.runtime_dir, self.trash_dir,
             self.tombstones_dir,
@@ -177,9 +217,41 @@ class WorkerConfig:
             "cores": os.cpu_count() or 1,
             "max_package_bytes": 2 * 1024 * 1024 * 1024,
             "worker_package": __version__,
+            # Наблюдение за провайдерами (этап 11). Отдельно от `providers`:
+            # тот список говорит, ЧТО воркер умеет запускать, а этот — умеет ли
+            # он вообще рассказать центру о состоянии установленных CLI.
+            "provider_gate_enabled": self.provider_gate_enabled,
+            "provider_probe_allowed": self.allow_real_provider_probe,
         }
         caps.update(self.extra_capabilities)
         return caps
+
+
+def _env_optional_float(name: str) -> float | None:
+    """Число или None. Пустая строка = «не задано», а не ноль.
+
+    Разница принципиальна для порога «мало осталось»: ноль означал бы, что
+    состояние `low` не наступает никогда, и оператор об этом не узнал бы.
+    """
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _env_provider_map(prefix: str, suffix: str) -> dict:
+    """Карта провайдер → значение из переменных вида PREFIX_CLAUDE_SUFFIX."""
+    from audit_worker.providers.paths import SUPPORTED_PROVIDERS
+
+    out: dict = {}
+    for provider in SUPPORTED_PROVIDERS:
+        raw = os.environ.get(f"{prefix}_{provider.upper()}_{suffix}", "").strip()
+        if raw:
+            out[provider] = raw
+    return out
 
 
 def _max_slots_from_env() -> int:
@@ -264,6 +336,43 @@ def load_config(
         # зажимается: заявлять больше без прогона нельзя.
         real_audit_max_slots=min(
             1, max(0, _env_int("AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS", 1))
+        ),
+        # ─── Provider gate (этап 11) ────────────────────────────────────────
+        provider_gate_enabled=_env_bool("AUDIT_WORKER_PROVIDER_GATE_ENABLED", True),
+        provider_auth_check_interval_sec=_env_float(
+            "AUDIT_WORKER_PROVIDER_AUTH_CHECK_INTERVAL_SEC", 300.0
+        ),
+        provider_quota_probe_interval_sec=_env_float(
+            "PROVIDER_QUOTA_PROBE_INTERVAL_SEC",
+            _env_float("AUDIT_WORKER_PROVIDER_QUOTA_PROBE_INTERVAL_SEC", 900.0),
+        ),
+        provider_quota_stale_after_sec=_env_float(
+            "AUDIT_WORKER_PROVIDER_QUOTA_STALE_AFTER_SEC", 1800.0
+        ),
+        provider_timeout_sec=_env_float("AUDIT_WORKER_PROVIDER_TIMEOUT_SEC", 60.0),
+        provider_quota_low_threshold_pct=_env_optional_float(
+            "DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT"
+        ),
+        provider_account_groups=_env_provider_map(
+            "AUDIT_WORKER_PROVIDER", "ACCOUNT_GROUP_ID"
+        ),
+        provider_policy_blocked={
+            name: value.lower() in {"1", "true", "yes", "on"}
+            for name, value in _env_provider_map(
+                "AUDIT_WORKER_PROVIDER", "POLICY_BLOCKED"
+            ).items()
+        },
+        provider_executables={
+            name: Path(value).expanduser()
+            for name, value in _env_provider_map(
+                "AUDIT_WORKER_PROVIDER", "EXECUTABLE"
+            ).items()
+        },
+        # Реальный вызов модели. Умолчание false — и оно НЕ должно зависеть от
+        # allow_real_llm: контрольный запрос этапа 11 и боевой аудит решаются
+        # отдельно, иначе включение одного тихо включало бы второе.
+        allow_real_provider_probe=_env_bool(
+            "AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE", False
         ),
         # verify_tls намеренно НЕ управляется переменной окружения: глобальный
         # verify=false — это тихое отключение защиты канала. Единственная
