@@ -26,6 +26,16 @@
 """
 from __future__ import annotations
 
+from audit_worker.providers.auth_mode import (
+    AUTH_MODE_AMBIENT_USER,
+    AUTH_MODE_ISOLATED_PROVIDER_HOME,
+    AUTH_MODE_UNAVAILABLE,
+    AUTH_MODES,
+    DEFAULT_AUTH_MODE,
+    UnknownAuthMode,
+    normalize_auth_mode,
+    require_auth_mode,
+)
 from audit_worker.providers.errors import (
     PROVIDER_ERROR_CODES,
     classify_exception,
@@ -49,7 +59,12 @@ from audit_worker.providers.quota import (
 )
 
 __all__ = [
+    "AUTH_MODES",
+    "AUTH_MODE_AMBIENT_USER",
+    "AUTH_MODE_ISOLATED_PROVIDER_HOME",
+    "AUTH_MODE_UNAVAILABLE",
     "CONFIDENCE_LEVELS",
+    "DEFAULT_AUTH_MODE",
     "PROVIDER_CLAUDE",
     "PROVIDER_CODEX",
     "PROVIDER_ERROR_CODES",
@@ -60,8 +75,11 @@ __all__ = [
     "ProviderQuotaSnapshot",
     "QuotaWindow",
     "SUPPORTED_PROVIDERS",
+    "UnknownAuthMode",
     "classify_exception",
     "classify_process_result",
+    "normalize_auth_mode",
     "provider_home",
     "providers_root",
+    "require_auth_mode",
 ]

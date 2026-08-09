@@ -32,6 +32,7 @@ from typing import Any, Callable, Optional
 
 from audit_worker import redaction
 from audit_worker.providers import errors, quota
+from audit_worker.providers.auth_mode import AUTH_MODE_UNAVAILABLE, DEFAULT_AUTH_MODE
 from audit_worker.providers.base import ProbeResult, ProviderAdapter
 from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
 from audit_worker.providers.codex_adapter import CodexProviderAdapter
@@ -68,6 +69,7 @@ class ProviderManager:
         low_threshold_pct: Optional[float] = None,
         account_groups: Optional[dict[str, str]] = None,
         policy_blocked: Optional[dict[str, bool]] = None,
+        auth_modes: Optional[dict[str, str]] = None,
         inference_allowed: bool = False,
         enabled: bool = True,
         executables: Optional[dict[str, Path]] = None,
@@ -95,9 +97,22 @@ class ProviderManager:
         groups = dict(account_groups or {})
         blocked = dict(policy_blocked or {})
         overrides = dict(executables or {})
+        # Режим берётся ПОПРОВАЙДЕРНО (`modes.get(name)`), как `account_groups`
+        # и `policy_blocked`, а не одним значением на всех, как
+        # `inference_allowed`. Второй образец здесь был бы ошибкой: он включил
+        # бы личный каталог человека сразу обоим CLI (§13 задания).
+        modes = dict(auth_modes or {})
         self.adapters: dict[str, ProviderAdapter] = {}
         for name in SUPPORTED_PROVIDERS:
-            home = provider_home(self.worker_root, name)
+            # При выключенном гейте режим не применяется вовсе. Иначе
+            # `AUDIT_WORKER_PROVIDER_GATE_ENABLED=false` перестал бы быть
+            # аварийным выключателем: разрешение домашнего каталога читает
+            # базу учётных записей и на хосте без записи для UID (контейнер со
+            # случайным пользователем) бросает исключение — воркер падал бы на
+            # старте именно тогда, когда оператор пытается его этим флагом
+            # спасти.
+            mode = modes.get(name) if self.enabled else None
+            home = provider_home(self.worker_root, name, auth_mode=mode)
             if self.enabled:
                 # Каталоги создаём даже когда CLI ещё не установлен: пустая
                 # раскладка с правами 0700 — это готовое место для будущего
@@ -165,6 +180,26 @@ class ProviderManager:
 
         identity = self._identities.get(name)
         if identity is None:
+            return
+
+        if adapter.home.auth_mode == AUTH_MODE_UNAVAILABLE:
+            # Режим объявлен оператором: учётных данных нет. Опрос лимита
+            # запустил бы CLI (у Claude — ради `auth status`, у Codex — ради
+            # `app-server`) и оставил бы следы в чужом HOME ради заведомо
+            # известного ответа. Снимок собирается без единого подпроцесса.
+            with self._lock:
+                self._quotas[name] = quota.unknown_snapshot(
+                    name,
+                    auth_state=identity.auth_state,
+                    quota_state=quota.QUOTA_AUTH_REQUIRED,
+                    reason=(
+                        "режим авторизации unavailable: провайдер на этом "
+                        "воркере не используется"
+                    ),
+                    observed_at=moment,
+                    probe_error_code=errors.ERR_AUTH_REQUIRED,
+                )
+                self._quota_checked_at[name] = moment
             return
 
         if not adapter.supports_zero_inference_quota():
@@ -235,10 +270,17 @@ class ProviderManager:
             if identity is not None:
                 payload.update(identity.as_center_payload())
             else:
+                adapter = self.adapters.get(name)
                 payload.update({
                     "installation_status": INSTALL_MISSING,
                     "auth_state": AUTH_UNKNOWN,
                     "auth_method": "none",
+                    # Режим известен из настройки, даже когда опроса ещё не
+                    # было: он берётся из конфигурации, а не из ответа CLI.
+                    "auth_mode": (
+                        adapter.home.auth_mode if adapter is not None
+                        else DEFAULT_AUTH_MODE
+                    ),
                     "policy_state": POLICY_ALLOWED,
                     "inference_allowed": False,
                 })
@@ -261,6 +303,24 @@ class ProviderManager:
         for name in SUPPORTED_PROVIDERS:
             identity = self.identity(name)
             if identity is None:
+                continue
+            if identity.auth_mode == AUTH_MODE_UNAVAILABLE:
+                # Проверяется ПЕРВЫМ, до «не установлен», и это не порядок ради
+                # порядка. Самая естественная конфигурация режима — «мы
+                # сознательно не даём этому провайдеру учётных данных здесь,
+                # поэтому его тут и нет». В обратном порядке ветка
+                # INSTALL_MISSING перехватывала бы её вместе с `continue`, и
+                # оператор в ответ на СВОЮ настройку получал бы тревожное «CLI
+                # не установлен» — то самое сообщение, отличать от которого эта
+                # ветка и написана.
+                out.append({
+                    "code": f"provider_{name}_auth_unavailable",
+                    "severity": "warn",
+                    "message": (
+                        f"{name}: режим авторизации unavailable — провайдер "
+                        "на этом воркере не используется по решению оператора"
+                    ),
+                })
                 continue
             if identity.installation_status == INSTALL_MISSING:
                 out.append({
@@ -306,6 +366,20 @@ class ProviderManager:
             return ProbeResult(
                 provider=provider, allowed=False, performed=False,
                 error_code=errors.ERR_UNKNOWN, detail="неизвестный провайдер",
+            )
+        if adapter.home.auth_mode == AUTH_MODE_UNAVAILABLE:
+            # Режим обещает, что CLI этого провайдера не запускается вовсе.
+            # Обещание, действующее только на автоматических путях, — не
+            # обещание: ручной контрольный запрос точно так же дошёл бы до
+            # чужого HOME, а оператор, объявивший провайдера неиспользуемым,
+            # меньше всего ожидает, что он всё-таки будет вызван.
+            return ProbeResult(
+                provider=provider, allowed=False, performed=False,
+                error_code=errors.ERR_AUTH_REQUIRED,
+                detail=(
+                    "режим авторизации unavailable: провайдер на этом воркере "
+                    "не используется"
+                ),
             )
         before = self.quota(provider)
         result = adapter.minimal_probe(confirmed_by_operator=confirmed_by_operator)

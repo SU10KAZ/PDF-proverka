@@ -38,6 +38,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
 
 from audit_worker import redaction
+from audit_worker.providers import auth_mode as auth_mode_mod
 from audit_worker.providers import errors
 from audit_worker.providers.identity import ProviderIdentity
 from audit_worker.providers.paths import ProviderHome
@@ -257,6 +258,10 @@ class ProviderAdapter(abc.ABC):
             "quota_source_stability": self.quota_source_stability(),
             "inference_probe_supported": True,
             "inference_probe_allowed": self.inference_allowed and not self.policy_blocked,
+            # Режим авторизации — часть возможностей, а не деталь раскладки:
+            # именно он объясняет оператору, почему воркер авторизован (или
+            # почему не будет авторизован никогда, если `unavailable`).
+            "auth_mode": self.home.auth_mode,
             "provider_home": self.home.as_public_dict(),
         }
 
@@ -303,6 +308,38 @@ class ProviderAdapter(abc.ABC):
                     "провайдер отключён политикой на этом воркере "
                     "(AUDIT_WORKER_PROVIDER_<X>_POLICY_BLOCKED)"
                 ),
+                auth_mode=self.home.auth_mode,
+            )
+
+        if self.home.auth_mode == auth_mode_mod.AUTH_MODE_UNAVAILABLE:
+            # Оператор объявил, что учётных данных для этого провайдера здесь
+            # нет. CLI не запускается вовсе — не потому, что это дорого, а
+            # потому, что `auth status` на чистой машине способен создать
+            # каталоги и файлы состояния в чужом HOME. Объявленное «не
+            # используем» не должно оставлять следов.
+            return ProviderIdentity(
+                provider=self.provider,
+                installation_status=(
+                    identity_mod.INSTALL_INSTALLED if self.installed()
+                    else identity_mod.INSTALL_MISSING
+                ),
+                auth_state=identity_mod.AUTH_LOGGED_OUT,
+                auth_method="none",
+                policy_state=identity_mod.POLICY_ALLOWED,
+                inference_allowed=False,
+                last_auth_check_at=now,
+                cli_version=None,
+                account_group_id=self.account_group_id,
+                provider_home=None,
+                executable_path=self.executable_path(),
+                credential_facts={},
+                capability=self.capability_snapshot(),
+                error_code=errors.ERR_AUTH_REQUIRED,
+                detail=(
+                    "режим авторизации unavailable: учётных данных для этого "
+                    "провайдера на воркере нет по решению оператора"
+                ),
+                auth_mode=self.home.auth_mode,
             )
 
         if not self.installed():
@@ -322,7 +359,11 @@ class ProviderAdapter(abc.ABC):
                 ),
                 capability=self.capability_snapshot(),
                 error_code=errors.ERR_CLI_MISSING,
-                detail="CLI провайдера не установлен в provider home",
+                detail=(
+                    "CLI провайдера не найден по штатному пути установки "
+                    "для текущего режима авторизации"
+                ),
+                auth_mode=self.home.auth_mode,
             )
 
         version = self.version()
@@ -358,6 +399,7 @@ class ProviderAdapter(abc.ABC):
             capability=self.capability_snapshot(),
             error_code=auth.error_code,
             detail=auth.detail,
+            auth_mode=self.home.auth_mode,
         )
 
     # ─── Запуск подпроцесса ──────────────────────────────────────────────────
@@ -376,7 +418,20 @@ class ProviderAdapter(abc.ABC):
         env["HOME"] = str(self.home.home)
         # Каталог временных файлов уводится внутрь provider home: иначе CLI
         # пишет в общий /tmp чужой машины, где его увидит кто угодно.
+        #
+        # В ambient-режиме это тем более так: `TMPDIR` НЕ переносится в личный
+        # каталог человека вместе с `HOME`. Домашний каталог здесь нужен ровно
+        # для одного — чтобы CLI нашёл свою штатную авторизацию; всё, что
+        # процесс пишет сам, остаётся во владении воркера.
         env["TMPDIR"] = str(self.home.runtime)
+        if self.home.ambient:
+            # Официальные CLI определяют пользователя не только по `HOME`.
+            # Значения берутся из базы учётных записей (`pwd`), а не из
+            # окружения воркера: подменённый `USER` не должен уметь развернуть
+            # CLI на чужую учётную запись (см. `auth_mode.resolve_ambient_home`).
+            user = auth_mode_mod.ambient_user_name()
+            env["USER"] = user
+            env["LOGNAME"] = user
         env.update(self.provider_env())
         forbidden = FORBIDDEN_ENV_NAMES & set(env)
         if forbidden:

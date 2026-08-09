@@ -33,6 +33,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
+from audit_worker.providers.auth_mode import AUTH_MODES, DEFAULT_AUTH_MODE
+
 # ─── Состояния установки ─────────────────────────────────────────────────────
 INSTALL_INSTALLED = "installed"
 INSTALL_MISSING = "missing"
@@ -162,6 +164,11 @@ class ProviderIdentity:
     policy_state: str
     inference_allowed: bool
     last_auth_check_at: float
+    #: ОТКУДА взята авторизация (`auth_mode.AUTH_MODES`). Отдельно от
+    #: `auth_method`: тот отвечает «чем вошли» (`claudeai`, `chatgpt`, `apiKey`),
+    #: этот — «где лежат учётные данные». Оператору нужны оба: «вошли по
+    #: подписке» и «из личного каталога пользователя VPS» — разные факты.
+    auth_mode: str = DEFAULT_AUTH_MODE
     cli_version: Optional[str] = None
     plan_type: Optional[str] = None
     account_group_id: Optional[str] = None
@@ -182,6 +189,8 @@ class ProviderIdentity:
             raise ValueError(f"auth_state={self.auth_state!r}")
         if self.policy_state not in POLICY_STATES:
             raise ValueError(f"policy_state={self.policy_state!r}")
+        if self.auth_mode not in AUTH_MODES:
+            raise ValueError(f"auth_mode={self.auth_mode!r}")
 
     @property
     def usable_for_inference(self) -> bool:
@@ -200,6 +209,7 @@ class ProviderIdentity:
             "cli_version": self.cli_version,
             "auth_state": self.auth_state,
             "auth_method": self.auth_method,
+            "auth_mode": self.auth_mode,
             "plan_type": self.plan_type,
             "account_group_id": self.account_group_id,
             "account_fingerprint": self.account_fingerprint,
@@ -228,6 +238,11 @@ class ProviderIdentity:
             "cli_version": self.cli_version,
             "auth_state": self.auth_state,
             "auth_method": self.auth_method,
+            # Режим — не путь. Слово `ambient_user` не раскрывает ни имени
+            # пользователя, ни раскладки каталогов; оно отвечает на вопрос
+            # «почему этот воркер авторизован», без которого центр не может
+            # отличить настроенный воркер от случайно унаследовавшего доступ.
+            "auth_mode": self.auth_mode,
             "plan_type": self.plan_type,
             "account_group_id": self.account_group_id,
             "account_fingerprint": self.account_fingerprint,

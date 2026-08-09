@@ -100,6 +100,7 @@ class WorkerAgent:
             low_threshold_pct=config.provider_quota_low_threshold_pct,
             account_groups=dict(config.provider_account_groups or {}),
             policy_blocked=dict(config.provider_policy_blocked or {}),
+            auth_modes=dict(config.provider_auth_modes or {}),
             executables=dict(config.provider_executables or {}),
             inference_allowed=config.allow_real_provider_probe,
             log=_log,

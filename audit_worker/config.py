@@ -121,6 +121,14 @@ class WorkerConfig:
     # кладёт официальный установщик. Поиска по PATH нет намеренно: в PATH
     # воркера первым идёт каталог ПОДДЕЛЬНЫХ провайдеров.
     provider_executables: dict = field(default_factory=dict)
+    # ─── Режим авторизации провайдера (этап 11b) ────────────────────────────
+    # ОТКУДА CLI берёт учётные данные: `isolated_provider_home` (умолчание,
+    # поведение этапа 11), `ambient_user` (личная авторизация пользователя
+    # VPS) или `unavailable`. Задаётся ПОПРОВАЙДЕРНО и только явно: общей
+    # переменной нет намеренно — `ambient_user` открывает CLI личный каталог
+    # человека, и такое включается на одной машине для одного провайдера, а
+    # не «глобально по умолчанию».
+    provider_auth_modes: dict = field(default_factory=dict)
     # РАЗРЕШЕНИЕ НА НАСТОЯЩИЙ ВЫЗОВ МОДЕЛИ. Отдельно от allow_real_llm:
     # контрольный запрос этапа 11 и боевой аудит — разные решения.
     allow_real_provider_probe: bool = False
@@ -254,6 +262,29 @@ def _env_provider_map(prefix: str, suffix: str) -> dict:
     return out
 
 
+def _env_provider_auth_modes() -> dict:
+    """Режим авторизации на провайдера. Неизвестное значение — фатально.
+
+    Единственное место во всём разборе конфигурации, где ошибка значения валит
+    старт. Причина в цене тихой ошибки именно здесь: остальные настройки при
+    опечатке дают заметный сбой (не тот путь, не тот интервал), а эта —
+    правдоподобную ложь. Воркер с `AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE=ambient`
+    (без `_user`) молча остался бы в изоляции и честно сообщил бы центру «вход
+    не выполнен»; оператор искал бы проблему в подписке, а не в букве.
+    """
+    from audit_worker.providers.auth_mode import UnknownAuthMode, require_auth_mode
+
+    out: dict = {}
+    for provider, raw in _env_provider_map("AUDIT_WORKER_PROVIDER", "AUTH_MODE").items():
+        try:
+            out[provider] = require_auth_mode(raw)
+        except UnknownAuthMode as exc:
+            raise SystemExit(
+                f"AUDIT_WORKER_PROVIDER_{provider.upper()}_AUTH_MODE: {exc}"
+            ) from exc
+    return out
+
+
 def _max_slots_from_env() -> int:
     """Число слотов из окружения, зажатое доказанным максимумом этапа.
 
@@ -368,6 +399,11 @@ def load_config(
                 "AUDIT_WORKER_PROVIDER", "EXECUTABLE"
             ).items()
         },
+        # Опечатка в значении обязана валить старт, а не откатываться к
+        # умолчанию: воркер, который «думает» про ambient, а работает в
+        # изоляции, отрапортует центру «вход не выполнен» и будет выглядеть
+        # сломанным провайдером вместо сломанной настройки.
+        provider_auth_modes=_env_provider_auth_modes(),
         # Реальный вызов модели. Умолчание false — и оно НЕ должно зависеть от
         # allow_real_llm: контрольный запрос этапа 11 и боевой аудит решаются
         # отдельно, иначе включение одного тихо включало бы второе.

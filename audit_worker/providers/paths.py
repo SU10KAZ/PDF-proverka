@@ -43,12 +43,33 @@
   3. Каталоги создаются с режимом 0700. Соседние сервисы на этом VPS работают
      под другими пользователями, и «читать нельзя» должно обеспечиваться
      файловой системой, а не договорённостью.
+
+Этап 11b добавил второй режим — `ambient_user` (см. `auth_mode.py`), в котором
+HOME процесса CLI = личный каталог пользователя VPS. Сказанное выше при этом
+НЕ отменяется, потому что относится к другому процессу: HOME КОНВЕЙЕРА как был,
+так и остаётся внутри каталога попытки (`audit_runner.isolated_roots`), и
+ambient-режим его не касается. Различие ролей — единственная причина, по которой
+два «домашних каталога» вообще могут сосуществовать:
+
+    процесс конвейера   HOME=<job_dir>/work/home   (изоляция данных задания)
+    процесс CLI         HOME=<по режиму>           (авторизация провайдера)
+
+В ambient-режиме личный каталог считается ЧУЖИМ: он читается (`os.stat`), но
+не создаётся и не перенастраивается по правам — см. `ensure_dirs`.
 """
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
+
+from audit_worker.providers.auth_mode import (
+    AUTH_MODE_AMBIENT_USER,
+    DEFAULT_AUTH_MODE,
+    normalize_auth_mode,
+    resolve_ambient_home,
+)
 
 PROVIDER_CLAUDE = "claude"
 PROVIDER_CODEX = "codex"
@@ -80,14 +101,62 @@ def providers_root(worker_root: Path) -> Path:
 
 @dataclass(frozen=True)
 class ProviderHome:
-    """Пути одного провайдера. Значения вычислены, а не приняты извне."""
+    """Пути одного провайдера. Значения вычислены, а не приняты извне.
+
+    `auth_mode` меняет ровно одно: ЧЕЙ каталог служит HOME процессу CLI.
+    `runtime` и `metadata` остаются во владении воркера в любом режиме —
+    первый потому, что пустой cwd вне репозиториев нужен одинаково (см.
+    шапку модуля про `codex app-server`), второй потому, что соль отпечатка
+    учётной записи не имеет права лежать в личном каталоге человека.
+    """
 
     provider: str
     root: Path
+    #: Одно из `auth_mode.AUTH_MODES`. Умолчание = поведение этапа 11.
+    auth_mode: str = DEFAULT_AUTH_MODE
+    #: Личный каталог пользователя VPS. Заполняется ТОЛЬКО в ambient-режиме и
+    #: только фабрикой `provider_home`; в остальных режимах обязан быть `None`,
+    #: иначе «изолированный» режим тихо перестал бы быть изолированным.
+    ambient_home: Optional[Path] = None
+
+    def __post_init__(self) -> None:
+        # Инвариант проверяется в конструкторе, а не в свойствах: свойство,
+        # которое бросает, невозможно безопасно использовать в отчётах, а
+        # именно там пути и читаются чаще всего.
+        mode = normalize_auth_mode(self.auth_mode)
+        object.__setattr__(self, "auth_mode", mode)
+        if mode == AUTH_MODE_AMBIENT_USER:
+            if self.ambient_home is None:
+                raise ValueError(
+                    "режим ambient_user требует ambient_home; "
+                    "используйте provider_home(..., auth_mode=...)"
+                )
+            object.__setattr__(self, "ambient_home", Path(self.ambient_home))
+        elif self.ambient_home is not None:
+            raise ValueError(
+                f"ambient_home задан при auth_mode={mode!r}: в этом режиме "
+                "личный каталог пользователя не участвует"
+            )
+
+    @property
+    def ambient(self) -> bool:
+        """Работает ли CLI под личной авторизацией пользователя VPS."""
+        return self.auth_mode == AUTH_MODE_AMBIENT_USER
 
     @property
     def home(self) -> Path:
-        """HOME процесса CLI."""
+        """HOME процесса CLI.
+
+        В ambient-режиме это личный каталог человека. Всё, что ниже по коду
+        обращается к `home`, обязано считать его ЧУЖИМ: читать `os.stat` можно,
+        создавать и менять права — нельзя.
+        """
+        if self.ambient:
+            if self.ambient_home is None:             # pragma: no cover
+                # Не `assert`: под `python -O` он исчезает, и вместо громкой
+                # ошибки получился бы `None` в пути к HOME процесса CLI.
+                raise ValueError("ambient_user без ambient_home")
+            return self.ambient_home
         return self.root / "home"
 
     @property
@@ -137,9 +206,22 @@ class ProviderHome:
         `CODEX_HOME`. Без этого на чистом воркере первый же `codex login`
         или `app-server` упал бы — притом что цитата этого требования стоит
         в шапке модуля. Для Claude создание `~/.claude` заранее безвредно.
+
+        В ambient-режиме список СОКРАЩЁН до каталогов воркера, и это главный
+        предохранитель всего режима. Оставь здесь `home` и `config_dir` —
+        и `os.chmod(path, 0o700)` уехал бы на `/home/coder` и `~/.claude`
+        живого человека: сначала закрыл бы его домашний каталог от группы
+        (на этом VPS под соседними пользователями работает почтово-веб стек),
+        а `mkdir` вдобавок создал бы `~/.codex` там, где оператор его,
+        возможно, не заводил. Каталог, которым воркер не владеет, воркер не
+        трогает — ни правами, ни созданием.
         """
-        for path in (self.root, self.home, self.runtime, self.metadata,
-                     self.config_dir):
+        if self.ambient:
+            managed: tuple[Path, ...] = (self.root, self.runtime, self.metadata)
+        else:
+            managed = (self.root, self.home, self.runtime, self.metadata,
+                       self.config_dir)
+        for path in managed:
             path.mkdir(parents=True, exist_ok=True)
             try:
                 os.chmod(path, PROVIDER_DIR_MODE)
@@ -156,13 +238,52 @@ class ProviderHome:
         имя её пользователя. Центру достаточно знать, что каталоги на месте.
         """
         return {
-            "layout": "worker_data_dir/providers/<provider>/{home,runtime,metadata}",
+            "layout": (
+                "ambient_user_home/{.claude|.codex}"
+                if self.ambient
+                else "worker_data_dir/providers/<provider>/{home,runtime,metadata}"
+            ),
+            "auth_mode": self.auth_mode,
+            # В ambient-режиме это факт про ЧУЖОЙ каталог — «есть ли у CLI
+            # куда смотреть». Абсолютного пути здесь нет ни в одном режиме.
             "home_exists": self.home.is_dir(),
+            "home_owned_by_worker": not self.ambient,
             "runtime_exists": self.runtime.is_dir(),
             "metadata_exists": self.metadata.is_dir(),
         }
 
 
-def provider_home(worker_root: Path, provider: str) -> ProviderHome:
+def provider_home(
+    worker_root: Path,
+    provider: str,
+    *,
+    auth_mode: Optional[str] = None,
+    ambient_home: Optional[Path] = None,
+) -> ProviderHome:
+    """Собрать раскладку провайдера для заданного режима авторизации.
+
+    Домашний каталог для ambient-режима вычисляется ЗДЕСЬ и один раз, чтобы
+    ниже по коду не было ни одной ветки, которая берёт его из окружения.
+    """
     name = require_provider(provider)
-    return ProviderHome(provider=name, root=providers_root(worker_root) / name)
+    mode = normalize_auth_mode(auth_mode)
+    if mode != AUTH_MODE_AMBIENT_USER and ambient_home is not None:
+        # Тихо проигнорировать было бы худшим из вариантов: вызывающий явно
+        # передал личный каталог и вправе считать, что CLI пойдёт туда. Молча
+        # оставить его в изоляции значит расписаться в том, что аргумент
+        # ничего не значит.
+        raise ValueError(
+            f"ambient_home передан при auth_mode={mode!r}: личный каталог "
+            "участвует только в режиме ambient_user"
+        )
+    resolved = (
+        resolve_ambient_home(ambient_home)
+        if mode == AUTH_MODE_AMBIENT_USER
+        else None
+    )
+    return ProviderHome(
+        provider=name,
+        root=providers_root(worker_root) / name,
+        auth_mode=mode,
+        ambient_home=resolved,
+    )

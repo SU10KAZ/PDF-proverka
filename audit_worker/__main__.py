@@ -303,6 +303,7 @@ def _cmd_providers(args: argparse.Namespace) -> int:
         low_threshold_pct=config.provider_quota_low_threshold_pct,
         account_groups=dict(config.provider_account_groups or {}),
         policy_blocked=dict(config.provider_policy_blocked or {}),
+        auth_modes=dict(config.provider_auth_modes or {}),
         executables=dict(config.provider_executables or {}),
         # Сознательно False: команда наблюдения не имеет права разрешить
         # вызов модели, каким бы ни было окружение.
@@ -365,6 +366,7 @@ def _cmd_provider_probe(args: argparse.Namespace) -> int:
         low_threshold_pct=config.provider_quota_low_threshold_pct,
         account_groups=dict(config.provider_account_groups or {}),
         policy_blocked=dict(config.provider_policy_blocked or {}),
+        auth_modes=dict(config.provider_auth_modes or {}),
         executables=dict(config.provider_executables or {}),
         inference_allowed=True,
         log=lambda message: print(f"[probe] {message}", file=sys.stderr),
