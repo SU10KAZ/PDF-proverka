@@ -35,7 +35,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from audit_worker.providers import errors, identity as identity_mod
+from audit_worker.providers import errors, identity as identity_mod, model_policy
 from audit_worker.providers.auth_mode import (
     AUTH_MODE_AMBIENT_USER,
     AUTH_MODE_UNAVAILABLE,
@@ -70,6 +70,12 @@ class ProviderRequirement:
     #: Сколько оплачиваемых вызовов допускает политика исполнения. Ноль означает
     #: «модель не звать» — это законное требование, а не ошибка.
     max_inferences: int = 0
+    #: ЛОГИЧЕСКАЯ способность («нужна сильная модель для аудита») вместо точного
+    #: идентификатора. Что она означает НА ЭТОЙ машине, решает локальная политика
+    #: воркера (`model_policy`), а не центр: см. её докстринг о том, почему точный
+    #: `model` из задания — это одновременно нарушение I-P5 и передача чужой
+    #: подписки в распоряжение центра. Взаимоисключима с `model`.
+    capability: Optional[str] = None
 
     @classmethod
     def from_payload(cls, payload: Any) -> Optional["ProviderRequirement"]:
@@ -80,7 +86,9 @@ class ProviderRequirement:
             raise ProviderResolutionError(
                 "provider_requirement: ожидается объект"
             )
-        unknown = set(payload) - {"provider", "model", "allowed_stages", "max_inferences"}
+        unknown = set(payload) - {
+            "provider", "model", "allowed_stages", "max_inferences", "capability",
+        }
         if unknown:
             raise ProviderResolutionError(
                 f"provider_requirement: недопустимые поля {sorted(unknown)}"
@@ -115,11 +123,34 @@ class ProviderRequirement:
         model = payload.get("model")
         if model is not None and (not isinstance(model, str) or len(model) > 128):
             raise ProviderResolutionError("provider_requirement.model: строка ≤128")
+        capability = payload.get("capability")
+        if capability is not None:
+            if not isinstance(capability, str) or not capability.strip():
+                raise ProviderResolutionError(
+                    "provider_requirement.capability: непустая строка"
+                )
+            capability = capability.strip()
+            if capability not in model_policy.KNOWN_CAPABILITIES:
+                raise ProviderResolutionError(
+                    f"provider_requirement.capability={capability!r} неизвестна "
+                    f"(известны: {list(model_policy.KNOWN_CAPABILITIES)})"
+                )
+            if model:
+                # Центру нельзя одновременно назвать способность и продиктовать
+                # строку модели: тогда неясно, кто из двоих решает, а «на всякий
+                # случай возьмём точный» вернуло бы центру распоряжение чужой
+                # подпиской ровно тем путём, который способность и закрывает.
+                raise ProviderResolutionError(
+                    "provider_requirement: capability и model взаимоисключимы — "
+                    "точную модель для способности выбирает локальная политика "
+                    "воркера, а не центр"
+                )
         return cls(
             provider=provider,
             model=model or None,
             allowed_stages=tuple(stages),
             max_inferences=max_inferences,
+            capability=capability or None,
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -128,6 +159,7 @@ class ProviderRequirement:
             "model": self.model,
             "allowed_stages": list(self.allowed_stages),
             "max_inferences": int(self.max_inferences),
+            "capability": self.capability,
         }
 
 
@@ -157,11 +189,22 @@ class ProviderBinding:
     grant_id: str
     max_inferences: int
     allowed_stages: tuple[str, ...]
+    #: ТОЧНЫЙ идентификатор модели, который уйдёт в CLI флагом `--model`.
+    #: С этапа 11D он берётся из ЛОКАЛЬНОЙ политики воркера по логической
+    #: способности задания, а не из самого задания.
     model: Optional[str] = None
     #: Значения, которых не должно быть в ответе модели. Приходят от оператора
     #: в момент прогона и в репозитории не хранятся (иначе «не нашли» ничего
     #: не доказывает).
     forbidden_literals: tuple[str, ...] = field(default_factory=tuple)
+    #: Логическая способность, по которой выбрана модель. Хранится ради разбора
+    #: чужого прогона: без неё «почему именно эта модель» восстановить нечем.
+    capability: Optional[str] = None
+    #: Идентификаторы, которые CLI имеет право назвать ФАКТИЧЕСКИ применёнными
+    #: для той же модели (см. `model_policy.default_accepted_reported`). Пустой
+    #: кортеж при заданном `model` означает «сверять не с чем» и трактуется как
+    #: несовпадение — умолчания «сойдёт любое» здесь нет.
+    accepted_reported_models: tuple[str, ...] = field(default_factory=tuple)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -179,6 +222,8 @@ class ProviderBinding:
             "allowed_stages": list(self.allowed_stages),
             "model": self.model,
             "forbidden_literals": list(self.forbidden_literals),
+            "capability": self.capability,
+            "accepted_reported_models": list(self.accepted_reported_models),
         }
 
     def as_public_dict(self) -> dict[str, Any]:
@@ -187,6 +232,8 @@ class ProviderBinding:
             "provider": self.provider,
             "auth_mode": self.auth_mode,
             "model": self.model,
+            "capability": self.capability,
+            "accepted_reported_models": list(self.accepted_reported_models),
             "max_inferences": int(self.max_inferences),
             "allowed_stages": list(self.allowed_stages),
             "grant_id": self.grant_id,
@@ -211,6 +258,11 @@ class ProviderBinding:
         literals = data.get("forbidden_literals") or []
         if not isinstance(literals, list):
             raise ProviderResolutionError("привязка: forbidden_literals не список")
+        accepted = data.get("accepted_reported_models") or []
+        if not isinstance(accepted, list):
+            raise ProviderResolutionError(
+                "привязка: accepted_reported_models не список"
+            )
         return cls(
             schema_version=int(version),
             provider=provider,
@@ -226,6 +278,8 @@ class ProviderBinding:
             allowed_stages=tuple(str(x) for x in stages),
             model=(str(data["model"]) if data.get("model") else None),
             forbidden_literals=tuple(str(x) for x in literals),
+            capability=(str(data["capability"]) if data.get("capability") else None),
+            accepted_reported_models=tuple(str(x) for x in accepted),
         )
 
     def write(self, metadata_dir: Path) -> Path:
@@ -320,6 +374,22 @@ class ProviderResolver:
             raise ProviderResolutionError(
                 f"провайдер {name!r}: авторизация не подтверждена (auth_state={state!r})"
             )
+        # Точную модель выбирает ВОРКЕР по своей политике (этап 11D). До 11D
+        # поля `model` в привязке хватало на «ожидание», которое никто не
+        # предъявлял CLI; теперь это строка, которая уйдёт в argv, и её
+        # источником обязан быть файл администратора машины.
+        resolved_model = requirement.model
+        accepted_reported: tuple[str, ...] = ()
+        if requirement.capability:
+            try:
+                policy = model_policy.load_policy(self.worker_root)
+                capability = policy.resolve(name, requirement.capability)
+            except model_policy.ProviderPolicyError as exc:
+                raise ProviderResolutionError(
+                    f"локальная политика моделей не покрывает требование: {exc}"
+                ) from None
+            resolved_model = capability.model
+            accepted_reported = capability.accepted_reported_models
         executable = adapter.executable_path()
         return ProviderBinding(
             schema_version=BINDING_SCHEMA_VERSION,
@@ -334,10 +404,12 @@ class ProviderResolver:
             grant_id=str(grant_id),
             max_inferences=int(requirement.max_inferences),
             allowed_stages=tuple(requirement.allowed_stages),
-            model=requirement.model,
+            model=resolved_model,
             forbidden_literals=tuple(
                 value for value in forbidden_literals if value and len(value) >= 8
             ),
+            capability=requirement.capability,
+            accepted_reported_models=accepted_reported,
         )
 
 

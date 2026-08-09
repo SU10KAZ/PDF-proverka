@@ -193,6 +193,8 @@ def validate_inference(
     attempt_id: str = "",
     claim_task_id: str = "",
     claim_attempt_id: str = "",
+    expected_model: str = "",
+    accepted_reported_models: Sequence[str] = (),
 ) -> ValidationReport:
     """Проверить результат по §7 задания. Возвращает ИМЕНОВАННЫЕ утверждения.
 
@@ -299,6 +301,27 @@ def validate_inference(
         and bool(attempt_id) and attempt_id == claim_attempt_id,
         f"task_id={task_id!r}/{claim_task_id!r} attempt_id={attempt_id!r}/{claim_attempt_id!r}",
     ))
+
+    # Модель (этап 11D). Проверка ВТОРАЯ: первую — и решающую — делает адаптер,
+    # он же обрывает вызов кодом `model_mismatch`. Дублирование намеренно и
+    # неизбыточно: адаптер знает, ЧТО он приказал CLI, а сюда те же значения
+    # приходят из ПРИВЯЗКИ, то есть из документа, который писал исполнитель до
+    # запуска процесса. Совпадение двух независимых источников и делает запись
+    # «ответила назначенная модель» доказательством, а не самоотчётом адаптера.
+    # Без назначенной модели проверка пропускается — так ведёт себя 11C-путь,
+    # где модель выбирал CLI.
+    expected = str(expected_model or "").strip()
+    if expected:
+        accepted = tuple(
+            str(value).strip() for value in accepted_reported_models if str(value).strip()
+        )
+        reported = str(result.model or "").strip()
+        checks.append(ValidationCheck(
+            "model_matches_policy",
+            bool(reported) and bool(accepted) and reported in accepted,
+            f"назначено {expected!r}, фактически {reported or '—'!r}, "
+            f"допустимые {list(accepted)}",
+        ))
     return ValidationReport(checks=tuple(checks))
 
 

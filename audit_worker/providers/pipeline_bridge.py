@@ -271,6 +271,12 @@ def run_stage_inference(
     try:
         result = adapter.structured_inference(
             prompt, purpose=purpose, timeout_sec=timeout_sec,
+            # Модель и допустимые фактические её идентификаторы берутся ИЗ
+            # ПРИВЯЗКИ, а не из аргументов вызывающего: этап конвейера не имеет
+            # права ни назначить модель, ни расширить список допустимых —
+            # решение принято локальной политикой воркера до запуска процесса.
+            model=binding.model,
+            accepted_reported_models=binding.accepted_reported_models,
         )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.
@@ -321,6 +327,8 @@ def _validate(
         attempt_id=binding.attempt_id,
         claim_task_id=claim_task_id or binding.task_id,
         claim_attempt_id=claim_attempt_id or binding.attempt_id,
+        expected_model=binding.model or "",
+        accepted_reported_models=binding.accepted_reported_models,
     )
 
 

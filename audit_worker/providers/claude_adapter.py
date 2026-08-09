@@ -46,7 +46,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from audit_worker.providers import errors, quota
 from audit_worker.providers.base import (
@@ -115,8 +115,8 @@ _PROBE_NEUTRALIZE_PERSONAL_CONTEXT = (
 )
 
 
-def _inference_argv() -> list[str]:
-    """argv РАБОЧЕГО вызова. Тоже только константы модуля (I-P5).
+def _inference_argv(model: Optional[str] = None) -> list[str]:
+    """argv РАБОЧЕГО вызова: константы модуля плюс модель локальной политики.
 
     Отличие от `_probe_argv()` ровно одно: нет позиционного промпта. Промпт
     уходит через stdin, поэтому argv здесь не содержит ни байта данных задания —
@@ -127,14 +127,23 @@ def _inference_argv() -> list[str]:
     «мягче» контрольного — иначе доказанное на probe перестало бы что-то
     говорить о боевом пути.
 
-    Модель НЕ задаётся флагом. Это не упущение, а следствие того же I-P5:
-    идентификатор модели пришёл бы из задания. Поэтому вызов идёт на модели
-    учётной записи по умолчанию, а фактически применённая модель ЧИТАЕТСЯ из
-    ответа и сверяется с требованием задания (проверка `provider_matches_task`
-    и поле `model` результата). Проверять сильнее, чем приказывать.
+    ПОЧЕМУ ТЕПЕРЬ ЕСТЬ `--model`, хотя на 11C его не было. Тогда флага не было
+    по букве I-P5: идентификатор модели пришёл бы ИЗ ЗАДАНИЯ. Прогон 11C показал
+    цену этого решения — конфигурация называла `claude-opus-5`, а ответила
+    `claude-opus-4-8[1m]`, модель учётной записи по умолчанию. На 11D источник
+    строки другой: её задаёт ЛОКАЛЬНАЯ политика воркера (`model_policy`), файл
+    администратора машины рядом с `worker.env`. Для воркера «извне» — это центр
+    и задание; собственная конфигурация машины внешним источником не является,
+    поэтому I-P5 сохраняется, а слепота «какая модель ответила» — устраняется.
+
+    Флаг `--model` НЕ вариадический (`--model <model>`, один аргумент), поэтому
+    форма с пробелом безопасна; вариадические флаги ниже по-прежнему пишутся
+    только через `=` (см. докстринг `_probe_argv`).
     """
-    return [
-        *_PROBE_NEUTRALIZE_PERSONAL_CONTEXT,
+    argv: list[str] = [*_PROBE_NEUTRALIZE_PERSONAL_CONTEXT]
+    if model:
+        argv += ["--model", str(model)]
+    argv += [
         "--tools=",
         "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
         "--permission-mode", "dontAsk",
@@ -144,6 +153,7 @@ def _inference_argv() -> list[str]:
         # его со стандартного ввода (docs → CLI reference, print mode).
         "-p",
     ]
+    return argv
 
 
 def _probe_argv() -> list[str]:
@@ -402,6 +412,8 @@ class ClaudeProviderAdapter(ProviderAdapter):
         *,
         purpose: str,
         timeout_sec: Optional[float] = None,
+        model: Optional[str] = None,
+        accepted_reported_models: Sequence[str] = (),
     ) -> ProviderInferenceResult:
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
@@ -415,8 +427,23 @@ class ClaudeProviderAdapter(ProviderAdapter):
                 auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
                 detail="пустой промпт: рабочий вызов не выполняется",
             )
+        requested_model = str(model).strip() if model else ""
+        accepted = tuple(str(x).strip() for x in accepted_reported_models if str(x).strip())
+        if requested_model and not accepted:
+            # Назначить модель и не назначить, с чем сверять ответ, — значит
+            # получить приказ без проверки. Отказ ДО запуска: он бесплатен,
+            # а вызов на непроверяемых условиях — нет.
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MODEL_MISMATCH,
+                detail=(
+                    f"модель {requested_model!r} назначена, но список допустимых "
+                    "фактических идентификаторов пуст: сверять ответ не с чем"
+                ),
+            )
         result = self.run(
-            _inference_argv(),
+            _inference_argv(requested_model or None),
             # Явный срок вызывающего ПОБЕЖДАЕТ. У контрольного запроса стоит
             # пол в 120 с, потому что там срок ничей: команду даёт человек и
             # бюджета этапа не существует. У рабочего вызова бюджет есть, его
@@ -462,6 +489,26 @@ class ClaudeProviderAdapter(ProviderAdapter):
             answer_text = result.stdout or ""
         payload = self._first_json_object(answer_text)
         ok = result.ok and payload is not None
+        # Сверка фактической модели — ПОСЛЕДНИЙ гейт и самый строгий (этап 11D).
+        # Стоит после разбора намеренно: результат уже есть, вызов уже оплачен,
+        # и его надо ЗАПИСАТЬ в журнал (это делает мост), но объявить успехом
+        # ответ чужой модели нельзя. Отсутствующий идентификатор тоже считается
+        # несовпадением: «не знаем, кто ответил» — не то же самое, что «ответила
+        # назначенная».
+        model_mismatch = ""
+        if requested_model:
+            reported = (model or "").strip()
+            if not reported:
+                model_mismatch = (
+                    f"CLI не сообщил фактическую модель; назначена {requested_model!r}"
+                )
+            elif reported not in accepted:
+                model_mismatch = (
+                    f"фактическая модель {reported!r} не входит в допустимые "
+                    f"{list(accepted)} для назначенной {requested_model!r}"
+                )
+        if model_mismatch:
+            ok = False
         return ProviderInferenceResult(
             provider=self.provider,
             model=model,
@@ -473,13 +520,22 @@ class ClaudeProviderAdapter(ProviderAdapter):
             auth_mode=self.home.auth_mode,
             error_code=(
                 None if ok
-                else (result.error_code() if not result.ok else errors.ERR_MALFORMED_STATUS)
+                else (
+                    result.error_code() if not result.ok
+                    else (
+                        errors.ERR_MODEL_MISMATCH if model_mismatch
+                        else errors.ERR_MALFORMED_STATUS
+                    )
+                )
             ),
             detail=(
                 None if ok
                 else (
                     "CLI завершился ошибкой" if not result.ok
-                    else "ответ модели не содержит JSON-объекта"
+                    else (
+                        model_mismatch if model_mismatch
+                        else "ответ модели не содержит JSON-объекта"
+                    )
                 )
             ),
             raw_sha256=sha256_text(answer_text),

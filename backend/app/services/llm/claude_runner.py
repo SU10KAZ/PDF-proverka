@@ -822,6 +822,183 @@ async def _run_codex_text_analysis_chunked(
     return 0, combined.text, combined
 
 
+#: Ключ этапа в белом списке привязки провайдера и в `pipeline_log`. Совпадает
+#: с тем, что уходит в `_run_cli(stage=…)`, и НЕ совпадает с
+#: `TEXT_ANALYSIS_STAGE` ("02_text_analysis") — это имя артефакта, а не этапа.
+TEXT_ANALYSIS_STAGE_KEY = "text_analysis"
+
+
+class ProviderOutputPathError(RuntimeError):
+    """Путь записи вышел за каталог попытки. Тихой записи не бывает."""
+
+
+def _assert_output_inside_attempt(output_path: Path, attempt_dir: Path) -> None:
+    """Выход обязан лежать ВНУТРИ каталога попытки (§17, §AD/AE задания 11D).
+
+    Проверка не декоративная. В provider-режиме корни данных процесса конвейера
+    выставляет `audit_runner.isolated_roots`, и все они уводят внутрь попытки;
+    путь наружу означал бы, что либо роль потеряна, либо кто-то передал
+    `output_dir` руками. Оба случая — запись в чужой каталог на чужой машине, и
+    узнавать о них по факту испорченного продового артефакта поздно.
+    """
+    resolved = Path(output_path).resolve()
+    root = Path(attempt_dir).resolve()
+    if not resolved.is_relative_to(root):
+        raise ProviderOutputPathError(
+            f"выход этапа ведёт вне каталога попытки: {resolved} ⊄ {root}. "
+            "Запись отменена: в provider-режиме конвейер пишет только внутрь "
+            "своей попытки"
+        )
+
+
+async def _run_text_analysis_via_provider(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    *,
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+) -> tuple[int, str, CLIResult]:
+    """`text_analysis` через ProviderAdapter: модель только рассуждает (11D).
+
+    Отличие от ветки Claude CLI не в «другом транспорте», а в РАСПРЕДЕЛЕНИИ
+    ОБЯЗАННОСТЕЙ. Там модель получала пути и сама делала файловую работу; здесь
+    файловую работу целиком делает конвейер:
+
+        читает MD  → строит промпт → зовёт модель → проверяет → пишет файл
+
+    Инженерная часть промпта берётся у БОЕВОГО сборщика ветки API
+    (`build_text_analysis_messages`), а не пишется заново: заводить второй
+    text_analysis ради нового транспорта — верный способ получить два расходящихся
+    аудита (§11 задания).
+
+    Молчаливого возврата к прежнему пути здесь нет ни в одной ветке. Мост
+    активен только тогда, когда исполнитель выписал привязку, УЖЕ списав
+    разрешение оператора; уйти в этот момент на `claude -p` по PATH значило бы
+    выполнить неавторизованный вызов из-под изолированного HOME и показать это
+    как обычную ошибку этапа.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.text_analysis import provider_transport
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+    built = provider_transport.build_provider_prompt(messages)
+    prompt = built["prompt"]
+
+    await send_output(
+        on_output,
+        f"[text_analysis] provider-режим: инструкции {built['system_chars']} симв., "
+        f"документ {built['document_chars']} симв., путей вычищено "
+        f"{built['filesystem_refs_stripped']}",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=TEXT_ANALYSIS_STAGE_KEY,
+                prompt=prompt,
+                purpose=TEXT_ANALYSIS_STAGE_KEY,
+                required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                field_types=provider_transport.FIELD_TYPES,
+                expected_semantics=provider_transport.EXPECTED_SEMANTICS,
+                timeout_sec=float(CLAUDE_TEXT_ANALYSIS_TIMEOUT),
+            )
+        )
+    except ProviderBridgeError as exc:
+        # Отказ моста — отказ ЭТАПА. Возвращаем его кодом возврата, а не
+        # исключением, чтобы боевой раннер обработал его своим штатным путём
+        # (запись в pipeline_log, StageResult.fail) — но ни одна ветка отсюда
+        # не ведёт к прежнему транспорту.
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+
+    validation = outcome.validation.as_dict() if outcome.validation else None
+    payload = result.result if isinstance(result.result, dict) else {}
+    run_report = {
+        "stage": TEXT_ANALYSIS_STAGE_KEY,
+        "transport": "provider_adapter",
+        "prompt_build": built,
+        "prompt_sha256": pipeline_bridge.sha256_text(prompt),
+        "performed_now": bool(outcome.performed),
+        "provider_result": result.as_dict(),
+        "validation": validation,
+        "ledger": outcome.ledger.as_dict(),
+        "soft_contract": provider_transport.soft_contract_report(payload),
+    }
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+    try:
+        _assert_output_inside_attempt(
+            resolved_output_dir / TEXT_ANALYSIS_FILENAME, attempt_dir
+        )
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже: разбирать неудачу без
+    # него пришлось бы по журналу вызовов на чужой машине.
+    _write_json(resolved_output_dir / "text_analysis_provider_run.json", run_report)
+
+    if not outcome.ok:
+        failed = (validation or {}).get("failed") if validation else None
+        detail = (
+            f"provider_result.status={result.status!r} "
+            f"error_code={result.error_code!r} detail={result.detail!r} "
+            f"validation_failed={failed}"
+        )
+        await send_output(on_output, f"[text_analysis] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    output_path = resolved_output_dir / TEXT_ANALYSIS_FILENAME
+    _write_json(output_path, payload)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        _save_audit_trail(
+            project_id, TEXT_ANALYSIS_STAGE, result.model or "",
+            cli_result.input_tokens, cli_result.output_tokens,
+            cli_result.duration_ms, payload,
+        )
+
+    await send_output(
+        on_output,
+        f"[text_analysis] provider-режим: {len(payload.get('text_findings') or [])} "
+        f"замечаний, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+    return 0, cli_result.result_text, cli_result
+
+
 async def run_text_analysis(
     project_info: dict,
     project_id: str,
@@ -832,6 +1009,20 @@ async def run_text_analysis(
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 02_text_analysis.json (динамический выбор провайдера)."""
+    # Мост провайдеров воркера (этап 11D). Развилка стоит ВЫШЕ выбора
+    # codex/claude/OpenRouter намеренно: в provider-режиме различается не
+    # «каким CLI», а КТО делает файловую работу, и решать это после сборки
+    # промпта было бы поздно — промпт уже был бы собран под чужой транспорт.
+    #
+    # На центре ветки не существует: `active()` смотрит на файл привязки,
+    # который выписывает только исполнитель воркера и только на время попытки.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        return await _run_text_analysis_via_provider(
+            project_info, project_id, on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+        )
+
     model = get_stage_model("text_analysis")
 
     if is_codex_model(model):

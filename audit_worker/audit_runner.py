@@ -198,6 +198,12 @@ _ALLOWED_FIELDS = {
 #: провайдерского слоя (см. комментарий к PROVIDER_BINDING_ENV).
 _PROVIDER_REQUIREMENT_FIELDS = {
     "provider", "model", "allowed_stages", "max_inferences",
+    # Этап 11D: ЛОГИЧЕСКАЯ способность вместо точного идентификатора модели.
+    # Здесь проверяется только форма; какой строке она соответствует НА ЭТОЙ
+    # машине — знает локальная политика воркера, и импортировать её сюда
+    # незачем (см. комментарий к PROVIDER_BINDING_ENV о независимости рубежа
+    # формы от провайдерского слоя).
+    "capability",
 }
 
 
@@ -240,11 +246,26 @@ def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
         raise AuditJobRejected(
             f"provider_requirement.max_inferences={max_inferences} вне [0, 8]"
         )
+    capability = raw.get("capability")
+    if capability is not None:
+        if not isinstance(capability, str) or not capability.strip():
+            raise AuditJobRejected("provider_requirement.capability: непустая строка")
+        capability = capability.strip()
+        if not capability.replace("_", "").isalnum() or len(capability) > 64:
+            raise AuditJobRejected(
+                f"provider_requirement.capability={capability!r} имеет недопустимую форму"
+            )
+        if model:
+            raise AuditJobRejected(
+                "provider_requirement: capability и model взаимоисключимы — "
+                "точную модель для способности выбирает воркер"
+            )
     return {
         "provider": provider.lower(),
         "model": model or None,
         "allowed_stages": list(stages),
         "max_inferences": max_inferences,
+        "capability": capability or None,
     }
 
 

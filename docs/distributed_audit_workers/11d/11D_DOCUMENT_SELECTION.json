@@ -1,0 +1,75 @@
+{
+  "stage": "11D",
+  "production_stage": "text_analysis",
+  "selected_at": "2026-08-09",
+  "selection_rule": "§15 задания: один НЕБОЛЬШОЙ реальный документ, уже успешно проходивший text_analysis, с существующим MD, известной дисциплиной, без нарезки на чанки",
+
+  "document": {
+    "logical_id": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС",
+    "object": "213_Mosfilmovskaya_31A_KingSons",
+    "discipline": "EOM",
+    "document_code": "133-23-ГК-ЭС",
+    "version_id": "v001",
+    "version_label": "V1",
+    "version_status": "active",
+    "analysis_status": "complete",
+    "analysis_run_id": "run_20260327T020723",
+    "input_format": "старый квартет (pdf + _document.md + _ocr.html + _result.json)",
+    "md_file": "133-23-ГК-ЭС_document.md",
+    "md_bytes": 19418,
+    "md_chars": 11544,
+    "md_sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+    "text_source": "md"
+  },
+
+  "prompt_estimate": {
+    "measured_on": "центр, БЕЗ обращения к модели (сборка промпта офлайн)",
+    "instructions_chars": 18022,
+    "document_chars": 11544,
+    "total_prompt_chars": 30179,
+    "estimated_input_tokens_rough": 10059,
+    "estimation_method": "≈ символы / 3 (кириллица), грубая верхняя оценка",
+    "chunking_required": false,
+    "codex_chunker_threshold_chars": 1048576,
+    "headroom_note": "На два порядка ниже потолка §15 (100k–150k input tokens) и не приближается к порогу нарезки. Первое испытание не должно упереться в режим чанков."
+  },
+
+  "historical_output": {
+    "exists": true,
+    "path_relative": "03_analysis/latest/02_text_analysis.json",
+    "sha256": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7",
+    "text_findings_count": 11,
+    "normative_refs_count": 4,
+    "text_source": "md",
+    "read_policy_before_inference": "ПРОЧИТАНЫ ТОЛЬКО СЧЁТЧИКИ И ХЭШ (§15 требует зафиксировать факт наличия). Содержимое замечаний до завершения нового inference не открывается и в построении нового результата не участвует (§16)."
+  },
+
+  "why_selected": [
+    "Дисциплина ЭОМ — из числа прямо предпочтённых заданием (§15).",
+    "Документ уже проходил text_analysis успешно: version.json → analysis_status=complete, missing_analysis_files пуст.",
+    "Есть исторический 02_text_analysis.json — будет с чем сверить результат постфактум (§26).",
+    "Размер входа мал и заведомо не требует нарезки: 11 544 символа MD, весь промпт 30 179 символов.",
+    "Это не самый большой и не самый маленький кандидат: из 406 подходящих версий корпуса он второй по возрастанию размера MD, а самый маленький (SS, 9 625 байт) слишком беден для осмысленного сравнения.",
+    "text_source=md — то есть документ пригоден для production-аудита без нарушения запрета на fallback."
+  ],
+
+  "rejected_alternatives": [
+    {"candidate": "SS / 133_23-ГК-САКЗ v001", "md_bytes": 9625, "reason": "самый маленький в корпусе: слишком мало материала, чтобы сравнение с историей что-то показало"},
+    {"candidate": "GP / 133-23-ГК-ГП1 v001", "md_bytes": 21633, "reason": "дисциплина не входит в предпочтённые §15"},
+    {"candidate": "KM / 13АВ-РД-КМ-К1 v001", "md_bytes": 30813, "reason": "29 нормативных ссылок — тяжелее по норм-контексту, дисциплина не предпочтена"}
+  ],
+
+  "copy_policy": {
+    "copied_to_worker": "ОДНА копия Markdown в 11D-sandbox на .31",
+    "copied_files": ["133-23-ГК-ЭС_document.md"],
+    "not_copied": ["PDF", "result.json", "ocr.html", "исторические артефакты анализа", "соседние проекты", "knowledge_base"],
+    "committed_to_git": false,
+    "reason": "Пользовательский документ в репозиторий не попадает (§15, §32)."
+  },
+
+  "corpus_scan": {
+    "candidates_with_md_and_historical_text_analysis": 406,
+    "scan_scope": "projects_v2/objects/*/disciplines/*/documents/*/versions/*",
+    "scan_read_only": true
+  }
+}

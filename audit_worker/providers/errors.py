@@ -24,6 +24,12 @@ ERR_INCOMPATIBLE_CLI = "incompatible_cli"
 ERR_MALFORMED_STATUS = "malformed_status"
 ERR_POLICY_BLOCKED = "policy_blocked"
 ERR_TIMEOUT = "timeout"
+#: Этап 11D. CLI выполнил вызов, но фактически ответила НЕ та модель, которую
+#: назначила локальная политика воркера. Отдельный код, а не `policy_blocked`:
+#: политика ничего не блокировала — она была нарушена уже после вызова, и
+#: реакция на это другая (оператор смотрит на подписку и на версию CLI, а не на
+#: конфигурацию запретов).
+ERR_MODEL_MISMATCH = "model_mismatch"
 ERR_UNKNOWN = "unknown"
 
 PROVIDER_ERROR_CODES: tuple[str, ...] = (
@@ -37,6 +43,7 @@ PROVIDER_ERROR_CODES: tuple[str, ...] = (
     ERR_MALFORMED_STATUS,
     ERR_POLICY_BLOCKED,
     ERR_TIMEOUT,
+    ERR_MODEL_MISMATCH,
     ERR_UNKNOWN,
 )
 

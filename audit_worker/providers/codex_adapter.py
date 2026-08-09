@@ -47,7 +47,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from audit_worker.providers import errors, quota
 from audit_worker.providers.base import (
@@ -405,10 +405,27 @@ class CodexProviderAdapter(ProviderAdapter):
         *,
         purpose: str,
         timeout_sec: Optional[float] = None,
+        model: Optional[str] = None,
+        accepted_reported_models: Sequence[str] = (),
     ) -> ProviderInferenceResult:
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
             return blocked
+        if model:
+            # Явное назначение модели реализовано и проверено на 11D только для
+            # Claude. Принять параметр и молча его проигнорировать значило бы
+            # выдать непроверенное за проверенное: вызывающий считал бы, что
+            # модель назначена, а фактически шла бы модель по умолчанию — ровно
+            # та подмена, ради устранения которой параметр и появился.
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MODEL_MISMATCH,
+                detail=(
+                    "явное назначение модели для codex не реализовано: "
+                    f"требование {model!r} не может быть исполнено"
+                ),
+            )
         text = str(prompt or "")
         if not text.strip():
             return ProviderInferenceResult(
