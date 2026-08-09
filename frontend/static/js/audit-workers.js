@@ -431,6 +431,15 @@
     expired: 'вход истёк', unknown: 'неизвестно', error: 'ошибка',
   };
 
+  // Две РАЗНЫЕ оси, которые легко перепутать: `auth_state` отвечает «вошли
+  // ли», `auth_mode` — «чьей учётной записью». Формулировки выбраны так,
+  // чтобы ambient нельзя было прочитать как «воркер завёл себе аккаунт».
+  const AUTH_MODE_LABEL = {
+    ambient_user: 'личная учётная запись пользователя VPS',
+    isolated_provider_home: 'отдельный каталог воркера',
+    unavailable: 'учётных данных здесь нет (решение оператора)',
+  };
+
   const QUOTA_LABEL = {
     ready: 'готов', low: 'мало осталось', limited: 'лимит исчерпан',
     cooldown: 'ожидание', auth_required: 'нужна авторизация',
@@ -538,6 +547,28 @@
       ];
       const stability = STABILITY_LABEL[quota.source_stability];
       if (stability) parts.push(el('span', { className: 'hint', text: stability }));
+      // Режим авторизации читается из capability, а не с верхнего уровня:
+      // санитайзер центра собирает верхний уровень перечислением полей и
+      // новый ключ отбрасывает, а capability_json сохраняется целиком.
+      // Показывать это обязательно: без режима «вошли» и «не вошли» выглядят
+      // одинаково независимо от того, ЧЬИ учётные данные при этом работают.
+      const capability = item.capability || {};
+      const authMode = capability.auth_mode;
+      if (authMode) {
+        parts.push(el('span', {
+          className: authMode === 'unavailable' ? 'hint' : '',
+          text: `авторизация: ${AUTH_MODE_LABEL[authMode] || authMode}`,
+        }));
+      }
+      // Остаток разрешений на РЕАЛЬНЫЙ контрольный запрос. Ноль — норма и
+      // потому не предупреждение; ненулевой остаток означает, что воркер
+      // прямо сейчас способен потратить настоящий запрос подписки, и это
+      // оператор обязан видеть, не заходя на машину.
+      const grant = capability.inference_probe_grant_remaining;
+      if (typeof grant === 'number' && grant > 0) {
+        parts.push(el('span', { className: 'warn',
+          text: `⚠ разрешено контрольных запросов к модели: ${grant}` }));
+      }
       if (item.stale) {
         parts.push(el('span', { className: 'warn',
           text: '⚠ снимок устарел — показаны последние известные значения, не текущие' }));

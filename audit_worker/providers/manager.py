@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from audit_worker import redaction
-from audit_worker.providers import errors, quota
+from audit_worker.providers import errors, probe_grant, quota
 from audit_worker.providers.auth_mode import AUTH_MODE_UNAVAILABLE, DEFAULT_AUTH_MODE
 from audit_worker.providers.base import ProbeResult, ProviderAdapter
 from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
@@ -287,6 +287,21 @@ class ProviderManager:
             payload["quota"] = snapshot.as_dict() if snapshot is not None else None
             payload["last_auth_check_at"] = self._auth_checked_at.get(name)
             payload["last_quota_check_at"] = self._quota_checked_at.get(name)
+            # Остаток разрешений на реальный контрольный запрос. Кладётся в
+            # `capability`, а не верхним ключом, по той же причине, что и
+            # `auth_mode`: санитайзер центра собирает верхний уровень
+            # перечислением полей и новый ключ молча отбросил бы, а
+            # `capability_json` сохраняется целиком.
+            #
+            # Зачем это центру вообще. Без него «может ли ЭТОТ воркер потратить
+            # настоящий запрос» — вопрос, на который отвечает только человек с
+            # ssh на машину. Разрешение, которого не видно, невозможно ни
+            # проверить, ни отозвать вовремя: оператор узнаёт о нём по счёту.
+            capability = payload.get("capability")
+            if isinstance(capability, dict):
+                capability["inference_probe_grant_remaining"] = (
+                    probe_grant.read_state(self.worker_root, name).remaining
+                )
             out.append(payload)
         return out
 
