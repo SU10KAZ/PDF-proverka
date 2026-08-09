@@ -237,10 +237,14 @@ def step_credentials(ssh: Ssh, report: Report, providers_root: str) -> dict[str,
     return logged
 
 
-def step_auth_status(ssh: Ssh, report: Report, worker_root: str, python: str) -> dict[str, Any]:
+def step_auth_status(ssh: Ssh, report: Report, worker_root: str, python: str,
+                     app_dir: str) -> dict[str, Any]:
     report.section("6. Авторизация и лимиты (0 обращений к моделям)")
+    # cwd — каталог УСТАНОВЛЕННОГО кода (`<root>/current`), а не каталог данных:
+    # пакет `audit_worker` лежит там, и без этого `python -m audit_worker`
+    # честно отвечает «No module named audit_worker».
     command = (
-        f"cd {_q(str(Path(worker_root).parent))} && "
+        f"cd {_q(app_dir)} && "
         f"AUDIT_WORKER_ROOT={_q(worker_root)} "
         f"{_q(python)} -m audit_worker providers"
     )
@@ -300,18 +304,28 @@ def step_auth_status(ssh: Ssh, report: Report, worker_root: str, python: str) ->
 
 def step_secret_scan(report: Report, payload: dict[str, Any]) -> None:
     report.section("7. Сканирование снимка на секреты")
-    blob = json.dumps(payload, ensure_ascii=False)
+    # Сканируется ИМЕННО то, что уезжает в центр (`providers`), а не весь вывод
+    # команды. Разница существенная: команда `audit_worker providers` — это
+    # диагностика ДЛЯ АДМИНИСТРАТОРА ЭТОГО VPS, и путь к каталогу данных в её
+    # шапке уместен. В heartbeat он попасть не должен, и проверять надо это.
+    center_blob = json.dumps(payload.get("providers", []), ensure_ascii=False)
+    whole_blob = json.dumps(payload, ensure_ascii=False)
     markers = (
-        "sk-ant-", "sk-proj-", "sk-", "eyJhbGciOi", "Bearer ",
+        "sk-ant-", "sk-proj-", "eyJhbGciOi", "Bearer ",
         "refresh_token", "access_token", "accessToken", "\"token\"",
         "-----BEGIN",
     )
-    hits = [m for m in markers if m in blob]
-    report.add("в снимке нет маркеров секретов", not hits, ", ".join(hits) or "чисто")
+    hits = [m for m in markers if m in whole_blob]
+    report.add("во всём выводе нет маркеров секретов", not hits, ", ".join(hits) or "чисто")
     report.add(
-        "в снимке нет абсолютных путей чужой машины",
-        "/home/" not in blob,
-        "найден /home/" if "/home/" in blob else "чисто",
+        "в снимке ДЛЯ ЦЕНТРА нет абсолютных путей чужой машины",
+        "/home/" not in center_blob,
+        "найден /home/" if "/home/" in center_blob else "чисто",
+    )
+    report.add(
+        "в снимке ДЛЯ ЦЕНТРА нет e-mail учётной записи",
+        "@" not in center_blob.replace("\\u0040", "@"),
+        "найден символ @" if "@" in center_blob else "чисто",
     )
     for item in payload.get("providers", []):
         for banned in ("email", "provider_home", "executable_path", "credential_facts"):
@@ -323,7 +337,7 @@ def step_secret_scan(report: Report, payload: dict[str, Any]) -> None:
 
 
 def step_provider_error_isolation(ssh: Ssh, report: Report, providers_root: str,
-                                  worker_root: str, python: str) -> None:
+                                  worker_root: str, python: str, app_dir: str) -> None:
     report.section("8. Изоляция отказа провайдера")
     # Временно уводим исполняемый файл: провайдер «ломается», воркер обязан
     # продолжать работать и честно сказать «CLI не установлен».
@@ -335,7 +349,7 @@ def step_provider_error_isolation(ssh: Ssh, report: Report, providers_root: str,
         return
     try:
         command = (
-            f"cd {_q(str(Path(worker_root).parent))} && "
+            f"cd {_q(app_dir)} && "
             f"AUDIT_WORKER_ROOT={_q(worker_root)} {_q(python)} -m audit_worker providers"
         )
         ok, out, err = ssh.ok(command, timeout=300.0)
@@ -435,10 +449,10 @@ def step_center(report: Report, central_url: str, cookie: str,
 
 
 def step_inference_probe(ssh: Ssh, report: Report, worker_root: str, python: str,
-                         provider: str) -> None:
+                         app_dir: str, provider: str) -> None:
     report.section("10. КОНТРОЛЬНЫЙ ЗАПРОС К МОДЕЛИ (по явному разрешению)")
     command = (
-        f"cd {_q(str(Path(worker_root).parent))} && "
+        f"cd {_q(app_dir)} && "
         f"AUDIT_WORKER_ROOT={_q(worker_root)} "
         f"AUDIT_WORKER_ALLOW_REAL_PROVIDER_PROBE=true "
         f"{_q(python)} -m audit_worker provider-probe {provider} "
@@ -475,6 +489,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--worker-root", default="/home/coder/audit-worker/data")
     parser.add_argument("--worker-python",
                         default="/home/coder/audit-worker/venv/bin/python")
+    parser.add_argument("--worker-app-dir",
+                        default="/home/coder/audit-worker/current",
+                        help="каталог установленного кода (там лежит audit_worker/)")
     parser.add_argument("--central-url", default="")
     parser.add_argument("--portal-cookie", default="",
                         help="portal_session=<значение> для authed-запросов к центру")
@@ -504,11 +521,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     step_personal_dirs_untouched(ssh, report, args.worker_user)
     step_executables(ssh, report, providers_root)
     step_credentials(ssh, report, providers_root)
-    payload = step_auth_status(ssh, report, args.worker_root, args.worker_python)
+    payload = step_auth_status(
+        ssh, report, args.worker_root, args.worker_python, args.worker_app_dir
+    )
     if payload:
         step_secret_scan(report, payload)
     step_provider_error_isolation(
-        ssh, report, providers_root, args.worker_root, args.worker_python
+        ssh, report, providers_root, args.worker_root, args.worker_python,
+        args.worker_app_dir,
     )
     step_center(report, args.central_url, args.portal_cookie)
 
@@ -523,7 +543,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             targets = PROVIDERS if args.provider == "all" else (args.provider,)
             for provider in targets:
                 step_inference_probe(
-                    ssh, report, args.worker_root, args.worker_python, provider
+                    ssh, report, args.worker_root, args.worker_python,
+                    args.worker_app_dir, provider,
                 )
     else:
         report.add(
