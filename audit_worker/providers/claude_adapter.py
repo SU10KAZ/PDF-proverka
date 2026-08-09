@@ -316,7 +316,11 @@ def _auth_from_payload(payload: dict[str, Any], *, exit_code: Optional[int]) -> 
     plan = payload.get("planType") or payload.get("plan") or payload.get("subscriptionType")
     # `email` и `organization` НЕ попадают ни в `raw_public`, ни к центру:
     # первое — персональные данные, второе — сведения об организации.
-    identifier = payload.get("email") or payload.get("organizationUuid")
+    # `orgId` — фактическое имя поля в ответе CLI (проверено на живом
+    # выводе). Прежний `organizationUuid` был выдумкой: ветка-фолбэк не
+    # срабатывала никогда, и у учётной записи без e-mail (Console/SSO)
+    # отпечаток молча оставался пустым.
+    identifier = payload.get("email") or payload.get("orgId")
 
     if logged_in is True:
         state = AUTH_LOGGED_IN

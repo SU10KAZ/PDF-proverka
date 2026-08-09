@@ -98,8 +98,14 @@ class CodexProviderAdapter(ProviderAdapter):
             # Официальная переменная: корень ВСЕГО состояния Codex, включая
             # auth.json, конфиг, логи и сессии.
             "CODEX_HOME": str(self.home.config_dir),
-            # Установщик и обновлятор Codex читают её; в фоне на чужом VPS
-            # обновляться незачем — версия входит в контракт разбора.
+            # Переменная УСТАНОВЩИКА («skip installer prompts»), а не
+            # выключатель автообновления: официального аналога
+            # `DISABLE_AUTOUPDATER` у Codex нет. Ставим её, чтобы ни одна
+            # ветка CLI не ушла в интерактивный диалог на машине без
+            # терминала. Следствие, которое нужно знать: версия Codex НЕ
+            # закреплена так же жёстко, как версия Claude, поэтому
+            # `parser_version` привязан к разбору app-server 0.147.x, и при
+            # расхождении контракта разбор честно даёт UNKNOWN.
             "CODEX_NON_INTERACTIVE": "1",
         }
 
@@ -396,23 +402,65 @@ def _auth_from_account(
     )
 
 
+def _number(value: Any) -> Optional[float]:
+    """Число или None. `bool` числом НЕ считается.
+
+    `isinstance(True, int)` истинно, и без этой проверки `usedPercent: true`
+    превращался бы в «использован 1 %», то есть в остаток 99 % — выдуманное
+    значение с высокой достоверностью. Ровно тот случай, ради которого весь
+    модуль и написан.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
 def _window(
     raw: Any, *, window_id: str, source: str, confidence: str
 ) -> Optional[quota.QuotaWindow]:
+    """Одно окно из ответа app-server.
+
+    Ключевое отличие от «мягкого» разбора: поле НЕПРАВИЛЬНОГО типа — это не
+    «поля нет», а расхождение контракта. Раньше оно молча превращалось в
+    `None`, и снимок уходил дальше с процентом соседнего окна: при
+    `primary.usedPercent = "97.5"` (строка вместо числа) и
+    `secondary.usedPercent = 10` оператор видел «готов, остаток 90 %», хотя
+    пятичасовое окно было выбрано на 97,5 %. Теперь такой ответ поднимает
+    `QuotaContractError`, и `quota_status` честно отдаёт UNKNOWN.
+    """
     if not isinstance(raw, dict):
         return None
-    used = raw.get("usedPercent")
-    minutes = raw.get("windowDurationMins")
-    resets_at = raw.get("resetsAt")
+    used_raw = raw.get("usedPercent")
+    minutes_raw = raw.get("windowDurationMins")
+    resets_raw = raw.get("resetsAt")
+
+    used = _number(used_raw)
+    if used_raw is not None and used is None:
+        raise quota.QuotaContractError(
+            f"{window_id}: usedPercent не число ({type(used_raw).__name__})"
+        )
+    resets_at = _number(resets_raw)
+    if resets_raw is not None and resets_at is None:
+        raise quota.QuotaContractError(
+            f"{window_id}: resetsAt не число ({type(resets_raw).__name__})"
+        )
+    minutes = _number(minutes_raw)
+    if minutes_raw is not None and minutes is None:
+        raise quota.QuotaContractError(
+            f"{window_id}: windowDurationMins не число ({type(minutes_raw).__name__})"
+        )
+
     if used is None and resets_at is None:
         return None
     return quota.QuotaWindow(
         window_id=window_id,
         source=source,
         confidence=confidence,
-        used_pct=used if isinstance(used, (int, float)) else None,
-        reset_at=float(resets_at) if isinstance(resets_at, (int, float)) else None,
-        duration_sec=int(minutes) * 60 if isinstance(minutes, (int, float)) else None,
+        used_pct=used,
+        reset_at=resets_at,
+        duration_sec=int(minutes) * 60 if minutes is not None else None,
     )
 
 
@@ -439,22 +487,26 @@ def _snapshot_from_rate_limits(
     buckets = payload.get("rateLimitsByLimitId")
     single = payload.get("rateLimits")
     chosen: Optional[dict[str, Any]] = None
+    chosen_key: Optional[str] = None
     if isinstance(buckets, dict) and buckets:
-        # Многоведёрный вид. Основное ведро Codex документировано как `codex`;
-        # если его нет, берём первое по алфавиту — но НЕ смешиваем вёдра между
-        # собой: у них разные лимиты и разные окна.
-        chosen = buckets.get("codex")
-        if not isinstance(chosen, dict):
+        # Многоведёрный вид. Основное ведро Codex документировано как `codex`.
+        if isinstance(buckets.get("codex"), dict):
+            chosen, chosen_key = buckets["codex"], "codex"
+        else:
             for key in sorted(buckets):
                 if isinstance(buckets[key], dict):
-                    chosen = buckets[key]
+                    chosen, chosen_key = buckets[key], key
                     break
     if not isinstance(chosen, dict) and isinstance(single, dict):
-        chosen = single
+        chosen, chosen_key = single, None
     if not isinstance(chosen, dict):
         raise quota.QuotaContractError("ни rateLimits, ни rateLimitsByLimitId не разобраны")
 
-    limit_id = str(chosen.get("limitId") or "codex")
+    # Имя ведра берётся из САМОГО ведра, а при его отсутствии — из ключа, под
+    # которым оно лежало. Подстановка «codex» по умолчанию была ошибкой: она
+    # подписывала измерение чужого лимита именем основного, и на экране
+    # «limit_id=codex» относилось не к codex.
+    limit_id = str(chosen.get("limitId") or chosen_key or "unknown")
     primary = _window(
         chosen.get("primary"), window_id=f"{limit_id}:primary",
         source=source, confidence=confidence,
@@ -463,29 +515,36 @@ def _snapshot_from_rate_limits(
         chosen.get("secondary"), window_id=f"{limit_id}:secondary",
         source=source, confidence=confidence,
     )
-    secondaries: list[quota.QuotaWindow] = [w for w in (secondary,) if w is not None]
-    # Остальные вёдра — тоже вторичные окна: их полезно видеть, но решение
-    # принимается по основному.
+    # Окна ВЫБРАННОГО ведра — те, по которым принимается решение.
+    own: list[quota.QuotaWindow] = [w for w in (primary, secondary) if w is not None]
+    # Окна прочих вёдер — справочные. Они НЕ участвуют ни в расчёте остатка,
+    # ни в выборе ближайшего сброса: у чужого ведра свой лимит и свои окна, и
+    # смешивать их означало бы подписать число не тем лимитом. Раньше `min()`
+    # шёл по объединённому списку — при `code_review` на 90 % основной остаток
+    # Codex подменялся чужим.
+    foreign: list[quota.QuotaWindow] = []
     if isinstance(buckets, dict):
         for key in sorted(buckets):
             bucket = buckets[key]
             if not isinstance(bucket, dict) or bucket is chosen:
                 continue
-            extra = _window(
-                bucket.get("primary"), window_id=f"{key}:primary",
-                source=source, confidence=confidence,
-            )
-            if extra is not None:
-                secondaries.append(extra)
+            for field_name in ("primary", "secondary"):
+                extra = _window(
+                    bucket.get(field_name), window_id=f"{key}:{field_name}",
+                    source=source, confidence=confidence,
+                )
+                if extra is not None:
+                    foreign.append(extra)
 
-    known = [w for w in ([primary] + secondaries) if w is not None and w.remaining_pct is not None]
-    remaining = min((w.remaining_pct for w in known), default=None)
+    secondaries: list[quota.QuotaWindow] = (
+        ([secondary] if secondary is not None else []) + foreign
+    )
+
+    known = [w.remaining_pct for w in own if w.remaining_pct is not None]
+    remaining = min(known) if known else None
     raw_supported = remaining is not None
 
-    resets = [
-        w.reset_at for w in ([primary] + secondaries)
-        if w is not None and w.reset_at is not None
-    ]
+    resets = [w.reset_at for w in own if w.reset_at is not None]
     next_reset = min(resets) if resets else None
 
     reached = chosen.get("rateLimitReachedType")

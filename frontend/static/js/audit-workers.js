@@ -47,6 +47,11 @@
     workerProviders: {},
     providerAccounts: [],
     providerMeta: { lowThresholdPct: null, autoDispatch: false },
+    // Отдельный признак: ответила ли ручка провайдеров. Без него отказ
+    // сервера выглядел на КАЖДОЙ карточке как «воркер не сообщал о
+    // провайдерах» — утверждение о воркере, которого никто не спрашивал.
+    providersLoaded: false,
+    providerAccountKinds: [],
   };
 
   const PERM = {
@@ -247,9 +252,7 @@
     const resetRaw = window.prompt(
       'Ручная дата сброса лимита (ГГГГ-ММ-ДД ЧЧ:ММ).\n'
       + 'Пустая строка — оставить как есть. Слово «нет» — стереть.',
-      account.manual_next_reset_at
-        ? new Date(account.manual_next_reset_at * 1000).toISOString().slice(0, 16).replace('T', ' ')
-        : '');
+      account.manual_next_reset_at ? localStamp(account.manual_next_reset_at) : '');
     if (resetRaw === null) return;
     const daysRaw = window.prompt(
       'Пороги предупреждения в днях через запятую:',
@@ -257,12 +260,36 @@
     if (daysRaw === null) return;
     const notes = window.prompt('Заметки:', account.notes || '');
     if (notes === null) return;
-    const unused = window.confirm(
-      'Отметить учётную запись как «лимит почти не использован»?\n\n'
-      + 'ОК — да (это включит предупреждение о сгорающем лимите даже при '
-      + 'неизвестном остатке).\nОтмена — нет.');
+    // Тип учётной записи — комплаенс-решение оператора, и без него запись
+    // остаётся в состоянии review_required. Раньше задать его с экрана было
+    // нельзя вовсе, хотя чек-лист готовности к первому реальному аудиту
+    // требует именно этого.
+    const kinds = state.providerAccountKinds.length
+      ? state.providerAccountKinds
+      : ['subscription_personal', 'subscription_team', 'subscription_enterprise',
+         'commercial_api', 'unknown'];
+    const kindRaw = window.prompt(
+      `Тип учётной записи (${kinds.join(' / ')}).\nПусто — не трогать.`,
+      account.account_kind || '');
+    if (kindRaw === null) return;
+    // Три состояния, а не два. `confirm` умеет только «да/нет», и «Отмена»
+    // молча снимала бы отметку у оператора, зашедшего поправить заметку, —
+    // а это единственный источник предупреждения о сгорающем лимите, когда
+    // остаток объективно неизвестен. API «не трогать» поддерживает
+    // (exclude_unset), диалог обязан уметь то же самое.
+    const unusedRaw = window.prompt(
+      'Отметка «лимит почти не использован»:\n'
+      + '  да  — включить (предупреждение о сгорающем лимите будет работать '
+      + 'даже при неизвестном остатке)\n'
+      + '  нет — выключить\n'
+      + '  пусто — не трогать',
+      account.operator_marked_unused ? 'да' : 'нет');
+    if (unusedRaw === null) return;
 
-    const body = { display_name: name.trim(), notes, operator_marked_unused: unused };
+    const body = { display_name: name.trim(), notes };
+    const unusedText = unusedRaw.trim().toLowerCase();
+    if (unusedText === 'да' || unusedText === 'yes') body.operator_marked_unused = true;
+    else if (unusedText === 'нет' || unusedText === 'no') body.operator_marked_unused = false;
     const trimmed = resetRaw.trim().toLowerCase();
     if (trimmed === 'нет' || trimmed === 'no') {
       body.clear_manual_reset = true;
@@ -277,6 +304,14 @@
     }
     const days = daysRaw.split(',').map((x) => parseInt(x.trim(), 10)).filter((x) => x > 0);
     if (days.length) body.warning_days = days;
+    const kind = kindRaw.trim();
+    if (kind) {
+      if (!kinds.includes(kind)) {
+        window.alert(`Неизвестный тип. Допустимы: ${kinds.join(', ')}`);
+        return;
+      }
+      body.account_kind = kind;
+    }
     await putAccount(accountId, body);
     await refresh();
   }
@@ -439,6 +474,21 @@
     return `${Number(pct).toFixed(0)}%`;
   }
 
+  /**
+   * Метка «ГГГГ-ММ-ДД ЧЧ:ММ» в ЛОКАЛЬНОЙ зоне браузера.
+   *
+   * Не `toISOString()`: он даёт UTC, а обратный разбор идёт `Date.parse` по
+   * локальному времени. Пара «подставили UTC — прочитали локально» сдвигала
+   * ручную дату на смещение зоны при КАЖДОМ открытии диалога, даже когда
+   * оператор поле не трогал: в Москве — на три часа назад каждый раз.
+   */
+  function localStamp(epochSeconds) {
+    const d = new Date(Number(epochSeconds) * 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+         + ` ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function daysText(days) {
     if (days === null || days === undefined) return '—';
     const value = Number(days);
@@ -449,6 +499,13 @@
   }
 
   function providerRows(workerId) {
+    if (!state.providersLoaded) {
+      // Утверждать что-либо о воркере, когда не ответил СЕРВЕР, нельзя: это
+      // ровно тот выдуманный факт, которого этот экран избегает.
+      return [el('p', { className: 'warn',
+        text: 'Состояние провайдеров не получено: запрос к центру не выполнен. '
+            + 'Это не значит, что воркер молчит.' })];
+    }
     const items = state.workerProviders[workerId] || [];
     if (!items.length) {
       return [el('p', { className: 'hint',
@@ -481,6 +538,10 @@
       ];
       const stability = STABILITY_LABEL[quota.source_stability];
       if (stability) parts.push(el('span', { className: 'hint', text: stability }));
+      if (item.stale) {
+        parts.push(el('span', { className: 'warn',
+          text: '⚠ снимок устарел — показаны последние известные значения, не текущие' }));
+      }
       if (item.account_group_id) {
         parts.push(el('span', { className: 'hint',
           text: `учётная запись: ${item.account_group_id}` }));
@@ -571,6 +632,49 @@
     return card;
   }
 
+  /** Короткая строка «провайдер → группа» для карточки VPS. */
+  function providerGroupsLine(workerId) {
+    const items = state.workerProviders[workerId] || [];
+    if (!items.length) return '—';
+    return items
+      .map((i) => `${PROVIDER_LABEL[i.provider] || i.provider}: `
+                + `${i.account_group_id || 'не привязан'}`)
+      .join(' · ');
+  }
+
+  /** Привязать провайдера воркера к общей учётной записи (право operate). */
+  async function bindProviderGroup(workerId) {
+    const provider = window.prompt(
+      'Какого провайдера привязать? claude или codex', 'codex');
+    if (provider === null) return;
+    const name = provider.trim().toLowerCase();
+    if (name !== 'claude' && name !== 'codex') {
+      window.alert('Допустимы только claude и codex.');
+      return;
+    }
+    const current = (state.workerProviders[workerId] || [])
+      .find((i) => i.provider === name);
+    const group = window.prompt(
+      'Идентификатор общей учётной записи (например claude-account-01).\n'
+      + 'Пустая строка — отвязать.\n\n'
+      + 'Внимание: две машины с ОДНОЙ группой считаются одним лимитом, '
+      + 'их остатки не складываются.',
+      (current && current.account_group_id) || '');
+    if (group === null) return;
+    await api(
+      `/api/workers/${encodeURIComponent(workerId)}`
+      + `/providers/${encodeURIComponent(name)}/account-group`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'audit-workers',
+        },
+        body: JSON.stringify({ account_group_id: group.trim() || null }),
+      });
+    await refresh();
+  }
+
   function renderWorker(worker) {
     const conn = worker.connection_status;
     const offline = conn === 'offline';
@@ -630,6 +734,7 @@
       // видеть разницу между «поддельные CLI» и «настоящая подписка».
       kv('Реальный аудит', remoteAuditLine(worker),
          remoteAuditWarning(worker) ? 'kv-critical' : ''),
+      kv('Учётные записи провайдеров', providerGroupsLine(worker.worker_id)),
       kv('Исполнитель', [
         EXECUTOR_LABEL[executor.status] || executor.status,
         executor.last_heartbeat_at ? `· ${humanStamp(executor.last_heartbeat_at)}` : '',
@@ -659,6 +764,8 @@
           dataset: { reject: worker.worker_id } }, admin),
       ]
       : [
+        actionButton({ className: 'btn', text: 'Учётная запись провайдера',
+          dataset: { bindGroup: worker.worker_id } }, state.perms.canOperate),
         actionButton({ className: 'btn', text: 'Отозвать',
           dataset: { revoke: worker.worker_id } }, admin),
       ];
@@ -1056,8 +1163,10 @@
       // Провайдеры приходят отдельной ручкой и НЕ роняют экран при ошибке:
       // подсистема воркеров работает и без наблюдения за подписками.
       const providersData = await api('/api/workers/providers/overview').catch(() => null);
+      state.providersLoaded = !!providersData;
       state.workerProviders = (providersData && providersData.worker_providers) || {};
       state.providerAccounts = (providersData && providersData.accounts) || [];
+      state.providerAccountKinds = (providersData && providersData.account_kinds) || [];
       state.providerMeta = {
         lowThresholdPct: providersData ? providersData.low_threshold_pct : null,
         autoDispatch: !!(providersData && providersData.auto_dispatch_enabled),
@@ -1255,9 +1364,12 @@
     const newAttempt = target.closest('[data-newattempt]');
     const deleteData = target.closest('[data-deletedata]');
     const accountEdit = target.closest('[data-edit-account]');
+    const bindGroup = target.closest('[data-bind-group]');
     try {
       if (accountEdit) {
         await editAccount(accountEdit.dataset.editAccount);
+      } else if (bindGroup) {
+        await bindProviderGroup(bindGroup.dataset.bindGroup);
       } else if (reject) {
         if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
           + 'claim-secret будет погашен, воркер токен не получит.')) return;

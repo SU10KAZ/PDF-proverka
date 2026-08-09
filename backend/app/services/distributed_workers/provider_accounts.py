@@ -69,6 +69,20 @@ STATES_WITHOUT_REMAINING: frozenset[str] = frozenset(
 
 DEFAULT_WARNING_DAYS: tuple[int, ...] = (7, 3, 1)
 
+#: Потолок числа АВТОМАТИЧЕСКИ заводимых учётных записей. У
+#: `subscription_accounts` нет своего пруннинга, а группа приходит от
+#: полу-доверенного воркера: без потолка агент, меняющий `account_group_id`
+#: в каждом heartbeat, за сутки создал бы тысячи строк, каждая из которых
+#: требует решения человека. Записи, заведённые ОПЕРАТОРОМ через API, под
+#: потолок не попадают — там источник доверенный.
+MAX_AUTO_ACCOUNTS = 64
+
+#: Предел размера `capability` от воркера. Это было единственное поле
+#: снимка, принимавшееся целиком любого размера: 2 МБ от воркера ложились
+#: в базу и возвращались браузеру оператора дословно.
+_MAX_CAPABILITY_BYTES = 8192
+_MAX_CAPABILITY_KEYS = 40
+
 #: Ограничители длины операторских строк. Не про XSS (экранирование —
 #: обязанность отображения), а про размер строки в базе и в ответе API.
 _MAX_DISPLAY_NAME = 120
@@ -136,6 +150,37 @@ def _epoch(value: Any) -> Optional[float]:
     return number
 
 
+def _bounded_capability(raw: Any) -> dict[str, Any]:
+    """`capability` от воркера — с ограничением размера и глубины.
+
+    Единственное поле снимка, которое раньше принималось целиком: воркер мог
+    прислать мегабайты, они ложились в `capability_json` и возвращались
+    браузеру оператора дословно. Ограничитель числа ЭЛЕМЕНТОВ в модели
+    (`max_length=8`) от этого не спасал — он считает провайдеров, а не байты.
+    """
+    if not isinstance(raw, dict):
+        return {}
+    out: dict[str, Any] = {}
+    for key in sorted(raw)[:_MAX_CAPABILITY_KEYS]:
+        value = raw[key]
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            out[str(key)[:64]] = value if not isinstance(value, str) else value[:200]
+        elif isinstance(value, dict):
+            # Один уровень вложенности: этого хватает на `provider_home`,
+            # а произвольную глубину принимать незачем.
+            out[str(key)[:64]] = {
+                str(k)[:64]: (v[:200] if isinstance(v, str) else v)
+                for k, v in list(value.items())[:_MAX_CAPABILITY_KEYS]
+                if isinstance(v, (str, int, float, bool)) or v is None
+            }
+    try:
+        if len(json.dumps(out, ensure_ascii=False).encode("utf-8")) > _MAX_CAPABILITY_BYTES:
+            return {"truncated": True}
+    except (TypeError, ValueError):
+        return {}
+    return out
+
+
 def sanitize_quota_window(raw: Any) -> Optional[dict[str, Any]]:
     if not isinstance(raw, dict):
         return None
@@ -198,7 +243,11 @@ def sanitize_quota(raw: Any, *, provider: str) -> dict[str, Any]:
     return {
         "provider": provider,
         "quota_state": state,
-        "observed_at": _opt_float(data.get("observed_at")),
+        # Через `_epoch`, а не `_opt_float`: именно это значение решает, протух
+        # ли снимок. Метка из будущего (сбитые часы VPS или подставленное
+        # `1e18`) сделала бы снимок вечно свежим, и «остаток 88 %» показывался
+        # бы как текущий бессрочно.
+        "observed_at": _epoch(data.get("observed_at")),
         "source": source,
         "confidence": confidence,
         "source_stability": _enum(
@@ -225,7 +274,7 @@ def sanitize_provider_snapshot(raw: Any) -> Optional[dict[str, Any]]:
     provider = str(raw.get("provider") or "").strip().lower()
     if provider not in PROVIDERS:
         return None
-    capability = raw.get("capability")
+    capability = _bounded_capability(raw.get("capability"))
     quota = sanitize_quota(raw.get("quota"), provider=provider)
     group = normalize_group_id(raw.get("account_group_id"), allow_empty=True)
     return {
@@ -246,12 +295,13 @@ def sanitize_provider_snapshot(raw: Any) -> Optional[dict[str, Any]]:
         "credential_insecure": bool(
             raw.get("credential_world_readable") or raw.get("credential_group_readable")
         ),
-        "capability": capability if isinstance(capability, dict) else {},
+        "capability": capability,
         "error_code": _opt_str(raw.get("error_code"), 64),
         "detail": _opt_str(raw.get("detail"), 600),
-        "observed_at": _opt_float(raw.get("observed_at")),
-        "last_auth_check_at": _opt_float(raw.get("last_auth_check_at")),
-        "last_quota_check_at": _opt_float(raw.get("last_quota_check_at")),
+        # Границы те же, что у квоты: метка времени решает вопрос свежести.
+        "observed_at": _epoch(raw.get("observed_at")),
+        "last_auth_check_at": _epoch(raw.get("last_auth_check_at")),
+        "last_quota_check_at": _epoch(raw.get("last_quota_check_at")),
         "quota": quota,
     }
 
@@ -309,10 +359,30 @@ def record_worker_providers(
                     credential_mode, credential_insecure, capability_json,
                     quota_json, quota_state, quota_source, quota_confidence,
                     remaining_pct, observed_next_reset_at, error_code, detail,
-                    observed_at, reported_at
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    observed_at, reported_at, account_group_source
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'worker')
                 ON CONFLICT(worker_id, provider) DO UPDATE SET
-                    account_group_id=excluded.account_group_id,
+                    -- Привязка к учётной записи — РЕШЕНИЕ ОПЕРАТОРА, и heartbeat
+                    -- его не отменяет. Раньше здесь стояло
+                    -- `excluded.account_group_id`, и всё работало ровно один
+                    -- такт: воркер, у которого переменная группы не задана (а
+                    -- это умолчание), присылал NULL и стирал то, что человек
+                    -- только что назначил через API.
+                    --
+                    -- Заодно это закрывает вторую дыру: воркер больше не может
+                    -- объявить СЕБЯ участником чужой учётной записи и стать по
+                    -- ней источником истины на экране. Значение из снимка
+                    -- принимается только когда центр ещё ничего не знает.
+                    account_group_id=COALESCE(
+                        worker_provider_states.account_group_id,
+                        excluded.account_group_id
+                    ),
+                    -- Происхождение не понижается: раз привязку сделал
+                    -- оператор, heartbeat не превращает её в самопривязку.
+                    account_group_source=CASE
+                        WHEN worker_provider_states.account_group_source='operator'
+                            THEN 'operator' ELSE excluded.account_group_source
+                    END,
                     installation_status=excluded.installation_status,
                     cli_version=excluded.cli_version,
                     auth_state=excluded.auth_state,
@@ -352,29 +422,48 @@ def record_worker_providers(
                     moment,
                 ),
             )
-        # Аккаунт заводится автоматически ТОЛЬКО когда воркер прислал
-        # `account_group_id`: сам центр группу не выдумывает, её назначает
-        # оператор (§8). Без группы состояние провайдера всё равно видно на
-        # карточке VPS — просто оно ни к какому аккаунту не отнесено.
-        for snap in clean:
-            if snap["account_group_id"]:
-                _ensure_account_row(
-                    conn,
-                    provider=snap["provider"],
-                    account_group_id=snap["account_group_id"],
-                    now=moment,
-                )
+        # Аккаунт заводится автоматически ТОЛЬКО под ту группу, которая уже
+        # закреплена за этой парой воркер+провайдер, — то есть под назначенную
+        # оператором либо принятую при первом знакомстве. Читаем из таблицы,
+        # а не из снимка: иначе воркер, меняющий группу в каждом heartbeat,
+        # заводил бы по новой учётной записи каждые тридцать секунд, и каждая
+        # требовала бы решения человека.
+        #
+        # Предел числа автозаводимых записей — отдельный рубеж на тот же
+        # случай: у `subscription_accounts` нет своего пруннинга, и раздуть её
+        # некому, кроме этого места.
+        stored = {
+            (row["provider"], row["account_group_id"])
+            for row in conn.execute(
+                "SELECT provider, account_group_id FROM worker_provider_states "
+                "WHERE worker_id=? AND account_group_id IS NOT NULL",
+                (worker_id,),
+            )
+        }
+        existing_total = int(
+            conn.execute("SELECT COUNT(*) FROM subscription_accounts").fetchone()[0]
+        )
+        for provider, group in sorted(stored):
+            if existing_total >= MAX_AUTO_ACCOUNTS:
+                break
+            if _ensure_account_row(
+                conn, provider=provider, account_group_id=group, now=moment
+            ):
+                existing_total += 1
     _append_history(worker_id=worker_id, snapshots=clean, settings=settings, now=moment)
     return clean
 
 
-def _ensure_account_row(conn, *, provider: str, account_group_id: str, now: float) -> None:
+def _ensure_account_row(
+    conn, *, provider: str, account_group_id: str, now: float
+) -> bool:
+    """Завести запись, если её ещё нет. `True` — если действительно завели."""
     row = conn.execute(
         "SELECT account_id FROM subscription_accounts WHERE provider=? AND account_group_id=?",
         (provider, account_group_id),
     ).fetchone()
     if row is not None:
-        return
+        return False
     conn.execute(
         """
         INSERT INTO subscription_accounts (
@@ -391,6 +480,7 @@ def _ensure_account_row(conn, *, provider: str, account_group_id: str, now: floa
             "review_required", "unknown", now, now,
         ),
     )
+    return True
 
 
 def _append_history(
@@ -701,12 +791,14 @@ def set_worker_provider_group(
             # привязку можно было сделать заранее, до первого heartbeat.
             conn.execute(
                 "INSERT INTO worker_provider_states "
-                "(worker_id, provider, account_group_id, reported_at) VALUES (?,?,?,?)",
+                "(worker_id, provider, account_group_id, account_group_source, "
+                " reported_at) VALUES (?,?,?,'operator',?)",
                 (worker_id, provider, group, moment),
             )
         else:
             conn.execute(
-                "UPDATE worker_provider_states SET account_group_id=?, reported_at=? "
+                "UPDATE worker_provider_states SET account_group_id=?, "
+                "account_group_source='operator', reported_at=? "
                 "WHERE worker_id=? AND provider=?",
                 (group, moment, worker_id, provider),
             )

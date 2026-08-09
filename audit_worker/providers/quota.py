@@ -110,6 +110,11 @@ class QuotaContractError(ValueError):
 def _clamp_pct(value: Optional[float], *, field_name: str) -> Optional[float]:
     if value is None:
         return None
+    # `bool` — подкласс `int`, и `float(True)` даёт 1.0. Без этой ветки
+    # `usedPercent: true` превратился бы в «использован 1 %», то есть в
+    # остаток 99 % с высокой достоверностью — ровно выдуманное число.
+    if isinstance(value, bool):
+        raise QuotaContractError(f"{field_name}: булево значение не процент")
     try:
         number = float(value)
     except (TypeError, ValueError) as exc:

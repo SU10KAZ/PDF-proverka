@@ -483,7 +483,22 @@ async def providers_overview(actor: Actor = Depends(require_view)) -> dict[str, 
         provider_view.accounts_overview, settings=settings, now=now
     )
     by_worker: dict[str, list[dict[str, Any]]] = {}
+    stale_after = max(60, int(settings.quota_stale_sec))
     for state in states:
+        # Устаревание помечается и в СЫРОЙ строке провайдера, а не только в
+        # сведённом представлении учётной записи. Иначе на одном экране
+        # карточка аккаунта писала «устарело», а строка провайдера того же
+        # VPS — «лимит: готов, остаток 62 %»: два разных ответа про одно
+        # измерение.
+        observed = state.get("observed_at")
+        state["stale"] = (
+            True if not observed else (now - float(observed)) > stale_after
+        )
+        quota_block = state.get("quota") or {}
+        if state["stale"] and quota_block.get("quota_state") in ("ready", "low"):
+            quota_block["quota_state"] = "stale"
+            state["quota"] = quota_block
+            state["quota_state"] = "stale"
         by_worker.setdefault(state["worker_id"], []).append(state)
     return {
         "worker_providers": by_worker,
@@ -550,6 +565,11 @@ async def update_provider_account(
     if account is None:
         raise HTTPException(status_code=404, detail="Учётная запись не найдена.")
     fields = payload.model_dump(exclude_unset=True)
+    # Список изменённого снимается ДО извлечения флага стирания: иначе самая
+    # разрушительная операция формы («стереть дату, которую человек ставил
+    # руками») попадала в неизменяемый журнал как «поля: —», то есть выглядела
+    # как действие, ничего не изменившее.
+    changed = sorted(fields)
     try:
         if fields.pop("clear_manual_reset", False):
             # Стирание — отдельная операция: в upsert `None` означает «не
@@ -567,7 +587,6 @@ async def update_provider_account(
     except provider_accounts.ProviderAccountError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    changed = sorted(fields)
     await _record_admin_action(
         request,
         action_type="provider_account_update",

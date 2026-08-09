@@ -30,6 +30,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Optional
 
+from audit_worker import redaction
 from audit_worker.providers import errors, quota
 from audit_worker.providers.base import ProbeResult, ProviderAdapter
 from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
@@ -129,13 +130,23 @@ class ProviderManager:
             except Exception as exc:                   # noqa: BLE001 — см. §27
                 # Отказ провайдера не имеет права остановить агента. Пишем в
                 # кеш честное состояние ошибки и идём дальше.
-                self._log(f"provider {name}: опрос не удался: {exc}")
+                #
+                # Текст исключения проходит редактор: он уезжает в `detail`
+                # снимка, а оттуда в heartbeat и на экран оператора. Сегодня
+                # туда попадают только имена переменных, но полагаться на
+                # дисциплину авторов будущих адаптеров здесь нельзя — в
+                # сообщении чужой библиотеки может оказаться и путь, и URL с
+                # учётными данными.
+                safe = redaction.redact(
+                    str(exc), extra_literals=(str(self.worker_root),)
+                )
+                self._log(f"provider {name}: опрос не удался: {safe}")
                 with self._lock:
                     self._quotas[name] = quota.unknown_snapshot(
                         name,
                         auth_state=AUTH_UNKNOWN,
                         quota_state=quota.QUOTA_ERROR,
-                        reason=f"внутренняя ошибка опроса: {exc}",
+                        reason=f"внутренняя ошибка опроса: {safe}",
                         observed_at=moment,
                         probe_error_code=errors.classify_exception(exc),
                     )

@@ -50,10 +50,22 @@ _BLOCKING_QUOTA_STATES = frozenset({"limited", "cooldown", "auth_required", "pol
 RECONCILIATION_POLICY = "most_trustworthy_then_freshest_single_snapshot"
 
 
-def _rank(state: dict[str, Any]) -> tuple[int, int, float]:
-    """Ключ сортировки снимков одной группы: источник → достоверность → свежесть."""
+def _rank(state: dict[str, Any]) -> tuple[int, int, int, float]:
+    """Ключ сортировки снимков одной группы.
+
+    Порядок: привязка оператором → надёжность источника → достоверность →
+    свежесть.
+
+    Первый уровень появился по итогам адверсариальной проверки. Воркер вправе
+    объявить группу сам (штатный механизм — переменная окружения на его
+    машине), но это заявление полу-доверенное: машина, впервые вышедшая на
+    связь с чужой группой и «более надёжным» источником, иначе становилась бы
+    выбранным снимком и показывала оператору выдуманный остаток по чужому
+    аккаунту. Привязка, сделанная человеком, старше любого заявления.
+    """
     quota = state.get("quota") or {}
     return (
+        0 if state.get("account_group_source") == "operator" else 1,
         _SOURCE_RANK.get(str(quota.get("source")), 99),
         _CONFIDENCE_RANK.get(str(quota.get("confidence")), 99),
         # Свежесть — по убыванию, поэтому со знаком минус.
@@ -99,6 +111,20 @@ def reconcile_group(
     remaining = quota.get("estimated_remaining_pct")
     if remaining is None:
         remaining = chosen.get("remaining_pct")
+
+    # Порог «мало осталось» применяет ЦЕНТР. Раньше он применялся только на
+    # воркере, а карточка при этом писала «Порог: 25 %», которого никто не
+    # применил: воркер читает ту же переменную с дефолтом None, центр — с
+    # дефолтом 25. Экран обещал одно, данные считались по другому.
+    threshold = int(settings.quota_low_threshold_pct)
+    if (
+        threshold > 0
+        and state == "ready"
+        and isinstance(remaining, (int, float))
+        and remaining <= threshold
+    ):
+        state = "low"
+
     if stale and state in ("ready", "low"):
         # Просроченный снимок не выдаётся за действующий. Число сохраняем —
         # оно последнее известное — но состояние честно говорит `stale`.
@@ -121,6 +147,7 @@ def reconcile_group(
                 "source": (s.get("quota") or {}).get("source"),
                 "observed_at": s.get("observed_at"),
                 "auth_state": s.get("auth_state"),
+                "account_group_source": s.get("account_group_source"),
             }
             for s in ordered
         ],
@@ -425,6 +452,12 @@ def rank_workers_for_future_job(
             reasons.append("учётная запись запрещена политикой")
 
         remaining = view.get("observed_remaining_pct") if view else None
+        # Протухший остаток — НЕ измеренный. Иначе воркер с трёхдневным
+        # снимком поднимался бы наверх как «остаток известен, сброс близко»,
+        # то есть лимит расходовался бы по устаревшему числу.
+        snapshot_stale = bool((view or {}).get("reconciliation", {}).get("stale"))
+        if snapshot_stale:
+            remaining = None
         days_to_reset = None
         if view:
             candidates = [
@@ -452,9 +485,16 @@ def rank_workers_for_future_job(
             "reasons": reasons,
             "free_slots": free_slots,
             "auth_state": (state or {}).get("auth_state", "unknown"),
-            "quota_state": ((state or {}).get("quota") or {}).get("quota_state", "unknown"),
+            # Состояние берётся из СВЕДЁННОГО представления, а не из сырого
+            # снимка: иначе в одной строке уживались бы «ready» из сырья и
+            # остаток, посчитанный с учётом устаревания.
+            "quota_state": (
+                view.get("quota_state") if view
+                else ((state or {}).get("quota") or {}).get("quota_state", "unknown")
+            ),
             "remaining_pct": remaining,
             "remaining_known": remaining_known,
+            "snapshot_stale": snapshot_stale,
             "account_group_id": group,
             "account_id": (account or {}).get("account_id"),
             "days_to_reset": days_to_reset,

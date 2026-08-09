@@ -425,7 +425,10 @@ class ProviderAdapter(abc.ABC):
         # cwd — пустой runtime-каталог (I-P4). Создаём здесь же: каталог могли
         # снести вместе с временными файлами, и падать из-за этого незачем.
         try:
-            self.home.runtime.mkdir(parents=True, exist_ok=True)
+            # Не просто mkdir: каталог мог быть снесён вместе с временными
+            # файлами, и восстановленный по umask он получил бы 0755 — при
+            # том, что именно он служит TMPDIR подпроцесса провайдера.
+            self.home.ensure_dirs()
         except OSError:
             pass
 
@@ -517,7 +520,10 @@ class ProviderAdapter(abc.ABC):
         deadline = time.monotonic() + limit
         argv = [str(executable), *[str(a) for a in args]]
         try:
-            self.home.runtime.mkdir(parents=True, exist_ok=True)
+            # Не просто mkdir: каталог мог быть снесён вместе с временными
+            # файлами, и восстановленный по umask он получил бы 0755 — при
+            # том, что именно он служит TMPDIR подпроцесса провайдера.
+            self.home.ensure_dirs()
         except OSError:
             pass
 
@@ -615,9 +621,21 @@ class ProviderAdapter(abc.ABC):
                     _kill_group(proc)
 
         literals = self._redact_literals()
+        # Редактируются ВСЕ значения, включая сами ответы RPC (I-P6), а не
+        # только служебные поля. Раньше здесь чистились лишь `detail` и
+        # `stderr`, и это была дыра, а не экономия: `limitId` из ответа
+        # провайдера доезжает до центра в `window_id` и в `detail` снимка на
+        # КАЖДОМ успешном опросе, а текст ошибки обновления токена — в
+        # `detail` при сбое. Единственный барьер на этом пути — вот этот.
         return JsonRpcResult(
-            responses=responses,
-            notifications=tuple(notifications),
+            responses={
+                key: redaction.redact_mapping(value, extra_literals=literals)
+                for key, value in responses.items()
+            },
+            notifications=tuple(
+                redaction.redact_mapping(item, extra_literals=literals)
+                for item in notifications
+            ),
             error_code=error_code,
             detail=redaction.redact(detail, extra_literals=literals) if detail else None,
             duration_sec=time.monotonic() - started,
@@ -666,30 +684,54 @@ def _display_argv(argv: Sequence[str]) -> list[str]:
 
 
 def _kill_group(proc: subprocess.Popen) -> None:
-    """SIGTERM группе → пауза → SIGKILL. Одиночный kill(pid) недостаточен.
+    """SIGTERM группе → пауза → SIGKILL группе. Критерий — смерть ГРУППЫ.
 
     `codex app-server` держится, пока открыт stdin, и порождает потомков.
-    Убить только лидера значило бы оставить на чужом VPS висящие процессы.
+    Раньше функция выходила, как только умирал ЛИДЕР: потомок в той же
+    группе, игнорирующий SIGTERM, переживал обе итерации, а если лидер вышел
+    сам, группе не уходило вообще ничего. На чужом VPS это оставляло
+    висящие процессы — ровно то, что инвариант I-P7 обещает не допускать.
+
+    Теперь SIGTERM и SIGKILL идут группе независимо от состояния лидера, а
+    выход — только когда группы больше нет.
     """
     try:
         pgid = os.getpgid(proc.pid)
     except (OSError, ProcessLookupError):
         pgid = None
+
+    def _group_alive() -> bool:
+        if pgid is None:
+            return proc.poll() is None
+        try:
+            os.killpg(pgid, 0)
+        except (OSError, ProcessLookupError):
+            return False
+        return True
+
     for sig, wait in ((signal.SIGTERM, 3.0), (signal.SIGKILL, 2.0)):
-        if proc.poll() is not None:
-            return
+        if not _group_alive():
+            break
         try:
             if pgid is not None:
                 os.killpg(pgid, sig)
             else:
                 proc.send_signal(sig)
         except (OSError, ProcessLookupError):
-            return
+            break
         try:
             proc.wait(timeout=wait)
-            return
         except subprocess.TimeoutExpired:
-            continue
+            pass
+        # Лидер мог уже умереть, а группа — жить. Ждём именно группу.
+        deadline = time.monotonic() + wait
+        while _group_alive() and time.monotonic() < deadline:
+            time.sleep(0.05)
+    # Зомби лидера снимаем в любом случае: иначе он висит до конца процесса.
+    try:
+        proc.poll()
+    except Exception:                                  # noqa: BLE001
+        pass
 
 
 def _drain_after_kill(proc: subprocess.Popen) -> tuple[str, str]:

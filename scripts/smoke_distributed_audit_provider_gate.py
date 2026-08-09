@@ -339,50 +339,46 @@ def step_secret_scan(report: Report, payload: dict[str, Any]) -> None:
 def step_provider_error_isolation(ssh: Ssh, report: Report, providers_root: str,
                                   worker_root: str, python: str, app_dir: str) -> None:
     report.section("8. Изоляция отказа провайдера")
-    # Временно уводим исполняемый файл: провайдер «ломается», воркер обязан
-    # продолжать работать и честно сказать «CLI не установлен».
+    # Провайдер «ломается» БЕЗ единой правки на диске: адаптеру подсовывается
+    # несуществующий путь к CLI переменной окружения. Прежняя версия шага
+    # физически перемещала исполняемый файл и возвращала его в `finally` —
+    # при обрыве ssh между двумя операциями провайдер оставался сломанным, а
+    # шапка скрипта при этом обещала «ничего не меняет». Обещание и поведение
+    # разошлись; теперь они совпадают.
+    command = (
+        f"cd {_q(app_dir)} && "
+        f"AUDIT_WORKER_ROOT={_q(worker_root)} "
+        f"AUDIT_WORKER_PROVIDER_CLAUDE_EXECUTABLE=/nonexistent/smoke/claude "
+        f"{_q(python)} -m audit_worker providers"
+    )
+    ok, out, err = ssh.ok(command, timeout=300.0)
+    payload = {}
+    if ok:
+        try:
+            payload = json.loads(out)
+        except (json.JSONDecodeError, ValueError):
+            payload = {}
+    claude = next(
+        (p for p in payload.get("providers", []) if p.get("provider") == "claude"), {}
+    )
+    report.add("сломанный провайдер не роняет команду", ok and bool(payload), err[:200])
+    report.add(
+        "сломанный провайдер помечен как missing",
+        claude.get("installation_status") == "missing",
+        str(claude.get("installation_status")),
+    )
+    codex = next(
+        (p for p in payload.get("providers", []) if p.get("provider") == "codex"), {}
+    )
+    report.add(
+        "второй провайдер опрошен как обычно",
+        codex.get("installation_status") in ("installed", "missing"),
+        str(codex.get("installation_status")),
+    )
+    # И контрольная проверка, что на диске ничего не изменилось.
     exe = f"{providers_root}/claude/home/.local/bin/claude"
-    moved = f"{exe}.smoke-moved"
-    ok, _, err = ssh.ok(f"test -e {_q(exe)} && mv {_q(exe)} {_q(moved)} && echo done || echo skip")
-    if not ok:
-        report.add("подготовка сценария отказа", False, err)
-        return
-    try:
-        command = (
-            f"cd {_q(app_dir)} && "
-            f"AUDIT_WORKER_ROOT={_q(worker_root)} {_q(python)} -m audit_worker providers"
-        )
-        ok, out, err = ssh.ok(command, timeout=300.0)
-        payload = {}
-        if ok:
-            try:
-                payload = json.loads(out)
-            except (json.JSONDecodeError, ValueError):
-                payload = {}
-        claude = next(
-            (p for p in payload.get("providers", []) if p.get("provider") == "claude"), {}
-        )
-        report.add(
-            "сломанный провайдер не роняет команду",
-            ok and bool(payload), err[:200],
-        )
-        report.add(
-            "сломанный провайдер помечен как missing",
-            claude.get("installation_status") == "missing",
-            str(claude.get("installation_status")),
-        )
-        codex = next(
-            (p for p in payload.get("providers", []) if p.get("provider") == "codex"), {}
-        )
-        report.add(
-            "второй провайдер опрошен как обычно",
-            codex.get("installation_status") in ("installed", "missing"),
-            str(codex.get("installation_status")),
-        )
-    finally:
-        ssh.ok(f"test -e {_q(moved)} && mv {_q(moved)} {_q(exe)} || true")
-        ok, out, _ = ssh.ok(f"test -x {_q(exe)} && echo yes || echo no")
-        report.add("исполняемый файл возвращён на место", out == "yes", exe)
+    _, out, _ = ssh.ok(f"test -x {_q(exe)} && echo yes || echo no")
+    report.add("файлы на воркере не тронуты", out == "yes", exe)
 
 
 def step_center(report: Report, central_url: str, cookie: str,

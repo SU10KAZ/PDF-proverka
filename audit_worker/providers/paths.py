@@ -130,8 +130,16 @@ class ProviderHome:
         return self.home / ".local" / "bin" / self.provider
 
     def ensure_dirs(self) -> None:
-        """Создать раскладку с узкими правами. Идемпотентно."""
-        for path in (self.root, self.home, self.runtime, self.metadata):
+        """Создать раскладку с узкими правами. Идемпотентно.
+
+        `config_dir` входит в список НЕ для симметрии: документация Codex
+        прямо требует «If you set it, the directory must already exist» про
+        `CODEX_HOME`. Без этого на чистом воркере первый же `codex login`
+        или `app-server` упал бы — притом что цитата этого требования стоит
+        в шапке модуля. Для Claude создание `~/.claude` заранее безвредно.
+        """
+        for path in (self.root, self.home, self.runtime, self.metadata,
+                     self.config_dir):
             path.mkdir(parents=True, exist_ok=True)
             try:
                 os.chmod(path, PROVIDER_DIR_MODE)

@@ -1232,3 +1232,313 @@ class TestNoSecretsAtRest:
             )
         assert "sk-ant-should-never-be-stored" not in blob
         assert "sk-ant-nope" not in blob
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Adversarial-находки этапа: каждый дефект закреплён тестом
+# ═════════════════════════════════════════════════════════════════════════════
+class TestAdversarialFindings:
+    """Пять независимых проверок нашли 15 дефектов. Ниже — их могилы."""
+
+    # ── редакция ответов JSON-RPC ────────────────────────────────────────────
+    def test_jsonrpc_responses_are_redacted(self, worker_root):
+        """Ответ app-server проходит редактор, а не едет в центр дословно.
+
+        `limitId` из ответа попадает в `window_id` и в `detail` снимка на
+        КАЖДОМ успешном опросе, а текст ошибки обновления токена — в `detail`
+        при сбое. Раньше редактировались только служебные поля.
+        """
+        rate = {"result": {"rateLimits": {
+            "limitId": "codex", "primary": {"usedPercent": 10.0,
+                                            "windowDurationMins": 300,
+                                            "resetsAt": 4_000_000_000},
+            "rateLimitReachedType": None}}}
+        account = {"result": {"account": None, "requiresOpenaiAuth": True,
+                              "leaked": "Authorization: Bearer eyJhbGciOi.aaaa.bbbb"}}
+        adapter = _codex(worker_root, _codex_script(account=account, rate=rate))
+        rpc = adapter._app_server()
+        blob = json.dumps(rpc.responses, ensure_ascii=False)
+        assert "eyJhbGciOi.aaaa.bbbb" not in blob
+        assert "<redacted" in blob
+
+    # ── разбор квоты ─────────────────────────────────────────────────────────
+    def test_non_numeric_percentage_gives_unknown_not_optimism(self, worker_root):
+        """Строка вместо числа — расхождение контракта, а не «поля нет».
+
+        Раньше `primary.usedPercent="97.5"` молча превращался в None, и
+        снимок уходил с остатком СОСЕДНЕГО окна: оператор видел «готов,
+        остаток 90 %» при выбранном на 97,5 % пятичасовом окне.
+        """
+        rate = {"result": {"rateLimits": {
+            "limitId": "codex",
+            "primary": {"usedPercent": "97.5", "windowDurationMins": 300,
+                        "resetsAt": 4_000_000_000},
+            "secondary": {"usedPercent": 10.0, "windowDurationMins": 10080,
+                          "resetsAt": 4_000_500_000},
+            "rateLimitReachedType": None}}}
+        adapter = _codex(
+            worker_root, _codex_script(account=_ACCOUNT_OK, rate=rate)
+        )
+        snapshot = adapter.quota_status()
+        assert snapshot.quota_state == quota.QUOTA_UNKNOWN
+        assert snapshot.estimated_remaining_pct is None
+        assert snapshot.probe_error_code == errors.ERR_MALFORMED_STATUS
+
+    def test_boolean_is_not_a_percentage(self):
+        with pytest.raises(quota.QuotaContractError):
+            quota.QuotaWindow(
+                window_id="w", source=quota.SOURCE_OFFICIAL_APP_SERVER_RPC,
+                confidence=quota.CONFIDENCE_HIGH, used_pct=True,
+            )
+
+    def test_other_buckets_do_not_drive_the_decision(self):
+        """У чужого ведра свой лимит: подменять им основной остаток нельзя."""
+        payload = {"rateLimitsByLimitId": {
+            "codex": {"limitId": "codex",
+                      "primary": {"usedPercent": 10.0, "windowDurationMins": 300,
+                                  "resetsAt": 4_000_000_000},
+                      "secondary": {"usedPercent": 20.0, "windowDurationMins": 10080,
+                                    "resetsAt": 4_000_400_000},
+                      "rateLimitReachedType": None},
+            "code_review": {"limitId": "code_review",
+                            "primary": {"usedPercent": 90.0, "windowDurationMins": 60,
+                                        "resetsAt": 3_999_000_000},
+                            "secondary": {"usedPercent": 99.0,
+                                          "windowDurationMins": 10080,
+                                          "resetsAt": 3_999_500_000},
+                            "rateLimitReachedType": None}}}
+        snapshot = _snapshot_from_rate_limits(
+            payload, provider="codex", auth_state=AUTH_LOGGED_IN,
+            account_group_id=None, observed_at=1_000_000.0, stale_after=1_000_900.0,
+            parser_version="codex-appserver-1", low_threshold_pct=None,
+        )
+        # Решение — по худшему окну ВЫБРАННОГО ведра: 100 − 20 = 80.
+        assert snapshot.estimated_remaining_pct == pytest.approx(80.0)
+        # Дата сброса — тоже своего ведра, а не чужого (3_999_000_000).
+        assert snapshot.next_reset_at == 4_000_000_000
+        # Чужие окна видны справочно.
+        ids = {w.window_id for w in snapshot.secondary_windows}
+        assert {"code_review:primary", "code_review:secondary"} <= ids
+
+    def test_unnamed_bucket_is_not_labelled_codex(self):
+        payload = {"rateLimitsByLimitId": {
+            "code_review": {"primary": {"usedPercent": 10.0,
+                                        "windowDurationMins": 60,
+                                        "resetsAt": 4_000_000_000}}}}
+        snapshot = _snapshot_from_rate_limits(
+            payload, provider="codex", auth_state=AUTH_LOGGED_IN,
+            account_group_id=None, observed_at=1_000_000.0, stale_after=1_000_900.0,
+            parser_version="codex-appserver-1", low_threshold_pct=None,
+        )
+        assert snapshot.primary_window.window_id == "code_review:primary"
+        assert "limit_id=code_review" in (snapshot.detail or "")
+
+    # ── раскладка и процессы ─────────────────────────────────────────────────
+    def test_config_dir_is_created(self, worker_root):
+        """`CODEX_HOME` обязан существовать заранее — документированное требование."""
+        home = provider_home(worker_root, "codex")
+        home.ensure_dirs()
+        assert home.config_dir.is_dir()
+        assert stat.S_IMODE(os.stat(home.config_dir).st_mode) == 0o700
+
+    def test_runtime_recreated_with_narrow_mode(self, worker_root):
+        adapter = _claude(worker_root, _CLAUDE_LOGGED_IN)
+        import shutil
+
+        shutil.rmtree(adapter.home.runtime)
+        adapter.run(["--version"])
+        assert stat.S_IMODE(os.stat(adapter.home.runtime).st_mode) == 0o700
+
+
+class TestAdversarialCenterFindings:
+    """Центральные находки: привязка, лимиты записей, устаревание, журнал."""
+
+    def test_heartbeat_does_not_erase_operator_binding(self, center):
+        """Главная находка: heartbeat стирал ручную привязку через такт."""
+        from backend.app.services.distributed_workers import provider_accounts
+
+        worker = _worker(center)
+        provider_accounts.set_worker_provider_group(
+            worker_id=worker["worker_id"], provider="codex",
+            account_group_id="codex-account-01", settings=center,
+        )
+        # Воркер без заданной переменной шлёт account_group_id=None.
+        blind = _snapshot(group=None)
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], snapshots=[blind], settings=center,
+        )
+        state = provider_accounts.list_worker_provider_states(settings=center)[0]
+        assert state["account_group_id"] == "codex-account-01"
+
+    def test_worker_cannot_hijack_someone_elses_account(self, center):
+        """Воркер не становится источником истины по чужой учётной записи."""
+        from backend.app.services.distributed_workers import (
+            provider_accounts, provider_view,
+        )
+
+        honest = _worker(center, "VPS-honest", "inst_pg0000h1")
+        rogue = _worker(center, "VPS-rogue", "inst_pg0000r1")
+        now = time.time()
+        provider_accounts.set_worker_provider_group(
+            worker_id=honest["worker_id"], provider="codex",
+            account_group_id="codex-account-01", settings=center,
+        )
+        provider_accounts.record_worker_providers(
+            worker_id=honest["worker_id"], settings=center,
+            snapshots=[_snapshot(group=None, remaining=12.0, observed_at=now)],
+        )
+        # Чужой воркер объявляет ту же группу и «более надёжный» источник.
+        provider_accounts.record_worker_providers(
+            worker_id=rogue["worker_id"], settings=center,
+            snapshots=[_snapshot(group="codex-account-01", remaining=99.0,
+                                 source="official_structured_api", observed_at=now)],
+        )
+        views = provider_view.accounts_overview(settings=center, now=now)
+        account = next(
+            v for v in views if v["account_group_id"] == "codex-account-01"
+        )
+        # Число берётся у воркера, привязанного ОПЕРАТОРОМ.
+        assert account["observed_remaining_pct"] == pytest.approx(12.0)
+        assert account["reconciliation"]["chosen_worker_id"] == honest["worker_id"]
+        # Самопривязавшийся воркер при этом ВИДЕН — и это правильно: прятать
+        # машину, объявившую себя участником чужой подписки, значило бы лишить
+        # оператора единственного шанса это заметить. Он виден и помечен как
+        # самопривязка, но на число не влияет.
+        contributors = {
+            row["worker_id"]: row
+            for row in account["reconciliation"]["contributing_workers"]
+        }
+        assert rogue["worker_id"] in contributors
+        assert contributors[rogue["worker_id"]]["account_group_source"] == "worker"
+        assert contributors[honest["worker_id"]]["account_group_source"] == "operator"
+
+    def test_worker_cannot_spawn_unlimited_accounts(self, center):
+        from backend.app.services.distributed_workers import provider_accounts
+
+        worker = _worker(center)
+        for i in range(30):
+            provider_accounts.record_worker_providers(
+                worker_id=worker["worker_id"], settings=center,
+                snapshots=[_snapshot(group=f"codex-{i:03d}")],
+            )
+        accounts = provider_accounts.list_accounts(settings=center)
+        # Первая группа закрепилась, остальные снимки её не меняют.
+        assert len(accounts) == 1
+        assert accounts[0]["account_group_id"] == "codex-000"
+
+    def test_capability_size_is_bounded(self, center):
+        from backend.app.services.distributed_workers import provider_accounts
+
+        worker = _worker(center)
+        fat = _snapshot()
+        fat["capability"] = {f"k{i}": "x" * 4000 for i in range(200)}
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], snapshots=[fat], settings=center,
+        )
+        state = provider_accounts.list_worker_provider_states(settings=center)[0]
+        assert len(json.dumps(state["capability"], ensure_ascii=False)) < 20_000
+
+    def test_future_observed_at_does_not_make_snapshot_immortal(self, center):
+        from backend.app.services.distributed_workers import (
+            provider_accounts, provider_view,
+        )
+
+        worker = _worker(center)
+        now = time.time()
+        cheating = _snapshot(remaining=88.0, observed_at=1e18)
+        cheating["quota"]["observed_at"] = 1e18
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], snapshots=[cheating], settings=center,
+        )
+        state = provider_accounts.list_worker_provider_states(settings=center)[0]
+        assert state["observed_at"] <= now + 60
+        view = provider_view.accounts_overview(settings=center, now=now + 10 * 3600)[0]
+        assert view["quota_state"] == "stale"
+
+    def test_low_threshold_is_applied_by_the_center(self, center):
+        """Экран обещал порог, которого никто не применял."""
+        from backend.app.services.distributed_workers import (
+            provider_accounts, provider_view,
+        )
+
+        worker = _worker(center)
+        now = time.time()
+        # Воркер прислал `ready` с остатком 4 % (порог у него не настроен).
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], settings=center,
+            snapshots=[_snapshot(remaining=4.0, observed_at=now)],
+        )
+        view = provider_view.accounts_overview(settings=center, now=now)[0]
+        assert view["quota_state"] == "low"
+        assert view["low_threshold_pct"] == 25
+
+    def test_ranking_ignores_stale_remaining(self, center):
+        from backend.app.services.distributed_workers import (
+            provider_accounts, provider_view, repositories,
+        )
+
+        worker = _worker(center)
+        now = time.time()
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], settings=center,
+            snapshots=[_snapshot(remaining=62.0, observed_at=now - 3 * 86400)],
+        )
+        result = provider_view.rank_workers_for_future_job(
+            provider="codex", settings=center,
+            workers=repositories.list_workers(settings=center), now=now,
+        )
+        row = result["workers"][0]
+        assert row["snapshot_stale"] is True
+        assert row["remaining_known"] is False
+        assert row["remaining_pct"] is None
+
+    def test_worker_provider_row_is_marked_stale_in_overview(self, center):
+        """Карточка VPS и карточка аккаунта не должны спорить друг с другом."""
+        from tests.distributed_workers_helpers import (
+            VIEWER_USER, make_center_app, portal_client,
+        )
+        from backend.app.services.distributed_workers import provider_accounts
+
+        worker = _worker(center)
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], settings=center,
+            snapshots=[_snapshot(remaining=62.0, observed_at=time.time() - 3 * 86400)],
+        )
+        client = portal_client(make_center_app(), username=VIEWER_USER)
+        data = client.get("/api/workers/providers/overview").json()
+        row = data["worker_providers"][worker["worker_id"]][0]
+        assert row["stale"] is True
+        assert row["quota"]["quota_state"] == "stale"
+
+    def test_clearing_manual_reset_is_recorded_in_the_audit_log(self, center):
+        """Самая разрушительная операция формы не должна выглядеть как «ничего»."""
+        from tests.distributed_workers_helpers import (
+            OPERATOR_USER, make_center_app, portal_client,
+        )
+        from backend.app.services.distributed_workers import (
+            provider_accounts, repositories,
+        )
+
+        worker = _worker(center)
+        provider_accounts.record_worker_providers(
+            worker_id=worker["worker_id"], snapshots=[_snapshot()], settings=center,
+        )
+        account = provider_accounts.list_accounts(settings=center)[0]
+        provider_accounts.upsert_account(
+            provider="codex", account_group_id="codex-account-01",
+            settings=center, manual_next_reset_at=time.time() + 86400,
+        )
+        client = portal_client(make_center_app(), username=OPERATOR_USER)
+        response = client.put(
+            f"/api/workers/providers/accounts/{account['account_id']}",
+            json={"clear_manual_reset": True},
+        )
+        assert response.status_code == 200
+        assert provider_accounts.get_account(
+            account["account_id"], settings=center
+        )["manual_next_reset_at"] is None
+        actions = repositories.list_admin_actions(settings=center)
+        entry = next(
+            a for a in actions if a["action_type"] == "provider_account_update"
+        )
+        assert "clear_manual_reset" in (entry.get("reason") or "")
