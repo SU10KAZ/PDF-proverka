@@ -1558,7 +1558,6 @@ def phase_audit_fake(
     check(launched.get("norm_stage_location") == "center",
           "API прямо сообщает: нормативный этап остаётся на центре",
           str(launched.get("norm_stage_location")))
-    audit_job_id = str((launched.get("job") or {}).get("job_id") or "")
 
     # ── пакет, собранный ЦЕНТРОМ ────────────────────────────────────────────
     packages_dir = stand.central_workers / "source_packages"
@@ -1567,18 +1566,20 @@ def phase_audit_fake(
         """Манифест ИМЕННО аудита, а не первый попавшийся.
 
         К этому моменту в `source_packages/` лежат ещё и пакеты тестовых
-        заданий этого прогона — по два файла каждый, без дисциплины. Раньше
+        заданий этого прогона — по два файла каждый, без дисциплины. Сначала
         здесь стояло `sorted(rglob(...))[0]`, и что попадётся первым, решал
-        случайный UUID: один прогон брал аудит, следующий — тестовое задание
-        и объявлял `discipline_id: None` расхождением конвейера.
+        случайный UUID. Затем — сверка с `job_id` из ответа `/audit/launch`,
+        и это оказалось хуже: тот ответ несёт идентификатор ЗАДАНИЯ КОНВЕЙЕРА,
+        а манифест — идентификатор ЛОГИЧЕСКОГО задания подсистемы воркеров.
+        Пространства разные, совпадений не бывает, и выбор возвращал пусто.
+
+        Надёжный признак — наличие `discipline_id`: он есть только у пакета
+        проекта. Связь с логическим заданием проверяется отдельно, ниже, и
+        уже по строке из `workers.db`.
         """
         for path in sorted(packages_dir.rglob("package_manifest.json")):
             data = _read_json(path)
-            if not data:
-                continue
-            if audit_job_id and str(data.get("job_id") or "") == audit_job_id:
-                return data
-            if not audit_job_id and data.get("discipline_id"):
+            if data and data.get("discipline_id"):
                 return data
         return None
 
@@ -1639,6 +1640,12 @@ def phase_audit_fake(
           "результат импортирован центром", str(row.get("result_import_state")))
     check(bool(row.get("result_package_hash")), "результат принят с SHA-256",
           str(row.get("result_package_hash"))[:24])
+    # Связь «пакет ↔ логическое задание» проверяется здесь, когда строка из
+    # workers.db уже есть: до этого момента идентификатора нужного вида
+    # взять просто неоткуда.
+    check(str(manifest.get("job_id") or "") == str(row.get("job_id") or ""),
+          "исходный пакет принадлежит именно этому логическому заданию",
+          f"пакет={manifest.get('job_id')} задание={row.get('job_id')}")
 
     # ── улики fake-режима, снятые С ВОРКЕРА ─────────────────────────────────
     result_manifests = worker_collect_json(worker, "*/result/result/audit_manifest.json")
