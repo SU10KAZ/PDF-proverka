@@ -179,6 +179,50 @@ def test_no_llm_invocation_in_worker_package():
     assert not offenders, offenders
 
 
+def test_provider_layer_is_the_only_place_naming_real_clis():
+    """Граница после этапа 11: имена настоящих CLI живут ТОЛЬКО в providers/.
+
+    Инвариант проверки выше не отменён, а уточнён. Он защищал одно: путь
+    КОНВЕЙЕРА не должен уметь дотянуться до настоящего Claude/Codex, иначе
+    воркер, рапортующий `provider_mode="fake"`, тихо позвал бы настоящую
+    модель. С этапа 11 появился ВТОРОЙ путь — наблюдение за провайдерами, — и
+    он обязан называть CLI по имени, потому что именно их и опрашивает.
+
+    Разделение сохраняет исходную защиту:
+      * модули верхнего уровня `audit_worker/*.py` (через них идёт конвейер)
+        по-прежнему не содержат исполняемых литералов настоящих CLI;
+      * пакет `audit_worker/providers/` их содержит, но НЕ импортируется ни
+        из `audit_runner`, ни из пути выполнения задания — это и проверяется
+        здесь. Пока импорта нет, `enforce_fake_providers` обойти нечем.
+    """
+    import ast
+
+    provider_dir = _ROOT / "audit_worker" / "providers"
+    assert provider_dir.is_dir(), "пакет providers/ должен существовать"
+
+    # Ни один модуль, участвующий в ВЫПОЛНЕНИИ задания, не тянет providers/.
+    pipeline_modules = ("audit_runner.py", "test_runner.py", "test_process.py")
+    importers: list[str] = []
+    for name in pipeline_modules:
+        path = _ROOT / "audit_worker" / name
+        if not path.is_file():
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith(
+                "audit_worker.providers"
+            ):
+                importers.append(f"{name}:{node.lineno}")
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name.startswith("audit_worker.providers"):
+                        importers.append(f"{name}:{node.lineno}")
+    assert not importers, (
+        "путь выполнения задания импортирует провайдерский слой — "
+        f"изоляция поддельных провайдеров под угрозой: {importers}"
+    )
+
+
 def test_only_one_subprocess_spawn_point():
     """Порождение процесса — ровно одно место и без shell.
 
