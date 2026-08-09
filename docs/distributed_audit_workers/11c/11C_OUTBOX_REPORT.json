@@ -1,0 +1,45 @@
+{
+  "журнал": "audit_worker/event_outbox.py — диск-первый, посегментный, на попытку",
+  "нумерация": "local_db.allocate_event_sequence (SQLite), PK (job, attempt, seq)",
+  "санитайзер": "redaction.redact_mapping ПРИ ЗАПИСИ (I-12), литералы: worker-token и execution-token попытки",
+  "новое_в_11c": "событие stage_progress со сводкой журнала вызовов: только числа и состояния ключей, без промптов и ответов",
+  "фактически": {
+    "claude": {
+      "событий_батчами_на_центр": 7,
+      "загрузок_архива": 3
+    },
+    "codex": {
+      "событий_батчами_на_центр": 7,
+      "загрузок_архива": 3
+    },
+    "stub": {
+      "событий_батчами_на_центр": 5,
+      "загрузок_архива": 3
+    }
+  },
+  "replay": "409 sequence_gap → rewind_to(expected_seq) и повтор; ack двигает ack.json, полностью подтверждённые сегменты уходят в events/acked/",
+  "переживает_рестарт": "проверено рестартом исполнителя внутри прогона (шаг 31)",
+  "execution_token_не_ушёл": {
+    "claude": {
+      "scanned_files": 24,
+      "total": 0,
+      "location_types": [],
+      "verdict": "PASS",
+      "forbidden_literal": 0
+    },
+    "codex": {
+      "scanned_files": 24,
+      "total": 0,
+      "location_types": [],
+      "verdict": "PASS",
+      "forbidden_literal": 0
+    },
+    "stub": {
+      "scanned_files": 24,
+      "total": 0,
+      "location_types": [],
+      "verdict": "PASS",
+      "forbidden_literal": 0
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "как_записано": "приёмной стороной: tests/distributed_audit_e2e/recording_center_app.py — ASGI-обёртка вокруг ПРОДОВОГО объекта backend.app.main:app. Продовый транспорт воркера не менялся",
+  "клиент": "audit_worker/client.py::CenterClient поверх httpx.Client(verify=True, follow_redirects=False)",
+  "заголовки": "X-Protocol-Version, Authorization: Bearer, X-Worker-Id, X-Instance-Id, X-Execution-Token, Idempotency-Key",
+  "маскируются_в_записи": [
+    "authorization",
+    "x-execution-token"
+  ],
+  "фактические_запросы": {
+    "claude": {
+      "worker_requests": 47,
+      "result_events": 7,
+      "upload_requests": 3,
+      "heartbeats": 5,
+      "secrets_in_bodies": 0,
+      "sample_event_path": "/api/v1/worker/events",
+      "sample_event_keys": [
+        "attempt_id",
+        "count",
+        "events",
+        "first_seq",
+        "job_id"
+      ]
+    },
+    "codex": {
+      "worker_requests": 61,
+      "result_events": 7,
+      "upload_requests": 3,
+      "heartbeats": 7,
+      "secrets_in_bodies": 0,
+      "sample_event_path": "/api/v1/worker/events",
+      "sample_event_keys": [
+        "attempt_id",
+        "count",
+        "events",
+        "first_seq",
+        "job_id"
+      ]
+    },
+    "stub": {
+      "worker_requests": 42,
+      "result_events": 5,
+      "upload_requests": 3,
+      "heartbeats": 4,
+      "secrets_in_bodies": 0,
+      "sample_event_path": "/api/v1/worker/events",
+      "sample_event_keys": [
+        "attempt_id",
+        "count",
+        "events",
+        "first_seq",
+        "job_id"
+      ]
+    }
+  },
+  "секретов_в_телах": {
+    "claude": 0,
+    "codex": 0,
+    "stub": 0
+  },
+  "оговорка_claim_secret": "в теле POST /api/v1/worker/claim claim-secret идёт ОТКРЫТО — так устроен обмен «одноразовый секрет → постоянный токен», иначе он невозможен. В файл доказательств он попадает уже отредактированным.",
+  "боевой_центр": "запрос НЕ отправлялся: ingress боевого центра выключен (см. 11C_CENTER_INGRESS_CUTOVER.md)"
+}

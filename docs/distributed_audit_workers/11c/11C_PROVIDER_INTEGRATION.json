@@ -1,0 +1,36 @@
+{
+  "разрыв_до_11c": "audit_pipeline_v1 звал CLI сам (claude_runner._run_cli → shutil.which) с HOME внутри каталога попытки, то есть находил НЕавторизованный бинарь; ProviderAdapter умел авторизовать, но конвейер о нём не знал. Граница была объявлена в доке 11b §13 и закреплена AST-тестом.",
+  "точка_расширения": {
+    "файл": "backend/app/services/llm/claude_runner.py",
+    "функция": "_run_cli",
+    "почему_здесь": "это единственная развилка «claude или codex» во всём конвейере; перехват стоит ПЕРЕД ней"
+  },
+  "новые_модули": {
+    "audit_worker/providers/resolver.py": "ProviderResolver + ProviderBinding — точка решения и его документ",
+    "audit_worker/providers/pipeline_bridge.py": "мост конвейер → ProviderAdapter",
+    "audit_worker/providers/inference.py": "структурированный контракт результата и 12 именованных проверок",
+    "audit_worker/providers/inference_grant.py": "разрешение оператора: задание + провайдер + TTL + max_uses",
+    "audit_worker/providers/inference_ledger.py": "I-P9 exactly-once",
+    "audit_worker/providers/pipeline_status.py": "отметка последнего вызова для heartbeat",
+    "backend/app/pipeline/stages/provider_selfcheck/__init__.py": "синтетический этап конвейера"
+  },
+  "второго_фреймворка_нет": "авторизация, окружение с нуля, отключение инструментов, нейтрализация личного контекста, убийство группы по таймауту и редакция вывода остались в ProviderAdapter; добавлен только рабочий вызов structured_inference и три служебных слоя вокруг него",
+  "три_независимых_разрешения": {
+    "машина": "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED (администратор VPS)",
+    "оператор": "<worker_root>/config/allow_synthetic_inference — файл под КОНКРЕТНОЕ задание, TTL, max_uses",
+    "центр": "provider_requirement в нагрузке задания (провайдер, модель, белый список этапов, потолок)",
+    "ни_одно_в_одиночку_не_открывает_вызов": true
+  },
+  "auth_mode": {
+    "claude": "ambient_user",
+    "codex": "ambient_user",
+    "stub": "isolated_provider_home"
+  },
+  "фактические_модели": {
+    "claude": "claude-opus-4-8[1m]",
+    "codex": null,
+    "stub": "fake-model"
+  },
+  "модель_не_навязывается_флагом": "идентификатор модели пришёл бы из задания и нарушил бы I-P5 (argv только из констант). Вызов идёт на модели учётной записи по умолчанию, а фактическая ЧИТАЕТСЯ из ответа. Измерено: claude отдал claude-opus-4-8[1m] (под --safe-mode), codex модель в потоке не назвал.",
+  "git_head": "85ab253241b0a65139ac68b2884455c79ed570fc"
+}
