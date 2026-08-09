@@ -41,7 +41,8 @@ bash(922034) → timeout → python(922066, боевой раннер этапа
 | base | `9d6e06c2a0f7d2f16472ce530019db18a47a71ce` |
 | branch | `feat/distributed-audit-workers-text-analysis-live-semantic-check` |
 | worktree | `.claude/worktrees/distributed-audit-workers-text-analysis-live-semantic-check` |
-| final commit | см. §14 ниже (проставляется при коммите этого отчёта) |
+| коммит артефактов | `322394f92d4fe2be0f71f10005fe52fc3fac56d2` |
+| final commit | коммит-штамп поверх него (этот файл) — см. `git log -1` ветки |
 | push | **нет** |
 
 `reset` / `clean` / `rebase` / `force checkout` / `merge` / `push` не
