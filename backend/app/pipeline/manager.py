@@ -6407,6 +6407,26 @@ class PipelineManager:
                 "warn",
             )
 
+        # Детерминированная точка остановки стенда РОВНО на границе
+        # «воркер / центр»: результат принят и применён, следующий этап
+        # определён, ни один центральный этап ещё не выполнялся. Этап 11G
+        # обязан останавливаться именно здесь — доказывается граница, а не
+        # центральный хвост, и `norm_verify` тратил бы модель на то, что к
+        # предмету этапа отношения не имеет.
+        #
+        # Вне стенда переменная не задана и вызов не делает ничего.
+        from backend.app.pipeline.execution import registry as _exec_registry
+
+        await asyncio.to_thread(
+            _exec_registry.handoff_test_pause,
+            "before_central_tail",
+            detail={
+                "project_id": job.project_id,
+                "resume_stage": detected,
+                "handle": getattr(handle, "attempt_id", None),
+            },
+        )
+
         norms_after_merge = self._norms_after_merge_enabled()
         if not norms_after_merge:
             await self._run_norm_verification(job, standalone=False, wait_before_fix=None)

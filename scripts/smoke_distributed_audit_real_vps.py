@@ -382,7 +382,9 @@ class Stand:
         env["AUDIT_DISABLE_DOTENV"] = "1"
         return env
 
-    def central_env(self, *, revision: str, bootstrap_secret: str) -> dict[str, str]:
+    def central_env(
+        self, *, revision: str, bootstrap_secret: str, stop_at_boundary: bool = False,
+    ) -> dict[str, str]:
         from backend.app.core import portal_auth
 
         env = self.base_env()
@@ -420,6 +422,14 @@ class Stand:
                 "BATCH_AUTO_RESUME_ENABLED": "true",
             }
         )
+        if stop_at_boundary:
+            # §38: после приёма результата центр обязан ОСТАНОВИТЬСЯ на границе
+            # «воркер/центр», а не идти в нормативный этап. Точка остановки —
+            # штатный стендовый хук платформы (`handoff_test_pause`), а не
+            # правка боевого кода: вне стенда переменная не задана и хук ничего
+            # не делает.
+            env["AUDIT_HANDOFF_TEST_PAUSE_AT"] = "before_central_tail"
+            env["AUDIT_HANDOFF_TEST_PAUSE_DIR"] = str(self.evidence / "handoff_pause")
         env["PATH"] = os.pathsep.join([str(self.providers), env.get("PATH", "")])
         return env
 
@@ -1597,7 +1607,7 @@ def phase_test_job(
 
 def phase_network_outage(
     stand: Stand, operator: Operator, worker: Worker, *, worker_id: str,
-    revision: str, bootstrap_secret: str,
+    revision: str, bootstrap_secret: str, stop_at_boundary: bool = False,
 ) -> dict:
     """Обрыв связи посреди задания.
 
@@ -1650,7 +1660,14 @@ echo "CHILD=$(pgrep -c -f 'audit_worker.test_process|test_runner' || true)"
           f"{outbox_before} → {outbox_during}")
 
     print("    поднимаем центр обратно")
-    env = stand.central_env(revision=revision, bootstrap_secret=bootstrap_secret)
+    # Флаг остановки на границе обязан пережить рестарт: аудит идёт ПОСЛЕ этой
+    # фазы, и поднятый здесь backend — тот самый, который его и обслужит.
+    # Без передачи флага центральный хвост тихо доезжал бы до нормативного
+    # этапа, то есть за границу, которую этап 11G обязан не переходить.
+    env = stand.central_env(
+        revision=revision, bootstrap_secret=bootstrap_secret,
+        stop_at_boundary=stop_at_boundary,
+    )
     start_backend(stand, env=env, tag="after_outage")
     check(_wait_for(lambda: backend_ready(stand), timeout=180),
           "центр поднялся после обрыва")
@@ -2145,7 +2162,7 @@ class RemoteAuditRun:
 def launch_remote_audit(
     stand: Stand, operator: Operator, worker: Worker, *,
     worker_id: str, timeout: float, real_document: str = "",
-    clone_local: bool = True,
+    clone_local: bool = True, stop_at_boundary: bool = False,
 ) -> Optional[RemoteAuditRun]:
     """Поставить удалённый аудит и довести его до принятого центром результата.
 
@@ -2251,15 +2268,36 @@ def launch_remote_audit(
                 if j.get("job_type") == "audit_pipeline_v1"]
         return rows[0] if rows else {}
 
-    done = _wait_for(
-        lambda: str(_audit_row().get("central_handoff_state", "")).lower()
-        in {"completed", "failed"}, timeout=timeout, interval=10.0,
-    )
-    row = _audit_row()
-    check(done and str(row.get("central_handoff_state")).lower() == "completed",
-          "ось центрального хвоста дошла до completed",
-          f"central_handoff_state={row.get('central_handoff_state')} "
-          f"state={row.get('state')}")
+    if stop_at_boundary:
+        # Центр остановлен ровно на границе (§38): результат принят и применён,
+        # следующий этап определён, центральные этапы не выполнялись. Ждать
+        # `completed` здесь нельзя — его в этом режиме не будет НИКОГДА, и
+        # ожидание было бы ожиданием того, что мы сами запретили.
+        done = _wait_for(
+            lambda: str(_audit_row().get("result_import_state", "")).lower() == "applied",
+            timeout=timeout, interval=10.0,
+        )
+        row = _audit_row()
+        check(done, "центр импортировал результат и дошёл до границы",
+              f"import={row.get('result_import_state')} "
+              f"handoff={row.get('central_handoff_state')}")
+        marker = stand.evidence / "handoff_pause" / "paused_before_central_tail.json"
+        check(_wait_for(marker.is_file, timeout=180, interval=2.0),
+              "центр встал в точке остановки ПЕРЕД центральными этапами",
+              str(marker) if marker.is_file() else "маркер не появился")
+        check(str(row.get("central_handoff_state", "")).lower() != "completed",
+              "ось хвоста НЕ доведена до completed — этап 11G туда не идёт",
+              str(row.get("central_handoff_state")))
+    else:
+        done = _wait_for(
+            lambda: str(_audit_row().get("central_handoff_state", "")).lower()
+            in {"completed", "failed"}, timeout=timeout, interval=10.0,
+        )
+        row = _audit_row()
+        check(done and str(row.get("central_handoff_state")).lower() == "completed",
+              "ось центрального хвоста дошла до completed",
+              f"central_handoff_state={row.get('central_handoff_state')} "
+              f"state={row.get('state')}")
     check(str(row.get("result_import_state", "")).lower() == "applied",
           "результат импортирован центром", str(row.get("result_import_state")))
     check(bool(row.get("result_package_hash")), "результат принят с SHA-256",
@@ -2543,7 +2581,7 @@ def phase_audit_provider(
     out: dict[str, Any] = {"mode": mode}
     run = launch_remote_audit(
         stand, operator, worker, worker_id=worker_id, timeout=timeout,
-        real_document=real_document, clone_local=False,
+        real_document=real_document, clone_local=False, stop_at_boundary=True,
     )
     if run is None:
         return {"launched": False, **out}
@@ -2690,12 +2728,22 @@ def phase_audit_provider(
     violations = sorted(central & set(result_manifest.get("completed_stages") or []))
     check(not violations, "нарушений границы «воркер/центр» нет",
           ", ".join(violations) or "0")
-    resume_hint = str(result_manifest.get("resume_hint") or "")
-    check(resume_hint in central,
-          "следующий по детектору этап — ЦЕНТРАЛЬНЫЙ (норм-верификация)",
-          f"resume_hint={resume_hint!r}")
-    check(resume_hint in forbidden,
-          "и он на воркере действительно не выполнялся", resume_hint or "нет")
+    # ГРАНИЦА. Спрашивается решение ЦЕНТРА (`central_resume_stage`, его пишет
+    # центральный детектор), а не подсказка воркера (`resume_hint` в манифесте).
+    # Разница не формальная: воркер считает подсказку на СВОЁМ дереве, до
+    # нормализации путей и до применения на центре, и его «completed» означает
+    # «мой участок закончен», а вовсе не «аудит завершён». Сверять границу по
+    # ней значило бы позволить воркеру назначать себе следующий этап — ровно
+    # то, что запрещает комментарий в `_run_central_tail_after_remote`.
+    center_next = str(row.get("central_resume_stage") or "")
+    worker_hint = str(result_manifest.get("resume_hint") or "")
+    check(center_next in central,
+          "следующий по решению ЦЕНТРА этап — центральный (норм-верификация)",
+          f"центр={center_next!r} (подсказка воркера была {worker_hint!r})")
+    check(center_next in forbidden,
+          "и он на воркере действительно не выполнялся", center_next or "нет")
+    out["center_next_stage"] = center_next
+    out["worker_resume_hint"] = worker_hint
 
     # ── содержательность результата ─────────────────────────────────────────
     # Локального эталона здесь нет намеренно: он гоняется на подделках, а
@@ -2713,11 +2761,25 @@ def phase_audit_provider(
     (stand.evidence / "provider_projection.json").write_text(
         json.dumps(projection, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    check(not projection["missing_artifacts"],
-          "удалённый результат содержит ВСЕ обязательные артефакты",
-          "нет: " + ", ".join(projection["missing_artifacts"]))
-    check(projection["excel"].get("present"),
-          "финальный Excel создан ЦЕНТРОМ после приёма результата")
+    # ЦЕНТРАЛЬНЫХ артефактов здесь быть НЕ ДОЛЖНО, и требовать их — ошибка
+    # утверждения, а не признак неполного результата: `norm_checks.json` и
+    # `03a_norms_verified.json` производит нормативный этап, который на этапе
+    # 11G сознательно не запускается (§38). Проверяется обратное: пришло всё,
+    # что обязан был сделать ВОРКЕР, и не пришло ничего центрального.
+    central_artifacts = {"norm_checks.json", "03a_norms_verified.json"}
+    missing_worker_side = [
+        name for name in projection["missing_artifacts"]
+        if name not in central_artifacts
+    ]
+    check(not missing_worker_side,
+          "результат несёт все артефакты WORKER-участка",
+          "нет: " + ", ".join(missing_worker_side))
+    check(set(projection["missing_artifacts"]) >= central_artifacts,
+          "центральных артефактов в результате нет — нормативный этап не запускался",
+          "лишнее: " + ", ".join(sorted(central_artifacts - set(projection["missing_artifacts"]))))
+    check(not projection["excel"].get("present"),
+          "финального Excel нет — центральный хвост остановлен на границе (§38)",
+          "Excel найден: центральные этапы всё-таки выполнились")
     scope = (
         f"замечаний {projection['findings_count']}, "
         f"этапов {len(projection.get('stage_completion') or {})}"
@@ -3146,7 +3208,13 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         print("\n── Подъём пилотного центра ─────────────────────────────────────")
         prepare_central_assets(stand)
-        env = stand.central_env(revision=revision, bootstrap_secret=bootstrap_secret)
+        env = stand.central_env(
+            revision=revision, bootstrap_secret=bootstrap_secret,
+            # Останавливаться на границе — только в режимах моста: там 11G
+            # доказывает саму границу. В `test`/`audit-fake` центральный хвост
+            # остаётся частью проверки (он и раньше ей был).
+            stop_at_boundary=args.mode in BRIDGE_MODES,
+        )
         start_backend(stand, env=env, tag="first")
         check(_wait_for(lambda: backend_ready(stand), timeout=180),
               "пилотный backend поднялся", stand.local_url)
@@ -3200,6 +3268,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         report["outage"] = phase_network_outage(
             stand, operator, worker, worker_id=worker_id,
             revision=revision, bootstrap_secret=bootstrap_secret,
+            stop_at_boundary=args.mode in BRIDGE_MODES,
         )
         report["agent_restart"] = phase_agent_restart(operator, worker, worker_id=worker_id)
         report["executor_restart"] = phase_executor_restart(
