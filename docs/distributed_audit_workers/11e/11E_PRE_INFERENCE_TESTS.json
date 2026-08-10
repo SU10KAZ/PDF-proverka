@@ -1,0 +1,581 @@
+{
+  "kind": "11E §23 — гейт до единственного оплаченного вызова",
+  "model_calls": 0,
+  "evidence": {
+    "attempt_dir": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e_fake5",
+    "prompt_dump_sha256": "2b5067e260b51638dfc22bb43a213f499834754c62731ed339113df588d49d34",
+    "prompt_dump_chars": 52815,
+    "pipeline_prompt_sha256": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+    "instructions_chars": 12868,
+    "payload_chars": 38818
+  },
+  "gate": {
+    "total": 93,
+    "passed": 93,
+    "failed": [],
+    "checks": [
+      {
+        "requirement": "identity",
+        "name": "prompt_dump_matches_pipeline_fingerprint",
+        "passed": true,
+        "detail": "конвейер=3b54ae4665fc5f31… дамп=2b5067e260b51638… дамп+\\n=3b54ae4665fc5f31… (подделка срезает хвостовой перевод строки)"
+      },
+      {
+        "requirement": "A",
+        "name": "production_stage_route_identified",
+        "passed": true,
+        "detail": "stage='findings_merge'"
+      },
+      {
+        "requirement": "B",
+        "name": "provider_transport_used",
+        "passed": true,
+        "detail": "transport='provider_adapter'"
+      },
+      {
+        "requirement": "C",
+        "name": "legacy_route_untouched_marker",
+        "passed": true,
+        "detail": "файловых инструкций в отправленном тексте нет"
+      },
+      {
+        "requirement": "D",
+        "name": "both_required_inputs_loaded",
+        "passed": true,
+        "detail": "02=70abe4757d3a6d24… 01=8516c260466e53c9…"
+      },
+      {
+        "requirement": "D",
+        "name": "input_hashes_match_source_files",
+        "passed": true,
+        "detail": "хэши входа совпали с исходными копиями"
+      },
+      {
+        "requirement": "E",
+        "name": "missing_input_would_fail",
+        "passed": true,
+        "detail": "поведение закреплено тестами E (resolve_merge_inputs бросает MergeInputError, до модели дело не доходит)"
+      },
+      {
+        "requirement": "F",
+        "name": "malformed_input_would_fail",
+        "passed": true,
+        "detail": "поведение закреплено тестами F (битый и не-объектный JSON — отказ)"
+      },
+      {
+        "requirement": "G",
+        "name": "all_input_ids_present_before_model",
+        "passed": true,
+        "detail": "ожидалось 25, закодировано 25"
+      },
+      {
+        "requirement": "G",
+        "name": "no_duplicate_input_ids",
+        "passed": true,
+        "detail": "дубли=[]"
+      },
+      {
+        "requirement": "G",
+        "name": "counts_match_source_artifacts",
+        "passed": true,
+        "detail": "T=19 G=6"
+      },
+      {
+        "requirement": "G",
+        "name": "ids_literally_in_sent_prompt",
+        "passed": true,
+        "detail": "каждый T-/G-идентификатор найден в отправленной полезной нагрузке"
+      },
+      {
+        "requirement": "H",
+        "name": "block_labels_and_sheets_inlined",
+        "passed": true,
+        "detail": "названия блоков доехали (без них подписи в тексте невозможны)"
+      },
+      {
+        "requirement": "H",
+        "name": "block_highlight_regions_inlined",
+        "passed": true,
+        "detail": "координаты подсветки доехали"
+      },
+      {
+        "requirement": "I",
+        "name": "no_filesystem_ref_in_instructions:.pdf",
+        "passed": true,
+        "detail": "инструкции не содержат '.pdf'"
+      },
+      {
+        "requirement": "I",
+        "name": "no_filesystem_ref_in_instructions:crop_url",
+        "passed": true,
+        "detail": "инструкции не содержат 'crop_url'"
+      },
+      {
+        "requirement": "I",
+        "name": "no_filesystem_ref_in_instructions:/_output/",
+        "passed": true,
+        "detail": "инструкции не содержат '/_output/'"
+      },
+      {
+        "requirement": "I",
+        "name": "no_filesystem_ref_in_instructions:/home/",
+        "passed": true,
+        "detail": "инструкции не содержат '/home/'"
+      },
+      {
+        "requirement": "I",
+        "name": "no_filesystem_ref_in_instructions:blocks_stage02",
+        "passed": true,
+        "detail": "инструкции не содержат 'blocks_stage02'"
+      },
+      {
+        "requirement": "I",
+        "name": "md_absence_declared_honestly",
+        "passed": true,
+        "detail": "отсутствие MD названо прямо, а не умолчано"
+      },
+      {
+        "requirement": "J",
+        "name": "payload_is_valid_json_blocks",
+        "passed": true,
+        "detail": "разобрано блоков: 2"
+      },
+      {
+        "requirement": "J",
+        "name": "unicode_not_escaped",
+        "passed": true,
+        "detail": "кириллица в полезной нагрузке не ушла в \\uXXXX"
+      },
+      {
+        "requirement": "K",
+        "name": "no_truncation_text_analysis",
+        "passed": true,
+        "detail": "текстовый артефакт доехал побайтово"
+      },
+      {
+        "requirement": "K",
+        "name": "no_truncation_blocks_analysis",
+        "passed": true,
+        "detail": "блочный артефакт доехал побайтово"
+      },
+      {
+        "requirement": "L",
+        "name": "engineering_present:discipline_role",
+        "passed": true,
+        "detail": "фрагмент 'эксперт-проектировщик'"
+      },
+      {
+        "requirement": "M",
+        "name": "engineering_present:dedup_rule",
+        "passed": true,
+        "detail": "фрагмент '**Deduplication**'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:merge_step",
+        "passed": true,
+        "detail": "фрагмент '### Step 2: Merge Findings'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:merge_rules",
+        "passed": true,
+        "detail": "фрагмент '### Merge Rules'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:cross_page",
+        "passed": true,
+        "detail": "фрагмент 'Cross-Page and Cross-Block Verification'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:detector_comparison",
+        "passed": true,
+        "detail": "фрагмент 'detector_comparison'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:coverage_warning",
+        "passed": true,
+        "detail": "фрагмент 'Coverage Warning Sections'"
+      },
+      {
+        "requirement": "N",
+        "name": "engineering_present:verification_processing",
+        "passed": true,
+        "detail": "фрагмент 'Processing text↔block verification'"
+      },
+      {
+        "requirement": "O",
+        "name": "engineering_present:source_tracing",
+        "passed": true,
+        "detail": "фрагмент 'source_finding_ids'"
+      },
+      {
+        "requirement": "O",
+        "name": "engineering_present:block_linkage",
+        "passed": true,
+        "detail": "фрагмент 'related_block_ids'"
+      },
+      {
+        "requirement": "O",
+        "name": "engineering_present:evidence_refs",
+        "passed": true,
+        "detail": "фрагмент 'evidence_text_refs'"
+      },
+      {
+        "requirement": "O",
+        "name": "engineering_present:no_internal_ids",
+        "passed": true,
+        "detail": "фрагмент 'No internal identifiers in human-readable text'"
+      },
+      {
+        "requirement": "P",
+        "name": "engineering_present:severity_elevation",
+        "passed": true,
+        "detail": "фрагмент '**Severity elevation**'"
+      },
+      {
+        "requirement": "P",
+        "name": "engineering_present:severity_reduction",
+        "passed": true,
+        "detail": "фрагмент '**Severity reduction**'"
+      },
+      {
+        "requirement": "Q",
+        "name": "engineering_present:schema_findings",
+        "passed": true,
+        "detail": "фрагмент '\"findings\"'"
+      },
+      {
+        "requirement": "Q",
+        "name": "engineering_present:schema_by_severity",
+        "passed": true,
+        "detail": "фрагмент '\"by_severity\"'"
+      },
+      {
+        "requirement": "Q",
+        "name": "engineering_present:sheet_page_rules",
+        "passed": true,
+        "detail": "фрагмент 'Sheet and Page Rules'"
+      },
+      {
+        "requirement": "Q",
+        "name": "engineering_present:norm_quote",
+        "passed": true,
+        "detail": "фрагмент 'norm_quote'"
+      },
+      {
+        "requirement": "Q",
+        "name": "engineering_present:output_language",
+        "passed": true,
+        "detail": "фрагмент 'OUTPUT LANGUAGE'"
+      },
+      {
+        "requirement": "R",
+        "name": "no_claude_md_in_argv",
+        "passed": true,
+        "detail": "личный и проектный контекст CLI подавлен флагом"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_semantics_in_prompt",
+        "passed": true,
+        "detail": "смысл шкалы перенесён явно"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_semantics_next_to_scale",
+        "passed": true,
+        "detail": "якорь='### Finding Fields'"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_value_defined:КРИТИЧЕСКОЕ",
+        "passed": true,
+        "detail": "значение определено в блоке смысла"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_value_defined:ЭКОНОМИЧЕСКОЕ",
+        "passed": true,
+        "detail": "значение определено в блоке смысла"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_value_defined:ЭКСПЛУАТАЦИОННОЕ",
+        "passed": true,
+        "detail": "значение определено в блоке смысла"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_value_defined:РЕКОМЕНДАТЕЛЬНОЕ",
+        "passed": true,
+        "detail": "значение определено в блоке смысла"
+      },
+      {
+        "requirement": "S",
+        "name": "severity_value_defined:ПРОВЕРИТЬ ПО СМЕЖНЫМ",
+        "passed": true,
+        "detail": "значение определено в блоке смысла"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:Read tool",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:Write tool",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:READ via",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:WRITE via",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:DO NOT output to chat",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "T",
+        "name": "transport_instruction_removed:After writing, output a brief summary",
+        "passed": true,
+        "detail": "снято"
+      },
+      {
+        "requirement": "U",
+        "name": "output_path_not_disclosed",
+        "passed": true,
+        "detail": "путь выходного файла модели не сообщается"
+      },
+      {
+        "requirement": "U",
+        "name": "transport_contract_present",
+        "passed": true,
+        "detail": "контракт транспорта стоит после полезной нагрузки"
+      },
+      {
+        "requirement": "U",
+        "name": "tool_restriction_scoped_to_access",
+        "passed": true,
+        "detail": "ограничение касается инструментов, а не предмета аудита"
+      },
+      {
+        "requirement": "U",
+        "name": "no_silent_skipping_rule",
+        "passed": true,
+        "detail": "требование не терять входные замечания сформулировано явно"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:Bash",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:Grep",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:Glob",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:Read",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:Write",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:WebFetch",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "VWXY",
+        "name": "tool_disallowed:WebSearch",
+        "passed": true,
+        "detail": "поимённо запрещён в argv"
+      },
+      {
+        "requirement": "Y",
+        "name": "tools_set_empty",
+        "passed": true,
+        "detail": "набор инструментов пуст"
+      },
+      {
+        "requirement": "Y",
+        "name": "max_turns_one",
+        "passed": true,
+        "detail": "один ход"
+      },
+      {
+        "requirement": "Y",
+        "name": "no_mcp_config",
+        "passed": true,
+        "detail": "MCP не подключается (норм-сервер недоступен по построению)"
+      },
+      {
+        "requirement": "Z",
+        "name": "controlled_cwd_inside_attempt",
+        "passed": true,
+        "detail": "cwd=['/home/coder/audit-worker-11e/sandbox/findings_merge_11e_fake5/providers/claude/runtime']"
+      },
+      {
+        "requirement": "AA",
+        "name": "exact_model_in_argv",
+        "passed": true,
+        "detail": "requested='claude-opus-5'"
+      },
+      {
+        "requirement": "AA",
+        "name": "model_from_local_policy",
+        "passed": true,
+        "detail": "источник='/home/coder/audit-worker-11e/data/provider_policy.json'"
+      },
+      {
+        "requirement": "AB",
+        "name": "accepted_reported_models_declared",
+        "passed": true,
+        "detail": "допустимые=['claude-opus-5', 'claude-opus-5[1m]']"
+      },
+      {
+        "requirement": "AD",
+        "name": "single_call_started",
+        "passed": true,
+        "detail": "calls_started=1"
+      },
+      {
+        "requirement": "AD",
+        "name": "single_cli_invocation",
+        "passed": true,
+        "detail": "рабочих запусков CLI=1"
+      },
+      {
+        "requirement": "AD",
+        "name": "grant_consumed_to_zero",
+        "passed": true,
+        "detail": "остаток=0"
+      },
+      {
+        "requirement": "AC",
+        "name": "no_legacy_fallback_marker",
+        "passed": true,
+        "detail": "прежний транспорт из provider-режима недостижим (тест AC)"
+      },
+      {
+        "requirement": "AE",
+        "name": "replay_behavior_covered_by_tests",
+        "passed": true,
+        "detail": "повтор завершённой попытки не зовёт модель (тест AE)"
+      },
+      {
+        "requirement": "AF",
+        "name": "crash_window_policy_covered_by_tests",
+        "passed": true,
+        "detail": "indeterminate не повторяется автоматически (тест AF)"
+      },
+      {
+        "requirement": "AG",
+        "name": "artifact_inside_attempt",
+        "passed": true,
+        "detail": "путь=/home/coder/audit-worker-11e/sandbox/findings_merge_11e_fake5/project/doc/v1/_output/03_findings.json"
+      },
+      {
+        "requirement": "AH",
+        "name": "production_path_denied",
+        "passed": true,
+        "detail": "запись вне каталога попытки отклоняется гейтом (тест AH)"
+      },
+      {
+        "requirement": "AI",
+        "name": "full_prompt_not_in_report",
+        "passed": true,
+        "detail": "тела инструкций в отчёте нет"
+      },
+      {
+        "requirement": "AJ",
+        "name": "client_artifacts_not_in_report",
+        "passed": true,
+        "detail": "формулировок входных замечаний в отчёте нет"
+      },
+      {
+        "requirement": "AJ",
+        "name": "model_answer_not_in_report",
+        "passed": true,
+        "detail": "ответ модели в отчёт не кладётся, только его отпечаток"
+      },
+      {
+        "requirement": "AL",
+        "name": "canary_literal_armed",
+        "passed": true,
+        "detail": "контрольных литералов в привязке: 1 (значения в отчёт не выводятся)"
+      },
+      {
+        "requirement": "AK",
+        "name": "credential_sanitizer_covered_by_tests",
+        "passed": true,
+        "detail": "форма учётных данных в ответе — отказ валидатора (тест AK)"
+      },
+      {
+        "requirement": "AM",
+        "name": "codex_not_invoked",
+        "passed": true,
+        "detail": "в журнале подделки нет ни одного упоминания codex"
+      },
+      {
+        "requirement": "AN",
+        "name": "norm_verify_not_invoked",
+        "passed": true,
+        "detail": "артефактов верификации норм нет"
+      },
+      {
+        "requirement": "AO",
+        "name": "no_downstream_artifacts",
+        "passed": true,
+        "detail": "в каталоге: ['01_blocks_analysis.json', '02_text_analysis.json', '03_findings.json', 'audit_trail', 'document_graph.json', 'findings_merge_provider_run.json']"
+      },
+      {
+        "requirement": "AO",
+        "name": "no_block_analysis_rerun",
+        "passed": true,
+        "detail": "блочный артефакт не пересоздавался"
+      },
+      {
+        "requirement": "AO",
+        "name": "no_text_analysis_rerun",
+        "passed": true,
+        "detail": "текстовый артефакт не пересоздавался"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "failed": []
+  }
+}

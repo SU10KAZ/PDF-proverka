@@ -1,0 +1,32 @@
+{
+  "kind": "11E §28 — задание единственного оплаченного вызова",
+  "task_id": "findings_merge_11e_real",
+  "attempt_id": "findings_merge_11e_real-a1",
+  "stage": "findings_merge",
+  "purpose": "findings_merge",
+  "provider": "claude",
+  "capability": "strong_audit",
+  "auth_mode": "ambient_user",
+  "grant": {
+    "grant_id": "g-findings_merge_11e_real",
+    "issued_by": "оператор, ОТДЕЛЬНЫМ запуском --issue-grant",
+    "max_uses": 1,
+    "ttl_sec": 5400,
+    "note": "11E findings_merge real_document"
+  },
+  "binding": {
+    "allowed_stages": ["findings_merge"],
+    "max_inferences": 1,
+    "model": "claude-opus-5",
+    "accepted_reported_models": ["claude-opus-5", "claude-opus-5[1m]"],
+    "forbidden_literals_count": 1,
+    "forbidden_literal_values_in_docs": false
+  },
+  "timeout_sec": 3000,
+  "sandbox_root": "/home/coder/audit-worker-11e/sandbox",
+  "attempt_dir": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e_real",
+  "worker_root": "/home/coder/audit-worker-11e/data",
+  "prompts_dir": "/home/coder/audit-worker-11e/prompts/prompts_snapshot",
+  "deployed_commit_at_call_time": "b68629da899a4a8b2438b2bfc12f8b50a8849e23",
+  "center_ingress_enabled": false
+}

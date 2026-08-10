@@ -1,0 +1,182 @@
+{
+  "kind": "11E §13 — построчная сверка смысла промптов свода",
+  "model_calls": 0,
+  "base_A": {
+    "what": "prepare_findings_merge_task (ветка Claude CLI, файловые инструменты)",
+    "why": "именно её заменяет 11E на воркере; сверка с API-промптом слепа к тому, что уже снял _clean_template_for_api (урок 11D.1)",
+    "chars": 11572,
+    "sha256": "eff523731d32bbdbdb5d5e0bb69559e9924b4c7a3f14a42020b549752f9a5715",
+    "non_empty_lines": 177
+  },
+  "base_B": {
+    "what": "provider_transport.build_provider_prompt поверх build_findings_merge_messages",
+    "instructions_chars": 12866,
+    "payload_chars": 38814,
+    "prompt_chars": 52816,
+    "prompt_sha256": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+    "absolute_paths_in_instructions": 0,
+    "severity_semantics_anchor": "### Finding Fields"
+  },
+  "line_classification": {
+    "counts": {
+      "PRESERVED": 171,
+      "TRANSPORT_ONLY": 6
+    },
+    "details": {
+      "TRANSPORT_ONLY": [
+        {
+          "line_no": 27,
+          "reason": "read_tool",
+          "text": "1. **Text analysis** — READ via Read tool: `/tmp/11e-semantic-7v6573qc/project/doc/v1/_output/02_text_analysis.json`"
+        },
+        {
+          "line_no": 32,
+          "reason": "read_tool",
+          "text": "2. **Block analysis** — READ via Read tool: `/tmp/11e-semantic-7v6573qc/project/doc/v1/_output/01_blocks_analysis.json`"
+        },
+        {
+          "line_no": 39,
+          "reason": "read_tool",
+          "text": "3. **MD file** (for context) — READ via Read tool: `/tmp/11e-semantic-7v6573qc/project/doc/v1/133-23-ГК-ЭС_document.md`"
+        },
+        {
+          "line_no": 218,
+          "reason": "write_tool",
+          "text": "WRITE via Write tool: `/tmp/11e-semantic-7v6573qc/project/doc/v1/_output/03_findings.json`"
+        },
+        {
+          "line_no": 222,
+          "reason": "write_tool",
+          "text": "1. Write JSON via Write tool — DO NOT output to chat"
+        },
+        {
+          "line_no": 223,
+          "reason": "brief_summary",
+          "text": "2. After writing, output a brief summary of findings"
+        }
+      ]
+    }
+  },
+  "content_added": {
+    "by_source": {
+      "input_data_note": 17,
+      "severity_semantics": 10,
+      "transport_contract": 17
+    },
+    "unclassified_lines": [],
+    "payload_note": "полезная нагрузка (два артефакта этапов) в classification не участвует: в legacy её не было по построению — модель должна была прочитать файлы сама. Её объём — в base_B.payload_chars"
+  },
+  "data_availability_delta": [
+    {
+      "id": "md_file_context",
+      "legacy_line_present": true,
+      "available_in_provider_run": false,
+      "declared_in_prompt": true,
+      "rationale": "Ветка Claude CLI давала модели путь к Markdown и рассчитывала на Read. Ни ветка API (OpenRouter), ни provider-маршрут его не вкладывают: полный документ рядом с двумя артефактами этапов удвоил бы промпт, а продовый безинструментный путь свода этого источника не имеет. Разница унаследована от решения о ветке API и в 11E не вводится; в промпте про неё сказано прямо (INPUT_DATA_NOTE, пункт 3), чтобы модель не ссылалась на то, чего не видела."
+    }
+  ],
+  "marker_report_vs_api_prompt": {
+    "engineering_markers_api": {
+      "json_schema_findings": true,
+      "json_schema_meta": true,
+      "severity_enum": true,
+      "adjacent_discipline_rule": true,
+      "cross_page_verification": true,
+      "merge_rules": true,
+      "dedup_rule": true,
+      "severity_elevation_rule": true,
+      "severity_reduction_rule": true,
+      "renumbering_rule": true,
+      "detector_comparison_rule": true,
+      "disputed_rule": true,
+      "coverage_warning_rule": true,
+      "verification_processing_rule": true,
+      "source_tracing_rule": true,
+      "block_linkage_rule": true,
+      "evidence_rule": true,
+      "highlight_rule": true,
+      "no_internal_ids_rule": true,
+      "sheet_page_rule": true,
+      "norm_quote_rule": true,
+      "output_language_rule": true
+    },
+    "engineering_markers_provider": {
+      "json_schema_findings": true,
+      "json_schema_meta": true,
+      "severity_enum": true,
+      "adjacent_discipline_rule": true,
+      "cross_page_verification": true,
+      "merge_rules": true,
+      "dedup_rule": true,
+      "severity_elevation_rule": true,
+      "severity_reduction_rule": true,
+      "renumbering_rule": true,
+      "detector_comparison_rule": true,
+      "disputed_rule": true,
+      "coverage_warning_rule": true,
+      "verification_processing_rule": true,
+      "source_tracing_rule": true,
+      "block_linkage_rule": true,
+      "evidence_rule": true,
+      "highlight_rule": true,
+      "no_internal_ids_rule": true,
+      "sheet_page_rule": true,
+      "norm_quote_rule": true,
+      "output_language_rule": true
+    },
+    "engineering_lost": [],
+    "transport_markers_leaked": [],
+    "absolute_paths_in_provider_instructions": 0,
+    "passed": true
+  },
+  "input_contract": {
+    "text_analysis": {
+      "filename": "02_text_analysis.json",
+      "bytes": 29088,
+      "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "text_findings": 19,
+      "normative_refs_found": 6,
+      "items_verified_from_blocks": 0,
+      "stage": "02_text_analysis",
+      "text_source": "md"
+    },
+    "blocks_analysis": {
+      "filename": "01_blocks_analysis.json",
+      "bytes": 25132,
+      "sha256": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "block_analyses": 10,
+      "block_findings": 6,
+      "preliminary_findings": 6,
+      "stage": "01_blocks_analysis"
+    }
+  },
+  "input_coverage": {
+    "expected_count": 25,
+    "expected_unique_count": 25,
+    "encoded_count": 25,
+    "missing_before_inference": [],
+    "duplicate_input_ids": [],
+    "passed": true
+  },
+  "hidden_context": {
+    "question": "где на платформе записаны ОПРЕДЕЛЕНИЯ значений severity (а не их перечень)",
+    "search_needles": [
+      "нельзя строить",
+      "cannot be built"
+    ],
+    "sources": {
+      "prompts": [],
+      "disciplines": [],
+      "root_claude_md": [],
+      "provider_transport": []
+    }
+  },
+  "verdict": {
+    "content_removed": 0,
+    "unknown": 0,
+    "engineering_lost_vs_api": [],
+    "transport_leaked": [],
+    "input_missing_before_inference": [],
+    "passed": true
+  }
+}

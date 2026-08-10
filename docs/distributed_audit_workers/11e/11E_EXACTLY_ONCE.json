@@ -1,0 +1,34 @@
+{
+  "kind": "11E §28 — разрешение и журнал вызовов",
+  "grant": {
+    "grant_id": "g-findings_merge_11e_real",
+    "issued_max_uses": 1,
+    "remaining_after_consume": 0,
+    "reusable_grant_found_after_run": false,
+    "issued_in_separate_operator_run": true,
+    "self_issued_by_pipeline": false
+  },
+  "ledger": {
+    "keys": [
+      {
+        "key": "findings_merge-4a76e6c00463209941bcfe4037f3ec09",
+        "state": "replay",
+        "has_result": true,
+        "performed_by_pid": 983758,
+        "claimed_at": 1786340329.503215,
+        "completed_at": 1786340361.826924,
+        "prompt_sha256": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e"
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "cli_work_invocations": 1,
+  "claude_real_inferences": 1,
+  "codex_inferences": 0,
+  "automatic_retry_performed": false,
+  "retry_policy_applied": "§27: первый вызов не вернул usable provider response → автоповтор НЕ выполнялся; wait_for_rate_limit в прогонном контексте всегда возвращает False",
+  "crash_window_policy": "заявка создаётся ДО обращения, результат пишется СРАЗУ после; исключение между ними помечает вызов indeterminate и запрещает автоповтор",
+  "replay_behavior": "повтор завершённой попытки отдаёт сохранённый результат и модель не зовёт (закреплено тестом AE)",
+  "second_inference_performed": false
+}

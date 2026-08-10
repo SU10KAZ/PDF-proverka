@@ -1,0 +1,46 @@
+{
+  "kind": "11E §3 — выбор документа",
+  "selected": {
+    "logical_id": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС / v001",
+    "object": "213_Mosfilmovskaya_31A_KingSons",
+    "discipline": "EOM",
+    "document_code": "133-23-ГК-ЭС",
+    "version_id": "v001"
+  },
+  "preferred_by_task": true,
+  "minimum_input_set_present": {
+    "02_text_analysis.json": true,
+    "01_blocks_analysis.json": true,
+    "verdict": "полный минимальный набор входов production findings_merge существует — менять документ не требовалось"
+  },
+  "why_selected": [
+    "§3 задания прямо предпочитает этот документ",
+    "его text_analysis уже доказан боевым прогоном на .31 (11D.2), артефакт цел и сверен по sha256",
+    "исторический block_analysis существует и не требует перезапуска (§2 запрещает block_analysis)",
+    "продовый маршрут свода на нём естественно требует РОВНО ОДИН вызов модели (§8)",
+    "размер входа мал: инструкции 12 866 симв. + полезная нагрузка 38 814 симв. = 52 815 симв., нарезки не требуется",
+    "минимум новых переменных относительно 11D/11D.1/11D.2"
+  ],
+  "artifacts_fabricated": false,
+  "inputs_created_by_hand": false,
+  "text_analysis_regenerated": false,
+  "block_analysis_regenerated": false,
+  "text_analysis_source": {
+    "which": "БОЕВОЙ output 11D.2, а не исторический",
+    "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+    "found_via": "manifest 11D2_RESULT_SUMMARY.json → путь на .31 → sha256 совпал",
+    "historical_alternative_not_used": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7 (11 замечаний) — НЕ использован: §4 требует именно live-выход 11D.2"
+  },
+  "historical_merge_output": {
+    "exists": true,
+    "path_relative": "03_analysis/latest/03_findings.json",
+    "sha256": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3",
+    "bytes": 64579,
+    "read_policy": "§22: до нового прогона зафиксирован ТОЛЬКО факт наличия, размер и хэш. Содержимое не открывалось — ни счётчики замечаний, ни severity. Прогон не состоялся, поэтому оно не открыто и после."
+  },
+  "copy_policy": {
+    "copied_to_worker": ["02_text_analysis.json (локально с .31)", "01_blocks_analysis.json", "document_graph.json", "133-23-ГК-ЭС_document.md"],
+    "not_copied": ["PDF", "кропы блоков", "result.json", "ocr.html", "исторический 03_findings.json", "norm_checks.json", "optimization.json", "соседние проекты", "knowledge_base"],
+    "committed_to_git": false
+  }
+}

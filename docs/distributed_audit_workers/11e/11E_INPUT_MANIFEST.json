@@ -1,0 +1,66 @@
+{
+  "kind": "11E §7 — фактические входы боевого прогона (хэши, размеры, счётчики)",
+  "note": "содержимое артефактов в Git не попадает: только отпечатки и счётчики",
+  "document": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС / v001",
+  "files": [
+    {
+      "filename": "02_text_analysis.json",
+      "required": true,
+      "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "bytes": 29088,
+      "producer": "БОЕВОЙ прогон 11D.2 на воркере .31 (10.08.2026 00:19–00:24)",
+      "provenance_verified_at": [
+        {"where": "воркер .31, каталог попытки 11D.2", "path": "~/audit-worker-11d2/sandbox/text_analysis_11d2_semantic_live_check/project/doc/v1/_output/02_text_analysis.json"},
+        {"where": "воркер .31, вход 11E", "path": "~/audit-worker-11e/inputs/02_text_analysis.json"},
+        {"where": "отчёт 11D2_RESULT_SUMMARY.json", "expected_sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad"}
+      ],
+      "sha256_matches_11d2_report": true,
+      "copy_method": "локальное копирование НА воркере (не через центр): иначе сверялась бы копия с копией",
+      "records": {"text_findings": 19, "normative_refs_found": 6, "items_verified_from_blocks": 0},
+      "text_source": "md",
+      "regenerated_in_11e": false
+    },
+    {
+      "filename": "01_blocks_analysis.json",
+      "required": true,
+      "sha256": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "bytes": 25132,
+      "producer": "исторический прогон block_analysis того же документа (корпус центра)",
+      "source_path_on_center": "projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/EOM/documents/133-23-ГК-ЭС/versions/v001/03_analysis/latest/01_blocks_analysis.json",
+      "records": {"block_analyses": 10, "block_findings": 6, "preliminary_findings": 6},
+      "block_finding_ids": ["G-001", "G-002", "G-003", "G-004", "G-005", "G-006"],
+      "regenerated_in_11e": false,
+      "why_historical": "§2 задания прямо запрещает запускать block_analysis в 11E"
+    },
+    {
+      "filename": "document_graph.json",
+      "required": false,
+      "sha256": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+      "bytes": 55795,
+      "role": "post-merge проходы: лист по странице, подписи блоков",
+      "goes_into_model_prompt": false
+    },
+    {
+      "filename": "133-23-ГК-ЭС_document.md",
+      "required": false,
+      "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+      "bytes": 19418,
+      "role": "post-merge проход: индекс «строка MD → страница» (кладётся ещё и как 02_work/document.md)",
+      "goes_into_model_prompt": false
+    }
+  ],
+  "text_finding_ids": ["T-001","T-002","T-003","T-004","T-005","T-006","T-007","T-008","T-009","T-010","T-011","T-012","T-013","T-014","T-015","T-016","T-017","T-018","T-019"],
+  "originals_unchanged": {
+    "checked_before_and_after": true,
+    "center_corpus": {
+      "01_blocks_analysis.json": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "02_text_analysis.json": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7",
+      "document_graph.json": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+      "03_findings.json": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3",
+      "133-23-ГК-ЭС_document.md": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    },
+    "worker_11d2_artifact": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+    "all_identical_after_run": true
+  },
+  "committed_content": false
+}

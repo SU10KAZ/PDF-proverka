@@ -1,0 +1,27 @@
+{
+  "kind": "11E §11 — полнота ТРАНСПОРТА входа до вызова модели",
+  "what_is_measured": "каждое ли входное замечание физически присутствует в тексте, ушедшем в stdin",
+  "what_is_NOT_measured": "сохранила ли модель их в выходе — дедупликация и объединение и есть смысл этапа",
+  "measured_on": "дамп реально отправленного stdin (репетиция) + отчёт конвейера боевого прогона",
+  "prompt_sha256_pipeline": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+  "expected_count": 25,
+  "expected_unique_count": 25,
+  "encoded_count": 25,
+  "text_findings": 19,
+  "block_findings": 6,
+  "other_source_findings": 0,
+  "expected_ids": [
+    "G-001","G-002","G-003","G-004","G-005","G-006",
+    "T-001","T-002","T-003","T-004","T-005","T-006","T-007","T-008","T-009",
+    "T-010","T-011","T-012","T-013","T-014","T-015","T-016","T-017","T-018","T-019"
+  ],
+  "missing_before_inference": [],
+  "duplicate_ids": [],
+  "matching_rule": "идентификатор ищется В КАВЫЧКАХ (\"T-001\"), как он записан в JSON: голая подстрока совпала бы с T-0010 и дала бы ложное «на месте»",
+  "byte_level_check": {
+    "text_analysis_block_sha256_equals_source_file": true,
+    "blocks_analysis_block_sha256_equals_source_file": true,
+    "comment": "не «похоже целиком», а побайтовое равенство вложенного блока и исходного файла — усечение исключено"
+  },
+  "passed": true
+}

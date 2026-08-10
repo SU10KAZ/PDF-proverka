@@ -1,0 +1,87 @@
+{
+  "kind": "11E §7 — что production findings_merge ЧИТАЕТ перед вызовом модели",
+  "established_by": "чтение кода на базе 3b5a9bb2, не предположением",
+  "stage_key": "findings_merge",
+  "artifact_written": "03_findings.json",
+  "audit_trail_dir_name": "03_findings_merge",
+  "timeout_sec": 3600,
+  "model_selector": "get_stage_model(\"findings_merge\")",
+  "inputs": [
+    {
+      "logical_role": "выход этапа анализа текста",
+      "filename": "02_text_analysis.json",
+      "legacy_alias_read": "01_text_analysis.json",
+      "type": "JSON-объект",
+      "required": true,
+      "producer_stage": "text_analysis",
+      "read_by": "prompt_builder._read_json_file (ветка API); в 11E дополнительно провереН provider_transport.resolve_merge_inputs",
+      "relevant_ids": "text_findings[].id (T-NNN)",
+      "also_used_fields": ["normative_refs_found", "project_params", "items_verified_from_blocks"],
+      "goes_into_model_prompt": true
+    },
+    {
+      "logical_role": "выход этапа анализа блоков",
+      "filename": "01_blocks_analysis.json",
+      "legacy_alias_read": "02_blocks_analysis.json",
+      "type": "JSON-объект",
+      "required": true,
+      "producer_stage": "block_analysis",
+      "read_by": "prompt_builder._read_findings_merge_blocks (сырой файл целиком для не-codex моделей)",
+      "relevant_ids": "block_analyses[].findings[].id (G-NNN)",
+      "also_used_fields": ["block_analyses[].block_id/page/sheet/label/sheet_type/highlight_regions", "preliminary_findings", "stage01_meta"],
+      "goes_into_model_prompt": true
+    },
+    {
+      "logical_role": "шаблон задачи этапа",
+      "filename": "prompts/pipeline/en/findings_merge_task.md",
+      "type": "Markdown",
+      "required": true,
+      "producer_stage": "—",
+      "goes_into_model_prompt": true
+    },
+    {
+      "logical_role": "профиль дисциплины",
+      "filename": "prompts/disciplines/<SECTION>/role.md",
+      "type": "Markdown",
+      "required": true,
+      "note": "в шаблон свода подставляется ТОЛЬКО {DISCIPLINE_ROLE}; checklist/triage/project_params этап не получает",
+      "goes_into_model_prompt": true
+    },
+    {
+      "logical_role": "Markdown документа",
+      "filename": "<md_file>",
+      "type": "Markdown",
+      "required": false,
+      "read_by": "ТОЛЬКО ветка Claude CLI — через Read самой модели",
+      "goes_into_model_prompt": false,
+      "note": "ветка API его не вкладывает; provider-маршрут наследует это решение и говорит об этом в промпте прямо"
+    },
+    {
+      "logical_role": "справочник норм дисциплины",
+      "filename": "norms_reference.md",
+      "required": false,
+      "read_by": "НИ ОДНОЙ веткой этапа свода",
+      "goes_into_model_prompt": false,
+      "known_issue": "KI-2: шаблон утверждает «provided in system context», чего не делает ни одна ветка"
+    }
+  ],
+  "post_merge_inputs": [
+    {"filename": "document_graph.json", "required": false, "used_by": ["backfill_text_evidence_in_findings", "block_captions.build_block_caption_map"], "goes_into_model_prompt": false},
+    {"filename": "02_work/document.md", "required": false, "used_by": ["backfill_text_evidence_in_findings (индекс «строка MD → страница»)"], "goes_into_model_prompt": false},
+    {"filename": "gemma_enrichment_summary.json / block_analysis_summary.json", "required": false, "used_by": ["attach_stage02_coverage_to_findings"], "goes_into_model_prompt": false}
+  ],
+  "not_read_at_all": ["document.pdf", "кропы блоков", "result.json", "ocr.html", "исторический 03_findings.json", "norm_checks.json", "optimization.json"],
+  "silent_degradation_before_11e": {
+    "what": "prompt_builder._read_json_file при отсутствии файла возвращает строку «(файл X не найден)» и кладёт её в промпт",
+    "consequence": "свод отрабатывает по одному источнику и записывает результат как полноценный",
+    "closed_in_11e_by": "provider_transport.resolve_merge_inputs — отказ ЭТАПА до вызова модели",
+    "legacy_behaviour_changed": false
+  },
+  "model_calls_natural_for_this_stage": {
+    "claude_cli_branch": 1,
+    "openrouter_branch": 1,
+    "codex_branch": 2,
+    "provider_branch_11e": 1,
+    "conclusion": "документ выбран так, что продовый маршрут естественно требует РОВНО ОДИН вызов; искусственного объединения чанков не выполнялось"
+  }
+}
