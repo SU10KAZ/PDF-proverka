@@ -24,11 +24,25 @@
   "working_branch": "feat/distributed-audit-workers-findings-merge-provider",
   "worktree": ".claude/worktrees/distributed-audit-workers-findings-merge-provider",
   "commits_of_11e": [
-    {"sha": "85cf70185c4600558b4f1b4e7c45460b1e9483e0", "subject": "feat(воркеры 11E): боевой findings_merge через ProviderAdapter без файловых инструментов"},
-    {"sha": "b68629da899a4a8b2438b2bfc12f8b50a8849e23", "subject": "fix(воркеры 11E): убрать противоречие о нормативной базе в промпте свода"},
-    {"sha": "43d2437f5eb53a03f0eaa4c0a5429064dfc64497", "subject": "fix(воркеры): сохранять текст ошибки CLI провайдера, а не только её хэш"}
+    {
+      "sha": "85cf70185c4600558b4f1b4e7c45460b1e9483e0",
+      "subject": "feat(воркеры 11E): боевой findings_merge через ProviderAdapter без файловых инструментов"
+    },
+    {
+      "sha": "b68629da899a4a8b2438b2bfc12f8b50a8849e23",
+      "subject": "fix(воркеры 11E): убрать противоречие о нормативной базе в промпте свода"
+    },
+    {
+      "sha": "43d2437f5eb53a03f0eaa4c0a5429064dfc64497",
+      "subject": "fix(воркеры): сохранять текст ошибки CLI провайдера, а не только её хэш"
+    },
+    {
+      "sha": "48ffce30",
+      "subject": "docs(воркеры 11E): отчёт этапа — перенос свода доказан до границы оплаты, вызов отказал"
+    }
   ],
   "forbidden_git_ops_performed": [],
   "push_performed": false,
-  "other_worktrees_touched": false
+  "other_worktrees_touched": false,
+  "final_commit_note": "хэш коммита артефактов проставлен отдельной правкой — сам коммит не может содержать собственный хэш"
 }
