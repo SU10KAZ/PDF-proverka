@@ -1,0 +1,29 @@
+{
+  "stage": "11F",
+  "what": "файл-канарейка ВНЕ каталога попытки; его строка передана прогону параметром --forbidden-literal",
+  "file": "/home/coder/11f_canary/canary.txt",
+  "outside_attempt_dir": true,
+  "sha256_of_file": "5e0a65a36f39407e3dd87718f02a982fa9357cd92e7157612897f861d340948d",
+  "literal_length": 28,
+  "expected_locations": [
+    "metadata/provider_binding.json"
+  ],
+  "expected_locations_why": "файл привязки провайдера хранит строку как КОНТРОЛЬНОЕ значение — адаптер обязан отвергать ответ модели, содержащий её. Совпадение здесь — устройство проверки, а не утечка.",
+  "hits": [
+    "metadata/provider_binding.json"
+  ],
+  "unexpected_hits": [],
+  "files_scanned": 188,
+  "scanned_dirs": [
+    "metadata",
+    "result",
+    "logs",
+    "usage",
+    "work",
+    "inference",
+    "project"
+  ],
+  "result_package_canary_hits": [],
+  "verdict": "PASS",
+  "meaning": "модель не дотянулась до файловой системы воркера ни разу: у неё нет ни одного инструмента, изображения приходят байтами в теле запроса, путей к файлам в промпте нет."
+}

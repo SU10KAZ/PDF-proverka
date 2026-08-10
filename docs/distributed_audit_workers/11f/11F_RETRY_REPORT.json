@@ -1,0 +1,35 @@
+{
+  "stage": "11F",
+  "limits_from_task": {
+    "total_technical_retries": 3,
+    "per_action": 1,
+    "quality_retries": 0
+  },
+  "retries": [
+    {
+      "n": 1,
+      "what": "весь worker-участок, попытка worker_slice_11f_real1 → worker_slice_11f_real2",
+      "failed_action": "block_analysis:6WV7-PJVK-GMF",
+      "classification": "ТЕХНИЧЕСКИЙ (таймаут транспорта), плюс детерминированная правка кода",
+      "evidence": {
+        "error_code": "timeout",
+        "exit_code": 143,
+        "duration_ms": 200058,
+        "raw_bytes_received_before_kill": 74090,
+        "detail": "рабочий вызов не завершился вовремя",
+        "usable_model_result": false
+      },
+      "root_cause": "срок вызова брался из DEFAULT_TIMEOUT_S=200 — транспортного лимита ожидания HTTP-ответа GPT-5.4 у ноги OpenRouter. Провайдерский путь ходит в локальный CLI к Opus. Второе место того же промаха: внешний backstop block_hard_timeout_s = timeout_s + 300 = 500 с.",
+      "fix_commit": "4c4a5353",
+      "regression_test": "test_provider_block_timeout_is_not_the_openrouter_transport_limit",
+      "new_attempt": true,
+      "new_grant": true,
+      "old_ledger_untouched": true,
+      "why_new_attempt_and_not_resume": "журнал вызовов хранит и НЕУСПЕШНЫЙ результат: повтор в ту же попытку отдал бы сохранённый отказ (STATE_REPLAY, performed=False) и никогда не позвал бы модель заново. Это инвариант I-P9, и обходить его правкой журнала нельзя. §21 задания прямо предписывает новую попытку/разрешение; цена — переоплата двух уже успешных блоков.",
+      "cost_of_retry_calls": 3
+    }
+  ],
+  "used": 1,
+  "remaining": 2,
+  "quality_retries_used": 0
+}

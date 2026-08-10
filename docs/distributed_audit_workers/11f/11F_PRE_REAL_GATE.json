@@ -1,0 +1,139 @@
+{
+  "stage": "11F",
+  "checked_at_utc": "2026-08-10T09:46:03Z",
+  "code_commit": "f0539242",
+  "release_on_worker": "20260810T094449-b797367a3170",
+  "items": [
+    {
+      "id": "A",
+      "name": "карта классического конвейера построена по коду",
+      "status": "GREEN",
+      "evidence": "11F_CLASSIC_PIPELINE_MAP.json/.md; порядок восстановлен из _run_ocr_pipeline (manager.py:5336), сверен тремя независимыми агентами и отдельным проверяющим (20/20 CONFIRMED)"
+    },
+    {
+      "id": "B",
+      "name": "граница worker/center явная",
+      "status": "GREEN",
+      "evidence": "WORKER_STAGE_PLAN (8) и FORBIDDEN_STAGES (4) уже объявлены в коде; двойной барьер — процессный гейт до прогона и audit_stage_history после"
+    },
+    {
+      "id": "C",
+      "name": "все worker-стадии опознаны",
+      "status": "GREEN",
+      "evidence": "13 ключей pipeline_log в фактическом прогоне; ни одной неопознанной"
+    },
+    {
+      "id": "D",
+      "name": "полный fake worker slice PASS",
+      "status": "GREEN",
+      "evidence": "три прогона: центр (fake8), воркер (fake1, fake_final). exit 0, 7 вызовов, все worker-этапы done"
+    },
+    {
+      "id": "E",
+      "name": "каждая модельная стадия совместима с ProviderAdapter",
+      "status": "GREEN",
+      "evidence": "block_analysis, text_analysis, findings_merge, findings_review, optimization, optimization_critic, optimization_corrector — все семь в белом списке привязки и все семь имеют провайдерский путь"
+    },
+    {
+      "id": "F",
+      "name": "нет тихого legacy-фолбэка",
+      "status": "GREEN",
+      "evidence": "закрыты четыре: потеря image_paths, подмена модели на openai/gpt-5.4, fail-soft absence_guard, выбор модели по первому ключу modelUsage. Каждый закрыт отказом, а не обходом"
+    },
+    {
+      "id": "G",
+      "name": "нет скрытой зависимости от CLAUDE.md",
+      "status": "GREEN",
+      "evidence": "11F_HIDDEN_CONTEXT_AUDIT.md; SEVERITY_SEMANTICS вынесена на все шесть модельных стадий; CLAUDE.md в релизе отсутствует (проверено на воркере)"
+    },
+    {
+      "id": "H",
+      "name": "tools=0 у текстовых стадий",
+      "status": "GREEN",
+      "evidence": "argv адаптера содержит --tools= и --disallowed-tools=; проверено тестом на паритет мультимодального и текстового argv"
+    },
+    {
+      "id": "I",
+      "name": "изоляция вложений блока доказана",
+      "status": "GREEN",
+      "evidence": "изображение уходит БАЙТАМИ в теле запроса; каталога вложений нет вовсе; read_crop отвергает выход за каталог блоков (проверено на симлинках, '..', абсолютных путях)"
+    },
+    {
+      "id": "J",
+      "name": "точная политика моделей",
+      "status": "GREEN",
+      "evidence": "модель из локальной политики воркера (strong_audit → claude-opus-5); reported сверяется с accepted; несовпадение = отказ"
+    },
+    {
+      "id": "K",
+      "name": "вход не выходит за каталог попытки",
+      "status": "GREEN",
+      "evidence": "isolated_roots переводит все корни внутрь job_dir; apply_runtime_paths проверяет это на стороне платформы"
+    },
+    {
+      "id": "L",
+      "name": "выход не выходит за каталог попытки",
+      "status": "GREEN",
+      "evidence": "_assert_output_inside_attempt на всех провайдерских путях"
+    },
+    {
+      "id": "M",
+      "name": "центральный этап на воркере запрещён",
+      "status": "GREEN",
+      "evidence": "forbidden_stages_not_run = все четыре в трёх fake-прогонах; audit_stage_history валит пакет при нарушении"
+    },
+    {
+      "id": "N",
+      "name": "checkpoint/resume работает на fake",
+      "status": "GREEN",
+      "evidence": "--resume в ту же попытку: 4 из 7 вызовов отданы из журнала бесплатно (3 блока + текст), 3 переоплачены из-за изменившихся входов. Измерено, а не заявлено"
+    },
+    {
+      "id": "O",
+      "name": "exactly-once работает",
+      "status": "GREEN",
+      "evidence": "7 заявок / 7 результатов / 0 indeterminate; ключ учитывает отпечаток вложения (тест на два разных кропа с одинаковым промптом)"
+    },
+    {
+      "id": "P",
+      "name": "манифест handoff собирается",
+      "status": "GREEN",
+      "evidence": "пакет результата 774 КБ / 139 файлов; локальный импорт центром PASS (139/139 хэшей, 127 файлов к применению, 0 отклонённых)"
+    },
+    {
+      "id": "Q",
+      "name": "тесты на утечку клиентских данных",
+      "status": "GREEN",
+      "evidence": "в отчётах о прогоне ни промпта, ни ответа — только sha256 и счётчики; metadata/ в пакет не входит; каталог дампов промптов убран"
+    },
+    {
+      "id": "R",
+      "name": "тесты на утечку учётных данных",
+      "status": "GREEN",
+      "evidence": "окружение подпроцесса собирается с нуля по белому списку из 4+3 переменных; привязка пишется с 0600; redaction применяется к stdout/stderr до записи"
+    },
+    {
+      "id": "S",
+      "name": "канарейка исключена",
+      "status": "PENDING_REAL",
+      "evidence": "файл ~/11f_canary/canary.txt вне каталога попытки, sha256 снят; строка передана как forbidden_literal. Проверяется по итогам боевого прогона"
+    },
+    {
+      "id": "T",
+      "name": "бюджет ≤ 20 естественных вызовов",
+      "status": "GREEN",
+      "evidence": "7 естественных (измерено fake), худший случай 9. Потолок попытки 16"
+    }
+  ],
+  "adversarial_review": {
+    "reviewers": 5,
+    "blockers_found": 2,
+    "blockers_fixed": 2,
+    "majors_found": 6,
+    "majors_fixed": 6,
+    "minors_found": 9,
+    "minors_fixed": 3,
+    "note": "все блокеры и majors закрыты кодом до боевого вызова; minor'ы, не влияющие на достоверность прогона, вынесены в 11F_KNOWN_ISSUES.md"
+  },
+  "verdict": "GREEN — боевой прогон разрешён"
+}

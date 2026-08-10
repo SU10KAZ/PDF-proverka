@@ -1,0 +1,76 @@
+{
+  "stage": "11F",
+  "check": "local_handoff_import",
+  "unpack": {
+    "ok": true,
+    "files": 144,
+    "bytes": 2756998,
+    "package_type": "result",
+    "tree_hash": "sha256:696c4ec0aa6cf238f11f84650e90ecd15a8e1c8ec6f75f46fa5ba373a65dd7a5"
+  },
+  "per_file_integrity": {
+    "checked": 143,
+    "mismatched": [],
+    "ok": true
+  },
+  "manifest_validation": {
+    "ok": true,
+    "error": null
+  },
+  "change_plan": {
+    "ok": true,
+    "counts": {
+      "apply": 131,
+      "rejected": 0,
+      "skipped_source": 0,
+      "skipped_central": 0
+    },
+    "sample": {
+      "apply": [
+        "03_analysis/latest/01_blocks_analysis.json",
+        "03_analysis/latest/01_blocks_for_text.json",
+        "03_analysis/latest/02_text_analysis.json",
+        "03_analysis/latest/03_findings.json",
+        "03_analysis/latest/03_findings_review.json"
+      ],
+      "rejected": [],
+      "skipped_source": [],
+      "skipped_central": []
+    }
+  },
+  "boundary": {
+    "resume_hint": "completed",
+    "worker_stage_plan": [
+      "crop_blocks",
+      "block_context",
+      "block_analysis",
+      "text_analysis",
+      "findings_merge",
+      "findings_review",
+      "optimization",
+      "optimization_review"
+    ],
+    "forbidden_stages_not_run": [
+      "norm_verify",
+      "decision_carryover",
+      "debt_control",
+      "excel"
+    ],
+    "central_only": [
+      "norm_verify",
+      "decision_carryover",
+      "debt_control",
+      "excel"
+    ],
+    "next_expected_central_stage": "norm_verify",
+    "norm_verify_executed_here": false,
+    "central_stage_violations": []
+  },
+  "verdict": "PASS",
+  "what_is_proven": "пакет, собранный воркером, проходит проверки центральной стороны тем же кодом, что и в бою (package_io.verify_and_unpack, result_import.validate_result_manifest, build_change_plan, resume_detector), и раскладывается в дерево версии",
+  "what_is_not_proven": [
+    "production ingress не включался (§34)",
+    "norm_verify не запускался (§36)",
+    "production-каталог проектов не трогался — всё в отдельном каталоге проверки"
+  ]
+}

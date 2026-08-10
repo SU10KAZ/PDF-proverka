@@ -1,0 +1,41 @@
+{
+  "stage": "11F",
+  "question": "что происходит при повторе, и переплачиваем ли мы уже успешные вызовы",
+  "mechanism": {
+    "ledger": "audit_worker/providers/inference_ledger.py — журнал ОДНОЙ попытки в <job_dir>/inference",
+    "key": "sha256(attempt_id, provider, purpose, prompt[, отпечаток вложений])",
+    "states": {
+      "allowed": "ключа нет — вызов разрешён",
+      "replay": "есть результат — отдаётся БЕЗ обращения к модели, performed=False",
+      "indeterminate": "есть заявка без результата — повтор ЗАПРЕЩЁН, решение принимает оператор"
+    },
+    "claim_before_call": true,
+    "result_saved_immediately": true
+  },
+  "measured_on_fake": {
+    "first_run_calls": 7,
+    "resume_same_attempt_total_calls_in_ledger": 10,
+    "replayed_free": 4,
+    "repaid": 3,
+    "replayed_stages": [
+      "block_analysis (3 блока)",
+      "text_analysis"
+    ],
+    "repaid_stages": [
+      "findings_merge",
+      "optimization",
+      "optimization_critic"
+    ],
+    "why_repaid": "ключ считается по ПРОМПТУ. Повторный полный прогон перегенерирует 03_findings.json (новые F-ID, новая мета), а это ВХОД свода, оптимизации и её критика — промпт меняется, ключ меняется, вызов новый. Блоки и текстовый анализ зависят только от неизменных входов (кропы, контекст блоков, MD), поэтому воспроизводятся побайтово.",
+    "conclusion": "resume защищает ровно то, что детерминировано по входу. Это не «сломан checkpoint», а следствие того, что единицей идемпотентности выбран ВЫЗОВ, а не этап. Полноценные stage-checkpoint'ы — отдельная работа."
+  },
+  "real_run_behaviour": {
+    "why_new_attempt_after_failure": "журнал хранит и НЕУСПЕШНЫЙ результат: повтор в ту же попытку отдал бы сохранённый отказ и никогда не позвал бы модель. Это инвариант I-P9. §21 задания предписывает для технического отказа новую попытку и новое разрешение — так и сделано, старый журнал не тронут.",
+    "attempt_1": "worker_slice_11f_real1 — 3 вызова блоков, 2 успешных, 1 таймаут; журнал сохранён как есть",
+    "attempt_2": "worker_slice_11f_real2 — новая попытка после исправления срока вызова"
+  },
+  "artifacts_seeded_between_runs": {
+    "mechanism": "_seed_prepared_inputs_from_latest и _seed_run_dir_from_latest переносят готовые кропы и контекст блоков в новый runs/<job_id>",
+    "effect": "crop_blocks и block_context во второй попытке не пересчитывались с нуля — 0 вызовов модели в обоих случаях"
+  }
+}

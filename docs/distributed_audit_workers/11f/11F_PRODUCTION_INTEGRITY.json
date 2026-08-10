@@ -1,0 +1,49 @@
+{
+  "stage": "11F",
+  "principle": "11F пишет ТОЛЬКО в отдельную песочницу. Production-дерево проекта не является ни входом прогона, ни выходом.",
+  "production_project": {
+    "path": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001",
+    "files": 116,
+    "snapshot_before": "/home/coder/11f_diagnostic/evidence/production_snapshot_before.json (sha256 каждого файла)",
+    "method": "полная копия дерева в песочницу /home/coder/11f_diagnostic/sandbox/projects_v2/ с переносимой раскладкой; пакет собирается ИЗ КОПИИ",
+    "checked_before_real_run": true,
+    "identical_before_real_run": true,
+    "checked_after_real_run": true,
+    "identical_after_real_run": true,
+    "after_check": {
+      "files_before": 116,
+      "files_after": 116,
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "verdict": "PASS",
+      "tool": "scripts/verify_11f_production_integrity.py (sha256 каждого файла)"
+    }
+  },
+  "worker_production_dirs": {
+    "path": "~/audit-worker (боевая установка) и каталоги прошлых этапов -11d, -11d2, -11e",
+    "method": "число файлов снято до прогона; 11F развёрнут в ОТДЕЛЬНЫЙ корень ~/audit-worker-11f",
+    "before": {
+      "audit-worker": 15072,
+      "audit-worker-11d": 1305,
+      "audit-worker-11d2": 7084,
+      "audit-worker-11e": 1942
+    },
+    "after": {
+      "audit-worker": 15072,
+      "audit-worker-11d": 1305,
+      "audit-worker-11d2": 7084,
+      "audit-worker-11e": 1942
+    },
+    "identical": true
+  },
+  "center_ingress": {
+    "DISTRIBUTED_WORKERS_ENABLED": "не менялся",
+    "nginx": "не менялся",
+    "firewall": "не менялся",
+    "production .env центра": "не менялся",
+    "note": "§34: настоящий центр→воркер транспорт в 11F не включался. Пакет собран и передан scp вручную."
+  },
+  "systemd_on_worker": "юниты не ставились и не перезапускались",
+  "verdict": "production changed = NO"
+}
