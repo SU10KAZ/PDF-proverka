@@ -35,6 +35,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+# Потолок вызовов попытки живёт в нейтральной конфигурации воркера: то же
+# значение проверяет `audit_runner` на приёме задания, а импортировать
+# провайдерский слой ему запрещено по построению.
+from audit_worker.config import MAX_INFERENCES_CEILING
 from audit_worker.providers import errors, identity as identity_mod, model_policy
 from audit_worker.providers.auth_mode import (
     AUTH_MODE_AMBIENT_USER,
@@ -52,20 +56,6 @@ BINDING_FILENAME = "provider_binding.json"
 #: Единственный канал: без неё мост провайдеров в конвейере не активируется
 #: вовсе, и код платформы ведёт себя ровно как до этапа 11C.
 BINDING_ENV = "AUDIT_WORKER_PROVIDER_BINDING"
-
-#: Максимум вызовов модели, который задание вправе заказать на ОДНУ попытку.
-#:
-#: Было 8 — число из времён, когда попытка означала ОДИН этап (11C-11E), и
-#: восьми хватало с запасом. Полный worker-участок (11F) — это уже цепочка:
-#: один вызов на каждый графический блок плюс текст, свод, оптимизация и её
-#: проверка. У самого маленького пригодного документа корпуса выходит девять,
-#: и прежний потолок отвергал бы задание ещё до старта.
-#:
-#: Новая граница — 64. Она по-прежнему рубеж, а не разрешение: реальный потолок
-#: задаёт разрешение оператора (`inference_grant`), которое списывается ДО
-#: запуска и знает цену вызова. Смысл константы в другом — не дать заданию
-#: заказать неограниченный расход на чужой подписке.
-MAX_INFERENCES_CEILING = 64
 
 
 class ProviderResolutionError(RuntimeError):

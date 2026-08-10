@@ -1165,6 +1165,19 @@ async def call_provider_for_block(
     built = _pt.build_provider_prompt(
         system_prompt=system_prompt, user_text=user_text,
     )
+    if built["prompt_chars"] > _pt.MAX_PROMPT_CHARS:
+        # Отказ ДО заявки в журнале: вызов, который заведомо не пройдёт по
+        # длине, не должен стоить ни попытки, ни единицы разрешения.
+        return {
+            "ok": False,
+            "error": (
+                f"промпт блока {built['prompt_chars']} симв. > потолка "
+                f"{_pt.MAX_PROMPT_CHARS}: нарезки в provider-режиме нет, а "
+                "молчаливое усечение входа недопустимо"
+            ),
+            "elapsed_ms": int((time.monotonic() - started) * 1000),
+            "context_source": context_source,
+        }
 
     try:
         attempt_dir = pipeline_bridge.attempt_dir()
@@ -2972,14 +2985,19 @@ async def run_findings_only_for_project(
     total_findings = sum(len(b["findings"]) for b in block_analyses)
     # Paid-token accounting excludes Codex/Claude subscription tokens in dual
     # mode. Cache hits remain visible in total tokens but are not billed.
+    #
+    # Провайдерский режим (11F) — тоже подписка, и его пропуск здесь означал бы
+    # выдуманный платный расход: обе прежние переменные принудительно False, и
+    # токены вызовов через ProviderAdapter уехали бы в учёт по прайсу
+    # OpenRouter GPT-5.4 — вместе с записью в журнал платных событий центра.
     paid_in = sum(
         int(r["result"].get("paid_input_tokens", r["result"].get("input_tokens") or 0))
         for r in results
-    ) if not (use_claude_cli or use_codex_cli) else 0
+    ) if not (use_claude_cli or use_codex_cli or use_provider_bridge) else 0
     paid_out = sum(
         int(r["result"].get("paid_output_tokens", r["result"].get("output_tokens") or 0))
         for r in results
-    ) if not (use_claude_cli or use_codex_cli) else 0
+    ) if not (use_claude_cli or use_codex_cli or use_provider_bridge) else 0
     cached_in = sum(
         int(r["result"].get("paid_cached_input_tokens", r["result"].get("input_tokens") or 0))
         for r in results if r["result"].get("from_cache") or r["result"].get("paid_cached_input_tokens")

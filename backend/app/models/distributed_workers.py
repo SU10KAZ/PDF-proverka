@@ -460,7 +460,7 @@ class ProviderRequirementPayload(BaseModel):
     #: Потолок оплачиваемых вызовов. Ноль — законное значение: «модель не звать».
     #: Верхняя граница здесь — рубеж центра; фактический потолок задаёт
     #: разрешение оператора на воркере, и оно всегда у́же.
-    max_inferences: int = Field(default=0, ge=0, le=8)
+    max_inferences: int = Field(default=0, ge=0, le=64)
 
     @field_validator("allowed_stages")
     @classmethod

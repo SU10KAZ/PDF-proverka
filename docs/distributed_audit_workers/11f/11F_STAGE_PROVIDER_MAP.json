@@ -1,0 +1,103 @@
+{
+  "stage": "11F",
+  "question": "чем и как каждая стадия worker-участка доходит до модели ПОСЛЕ 11F",
+  "rule": "мост активен ⇔ задана AUDIT_WORKER_PROVIDER_BINDING и файл привязки существует. На центре переменной нет никогда, поэтому все развилки ниже там — no-op.",
+  "stages": [
+    {
+      "stage": "crop_blocks",
+      "model": false,
+      "transport": "—",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "document_graph_v2",
+      "model": false,
+      "transport": "—",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "block_context",
+      "model": false,
+      "transport": "—",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "block_analysis",
+      "model": true,
+      "transport": "gemma_findings_only.call_provider_for_block → pipeline_bridge.run_stage_inference(images=[…]) → ClaudeProviderAdapter.structured_inference_multimodal",
+      "fork": "gemma_findings_only.py: use_provider_bridge перекрывает use_claude_cli/use_codex_cli/use_dual",
+      "image_delivery": "content-блок type=image (base64) на stdin, --input-format stream-json",
+      "tools": 0,
+      "changed_in_11f": true,
+      "was": "прямой asyncio.create_subprocess_exec с --allowedTools Read,Write, мимо моста"
+    },
+    {
+      "stage": "text_analysis",
+      "model": true,
+      "transport": "claude_runner._run_text_analysis_via_provider (11D)",
+      "changed_in_11f": "частично: в промпт добавлен инлайн 01_blocks_for_text.json"
+    },
+    {
+      "stage": "findings_merge",
+      "model": true,
+      "transport": "claude_runner._run_findings_merge_via_provider (11E)",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "findings_review",
+      "model": "условно",
+      "transport": "детерминированное ядро без модели + absence_guard._verify_via_provider_bridge",
+      "changed_in_11f": true,
+      "was": "прямой subprocess.run + fail-soft → тихая деградация на воркере"
+    },
+    {
+      "stage": "optimization",
+      "model": true,
+      "transport": "claude_runner._run_json_stage_via_provider → provider_json_stage",
+      "changed_in_11f": true,
+      "was": "_run_cli с OPTIMIZATION_TOOLS: промпт требовал Read/Write при --tools="
+    },
+    {
+      "stage": "optimization_critic",
+      "model": true,
+      "transport": "claude_runner._run_json_stage_via_provider",
+      "changed_in_11f": true
+    },
+    {
+      "stage": "optimization_corrector",
+      "model": "условно",
+      "transport": "claude_runner._run_json_stage_via_provider",
+      "changed_in_11f": true
+    },
+    {
+      "stage": "norm_verify",
+      "model": true,
+      "transport": "CENTER_ONLY",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "debt_control",
+      "model": true,
+      "transport": "CENTER_ONLY",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "decision_carryover",
+      "model": true,
+      "transport": "CENTER_ONLY",
+      "changed_in_11f": false
+    },
+    {
+      "stage": "excel",
+      "model": false,
+      "transport": "CENTER_ONLY",
+      "changed_in_11f": false
+    }
+  ],
+  "silent_fallbacks_closed": [
+    "общий путь моста молча терял image_paths → теперь отказ этапа",
+    "block_analysis подменял несовместимую модель на openai/gpt-5.4 (только warn) → при активном мосте подмены нет",
+    "absence_guard fail-soft → {} при неавторизованном CLI → при активном мосте прямой путь запрещён",
+    "модель бралась как первый ключ modelUsage → теперь из сообщения ассистента, служебные исключены"
+  ]
+}

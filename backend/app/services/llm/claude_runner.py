@@ -1553,7 +1553,12 @@ async def _run_json_stage_via_provider(
     ):
         messages = messages_builder(project_info, project_id)
 
-    built = _pjs.build_provider_prompt(messages, root_key=root_key)
+    try:
+        built = _pjs.build_provider_prompt(messages, root_key=root_key)
+    except _pjs.ProviderStageRefusal as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
     problems = _pjs.guard_problems(built, max_prompt_chars=max_prompt_chars)
     if problems:
         detail = "; ".join(problems)
@@ -1563,8 +1568,9 @@ async def _run_json_stage_via_provider(
     await send_output(
         on_output,
         f"[{stage_key}] provider-режим: инструкции {built['system_chars']} симв., "
-        f"вход {built['payload_chars']} симв., файловых инструкций снято "
-        f"{built['file_instructions_stripped']}",
+        f"вход {built['payload_chars']} симв., изображений {len(built['images'])}, "
+        f"файловых инструкций снято {built['file_instructions_stripped']}, "
+        f"путей заменено {built['filesystem_refs_stripped']}",
     )
 
     try:
@@ -1578,6 +1584,9 @@ async def _run_json_stage_via_provider(
                 required_result_fields=(root_key,),
                 field_types={root_key: list},
                 timeout_sec=float(timeout),
+                # Картинки листов-планов, если боевой сборщик их приложил.
+                # Пустой список — обычный текстовый вызов.
+                images=built["images"],
             )
         )
     except ProviderBridgeError as exc:
@@ -2096,7 +2105,7 @@ async def run_optimization(
             messages_builder=_pb.build_optimization_messages,
             project_info=project_info, project_id=project_id, on_output=on_output,
             output_dir=output_dir, version_dir=version_dir, version_id=version_id,
-            artifact_name="optimization.json", root_key="optimizations",
+            artifact_name="optimization.json", root_key="items",
             audit_stage="05_optimization", timeout=_t,
         )
 
@@ -2356,7 +2365,7 @@ async def run_optimization_critic(
             messages_builder=_pb.build_optimization_critic_messages,
             project_info=project_info, project_id=project_id, on_output=on_output,
             output_dir=output_dir, version_dir=version_dir, version_id=version_id,
-            artifact_name="optimization_review.json", root_key="optimizations",
+            artifact_name="optimization_review.json", root_key="reviews",
             audit_stage="05b_optimization_critic",
             timeout=CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT,
         )
@@ -2453,7 +2462,7 @@ async def run_optimization_corrector(
             messages_builder=_pb.build_optimization_corrector_messages,
             project_info=project_info, project_id=project_id, on_output=on_output,
             output_dir=output_dir, version_dir=version_dir, version_id=version_id,
-            artifact_name="optimization.json", root_key="optimizations",
+            artifact_name="optimization.json", root_key="items",
             audit_stage="05c_optimization_corrector",
             timeout=CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT,
         )

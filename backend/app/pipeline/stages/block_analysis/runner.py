@@ -897,6 +897,24 @@ async def run_block_analysis_findings_only(
         ctx.update_pipeline_log("block_analysis", "error", error=error)
         return StageResult.fail(f"Stage 01 ({BLOCK_BATCH_MODE_FINDINGS_ONLY}): все блоки упали")
 
+    # В провайдерском режиме потеря ЛЮБОГО блока — отказ этапа, а не «частичный
+    # успех». Строже, чем на центре, и намеренно.
+    #
+    # На центре ансамбль из нескольких ног и повторов делает частичную потерю
+    # статистическим шумом. Здесь нога одна, и типичная причина отказа —
+    # исчерпанный потолок вызовов попытки: тогда первые блоки проходят, а все
+    # остальные возвращают `ok=False`. Этап отчитался бы успехом, аудит доехал
+    # бы до конца, и разница «40 блоков» против «6 блоков» не была бы видна ни
+    # по одному артефакту, кроме числа в сообщении.
+    if provider_mode and summary["blocks_failed"] > 0:
+        error = (
+            f"провайдерский режим: {summary['blocks_failed']} из "
+            f"{summary['blocks_failed'] + summary['blocks_ok']} блоков не "
+            "проанализированы. Частичный визуальный аудит не выдаётся за полный"
+        )
+        ctx.update_pipeline_log("block_analysis", "error", error=error)
+        return StageResult.fail(f"Stage 01: {error}")
+
     msg = (
         f"OK ({summary['blocks_ok']}/{summary['blocks_total']} блоков, "
         f"{summary['wall_clock_s']:.0f}s, "

@@ -36,6 +36,13 @@ def detector_for_model(model: str | None) -> str:
         return "gpt_openrouter"
     if value.startswith("claude-"):
         return "claude"
+    # Провайдерский слой воркера (11F). Строку задаёт не конфигурация, а
+    # локальная политика воркера, и до `stage_models.json` ей дела нет. Без
+    # этой ветки она проваливалась в терминальный `openrouter` ниже — то есть
+    # КАЖДОЕ графическое замечание, найденное на воркере по подписке, навсегда
+    # получало провенанс платного HTTP-провайдера, которого там не было вовсе.
+    if value.startswith("provider/"):
+        return "worker_provider"
     if value:
         return "openrouter"
     return "unknown"

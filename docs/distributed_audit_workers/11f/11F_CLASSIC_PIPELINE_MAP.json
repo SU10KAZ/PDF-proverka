@@ -1,0 +1,226 @@
+{
+  "stage": "11F",
+  "source_of_truth": "код на 896f1d2d, не документация",
+  "entrypoint_full_audit": {
+    "worker": "audit_worker/audit_runner.py::run_audit_job → python -m backend.app.pipeline.remote_audit_runner <run_spec.json>",
+    "platform": "backend/app/pipeline/remote_audit_runner.py::run() → PipelineManager._dispatch_action(item, job)",
+    "full_action": "backend/app/pipeline/manager.py::_run_ocr_pipeline (action='full'/'audit'/…)",
+    "note": "Второго конвейера нет. remote_audit_runner не содержит ни одной стадии — он выставляет корни данных, проверяет снимки и зовёт тот же _dispatch_action, что и центр."
+  },
+  "canonical_order_source": "backend/app/pipeline/manager.py:5336 _run_ocr_pipeline — последовательность вызовов, а не декларативный список",
+  "stages": [
+    {
+      "name": "crop_blocks",
+      "runner": "backend/app/pipeline/stages/crop_blocks/runner.py (оркестратор: manager._ensure_stage02_crops, manager.py:2365)",
+      "inputs": ["02_work/result.json (crop_url, coords_px)", "02_work/document.pdf (fallback-рендер)"],
+      "outputs": ["03_analysis/runs/<job>/blocks_stage02_100/*.png", ".../index.json"],
+      "model_calls": 0,
+      "provider": null,
+      "network": "ДА: сначала скачивание crop_url (R2/портал), при неудаче — офлайн-рендер из локального PDF (crop_blocks/blocks.py:368-403)",
+      "resume": "index.json + render_profile-кеш; manager._seed_prepared_inputs_from_latest переиспользует кропы из latest",
+      "classification": "DETERMINISTIC_PORTABLE"
+    },
+    {
+      "name": "document_graph_v2",
+      "runner": "manager._build_document_graph_v2 (manager.py:1910)",
+      "inputs": ["02_work/result.json", "02_work/document.md"],
+      "outputs": ["document_graph.json"],
+      "model_calls": 0,
+      "provider": null,
+      "network": "нет",
+      "resume": "перестраивается всегда",
+      "classification": "DETERMINISTIC_PORTABLE",
+      "note": "Отдельного имени стадии в pipeline_log нет — часть crop_blocks-фазы. В WORKER_STAGE_PLAN не перечислен."
+    },
+    {
+      "name": "block_context",
+      "runner": "manager._run_gemma_enrichment_stage (manager.py:2084) → stages/gemma_enrichment + stages/block_context/contract.py",
+      "inputs": ["кропы блоков", "вектор-слой блок-PDF/страницы", "result.json"],
+      "outputs": ["block_context_summary.json", "block_vector_graphs/<block_id>.json"],
+      "model_calls": 0,
+      "provider": "детерминированный build_block_context (Вектограф/raw_vector). Локальные LLM (Gemma/Qwen) с платформы удалены; имя каталога — исторический нейминг.",
+      "network": "нет",
+      "resume": "validate_block_context_summary(output_dir).valid",
+      "classification": "DETERMINISTIC_PORTABLE"
+    },
+    {
+      "name": "block_grounding",
+      "runner": "manager._run_block_grounding_stage (manager.py:2097)",
+      "inputs": ["block_context_summary.json", "вектор-слой"],
+      "outputs": ["shadow-артефакты grounding"],
+      "model_calls": 0,
+      "provider": null,
+      "network": "нет",
+      "conditional": "флаг, default OFF; fail-soft",
+      "classification": "DETERMINISTIC_PORTABLE"
+    },
+    {
+      "name": "block_analysis",
+      "runner": "manager._run_block_analysis_findings_only (manager.py:2440) → stages/block_analysis/runner.py:769 → stages/block_analysis/gemma_findings_only.py::run_findings_only_for_project",
+      "inputs": ["blocks_stage02_100/*.png + index.json", "block_context_summary.json", "page text", "document_graph.json"],
+      "outputs": ["01_blocks_analysis.json", "block_analysis_summary.json", "runtime_batches"],
+      "model_calls": "ОДИН вызов НА БЛОК (single-block runtime plan, gemma_findings_only.py:1880). Умножается на число «ног»: ensemble/gpt-codex = 2 (GPT-5.4 OpenRouter + Codex CLI), +1 при STAGE01_THIRD_LEG_ENABLED (OFF), +1 на блок при STAGE01_PROTECTION_TABLE_CHECK_ENABLED (OFF). Отдельно dual_review при model==ensemble/gpt-codex (STAGE01_DUAL_REVIEW_ENABLED, default ON) и gap-search (OFF).",
+      "provider": "по model id: claude-* → call_claude_cli_for_block (gemma_findings_only.py:1435, ПРЯМОЙ subprocess claude -p --allowedTools Read,Write); codex/* → call_codex_for_block (codex exec --image); ensemble/gpt-codex → GPT+Codex; иначе OpenRouter HTTP",
+      "default_model": "ensemble/gpt-codex (config.py:278) — платный OpenRouter + Codex CLI",
+      "network": "ДА при OpenRouter-ноге; PaidApiGuard проверяется ДО первого блока (manager.py:2455)",
+      "resume": "01_blocks_analysis.json + pipeline_log; per-block кеш stage02_paid_cache",
+      "classification": "WORKER_TARGET",
+      "problems_for_11f": [
+        "call_claude_cli_for_block НЕ проходит через _run_cli → НЕ проходит через pipeline_bridge/ProviderAdapter (прямой asyncio.create_subprocess_exec)",
+        "даёт модели --allowedTools Read,Write, то есть свободный доступ к ФС ради чтения PNG и записи результата",
+        "_run_cli имеет параметр image_paths, но ветка моста (claude_runner.py:350) его игнорирует — изображения молча теряются",
+        "production-дефолт ensemble/gpt-codex недостижим на воркере с одной Claude-подпиской: Codex запрещён (§35), OpenRouter требует платного ключа"
+      ]
+    },
+    {
+      "name": "text_analysis",
+      "runner": "stages/text_analysis/runner.py → claude_runner.run_text_analysis (claude_runner.py:1104)",
+      "inputs": ["02_work/document.md", "01_blocks_analysis.json (компактная проекция при blocks_before_text)"],
+      "outputs": ["02_text_analysis.json"],
+      "model_calls": "1 (single-pass). Codex-ветка: N при чанкинге MD (Tier 2). Provider-ветка: 1.",
+      "provider": "МОСТ УЖЕ ЕСТЬ: claude_runner.py:1122 — при активной привязке уходит в _run_text_analysis_via_provider (11D)",
+      "default_model": "claude-opus-5",
+      "network": "нет (подписка через CLI)",
+      "resume": "02_text_analysis.json + pipeline_log",
+      "classification": "WORKER_TARGET",
+      "status_11f": "ДОКАЗАН боевым прогоном 11D.2"
+    },
+    {
+      "name": "findings_merge",
+      "runner": "stages/findings_merge/runner.py → claude_runner.run_findings_merge (claude_runner.py:1485)",
+      "inputs": ["02_text_analysis.json", "01_blocks_analysis.json"],
+      "outputs": ["03_findings.json"],
+      "model_calls": 1,
+      "provider": "МОСТ УЖЕ ЕСТЬ: _run_findings_merge_via_provider (11E), stages/findings_merge/provider_transport.py",
+      "default_model": "claude-opus-5",
+      "network": "нет",
+      "resume": "03_findings.json",
+      "classification": "WORKER_TARGET",
+      "status_11f": "ДОКАЗАН боевым прогоном 11E.1"
+    },
+    {
+      "name": "findings_review",
+      "pipeline_log_keys": ["findings_critic", "findings_corrector"],
+      "runner": "manager._run_findings_verify (manager.py:4570) → stages/findings_verify/runner.py::run_findings_verify",
+      "inputs": ["03_findings.json", "02_work/document.md"],
+      "outputs": ["03_findings_review.json", "обновлённый 03_findings.json"],
+      "model_calls": "0 в детерминированной фазе (Python-критик 1/2/4 + консервативный корректор). УСЛОВНО 1+ в фазе «страж отсутствия»: только если есть absence-кандидаты; при MD > 300 000 символов режется на чанки по ~286 КБ и вызывается параллельно (до 4), плюс ОДИН внутренний повтор на пустой ответ чанка (absence_guard.py:344-346).",
+      "provider": "absence_guard.run_claude_verification (absence_guard.py:189) — ПРЯМОЙ subprocess claude -p, минуя _run_cli и мост; fail-soft: любая ошибка → {} и никого не понижаем",
+      "default_model": "get_claude_model() (не stage_models)",
+      "network": "нет",
+      "conditional": "PIPELINE_VERIFIER_ENABLED default True",
+      "resume": "pipeline_log ключи findings_critic/findings_corrector",
+      "classification": "WORKER_TARGET",
+      "problems_for_11f": [
+        "прямой subprocess мимо моста: на воркере HOME изолирован → CLI неавторизован → fail-soft вернёт {} и этап ТИХО деградирует, выглядя успешным",
+        "скрытый повтор вызова на пустой ответ чанка — не учтённый в бюджете model call"
+      ]
+    },
+    {
+      "name": "critic_v2_triage",
+      "runner": "manager._run_critic_v2_post_review (manager.py:4605) → stages/findings_review/critic_v2",
+      "model_calls": "0 в дефолте",
+      "conditional": "CRITIC_V2_* default OFF; fail-open",
+      "classification": "DETERMINISTIC_PORTABLE",
+      "note": "llm_gate.py:1465 и kb_gate.py:174 содержат прямые subprocess-вызовы, но при OFF не исполняются"
+    },
+    {
+      "name": "optimization",
+      "runner": "manager._run_optimization (в _run_post_findings_parallel, manager.py:4769) → stages/optimization/runner.py → claude_runner.run_optimization (claude_runner.py:1916)",
+      "inputs": ["03_findings.json", "02_text_analysis.json", "01_blocks_analysis.json", "визуальный контекст блоков (только codex-ветка)"],
+      "outputs": ["optimization.json"],
+      "model_calls": 1,
+      "provider": "claude-* → _run_cli с OPTIMIZATION_TOOLS (модель пишет файл сама); codex/* → codex exec с image_paths; иначе OpenRouter",
+      "default_model": "ensemble/claude-codex-opt (config.py:285)",
+      "network": "ДА при OpenRouter/ensemble",
+      "resume": "optimization.json",
+      "classification": "WORKER_TARGET",
+      "problems_for_11f": ["провайдерской ветки нет: под мостом tools=0, а claude-ветка ждёт, что модель сама запишет optimization.json"]
+    },
+    {
+      "name": "optimization_review",
+      "pipeline_log_keys": ["optimization_critic", "optimization_corrector"],
+      "runner": "manager._run_optimization_review → claude_runner.run_optimization_critic (2165) / run_optimization_corrector (2237) + stages/optimization/deterministic_critic.py, deterministic_corrector.py",
+      "inputs": ["optimization.json", "03_findings.json"],
+      "outputs": ["optimization_review.json", "optimization_pre_review.json"],
+      "model_calls": "до 2 (критик + корректор; корректор условен — только если критик нашёл, что править)",
+      "provider": "OPTIMIZATION_REVIEW_TOOLS через _run_cli / OpenRouter",
+      "default_model": "claude-sonnet-5 (оба)",
+      "network": "нет для claude-ветки",
+      "classification": "WORKER_TARGET",
+      "problems_for_11f": ["провайдерской ветки нет"]
+    },
+    {
+      "name": "norm_verify",
+      "runner": "manager._run_norm_verification (manager.py:4912) → stages/norms/",
+      "inputs": ["03_findings.json"],
+      "outputs": ["norm_checks.json", "norm_checks_llm.json", "03a_norms_verified.json", "missing_norms_*"],
+      "model_calls": "несколько (verify + norm_fix + norm_requote), плюс MCP-верификация цитат",
+      "provider": "claude-opus-5 + norms-MCP",
+      "central_dependencies": [
+        "norms/norms_db.json и norms/norms_paragraphs.json (центральная нормативная база)",
+        "запись в глобальный реестр отсутствующих норм (missing_norms_vault.json в APP_DATA_DIR центра)",
+        "norms-MCP сервер"
+      ],
+      "classification": "CENTER_ONLY",
+      "enforced_by": "remote_audit_runner.FORBIDDEN_STAGES + manager._central_stage_blocked('norm_verify') (manager.py:4923)"
+    },
+    {
+      "name": "debt_control",
+      "runner": "manager._run_debt_control (manager.py:2169)",
+      "central_dependencies": ["migrated_findings_service — сквозной реестр замечаний между версиями", "прямой subprocess claude (migrated_findings_service.py:1233)"],
+      "classification": "CENTER_ONLY",
+      "enforced_by": "FORBIDDEN_STAGES + _central_stage_blocked('debt_control') (manager.py:2179)"
+    },
+    {
+      "name": "decision_carryover",
+      "runner": "manager._run_decision_carryover (manager.py:2207)",
+      "central_dependencies": ["вердикты эксперта предыдущих версий", "knowledge_base/decisions_log", "прямой subprocess claude (decision_carryover_service.py:335)"],
+      "classification": "CENTER_ONLY",
+      "enforced_by": "FORBIDDEN_STAGES + _central_stage_blocked('decision_carryover') (manager.py:2217)"
+    },
+    {
+      "name": "excel",
+      "runner": "stages/report/runner.py::run_excel_report",
+      "central_dependencies": ["сводный отчёт по всем проектам центра"],
+      "classification": "CENTER_ONLY",
+      "enforced_by": "FORBIDDEN_STAGES + _central_stage_blocked('excel') (manager.py:5554)"
+    },
+    {
+      "name": "provider_selfcheck",
+      "runner": "backend/app/pipeline/stages/provider_selfcheck/__init__.py",
+      "model_calls": 1,
+      "provider": "pipeline_bridge → ProviderAdapter",
+      "classification": "WORKER_TARGET",
+      "note": "синтетический этап-доказательство пути к модели; в состав полного аудита не входит, вызывается отдельным action"
+    }
+  ],
+  "existing_boundary_in_code": {
+    "worker_stage_plan": ["crop_blocks", "block_context", "block_analysis", "text_analysis", "findings_merge", "findings_review", "optimization", "optimization_review"],
+    "worker_stage_plan_source": "backend/app/pipeline/remote_audit_runner.py:876 WORKER_STAGE_PLAN",
+    "forbidden_stages": ["norm_verify", "decision_carryover", "debt_control", "excel"],
+    "forbidden_stages_source": "backend/app/pipeline/remote_audit_runner.py:29 FORBIDDEN_STAGES",
+    "double_enforcement": "1) manager._central_stage_blocked отказывает по env AUDIT_PIPELINE_CENTRAL_STAGES_DISABLED; 2) remote_audit_runner.audit_stage_history сверяет журнал ПОСЛЕ прогона и валит пакет, если центральный этап всё же выполнился",
+    "conclusion": "Граница worker/center УЖЕ объявлена в коде и совпадает с целевой схемой задания 11F. 11F не проектирует её заново, а проверяет исполнением."
+  },
+  "ordering_flags": {
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED": {"default": true, "effect": "block_analysis выполняется ДО text_analysis; текст читает компактную проекцию блоков"},
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED": {"default": false, "effect": "norm_verify выходит из параллельной группы и идёт после debt_control"},
+    "PIPELINE_VERIFIER_ENABLED": {"default": true},
+    "STAGE01_DUAL_REVIEW_ENABLED": {"default": true, "applies_when": "model == 'ensemble/gpt-codex' только"},
+    "STAGE01_THIRD_LEG_ENABLED": {"default": false},
+    "STAGE01_PROTECTION_TABLE_CHECK_ENABLED": {"default": false},
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED": {"default": false},
+    "CRITIC_V2_*": {"default": false}
+  },
+  "parallelism": {
+    "post_findings_group": "manager._run_post_findings_parallel (manager.py:4701): три задачи параллельно — findings_review, norm_verify, optimization→optimization_review. norm_fix ждёт corrector_done (оба пишут 03_findings.json).",
+    "worker_effect": "на воркере norm_verify выключен централизацией, остаются findings_review ∥ optimization→optimization_review"
+  },
+  "artifact_roots": {
+    "v2_layout": "projects_v2/objects/<obj>/disciplines/<Д>/documents/<код>/versions/<vid>/",
+    "run_dir": "03_analysis/runs/<job_id>/ — свежий прогон",
+    "latest": "03_analysis/latest/ — промоутится из run_dir (_promote_v2_analysis_artifacts / _promote_completed_audit_v2)",
+    "seeding": "manager._seed_run_dir_from_latest и _seed_prepared_inputs_from_latest переносят готовые входы в новый run_dir"
+  }
+}

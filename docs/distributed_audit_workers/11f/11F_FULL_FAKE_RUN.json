@@ -1,0 +1,178 @@
+{
+  "stage": "11F",
+  "what": "полный fake-прогон worker-участка: подделка CLI, ноль обращений к модели",
+  "why_fake_cli_and_not_provider_mode_fake": "`provider_mode=fake` в спеке несовместим с привязкой провайдера (`bind_providers` отвергает их сочетание): в режиме подделок мост к настоящему CLI недопустим. Но 11F проверяет именно ПУТЬ через мост, поэтому подделка ПРИВЯЗАНА к адаптеру полем `executable`: слой провайдера, журнал вызовов, сверка модели и изоляция — настоящие, поддельный только бинарь.",
+  "runs": [
+    {
+      "task_id": "fake4",
+      "host": "центр",
+      "exit_code": 0,
+      "duration_sec": 3.08,
+      "model_calls": {
+        "total": 7,
+        "claims": 7,
+        "indeterminate": 0,
+        "by_stage": {
+          "block_analysis": 3,
+          "findings_merge": 1,
+          "optimization": 1,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "models": [
+          "claude-opus-5"
+        ],
+        "failed": [],
+        "tokens_out": 112,
+        "cost_usd": 0.0
+      },
+      "stage_completion": {
+        "crop_blocks": "done",
+        "block_context": "done",
+        "gemma_enrichment": "done",
+        "block_analysis": "done",
+        "block_retry": "skipped",
+        "text_analysis": "done",
+        "findings_merge": "done",
+        "findings_critic": "done",
+        "optimization": "done",
+        "findings_corrector": "done",
+        "critic_v2_triage": "skipped",
+        "optimization_critic": "done",
+        "optimization_corrector": "skipped"
+      },
+      "forbidden_stages_not_run": [
+        "norm_verify",
+        "decision_carryover",
+        "debt_control",
+        "excel"
+      ],
+      "result_package": {
+        "archive": "/home/coder/11f_diagnostic/sandbox_runs/fake4/package_output/fake4-a1.tar.gz",
+        "sha256": "a97f62c5077562b424162591a056ed5ef600d8262f0c657a9ce233d559f29329",
+        "bytes": 773945,
+        "files": 139,
+        "tree_hash": "sha256:33e41c72a965487e9add9b69c9ccc00a7499ef835d8ed1c61ce28aea552464a0",
+        "resume_hint": "completed",
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      }
+    },
+    {
+      "task_id": "worker_slice_11f_fake1",
+      "host": "176.12.77.31 (andrewuzun3.hlab.kz)",
+      "exit_code": 0,
+      "duration_sec": 3.96,
+      "model_calls": {
+        "total": 7,
+        "claims": 7,
+        "indeterminate": 0,
+        "by_stage": {
+          "block_analysis": 3,
+          "findings_merge": 1,
+          "optimization": 1,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "models": [
+          "claude-opus-5"
+        ],
+        "failed": [],
+        "tokens_out": 112,
+        "cost_usd": 0.0
+      },
+      "stage_completion": {
+        "crop_blocks": "done",
+        "block_context": "done",
+        "gemma_enrichment": "done",
+        "block_analysis": "done",
+        "block_retry": "skipped",
+        "text_analysis": "done",
+        "findings_merge": "done",
+        "findings_critic": "done",
+        "optimization": "done",
+        "findings_corrector": "done",
+        "critic_v2_triage": "skipped",
+        "optimization_critic": "done",
+        "optimization_corrector": "skipped"
+      },
+      "forbidden_stages_not_run": [
+        "norm_verify",
+        "decision_carryover",
+        "debt_control",
+        "excel"
+      ],
+      "result_package": {
+        "archive": "/home/coder/audit-worker-11f/sandbox/worker_slice_11f_fake1/package_output/worker_slice_11f_fake1-a1.tar.gz",
+        "sha256": "f10b211883435892438180684723871050a92348587d298b0a57170f0d7e869c",
+        "bytes": 776645,
+        "files": 139,
+        "tree_hash": "sha256:7689ca2826fc19db2d0a91ba4c4ae0a29dde85390076cb37ba3104aad37f68cd",
+        "resume_hint": "completed",
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      }
+    }
+  ],
+  "defects_found_and_fixed_during_fake": [
+    {
+      "n": 1,
+      "symptom": "Неизвестный профиль: 'remote_worker'",
+      "cause": "спека объявляла профиль, которого нет в SUPPORTED_PROFILES",
+      "fix": "профиль remote_audit_pilot_v1",
+      "kind": "конфигурация прогона"
+    },
+    {
+      "n": 2,
+      "symptom": "Снимок runtime-конфигурации не найден",
+      "cause": "пакет собирался без runtime_config.json",
+      "fix": "сборщик пакета строит и кладёт снимок (runtime_config.build_snapshot)",
+      "kind": "инструмент"
+    },
+    {
+      "n": 3,
+      "symptom": "Профиль дисциплины 'KM' не загружается: дисциплина не опознана, известные коды: пусто",
+      "cause": "снимок промптов собирался только по prompts/pipeline, а AUDIT_PROMPTS_DIR уводит PROMPTS_DIR ЦЕЛИКОМ в снимок — реестр дисциплин prompts/disciplines/_registry.json становился недостижим",
+      "fix": "снимок всего каталога prompts, как на центре",
+      "kind": "инструмент (класс дефекта — реальный: тот же промах повторил бы любой сборщик пакета)"
+    },
+    {
+      "n": 4,
+      "symptom": "Снимок конфигурации не совпадает с заявленным: stage_models",
+      "cause": "stage_models.json дописывался ПОСЛЕ распаковки, а verify_snapshot сверяет его с хэшем манифеста",
+      "fix": "модели едут в пакете",
+      "kind": "инструмент"
+    },
+    {
+      "n": 5,
+      "symptom": "FileExistsError на metadata/provider_binding.json",
+      "cause": "скрипт создавал каталоги по ВСЕМ значениям env, включая путь к файлу привязки",
+      "fix": "создаются только корни из isolated_roots",
+      "kind": "инструмент"
+    },
+    {
+      "n": 6,
+      "symptom": "text_analysis: validation_failed=['required_fields','expected_semantics']",
+      "cause": "подделка CLI выбирала схему ответа по подстроке 'findings', а с 11F в промпт текстового анализа вкладывается блочный контекст, где это слово есть",
+      "fix": "выбор схемы по маркеру этапа",
+      "kind": "подделка (не конвейер)"
+    },
+    {
+      "n": 7,
+      "symptom": "optimization: в инструкциях остались абсолютные пути (4)",
+      "cause": "provider_json_stage снимал строки-инструкции файловой работы, но не одиночные абсолютные пути в описаниях входа",
+      "fix": "добавлено strip_filesystem_references поверх, порядок: сначала строки, потом пути",
+      "kind": "КОД (собственный гейт поймал собственный дефект до боевого вызова)"
+    }
+  ],
+  "verdict": "PASS — цепочка проходит от начала до конца, все worker-этапы done, центральные не выполнялись, пакет результата собран",
+  "both_hosts_agree": true
+}

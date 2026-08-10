@@ -94,6 +94,44 @@ def read_crop(blocks_dir: Path, file_name: str) -> bytes:
     return blob
 
 
+#: Потолок промпта блочного вызова. Есть у text_analysis и findings_merge, не
+#: было здесь: плотный лист (спецификация кабельного журнала) даёт page_text и
+#: document_context в сотни тысяч символов, и вызов уходил бы заведомо
+#: непроходным — уже списав заявку в журнале.
+MAX_PROMPT_CHARS = 600_000
+
+
+def response_contract() -> str:
+    """Требования к КАЖДОЙ находке — из боевой JSON-схемы Stage 01.
+
+    Продовая нога GPT задаёт их структурно (`response_format=json_schema`,
+    `strict: True`), а CLI-провайдер такого рычага не имеет: у него `--tools=`
+    и свободный текст. Значит перечислять обязательные поля надо в самом
+    промпте — иначе модель вернёт находки без `claim_type`, `evidence_kind`,
+    `confidence` и прочего, а evidence-гейт следующего шага их отбросит. Список
+    берётся ИЗ САМОЙ СХЕМЫ, а не переписывается рядом: разойтись они тогда не
+    смогут.
+    """
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+        RESPONSE_SCHEMA,
+    )
+
+    item = RESPONSE_SCHEMA["schema"]["properties"]["findings"]["items"]
+    required = list(item.get("required") or [])
+    lines = []
+    for name in required:
+        spec = (item.get("properties") or {}).get(name) or {}
+        enum = spec.get("enum")
+        kind = spec.get("type")
+        hint = f" — одно из: {', '.join(enum)}" if enum else f" ({kind})"
+        lines.append(f"  · {name}{hint}")
+    return (
+        "У КАЖДОЙ находки обязаны быть ВСЕ поля ниже. Находка с неполным "
+        "набором полей будет отброшена проверкой на следующем шаге — то есть "
+        "потеряна.\n" + "\n".join(lines)
+    )
+
+
 def build_provider_prompt(
     *,
     system_prompt: str,
@@ -108,10 +146,12 @@ def build_provider_prompt(
     system = str(system_prompt or "").strip()
     payload = str(user_text or "").strip()
     severity = SEVERITY_SEMANTICS.strip()
+    fields = response_contract()
     instructions = "\n\n".join([
         system,
         severity,
         _OUTPUT_CONTRACT.strip(),
+        fields,
     ])
     prompt = instructions + "\n\n" + payload
     return {
@@ -123,6 +163,7 @@ def build_provider_prompt(
             "stage01_system_prompt_chars": len(system),
             "severity_semantics_chars": len(severity),
             "output_contract_chars": len(_OUTPUT_CONTRACT.strip()),
+            "response_fields_contract_chars": len(fields),
             "block_payload_chars": len(payload),
             "image_delivery": "content-block base64 в теле запроса (stdin stream-json)",
             "tools": 0,

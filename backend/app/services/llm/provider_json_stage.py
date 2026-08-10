@@ -41,8 +41,28 @@ from typing import Any, Iterable, Optional
 
 from backend.app.pipeline.stages.text_analysis.provider_transport import (
     SEVERITY_SEMANTICS,
-    strip_filesystem_references,
 )
+
+#: Чем заменяется абсолютный путь в инструкциях.
+#:
+#: НЕ «(not available in this run)», как у text_analysis. Там плейсхолдер
+#: честен: путь указывал на файл, которого у модели действительно нет. Здесь он
+#: указывает на артефакт, который конвейер ВЛОЖИЛ в это же сообщение ниже, и
+#: сказать модели «недоступно» значит соврать ей о собственном входе: критик
+#: оптимизации, прочитав «document graph недоступен», обязан по своему же
+#: критерию ставить `no_traceability` — то есть отказ, вызванный подсказкой.
+INLINED_PLACEHOLDER = "(вложено в это сообщение ниже)"
+
+#: Потолок вложений одного вызова: сколько картинок и сколько байт суммарно.
+#:
+#: `_get_plan_images` отбирает листы-планы БЕЗ какого-либо ограничения — на
+#: версии с тридцатью планами это тридцать PNG по несколько сот килобайт, то
+#: есть больше десяти мегабайт base64 в ОДНОЙ строке stdin. Дальше два исхода,
+#: и оба необратимые: провайдер отвергает запрос (вызов оплачен, повтор
+#: запрещён) либо принимает и считает по объёму. Отказ ДО заявки в журнале
+#: дешевле обоих.
+MAX_ATTACHED_IMAGES = 12
+MAX_ATTACHED_BYTES = 6 * 1024 * 1024
 
 #: Абсолютные пути в инструкциях. Тот же рубеж, что и у text_analysis: модель
 #: не должна получать путь проекта — ни как задание, ни как справку.
@@ -76,8 +96,75 @@ def strip_file_instructions(text: str) -> tuple[str, int]:
     return "\n".join(kept), removed
 
 
+class ProviderStageRefusal(RuntimeError):
+    """Этап не выполняется. Ни одна ветка отсюда не ведёт к прежнему транспорту."""
+
+
 def count_absolute_paths(text: str) -> int:
     return len(_ABS_PATH_RE.findall(str(text or "")))
+
+
+def _replace_paths(text: str) -> tuple[str, int]:
+    """Заменить абсолютные пути на честный маркер. Возвращает (текст, сколько)."""
+    replaced = 0
+
+    def _sub(match: "re.Match[str]") -> str:
+        nonlocal replaced
+        replaced += 1
+        return match.group(0).replace(match.group(1), INLINED_PLACEHOLDER)
+
+    return _ABS_PATH_RE.sub(_sub, str(text or "")), replaced
+
+
+def extract_images(messages: Iterable[dict]) -> list[tuple[str, bytes]]:
+    """Достать изображения из боевых messages.
+
+    Боевой сборщик `build_optimization_messages` кладёт в user-сообщение
+    картинки листов-планов (`make_image_content` → `{"type":"image_url",
+    "image_url":{"url":"data:image/png;base64,…"}}`). Отбросить их молча — ровно
+    та потеря графики, ради запрета которой в общем пути моста стоит явный
+    отказ: этап отчитался бы успехом, проанализировав чертежи, которых не видел.
+    """
+    import base64
+    import binascii
+
+    out: list[tuple[str, bytes]] = []
+    for message in messages or []:
+        content = (message or {}).get("content")
+        if not isinstance(content, list):
+            continue
+        for part in content:
+            if not isinstance(part, dict):
+                continue
+            if part.get("type") != "image_url":
+                continue
+            url = str(((part.get("image_url") or {}).get("url")) or "")
+            if not url.startswith("data:"):
+                raise ProviderStageRefusal(
+                    "изображение задано ссылкой, а не данными: провайдерский "
+                    "путь не ходит в сеть за содержимым промпта"
+                )
+            header, _, payload = url.partition(",")
+            media_type = header[5:].split(";", 1)[0] or "image/png"
+            try:
+                out.append((media_type, base64.b64decode(payload, validate=True)))
+            except (binascii.Error, ValueError) as exc:
+                raise ProviderStageRefusal(
+                    f"изображение не разбирается из data-URL: {exc}"
+                ) from None
+    if len(out) > MAX_ATTACHED_IMAGES:
+        raise ProviderStageRefusal(
+            f"вложений {len(out)} > потолка {MAX_ATTACHED_IMAGES}: отбрасывать "
+            "часть чертежей молча нельзя, а слать всё — заведомо непроходной "
+            "вызов. Нужен планировщик отбора, которого в provider-режиме нет"
+        )
+    total = sum(len(blob) for _mt, blob in out)
+    if total > MAX_ATTACHED_BYTES:
+        raise ProviderStageRefusal(
+            f"вложения весят {total} байт > потолка {MAX_ATTACHED_BYTES} "
+            "(в теле запроса это ещё +33% из-за base64)"
+        )
+    return out
 
 
 def split_messages(messages: Iterable[dict]) -> tuple[str, str]:
@@ -129,6 +216,7 @@ def build_provider_prompt(
     замечания по документу заказчика, и отчёт стал бы вторым их экземпляром за
     пределами артефакта.
     """
+    images = extract_images(messages)
     system_raw, payload = split_messages(messages)
     # Два разных снятия, и порядок содержателен. Сначала уходят СТРОКИ-задания
     # файловой работы целиком («WRITE via Write tool: …»), потом из оставшегося
@@ -136,7 +224,7 @@ def build_provider_prompt(
     # входных данных. Обратный порядок оставил бы в промпте инструкцию с
     # заглушкой вместо пути: «запиши результат в <путь удалён>».
     system_text, stripped = strip_file_instructions(system_raw)
-    system_text, paths_stripped = strip_filesystem_references(system_text)
+    system_text, paths_stripped = _replace_paths(system_text)
     parts = [system_text.strip()]
     severity = SEVERITY_SEMANTICS.strip() if with_severity else ""
     if severity:
@@ -153,7 +241,9 @@ def build_provider_prompt(
         "file_instructions_stripped": stripped,
         "filesystem_refs_stripped": paths_stripped,
         "absolute_paths_remaining_in_instructions": count_absolute_paths(instructions),
+        "images": images,
         "map": {
+            "images_attached": len(images),
             "source_system_chars": len(system_raw),
             "instructions_chars": len(instructions),
             "payload_chars": len(payload),
@@ -166,10 +256,6 @@ def build_provider_prompt(
             "tools": 0,
         },
     }
-
-
-class ProviderStageRefusal(RuntimeError):
-    """Этап не выполняется. Ни одна ветка отсюда не ведёт к прежнему транспорту."""
 
 
 def guard_problems(built: dict[str, Any], *, max_prompt_chars: int) -> list[str]:

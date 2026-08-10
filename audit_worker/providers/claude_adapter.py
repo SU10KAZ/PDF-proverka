@@ -599,6 +599,25 @@ class ClaudeProviderAdapter(ProviderAdapter):
             purpose=purpose,
         )
         envelope = parse_stream_json(result.stdout or "")
+        if envelope is None:
+            # В потоке нет итогового объекта `{"type":"result"}`. Уйти дальше с
+            # СЫРЫМ NDJSON нельзя: `_first_json_object` подобрал бы первое
+            # событие потока — служебную инициализацию CLI с `session_id` и
+            # составом инструментов — и при нулевом коде возврата это было бы
+            # записано в журнал как успешный ответ модели.
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                duration_ms=int(result.duration_sec * 1000),
+                exit_code=result.exit_code,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MALFORMED_STATUS,
+                detail=(
+                    "потоковый вывод оборван: итогового объекта result нет. "
+                    "Служебное событие CLI не выдаётся за ответ модели"
+                ),
+                raw_sha256=sha256_text(result.stdout or ""),
+                raw_bytes=len((result.stdout or "").encode("utf-8", "replace")),
+            )
         return self._finalize_inference(
             result, envelope,
             requested_model=requested_model, accepted=accepted,

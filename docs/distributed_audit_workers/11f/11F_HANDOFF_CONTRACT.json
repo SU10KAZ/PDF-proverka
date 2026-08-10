@@ -1,0 +1,94 @@
+{
+  "stage": "11F",
+  "question": "какой минимально достаточный результат воркер обязан вернуть центру, чтобы центральный конвейер продолжил обработку",
+  "source_of_truth": "формат уже определён подсистемой: audit_worker/package_io.build_result_package. 11F его не переизобретает, а фиксирует фактический состав.",
+  "format": {
+    "container": "tar.gz",
+    "note": "чтение умеет и tar.zst, запись — пока нет (package_io.detect_compression)"
+  },
+  "required_artifacts": [
+    "work/pipeline_log.json",
+    "result/03_findings.json",
+    "result/01_blocks_analysis.json",
+    "result/02_text_analysis.json",
+    "result/audit_manifest.json",
+    "usage/usage_report.json"
+  ],
+  "optional_artifacts": [
+    "result/03_findings_review.json",
+    "result/optimization.json",
+    "result/optimization_review.json",
+    "logs/pipeline.log",
+    "logs/actions/*.jsonl",
+    "work/process_exit.json"
+  ],
+  "identity": {
+    "job_id": "идентификатор задания",
+    "attempt_id": "идентификатор попытки",
+    "project_id": "код документа",
+    "version_id": "версия",
+    "project_version_rel": "переносимый путь версии внутри projects_v2",
+    "discipline_id": "дисциплина",
+    "discipline_profile_hash": "хэш применённого профиля"
+  },
+  "integrity": {
+    "per_file_sha256": "files[].sha256",
+    "tree_hash": "sha256 по отсортированным парам «путь sha256»",
+    "source_package_hash": "хэш пакета исходников — связывает результат с тем, что отправляли",
+    "runtime_snapshot_hash": "хэш применённой runtime-конфигурации",
+    "hardlink_groups": "карта жёстких связей, чтобы приёмная сторона проверила, что они не потерялись"
+  },
+  "stage_state": {
+    "worker_stage_plan": [
+      "crop_blocks",
+      "block_context",
+      "block_analysis",
+      "text_analysis",
+      "findings_merge",
+      "findings_review",
+      "optimization",
+      "optimization_review"
+    ],
+    "stage_completion": "статус каждого этапа из pipeline_log",
+    "completed_stages": "этапы, статус которых ИЗМЕНИЛСЯ в этом прогоне (диф против журнала до старта)",
+    "forbidden_stages_not_run": [
+      "norm_verify",
+      "decision_carryover",
+      "debt_control",
+      "excel"
+    ],
+    "resume_hint": "с чего центру продолжать"
+  },
+  "provider_provenance": {
+    "in_audit_manifest": [
+      "provider_mode",
+      "provider_bridge (провайдер, режим авторизации, модель, способность, допустимые фактические модели, потолок вызовов, белый список этапов, идентификатор разрешения)",
+      "applied_runtime_config",
+      "applied_discipline_profile"
+    ],
+    "in_usage_report": "расход по этапам, собранный конвейером"
+  },
+  "execution_revision": {
+    "pipeline_revision": "11f",
+    "execution_profile": "remote_audit_pilot_v1",
+    "worker_version": "0.1.0",
+    "protocol_version": 1,
+    "manifest_version": 1
+  },
+  "explicitly_excluded": {
+    "credentials": "в пакете нет и быть не может: привязка не содержит учётных данных, окружение процесса собрано по белому списку",
+    "raw_prompts": "не пишутся никуда, кроме stdin подпроцесса; в отчётах — только sha256",
+    "raw_model_responses": "в отчётах о прогоне только отпечаток; полный ответ живёт в журнале вызовов",
+    "inference_ledger": "НЕ входит в пакет результата. Это осознанный компромисс: журнал содержит полные ответы модели, то есть замечания по документу заказчика, и его отправка означала бы второй экземпляр этих данных. Цена: центр не может проверить число оплаченных вызовов по пакету — только по отчёту о расходе. Зафиксировано как открытый вопрос следующего этапа.",
+    "source_documents": "PDF/MD обратно не едут: центр их и отправлял, а перезапись необратима",
+    "central_artifacts": "norm_checks*, 03a_norms_verified, expert_review, decisions_log — запрещены к переносу в обе стороны"
+  },
+  "next_expected_central_stage": "norm_verify",
+  "central_tail_after_handoff": [
+    "norm_verify",
+    "debt_control",
+    "decision_carryover",
+    "excel"
+  ],
+  "boundary_is_not_an_error": "остановка воркера на границе — ШТАТНЫЙ handoff. Манифест объявляет central_only_stages и resume_hint, по которым центр знает, что делать дальше."
+}

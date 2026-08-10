@@ -242,9 +242,12 @@ def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
         raise AuditJobRejected(
             "provider_requirement.max_inferences: ожидается целое число"
         ) from None
-    if not 0 <= max_inferences <= 8:
+    from audit_worker.config import MAX_INFERENCES_CEILING
+
+    if not 0 <= max_inferences <= MAX_INFERENCES_CEILING:
         raise AuditJobRejected(
-            f"provider_requirement.max_inferences={max_inferences} вне [0, 8]"
+            f"provider_requirement.max_inferences={max_inferences} вне "
+            f"[0, {MAX_INFERENCES_CEILING}]"
         )
     capability = raw.get("capability")
     if capability is not None:

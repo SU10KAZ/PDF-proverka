@@ -49,7 +49,12 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+#: Корень установленного кода платформы. По умолчанию — родитель каталога
+#: скрипта (так он лежит в репозитории), но на воркере скрипт живёт в
+#: операторском `tools/`, а код — в `current/`, и путь задаётся явно.
+REPO_ROOT = Path(
+    os.environ.get("AUDIT_11F_REPO_ROOT") or Path(__file__).resolve().parents[1]
+).resolve()
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -193,13 +198,20 @@ def payload_for(body: str) -> dict:
                 "evidence_text_refs": [], "evidence": [], "highlight_regions": [],
             }],
         }
-    if '"optimizations"' in body or "optimization" in body.lower():
-        return {"optimizations": [{
+    # Остальные этапы объявляют корневой ключ ПРЯМО В КОНТРАКТЕ ответа.
+    # Подделка читает его оттуда, а не угадывает: угадывание уже один раз
+    # обмануло репетицию (root_key «optimizations» вместо «items»/«reviews»
+    # прошёл бы fake и упал бы в бою).
+    import re as _re
+
+    m = _re.search(r'Объект обязан содержать ключ "([A-Za-z_]+)"', body)
+    if m:
+        key = m.group(1)
+        return {key: [{
             "id": "OPT-001",
             "title": "Ответ подделки CLI: обращения к модели не было",
             "description": "Репетиция пути 11F",
             "category": "репетиция",
-            "savings_estimate": "",
             "verdict": "accepted",
         }]}
     return {"findings": []}
@@ -275,16 +287,43 @@ def build_attempt(
     sandbox_root: Path,
     task_id: str,
     source_package: Path,
+    resume: bool = False,
 ) -> dict[str, Any]:
     """Каталог попытки боевой раскладки + распакованный пакет проекта."""
     from audit_worker import audit_runner, package_io
 
     job_dir = sandbox_root / task_id
+    resumed = False
     if job_dir.exists():
-        raise SystemExit(
-            f"каталог попытки уже существует: {job_dir}. Повтор в тот же каталог "
-            "запрещён — новая попытка требует нового task_id"
-        )
+        if not resume:
+            raise SystemExit(
+                f"каталог попытки уже существует: {job_dir}. Повтор в тот же "
+                "каталог без --resume запрещён — новая попытка требует нового "
+                "task_id"
+            )
+        # ПРОДОЛЖЕНИЕ той же попытки (§19, §27 задания). Тот же `attempt_id`,
+        # тот же журнал вызовов в `<job>/inference` — значит уже успешные
+        # вызовы отдаются из журнала (`STATE_REPLAY`) и НЕ оплачиваются
+        # повторно. Новый `task_id` дал бы новый журнал и переоплату всего
+        # участка ради починки последнего этапа.
+        #
+        # Пакет исходников заново не распаковывается: дерево проекта на месте,
+        # а распаковка стёрла бы результаты уже выполненных этапов.
+        resumed = True
+        layout = audit_runner.prepare_job_dir(job_dir)
+        manifest_path = job_dir / "metadata" / "source_manifest.json"
+        if not manifest_path.is_file():
+            raise SystemExit(
+                f"продолжение невозможно: нет {manifest_path}. Каталог попытки "
+                "создан не этим инструментом"
+            )
+        return {
+            "job_dir": job_dir,
+            "layout": layout,
+            "source_manifest": json.loads(manifest_path.read_text(encoding="utf-8")),
+            "unpacked": {"resumed": True},
+            "resumed": True,
+        }
     layout = audit_runner.prepare_job_dir(job_dir)
 
     # Распаковка идёт ТЕМ ЖЕ путём, что в бою (`agent._download_and_verify`):
@@ -310,11 +349,15 @@ def build_attempt(
         _shutil.rmtree(destination, ignore_errors=True)
         destination.parent.mkdir(parents=True, exist_ok=True)
         _os.replace(source, destination)
+    # Манифест сохраняется: продолжению попытки он нужен, а распаковывать
+    # пакет заново нельзя — это стёрло бы результаты выполненных этапов.
+    write_json(job_dir / "metadata" / "source_manifest.json", manifest)
     return {
         "job_dir": job_dir,
         "layout": layout,
         "source_manifest": manifest,
         "unpacked": {"files": info["files"], "bytes": info["bytes"]},
+        "resumed": False,
     }
 
 
@@ -345,7 +388,8 @@ def issue_grant_and_binding(
     worker_root = job_dir / "worker_root"
     worker_root.mkdir(parents=True, exist_ok=True)
     grant_id = f"g-{task_id}"
-    grant = grant_mod.issue(
+    existing = grant_mod.find(worker_root, provider=PROVIDER_CLAUDE, task_id=task_id)
+    grant = existing if existing is not None else grant_mod.issue(
         worker_root,
         grant_id=grant_id,
         provider=PROVIDER_CLAUDE,
@@ -624,6 +668,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--source-package", required=True, type=Path)
     parser.add_argument("--sandbox-root", required=True, type=Path)
     parser.add_argument("--action", default="full")
+    parser.add_argument(
+        "--resume", action="store_true",
+        help=(
+            "продолжить СУЩЕСТВУЮЩУЮ попытку: тот же attempt_id и тот же журнал "
+            "вызовов, поэтому уже успешные вызовы отдаются из журнала и не "
+            "оплачиваются заново"
+        ),
+    )
     parser.add_argument("--max-inferences", type=int, default=16)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument(
@@ -648,7 +700,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         sandbox_root=args.sandbox_root,
         task_id=args.task_id,
         source_package=args.source_package,
+        resume=args.resume,
     )
+    report["resumed"] = bool(attempt.get("resumed"))
     job_dir = attempt["job_dir"]
     manifest = attempt["source_manifest"]
     project_id = str(manifest.get("project_id") or "")

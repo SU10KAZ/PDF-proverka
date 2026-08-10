@@ -343,3 +343,122 @@ def test_absence_guard_uses_bridge_when_active(monkeypatch):
     )
     assert calls == ["findings_review"]
     assert isinstance(verdicts, dict)
+
+
+# ─── 11. Дефекты, найденные состязательным ревью до боевого прогона ──────────
+
+def test_optimization_root_keys_match_real_schemas():
+    """root_key обязан совпадать со СХЕМОЙ боевого шаблона, а не звучать похоже.
+
+    Первая реализация объявила всем трём этапам ключ «optimizations». Реальные
+    схемы другие: optimization_task.md → "items", optimization_critic_task.md →
+    "reviews", optimization_corrector_task.md → "items". Fake-прогон был зелен
+    ровно потому, что подделка отвечала тем же неверным ключом; в бою модель
+    следовала бы схеме, и этап отверг бы её ответ — уже оплаченный.
+    """
+    src = (ROOT / "backend/app/services/llm/claude_runner.py").read_text(encoding="utf-8")
+    assert 'artifact_name="optimization.json", root_key="items"' in src
+    assert 'artifact_name="optimization_review.json", root_key="reviews"' in src
+    # Схемы шаблонов — источник истины, сверяем их существование.
+    assert '"items"' in (ROOT / "prompts/pipeline/en/optimization_task.md").read_text(encoding="utf-8")
+    assert '"reviews"' in (ROOT / "prompts/pipeline/en/optimization_critic_task.md").read_text(encoding="utf-8")
+
+
+def test_json_stage_extracts_images_instead_of_dropping_them():
+    """Картинки листов-планов обязаны доехать до модели, а не исчезнуть молча."""
+    import base64
+
+    from backend.app.services.llm import provider_json_stage as pjs
+
+    messages = [
+        {"role": "system", "content": "инструкции"},
+        {"role": "user", "content": [
+            {"type": "text", "text": "ДАННЫЕ"},
+            {"type": "image_url", "image_url": {
+                "url": "data:image/png;base64," + base64.b64encode(b"PNG-A").decode()}},
+            {"type": "image_url", "image_url": {
+                "url": "data:image/png;base64," + base64.b64encode(b"PNG-B").decode()}},
+        ]},
+    ]
+    built = pjs.build_provider_prompt(messages, root_key="items")
+    assert [blob for _mt, blob in built["images"]] == [b"PNG-A", b"PNG-B"]
+    assert built["map"]["images_attached"] == 2
+
+
+def test_json_stage_refuses_remote_image_reference():
+    """Ссылка вместо данных — отказ: провайдерский путь в сеть за промптом не ходит."""
+    from backend.app.services.llm import provider_json_stage as pjs
+
+    messages = [{"role": "user", "content": [
+        {"type": "image_url", "image_url": {"url": "https://example.com/a.png"}},
+    ]}]
+    with pytest.raises(pjs.ProviderStageRefusal):
+        pjs.build_provider_prompt(messages, root_key="items")
+
+
+def test_json_stage_placeholder_does_not_claim_inputs_unavailable():
+    """Нельзя говорить модели «недоступно» про то, что вложено ниже.
+
+    text_analysis подставляет «(not available in this run)» — и там это правда.
+    Здесь артефакт вложен в то же сообщение, и та же подстановка заставляла бы
+    критика оптимизации ставить `no_traceability` по собственному критерию.
+    """
+    from backend.app.services.llm import provider_json_stage as pjs
+
+    built = pjs.build_provider_prompt(
+        [{"role": "system", "content": "Input: /srv/x/_output/03_findings.json"},
+         {"role": "user", "content": "ДАННЫЕ"}],
+        root_key="items",
+    )
+    assert "not available in this run" not in built["prompt"]
+    assert pjs.INLINED_PLACEHOLDER in built["prompt"]
+
+
+def test_worker_provider_model_is_not_reported_as_openrouter():
+    """Провенанс замечания не должен называть платного провайдера, которого не было."""
+    from backend.app.pipeline.stages.block_analysis.provenance import detector_for_model
+    from backend.app.pipeline.stages.block_analysis.provider_transport import (
+        PROVIDER_BLOCK_MODEL_ID,
+    )
+
+    assert detector_for_model(PROVIDER_BLOCK_MODEL_ID) == "worker_provider"
+    assert detector_for_model("openai/gpt-5.4") == "gpt_openrouter"
+    assert detector_for_model("claude-opus-5") == "claude"
+
+
+def test_block_prompt_lists_every_required_finding_field():
+    """Без json_schema обязательные поля перечисляются в промпте — иначе гейт их отбросит."""
+    from backend.app.pipeline.stages.block_analysis import provider_transport as pt
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import RESPONSE_SCHEMA
+
+    contract = pt.response_contract()
+    required = RESPONSE_SCHEMA["schema"]["properties"]["findings"]["items"]["required"]
+    for name in required:
+        assert name in contract, f"поле {name} не названо модели"
+
+
+def test_worker_acceptance_gate_uses_same_ceiling_as_resolver():
+    """Три валидатора одного поля обязаны иметь ОДИН потолок."""
+    from audit_worker import audit_runner
+    from audit_worker.providers import resolver
+    from backend.app.models.distributed_workers import ProviderRequirementPayload
+
+    params = audit_runner._validate_provider_requirement({
+        "provider": "claude", "capability": "strong_audit",
+        "allowed_stages": ["block_analysis"], "max_inferences": 16,
+    })
+    assert params["max_inferences"] == 16
+    payload = ProviderRequirementPayload(
+        provider="claude", allowed_stages=["block_analysis"], max_inferences=16,
+    )
+    assert payload.max_inferences == 16
+    assert resolver.MAX_INFERENCES_CEILING == 64
+
+
+def test_broken_stream_output_is_not_reported_as_success():
+    """Оборванный поток — ошибка, а не служебное событие CLI, выданное за ответ."""
+    from audit_worker.providers.claude_adapter import parse_stream_json
+
+    # В потоке есть только init-событие: итогового `result` нет.
+    stdout = '{"type":"system","subtype":"init","session_id":"abc","tools":["Read"]}\n'
+    assert parse_stream_json(stdout) is None

@@ -1,0 +1,48 @@
+{
+  "stage": "11F",
+  "artifact": "capability probe budget (предварительный, до полного 11F_INFERENCE_BUDGET.json)",
+  "declared_at_utc": "2026-08-10T08:19:32Z",
+  "why": "§12 задания требует СНАЧАЛА проверить фактическую возможность установленного CLI передавать изображение, а не придумывать механизм. Без этого нельзя посчитать бюджет block_analysis.",
+  "facts_established_without_inference": [
+    "claude 2.1.220 на .31 не имеет флага --image (проверено по --help)",
+    "--input-format stream-json существует и ТРЕБУЕТ --output-format stream-json (проверено: 'Error: --input-format=stream-json requires output-format=stream-json')",
+    "разбор строки stream-json происходит ЛОКАЛЬНО до обращения к модели (malformed JSON → SyntaxError, вызова нет)"
+  ],
+  "open_question": "принимает ли CLI content-block type=image (base64) на stdin и доходит ли изображение до модели ПРИ --tools= (ноль инструментов)",
+  "probe": {
+    "calls": 1,
+    "provider": "claude",
+    "model_requested": "claude-opus-5",
+    "host": "176.12.77.31",
+    "payload": "синтетическая PNG 420x160, сгенерированная локально; текст 'KONTROL-4917' и 'SUM = 4917'",
+    "client_data_involved": false,
+    "success_criterion": "ответ модели содержит 4917 → изображение дошло без единого инструмента",
+    "counts_against": "отдельная строка бюджета 'capability_probe'; НЕ входит в EXPECTED_NATURAL_CALLS конвейера и НЕ является technical retry"
+  },
+  "result": {
+    "verdict": "PASS",
+    "executed_at_utc": "2026-08-10T08:19:48Z",
+    "host": "176.12.77.31",
+    "requested_model": "claude-opus-5",
+    "reported_model_in_assistant_message": "claude-opus-5",
+    "match": true,
+    "answer": "4917",
+    "tools": 0,
+    "permission_denials": 0,
+    "exit": 0,
+    "duration_api_ms": 4129,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 2720,
+      "output_tokens": 59
+    },
+    "total_cost_usd": 0.029323,
+    "mechanism_proven": "claude -p --input-format stream-json --output-format stream-json; строка stdin = {'type':'user','message':{'role':'user','content':[{'type':'image','source':{'type':'base64',...}},{'type':'text',...}]}}",
+    "why_this_matters": "изображение доставляется БАЙТАМИ через stdin. Ни Read-инструмента, ни каталога вложений, ни доступа к файловой системе не требуется вовсе — §12 закрывается сильнее, чем допускала формулировка задания."
+  },
+  "constraints_discovered": [
+    "--input-format stream-json обязывает --output-format stream-json → адаптеру нужен разбор NDJSON вместо одиночного JSON-конверта",
+    "--verbose обязателен для stream-json output в print-режиме",
+    "ВАЖНО: в modelUsage ответа присутствует ВТОРАЯ модель claude-haiku-4-5 (543 вход / 19 выход, $0.000638). Это служебный вызов САМОГО CLI, не вызов конвейера. Он не управляется политикой моделей воркера и должен учитываться в отчётности честно, а не выдаваться за ноль."
+  ]
+}
