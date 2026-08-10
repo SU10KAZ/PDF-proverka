@@ -27,11 +27,12 @@
 | Ветка 11I | `feat/distributed-audit-workers-routing-plan` |
 | Ветка 11J | `feat/distributed-audit-workers-executable-routing-plan` |
 | Worktree | `.claude/worktrees/distributed-audit-workers-executable-routing-plan` |
-| Финальный коммит | `687483dc` |
-| Коммитов | 6 |
+| Финальный коммит | `46bb98fc` |
+| Коммитов | 7 |
 | Push / merge | **не выполнялись** (запрещены §46) |
 
 ```
+46bb98fc docs(маршрутизация 11J): доказательная база, границы и финальный отчёт
 687483dc fix(маршрутизация 11J): план не имеет права подменять окружение воркера
 e717c598 fix(маршрутизация 11J): targeted-проходы не имеют права ронять оплаченный свод
 b73fb325 fix(маршрутизация 11J): дефекты, найденные состязательным ревью
@@ -173,6 +174,6 @@ ssh-сессии на самой машине через `read -s` (ввод н�
 
 ## 7. Артефакты
 
-`docs/distributed_audit_workers/11j/` — 21 файл. Все JSON собираются скриптом
+`docs/distributed_audit_workers/11j/` — 24 файла. Все JSON собираются скриптом
 `scripts/build_11j_artifacts.py` из фактического кода, а не набираются руками:
 число в отчёте, набранное вручную, устаревает молча.
