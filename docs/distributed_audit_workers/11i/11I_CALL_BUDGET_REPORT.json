@@ -1,0 +1,1726 @@
+{
+  "why_rewritten": "прежняя формула считала ОДИН вызов на графический блок, а этап 01 делает четыре. Документ на 40 блоков требует ~166 обращений против авторизованных 64: аудит упирался в потолок на середине, уже оплатив две трети вызовов",
+  "center_ceiling_now": 1024,
+  "center_ceiling_before": 64,
+  "third_leg_on": {
+    "B=1": {
+      "claude_gpt_codex": {
+        "scope": "all",
+        "graphic_blocks": 1,
+        "blind_estimate": false,
+        "natural_calls": 12,
+        "mandatory_calls": 7,
+        "conditional_calls": 5,
+        "per_provider": {
+          "claude": 7,
+          "codex": 4,
+          "openrouter": 1
+        },
+        "per_stage": {
+          "block_batch": 4,
+          "findings_corrector": 1,
+          "findings_merge": 1,
+          "norm_fix": 2,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 0,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      },
+      "full_codex": {
+        "scope": "all",
+        "graphic_blocks": 1,
+        "blind_estimate": false,
+        "natural_calls": 14,
+        "mandatory_calls": 7,
+        "conditional_calls": 7,
+        "per_provider": {
+          "claude": 2,
+          "codex": 11,
+          "openrouter": 1
+        },
+        "per_stage": {
+          "block_batch": 4,
+          "findings_corrector": 1,
+          "findings_merge": 3,
+          "norm_fix": 2,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_discipline",
+            "role": "targeted_discipline",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_docnorm",
+            "role": "targeted_docnorm",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 0,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      }
+    },
+    "B=3": {
+      "claude_gpt_codex": {
+        "scope": "all",
+        "graphic_blocks": 3,
+        "blind_estimate": false,
+        "natural_calls": 20,
+        "mandatory_calls": 11,
+        "conditional_calls": 9,
+        "per_provider": {
+          "claude": 7,
+          "codex": 10,
+          "openrouter": 3
+        },
+        "per_stage": {
+          "block_batch": 12,
+          "findings_corrector": 1,
+          "findings_merge": 1,
+          "norm_fix": 2,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 0,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      },
+      "full_codex": {
+        "scope": "all",
+        "graphic_blocks": 3,
+        "blind_estimate": false,
+        "natural_calls": 22,
+        "mandatory_calls": 11,
+        "conditional_calls": 11,
+        "per_provider": {
+          "claude": 2,
+          "codex": 17,
+          "openrouter": 3
+        },
+        "per_stage": {
+          "block_batch": 12,
+          "findings_corrector": 1,
+          "findings_merge": 3,
+          "norm_fix": 2,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 3,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_discipline",
+            "role": "targeted_discipline",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_docnorm",
+            "role": "targeted_docnorm",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 0,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      }
+    },
+    "B=40": {
+      "claude_gpt_codex": {
+        "scope": "all",
+        "graphic_blocks": 40,
+        "blind_estimate": false,
+        "natural_calls": 172,
+        "mandatory_calls": 85,
+        "conditional_calls": 87,
+        "per_provider": {
+          "claude": 11,
+          "codex": 121,
+          "openrouter": 40
+        },
+        "per_stage": {
+          "block_batch": 160,
+          "findings_corrector": 1,
+          "findings_merge": 1,
+          "norm_fix": 2,
+          "norm_verify": 4,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 4,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      },
+      "full_codex": {
+        "scope": "all",
+        "graphic_blocks": 40,
+        "blind_estimate": false,
+        "natural_calls": 174,
+        "mandatory_calls": 85,
+        "conditional_calls": 89,
+        "per_provider": {
+          "claude": 2,
+          "codex": 132,
+          "openrouter": 40
+        },
+        "per_stage": {
+          "block_batch": 160,
+          "findings_corrector": 1,
+          "findings_merge": 3,
+          "norm_fix": 2,
+          "norm_verify": 4,
+          "optimization": 2,
+          "optimization_critic": 1,
+          "text_analysis": 1
+        },
+        "per_action": [
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_openrouter",
+            "role": "detector",
+            "provider": "openrouter",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_standard",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": false
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "detector_codex_strong",
+            "role": "detector",
+            "provider": "codex",
+            "capability": "block_detector_strong",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": true
+          },
+          {
+            "stage_id": "block_batch",
+            "action_id": "judge_gap_search",
+            "role": "judge_gap_search",
+            "provider": "codex",
+            "capability": "block_judge",
+            "multiplicity": "per_graphic_block",
+            "calls": 40,
+            "conditional": true
+          },
+          {
+            "stage_id": "text_analysis",
+            "action_id": "text_audit",
+            "role": "text_audit",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "merge_base",
+            "role": "merge",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_discipline",
+            "role": "targeted_discipline",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_merge",
+            "action_id": "targeted_docnorm",
+            "role": "targeted_docnorm",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "findings_corrector",
+            "action_id": "absence_guard",
+            "role": "absence_guard",
+            "provider": "claude",
+            "capability": "cheap_review",
+            "multiplicity": "per_chunk",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_verify",
+            "action_id": "clause_binding",
+            "role": "norm_binding",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_batch",
+            "calls": 4,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_findings",
+            "role": "norm_review_findings",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "norm_fix",
+            "action_id": "review_optimization",
+            "role": "norm_review_optimization",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": true
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_primary",
+            "role": "optimization_primary",
+            "provider": "claude",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization",
+            "action_id": "optimization_visual",
+            "role": "optimization_visual",
+            "provider": "codex",
+            "capability": "visual_reasoning",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          },
+          {
+            "stage_id": "optimization_critic",
+            "action_id": "critic",
+            "role": "optimization_critic",
+            "provider": "codex",
+            "capability": "strong_audit",
+            "multiplicity": "per_document",
+            "calls": 1,
+            "conditional": false
+          }
+        ],
+        "deterministic_actions": 8
+      }
+    }
+  },
+  "third_leg_off_claude_gpt_codex": {
+    "B=1": {
+      "scope": "all",
+      "graphic_blocks": 1,
+      "blind_estimate": false,
+      "natural_calls": 11,
+      "mandatory_calls": 7,
+      "conditional_calls": 4,
+      "per_provider": {
+        "claude": 7,
+        "codex": 3,
+        "openrouter": 1
+      },
+      "per_stage": {
+        "block_batch": 3,
+        "findings_corrector": 1,
+        "findings_merge": 1,
+        "norm_fix": 2,
+        "optimization": 2,
+        "optimization_critic": 1,
+        "text_analysis": 1
+      },
+      "per_action": [
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "provider": "codex",
+          "capability": "block_judge",
+          "multiplicity": "per_graphic_block",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "text_analysis",
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "merge_base",
+          "role": "merge",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_corrector",
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_verify",
+          "action_id": "clause_binding",
+          "role": "norm_binding",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_batch",
+          "calls": 0,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_findings",
+          "role": "norm_review_findings",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_optimization",
+          "role": "norm_review_optimization",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization_critic",
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        }
+      ],
+      "deterministic_actions": 8
+    },
+    "B=3": {
+      "scope": "all",
+      "graphic_blocks": 3,
+      "blind_estimate": false,
+      "natural_calls": 17,
+      "mandatory_calls": 11,
+      "conditional_calls": 6,
+      "per_provider": {
+        "claude": 7,
+        "codex": 7,
+        "openrouter": 3
+      },
+      "per_stage": {
+        "block_batch": 9,
+        "findings_corrector": 1,
+        "findings_merge": 1,
+        "norm_fix": 2,
+        "optimization": 2,
+        "optimization_critic": 1,
+        "text_analysis": 1
+      },
+      "per_action": [
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 3,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 3,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "provider": "codex",
+          "capability": "block_judge",
+          "multiplicity": "per_graphic_block",
+          "calls": 3,
+          "conditional": true
+        },
+        {
+          "stage_id": "text_analysis",
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "merge_base",
+          "role": "merge",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_corrector",
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_verify",
+          "action_id": "clause_binding",
+          "role": "norm_binding",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_batch",
+          "calls": 0,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_findings",
+          "role": "norm_review_findings",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_optimization",
+          "role": "norm_review_optimization",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization_critic",
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        }
+      ],
+      "deterministic_actions": 8
+    },
+    "B=40": {
+      "scope": "all",
+      "graphic_blocks": 40,
+      "blind_estimate": false,
+      "natural_calls": 132,
+      "mandatory_calls": 85,
+      "conditional_calls": 47,
+      "per_provider": {
+        "claude": 11,
+        "codex": 81,
+        "openrouter": 40
+      },
+      "per_stage": {
+        "block_batch": 120,
+        "findings_corrector": 1,
+        "findings_merge": 1,
+        "norm_fix": 2,
+        "norm_verify": 4,
+        "optimization": 2,
+        "optimization_critic": 1,
+        "text_analysis": 1
+      },
+      "per_action": [
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "provider": "codex",
+          "capability": "block_judge",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": true
+        },
+        {
+          "stage_id": "text_analysis",
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "merge_base",
+          "role": "merge",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_corrector",
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_verify",
+          "action_id": "clause_binding",
+          "role": "norm_binding",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_batch",
+          "calls": 4,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_findings",
+          "role": "norm_review_findings",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "norm_fix",
+          "action_id": "review_optimization",
+          "role": "norm_review_optimization",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization_critic",
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        }
+      ],
+      "deterministic_actions": 8
+    }
+  },
+  "worker_budget_b40": {
+    "claude_gpt_codex": {
+      "scope": "worker",
+      "graphic_blocks": 40,
+      "blind_estimate": false,
+      "natural_calls": 166,
+      "mandatory_calls": 85,
+      "conditional_calls": 81,
+      "per_provider": {
+        "claude": 5,
+        "codex": 121,
+        "openrouter": 40
+      },
+      "per_stage": {
+        "block_batch": 160,
+        "findings_corrector": 1,
+        "findings_merge": 1,
+        "optimization": 2,
+        "optimization_critic": 1,
+        "text_analysis": 1
+      },
+      "per_action": [
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_strong",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector_strong",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": true
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "provider": "codex",
+          "capability": "block_judge",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": true
+        },
+        {
+          "stage_id": "text_analysis",
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "merge_base",
+          "role": "merge",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_corrector",
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization_critic",
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        }
+      ],
+      "deterministic_actions": 8,
+      "technical_retry_headroom": 17,
+      "requested": 183,
+      "ceiling": 1024,
+      "max_inferences": 183,
+      "clamped_by_ceiling": false,
+      "formula": "166 естественных обращений по плану (85 обязательных + 81 условных) + 17 на технические повторы (max(3, ceil(N×0.10)))"
+    },
+    "full_codex": {
+      "scope": "worker",
+      "graphic_blocks": 40,
+      "blind_estimate": false,
+      "natural_calls": 168,
+      "mandatory_calls": 85,
+      "conditional_calls": 83,
+      "per_provider": {
+        "claude": 2,
+        "codex": 126,
+        "openrouter": 40
+      },
+      "per_stage": {
+        "block_batch": 160,
+        "findings_corrector": 1,
+        "findings_merge": 3,
+        "optimization": 2,
+        "optimization_critic": 1,
+        "text_analysis": 1
+      },
+      "per_action": [
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": false
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "detector_codex_strong",
+          "role": "detector",
+          "provider": "codex",
+          "capability": "block_detector_strong",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": true
+        },
+        {
+          "stage_id": "block_batch",
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "provider": "codex",
+          "capability": "block_judge",
+          "multiplicity": "per_graphic_block",
+          "calls": 40,
+          "conditional": true
+        },
+        {
+          "stage_id": "text_analysis",
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "provider": "codex",
+          "capability": "strong_audit",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "merge_base",
+          "role": "merge",
+          "provider": "codex",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "targeted_discipline",
+          "role": "targeted_discipline",
+          "provider": "codex",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "findings_merge",
+          "action_id": "targeted_docnorm",
+          "role": "targeted_docnorm",
+          "provider": "codex",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "findings_corrector",
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "provider": "claude",
+          "capability": "cheap_review",
+          "multiplicity": "per_chunk",
+          "calls": 1,
+          "conditional": true
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "provider": "claude",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization",
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        },
+        {
+          "stage_id": "optimization_critic",
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "provider": "codex",
+          "capability": "strong_audit",
+          "multiplicity": "per_document",
+          "calls": 1,
+          "conditional": false
+        }
+      ],
+      "deterministic_actions": 8,
+      "technical_retry_headroom": 17,
+      "requested": 185,
+      "ceiling": 1024,
+      "max_inferences": 185,
+      "clamped_by_ceiling": false,
+      "formula": "168 естественных обращений по плану (85 обязательных + 83 условных) + 17 на технические повторы (max(3, ceil(N×0.10)))"
+    }
+  },
+  "retry_is_not_a_leg": "естественная оценка НЕ включает повторы: повтор после таймаута — не вторая нога ансамбля. Запас считается отдельно"
+}

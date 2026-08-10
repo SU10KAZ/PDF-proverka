@@ -1,0 +1,11 @@
+{
+  "claim": "хэш одинаков у центра, в нагрузке задания, в спеке и в привязке",
+  "claude_gpt_codex": "sha256:39c5ddc78ef364e836dc73e7de13ebd35b21e60edfbd53c000fb54b26cf1c019",
+  "full_codex": "sha256:5d0479d5b5265b67f222645851bb2ac3129886fa2c5dc6b14adbf96bf4a7c5b4",
+  "hash_excludes": [
+    "routing_plan_id",
+    "created_at"
+  ],
+  "why": "хэш обязан отвечать на вопрос «изменился ли МАРШРУТ». Два задания на одном пресете и одних флагах обязаны дать один хэш, иначе сверка сторон ловила бы время создания, а не смысл",
+  "canonical_serialization": "json.dumps(sort_keys=True, separators=(',',':'))"
+}

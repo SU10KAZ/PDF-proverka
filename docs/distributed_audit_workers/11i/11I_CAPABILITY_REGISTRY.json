@@ -1,0 +1,74 @@
+{
+  "schema": "плоский реестр логических способностей; точных моделей нет",
+  "why_not_model_ids": "точная строка — распоряжение чужой подпиской и данные задания в argv стороннего CLI (инвариант I-P5). Центр называет СПОСОБНОСТЬ, строку выбирает локальная политика воркера",
+  "providers": [
+    "claude",
+    "codex",
+    "openrouter"
+  ],
+  "capabilities": [
+    "strong_audit",
+    "cheap_review",
+    "block_detector",
+    "block_detector_strong",
+    "block_judge",
+    "visual_reasoning"
+  ],
+  "provider_capabilities": {
+    "claude": [
+      "strong_audit",
+      "cheap_review"
+    ],
+    "codex": [
+      "strong_audit",
+      "cheap_review",
+      "block_detector",
+      "block_detector_strong",
+      "block_judge",
+      "visual_reasoning"
+    ],
+    "openrouter": [
+      "strong_audit",
+      "cheap_review",
+      "block_detector"
+    ]
+  },
+  "roles": {
+    "model": [
+      "detector",
+      "judge_gap_search",
+      "text_audit",
+      "merge",
+      "targeted_discipline",
+      "targeted_docnorm",
+      "targeted_mark_system",
+      "absence_guard",
+      "norm_binding",
+      "norm_review_findings",
+      "norm_review_optimization",
+      "optimization_primary",
+      "optimization_visual",
+      "optimization_critic"
+    ],
+    "deterministic": [
+      "detector_combine",
+      "structural_critic",
+      "optimization_merge",
+      "deterministic_fix",
+      "norm_paragraph_verification",
+      "norm_requote",
+      "critic_augment"
+    ]
+  },
+  "reasoning_efforts": [
+    "low",
+    "medium",
+    "high",
+    "xhigh"
+  ],
+  "effort_capable_providers": [
+    "codex",
+    "openrouter"
+  ],
+  "worker_registry_mirror": "audit_worker/providers/model_policy.py KNOWN_CAPABILITIES"
+}

@@ -453,7 +453,22 @@ def test_worker_acceptance_gate_uses_same_ceiling_as_resolver():
         allowed_stages=["block_analysis"], max_inferences=16,
     )
     assert payload.max_inferences == 16
-    assert resolver.MAX_INFERENCES_CEILING == 64
+    # Значение потолка поднято на 11I (было 64): прежнее число описывало
+    # ОДНОНОГИЙ worker-участок, в который мост схлопывал ансамбль. Нескхлопнутый
+    # этап 01 даёт четыре обращения на графический блок, и 64 не хватает уже на
+    # документ из пятнадцати блоков.
+    #
+    # Утверждение теста при этом прежнее и единственно важное: три валидатора
+    # одного поля обязаны иметь ОДИН потолок. Расхождение означало бы задание,
+    # принятое центром и отвергнутое воркером уже после выдачи.
+    from backend.app.services.distributed_workers import provider_requirement as _pr
+
+    ceiling = resolver.MAX_INFERENCES_CEILING
+    assert ceiling == _pr.CENTER_MAX_INFERENCES
+    schema_ceiling = ProviderRequirementPayload.model_fields["max_inferences"].metadata
+    assert any(getattr(item, "le", None) == ceiling for item in schema_ceiling), (
+        f"схема нагрузки центра ограничивает max_inferences не на {ceiling}"
+    )
 
 
 def test_broken_stream_output_is_not_reported_as_success():

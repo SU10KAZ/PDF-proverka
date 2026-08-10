@@ -104,11 +104,26 @@ _WIRE_REQUIREMENT = {
 }
 
 #: Способности воркера, при которых центр вправе заказать вызовы модели.
+#: Возможности «настоящего» воркера. С 11I их стало больше по двум причинам,
+#: и обе — следствие того, что маршрут перестал быть одной парой.
+#:
+#: Во-первых, план требует ТРЁХ провайдеров и шести классов моделей сразу
+#: (ансамбль этапа 01 и две ноги этапа 05). Во-вторых, воркер обязан объявить
+#: `routing_plan_v1`: он разбирает нагрузку закрытым набором полей, и машина
+#: прошлой сборки отвергла бы задание с планом целиком, ещё на приёме.
 _REAL_WORKER_CAPS = {
     "provider_mode": "real",
     "real_llm_enabled": True,
     "pipeline_provider_bridge_enabled": True,
-    "provider_capabilities": {PROVIDER: [CAPABILITY]},
+    "routing_plan_v1": True,
+    "provider_capabilities": {
+        "claude": ["strong_audit", "cheap_review"],
+        "codex": [
+            "strong_audit", "cheap_review", "block_detector",
+            "block_detector_strong", "block_judge", "visual_reasoning",
+        ],
+        "openrouter": ["block_detector"],
+    },
     "job_types": ["test_pipeline_v1", "audit_pipeline_v1"],
     "pipeline_revision": "rev-abc123",
 }
@@ -329,6 +344,15 @@ def _version_with_blocks(root: Path, *, graphic_blocks: int) -> Path:
     """Минимальное дерево версии со структурой документа для оценки бюджета."""
     version = root / "версия"
     (version / "01_input").mkdir(parents=True)
+    # Дисциплина в АВТОРИТЕТНЫХ метаданных версии. С 11I она нужна не только
+    # `create_audit_job`, но и компилятору плана: от неё зависит, получит ли
+    # Codex-путь свода дисциплинарный targeted-проход. Версия без дисциплины —
+    # это версия, для которой правильного маршрута не существует, и отказ здесь
+    # такой же обязательный, как и в `create_audit_job`.
+    (version / "01_input" / "project_info.json").write_text(
+        json.dumps({"section": "EOM", "name": "проект"}, ensure_ascii=False),
+        encoding="utf-8",
+    )
     (version / "01_input" / "проект_result.json").write_text(
         json.dumps({
             "pages": [{
@@ -407,15 +431,23 @@ def test_d_backend_passes_the_requirement_into_create_audit_job(
     assert requirement["provider"] == PROVIDER
     assert requirement["capability"] == CAPABILITY
     assert requirement["model"] is None
-    # Бюджет посчитан от структуры документа, а не взят круглым числом:
-    # 2 графических блока + 6 текстовых этапов + запас на технические повторы.
+    # Бюджет считается ИЗ ТОПОЛОГИИ ПЛАНА (11I), а не из «один вызов на блок».
     #
-    # Запас с 11H пропорционален размеру: `max(3, ceil(N × 0.10))`. Константа 2,
-    # стоявшая здесь до этого, для восьми вызовов ещё работала, а для полусотни
-    # означала обрыв аудита на середине — уже после того, как две трети вызовов
-    # оплачены. Для N=8 запас равен 3, то есть 11.
-    assert requirement["max_inferences"] == 11
+    # До 11I здесь стояло 11: 2 графических блока + 6 текстовых этапов + 3 на
+    # повторы. Число описывало одноногий worker-участок, в который мост
+    # схлопывал ансамбль. Ансамбль из трёх детекторов и судьи даёт 4 обращения
+    # на блок, и та же двухблочная версия требует уже вдвое больше.
+    #
+    # Проверяется не константа, а СВОЙСТВО: бюджет обязан покрывать ансамбль.
+    assert requirement["max_inferences"] >= 2 * 4, (
+        "бюджет снова описывает одноногий этап 01 — прогон оборвётся на "
+        "середине, уже оплатив часть вызовов"
+    )
     assert "block_analysis" in requirement["allowed_stages"]
+    # И задание уехало с планом: без него воркер маршрут не восстановит.
+    plan = captured.get("routing_plan")
+    assert plan is not None, "задание создано БЕЗ плана маршрутизации"
+    assert plan["routing_plan_hash"].startswith("sha256:")
 
 
 # ═════════════ E. Хранение в БД ══════════════════════════════════════════════
@@ -491,14 +523,28 @@ def test_g_worker_parses_full_central_params_with_capability(tmp_path):
     ужесточение любой из сторон превращается в «задание отвергнуто на воркере»
     уже в бою.
     """
-    params = audit_runner.validate_params(
-        _audit_params(provider_requirement=dict(_WIRE_REQUIREMENT)),
-        config=_worker_config(tmp_path),
-    )
+    # С 11I задание, которое собирается звать модель, обязано нести
+    # замороженный план маршрутизации: иначе состав моделей на воркере снова
+    # определялся бы тем, какая конфигурация лежит на машине.
+    from backend.app.services.audit_routing import presets as _presets
+    from tests.test_audit_routing_plan import build_plan as _build_plan
+
+    plan = _build_plan(_presets.PRESET_FULL_CODEX)
+    payload = _audit_params(provider_requirement=dict(_WIRE_REQUIREMENT))
+    payload["routing_plan"] = plan.to_dict()
+    params = audit_runner.validate_params(payload, config=_worker_config(tmp_path))
     assert params.provider_requirement["provider"] == PROVIDER
     assert params.provider_requirement["capability"] == CAPABILITY
     assert params.provider_requirement["model"] is None
     assert params.as_dict()["provider_requirement"]["max_inferences"] == 8
+    assert params.as_dict()["routing_plan"]["routing_plan_hash"] == plan.plan_hash()
+
+    # И то же задание БЕЗ плана отвергается — fail closed, а не «как раньше».
+    with pytest.raises(audit_runner.AuditJobRejected, match="routing_plan"):
+        audit_runner.validate_params(
+            _audit_params(provider_requirement=dict(_WIRE_REQUIREMENT)),
+            config=_worker_config(tmp_path),
+        )
 
 
 # ═════════════ H/I. Неизвестный провайдер и неизвестная способность ══════════

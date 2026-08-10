@@ -1,0 +1,33 @@
+{
+  "why_frozen": "маршрут зависит не только от пресета: третья нога ансамбля, targeted-проходы свода и детерминированность F OPT Fix включаются флагами. Правка .env после создания задания не должна менять уже созданный маршрут",
+  "routing_relevant_env_flags": [
+    "STAGE01_THIRD_LEG_ENABLED",
+    "STAGE01_DUAL_REVIEW_ENABLED",
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED",
+    "STAGE01_PROTECTION_TABLE_CHECK_ENABLED",
+    "OPTIMIZATION_CRITIC_DETERMINISTIC",
+    "NORM_CLAUSE_BINDING_ENABLED",
+    "AUDIT_CODEX_TARGETED_FINDINGS",
+    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED",
+    "AUDIT_CODEX_OPTIMIZATION_IMAGES",
+    "PIPELINE_VERIFIER_ENABLED",
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED",
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED"
+  ],
+  "runtime_globals": [
+    "CLAUDE_DEFAULT_MODEL_CLASS"
+  ],
+  "captured_for_reference_plans": {
+    "AUDIT_CODEX_TARGETED_FINDINGS": "1",
+    "CLAUDE_DEFAULT_MODEL_CLASS": "cheap",
+    "NORM_CLAUSE_BINDING_ENABLED": "true",
+    "OPTIMIZATION_CRITIC_DETERMINISTIC": "true",
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED": "true",
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED": "true",
+    "PIPELINE_VERIFIER_ENABLED": "true",
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED": "true",
+    "STAGE01_DUAL_REVIEW_ENABLED": "true",
+    "STAGE01_THIRD_LEG_ENABLED": "true"
+  },
+  "not_copied": "весь .env — в нём секреты; копируется закрытый список"
+}
