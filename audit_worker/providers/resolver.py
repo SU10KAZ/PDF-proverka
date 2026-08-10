@@ -44,7 +44,11 @@ from audit_worker.providers.auth_mode import (
     AUTH_MODE_AMBIENT_USER,
     AUTH_MODE_UNAVAILABLE,
 )
-from audit_worker.providers.paths import SUPPORTED_PROVIDERS, require_provider
+from audit_worker.providers.paths import (
+    SUPPORTED_PROVIDERS,
+    is_http_provider,
+    require_provider,
+)
 
 #: Версия схемы файла привязки. Процесс конвейера отвергает неизвестную версию.
 BINDING_SCHEMA_VERSION = 1
@@ -252,11 +256,13 @@ class RouteBinding:
             raise ProviderResolutionError("маршрут привязки без способности")
         try:
             model = model_policy.validate_model_id(
-                data.get("model"), where=f"маршрут {provider}/{capability}.model"
+                data.get("model"), where=f"маршрут {provider}/{capability}.model",
+                provider=provider,
             )
             accepted = tuple(
                 model_policy.validate_model_id(
-                    item, where=f"маршрут {provider}/{capability}.accepted"
+                    item, where=f"маршрут {provider}/{capability}.accepted",
+                    provider=provider,
                 )
                 for item in (data.get("accepted_reported_models") or [])
             )
@@ -434,12 +440,15 @@ class ProviderBinding:
         try:
             raw_model = data.get("model")
             model_value = (
-                model_policy.validate_model_id(raw_model, where="привязка.model")
+                model_policy.validate_model_id(
+                    raw_model, where="привязка.model", provider=provider,
+                )
                 if raw_model else None
             )
             accepted_values = tuple(
                 model_policy.validate_model_id(
-                    item, where="привязка.accepted_reported_models"
+                    item, where="привязка.accepted_reported_models",
+                    provider=provider,
                 )
                 for item in accepted
             )
@@ -557,8 +566,15 @@ class ProviderResolver:
             )
         if not adapter.installed():
             raise ProviderResolutionError(
-                f"CLI провайдера {name!r} не установлен по штатному пути "
-                f"({errors.ERR_CLI_MISSING})"
+                (
+                    f"провайдер {name!r}: канал к шлюзу недоступен — HTTP-клиент "
+                    f"отсутствует в окружении ({errors.ERR_CLI_MISSING})"
+                    if is_http_provider(name)
+                    else (
+                        f"CLI провайдера {name!r} не установлен по штатному пути "
+                        f"({errors.ERR_CLI_MISSING})"
+                    )
+                )
             )
         identity = self.manager.identity(name)
         if identity is None or identity.auth_state != identity_mod.AUTH_LOGGED_IN:
@@ -659,7 +675,9 @@ class ProviderResolver:
                 )
             if not adapter.installed():
                 raise ProviderResolutionError(
-                    f"CLI провайдера {provider_name!r} не установлен"
+                    f"провайдер {provider_name!r}: HTTP-клиент недоступен"
+                    if is_http_provider(provider_name)
+                    else f"CLI провайдера {provider_name!r} не установлен"
                 )
             identity = self.manager.identity(provider_name)
             if identity is None or identity.auth_state != identity_mod.AUTH_LOGGED_IN:

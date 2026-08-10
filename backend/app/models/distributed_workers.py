@@ -72,7 +72,36 @@ CAPABILITY_STRONG_AUDIT = "strong_audit"
 #: быть подмножеством `model_policy.KNOWN_CAPABILITIES` воркера — это проверяет
 #: отдельный тест, иначе центр смог бы заказать способность, которую ни один
 #: воркер не в состоянии разрешить, и отказ пришёл бы уже ПОСЛЕ выдачи задания.
-KNOWN_CAPABILITIES: tuple[str, ...] = (CAPABILITY_STRONG_AUDIT,)
+#: Способности, добавленные на 11I вместе с планом маршрутизации, и признанные
+#: центральным контрактом на 11J. До 11J реестр центра состоял из ОДНОГО
+#: значения, хотя план уже оперировал шестью: требование к воркеру физически не
+#: могло сказать «нужен детектор блоков» — только «нужна сильная модель». Для
+#: одно-провайдерного задания это было безразлично, для ансамбля из четырёх
+#: обращений на блок — нет.
+CAPABILITY_CHEAP_REVIEW = "cheap_review"
+CAPABILITY_BLOCK_DETECTOR = "block_detector"
+CAPABILITY_BLOCK_DETECTOR_STRONG = "block_detector_strong"
+CAPABILITY_BLOCK_JUDGE = "block_judge"
+CAPABILITY_VISUAL_REASONING = "visual_reasoning"
+
+KNOWN_CAPABILITIES: tuple[str, ...] = (
+    CAPABILITY_STRONG_AUDIT,
+    CAPABILITY_CHEAP_REVIEW,
+    CAPABILITY_BLOCK_DETECTOR,
+    CAPABILITY_BLOCK_DETECTOR_STRONG,
+    CAPABILITY_BLOCK_JUDGE,
+    CAPABILITY_VISUAL_REASONING,
+)
+
+#: Провайдеры, которых центр вправе назвать в требовании к воркеру.
+#:
+#: OpenRouter добавлен на 11J. До него список описывал два CLI-провайдера, и
+#: задание, у которого worker-участок держится на внешнем шлюзе, выразить было
+#: нечем: поле принимало только `claude` и `codex`, а нога GPT этапа 01 при
+#: этом обязательна в ОБОИХ пресетах. Следствие было не «неудобно», а
+#: «невыразимо»: центр называл преобладающим провайдером Codex, и привязка
+#: выписывалась не под ту подписку.
+KNOWN_REQUIREMENT_PROVIDERS: tuple[str, ...] = ("claude", "codex", "openrouter")
 
 
 class JobState(str, Enum):
@@ -474,7 +503,7 @@ class ProviderRequirementPayload(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    provider: Literal["claude", "codex"]
+    provider: Literal["claude", "codex", "openrouter"]
     #: ЛОГИЧЕСКАЯ способность. Что она означает НА КОНКРЕТНОЙ машине, решает
     #: локальная политика воркера. Обязательна для задания, которое собирается
     #: звать модель (см. `_check_capability_required`).

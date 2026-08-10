@@ -6338,6 +6338,38 @@ class PipelineManager:
     async def _run_central_tail_after_remote(
         self, job: AuditJob, result: Any, *, handle: Any = None
     ) -> None:
+        """Обёртка заморозки маршрута. Тело хвоста — в `_central_tail_body`.
+
+        До 11J хвост брал модели из ТЕКУЩЕЙ глобальной таблицы центра
+        (`get_stage_model`), то есть оператор, переключивший пресет между
+        приёмом результата воркера и нормативным этапом, менял провайдера
+        привязки пунктов уже идущего задания (KI-11I-3).
+
+        План берётся из нагрузки задания — тот же объект, что уехал на воркер,
+        — и привязывается к ЗАДАЧЕ, а не к процессу: центр исполняет несколько
+        проектов в одном процессе, и процессный держатель затирал бы соседей.
+        Привязка охватывает ВЕСЬ хвост, включая ранние выходы: `bind_plan` —
+        контекстный менеджер, и `return` изнутри снимает её так же корректно,
+        как обычное завершение.
+        """
+        from backend.app.pipeline.execution import registry as _exec_registry
+        from backend.app.services.audit_routing import active_plan as _active_plan
+
+        plan = await asyncio.to_thread(_exec_registry.frozen_routing_plan, handle)
+        if plan is not None:
+            await self._log(
+                job,
+                "Центральный хвост идёт по замороженному плану "
+                f"{plan.preset_id!r} ({plan.plan_hash()[:19]}…) — смена пресета "
+                "на него уже не влияет",
+                "info",
+            )
+        with _active_plan.bind_plan(plan):
+            await self._central_tail_body(job, result, handle=handle)
+
+    async def _central_tail_body(
+        self, job: AuditJob, result: Any, *, handle: Any = None
+    ) -> None:
         """Достроить аудит на центре после приёма результата с воркера.
 
         Воркер выполняет только этапы профиля; нормативный этап, контроль

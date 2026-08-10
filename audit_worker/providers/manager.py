@@ -42,6 +42,7 @@ from audit_worker.providers.auth_mode import AUTH_MODE_UNAVAILABLE, DEFAULT_AUTH
 from audit_worker.providers.base import ProbeResult, ProviderAdapter
 from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
 from audit_worker.providers.codex_adapter import CodexProviderAdapter
+from audit_worker.providers.openrouter_adapter import OpenRouterProviderAdapter
 from audit_worker.providers.identity import (
     AUTH_UNKNOWN,
     INSTALL_MISSING,
@@ -51,13 +52,16 @@ from audit_worker.providers.identity import (
 from audit_worker.providers.paths import (
     PROVIDER_CLAUDE,
     PROVIDER_CODEX,
+    PROVIDER_OPENROUTER,
     SUPPORTED_PROVIDERS,
+    is_http_provider,
     provider_home,
 )
 
 _ADAPTERS: dict[str, type[ProviderAdapter]] = {
     PROVIDER_CLAUDE: ClaudeProviderAdapter,
     PROVIDER_CODEX: CodexProviderAdapter,
+    PROVIDER_OPENROUTER: OpenRouterProviderAdapter,
 }
 
 
@@ -104,6 +108,10 @@ class ProviderManager:
         self._auth_checked_at: dict[str, float] = {}
         self._quota_checked_at: dict[str, float] = {}
         self._last_probe: dict[str, ProbeResult] = {}
+        #: Провайдеры, у которых объявленный режим авторизации отвергнут (11J).
+        #: Держится отдельно от снимков: это ошибка КОНФИГУРАЦИИ машины, а не
+        #: состояние провайдера, и она не должна исчезнуть при следующем опросе.
+        self._auth_mode_errors: dict[str, str] = {}
 
         groups = dict(account_groups or {})
         blocked = dict(policy_blocked or {})
@@ -123,7 +131,19 @@ class ProviderManager:
             # старте именно тогда, когда оператор пытается его этим флагом
             # спасти.
             mode = modes.get(name) if self.enabled else None
-            home = provider_home(self.worker_root, name, auth_mode=mode)
+            try:
+                home = provider_home(self.worker_root, name, auth_mode=mode)
+            except ValueError as exc:
+                # Единственный достижимый случай — `ambient_user` у провайдера
+                # без CLI (этап 11J). Падать здесь нельзя: агент не имеет права
+                # не стартовать из-за одной строки в конфигурации, иначе
+                # оператор теряет и heartbeat, и возможность увидеть причину.
+                # Поэтому режим принудительно возвращается к изолированному, а
+                # сама ошибка становится ВИДИМОЙ: она уезжает в предупреждения
+                # heartbeat отдельной строкой severity=error.
+                self._auth_mode_errors[name] = str(exc)
+                self._log(f"provider {name}: режим авторизации отвергнут: {exc}")
+                home = provider_home(self.worker_root, name)
             if self.enabled:
                 # Каталоги создаём даже когда CLI ещё не установлен: пустая
                 # раскладка с правами 0700 — это готовое место для будущего
@@ -355,6 +375,15 @@ class ProviderManager:
             return []
         moment = now if now is not None else time.time()
         out: list[dict[str, Any]] = []
+        for name, detail in sorted(self._auth_mode_errors.items()):
+            out.append({
+                "code": f"provider_{name}_auth_mode_rejected",
+                "severity": "error",
+                "message": (
+                    f"{name}: объявленный режим авторизации отвергнут "
+                    f"({detail}); используется изолированный режим"
+                ),
+            })
         for name in SUPPORTED_PROVIDERS:
             identity = self.identity(name)
             if identity is None:
@@ -381,7 +410,12 @@ class ProviderManager:
                 out.append({
                     "code": f"provider_{name}_missing",
                     "severity": "warn",
-                    "message": f"CLI {name} не установлен на воркере",
+                    "message": (
+                        f"{name}: HTTP-клиент недоступен — канал к шлюзу "
+                        "физически отсутствует"
+                        if is_http_provider(name)
+                        else f"CLI {name} не установлен на воркере"
+                    ),
                 })
                 continue
             if identity.auth_state != "logged_in":
@@ -389,9 +423,35 @@ class ProviderManager:
                     "code": f"provider_{name}_auth",
                     "severity": "warn",
                     "message": (
-                        f"{name}: авторизация не выполнена "
-                        f"({identity.auth_state}) — реальный аудит на этом "
-                        "провайдере невозможен"
+                        f"{name}: ключ не настроен на этом воркере "
+                        f"({identity.detail or identity.auth_state}) — "
+                        "реальный аудит на этом провайдере невозможен"
+                        if is_http_provider(name)
+                        else (
+                            f"{name}: авторизация не выполнена "
+                            f"({identity.auth_state}) — реальный аудит на этом "
+                            "провайдере невозможен"
+                        )
+                    ),
+                })
+            capability = identity.capability or {}
+            endpoint_error = capability.get("endpoint_error")
+            if endpoint_error:
+                out.append({
+                    "code": f"provider_{name}_endpoint",
+                    "severity": "error",
+                    "message": f"{name}: адрес шлюза отвергнут — {endpoint_error}",
+                })
+            if capability.get("endpoints_stubbed"):
+                # НЕ ошибка: так объявлен стенд. Но и молчать нельзя — иначе
+                # «аудит прошёл» на стенде неотличим от боевого прогона.
+                out.append({
+                    "code": f"provider_{name}_endpoints_stubbed",
+                    "severity": "warn",
+                    "message": (
+                        f"{name}: внешние точки объявлены заглушками "
+                        "(AUDIT_WORKER_PROVIDER_ENDPOINTS_STUBBED=true) — "
+                        "настоящая модель на этом воркере не вызывается"
                     ),
                 })
             creds = identity.credential_facts or {}

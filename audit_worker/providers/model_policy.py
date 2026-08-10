@@ -62,7 +62,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-from audit_worker.providers.paths import SUPPORTED_PROVIDERS, require_provider
+from audit_worker.providers.paths import (
+    SUPPORTED_PROVIDERS,
+    is_http_provider,
+    require_provider,
+)
 
 #: Версия схемы. Незнакомая версия — отказ, а не «прочитаем, что понятно».
 POLICY_SCHEMA_VERSION = 1
@@ -168,11 +172,22 @@ class CapabilityPolicy:
         }
 
 
-def default_accepted_reported(model: str) -> tuple[str, ...]:
-    """Разрешённые формы фактического идентификатора для точной модели."""
+def default_accepted_reported(
+    model: str, *, provider: Optional[str] = None
+) -> tuple[str, ...]:
+    """Разрешённые формы фактического идентификатора для точной модели.
+
+    Суффикс `[1m]` — свойство CLI Claude, а не общее правило. У внешнего шлюза
+    вариант «та же модель, другое окно» называется иначе, и приписывать ему
+    несуществующую форму значит держать в списке допустимого строку, которая не
+    появится никогда. Для HTTP-провайдера умолчание — сам идентификатор;
+    маршрутные суффиксы шлюза (`…:floor`) снимает сравнение в адаптере.
+    """
     base = str(model or "").strip()
     if not base:
         return ()
+    if provider and is_http_provider(provider):
+        return (base,)
     if base.endswith(_LONG_CONTEXT_SUFFIX):
         stripped = base[: -len(_LONG_CONTEXT_SUFFIX)]
         return (base, stripped)
@@ -189,8 +204,18 @@ def policy_path(worker_root: Optional[Path] = None) -> Optional[Path]:
     return Path(worker_root) / POLICY_FILENAME
 
 
-def validate_model_id(value: Any, *, where: str) -> str:
-    """Проверить идентификатор модели. Публичная: её зовёт и разбор привязки."""
+def validate_model_id(
+    value: Any, *, where: str, provider: Optional[str] = None
+) -> str:
+    """Проверить идентификатор модели. Публичная: её зовёт и разбор привязки.
+
+    `provider` расширяет набор допустимых символов ровно на один знак и ровно
+    там, где он неизбежен. Идентификаторы внешнего шлюза имеют вид
+    `openai/gpt-5.4`: косая черта — часть НАЗВАНИЯ модели, а не путь. Разрешать
+    её всем нельзя: у CLI-провайдеров идентификатор уходит в argv, и закрытый
+    набор символов там — сознательный рубеж. У HTTP-провайдера argv нет вовсе,
+    значение уходит полем тела запроса, поэтому послабление ограничено ими.
+    """
     if not isinstance(value, str):
         raise ProviderPolicyError(f"{where}: ожидается строка")
     model = value.strip()
@@ -210,6 +235,15 @@ def validate_model_id(value: Any, *, where: str) -> str:
     # Закрытый набор символов: идентификатор уходит в argv, и «почти любая
     # строка» там нам не нужна. Скобки разрешены ради суффикса `[1m]`.
     allowed = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_[]")
+    if provider and is_http_provider(provider):
+        allowed.add("/")
+        if "//" in model or model.startswith("/") or model.endswith("/"):
+            # Косая черта разрешена как РАЗДЕЛИТЕЛЬ «вендор/модель», а не как
+            # начало пути. Формы, похожие на путь или на URL, отвергаются.
+            raise ProviderPolicyError(
+                f"{where}: идентификатор {model!r} похож на путь, а не на "
+                "пару «вендор/модель»"
+            )
     bad = sorted(set(model) - allowed)
     if bad:
         raise ProviderPolicyError(
@@ -311,11 +345,13 @@ def parse_policy(payload: Any, *, source_path: Optional[Path] = None) -> Provide
                     f"{sorted(cap_unknown)}"
                 )
             model = _validate_model_id(
-                cap_body.get("model"), where=f"политика {provider}.{cap_name}.model"
+                cap_body.get("model"),
+                where=f"политика {provider}.{cap_name}.model",
+                provider=provider,
             )
             raw_accepted = cap_body.get("accepted_reported_models")
             if raw_accepted is None:
-                accepted = default_accepted_reported(model)
+                accepted = default_accepted_reported(model, provider=provider)
             else:
                 if not isinstance(raw_accepted, list) or not raw_accepted:
                     raise ProviderPolicyError(
@@ -326,6 +362,7 @@ def parse_policy(payload: Any, *, source_path: Optional[Path] = None) -> Provide
                     _validate_model_id(
                         item,
                         where=f"политика {provider}.{cap_name}.accepted_reported_models",
+                        provider=provider,
                     )
                     for item in raw_accepted
                 )

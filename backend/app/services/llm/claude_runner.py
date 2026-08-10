@@ -33,7 +33,7 @@ import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional, Callable, Awaitable, Sequence, Union
+from typing import Any, Optional, Callable, Awaitable, Sequence, Union
 
 from backend.app.services.storage.stage_artifacts import (
     BLOCKS_FOR_TEXT_FILENAME,
@@ -1512,7 +1512,250 @@ async def _run_findings_merge_via_provider(
         f"замечаний, модель {result.model!r}, "
         f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
     )
-    return 0, cli_result.result_text, cli_result
+
+    # Targeted-проходы свода (этап 11J, закрытие KI-11I-2). До 11J
+    # провайдерский путь делал РОВНО ОДИН вызов: targeted существовали только в
+    # ветке прямого `codex exec`, до которой мост не доходит. План при этом
+    # объявлял три действия — то есть удалённый прогон «Full Codex» давал свод
+    # без усилителей, а бюджет их считал. Расхождение было измеримым и
+    # задокументированным, но от этого не переставало быть другим аудитом.
+    return await _run_targeted_findings_merge_via_provider(
+        project_info=project_info,
+        project_id=project_id,
+        on_output=on_output,
+        output_dir=output_dir,
+        version_dir=version_dir,
+        version_id=version_id,
+        resolved_output_dir=resolved_output_dir,
+        attempt_dir=attempt_dir,
+        base_payload=payload,
+        base_result=cli_result,
+    )
+
+
+#: Имя targeted-прохода (`CodexTargetedPass.stage`) → роль действия плана.
+#:
+#: Отображение явное, а не «по префиксу»: имена проходов историчные
+#: (`alia_*`), и угадывание роли по строке сломалось бы на первом же новом
+#: проходе — молча, потому что отсутствие роли выглядит как «прохода нет».
+_TARGETED_PASS_ROLE: dict[str, str] = {
+    "alia_ar_masonry_audit": "targeted_discipline",
+    "alia_eom_protection_audit": "targeted_discipline",
+    "alia_ss_lowcurrent_audit": "targeted_discipline",
+    "alia_km_steel_audit": "targeted_discipline",
+    "alia_docnorm_audit": "targeted_docnorm",
+    "alia_mark_system_audit": "targeted_mark_system",
+}
+
+
+async def _run_targeted_findings_merge_via_provider(
+    *,
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    resolved_output_dir: Path,
+    attempt_dir: Path,
+    base_payload: dict,
+    base_result: "CLIResult",
+) -> tuple[int, str, "CLIResult"]:
+    """Targeted-проходы свода ЧЕРЕЗ МОСТ, по действиям плана (этап 11J).
+
+    Что здесь принципиально и чего здесь нет.
+
+    **Проходы берутся из ПЛАНА, а не из флагов окружения.** Ветка прямого
+    `codex exec` спрашивает `AUDIT_CODEX_TARGETED_FINDINGS` и
+    `FINDING_EVIDENCE_OCR_OBSERVER_ENABLED` в момент исполнения; здесь оба уже
+    заморожены — компилятор превратил их в действия плана либо не превратил.
+    Поэтому на пресете «Claude+GPT+Codex» ни одного targeted-действия в плане
+    нет, и этот код не сделает ни одного вызова (§15 задания: не добавлять
+    Codex-проходы туда, где боевой Claude-маршрут их не выполняет).
+
+    **Промпт берётся у БОЕВОГО сборщика** (`build_targeted_findings_passes`) —
+    того же, что и в ветке `codex exec`. Второй набор промптов ради нового
+    транспорта означал бы два расходящихся аудита.
+
+    **Отказ прохода не фатален**, ровно как в ветке `codex exec`: базовый свод
+    уже валиден и записан. Но отказ ВИДЕН — он в журнале вызовов попытки и в
+    отчёте о прогоне, а не растворён в `except`.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.findings_merge import provider_transport
+    from backend.app.services.audit_routing import active_plan as _ap
+
+    def _empty() -> tuple[int, str, "CLIResult"]:
+        return 0, base_result.result_text, base_result
+
+    try:
+        actions = [
+            item for item in _ap.stage_actions("findings_merge")
+            if item.is_model and item.role in set(_TARGETED_PASS_ROLE.values())
+        ]
+    except Exception:                                    # noqa: BLE001 — fail-soft
+        actions = []
+    if not actions:
+        return _empty()
+    by_role = {item.role: item for item in actions}
+
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import (
+        build_targeted_findings_passes,
+        combine_findings_with_targeted,
+        enforce_stage01_atomicity,
+    )
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        passes = build_targeted_findings_passes(project_info, project_id)
+    if not passes:
+        # План объявил проходы, а сборщик их не построил: единственная причина
+        # — отсутствие MD. Это НЕ повод молчать: план и след разойдутся, и
+        # разойдутся необъяснимо, если не сказать почему.
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы объявлены планом "
+            f"({sorted(by_role)}), но сборщик не построил ни одного: нет MD-файла",
+        )
+        return _empty()
+
+    targeted_payloads: list[tuple[str, dict]] = []
+    reports: list[dict[str, Any]] = []
+    total_in = base_result.input_tokens
+    total_out = base_result.output_tokens
+    total_ms = base_result.duration_ms
+    total_cost = float(base_result.cost_usd or 0.0)
+
+    for targeted_pass in passes:
+        role = _TARGETED_PASS_ROLE.get(targeted_pass.stage)
+        action = by_role.get(role or "")
+        if action is None:
+            # Проход, которого нет в плане, НЕ исполняется. Иначе прогон сделал
+            # бы оплаченный вызов, которого никто не авторизовал и которого нет
+            # в бюджете, — то есть план перестал бы описывать прогон.
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": "действия с такой ролью в плане нет",
+            })
+            continue
+        built = provider_transport.build_provider_prompt(targeted_pass.messages)
+        if built["prompt_chars"] > PROVIDER_MERGE_PROMPT_MAX_CHARS:
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": f"промпт {built['prompt_chars']} симв. > потолка",
+            })
+            continue
+        try:
+            outcome = await _asyncio.to_thread(
+                lambda p=built, a=action, s=targeted_pass: pipeline_bridge.run_stage_inference(
+                    job_dir=attempt_dir,
+                    stage=FINDINGS_MERGE_STAGE_KEY,
+                    prompt=p["prompt"],
+                    # `purpose` несёт имя прохода: без него три targeted-вызова
+                    # одной попытки различались бы в журнале только по
+                    # `action_id`, а глазами — никак.
+                    purpose=f"findings_merge:targeted:{s.stage}",
+                    action_id=a.action_id,
+                    provider=str(a.provider or ""),
+                    capability=str(a.capability or ""),
+                    reasoning_effort=str(a.reasoning_effort or ""),
+                    required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                    field_types=provider_transport.FIELD_TYPES,
+                    timeout_sec=float(_codex_targeted_timeout()),
+                )
+            )
+        except ProviderBridgeError as exc:
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": f"provider_bridge: {exc}",
+            })
+            continue
+        usage = dict(outcome.provider_result.usage)
+        total_in += int(usage.get("input_tokens", 0) or 0)
+        total_out += int(usage.get("output_tokens", 0) or 0)
+        total_ms += int(outcome.provider_result.duration_ms or 0)
+        total_cost += float(usage.get("total_cost_usd", 0.0) or 0.0)
+        payload = outcome.provider_result.result
+        ok = bool(outcome.ok and isinstance(payload, dict))
+        reports.append({
+            "pass": targeted_pass.stage,
+            "action_id": action.action_id,
+            "provider": action.provider,
+            "capability": action.capability,
+            "executed": True,
+            "performed_now": bool(outcome.performed),
+            "ok": ok,
+            "findings": len((payload or {}).get("findings") or []) if ok else 0,
+            "error_code": outcome.provider_result.error_code,
+        })
+        if ok:
+            _write_json(resolved_output_dir / targeted_pass.output_filename, payload)
+            targeted_payloads.append((targeted_pass.stage, payload))
+
+    _write_json(
+        resolved_output_dir / "findings_merge_targeted_provider_run.json",
+        {
+            "stage": FINDINGS_MERGE_STAGE_KEY,
+            "transport": "provider_adapter",
+            "planned_roles": sorted(by_role),
+            "passes": reports,
+        },
+    )
+    if not targeted_payloads:
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы: ни один не дал результата — "
+            "остаётся базовый свод",
+        )
+        return _empty()
+
+    # Базовый свод сохраняется отдельным файлом ДО перезаписи мастера — тот же
+    # порядок, что в ветке `codex exec`: без него сравнить «что добавили
+    # проходы» было бы не с чем.
+    _write_json(resolved_output_dir / "03_findings_codex_base.json", base_payload)
+    combined = combine_findings_with_targeted(
+        base_payload, targeted_payloads, output_dir=resolved_output_dir,
+    )
+    combined = enforce_stage01_atomicity(
+        combined, resolved_output_dir / "01_blocks_analysis.json",
+    )
+    _write_json(resolved_output_dir / FINDINGS_FILENAME, combined)
+
+    merged = CLIResult(
+        result_text=json.dumps(combined, ensure_ascii=False),
+        is_error=False,
+        duration_ms=total_ms,
+        input_tokens=total_in,
+        output_tokens=total_out,
+        cost_usd=total_cost,
+    )
+    _save_audit_trail(
+        project_id, "03_findings_targeted_union", "",
+        total_in, total_out, total_ms,
+        {"json_data": combined,
+         "targeted_passes": [stage for stage, _ in targeted_payloads]},
+        output_dir=resolved_output_dir,
+    )
+    await send_output(
+        on_output,
+        f"[findings_merge] targeted-проходы через мост: "
+        f"{len(targeted_payloads)} из {len(passes)}, "
+        f"итог {len(combined.get('findings') or [])} замечаний",
+    )
+    return 0, merged.result_text, merged
+
+
+def _codex_targeted_timeout() -> int:
+    """Срок targeted-прохода. Общий с веткой `codex exec`, чтобы не разъехались."""
+    try:
+        return int(os.environ.get("AUDIT_CODEX_TARGETED_TIMEOUT", "900"))
+    except ValueError:
+        return 900
 
 
 def _plan_route(stage_id: str, *, provider: Optional[str] = None) -> dict:

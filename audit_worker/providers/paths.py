@@ -73,9 +73,36 @@ from audit_worker.providers.auth_mode import (
 
 PROVIDER_CLAUDE = "claude"
 PROVIDER_CODEX = "codex"
+#: Внешний платный шлюз (этап 11J). Провайдер БЕЗ CLI: обращение к модели —
+#: HTTPS-запрос из процесса конвейера, а не подпроцесс.
+#:
+#: Раскладка ему всё равно нужна, и по трём причинам сразу. Во-первых, учётные
+#: данные обязаны лежать там же, где у остальных, — под 0700 в каталоге ДАННЫХ
+#: воркера, а не в каталоге кода, чтобы обновление и откат их не трогали.
+#: Во-вторых, `credential_facts` (режим файла, владелец, доступность группе и
+#: миру) считается общим кодом по `credential_path`, и провайдер без раскладки
+#: выпал бы из этой проверки целиком. В-третьих, `metadata/` держит соль
+#: отпечатка учётной записи — единственный способ заметить, что ключ на этой
+#: машине подменили.
+#:
+#: Чего у него нет: `runtime`-каталога в роли cwd подпроцесса (подпроцесса нет
+#: вовсе) и `default_executable` (см. `OpenRouterProviderAdapter.installed`).
+PROVIDER_OPENROUTER = "openrouter"
 
 #: Порядок фиксирован: он же порядок вывода в heartbeat и в интерфейсе.
-SUPPORTED_PROVIDERS: tuple[str, ...] = (PROVIDER_CLAUDE, PROVIDER_CODEX)
+SUPPORTED_PROVIDERS: tuple[str, ...] = (
+    PROVIDER_CLAUDE, PROVIDER_CODEX, PROVIDER_OPENROUTER,
+)
+
+#: Провайдеры, обращение к которым идёт по HTTP из процесса конвейера, а не
+#: запуском CLI. Различие не косметическое: у них нет argv, нет окружения
+#: подпроцесса и нет кода возврата — то есть инварианты I-P1…I-P8 к ним
+#: неприменимы ДОСЛОВНО и заменяются собственными (см. `openrouter_adapter`).
+HTTP_PROVIDERS: tuple[str, ...] = (PROVIDER_OPENROUTER,)
+
+
+def is_http_provider(name: str) -> bool:
+    return str(name or "").strip().lower() in HTTP_PROVIDERS
 
 #: Режим каталогов provider home. 0700 — не «на всякий случай»: на этом VPS
 #: живут посторонние сервисы, и единственная надёжная граница здесь — права ФС.
@@ -175,16 +202,30 @@ class ProviderHome:
 
         Читается только `os.stat`: существование, режим, владелец. Содержимое
         не открывается ни разу — ни для проверки, ни для диагностики.
+
+        Исключение ровно одно и оно осознанное: у OpenRouter ключ нужен САМОМУ
+        вызову (он уходит в заголовок `Authorization`), и прочитать файл всё же
+        придётся. Но делает это не этот модуль и не `identity`, а отдельный
+        `openrouter_secret`, и только в момент запроса. Здесь по-прежнему
+        только путь.
         """
         if self.provider == PROVIDER_CLAUDE:
             return self.config_dir / ".credentials.json"
+        if self.provider == PROVIDER_OPENROUTER:
+            return self.config_dir / "credentials.json"
         return self.config_dir / "auth.json"
 
     @property
     def config_dir(self) -> Path:
-        """`CLAUDE_CONFIG_DIR` либо `CODEX_HOME` — то, что передаётся CLI."""
+        """`CLAUDE_CONFIG_DIR` либо `CODEX_HOME` — то, что передаётся CLI.
+
+        У OpenRouter передавать нечего: каталог существует только затем, чтобы
+        ключ лежал в предсказуемом месте под теми же 0700, что и у остальных.
+        """
         if self.provider == PROVIDER_CLAUDE:
             return self.home / ".claude"
+        if self.provider == PROVIDER_OPENROUTER:
+            return self.home / ".openrouter"
         return self.home / ".codex"
 
     @property
@@ -267,6 +308,17 @@ def provider_home(
     """
     name = require_provider(provider)
     mode = normalize_auth_mode(auth_mode)
+    if mode == AUTH_MODE_AMBIENT_USER and is_http_provider(name):
+        # `ambient_user` означает «CLI входит из личного каталога человека».
+        # У провайдера без CLI входа нет, а раскладка при этом уехала бы в
+        # `~/.openrouter/credentials.json` живого пользователя: воркер начал бы
+        # тратить ключ, о котором его никто не просил, и который оператор
+        # воркера не выдавал. Режим отвергается, а не игнорируется.
+        raise ValueError(
+            f"провайдер {name!r} не имеет CLI и не поддерживает режим "
+            f"{AUTH_MODE_AMBIENT_USER!r}: ключ выдаётся воркеру отдельно, "
+            "а не наследуется из личного каталога пользователя VPS"
+        )
     if mode != AUTH_MODE_AMBIENT_USER and ambient_home is not None:
         # Тихо проигнорировать было бы худшим из вариантов: вызывающий явно
         # передал личный каталог и вправе считать, что CLI пойдёт туда. Молча

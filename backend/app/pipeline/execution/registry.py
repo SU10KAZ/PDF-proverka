@@ -8,6 +8,7 @@ backend, ровно как раньше**. Включение подсистем
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 from typing import Any, Optional
@@ -264,6 +265,54 @@ def central_handoff_state(handle: Any) -> Optional[str]:
             return None
         return central_handoff.current(row).value
     except Exception:                      # noqa: BLE001 — диагностика не блокер
+        return None
+
+
+def frozen_routing_plan(handle: Any) -> Any:
+    """ЗАМОРОЖЕННЫЙ план этого задания — тот же, что уехал на воркер.
+
+    Источник — нагрузка логического задания в `workers.db`, а не повторная
+    компиляция и не текущая глобальная конфигурация центра. Это принципиально:
+    смысл 11J в том, что маршрут задания зафиксирован в момент его создания, и
+    центральный хвост обязан доигрывать ТОТ ЖЕ маршрут, даже если оператор
+    успел переключить пресет (KI-11I-3, §18 задания).
+
+    Повторная компиляция дала бы «план, который получился бы, если бы задание
+    создавали сейчас» — то есть ровно ту подмену, от которой уходим. Разбор
+    сверяет `routing_plan_hash` с содержимым (`RoutingPlan.from_dict`), так что
+    подменённая в БД запись до исполнения не доедет.
+
+    `None` — законный ответ: задание могло быть создано сборкой до 11I либо
+    вовсе не удалённым. Хвост в этом случае работает как раньше.
+    """
+    job_id = getattr(handle, "remote_job_id", None)
+    if not job_id:
+        return None
+    try:
+        from backend.app.services.audit_routing.plan import RoutingPlan
+        from backend.app.services.distributed_workers import repositories
+        from backend.app.services.distributed_workers.settings import get_settings
+
+        row = repositories.get_logical_job(str(job_id), settings=get_settings())
+        if row is None:
+            return None
+        payload = row.get("payload")
+        if isinstance(payload, str):
+            payload = json.loads(payload or "{}")
+        raw = ((payload or {}).get("params") or {}).get("routing_plan")
+        if not isinstance(raw, dict) or not raw:
+            return None
+        return RoutingPlan.from_dict(raw)
+    except Exception as exc:                # noqa: BLE001 — см. ниже
+        # Fail-soft, и это осознанный выбор. Отказ здесь означал бы, что
+        # аудит, у которого worker-участок УЖЕ оплачен и принят, не может
+        # доиграть нормативный хвост из-за нечитаемого поля. Прежнее
+        # поведение (глобальная конфигурация) хуже замороженного плана, но
+        # несравнимо лучше потерянного прогона.
+        logger.warning(
+            "Замороженный план задания %s не прочитан, хвост пойдёт по "
+            "текущей конфигурации центра: %s", job_id, exc,
+        )
         return None
 
 

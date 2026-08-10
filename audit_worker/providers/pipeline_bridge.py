@@ -57,7 +57,9 @@ from audit_worker.providers.inference_ledger import (
 from audit_worker.providers.paths import (
     PROVIDER_CLAUDE,
     PROVIDER_CODEX,
+    PROVIDER_OPENROUTER,
     ProviderHome,
+    is_http_provider,
 )
 from audit_worker.providers.resolver import (
     BINDING_ENV,
@@ -224,10 +226,18 @@ def build_adapter(binding: ProviderBinding, *, on_process=None, route=None):
     """
     from audit_worker.providers.claude_adapter import ClaudeProviderAdapter
     from audit_worker.providers.codex_adapter import CodexProviderAdapter
+    from audit_worker.providers.openrouter_adapter import OpenRouterProviderAdapter
 
+    # Второй реестр адаптеров в проекте, и это НЕ дубликат по недосмотру:
+    # `manager._ADAPTERS` собирает адаптеры НАБЛЮДЕНИЯ (identity, heartbeat,
+    # предупреждения), здесь — адаптер ОПЛАЧИВАЕМОГО вызова с
+    # `inference_allowed=True`. Провайдер, добавленный только в один из них,
+    # даёт либо канал, невидимый центру, либо видимость без канала; и то и
+    # другое проверяется отдельным тестом на совпадение множеств.
     classes = {
         PROVIDER_CLAUDE: ClaudeProviderAdapter,
         PROVIDER_CODEX: CodexProviderAdapter,
+        PROVIDER_OPENROUTER: OpenRouterProviderAdapter,
     }
     provider_name = route.provider if route is not None else binding.provider
     factory = classes.get(provider_name)
@@ -534,9 +544,27 @@ def _preflight(
         installed = False
     if not installed:
         return (
-            f"CLI провайдера {provider_name!r} не найден по пути привязки: "
-            "вызов невозможен"
+            f"провайдер {provider_name!r}: HTTP-клиент недоступен в этом "
+            "окружении — вызов невозможен"
+            if is_http_provider(provider_name)
+            else (
+                f"CLI провайдера {provider_name!r} не найден по пути привязки: "
+                "вызов невозможен"
+            )
         )
+    if is_http_provider(provider_name):
+        # §24 задания: ключ, пропавший между выдачей задания и действием,
+        # проваливает ДЕЙСТВИЕ, а не подменяется другим провайдером. Проверка
+        # здесь, до заявки в журнале, ровно затем, чтобы отсутствие ключа не
+        # стоило единицы разрешения и не оставило вечный replay отказа.
+        status = getattr(adapter, "secret_status", None)
+        if callable(status):
+            probe = status()
+            if not getattr(probe, "configured", False):
+                return (
+                    f"провайдер {provider_name!r}: ключ на этом воркере "
+                    f"недоступен ({getattr(probe, 'reason', '')})"
+                )
     return ""
 
 

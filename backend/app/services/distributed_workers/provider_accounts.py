@@ -36,7 +36,16 @@ from backend.app.services.distributed_workers import database
 from backend.app.services.distributed_workers.settings import DistributedWorkersSettings
 
 # ─── Закрытые словари. Всё, чего здесь нет, приходит от воркера как «unknown» ─
-PROVIDERS: tuple[str, ...] = ("claude", "codex")
+#: OpenRouter добавлен на 11J. До него `sanitize_provider_snapshot` ВЫБРАСЫВАЛА
+#: его состояние молча: воркер сообщал «ключ есть / ключа нет», а карточка VPS
+#: этого не показывала — то есть единственный способ узнать о нехватке ключа
+#: оставался отказ в назначении задания, уже после сборки пакета.
+#:
+#: `account_group_id` (§21 задания) для него означает то же, что и для
+#: подписок: непрозрачный идентификатор, которым ОПЕРАТОР помечает воркеры,
+#: делящие один платёжный счёт. Ключа он не содержит и вывести его из ключа
+#: нельзя — соответствие задаёт человек.
+PROVIDERS: tuple[str, ...] = ("claude", "codex", "openrouter")
 
 QUOTA_STATES: tuple[str, ...] = (
     "ready", "low", "limited", "cooldown", "auth_required",

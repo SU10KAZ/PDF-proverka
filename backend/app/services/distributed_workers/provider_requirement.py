@@ -36,6 +36,7 @@ from backend.app.models.distributed_workers import (
     CAPABILITY_STRONG_AUDIT,
     KNOWN_CAPABILITIES,
     ProviderRequirementPayload,
+    KNOWN_REQUIREMENT_PROVIDERS,
 )
 
 #: Провайдер профиля `remote_audit_pilot_v1` по умолчанию. Полем ЗАПРОСА он не
@@ -51,7 +52,13 @@ from backend.app.models.distributed_workers import (
 DEFAULT_AUDIT_PROVIDER = "claude"
 
 #: Провайдеры, которых центр умеет заказывать. Совпадает со схемой нагрузки.
-SUPPORTED_AUDIT_PROVIDERS: tuple[str, ...] = ("claude", "codex")
+#:
+#: OpenRouter появился здесь на 11J. До него взвешивание «преобладающего
+#: провайдера» ПРОПУСКАЛО его действия целиком (`if item.provider in
+#: SUPPORTED_AUDIT_PROVIDERS`), и раскладка, у которой worker-участок держится
+#: на внешнем шлюзе, получала в требовании чужого провайдера — то есть привязка
+#: выписывалась под подписку, которая в этом задании не участвует.
+SUPPORTED_AUDIT_PROVIDERS: tuple[str, ...] = tuple(KNOWN_REQUIREMENT_PROVIDERS)
 
 #: Способность, которую требует боевой аудит.
 AUDIT_CAPABILITY = CAPABILITY_STRONG_AUDIT

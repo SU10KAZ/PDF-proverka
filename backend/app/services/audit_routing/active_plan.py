@@ -19,8 +19,10 @@
 """
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import threading
-from typing import Any, Optional
+from typing import Any, Iterator, Optional
 
 from backend.app.services.audit_routing import registry
 from backend.app.services.audit_routing.plan import RoutingAction, RoutingPlan
@@ -28,9 +30,32 @@ from backend.app.services.audit_routing.plan import RoutingAction, RoutingPlan
 _lock = threading.Lock()
 _plan: Optional[RoutingPlan] = None
 
+#: План ТЕКУЩЕЙ ЗАДАЧИ. Введён на 11J и имеет приоритет над процессным.
+#:
+#: Почему двух держателей, а не одного. На воркере конвейер — отдельный
+#: подпроцесс на попытку, и попыток ровно одна (`real_audit_max_slots`):
+#: процессный держатель там корректен и остаётся как был. Центр же исполняет
+#: НЕСКОЛЬКО проектов в одном процессе (`BATCH_MAX_PARALLEL`), и процессный
+#: держатель означал бы, что план одного задания затирает план соседнего —
+#: именно поэтому 11I не подключил к плану центральный хвост (KI-11I-3).
+#:
+#: `ContextVar` решает это ровно так, как в проекте уже принято для путей
+#: аудита и версии (`common/audit_scope.py`, `version_service._bound_version_id`):
+#: значение видно всей цепочке задачи, включая `asyncio.to_thread` (он
+#: копирует контекст), и не видно соседней задаче.
+#: Отдельный часовой вместо `None` в умолчании. `ContextVar.get()` иначе не
+#: различает «привязки не было» и «привязали план, которого нет», а разница
+#: существенна: второе — утверждение вызывающего о задании, и подменять его
+#: процессным значением нельзя.
+_UNBOUND = object()
+
+_bound_plan: contextvars.ContextVar[Any] = contextvars.ContextVar(
+    "audit_routing_bound_plan", default=_UNBOUND
+)
+
 
 def set_plan(plan: Optional[RoutingPlan]) -> None:
-    """Установить план прогона. Вызывается один раз на процесс."""
+    """Установить план ПРОЦЕССА. Вызывается один раз — на воркере."""
     global _plan
     with _lock:
         _plan = plan
@@ -40,9 +65,40 @@ def clear() -> None:
     set_plan(None)
 
 
+@contextlib.contextmanager
+def bind_plan(plan: Optional[RoutingPlan]) -> Iterator[Optional[RoutingPlan]]:
+    """Привязать план к ТЕКУЩЕЙ задаче. Для центра, где задач несколько.
+
+    `None` — законное значение и означает «у этого задания плана нет»
+    (классический локальный прогон). Оно ЯВНО перекрывает процессный план:
+    иначе центральный хвост локального аудита подхватил бы чужой маршрут,
+    оставшийся в процессе от диагностического прогона.
+    """
+    token = _bound_plan.set(plan)
+    try:
+        yield plan
+    finally:
+        _bound_plan.reset(token)
+
+
 def get_plan() -> Optional[RoutingPlan]:
+    """План текущего прогона: сперва задача, потом процесс.
+
+    Порядок именно такой. Привязка к задаче — точное утверждение о ЭТОМ
+    задании; процессный держатель — умолчание для одноразового процесса
+    воркера. Обратный порядок означал бы, что процессное значение перебивает
+    точное, то есть привязка ничего не меняет.
+    """
+    bound = _bound_plan.get()
+    if bound is not _UNBOUND:
+        return bound
     with _lock:
         return _plan
+
+
+def bound_to_task() -> bool:
+    """Привязан ли план к текущей задаче (в отличие от процессного)."""
+    return _bound_plan.get() is not _UNBOUND
 
 
 def plan_hash() -> str:

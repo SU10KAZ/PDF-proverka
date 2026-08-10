@@ -100,6 +100,24 @@ def required_artifacts_for(action: str) -> tuple[str, ...]:
 #: ambient-авторизацию настоящих CLI.
 _ENV_WHITELIST = ("PATH", "LANG", "LC_ALL", "TZ")
 
+#: Настройки HTTP-провайдера, которые задаёт АДМИНИСТРАТОР VPS (этап 11J).
+#:
+#: Ни одна из них не является секретом и ни одна не приходит из задания:
+#: первая — ПУТЬ к файлу ключа (не сам ключ), вторая — адрес шлюза, третья —
+#: объявление «внешние точки этой машины заглушены». Секрет остаётся в файле
+#: 0600 и в окружение подпроцесса не попадает никогда: имя `OPENROUTER_API_KEY`
+#: входит в `FORBIDDEN_ENV_NAMES` слоя провайдеров и в этом списке отсутствует.
+#:
+#: Список отдельный, а не дописан в `_ENV_WHITELIST`, ровно затем, чтобы
+#: разница «системная переменная» / «настройка провайдера» осталась видимой в
+#: коде: первую наследуют все, вторую — только потому, что HTTP-провайдер
+#: живёт В САМОМ процессе конвейера, а не в подпроцессе с собственным HOME.
+_ENV_HTTP_PROVIDER_OPTIONAL = (
+    "AUDIT_WORKER_PROVIDER_OPENROUTER_CREDENTIAL",
+    "AUDIT_WORKER_PROVIDER_OPENROUTER_BASE_URL",
+    "AUDIT_WORKER_PROVIDER_ENDPOINTS_STUBBED",
+)
+
 #: Дополнительные системные переменные, без которых интерпретатор на некоторых
 #: VPS не стартует вовсе. Секретов среди них нет, значения не путь к данным.
 _ENV_SYSTEM_OPTIONAL = ("LD_LIBRARY_PATH", "SSL_CERT_FILE", "SSL_CERT_DIR")
@@ -538,6 +556,9 @@ def build_env(
     # окружении воркера доехал бы до конвейера по умолчанию.
     env = {k: os.environ[k] for k in _ENV_WHITELIST if k in os.environ}
     for name in _ENV_SYSTEM_OPTIONAL:
+        if name in os.environ:
+            env[name] = os.environ[name]
+    for name in _ENV_HTTP_PROVIDER_OPTIONAL:
         if name in os.environ:
             env[name] = os.environ[name]
     root = Path(getattr(config, "pipeline_root"))

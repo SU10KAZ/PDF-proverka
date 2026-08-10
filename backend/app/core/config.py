@@ -643,10 +643,35 @@ STAGE_MODEL_HINTS: dict[str, str] = {
 }
 
 def get_stage_model(stage: str) -> str:
-    """Получить модель для этапа из унифицированного конфига."""
+    """Получить модель для этапа: сперва ЗАМОРОЖЕННЫЙ план, потом конфиг.
+
+    Порядок появился на 11J и закрывает KI-11I-3. `STAGE_MODEL_CONFIG` —
+    ГЛОБАЛЬНОЕ мутабельное состояние процесса: оператор, переключивший пресет
+    из интерфейса, менял маршрут уже идущего задания, потому что таблица
+    читалась в момент старта КАЖДОГО этапа, а не в момент запуска аудита.
+
+    Если у текущего прогона есть замороженный план (привязан к задаче на
+    центре либо к процессу на воркере) и он однозначно называет пару
+    «провайдер + способность» для этого этапа — маршрут берётся оттуда, и
+    переключение пресета на него уже не влияет. Плана нет — поведение
+    прежнее, дословно.
+
+    Отказ плана здесь fail-soft НАМЕРЕННО. `get_stage_model` зовут из
+    десятков мест, включая пути, где `backend.app.services` может быть не
+    импортируем (офлайн-скрипты); падение здесь означало бы, что план,
+    задуманный как уточнение, ломает работавшие сценарии.
+    """
     stage_key = stage
     if stage.startswith("block_batch"):
         stage_key = "block_batch"
+    try:
+        from backend.app.services.audit_routing import center_models
+
+        planned = center_models.stage_model_from_plan(stage_key)
+    except Exception:                                   # noqa: BLE001 — см. докстринг
+        planned = ""
+    if planned:
+        return planned
     return STAGE_MODEL_CONFIG.get(stage_key, "openai/gpt-5.4")
 
 def is_claude_stage(stage: str) -> bool:

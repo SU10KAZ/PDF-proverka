@@ -674,7 +674,18 @@ class CodexProviderAdapter(ProviderAdapter):
                     )
                 paths.append(path)
             result = self.run(
-                _inference_argv(requested_model or None, paths),
+                # `reasoning_effort` здесь ОБЯЗАТЕЛЕН, и его отсутствие было
+                # дефектом (найден состязательным ревью 11J). Параметр
+                # принимался сигнатурой, но в argv не доезжал — то есть
+                # единственное действие плана, ради которого effort и заведён
+                # (визуальная нога оптимизации, `xhigh`), исполнялось на
+                # умолчании. Хэш плана при этом заверял уровень, которого в
+                # прогоне не было: сверить это по артефактам невозможно —
+                # effort в ответ CLI не возвращается.
+                _inference_argv(
+                    requested_model or None, paths,
+                    reasoning_effort=reasoning_effort,
+                ),
                 timeout_sec=(
                     float(timeout_sec) if timeout_sec
                     else max(120.0, float(self.timeout_sec))

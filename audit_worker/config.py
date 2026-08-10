@@ -287,8 +287,43 @@ class WorkerConfig:
             return {}
         out: dict[str, list[str]] = {}
         for (provider, capability) in sorted(policy.capabilities):
+            if not self._provider_usable(provider):
+                # Способность, записанная в политике, но неисполнимая на этой
+                # машине, — худший вид объявления: центр по нему НАЗНАЧИТ
+                # задание, соберёт многогигабайтный пакет и узнает правду в
+                # середине прогона. Для провайдера с ключом «политика говорит,
+                # что умеем» и «умеем» — разные утверждения (§37-B задания).
+                continue
             out.setdefault(provider, []).append(capability)
         return out
+
+    def _provider_usable(self, provider: str) -> bool:
+        """Может ли воркер ФАКТИЧЕСКИ исполнить вызов этого провайдера.
+
+        Для CLI-провайдеров ответ даёт вход оператора, и проверить его без
+        запуска процесса нельзя — поэтому здесь их не трогаем: объявление
+        остаётся по политике, как было до 11J. Для провайдера с ключом
+        проверка бесплатна и точна (`os.stat` файла), и не сделать её значило
+        бы объявлять способность, которой нет.
+        """
+        try:
+            from audit_worker.providers import openrouter_secret, paths
+
+            if not paths.is_http_provider(provider):
+                return True
+            home = paths.provider_home(self.root, provider)
+            return bool(openrouter_secret.probe(home.credential_path).configured)
+        except Exception:                            # noqa: BLE001 — heartbeat не падает
+            return False
+
+    @staticmethod
+    def _endpoints_stubbed() -> bool:
+        try:
+            from audit_worker.providers import openrouter_adapter
+
+            return bool(openrouter_adapter.stubbed_endpoints_declared())
+        except Exception:                            # noqa: BLE001 — heartbeat не падает
+            return False
 
     def capabilities(self) -> dict:
         from audit_worker import slots as _slots
@@ -344,6 +379,20 @@ class WorkerConfig:
             # Центр обязан узнать об этом заранее и не выдавать такому воркеру
             # задание с планом — а не выяснять это по отказу на приёме.
             "routing_plan_v1": True,
+            # Умеет ли воркер провайдера БЕЗ CLI (этап 11J). Отдельный флаг, а
+            # не вывод из `provider_capabilities`: пустой список способностей
+            # OpenRouter означает «ключа нет», а отсутствие флага — «сборка
+            # старая и про такого провайдера не знает вовсе». Центру нужны
+            # разные сообщения оператору: «выдайте ключ» и «обновите воркер».
+            "http_providers_v1": True,
+            # Объявлены ли внешние точки этой машины заглушками. Ставит
+            # администратор стенда; на боевом воркере значение False.
+            #
+            # Поле обязано быть ВИДИМЫМ центру: без него прогон на стенде и
+            # боевой прогон неотличимы в отчёте, а «аудит прошёл» перестаёт
+            # что-либо значить. Оно же — единственное условие, при котором
+            # адрес шлюза разрешено увести с официального хоста.
+            "provider_endpoints_stubbed": self._endpoints_stubbed(),
             "provider_auto_grant_enabled": self.pipeline_provider_auto_grant_enabled,
             "provider_max_inferences_per_job": self.pipeline_provider_max_inferences,
         }
