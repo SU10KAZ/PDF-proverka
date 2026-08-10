@@ -1281,23 +1281,35 @@ class TestReviewFindings:
         assert "кастомный промпт" in text
         assert _journal_text(journal) == ""
 
-    def test_existing_block_context_is_not_silently_dropped(
+    def test_existing_block_context_is_inlined_not_dropped(
         self, monkeypatch, tmp_path, job_dir, project
     ):
-        """Собранный блочный контекст есть, а вложить его нечем — отказ."""
+        """Собранный блочный контекст ВКЛАДЫВАЕТСЯ в промпт (этап 11F).
+
+        До 11F здесь стоял отказ: вложить контекст было нечем, а пройти мимо
+        значило выполнить текстовый анализ вслепую там, где данные блоков уже
+        собраны. Отказ был верным решением для ОДНОГО этапа, но при продовом
+        порядке «блоки перед текстом» этот файл существует всегда — то есть
+        полный worker-прогон упирался в него гарантированно. 11F закрыл причину,
+        а не следствие: контекст читает конвейер и кладёт в промпт текстом.
+
+        Инвариант остался прежним по смыслу: собранные данные блоков не имеют
+        права молча исчезнуть. Изменилось только то, ЧЕМ он обеспечивается.
+        """
         journal = tmp_path / "journal.txt"
         exe = _fake_claude(tmp_path / "bin" / "claude", journal)
         _ambient_home(monkeypatch, tmp_path / "ambient")
         _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
         from backend.app.services.storage.stage_artifacts import BLOCKS_FOR_TEXT_FILENAME
 
+        marker = "BLOCK-CONTEXT-MARKER-11F"
         (project["output_dir"] / BLOCKS_FOR_TEXT_FILENAME).write_text(
-            json.dumps({"blocks": []}), encoding="utf-8"
+            json.dumps({"blocks": [{"block_id": marker}]}), encoding="utf-8"
         )
-        code, text, _r = _run_stage(project)
-        assert code == 1
-        assert "блочный контекст" in text
-        assert _journal_text(journal) == ""
+        code, _text, _r = _run_stage(project)
+        assert code == 0
+        # Доказательство вкладывания — по ФАКТИЧЕСКОМУ промпту, ушедшему в CLI.
+        assert marker in _journal_text(journal)
 
     def test_run_report_carries_no_document_text(
         self, monkeypatch, tmp_path, job_dir, project

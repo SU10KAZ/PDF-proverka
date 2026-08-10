@@ -38,6 +38,9 @@ from backend.app.services.storage.stage_artifacts import (
     resolve_existing,
 )
 from backend.app.pipeline.stage_result import StageResult
+from backend.app.pipeline.stages.block_analysis.provider_transport import (
+    PROVIDER_BLOCK_MODEL_ID,
+)
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.common import audit_scope
 
@@ -621,7 +624,24 @@ async def run_block_analysis_findings_only(
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
     }
-    if ui_model in findings_only_compatible:
+    # Мост воркера (этап 11F). Когда он активен, модель выбирает ЛОКАЛЬНАЯ
+    # политика воркера по способности, а не `stage_models.json`: строка отсюда
+    # в argv не попадает вовсе. Поэтому и сверять её со списком совместимости
+    # нечего — а главное, нельзя молча подменять на `openai/gpt-5.4`, как ниже:
+    # на воркере это означало бы уход в платный OpenRouter мимо провайдерского
+    # слоя, то есть ровно тот тихий обход, ради запрета которого мост и писался.
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+        provider_bridge_active as _provider_bridge_active,
+    )
+
+    provider_mode = _provider_bridge_active()
+    if provider_mode:
+        model = PROVIDER_BLOCK_MODEL_ID
+        await ctx.log(
+            "  · мост провайдеров активен: модель задаёт локальная политика "
+            f"воркера, конфигурация block_batch={ui_model} не применяется",
+        )
+    elif ui_model in findings_only_compatible:
         model = ui_model
     else:
         model = DEFAULT_MODEL

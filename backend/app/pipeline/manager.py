@@ -2464,8 +2464,19 @@ class PipelineManager:
                 assert_paid_api_allowed,
             )
             from backend.app.core.config import get_stage_model
+            from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+                provider_bridge_active,
+            )
             stage01_model = get_stage_model("block_batch") or "openai/gpt-5.4"
-            if _stage01_model_spends_paid_api(stage01_model):
+            # Мост воркера (11F) перекрывает конфигурацию: модель задаёт
+            # локальная политика воркера, а транспортом служит ProviderAdapter,
+            # который в платный HTTP не ходит вовсе. Проверять здесь строку из
+            # `stage_models.json` значило бы валить удалённый прогон по модели,
+            # которая на нём не применяется, — ровно тот класс ложного
+            # срабатывания, ради которого написана `_stage01_model_spends_paid_api`.
+            if provider_bridge_active():
+                pass
+            elif _stage01_model_spends_paid_api(stage01_model):
                 assert_paid_api_allowed(PaidApiContext(
                     source="manager.stage01.orchestrator",
                     model=stage01_model,

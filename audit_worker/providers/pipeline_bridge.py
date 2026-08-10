@@ -71,6 +71,25 @@ class ProviderBridgeError(RuntimeError):
     """Мост активен, но вызов невозможен. Тихого обхода не бывает."""
 
 
+def attachments_digest(images: Sequence[tuple[str, bytes]]) -> str:
+    """Отпечаток вложений вызова. Пустая последовательность — пустая строка.
+
+    Считается по паре `(media_type, байты)` каждого вложения в ПОРЯДКЕ передачи:
+    порядок содержателен, потому что модель видит блоки именно в нём.
+    """
+    if not images:
+        return ""
+    import hashlib
+
+    digest = hashlib.sha256()
+    for media_type, blob in images:
+        digest.update(str(media_type).encode("utf-8", "replace"))
+        digest.update(b"\x00")
+        digest.update(hashlib.sha256(blob or b"").digest())
+        digest.update(b"\x00")
+    return digest.hexdigest()
+
+
 def binding_path() -> Optional[Path]:
     raw = os.environ.get(BINDING_ENV, "").strip()
     return Path(raw) if raw else None
@@ -213,6 +232,7 @@ def run_stage_inference(
     claim_attempt_id: str = "",
     timeout_sec: Optional[float] = None,
     on_process=None,
+    images: Sequence[tuple[str, bytes]] = (),
 ) -> BridgeOutcome:
     """Выполнить ОДИН вызов модели для этапа конвейера.
 
@@ -236,9 +256,12 @@ def run_stage_inference(
             f"{list(binding.allowed_stages)}: обращение к модели запрещено"
         )
     ledger = InferenceLedger(job_dir, attempt_id=binding.attempt_id, job_id=binding.job_id)
+    images = tuple(images or ())
+    attachments_sha256 = attachments_digest(images)
     key = call_key(
         attempt_id=binding.attempt_id, provider=binding.provider,
         purpose=purpose, prompt=prompt,
+        attachments_sha256=attachments_sha256,
     )
     summary = ledger.summary()
     entry = ledger.inspect(key)
@@ -281,7 +304,7 @@ def run_stage_inference(
     # назначена без списка допустимых. Все они означают «до модели не дошли»,
     # а списанная заявка означала бы «дошли, но исход неизвестен» — то есть
     # съеденную попытку и вечный replay ошибки при любом повторе.
-    unreachable = _preflight(adapter, binding, prompt)
+    unreachable = _preflight(adapter, binding, prompt, images=images)
     if unreachable:
         raise ProviderBridgeError(unreachable)
 
@@ -306,15 +329,29 @@ def run_stage_inference(
         )
 
     try:
-        result = adapter.structured_inference(
-            prompt, purpose=purpose, timeout_sec=timeout_sec,
-            # Модель и допустимые фактические её идентификаторы берутся ИЗ
-            # ПРИВЯЗКИ, а не из аргументов вызывающего: этап конвейера не имеет
-            # права ни назначить модель, ни расширить список допустимых —
-            # решение принято локальной политикой воркера до запуска процесса.
-            model=binding.model,
-            accepted_reported_models=binding.accepted_reported_models,
-        )
+        # Модель и допустимые фактические её идентификаторы берутся ИЗ
+        # ПРИВЯЗКИ, а не из аргументов вызывающего: этап конвейера не имеет
+        # права ни назначить модель, ни расширить список допустимых —
+        # решение принято локальной политикой воркера до запуска процесса.
+        if images:
+            inference = getattr(adapter, "structured_inference_multimodal", None)
+            if inference is None:
+                raise ProviderBridgeError(
+                    f"провайдер {binding.provider!r} не умеет передавать "
+                    "изображения: молчаливый переход на текстовый вызов "
+                    "запрещён — этап получил бы анализ чертежа без чертежа"
+                )
+            result = inference(
+                prompt, images=images, purpose=purpose, timeout_sec=timeout_sec,
+                model=binding.model,
+                accepted_reported_models=binding.accepted_reported_models,
+            )
+        else:
+            result = adapter.structured_inference(
+                prompt, purpose=purpose, timeout_sec=timeout_sec,
+                model=binding.model,
+                accepted_reported_models=binding.accepted_reported_models,
+            )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.
         # Помечаем явно и не даём повторить автоматически.
@@ -347,7 +384,13 @@ def run_stage_inference(
     )
 
 
-def _preflight(adapter, binding: ProviderBinding, prompt: str) -> str:
+def _preflight(
+    adapter,
+    binding: ProviderBinding,
+    prompt: str,
+    *,
+    images: Sequence[tuple[str, bytes]] = (),
+) -> str:
     """Причина, по которой вызов НЕ СОСТОИТСЯ. Пустая строка — путь открыт.
 
     Проверяется ровно то, что известно ДО запуска процесса. Смысл — отделить
@@ -371,6 +414,14 @@ def _preflight(adapter, binding: ProviderBinding, prompt: str) -> str:
         return f"рабочий вызов модели не разрешён на адаптере {binding.provider!r}"
     if not str(prompt or "").strip():
         return "пустой промпт: рабочий вызов не выполняется"
+    if images and not hasattr(adapter, "structured_inference_multimodal"):
+        # Проверяется ДО заявки: провайдер, не умеющий вложений, — это «до
+        # модели не дошли», и стоить попытки это не должно.
+        return (
+            f"провайдер {binding.provider!r} не умеет передавать изображения: "
+            "молчаливый переход на текстовый вызов запрещён — этап получил бы "
+            "анализ чертежа без чертежа"
+        )
     if binding.model and not binding.accepted_reported_models:
         return (
             f"модель {binding.model!r} назначена, но список допустимых "

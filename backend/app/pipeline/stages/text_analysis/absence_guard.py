@@ -186,6 +186,60 @@ def parse_verification_response(parsed: dict) -> dict:
     return out
 
 
+def _verify_via_provider_bridge(
+    md_text: str, candidates: list[dict], *, timeout_sec: int
+) -> Optional[dict]:
+    """Проверка присутствия через ProviderAdapter воркера (этап 11F).
+
+    Возвращает `None`, когда моста нет — тогда вызывающий идёт прежним путём, и
+    на центре поведение не меняется ни на шаг. Возвращает словарь вердиктов
+    (возможно пустой) — когда мост есть: в этом случае прежний путь запрещён
+    полностью, потому что он означал бы вызов неавторизованного CLI из-под
+    изолированного HOME.
+
+    Пустой словарь при отказе — это сохранённая fail-soft семантика этапа: без
+    верификатора мы НИКОГО не понижаем, то есть замечания не теряются. Разница с
+    прежним поведением в том, что отказ теперь ВИДЕН: он записан в журнал
+    вызовов попытки, а не растворён в `except: return {}`.
+    """
+    try:
+        from audit_worker.providers import pipeline_bridge
+        from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    except ModuleNotFoundError:
+        return None
+    try:
+        if not pipeline_bridge.active():
+            return None
+    except Exception:                                      # noqa: BLE001
+        # `active()` бросает при заданной переменной и отсутствующем файле —
+        # это ошибка развёртывания, и она обязана быть заметной. Но ронять
+        # fail-soft этап нечем: возвращаем пустые вердикты, а не прежний путь.
+        return {}
+
+    prompt = build_verification_prompt(md_text, candidates)
+    try:
+        outcome = pipeline_bridge.run_stage_inference(
+            job_dir=pipeline_bridge.attempt_dir(),
+            stage="findings_review",
+            prompt=prompt,
+            purpose="absence_guard",
+            timeout_sec=float(timeout_sec),
+        )
+    except ProviderBridgeError:
+        return {}
+    except Exception:                                      # noqa: BLE001
+        return {}
+    if not outcome.ok:
+        return {}
+    payload = outcome.provider_result.result
+    if not isinstance(payload, dict):
+        return {}
+    try:
+        return parse_verification_response(payload)
+    except Exception:                                      # noqa: BLE001
+        return {}
+
+
 def run_claude_verification(
     md_text: str, candidates: list[dict], *, timeout_sec: int = 180
 ) -> dict:
@@ -199,6 +253,18 @@ def run_claude_verification(
     import subprocess
 
     from backend.app.core.config import get_claude_cli, get_claude_model
+
+    # ─── Мост провайдеров воркера (этап 11F) ────────────────────────────────
+    # Прежде этот путь ходил к модели ПРЯМЫМ `subprocess.run`, минуя
+    # `claude_runner._run_cli`, а значит и провайдерский слой. На воркере это
+    # не «другой транспорт», а тихая деградация: `HOME` там изолирован каталогом
+    # попытки, найденный по PATH бинарь неавторизован, вызов падает — и
+    # fail-soft ниже возвращает `{}`. Этап при этом отчитывается успехом, просто
+    # не понизив ни одного подтверждённо-ложного «нет». Незаметно и бесплатно
+    # выглядит как «кандидатов не нашлось».
+    verdicts = _verify_via_provider_bridge(md_text, candidates, timeout_sec=timeout_sec)
+    if verdicts is not None:
+        return verdicts
 
     cli = get_claude_cli()
     if not cli:

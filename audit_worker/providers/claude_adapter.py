@@ -161,6 +161,49 @@ def _inference_argv(model: Optional[str] = None) -> list[str]:
     return argv
 
 
+def _inference_argv_multimodal(model: Optional[str] = None) -> list[str]:
+    """argv рабочего вызова С ИЗОБРАЖЕНИЕМ. Те же константы плюс два флага.
+
+    Почему вообще понадобился отдельный argv. У `claude` 2.1.220 нет флага
+    `--image` (проверено по `--help` на пилотном воркере). Единственный
+    официальный способ отдать модели картинку, не включая ей ни одного
+    инструмента, — подать на stdin сообщение в формате `stream-json` с
+    content-блоком `type=image`. Тогда изображение уходит БАЙТАМИ в теле
+    запроса: ни `Read`, ни каталог вложений, ни доступ к файловой системе не
+    нужны вовсе — это строго сильнее того, что допускал §12 задания 11F.
+
+    Проверено живым вызовом на 176.12.77.31 (11F, capability probe): синтет
+    PNG 420×160 с числом, `--tools=`, ответ модели — ровно это число.
+
+    Два вынужденных отличия от `_inference_argv`:
+
+      * `--input-format stream-json` ТРЕБУЕТ `--output-format stream-json`.
+        Проверено: с `--output-format json` CLI отказывается ещё до обращения
+        к модели («--input-format=stream-json requires
+        output-format=stream-json»). Поэтому разбор ответа — построчный NDJSON,
+        а не одиночный конверт;
+      * `--verbose` обязателен для потокового вывода в print-режиме.
+
+    Разбор строки stdin происходит ЛОКАЛЬНО до обращения к модели (проверено:
+    битый JSON даёт `SyntaxError` и нулевой расход), то есть ошибка сборки
+    сообщения не стоит вызова.
+    """
+    argv: list[str] = [*_PROBE_NEUTRALIZE_PERSONAL_CONTEXT]
+    if model:
+        argv += [f"--model={model}"]
+    argv += [
+        "--tools=",
+        "--disallowed-tools=" + ",".join(_PROBE_DISALLOWED_TOOLS),
+        "--permission-mode", "dontAsk",
+        "--max-turns", "1",
+        "--input-format", "stream-json",
+        "--output-format", "stream-json",
+        "--verbose",
+        "-p",
+    ]
+    return argv
+
+
 def _probe_argv() -> list[str]:
     """argv контрольного запроса. Только константы модуля (I-P5).
 
@@ -391,9 +434,7 @@ class ClaudeProviderAdapter(ProviderAdapter):
                 usage = {k: v for k, v in raw_usage.items() if isinstance(v, (int, float))}
             if isinstance(payload.get("total_cost_usd"), (int, float)):
                 usage["total_cost_usd"] = payload["total_cost_usd"]
-            model_usage = payload.get("modelUsage")
-            if isinstance(model_usage, dict) and model_usage:
-                model = next(iter(model_usage))
+            model = _model_from_envelope(payload)
         else:
             text = result.stdout or ""
         return ProbeResult(
@@ -461,6 +502,124 @@ class ClaudeProviderAdapter(ProviderAdapter):
             stdin_text=text,
             purpose=purpose,
         )
+        envelope: Any = None
+        try:
+            envelope = result.json_stdout()
+        except (json.JSONDecodeError, ValueError):
+            envelope = None
+        return self._finalize_inference(
+            result, envelope,
+            requested_model=requested_model, accepted=accepted,
+        )
+
+    # ─── Рабочий вызов С ИЗОБРАЖЕНИЕМ (этап 11F) ─────────────────────────────
+    def structured_inference_multimodal(
+        self,
+        prompt: str,
+        *,
+        images: Sequence[tuple[str, bytes]],
+        purpose: str,
+        timeout_sec: Optional[float] = None,
+        model: Optional[str] = None,
+        accepted_reported_models: Sequence[str] = (),
+    ) -> ProviderInferenceResult:
+        """То же, что `structured_inference`, но с изображениями в теле запроса.
+
+        `images` — последовательность пар `(media_type, raw_bytes)`. Байты
+        кодируются в base64 и уходят content-блоками `type=image` в ОДНОМ
+        сообщении вместе с текстом задания. Файловая система при этом не
+        участвует ни с одной стороны: у модели по-прежнему `--tools=`, никакого
+        каталога вложений не создаётся, и путь к кропу модели не сообщается.
+
+        Порядок блоков — сначала изображения, потом текст: инструкция, стоящая
+        после материала, надёжнее удерживает формат ответа.
+        """
+        import base64
+
+        blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
+        if blocked is not None:
+            return blocked
+        text = str(prompt or "")
+        if not text.strip():
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail="пустой промпт: рабочий вызов не выполняется",
+            )
+        if not images:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail=(
+                    "мультимодальный вызов без изображений: молчаливый переход "
+                    "на текстовый путь запрещён — этап получил бы анализ чертежа "
+                    "без чертежа"
+                ),
+            )
+        requested_model = str(model).strip() if model else ""
+        accepted = tuple(str(x).strip() for x in accepted_reported_models if str(x).strip())
+        if requested_model and not accepted:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MODEL_MISMATCH,
+                detail=(
+                    f"модель {requested_model!r} назначена, но список допустимых "
+                    "фактических идентификаторов пуст: сверять ответ не с чем"
+                ),
+            )
+        content: list[dict[str, Any]] = []
+        for media_type, blob in images:
+            if not blob:
+                return ProviderInferenceResult(
+                    provider=self.provider, model=None, status=STATUS_ERROR,
+                    auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                    detail="пустое изображение во вложении: вызов не выполняется",
+                )
+            content.append({
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": str(media_type),
+                    "data": base64.b64encode(blob).decode("ascii"),
+                },
+            })
+        content.append({"type": "text", "text": text})
+        line = json.dumps(
+            {"type": "user", "message": {"role": "user", "content": content}},
+            ensure_ascii=False,
+        )
+        result = self.run(
+            _inference_argv_multimodal(requested_model or None),
+            timeout_sec=(
+                float(timeout_sec) if timeout_sec
+                else max(120.0, float(self.timeout_sec))
+            ),
+            stdin_text=line + "\n",
+            purpose=purpose,
+        )
+        envelope = parse_stream_json(result.stdout or "")
+        return self._finalize_inference(
+            result, envelope,
+            requested_model=requested_model, accepted=accepted,
+        )
+
+    def _finalize_inference(
+        self,
+        result: Any,
+        envelope: Any,
+        *,
+        requested_model: str,
+        accepted: Sequence[str],
+    ) -> ProviderInferenceResult:
+        """Разбор ответа CLI, общий для текстового и мультимодального вызова.
+
+        Вынесен из `structured_inference` без изменения поведения: два вызова
+        отличаются только тем, КАК собран stdin и КАК разобран stdout, а всё, что
+        идёт после — сверка модели, извлечение JSON, классификация ошибки — обязано
+        быть буквально одним и тем же кодом. Иначе строгий гейт модели существовал
+        бы на одном пути и отсутствовал на другом.
+        """
         duration_ms = int(result.duration_sec * 1000)
         if result.timed_out:
             return ProviderInferenceResult(
@@ -471,29 +630,26 @@ class ClaudeProviderAdapter(ProviderAdapter):
                 raw_sha256=sha256_text(result.stdout or ""),
                 raw_bytes=len((result.stdout or "").encode("utf-8", "replace")),
             )
-        envelope: Any = None
-        try:
-            envelope = result.json_stdout()
-        except (json.JSONDecodeError, ValueError):
-            envelope = None
         answer_text = ""
         usage: dict[str, Any] = {}
         model: Optional[str] = None
         if isinstance(envelope, dict):
             answer_text = str(envelope.get("result") or "")
             usage = _usage_from_payload(envelope)
-            model_usage = envelope.get("modelUsage")
-            if isinstance(model_usage, dict) and model_usage:
-                model = next(iter(model_usage))
-            if not model and isinstance(envelope.get("model"), str):
-                model = envelope["model"]
+            model = _model_from_envelope(envelope)
         else:
             # Конверт не разобран — работаем с сырым выводом. Это законный
             # случай (например ошибка CLI текстом), и он обязан дойти до
             # проверки как ошибка, а не как пустой успех.
             answer_text = result.stdout or ""
         payload = self._first_json_object(answer_text)
-        ok = result.ok and payload is not None
+        # `is_error` в конверте — независимый от кода возврата признак отказа.
+        # Проверять его обязательно: CLI умеет завершиться нулём, сообщив об
+        # ошибке полем, и без этой строки такой ответ прошёл бы как успех.
+        envelope_error = bool(
+            isinstance(envelope, dict) and envelope.get("is_error") is True
+        )
+        ok = result.ok and payload is not None and not envelope_error
         # Сверка фактической модели — ПОСЛЕДНИЙ гейт и самый строгий (этап 11D).
         # Стоит после разбора намеренно: результат уже есть, вызов уже оплачен,
         # и его надо ЗАПИСАТЬ в журнал (это делает мост), но объявить успехом
@@ -594,6 +750,97 @@ def _usage_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if isinstance(payload.get("num_turns"), int):
         usage["num_turns"] = payload["num_turns"]
     return usage
+
+
+def parse_stream_json(stdout: str) -> Optional[dict[str, Any]]:
+    """Свести NDJSON потокового вывода к тому же конверту, что даёт `json`.
+
+    `--output-format stream-json` печатает по объекту в строке: события системы,
+    сообщения ассистента и ПОСЛЕДНИМ — объект `{"type":"result", …}` с текстом
+    ответа, расходом, стоимостью и `modelUsage`. Он и есть конверт: остальные
+    строки нужны только чтобы достать фактическую модель из сообщения
+    ассистента, если в итоговом объекте её нет.
+
+    Возвращает `None`, если ни одной валидной строки нет — вызывающий обязан
+    обработать это как ошибку CLI, а не как пустой успех.
+    """
+    envelope: Optional[dict[str, Any]] = None
+    assistant_model: Optional[str] = None
+    for raw_line in (stdout or "").splitlines():
+        line = raw_line.strip()
+        if not line or not line.startswith("{"):
+            continue
+        try:
+            event = json.loads(line)
+        except (json.JSONDecodeError, ValueError):
+            continue
+        if not isinstance(event, dict):
+            continue
+        kind = event.get("type")
+        if kind == "result":
+            envelope = event
+        elif kind == "assistant" and assistant_model is None:
+            message = event.get("message")
+            if isinstance(message, dict) and isinstance(message.get("model"), str):
+                assistant_model = message["model"].strip() or None
+    if envelope is None:
+        return None
+    # Модель из сообщения ассистента приоритетнее: в итоговом объекте поля
+    # `model` нет вовсе, а `modelUsage` смешивает рабочую модель со служебными.
+    if assistant_model and not isinstance(envelope.get("model"), str):
+        envelope = {**envelope, "model": assistant_model}
+    return envelope
+
+
+#: Модели, которые Claude Code запускает ДЛЯ СЕБЯ и которые не имеют отношения
+#: к заданию этапа: служебная классификация, оценка «thinking tokens», заголовки
+#: сессии. Они появляются в `modelUsage` рядом с рабочей моделью.
+#:
+#: Это не гипотеза. Живой вызов 11F (capability probe на .31) вернул
+#: `modelUsage` с ДВУМЯ ключами: `claude-haiku-4-5-20251001` (543 входных,
+#: 19 выходных, $0,000638) и `claude-opus-5` (запрошенная). Служебный ключ
+#: стоял ПЕРВЫМ.
+_AUXILIARY_MODEL_PREFIXES = ("claude-haiku-",)
+
+
+def _model_from_envelope(payload: dict[str, Any]) -> Optional[str]:
+    """Какая модель ФАКТИЧЕСКИ отвечала на задание.
+
+    Прежняя реализация брала `next(iter(modelUsage))` — первый ключ словаря.
+    Пока в `modelUsage` была одна запись, это работало; но CLI кладёт туда и
+    СВОИ служебные модели (см. `_AUXILIARY_MODEL_PREFIXES`), и порядок ключей
+    определяется порядком вставки, а не важностью. То есть строгий гейт
+    «сообщённая модель == запрошенной» мог отвергнуть совершенно нормальный
+    ответ Opus только потому, что CLI успел до него сходить в Haiku за
+    заголовком сессии — и это выглядело бы как подмена модели.
+
+    Порядок разрешения, от надёжного к запасному:
+
+      1. поле `model` верхнего уровня, если оно есть;
+      2. запись `modelUsage` с наибольшим числом ВЫХОДНЫХ токенов среди
+         неслужебных: рабочий ответ длиннее служебного на порядок;
+      3. первая неслужебная запись;
+      4. первая запись вообще — чтобы «не знаю, кто ответил» не превращалось
+         в `None` там, где ответ на самом деле есть.
+    """
+    top = payload.get("model")
+    if isinstance(top, str) and top.strip():
+        return top.strip()
+    model_usage = payload.get("modelUsage")
+    if not isinstance(model_usage, dict) or not model_usage:
+        return None
+    names = [str(k) for k in model_usage]
+    primary = [n for n in names if not n.startswith(_AUXILIARY_MODEL_PREFIXES)]
+    pool = primary or names
+
+    def _out_tokens(name: str) -> int:
+        row = model_usage.get(name)
+        if not isinstance(row, dict):
+            return 0
+        value = row.get("outputTokens", row.get("output_tokens", 0))
+        return int(value) if isinstance(value, (int, float)) else 0
+
+    return max(pool, key=_out_tokens)
 
 
 def _auth_from_payload(payload: dict[str, Any], *, exit_code: Optional[int]) -> AuthStatus:

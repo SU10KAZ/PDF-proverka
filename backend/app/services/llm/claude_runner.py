@@ -351,6 +351,18 @@ async def _run_cli(
     if bridge is not None and bridge.active():
         import asyncio as _asyncio
 
+        # Мост передаёт модели ТОЛЬКО текст. Если вызывающий приложил
+        # изображения, молча уйти без них нельзя: этап получил бы анализ
+        # чертежа без чертежа и отчитался бы успехом. Стадии, которым нужна
+        # графика, обязаны ходить своей провайдерской веткой с вложениями
+        # (`pipeline_bridge.run_stage_inference(images=…)`), а не через эту.
+        if image_paths:
+            detail = (
+                f"этап {stage!r} приложил {len(list(image_paths))} изображени(й), "
+                "а общий путь моста передаёт только текст: молчаливая потеря "
+                "графики запрещена"
+            )
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
         exit_code, text, usage = await _asyncio.to_thread(
             bridge.route_cli_call, stage=stage, prompt=task_text, timeout_sec=timeout,
         )
@@ -931,7 +943,22 @@ async def _run_text_analysis_via_provider(
             Path(_resolve_output_dir(project_id, output_dir=output_dir)),
             BLOCKS_FOR_TEXT_FILENAME,
         )
-    built = provider_transport.build_provider_prompt(messages)
+    # Блочный контекст вкладывается ТЕКСТОМ (этап 11F). До этого provider-режим
+    # умел только отказаться при его наличии — а при продовом порядке «блоки
+    # перед текстом» файл существует всегда, то есть полный worker-прогон
+    # упирался в отказ гарантированно. Читает файл конвейер, не модель.
+    blocks_context = ""
+    blocks_context_error = ""
+    if blocks_for_text is not None and Path(blocks_for_text).is_file():
+        try:
+            blocks_context = Path(blocks_for_text).read_text(encoding="utf-8")
+        except OSError as exc:
+            blocks_context_error = (
+                f"блочный контекст {Path(blocks_for_text).name} не читается: {exc}"
+            )
+    built = provider_transport.build_provider_prompt(
+        messages, blocks_context=blocks_context,
+    )
     prompt = built["prompt"]
 
     # Проверки промпта — в РАНТАЙМЕ, а не только в тестах. Тест доказывает, что
@@ -951,15 +978,17 @@ async def _run_text_analysis_via_provider(
             f"{PROVIDER_PROMPT_MAX_CHARS}: планировщика нарезки в provider-режиме "
             "нет, а молчаливое усечение документа недопустимо"
         )
-    if blocks_for_text is not None and Path(blocks_for_text).is_file():
-        # Блочный контекст существует, но provider-режим его НЕ вкладывает.
-        # Пройти мимо значило бы выполнить текстовый анализ вслепую там, где
-        # данные блоков есть, и записать результат как полноценный.
-        guard_problems.append(
-            f"есть блочный контекст ({Path(blocks_for_text).name}), а "
-            "provider-режим его не вкладывает: аудит вышел бы без данных, "
-            "которые уже собраны"
-        )
+    if blocks_context_error:
+        guard_problems.append(blocks_context_error)
+    elif blocks_for_text is not None and Path(blocks_for_text).is_file():
+        # Файл есть — значит он ОБЯЗАН оказаться в промпте. Проверяется факт, а
+        # не намерение: пустая секция при существующем файле означала бы ровно
+        # тот слепой аудит, ради запрета которого здесь раньше стоял отказ.
+        if not built["map"].get("blocks_context_applied"):
+            guard_problems.append(
+                f"блочный контекст ({Path(blocks_for_text).name}) существует, но "
+                "в промпт не попал: аудит вышел бы без данных, которые уже собраны"
+            )
     if guard_problems:
         detail = "; ".join(guard_problems)
         await send_output(on_output, f"[text_analysis] {detail}")
@@ -1482,6 +1511,135 @@ async def _run_findings_merge_via_provider(
     return 0, cli_result.result_text, cli_result
 
 
+async def _run_json_stage_via_provider(
+    *,
+    stage_key: str,
+    messages_builder,
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    artifact_name: str,
+    root_key: str,
+    audit_stage: str,
+    timeout: int,
+    max_prompt_chars: int = PROVIDER_PROMPT_MAX_CHARS,
+) -> tuple[int, str, CLIResult]:
+    """Общий provider-путь для этапов «messages → один JSON-артефакт» (11F).
+
+    Обслуживает `optimization`, `optimization_critic` и `optimization_corrector`.
+    Все три устроены одинаково: боевой сборщик отдаёт messages, модель обязана
+    вернуть один объект, конвейер пишет его в известный файл. Различаются они
+    именем артефакта, корневым ключом и сроком — это и есть аргументы.
+
+    Прежняя claude-ветка этих этапов формально прошла бы через мост (она зовёт
+    `_run_cli`), но её промпт требует `Read`/`Write`, а мост запускает CLI с
+    `--tools=`. То есть этап получил бы задание записать файл в вызове, где
+    записывать нечем, — и молча вернул бы пустой результат.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.services.llm import provider_json_stage as _pjs
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = messages_builder(project_info, project_id)
+
+    built = _pjs.build_provider_prompt(messages, root_key=root_key)
+    problems = _pjs.guard_problems(built, max_prompt_chars=max_prompt_chars)
+    if problems:
+        detail = "; ".join(problems)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    await send_output(
+        on_output,
+        f"[{stage_key}] provider-режим: инструкции {built['system_chars']} симв., "
+        f"вход {built['payload_chars']} симв., файловых инструкций снято "
+        f"{built['file_instructions_stripped']}",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=stage_key,
+                prompt=built["prompt"],
+                purpose=stage_key,
+                required_result_fields=(root_key,),
+                field_types={root_key: list},
+                timeout_sec=float(timeout),
+            )
+        )
+    except ProviderBridgeError as exc:
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+    payload = result.result if isinstance(result.result, dict) else {}
+
+    try:
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже.
+    _pjs.write_artifact(
+        resolved_output_dir / f"{stage_key}_provider_run.json",
+        _pjs.run_report(
+            stage=stage_key, built=built, outcome=outcome, root_key=root_key,
+            prompt_sha256=pipeline_bridge.sha256_text(built["prompt"]),
+        ),
+    )
+
+    if not outcome.ok:
+        detail = _pjs.failure_detail(outcome)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    _pjs.write_artifact(resolved_output_dir / artifact_name, payload)
+    _save_audit_trail(
+        project_id, audit_stage, result.model or "",
+        cli_result.input_tokens, cli_result.output_tokens,
+        cli_result.duration_ms, payload,
+        output_dir=resolved_output_dir,
+    )
+    root_value = payload.get(root_key)
+    await send_output(
+        on_output,
+        f"[{stage_key}] provider-режим: "
+        f"{len(root_value) if isinstance(root_value, list) else '?'} "
+        f"записей в {root_key!r}, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+    return 0, cli_result.result_text, cli_result
+
+
 async def run_findings_merge(
     project_info: dict,
     project_id: str,
@@ -1926,6 +2084,22 @@ async def run_optimization(
     reasoning_effort_override: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
+    # Мост воркера (этап 11F). Развилка стоит ВЫШЕ выбора codex/claude/OpenRouter
+    # намеренно: в provider-режиме различается не «каким CLI», а КТО делает
+    # файловую работу, и решать это после сборки промпта было бы поздно.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        from backend.app.core.config import CLAUDE_OPTIMIZATION_TIMEOUT as _t
+        return await _run_json_stage_via_provider(
+            stage_key="optimization",
+            messages_builder=_pb.build_optimization_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization.json", root_key="optimizations",
+            audit_stage="05_optimization", timeout=_t,
+        )
+
     model = model_override or get_stage_model("optimization")
 
     if is_codex_model(model):
@@ -2174,6 +2348,19 @@ async def run_optimization_critic(
     """Запустить критическую проверку оптимизации (динамический выбор провайдера)."""
     from backend.app.core.config import CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT, OPTIMIZATION_REVIEW_TOOLS
 
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        return await _run_json_stage_via_provider(
+            stage_key="optimization_critic",
+            messages_builder=_pb.build_optimization_critic_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization_review.json", root_key="optimizations",
+            audit_stage="05b_optimization_critic",
+            timeout=CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT,
+        )
+
     model = get_stage_model("optimization_critic")
 
     if is_codex_model(model):
@@ -2257,6 +2444,19 @@ async def run_optimization_corrector(
     pre_review_path = output_dir / "optimization_pre_review.json"
     if opt_path.exists():
         shutil.copy2(opt_path, pre_review_path)
+
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        return await _run_json_stage_via_provider(
+            stage_key="optimization_corrector",
+            messages_builder=_pb.build_optimization_corrector_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization.json", root_key="optimizations",
+            audit_stage="05c_optimization_corrector",
+            timeout=CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT,
+        )
 
     model = get_stage_model("optimization_corrector")
 

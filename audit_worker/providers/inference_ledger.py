@@ -71,18 +71,32 @@ def ledger_dir(job_dir: Path) -> Path:
     return Path(job_dir) / LEDGER_DIRNAME
 
 
-def call_key(*, attempt_id: str, provider: str, purpose: str, prompt: str) -> str:
+def call_key(
+    *,
+    attempt_id: str,
+    provider: str,
+    purpose: str,
+    prompt: str,
+    attachments_sha256: str = "",
+) -> str:
     """Ключ вызова. Один вызов = одна пара (что спрашиваем, у кого).
 
     Промпт входит в ключ ХЭШЕМ: два разных этапа одной попытки — это два разных
     оплачиваемых вызова, и объединять их одним ключом значило бы, что второй
     этап молча получит ответ первого. При этом сам промпт в имени файла не
     появляется: имена файлов попадают в журналы и в пакет.
+
+    `attachments_sha256` — отпечаток ВЛОЖЕНИЙ (этап 11F). Без него анализ двух
+    разных чертежей с одинаковым текстом задания дал бы один и тот же ключ, и
+    второй блок молча получил бы ответ по первому: не ошибка транспорта, а
+    подмена данных, которую не видно ни по одному артефакту. Пустая строка
+    сохраняет ключи текстовых вызовов побайтово теми же, что до 11F.
     """
+    parts = [str(attempt_id), str(provider), str(purpose), str(prompt)]
+    if attachments_sha256:
+        parts.append(str(attachments_sha256))
     digest = hashlib.sha256(
-        "\x00".join([
-            str(attempt_id), str(provider), str(purpose), str(prompt)
-        ]).encode("utf-8", "replace")
+        "\x00".join(parts).encode("utf-8", "replace")
     ).hexdigest()
     return f"{str(purpose)[:32]}-{digest[:32]}"
 

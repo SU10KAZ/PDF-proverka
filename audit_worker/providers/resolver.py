@@ -53,6 +53,20 @@ BINDING_FILENAME = "provider_binding.json"
 #: вовсе, и код платформы ведёт себя ровно как до этапа 11C.
 BINDING_ENV = "AUDIT_WORKER_PROVIDER_BINDING"
 
+#: Максимум вызовов модели, который задание вправе заказать на ОДНУ попытку.
+#:
+#: Было 8 — число из времён, когда попытка означала ОДИН этап (11C-11E), и
+#: восьми хватало с запасом. Полный worker-участок (11F) — это уже цепочка:
+#: один вызов на каждый графический блок плюс текст, свод, оптимизация и её
+#: проверка. У самого маленького пригодного документа корпуса выходит девять,
+#: и прежний потолок отвергал бы задание ещё до старта.
+#:
+#: Новая граница — 64. Она по-прежнему рубеж, а не разрешение: реальный потолок
+#: задаёт разрешение оператора (`inference_grant`), которое списывается ДО
+#: запуска и знает цену вызова. Смысл константы в другом — не дать заданию
+#: заказать неограниченный расход на чужой подписке.
+MAX_INFERENCES_CEILING = 64
+
 
 class ProviderResolutionError(RuntimeError):
     """Требование задания не может быть исполнено этим воркером."""
@@ -113,12 +127,13 @@ class ProviderRequirement:
             raise ProviderResolutionError(
                 "provider_requirement.max_inferences: ожидается целое число"
             ) from None
-        if max_inferences < 0 or max_inferences > 8:
+        if max_inferences < 0 or max_inferences > MAX_INFERENCES_CEILING:
             # Верхняя граница — не догма, а рубеж: задание не имеет права
             # заказать «сто вызовов» на чужой подписке. Реальный потолок всё
             # равно задаёт разрешение оператора.
             raise ProviderResolutionError(
-                f"provider_requirement.max_inferences={max_inferences} вне [0, 8]"
+                f"provider_requirement.max_inferences={max_inferences} вне "
+                f"[0, {MAX_INFERENCES_CEILING}]"
             )
         model = payload.get("model")
         if model is not None:

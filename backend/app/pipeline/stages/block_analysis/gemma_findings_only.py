@@ -172,6 +172,22 @@ def _build_clean_env() -> dict:
     return keep
 
 
+def provider_bridge_active() -> bool:
+    """Активен ли мост провайдеров воркера в ЭТОМ процессе (этап 11F).
+
+    Отсутствие пакета `audit_worker` — законный случай: на центре его может не
+    быть вовсе, и там поведение обязано остаться прежним. А вот заданная
+    переменная привязки при отсутствующем файле — ошибка развёртывания, и она
+    поднимается наверх исключением: тихий возврат к прежнему транспорту
+    означал бы вызов неавторизованного CLI из-под изолированного HOME.
+    """
+    try:
+        from audit_worker.providers import pipeline_bridge
+    except ModuleNotFoundError:
+        return False
+    return bool(pipeline_bridge.active())
+
+
 def is_claude_cli_model(model: str) -> bool:
     """Sonnet/Opus через Claude CLI subscription (`claude-sonnet-5`, `claude-opus-5`, …)."""
     return model.startswith("claude-")
@@ -1097,6 +1113,121 @@ def build_effective_block_user_text(
 
 # ─── OpenRouter call ────────────────────────────────────────────────────────
 
+async def call_provider_for_block(
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    blocks_dir: Path,
+    *,
+    system_prompt: str,
+    timeout: int,
+    output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
+) -> dict:
+    """Нога Stage 01 через ProviderAdapter воркера (этап 11F).
+
+    Контракт возврата — тот же словарь, что у остальных ног
+    (`ok`/`parsed`/`elapsed_ms`/токены/`context_source`), поэтому сводящий код
+    (`combine_detector_results`, провенанс, счётчики) не меняется ни строкой.
+
+    Отличий от `call_claude_cli_for_block` ровно три, и все транспортные:
+    изображение уходит байтами в теле запроса, инструментов у модели нет,
+    результат возвращается объектом, а не файлом.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.block_analysis import provider_transport as _pt
+
+    started = time.monotonic()
+    block_id = str(block.get("block_id") or "")
+    try:
+        image = _pt.read_crop(blocks_dir, block.get("file") or "")
+    except _pt.BlockInputError as exc:
+        return {"ok": False, "error": str(exc), "elapsed_ms": 0}
+
+    user_text, context_source = build_effective_block_context(
+        block,
+        enrichment,
+        page_text,
+        output_dir=output_dir,
+        routed_context=routed_context,
+        document_context=document_context,
+        document_type=document_type,
+        page_neighbors=page_neighbors,
+        include_absence_caveat=include_absence_caveat,
+    )
+    built = _pt.build_provider_prompt(
+        system_prompt=system_prompt, user_text=user_text,
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage="block_analysis",
+                prompt=built["prompt"],
+                # `purpose` включает block_id: иначе два блока одной попытки
+                # получили бы соседние ключи только за счёт отпечатка вложения,
+                # а в журнале их было бы не различить глазом.
+                purpose=f"block_analysis:{block_id}",
+                required_result_fields=_pt.REQUIRED_RESULT_FIELDS,
+                field_types=_pt.FIELD_TYPES,
+                timeout_sec=float(timeout),
+                images=[(_pt.CROP_MEDIA_TYPE, image)],
+            )
+        )
+    except ProviderBridgeError as exc:
+        return {
+            "ok": False,
+            "error": f"provider_bridge: {exc}",
+            "elapsed_ms": int((time.monotonic() - started) * 1000),
+            "context_source": context_source,
+        }
+
+    elapsed_ms = int((time.monotonic() - started) * 1000)
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    payload = result.result if isinstance(result.result, dict) else {}
+    if not outcome.ok:
+        return {
+            "ok": False,
+            "error": _pt.failure_detail(outcome),
+            "elapsed_ms": elapsed_ms,
+            "input_tokens": usage.get("input_tokens"),
+            "output_tokens": usage.get("output_tokens"),
+            "cli_reported_cost_usd": usage.get("total_cost_usd"),
+            "exit_code": result.exit_code,
+            "context_source": context_source,
+            "provider_performed": bool(outcome.performed),
+        }
+    parsed = {"findings": _pt.result_findings(payload)}
+    return {
+        "ok": True,
+        "parse_error": None,
+        "elapsed_ms": elapsed_ms,
+        "input_tokens": usage.get("input_tokens"),
+        "output_tokens": usage.get("output_tokens"),
+        "reasoning_tokens": None,
+        "cli_reported_cost_usd": usage.get("total_cost_usd"),
+        "raw_content": "",
+        "parsed": parsed,
+        "exit_code": result.exit_code,
+        "context_source": context_source,
+        "provider_performed": bool(outcome.performed),
+        "provider_model": result.model,
+        "provider_prompt_sha256": pipeline_bridge.sha256_text(built["prompt"]),
+        "provider_prompt_map": built["map"],
+        "provider_soft_contract": _pt.soft_contract_report(payload),
+    }
+
+
 async def call_gpt_for_block(
     client: httpx.AsyncClient,
     block: dict,
@@ -1888,9 +2019,15 @@ async def run_findings_only_for_project(
         if batch.get("blocks")
     ]
 
-    use_claude_cli = is_claude_cli_model(model)
-    use_codex_cli = is_codex_model(model)
-    use_dual = model == STAGE02_DUAL_MODEL_ID
+    # Мост воркера (этап 11F) перекрывает ЛЮБОЙ выбор транспорта: когда
+    # исполнитель выписал привязку, единственный разрешённый путь к модели —
+    # провайдерский слой. Развилка стоит выше остальных намеренно, ровно как в
+    # `run_text_analysis`/`run_findings_merge`: решать «каким CLI» после сборки
+    # промпта было бы поздно.
+    use_provider_bridge = provider_bridge_active()
+    use_claude_cli = (not use_provider_bridge) and is_claude_cli_model(model)
+    use_codex_cli = (not use_provider_bridge) and is_codex_model(model)
+    use_dual = (not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID
     detector_models = (
         [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
         if use_dual
@@ -1900,7 +2037,7 @@ async def run_findings_only_for_project(
     if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
 
-    if not use_claude_cli and not use_codex_cli:
+    if not use_provider_bridge and not use_claude_cli and not use_codex_cli:
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
@@ -2321,6 +2458,23 @@ async def run_findings_only_for_project(
                         model=model, system_prompt=system_prompt, timeout=timeout_s,
                         reasoning_effort=reasoning_effort,
                         project_id=project_id, output_dir=output_dir,
+                        routed_context=routed_context,
+                        document_context=document_context,
+                        document_type=document_type,
+                        page_neighbors=page_neighbors,
+                        include_absence_caveat=include_caveat,
+                    )
+                if use_provider_bridge:
+                    # Мост воркера (11F). Стоит ПЕРВЫМ намеренно: когда
+                    # исполнитель выписал привязку, ни одна другая нога не имеет
+                    # права выполниться — все они идут мимо провайдерского слоя
+                    # (OpenRouter по HTTPS, `codex exec`, прямой `claude -p`), то
+                    # есть без авторизации по режиму, без журнала вызовов и без
+                    # сверки фактической модели.
+                    return await call_provider_for_block(
+                        block, item["enrichment"], page_text, blocks_dir,
+                        system_prompt=system_prompt, timeout=timeout_s,
+                        output_dir=output_dir,
                         routed_context=routed_context,
                         document_context=document_context,
                         document_type=document_type,

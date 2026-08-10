@@ -291,13 +291,40 @@ def _insert_severity_semantics(system_text: str) -> tuple[str, str]:
     return f"{system_text}\n\n{SEVERITY_SEMANTICS}", "end_of_instructions"
 
 
-def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
+#: Заголовок инлайновой секции с уже собранным анализом блоков.
+#:
+#: Появился на 11F. До него provider-режим просто ОТКАЗЫВАЛСЯ работать, если
+#: рядом лежал `01_blocks_for_text.json`: вкладывать его было нечем, а пройти
+#: мимо значило выполнить текстовый анализ вслепую там, где данные блоков уже
+#: собраны. При продовом порядке «блоки перед текстом» (дефолт) этот файл
+#: существует ВСЕГДА, то есть полный worker-прогон упирался в отказ гарантированно.
+BLOCKS_CONTEXT_HEADER = """
+===== BLOCK ANALYSIS (already produced by the pipeline, inlined) =====
+
+Ниже — компактная проекция результатов анализа графических блоков этого же
+документа. Это НЕ твои находки: их уже нашла графическая стадия. Используй их
+как проверенный контекст — сверяй с ними свои текстовые замечания, не дублируй
+их и не переоткрывай.
+"""
+
+BLOCKS_CONTEXT_FOOTER = "===== END OF BLOCK ANALYSIS ====="
+
+
+def build_provider_prompt(
+    messages: Iterable[dict],
+    *,
+    blocks_context: str = "",
+) -> dict[str, Any]:
     """Собрать один текст для stdin `claude -p` из боевых messages этапа.
 
     Возвращает не только промпт, но и КАРТУ сборки: сколько символов пришло из
     инструкций, сколько из документа, сколько путей вычищено. Карта уезжает в
     артефакт прогона — без неё «промпт собран правильно» пришлось бы принимать
     на слово, а разбирать чужой прогон было бы нечем.
+
+    `blocks_context` — содержимое `01_blocks_for_text.json`, вложенное ТЕКСТОМ.
+    Пустая строка сохраняет промпт побайтово таким же, каким он был на 11D/11E:
+    обратная совместимость здесь не вежливость, а условие сравнимости прогонов.
     """
     system_raw, user_text = split_messages(messages)
     system_text, stripped = strip_filesystem_references(system_raw)
@@ -310,15 +337,25 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
     else:
         system_text = f"{INPUT_DATA_NOTE}\n\n{system_text}"
     system_text, severity_anchor = _insert_severity_semantics(system_text)
+    blocks_text = str(blocks_context or "").strip()
+    blocks_section = ""
+    if blocks_text:
+        blocks_section = (
+            f"{BLOCKS_CONTEXT_HEADER.strip()}\n\n"
+            f"{blocks_text}\n\n"
+            f"{BLOCKS_CONTEXT_FOOTER}\n\n"
+        )
     prompt = (
         f"{system_text}\n\n"
         "===== SOURCE DOCUMENT (inlined by the pipeline) =====\n\n"
         f"{user_text}\n\n"
         "===== END OF SOURCE DOCUMENT =====\n\n"
+        f"{blocks_section}"
         f"{TRANSPORT_CONTRACT}\n"
     )
     return {
         "prompt": prompt,
+        "blocks_context_chars": len(blocks_text),
         # `map` — то, что МОЖНО класть в отчёт. Сам `prompt` содержит документ
         # заказчика целиком, и место ему только в stdin подпроцесса: отчёт о
         # прогоне уезжает центру в пакете результата и попадает в разбор
@@ -335,6 +372,8 @@ def build_provider_prompt(messages: Iterable[dict]) -> dict[str, Any]:
             "transport_contract_applied": "OUTPUT TRANSPORT" in prompt,
             "severity_semantics_applied": SEVERITY_SEMANTICS.splitlines()[0] in prompt,
             "severity_semantics_anchor": severity_anchor,
+            "blocks_context_chars": len(blocks_text),
+            "blocks_context_applied": bool(blocks_text),
         },
         "system_chars": len(system_text),
         "document_chars": len(user_text),
