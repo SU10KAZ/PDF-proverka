@@ -27,8 +27,9 @@
 | Ветка 11I | `feat/distributed-audit-workers-routing-plan` |
 | Ветка 11J | `feat/distributed-audit-workers-executable-routing-plan` |
 | Worktree | `.claude/worktrees/distributed-audit-workers-executable-routing-plan` |
-| Финальный коммит | `9a847b2b` |
-| Коммитов | 8 |
+| Последний коммит с кодом | `9a847b2b` |
+| Tip ветки | см. `git log -1`; последние коммиты — только документация |
+| Коммитов | 9 |
 | Push / merge | **не выполнялись** (запрещены §46) |
 
 ```
