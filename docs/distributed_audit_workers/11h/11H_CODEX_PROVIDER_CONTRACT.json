@@ -1,0 +1,81 @@
+{
+ "stage": "11H",
+ "question": "как Codex ведёт себя как провайдер РАБОЧИХ вызовов — фактический контракт, а не документация",
+ "cli": "codex-cli 0.147.0 (воркер .31), 0.147.0-alpha.6.5 (центр .128)",
+ "argv_working_call": [
+  "exec",
+  "--json",
+  "--sandbox read-only",
+  "--skip-git-repo-check",
+  "--ephemeral",
+  "--ignore-rules",
+  "--ignore-user-config",
+  "--model=<из локальной политики>",
+  "--image=<файл вложения> (по одному на вложение)",
+  "-"
+ ],
+ "measured_facts": [
+  {
+   "fact": "поток exec --json состоит ровно из четырёх типов событий",
+   "events": [
+    "thread.started (только thread_id)",
+    "turn.started",
+    "item.completed (item.type=agent_message, item.text)",
+    "turn.completed (usage: input/cached_input/cache_write_input/output/reasoning_output)"
+   ],
+   "how": "диагностический вызов на .31, промпт «Ответь ровно одним JSON-объектом»",
+   "consequence": "идентификатора применённой модели НЕТ ни в одном событии"
+  },
+  {
+   "fact": "--model реально действует, а не игнорируется",
+   "how": "вызов с --model=НЕСУЩЕСТВУЮЩАЯ-МОДЕЛЬ-11H",
+   "observed": "item.completed type=error «Model metadata for … not found», затем error 400 invalid_request_error от сервера, exit=1",
+   "consequence": "назначение модели доказуемо, даже когда отчёт о применённой недоступен"
+  },
+  {
+   "fact": "вложения передаются файлом и читаются процессом CLI",
+   "how": "боевой прогон: argv содержит --image=<runtime>/attach-XXXX/attachment-000.png",
+   "consequence": "путь обязан жить в изолированном каталоге вызова — см. 11H_CODEX_MULTIMODAL_REVIEW.md"
+  },
+  {
+   "fact": "песочница на .31 fail-closed",
+   "how": "codex sandbox -- <команда> → exit=1, bwrap не стартует (AppArmor)",
+   "consequence": "команды модели не выполняются вовсе"
+  },
+  {
+   "fact": "usage сообщается по факту завершения хода",
+   "example": {
+    "input_tokens": 28447,
+    "cached_input_tokens": 9984,
+    "output_tokens": 309,
+    "reasoning_output_tokens": 298
+   }
+  }
+ ],
+ "contract_decision": {
+  "problem": "мост требует сверки фактической модели от ЛЮБОГО провайдера; Codex её не сообщает",
+  "rejected_option_1": "игнорировать молчание для codex веткой в коде — расползётся на новые провайдеры молча",
+  "rejected_option_2": "спросить модель, кто она — самоотчёт ненадёжен и стоит токенов",
+  "chosen": "поле `model_report` в ЛОКАЛЬНОЙ политике машины: `required` (умолчание) | `unsupported`. Объявляет администратор VPS, значение едет в привязку и в манифест",
+  "what_is_still_checked": [
+   "модель НАЗНАЧЕНА (без неё вызов не выполняется вовсе)",
+   "CLI не назвал ЧУЖУЮ модель (послабление касается только молчания)",
+   "послабление видно по ИМЕНИ проверки в отчёте: model_assigned_reporting_unsupported"
+  ],
+  "what_is_no_longer_provable": "что ответила именно назначенная модель, а не другая молча"
+ },
+ "incident": {
+  "when": "первый боевой прогон 11H",
+  "symptom": "10 блоков подряд error_code=model_mismatch, detail «CLI не сообщил фактическую модель»",
+  "action": "прогон остановлен оператором на 10-м блоке, не дожидаясь 41-го",
+  "cost": {
+   "paid_calls": 15,
+   "input_tokens": 382312,
+   "output_tokens": 8513,
+   "wall_sec": 323,
+   "usable_results": 0
+  },
+  "classification": "технический отказ контура, НЕ качество модели"
+ },
+ "taken_at_utc": "2026-08-10T14:31:58Z"
+}
