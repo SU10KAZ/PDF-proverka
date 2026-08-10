@@ -1220,6 +1220,268 @@ async def run_text_analysis(
 
 # ─── Свод замечаний (Claude CLI, Opus) ────────────────────────────────
 
+#: Ключ этапа свода в белом списке привязки провайдера и в `pipeline_log`.
+#: Совпадает с тем, что уходит в `_run_cli(stage=…)`, и НЕ совпадает с
+#: `"03_findings_merge"` — то имя каталога audit trail, а не имя этапа.
+FINDINGS_MERGE_STAGE_KEY = "findings_merge"
+
+#: Имя артефакта свода. Продовое, а не назначенное здесь: его же проверяет
+#: боевой раннер этапа и его же читают все post-merge проходы.
+FINDINGS_FILENAME = "03_findings.json"
+
+#: Потолок промпта provider-режима для свода, символов.
+#:
+#: Отдельный от текстового не по капризу: у свода другой состав входа. Ветка
+#: codex умеет ужать `01_blocks_analysis.json` до компактной проекции, когда
+#: сырой payload не влезает в лимит CLI (`_CODEX_MERGE_INPUT_BUDGET`); у
+#: provider-маршрута такого планировщика нет. Без потолка большой проект дал бы
+#: либо ошибку CLI, либо — что хуже — молчаливое усечение, при котором правило
+#: «ни одно входное замечание не теряется» осталось бы в промпте, а половины
+#: замечаний модель не увидела бы. Отказ ДО вызова бесплатен.
+PROVIDER_MERGE_PROMPT_MAX_CHARS = int(
+    os.environ.get("AUDIT_PROVIDER_FINDINGS_MERGE_MAX_CHARS", "600000") or "600000"
+)
+
+
+async def _run_findings_merge_via_provider(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    *,
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    stage_key: str = FINDINGS_MERGE_STAGE_KEY,
+) -> tuple[int, str, CLIResult]:
+    """`findings_merge` через ProviderAdapter: модель только сводит (11E).
+
+    Отличие от ветки Claude CLI не в «другом транспорте», а в РАСПРЕДЕЛЕНИИ
+    ОБЯЗАННОСТЕЙ. Там модель получала пути к артефактам предыдущих этапов и сама
+    делала файловую работу; здесь файловую работу целиком делает конвейер:
+
+        читает 02+01 → проверяет вход → строит промпт → зовёт модель →
+        проверяет ответ → пишет 03_findings.json
+
+    Инженерная часть промпта берётся у БОЕВОГО сборщика ветки API
+    (`build_findings_merge_messages`), а не пишется заново: второй свод ради
+    нового транспорта — верный способ получить два расходящихся аудита.
+
+    Молчаливого возврата к прежнему пути нет ни в одной ветке. Мост активен
+    только тогда, когда исполнитель выписал привязку, УЖЕ списав разрешение
+    оператора; уйти в этот момент на `claude -p` по PATH значило бы выполнить
+    неавторизованный вызов из-под изолированного HOME и показать это как
+    обычную ошибку этапа.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.findings_merge import provider_transport
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+    from backend.app.pipeline.stages.prepare.task_builder import _load_prompt_override
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        # Кастомный промпт проекта заменяемая CLI-ветка честно применяла
+        # (`prepare_findings_merge_task` начинается с него). Сборщик API-ветки
+        # про override не знает вовсе — на воркере молча откатиться к стоковому
+        # шаблону значит выполнить НЕ ТОТ свод, о котором просил оператор.
+        override = _load_prompt_override(project_id, stage_key)
+        if override:
+            detail = (
+                "для этапа findings_merge задан кастомный промпт проекта, а "
+                "provider-режим его не поддерживает. Прогон отменён: тихая "
+                "подмена промпта дала бы свод по другим правилам"
+            )
+            await send_output(on_output, f"[findings_merge] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+        # Вход разрешается ОТДЕЛЬНО и ДО сборки промпта. Боевой сборщик при
+        # отсутствии артефакта кладёт в промпт строку «(файл … не найден)» и
+        # идёт дальше — на центре это давняя данность, на воркере это
+        # оплаченный вызов, который выглядит успешным и теряет половину аудита.
+        try:
+            inputs = provider_transport.resolve_merge_inputs(resolved_output_dir)
+        except provider_transport.MergeInputError as exc:
+            detail = str(exc)
+            await send_output(on_output, f"[findings_merge] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+        messages = prompt_builder.build_findings_merge_messages(project_info, project_id)
+
+    built = provider_transport.build_provider_prompt(messages)
+    prompt = built["prompt"]
+    input_facts = inputs.as_facts()
+    coverage = provider_transport.input_coverage_report(
+        prompt, input_facts["expected_input_finding_ids"],
+    )
+
+    # Проверки промпта — в РАНТАЙМЕ, а не только в тестах. Тест доказывает, что
+    # код умеет собрать промпт правильно; артефакт прогона обязан доказать, что
+    # в ЭТОТ раз он собран правильно.
+    guard_problems: list[str] = []
+    if built["absolute_paths_remaining_in_instructions"]:
+        guard_problems.append(
+            f"в инструкциях остались абсолютные пути "
+            f"({built['absolute_paths_remaining_in_instructions']}): §14 запрещает "
+            "давать модели путь проекта"
+        )
+    if built["prompt_chars"] > PROVIDER_MERGE_PROMPT_MAX_CHARS:
+        guard_problems.append(
+            f"промпт {built['prompt_chars']} симв. > потолка "
+            f"{PROVIDER_MERGE_PROMPT_MAX_CHARS}: планировщика компактной проекции "
+            "в provider-режиме нет, а молчаливое усечение входа недопустимо"
+        )
+    if not coverage["passed"]:
+        # Потеря входного замечания ДО модели не видна ни по одному артефакту:
+        # выход выглядит нормально, просто в нём нечего искать.
+        guard_problems.append(
+            "входные замечания не доехали до промпта: "
+            f"{coverage['missing_before_inference']}"
+        )
+    if guard_problems:
+        detail = "; ".join(guard_problems)
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    await send_output(
+        on_output,
+        f"[findings_merge] provider-режим: инструкции {built['system_chars']} симв., "
+        f"вход {built['payload_chars']} симв., замечаний на входе "
+        f"{coverage['expected_unique_count']} "
+        f"(T={input_facts['text_analysis']['text_findings']}, "
+        f"G={input_facts['blocks_analysis']['block_findings']})",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=stage_key,
+                prompt=prompt,
+                purpose=stage_key,
+                required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                field_types=provider_transport.FIELD_TYPES,
+                expected_semantics=provider_transport.EXPECTED_SEMANTICS,
+                timeout_sec=float(CLAUDE_FINDINGS_MERGE_TIMEOUT),
+            )
+        )
+    except ProviderBridgeError as exc:
+        # Отказ моста — отказ ЭТАПА. Возвращаем его кодом возврата, а не
+        # исключением, чтобы боевой раннер обработал его своим штатным путём —
+        # но ни одна ветка отсюда не ведёт к прежнему транспорту.
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+
+    validation = outcome.validation.as_dict() if outcome.validation else None
+    payload = result.result if isinstance(result.result, dict) else {}
+    # Ни промпта, ни ответа модели в отчёте о прогоне: и то и другое — замечания
+    # по документу заказчика. Отчёт уезжает центру в пакете результата и
+    # разбирается руками, то есть каждая такая копия — ещё один экземпляр
+    # клиентских данных за пределами артефакта.
+    provider_facts = {k: v for k, v in result.as_dict().items() if k != "result"}
+    provider_facts["result_keys"] = sorted(payload.keys())
+    provider_facts["result_findings"] = len(payload.get("findings") or [])
+    run_report = {
+        "stage": stage_key,
+        "transport": "provider_adapter",
+        "prompt_build": built["map"],
+        "prompt_sha256": pipeline_bridge.sha256_text(prompt),
+        "input_contract": {
+            key: value for key, value in input_facts.items()
+            if key not in ("text_finding_ids", "block_finding_ids",
+                           "expected_input_finding_ids")
+        },
+        "input_coverage": coverage,
+        "performed_now": bool(outcome.performed),
+        "provider_result": provider_facts,
+        "validation": validation,
+        "ledger": outcome.ledger.as_dict(),
+        "soft_contract": provider_transport.soft_contract_report(payload),
+        "content_excluded": (
+            "Промпт и ответ модели в отчёт не кладутся: это замечания по "
+            "документу заказчика. Отпечаток промпта — prompt_sha256, отпечаток "
+            "ответа — provider_result.raw_sha256."
+        ),
+    }
+
+    try:
+        # Проверяется КАТАЛОГ, а не один файл в нём: этап пишет артефакт, отчёт
+        # о прогоне и `audit_trail/`. Гейт на одном пути оставлял бы две записи
+        # без проверки.
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже.
+    _write_json(resolved_output_dir / "findings_merge_provider_run.json", run_report)
+
+    if not outcome.ok:
+        failed = (validation or {}).get("failed") if validation else None
+        if outcome.performed:
+            detail = (
+                f"provider_result.status={result.status!r} "
+                f"error_code={result.error_code!r} detail={result.detail!r} "
+                f"validation_failed={failed}"
+            )
+        else:
+            # ПОВТОР уже сохранённой неудачи. Код ошибки сюда НЕ подставляется:
+            # `rate_limited` в тексте распознаётся общим классификатором
+            # конвейера как свежий лимит, и раннер ушёл бы в цикл ожидания,
+            # который ничего не изменит — журнал отдаст тот же ответ.
+            detail = (
+                "повтор невозможен: результат этого вызова уже записан в журнал "
+                f"попытки и неуспешен (проверка: {failed}). Новая попытка "
+                "требует нового attempt_id и новой единицы разрешения"
+            )
+        await send_output(on_output, f"[findings_merge] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    _write_json(resolved_output_dir / FINDINGS_FILENAME, payload)
+
+    # Каталог audit trail задаётся ЯВНО уже проверенным путём, а не аргументом
+    # вызывающего: при `output_dir=None` резолвер ушёл бы в `audit_scope`/версию
+    # проекта, то есть мимо гейта `_assert_output_inside_attempt`.
+    _save_audit_trail(
+        project_id, "03_findings_merge", result.model or "",
+        cli_result.input_tokens, cli_result.output_tokens,
+        cli_result.duration_ms, payload,
+        output_dir=resolved_output_dir,
+    )
+
+    await send_output(
+        on_output,
+        f"[findings_merge] provider-режим: {len(payload.get('findings') or [])} "
+        f"замечаний, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+    return 0, cli_result.result_text, cli_result
+
+
 async def run_findings_merge(
     project_info: dict,
     project_id: str,
@@ -1230,6 +1492,20 @@ async def run_findings_merge(
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить свод замечаний из текста + блоков -> 03_findings.json (динамический выбор провайдера)."""
+    # Мост провайдеров воркера (этап 11E). Развилка стоит ВЫШЕ выбора
+    # codex/claude/OpenRouter намеренно: в provider-режиме различается не
+    # «каким CLI», а КТО делает файловую работу, и решать это после сборки
+    # промпта было бы поздно — промпт уже был бы собран под чужой транспорт.
+    #
+    # На центре ветки не существует: `active()` смотрит на файл привязки,
+    # который выписывает только исполнитель воркера и только на время попытки.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        return await _run_findings_merge_via_provider(
+            project_info, project_id, on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+        )
+
     model = get_stage_model("findings_merge")
 
     if is_codex_model(model):
