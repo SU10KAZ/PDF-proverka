@@ -800,10 +800,41 @@ class TestSemanticPreservation:
         head = built["prompt"].split("===== STAGE OUTPUTS", 1)[0]
 
         assert "**Project MD file — NOT available in this run.**" in head
-        assert "**Normative reference — not inlined in this run.**" in head
+        assert "**Normative reference — NOT available in this run.**" in head
         # И при этом честно называет то, что ЕСТЬ.
         assert "inlined below under `## 02_text_analysis.json`" in head
         assert "inlined below under `## 01_blocks_analysis.json`" in head
+
+    def test_false_template_claim_is_refuted_not_merely_contradicted(self, project):
+        """Ложное утверждение шаблона опровергается ЯВНО, а не молча.
+
+        Шаблон свода утверждает «**Normative reference** — provided in system
+        context», и это неправда ни на одной ветке: в EN-шаблоне есть только
+        `{DISCIPLINE_ROLE}`. Пока справка о входе стояла рядом молча, промпт
+        содержал два соседних противоположных утверждения, причём ложное —
+        позже по тексту, то есть с большей рецентностью.
+        """
+        built = provider_transport.build_provider_prompt(_build_messages(project))
+        head = built["prompt"].split("===== STAGE OUTPUTS", 1)[0]
+
+        # Строка шаблона на месте — продовый шаблон не тронут.
+        claim = "**Normative reference** — provided in system context."
+        assert claim in head
+        # И она названа и опровергнута, а не просто окружена другим текстом.
+        assert 'states that it is "provided in system context"' in head
+        assert "In this run it is not" in head
+        # Опровержение стоит РАНЬШЕ ложной строки — иначе последнее слово
+        # осталось бы за ней.
+        assert head.index("In this run it is not") < head.index(claim)
+
+    def test_norms_reference_really_is_absent(self, project):
+        """Опровержение соответствует действительности, а не перестраховке."""
+        messages = _build_messages(project)
+        api_prompt = "\n\n".join(m["content"] for m in messages)
+        # Признак вложенного справочника норм — заголовки norms_reference.md
+        # дисциплины. Роль дисциплины при этом на месте.
+        assert "эксперт-проектировщик по электроснабжению" in api_prompt
+        assert "norms_reference" not in api_prompt
 
     def test_transport_contract_limits_tools_not_subject(self, project):
         """Урок 11D.1: ограничение касается ИНСТРУМЕНТОВ, а не предмета аудита."""

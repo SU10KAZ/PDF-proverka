@@ -94,6 +94,17 @@ __all__ = [
 #: модели путь к MD и надеялась на `Read`; ветка API его не вкладывает вовсе. В
 #: provider-режиме файла нет — и молчать об этом нельзя: свод, считающий, что
 #: документ «где-то есть», начал бы ссылаться на то, чего не видел.
+#:
+#: Пункт про нормативную базу сформулирован как ЯВНОЕ ОПРОВЕРЖЕНИЕ строки
+#: шаблона, а не как отдельное утверждение рядом с ней. Причина найдена
+#: состязательным разбором до боевого вызова: шаблон свода говорит
+#: «**Normative reference** — provided in system context», и это неправда ни на
+#: одной ветке — в EN-шаблоне есть только `{DISCIPLINE_ROLE}`, справочник норм
+#: не вкладывается ни ветке API, ни CLI-ветке (пре-существующий дефект, KI-2).
+#: Пока справка стояла рядом молча, промпт содержал два соседних
+#: противоположных утверждения об одном и том же, причём ложное — ПОЗЖЕ, то
+#: есть с большей рецентностью. Правка касается транспортной правды о составе
+#: входа, а не правил свода: продовый шаблон не тронут ни на символ.
 INPUT_DATA_NOTE = """## Input Data (this run)
 
 1. **Text analysis output** — inlined below under `## 02_text_analysis.json`.
@@ -105,8 +116,11 @@ INPUT_DATA_NOTE = """## Input Data (this run)
 3. **Project MD file — NOT available in this run.** Use the two artifacts above
    as the only source of facts. Do not claim to have read the source document,
    and do not invent block labels or sheet numbers that are not in them.
-4. **Normative reference — not inlined in this run.** Keep the norm references
-   that the source T-/G-findings already carry; do not invent clause numbers.
+4. **Normative reference — NOT available in this run.** The task specification
+   below states that it is "provided in system context". In this run it is not:
+   no normative reference file is attached. Keep the norm references that the
+   source T-/G-findings already carry, and do not invent clause numbers or cite
+   a reference you were not given.
 
 The section below is the full task specification. Where it refers to reading a
 file, the content is already inlined as described above."""

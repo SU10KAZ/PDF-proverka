@@ -270,6 +270,8 @@ STDIN=$(cat)
   echo "ARGV:$*"
   echo "STDIN_BYTES:${{#STDIN}}"
   echo "CWD:$(pwd)"
+  echo "CWD_ENTRIES:$(ls -A . | tr '\\n' ',')"
+  tr "\\0" "\\n" < /proc/$$/environ | sed 's/^/ENV:/'
 }} >> "$JOURNAL"
 printf '%s' "$STDIN" > {prompt_dump}
 python3 - {answer_file} <<'PYEOF'
