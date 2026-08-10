@@ -101,10 +101,14 @@ def model_for(provider: Optional[str], capability: Optional[str]) -> str:
 #: провайдеров, «модель этапа» для них не определена, и выбирать одну за
 #: вызывающего нельзя. Такие этапы читают план через `active_plan`
 #: поимённо — `block_detector_legs()`, `optimization_legs()`.
+#: `findings_critic` сюда НЕ входит, и это не пропуск. `stage_model_from_plan`
+#: сначала отбирает модельные действия и только потом сверяет роль, а
+#: `structural_critic` по реестру ДЕТЕРМИНИРОВАННЫЙ — запись не совпала бы
+#: никогда. Мёртвая строка в карте хуже её отсутствия: она утверждает, что
+#: этап замораживается, тогда как он честно уходит к глобальной таблице.
 PRIMARY_ROLE_OF_STAGE: dict[str, str] = {
     "text_analysis": registry.ROLE_TEXT_AUDIT,
     "findings_merge": registry.ROLE_MERGE,
-    "findings_critic": registry.ROLE_STRUCTURAL_CRITIC,
     "findings_corrector": registry.ROLE_ABSENCE_GUARD,
     "norm_verify": registry.ROLE_NORM_BINDING,
     "norm_fix": registry.ROLE_NORM_REVIEW_FINDINGS,

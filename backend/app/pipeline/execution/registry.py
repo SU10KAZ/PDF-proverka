@@ -287,6 +287,11 @@ def frozen_routing_plan(handle: Any) -> Any:
     """
     job_id = getattr(handle, "remote_job_id", None)
     if not job_id:
+        logger.info(
+            "Замороженный план не читается: у ссылки на исполнение нет "
+            "идентификатора удалённого задания — хвост пойдёт по текущей "
+            "конфигурации центра",
+        )
         return None
     try:
         from backend.app.services.audit_routing.plan import RoutingPlan
@@ -295,12 +300,26 @@ def frozen_routing_plan(handle: Any) -> Any:
 
         row = repositories.get_logical_job(str(job_id), settings=get_settings())
         if row is None:
+            # Все три «тихих» выхода логируются, и это не многословие.
+            # Утверждение этапа звучит как «хвост идёт по замороженному
+            # плану»; молчаливый возврат `None` делает «пошли по плану» и
+            # «пошли по живой конфигурации» неразличимыми в журнале, то есть
+            # само утверждение — непроверяемым.
+            logger.warning(
+                "Замороженный план не читается: задания %s нет в workers.db — "
+                "хвост пойдёт по текущей конфигурации центра", job_id,
+            )
             return None
         payload = row.get("payload")
         if isinstance(payload, str):
             payload = json.loads(payload or "{}")
         raw = ((payload or {}).get("params") or {}).get("routing_plan")
         if not isinstance(raw, dict) or not raw:
+            logger.info(
+                "У задания %s нет плана маршрутизации (создано сборкой до "
+                "11I либо не удалённое) — хвост пойдёт по текущей "
+                "конфигурации центра", job_id,
+            )
             return None
         return RoutingPlan.from_dict(raw)
     except Exception as exc:                # noqa: BLE001 — см. ниже

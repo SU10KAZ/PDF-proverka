@@ -1100,3 +1100,58 @@ def test_rev8_request_shape_matches_the_central_leg(provisioned, stub):
     parts = captured["messages"][0]["content"]
     assert [p["type"] for p in parts] == ["text", "image_url"]
     assert parts[1]["image_url"]["url"].startswith("data:image/png;base64,")
+
+
+def test_rev9_rejected_endpoint_message_carries_no_url_credentials(monkeypatch):
+    """Ревью-9. Сообщение об отвергнутом адресе НЕ несёт значение переменной.
+
+    Первая попытка исправления пропускала строку через редактор, и это
+    оказалось смягчением, а не решением: на пароле с символом `@` редактор
+    оставляет хвост, а имя самой переменной под его правило подстановок не
+    подпадает. Надёжнее не класть значение в сообщение вовсе — ровно так уже
+    поступает соседняя, успешная ветка, отдающая наружу только хост.
+
+    Триггер этой ветки — неофициальный хост без объявленного режима заглушек,
+    то есть ровно корпоративный обратный прокси, который докстринг переменной
+    называет законным применением.
+    """
+    monkeypatch.delenv(STUBBED_ENDPOINTS_ENV, raising=False)
+    for url, secret in (
+        ("https://svc:S3cr3tP@ssw0rd@corp-proxy.internal/openrouter/v1", "ssw0rd"),
+        ("https://gw.internal/v1?api_key=sk-live-0123456789abcdefghij", "sk-live"),
+        ("https://user:пароль@proxy.local/v1", "пароль"),
+    ):
+        monkeypatch.setenv(BASE_URL_ENV, url)
+        with pytest.raises(OpenRouterEndpointError) as exc:
+            resolve_base_url()
+        message = str(exc.value)
+        assert secret not in message, f"утечка из {url!r}: {message}"
+        assert "?" not in message, "в сообщение попали параметры запроса"
+        # Хост назван — иначе оператор не поймёт, что именно отвергнуто.
+        assert ".internal" in message or ".local" in message
+
+
+def test_rev10_dead_primary_role_entries_are_absent():
+    """Ревью-10. В карте основных ролей нет заведомо недостижимых записей.
+
+    `stage_model_from_plan` сначала отбирает МОДЕЛЬНЫЕ действия и только потом
+    сверяет роль. Запись, называющая детерминированную роль, не совпала бы
+    никогда — и при этом утверждала бы, что этап заморожен.
+    """
+    dead = [
+        stage for stage, role in center_models.PRIMARY_ROLE_OF_STAGE.items()
+        if role in registry.DETERMINISTIC_ROLES
+    ]
+    assert not dead, f"карта называет детерминированные роли: {dead}"
+    # И каждая оставшаяся запись достижима хотя бы в одном пресете.
+    reachable: set[str] = set()
+    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+        plan = build_plan(preset_id)
+        for stage, action in plan.model_actions():
+            reachable.add(f"{stage.stage_id}:{action.role}")
+    unreachable = [
+        f"{stage}:{role}"
+        for stage, role in center_models.PRIMARY_ROLE_OF_STAGE.items()
+        if f"{stage}:{role}" not in reachable
+    ]
+    assert not unreachable, f"недостижимые записи карты: {unreachable}"
