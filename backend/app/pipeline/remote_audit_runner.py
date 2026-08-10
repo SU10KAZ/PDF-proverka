@@ -562,7 +562,92 @@ def activate_routing_plan(
             raise SystemExit(str(exc)) from None
 
     _active_plan.set_plan(plan)
-    return _active_plan.describe()
+    applied = apply_routing_flags(plan)
+    described = _active_plan.describe()
+    described["applied_feature_flags"] = applied
+    return described
+
+
+#: Флаги, которые конвейер читает КАК АТРИБУТЫ модуля конфигурации, а не из
+#: окружения на каждом вызове. Их мало и они перечислены поимённо: угадывать по
+#: совпадению имён нельзя — в `config` есть одноимённые значения другого типа.
+_CONFIG_BOOL_FLAGS: tuple[str, ...] = (
+    "STAGE01_DUAL_REVIEW_ENABLED",
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED",
+    "OPTIMIZATION_CRITIC_DETERMINISTIC",
+    "PIPELINE_VERIFIER_ENABLED",
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED",
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED",
+    "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED",
+)
+
+#: То же для модуля этапа 01: там часть флагов читается на импорте модуля.
+_STAGE01_MODULE_FLAGS: tuple[str, ...] = (
+    "STAGE01_THIRD_LEG_ENABLED",
+    "STAGE01_PROTECTION_TABLE_CHECK_ENABLED",
+)
+
+
+def _flag_is_true(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in ("1", "true", "yes", "on")
+
+
+def apply_routing_flags(plan: Any) -> dict[str, Any]:
+    """Применить ЗАМОРОЖЕННЫЕ флаги плана к процессу конвейера.
+
+    Без этого шага заморозка была бы наполовину фикцией, и это не гипотеза.
+
+    Процесс конвейера на воркере стартует с окружением, собранным С НУЛЯ по
+    белому списку (`PATH/LANG/LC_ALL/TZ`) плюс `AUDIT_DISABLE_DOTENV=1`. Снимок
+    флагов приезжает в пакете, но только СВЕРЯЕТСЯ по хэшу и никуда не
+    применяется — то есть на воркере действуют КОДОВЫЕ умолчания. Для
+    `OPTIMIZATION_CRITIC_DETERMINISTIC` это `False` при плане, объявляющем
+    `true`: этап F OPT Fix уходил бы в агентную ветку, которой в плане нет, и
+    получал бы отказ моста на каждом прогоне, где критик нашёл проблемы. Для
+    `STAGE01_DUAL_GAP_SEARCH_ENABLED` — судья работал бы без кропа, то есть
+    без gap-search, который план ему предписывает.
+
+    Порядок применения: окружение (для тех, кто читает его на каждом вызове),
+    затем атрибуты уже импортированных модулей (для тех, кто прочитал его
+    однажды). Второе без первого не работает, первое без второго — тоже.
+    """
+    flags = plan.flags if hasattr(plan, "flags") else {}
+    if not flags:
+        return {"applied": 0}
+
+    applied: dict[str, Any] = {}
+    for name, value in flags.items():
+        if not isinstance(name, str) or not name.isupper():
+            # Снимок несёт и типизированные значения вроде класса модели
+            # Claude — они не переменные окружения и в него не пишутся.
+            continue
+        if name.startswith("CLAUDE_DEFAULT_"):
+            continue
+        os.environ[name] = str(value)
+        applied[name] = str(value)
+
+    # Модули, прочитавшие флаг однажды. Импортируются мягко: конвейер мог их
+    # ещё не тронуть, и это нормально — тогда они прочитают уже правленое
+    # окружение сами.
+    try:
+        from backend.app.core import config as _cfg
+
+        for name in _CONFIG_BOOL_FLAGS:
+            if name in flags and hasattr(_cfg, name):
+                setattr(_cfg, name, _flag_is_true(flags[name]))
+    except Exception:                                  # noqa: BLE001 — fail-soft
+        pass
+
+    stage01 = sys.modules.get(
+        "backend.app.pipeline.stages.block_analysis.gemma_findings_only"
+    )
+    if stage01 is not None:
+        for name in _STAGE01_MODULE_FLAGS:
+            if name in flags and hasattr(stage01, name):
+                setattr(stage01, name, _flag_is_true(flags[name]))
+    return {"applied": len(applied), "flags": applied}
 
 
 def verify_snapshot(spec: dict[str, Any]) -> dict[str, Any]:

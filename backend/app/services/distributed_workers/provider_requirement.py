@@ -419,13 +419,17 @@ def build_routing_plan_requirement(
         "routing_plan_id": routing_plan.routing_plan_id,
         "preset_id": routing_plan.preset_id,
         "required_provider_capabilities": multi,
-        # Потолок схемы (64) ниже естественной потребности ансамбля. Это
-        # отдельное наблюдаемое утверждение, а не строка формулы: обрыв аудита
-        # на середине выглядит в журнале как ошибка этапа, и связать его с
-        # рубежом задним числом можно только по этому полю.
-        "clamped_by_schema_ceiling": bool(
-            estimate["max_inferences"] > CENTER_MAX_INFERENCES
-        ),
+        # Бюджет УРЕЗАН рубежом — отдельное наблюдаемое утверждение, а не
+        # строка формулы: обрыв аудита на середине выглядит в журнале как
+        # ошибка этапа, и связать его с рубежом задним числом можно только по
+        # этому полю.
+        #
+        # Раньше здесь сравнивался УЖЕ ЗАЖАТЫЙ результат с тем же рубежом,
+        # которым он зажат, — выражение было тождественно ложным, и поле,
+        # заведённое ради объяснимости обрыва, утверждало, что обрезки не было.
+        # Ответ на этот вопрос даёт сам оценщик.
+        "clamped_by_schema_ceiling": bool(estimate.get("clamped_by_ceiling")),
+        "requested_before_ceiling": int(estimate.get("requested") or 0),
         "natural_worker_calls": estimate["natural_calls"],
     }
     return requirement, rationale

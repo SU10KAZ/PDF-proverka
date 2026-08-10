@@ -146,6 +146,21 @@ def read_completed_marker(job_dir: Path) -> Optional[dict[str, Any]]:
     return None
 
 
+def _grantable_providers() -> frozenset[str]:
+    """Провайдеры, которым воркер вообще умеет выписать разрешение.
+
+    Берётся из реестра провайдерского слоя, а не перечисляется здесь строками:
+    имена настоящих CLI в пакете воркера запрещены отдельным рубежом
+    (`test_no_real_cli_names_in_the_worker_package`), и дублирование их
+    литералами разошлось бы с реестром при первом же добавлении провайдера.
+    Для провайдера вне набора отказ даёт резолвер маршрутов — там он
+    содержательнее («план требует X, которого воркер не поддерживает»).
+    """
+    from audit_worker.providers.paths import SUPPORTED_PROVIDERS
+
+    return frozenset(SUPPORTED_PROVIDERS)
+
+
 def _routes_from_plan(
     params: "audit_runner.SafeAuditParams",
 ) -> tuple[tuple[tuple[str, str], ...], str]:
@@ -891,33 +906,89 @@ class Executor:
         # потраченными единицами. Если автоматические разрешения на машине не
         # включены, ничего не происходит и работает прежний путь — файл,
         # созданный оператором.
-        if getattr(self.config, "pipeline_provider_auto_grant_enabled", False):
+        auto_grant_enabled = bool(
+            getattr(self.config, "pipeline_provider_auto_grant_enabled", False)
+        )
+
+        # ПРОВАЙДЕРЫ, ЧЬИ ПОДПИСКИ ТРАТИТ ЭТО ЗАДАНИЕ (этап 11I).
+        #
+        # До 11I их был ровно один: привязка несла одну модель на попытку, и
+        # разрешение оператора совпадало с ней по построению. План требует
+        # нескольких, а разрешение осталось бы одним — план `claude_gpt_codex`
+        # тратил бы codex-подписку под claude-разрешением, и в файле грантов не
+        # было бы ни одной записи по codex. Разрешение — учёт чужих денег и
+        # чужих лимитов, и «списали не с той подписки» здесь не мелочь.
+        #
+        # Провайдер требования идёт ПЕРВЫМ: его грант остаётся тем, который
+        # попадает в привязку и в evidence, — прежнее поведение сохраняется.
+        required_routes, plan_hash = _routes_from_plan(params)
+        grant_providers: list[str] = [requirement.provider]
+        for provider_name, _capability in required_routes:
+            if provider_name in grant_providers:
+                continue
+            if provider_name not in _grantable_providers():
+                # Провайдера, которого воркер не поддерживает, до резолва
+                # маршрутов задание всё равно не доживёт — там отказ
+                # содержательнее («план требует X, воркер его не знает»).
+                continue
+            grant_providers.append(provider_name)
+
+        # Разрешение по заданию центра (этап 11G). Выписывается ДО списания и
+        # идемпотентно по попытке: повторный вход возвращает ту же запись с уже
+        # потраченными единицами. Если автоматические разрешения на машине не
+        # включены, ничего не происходит и работает прежний путь — файл,
+        # созданный оператором.
+        if auto_grant_enabled:
+            for provider_name in grant_providers:
+                try:
+                    issued = inference_grant.issue_for_job(
+                        self.config.root,
+                        provider=provider_name,
+                        job_id=str(job_id),
+                        attempt_id=str(attempt_id),
+                        capability=str(requirement.capability or ""),
+                        requested_max_inferences=int(requirement.max_inferences),
+                        machine_ceiling=int(
+                            getattr(self.config, "pipeline_provider_max_inferences", 0)
+                        ),
+                        ttl_sec=float(
+                            getattr(
+                                self.config, "pipeline_provider_grant_ttl_sec", 6 * 3600.0
+                            )
+                        ),
+                    )
+                except inference_grant.InferenceGrantError as exc:
+                    # Отказ рубежа машины. Ожидание оператора здесь бессмысленно:
+                    # потолок не появится сам, а требование задания не изменится.
+                    raise audit_runner.AuditJobRejected(
+                        f"автоматическое разрешение для провайдера "
+                        f"{provider_name!r} не выписано: {exc}"
+                    ) from None
+                _log(
+                    f"разрешение {issued.grant_id} выписано автоматически по "
+                    f"заданию центра: {issued.max_uses} обращений, провайдер "
+                    f"{provider_name!r}, способность {requirement.capability!r}"
+                )
+
+        # Разрешения ДОПОЛНИТЕЛЬНЫХ провайдеров плана списываются здесь, до
+        # основного: если чужой подписки не разрешили, задание не должно
+        # начинаться вовсе — иначе часть ансамбля отработает, а часть упрётся
+        # в отказ уже после оплаты.
+        for provider_name in grant_providers[1:]:
             try:
-                issued = inference_grant.issue_for_job(
-                    self.config.root,
-                    provider=requirement.provider,
-                    job_id=str(job_id),
-                    attempt_id=str(attempt_id),
-                    capability=str(requirement.capability or ""),
-                    requested_max_inferences=int(requirement.max_inferences),
-                    machine_ceiling=int(
-                        getattr(self.config, "pipeline_provider_max_inferences", 0)
-                    ),
-                    ttl_sec=float(
-                        getattr(self.config, "pipeline_provider_grant_ttl_sec", 6 * 3600.0)
-                    ),
+                extra_grant = inference_grant.consume(
+                    self.config.root, provider=provider_name, task_id=str(job_id)
                 )
             except inference_grant.InferenceGrantError as exc:
-                # Отказ рубежа машины. Ожидание оператора здесь бессмысленно:
-                # потолок не появится сам, а требование задания не изменится.
                 raise audit_runner.AuditJobRejected(
-                    f"автоматическое разрешение не выписано: {exc}"
+                    f"нет разрешения оператора на вызовы провайдера "
+                    f"{provider_name!r}, которого требует план: {exc}"
                 ) from None
             _log(
-                f"разрешение {issued.grant_id} выписано автоматически по заданию "
-                f"центра: {issued.max_uses} обращений, способность "
-                f"{requirement.capability!r}"
+                f"разрешение {extra_grant.grant_id} списано: "
+                f"{extra_grant.used}/{extra_grant.max_uses} по {extra_grant.provider}"
             )
+
         try:
             grant = inference_grant.consume(
                 self.config.root, provider=requirement.provider, task_id=str(job_id)
@@ -938,10 +1009,6 @@ class Executor:
             f"разрешение {grant.grant_id} списано: "
             f"{grant.used}/{grant.max_uses} по {grant.provider}"
         )
-        # Маршруты ПЛАНА (этап 11I). Пары «провайдер + способность» берутся из
-        # замороженного плана задания: до 11I их было ровно по одной на попытку,
-        # и ансамбли поэтому исполнялись одной ногой.
-        required_routes, plan_hash = _routes_from_plan(params)
         try:
             binding = resolver.resolve(
                 requirement,

@@ -1,6 +1,6 @@
 {
   "preset_id": "codex_exec",
-  "routing_plan_hash": "sha256:5d0479d5b5265b67f222645851bb2ac3129886fa2c5dc6b14adbf96bf4a7c5b4",
+  "routing_plan_hash": "sha256:f6498507662be0dfc9d3066da155bdf9b42f348468cdf675d2caa2cb31bc3ae9",
   "model_actions": 15,
   "trace": [
     {
@@ -161,15 +161,7 @@
         "merge_base"
       ],
       "condition": {
-        "type": "discipline_in",
-        "params": {
-          "disciplines": [
-            "AR",
-            "EOM",
-            "SS",
-            "KM"
-          ]
-        }
+        "type": "has_md_file"
       },
       "multiplicity": {
         "type": "per_document"
@@ -209,10 +201,7 @@
       "parallel_group": null,
       "depends_on": [],
       "condition": {
-        "type": "feature_enabled",
-        "params": {
-          "flag": "PIPELINE_VERIFIER_ENABLED"
-        }
+        "type": "always"
       },
       "multiplicity": {
         "type": "per_document"

@@ -251,23 +251,38 @@ def _check_dependencies(plan: RoutingPlan, out: list[str]) -> None:
 
 
 def _check_no_exact_model(plan: RoutingPlan, out: list[str]) -> None:
-    """Ни одно значение плана не должно выглядеть точным идентификатором модели."""
+    """Ни одно значение плана не должно выглядеть точным идентификатором модели.
 
-    def walk(node: object, path: str) -> None:
-        if isinstance(node, dict):
-            for key, value in node.items():
-                walk(value, f"{path}.{key}" if path else str(key))
-        elif isinstance(node, list):
-            for index, value in enumerate(node):
-                walk(value, f"{path}[{index}]")
-        elif registry.looks_like_exact_model(node):
+    Проверяется КАНОНИЧЕСКАЯ СЕРИАЛИЗАЦИЯ целиком, а не обход структуры.
+
+    Обход был дырявым по построению: он рекурсировал только по `dict` и `list`,
+    а всё остальное отдавал в проверку как скаляр — значение-кортеж или
+    множество не проверялось вовсе. `RoutingCondition.of(…, disciplines=(…,))`
+    хранит параметры именно кортежем, то есть строку модели можно было провезти
+    одним валидным вызовом. Сериализация же покрывает ровно то, что уедет на
+    чужой VPS, и никаких «а этот тип мы не обошли» в ней не бывает.
+
+    Дополнительно снимается NFKC-нормализация: кириллическая «с» в «сlaude-opus»
+    неотличима глазом и не ловится латинским шаблоном.
+    """
+    import unicodedata
+
+    text = plan.canonical_json().decode("utf-8", "replace")
+    normalized = unicodedata.normalize("NFKC", text)
+    # Гомоглифы приводятся к латинице: только те буквы, которые совпадают
+    # начертанием и реально встречаются в идентификаторах моделей.
+    homoglyphs = str.maketrans({
+        "а": "a", "с": "c", "е": "e", "о": "o", "р": "p", "х": "x",
+        "А": "A", "С": "C", "Е": "E", "О": "O", "Р": "P", "Х": "X",
+    })
+    for candidate in {text, normalized, normalized.translate(homoglyphs)}:
+        if registry.looks_like_exact_model(candidate):
             out.append(
-                f"{path}: значение {node!r} похоже на точный идентификатор модели. "
+                "план содержит строку, похожую на точный идентификатор модели. "
                 "Центр называет только СПОСОБНОСТЬ; модель выбирает локальная "
                 "политика воркера (инвариант I-P5)"
             )
-
-    walk(plan.content_dict(), "")
+            return
 
 
 def _check_scopes(plan: RoutingPlan, out: list[str]) -> None:

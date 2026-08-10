@@ -1,7 +1,7 @@
 {
   "claim": "хэш одинаков у центра, в нагрузке задания, в спеке и в привязке",
-  "claude_gpt_codex": "sha256:39c5ddc78ef364e836dc73e7de13ebd35b21e60edfbd53c000fb54b26cf1c019",
-  "full_codex": "sha256:5d0479d5b5265b67f222645851bb2ac3129886fa2c5dc6b14adbf96bf4a7c5b4",
+  "claude_gpt_codex": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61",
+  "full_codex": "sha256:f6498507662be0dfc9d3066da155bdf9b42f348468cdf675d2caa2cb31bc3ae9",
   "hash_excludes": [
     "routing_plan_id",
     "created_at"

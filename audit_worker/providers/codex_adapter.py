@@ -102,9 +102,18 @@ _INFERENCE_ARGV: tuple[str, ...] = (
 _INFERENCE_ARGV_HEAD: tuple[str, ...] = _INFERENCE_ARGV[:-1]
 
 
+#: Уровни усилия, которые Codex CLI принимает. Значение вне набора НЕ
+#: передаётся: тихо подставить чужое — значит получить прогон, не совпадающий
+#: с планом, который его обещал.
+_ALLOWED_REASONING_EFFORTS: frozenset[str] = frozenset(
+    {"low", "medium", "high", "xhigh"}
+)
+
+
 def _inference_argv(
     model: Optional[str] = None,
     image_paths: Sequence[Path] = (),
+    reasoning_effort: Optional[str] = None,
 ) -> list[str]:
     """argv рабочего вызова: константы модуля + значения локальной политики.
 
@@ -132,6 +141,16 @@ def _inference_argv(
     argv: list[str] = [*_INFERENCE_ARGV_HEAD]
     if model:
         argv.append(f"--model={model}")
+    # УРОВЕНЬ УСИЛИЯ (этап 11I). До него параметр терялся между планом и argv:
+    # план обещал `xhigh` визуальной ноге оптимизации, а вызов уходил на
+    # умолчание CLI — и хэш плана удостоверял свойство, которого не было.
+    #
+    # `--ignore-user-config` выше отключает в том числе `model_reasoning_effort`
+    # машины, поэтому значение обязано приходить флагом; форма `-c ключ=значение`
+    # — та же, что использует центральный `codex_runner`.
+    effort = str(reasoning_effort or "").strip().lower()
+    if effort in _ALLOWED_REASONING_EFFORTS:
+        argv.extend(["-c", f'model_reasoning_effort="{effort}"'])
     for path in image_paths:
         argv.append(f"--image={path}")
     argv.append("-")
@@ -466,6 +485,7 @@ class CodexProviderAdapter(ProviderAdapter):
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
         model_report: str = "required",
+        reasoning_effort: Optional[str] = None,
     ) -> ProviderInferenceResult:
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
@@ -495,7 +515,7 @@ class CodexProviderAdapter(ProviderAdapter):
                 ),
             )
         result = self.run(
-            _inference_argv(requested_model or None),
+            _inference_argv(requested_model or None, reasoning_effort=reasoning_effort),
             # Явный срок вызывающего ПОБЕЖДАЕТ. У контрольного запроса стоит
             # пол в 120 с, потому что там срок ничей: команду даёт человек и
             # бюджета этапа не существует. У рабочего вызова бюджет есть, его
@@ -524,6 +544,7 @@ class CodexProviderAdapter(ProviderAdapter):
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
         model_report: str = "required",
+        reasoning_effort: Optional[str] = None,
     ) -> ProviderInferenceResult:
         """То же, что `structured_inference`, но с вложенными изображениями.
 

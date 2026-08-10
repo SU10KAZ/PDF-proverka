@@ -314,12 +314,17 @@ def _compile_findings_merge(
                     provider=provider,
                     capability=capability,
                     depends_on=("merge_base",),
-                    condition=RoutingCondition.of(
-                        registry.COND_DISCIPLINE_IN,
-                        disciplines=list(TARGETED_DISCIPLINES),
-                    ),
+                    # Дисциплина уже проверена компилятором (действие в план
+                    # просто не попало бы), поэтому в условии остаётся то, что
+                    # центру заранее неизвестно: сборщик проходов возвращает
+                    # ПУСТОЙ список, если MD проекта не существует, — и тогда
+                    # гаснут все три прохода разом.
+                    condition=RoutingCondition.of(registry.COND_HAS_MD_FILE),
                     multiplicity=RoutingMultiplicity.per_document(),
-                    note="дисциплинарный проход; отказ нефатален",
+                    note=(
+                        "дисциплинарный проход (дисциплина входит в "
+                        f"{list(TARGETED_DISCIPLINES)}); отказ нефатален"
+                    ),
                 )
             )
         actions.append(
@@ -342,10 +347,11 @@ def _compile_findings_merge(
                     provider=provider,
                     capability=capability,
                     depends_on=("merge_base",),
-                    condition=RoutingCondition.feature(
-                        "FINDING_EVIDENCE_OCR_OBSERVER_ENABLED"
-                    ),
+                    # Флаг уже применён компилятором; остаётся условие данных,
+                    # общее для всех targeted-проходов.
+                    condition=RoutingCondition.of(registry.COND_HAS_MD_FILE),
                     multiplicity=RoutingMultiplicity.per_document(),
+                    note="за флагом FINDING_EVIDENCE_OCR_OBSERVER_ENABLED",
                 )
             )
     return _stage(
@@ -364,6 +370,11 @@ def _compile_findings_critic(inputs: CompilerInputs) -> RoutingStage:
     `run_deterministic_critic` вызывается с `llm_call=None` литералом; строка
     таблицы `findings_critic` конвейером не читается вообще.
     """
+    if not _flag(inputs.feature_flags, "PIPELINE_VERIFIER_ENABLED", True):
+        # Килсвитч гасит стадию ЦЕЛИКОМ, до первой фазы. Оставить в плане
+        # действие с условием на тот же флаг значило бы описать шаг, которого
+        # не будет: флаг заморожен, ответ известен уже сейчас.
+        return _stage("findings_critic", [], note="этап выключен PIPELINE_VERIFIER_ENABLED")
     return _stage(
         "findings_critic",
         [
@@ -371,7 +382,6 @@ def _compile_findings_critic(inputs: CompilerInputs) -> RoutingStage:
                 action_id="structural_checks",
                 role=registry.ROLE_STRUCTURAL_CRITIC,
                 kind=registry.KIND_DETERMINISTIC,
-                condition=RoutingCondition.feature("PIPELINE_VERIFIER_ENABLED"),
                 multiplicity=RoutingMultiplicity.per_document(),
                 note="run_deterministic_critic(llm_call=None): 0 обращений к модели",
             ),
@@ -390,6 +400,14 @@ def _compile_findings_corrector(inputs: CompilerInputs) -> RoutingStage:
     capability = registry.CLASS_TO_CAPABILITY.get(
         inputs.claude_default_model_class, registry.CAP_CHEAP_REVIEW
     )
+    if not _flag(inputs.feature_flags, "PIPELINE_VERIFIER_ENABLED", True):
+        # Тот же килсвитч: обе фазы живут внутри одной стадии `findings_review`
+        # и гаснут вместе. Страж отсутствия — самое дорогое из того, что здесь
+        # гаснет, и бюджет обязан это учитывать.
+        return _stage(
+            "findings_corrector", [],
+            note="этап выключен PIPELINE_VERIFIER_ENABLED",
+        )
     return _stage(
         "findings_corrector",
         [

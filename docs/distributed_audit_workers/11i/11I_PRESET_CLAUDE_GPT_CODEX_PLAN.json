@@ -2,7 +2,7 @@
   "schema_version": 1,
   "condition_evaluator_version": 1,
   "preset_id": "claude_gpt_codex",
-  "pipeline_revision": "1a79e27d",
+  "pipeline_revision": "70938f2c",
   "feature_flags": {
     "AUDIT_CODEX_TARGETED_FINDINGS": "1",
     "CLAUDE_DEFAULT_MODEL_CLASS": "cheap",
@@ -158,10 +158,7 @@
           "role": "structural_critic",
           "kind": "deterministic",
           "condition": {
-            "type": "feature_enabled",
-            "params": {
-              "flag": "PIPELINE_VERIFIER_ENABLED"
-            }
+            "type": "always"
           },
           "multiplicity": {
             "type": "per_document"
@@ -418,7 +415,7 @@
       "note": "строка таблицы моделей для этого этапа не читается конвейером"
     }
   ],
-  "routing_plan_id": "rp_3a031c37a0444eee",
-  "created_at": 1786392782.0032656,
-  "routing_plan_hash": "sha256:39c5ddc78ef364e836dc73e7de13ebd35b21e60edfbd53c000fb54b26cf1c019"
+  "routing_plan_id": "rp_8f07fb519ec24e2c",
+  "created_at": 1786394579.4129179,
+  "routing_plan_hash": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61"
 }

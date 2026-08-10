@@ -217,6 +217,39 @@ def _verify_via_provider_bridge(
         return {}
 
     prompt = build_verification_prompt(md_text, candidates)
+
+    # Маршрут ДЕЙСТВИЯ ПЛАНА (11I). Страж отсутствия — единственный этап, где
+    # модель берётся не из строки таблицы, а из глобальной ручки центра; в плане
+    # он выражен явным действием `absence_guard` с провайдером Claude — и в
+    # пресете «Full Codex» тоже.
+    #
+    # Пустой маршрут при АКТИВНОМ плане означает, что действия для стража в
+    # плане нет. Это не повод звать модель «как-нибудь»: мост такой вызов
+    # отвергнет, и отказ обязан быть заметным, а не раствориться в fail-soft.
+    route: dict = {}
+    plan_active = False
+    try:
+        from backend.app.services.audit_routing import active_plan as _ap
+        from backend.app.services.audit_routing import registry as _reg
+
+        plan_active = _ap.get_plan() is not None
+        action = _ap.single_action("findings_corrector", _reg.ROLE_ABSENCE_GUARD)
+        if action is not None:
+            route = {
+                "action_id": action.action_id,
+                "provider": str(action.provider or ""),
+                "capability": str(action.capability or ""),
+            }
+    except Exception:                                      # noqa: BLE001 — fail-soft
+        route = {}
+    if plan_active and not route:
+        raise RuntimeError(
+            "страж отсутствия обращается к модели, а в плане маршрутизации "
+            "действия absence_guard нет. Молчаливый пропуск здесь уже случался "
+            "и стоил 55 проектов без проверки отсутствия: этап обязан упасть, "
+            "а не отчитаться успехом без единого вердикта"
+        )
+
     try:
         outcome = pipeline_bridge.run_stage_inference(
             job_dir=pipeline_bridge.attempt_dir(),
@@ -224,6 +257,7 @@ def _verify_via_provider_bridge(
             prompt=prompt,
             purpose="absence_guard",
             timeout_sec=float(timeout_sec),
+            **route,
         )
     except ProviderBridgeError:
         return {}

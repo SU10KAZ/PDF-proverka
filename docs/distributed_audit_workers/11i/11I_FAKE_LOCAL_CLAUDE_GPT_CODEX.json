@@ -1,6 +1,6 @@
 {
   "preset_id": "claude_gpt_codex",
-  "routing_plan_hash": "sha256:39c5ddc78ef364e836dc73e7de13ebd35b21e60edfbd53c000fb54b26cf1c019",
+  "routing_plan_hash": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61",
   "model_actions": 13,
   "trace": [
     {
@@ -156,10 +156,7 @@
       "parallel_group": null,
       "depends_on": [],
       "condition": {
-        "type": "feature_enabled",
-        "params": {
-          "flag": "PIPELINE_VERIFIER_ENABLED"
-        }
+        "type": "always"
       },
       "multiplicity": {
         "type": "per_document"

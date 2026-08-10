@@ -654,9 +654,26 @@ async def run_block_analysis_findings_only(
 
     # ── Smoke-limits via env (опционально, не активны в production) ──
     smoke = _read_stage02_smoke_env()
+    # Параллельность блоков. Считается по ЧИСЛУ ОДНОВРЕМЕННЫХ ПОДПРОЦЕССОВ, а
+    # не по числу блоков: каждая нога ансамбля — отдельный запуск CLI.
+    #
+    # До 11I мост схлопывал ансамбль в одну ногу, и провайдерский режим брал
+    # общий потолок 3. Ансамбль по плану даёт три ноги на блок, то есть при том
+    # же потолке на машине оказалось бы девять одновременных CLI провайдера —
+    # втрое больше, чем центр позволяет себе при таком же составе ног.
+    # Провайдерский режим приравнивается к codex-режиму: там потолок и задан
+    # под ансамбль (`AUDIT_STAGE02_CODEX_PARALLELISM`).
+    _plan_ensemble = False
+    if provider_mode:
+        try:
+            from backend.app.services.audit_routing import active_plan as _ap
+
+            _plan_ensemble = len(_ap.block_detector_legs()) > 1
+        except Exception:                            # noqa: BLE001 — fail-soft
+            _plan_ensemble = False
     detector_default_parallelism = (
         STAGE01_CODEX_PARALLELISM
-        if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
+        if (model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID} or _plan_ensemble)
         else DEFAULT_PARALLELISM
     )
     parallelism = smoke.get("max_parallel", detector_default_parallelism)

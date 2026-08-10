@@ -3,7 +3,7 @@
   "not_covered": "живой сокет: стенд 11G с uvicorn и агентом в отдельном процессе здесь не поднимался, транспорт с 11G не менялся",
   "inference_calls": 0,
   "preset_id": "codex_exec",
-  "routing_plan_hash": "sha256:9c1220fdceb2deb9b2304103da678c51f6f43147d15cfc8775df0cf7e5af1d03",
+  "routing_plan_hash": "sha256:bdc832f2c5cba1fae18b558c7c183cbafaed2bbf580cfb0669eef124b8ca020a",
   "graphic_blocks": 40,
   "provider_requirement": {
     "provider": "codex",
@@ -180,15 +180,7 @@
         "merge_base"
       ],
       "condition": {
-        "type": "discipline_in",
-        "params": {
-          "disciplines": [
-            "AR",
-            "EOM",
-            "SS",
-            "KM"
-          ]
-        }
+        "type": "has_md_file"
       },
       "multiplicity": {
         "type": "per_document"
@@ -228,10 +220,7 @@
       "parallel_group": null,
       "depends_on": [],
       "condition": {
-        "type": "feature_enabled",
-        "params": {
-          "flag": "PIPELINE_VERIFIER_ENABLED"
-        }
+        "type": "always"
       },
       "multiplicity": {
         "type": "per_document"

@@ -22,9 +22,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-#: Поля, которые судья обязан вернуть. Ответ без них разбирать нечем, и
-#: `review_dual_findings` уйдёт в свой штатный fail-soft.
-JUDGE_REQUIRED_FIELDS: tuple[str, ...] = ("findings",)
+#: Поля, которые судья обязан вернуть.
+#:
+#: Имена взяты из ЕГО СХЕМЫ (`dual_review.REVIEW_SYSTEM_PROMPT`), а не из схемы
+#: детектора: судья возвращает `relationships` и `gap_findings`, ключа
+#: `findings` в его ответе нет и быть не может. Ошибка здесь не «строже, чем
+#: надо»: проверка обязательных полей падала бы на КАЖДОМ блоке уже ПОСЛЕ
+#: оплаченного вызова, вердикт выбрасывался бы, и этап тихо шёл бы на
+#: `fallback_dual_review` — то есть судья был бы оплачен и не применён.
+#:
+#: `gap_search` в список не входит намеренно: при выключенном gap-search модель
+#: вправе его не возвращать, а `normalize_review_payload` восстанавливает блок
+#: сам.
+JUDGE_REQUIRED_FIELDS: tuple[str, ...] = ("relationships", "gap_findings")
 
 
 @dataclass
@@ -33,6 +43,13 @@ class JudgeCallResult:
 
     Дублирование формы намеренно: импортировать сюда класс транспорта Codex
     значило бы связать провайдерский путь с CLI, которого на воркере нет.
+
+    Поля `text` и `model` обязательны, хотя провайдерскому пути они не нужны:
+    их читает `review_dual_findings` на ОБЕИХ ветках — и успешной, и
+    отказной. Без них первое же обращение к `result.text` давало бы
+    `AttributeError`, который внешний fail-soft превратил бы в «судья не
+    сработал» — после того как вызов уже оплачен, и без единого слова о
+    причине в журнале.
     """
 
     json_data: Optional[dict[str, Any]] = None
@@ -42,6 +59,13 @@ class JudgeCallResult:
     output_tokens: int = 0
     duration_ms: int = 0
     content: str = ""
+    #: Сырой текст ответа. Совпадает с `content`; отдельное имя — потому что
+    #: под ним его читает разбор судьи.
+    text: str = ""
+    #: Фактическая модель. На провайдерском пути её называет локальная политика
+    #: воркера, а не конвейер, поэтому здесь пусто — вызывающий подставит метку
+    #: действия плана.
+    model: str = ""
     usage: dict[str, Any] = field(default_factory=dict)
 
 
@@ -131,12 +155,14 @@ def build_judge_call(
                 duration_ms=int(getattr(result, "duration_ms", 0) or 0),
                 usage=usage,
             )
+        raw = json.dumps(payload, ensure_ascii=False)
         return JudgeCallResult(
             json_data=payload,
             input_tokens=int(usage.get("input_tokens") or 0),
             output_tokens=int(usage.get("output_tokens") or 0),
             duration_ms=int(getattr(result, "duration_ms", 0) or 0),
-            content=json.dumps(payload, ensure_ascii=False),
+            content=raw,
+            text=raw,
             usage=usage,
         )
 

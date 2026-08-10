@@ -221,11 +221,21 @@ class RouteBinding:
         }
 
     def as_public_dict(self) -> dict[str, Any]:
-        """Вид для центра: без путей файловой системы."""
+        """Вид для центра: без путей файловой системы и БЕЗ строки модели.
+
+        Точные идентификаторы — собственность машины, и объявленный инвариант
+        прямо это утверждает: «наружу уходит только „claude умеет
+        strong_audit"». До 11I наружу утекала одна строка (`binding.model`); с
+        маршрутами утекла бы вся таблица локальной политики — то есть состав и
+        уровень чужих подписок целиком.
+
+        Что остаётся: провайдер, способность, режим сверки модели и режим
+        авторизации. Этого хватает, чтобы разобрать прогон, и не хватает, чтобы
+        восстановить конфигурацию VPS.
+        """
         return {
             "provider": self.provider,
             "capability": self.capability,
-            "model": self.model,
             "model_report": self.model_report,
             "auth_mode": self.auth_mode,
         }
@@ -252,16 +262,40 @@ class RouteBinding:
             )
         except model_policy.ProviderPolicyError as exc:
             raise ProviderResolutionError(str(exc)) from None
+        report = str(data.get("model_report") or model_policy.MODEL_REPORT_REQUIRED)
+        if report not in model_policy.MODEL_REPORT_MODES:
+            raise ProviderResolutionError(
+                f"маршрут {provider}/{capability}.model_report={report!r}: "
+                f"допустимы {list(model_policy.MODEL_REPORT_MODES)}"
+            )
+        executable = data.get("executable")
+        if executable is not None:
+            # Путь к CLI — это argv[0] следующего оплачиваемого вызова, и
+            # привязка лежит в каталоге, которым владеет процесс конвейера.
+            # Ровно эта угроза названа причиной валидировать строку модели;
+            # относительный путь здесь означал бы «взять что-нибудь из cwd».
+            executable = str(executable)
+            if not executable.startswith("/"):
+                raise ProviderResolutionError(
+                    f"маршрут {provider}/{capability}.executable={executable!r}: "
+                    "ожидается абсолютный путь"
+                )
+        timeout = float(data.get("timeout_sec") or 60.0)
+        if not 0 < timeout <= 24 * 3600:
+            raise ProviderResolutionError(
+                f"маршрут {provider}/{capability}.timeout_sec={timeout!r} вне "
+                "разумных границ"
+            )
         return cls(
             provider=provider,
             capability=capability,
             model=model,
             accepted_reported_models=accepted,
-            model_report=str(data.get("model_report") or "required"),
+            model_report=report,
             auth_mode=str(data.get("auth_mode") or ""),
             provider_root=str(data.get("provider_root") or ""),
-            executable=(str(data["executable"]) if data.get("executable") else None),
-            timeout_sec=float(data.get("timeout_sec") or 60.0),
+            executable=executable,
+            timeout_sec=timeout,
         )
 
 

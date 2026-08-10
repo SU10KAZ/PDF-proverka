@@ -325,7 +325,7 @@ def run_stage_inference(
     if entry.state == STATE_REPLAY and entry.result is not None:
         return BridgeOutcome(
             provider_result=entry.result, ledger=entry, performed=False,
-            validation=_validate(entry.result, binding=binding,
+            validation=_validate(entry.result, binding=binding, route=route,
                                  required_result_fields=required_result_fields,
                                  field_types=field_types,
                                  expected_semantics=expected_semantics,
@@ -361,7 +361,7 @@ def run_stage_inference(
     # назначена без списка допустимых. Все они означают «до модели не дошли»,
     # а списанная заявка означала бы «дошли, но исход неизвестен» — то есть
     # съеденную попытку и вечный replay ошибки при любом повторе.
-    unreachable = _preflight(adapter, binding, prompt, images=images)
+    unreachable = _preflight(adapter, binding, prompt, images=images, route=route)
     if unreachable:
         raise ProviderBridgeError(unreachable)
 
@@ -374,7 +374,7 @@ def run_stage_inference(
         if claim.state == STATE_REPLAY and claim.result is not None:
             return BridgeOutcome(
                 provider_result=claim.result, ledger=claim, performed=False,
-                validation=_validate(claim.result, binding=binding,
+                validation=_validate(claim.result, binding=binding, route=route,
                                      required_result_fields=required_result_fields,
                                      field_types=field_types,
                                      expected_semantics=expected_semantics,
@@ -390,6 +390,28 @@ def run_stage_inference(
         route.accepted_reported_models if route else binding.accepted_reported_models
     )
     report_mode = route.model_report if route else binding.model_report
+
+    # УРОВЕНЬ УСИЛИЯ (11I). До этой правки параметр принимался мостом и молча
+    # выбрасывался: план обещал визуальной ноге оптимизации `xhigh`, а вызов
+    # уходил на умолчание CLI — и хэш плана удостоверял свойство, которого в
+    # прогоне не было. Передаётся только тем адаптерам, которые его понимают:
+    # у Claude CLI такого параметра нет, и подсовывать его туда значило бы
+    # менять `TypeError` на другую форму той же лжи.
+    effort = str(reasoning_effort or "").strip().lower()
+    effort_kwargs: dict[str, Any] = {}
+    if effort:
+        import inspect as _inspect
+
+        target = (
+            getattr(adapter, "structured_inference_multimodal", None) if images
+            else getattr(adapter, "structured_inference", None)
+        )
+        try:
+            accepts = "reasoning_effort" in _inspect.signature(target).parameters
+        except (TypeError, ValueError):                 # noqa: BLE001
+            accepts = False
+        if accepts:
+            effort_kwargs["reasoning_effort"] = effort
     try:
         # Модель и допустимые фактические её идентификаторы берутся ИЗ
         # ПРИВЯЗКИ (маршрута плана), а не из аргументов вызывающего: этап
@@ -408,6 +430,7 @@ def run_stage_inference(
                 model=model_id,
                 accepted_reported_models=accepted_models,
                 model_report=report_mode,
+                **effort_kwargs,
             )
         else:
             result = adapter.structured_inference(
@@ -415,6 +438,7 @@ def run_stage_inference(
                 model=model_id,
                 accepted_reported_models=accepted_models,
                 model_report=report_mode,
+                **effort_kwargs,
             )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.
@@ -437,7 +461,7 @@ def run_stage_inference(
         )
         raise
     validation = _validate(
-        result, binding=binding,
+        result, binding=binding, route=route,
         required_result_fields=required_result_fields,
         field_types=field_types, expected_semantics=expected_semantics,
         claim_task_id=claim_task_id, claim_attempt_id=claim_attempt_id,
@@ -454,14 +478,26 @@ def _preflight(
     prompt: str,
     *,
     images: Sequence[tuple[str, bytes]] = (),
+    route=None,
 ) -> str:
     """Причина, по которой вызов НЕ СОСТОИТСЯ. Пустая строка — путь открыт.
 
     Проверяется ровно то, что известно ДО запуска процесса. Смысл — отделить
     «до модели не дошли» от «модель ответила ошибкой»: первое не должно стоить
     ни списанной заявки, ни съеденного потолка, ни вечного replay при повторе.
+
+    Проверяется МАРШРУТ, которым вызов будет сделан, а не первичная привязка:
+    у codex-ноги своя модель, свой список допустимых идентификаторов и свой
+    адаптер, и «модель назначена» у первичного провайдера ничего о ней не
+    говорит.
     """
-    if not binding.model:
+    provider_name = route.provider if route is not None else binding.provider
+    model_id = route.model if route is not None else binding.model
+    accepted = (
+        route.accepted_reported_models if route is not None
+        else binding.accepted_reported_models
+    )
+    if not model_id:
         # Вызов без НАЗНАЧЕННОЙ модели — это ровно та слепота 11C, ради
         # устранения которой писалась локальная политика: argv уходит без
         # `--model`, отвечает модель учётной записи по умолчанию, а обе сверки
@@ -473,23 +509,24 @@ def _preflight(
             "умолчанию, и ни одна проверка этого не заметила бы)"
         )
     if getattr(adapter, "policy_blocked", False):
-        return f"провайдер {binding.provider!r} отключён политикой на этом воркере"
+        return f"провайдер {provider_name!r} отключён политикой на этом воркере"
     if not getattr(adapter, "inference_allowed", False):
-        return f"рабочий вызов модели не разрешён на адаптере {binding.provider!r}"
+        return f"рабочий вызов модели не разрешён на адаптере {provider_name!r}"
     if not str(prompt or "").strip():
         return "пустой промпт: рабочий вызов не выполняется"
     if images and not hasattr(adapter, "structured_inference_multimodal"):
         # Проверяется ДО заявки: провайдер, не умеющий вложений, — это «до
         # модели не дошли», и стоить попытки это не должно.
         return (
-            f"провайдер {binding.provider!r} не умеет передавать изображения: "
+            f"провайдер {provider_name!r} не умеет передавать изображения: "
             "молчаливый переход на текстовый вызов запрещён — этап получил бы "
             "анализ чертежа без чертежа"
         )
-    if binding.model and not binding.accepted_reported_models:
+    if model_id and not accepted:
         return (
-            f"модель {binding.model!r} назначена, но список допустимых "
-            "фактических идентификаторов пуст: сверять ответ не с чем"
+            f"назначенная модель есть, но список допустимых фактических "
+            f"идентификаторов у маршрута {provider_name!r} пуст: сверять ответ "
+            "не с чем"
         )
     try:
         installed = adapter.installed()
@@ -497,7 +534,7 @@ def _preflight(
         installed = False
     if not installed:
         return (
-            f"CLI провайдера {binding.provider!r} не найден по пути привязки: "
+            f"CLI провайдера {provider_name!r} не найден по пути привязки: "
             "вызов невозможен"
         )
     return ""
@@ -512,6 +549,7 @@ def _validate(
     expected_semantics: Optional[dict[str, Any]],
     claim_task_id: str = "",
     claim_attempt_id: str = "",
+    route=None,
 ) -> ValidationReport:
     """Сверка идентичности здесь НЕ тавтологична — и это главное в функции.
 
@@ -521,11 +559,22 @@ def _validate(
     Совпадение двух независимых записей и есть доказательство «результат
     относится к этой попытке». Сравнение привязки с самой собой доказывало бы
     только то, что файл не поменялся между двумя строками кода.
+
+    С 11I у попытки НЕСКОЛЬКО маршрутов, и сверять ответ codex-ноги с
+    ожиданиями первичного провайдера привязки нельзя: у них разный провайдер,
+    разная модель и разный режим отчёта о модели. Такая сверка не «строже» —
+    она просто ложна, и падала бы КАЖДАЯ нога, кроме первичной, уже ПОСЛЕ
+    оплаченного вызова. Поэтому ожидания берутся из МАРШРУТА, которым вызов
+    фактически сделан; поля попытки (`task_id`, `attempt_id`, запрещённые
+    литералы) остаются от привязки — они общие для всех маршрутов.
     """
     return validate_inference(
         result,
-        expected_provider=binding.provider,
-        expected_auth_mode=binding.auth_mode,
+        expected_provider=(route.provider if route is not None else binding.provider),
+        expected_auth_mode=(
+            route.auth_mode if route is not None and route.auth_mode
+            else binding.auth_mode
+        ),
         required_result_fields=required_result_fields,
         field_types=field_types,
         expected_semantics=expected_semantics,
@@ -534,9 +583,16 @@ def _validate(
         attempt_id=binding.attempt_id,
         claim_task_id=claim_task_id or binding.task_id,
         claim_attempt_id=claim_attempt_id or binding.attempt_id,
-        expected_model=binding.model or "",
-        accepted_reported_models=binding.accepted_reported_models,
-        model_report=binding.model_report,
+        expected_model=(
+            (route.model if route is not None else binding.model) or ""
+        ),
+        accepted_reported_models=(
+            route.accepted_reported_models if route is not None
+            else binding.accepted_reported_models
+        ),
+        model_report=(
+            route.model_report if route is not None else binding.model_report
+        ),
     )
 
 

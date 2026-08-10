@@ -2,7 +2,7 @@
   "schema_version": 1,
   "condition_evaluator_version": 1,
   "preset_id": "codex_exec",
-  "pipeline_revision": "1a79e27d",
+  "pipeline_revision": "70938f2c",
   "feature_flags": {
     "AUDIT_CODEX_TARGETED_FINDINGS": "1",
     "CLAUDE_DEFAULT_MODEL_CLASS": "cheap",
@@ -153,15 +153,7 @@
           "role": "targeted_discipline",
           "kind": "model",
           "condition": {
-            "type": "discipline_in",
-            "params": {
-              "disciplines": [
-                "AR",
-                "EOM",
-                "SS",
-                "KM"
-              ]
-            }
+            "type": "has_md_file"
           },
           "multiplicity": {
             "type": "per_document"
@@ -171,7 +163,7 @@
           "depends_on": [
             "merge_base"
           ],
-          "note": "дисциплинарный проход; отказ нефатален"
+          "note": "дисциплинарный проход (дисциплина входит в ['AR', 'EOM', 'SS', 'KM']); отказ нефатален"
         },
         {
           "action_id": "targeted_docnorm",
@@ -203,10 +195,7 @@
           "role": "structural_critic",
           "kind": "deterministic",
           "condition": {
-            "type": "feature_enabled",
-            "params": {
-              "flag": "PIPELINE_VERIFIER_ENABLED"
-            }
+            "type": "always"
           },
           "multiplicity": {
             "type": "per_document"
@@ -463,7 +452,7 @@
       "note": "строка таблицы моделей для этого этапа не читается конвейером"
     }
   ],
-  "routing_plan_id": "rp_392dfd563dd144d8",
-  "created_at": 1786392782.005111,
-  "routing_plan_hash": "sha256:5d0479d5b5265b67f222645851bb2ac3129886fa2c5dc6b14adbf96bf4a7c5b4"
+  "routing_plan_id": "rp_ef370821406f4ed0",
+  "created_at": 1786394579.416049,
+  "routing_plan_hash": "sha256:f6498507662be0dfc9d3066da155bdf9b42f348468cdf675d2caa2cb31bc3ae9"
 }
