@@ -89,7 +89,15 @@ _BLIND_BLOCK_ESTIMATE = 12
 #: любого честно посчитанного бюджета, иначе он превращается в скрытый лимит
 #: на размер документа. Ограничивает же реальный расход не он, а формула
 #: `estimate_inferences` и потолок локальной политики воркера — тот всегда у́же.
-CENTER_MAX_INFERENCES = 64
+#:
+#: Этап 11I поднимает рубеж по той же самой причине, по которой 11H поднял его
+#: с 24 до 64: старое значение описывало ОДНОНОГИЙ worker-участок, в который
+#: ансамбль схлопывал мост. Как только этап 01 перестаёт схлопываться, он даёт
+#: четыре обращения на графический блок, и 64 не хватает уже на документ из
+#: пятнадцати блоков. Новое значение — не «побольше на всякий случай»: реальный
+#: потолок задаёт `budget.worker_budget`, выведенный из топологии плана, а этот
+#: рубеж лишь обязан быть выше любого честного результата такой формулы.
+CENTER_MAX_INFERENCES = 1024
 
 
 def technical_retry_headroom(natural_calls: int) -> int:
@@ -291,6 +299,136 @@ def audit_provider() -> str:
             f"{list(SUPPORTED_AUDIT_PROVIDERS)}"
         )
     return raw
+
+
+#: Способность воркера, объявляющая понимание плана маршрутизации (11I).
+#:
+#: Гейт нужен потому, что установленный воркер разбирает нагрузку задания
+#: закрытым набором полей (`audit_runner._ALLOWED_FIELDS`): незнакомое поле
+#: `routing_plan` он отвергнет целиком, ДО исполнения. Отправить план машине,
+#: которая его не понимает, — значит сорвать задание на приёме.
+WORKER_CAPABILITY_ROUTING_PLAN = "routing_plan_v1"
+
+
+def worker_understands_routing_plan(worker: dict[str, Any]) -> bool:
+    """Объявил ли воркер понимание плана маршрутизации."""
+    from backend.app.services.distributed_workers import job_service
+
+    caps = job_service.worker_capabilities(worker)
+    return bool(caps.get(WORKER_CAPABILITY_ROUTING_PLAN))
+
+
+def build_routing_plan_requirement(
+    *,
+    version_dir: Path,
+    worker: dict[str, Any],
+    routing_plan: Any,
+    action: str = "full",
+) -> tuple[ProviderRequirementPayload, dict[str, Any]]:
+    """Требование, выведенное ИЗ ПЛАНА. Отказ — до создания задания.
+
+    Отличий от `build_audit_requirement` три, и все три существенны.
+
+    **Провайдер и способность больше не выбираются настройкой центра.** Они
+    следуют из плана: этап 01 требует OpenRouter и два класса моделей Codex
+    одновременно, а этап 05 — Claude и Codex сразу. `provider_requirement`
+    остаётся в нагрузке ради установленного воркера, но заполняется тем
+    провайдером, на котором держится БОЛЬШИНСТВО worker-действий плана, и
+    сопровождается полным многопровайдерным списком.
+
+    **Бюджет считается из топологии.** Прежняя формула авторизовала один вызов
+    на графический блок при фактических четырёх; документ на сорок блоков
+    упирался в потолок, уже оплатив две трети прогона.
+
+    **Совместимость проверяется по ВСЕМ парам плана.** Воркер, у которого нет
+    OpenRouter, не получает задание вовсе — вместо того чтобы молча выполнить
+    ансамбль одной ногой.
+    """
+    from backend.app.services.audit_routing import budget as routing_budget
+    from backend.app.services.audit_routing import registry as routing_registry
+    from backend.app.services.audit_routing import requirements as routing_requirements
+
+    if not worker_understands_routing_plan(worker):
+        raise ProviderRequirementError(
+            "воркер не объявляет способность "
+            f"{WORKER_CAPABILITY_ROUTING_PLAN!r}: он разбирает нагрузку задания "
+            "закрытым набором полей и отвергнет план целиком. Отправлять "
+            "задание без плана нельзя — маршрут вернулся бы к глобальной "
+            "настройке центра, то есть к тому, что 11I и устраняет"
+        )
+
+    from backend.app.services.distributed_workers import job_service
+
+    verdict = routing_requirements.check_worker(
+        routing_plan, job_service.worker_capabilities(worker)
+    )
+    if not verdict.compatible:
+        raise ProviderRequirementError(routing_requirements.explain(verdict))
+
+    blocks = count_graphic_blocks(Path(version_dir))
+    shape = routing_budget.DocumentShape(graphic_blocks=blocks)
+    # Ноль означает «настройки нет»: потолок берётся из рубежа центра.
+    configured = _env_int("DISTRIBUTED_AUDIT_MAX_INFERENCES", 0)
+    ceiling = min(CENTER_MAX_INFERENCES, configured) if configured > 0 else CENTER_MAX_INFERENCES
+    estimate = routing_budget.worker_budget(routing_plan, shape, ceiling=ceiling)
+
+    required = routing_requirements.extract(routing_plan)
+    multi = routing_requirements.as_payload(required)
+
+    # `provider` схемы — Literal["claude","codex"]: OpenRouter в него не входит
+    # и входить не должен, потому что это поле старого одно-провайдерного
+    # контракта. Выбирается провайдер, на котором держится большинство
+    # worker-действий; полный состав уезжает планом.
+    weights: dict[str, int] = {}
+    for stage, item in routing_plan.model_actions():
+        if stage.execution_scope != routing_registry.SCOPE_WORKER:
+            continue
+        if item.provider in SUPPORTED_AUDIT_PROVIDERS:
+            weights[item.provider] = weights.get(item.provider, 0) + 1
+    legacy_provider = (
+        max(sorted(weights), key=lambda name: weights[name])
+        if weights else DEFAULT_AUDIT_PROVIDER
+    )
+
+    worker_stages = sorted({
+        stage.pipeline_stage or stage.stage_id
+        for stage in routing_plan.stages
+        if stage.execution_scope == routing_registry.SCOPE_WORKER
+    })
+    unknown = [s for s in worker_stages if s not in AUDIT_MODEL_STAGES]
+    if unknown:
+        raise ProviderRequirementError(
+            f"план назначает воркеру стадии вне белого списка центра: {unknown}"
+        )
+
+    requirement = ProviderRequirementPayload(
+        provider=legacy_provider,
+        capability=AUDIT_CAPABILITY,
+        allowed_stages=list(worker_stages),
+        max_inferences=int(min(estimate["max_inferences"], CENTER_MAX_INFERENCES)),
+    )
+    rationale = {
+        "provider": legacy_provider,
+        "provider_source": "план маршрутизации (преобладающий провайдер worker-участка)",
+        "capability": AUDIT_CAPABILITY,
+        "action": action,
+        "allowed_stages": list(worker_stages),
+        "budget": estimate,
+        "exact_model_in_payload": False,
+        "routing_plan_hash": routing_plan.plan_hash(),
+        "routing_plan_id": routing_plan.routing_plan_id,
+        "preset_id": routing_plan.preset_id,
+        "required_provider_capabilities": multi,
+        # Потолок схемы (64) ниже естественной потребности ансамбля. Это
+        # отдельное наблюдаемое утверждение, а не строка формулы: обрыв аудита
+        # на середине выглядит в журнале как ошибка этапа, и связать его с
+        # рубежом задним числом можно только по этому полю.
+        "clamped_by_schema_ceiling": bool(
+            estimate["max_inferences"] > CENTER_MAX_INFERENCES
+        ),
+        "natural_worker_calls": estimate["natural_calls"],
+    }
+    return requirement, rationale
 
 
 def build_audit_requirement(

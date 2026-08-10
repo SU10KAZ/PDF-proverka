@@ -168,7 +168,7 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
         _root, version_dir, _output = self._manager._resolve_job_paths(  # noqa: SLF001
             ctx.job
         )
-        requirement, rationale = await database.run_db(
+        requirement, rationale, routing_plan = await database.run_db(
             self._provider_requirement,
             worker_id=request.assigned_worker_id,
             version_dir=Path(version_dir),
@@ -187,6 +187,7 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             include_optimization=request.options.include_optimization,
             retry_stage=request.options.retry_stage,
             provider_requirement=requirement,
+            routing_plan=(routing_plan.to_dict() if routing_plan is not None else None),
             actor=f"operator:{ctx.extra.get('actor', 'unknown')}",
             display_name=request.project_id,
             settings=settings,
@@ -212,7 +213,7 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
         version_dir: Path,
         action: str,
         settings: Any,
-    ) -> tuple[Optional[dict[str, Any]], dict[str, Any]]:
+    ) -> tuple[Optional[dict[str, Any]], dict[str, Any], Any]:
         """Требование к провайдеру для ЭТОГО задания — или его осознанное отсутствие.
 
         Развилка ровно одна и проходит по воркеру, а не по желанию оператора.
@@ -234,10 +235,14 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
         задания значит потратить место и время на обеих сторонах.
         """
         from backend.app.services.distributed_workers import (
+            audit_job_service,
             job_service,
             provider_requirement as provider_requirement_service,
             repositories,
         )
+
+        from backend.app.services.audit_routing import compiler as routing_compiler
+        from backend.app.services.audit_routing.plan import RoutingPlanError
 
         worker = repositories.get_worker(worker_id, settings=settings)
         if worker is None:
@@ -251,18 +256,46 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
                     "(real_llm_enabled=false) — требование не формируется, "
                     "конвейер пойдёт к подделкам"
                 ),
-            }
+            }, None
+
+        # ЗДЕСЬ И ТОЛЬКО ЗДЕСЬ маршрут превращается из глобального состояния
+        # центра в свойство задания. Всё, что оператор переключит после этой
+        # строки, к текущему заданию отношения не имеет.
         try:
-            requirement, rationale = provider_requirement_service.build_audit_requirement(
-                version_dir=Path(version_dir), worker=worker, action=action,
+            discipline, _profile = audit_job_service.build_discipline_snapshot(
+                Path(version_dir), revision=audit_job_service.center_pipeline_revision()
+            )
+            plan = routing_compiler.compile_from_center(
+                discipline_id=discipline.code,
+                pipeline_revision=audit_job_service.center_pipeline_revision(),
+            )
+        except RoutingPlanError as exc:
+            # Невалидная конфигурация моделей — отказ ДО создания задания.
+            # Прежде такая правка `stage_models.json` молча меняла маршрут.
+            raise ExecutionError(
+                f"Конфигурация моделей не даёт исполнимого плана маршрутизации: {exc}"
+            ) from None
+        except Exception as exc:                    # noqa: BLE001 — дисциплина/профиль
+            raise ExecutionError(
+                f"План маршрутизации не построен: {exc}"
+            ) from None
+
+        try:
+            requirement, rationale = (
+                provider_requirement_service.build_routing_plan_requirement(
+                    version_dir=Path(version_dir), worker=worker,
+                    routing_plan=plan, action=action,
+                )
             )
         except provider_requirement_service.ProviderRequirementError as exc:
             # Fail closed. Молчаливое понижение до подделок здесь означало бы
-            # «аудит прошёл», за которым нет ни одного обращения к модели.
+            # «аудит прошёл», за которым нет ни одного обращения к модели; а
+            # молчаливый пропуск ноги ансамбля — «аудит прошёл тем же составом»,
+            # что ещё хуже, потому что незаметно.
             raise ExecutionError(
-                f"Воркер не может исполнить требование к провайдеру: {exc}"
+                f"Воркер не может исполнить план маршрутизации: {exc}"
             ) from None
-        return requirement.model_dump(), rationale
+        return requirement.model_dump(), rationale, plan
 
     async def _announce_requirement(
         self, project_id: str, rationale: dict[str, Any]
@@ -275,10 +308,17 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             )
         else:
             budget = rationale.get("budget") or {}
+            providers = ", ".join(
+                f"{block['provider']}: "
+                + "/".join(c["capability"] for c in block["capabilities"])
+                for block in (rationale.get("required_provider_capabilities") or [])
+            )
             message = (
-                f"Требование к провайдеру: {rationale['provider']} / "
-                f"способность {rationale['capability']}, потолок обращений "
-                f"{budget.get('max_inferences')} ({budget.get('formula', '')}). "
+                f"План маршрутизации {rationale.get('preset_id', '?')} "
+                f"({rationale.get('routing_plan_hash', '')[:19]}…): потолок "
+                f"обращений {budget.get('max_inferences')} "
+                f"({budget.get('formula', '')}). Требуемые способности — "
+                f"{providers or rationale.get('capability')}. "
                 "Точную модель выбирает воркер по своей локальной политике."
             )
         await ws_manager.broadcast_to_project(

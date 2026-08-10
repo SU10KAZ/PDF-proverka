@@ -505,9 +505,64 @@ def bind_providers(spec: dict[str, Any]) -> dict[str, Any]:
             "списанного разрешения оператора не выполняется"
         )
     spec["_provider_binding"] = binding
+    routing = activate_routing_plan(spec, binding=binding)
     # В evidence уезжает ПУБЛИЧНЫЙ вид: без абсолютных путей и без контрольных
     # литералов оператора.
-    return {"bridge": "active", **binding.as_public_dict()}
+    return {"bridge": "active", **binding.as_public_dict(), "routing_plan": routing}
+
+
+def activate_routing_plan(
+    spec: dict[str, Any], *, binding: Any = None
+) -> dict[str, Any]:
+    """Разобрать план задания, сверить хэш и сделать его планом ПРОГОНА.
+
+    Три утверждения, и каждое стоит отдельного отказа.
+
+    **План обязан разбираться и проходить доменную проверку.** Отвергнутый план
+    — это не «поедем как раньше»: «как раньше» означает читать глобальную
+    конфигурацию машины, а она на воркере вообще не та, что была у оператора в
+    момент запуска.
+
+    **Хэш плана обязан совпасть с хэшем в привязке.** Привязку писал исполнитель
+    из нагрузки задания, план приехал той же нагрузкой, но разными полями и
+    разным кодом. Совпадение двух независимо посчитанных значений — это и есть
+    доказательство, что центр и воркер держат ОДИН маршрут.
+
+    **Задание с вызовами модели без плана не исполняется.** Fail closed: иначе
+    первое же задание от старого центра тихо вернуло бы прежнее поведение.
+    """
+    from backend.app.services.audit_routing import active_plan as _active_plan
+    from backend.app.services.audit_routing import validator as _routing_validator
+    from backend.app.services.audit_routing.plan import RoutingPlan, RoutingPlanError
+
+    raw = spec.get("routing_plan") or None
+    requirement = spec.get("provider_requirement") or None
+    wants_model = bool(requirement) and int((requirement or {}).get("max_inferences") or 0) > 0
+    if not raw:
+        if wants_model:
+            raise SystemExit(
+                "задание требует обращений к модели, но не несёт плана "
+                "маршрутизации. Возврат к глобальной конфигурации запрещён: "
+                "состав моделей обязан приходить замороженным вместе с заданием"
+            )
+        _active_plan.clear()
+        return {"active": False, "reason": "план не передан, вызовы модели не требуются"}
+
+    try:
+        plan = RoutingPlan.from_dict(raw)
+        _routing_validator.validate(plan)
+    except RoutingPlanError as exc:
+        raise SystemExit(f"план маршрутизации отвергнут: {exc}") from None
+
+    declared = str(getattr(binding, "routing_plan_hash", "") or "")
+    if declared:
+        try:
+            plan.assert_hash(declared)
+        except RoutingPlanError as exc:
+            raise SystemExit(str(exc)) from None
+
+    _active_plan.set_plan(plan)
+    return _active_plan.describe()
 
 
 def verify_snapshot(spec: dict[str, Any]) -> dict[str, Any]:

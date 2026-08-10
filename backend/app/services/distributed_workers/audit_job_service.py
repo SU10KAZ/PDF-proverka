@@ -347,6 +347,7 @@ def create_audit_job(
     include_optimization: bool = True,
     retry_stage: Optional[str] = None,
     provider_requirement: Optional[dict[str, Any]] = None,
+    routing_plan: Optional[dict[str, Any]] = None,
     actor: str,
     display_name: str = "",
     settings: DistributedWorkersSettings,
@@ -439,6 +440,10 @@ def create_audit_job(
         discipline_profile_hash=profile_snapshot.tree_hash,
         required_result_artifacts=required_artifacts_for(safe_action),
         provider_requirement=provider_requirement,
+        # План маршрутизации ЗАМОРАЖИВАЕТСЯ здесь и больше не меняется. Всё,
+        # что оператор переключит после этой строки, относится к следующим
+        # заданиям, а не к этому.
+        routing_plan=routing_plan,
     )
 
     job = repositories.create_job(

@@ -164,7 +164,7 @@ class BridgeOutcome:
         }
 
 
-def _build_home(binding: ProviderBinding) -> ProviderHome:
+def _build_home(binding: ProviderBinding, *, route=None) -> ProviderHome:
     """Раскладка провайдера по привязке.
 
     В ambient-режиме `ambient_home` вычисляется ЗДЕСЬ через базу учётных
@@ -172,21 +172,49 @@ def _build_home(binding: ProviderBinding) -> ProviderHome:
     `/etc/passwd` — нет. Это то же правило, что и в `auth_mode.resolve_ambient_home`,
     и ослаблять его на пути конвейера было бы бессмысленно.
     """
-    if binding.auth_mode == AUTH_MODE_AMBIENT_USER:
+    provider_name = route.provider if route is not None else binding.provider
+    auth_mode = route.auth_mode if route is not None and route.auth_mode else binding.auth_mode
+    root = Path(
+        route.provider_root if route is not None and route.provider_root
+        else binding.provider_root
+    )
+    if auth_mode == AUTH_MODE_AMBIENT_USER:
         return ProviderHome(
-            provider=binding.provider,
-            root=Path(binding.provider_root),
-            auth_mode=binding.auth_mode,
+            provider=provider_name,
+            root=root,
+            auth_mode=auth_mode,
             ambient_home=resolve_ambient_home(),
         )
     return ProviderHome(
-        provider=binding.provider,
-        root=Path(binding.provider_root),
-        auth_mode=binding.auth_mode,
+        provider=provider_name,
+        root=root,
+        auth_mode=auth_mode,
     )
 
 
-def build_adapter(binding: ProviderBinding, *, on_process=None):
+def _select_route(binding: ProviderBinding, *, provider: str, capability: str):
+    """Маршрут под действие плана. Отсутствие описанной пары — отказ.
+
+    Молчаливый откат на «основной» провайдер привязки здесь был бы худшим из
+    возможных поведений: ансамбль выполнился бы, но не тем составом, и в
+    результате об этом не осталось бы ни следа.
+    """
+    if not binding.routes:
+        return None
+    if not provider and not capability:
+        return None
+    route = binding.route_for(str(provider), str(capability))
+    if route is None:
+        raise ProviderBridgeError(
+            f"привязка не содержит маршрута для провайдера {provider!r} и "
+            f"способности {capability!r}: локальная политика воркера такой "
+            f"пары не описывает. Подмена другим провайдером запрещена — "
+            f"ансамбль, собранный не из тех ног, это не тот же аудит"
+        )
+    return route
+
+
+def build_adapter(binding: ProviderBinding, *, on_process=None, route=None):
     """Собрать адаптер по привязке. Единственное место, где `inference_allowed=True`.
 
     Флаг ставится не «по конфигурации», а по факту существования привязки,
@@ -201,18 +229,22 @@ def build_adapter(binding: ProviderBinding, *, on_process=None):
         PROVIDER_CLAUDE: ClaudeProviderAdapter,
         PROVIDER_CODEX: CodexProviderAdapter,
     }
-    factory = classes.get(binding.provider)
+    provider_name = route.provider if route is not None else binding.provider
+    factory = classes.get(provider_name)
     if factory is None:
-        raise ProviderBridgeError(f"неизвестный провайдер привязки: {binding.provider!r}")
-    home = _build_home(binding)
+        raise ProviderBridgeError(f"неизвестный провайдер привязки: {provider_name!r}")
+    home = _build_home(binding, route=route)
     try:
         home.ensure_dirs()
     except OSError as exc:
         raise ProviderBridgeError(f"не создать раскладку провайдера: {exc}") from None
+    executable = (
+        route.executable if route is not None and route.executable else binding.executable
+    )
     return factory(
         home,
-        executable=Path(binding.executable) if binding.executable else None,
-        timeout_sec=binding.timeout_sec,
+        executable=Path(executable) if executable else None,
+        timeout_sec=(route.timeout_sec if route is not None else binding.timeout_sec),
         inference_allowed=True,
         on_process=on_process,
     )
@@ -225,6 +257,18 @@ def run_stage_inference(
     prompt: str,
     purpose: str = "",
     binding: Optional[ProviderBinding] = None,
+    #: Действие ПЛАНА МАРШРУТИЗАЦИИ (этап 11I). Тройка «идентификатор действия +
+    #: провайдер + способность» заменяет прежнее «одна модель на попытку».
+    #:
+    #: `action_id` обязателен не ради журнала, а ради exactly-once: ключ вызова
+    #: складывался из (попытка, провайдер, purpose, промпт, вложения), и две
+    #: ноги ансамбля с ОДИНАКОВЫМ промптом давали ОДИН ключ. Вторая нога молча
+    #: получала replay ответа первой — то есть ансамбль из двух моделей
+    #: вырождался в одну, не оставляя следа.
+    action_id: str = "",
+    provider: str = "",
+    capability: str = "",
+    reasoning_effort: str = "",
     required_result_fields: Sequence[str] = (),
     field_types: Optional[dict[str, Any]] = None,
     expected_semantics: Optional[dict[str, Any]] = None,
@@ -250,18 +294,31 @@ def run_stage_inference(
     binding = binding or load_binding()
     stage_name = str(stage or "")
     purpose = str(purpose or stage_name or "inference")
+    if binding.routes and not action_id:
+        # Привязка с маршрутами означает, что задание пришло с планом. Вызов
+        # без идентификатора действия в такой попытке — это вызов, которого нет
+        # в плане, и разрешать его значило бы вернуть «маршрут решается на
+        # месте» ровно там, где 11I его убирает.
+        raise ProviderBridgeError(
+            f"этап {stage_name!r} обращается к модели без action_id, а задание "
+            "пришло с планом маршрутизации: каждое обращение обязано "
+            "соответствовать действию плана"
+        )
     if binding.allowed_stages and stage_name not in binding.allowed_stages:
         raise ProviderBridgeError(
             f"этап {stage_name!r} не входит в белый список привязки "
             f"{list(binding.allowed_stages)}: обращение к модели запрещено"
         )
+    route = _select_route(binding, provider=provider, capability=capability)
+    effective_provider = route.provider if route else binding.provider
     ledger = InferenceLedger(job_dir, attempt_id=binding.attempt_id, job_id=binding.job_id)
     images = tuple(images or ())
     attachments_sha256 = attachments_digest(images)
     key = call_key(
-        attempt_id=binding.attempt_id, provider=binding.provider,
+        attempt_id=binding.attempt_id, provider=effective_provider,
         purpose=purpose, prompt=prompt,
         attachments_sha256=attachments_sha256,
+        action_id=action_id,
     )
     summary = ledger.summary()
     entry = ledger.inspect(key)
@@ -298,7 +355,7 @@ def run_stage_inference(
     # (`resolve_ambient_home`, `ensure_dirs`, неизвестный провайдер), оставляло
     # в журнале заявку-сироту: попытка навсегда «неизвестного исхода», хотя
     # адаптер даже не был создан и модель заведомо не звали.
-    adapter = build_adapter(binding, on_process=on_process)
+    adapter = build_adapter(binding, on_process=on_process, route=route)
     # То же и с гейтами, знать которые можно ЗАРАНЕЕ: провайдер отключён
     # политикой, вызовы запрещены, CLI отсутствует, промпт пуст, модель
     # назначена без списка допустимых. Все они означают «до модели не дошли»,
@@ -309,7 +366,7 @@ def run_stage_inference(
         raise ProviderBridgeError(unreachable)
 
     claim = ledger.begin(
-        key, provider=binding.provider, purpose=purpose,
+        key, provider=effective_provider, purpose=purpose,
         prompt_sha256=sha256_text(prompt),
     )
     if claim.state != STATE_ALLOWED:
@@ -328,11 +385,16 @@ def run_stage_inference(
             f"вызов {key} захвачен другим процессом: повтор запрещён (I-P9)"
         )
 
+    model_id = route.model if route else binding.model
+    accepted_models = (
+        route.accepted_reported_models if route else binding.accepted_reported_models
+    )
+    report_mode = route.model_report if route else binding.model_report
     try:
         # Модель и допустимые фактические её идентификаторы берутся ИЗ
-        # ПРИВЯЗКИ, а не из аргументов вызывающего: этап конвейера не имеет
-        # права ни назначить модель, ни расширить список допустимых —
-        # решение принято локальной политикой воркера до запуска процесса.
+        # ПРИВЯЗКИ (маршрута плана), а не из аргументов вызывающего: этап
+        # конвейера называет СПОСОБНОСТЬ, а какой строке она соответствует на
+        # этой машине, решила локальная политика до запуска процесса.
         if images:
             inference = getattr(adapter, "structured_inference_multimodal", None)
             if inference is None:
@@ -343,16 +405,16 @@ def run_stage_inference(
                 )
             result = inference(
                 prompt, images=images, purpose=purpose, timeout_sec=timeout_sec,
-                model=binding.model,
-                accepted_reported_models=binding.accepted_reported_models,
-                model_report=binding.model_report,
+                model=model_id,
+                accepted_reported_models=accepted_models,
+                model_report=report_mode,
             )
         else:
             result = adapter.structured_inference(
                 prompt, purpose=purpose, timeout_sec=timeout_sec,
-                model=binding.model,
-                accepted_reported_models=binding.accepted_reported_models,
-                model_report=binding.model_report,
+                model=model_id,
+                accepted_reported_models=accepted_models,
+                model_report=report_mode,
             )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.

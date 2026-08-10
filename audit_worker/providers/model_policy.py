@@ -74,11 +74,34 @@ POLICY_FILENAME = "provider_policy.json"
 #: администратор машины, НЕ центр и НЕ задание.
 POLICY_ENV = "AUDIT_WORKER_PROVIDER_POLICY"
 
-#: Единственная сегодня логическая способность. Список закрыт намеренно:
-#: способность, которой нет в этом кортеже, отвергается на разборе требования,
-#: а не превращается в «модель по умолчанию».
+#: Логические способности. Список закрыт намеренно: способность, которой нет в
+#: этом кортеже, отвергается на разборе требования, а не превращается в
+#: «модель по умолчанию».
+#:
+#: До 11I способность была ровно одна, и различить «сильная модель для свода» и
+#: «дешёвая для критика» было нечем — а фактический прогон использует шесть
+#: разных классов моделей одновременно. Набор обязан быть НАДмножеством реестра
+#: центра (`backend/app/services/audit_routing/registry.py`): центр не должен
+#: иметь возможности заказать способность, которую ни один воркер не в
+#: состоянии разрешить. Это проверяет отдельный тест.
+#:
+#: Имя `strong_audit` сохранено дословно: политики, написанные до 11I,
+#: продолжают работать без правки файла администратором VPS.
 CAPABILITY_STRONG_AUDIT = "strong_audit"
-KNOWN_CAPABILITIES: tuple[str, ...] = (CAPABILITY_STRONG_AUDIT,)
+CAPABILITY_CHEAP_REVIEW = "cheap_review"
+CAPABILITY_BLOCK_DETECTOR = "block_detector"
+CAPABILITY_BLOCK_DETECTOR_STRONG = "block_detector_strong"
+CAPABILITY_BLOCK_JUDGE = "block_judge"
+CAPABILITY_VISUAL_REASONING = "visual_reasoning"
+
+KNOWN_CAPABILITIES: tuple[str, ...] = (
+    CAPABILITY_STRONG_AUDIT,
+    CAPABILITY_CHEAP_REVIEW,
+    CAPABILITY_BLOCK_DETECTOR,
+    CAPABILITY_BLOCK_DETECTOR_STRONG,
+    CAPABILITY_BLOCK_JUDGE,
+    CAPABILITY_VISUAL_REASONING,
+)
 
 #: Суффикс варианта модели с окном 1M токенов. Не «алиас» и не «похожая
 #: модель»: та же модель, другое окно контекста.

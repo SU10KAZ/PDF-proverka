@@ -159,6 +159,11 @@ class SafeAuditParams:
     #: Требование к провайдеру в виде обычного словаря скаляров. Разбирает его
     #: резолвер исполнителя; здесь оно только переносится.
     provider_requirement: Optional[dict[str, Any]] = None
+    #: ЗАМОРОЖЕННЫЙ план маршрутизации (этап 11I). Здесь он тоже только
+    #: переносится: рубеж формы не имеет права знать доменную схему плана, как
+    #: не знает и провайдерского слоя. Смысл плана проверяет процесс конвейера,
+    #: которому он и адресован.
+    routing_plan: Optional[dict[str, Any]] = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -177,6 +182,7 @@ class SafeAuditParams:
             "discipline_profile_hash": self.discipline_profile_hash,
             "required_result_artifacts": list(self.required_result_artifacts),
             "provider_requirement": self.provider_requirement,
+            "routing_plan": self.routing_plan,
         }
 
 
@@ -192,6 +198,11 @@ _ALLOWED_FIELDS = {
     # исполнителя; здесь проверяется лишь форма — чтобы негодная нагрузка
     # отвергалась там же, где и все остальные (§4 задания).
     "provider_requirement",
+    # ЗАМОРОЖЕННЫЙ ПЛАН МАРШРУТИЗАЦИИ (этап 11I). Определяет, какие действия,
+    # каким провайдером и какой способностью выполняет каждый этап. Без него
+    # маршрут вернулся бы к глобальной настройке центра, которая к моменту
+    # исполнения могла измениться.
+    "routing_plan",
 }
 
 #: Поля требования к провайдеру. Проверяются формально, без импорта
@@ -289,6 +300,57 @@ def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
     }
 
 
+#: Верхнеуровневые поля плана маршрутизации. Как и у требования, здесь
+#: проверяется только ФОРМА: рубеж приёма не имеет права импортировать доменную
+#: схему платформы, иначе граница «воркер не знает внутренностей конвейера»
+#: перестала бы существовать. Смысл плана проверяет процесс конвейера.
+_ROUTING_PLAN_FIELDS = {
+    "schema_version", "condition_evaluator_version", "preset_id",
+    "pipeline_revision", "feature_flags", "stages", "routing_plan_id",
+    "created_at", "routing_plan_hash",
+}
+
+#: Версия схемы плана, которую понимает ЭТА сборка воркера.
+SUPPORTED_ROUTING_PLAN_SCHEMA = 1
+
+
+def _validate_routing_plan(raw: Any) -> Optional[dict[str, Any]]:
+    """Проверить форму плана маршрутизации. Незнакомое поле — отказ."""
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise AuditJobRejected("routing_plan: ожидается объект")
+    unknown = set(raw) - _ROUTING_PLAN_FIELDS
+    if unknown:
+        raise AuditJobRejected(f"routing_plan: недопустимые поля {sorted(unknown)}")
+    version = raw.get("schema_version")
+    if version != SUPPORTED_ROUTING_PLAN_SCHEMA:
+        raise AuditJobRejected(
+            f"routing_plan.schema_version={version!r}: эта сборка воркера "
+            f"понимает только {SUPPORTED_ROUTING_PLAN_SCHEMA}"
+        )
+    stages = raw.get("stages")
+    if not isinstance(stages, list) or not stages:
+        raise AuditJobRejected("routing_plan.stages: непустой список")
+    plan_hash = str(raw.get("routing_plan_hash") or "").strip()
+    if not plan_hash.startswith("sha256:") or len(plan_hash) != 71:
+        raise AuditJobRejected(
+            "routing_plan_hash отсутствует или имеет недопустимую форму: план "
+            "без хэша невозможно ни сверить, ни проследить в результате"
+        )
+    # Точной модели в плане быть не может — тот же рубеж, что и у требования,
+    # но по всему документу целиком.
+    flat = json.dumps(raw, ensure_ascii=False).lower()
+    for marker in ("claude-opus", "claude-sonnet", "gpt-5", "codex/", "openai/"):
+        if marker in flat:
+            raise AuditJobRejected(
+                f"routing_plan содержит {marker!r}: точную модель выбирает "
+                "ЛОКАЛЬНАЯ политика воркера по способности, центру этот "
+                "идентификатор не принадлежит"
+            )
+    return raw
+
+
 def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
     """Проверить нагрузку задания. Неизвестное поле — отказ, а не игнор."""
     data = raw or {}
@@ -383,6 +445,23 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
             "проверять нечего"
         )
 
+    routing_plan = _validate_routing_plan(data.get("routing_plan"))
+    # Fail closed (§29 задания): задание, которое собирается звать модель, без
+    # плана маршрутизации не исполняется. Молчаливый возврат к прежнему
+    # поведению означал бы, что маршрут снова определяется тем, какая
+    # конфигурация лежит на машине в момент старта каждого этапа.
+    if (
+        routing_plan is None
+        and requirement is not None
+        and int(requirement.get("max_inferences") or 0) > 0
+        and action != ACTION_PROVIDER_SELFCHECK
+    ):
+        raise AuditJobRejected(
+            "задание требует обращений к модели, но не несёт routing_plan. "
+            "Исполнять маршрут «как-нибудь» воркер не будет: состав моделей "
+            "обязан приходить замороженным вместе с заданием"
+        )
+
     return SafeAuditParams(
         execution_profile=profile,
         action=action,
@@ -399,6 +478,7 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         discipline_profile_hash=profile_hash,
         required_result_artifacts=merged,
         provider_requirement=requirement,
+        routing_plan=routing_plan,
     )
 
 
@@ -599,6 +679,12 @@ def run_audit_job(
         # видеть, что именно было заказано, и сверять это с привязкой, которую
         # исполнитель выписал по своему решению.
         "provider_requirement": params.provider_requirement,
+        # ЗАМОРОЖЕННЫЙ ПЛАН МАРШРУТИЗАЦИИ (11I) переносится в спеку КАК ЕСТЬ —
+        # по той же причине, что и требование: код платформы обязан видеть, что
+        # именно было заказано, и сверить хэш плана с хэшем в привязке. Два
+        # независимо посчитанных значения, совпав, доказывают, что центр и
+        # воркер держат ОДИН маршрут.
+        "routing_plan": params.routing_plan,
         "provider_binding": str(provider_binding) if provider_binding else None,
         "paths": {key: str(value) for key, value in layout.items()},
     }

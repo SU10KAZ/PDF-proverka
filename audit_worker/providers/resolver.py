@@ -183,6 +183,89 @@ class ProviderRequirement:
 
 
 @dataclass(frozen=True)
+class RouteBinding:
+    """Один разрешённый маршрут: «провайдер + способность» → точная модель.
+
+    Появился на 11I. До него привязка описывала ОДНУ модель на всю попытку — и
+    этого хватало ровно потому, что мост схлопывал ансамбли: этап 01 из трёх
+    ног превращался в одну, этап 05 из двух — в одну. Как только план требует
+    исполнить ансамбль целиком, «одна модель на попытку» перестаёт быть
+    ограничением безопасности и становится ошибкой воспроизведения.
+
+    Что здесь по-прежнему НЕ приходит от центра: точный идентификатор модели.
+    Его выдаёт локальная политика воркера по способности — ровно как и раньше,
+    просто теперь таких выдач несколько.
+    """
+
+    provider: str
+    capability: str
+    model: str
+    accepted_reported_models: tuple[str, ...] = field(default_factory=tuple)
+    model_report: str = "required"
+    auth_mode: str = ""
+    provider_root: str = ""
+    executable: Optional[str] = None
+    timeout_sec: float = 60.0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "provider": self.provider,
+            "capability": self.capability,
+            "model": self.model,
+            "accepted_reported_models": list(self.accepted_reported_models),
+            "model_report": self.model_report,
+            "auth_mode": self.auth_mode,
+            "provider_root": self.provider_root,
+            "executable": self.executable,
+            "timeout_sec": float(self.timeout_sec),
+        }
+
+    def as_public_dict(self) -> dict[str, Any]:
+        """Вид для центра: без путей файловой системы."""
+        return {
+            "provider": self.provider,
+            "capability": self.capability,
+            "model": self.model,
+            "model_report": self.model_report,
+            "auth_mode": self.auth_mode,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> "RouteBinding":
+        data = payload or {}
+        try:
+            provider = require_provider(str(data.get("provider") or ""))
+        except ValueError as exc:
+            raise ProviderResolutionError(str(exc)) from None
+        capability = str(data.get("capability") or "").strip()
+        if not capability:
+            raise ProviderResolutionError("маршрут привязки без способности")
+        try:
+            model = model_policy.validate_model_id(
+                data.get("model"), where=f"маршрут {provider}/{capability}.model"
+            )
+            accepted = tuple(
+                model_policy.validate_model_id(
+                    item, where=f"маршрут {provider}/{capability}.accepted"
+                )
+                for item in (data.get("accepted_reported_models") or [])
+            )
+        except model_policy.ProviderPolicyError as exc:
+            raise ProviderResolutionError(str(exc)) from None
+        return cls(
+            provider=provider,
+            capability=capability,
+            model=model,
+            accepted_reported_models=accepted,
+            model_report=str(data.get("model_report") or "required"),
+            auth_mode=str(data.get("auth_mode") or ""),
+            provider_root=str(data.get("provider_root") or ""),
+            executable=(str(data["executable"]) if data.get("executable") else None),
+            timeout_sec=float(data.get("timeout_sec") or 60.0),
+        )
+
+
+@dataclass(frozen=True)
 class ProviderBinding:
     """РЕШЕНИЕ воркера: чем и на каких условиях исполнять этот вызов модели.
 
@@ -230,6 +313,20 @@ class ProviderBinding:
     #: отвечал на вопрос «сверяли ли модель» по файлу, а не по догадке о версии
     #: CLI.
     model_report: str = "required"
+    #: ВСЕ маршруты, разрешённые локальной политикой для этой попытки (11I).
+    #: Пустой кортеж — привязка прежней формы: один провайдер, одна модель.
+    routes: tuple["RouteBinding", ...] = field(default_factory=tuple)
+    #: Хэш замороженного плана маршрутизации. Сверяется мостом перед каждым
+    #: обращением: расхождение означает, что центр и воркер держат РАЗНЫЕ
+    #: маршруты, и исполнять в таком состоянии нечего.
+    routing_plan_hash: str = ""
+
+    def route_for(self, provider: str, capability: str) -> Optional["RouteBinding"]:
+        """Маршрут для пары. `None` — политика такой пары не описывает."""
+        for item in self.routes:
+            if item.provider == provider and item.capability == capability:
+                return item
+        return None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -250,6 +347,8 @@ class ProviderBinding:
             "capability": self.capability,
             "accepted_reported_models": list(self.accepted_reported_models),
             "model_report": self.model_report,
+            "routes": [item.as_dict() for item in self.routes],
+            "routing_plan_hash": self.routing_plan_hash,
         }
 
     def as_public_dict(self) -> dict[str, Any]:
@@ -264,6 +363,8 @@ class ProviderBinding:
             "max_inferences": int(self.max_inferences),
             "allowed_stages": list(self.allowed_stages),
             "grant_id": self.grant_id,
+            "routing_plan_hash": self.routing_plan_hash,
+            "routes": [item.as_public_dict() for item in self.routes],
         }
 
     @classmethod
@@ -330,6 +431,11 @@ class ProviderBinding:
             model_report=str(
                 data.get("model_report") or model_policy.MODEL_REPORT_REQUIRED
             ),
+            routes=tuple(
+                RouteBinding.from_dict(item)
+                for item in (data.get("routes") or [])
+            ),
+            routing_plan_hash=str(data.get("routing_plan_hash") or ""),
         )
 
     def write(self, metadata_dir: Path) -> Path:
@@ -390,6 +496,8 @@ class ProviderResolver:
         grant_id: str,
         provider_root: Path,
         forbidden_literals: Sequence[str] = (),
+        required_routes: Sequence[tuple[str, str]] = (),
+        routing_plan_hash: str = "",
     ) -> ProviderBinding:
         """Выбрать провайдера и собрать привязку. Бросает при невозможности.
 
@@ -454,6 +562,7 @@ class ProviderResolver:
                 "модель учётной записи по умолчанию"
             )
         executable = adapter.executable_path()
+        routes = self._resolve_routes(required_routes)
         return ProviderBinding(
             schema_version=BINDING_SCHEMA_VERSION,
             provider=name,
@@ -474,7 +583,76 @@ class ProviderResolver:
             capability=requirement.capability,
             accepted_reported_models=accepted_reported,
             model_report=model_report,
+            routes=routes,
+            routing_plan_hash=str(routing_plan_hash or ""),
         )
+
+    def _resolve_routes(
+        self, required: Sequence[tuple[str, str]]
+    ) -> tuple[RouteBinding, ...]:
+        """Разрешить КАЖДУЮ пару «провайдер + способность» плана.
+
+        Проверки те же, что и для основного провайдера, и в том же порядке:
+        адаптер существует, не заблокирован политикой, авторизация подтверждена,
+        локальная политика описывает способность. Отсутствие любой пары —
+        отказ, а не «выполним чем есть»: план требует ансамбль, и ансамбль,
+        собранный не из тех ног, — это не тот же аудит.
+        """
+        if not required:
+            return ()
+        try:
+            policy = model_policy.load_policy(self.worker_root)
+        except model_policy.ProviderPolicyError as exc:
+            raise ProviderResolutionError(
+                f"локальная политика моделей не читается: {exc}"
+            ) from None
+        out: list[RouteBinding] = []
+        for provider_name, capability_name in sorted(set(required)):
+            adapter = self.manager.adapters.get(provider_name)
+            if adapter is None:
+                raise ProviderResolutionError(
+                    f"план требует провайдера {provider_name!r}, которого этот "
+                    f"воркер не поддерживает"
+                )
+            if adapter.policy_blocked:
+                raise ProviderResolutionError(
+                    f"провайдер {provider_name!r} отключён политикой воркера"
+                )
+            auth = adapter.home.auth_mode
+            if auth == AUTH_MODE_UNAVAILABLE:
+                raise ProviderResolutionError(
+                    f"провайдер {provider_name!r}: режим авторизации unavailable"
+                )
+            if not adapter.installed():
+                raise ProviderResolutionError(
+                    f"CLI провайдера {provider_name!r} не установлен"
+                )
+            identity = self.manager.identity(provider_name)
+            if identity is None or identity.auth_state != identity_mod.AUTH_LOGGED_IN:
+                state = identity.auth_state if identity else identity_mod.AUTH_UNKNOWN
+                raise ProviderResolutionError(
+                    f"провайдер {provider_name!r}: авторизация не подтверждена "
+                    f"(auth_state={state!r})"
+                )
+            try:
+                resolved = policy.resolve(provider_name, capability_name)
+            except model_policy.ProviderPolicyError as exc:
+                raise ProviderResolutionError(
+                    f"локальная политика не покрывает маршрут плана: {exc}"
+                ) from None
+            executable = adapter.executable_path()
+            out.append(RouteBinding(
+                provider=provider_name,
+                capability=capability_name,
+                model=resolved.model,
+                accepted_reported_models=resolved.accepted_reported_models,
+                model_report=resolved.model_report,
+                auth_mode=auth,
+                provider_root=str(adapter.home.root),
+                executable=str(executable) if executable else None,
+                timeout_sec=float(adapter.timeout_sec),
+            ))
+        return tuple(out)
 
 
 def ambient_root_for_attempt(job_dir: Path, provider: str) -> Path:

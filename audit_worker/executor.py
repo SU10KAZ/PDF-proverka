@@ -146,6 +146,43 @@ def read_completed_marker(job_dir: Path) -> Optional[dict[str, Any]]:
     return None
 
 
+def _routes_from_plan(
+    params: "audit_runner.SafeAuditParams",
+) -> tuple[tuple[tuple[str, str], ...], str]:
+    """Пары «провайдер + способность» и хэш ИЗ ЗАМОРОЖЕННОГО ПЛАНА.
+
+    Разбор намеренно примитивен и не импортирует доменную схему платформы:
+    воркер не имеет права зависеть от внутренностей конвейера (та же граница,
+    что держит `audit_runner` в стороне от провайдерского слоя). Нужны ровно
+    два ответа — какие маршруты разрешить локальной политике и с каким хэшем
+    сверяться. Смысл плана проверяет процесс конвейера, которому план и
+    адресован.
+
+    Берутся ТОЛЬКО действия worker-области: нормативный хвост исполняет центр,
+    и требовать под него локальную модель значило бы отказывать воркеру за
+    отсутствие того, чем он всё равно не воспользуется.
+    """
+    plan = getattr(params, "routing_plan", None)
+    if not isinstance(plan, dict):
+        return (), ""
+    routes: set[tuple[str, str]] = set()
+    for stage in plan.get("stages") or []:
+        if not isinstance(stage, dict):
+            continue
+        if str(stage.get("execution_scope") or "") != "worker":
+            continue
+        for action in stage.get("actions") or []:
+            if not isinstance(action, dict):
+                continue
+            if str(action.get("kind") or "model") != "model":
+                continue
+            provider = str(action.get("provider") or "").strip()
+            capability = str(action.get("capability") or "").strip()
+            if provider and capability:
+                routes.add((provider, capability))
+    return tuple(sorted(routes)), str(plan.get("routing_plan_hash") or "")
+
+
 class Executor:
     def __init__(self, config: WorkerConfig, *, db: Optional[local_db.LocalDB] = None):
         self.config = config
@@ -901,6 +938,10 @@ class Executor:
             f"разрешение {grant.grant_id} списано: "
             f"{grant.used}/{grant.max_uses} по {grant.provider}"
         )
+        # Маршруты ПЛАНА (этап 11I). Пары «провайдер + способность» берутся из
+        # замороженного плана задания: до 11I их было ровно по одной на попытку,
+        # и ансамбли поэтому исполнялись одной ногой.
+        required_routes, plan_hash = _routes_from_plan(params)
         try:
             binding = resolver.resolve(
                 requirement,
@@ -910,6 +951,8 @@ class Executor:
                 grant_id=grant.grant_id,
                 provider_root=provider_root,
                 forbidden_literals=self._forbidden_literals(),
+                required_routes=required_routes,
+                routing_plan_hash=plan_hash,
             )
         except ProviderResolutionError as exc:
             # Разрешение уже списано и НЕ возвращается: единица тратится за
@@ -926,6 +969,11 @@ class Executor:
         _log(
             f"привязка провайдера выписана: {binding.provider} "
             f"({binding.auth_mode}), этапы {list(binding.allowed_stages)}"
+            + (
+                f"; маршрутов плана {len(binding.routes)} "
+                f"({', '.join(sorted({r.provider for r in binding.routes}))})"
+                if binding.routes else ""
+            )
         )
         return path
 

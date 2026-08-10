@@ -1127,8 +1127,12 @@ async def call_provider_for_block(
     document_type: str = "",
     page_neighbors: str = "",
     include_absence_caveat: bool = False,
+    action_id: str = "",
+    provider: str = "",
+    capability: str = "",
+    reasoning_effort: str = "",
 ) -> dict:
-    """Нога Stage 01 через ProviderAdapter воркера (этап 11F).
+    """Нога Stage 01 через ProviderAdapter воркера (этапы 11F и 11I).
 
     Контракт возврата — тот же словарь, что у остальных ног
     (`ok`/`parsed`/`elapsed_ms`/токены/`context_source`), поэтому сводящий код
@@ -1206,6 +1210,13 @@ async def call_provider_for_block(
                 # получили бы соседние ключи только за счёт отпечатка вложения,
                 # а в журнале их было бы не различить глазом.
                 purpose=f"block_analysis:{block_id}",
+                # Нога ансамбля (11I). Без action_id три детектора с одним
+                # промптом и одной картинкой дали бы ОДИН ключ журнала, и две
+                # ноги молча получили бы replay ответа первой.
+                action_id=action_id,
+                provider=provider,
+                capability=capability,
+                reasoning_effort=reasoning_effort,
                 required_result_fields=_pt.REQUIRED_RESULT_FIELDS,
                 field_types=_pt.FIELD_TYPES,
                 timeout_sec=effective_timeout,
@@ -2056,12 +2067,33 @@ async def run_findings_only_for_project(
     use_provider_bridge = provider_bridge_active()
     use_claude_cli = (not use_provider_bridge) and is_claude_cli_model(model)
     use_codex_cli = (not use_provider_bridge) and is_codex_model(model)
-    use_dual = (not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID
-    detector_models = (
-        [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
-        if use_dual
-        else [model]
+
+    # ── Ансамбль ПО ПЛАНУ МАРШРУТИЗАЦИИ (этап 11I) ──────────────────────────
+    #
+    # До 11I строка ниже читалась так: «мост активен ⇒ ансамбля нет». Это и был
+    # главный дефект воспроизведения: удалённый прогон делал ОДИН вызов на блок
+    # там, где центр делает четыре, — без судьи, без gap-search и без второй
+    # модели. Причина была не в осторожности, а в контракте: привязка несла одну
+    # модель на попытку, и звать «вторую ногу» было нечем.
+    #
+    # Теперь маршрут приходит планом, а привязка несёт по маршруту на каждую
+    # пару «провайдер + способность». Ансамбль под мостом исполняется целиком.
+    from backend.app.services.audit_routing import active_plan as _active_plan
+
+    _plan_legs = _active_plan.block_detector_legs() if use_provider_bridge else ()
+    _plan_judge = _active_plan.block_judge_action() if use_provider_bridge else None
+    use_plan_ensemble = bool(_plan_legs)
+
+    use_dual = (
+        ((not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID)
+        or use_plan_ensemble
     )
+    if use_plan_ensemble:
+        detector_models = [_active_plan.leg_model_label(leg) for leg in _plan_legs]
+    elif use_dual:
+        detector_models = [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
+    else:
+        detector_models = [model]
     configured_detector_models = list(detector_models)
     if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
@@ -2312,8 +2344,165 @@ async def run_findings_only_for_project(
                 graph, retrieval_query, int(block.get("page") or 0)
             )
 
+            async def _finish_dual_review(combined: dict, *, judge_action) -> dict:
+                """Судья ансамбля ПЛАНА: тот же контракт, другой транспорт.
+
+                Повторяет центральную ветку дословно: пропуск при неполном
+                составе детекторов, пропуск при выключенном судье, fail-soft
+                при отказе — и тот же учёт токенов. Отличие ровно одно: вызов
+                уходит через мост провайдера, потому что прямой `codex exec` на
+                воркере недостижим (окружение процесса конвейера собрано с нуля
+                по белому списку).
+                """
+                from backend.app.pipeline.stages.block_analysis.dual_review import (
+                    fallback_dual_review,
+                    review_dual_findings,
+                )
+
+                judge_label = (
+                    _active_plan.leg_model_label(judge_action)
+                    if judge_action is not None else "provider/plan:judge"
+                )
+                if not combined.get("detectors_complete"):
+                    combined["dual_review"] = {
+                        "schema_version": 1,
+                        "status": "skipped",
+                        "reason": "partial_detector_failure",
+                        "counts": {
+                            "matches": 0, "extensions": 0, "new": 0,
+                            "disputed": 0, "gap_findings": 0,
+                        },
+                        "gap_search": {
+                            "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                            "performed": False,
+                            "status": "skipped",
+                            "findings_added": 0,
+                        },
+                    }
+                    return combined
+                if judge_action is None:
+                    combined["dual_review"] = {
+                        "schema_version": 1,
+                        "status": "disabled",
+                        "reviewer_model": judge_label,
+                        "counts": {
+                            "matches": 0, "extensions": 0,
+                            "new": len((combined.get("parsed") or {}).get("findings") or []),
+                            "disputed": 0, "gap_findings": 0,
+                        },
+                        "gap_search": {
+                            "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                            "performed": False,
+                            "status": "disabled",
+                            "findings_added": 0,
+                        },
+                    }
+                    return combined
+
+                review_context, _ = build_effective_block_context(
+                    block,
+                    item["enrichment"],
+                    page_text,
+                    output_dir=output_dir,
+                    routed_context=routed_context,
+                    document_context=document_context,
+                    document_type=document_type,
+                    page_neighbors=page_neighbors,
+                    include_absence_caveat=include_caveat,
+                )
+                from backend.app.pipeline.stages.block_analysis import (
+                    provider_judge as _provider_judge,
+                )
+
+                judge_call = _provider_judge.build_judge_call(
+                    action=judge_action,
+                    block_id=str(block.get("block_id") or ""),
+                    blocks_dir=blocks_dir,
+                    timeout_sec=float(timeout_s),
+                )
+                try:
+                    review = await review_dual_findings(
+                        (combined.get("parsed") or {}).get("findings") or [],
+                        block_id=str(block.get("block_id") or ""),
+                        page=int(block.get("page") or 0),
+                        block_context=review_context,
+                        image_path=blocks_dir / block["file"],
+                        reviewer_model=judge_label,
+                        run_id=run_id,
+                        project_id=project_id,
+                        timeout=timeout_s,
+                        gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                        judge_call=judge_call,
+                    )
+                except Exception as exc:      # fail-soft: сырые находки выживают
+                    review = fallback_dual_review(
+                        (combined.get("parsed") or {}).get("findings") or [],
+                        reviewer_model=judge_label,
+                        run_id=run_id,
+                        gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                combined["parsed"] = {"findings": review["findings"]}
+                combined["dual_review"] = review["report"]
+                combined["dual_review_raw_content"] = review.get("raw_content") or ""
+                combined["dual_review_calls"] = 1
+                combined["dual_review_input_tokens"] = int(review.get("input_tokens") or 0)
+                combined["dual_review_output_tokens"] = int(review.get("output_tokens") or 0)
+                combined["input_tokens"] += int(review.get("input_tokens") or 0)
+                combined["output_tokens"] += int(review.get("output_tokens") or 0)
+                combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
+                return combined
+
             async def _dispatch() -> dict:
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
+                if use_plan_ensemble:
+                    # Ноги плана: каждая идёт СВОИМ маршрутом через мост, все
+                    # одновременно, вход у всех один и тот же. Отличие от
+                    # центрального ансамбля только транспортное — состав,
+                    # порядок и объединение те же.
+                    _plan_calls = [
+                        call_provider_for_block(
+                            block, item["enrichment"], page_text, blocks_dir,
+                            system_prompt=system_prompt, timeout=timeout_s,
+                            output_dir=output_dir,
+                            routed_context=routed_context,
+                            document_context=document_context,
+                            document_type=document_type,
+                            page_neighbors=page_neighbors,
+                            include_absence_caveat=include_caveat,
+                            action_id=leg.action_id,
+                            provider=str(leg.provider or ""),
+                            capability=str(leg.capability or ""),
+                            reasoning_effort=str(leg.reasoning_effort or ""),
+                        )
+                        for leg in _plan_legs
+                    ]
+                    _plan_results = await asyncio.gather(
+                        *_plan_calls, return_exceptions=True
+                    )
+                    _plan_normalized: list = []
+                    for _r in _plan_results:
+                        if isinstance(_r, asyncio.CancelledError):
+                            raise _r
+                        if isinstance(_r, BaseException):
+                            _plan_normalized.append({
+                                "ok": False,
+                                "error": f"{type(_r).__name__}: {_r}",
+                                "parse_error": "leg_exception",
+                                "elapsed_ms": 0,
+                            })
+                        else:
+                            _plan_normalized.append(_r)
+                    _plan_pairs = [
+                        (_active_plan.leg_model_label(leg), res)
+                        for leg, res in zip(_plan_legs, _plan_normalized)
+                    ]
+                    if protection_pair is not None:
+                        _plan_pairs.append(protection_pair)
+                    combined = combine_detector_results(_plan_pairs, run_id=run_id)
+                    return await _finish_dual_review(
+                        combined, judge_action=_plan_judge
+                    )
                 if use_dual:
                     assert client is not None
                     _dispatch_calls = [
