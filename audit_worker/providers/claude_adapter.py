@@ -536,7 +536,7 @@ class ClaudeProviderAdapter(ProviderAdapter):
             detail=(
                 None if ok
                 else (
-                    "CLI завершился ошибкой" if not result.ok
+                    _cli_failure_detail(result, answer_text) if not result.ok
                     else (
                         model_mismatch if model_mismatch
                         else "ответ модели не содержит JSON-объекта"
@@ -546,6 +546,41 @@ class ClaudeProviderAdapter(ProviderAdapter):
             raw_sha256=sha256_text(answer_text),
             raw_bytes=len(answer_text.encode("utf-8", "replace")),
         )
+
+
+#: Сколько символов сообщения CLI попадает в `detail`. Не «на всякий случай», а
+#: рубеж: ошибка провайдера — короткая служебная строка, а вот
+#: `invalid_request_error` теоретически способна процитировать кусок входа.
+#: Обрезка держит диагностику полезной и не превращает поле в канал утечки.
+_CLI_FAILURE_DETAIL_MAX_CHARS = 400
+
+
+def _cli_failure_detail(result: Any, answer_text: str) -> str:
+    """Почему CLI завершился ошибкой — СЛОВАМИ САМОГО CLI, а не константой.
+
+    Раньше здесь стояла строка «CLI завершился ошибкой», а текст ответа нигде
+    не сохранялся: в журнал попытки уезжал только его `sha256`. Цена вскрылась
+    на 11E — единственный оплаченный вызов этапа вернул ошибку в 99 байт, и
+    разобрать её оказалось нечем: бюджет вызовов исчерпан, повтор запрещён,
+    подбор строки по хэшу ничего не дал. Диагностическое сообщение провайдера —
+    не данные заказчика, и терять его на границе, где деньги уже потрачены,
+    нельзя.
+
+    Источники берутся в порядке информативности: разобранный `result` конверта,
+    затем сырой stdout, затем stderr. Оба потока приходят сюда УЖЕ пройдя
+    `redaction.redact` в `run()`, поэтому учётные данные в них не попадают.
+    """
+    parts: list[str] = []
+    for chunk in (answer_text, getattr(result, "stdout", ""), getattr(result, "stderr", "")):
+        text = " ".join(str(chunk or "").split())
+        if text and text not in parts:
+            parts.append(text)
+    joined = " | ".join(parts)
+    if not joined:
+        return "CLI завершился ошибкой (вывод пуст)"
+    if len(joined) > _CLI_FAILURE_DETAIL_MAX_CHARS:
+        joined = joined[:_CLI_FAILURE_DETAIL_MAX_CHARS] + "…"
+    return f"CLI завершился ошибкой: {joined}"
 
 
 def _usage_from_payload(payload: dict[str, Any]) -> dict[str, Any]:

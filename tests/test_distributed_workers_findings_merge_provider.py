@@ -1195,6 +1195,53 @@ class TestSafety:
         assert "no_forbidden_literals" in text
         assert not (project["output_dir"] / "03_findings.json").exists()
 
+    def test_cli_failure_detail_carries_the_providers_own_message(
+        self, monkeypatch, tmp_path, job_dir, project
+    ):
+        """Ошибка CLI доезжает СЛОВАМИ CLI, а не константой.
+
+        Дефект вскрылся на единственном оплаченном вызове 11E: CLI вернул
+        ошибку в 99 байт, а в журнал попытки уехал только её `sha256`.
+        Разобрать причину оказалось нечем — бюджет вызовов исчерпан, повтор
+        запрещён. Диагностическое сообщение провайдера данными заказчика не
+        является и на границе, где деньги уже потрачены, теряться не должно.
+        """
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal,
+                           answer="API Error: 529 overloaded_error", exit_code=1)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+
+        code, text, _result = _run_stage(project)
+
+        assert code == 1
+        assert "CLI завершился ошибкой" in text
+        assert "529" in text and "overloaded_error" in text
+        assert not (project["output_dir"] / "03_findings.json").exists()
+
+    def test_cli_failure_detail_is_bounded(self, monkeypatch, tmp_path, job_dir,
+                                           project):
+        """Сообщение обрезается: поле диагностики не канал для выгрузки входа."""
+        from audit_worker.providers import claude_adapter
+
+        long_message = "x" * 5000
+        journal = tmp_path / "journal.txt"
+        exe = _fake_claude(tmp_path / "bin" / "claude", journal,
+                           answer=long_message, exit_code=1)
+        _ambient_home(monkeypatch, tmp_path / "ambient")
+        _activate(monkeypatch, _binding(job_dir, executable=exe), job_dir)
+
+        code, text, _result = _run_stage(project)
+
+        assert code == 1
+        detail = json.loads(
+            (project["output_dir"] / "findings_merge_provider_run.json").read_text(
+                encoding="utf-8"
+            )
+        )["provider_result"]["detail"]
+        assert len(detail) < claude_adapter._CLI_FAILURE_DETAIL_MAX_CHARS + 200
+        assert detail.endswith("…")
+
     def test_am_codex_adapter_refuses_explicit_model(self, tmp_path):
         """§23 AM: codex не притворяется, что умеет назначенную модель."""
         from audit_worker.providers.paths import provider_home
