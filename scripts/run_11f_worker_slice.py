@@ -420,8 +420,11 @@ def issue_grant_and_binding(
         capability=resolution.capability,
         accepted_reported_models=tuple(resolution.accepted_reported_models),
     )
-    binding_path = job_dir / "metadata" / BINDING_FILENAME
-    write_json(binding_path, binding.as_dict())
+    # Запись через сам ProviderBinding, а не через общий write_json: у него
+    # стоит chmod 0600. В привязке нет учётных данных, но есть абсолютные пути
+    # машины и КОНТРОЛЬНЫЕ ЛИТЕРАЛЫ оператора (канарейка) — файл, доступный на
+    # чтение всей машине, обесценивает саму проверку канарейки.
+    binding_path = binding.write(job_dir / "metadata")
     return {
         "grant_path": grant_path,
         "grant_id": grant.grant_id,
@@ -511,9 +514,11 @@ def run_pipeline(
     env["AUDIT_WORKER_PROVIDER_BINDING"] = str(binding_path)
     env["PYTHONPATH"] = str(REPO_ROOT)
     env["PYTHONUNBUFFERED"] = "1"
-    if fake_cli is not None:
-        env["AUDIT_11F_FAKE_JOURNAL"] = str(job_dir / "logs" / "fake_provider_calls.jsonl")
-        env["AUDIT_11F_FAKE_DUMP_DIR"] = str(job_dir / "logs" / "prompt_dumps")
+    # Переменные диагностики подделки НЕ выставляются намеренно. Во-первых, до
+    # неё они всё равно не доходят: адаптер собирает окружение подпроцесса с
+    # нуля по белому списку (I-P6). Во-вторых, дамп промптов писался бы в
+    # `logs/`, а этот каталог пакет результата забирает ЦЕЛИКОМ — то есть
+    # документ заказчика уехал бы центру вторым экземпляром.
     # Каталоги корней данных создаются заранее: часть библиотек падает на
     # несуществующем HOME/TMPDIR. Создаются ТОЛЬКО корни из `isolated_roots`,
     # а не всё подряд из env — иначе путь к файлу привязки превратился бы в
@@ -775,21 +780,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     if audit_manifest.is_file():
         report["audit_manifest"] = json.loads(audit_manifest.read_text(encoding="utf-8"))
 
-    ledger_dir = job_dir / "work" / "provider_ledger"
-    if not ledger_dir.is_dir():
-        ledger_dir = job_dir / "providers"
-    report["ledger_files"] = sorted(
-        str(p.relative_to(job_dir)) for p in job_dir.rglob("*.json")
-        if "ledger" in str(p)
-    )
-    fake_journal = job_dir / "logs" / "fake_provider_calls.jsonl"
-    if fake_journal.is_file():
-        lines = [json.loads(x) for x in fake_journal.read_text(encoding="utf-8").splitlines() if x.strip()]
-        report["fake_calls"] = {
-            "total": len(lines),
-            "with_images": sum(1 for x in lines if x.get("images")),
-            "stream": sum(1 for x in lines if x.get("stream")),
-        }
+    # Каталог журнала называется `inference` (LEDGER_DIRNAME), а не «ledger».
+    # Прежний фильтр по подстроке всегда давал пустой список — то есть отчёт,
+    # который разбирают руками, утверждал бы, что журнала вызовов нет.
+    from audit_worker.providers.inference_ledger import ledger_dir as _ledger_dir
+
+    _ld = _ledger_dir(job_dir)
+    report["ledger_dir"] = str(_ld.relative_to(job_dir)) if _ld.is_dir() else None
+    report["ledger_files"] = sorted(p.name for p in _ld.glob("*.json")) if _ld.is_dir() else []
 
     # ─── Журнал вызовов модели: считается по ЖУРНАЛУ ПОПЫТКИ ────────────────
     # Не по счётчикам этапов и не по журналу подделки: подделка запускается
