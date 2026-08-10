@@ -226,6 +226,14 @@ def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
     model = raw.get("model")
     if model is not None and (not isinstance(model, str) or len(model) > 128):
         raise AuditJobRejected("provider_requirement.model: строка не длиннее 128")
+    if model and str(model).strip():
+        # Точный идентификатор от ЦЕНТРА не принимается (11D, подтверждено 11G).
+        # Раньше отказ жил только в резолвере; здесь — рубеж ФОРМЫ, и он
+        # срабатывает до того, как задание вообще будет принято к исполнению.
+        raise AuditJobRejected(
+            "provider_requirement.model не принимается: точную модель выбирает "
+            "локальная политика воркера по логической способности (capability)"
+        )
     stages = raw.get("allowed_stages") or []
     if not isinstance(stages, list) or not all(isinstance(x, str) for x in stages):
         raise AuditJobRejected(
@@ -263,6 +271,15 @@ def _validate_provider_requirement(raw: Any) -> Optional[dict[str, Any]]:
                 "provider_requirement: capability и model взаимоисключимы — "
                 "точную модель для способности выбирает воркер"
             )
+    if max_inferences > 0 and not capability:
+        # Fail closed (11G). Требование «зови модель, но чем — не скажу»
+        # заканчивается вызовом без флага `--model`, то есть моделью учётной
+        # записи по умолчанию. Отвергаем на приёме задания, а не в середине
+        # прогона: отказ до исполнения ничего не стоит.
+        raise AuditJobRejected(
+            f"provider_requirement требует вызовов модели "
+            f"(max_inferences={max_inferences}), но не назвал capability"
+        )
     return {
         "provider": provider.lower(),
         "model": model or None,

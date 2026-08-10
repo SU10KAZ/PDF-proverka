@@ -150,6 +150,20 @@ class ProviderRequirement:
                     f"provider_requirement.capability={capability!r} неизвестна "
                     f"(известны: {list(model_policy.KNOWN_CAPABILITIES)})"
                 )
+        if max_inferences > 0 and not capability:
+            # Fail closed (этап 11G). Без этой проверки требование «зови модель,
+            # но способность не назову» доходило бы до `resolve()`, привязка
+            # получила бы `model=None`, адаптер не передал бы CLI флаг `--model`
+            # — и вызов ушёл бы на модель учётной записи ПО УМОЛЧАНИЮ. Ровно эта
+            # тихая подмена (11C: ожидали `claude-opus-5`, ответил
+            # `claude-opus-4-8[1m]`) и породила саму идею способностей, поэтому
+            # умолчания здесь нет и быть не может.
+            raise ProviderResolutionError(
+                f"provider_requirement требует вызовов модели "
+                f"(max_inferences={max_inferences}), но не назвал capability. "
+                "Точную модель выбирает локальная политика воркера, и выбирать "
+                "ей не из чего"
+            )
         return cls(
             provider=provider,
             model=None,
@@ -415,6 +429,17 @@ class ProviderResolver:
                 ) from None
             resolved_model = capability.model
             accepted_reported = capability.accepted_reported_models
+        if int(requirement.max_inferences) > 0 and not resolved_model:
+            # Второй рубеж того же утверждения. `from_payload` защищает разбор
+            # ТРЕБОВАНИЯ ЦЕНТРА, а сюда приходят и требования, собранные кодом
+            # (диагностические прогоны). Привязка без модели — это привязка,
+            # после которой CLI молча возьмёт модель учётной записи; писать
+            # такую на диск нельзя ни по какому пути.
+            raise ProviderResolutionError(
+                "привязка без точной модели при разрешённых вызовах: локальная "
+                "политика не выдала идентификатор. Вызов молча ушёл бы на "
+                "модель учётной записи по умолчанию"
+            )
         executable = adapter.executable_path()
         return ProviderBinding(
             schema_version=BINDING_SCHEMA_VERSION,

@@ -161,6 +161,32 @@ class WorkerConfig:
     # привязано к ЗАДАНИЮ (§9 этапа 11C), а значит выписать его можно только
     # ПОСЛЕ того, как задание создано: до этого момента task_id не существует.
     pipeline_provider_grant_wait_sec: float = 0.0
+    # ─── Автоматическое разрешение по заданию центра (этап 11G) ─────────────
+    # ЧТО ИМЕННО МЕНЯЕТСЯ. До 11G третье решение из тройки выше — «оператор
+    # разрешает КОНКРЕТНОЕ задание» — существовало файлом, который человек
+    # создавал руками ПОСЛЕ появления задания. Для диагностических этапов это
+    # было правильно: центр не умел сказать, чего он хочет, и подписью под
+    # расходом чужой подписки был именно файл. С 11G центр присылает
+    # ограниченное требование (провайдер, способность, белый список этапов,
+    # потолок обращений), и подпись переносится ТУДА, ГДЕ ЕЙ МЕСТО: на
+    # регистрацию воркера у центра плюс эти две настройки машины.
+    #
+    # Разрешение при этом НЕ исчезает: оно по-прежнему выписывается, ложится на
+    # диск ДО вызова модели, привязано к заданию, имеет срок и списывается
+    # атомарно. Меняется только автор записи — штатный код исполнителя вместо
+    # руки оператора.
+    #
+    # Обе настройки — рубеж МАШИНЫ, а не задания: ни центр, ни задание изменить
+    # их не могут. Нулевой потолок (умолчание) означает «автоматических
+    # разрешений нет», и тогда поведение дословно прежнее.
+    pipeline_provider_auto_grant_enabled: bool = False
+    # Сколько обращений к модели машина готова отдать ОДНОМУ заданию. Требование
+    # центра зажимается этим числом сверху: заказать больше, чем разрешил
+    # владелец VPS, задание не может.
+    pipeline_provider_max_inferences: int = 0
+    # Срок жизни автоматического разрешения. Забытое разрешение без срока —
+    # открытая дверь, о которой никто не помнит.
+    pipeline_provider_grant_ttl_sec: float = 6 * 3600.0
     # Файл со значениями, которых не должно быть в ответе модели (контрольная
     # строка канарейки и т.п.). Содержимое в репозитории не хранится намеренно:
     # хранить контрольную строку в Git значит обесценить её проверку.
@@ -230,6 +256,33 @@ class WorkerConfig:
         except OSError:
             pass
 
+    def declared_provider_capabilities(self) -> dict:
+        """`{провайдер: [способности]}` из ЛОКАЛЬНОЙ политики моделей.
+
+        Пустой словарь — законный и информативный ответ: он означает «политики
+        на машине нет», и центр обязан прочитать это как «задание с вызовами
+        сюда выдавать нельзя», а не как «поле не прислали, наверное можно».
+
+        Ошибка чтения политики подавляется намеренно: heartbeat не имеет права
+        падать из-за неверного JSON в файле администратора. Отсутствие
+        способностей в объявлении и есть сообщение о неисправности, и оно
+        приводит к отказу ДО создания задания.
+        """
+        if not (self.allow_real_llm and self.pipeline_provider_bridge_enabled):
+            # В fake-режиме объявлять способности не о чем: моста нет, и
+            # «умею strong_audit» было бы неправдой.
+            return {}
+        try:
+            from audit_worker.providers import model_policy
+
+            policy = model_policy.load_policy(self.root)
+        except Exception:                            # noqa: BLE001 — heartbeat не падает
+            return {}
+        out: dict[str, list[str]] = {}
+        for (provider, capability) in sorted(policy.capabilities):
+            out.setdefault(provider, []).append(capability)
+        return out
+
     def capabilities(self) -> dict:
         from audit_worker import slots as _slots
 
@@ -267,6 +320,17 @@ class WorkerConfig:
             # CLI. Отдельно от `provider_probe_allowed`: контрольный запрос и
             # рабочий вызов из конвейера — разные каналы и разные решения.
             "pipeline_provider_bridge_enabled": self.pipeline_provider_bridge_enabled,
+            # Что воркер умеет ПО СМЫСЛУ, а не по имени модели (этап 11G).
+            # Центр сверяет с этим полем требование ДО создания задания:
+            # иначе отказ «локальная политика не покрывает способность»
+            # приходил бы уже после сборки пакета и его выдачи.
+            #
+            # Точных идентификаторов моделей здесь нет намеренно: они —
+            # собственность машины, и центру знать их незачем. Наружу уходит
+            # только «claude умеет strong_audit».
+            "provider_capabilities": self.declared_provider_capabilities(),
+            "provider_auto_grant_enabled": self.pipeline_provider_auto_grant_enabled,
+            "provider_max_inferences_per_job": self.pipeline_provider_max_inferences,
         }
         caps.update(self.extra_capabilities)
         return caps
@@ -452,6 +516,20 @@ def load_config(
         ),
         pipeline_provider_grant_wait_sec=max(
             0.0, _env_float("AUDIT_WORKER_PIPELINE_PROVIDER_GRANT_WAIT_SEC", 0.0)
+        ),
+        pipeline_provider_auto_grant_enabled=_env_bool(
+            "AUDIT_WORKER_PIPELINE_PROVIDER_AUTO_GRANT_ENABLED", False
+        ),
+        pipeline_provider_max_inferences=max(
+            0,
+            min(
+                MAX_INFERENCES_CEILING,
+                _env_int("AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES", 0),
+            ),
+        ),
+        pipeline_provider_grant_ttl_sec=max(
+            60.0,
+            _env_float("AUDIT_WORKER_PIPELINE_PROVIDER_GRANT_TTL_SEC", 6 * 3600.0),
         ),
         provider_forbidden_literals_file=(
             Path(os.environ["AUDIT_WORKER_PROVIDER_FORBIDDEN_LITERALS_FILE"])

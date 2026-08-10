@@ -449,7 +449,8 @@ def test_worker_acceptance_gate_uses_same_ceiling_as_resolver():
     })
     assert params["max_inferences"] == 16
     payload = ProviderRequirementPayload(
-        provider="claude", allowed_stages=["block_analysis"], max_inferences=16,
+        provider="claude", capability="strong_audit",
+        allowed_stages=["block_analysis"], max_inferences=16,
     )
     assert payload.max_inferences == 16
     assert resolver.MAX_INFERENCES_CEILING == 64

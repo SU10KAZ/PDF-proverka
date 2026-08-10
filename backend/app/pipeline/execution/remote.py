@@ -168,6 +168,15 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
         _root, version_dir, _output = self._manager._resolve_job_paths(  # noqa: SLF001
             ctx.job
         )
+        requirement, rationale = await database.run_db(
+            self._provider_requirement,
+            worker_id=request.assigned_worker_id,
+            version_dir=Path(version_dir),
+            action=request.options.action,
+            settings=settings,
+        )
+        if rationale:
+            await self._announce_requirement(request.project_id, rationale)
         created = await database.run_db(
             audit_job_service.create_audit_job,
             worker_id=request.assigned_worker_id,
@@ -177,6 +186,7 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
             action=request.options.action,
             include_optimization=request.options.include_optimization,
             retry_stage=request.options.retry_stage,
+            provider_requirement=requirement,
             actor=f"operator:{ctx.extra.get('actor', 'unknown')}",
             display_name=request.project_id,
             settings=settings,
@@ -194,6 +204,86 @@ class RemoteWorkerExecutionBackend(ExecutionBackend):
         )
         self._persist(ctx.item, handle)
         return handle
+
+    @staticmethod
+    def _provider_requirement(
+        *,
+        worker_id: str,
+        version_dir: Path,
+        action: str,
+        settings: Any,
+    ) -> tuple[Optional[dict[str, Any]], dict[str, Any]]:
+        """Требование к провайдеру для ЭТОГО задания — или его осознанное отсутствие.
+
+        Развилка ровно одна и проходит по воркеру, а не по желанию оператора.
+
+        * **Воркер с настоящими моделями** получает требование
+          «claude + strong_audit», список этапов и потолок вызовов. Точной
+          модели в требовании нет: её выбирает локальная политика воркера.
+          Это и есть разрыв, который закрывает этап 11G: до него штатный путь
+          не формировал требования вовсе, воркер не активировал мост, и
+          привязку приходилось выписывать оператору руками.
+        * **Воркер на подделках** требования не получает (`None`). Это не
+          послабление, а сохранение прежнего поведения: `create_audit_job`
+          трактует задание без требования как `provider_mode="fake"`, и
+          конвейер идёт к поддельным CLI, как до 11C.
+
+        Отказ здесь происходит ДО создания задания и ДО сборки пакета: воркер,
+        объявивший настоящие модели, но не объявивший нужную способность, —
+        это машина без локальной политики, и узнавать об этом после выдачи
+        задания значит потратить место и время на обеих сторонах.
+        """
+        from backend.app.services.distributed_workers import (
+            job_service,
+            provider_requirement as provider_requirement_service,
+            repositories,
+        )
+
+        worker = repositories.get_worker(worker_id, settings=settings)
+        if worker is None:
+            raise ExecutionError(f"Воркер {worker_id!r} не найден")
+        caps = job_service.worker_capabilities(worker)
+        if not bool(caps.get("real_llm_enabled")):
+            return None, {
+                "provider_requirement": None,
+                "why": (
+                    "воркер объявил поддельные провайдеры "
+                    "(real_llm_enabled=false) — требование не формируется, "
+                    "конвейер пойдёт к подделкам"
+                ),
+            }
+        try:
+            requirement, rationale = provider_requirement_service.build_audit_requirement(
+                version_dir=Path(version_dir), worker=worker, action=action,
+            )
+        except provider_requirement_service.ProviderRequirementError as exc:
+            # Fail closed. Молчаливое понижение до подделок здесь означало бы
+            # «аудит прошёл», за которым нет ни одного обращения к модели.
+            raise ExecutionError(
+                f"Воркер не может исполнить требование к провайдеру: {exc}"
+            ) from None
+        return requirement.model_dump(), rationale
+
+    async def _announce_requirement(
+        self, project_id: str, rationale: dict[str, Any]
+    ) -> None:
+        """Показать оператору, ЧТО именно центр потребовал. Без имени модели."""
+        if not rationale.get("provider"):
+            message = (
+                "Провайдер модели воркеру не назначен: "
+                f"{rationale.get('why', 'причина не указана')}"
+            )
+        else:
+            budget = rationale.get("budget") or {}
+            message = (
+                f"Требование к провайдеру: {rationale['provider']} / "
+                f"способность {rationale['capability']}, потолок обращений "
+                f"{budget.get('max_inferences')} ({budget.get('formula', '')}). "
+                "Точную модель выбирает воркер по своей локальной политике."
+            )
+        await ws_manager.broadcast_to_project(
+            project_id, WSMessage.log(project_id, message, "info")
+        )
 
     def _persist(self, item: Any, handle: ExecutionHandle) -> None:
         """Сохранить ссылку в элемент очереди и на диск.

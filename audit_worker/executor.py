@@ -849,6 +849,38 @@ class Executor:
         manager.refresh(force=True)
         resolver = ProviderResolver(manager, worker_root=self.config.root)
         provider_root = ambient_root_for_attempt(job_dir, requirement.provider)
+        # Разрешение по заданию центра (этап 11G). Выписывается ДО списания и
+        # идемпотентно по попытке: повторный вход возвращает ту же запись с уже
+        # потраченными единицами. Если автоматические разрешения на машине не
+        # включены, ничего не происходит и работает прежний путь — файл,
+        # созданный оператором.
+        if getattr(self.config, "pipeline_provider_auto_grant_enabled", False):
+            try:
+                issued = inference_grant.issue_for_job(
+                    self.config.root,
+                    provider=requirement.provider,
+                    job_id=str(job_id),
+                    attempt_id=str(attempt_id),
+                    capability=str(requirement.capability or ""),
+                    requested_max_inferences=int(requirement.max_inferences),
+                    machine_ceiling=int(
+                        getattr(self.config, "pipeline_provider_max_inferences", 0)
+                    ),
+                    ttl_sec=float(
+                        getattr(self.config, "pipeline_provider_grant_ttl_sec", 6 * 3600.0)
+                    ),
+                )
+            except inference_grant.InferenceGrantError as exc:
+                # Отказ рубежа машины. Ожидание оператора здесь бессмысленно:
+                # потолок не появится сам, а требование задания не изменится.
+                raise audit_runner.AuditJobRejected(
+                    f"автоматическое разрешение не выписано: {exc}"
+                ) from None
+            _log(
+                f"разрешение {issued.grant_id} выписано автоматически по заданию "
+                f"центра: {issued.max_uses} обращений, способность "
+                f"{requirement.capability!r}"
+            )
         try:
             grant = inference_grant.consume(
                 self.config.root, provider=requirement.provider, task_id=str(job_id)

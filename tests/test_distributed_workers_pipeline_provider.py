@@ -135,6 +135,17 @@ def worker_root(tmp_path: Path) -> Path:
     root = tmp_path / "worker"
     (root / "config").mkdir(parents=True)
     (root / "runtime").mkdir(parents=True)
+    # Локальная политика моделей — обязательная часть состояния воркера с 11D:
+    # без неё способность заданию не во что превратить, и с 11G резолвер прямо
+    # отказывается писать привязку без точной модели. Корень воркера БЕЗ
+    # политики — это не «минимальная фикстура», а неисправная машина.
+    (root / "provider_policy.json").write_text(json.dumps({
+        "policy_version": 1,
+        "claude": {
+            "auth_mode": "ambient_user",
+            "capabilities": {"strong_audit": {"model": "claude-opus-5"}},
+        },
+    }, ensure_ascii=False), encoding="utf-8")
     return root
 
 
@@ -262,7 +273,7 @@ class TestProviderSelection:
         binding = resolver.ProviderResolver(manager, worker_root=worker_root).resolve(
             resolver.ProviderRequirement(
                 provider="claude", allowed_stages=("provider_selfcheck",),
-                max_inferences=1,
+                max_inferences=1, capability="strong_audit",
             ),
             job_id="job-1", attempt_id="attempt-1", task_id="job-1",
             grant_id="g-1",
@@ -271,6 +282,28 @@ class TestProviderSelection:
         assert binding.provider == "claude"
         assert binding.auth_mode == AUTH_MODE_AMBIENT_USER
         assert binding.executable == str(exe)
+        # Точную модель дала ЛОКАЛЬНАЯ политика, а не требование.
+        assert binding.model == "claude-opus-5"
+        assert binding.capability == "strong_audit"
+
+    def test_binding_without_a_model_is_refused(self, worker_root, tmp_path, job_dir):
+        """Привязка без модели при разрешённых вызовах — отказ (11G).
+
+        Иначе адаптер не передал бы CLI флаг `--model`, и вызов ушёл бы на
+        модель учётной записи по умолчанию: та самая тихая подмена 11C.
+        """
+        exe = _fake_claude(tmp_path / "bin" / "claude", tmp_path / "j.txt")
+        manager = self._manager(worker_root, exe)
+        with pytest.raises(resolver.ProviderResolutionError):
+            resolver.ProviderResolver(manager, worker_root=worker_root).resolve(
+                resolver.ProviderRequirement(
+                    provider="claude", allowed_stages=("provider_selfcheck",),
+                    max_inferences=1,          # способности нет
+                ),
+                job_id="job-1", attempt_id="attempt-1", task_id="job-1",
+                grant_id="g-1",
+                provider_root=resolver.ambient_root_for_attempt(job_dir, "claude"),
+            )
 
     def test_unauthorized_provider_is_refused(self, worker_root, tmp_path, job_dir):
         exe = _write_exe(tmp_path / "bin" / "claude", """
@@ -939,6 +972,7 @@ class TestJobContract:
                 "discipline_profile_hash": "b" * 16,
                 "provider_requirement": {
                     "provider": "claude",
+                    "capability": "strong_audit",
                     "allowed_stages": ["provider_selfcheck"],
                     "max_inferences": 1,
                 },
@@ -946,7 +980,10 @@ class TestJobContract:
             config=_Config(),
         )
         assert params.provider_requirement["provider"] == "claude"
+        assert params.provider_requirement["capability"] == "strong_audit"
         assert params.as_dict()["provider_requirement"]["max_inferences"] == 1
+        # Точной модели в требовании нет ни в каком виде (11G).
+        assert params.provider_requirement["model"] is None
 
     def test_binding_is_only_added_to_env_when_present(self, tmp_path):
         class _Config:
@@ -962,11 +999,20 @@ class TestJobContract:
         )
         assert with_binding[resolver.BINDING_ENV].endswith("provider_binding.json")
 
-    def test_worker_runtime_never_issues_its_own_grant(self):
-        """`issue()` — инструмент оператора. В рантайме воркера его нет.
+    def test_worker_runtime_never_issues_a_freeform_grant(self):
+        """`issue()` — инструмент ОПЕРАТОРА. В рантайме воркера его нет.
 
-        Разрешение, которое воркер выписывает себе сам, разрешением не
-        является; проверка структурная, потому что утверждение структурное.
+        Что изменилось на 11G и что осталось. Осталось: воркер не вправе
+        выписать себе разрешение с произвольными параметрами — `issue()`
+        принимает и число использований, и срок, и задание как есть, и вызов
+        такой функции из рантайма означал бы «сам себе разрешил сколько
+        захотел». Изменилось: появился `issue_for_job()`, у которого свободных
+        параметров нет вовсе — всё выводится из задания центра и зажимается
+        потолком МАШИНЫ, заданным администратором VPS заранее.
+
+        Поэтому проверка стала точнее, а не слабее: свободная форма запрещена
+        по-прежнему, а связанная разрешена ровно одному месту — исполнителю,
+        который и так единственный имеет право войти в оплачиваемый канал.
         """
         runtime = [
             "audit_worker/executor.py",
@@ -976,7 +1022,71 @@ class TestJobContract:
         ]
         for rel in runtime:
             source = (REPO_ROOT / rel).read_text(encoding="utf-8")
-            assert "inference_grant.issue" not in source, rel
+            assert "inference_grant.issue(" not in source, rel
+            if rel != "audit_worker/executor.py":
+                assert "issue_for_job" not in source, rel
+        executor = (REPO_ROOT / "audit_worker/executor.py").read_text(encoding="utf-8")
+        assert executor.count("inference_grant.issue_for_job(") == 1
+
+    def test_auto_grant_refuses_without_a_machine_ceiling(self, worker_root):
+        """Потолок задаёт владелец VPS. Ноль означает «автоматических нет»."""
+        with pytest.raises(inference_grant.InferenceGrantError):
+            inference_grant.issue_for_job(
+                worker_root, provider="claude", job_id="job-1",
+                attempt_id="a-1", capability="strong_audit",
+                requested_max_inferences=4, machine_ceiling=0, ttl_sec=600,
+            )
+
+    def test_auto_grant_refuses_to_silently_trim_the_request(self, worker_root):
+        """Урезать требование молча нельзя: аудит оборвался бы оплаченным."""
+        with pytest.raises(inference_grant.InferenceGrantError):
+            inference_grant.issue_for_job(
+                worker_root, provider="claude", job_id="job-1",
+                attempt_id="a-1", capability="strong_audit",
+                requested_max_inferences=9, machine_ceiling=4, ttl_sec=600,
+            )
+
+    def test_auto_grant_is_idempotent_per_attempt(self, worker_root):
+        """Повторный вход не обнуляет потраченное и не создаёт вторую запись."""
+        first = inference_grant.issue_for_job(
+            worker_root, provider="claude", job_id="job-1", attempt_id="a-1",
+            capability="strong_audit", requested_max_inferences=9,
+            machine_ceiling=12, ttl_sec=600,
+        )
+        inference_grant.consume(worker_root, provider="claude", task_id="job-1")
+        again = inference_grant.issue_for_job(
+            worker_root, provider="claude", job_id="job-1", attempt_id="a-1",
+            capability="strong_audit", requested_max_inferences=9,
+            machine_ceiling=12, ttl_sec=600,
+        )
+        assert again.grant_id == first.grant_id
+        assert again.used == 1, "перевыписка вернула бы оплаченной попытке новый прогон"
+        assert len(inference_grant.read_records(worker_root)) == 1
+
+    def test_second_attempt_of_the_same_job_gets_its_own_grant(self, worker_root):
+        """Разрешение исчерпанной попытки не блокирует новую.
+
+        `consume` ищет ПРИГОДНУЮ запись, а не первую совпавшую по заданию:
+        под одним заданием их теперь несколько — по одной на попытку.
+        """
+        inference_grant.issue_for_job(
+            worker_root, provider="claude", job_id="job-1", attempt_id="a-1",
+            capability="strong_audit", requested_max_inferences=9,
+            machine_ceiling=12, ttl_sec=600,
+        )
+        for _ in range(inference_grant.GRANT_MAX_ENTRIES_PER_ATTEMPT):
+            inference_grant.consume(worker_root, provider="claude", task_id="job-1")
+        with pytest.raises(inference_grant.InferenceGrantError):
+            inference_grant.consume(worker_root, provider="claude", task_id="job-1")
+        inference_grant.issue_for_job(
+            worker_root, provider="claude", job_id="job-1", attempt_id="a-2",
+            capability="strong_audit", requested_max_inferences=9,
+            machine_ceiling=12, ttl_sec=600,
+        )
+        used = inference_grant.consume(
+            worker_root, provider="claude", task_id="job-1"
+        )
+        assert used.grant_id == "auto-a-2"
 
 
 # ═════════════ Heartbeat ═════════════════════════════════════════════════════

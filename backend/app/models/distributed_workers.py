@@ -11,7 +11,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 # ─── Закрытые перечисления ───────────────────────────────────────────────────
@@ -55,6 +55,24 @@ CENTRAL_ONLY_STAGES: tuple[str, ...] = (
     "decision_carryover",
     "excel",
 )
+
+#: ЛОГИЧЕСКАЯ способность провайдера, которую центр вправе потребовать.
+#:
+#: Почему способность, а не идентификатор модели. Точная строка (`claude-opus-5`)
+#: — это распоряжение чужой подпиской: центр не платит за вызов и не знает, что
+#: физически закреплено на конкретном VPS. Кроме того, строка задания, уехавшая
+#: в argv стороннего CLI, ломает инвариант I-P5 («данные задания не попадают в
+#: командную строку»). Поэтому центр формулирует ТРЕБОВАНИЕ, а во что оно
+#: превращается на машине — решает локальная политика воркера
+#: (`audit_worker/providers/model_policy.py`).
+CAPABILITY_STRONG_AUDIT = "strong_audit"
+
+#: Реестр закрыт намеренно: способность, которой здесь нет, отвергается на
+#: разборе требования, а не превращается в «модель по умолчанию». Набор обязан
+#: быть подмножеством `model_policy.KNOWN_CAPABILITIES` воркера — это проверяет
+#: отдельный тест, иначе центр смог бы заказать способность, которую ни один
+#: воркер не в состоянии разрешить, и отказ пришёл бы уже ПОСЛЕ выдачи задания.
+KNOWN_CAPABILITIES: tuple[str, ...] = (CAPABILITY_STRONG_AUDIT,)
 
 
 class JobState(str, Enum):
@@ -444,22 +462,32 @@ class ProviderRequirementPayload(BaseModel):
 
     Умышленно бедная структура. Всё, что могло бы стать каналом «выполни
     произвольное», здесь отсутствует по построению: нет пути к бинарю, нет
-    аргументов, нет окружения, нет промпта. Модель — ОЖИДАНИЕ, а не приказ:
-    воркер не подставляет её флагом (это нарушило бы I-P5), а сверяет с тем,
-    что фактически ответило.
+    аргументов, нет окружения, нет промпта.
+
+    Этап 11G: требование выражается парой «провайдер + СПОСОБНОСТЬ». Точного
+    идентификатора модели центр не передаёт — см. `KNOWN_CAPABILITIES` о том,
+    почему это не косметика, а рубеж. Поле `model` осталось в схеме ровно
+    затем, чтобы РАНЕЕ сохранённые нагрузки продолжали разбираться (`extra=
+    "forbid"` отверг бы незнакомый ключ целиком), и принимает только пустое
+    значение: непустая строка — отказ, а не «ну ладно, учтём как пожелание».
     """
 
     model_config = ConfigDict(extra="forbid")
 
     provider: Literal["claude", "codex"]
-    #: Ожидаемая модель. Проверяется по факту, а не навязывается.
+    #: ЛОГИЧЕСКАЯ способность. Что она означает НА КОНКРЕТНОЙ машине, решает
+    #: локальная политика воркера. Обязательна для задания, которое собирается
+    #: звать модель (см. `_check_capability_required`).
+    capability: Optional[str] = Field(default=None, max_length=64)
+    #: Устаревшее поле. Существует только ради разбора старых нагрузок; любое
+    #: непустое значение отвергается.
     model: Optional[str] = Field(default=None, max_length=128)
     #: Этапы, которым разрешено обращаться к модели. Пустой список означает
     #: «никаким»: белый список, а не чёрный.
     allowed_stages: list[str] = Field(default_factory=list, max_length=16)
     #: Потолок оплачиваемых вызовов. Ноль — законное значение: «модель не звать».
     #: Верхняя граница здесь — рубеж центра; фактический потолок задаёт
-    #: разрешение оператора на воркере, и оно всегда у́же.
+    #: политика воркера, и она всегда у́же.
     max_inferences: int = Field(default=0, ge=0, le=64)
 
     @field_validator("allowed_stages")
@@ -469,6 +497,57 @@ class ProviderRequirementPayload(BaseModel):
             if not stage or len(stage) > 64 or not stage.replace("_", "").isalnum():
                 raise ValueError(f"недопустимое имя этапа: {stage!r}")
         return value
+
+    @field_validator("capability")
+    @classmethod
+    def _check_capability(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        capability = value.strip()
+        if not capability:
+            raise ValueError("capability: непустая строка либо отсутствие поля")
+        if capability not in KNOWN_CAPABILITIES:
+            raise ValueError(
+                f"неизвестная способность {capability!r} "
+                f"(известны: {', '.join(KNOWN_CAPABILITIES)})"
+            )
+        return capability
+
+    @field_validator("model")
+    @classmethod
+    def _reject_exact_model(cls, value: Optional[str]) -> None:
+        """Точный идентификатор модели центру не принадлежит (этап 11D/11G).
+
+        Проверка живёт в САМОЙ схеме, а не в вызывающем коде: иначе «центр не
+        присылает модель» было бы свойством одного места вызова, и следующий
+        вызывающий восстановил бы канал, ничего не нарушив формально.
+        """
+        if value is None or not str(value).strip():
+            return None
+        raise ValueError(
+            "provider_requirement.model не принимается: точную модель выбирает "
+            "ЛОКАЛЬНАЯ политика воркера по логической способности (capability). "
+            "Центру идентификатор модели не принадлежит"
+        )
+
+    @model_validator(mode="after")
+    def _check_capability_required(self) -> "ProviderRequirementPayload":
+        """Задание, которое собирается звать модель, обязано назвать способность.
+
+        Без этого правила требование `max_inferences>0` без `capability` дошло
+        бы до воркера, резолвер выписал бы привязку с `model=None`, адаптер не
+        передал бы CLI флаг `--model` — и вызов ушёл бы на модель учётной записи
+        по умолчанию. Ровно эта тихая подмена (11C: ожидали `claude-opus-5`,
+        ответил `claude-opus-4-8[1m]`) и породила саму идею способностей.
+        """
+        if int(self.max_inferences) > 0 and not self.capability:
+            raise ValueError(
+                "provider_requirement требует вызовов модели "
+                f"(max_inferences={self.max_inferences}), но не назвал "
+                "capability. Умолчания нет намеренно: молчаливый выбор модели "
+                "на воркере запрещён"
+            )
+        return self
 
 
 class AuditPipelineParams(BaseModel):

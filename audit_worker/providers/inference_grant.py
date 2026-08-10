@@ -67,6 +67,21 @@ MAX_GRANT_MODE = 0o600
 #: Версия схемы файла. Неизвестная версия — отказ, а не «разберём как выйдет».
 SCHEMA_VERSION = 1
 
+#: Сколько РАЗ одна попытка вправе войти в оплачиваемый канал (этап 11G).
+#:
+#: Это не число вызовов модели и не бюджет: сколько обращений допускает
+#: задание, знает `binding.max_inferences`, и считает их журнал вызовов
+#: (`inference_ledger`, инвариант I-P9 — повторный вход отдаёт СОХРАНЁННЫЙ
+#: ответ, не оплачивая заново). Здесь считается другое: сколько раз исполнитель
+#: может ВОЙТИ в этот канал по одной попытке.
+#:
+#: Единица была бы неверна: перезапуск исполнителя посреди попытки — штатное
+#: событие (`reconciliation`), и после него привязка выписывается заново.
+#: С `max_uses=1` такая попытка получала бы отказ «разрешение исчерпано» и
+#: становилась невосстановимой, хотя ни одного лишнего вызова не произошло бы.
+#: Три = один обычный вход плюс два технических восстановления.
+GRANT_MAX_ENTRIES_PER_ATTEMPT = 3
+
 
 class InferenceGrantError(RuntimeError):
     """Разрешения нет, оно повреждено, просрочено или исчерпано."""
@@ -313,30 +328,42 @@ def consume(
                 "разрешения себе не выписывает."
             )
         records = _parse(path.read_text(encoding="utf-8"))
-        index = next(
-            (
-                i for i, record in enumerate(records)
-                if record.provider == name and record.task_id == str(task_id)
-            ),
-            None,
-        )
-        if index is None:
+        matching = [
+            i for i, record in enumerate(records)
+            if record.provider == name and record.task_id == str(task_id)
+        ]
+        if not matching:
             raise InferenceGrantError(
                 f"разрешения под провайдера {name!r} и задание {task_id!r} нет. "
                 "Разрешение привязано к заданию намеренно: иначе один выданный "
                 "прогон разрешал бы любой следующий."
             )
+        # ПРИГОДНАЯ запись, а не просто первая совпавшая. Пока разрешение
+        # выписывал человек, запись под задание была ровно одна, и разница не
+        # проявлялась. С автоматической выпиской (11G) под одним заданием
+        # накапливаются записи РАЗНЫХ попыток, и «первая совпавшая» означало бы
+        # вечный отказ «разрешение исчерпано» по записи прошлой попытки, при
+        # живом разрешении текущей. Порядок просмотра — от последней к первой:
+        # свежая запись относится к текущей попытке.
+        index = next(
+            (
+                i for i in reversed(matching)
+                if records[i].remaining > 0 and not records[i].expired(now=moment)
+            ),
+            None,
+        )
+        if index is None:
+            latest = records[matching[-1]]
+            if latest.expired(now=moment):
+                raise InferenceGrantError(
+                    f"разрешение {latest.grant_id!r} просрочено "
+                    f"(истекло {int(moment - latest.expires_at)} с назад)"
+                )
+            raise InferenceGrantError(
+                f"разрешение {latest.grant_id!r} исчерпано "
+                f"({latest.used}/{latest.max_uses})"
+            )
         record = records[index]
-        if record.expired(now=moment):
-            raise InferenceGrantError(
-                f"разрешение {record.grant_id!r} просрочено "
-                f"(истекло {int(moment - record.expires_at)} с назад)"
-            )
-        if record.remaining <= 0:
-            raise InferenceGrantError(
-                f"разрешение {record.grant_id!r} исчерпано "
-                f"({record.used}/{record.max_uses})"
-            )
         updated = GrantRecord(
             grant_id=record.grant_id,
             provider=record.provider,
@@ -351,6 +378,104 @@ def consume(
         return updated
 
 
+def issue_for_job(
+    worker_root: Path,
+    *,
+    provider: str,
+    job_id: str,
+    attempt_id: str,
+    capability: str,
+    requested_max_inferences: int,
+    machine_ceiling: int,
+    ttl_sec: float,
+    now: Optional[float] = None,
+) -> GrantRecord:
+    """Разрешение, выписанное ШТАТНЫМ КОДОМ по заданию центра (этап 11G).
+
+    Почему это не отмена рубежа, а перенос подписи.
+
+    Прежний порядок требовал, чтобы человек с доступом к машине создал файл
+    ПОСЛЕ появления задания. Для этапов 11C–11F это было единственно верно:
+    центр не умел сказать, чего он хочет, и файл был единственным местом, где
+    расход чужой подписки кем-то подписан. С 11G центр присылает ограниченное
+    требование, и подпись переезжает на два решения ВЛАДЕЛЬЦА МАШИНЫ, принятые
+    заранее и не зависящие от задания:
+
+      * воркер зарегистрирован и одобрен у этого центра;
+      * администратор VPS включил автоматические разрешения и задал потолок
+        обращений на одно задание (`machine_ceiling`).
+
+    Что при этом сохраняется дословно: запись ложится на диск ДО вызова модели,
+    привязана к ЗАДАНИЮ, имеет СРОК и списывается АТОМАРНО. Ни одно свойство
+    разрешения не ослаблено — сменился только автор записи.
+
+    Идемпотентность — не удобство, а инвариант. `grant_id` детерминирован по
+    попытке, и повторный вход (перезапуск исполнителя, повторная доставка
+    задания) НЕ создаёт вторую запись и НЕ обнуляет `used`: уже потраченная
+    единица остаётся потраченной. Именно этим автоматическая выписка
+    отличается от «выписать заново», которое `issue` запрещает.
+    """
+    ceiling = int(machine_ceiling)
+    if ceiling <= 0:
+        raise InferenceGrantError(
+            "автоматические разрешения на этой машине не включены "
+            "(AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES=0). Потолок задаёт "
+            "владелец VPS, и задание его не переопределяет"
+        )
+    requested = int(requested_max_inferences)
+    if requested <= 0:
+        raise InferenceGrantError(
+            f"задание не запрашивает обращений к модели (max_inferences={requested})"
+        )
+    if requested > ceiling:
+        # Отказ, а не молчаливое усечение. Урезанный потолок означал бы аудит,
+        # оборвавшийся в середине уже оплаченным, — и никто не смог бы сказать,
+        # что произошло: журнал показал бы «упёрлись в лимит», не назвав чей.
+        raise InferenceGrantError(
+            f"задание просит {requested} обращений к модели, а машина разрешает "
+            f"не более {ceiling} на задание. Урезать требование молча нельзя: "
+            "аудит оборвался бы в середине, уже потратив часть вызовов"
+        )
+    if not str(capability or "").strip():
+        raise InferenceGrantError(
+            "разрешение не выписывается без логической способности: без неё "
+            "точную модель выберет CLI, а не политика машины"
+        )
+    grant_id = f"auto-{attempt_id}"
+    moment = now if now is not None else time.time()
+    path = grant_path(worker_root)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with _FileLock(_lock_path(worker_root)):
+        problem = _check_file_safety(path)
+        if problem:
+            raise InferenceGrantError(problem)
+        records = _parse(path.read_text(encoding="utf-8")) if path.exists() else []
+        existing = next((r for r in records if r.grant_id == grant_id), None)
+        if existing is not None:
+            # Повторный вход. Возвращаем запись КАК ЕСТЬ — со всем, что уже
+            # потрачено. Перевыписать значило бы вернуть израсходованной
+            # попытке новый оплаченный прогон.
+            return existing
+        record = GrantRecord(
+            grant_id=grant_id,
+            provider=str(provider).strip().lower(),
+            task_id=str(job_id),
+            # ВХОДЫ в канал, а не обращения к модели: см. комментарий к
+            # `GRANT_MAX_ENTRIES_PER_ATTEMPT`. Потолок обращений едет в привязке
+            # (`binding.max_inferences`) и проверяется на каждом вызове.
+            max_uses=GRANT_MAX_ENTRIES_PER_ATTEMPT,
+            used=0,
+            expires_at=moment + float(ttl_sec),
+            note=(
+                f"auto:11G job={job_id} attempt={attempt_id} "
+                f"capability={capability} inferences={requested}/{ceiling}"
+            ),
+        )
+        records.append(record)
+        _write_atomically(path, records)
+        return record
+
+
 def issue(
     worker_root: Path,
     *,
@@ -362,11 +487,12 @@ def issue(
     note: str = "",
     now: Optional[float] = None,
 ) -> GrantRecord:
-    """Выписать разрешение. ТОЛЬКО для оператора и тестов, не для воркера.
+    """Выписать разрешение ВРУЧНУЮ. Оператор и тесты, не рантайм воркера.
 
-    Функция живёт здесь, а не в скрипте, ради одного: формат файла имеет ровно
-    одного автора. Вызывать её из кода воркера нельзя — это проверяется тестом
-    (`test_worker_runtime_never_issues_its_own_grant`).
+    Отличие от `issue_for_job` — не в правах, а в ИСТОЧНИКЕ: здесь параметры
+    задаёт человек произвольно, там они выводятся из задания центра и
+    зажимаются потолком машины. Поэтому вызывать `issue` из кода воркера
+    по-прежнему нельзя, и это проверяется тестом.
     """
     moment = now if now is not None else time.time()
     path = grant_path(worker_root)
