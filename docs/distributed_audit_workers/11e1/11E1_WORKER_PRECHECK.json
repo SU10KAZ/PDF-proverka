@@ -1,0 +1,71 @@
+{
+  "kind": "11E.1 §7 — проверка воркера БЕЗ единого обращения к модели",
+  "captured_at": "2026-08-10",
+  "host": {
+    "ip": "176.12.77.31",
+    "hostname": "andrewuzun3.hlab.kz",
+    "user": "coder",
+    "expected_user": "coder",
+    "matches": true
+  },
+  "claude_cli": {
+    "path": "/home/coder/.local/bin/claude -> /home/coder/.local/share/claude/versions/2.1.220",
+    "version": "2.1.220 (Claude Code)",
+    "same_as_11e": true,
+    "updated_in_11e1": false
+  },
+  "auth_zero_inference": {
+    "command": "claude auth status",
+    "loggedIn": true,
+    "authMethod": "claude.ai",
+    "apiProvider": "firstParty",
+    "subscriptionType": "max",
+    "orgName_present": true,
+    "login_performed": false,
+    "credential_files_read": false,
+    "credential_values_in_docs": false
+  },
+  "same_account_as_center": {
+    "value": true,
+    "consequence": "§8 задания: .31 и центр НЕ являются независимыми пулами квоты. Причина отказа 11E не установлена и здесь не постулируется",
+    "mitigation_in_11e1": "во время боевого вызова с центральной машины не запускалось ни одного дополнительного обращения к модели (ни субагентов, ни параллельных задач); архитектура ради этого не менялась"
+  },
+  "runtime_11e": {
+    "root": "/home/coder/audit-worker-11e",
+    "current_release": "20260810T054528-56f0b6efe13f",
+    "source_commit": "43d2437f5eb53a03f0eaa4c0a5429064dfc64497",
+    "source_branch": "feat/distributed-audit-workers-findings-merge-provider",
+    "file_count": 571,
+    "tree_hash_declared": "sha256:56f0b6efe13f7e4654e0e720ba5e70629db2f71b645a1591d5bcdeaa02447b9c",
+    "tree_hash_recomputed_on_worker": "sha256:56f0b6efe13f7e4654e0e720ba5e70629db2f71b645a1591d5bcdeaa02447b9c",
+    "unpacked_tree_intact": true,
+    "files_missing": 0,
+    "files_extra": 0,
+    "claude_md_in_release": false,
+    "redeployed_in_11e1": false,
+    "why_no_redeploy": "развёрнутый код побайтово совпал с кодом финала 11E — переразвёртывание изменило бы состояние без единой причины"
+  },
+  "operator_tools_on_worker": {
+    "comparison": "sha256 инструментов на .31 против репозитория на 7a32e2e1",
+    "run_11e_findings_merge_provider.py": {"worker": "3809d361274710aeeb715ae47c5a201d4eb41324529712f530ad551be90ae1f8", "repo": "3809d361274710aeeb715ae47c5a201d4eb41324529712f530ad551be90ae1f8", "match": true},
+    "verify_11e_pre_inference_gate.py": {"worker": "cd69f110c2d49853ac8e73d9b5cec5db84667d9beffbc9cc18390348cda61652", "repo": "cd69f110c2d49853ac8e73d9b5cec5db84667d9beffbc9cc18390348cda61652", "match": true},
+    "verify_11e_prompt_semantics.py": {"worker": "69cc9d668eb47c62bec00bbd203b40f5873dc0969ff9834500453182a6fb15ce", "repo": "69cc9d668eb47c62bec00bbd203b40f5873dc0969ff9834500453182a6fb15ce", "match": true},
+    "capture_proc_11e.sh": {"worker": "4a5bc1bdfe6e0d9155c01deb1618fc6bafde3cc70b53e35c2d682a09942082e4", "in_repo": false, "note": "операторский снимок дерева процессов, в бандл не входит"},
+    "modified_in_11e1": false
+  },
+  "model_policy_local": {
+    "path": "/home/coder/audit-worker-11e/data/provider_policy.json",
+    "mode": "0600",
+    "changed_in_11e1": false,
+    "resolved_zero_inference": {"capability": "strong_audit", "model": "claude-opus-5", "accepted_reported_models": ["claude-opus-5", "claude-opus-5[1m]"]},
+    "source_of_model": "ЛОКАЛЬНАЯ политика воркера; центр несёт способность, а не строку модели (I-P5)"
+  },
+  "old_grant_state": {
+    "grant_id": "g-findings_merge_11e_real",
+    "max_uses": 1,
+    "used": 1,
+    "remaining": 0,
+    "reused_in_11e1": false
+  },
+  "nothing_updated": {"os": false, "kernel": false, "python": false, "node": false, "claude_cli": false, "codex_cli": false, "venv": false}
+}

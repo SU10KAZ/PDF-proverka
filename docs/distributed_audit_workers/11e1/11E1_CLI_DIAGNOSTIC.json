@@ -1,0 +1,65 @@
+{
+  "kind": "11E.1 §15/§17 — диагностика единственного боевого вызова",
+  "outcome": "SUCCESS — ветка §17 (разбор ошибки) не применялась",
+  "timestamps_utc": {"started": "2026-08-10T06:45:48Z", "finished": "2026-08-10T06:51:26Z"},
+  "where_it_physically_ran": {
+    "hostname": "andrewuzun3.hlab.kz",
+    "ip": "176.12.77.31",
+    "is_worker": true,
+    "ssh_used_as_inference_transport": false,
+    "how_proven": "снимок дерева процессов ВО ВРЕМЯ вызова: процесс CLI — потомок раннера НА ВОРКЕРЕ, читает промпт со своего stdin. Схемы «промпт → SSH → claude → stdout → центр» нет"
+  },
+  "process_tree": {
+    "snapshots_taken": 1433,
+    "chain": [
+      {"pid": 993172, "comm": "bash", "ppid": 993171},
+      {"pid": 993173, "comm": "bash", "ppid": 993172, "role": "снимок дерева процессов"},
+      {"pid": 993177, "comm": "timeout", "ppid": 993172},
+      {"pid": 993178, "comm": "python", "ppid": 993177, "role": "раннер этапа findings_merge"},
+      {"pid": 993284, "comm": "claude", "ppid": 993178, "role": "ЕДИНСТВЕННЫЙ процесс CLI провайдера"}
+    ],
+    "distinct_claude_pids": 1,
+    "claude_executable": "/home/coder/.local/share/claude/versions/2.1.220",
+    "claude_launcher": "/home/coder/.local/bin/claude",
+    "claude_cwd": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e1_retry/providers/claude/runtime",
+    "cwd_inside_attempt_dir": true
+  },
+  "sanitized_argv": "/home/coder/.local/bin/claude --safe-mode --strict-mcp-config --disable-slash-commands --no-session-persistence --setting-sources= --model=claude-opus-5 --tools= --disallowed-tools=Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit,TodoWrite,AskUserQuestion --permission-mode dontAsk --max-turns 1 --output-format json -p",
+  "argv_notes": {
+    "prompt_not_in_argv": "промпт передаётся через stdin (-p без значения) — в argv он не попадает",
+    "credentials_in_argv": 0,
+    "identical_to_11e_argv_except_nothing": true
+  },
+  "call": {
+    "requested_model": "claude-opus-5",
+    "reported_model": "claude-opus-5",
+    "model_match": "точное совпадение (без формы [1m])",
+    "exit_code": 0,
+    "provider_status": "success",
+    "error_code": null,
+    "detail": null,
+    "duration_ms": 336974,
+    "duration_sec_stage": 337.403,
+    "raw_response_bytes": 80793,
+    "raw_response_sha256": "03868b2ff8b01bf00641f2053d802bb7e41e9a3dd7f28bd5fba697a3a0a6a887",
+    "result_keys": ["findings", "meta"],
+    "result_findings": 23,
+    "num_turns": 1
+  },
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 26268,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 28800,
+    "total_cost_usd": 0.98269,
+    "note": "промпт ушёл в кеш-создание (26 268 ток.), поэтому input_tokens = 2 — это учёт CLI, а не признак усечённого входа: длина промпта проверена отдельно (52 816 символов, отпечаток совпал с 11E)"
+  },
+  "comparison_with_11e": {
+    "11e": {"exit_code": 1, "duration_sec": 32.3, "status": "error", "reported_model": null, "usage_tokens": 0, "artifact": "не создан", "detail": "CLI завершился ошибкой (текст ошибки утерян — дефект, исправленный в 43d2437f)"},
+    "11e1": {"exit_code": 0, "duration_sec": 337.4, "status": "success", "reported_model": "claude-opus-5", "output_tokens": 28800, "artifact": "создан"},
+    "what_changed_between_them": "ни промпт, ни входы, ни модель, ни код пути вызова — отпечаток промпта побайтово тот же. Изменилось только время попытки",
+    "root_cause_of_11e_failure": "НЕ УСТАНОВЛЕНА и по итогам 11E.1 установленной не считается: отказ не воспроизвёлся, а текст той ошибки был потерян исправленным позже дефектом. Классификацию (RATE_LIMIT / OVERLOADED / прочее) выдвигать не на чем",
+    "diagnostic_fix_exercised": false,
+    "diagnostic_fix_status": "развёрнут и активен, но в 11E.1 не сработал — ошибки не было"
+  }
+}

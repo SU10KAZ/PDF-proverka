@@ -1,0 +1,65 @@
+{
+  "kind": "11E.1 §3 — база Git этапа",
+  "purpose": "повтор РОВНО ОДНОГО боевого findings_merge после технического отказа CLI в 11E",
+  "state_before": {
+    "primary_worktree": "/home/coder/projects/PDF-proverka",
+    "branch_at_start": "feature/block-vector-graphs",
+    "head_at_start": "a62856d21e3fe8912bc7b078fe9cd64cd3233029",
+    "dirty": [" M .claude/settings.json", "?? docs/distributed_audit_workers/"],
+    "note": "рабочее дерево центра к 11E.1 отношения не имеет; этап живёт в отдельном worktree"
+  },
+  "base": {
+    "expected_by_task": "7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f",
+    "actual_tip_of_11e": "7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f",
+    "matches": true,
+    "found_in": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-findings-merge-provider",
+    "branch": "feat/distributed-audit-workers-findings-merge-provider",
+    "last_commits": [
+      "7a32e2e1 docs(воркеры 11E): проставить хэш коммита артефактов в базу Git",
+      "48ffce30 docs(воркеры 11E): отчёт этапа — перенос свода доказан до границы оплаты, вызов отказал",
+      "43d2437f fix(воркеры): сохранять текст ошибки CLI провайдера, а не только её хэш",
+      "b68629da fix(воркеры 11E): убрать противоречие о нормативной базе в промпте свода",
+      "85cf7018 feat(воркеры 11E): боевой findings_merge через ProviderAdapter без файловых инструментов"
+    ]
+  },
+  "created": {
+    "branch": "feat/distributed-audit-workers-findings-merge-retry",
+    "worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-findings-merge-retry",
+    "base_commit": "7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f",
+    "push": "НЕ выполнялся"
+  },
+  "code_identity_11e_final_vs_deployed": {
+    "question": "релиз на .31 собран с коммита 43d2437f — соответствует ли он финальному коду 11E (7a32e2e1)?",
+    "diff_43d2437f_to_7a32e2e1": {
+      "files_changed": 28,
+      "outside_docs": 0,
+      "conclusion": "между развёрнутым коммитом и финалом 11E изменены ТОЛЬКО документы"
+    },
+    "deterministic_rebuild": {
+      "built_from": "7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f",
+      "tool": "scripts/deploy_audit_worker.py build (не изменялся)",
+      "tree_hash": "sha256:56f0b6efe13f7e4654e0e720ba5e70629db2f71b645a1591d5bcdeaa02447b9c",
+      "deployed_tree_hash": "sha256:56f0b6efe13f7e4654e0e720ba5e70629db2f71b645a1591d5bcdeaa02447b9c",
+      "match": true,
+      "file_count": 571,
+      "artifact_not_delivered": "сборка выполнена ТОЛЬКО для сверки хэша; на воркер не доставлялась — там уже стоит идентичный код"
+    },
+    "redeploy_needed": false
+  },
+  "changes_to_findings_merge_in_11e1": {
+    "prompt": "не изменён",
+    "text_analysis": "не изменён",
+    "block_artifacts": "не изменены",
+    "severity_semantics": "не изменена",
+    "discipline_profile": "не изменён",
+    "provider_adapter_routing": "не изменено",
+    "model_policy": "не изменена",
+    "input_serialization": "не изменена",
+    "input_ordering": "не изменено",
+    "dedup_rules": "не изменены",
+    "output_schema": "не изменена",
+    "validator": "не изменён",
+    "sanitized_cli_detail_fix_from_11e": "сохранён (коммит 43d2437f, уже развёрнут)",
+    "code_commits_in_11e1": 0
+  }
+}
