@@ -508,3 +508,64 @@ def test_plan_hash_mismatch_fails_closed():
     plan = build_plan()
     with pytest.raises(RoutingPlanError, match="не совпал"):
         plan.assert_hash("sha256:" + "0" * 64)
+
+
+# ─── Ни один worker-этап не проваливается мимо плана ─────────────────────────
+def test_every_worker_bridge_stage_has_a_plan_action():
+    """У каждой стадии, которая зовёт мост, есть действие плана.
+
+    Мост отвергает обращение без `action_id`, когда задание пришло с планом.
+    Это правильное поведение — но только если план ДЕЙСТВИТЕЛЬНО покрывает все
+    стадии, которые до моста доходят. Стадия, оказавшаяся непокрытой, дала бы
+    не «маршрут решается на месте», а отказ этапа в середине боевого прогона.
+    """
+    from backend.app.services.audit_routing import active_plan
+
+    for preset_id in (presets.PRESET_CLAUDE_GPT_CODEX, presets.PRESET_FULL_CODEX):
+        plan = build_plan(preset_id)
+        active_plan.set_plan(plan)
+        try:
+            for pipeline_stage in (
+                "block_analysis", "text_analysis", "findings_merge",
+                "optimization", "optimization_critic",
+            ):
+                if pipeline_stage == "block_analysis":
+                    # У этапа 01 действий несколько — их разбирает свой код.
+                    assert active_plan.block_detector_legs()
+                    assert active_plan.block_judge_action() is not None
+                    continue
+                if pipeline_stage == "optimization":
+                    # Ансамбль: маршрут различается провайдером ноги.
+                    for provider in (registry.PROVIDER_CLAUDE, registry.PROVIDER_CODEX):
+                        route = active_plan.route_kwargs_for_pipeline_stage(
+                            pipeline_stage, provider=provider
+                        )
+                        assert route.get("action_id"), (
+                            f"{preset_id}/{pipeline_stage}/{provider}: нет действия плана"
+                        )
+                    continue
+                route = active_plan.route_kwargs_for_pipeline_stage(pipeline_stage)
+                assert route.get("action_id"), (
+                    f"{preset_id}/{pipeline_stage}: нет действия плана — стадия "
+                    "получила бы отказ моста в середине прогона"
+                )
+                assert route.get("capability")
+        finally:
+            active_plan.clear()
+
+
+def test_optimization_corrector_has_no_route_when_deterministic():
+    """F OPT Fix при детерминированном режиме к мосту не обращается вовсе.
+
+    Действие есть, но оно детерминированное — маршрута у него нет и быть не
+    должно. Если бы маршрут появился, оценщик бюджета насчитал бы лишний
+    оплачиваемый вызов на каждый прогон.
+    """
+    from backend.app.services.audit_routing import active_plan
+
+    plan = build_plan(flags={**PROD_FLAGS, "OPTIMIZATION_CRITIC_DETERMINISTIC": "true"})
+    active_plan.set_plan(plan)
+    try:
+        assert active_plan.route_kwargs_for_pipeline_stage("optimization_corrector") == {}
+    finally:
+        active_plan.clear()

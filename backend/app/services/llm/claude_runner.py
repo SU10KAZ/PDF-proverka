@@ -1009,6 +1009,9 @@ async def _run_text_analysis_via_provider(
                 stage=stage_key,
                 prompt=prompt,
                 purpose=stage_key,
+                # Маршрут ДЕЙСТВИЯ ПЛАНА (11I). Пустой словарь означает, что
+                # плана нет — поведение остаётся прежним.
+                **_plan_route("text_analysis"),
                 required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
                 field_types=provider_transport.FIELD_TYPES,
                 expected_semantics=provider_transport.EXPECTED_SEMANTICS,
@@ -1395,6 +1398,7 @@ async def _run_findings_merge_via_provider(
                 stage=stage_key,
                 prompt=prompt,
                 purpose=stage_key,
+                **_plan_route("findings_merge"),
                 required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
                 field_types=provider_transport.FIELD_TYPES,
                 expected_semantics=provider_transport.EXPECTED_SEMANTICS,
@@ -1511,6 +1515,23 @@ async def _run_findings_merge_via_provider(
     return 0, cli_result.result_text, cli_result
 
 
+def _plan_route(stage_id: str, *, provider: Optional[str] = None) -> dict:
+    """Параметры маршрута действия плана для вызова моста (этап 11I).
+
+    Пустой словарь означает «плана нет» — вызывающий работает как до 11I.
+    Если план ЕСТЬ, но действия для этапа в нём не нашлось, словарь тоже пуст,
+    и мост ответит отказом. Это намеренно: обращение к модели, которого нет в
+    плане, означает неполный план, а молчаливое его исполнение вернуло бы
+    ровно ту непрослеживаемость, ради устранения которой план и вводится.
+    """
+    try:
+        from backend.app.services.audit_routing import active_plan as _ap
+
+        return _ap.route_kwargs_for_pipeline_stage(stage_id, provider=provider)
+    except Exception:                                # noqa: BLE001 — fail-soft
+        return {}
+
+
 async def _run_json_stage_via_provider(
     *,
     stage_key: str,
@@ -1526,6 +1547,7 @@ async def _run_json_stage_via_provider(
     audit_stage: str,
     timeout: int,
     max_prompt_chars: int = PROVIDER_PROMPT_MAX_CHARS,
+    plan_provider: Optional[str] = None,
 ) -> tuple[int, str, CLIResult]:
     """Общий provider-путь для этапов «messages → один JSON-артефакт» (11F).
 
@@ -1581,6 +1603,10 @@ async def _run_json_stage_via_provider(
                 stage=stage_key,
                 prompt=built["prompt"],
                 purpose=stage_key,
+                # Ансамбль оптимизации зовёт эту функцию ДВАЖДЫ, различая ноги
+                # только провайдером: без него обе ноги дали бы один ключ
+                # журнала, и вторая молча получила бы ответ первой.
+                **_plan_route(stage_key, provider=plan_provider),
                 required_result_fields=(root_key,),
                 field_types={root_key: list},
                 timeout_sec=float(timeout),
@@ -2100,6 +2126,16 @@ async def run_optimization(
     if _bridge is not None and _bridge.active():
         import backend.app.pipeline.stages.prepare.prompt_builder as _pb
         from backend.app.core.config import CLAUDE_OPTIMIZATION_TIMEOUT as _t
+        # Какая ИМЕННО нога ансамбля вызвана. Ансамбль зовёт эту функцию
+        # дважды, различая ноги строкой `model_override`; строка приходит из
+        # КОНСТАНТ конвейера, а не из задания, поэтому классифицировать её
+        # здесь можно — инвариант I-P5 касается данных задания.
+        _leg = model_override or ""
+        _leg_provider = (
+            "claude" if _leg.startswith("claude-")
+            else "codex" if _leg.startswith("codex/")
+            else None
+        )
         return await _run_json_stage_via_provider(
             stage_key="optimization",
             messages_builder=_pb.build_optimization_messages,
@@ -2107,6 +2143,7 @@ async def run_optimization(
             output_dir=output_dir, version_dir=version_dir, version_id=version_id,
             artifact_name="optimization.json", root_key="items",
             audit_stage="05_optimization", timeout=_t,
+            plan_provider=_leg_provider,
         )
 
     model = model_override or get_stage_model("optimization")

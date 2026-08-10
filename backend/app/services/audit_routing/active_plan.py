@@ -93,6 +93,84 @@ def single_action(stage_id: str, role: str) -> Optional[RoutingAction]:
     return None
 
 
+def action_for(
+    stage_id: str,
+    *,
+    role: Optional[str] = None,
+    provider: Optional[str] = None,
+) -> Optional[RoutingAction]:
+    """Модельное действие этапа по роли и/или провайдеру.
+
+    Провайдер нужен там, где этап делает НЕСКОЛЬКО обращений разными
+    провайдерами и вызывающий знает только своё: ансамбль оптимизации зовёт
+    один и тот же код дважды, различая ноги именно провайдером.
+    """
+    candidates = [
+        item for item in stage_actions(stage_id)
+        if item.is_model
+        and (role is None or item.role == role)
+        and (provider is None or item.provider == provider)
+    ]
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def route_kwargs(
+    stage_id: str,
+    *,
+    role: Optional[str] = None,
+    provider: Optional[str] = None,
+) -> dict[str, Any]:
+    """Параметры маршрута для `pipeline_bridge.run_stage_inference`.
+
+    Пустой словарь — плана нет; вызывающий работает как до 11I. Если план ЕСТЬ,
+    а действия для этого этапа в нём нет, словарь тоже пуст — и мост ответит
+    отказом. Это намеренно: обращение к модели, которого нет в плане, означает,
+    что план неполон, и молчаливое исполнение такого обращения вернуло бы
+    ровно ту ситуацию, ради устранения которой план и вводится.
+    """
+    action = action_for(stage_id, role=role, provider=provider)
+    if action is None:
+        return {}
+    return {
+        "action_id": action.action_id,
+        "provider": str(action.provider or ""),
+        "capability": str(action.capability or ""),
+        "reasoning_effort": str(action.reasoning_effort or ""),
+    }
+
+
+#: Стадия конвейера → (строка таблицы моделей, роль ОСНОВНОГО действия).
+#:
+#: Роль обязательна там, где этап содержит несколько модельных действий, а
+#: провайдерский путь делает ровно одно. Свод на Codex-пути — именно такой
+#: случай: план объявляет базовый свод и targeted-проходы, а мост выполняет
+#: только базовый (targeted существуют лишь в ветке прямого `codex exec`, см.
+#: `11I_KNOWN_ISSUES.md`, KI-11I-2). Без явной роли резолв вернул бы «действий
+#: несколько, выбрать не могу», и этап получил бы отказ моста.
+#:
+#: Неоднозначные СТАДИИ (одна стадия — несколько строк таблицы) сюда не входят:
+#: угадывать за вызывающего нельзя.
+_PIPELINE_TO_STAGE_ID: dict[str, tuple[str, Optional[str]]] = {
+    "block_analysis": ("block_batch", None),
+    "text_analysis": ("text_analysis", registry.ROLE_TEXT_AUDIT),
+    "findings_merge": ("findings_merge", registry.ROLE_MERGE),
+    "optimization": ("optimization", None),
+    "optimization_critic": ("optimization_critic", registry.ROLE_OPTIMIZATION_CRITIC),
+    "optimization_corrector": ("optimization_corrector", None),
+}
+
+
+def route_kwargs_for_pipeline_stage(
+    pipeline_stage: str, *, provider: Optional[str] = None
+) -> dict[str, Any]:
+    """То же, но по имени СТАДИИ конвейера, а не строки таблицы моделей."""
+    found = _PIPELINE_TO_STAGE_ID.get(str(pipeline_stage))
+    if found is None:
+        return {}
+    stage_id, role = found
+    return route_kwargs(stage_id, role=role, provider=provider)
+
+
 def describe() -> dict[str, Any]:
     """Короткое описание для журнала и evidence. Без точных моделей."""
     plan = get_plan()
