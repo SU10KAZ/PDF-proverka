@@ -2924,8 +2924,10 @@ def phase_audit_provider(
     check(set(projection["missing_artifacts"]) >= central_artifacts,
           "центральных артефактов в результате нет — нормативный этап не запускался",
           "лишнее: " + ", ".join(sorted(central_artifacts - set(projection["missing_artifacts"]))))
-    check(not projection["excel"].get("present"),
-          "финального Excel нет — центральный хвост остановлен на границе (§38)",
+    check(bool(projection["excel"].get("present")) is not stop_at_boundary,
+          ("финального Excel нет — центральный хвост остановлен на границе (§38)"
+           if stop_at_boundary else
+           "финальный Excel создан ЦЕНТРОМ — хвост выполнен"),
           "Excel найден: центральные этапы всё-таки выполнились")
     scope = (
         f"замечаний {projection['findings_count']}, "
@@ -3281,6 +3283,13 @@ def build_parser() -> argparse.ArgumentParser:
               "которое центр вправе прислать"),
     )
     parser.add_argument(
+        "--skip-resilience", action="store_true",
+        help=("пропустить фазы устойчивости (обрыв связи, рестарты, отмена, "
+              "retention) и идти сразу к аудиту. Для ПЛАТНОГО прогона: те же "
+              "фазы уже прогнаны на подделках, а обрыв связи посреди "
+              "оплачиваемого аудита — риск без доказательной ценности"),
+    )
+    parser.add_argument(
         "--central-tail", action="store_true",
         help=("довести аудит до конца НА ЦЕНТРЕ: norm_verify и остальные "
               "центральные этапы вместо остановки на границе. Требует "
@@ -3451,18 +3460,24 @@ def main(argv: Optional[list[str]] = None) -> int:
         if args.stop_after == "test":
             return _finish()
 
-        report["outage"] = phase_network_outage(
+        if args.skip_resilience:
+            check(True, "фазы устойчивости пропущены по ключу оператора",
+                  "обрыв связи, рестарты, отмена и retention прогнаны отдельным "
+                  "прогоном на подделках")
+        report["outage"] = None if args.skip_resilience else phase_network_outage(
             stand, operator, worker, worker_id=worker_id,
             revision=revision, bootstrap_secret=bootstrap_secret,
             stop_at_boundary=args.mode in BRIDGE_MODES and not args.central_tail,
             central_tail_cli=central_tail_cli,
         )
-        report["agent_restart"] = phase_agent_restart(operator, worker, worker_id=worker_id)
-        report["executor_restart"] = phase_executor_restart(
+        report["agent_restart"] = None if args.skip_resilience else phase_agent_restart(
+            operator, worker, worker_id=worker_id)
+        report["executor_restart"] = None if args.skip_resilience else phase_executor_restart(
             operator, worker, worker_id=worker_id
         )
-        report["cancel"] = phase_cancel(operator, worker, worker_id=worker_id)
-        report["retention"] = phase_retention(worker)
+        report["cancel"] = None if args.skip_resilience else phase_cancel(
+            operator, worker, worker_id=worker_id)
+        report["retention"] = None if args.skip_resilience else phase_retention(worker)
         if args.stop_after == "resilience":
             return _finish()
 

@@ -1,7 +1,7 @@
 {
  "stage": "11H",
  "question": "сколько ресурса подписки Codex доступно ДО боевого прогона",
- "taken_at_utc": "2026-08-10T13:49:57Z",
+ "taken_at_utc": "2026-08-10T14:19:11Z",
  "zero_inference": true,
  "source": "official_app_server_rpc",
  "source_official": "codex app-server → account/rateLimits/read (JSON-RPC 2.0 по stdio)",
@@ -14,8 +14,8 @@
  "raw_remaining_supported": true,
  "primary_window": {
   "window_id": "codex:primary",
-  "used_pct": 6.0,
-  "remaining_pct": 94.0,
+  "used_pct": 7.0,
+  "remaining_pct": 93.0,
   "reset_at": 1786888622.0,
   "duration_sec": 604800,
   "source": "official_app_server_rpc",
@@ -35,5 +35,28 @@
  "next_reset_at": 1786888622.0,
  "estimated_remaining_pct": 94.0,
  "detail": "limit_id=codex",
- "caveat": "машина .31 используется не только аудитом: в ~/.codex активные сессии Codex постороннего происхождения (logs_2.sqlite 1,4 ГБ, обновлялся в день снимка). Дельта before/after поэтому показывает расход ПОДПИСКИ за период, а не только расход этого прогона"
+ "caveat": "машина .31 используется не только аудитом: в ~/.codex активные сессии Codex постороннего происхождения (logs_2.sqlite 1,4 ГБ, обновлялся в день снимка). Дельта before/after поэтому показывает расход ПОДПИСКИ за период, а не только расход этого прогона",
+ "snapshots": [
+  {
+   "label": "предварительный (до работ 11H)",
+   "taken_at_utc": "2026-08-10T13:49:57Z",
+   "primary_used_pct": 6.0,
+   "primary_remaining_pct": 94.0
+  },
+  {
+   "label": "непосредственно перед платным прогоном",
+   "taken_at_utc": "2026-08-10T14:19:11Z",
+   "primary_used_pct": 7.0,
+   "primary_remaining_pct": 93.0,
+   "secondary": [
+    {
+     "window_id": "codex_bengalfox:primary",
+     "used_pct": 0.0,
+     "remaining_pct": 100.0,
+     "reset_at": 1786976301.0
+    }
+   ],
+   "note": "между снимками прошли только zero-inference опросы и fake-прогоны; +1 п.п. — расход ПОСТОРОННИХ сессий Codex на этой машине, аудит модель ещё не звал"
+  }
+ ]
 }
