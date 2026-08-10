@@ -1,0 +1,168 @@
+{
+  "вердикт_после_provisioning": {
+    "claude_gpt_codex": {
+      "причины": [],
+      "совместим": true
+    },
+    "codex_exec": {
+      "причины": [],
+      "совместим": true
+    }
+  },
+  "вердикт_сейчас": {
+    "claude_gpt_codex": {
+      "не_хватает": [
+        {
+          "actions": [
+            "findings_corrector.absence_guard",
+            "optimization_critic.critic"
+          ],
+          "capability": "cheap_review",
+          "provider": "claude",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "findings_merge.merge_base",
+            "optimization.optimization_primary",
+            "text_analysis.text_audit"
+          ],
+          "capability": "strong_audit",
+          "provider": "claude",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_codex_standard"
+          ],
+          "capability": "block_detector",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_codex_strong"
+          ],
+          "capability": "block_detector_strong",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.judge_gap_search"
+          ],
+          "capability": "block_judge",
+          "provider": "codex",
+          "required_always": false
+        },
+        {
+          "actions": [
+            "optimization.optimization_visual"
+          ],
+          "capability": "visual_reasoning",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_openrouter"
+          ],
+          "capability": "block_detector",
+          "provider": "openrouter",
+          "required_always": true
+        }
+      ],
+      "причины": [
+        "воркер не объявляет способность 'cheap_review' для провайдера 'claude' — она нужна действиям findings_corrector.absence_guard, optimization_critic.critic",
+        "воркер не объявляет способность 'strong_audit' для провайдера 'claude' — она нужна действиям findings_merge.merge_base, optimization.optimization_primary, text_analysis.text_audit",
+        "воркер не объявляет способность 'block_detector' для провайдера 'codex' — она нужна действиям block_batch.detector_codex_standard",
+        "воркер не объявляет способность 'block_detector_strong' для провайдера 'codex' — она нужна действиям block_batch.detector_codex_strong",
+        "воркер не объявляет способность 'block_judge' для провайдера 'codex' — она нужна действиям block_batch.judge_gap_search",
+        "воркер не объявляет способность 'visual_reasoning' для провайдера 'codex' — она нужна действиям optimization.optimization_visual",
+        "воркер не объявляет способность 'block_detector' для провайдера 'openrouter' — она нужна действиям block_batch.detector_openrouter"
+      ],
+      "совместим": false
+    },
+    "codex_exec": {
+      "не_хватает": [
+        {
+          "actions": [
+            "findings_corrector.absence_guard"
+          ],
+          "capability": "cheap_review",
+          "provider": "claude",
+          "required_always": false
+        },
+        {
+          "actions": [
+            "optimization.optimization_primary"
+          ],
+          "capability": "strong_audit",
+          "provider": "claude",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_codex_standard"
+          ],
+          "capability": "block_detector",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_codex_strong"
+          ],
+          "capability": "block_detector_strong",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.judge_gap_search"
+          ],
+          "capability": "block_judge",
+          "provider": "codex",
+          "required_always": false
+        },
+        {
+          "actions": [
+            "optimization.optimization_visual"
+          ],
+          "capability": "visual_reasoning",
+          "provider": "codex",
+          "required_always": true
+        },
+        {
+          "actions": [
+            "block_batch.detector_openrouter"
+          ],
+          "capability": "block_detector",
+          "provider": "openrouter",
+          "required_always": true
+        }
+      ],
+      "причины": [
+        "воркер не объявляет способность 'cheap_review' для провайдера 'claude' — она нужна действиям findings_corrector.absence_guard",
+        "воркер не объявляет способность 'strong_audit' для провайдера 'claude' — она нужна действиям optimization.optimization_primary",
+        "воркер не объявляет способность 'block_detector' для провайдера 'codex' — она нужна действиям block_batch.detector_codex_standard",
+        "воркер не объявляет способность 'block_detector_strong' для провайдера 'codex' — она нужна действиям block_batch.detector_codex_strong",
+        "воркер не объявляет способность 'block_judge' для провайдера 'codex' — она нужна действиям block_batch.judge_gap_search",
+        "воркер не объявляет способность 'visual_reasoning' для провайдера 'codex' — она нужна действиям optimization.optimization_visual",
+        "воркер не объявляет способность 'block_detector' для провайдера 'openrouter' — она нужна действиям block_batch.detector_openrouter"
+      ],
+      "совместим": false
+    }
+  },
+  "снято": "по факту существования файлов на 176.12.77.31 (ssh, только чтение). Содержимое учётных данных не открывалось; значение ключа не запрашивалось и не устанавливалось",
+  "факт_на_31": {
+    "openrouter_credential_configured": false,
+    "provider_policy.json_боевой_сборки_11h": {
+      "codex": [
+        "strong_audit"
+      ]
+    },
+    "worker.env_содержит_OPENROUTER_API_KEY": false,
+    "установленная_сборка": "предшествует 11J (http_providers_v1 не объявляет)"
+  }
+}

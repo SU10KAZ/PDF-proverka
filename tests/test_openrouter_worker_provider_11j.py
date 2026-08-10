@@ -33,6 +33,7 @@ Codex такого класса ошибок не было вовсе: их уч
 from __future__ import annotations
 
 import json
+import os
 import socket
 import sys
 import threading
@@ -895,3 +896,104 @@ def test_ak_al_plan_hash_survives_serialization(preset_id):
     assert restored.plan_hash() == plan.plan_hash()
     packaged = type(plan).from_dict(json.loads(plan.to_package_bytes().decode("utf-8")))
     assert packaged.plan_hash() == plan.plan_hash()
+
+
+# ═════════════ Исправления по состязательному ревью 11J ══════════════════════
+def test_rev1_symlinked_credential_is_refused(or_home, tmp_path):
+    """Ревью-1. Файл ключа не может быть символьной ссылкой.
+
+    `os.stat` идёт ПО ССЫЛКЕ, и подменённый ссылкой файл прошёл бы проверку
+    прав по цели: воркер отправил бы содержимое ЧУЖОГО файла в заголовке
+    `Authorization` на внешний хост. Соседний `inference_grant` проверяет это
+    правильно с самого начала (`lstat` + отказ на `S_ISLNK`), и расхождение
+    двух файлов с одинаковыми требованиями — само по себе дефект.
+    """
+    victim = tmp_path / "чужой_секрет.txt"
+    victim.write_text("wtk_ЧУЖОЙ_ТОКЕН_ВОРКЕРА_0123456789", encoding="utf-8")
+    victim.chmod(0o600)
+    or_home.credential_path.parent.mkdir(parents=True, exist_ok=True)
+    or_home.credential_path.symlink_to(victim)
+
+    status = openrouter_secret.probe(or_home.credential_path)
+    assert not status.configured
+    assert "ссылка" in status.reason
+
+    with pytest.raises(openrouter_secret.OpenRouterSecretError):
+        openrouter_secret.read_secret(or_home.credential_path)
+
+
+def test_rev2_world_writable_credential_is_refused(provisioned):
+    """Ревью-2. Проверяется ВСЯ маска прав, а не только биты чтения.
+
+    Файл 0622 «не читается посторонним», но ЗАПИСЫВАЕТСЯ им — и тогда в
+    заголовок уедет строка, которую подставил кто угодно на этой машине.
+    Прежняя проверка смотрела только `S_IRGRP`/`S_IROTH` и такой файл
+    принимала, при этом сообщение обещало «требуется 0600».
+    """
+    for mode in (0o622, 0o606, 0o700, 0o660):
+        os.chmod(provisioned.credential_path, mode)
+        status = openrouter_secret.probe(provisioned.credential_path)
+        assert not status.configured, f"права {mode:04o} приняты"
+        assert "шире" in status.reason
+    os.chmod(provisioned.credential_path, 0o600)
+    assert openrouter_secret.probe(provisioned.credential_path).configured
+
+
+def test_rev3_endpoint_error_reaching_the_center_is_redacted(or_home, monkeypatch):
+    """Ревью-3. Сообщение об отвергнутом адресе шлюза проходит редактор.
+
+    Оно уезжает в `capability` → heartbeat → карточку VPS, а содержит значение
+    переменной администратора — в которой при ошибке настройки может оказаться
+    и адрес внутреннего прокси, и форма `https://user:pass@host`.
+    """
+    monkeypatch.delenv(STUBBED_ENDPOINTS_ENV, raising=False)
+    monkeypatch.setenv(
+        BASE_URL_ENV, "https://служебный:sk-or-v1-SECRETVALUE0123456789@proxy.local/api/v1",
+    )
+    snapshot = _adapter(or_home).capability_snapshot()
+    assert "endpoint_error" in snapshot
+    assert "sk-or-v1-SECRETVALUE" not in json.dumps(snapshot, ensure_ascii=False)
+
+
+def test_rev4_credential_facts_describe_the_file_actually_read(
+    or_home, tmp_path, monkeypatch,
+):
+    """Ревью-4. При переопределённом пути телеметрия описывает НУЖНЫЙ файл.
+
+    Базовый `identity()` считает факты по раскладке безусловно. Для CLI это
+    верно — путь у них один; здесь администратор мог указать другой, и центр
+    видел бы «файла нет» рядом с «провайдер авторизован». Оператору такое
+    сочетание не объяснить.
+    """
+    external = tmp_path / "openrouter.key"
+    openrouter_secret.write_secret_for_tests(external, TEST_KEY)
+    monkeypatch.setenv(openrouter_secret.CREDENTIAL_PATH_ENV, str(external))
+
+    adapter = _adapter(or_home)
+    assert adapter.auth_status().auth_state == "logged_in"
+    identity = adapter.identity()
+    assert identity.credential_facts["exists"] is True, (
+        "телеметрия описывает файл раскладки, а читается файл администратора"
+    )
+    assert identity.credential_facts["mode"] == "0600"
+    assert identity.credential_facts["path_source"] == "admin_env"
+    payload = identity.as_center_payload()
+    assert payload["credential_present"] is True
+    assert not _scan(payload)
+    # Абсолютного пути в центральном представлении нет ни в каком виде.
+    assert str(external) not in json.dumps(payload, ensure_ascii=False)
+
+
+def test_rev5_non_ascii_key_is_refused_before_the_request(or_home):
+    """Ревью-5. Ключ вне ASCII отвергается ДО запроса.
+
+    Заголовок HTTP кодируется latin-1: такое значение уронило бы клиент
+    исключением, в текст которого попал бы сам ключ.
+    """
+    openrouter_secret.write_secret_for_tests(
+        or_home.credential_path, "sk-or-v1-КИРИЛЛИЦА-0123456789",
+    )
+    with pytest.raises(openrouter_secret.OpenRouterSecretError) as exc:
+        openrouter_secret.read_secret(or_home.credential_path)
+    assert "ASCII" in str(exc.value)
+    assert "КИРИЛЛИЦА" not in str(exc.value), "ключ попал в текст ошибки"

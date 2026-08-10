@@ -131,97 +131,154 @@ def credential_path(default_path: Path, *, env: Optional[dict[str, str]] = None)
     return Path(raw), "admin_env"
 
 
+#: Максимальные права файла ключа. Проверяется ВСЯ маска, а не только биты
+#: чтения: файл 0622 «не читается посторонним», но записывается им — и тогда в
+#: заголовок `Authorization` уедет чужая строка. Значение и способ проверки
+#: взяты у `inference_grant.MAX_GRANT_MODE` дословно: два файла с одинаковыми
+#: требованиями обязаны проверяться одинаково, иначе они разъедутся.
+MAX_CREDENTIAL_MODE = 0o600
+
+
+def _safety_reason(info: os.stat_result) -> str:
+    """Почему файл с такими фактами непригоден. Пустая строка — пригоден.
+
+    Правила совпадают с `inference_grant._check_file_safety`, и это не
+    копирование от лени: два соседних файла с одинаковыми требованиями,
+    проверяемые по-разному, — это гарантия, что однажды они разойдутся, и
+    разойдутся в сторону послабления.
+    """
+    if stat.S_ISLNK(info.st_mode):
+        return (
+            "файл ключа — символьная ссылка; ожидается обычный файл. Ссылка "
+            "означает, что содержимое выбирает не тот, кто владеет каталогом"
+        )
+    if not stat.S_ISREG(info.st_mode):
+        return "файл ключа не является обычным файлом"
+    if info.st_uid != os.getuid():
+        return (
+            f"файл ключа принадлежит uid={info.st_uid}, а воркер работает "
+            f"под uid={os.getuid()}"
+        )
+    extra = stat.S_IMODE(info.st_mode) & ~MAX_CREDENTIAL_MODE
+    if extra:
+        return (
+            f"права файла ключа {stat.S_IMODE(info.st_mode):04o} шире "
+            f"допустимых {MAX_CREDENTIAL_MODE:04o}: чтение или запись "
+            "разрешены не только владельцу"
+        )
+    if info.st_size <= 0:
+        return "файл ключа пуст"
+    if info.st_size > MAX_CREDENTIAL_BYTES:
+        return (
+            f"файл ключа больше {MAX_CREDENTIAL_BYTES} байт — это не ключ, "
+            "а чужой файл, указанный путём по ошибке"
+        )
+    return ""
+
+
+def _facts(info: os.stat_result, source: str) -> dict[str, Any]:
+    mode = stat.S_IMODE(info.st_mode)
+    return {
+        "present": True,
+        "mode": f"{mode:04o}",
+        "owner_is_current_user": info.st_uid == os.getuid(),
+        "group_readable": bool(mode & stat.S_IRGRP),
+        "world_readable": bool(mode & stat.S_IROTH),
+        "source": source,
+    }
+
+
 def probe(default_path: Path, *, env: Optional[dict[str, str]] = None) -> SecretStatus:
-    """Настроен ли ключ. Файл НЕ открывается — только `os.stat`.
+    """Настроен ли ключ. Файл НЕ открывается — только `lstat`.
 
     Это тот самый «безопасный zero-cost auth check» §7 задания: он не тратит ни
     одного запроса к провайдеру и не может стоить денег. Больше он ничего и не
     утверждает: `configured` означает «ключ на месте и права узкие», а не
     «ключ действителен». Выдавать второе за первое — ровно то, что §7
     запрещает.
+
+    `lstat`, а не `stat`: `stat` идёт ПО ССЫЛКЕ, и файл ключа, подменённый
+    ссылкой на чужой файл, прошёл бы проверку прав по цели ссылки. Для секрета,
+    который уезжает в заголовок HTTP-запроса, это означало бы отправку чужого
+    содержимого на внешний хост.
     """
     try:
         path, source = credential_path(default_path, env=env)
     except OpenRouterSecretError as exc:
         return SecretStatus(configured=False, present=False, reason=str(exc))
     try:
-        info = os.stat(path)
+        info = os.lstat(path)
     except OSError:
         return SecretStatus(
             configured=False, present=False, source=source,
             reason="файл ключа не найден: провайдер на этом воркере не настроен",
         )
-    mode = stat.S_IMODE(info.st_mode)
-    group_readable = bool(mode & stat.S_IRGRP)
-    world_readable = bool(mode & stat.S_IROTH)
-    owner_ok = info.st_uid == os.getuid()
-    common = {
-        "present": True,
-        "mode": f"{mode:04o}",
-        "owner_is_current_user": owner_ok,
-        "group_readable": group_readable,
-        "world_readable": world_readable,
-        "source": source,
-    }
-    if info.st_size <= 0:
-        return SecretStatus(configured=False, reason="файл ключа пуст", **common)
-    if info.st_size > MAX_CREDENTIAL_BYTES:
-        return SecretStatus(
-            configured=False,
-            reason=(
-                f"файл ключа больше {MAX_CREDENTIAL_BYTES} байт — это не ключ, "
-                "а чужой файл, указанный путём по ошибке"
-            ),
-            **common,
-        )
-    if world_readable or group_readable:
-        # Отказ, а не предупреждение. Ключ, доступный на чтение соседнему
-        # сервису этого VPS, — это ключ, который уже утёк; продолжать работу
-        # с ним значило бы платить за чужие запросы и не знать об этом.
-        return SecretStatus(
-            configured=False,
-            reason=(
-                f"права файла ключа {mode:04o} слишком широкие: чтение "
-                "разрешено не только владельцу. Требуется 0600"
-            ),
-            **common,
-        )
-    if not owner_ok:
-        return SecretStatus(
-            configured=False,
-            reason="файл ключа принадлежит другому пользователю",
-            **common,
-        )
-    return SecretStatus(configured=True, reason="", **common)
+    facts = _facts(info, source)
+    reason = _safety_reason(info)
+    if reason:
+        return SecretStatus(configured=False, reason=reason, **facts)
+    return SecretStatus(configured=True, reason="", **facts)
 
 
 def read_secret(default_path: Path, *, env: Optional[dict[str, str]] = None) -> str:
     """Прочитать ключ. Вызывается ТОЛЬКО в момент запроса к провайдеру.
 
-    Все проверки `probe()` повторяются здесь заново, а не берутся из снимка:
-    между heartbeat и вызовом файл мог смениться, и «когда-то было 0600» — не
-    утверждение о настоящем моменте. Это же закрывает §24 задания: пропавший
-    между preflight и действием ключ обязан провалить КОНКРЕТНОЕ действие.
+    Проверки не берутся из снимка heartbeat и не повторяются «примерно»: файл
+    открывается ОДИН раз с `O_NOFOLLOW`, и решение о пригодности принимается по
+    `fstat` УЖЕ ОТКРЫТОГО дескриптора. Это принципиально: между `lstat` и
+    `open` файл можно подменить, и тогда проверенные права описывали бы один
+    inode, а прочитанные байты приходили бы из другого. Здесь проверяется
+    ровно тот inode, из которого читаем.
+
+    Это же закрывает §24 задания: пропавший между preflight и действием ключ
+    обязан провалить КОНКРЕТНОЕ действие.
     """
-    status = probe(default_path, env=env)
-    if not status.configured:
-        raise OpenRouterSecretError(
-            status.reason or "ключ OpenRouter на этом воркере не настроен"
-        )
-    path, _source = credential_path(default_path, env=env)
     try:
-        raw = path.read_text(encoding="utf-8", errors="strict")
-    except (OSError, UnicodeDecodeError) as exc:
-        # В текст ошибки уходит ТИП проблемы, а не содержимое файла: сообщение
-        # попадёт в лог попытки и в отчёт о прогоне.
+        path, _source = credential_path(default_path, env=env)
+    except OpenRouterSecretError:
+        raise
+    try:
+        # `O_NOFOLLOW` отвергает символьную ссылку на уровне ядра: проверка
+        # «а не ссылка ли это» и открытие становятся одной операцией.
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    except OSError as exc:
         raise OpenRouterSecretError(
-            f"файл ключа не читается ({type(exc).__name__})"
+            f"файл ключа не открывается ({type(exc).__name__}): "
+            "провайдер на этом воркере не настроен либо путь ведёт на ссылку"
         ) from None
-    key = _extract_key(raw)
+    try:
+        info = os.fstat(fd)
+        reason = _safety_reason(info)
+        if reason:
+            raise OpenRouterSecretError(reason)
+        # Читаем не больше потолка + 1 байт: превышение уже отвергнуто по
+        # `fstat`, но между ним и чтением файл мог вырасти, и брать в память
+        # процесса, который пишет логи, произвольный объём незачем.
+        raw = os.read(fd, MAX_CREDENTIAL_BYTES + 1)
+    finally:
+        os.close(fd)
+    if len(raw) > MAX_CREDENTIAL_BYTES:
+        raise OpenRouterSecretError(
+            f"файл ключа больше {MAX_CREDENTIAL_BYTES} байт"
+        )
+    try:
+        text = raw.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        raise OpenRouterSecretError(
+            "файл ключа не является текстом UTF-8"
+        ) from None
+    key = _extract_key(text)
     if len(key) < MIN_KEY_LEN:
         raise OpenRouterSecretError(
             "файл ключа не содержит пригодного значения "
             f"(нужно не меньше {MIN_KEY_LEN} символов)"
+        )
+    if not key.isascii():
+        # Заголовок HTTP кодируется latin-1. Не-ASCII значение уронило бы
+        # клиент исключением, в текст которого попал бы сам ключ.
+        raise OpenRouterSecretError(
+            "ключ содержит символы вне ASCII: такое значение невозможно "
+            "передать заголовком HTTP"
         )
     return key
 

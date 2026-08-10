@@ -1,0 +1,46 @@
+{
+  "без_плана_глобальная_таблица": {
+    "findings_merge": "claude-opus-5",
+    "norm_fix": "claude-opus-5",
+    "norm_requote": "claude-opus-5",
+    "norm_verify": "claude-opus-5",
+    "optimization_critic": "claude-sonnet-5",
+    "text_analysis": "claude-opus-5"
+  },
+  "после_снятия_привязки": {
+    "findings_merge": "claude-opus-5",
+    "norm_fix": "claude-opus-5",
+    "norm_requote": "claude-opus-5",
+    "norm_verify": "claude-opus-5",
+    "optimization_critic": "claude-sonnet-5",
+    "text_analysis": "claude-opus-5"
+  },
+  "почему_contextvar": "центр исполняет несколько проектов одним процессом (BATCH_MAX_PARALLEL); процессный держатель затирал бы соседей — именно поэтому 11I хвост к плану не подключил",
+  "привязка_снимается": true,
+  "проблема": "до 11J хвост брал модели из ТЕКУЩЕЙ глобальной таблицы центра (KI-11I-3): оператор, переключивший пресет между приёмом результата воркера и нормативным этапом, менял провайдера привязки пунктов уже идущего задания",
+  "разрешение": {
+    "claude_gpt_codex": {
+      "findings_merge": "claude-opus-5",
+      "norm_fix": "claude-opus-5",
+      "norm_requote": "claude-opus-5",
+      "norm_verify": "claude-opus-5",
+      "optimization_critic": "claude-sonnet-5",
+      "text_analysis": "claude-opus-5"
+    },
+    "codex_exec": {
+      "findings_merge": "codex/gpt-5.4",
+      "norm_fix": "codex/gpt-5.4",
+      "norm_requote": "claude-opus-5",
+      "norm_verify": "codex/gpt-5.4",
+      "optimization_critic": "codex/gpt-5.4",
+      "text_analysis": "codex/gpt-5.4"
+    }
+  },
+  "решение": "план читается из нагрузки задания (execution.registry.frozen_routing_plan) и привязывается к ЗАДАЧЕ через ContextVar; config.get_stage_model спрашивает план ДО глобальной таблицы",
+  "этапы_хвоста": [
+    "norm_verify",
+    "debt_control",
+    "decision_carryover",
+    "excel"
+  ]
+}

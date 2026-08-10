@@ -1,0 +1,143 @@
+{
+  "claude_gpt_codex": {
+    "действия": [
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_openrouter",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "openrouter",
+        "роль": "detector",
+        "способность": "block_detector",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_codex_standard",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "codex",
+        "роль": "detector",
+        "способность": "block_detector",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_codex_strong",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "codex",
+        "роль": "detector",
+        "способность": "block_detector_strong",
+        "условие": "feature_enabled"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "combine_detectors",
+        "зависит_от": [
+          "detectors"
+        ],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "detector_combine",
+        "способность": null,
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "judge_gap_search",
+        "зависит_от": [
+          "combine_detectors"
+        ],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "judge_gap_search",
+        "способность": "block_judge",
+        "условие": "detectors_complete"
+      }
+    ],
+    "модельных_на_блок": 4,
+    "область": "worker"
+  },
+  "codex_exec": {
+    "действия": [
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_openrouter",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "openrouter",
+        "роль": "detector",
+        "способность": "block_detector",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_codex_standard",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "codex",
+        "роль": "detector",
+        "способность": "block_detector",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "low",
+        "вид": "model",
+        "действие": "detector_codex_strong",
+        "зависит_от": [],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": "detectors",
+        "провайдер": "codex",
+        "роль": "detector",
+        "способность": "block_detector_strong",
+        "условие": "feature_enabled"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "combine_detectors",
+        "зависит_от": [
+          "detectors"
+        ],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "detector_combine",
+        "способность": null,
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "judge_gap_search",
+        "зависит_от": [
+          "combine_detectors"
+        ],
+        "мультипликативность": "per_graphic_block",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "judge_gap_search",
+        "способность": "block_judge",
+        "условие": "detectors_complete"
+      }
+    ],
+    "модельных_на_блок": 4,
+    "область": "worker"
+  },
+  "описание": "этап 01 — три детектора ‖, объединение, судья"
+}

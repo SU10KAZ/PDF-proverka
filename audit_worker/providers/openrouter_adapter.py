@@ -68,6 +68,7 @@ from __future__ import annotations
 import base64
 import json
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, Optional, Sequence
 from urllib.parse import urlparse
@@ -227,6 +228,36 @@ class OpenRouterProviderAdapter(ProviderAdapter):
         """Настроен ли ключ. Без чтения содержимого и без сети."""
         return openrouter_secret.probe(self.home.credential_path)
 
+    def credential_facts(self) -> dict[str, Any]:
+        """Факты о ФАКТИЧЕСКИ читаемом файле ключа.
+
+        Базовый `identity()` считает их по `home.credential_path`
+        безусловно — для CLI-провайдеров это верно, потому что путь у них один.
+        Здесь путь может быть переопределён администратором
+        (`AUDIT_WORKER_PROVIDER_OPENROUTER_CREDENTIAL`), и тогда центральная
+        телеметрия описывала бы НЕСУЩЕСТВУЮЩИЙ файл, одновременно сообщая
+        `auth_state=logged_in`. Оператор видел бы «ключа нет, но провайдер
+        авторизован» и не мог бы понять, какой из двух фактов ложный.
+        """
+        status = self.secret_status()
+        return {
+            "exists": bool(status.present),
+            "mode": status.mode,
+            "owner_is_current_user": status.owner_is_current_user,
+            "group_readable": status.group_readable,
+            "world_readable": status.world_readable,
+            # Абсолютного пути здесь нет ни в каком виде: центру достаточно
+            # знать, откуда он взят — из раскладки или из настройки машины.
+            "path_source": status.source,
+        }
+
+    def identity(self):
+        """`ProviderIdentity` с фактами о РЕАЛЬНОМ файле ключа."""
+        base = super().identity()
+        if not base.credential_facts and base.auth_mode == "unavailable":
+            return base
+        return replace(base, credential_facts=self.credential_facts())
+
     def auth_status(self) -> AuthStatus:
         """Состояние авторизации БЕЗ обращения к сети (§7 задания).
 
@@ -302,7 +333,11 @@ class OpenRouterProviderAdapter(ProviderAdapter):
         try:
             base = resolve_base_url()
         except OpenRouterEndpointError as exc:
-            snapshot["endpoint_error"] = str(exc)
+            # Через редактор — как ВСЁ, что уезжает центру. Сообщение содержит
+            # значение переменной администратора, а в ней может оказаться и
+            # адрес внутреннего прокси, и (при ошибке настройки) строка с
+            # учётными данными в форме `https://user:pass@host`.
+            snapshot["endpoint_error"] = redaction.redact(str(exc))
         else:
             # Хост, а не полный URL с возможными параметрами: центру нужно
             # знать «боевой шлюз или заглушка», а не раскладку прокси.
@@ -578,7 +613,14 @@ class OpenRouterProviderAdapter(ProviderAdapter):
                 provider=self.provider, model=model, status=STATUS_ERROR,
                 auth_mode=self.home.auth_mode, duration_ms=duration,
                 error_code=code,
-                detail=redaction.redact(f"{type(exc).__name__}: {exc}"),
+                # Ключ передаётся редактору ЯВНЫМ литералом, а не оставляется
+                # на правило формы `sk-…`. Правило формы описывает ключи,
+                # которые мы видели; исключение клиента способно вернуть
+                # заголовок в любом виде, включая усечённый и перекодированный,
+                # и тогда правило не сработает, а литерал сработает.
+                detail=redaction.redact(
+                    f"{type(exc).__name__}: {exc}", extra_literals=(api_key,),
+                ),
             )
         finally:
             # Значение перестаёт быть достижимым сразу после запроса. Питон не

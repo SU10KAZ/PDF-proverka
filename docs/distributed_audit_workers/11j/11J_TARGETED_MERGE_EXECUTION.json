@@ -1,0 +1,67 @@
+{
+  "claude_gpt_codex": {
+    "действия": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "merge_base",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "claude",
+        "роль": "merge",
+        "способность": "strong_audit",
+        "условие": "always"
+      }
+    ],
+    "исполняется_мостом": "claude_runner._run_targeted_findings_merge_via_provider",
+    "область": "worker"
+  },
+  "codex_exec": {
+    "действия": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "merge_base",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "merge",
+        "способность": "strong_audit",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "targeted_discipline",
+        "зависит_от": [
+          "merge_base"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "targeted_discipline",
+        "способность": "strong_audit",
+        "условие": "has_md_file"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "targeted_docnorm",
+        "зависит_от": [
+          "merge_base"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "targeted_docnorm",
+        "способность": "strong_audit",
+        "условие": "has_md_file"
+      }
+    ],
+    "исполняется_мостом": "claude_runner._run_targeted_findings_merge_via_provider",
+    "область": "worker"
+  },
+  "описание": "этап 03 — базовый свод и targeted-проходы"
+}

@@ -1,0 +1,227 @@
+{
+  "claude_gpt_codex": {
+    "исправление": [
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "deterministic_fix",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "deterministic_fix",
+        "способность": null,
+        "условие": "has_critic_issues"
+      }
+    ],
+    "критик": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "critic",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "claude",
+        "роль": "optimization_critic",
+        "способность": "cheap_review",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "critic_augment",
+        "зависит_от": [
+          "critic"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "critic_augment",
+        "способность": null,
+        "условие": "feature_enabled"
+      }
+    ],
+    "оптимизация": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "optimization_primary",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": "optimization_legs",
+        "провайдер": "claude",
+        "роль": "optimization_primary",
+        "способность": "strong_audit",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "xhigh",
+        "вид": "model",
+        "действие": "optimization_visual",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": "optimization_legs",
+        "провайдер": "codex",
+        "роль": "optimization_visual",
+        "способность": "visual_reasoning",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "optimization_merge",
+        "зависит_от": [
+          "optimization_legs"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "optimization_merge",
+        "способность": null,
+        "условие": "always"
+      }
+    ],
+    "страж_отсутствия": [
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "apply_verdicts",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "deterministic_fix",
+        "способность": null,
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "absence_guard",
+        "зависит_от": [
+          "apply_verdicts"
+        ],
+        "мультипликативность": "per_chunk",
+        "параллельная_группа": null,
+        "провайдер": "claude",
+        "роль": "absence_guard",
+        "способность": "cheap_review",
+        "условие": "has_absence_candidates"
+      }
+    ]
+  },
+  "codex_exec": {
+    "исправление": [
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "deterministic_fix",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "deterministic_fix",
+        "способность": null,
+        "условие": "has_critic_issues"
+      }
+    ],
+    "критик": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "critic",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": "codex",
+        "роль": "optimization_critic",
+        "способность": "strong_audit",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "critic_augment",
+        "зависит_от": [
+          "critic"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "critic_augment",
+        "способность": null,
+        "условие": "feature_enabled"
+      }
+    ],
+    "оптимизация": [
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "optimization_primary",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": "optimization_legs",
+        "провайдер": "claude",
+        "роль": "optimization_primary",
+        "способность": "strong_audit",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": "xhigh",
+        "вид": "model",
+        "действие": "optimization_visual",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": "optimization_legs",
+        "провайдер": "codex",
+        "роль": "optimization_visual",
+        "способность": "visual_reasoning",
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "optimization_merge",
+        "зависит_от": [
+          "optimization_legs"
+        ],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "optimization_merge",
+        "способность": null,
+        "условие": "always"
+      }
+    ],
+    "страж_отсутствия": [
+      {
+        "reasoning_effort": null,
+        "вид": "deterministic",
+        "действие": "apply_verdicts",
+        "зависит_от": [],
+        "мультипликативность": "per_document",
+        "параллельная_группа": null,
+        "провайдер": null,
+        "роль": "deterministic_fix",
+        "способность": null,
+        "условие": "always"
+      },
+      {
+        "reasoning_effort": null,
+        "вид": "model",
+        "действие": "absence_guard",
+        "зависит_от": [
+          "apply_verdicts"
+        ],
+        "мультипликативность": "per_chunk",
+        "параллельная_группа": null,
+        "провайдер": "claude",
+        "роль": "absence_guard",
+        "способность": "cheap_review",
+        "условие": "has_absence_candidates"
+      }
+    ]
+  },
+  "описание": "этап 05 — две ноги ‖, объединение, критик"
+}
