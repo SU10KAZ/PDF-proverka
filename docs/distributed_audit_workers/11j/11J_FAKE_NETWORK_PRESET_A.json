@@ -1,0 +1,38 @@
+{
+  "статус": "НЕ ВЫПОЛНЕН",
+  "предмет": "§27–§28 задания: живой транспорт «центр .128 ↔ воркер .31» с поддельными провайдерами, пресет Claude+GPT+Codex",
+  "почему_не_выполнен": [
+    "Существующий стенд с uvicorn и двумя процессами воркера (scripts/smoke_distributed_audit_central_handoff_e2e.py) работает в режиме provider_mode=fake, а этот режим НЕСОВМЕСТИМ с провайдерским мостом по построению: remote_audit_runner.bind_providers отвергает одновременное наличие подделок и привязки — «в режиме подделок мост к настоящему CLI недопустим». То есть в существующем стенде план маршрутизации не исполняется вовсе.",
+    "Стенд, где мост АКТИВЕН, а внешние точки заглушены, требует поддельных CLI, отвечающих не только на рабочий вызов, но и на --version и auth/app-server: иначе resolver.resolve откажет по auth_state. Такие подделки существуют (scripts/smoke_distributed_audit_pipeline_provider_e2e.py:827), но собраны под другой сценарий — одно действие provider_selfcheck, а не полный аудит."
+  ],
+  "что_сделано_вместо": {
+    "настоящий_сокет_и_настоящее_исполнение": "tests/test_multiprovider_bridge_execution_11j.py — один блок проходит четырьмя действиями плана: нога шлюза уходит в НАСТОЯЩИЙ HTTP-сокет, три ноги Codex — в НАСТОЯЩИЕ подпроцессы. Настоящие: мост, привязка (файл на диске), журнал вызовов, exactly-once, отпечатки входа.",
+    "контракт_на_настоящих_объектах": "tests/test_audit_routing_plan_network_e2e.py (11I, зелёный) — план проходит центр → нагрузку задания → JSON-круг → рубеж формы воркера неизменным; хэш устойчив.",
+    "заморозка_хвоста": "tests/test_openrouter_worker_provider_11j.py::test_aj_global_preset_switch_cannot_change_a_running_job и ::test_aj2_bound_plan_is_isolated_between_concurrent_tasks."
+  },
+  "что_осталось_собрать": [
+    "сценарий, поднимающий центр (uvicorn на tests.distributed_audit_e2e.center_app), агента и исполнителя воркера отдельными процессами",
+    "поддельные CLI с ответами на --version и auth/app-server, привязанные через AUDIT_WORKER_PROVIDER_<X>_EXECUTABLE",
+    "поддельный шлюз — ГОТОВ: tests/distributed_audit_e2e/openrouter_stub.py",
+    "объявление AUDIT_WORKER_PROVIDER_ENDPOINTS_STUBBED=true — ГОТОВО, и оно же честно показывает центру, что прогон стендовый",
+    "создание задания с планом пресета A и сверка следа с эталоном ниже"
+  ],
+  "эталонный_след_для_будущего_прогона": {
+    "01_Blocks": [
+      "openrouter/block_detector (detector_openrouter)",
+      "codex/block_detector (detector_codex_standard)",
+      "codex/block_detector_strong (detector_codex_strong)",
+      "детерминированное объединение",
+      "codex/block_judge (judge_gap_search)"
+    ],
+    "02_Text": "claude/strong_audit",
+    "03_Merge": "claude/strong_audit; targeted-проходов НЕТ",
+    "Верификатор": "0 обращений к модели",
+    "Страж_отсутствия": "claude/cheap_review",
+    "Оптимизация": "claude/strong_audit ‖ codex/visual_reasoning @ xhigh",
+    "OPT_Critic": "claude/cheap_review",
+    "F_OPT_Fix": "0 обращений к модели",
+    "Нормативные_действия": "НЕ на воркере: norm_verify/norm_fix остаются центру"
+  },
+  "реальных_вызовов_модели": 0
+}

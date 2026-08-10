@@ -997,3 +997,106 @@ def test_rev5_non_ascii_key_is_refused_before_the_request(or_home):
         openrouter_secret.read_secret(or_home.credential_path)
     assert "ASCII" in str(exc.value)
     assert "КИРИЛЛИЦА" not in str(exc.value), "ключ попал в текст ошибки"
+
+
+def test_rev6_feature_flags_cannot_inject_provider_env(monkeypatch):
+    """Ревью-6 (критическое). Центр не может через план подменить адрес шлюза.
+
+    `apply_routing_flags` писал в окружение процесса конвейера ЛЮБОЕ имя из
+    `feature_flags`, отфильтрованное только по `isupper()`. Снимок флагов на
+    стороне центра собирается по закрытому списку, но воркер разбирает план
+    заново и состава `feature_flags` не проверял.
+
+    Цена дыры стала другой ровно на 11J: до него в окружении конвейера не было
+    ни одной переменной, меняющей МАРШРУТ СЕТЕВОГО ЗАПРОСА. Теперь есть — и
+    задание, положившее адрес шлюза в `feature_flags`, увело бы ключ владельца
+    VPS на произвольный хост, а выглядело бы это обычным успешным прогоном.
+    """
+    from backend.app.pipeline import remote_audit_runner
+
+    hostile = {
+        "STAGE01_THIRD_LEG_ENABLED": "true",
+        BASE_URL_ENV: "https://attacker.example/api/v1",
+        STUBBED_ENDPOINTS_ENV: "true",
+        openrouter_secret.CREDENTIAL_PATH_ENV: "/etc/shadow",
+        "PATH": "/attacker/bin",
+    }
+    plan = build_plan(presets.PRESET_FULL_CODEX, flags=hostile)
+    for name in (BASE_URL_ENV, STUBBED_ENDPOINTS_ENV,
+                 openrouter_secret.CREDENTIAL_PATH_ENV):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    report = remote_audit_runner.apply_routing_flags(plan)
+
+    assert report["flags"] == {"STAGE01_THIRD_LEG_ENABLED": "true"}
+    assert set(report["rejected"]) >= {
+        BASE_URL_ENV, STUBBED_ENDPOINTS_ENV,
+        openrouter_secret.CREDENTIAL_PATH_ENV, "PATH",
+    }
+    for name in (BASE_URL_ENV, STUBBED_ENDPOINTS_ENV,
+                 openrouter_secret.CREDENTIAL_PATH_ENV):
+        assert os.environ.get(name) is None, f"{name} уехал в окружение из плана"
+    assert os.environ["PATH"] == "/usr/bin", "PATH подменён нагрузкой задания"
+
+
+def test_rev7_bridge_refuses_ambient_mode_for_the_http_provider(tmp_path):
+    """Ревью-7. Мост тоже отвергает ambient у провайдера без CLI.
+
+    Фабрика `paths.provider_home` этот режим отвергает; `_build_home` моста
+    строил `ProviderHome` НАПРЯМУЮ и проверку обходил. Ambient означал бы
+    раскладку в личном каталоге живого пользователя.
+    """
+    from audit_worker.providers.resolver import ProviderBinding, RouteBinding
+
+    binding = ProviderBinding(
+        schema_version=1, provider="openrouter", auth_mode="ambient_user",
+        provider_root=str(tmp_path / "p"), executable=None, timeout_sec=60.0,
+        job_id="j", attempt_id="a", task_id="t", grant_id="g", max_inferences=1,
+        allowed_stages=("block_analysis",), model=MODEL_ID,
+        capability="block_detector", accepted_reported_models=(MODEL_ID,),
+        routes=(RouteBinding(
+            provider="openrouter", capability="block_detector", model=MODEL_ID,
+            accepted_reported_models=(MODEL_ID,), auth_mode="ambient_user",
+            provider_root=str(tmp_path / "p"),
+        ),),
+    )
+    route = binding.routes[0]
+    with pytest.raises(pipeline_bridge.ProviderBridgeError) as exc:
+        pipeline_bridge._build_home(binding, route=route)
+    assert "ambient_user" in str(exc.value)
+
+
+def test_rev8_request_shape_matches_the_central_leg(provisioned, stub):
+    """Ревью-8. Запрос несёт потолок ответа и требование JSON-объекта.
+
+    Без `max_tokens` длина ответа определяется маршрутом шлюза, а не прогоном;
+    без `response_format` модель вольна ответить прозой, и разбор провалится
+    уже ПОСЛЕ оплаты. Боевой центральный путь задаёт оба поля.
+    """
+    import json as _json
+
+    captured: dict = {}
+
+    import httpx
+
+    class _Recorder(httpx.Client):
+        def post(self, url, **kwargs):                    # noqa: A003
+            captured.update(kwargs.get("json") or {})
+            return super().post(url, **kwargs)
+
+    stub()
+    monkey = pytest.MonkeyPatch()
+    try:
+        monkey.setattr(httpx, "Client", _Recorder)
+        result = _call(_adapter(provisioned), images=[("image/png", PNG)])
+    finally:
+        monkey.undo()
+    assert result.ok, result.detail
+    assert captured.get("max_tokens") == 16000
+    assert captured.get("response_format") == {"type": "json_object"}
+    assert captured.get("temperature") == 0.2
+    assert captured.get("reasoning") == {"effort": "low"}
+    parts = captured["messages"][0]["content"]
+    assert [p["type"] for p in parts] == ["text", "image_url"]
+    assert parts[1]["image_url"]["url"].startswith("data:image/png;base64,")

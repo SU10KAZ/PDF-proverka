@@ -181,6 +181,19 @@ def _build_home(binding: ProviderBinding, *, route=None) -> ProviderHome:
         else binding.provider_root
     )
     if auth_mode == AUTH_MODE_AMBIENT_USER:
+        if is_http_provider(provider_name):
+            # Тот же отказ, что и у фабрики `paths.provider_home` (11J). Здесь
+            # он повторён, а не заимствован, потому что эта ветка фабрику НЕ
+            # зовёт: она строит `ProviderHome` напрямую, и проверка провайдера
+            # прошла бы мимо. Ambient для провайдера без CLI означал бы, что
+            # раскладка уехала в `~/.openrouter/credentials.json` живого
+            # пользователя — воркер начал бы тратить ключ, который ему не
+            # выдавали.
+            raise ProviderBridgeError(
+                f"провайдер {provider_name!r} не имеет CLI и не поддерживает "
+                f"режим {AUTH_MODE_AMBIENT_USER!r}: ключ выдаётся воркеру "
+                "отдельно, а не наследуется из личного каталога пользователя"
+            )
         return ProviderHome(
             provider=provider_name,
             root=root,

@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sys
 import time
@@ -617,7 +618,31 @@ def apply_routing_flags(plan: Any) -> dict[str, Any]:
     if not flags:
         return {"applied": 0}
 
+    # ЗАКРЫТЫЙ список имён, а не «всё, что заглавными» (этап 11J).
+    #
+    # Прежний фильтр `name.isupper()` означал, что ЛЮБОЕ имя из нагрузки
+    # задания попадает в окружение процесса конвейера. Снимок флагов на
+    # СТОРОНЕ ЦЕНТРА собирается по закрытому списку (`collect_feature_flags`),
+    # но воркер разбирает план заново и такой проверки не делал: он сверял
+    # набор верхних ключей и запрет точных моделей, а состав `feature_flags`
+    # оставался свободным словарём.
+    #
+    # Цена дыры стала другой ровно на 11J. До него в окружении конвейера не
+    # было ни одной переменной, меняющей МАРШРУТ СЕТЕВОГО ЗАПРОСА; теперь
+    # такие есть: адрес шлюза, объявление заглушек и путь к файлу ключа.
+    # Задание, положившее `AUDIT_WORKER_PROVIDER_OPENROUTER_BASE_URL` в
+    # `feature_flags`, увело бы ключ владельца VPS на произвольный хост — и
+    # выглядело бы это как обычный успешный прогон.
+    #
+    # Список берётся из реестра ЦЕНТРА, потому что именно он определяет, что
+    # такое «флаг маршрутизации». Всё прочее отбрасывается и попадает в отчёт
+    # отдельным полем: молча выброшенный флаг — это план, который исполнен не
+    # так, как записан.
+    from backend.app.services.audit_routing import registry as _routing_registry
+
+    allowed = set(_routing_registry.ROUTING_FEATURE_FLAGS)
     applied: dict[str, Any] = {}
+    rejected: list[str] = []
     for name, value in flags.items():
         if not isinstance(name, str) or not name.isupper():
             # Снимок несёт и типизированные значения вроде класса модели
@@ -625,8 +650,19 @@ def apply_routing_flags(plan: Any) -> dict[str, Any]:
             continue
         if name.startswith("CLAUDE_DEFAULT_"):
             continue
+        if name not in allowed:
+            rejected.append(name)
+            continue
         os.environ[name] = str(value)
         applied[name] = str(value)
+    if rejected:
+        # Не исключение: план мог приехать с новой сборки центра, знающей флаг,
+        # которого эта сборка воркера ещё не знает. Но и не молчание — отказ
+        # обязан быть виден в отчёте о прогоне.
+        logging.getLogger(__name__).warning(
+            "routing_plan.feature_flags: имена вне реестра маршрутизации "
+            "отброшены: %s", sorted(rejected),
+        )
 
     # Модули, прочитавшие флаг однажды. Импортируются мягко: конвейер мог их
     # ещё не тронуть, и это нормально — тогда они прочитают уже правленое
@@ -647,7 +683,8 @@ def apply_routing_flags(plan: Any) -> dict[str, Any]:
         for name in _STAGE01_MODULE_FLAGS:
             if name in flags and hasattr(stage01, name):
                 setattr(stage01, name, _flag_is_true(flags[name]))
-    return {"applied": len(applied), "flags": applied}
+    return {"applied": len(applied), "flags": applied,
+            "rejected": sorted(rejected)}
 
 
 def verify_snapshot(spec: dict[str, Any]) -> dict[str, Any]:

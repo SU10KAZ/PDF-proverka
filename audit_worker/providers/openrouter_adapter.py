@@ -133,9 +133,10 @@ MAX_ATTACHMENT_BYTES = 24 * 1024 * 1024
 #: `DEFAULT_TIMEOUT_S` центральной ноги.
 DEFAULT_TIMEOUT_SEC = 200.0
 
-#: Схема ответа. Общая с центральным путём: форма результата этапа 01 не имеет
-#: права зависеть от того, на какой машине выполнен вызов.
-_RESPONSE_FORMAT_NAME = "findings_only"
+#: Потолок ответа. Совпадает с боевым центральным путём
+#: (`gemma_findings_only.DEFAULT_MAX_TOKENS`): длина ответа — свойство прогона,
+#: а не маршрута, выбранного шлюзом.
+MAX_OUTPUT_TOKENS = 16000
 
 
 def stubbed_endpoints_declared(env: Optional[dict[str, str]] = None) -> bool:
@@ -588,6 +589,18 @@ class OpenRouterProviderAdapter(ProviderAdapter):
             "model": model,
             "messages": [{"role": "user", "content": content}],
             "temperature": 0.2,
+            # Потолок ответа. Боевой центральный путь его задаёт
+            # (`gemma_findings_only.DEFAULT_MAX_TOKENS`), и без него шлюз берёт
+            # умолчание маршрута — то есть длина ответа перестаёт быть
+            # свойством прогона. Усечение при этом не проходит молча: ответ с
+            # `finish_reason=length` отвергается ниже.
+            "max_tokens": MAX_OUTPUT_TOKENS,
+            # Ответ обязан быть JSON-ОБЪЕКТОМ. Центральный путь требует этого
+            # строгой схемой; здесь схема ответа принадлежит этапу, а не
+            # транспорту (мост проверяет поля сам), поэтому запрашивается
+            # общий объектный режим. Без него модель вольна ответить прозой, и
+            # `_first_json_object` вернёт None уже ПОСЛЕ оплаты.
+            "response_format": {"type": "json_object"},
         }
         if reasoning_effort:
             payload["reasoning"] = {"effort": str(reasoning_effort)}
