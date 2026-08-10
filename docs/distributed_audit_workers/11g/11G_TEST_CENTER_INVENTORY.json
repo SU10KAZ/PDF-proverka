@@ -1,0 +1,39 @@
+{
+  "stage": "11G",
+  "question": "чем изолированный тест-центр отличается от боевого и что он НЕ трогает",
+  "host": "adm.hlab.kz / 176.12.77.128 (та же машина, что и боевой центр)",
+  "production_center": {
+    "app": "uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "ingress": "nginx auditmanager.app:443 (Let's Encrypt) → 127.0.0.1:8081",
+    "distributed_workers_enabled": false,
+    "why_that_matters": "агентский роутер /api/v1/worker/* при выключенном флаге НЕ регистрируется вовсе (main.py) — любой запрос воркера получил бы 404, а не 403",
+    "env_sha256_before_and_after": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "changed": "NO — .env, nginx, сервис и БД боевого центра не менялись"
+  },
+  "test_center": {
+    "app": "тот же объект backend.app.main:app, поднят под именем tests.distributed_audit_e2e.center_app:app",
+    "why_a_different_name": "продовый вотчдог машины делает pgrep -f 'uvicorn.*backend.app.main' и убил бы стенд посреди прогона",
+    "port": "свободный, выбирается прогоном",
+    "ingress": "временный cloudflared quick tunnel (см. 11G_HTTPS_INGRESS_REPORT.md)",
+    "isolated_roots": {
+      "AUDIT_DATA_DIR": "<стенд>/central/data",
+      "AUDIT_APP_DATA_DIR": "<стенд>/central/app_data",
+      "AUDIT_PROJECTS_DIR": "<стенд>/central/projects",
+      "AUDIT_PROJECTS_V2_DIR": "<стенд>/central/projects_v2",
+      "AUDIT_PROMPTS_DIR": "<стенд>/central/prompts",
+      "DISTRIBUTED_WORKERS_DATA_DIR": "<стенд>/central/workers (своя workers.db, свои source_packages/result_staging/validated_results)",
+      "AUDIT_ACTION_LOG_DIR": "<стенд>/central/logs/actions"
+    },
+    "flags": {
+      "DISTRIBUTED_WORKERS_ENABLED": true,
+      "DISTRIBUTED_AUDIT_EXECUTION_ENABLED": true,
+      "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": "одноразовый, генерируется прогоном; в Git не попадает",
+      "AUDIT_PIPELINE_REVISION": "11g",
+      "PAID_API_ENABLED": false
+    },
+    "netguard": "взведён: любое исходящее соединение процесса центра вне loopback убивает процесс. Центр только ПРИНИМАЕТ — cloudflared приходит к нему сам",
+    "production_projects": "не читаются и не пишутся: дерево проектов у стенда своё. Для боевого документа делается КОПИЯ, продовое дерево сверяется хэшем до и после"
+  },
+  "production_job_queue_used": false,
+  "production_worker_records_touched": false
+}

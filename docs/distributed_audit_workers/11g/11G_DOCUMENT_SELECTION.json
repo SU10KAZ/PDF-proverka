@@ -1,0 +1,35 @@
+{
+  "stage": "11G",
+  "question": "какой документ прогнать через настоящий сетевой E2E",
+  "rule_from_task": "§22 — ТОТ ЖЕ документ, что прошёл полный worker slice на 11F; идентичность прочитать из артефактов 11F, а не угадывать",
+  "read_from": [
+    "docs/distributed_audit_workers/11f/11F_DOCUMENT_SELECTION.json",
+    "docs/distributed_audit_workers/11f/11F_REAL_JOB.json",
+    "docs/distributed_audit_workers/11f/11F_FINAL_REPORT.md"
+  ],
+  "selected": {
+    "object": "214_Alia_ASTERUS",
+    "discipline": "KM (Конструкции металлические)",
+    "document": "13АВ-РД-КМ-К2",
+    "version": "v001",
+    "production_version_dir": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001",
+    "pages": 6,
+    "blocks_total": 11,
+    "graphic_blocks_with_crop": 3,
+    "md_chars": 19759,
+    "identical_to_11f": true
+  },
+  "isolation": {
+    "why_a_copy": "импорт результата ПИШЕТ в дерево версии. §42 запрещает менять продовые артефакты, поэтому дерево копируется в изолированный стенд (AUDIT_PROJECTS_V2_DIR стенда), а продовое проверяется хэшем до и после",
+    "what_is_copied": "01_input, 02_work, version.json + ПУСТЫЕ 03_analysis/{latest,runs}, 04_review, 05_export, 99_service",
+    "why_not_whole_tree": "у продовой версии в 03_analysis/latest уже лежат norm_checks.json и 03_findings.json прошлого прогона; скопировать их значит получить detect_resume_stage=completed, то есть resume завершённого аудита вместо нового — и граница CENTER_ONLY тогда не проверяется вовсе",
+    "version_json_fields_stripped": [
+      "analysis_run_id",
+      "analysis_status",
+      "missing_analysis_files"
+    ]
+  },
+  "expected_natural_calls_11f": 8,
+  "expected_natural_calls_11g_estimate": 9,
+  "why_estimate_differs_from_11f": "оценка считает findings_review как ОДИН вызов; на 11F страж отсутствия отработал детерминированно и модель не звал (0). Оценка сознательно консервативна вверх"
+}
