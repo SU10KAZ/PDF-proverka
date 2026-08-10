@@ -3,7 +3,7 @@
   "not_covered": "живой сокет: стенд 11G с uvicorn и агентом в отдельном процессе здесь не поднимался, транспорт с 11G не менялся",
   "inference_calls": 0,
   "preset_id": "codex_exec",
-  "routing_plan_hash": "sha256:bdc832f2c5cba1fae18b558c7c183cbafaed2bbf580cfb0669eef124b8ca020a",
+  "routing_plan_hash": "sha256:feee17836a9776db62a473779e8b49d32c53fe843880bcf8e7c7c82379430587",
   "graphic_blocks": 40,
   "provider_requirement": {
     "provider": "codex",
