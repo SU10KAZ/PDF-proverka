@@ -1,0 +1,38 @@
+{
+ "stage": "11H",
+ "question": "пострадала ли продовая инсталляция и данные заказчика за время прогонов",
+ "production_backend": {
+  "touched": false,
+  "detail": "боевой uvicorn на 127.0.0.1:8081 не останавливался и не перезапускался; DISTRIBUTED_WORKERS_ENABLED у него не задана — агентского роутера у него нет",
+  "why_not_used": "включение потребовало бы рестарта продового сервиса, а рестарт бэкенда делается только с подтверждения Андрея Ивановича"
+ },
+ "production_data": {
+  "target_version_dir": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-2-РД_V1/versions/v001",
+  "audit_ran_in": "изолированная КОПИЯ дерева версии внутри стенда",
+  "source_tree_unchanged_check": "проверка прогона «исходное дерево версии не изменилось за прогон» (sha256 до/после)",
+  "historical_audit_of_the_same_pdf": {
+   "document": "0000-СТ26-01-14-АР5-2-РД",
+   "touched": false,
+   "why_it_matters": "это ДРУГОЙ каталог документа; прогон 11H его не читает и не пишет"
+  }
+ },
+ "worker_side": {
+  "roots_of_previous_stages": "audit-worker, -11d, -11d2, -11e, -11f, -11g не трогались",
+  "11g_units": "остались в том состоянии, в котором были найдены",
+  "new_root": "/home/coder/audit-worker-11h (свой data/, config/, logs/, venv, релизы)",
+  "inbound_ports_opened": 0,
+  "system_services": "почтово-веб стек, firewall, sshd, системный systemd не трогались"
+ },
+ "git": {
+  "branch": "feat/distributed-audit-workers-codex-real-project-e2e",
+  "worktree": ".claude/worktrees/distributed-audit-workers-codex-real-project-e2e",
+  "push": false,
+  "merge": false,
+  "incident": {
+   "what": "один коммит ошибочно ушёл в ГЛАВНЫЙ worktree (ветка feature/block-vector-graphs)",
+   "cause": "рабочий каталог оболочки переключился между вызовами, и относительные пути ушли не туда",
+   "fix": "git reset --soft HEAD~1 + разындексирование; файлы вернулись в untracked, ветка прода в исходном состоянии",
+   "pushed": false
+  }
+ }
+}
