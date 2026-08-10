@@ -1,0 +1,25 @@
+{
+ "stage": "11H",
+ "question": "сколько ресурса подписки Codex осталось ПОСЛЕ боевого прогона",
+ "taken_at_utc": "2026-08-10T14:48:31Z",
+ "zero_inference": true,
+ "source": "official_app_server_rpc (codex app-server → account/rateLimits/read)",
+ "plan_type": "pro",
+ "account_fingerprint": "428b185e6d53ff28",
+ "primary_window": {
+  "window_id": "codex:primary",
+  "used_pct": 9.0,
+  "remaining_pct": 91.0,
+  "reset_at": 1786888622.0,
+  "duration_sec": 604800
+ },
+ "secondary_windows": [
+  {
+   "window_id": "codex_bengalfox:primary",
+   "used_pct": 0.0,
+   "remaining_pct": 100.0,
+   "reset_at": 1786978078.0,
+   "duration_sec": 604800
+  }
+ ]
+}

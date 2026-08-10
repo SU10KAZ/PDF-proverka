@@ -1,0 +1,24 @@
+{
+ "stage": "11H",
+ "question": "через что физически ехали данные",
+ "job_data_transport": "HTTPS (исходящий от воркера, verify_tls=True)",
+ "routes_used": [
+  "register",
+  "heartbeat",
+  "jobs/next (long-poll)",
+  "jobs/{id}/source",
+  "accept",
+  "events",
+  "uploads/*",
+  "commands",
+  "reconcile"
+ ],
+ "ssh_used_for_job_data": false,
+ "ssh_used_for": [
+  "развёртывание релиза (deploy_audit_worker.py)",
+  "диагностика и снятие улик"
+ ],
+ "inbound_ports_opened_on_worker": 0,
+ "why_zero": "центр не ходит на воркер: воркер сам забирает задание и сам отдаёт результат",
+ "ingress": "cloudflared quick-tunnel до изолированного тест-центра; боевой ingress не менялся"
+}

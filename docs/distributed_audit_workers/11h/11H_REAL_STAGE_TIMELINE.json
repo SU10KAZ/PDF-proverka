@@ -1,0 +1,172 @@
+{
+ "stage": "11H",
+ "question": "что и сколько выполнялось на ВОРКЕРЕ",
+ "job_id": "2f025ddf-f45b-498d-8ff8-3a31073d8164",
+ "attempt_id": "4a21d5e6-bc16-4eb8-a17c-b5e06a1f654c",
+ "provider": "codex",
+ "model": "gpt-5.6-sol",
+ "stages": [
+  {
+   "stage": "crop_blocks",
+   "status": "done",
+   "model_calls": 0,
+   "duration_sec": 41,
+   "output": "41 кроп + index.json"
+  },
+  {
+   "stage": "block_context",
+   "status": "done",
+   "model_calls": 0,
+   "duration_sec": 30,
+   "output": "векторные графы 41/41, профиль structured_architecture"
+  },
+  {
+   "stage": "block_analysis",
+   "status": "done",
+   "model_calls": 41,
+   "duration_sec": 423,
+   "output": "36 находок",
+   "note": "один блок = один мультимодальный вызов Codex",
+   "provider_stats": {
+    "calls": 41,
+    "success": 41,
+    "error": 0,
+    "findings": 37,
+    "input_tokens": 1052248,
+    "cached_input_tokens": 450688,
+    "output_tokens": 24711,
+    "reasoning_output_tokens": 13401,
+    "duration_sec": 1047
+   }
+  },
+  {
+   "stage": "block_retry",
+   "status": "skipped",
+   "model_calls": 0,
+   "why": "все блоки читаемы"
+  },
+  {
+   "stage": "text_analysis",
+   "status": "done",
+   "model_calls": 1,
+   "duration_sec": 145,
+   "provider_stats": {
+    "calls": 1,
+    "success": 1,
+    "error": 0,
+    "findings": 0,
+    "input_tokens": 104086,
+    "cached_input_tokens": 9984,
+    "output_tokens": 7500,
+    "reasoning_output_tokens": 443,
+    "duration_sec": 144
+   }
+  },
+  {
+   "stage": "findings_merge",
+   "status": "done",
+   "model_calls": 1,
+   "duration_sec": 230,
+   "output": "29 замечаний",
+   "provider_stats": {
+    "calls": 1,
+    "success": 1,
+    "error": 0,
+    "findings": 29,
+    "input_tokens": 59426,
+    "cached_input_tokens": 9984,
+    "output_tokens": 12419,
+    "reasoning_output_tokens": 799,
+    "duration_sec": 230
+   }
+  },
+  {
+   "stage": "findings_critic",
+   "status": "done",
+   "model_calls": 0,
+   "output": "29 проверено, 7 проблем",
+   "note": "детерминированное ядро"
+  },
+  {
+   "stage": "findings_corrector",
+   "status": "done",
+   "model_calls": 0,
+   "duration_sec": 19,
+   "output": "фантом: 7, понижено: 3, на ручную проверку: 4"
+  },
+  {
+   "stage": "findings_review (страж отсутствия)",
+   "status": "выполнен",
+   "model_calls": 1,
+   "provider_stats": {
+    "calls": 1,
+    "success": 1,
+    "error": 0,
+    "findings": 0,
+    "input_tokens": 86343,
+    "cached_input_tokens": 12032,
+    "output_tokens": 495,
+    "reasoning_output_tokens": 251,
+    "duration_sec": 19
+   }
+  },
+  {
+   "stage": "optimization",
+   "status": "done",
+   "model_calls": 1,
+   "duration_sec": 96,
+   "output": "8 предложений",
+   "provider_stats": {
+    "calls": 1,
+    "success": 1,
+    "error": 0,
+    "findings": 0,
+    "input_tokens": 117346,
+    "cached_input_tokens": 12032,
+    "output_tokens": 4070,
+    "reasoning_output_tokens": 359,
+    "duration_sec": 96
+   }
+  },
+  {
+   "stage": "optimization_critic",
+   "status": "done",
+   "model_calls": 1,
+   "duration_sec": 24,
+   "provider_stats": {
+    "calls": 1,
+    "success": 1,
+    "error": 0,
+    "findings": 0,
+    "input_tokens": 39391,
+    "cached_input_tokens": 9984,
+    "output_tokens": 797,
+    "reasoning_output_tokens": 271,
+    "duration_sec": 24
+   }
+  },
+  {
+   "stage": "optimization_corrector",
+   "status": "skipped",
+   "model_calls": 0,
+   "why": "все предложения прошли критика"
+  }
+ ],
+ "totals": {
+  "model_calls": 46,
+  "claims": 46,
+  "indeterminate": 0,
+  "output_tokens": 49992,
+  "input_tokens": 1458840,
+  "cached_input_tokens": 504704,
+  "reasoning_output_tokens": 15524,
+  "provider_time_sec": 1560
+ },
+ "central_stages_on_worker": 0,
+ "forbidden_stages_not_run": [
+  "debt_control",
+  "decision_carryover",
+  "excel",
+  "norm_verify"
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "stage": "11H",
+ "question": "как выглядело НАСТОЯЩЕЕ распределённое задание",
+ "job_id": "2f025ddf-f45b-498d-8ff8-3a31073d8164",
+ "attempt_id": "4a21d5e6-bc16-4eb8-a17c-b5e06a1f654c",
+ "worker": {
+  "worker_id": "wrk_c01aaa44",
+  "host": "176.12.77.31",
+  "display_name": "pilot-vps-176.12.77.31",
+  "root": "/home/coder/audit-worker-11h",
+  "pipeline_revision": "11h",
+  "selected_by": "worker_id в запросе оператора, не hardcoded IP в конвейере"
+ },
+ "document": "СТ26_01-14-АР5-2-РД_V1 (256_Primavera_K14_Spartak / AR / v001)",
+ "center": {
+  "kind": "изолированный тест-центр (tests.distributed_audit_e2e.center_app) на .128",
+  "ingress": "cloudflared quick-tunnel (боевой ingress не трогался)",
+  "why_not_production_backend": "включение DISTRIBUTED_WORKERS_ENABLED требует рестарта продового сервиса"
+ },
+ "path": "PipelineManager → RemoteWorkerExecutionBackend → audit_job_service.create_audit_job",
+ "provider_requirement": {
+  "provider": "codex",
+  "capability": "strong_audit",
+  "model": null,
+  "max_inferences": 52,
+  "allowed_stages": [
+   "block_analysis",
+   "text_analysis",
+   "findings_merge",
+   "findings_review",
+   "optimization",
+   "optimization_critic",
+   "optimization_corrector"
+  ]
+ },
+ "exact_model_in_center_payload": false,
+ "exact_model_check": "поиск по opus|sonnet|gpt-|claude-|codex/ в сериализованной нагрузке пуст",
+ "worker_side_binding": {
+  "provider": "codex",
+  "model": "gpt-5.6-sol",
+  "model_source": "ЛОКАЛЬНАЯ политика воркера (сверка идёт с файлом политики)",
+  "model_report": "unsupported",
+  "grant_id": "auto-4a21d5e6-bc16-4eb8-a17c-b5e06a1f654c",
+  "grant_issued_by": "рантайм воркера, не оператор"
+ },
+ "claimed_by_worker_itself": true,
+ "source_package_transport": "HTTPS (jobs/{id}/source), скачивает воркер",
+ "ssh_used_as_job_transport": false,
+ "ssh_used_for": "развёртывание релиза и диагностика — административный канал"
+}

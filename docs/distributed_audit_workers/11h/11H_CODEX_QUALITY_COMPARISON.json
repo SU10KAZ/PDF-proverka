@@ -1,0 +1,85 @@
+{
+ "stage": "11H",
+ "question": "как выглядит результат Codex рядом с историческим по ТОМУ ЖЕ PDF",
+ "extra_model_calls": 0,
+ "new": {
+  "label": "11H — Codex на удалённом воркере",
+  "findings": 29,
+  "severity": {
+   "КРИТИЧЕСКОЕ": 11,
+   "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 3,
+   "ЭКОНОМИЧЕСКОЕ": 6,
+   "ЭКСПЛУАТАЦИОННОЕ": 1,
+   "РЕКОМЕНДАТЕЛЬНОЕ": 8
+  },
+  "categories_top": {
+   "documentation": 20,
+   "normative_refs": 4,
+   "roof": 2,
+   "insulation": 2,
+   "facade": 1
+  },
+  "with_norm": 21,
+  "with_clause": 0,
+  "norm_share_pct": 72,
+  "clause_share_pct": 0,
+  "pages_covered": 9,
+  "from_blocks": 20,
+  "from_text": 9,
+  "optimization_items": 8,
+  "norm_checks_present": true,
+  "norm_checks_count": 17
+ },
+ "historical": {
+  "label": "исторический прогон 29.07.2026",
+  "findings": 62,
+  "severity": {
+   "КРИТИЧЕСКОЕ": 9,
+   "ЭКСПЛУАТАЦИОННОЕ": 18,
+   "ЭКОНОМИЧЕСКОЕ": 22,
+   "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 10,
+   "РЕКОМЕНДАТЕЛЬНОЕ": 3
+  },
+  "categories_top": {
+   "documentation": 40,
+   "normative_refs": 8,
+   "roof": 4,
+   "coordination": 2,
+   "material_quantity_mismatch": 1,
+   "incomplete_layer_specification": 1,
+   "foundation_plan_dimensions": 1,
+   "equipment_anchorage": 1,
+   "ladder_design_coordination": 1,
+   "герметизация_примыкания_к_витражу": 1
+  },
+  "with_norm": 62,
+  "with_clause": 54,
+  "norm_share_pct": 100,
+  "clause_share_pct": 87,
+  "pages_covered": 11,
+  "from_blocks": 52,
+  "from_text": 2,
+  "optimization_items": 25,
+  "norm_checks_present": true,
+  "norm_checks_count": 20
+ },
+ "comparability": {
+  "same_pdf_sha256": true,
+  "same_pipeline": false,
+  "why_not": "исторический прогон шёл с локальным обогащением графики (Gemma, с платформы удалено) и ансамблем Claude+Codex на оптимизации; 11H — единственный провайдер Codex и детерминированный контекст блоков",
+  "what_the_numbers_mean": "сопоставимы объём (число замечаний), нормативная привязка и покрытие страниц. НЕ сопоставимы: severity (разные калибровки), категории (свободный словарь модели)"
+ },
+ "deltas": {
+  "findings": -33,
+  "with_norm_pct": -28,
+  "with_clause_pct": -87,
+  "pages_covered": -2
+ },
+ "reading": {
+  "objem": "Codex вдвое скромнее по числу замечаний (29 против 62) и втрое по оптимизации (8 против 25)",
+  "critical": "критических при этом БОЛЬШЕ (11 против 9) — дело не в том, что он «ничего не видит»",
+  "norm_clause": "номера пункта нормы Codex не даёт ВООБЩЕ (0% против 87%). Это ранее измеренное свойство модели на своде замечаний (Opus — 71% с пунктом, codex — 0), а не следствие распределённого контура: свод шёл тем же промптом",
+  "source_balance": "у Codex доля замечаний из текста выше (9 из 29 против 2 из 62): исторический прогон имел локальное обогащение графики, и текстовая нога у него была слабее нагружена",
+  "practical": "как рантайм-провайдер Codex работоспособен и дёшев, но на своде теряет нормативную привязку. Разумный следующий шаг — разные провайдеры на разных стадиях (блоки Codex, свод Opus), а не один на весь конвейер"
+ }
+}

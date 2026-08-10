@@ -1,0 +1,36 @@
+{
+ "stage": "11H",
+ "question": "что сделал центр после приёма результата",
+ "import_state": "applied",
+ "central_resume_stage_decided_by": "ЦЕНТРАЛЬНЫЙ детектор (_detect_central_resume_stage), не подсказка воркера",
+ "central_handoff_state": "completed",
+ "central_stages": [
+  {
+   "stage": "norm_verify",
+   "status": "done",
+   "where": "ЦЕНТР (.128)",
+   "model": "codex/gpt-5.4",
+   "artifacts": [
+    "norm_checks.json",
+    "norm_checks_llm.json",
+    "03a_norms_verified.json"
+   ]
+  },
+  {
+   "stage": "debt_control",
+   "status": "skipped",
+   "why": "нет предыдущей проверенной версии"
+  },
+  {
+   "stage": "decision_carryover",
+   "status": "skipped",
+   "why": "нет предыдущей проверенной версии"
+  },
+  {
+   "stage": "excel",
+   "status": "done",
+   "artifact": "audit_report_СТ26_01-14-АР5-2-РД_V1_*.xlsx"
+  }
+ ],
+ "completed_marker": "ставится по ФАКТУ артефакта norm_checks.json, а не по достигнутой строке кода"
+}
