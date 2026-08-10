@@ -195,6 +195,7 @@ def validate_inference(
     claim_attempt_id: str = "",
     expected_model: str = "",
     accepted_reported_models: Sequence[str] = (),
+    model_report: str = "required",
 ) -> ValidationReport:
     """Проверить результат по §7 задания. Возвращает ИМЕНОВАННЫЕ утверждения.
 
@@ -316,11 +317,21 @@ def validate_inference(
             str(value).strip() for value in accepted_reported_models if str(value).strip()
         )
         reported = str(result.model or "").strip()
+        # Провайдер, чей CLI вообще не называет модель, объявляет это в
+        # ЛОКАЛЬНОЙ политике машины (`model_report="unsupported"`). Тогда
+        # утверждение меняется — но не исчезает: проверяется, что назначенная
+        # модель есть и что CLI не назвал ЧУЖУЮ. Молчаливого «ну и ладно» нет
+        # ни в одной ветке, а сам факт послабления виден в отчёте по имени
+        # проверки.
+        silent_ok = (not reported) and model_report == "unsupported"
         checks.append(ValidationCheck(
-            "model_matches_policy",
-            bool(reported) and bool(accepted) and reported in accepted,
+            "model_matches_policy" if not silent_ok
+            else "model_assigned_reporting_unsupported",
+            silent_ok or (bool(reported) and bool(accepted) and reported in accepted),
             f"назначено {expected!r}, фактически {reported or '—'!r}, "
-            f"допустимые {list(accepted)}",
+            f"допустимые {list(accepted)}"
+            + ("; CLI провайдера не сообщает модель (объявлено политикой машины)"
+               if silent_ok else ""),
         ))
     return ValidationReport(checks=tuple(checks))
 

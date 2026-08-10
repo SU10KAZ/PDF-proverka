@@ -224,6 +224,12 @@ class ProviderBinding:
     #: кортеж при заданном `model` означает «сверять не с чем» и трактуется как
     #: несовпадение — умолчания «сойдёт любое» здесь нет.
     accepted_reported_models: tuple[str, ...] = field(default_factory=tuple)
+    #: Умеет ли CLI провайдера называть фактически применённую модель
+    #: (`model_policy.MODEL_REPORT_MODES`). Значение приходит из ЛОКАЛЬНОЙ
+    #: политики машины и едет в привязку затем, чтобы разбор чужого прогона
+    #: отвечал на вопрос «сверяли ли модель» по файлу, а не по догадке о версии
+    #: CLI.
+    model_report: str = "required"
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -243,6 +249,7 @@ class ProviderBinding:
             "forbidden_literals": list(self.forbidden_literals),
             "capability": self.capability,
             "accepted_reported_models": list(self.accepted_reported_models),
+            "model_report": self.model_report,
         }
 
     def as_public_dict(self) -> dict[str, Any]:
@@ -253,6 +260,7 @@ class ProviderBinding:
             "model": self.model,
             "capability": self.capability,
             "accepted_reported_models": list(self.accepted_reported_models),
+            "model_report": self.model_report,
             "max_inferences": int(self.max_inferences),
             "allowed_stages": list(self.allowed_stages),
             "grant_id": self.grant_id,
@@ -319,6 +327,9 @@ class ProviderBinding:
             forbidden_literals=tuple(str(x) for x in literals),
             capability=(str(data["capability"]) if data.get("capability") else None),
             accepted_reported_models=accepted_values,
+            model_report=str(
+                data.get("model_report") or model_policy.MODEL_REPORT_REQUIRED
+            ),
         )
 
     def write(self, metadata_dir: Path) -> Path:
@@ -419,6 +430,7 @@ class ProviderResolver:
         # источником обязан быть файл администратора машины.
         resolved_model = requirement.model
         accepted_reported: tuple[str, ...] = ()
+        model_report = model_policy.MODEL_REPORT_REQUIRED
         if requirement.capability:
             try:
                 policy = model_policy.load_policy(self.worker_root)
@@ -429,6 +441,7 @@ class ProviderResolver:
                 ) from None
             resolved_model = capability.model
             accepted_reported = capability.accepted_reported_models
+            model_report = capability.model_report
         if int(requirement.max_inferences) > 0 and not resolved_model:
             # Второй рубеж того же утверждения. `from_payload` защищает разбор
             # ТРЕБОВАНИЯ ЦЕНТРА, а сюда приходят и требования, собранные кодом
@@ -460,6 +473,7 @@ class ProviderResolver:
             ),
             capability=requirement.capability,
             accepted_reported_models=accepted_reported,
+            model_report=model_report,
         )
 
 

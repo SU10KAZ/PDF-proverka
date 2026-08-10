@@ -345,12 +345,14 @@ def run_stage_inference(
                 prompt, images=images, purpose=purpose, timeout_sec=timeout_sec,
                 model=binding.model,
                 accepted_reported_models=binding.accepted_reported_models,
+                model_report=binding.model_report,
             )
         else:
             result = adapter.structured_inference(
                 prompt, purpose=purpose, timeout_sec=timeout_sec,
                 model=binding.model,
                 accepted_reported_models=binding.accepted_reported_models,
+                model_report=binding.model_report,
             )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.
@@ -472,6 +474,7 @@ def _validate(
         claim_attempt_id=claim_attempt_id or binding.attempt_id,
         expected_model=binding.model or "",
         accepted_reported_models=binding.accepted_reported_models,
+        model_report=binding.model_report,
     )
 
 

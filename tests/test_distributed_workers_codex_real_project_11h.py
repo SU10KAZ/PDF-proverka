@@ -413,3 +413,107 @@ class TestCenterProviderChoice:
                 version_dir=version, worker=worker
             )
         assert "codex" in str(exc.value)
+
+
+# ═════════════ Провайдер, не сообщающий модель (инцидент боевого прогона) ════
+class TestModelReportUnsupported:
+    """Codex 0.147.0 не называет применённую модель НИ В ОДНОМ событии потока.
+
+    Обнаружено не на бумаге, а на первом боевом прогоне 11H: 10 блоков подряд
+    отказали с `model_mismatch` и `detail="CLI не сообщил фактическую модель"`.
+    Прогон был остановлен, поток `codex exec --json` снят диагностическим
+    вызовом — в нём ровно четыре события: `thread.started` (только thread_id),
+    `turn.started`, `item.completed`, `turn.completed` (только usage).
+
+    Ослабление гейта сделано ЯВНЫМ и локальным: администратор машины объявляет
+    `model_report="unsupported"` в своей политике. Ветки «если провайдер codex,
+    не сверяем» в коде нет — она расползлась бы на новые провайдеры молча.
+    """
+
+    def _policy(self, report: str) -> Any:
+        from audit_worker.providers import model_policy
+
+        return model_policy.parse_policy({
+            "policy_version": 1,
+            "codex": {"auth_mode": "ambient_user", "capabilities": {
+                "strong_audit": {"model": "gpt-5.6-sol", "model_report": report},
+            }},
+        }).resolve("codex", "strong_audit")
+
+    def test_silence_is_mismatch_by_default(self, tmp_path):
+        stub = _stub(tmp_path, model="")          # заглушка молчит о модели
+        result = _adapter(tmp_path, executable=stub).structured_inference(
+            "верни JSON", purpose="text_analysis", model="gpt-5.6-sol",
+            accepted_reported_models=("gpt-5.6-sol",),
+        )
+        assert result.error_code == errors.ERR_MODEL_MISMATCH
+
+    def test_declared_unsupported_lets_the_call_through(self, tmp_path):
+        stub = _stub(tmp_path, model="")
+        result = _adapter(tmp_path, executable=stub).structured_inference(
+            "верни JSON", purpose="text_analysis", model="gpt-5.6-sol",
+            accepted_reported_models=("gpt-5.6-sol",), model_report="unsupported",
+        )
+        assert result.ok, result.detail
+
+    def test_foreign_model_still_fails_when_unsupported(self, tmp_path):
+        """Послабление касается МОЛЧАНИЯ, а не чужой модели."""
+        stub = _stub(tmp_path, model="gpt-4.1-mini")
+        result = _adapter(tmp_path, executable=stub).structured_inference(
+            "верни JSON", purpose="text_analysis", model="gpt-5.6-sol",
+            accepted_reported_models=("gpt-5.6-sol",), model_report="unsupported",
+        )
+        assert result.error_code == errors.ERR_MODEL_MISMATCH
+
+    def test_policy_default_is_required(self):
+        assert self._policy("required").model_report == "required"
+        assert self._policy("required").reported_matches(None) is False
+
+    def test_policy_unsupported_accepts_silence_only(self):
+        capability = self._policy("unsupported")
+        assert capability.reported_matches(None) is True
+        assert capability.reported_matches("gpt-5.6-sol") is True
+        assert capability.reported_matches("gpt-4.1-mini") is False
+
+    def test_unknown_report_mode_is_refused(self):
+        from audit_worker.providers import model_policy
+
+        with pytest.raises(model_policy.ProviderPolicyError):
+            model_policy.parse_policy({
+                "policy_version": 1,
+                "codex": {"capabilities": {
+                    "strong_audit": {"model": "gpt-5.6-sol", "model_report": "как-нибудь"},
+                }},
+            })
+
+    def test_validator_names_the_weakened_check(self):
+        """Послабление ВИДНО в отчёте: у проверки другое имя."""
+        from audit_worker.providers.inference import (
+            ProviderInferenceResult, STATUS_SUCCESS, validate_inference,
+        )
+
+        result = ProviderInferenceResult(
+            provider="codex", model=None, status=STATUS_SUCCESS,
+            result={"findings": []}, auth_mode=AUTH_MODE_AMBIENT_USER,
+        )
+        report = validate_inference(
+            result, expected_provider="codex", expected_auth_mode=AUTH_MODE_AMBIENT_USER,
+            expected_model="gpt-5.6-sol", accepted_reported_models=("gpt-5.6-sol",),
+            model_report="unsupported",
+        )
+        names = {c.name for c in report.checks}
+        assert "model_assigned_reporting_unsupported" in names
+        assert "model_matches_policy" not in names
+
+
+# ═════════════ Назначение модели у Codex не декоративно ══════════════════════
+class TestModelFlagIsEffective:
+    def test_argv_carries_the_model(self):
+        """Единственное, что доказуемо без отчёта CLI, — что флаг предъявлен.
+
+        Что он ДЕЙСТВУЕТ, проверено вживую на .31: `--model=<несуществующая>`
+        даёт от сервера 400 invalid_request_error и выход с кодом 1. То есть
+        значение флага доезжает до провайдера, а не игнорируется.
+        """
+        argv = _inference_argv("gpt-5.6-sol")
+        assert "--model=gpt-5.6-sol" in argv

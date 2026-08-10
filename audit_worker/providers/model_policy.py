@@ -84,6 +84,24 @@ KNOWN_CAPABILITIES: tuple[str, ...] = (CAPABILITY_STRONG_AUDIT,)
 #: модель»: та же модель, другое окно контекста.
 _LONG_CONTEXT_SUFFIX = "[1m]"
 
+#: Сообщает ли CLI провайдера, КАКАЯ модель фактически ответила.
+#:
+#: `required` (умолчание) — сообщает, и несовпадение либо молчание считаются
+#: отказом. Так работает Claude: `--output-format json` несёт `modelUsage`.
+#:
+#: `unsupported` — НЕ сообщает, и это свойство CLI, а не наша слепота.
+#: Измерено на Codex 0.147.0: поток `exec --json` состоит из `thread.started`
+#: (только `thread_id`), `turn.started`, `item.completed` и `turn.completed`
+#: (только `usage`) — идентификатора модели нет ни в одном событии.
+#:
+#: Почему это ОТДЕЛЬНОЕ ЯВНОЕ поле, а не «если провайдер codex, то не сверяем».
+#: Ослабление гейта обязано быть решением администратора машины, записанным в
+#: его файле, а не веткой в коде: ветка расползается на новые провайдеры молча,
+#: запись — нет. И она же документирует, ЧТО именно перестало проверяться.
+MODEL_REPORT_REQUIRED = "required"
+MODEL_REPORT_UNSUPPORTED = "unsupported"
+MODEL_REPORT_MODES: tuple[str, ...] = (MODEL_REPORT_REQUIRED, MODEL_REPORT_UNSUPPORTED)
+
 
 class ProviderPolicyError(RuntimeError):
     """Политика отсутствует, не читается или не покрывает запрошенное."""
@@ -99,18 +117,22 @@ class CapabilityPolicy:
     model: str
     #: Идентификаторы, которые CLI имеет право назвать фактическими.
     accepted_reported_models: tuple[str, ...]
+    #: `required` | `unsupported` — см. MODEL_REPORT_MODES.
+    model_report: str = MODEL_REPORT_REQUIRED
 
     def reported_matches(self, reported: Optional[str]) -> bool:
         """Совпал ли фактически применённый идентификатор с разрешённым.
 
-        `None`/пустое значение НЕ считается совпадением. «Мы не смогли узнать,
-        какая модель ответила» и «ответила нужная» — разные утверждения, и
-        подменять второе первым значило бы вернуть ровно ту слепоту, которую
-        этот модуль устраняет.
+        `None`/пустое значение НЕ считается совпадением, пока политика не
+        объявила `model_report="unsupported"`. «Мы не смогли узнать, какая
+        модель ответила» и «ответила нужная» — разные утверждения, и подменять
+        второе первым значило бы вернуть ровно ту слепоту, которую этот модуль
+        устраняет. Но и требовать от CLI того, чего он не умеет, — не строгость,
+        а неработающий провайдер: см. MODEL_REPORT_MODES.
         """
         value = (reported or "").strip()
         if not value:
-            return False
+            return self.model_report == MODEL_REPORT_UNSUPPORTED
         return value in self.accepted_reported_models
 
     def as_dict(self) -> dict[str, Any]:
@@ -119,6 +141,7 @@ class CapabilityPolicy:
             "capability": self.capability,
             "model": self.model,
             "accepted_reported_models": list(self.accepted_reported_models),
+            "model_report": self.model_report,
         }
 
 
@@ -256,7 +279,9 @@ def parse_policy(payload: Any, *, source_path: Optional[Path] = None) -> Provide
                 raise ProviderPolicyError(
                     f"политика {provider}.{cap_name}: ожидается объект"
                 )
-            cap_unknown = set(cap_body) - {"model", "accepted_reported_models"}
+            cap_unknown = set(cap_body) - {
+                "model", "accepted_reported_models", "model_report",
+            }
             if cap_unknown:
                 raise ProviderPolicyError(
                     f"политика {provider}.{cap_name}: недопустимые ключи "
@@ -286,11 +311,18 @@ def parse_policy(payload: Any, *, source_path: Optional[Path] = None) -> Provide
                         f"политика {provider}.{cap_name}: запрошенная модель "
                         f"{model!r} обязана входить в accepted_reported_models"
                     )
+            model_report = cap_body.get("model_report", MODEL_REPORT_REQUIRED)
+            if model_report not in MODEL_REPORT_MODES:
+                raise ProviderPolicyError(
+                    f"политика {provider}.{cap_name}.model_report={model_report!r}: "
+                    f"допустимы {list(MODEL_REPORT_MODES)}"
+                )
             capabilities[(provider, cap_name)] = CapabilityPolicy(
                 provider=provider,
                 capability=cap_name,
                 model=model,
                 accepted_reported_models=accepted,
+                model_report=model_report,
             )
     if not capabilities:
         raise ProviderPolicyError(

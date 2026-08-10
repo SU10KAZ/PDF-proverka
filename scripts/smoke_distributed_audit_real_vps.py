@@ -1079,11 +1079,18 @@ from backend.app.pipeline.execution import provider_bridge_stub as stub
 model = os.environ["PROVIDER_MODEL"]
 provider = os.environ.get("PROVIDER_NAME", "claude")
 policy_path = Path(os.environ["POLICY_PATH"])
+capability = {"model": model}
+# Codex 0.147.0 не называет фактически применённую модель НИ В ОДНОМ событии
+# потока `exec --json`. Администратор машины объявляет это явно: иначе каждый
+# вызов честно отвергался бы как «модель не подтверждена» — что и произошло на
+# первом боевом прогоне 11H, где так упали 10 блоков подряд.
+if provider == "codex":
+    capability["model_report"] = model_policy.MODEL_REPORT_UNSUPPORTED
 policy = {
     "policy_version": model_policy.POLICY_SCHEMA_VERSION,
     provider: {
         "auth_mode": "ambient_user",
-        "capabilities": {model_policy.CAPABILITY_STRONG_AUDIT: {"model": model}},
+        "capabilities": {model_policy.CAPABILITY_STRONG_AUDIT: capability},
     },
 }
 policy_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1097,7 +1104,8 @@ parsed = model_policy.parse_policy(
     json.loads(policy_path.read_text(encoding="utf-8")), source_path=policy_path
 )
 resolved = parsed.resolve(provider, model_policy.CAPABILITY_STRONG_AUDIT)
-print("POLICY_OK model=%s mode=%o" % (resolved.model, policy_path.stat().st_mode & 0o777))
+print("POLICY_OK model=%s report=%s mode=%o" % (
+    resolved.model, resolved.model_report, policy_path.stat().st_mode & 0o777))
 
 if os.environ.get("USE_STUB") == "1":
     binary = stub.materialize(Path(os.environ["STUB_DIR"]), provider=provider)
@@ -2369,13 +2377,24 @@ def launch_remote_audit(
           "манифест несёт хэш снимка runtime-конфигурации")
 
     # ── что применилось НА ВОРКЕРЕ ──────────────────────────────────────────
+    #
+    # Идентификатор попытки нужен ЗДЕСЬ, до строки из workers.db: без него
+    # маски ниже читают файлы чужих попыток. Берётся он из логического задания,
+    # которое назвал манифест пакета, — то есть из того же источника, что и
+    # проверка «пакет принадлежит этому заданию» ниже.
+    run_attempt_id = attempt_id_of(operator, str(manifest.get("job_id") or ""))
+    #
+    # Маска привязана к ЭТОЙ попытке. Раньше стояло `*/metadata/…`, и на корне,
+    # где уже проходили прогоны, первым находился файл ЧУЖОЙ попытки: реальный
+    # AR-документ проверялся против профиля VK синтетической фикстуры прошлого
+    # прогона. На свежем корне (11G) дефект не проявлялся — там чужих попыток
+    # просто не было.
+    attempt_glob = f"*/{run_attempt_id}/metadata/applied_discipline_profile.json"
     got = _wait_for(
-        lambda: bool(worker_collect_json(
-            worker, "*/metadata/applied_discipline_profile.json")),
+        lambda: bool(worker_collect_json(worker, attempt_glob)),
         timeout=timeout, interval=10.0,
     )
-    applied = (worker_collect_json(
-        worker, "*/metadata/applied_discipline_profile.json") or [{}])[0]
+    applied = (worker_collect_json(worker, attempt_glob) or [{}])[0]
     check(got, "воркер применил профиль дисциплины из пакета")
     check(applied.get("discipline_id") == section,
           "на воркере применён профиль ИМЕННО нужной дисциплины",
@@ -2387,7 +2406,7 @@ def launch_remote_audit(
           "хэш применённого профиля совпал с отправленным")
 
     applied_runtime = (worker_collect_json(
-        worker, "*/metadata/applied_runtime_config.json") or [{}])[0]
+        worker, f"*/{run_attempt_id}/metadata/applied_runtime_config.json") or [{}])[0]
     check(applied_runtime.get("applied_write_mode") == "projects_v2_primary",
           "снимок центра пересилил настройку хоста воркера",
           str(applied_runtime.get("applied_write_mode")))

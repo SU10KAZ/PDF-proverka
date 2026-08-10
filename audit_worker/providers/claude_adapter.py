@@ -460,6 +460,7 @@ class ClaudeProviderAdapter(ProviderAdapter):
         timeout_sec: Optional[float] = None,
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
+        model_report: str = "required",
     ) -> ProviderInferenceResult:
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
@@ -522,6 +523,7 @@ class ClaudeProviderAdapter(ProviderAdapter):
         timeout_sec: Optional[float] = None,
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
+        model_report: str = "required",
     ) -> ProviderInferenceResult:
         """То же, что `structured_inference`, но с изображениями в теле запроса.
 

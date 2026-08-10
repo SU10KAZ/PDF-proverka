@@ -402,6 +402,27 @@
     if (caps.pipeline_revision) {
       parts.push(`· ревизия ${String(caps.pipeline_revision)}`);
     }
+    // СПОСОБНОСТИ — то, что центр заказывает у воркера с этапа 11G. Точной
+    // модели здесь нет и быть не может: она принадлежит машине, и центру её
+    // не показывают. Оператору нужно ровно это: «умеет ли воркер то, что
+    // задание попросит», — иначе отказ «локальная политика не покрывает
+    // способность» виден только в тексте ошибки запуска.
+    const offered = caps.provider_capabilities;
+    if (offered && typeof offered === 'object') {
+      const line = Object.keys(offered)
+        .sort()
+        .map((name) => `${PROVIDER_LABEL[name] || name}: `
+          + (Array.isArray(offered[name]) ? offered[name].join(', ') : '—'))
+        .join('; ');
+      if (line) parts.push(`· способности ${line}`);
+      else parts.push('· способности НЕ объявлены (нет локальной политики моделей)');
+    } else if (real) {
+      parts.push('· способности НЕ объявлены (нет локальной политики моделей)');
+    }
+    if (caps.provider_auto_grant_enabled === true) {
+      parts.push(`· авторазрешение до ${Number(caps.provider_max_inferences_per_job) || 0}`
+        + ' обращений на задание');
+    }
     if (target && !target.compatible) {
       const reasons = (target.reasons || [])
         .map((r) => r && r.message)

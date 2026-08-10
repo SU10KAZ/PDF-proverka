@@ -465,6 +465,7 @@ class CodexProviderAdapter(ProviderAdapter):
         timeout_sec: Optional[float] = None,
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
+        model_report: str = "required",
     ) -> ProviderInferenceResult:
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
@@ -509,6 +510,7 @@ class CodexProviderAdapter(ProviderAdapter):
         )
         return self._finalize_inference(
             result, requested_model=requested_model, accepted=accepted,
+            model_report=model_report,
         )
 
     # ─── Рабочий вызов С ИЗОБРАЖЕНИЕМ (этап 11H) ─────────────────────────────
@@ -521,6 +523,7 @@ class CodexProviderAdapter(ProviderAdapter):
         timeout_sec: Optional[float] = None,
         model: Optional[str] = None,
         accepted_reported_models: Sequence[str] = (),
+        model_report: str = "required",
     ) -> ProviderInferenceResult:
         """То же, что `structured_inference`, но с вложенными изображениями.
 
@@ -663,6 +666,7 @@ class CodexProviderAdapter(ProviderAdapter):
                 shutil.rmtree(workspace, ignore_errors=True)
         return self._finalize_inference(
             result, requested_model=requested_model, accepted=accepted,
+            model_report=model_report,
         )
 
     def _finalize_inference(
@@ -671,6 +675,7 @@ class CodexProviderAdapter(ProviderAdapter):
         *,
         requested_model: str,
         accepted: Sequence[str],
+        model_report: str = "required",
     ) -> ProviderInferenceResult:
         """Разбор потока `codex exec --json`, общий для обоих рабочих вызовов.
 
@@ -708,9 +713,25 @@ class CodexProviderAdapter(ProviderAdapter):
         if requested_model:
             reported = (reported_model or "").strip()
             if not reported:
-                model_mismatch = (
-                    f"CLI не сообщил фактическую модель; назначена {requested_model!r}"
-                )
+                # Молчание CLI — несовпадение, ПОКА политика машины не объявила
+                # обратное. `unsupported` ставит администратор VPS, и ставит он
+                # его не «чтобы прошло», а потому что у CLI такого поля нет:
+                # поток `codex exec --json` 0.147.0 состоит из `thread.started`
+                # (только thread_id), `turn.started`, `item.completed` и
+                # `turn.completed` (только usage) — идентификатора модели нет ни
+                # в одном событии (измерено на .31, диагностический вызов 11H).
+                #
+                # Что при этом НЕ теряется: сам факт назначения модели.
+                # `--model` у Codex не декоративен — с неизвестным значением CLI
+                # получает от сервера 400 `invalid_request_error` и выходит с
+                # кодом 1 (проверено там же). То есть «модель назначена и
+                # принята» остаётся доказанным; недоказуемо ровно одно — что
+                # ответила именно она.
+                if model_report != "unsupported":
+                    model_mismatch = (
+                        "CLI не сообщил фактическую модель; назначена "
+                        f"{requested_model!r}"
+                    )
             elif reported not in accepted:
                 model_mismatch = (
                     f"фактическая модель {reported!r} не входит в допустимые "
