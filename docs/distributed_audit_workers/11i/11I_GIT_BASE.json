@@ -1,0 +1,51 @@
+{
+  "stage": "11I",
+  "generated": "2026-08-10",
+  "base_stage": "11H",
+  "base_branch": "feat/distributed-audit-workers-codex-real-project-e2e",
+  "base_head": "de2f84f2afb3da5568362001facc255e3716972e",
+  "base_head_subject": "docs(воркеры 11H): доказательная база боевого прогона и финальный отчёт",
+  "base_head_date": "2026-08-10T17:55:03+03:00",
+  "how_base_was_found": [
+    "git worktree list -> worktree distributed-audit-workers-codex-real-project-e2e",
+    "git show-ref --heads | grep distributed-audit-workers",
+    "git log --oneline -12 in that worktree"
+  ],
+  "commits_over_11g_tip": {
+    "11g_tip": "d1563a6c997429199ffad2dc915c8b2bed688fca",
+    "count": 10,
+    "note": "в тексте задачи указано 8 коммитов; фактически над tip 11G их 10 — использован ФАКТИЧЕСКИЙ tip, не число из задачи",
+    "subjects": [
+      "de2f84f2 docs(воркеры 11H): доказательная база боевого прогона и финальный отчёт",
+      "adf158f1 feat(воркеры 11H): сравнение с историческим аудитом того же PDF",
+      "3759c2c9 docs(воркеры 11H): безопасность учётных данных, клиентские данные, целостность прода",
+      "1cd5e2f4 feat(воркеры 11H): сборщик доказательной базы боевого прогона",
+      "39ccfe7e docs(воркеры 11H): фактический контракт Codex и цена инцидента с моделью",
+      "a897c574 docs(воркеры 11H): чему научил провал гейта перед боевым прогоном",
+      "0941033d fix(воркеры 11H): Codex не называет модель — послабление ЯВНОЕ, а не молчаливое",
+      "9d8fc125 feat(воркеры 11H): ключ пропуска фаз устойчивости и перенос результата в прод",
+      "b5900bff feat(воркеры 11H): центральный хвост на Codex и матрица отказов",
+      "ac483197 feat(воркеры 11H): Codex как рабочий провайдер worker-участка"
+    ]
+  },
+  "branch_11i": "feat/distributed-audit-workers-routing-plan",
+  "worktree_11i": ".claude/worktrees/distributed-audit-workers-routing-plan",
+  "push": "ЗАПРЕЩЁН заданием; выполнен не будет",
+  "inventory_artifacts": {
+    "source": "docs/distributed_audit_workers/model_routing_inventory/ (uncommitted в основном worktree feature/block-vector-graphs)",
+    "action": "скопированы БЕЗ изменения содержимого в worktree 11I для включения в документацию",
+    "files": [
+      "BLOCK_ANALYSIS_ROUTING.md",
+      "FALLBACK_MATRIX.md",
+      "FINAL_MODEL_ROUTING_REPORT.md",
+      "MODEL_CALL_FORMULAS.json",
+      "MODEL_ROUTING_SOURCE_MAP.md",
+      "OPTIMIZATION_ROUTING.md",
+      "PRESET_CLAUDE_GPT_CODEX.md",
+      "PRESET_DIFF.md",
+      "PRESET_FULL_CODEX.md",
+      "UI_RUNTIME_MISMATCHES.md",
+      "WORKER_REPRODUCTION_MATRIX.json"
+    ]
+  }
+}
