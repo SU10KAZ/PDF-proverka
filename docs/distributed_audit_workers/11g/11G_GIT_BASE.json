@@ -1,0 +1,29 @@
+{
+  "stage": "11G",
+  "question": "от какого фактического коммита 11F ведётся ветка 11G",
+  "how_established": "по истории веток, а не по имени: git worktree list + git show-ref --heads | grep distributed-audit-workers, затем проверка что tip содержит b2247d8a (общий дефект _version_project_dir, исправленный на 11F)",
+  "base_branch": "feat/distributed-audit-workers-full-worker-diagnostic",
+  "base_commit": "09afc6b9fbed4b07e499f25496db26d8778d78b5",
+  "base_commit_short": "09afc6b9",
+  "base_commit_subject": "fix(воркеры 11F): потолок кропа под предел провайдера + сборщик доказательств",
+  "base_contains_b2247d8a": true,
+  "base_contains": [
+    "f5c59130 весь worker-участок конвейера через ProviderAdapter (11F)",
+    "b60a99ba шесть дефектов состязательного ревью 11F",
+    "b2247d8a fix(конвейер): корень версии вне привязки указывал в 03_analysis",
+    "f4d9ffa2/b486c52c доказательная база и финальный отчёт 11F",
+    "09afc6b9 потолок кропа под предел провайдера"
+  ],
+  "branch": "feat/distributed-audit-workers-network-e2e",
+  "worktree": ".claude/worktrees/distributed-audit-workers-network-e2e",
+  "not_done": [
+    "reset",
+    "clean",
+    "rebase",
+    "force checkout",
+    "удаление чужих worktree",
+    "merge",
+    "push"
+  ],
+  "other_worktrees_untouched": true
+}

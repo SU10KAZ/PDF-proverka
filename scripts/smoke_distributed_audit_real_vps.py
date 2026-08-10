@@ -50,7 +50,35 @@ localhost.
         --worker-host 10.0.0.5 --worker-user coder \\
         --tunnel cloudflared --mode audit-fake --allow-remote-actions
 
-Параметра `--real-llm` здесь нет и не будет.
+    # боевой мост провайдера, но бинарь — заглушка (0 обращений к модели)
+    python scripts/smoke_distributed_audit_real_vps.py \\
+        --worker-host 10.0.0.5 --worker-user coder \\
+        --tunnel cloudflared --mode audit-provider --allow-remote-actions
+
+    # то же самое НАСТОЯЩИМ claude воркера, на продовом документе
+    python scripts/smoke_distributed_audit_real_vps.py \\
+        --worker-host 10.0.0.5 --worker-user coder \\
+        --tunnel cloudflared --mode audit-real --allow-remote-actions \\
+        --i-confirm-real-inference --real-document
+
+Четыре режима и что каждый доказывает
+─────────────────────────────────────
+  test            транспорт: одно `test_pipeline_v1` через настоящую сеть;
+  audit-fake      транспорт АУДИТА: `AUDIT_WORKER_ALLOW_REAL_LLM=false`, воркер
+                  объявляет центру `provider_mode="fake"`, центр НАМЕРЕННО не
+                  шлёт `provider_requirement`, привязка не выписывается, а
+                  конвейер идёт к `fake_providers`. Про цепочку этапа 11G этот
+                  режим не доказывает ничего: он её выключает целиком;
+  audit-provider  цепочка «требование центра → способность воркера → локальная
+                  политика моделей → привязка → разрешение → журнал вызовов»
+                  БОЕВАЯ вся. Подделан ровно последний метр — сам бинарь
+                  `claude` подменён заглушкой `provider_bridge_stub`. Обращений
+                  к Anthropic ноль, расхода подписки ноль;
+  audit-real      то же самое настоящим `claude` воркера. Требует отдельного
+                  `--i-confirm-real-inference`.
+
+Параметра `--real-llm` здесь нет и не будет: единственный путь к настоящей
+модели — назвать режим `audit-real` и подтвердить его вторым флагом.
 """
 
 from __future__ import annotations
@@ -93,8 +121,59 @@ EXTERNAL_ID = "ТЕСТ/РД-ВК1 — корпус 1"
 
 SMOKE_FEATURE_FLAGS = {"AUDIT_ROLE": "center"}
 
+#: Режимы прогона. `test`/`audit-fake` — прежние; два новых включают БОЕВОЙ
+#: мост провайдера и отличаются друг от друга ровно последним метром (бинарь).
+MODE_TEST = "test"
+MODE_AUDIT_FAKE = "audit-fake"
+MODE_AUDIT_PROVIDER = "audit-provider"
+MODE_AUDIT_REAL = "audit-real"
+BRIDGE_MODES = (MODE_AUDIT_PROVIDER, MODE_AUDIT_REAL)
+
+#: Продовый документ по умолчанию для `--real-document`. Синтетическая фикстура
+#: даёт два блока и три абзаца — на ней бюджет обращений к модели вырождается
+#: (`estimate_inferences` = блоки + 6), и «потолок соблюдён» ничего не значит.
+#: Живой КМ-документ даёт настоящий счёт блоков и настоящую длину промптов.
+DEFAULT_REAL_DOCUMENT = (
+    "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS"
+    "/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001"
+)
+
+#: Точная модель, которую ЛОКАЛЬНАЯ политика воркера сопоставляет способности
+#: `strong_audit`. Значение принадлежит МАШИНЕ: центр его не видит и не шлёт,
+#: а этот скрипт выступает здесь администратором VPS, а не центром.
+DEFAULT_PROVIDER_MODEL = "claude-opus-5"
+
 AGENT_UNIT = "audit-worker-agent.service"
 EXECUTOR_UNIT = "audit-worker-executor.service"
+
+
+def unit_names(root: str) -> tuple[str, str]:
+    """Имена юнитов ДЛЯ ЭТОЙ установки.
+
+    Почему не константы. Имена были фиксированными, а корень установки —
+    параметром; в результате развёртывание во второй корень перезапускало
+    юниты ПЕРВОГО. Практически это выглядело так: `deploy --remote-root
+    …/audit-worker-11g` поднял агента, читающего `…/audit-worker/config/
+    worker.env` с мёртвым адресом центра прошлого этапа. Ничего не сломалось
+    по счастливой случайности (у той установки настоящие модели выключены, а
+    туннель давно закрыт), но это была именно случайность.
+
+    Изоляция экземпляров — требование §15 задания 11G, и держаться она обязана
+    на имени, а не на договорённости «не разворачивать дважды».
+
+    Умолчание сохранено дословно: корень `…/audit-worker` даёт прежние имена,
+    поэтому уже установленные юниты и их журналы не переезжают.
+    """
+    name = Path(root).name
+    if name == "audit-worker":
+        return AGENT_UNIT, EXECUTOR_UNIT
+    # Без `@`: у systemd это синтаксис шаблонов, и конкретный файл с собакой в
+    # имени читался бы как экземпляр несуществующего шаблона.
+    suffix = name.removeprefix("audit-worker-") or name
+    return (
+        f"audit-worker-{suffix}-agent.service",
+        f"audit-worker-{suffix}-executor.service",
+    )
 
 # ─── счётчик проверок ────────────────────────────────────────────────────────
 
@@ -464,9 +543,16 @@ def start_tunnel(stand: Stand, *, binary: str) -> str:
 # ─── фикстура и снимки ───────────────────────────────────────────────────────
 
 
-def build_fixture(stand: Stand):
+def build_fixture(stand: Stand, *, real_document: str = ""):
+    """Проект для удалённого аудита: синтетический либо копия продового.
+
+    Форма возврата одна и та же (`fixture.ProjectFixture`) — вся остальная фаза
+    её не различает.
+    """
     from tests.distributed_audit_e2e import fixture as fx
 
+    if real_document:
+        return copy_production_version(Path(real_document), stand.central_v2)
     return fx.build_project_fixture(
         stand.central_v2,
         document_code=DOCUMENT_CODE,
@@ -475,6 +561,186 @@ def build_fixture(stand: Stand):
         discipline=DISCIPLINE_FOLDER,
         section=DISCIPLINE_SECTION,
     )
+
+
+#: Чего в копии продовой версии быть не должно. `*.rename_bak` — след
+#: переименования проекта; попав в пакет, он читался бы как вторая версия
+#: `document.json` и разъезжался бы с настоящей при первом же чтении.
+_PRODUCTION_COPY_IGNORE = ("*.rename_bak", "*.tmp", ".DS_Store")
+
+#: Каталоги версии, которые создаются ПУСТЫМИ. Набор и порядок — как у
+#: синтетической фикстуры: с точки зрения конвейера продовый документ обязан
+#: выглядеть неаудированным, иначе прогон окажется не аудитом.
+_EMPTY_VERSION_DIRS = (
+    "03_analysis/latest", "03_analysis/runs", "99_service", "04_review", "05_export",
+)
+
+#: Поля `version.json`, описывающие ПРОШЛЫЙ анализ. Копируются исходники, а не
+#: результаты, и оставленный `analysis_status: complete` рядом с пустым
+#: `03_analysis` — прямая ложь о состоянии версии.
+_ANALYSIS_FIELDS = ("analysis_run_id", "analysis_status", "missing_analysis_files")
+
+
+def copy_production_version(source_version_dir: Path, target_v2_root: Path):
+    """Скопировать ИСХОДНИКИ продовой версии в изолированный стенд.
+
+    Почему копия, а не работа по месту: этап импорта результата ПИШЕТ в дерево
+    версии (`03_analysis`, `05_export`, журнал этапов), а `AUDIT_PROJECTS_V2_DIR`
+    стенда — единственный корень, который центр вообще видит. Прогон по
+    продовому пути означал бы, что смоук-тест правит рабочий документ заказчика;
+    неизменность исходного дерева проверяется отдельно, после прогона.
+
+    Почему копируются ТОЛЬКО исходники (`01_input`, `02_work`, `version.json`),
+    а `03_analysis` создаётся пустым. У продового документа аудит уже пройден:
+    в `03_analysis/latest` лежат `03_findings.json` и `norm_checks.json`. Копия
+    вместе с ними означала бы, что `detect_resume_stage` отвечает «completed»
+    (ветка «всё завершено» после `has_norm_checks`), а прогон превращается из
+    аудита в возобновление законченного — при том, что проверка границы ждёт
+    от подсказки ИМЕННО центральный `norm_verify`. Синтетическая фикстура
+    создаёт эти каталоги пустыми ровно по той же причине.
+
+    Раскладка воспроизводится дословно (`objects/<об>/disciplines/<Д>/documents/
+    <код>/versions/<vid>`): по ней резолвятся пути (`resolve_v2_target`), и
+    «плоская копия файлов версии» не резолвится вовсе.
+    """
+    from tests.distributed_audit_e2e import fixture as fx
+
+    source_version_dir = Path(source_version_dir).resolve()
+    doc_dir_src = source_version_dir.parent.parent
+    discipline_dir_src = doc_dir_src.parent.parent
+    object_dir_src = discipline_dir_src.parent.parent
+    if (
+        source_version_dir.parent.name != "versions"
+        or doc_dir_src.parent.name != "documents"
+        or discipline_dir_src.parent.name != "disciplines"
+        or object_dir_src.parent.name != "objects"
+    ):
+        fatal("продовый документ лежит в раскладке projects_v2",
+              f"{source_version_dir} не похож на .../objects/<об>/disciplines/"
+              "<Д>/documents/<код>/versions/<vid>")
+    # Проверяются все три источника метаданных, а не только каталог исходников.
+    # `_read_json` на отсутствующем файле отдаёт `{}` молча — и копия получила
+    # бы `version.json`/`document.json` без `document_code` и `object_id`,
+    # то есть дерево, которое не резолвится, с ошибкой уже на стороне центра.
+    for relative in ("01_input", "version.json"):
+        if not (source_version_dir / relative).exists():
+            fatal(f"у продовой версии есть {relative}", str(source_version_dir))
+    if not (doc_dir_src / "document.json").is_file():
+        fatal("у продового документа есть document.json", str(doc_dir_src))
+
+    version_id = source_version_dir.name
+    document_code = doc_dir_src.name
+    discipline_folder = discipline_dir_src.name
+    object_folder = object_dir_src.name
+
+    target_v2_root = Path(target_v2_root)
+    object_dir = target_v2_root / "objects" / object_folder
+    doc_dir = (
+        object_dir / "disciplines" / discipline_folder / "documents" / document_code
+    )
+    version_dir = doc_dir / "versions" / version_id
+    if version_dir.exists():
+        shutil.rmtree(version_dir)
+    version_dir.mkdir(parents=True, exist_ok=True)
+    for name in fx.SOURCE_GUARDED_DIRS:
+        source = source_version_dir / name
+        if source.is_dir():
+            shutil.copytree(
+                source, version_dir / name,
+                ignore=shutil.ignore_patterns(*_PRODUCTION_COPY_IGNORE),
+            )
+    version_meta = _read_json(source_version_dir / "version.json")
+    for field_name in _ANALYSIS_FIELDS:
+        version_meta.pop(field_name, None)
+    (version_dir / "version.json").write_text(
+        json.dumps(version_meta, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    for name in _EMPTY_VERSION_DIRS:
+        (version_dir / name).mkdir(parents=True, exist_ok=True)
+    object_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("object.json",):
+        source = object_dir_src / name
+        if source.is_file():
+            shutil.copy2(source, object_dir / name)
+
+    document = _read_json(doc_dir_src / "document.json")
+    # Список версий и указатель текущей УРЕЗАЮТСЯ до скопированной. Оставить
+    # их как в проде значит оставить ссылки на версии, которых в стенде нет:
+    # `current_version` указывал бы в пустоту, и резолв версии по документу
+    # молча брал бы не то, что мы скопировали.
+    document["versions"] = [
+        entry for entry in (document.get("versions") or [])
+        if str((entry or {}).get("version_id")) == version_id
+    ] or [{"version_id": version_id, "version_no": 1}]
+    document["current_version"] = version_id
+    doc_dir.mkdir(parents=True, exist_ok=True)
+    (doc_dir / "document.json").write_text(
+        json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    (doc_dir / "current_version.txt").write_text(version_id, encoding="utf-8")
+
+    info = _read_json(version_dir / "01_input" / "project_info.json")
+    section = str(
+        info.get("section") or document.get("discipline") or discipline_folder
+    ).strip()
+    return fx.ProjectFixture(
+        v2_root=target_v2_root,
+        doc_dir=doc_dir,
+        version_dir=version_dir,
+        document_code=document_code,
+        external_id=str(info.get("external_id") or document_code),
+        object_id=str(_read_json(object_dir / "object.json").get("object_id") or ""),
+        object_folder=object_folder,
+        discipline=discipline_folder,
+        version_id=version_id,
+        section=section,
+    )
+
+
+def center_max_inferences() -> int:
+    """Верхняя граница обращений к модели, которую центр вправе заказать.
+
+    Берётся из кода центра, а не литералом: потолок машины обязан быть не ниже
+    неё, иначе автоматическая выписка разрешения отвергнет требование
+    («задание просит N, машина разрешает M») уже после сборки и выдачи пакета —
+    то есть на совершенно исправной цепочке.
+    """
+    from backend.app.services.distributed_workers.provider_requirement import (
+        CENTER_MAX_INFERENCES,
+    )
+
+    return int(CENTER_MAX_INFERENCES)
+
+
+def tree_hash(root: Path) -> str:
+    """SHA-256 ВСЕГО дерева каталога: имена + содержимое.
+
+    Шире, чем `fixture.source_tree_hash` (тот покрывает только `01_input`,
+    `02_work` и `version.json`) — и это здесь принципиально: доказывать надо,
+    что прогон не тронул продовый документ ВООБЩЕ, включая `03_analysis` и
+    `05_export`, куда пишет импорт результата.
+    """
+    import hashlib
+
+    root = Path(root)
+    digest = hashlib.sha256()
+    for path in sorted(root.rglob("*")):
+        if not path.is_file():
+            continue
+        digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        digest.update(b"\0")
+    return "sha256:" + digest.hexdigest()
+
+
+def production_source_hash(real_document: str) -> str:
+    """Хэш продового дерева версии. Пустая строка — продовый документ не взят."""
+    if not real_document:
+        return ""
+    return tree_hash(Path(real_document))
 
 
 def prepare_central_assets(stand: Stand) -> dict:
@@ -495,6 +761,13 @@ def prepare_central_assets(stand: Stand) -> dict:
 # ─── конфигурация воркера ────────────────────────────────────────────────────
 
 
+#: Как настроен провайдерский контур воркера. `fake` — прежнее поведение
+#: (подделки CLI, `provider_mode="fake"` у центра); `bridge` — боевая цепочка
+#: 11G, в которой подделан только сам бинарь либо не подделан вовсе.
+PROVIDER_ENV_FAKE = "fake"
+PROVIDER_ENV_BRIDGE = "bridge"
+
+
 def worker_env_file(
     *,
     root: str,
@@ -503,6 +776,11 @@ def worker_env_file(
     display_name: str,
     heartbeat_sec: int = 10,
     poll_wait_sec: int = 10,
+    provider_mode: str = PROVIDER_ENV_FAKE,
+    claude_executable: str = "",
+    max_inferences: int = 0,
+    grant_ttl_sec: int = 6 * 3600,
+    stub_call_log: str = "",
 ) -> str:
     """Содержимое config/worker.env. Секретов здесь нет по построению.
 
@@ -514,45 +792,186 @@ def worker_env_file(
     дочернего процесса с нуля и наследует из хоста ровно четыре переменные
     (PATH, LANG, LC_ALL, TZ). Пути проектов кириллические — без явной локали
     конвейер спотыкается на них уже внутри.
+
+    `provider_mode`:
+
+    * `fake` — байт-в-байт прежнее содержимое. Режимы `test` и `audit-fake`
+      обязаны получить ТОТ ЖЕ файл, что и до появления моста: иначе «ничего,
+      кроме бинаря, не изменилось» перестаёт быть проверяемым утверждением;
+    * `bridge` — настоящие модели разрешены, мост конвейера включён,
+      разрешения выписывает рантайм. Каталога подделок здесь нет (см. ниже).
     """
-    return "\n".join(
-        [
-            "# audit-worker — окружение пилота реального VPS.",
-            "# Генерируется скриптом; секретов не содержит.",
+    lines = [
+        "# audit-worker — окружение пилота реального VPS.",
+        "# Генерируется скриптом; секретов не содержит.",
+        "",
+        "# Пакет `audit_worker` живёт ВНУТРИ релиза, а не в venv: иначе",
+        "# откат стал бы переустановкой пакета вместо переключения симлинка.",
+        "# Значит `python -m audit_worker` обязан находить его через",
+        "# PYTHONPATH, а не через текущий каталог — юнит стартует не оттуда.",
+        "# Дочернему процессу конвейера это не мешает: `audit_runner.build_env`",
+        "# строит его окружение с нуля и PYTHONPATH задаёт сам.",
+        f"PYTHONPATH={root}/current",
+        "",
+        f"AUDIT_WORKER_ROOT={root}/data",
+        f"AUDIT_WORKER_DISPATCHER_URL={central_url}",
+        f"AUDIT_WORKER_NAME={display_name}",
+        f"AUDIT_WORKER_PIPELINE_ROOT={root}/current",
+        f"AUDIT_WORKER_PIPELINE_REVISION={revision}",
+        f"AUDIT_WORKER_PIPELINE_PYTHON={root}/venv/bin/python",
+        "AUDIT_WORKER_AUDIT_PIPELINE_ENABLED=true",
+    ]
+    if provider_mode == PROVIDER_ENV_BRIDGE:
+        lines += [
+            "# ── Мост провайдера (этап 11G) ────────────────────────────────",
+            "# Цепочка боевая целиком: требование центра → объявленная",
+            "# способность → локальная политика моделей → привязка → разрешение.",
+            "AUDIT_WORKER_ALLOW_REAL_LLM=true",
+            "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED=true",
+            "# Разрешение выписывает РАНТАЙМ по заданию центра, а не оператор",
+            "# руками: подпись владельца машины переехала на две настройки ниже",
+            "# (сам факт включения и потолок), и это ровно то, что 11G проверяет.",
+            "AUDIT_WORKER_PIPELINE_PROVIDER_AUTO_GRANT_ENABLED=true",
+            f"AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES={int(max_inferences)}",
+            f"AUDIT_WORKER_PIPELINE_PROVIDER_GRANT_TTL_SEC={int(grant_ttl_sec)}",
             "",
-            "# Пакет `audit_worker` живёт ВНУТРИ релиза, а не в venv: иначе",
-            "# откат стал бы переустановкой пакета вместо переключения симлинка.",
-            "# Значит `python -m audit_worker` обязан находить его через",
-            "# PYTHONPATH, а не через текущий каталог — юнит стартует не оттуда.",
-            "# Дочернему процессу конвейера это не мешает: `audit_runner.build_env`",
-            "# строит его окружение с нуля и PYTHONPATH задаёт сам.",
-            f"PYTHONPATH={root}/current",
-            "",
-            f"AUDIT_WORKER_ROOT={root}/data",
-            f"AUDIT_WORKER_DISPATCHER_URL={central_url}",
-            f"AUDIT_WORKER_NAME={display_name}",
-            f"AUDIT_WORKER_PIPELINE_ROOT={root}/current",
-            f"AUDIT_WORKER_PIPELINE_REVISION={revision}",
-            f"AUDIT_WORKER_PIPELINE_PYTHON={root}/venv/bin/python",
-            "AUDIT_WORKER_AUDIT_PIPELINE_ENABLED=true",
+            "# КАТАЛОГА ПОДДЕЛОК ЗДЕСЬ НЕТ, и это не забывчивость.",
+            "# `remote_audit_runner.bind_providers` отвергает запуск, если",
+            "# привязка провайдера пришла вместе с provider_mode=fake («в режиме",
+            "# подделок мост к настоящему CLI недопустим»), а",
+            "# `apply_runtime_snapshot` ПОНИЖАЕТ spec до fake, стоит снимку",
+            "# центра сказать fake. Оставленный каталог подделок — это шаг до",
+            "# падения попытки уже ПОСЛЕ сборки и выдачи пакета, причём",
+            "# `enforce_fake_providers` к тому моменту успел бы перенаправить",
+            "# CLAUDE_CLI_BIN на подделку.",
+            "AUDIT_WORKER_PROVIDER_CLAUDE_AUTH_MODE=ambient_user",
+            "# Codex объявлен НЕДОСТУПНЫМ явно. Умолчание",
+            "# (isolated_provider_home) означало бы «учётные данные где-то есть,",
+            "# просто мы их не нашли», и адаптер честно рапортовал бы сломанный",
+            "# провайдер вместо отсутствующего.",
+            "AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE=unavailable",
+        ]
+        if claude_executable:
+            lines += [
+                "# Путь к бинарю задаёт АДМИНИСТРАТОР машины (I-P5): ни центр,",
+                "# ни задание сюда дотянуться не могут. В режиме audit-provider",
+                "# здесь стоит заглушка; в audit-real строки нет вовсе, и",
+                "# адаптер берёт путь официального установщика сам.",
+                f"AUDIT_WORKER_PROVIDER_CLAUDE_EXECUTABLE={claude_executable}",
+            ]
+        if stub_call_log:
+            lines += [
+                "# Журнал вызовов заглушки. ДО САМОЙ ЗАГЛУШКИ ЭТА СТРОКА НЕ",
+                "# ДОХОДИТ: `providers/base.build_env` собирает окружение",
+                "# подпроцесса CLI с нуля и наследует только ENV_PASSTHROUGH",
+                "# (LANG/LC_ALL/TZ/SSL_*/LD_LIBRARY_PATH). Значение доставляет",
+                "# обёртка администратора рядом с заглушкой; здесь оно записано,",
+                "# чтобы путь был виден в одном месте с остальной настройкой.",
+                f"AUDIT_PROVIDER_STUB_CALL_LOG={stub_call_log}",
+            ]
+    else:
+        lines += [
             "# Реальные модели запрещены на всём этапе. Снять эту строку мало:",
             "# исполнитель дополнительно требует каталог подделок с маркером.",
             "AUDIT_WORKER_ALLOW_REAL_LLM=false",
             f"AUDIT_WORKER_FAKE_PROVIDER_DIR={root}/fake_providers",
             f"AUDIT_WORKER_PROVIDER_DIR={root}/fake_providers",
             f"AUDIT_WORKER_FAKE_CALL_LOG={root}/logs/fake_provider_calls.jsonl",
-            "AUDIT_WORKER_MAX_SLOTS=1",
-            "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS=1",
-            f"AUDIT_WORKER_HEARTBEAT_SEC={heartbeat_sec}",
-            f"AUDIT_WORKER_POLL_WAIT_SEC={poll_wait_sec}",
-            "AUDIT_WORKER_RETENTION_ENABLED=true",
-            "AUDIT_WORKER_RETENTION_DELETE_ENABLED=false",
-            "LANG=C.UTF-8",
-            "LC_ALL=C.UTF-8",
-            "PYTHONUNBUFFERED=1",
-            "",
         ]
-    )
+    lines += [
+        "AUDIT_WORKER_MAX_SLOTS=1",
+        "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS=1",
+        f"AUDIT_WORKER_HEARTBEAT_SEC={heartbeat_sec}",
+        f"AUDIT_WORKER_POLL_WAIT_SEC={poll_wait_sec}",
+        "AUDIT_WORKER_RETENTION_ENABLED=true",
+        "AUDIT_WORKER_RETENTION_DELETE_ENABLED=false",
+        "LANG=C.UTF-8",
+        "LC_ALL=C.UTF-8",
+        "PYTHONUNBUFFERED=1",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def worker_provider_paths(root: str) -> dict[str, str]:
+    """Пути провайдерского контура НА ВОРКЕРЕ — одной функцией на все фазы.
+
+    Раскладывает файлы `phase_configure_worker`, а читает их `phase_audit_
+    provider`. Разъехавшиеся «куда положили» и «где ищем» дали бы зелёную
+    проверку по пустому месту: `_first_json_object` на отсутствующем файле
+    возвращает `{}`, и «в политике модель claude-opus-5» превратилось бы в
+    «в пустоте её тоже нет — значит совпало».
+
+    Имена файлов берутся ИЗ КОДА воркера, а не переписываются литералами: имя
+    файла разрешения — контракт `inference_grant`, и разъехаться с ним молча
+    оно не должно.
+    """
+    from audit_worker.providers import inference_grant, model_policy
+    from backend.app.pipeline.execution import provider_bridge_stub
+
+    data_root = f"{root}/data"
+    stub_dir = f"{root}/provider_stub"
+    return {
+        "data_root": data_root,
+        "stub_dir": stub_dir,
+        "stub_binary": f"{stub_dir}/{provider_bridge_stub.STUB_NAME}",
+        # Обёртка НЕ называется `claude`: рядом лежит сама заглушка с этим
+        # именем, и совпадение имён означало бы, что один файл затирает другой.
+        "stub_wrapper": f"{stub_dir}/claude-with-call-log",
+        "stub_call_log": f"{root}/logs/provider_stub_calls.jsonl",
+        "policy": f"{data_root}/{model_policy.POLICY_FILENAME}",
+        "grant": f"{data_root}/config/{inference_grant.GRANT_FILENAME}",
+    }
+
+
+#: Установка локальной политики моделей и (для `audit-provider`) заглушки CLI
+#: НА ВОРКЕРЕ.
+#:
+#: Программа исполняется python'ом релиза и импортирует `provider_bridge_stub`
+#: из того же дерева `current`, что и конвейер. Альтернатива — прочитать файл
+#: заглушки на центре и передать байты через heredoc — отвергнута: она
+#: доказывала бы, что мы положили на воркер СВОЮ копию, тогда как исполнять он
+#: будет код своего релиза, и расхождение версий осталось бы незамеченным.
+#: Тем же способом в этом файле уже материализуются `fake_providers`.
+#:
+#: Обычная строка, а не f-string: тело состоит из словарей, и удвоение каждой
+#: фигурной скобки сделало бы его нечитаемым (см. `_OUTBOX_PROBE`).
+_PROVIDER_SETUP_PROBE = '''
+import json
+import os
+from pathlib import Path
+
+from audit_worker.providers import model_policy
+from backend.app.pipeline.execution import provider_bridge_stub as stub
+
+model = os.environ["PROVIDER_MODEL"]
+policy_path = Path(os.environ["POLICY_PATH"])
+policy = {
+    "policy_version": model_policy.POLICY_SCHEMA_VERSION,
+    "claude": {
+        "auth_mode": "ambient_user",
+        "capabilities": {model_policy.CAPABILITY_STRONG_AUDIT: {"model": model}},
+    },
+}
+policy_path.parent.mkdir(parents=True, exist_ok=True)
+policy_path.write_text(
+    json.dumps(policy, ensure_ascii=False, indent=2), encoding="utf-8"
+)
+# Читаем ОБРАТНО и разбираем тем же кодом, что и воркер: «файл записан» и
+# «политика читается» — разные утверждения, а heartbeat подавляет ошибку
+# разбора и просто не объявляет способностей.
+parsed = model_policy.parse_policy(
+    json.loads(policy_path.read_text(encoding="utf-8")), source_path=policy_path
+)
+resolved = parsed.resolve("claude", model_policy.CAPABILITY_STRONG_AUDIT)
+print("POLICY_OK model=%s mode=%o" % (resolved.model, policy_path.stat().st_mode & 0o777))
+
+if os.environ.get("USE_STUB") == "1":
+    binary = stub.materialize(Path(os.environ["STUB_DIR"]))
+    if not stub.looks_like_stub(binary):
+        raise SystemExit("каталог заглушки без маркера PROVIDER_STUB.json")
+    print("STUB_OK path=%s mode=%o" % (binary, binary.stat().st_mode & 0o777))
+'''
 
 
 def systemd_unit(*, kind: str, root: str) -> str:
@@ -636,7 +1055,9 @@ def phase_preflight_central(stand: Stand, *, revision: str) -> dict:
     return info
 
 
-def phase_preflight_worker(worker: Worker, *, revision: str) -> dict:
+def phase_preflight_worker(
+    worker: Worker, *, revision: str, require_real_cli: bool = False
+) -> dict:
     print("\n── Преflight воркера (только чтение) ────────────────────────────")
     result = worker.read(
         f"""set +e
@@ -647,12 +1068,12 @@ echo "PY=$($root/venv/bin/python -V 2>&1 | awk '{{print $2}}')"
 echo "NPROC=$(nproc)"
 echo "RAM_MB=$(free -m | awk '/Mem:|Память:/{{print $2}}' | head -1)"
 echo "SWAP_MB=$(free -m | awk '/Swap:|Подкачка:/{{print $2}}' | head -1)"
-echo "DISK_FREE_MB=$(df -Pm "$root" 2>/dev/null | awk 'NR==2{{print $4}}')"
+echo "DISK_FREE_MB=$(d="$root"; while [ ! -d "$d" ] && [ "$d" != "/" ]; do d=$(dirname "$d"); done; LC_ALL=C df -Pm "$d" 2>/dev/null | awk 'NR==2{{print $4}}')"
 echo "RELEASE=$( [ -L "$root/current" ] && basename "$(readlink -f "$root/current")" || echo none )"
 echo "MANIFEST_REV=$(python3 -c "import json,sys;print(json.load(open('$root/current/MANIFEST.deploy.json'))['pipeline_revision'])" 2>/dev/null)"
 echo "MANIFEST_TREE=$(python3 -c "import json,sys;print(json.load(open('$root/current/MANIFEST.deploy.json'))['tree_hash'])" 2>/dev/null)"
-echo "CLAUDE=$(command -v claude || echo absent)"
-echo "CODEX=$(command -v codex || echo absent)"
+echo "CLAUDE=$( [ -x "$HOME/.local/bin/claude" ] && echo "$HOME/.local/bin/claude" || command -v claude || echo absent )"
+echo "CODEX=$( [ -x "$HOME/.local/bin/codex" ] && echo "$HOME/.local/bin/codex" || command -v codex || echo absent )"
 echo "TOKEN=$( [ -f "$root/data/token" ] && echo present || echo absent )"
 echo "TOKEN_MODE=$( [ -f "$root/data/token" ] && stat -c '%a' "$root/data/token" || echo - )"
 echo "FAKEDIR=$( [ -f "$root/fake_providers/PROVIDERS.json" ] && echo present || echo absent )"
@@ -672,10 +1093,35 @@ echo "LISTEN=$(ss -tlnH 2>/dev/null | awk '$4 !~ /127\\.0\\.0\\.1|\\[::1\\]/ {{p
     check(info.get("manifest_rev") == revision,
           "pipeline_revision релиза совпадает с центром",
           f"воркер={info.get('manifest_rev')} центр={revision}")
-    check(info.get("claude") == "absent", "настоящий claude на воркере отсутствует",
-          info.get("claude", ""))
-    check(info.get("codex") == "absent", "настоящий codex на воркере отсутствует",
-          info.get("codex", ""))
+    # ПОЧЕМУ НЕ `command -v`. Прежняя проверка спрашивала PATH, а PATH
+    # неинтерактивного SSH не содержит `~/.local/bin` — и настоящий CLI,
+    # лежащий ровно там, куда его кладёт официальный установщик, рапортовался
+    # как «отсутствует». То есть утверждение «настоящих моделей на машине нет»
+    # держалось на том, что мы не туда смотрели: на .31 claude 2.1.220 стоит с
+    # 11F и всё это время был виден воркеру (адаптер берёт его по пути
+    # установщика, а не из PATH). Спрашиваем тот же путь, что и адаптер.
+    claude_present = info.get("claude", "absent") != "absent"
+    if require_real_cli:
+        check(claude_present, "настоящий claude на воркере установлен",
+              info.get("claude", ""))
+    else:
+        # ПОЧЕМУ ЭТО НЕ ПРОВЕРКА, А СПРАВКА. Раньше здесь стояло утверждение
+        # «настоящего CLI на машине нет», и оно проходило только потому, что
+        # `command -v` не видел `~/.local/bin`. Стоило посмотреть по верному
+        # пути — и выяснилось, что claude 2.1.220 стоит на .31 с этапа 11F.
+        #
+        # Само утверждение и было выбрано неудачно: наличие бинаря ничего не
+        # доказывает и ничему не мешает. «Модель не звали» доказывают журнал
+        # подделок (все вызовы ушли в них) и `provider_mode` в манифесте
+        # результата — и обе эти проверки в прогоне есть. Требовать вдобавок
+        # отсутствия бинаря значит запретить машине быть той же, на которой
+        # пойдёт боевой прогон.
+        print(f"    справка: настоящий claude на воркере — "
+              f"{info.get('claude', 'absent')} (в этом режиме не используется; "
+              f"доказательство — журнал подделок ниже)")
+    if info.get("codex", "absent") != "absent":
+        print(f"    справка: настоящий codex на воркере — {info.get('codex')} "
+              f"(этап 11G его не зовёт ни в одном режиме)")
     cpu = int(info.get("nproc", "0") or 0)
     disk = int(info.get("disk_free_mb", "0") or 0)
     check(cpu >= 2, "ядер хватает на слот (нужно ≥2)", f"{cpu}")
@@ -742,15 +1188,80 @@ curl -s -o /dev/null -w "PORTAL=%{{http_code}}\\n" --max-time 25 "$url/api/auth/
 
 
 def phase_configure_worker(
-    worker: Worker, *, central_url: str, revision: str, display_name: str
-) -> None:
+    worker: Worker, *, central_url: str, revision: str, display_name: str,
+    mode: str = MODE_TEST, provider_model: str = DEFAULT_PROVIDER_MODEL,
+    max_inferences: int = 0,
+) -> dict:
+    """Разложить worker.env, юниты и провайдерский контур выбранного режима.
+
+    Возвращает пути провайдерского контура: их же читает `phase_audit_provider`.
+    """
     print("\n── Конфигурация воркера ────────────────────────────────────────")
+    bridge = mode in BRIDGE_MODES
+    use_stub = mode == MODE_AUDIT_PROVIDER
+    paths = worker_provider_paths(worker.root)
     env_body = worker_env_file(
         root=worker.root, central_url=central_url, revision=revision,
         display_name=display_name,
+        provider_mode=PROVIDER_ENV_BRIDGE if bridge else PROVIDER_ENV_FAKE,
+        claude_executable=paths["stub_wrapper"] if use_stub else "",
+        max_inferences=max_inferences,
+        stub_call_log=paths["stub_call_log"] if use_stub else "",
     )
     agent_unit = systemd_unit(kind="agent", root=worker.root)
     executor_unit = systemd_unit(kind="executor", root=worker.root)
+
+    if bridge:
+        # Подделки НЕ материализуются: в режиме моста их наличие рядом с
+        # привязкой — это либо ошибка развёртывания, либо обход запрета
+        # (`bind_providers` отвергает такую пару). Вместо них ставится
+        # локальная политика моделей и, для audit-provider, заглушка CLI.
+        provider_setup = f"""export WORKER_INSTALL_ROOT="$root"
+export POLICY_PATH={shlex.quote(paths["policy"])}
+export STUB_DIR={shlex.quote(paths["stub_dir"])}
+export PROVIDER_MODEL={shlex.quote(provider_model)}
+export USE_STUB={"1" if use_stub else "0"}
+"$root/venv/bin/python" - <<'PROVIDER_SETUP_PY'
+{_PROVIDER_SETUP_PROBE}
+PROVIDER_SETUP_PY
+echo "FAKEDIR_IN_ENV=$(grep -c '^AUDIT_WORKER_FAKE_PROVIDER_DIR=' "$root/config/worker.env" || true)"
+echo "PROVIDERDIR_IN_ENV=$(grep -c '^AUDIT_WORKER_PROVIDER_DIR=' "$root/config/worker.env" || true)"
+echo "REAL_CLAUDE=$( [ -x "$HOME/.local/bin/claude" ] && echo "$HOME/.local/bin/claude" || echo absent )"
+"""
+        if use_stub:
+            # Обёртку пишет АДМИНИСТРАТОР машины — то есть этот скрипт в роли
+            # владельца VPS, а не центра. Она не делает ничего, кроме подстановки
+            # двух переменных заглушки, и существует ровно потому, что штатным
+            # путём они до подпроцесса CLI не доходят: `providers/base.build_env`
+            # собирает его окружение с нуля по закрытому списку ENV_PASSTHROUGH.
+            # Без обёртки `AUDIT_PROVIDER_STUB_CALL_LOG` пуст, `_log` заглушки
+            # молча ничего не пишет, и «ни один вызов не ушёл в сеть» осталось бы
+            # утверждением без журнала.
+            provider_setup += f"""cat > {shlex.quote(paths["stub_wrapper"])} <<'STUB_WRAPPER_EOF'
+#!/bin/sh
+# Обёртка администратора VPS над заглушкой CLI. Ничего, кроме двух переменных.
+AUDIT_PROVIDER_STUB_CALL_LOG={shlex.quote(paths["stub_call_log"])}
+AUDIT_PROVIDER_STUB_MODEL={shlex.quote(provider_model)}
+export AUDIT_PROVIDER_STUB_CALL_LOG AUDIT_PROVIDER_STUB_MODEL
+exec {shlex.quote(paths["stub_binary"])} "$@"
+STUB_WRAPPER_EOF
+chmod 700 {shlex.quote(paths["stub_wrapper"])}
+# Журнал заглушки обнуляется на КАЖДУЮ настройку стенда: он накопительный, и
+# записи прошлого прогона сделали бы сверку «вызовов заглушки = вызовов в
+# журнале попытки» заведомо неверной в большую сторону.
+rm -f {shlex.quote(paths["stub_call_log"])}
+echo "WRAPPER_MODE=$(stat -c '%a' {shlex.quote(paths["stub_wrapper"])})"
+"""
+    else:
+        provider_setup = """"$root/venv/bin/python" -c "
+from pathlib import Path
+from backend.app.pipeline.execution import fake_providers
+target = Path('$root/fake_providers')
+fake_providers.materialize(target)
+assert fake_providers.looks_like_fake_dir(target), 'каталог подделок не прошёл проверку'
+print('FAKE_PROVIDERS_OK', target)
+"
+"""
 
     result = worker.act(
         f"""set -euo pipefail
@@ -770,23 +1281,52 @@ cat > ~/.config/systemd/user/{EXECUTOR_UNIT} <<'EXECUTOR_EOF'
 EXECUTOR_EOF
 export PYTHONPATH="$root/current"
 export AUDIT_DISABLE_DOTENV=1
-"$root/venv/bin/python" -c "
-from pathlib import Path
-from backend.app.pipeline.execution import fake_providers
-target = Path('$root/fake_providers')
-fake_providers.materialize(target)
-assert fake_providers.looks_like_fake_dir(target), 'каталог подделок не прошёл проверку'
-print('FAKE_PROVIDERS_OK', target)
-"
+{provider_setup}
 echo "ENV_MODE=$(stat -c '%a' "$root/config/worker.env")"
 echo CONFIG_OK
 """
     )
     check("CONFIG_OK" in result.stdout, "worker.env и юниты установлены",
           result.stderr[-300:] if result.returncode else "")
-    check("FAKE_PROVIDERS_OK" in result.stdout, "каталог подделок создан и валиден")
+    if bridge:
+        check("POLICY_OK" in result.stdout,
+              "локальная политика моделей установлена и разбирается",
+              _grep_line(result.stdout, "POLICY_OK") or result.stderr[-300:])
+        check(f"model={provider_model}" in result.stdout,
+              "политика сопоставила strong_audit требуемой модели",
+              _grep_line(result.stdout, "POLICY_OK"))
+        # Отсутствие подделок проверяется по УСТАНОВЛЕННОМУ файлу, а не по
+        # намерению генератора: worker.env мог остаться от прошлого прогона в
+        # fake-режиме, и тогда попытка упала бы на bind_providers после сборки
+        # пакета — то есть дорого и в самом конце.
+        check("FAKEDIR_IN_ENV=0" in result.stdout and "PROVIDERDIR_IN_ENV=0" in result.stdout,
+              "в worker.env нет каталога подделок (иначе мост несовместим с fake)",
+              _grep_line(result.stdout, "FAKEDIR_IN_ENV"))
+        if use_stub:
+            check("STUB_OK" in result.stdout,
+                  "заглушка CLI разложена и прошла looks_like_stub",
+                  _grep_line(result.stdout, "STUB_OK") or result.stderr[-300:])
+            check("WRAPPER_MODE=700" in result.stdout,
+                  "обёртка заглушки исполняема и закрыта от посторонних (0700)",
+                  _grep_line(result.stdout, "WRAPPER_MODE"))
+        else:
+            real_cli = _grep_line(result.stdout, "REAL_CLAUDE=").partition("=")[2]
+            check(real_cli not in ("", "absent"),
+                  "настоящий claude на воркере лежит по пути установщика",
+                  real_cli or "нет данных")
+    else:
+        check("FAKE_PROVIDERS_OK" in result.stdout, "каталог подделок создан и валиден")
     check("ENV_MODE=600" in result.stdout, "worker.env доступен только владельцу (0600)",
           [l for l in result.stdout.splitlines() if l.startswith("ENV_MODE")][:1])
+    return paths
+
+
+def _grep_line(text: str, marker: str) -> str:
+    """Первая строка вывода, содержащая маркер. Пустая строка — не нашлось."""
+    for line in text.splitlines():
+        if marker in line:
+            return line.strip()
+    return ""
 
 
 def phase_reset_registration(worker: Worker) -> None:
@@ -1413,6 +1953,32 @@ find "$root/data/jobs" -path {shlex.quote(relative_glob)} -type f 2>/dev/null \\
     return out
 
 
+def worker_find(worker: Worker, relative_glob: str, *, limit: int = 400) -> list[str]:
+    """Пути файлов по маске внутри каталога заданий воркера.
+
+    Отдельно от `worker_collect_json`: журнал вызовов модели доказывается
+    ИМЕНАМИ файлов (`<ключ>.claim.json` без `<ключ>.result.json` — это исход
+    «неизвестен»), а не их содержимым, и читать их целиком незачем.
+    """
+    result = worker.read(
+        f"""set +e
+root={shlex.quote(worker.root)}
+find "$root/data/jobs" -path {shlex.quote(relative_glob)} -type f 2>/dev/null \\
+  | head -{int(limit)}
+""",
+        timeout=180,
+    )
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def worker_read_file(worker: Worker, path: str, *, timeout: int = 120) -> str:
+    """Содержимое одного файла воркера по АБСОЛЮТНОМУ пути. Только чтение."""
+    result = worker.read(
+        f"set +e\ncat {shlex.quote(str(path))} 2>/dev/null\n", timeout=timeout
+    )
+    return result.stdout
+
+
 def worker_collect_jsonl(worker: Worker, relative_glob: str) -> list[dict]:
     result = worker.read(
         f"""set +e
@@ -1549,17 +2115,51 @@ def run_local_baseline(
     return package_io.portable_version_dir(job_dir / "project"), profile.tree_hash
 
 
-def phase_audit_fake(
-    stand: Stand, operator: Operator, worker: Worker, *,
-    worker_id: str, revision: str, timeout: float = 2400,
-) -> dict:
-    """audit_pipeline_v1 на реальном VPS + центральный хвост + сравнение."""
-    print("\n── audit_pipeline_v1 (fake providers) через настоящую сеть ─────")
-    from tests.distributed_audit_e2e import fixture as fx
-    from backend.app.services.distributed_workers import semantic_projection as sp
+@dataclass
+class RemoteAuditRun:
+    """Итог ОБЩЕЙ части удалённого аудита — вход для проверок конкретного режима.
 
-    remote_fx = build_fixture(stand)
-    local_fx = fx.clone_fixture(remote_fx, stand.local_case / "v2")
+    Общее у `audit-fake` и `audit-provider` — всё, что не зависит от того, чем
+    отвечал последний метр: постановка задания, пакет центра, применённые на
+    воркере снимки и центральный хвост. Различаются они только уликами того,
+    КТО именно отвечал вместо модели, и ради этого различия копировать двести
+    строк одинаковых проверок незачем.
+    """
+
+    remote_fixture: Any
+    local_fixture: Any
+    source_hash_before: str
+    manifest: dict
+    row: dict
+    applied_profile: dict
+    applied_runtime: dict
+    result_manifest: dict
+    #: Идентификатор попытки ПО ДАННЫМ ЦЕНТРА. Им сужаются маски поиска улик на
+    #: воркере: каталог `jobs/` переживает прогоны (его не чистит ни
+    #: `phase_reset_registration`, ни retention в сухом режиме), и маска без
+    #: попытки взяла бы журнал вызовов ПРОШЛОГО аудита — то есть насчитала бы
+    #: обращения к модели, которых в этом прогоне не было.
+    attempt_id: str = ""
+
+
+def launch_remote_audit(
+    stand: Stand, operator: Operator, worker: Worker, *,
+    worker_id: str, timeout: float, real_document: str = "",
+    clone_local: bool = True,
+) -> Optional[RemoteAuditRun]:
+    """Поставить удалённый аудит и довести его до принятого центром результата.
+
+    Возвращает `None`, если задание не удалось даже поставить: продолжать
+    проверками режима после этого бессмысленно — они все читали бы пустоту.
+    """
+    from tests.distributed_audit_e2e import fixture as fx
+
+    remote_fx = build_fixture(stand, real_document=real_document)
+    # Клон нужен ровно одному потребителю — локальному эталону режима
+    # `audit-fake`. В режиме моста эталона нет (поддельный и заглушечный CLI
+    # отвечают РАЗНОЕ, и семантическое сравнение сравнивало бы не то), поэтому
+    # копия продового дерева в стенде не делается второй раз.
+    local_fx = fx.clone_fixture(remote_fx, stand.local_case / "v2") if clone_local else None
     source_hash_before = fx.source_tree_hash(remote_fx.version_dir)
     check(bool(source_hash_before), "исходное дерево версии посчитано",
           source_hash_before[:24] + "…")
@@ -1571,7 +2171,7 @@ def phase_audit_fake(
     )
     if not check(launch.status_code == 200, "оператор запустил удалённый аудит по HTTP",
                  f"HTTP {launch.status_code}: {launch.text[:400]}"):
-        return {"launched": False}
+        return None
     launched = launch.json()
     check(launched.get("norm_stage_location") == "center",
           "API прямо сообщает: нормативный этап остаётся на центре",
@@ -1604,11 +2204,17 @@ def phase_audit_fake(
     _wait_for(lambda: _package_manifest() is not None, timeout=600, interval=1.0)
     manifest = _package_manifest() or {}
     check(bool(manifest), "центр собрал исходный пакет проекта")
-    check(manifest.get("discipline_id") == DISCIPLINE_SECTION,
+    # Ожидаемая дисциплина берётся у ФИКСТУРЫ, а не из константы модуля: с
+    # `--real-document` документ приходит из корпуса и его раздел (КМ) с
+    # синтетическим (ВК) не совпадает. Сверять с константой значило бы падать
+    # на исправном прогоне.
+    section = remote_fx.section
+    check(manifest.get("discipline_id") == section,
           "манифест пакета несёт правильный discipline_id (не EOM)",
           str(manifest.get("discipline_id")))
     entries = [e.get("path", "") for e in manifest.get("files", [])]
-    check(all("/EOM/" not in p for p in entries), "профиля EOM в пакете НЕТ")
+    check(section == "EOM" or all("/EOM/" not in p for p in entries),
+          "профиля EOM в пакете НЕТ")
     check(str(manifest.get("runtime_snapshot_hash", "")).startswith("sha256:"),
           "манифест несёт хэш снимка runtime-конфигурации")
 
@@ -1621,10 +2227,10 @@ def phase_audit_fake(
     applied = (worker_collect_json(
         worker, "*/metadata/applied_discipline_profile.json") or [{}])[0]
     check(got, "воркер применил профиль дисциплины из пакета")
-    check(applied.get("discipline_id") == DISCIPLINE_SECTION,
+    check(applied.get("discipline_id") == section,
           "на воркере применён профиль ИМЕННО нужной дисциплины",
           str(applied.get("discipline_id")))
-    check(applied.get("loaded_code") == DISCIPLINE_SECTION,
+    check(applied.get("loaded_code") == section,
           "конвейер воркера ЗАГРУЗИЛ этот профиль, а не подставил EOM",
           str(applied.get("loaded_code")))
     check(applied.get("discipline_profile_hash") == manifest.get("discipline_profile_hash"),
@@ -1665,16 +2271,87 @@ def phase_audit_fake(
           "исходный пакет принадлежит именно этому логическому заданию",
           f"пакет={manifest.get('job_id')} задание={row.get('job_id')}")
 
+    attempt_id = attempt_id_of(operator, str(row.get("job_id") or ""))
+    # Маска сужается до попытки, но с откатом на прежнюю: если центр по какой-то
+    # причине не отдал список попыток, лучше прочитать манифест не той попытки и
+    # увидеть расхождение, чем не прочитать ничего и объявить его отсутствующим.
+    # Две формы пути — историческая раскладка пакета результата.
+    result_manifests: list[dict] = []
+    prefixes = ([f"*/{attempt_id}/"] if attempt_id else []) + ["*/"]
+    for prefix in prefixes:
+        for tail in ("result/result/", "result/"):
+            result_manifests = worker_collect_json(
+                worker, f"{prefix}{tail}audit_manifest.json"
+            )
+            if result_manifests:
+                break
+        if result_manifests:
+            break
+    return RemoteAuditRun(
+        remote_fixture=remote_fx,
+        local_fixture=local_fx,
+        source_hash_before=source_hash_before,
+        manifest=manifest,
+        row=row,
+        applied_profile=applied,
+        applied_runtime=applied_runtime,
+        result_manifest=result_manifests[0] if result_manifests else {},
+        attempt_id=attempt_id,
+    )
+
+
+def attempt_id_of(operator: Operator, job_id: str) -> str:
+    """Идентификатор попытки задания по данным ЦЕНТРА. Пусто — центр не ответил.
+
+    Берётся ПОСЛЕДНЯЯ попытка: у аудита их обычно одна, но повторная выдача
+    после сбоя создаёт вторую, и улики надо читать по свежей.
+    """
+    if not job_id:
+        return ""
+    response = operator.get(f"/api/workers/jobs/{job_id}/attempts")
+    if response.status_code >= 400:
+        return ""
+    rows = response.json().get("attempts") or []
+    return str((rows[-1] if rows else {}).get("attempt_id") or "")
+
+
+#: Центральные этапы, которых на воркере быть не должно. Импортируется из кода
+#: платформы, а не переписывается списком: расхождение сделало бы проверку
+#: границы «зелёной» ровно в тот момент, когда границу двигают.
+def central_only_stages() -> set[str]:
+    from backend.app.pipeline.remote_audit_runner import FORBIDDEN_STAGES
+
+    return set(FORBIDDEN_STAGES)
+
+
+def phase_audit_fake(
+    stand: Stand, operator: Operator, worker: Worker, *,
+    worker_id: str, revision: str, timeout: float = 2400,
+    real_document: str = "",
+) -> dict:
+    """audit_pipeline_v1 на реальном VPS + центральный хвост + сравнение."""
+    print("\n── audit_pipeline_v1 (fake providers) через настоящую сеть ─────")
+    from tests.distributed_audit_e2e import fixture as fx
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    run = launch_remote_audit(
+        stand, operator, worker, worker_id=worker_id, timeout=timeout,
+        real_document=real_document, clone_local=True,
+    )
+    if run is None:
+        return {"launched": False}
+    remote_fx, local_fx = run.remote_fixture, run.local_fixture
+    manifest, row = run.manifest, run.row
+    source_hash_before = run.source_hash_before
+    section = remote_fx.section
+
     # ── улики fake-режима, снятые С ВОРКЕРА ─────────────────────────────────
-    result_manifests = worker_collect_json(worker, "*/result/result/audit_manifest.json")
-    if not result_manifests:
-        result_manifests = worker_collect_json(worker, "*/result/audit_manifest.json")
-    result_manifest = result_manifests[0] if result_manifests else {}
+    result_manifest = run.result_manifest
     check(result_manifest.get("provider_mode") == "fake",
           "манифест результата воркера: provider_mode=fake",
           str(result_manifest.get("provider_mode")))
     forbidden = set(result_manifest.get("forbidden_stages_not_run") or [])
-    check(forbidden == {"norm_verify", "decision_carryover", "debt_control", "excel"},
+    check(forbidden == central_only_stages(),
           "центральные этапы на воркере не выполнялись",
           json.dumps(sorted(forbidden), ensure_ascii=False))
 
@@ -1694,7 +2371,7 @@ def phase_audit_fake(
     local_projection = sp.collect_projection(
         version_dir=local_dir,
         final_status=_final_status_of(local_dir),
-        discipline_id=DISCIPLINE_SECTION,
+        discipline_id=section,
         discipline_profile_hash=local_profile_hash,
         source_tree_hash=fx.source_tree_hash(local_dir),
         usage_report=_read_json(
@@ -1723,7 +2400,7 @@ def phase_audit_fake(
     )
 
     check(remote_projection["discipline_id"] == local_projection["discipline_id"]
-          == DISCIPLINE_SECTION,
+          == section,
           "дисциплина обеих сторон прочитана независимо и совпала",
           f"local={local_projection['discipline_id']!r} "
           f"remote={remote_projection['discipline_id']!r}")
@@ -1755,6 +2432,304 @@ def phase_audit_fake(
           "исходное дерево версии не изменилось за прогон")
     return {"launched": True, "row": row, "diff": diff, "scope": scope,
             "fake_calls": len(calls)}
+
+
+# ─── боевой мост провайдера ──────────────────────────────────────────────────
+
+#: Подстроки, по которым узнаётся ТОЧНЫЙ идентификатор модели.
+#:
+#: `claude` без дефиса сюда не входит намеренно: это ИМЯ ПРОВАЙДЕРА, оно обязано
+#: быть в `provider_requirement.provider`, и запрет на него превратил бы
+#: корректную нагрузку в нарушение. Идентификатор модели всегда несёт поколение
+#: через дефис (`claude-opus-5`, `gpt-5.4`), поэтому ищется именно `claude-`.
+#: `codex/` — форма записи модели в `stage_models.json`; имя провайдера пишется
+#: без слэша, так что и она в нагрузку попасть не может.
+#: Набор совпадает с `_MODEL_MARKERS` модульного теста 11G: одно утверждение —
+#: один список, иначе живой прогон и модульный тест проверяли бы разное.
+_MODEL_ID_MARKERS: tuple[str, ...] = ("opus", "sonnet", "gpt-", "claude-", "codex/")
+
+
+def find_model_identifiers(payload: Any) -> list[str]:
+    """Маркеры точной модели в нагрузке задания. Пустой список — их нет."""
+    text = json.dumps(payload, ensure_ascii=False, default=str).lower()
+    return [marker for marker in _MODEL_ID_MARKERS if marker in text]
+
+
+def harness_issues_grants() -> list[str]:
+    """Не выписывает ли разрешения САМ этот скрипт (структурная проверка).
+
+    Смысл всей фазы в том, что разрешение выписал рантайм воркера по заданию
+    центра. Положи его сюда харнес — все остальные проверки прошли бы ровно так
+    же и не доказывали бы ничего.
+
+    Иглы имеют форму ВЫЗОВА (с открывающей скобкой) и собираются из кусков.
+    И то и другое вынужденно: без скобки под совпадение попадает любое
+    упоминание в комментарии, а записанная целиком игла — это литерал в этом же
+    файле, то есть вечное совпадение с самой собой. Имя файла разрешения здесь
+    тоже не пишется литералом: оно берётся константой у `inference_grant`
+    (см. `worker_provider_paths`).
+    """
+    source = Path(__file__).read_text(encoding="utf-8")
+    needles = ("inference_grant" + ".issue", "issue_for" + "_job(")
+    return [needle for needle in needles if needle in source]
+
+
+def ledger_counts(worker: Worker, *, attempt_id: str = "") -> dict[str, Any]:
+    """Свод журнала вызовов модели ПОПЫТКИ — по ИМЕНАМ файлов журнала.
+
+    Читается так же, как это делает `InferenceLedger.summary()`: ключ с
+    `.result.json` — вызов завершён, ключ с `.claim.json` без результата —
+    исход НЕИЗВЕСТЕН (I-P9 запрещает такой вызов повторять). Читать содержимое
+    незачем и нельзя: в результатах лежат ответы модели, а они на центр не
+    уезжают.
+    """
+    started: set[str] = set()
+    completed: set[str] = set()
+    indeterminate: set[str] = set()
+    prefix = f"*/{attempt_id}/" if attempt_id else "*/"
+    for path in worker_find(worker, f"{prefix}inference/*.json"):
+        name = Path(path).name
+        key, _, suffix = name.partition(".")
+        if not key:
+            continue
+        if suffix.startswith("result"):
+            started.add(key)
+            completed.add(key)
+        elif suffix.startswith("claim"):
+            started.add(key)
+        elif suffix.startswith("indeterminate"):
+            started.add(key)
+            indeterminate.add(key)
+    return {
+        "calls_started": len(started),
+        "calls_completed": len(completed),
+        "indeterminate": sorted(indeterminate | (started - completed)),
+    }
+
+
+def phase_audit_provider(
+    stand: Stand, operator: Operator, worker: Worker, *,
+    worker_id: str, mode: str, paths: dict[str, str],
+    provider_model: str = DEFAULT_PROVIDER_MODEL,
+    real_document: str = "", timeout: float = 4800,
+) -> dict:
+    """audit_pipeline_v1 через БОЕВОЙ мост провайдера.
+
+    Что здесь проверяется сверх `audit-fake` — и почему `audit-fake` этого не
+    проверяет в принципе. В fake-режиме воркер объявляет `provider_mode="fake"`,
+    центр НЕ формирует требования к провайдеру, привязка не выписывается, а
+    конвейер уходит к подделкам. То есть вся цепочка этапа 11G в нём выключена,
+    и её исправность прогон `audit-fake` не подтверждает ни одной проверкой.
+
+    Здесь цепочка работает целиком:
+
+        требование центра (провайдер + СПОСОБНОСТЬ, без имени модели)
+          → объявленная воркером способность
+          → локальная политика моделей воркера (способность → точная модель)
+          → привязка провайдера на попытку
+          → разрешение, выписанное РАНТАЙМОМ по заданию
+          → журнал вызовов (I-P9)
+          → argv CLI с `--model`
+
+    Подделан ровно последний метр: в режиме `audit-provider` — сам бинарь
+    (`provider_bridge_stub`), в `audit-real` — ничего.
+    """
+    title = "заглушка CLI" if mode == MODE_AUDIT_PROVIDER else "НАСТОЯЩИЙ claude"
+    print(f"\n── audit_pipeline_v1 через мост провайдера ({title}) ───────────")
+    from tests.distributed_audit_e2e import fixture as fx
+    from backend.app.pipeline.execution import provider_bridge_stub
+    from backend.app.services.distributed_workers import semantic_projection as sp
+
+    out: dict[str, Any] = {"mode": mode}
+    run = launch_remote_audit(
+        stand, operator, worker, worker_id=worker_id, timeout=timeout,
+        real_document=real_document, clone_local=False,
+    )
+    if run is None:
+        return {"launched": False, **out}
+    remote_fx, row = run.remote_fixture, run.row
+    job_id = str(row.get("job_id") or "")
+    attempt_id = run.attempt_id
+    out["launched"] = True
+    out["row"] = row
+    out["attempt_id"] = attempt_id
+    # Без идентификатора попытки все улики ниже читались бы маской «любая
+    # попытка любого задания» — а `jobs/` на воркере переживает прогоны, и
+    # первым нашёлся бы журнал прошлого аудита.
+    check(bool(attempt_id), "центр назвал попытку этого задания",
+          f"job={job_id} attempt={attempt_id or 'нет'}")
+    prefix = f"*/{attempt_id}/" if attempt_id else "*/"
+
+    # ── (a) требование, которое центр ПОЛОЖИЛ в задание ─────────────────────
+    payload = _job_payload(row)
+    requirement = payload.get("provider_requirement") or {}
+    check(bool(requirement),
+          "в нагрузке задания есть provider_requirement",
+          json.dumps(requirement, ensure_ascii=False)[:200] or "поля нет")
+    check(str(requirement.get("provider")) == "claude"
+          and str(requirement.get("capability")) == "strong_audit",
+          "центр потребовал провайдера claude и способность strong_audit",
+          f"provider={requirement.get('provider')!r} "
+          f"capability={requirement.get('capability')!r}")
+    check(int(requirement.get("max_inferences") or 0) > 0,
+          "требование несёт положительный потолок обращений к модели",
+          str(requirement.get("max_inferences")))
+    out["requirement"] = requirement
+
+    # ── (b) точной модели в задании НЕТ ─────────────────────────────────────
+    leaked = find_model_identifiers(payload)
+    check(not leaked,
+          "имени модели в нагрузке задания нет ни в каком виде (I-P5)",
+          "найдено: " + ", ".join(leaked) if leaked else
+          "провайдер назван, модель — нет")
+
+    # ── (c) привязка, выписанная ВОРКЕРОМ ───────────────────────────────────
+    bindings = worker_collect_json(worker, f"{prefix}metadata/provider_binding.json")
+    binding = bindings[0] if bindings else {}
+    check(bool(binding), "воркер выписал привязку провайдера на попытку",
+          f"{len(bindings)} файл(ов)")
+    check(str(binding.get("job_id")) == job_id
+          and str(binding.get("attempt_id")) == attempt_id,
+          "привязка относится ИМЕННО к этому заданию и этой попытке",
+          f"job={binding.get('job_id')!r} attempt={binding.get('attempt_id')!r}")
+    check(str(binding.get("provider")) == "claude"
+          and str(binding.get("capability")) == "strong_audit",
+          "привязка относится к тому же провайдеру и той же способности",
+          f"provider={binding.get('provider')!r} "
+          f"capability={binding.get('capability')!r}")
+    policy = _first_json_object(worker_read_file(worker, paths["policy"]))
+    policy_model = str(
+        (((policy.get("claude") or {}).get("capabilities") or {})
+         .get("strong_audit") or {}).get("model") or ""
+    )
+    # Сверка идёт с ФАЙЛОМ ПОЛИТИКИ, а не с литералом в этом скрипте: литерал
+    # совпал бы и в мире, где модель на самом деле выбрал CLI по умолчанию, —
+    # то есть ровно в том мире, ради устранения которого политика написана.
+    check(bool(policy_model) and str(binding.get("model")) == policy_model,
+          "модель привязки взята из ЛОКАЛЬНОЙ политики воркера",
+          f"привязка={binding.get('model')!r} политика={policy_model!r}")
+    check(policy_model == provider_model,
+          "политика воркера описывает ту модель, которую задал администратор",
+          f"{policy_model!r} vs {provider_model!r}")
+    out["binding"] = binding
+
+    # ── (d) разрешение выписал РАНТАЙМ, а не оператор ───────────────────────
+    grants = _first_json_object(worker_read_file(worker, paths["grant"]))
+    records = [
+        record for record in (grants.get("grants") or [])
+        if str(record.get("task_id")) == job_id
+    ]
+    check(bool(records), "в файле разрешений есть запись под это задание",
+          f"задание {job_id}, записей всего {len(grants.get('grants') or [])}")
+    auto = [r for r in records if str(r.get("grant_id", "")).startswith("auto-")]
+    check(len(auto) == len(records) and bool(auto),
+          "все разрешения под это задание выписаны автоматом (auto-*)",
+          ", ".join(str(r.get("grant_id")) for r in records) or "нет")
+    note = " ".join(str(r.get("note") or "") for r in auto)
+    check(job_id in note and "strong_audit" in note,
+          "заметка разрешения называет задание и способность",
+          note[:160] or "заметка пуста")
+    check(any(str(r.get("grant_id")) == f"auto-{attempt_id}" for r in auto),
+          "идентификатор разрешения детерминирован по ПОПЫТКЕ",
+          f"ожидали auto-{attempt_id}")
+    out["grants"] = auto
+
+    # ── (e) харнес разрешений не выписывает ─────────────────────────────────
+    self_issued = harness_issues_grants()
+    check(not self_issued,
+          "сам прогон разрешений не выписывает (проверка по исходнику)",
+          ", ".join(self_issued) or "вызовов выписки в скрипте нет")
+
+    # ── (f) журнал вызовов модели ───────────────────────────────────────────
+    ledger = ledger_counts(worker, attempt_id=attempt_id)
+    out["ledger"] = ledger
+    check(ledger["calls_completed"] > 0,
+          "модель звали: журнал попытки непуст",
+          f"начато {ledger['calls_started']}, завершено {ledger['calls_completed']}")
+    check(ledger["calls_started"] == ledger["calls_completed"]
+          and not ledger["indeterminate"],
+          "все начатые вызовы завершены, неизвестных исходов нет (I-P9)",
+          f"{ledger['calls_started']} → {ledger['calls_completed']}, "
+          f"неизвестных {len(ledger['indeterminate'])}")
+    check(ledger["calls_completed"] <= int(requirement.get("max_inferences") or 0),
+          "число вызовов не вышло за потолок требования",
+          f"{ledger['calls_completed']} ≤ {requirement.get('max_inferences')}")
+
+    # ── (g) каждый вызов ушёл В ЗАГЛУШКУ, а не в сеть ───────────────────────
+    if mode == MODE_AUDIT_PROVIDER:
+        log_path = stand.evidence / "provider_stub_calls.jsonl"
+        log_path.write_text(
+            worker_read_file(worker, paths["stub_call_log"]), encoding="utf-8"
+        )
+        stub_calls = provider_bridge_stub.read_call_log(log_path)
+        inferences = [c for c in stub_calls if c.get("kind") == "inference"]
+        out["stub_calls"] = {"total": len(stub_calls), "inference": len(inferences)}
+        check(bool(stub_calls), "журнал заглушки на воркере непуст",
+              f"{len(stub_calls)} запис(ь/и)")
+        # Равенство, а не «≥»: заглушка отвечает на каждый вызов, который
+        # выпустил мост, и ни на один сверх того. Расхождение в любую сторону
+        # означает вызов, прошедший мимо журнала попытки либо мимо заглушки, —
+        # то есть мимо доказательства «в сеть не ходили».
+        check(len(inferences) == ledger["calls_completed"],
+              "обращений к заглушке ровно столько же, сколько вызовов в журнале",
+              f"заглушка {len(inferences)}, журнал {ledger['calls_completed']}")
+
+    # ── (h) результат, граница и подсказка продолжения ──────────────────────
+    result_manifest = run.result_manifest
+    check(str(result_manifest.get("provider_mode")) == "real",
+          "манифест результата воркера: provider_mode=real",
+          str(result_manifest.get("provider_mode")))
+    bridge_evidence = result_manifest.get("provider_bridge") or {}
+    check(str(bridge_evidence.get("capability")) == "strong_audit",
+          "манифест результата несёт публичный вид привязки",
+          json.dumps(bridge_evidence, ensure_ascii=False)[:160] or "поля нет")
+    central = central_only_stages()
+    forbidden = set(result_manifest.get("forbidden_stages_not_run") or [])
+    check(forbidden == central, "центральные этапы на воркере не выполнялись",
+          json.dumps(sorted(forbidden), ensure_ascii=False))
+    violations = sorted(central & set(result_manifest.get("completed_stages") or []))
+    check(not violations, "нарушений границы «воркер/центр» нет",
+          ", ".join(violations) or "0")
+    resume_hint = str(result_manifest.get("resume_hint") or "")
+    check(resume_hint in central,
+          "следующий по детектору этап — ЦЕНТРАЛЬНЫЙ (норм-верификация)",
+          f"resume_hint={resume_hint!r}")
+    check(resume_hint in forbidden,
+          "и он на воркере действительно не выполнялся", resume_hint or "нет")
+
+    # ── содержательность результата ─────────────────────────────────────────
+    # Локального эталона здесь нет намеренно: он гоняется на подделках, а
+    # удалённая сторона — на заглушке либо на настоящей модели. Ответы у них
+    # РАЗНЫЕ по построению, и семантическое сравнение показывало бы расхождение
+    # там, где расхождение и задумано. Проверяется полнота результата как
+    # такового.
+    projection = sp.collect_projection(
+        version_dir=remote_fx.version_dir,
+        final_status=_final_status_of(remote_fx.version_dir),
+        discipline_id=payload.get("discipline_id"),
+        discipline_profile_hash=payload.get("discipline_profile_hash"),
+        source_tree_hash=fx.source_tree_hash(remote_fx.version_dir),
+    )
+    (stand.evidence / "provider_projection.json").write_text(
+        json.dumps(projection, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    check(not projection["missing_artifacts"],
+          "удалённый результат содержит ВСЕ обязательные артефакты",
+          "нет: " + ", ".join(projection["missing_artifacts"]))
+    check(projection["excel"].get("present"),
+          "финальный Excel создан ЦЕНТРОМ после приёма результата")
+    scope = (
+        f"замечаний {projection['findings_count']}, "
+        f"этапов {len(projection.get('stage_completion') or {})}"
+    )
+    check(projection["findings_count"] > 0
+          and len(projection.get("stage_completion") or {}) >= 5,
+          "результат содержателен, а не пуст", scope)
+    out["scope"] = scope
+
+    check(fx.source_tree_hash(remote_fx.version_dir) == run.source_hash_before,
+          "исходное дерево версии не изменилось за прогон")
+    return out
 
 
 def phase_retention(worker: Worker) -> dict:
@@ -2057,7 +3032,42 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--central-port", type=int, default=0)
     parser.add_argument("--tunnel", choices=("none", "cloudflared"), default="none")
     parser.add_argument("--tunnel-binary", default="cloudflared")
-    parser.add_argument("--mode", choices=("test", "audit-fake"), default="test")
+    parser.add_argument(
+        "--mode",
+        choices=(MODE_TEST, MODE_AUDIT_FAKE, MODE_AUDIT_PROVIDER, MODE_AUDIT_REAL),
+        default=MODE_TEST,
+        help=("test — только транспорт; audit-fake — аудит на подделках (мост "
+              "провайдера ВЫКЛЮЧЕН центром); audit-provider — боевой мост, "
+              "бинарь claude подменён заглушкой (0 обращений к модели); "
+              "audit-real — то же настоящим claude воркера"),
+    )
+    parser.add_argument(
+        "--i-confirm-real-inference", action="store_true",
+        help=("обязателен для --mode audit-real: настоящие обращения к модели "
+              "и расход подписки по умолчанию не выполняются"),
+    )
+    parser.add_argument(
+        "--real-document", nargs="?", const=DEFAULT_REAL_DOCUMENT, default="",
+        metavar="VERSION_DIR",
+        help=("аудировать ПРОДОВЫЙ документ вместо синтетической фикстуры. Без "
+              f"значения берётся {DEFAULT_REAL_DOCUMENT}. Дерево версии "
+              "копируется в стенд; продовое не изменяется (проверяется хэшем)"),
+    )
+    parser.add_argument(
+        "--provider-model", default=DEFAULT_PROVIDER_MODEL,
+        help=("точная модель для способности strong_audit в ЛОКАЛЬНОЙ политике "
+              "воркера. Значение принадлежит машине: центр его не видит"),
+    )
+    parser.add_argument(
+        "--max-inferences", type=int, default=0,
+        help=("потолок обращений к модели на задание НА МАШИНЕ. 0 — взять "
+              "верхнюю границу центра, чтобы машина не отказала требованию, "
+              "которое центр вправе прислать"),
+    )
+    parser.add_argument(
+        "--audit-timeout-sec", type=float, default=0.0,
+        help="потолок ожидания аудита; 0 — умолчание режима",
+    )
     parser.add_argument("--pipeline-revision", default="")
     parser.add_argument("--display-name", default="")
     parser.add_argument("--bootstrap-secret", default="",
@@ -2066,13 +3076,28 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--keep", action="store_true", help="не удалять стенд")
     parser.add_argument("--allow-remote-actions", action="store_true",
                         help="без него — только read-only preflight")
-    parser.add_argument("--stop-after", default="",
-                        help="остановиться после фазы: preflight|transport|register|heartbeat")
+    parser.add_argument(
+        "--stop-after", default="",
+        help=("остановиться после фазы: transport|register|heartbeat|test|"
+              "resilience|audit"),
+    )
     return parser
 
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
+
+    # Рубеж перед расходом чужой подписки, а не «ещё одна опция». Стоит до
+    # создания стенда: отказ обязан ничего не создать и не тронуть воркер.
+    # Прецедент — `run_11d_text_analysis_provider.py`
+    # (`--i-confirm-one-real-inference`).
+    if args.mode == MODE_AUDIT_REAL and not args.i_confirm_real_inference:
+        raise SystemExit(
+            "режим audit-real делает НАСТОЯЩИЕ обращения к модели на подписке "
+            "владельца воркера и требует --i-confirm-real-inference. Для полной "
+            "проверки той же цепочки без единого обращения к модели используйте "
+            f"--mode {MODE_AUDIT_PROVIDER}"
+        )
 
     revision = args.pipeline_revision or os.environ.get("AUDIT_PIPELINE_REVISION", "")
     if not revision:
@@ -2082,6 +3107,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         ).stdout.strip()
     display_name = args.display_name or f"pilot-vps-{args.worker_host}"
     bootstrap_secret = args.bootstrap_secret or ("pilot-" + uuid.uuid4().hex)
+
+    # Имена юнитов — свойство УСТАНОВКИ, а не константа модуля (см. unit_names).
+    # Присваивание глобалей здесь, до первой фазы: ниже они читаются из тел
+    # функций на каждом вызове, поэтому одного присваивания достаточно.
+    global AGENT_UNIT, EXECUTOR_UNIT
+    AGENT_UNIT, EXECUTOR_UNIT = unit_names(args.worker_root)
 
     root = Path(args.root) if args.root else Path(tempfile.mkdtemp(prefix="real_vps_pilot_"))
     stand = Stand(root=root, port=args.central_port or _free_port())
@@ -2100,7 +3131,14 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     try:
         phase_preflight_central(stand, revision=revision)
-        inventory = phase_preflight_worker(worker, revision=revision)
+        inventory = phase_preflight_worker(
+            worker, revision=revision,
+            # Режимы с мостом провайдера требуют, чтобы CLI на машине БЫЛ:
+            # в `audit-provider` его подменяет заглушка администратора, в
+            # `audit-real` работает настоящий бинарь. Для `test`/`audit-fake`
+            # утверждение прежнее и обратное.
+            require_real_cli=args.mode in ("audit-provider", "audit-real"),
+        )
 
         if not args.allow_remote_actions:
             print("\n(остановлено: без --allow-remote-actions выполняется только preflight)")
@@ -2130,8 +3168,16 @@ def main(argv: Optional[list[str]] = None) -> int:
         stand.cleanup.append(operator.close)
         check(operator.login(), "оператор авторизован на центре", PORTAL_USER)
 
-        phase_configure_worker(
-            worker, central_url=central_url, revision=revision, display_name=display_name
+        # Потолок машины по умолчанию равен верхней границе ЦЕНТРА: `issue_for_
+        # job` отказывает, когда задание просит больше, чем разрешает машина, а
+        # сколько именно попросит центр, зависит от числа графических блоков
+        # документа. Потолок «поменьше» превратил бы исправный прогон на живом
+        # документе в отказ выписки разрешения.
+        max_inferences = args.max_inferences or center_max_inferences()
+        provider_paths = phase_configure_worker(
+            worker, central_url=central_url, revision=revision,
+            display_name=display_name, mode=args.mode,
+            provider_model=args.provider_model, max_inferences=max_inferences,
         )
         phase_reset_registration(worker)
         worker_id = phase_register(
@@ -2164,10 +3210,29 @@ def main(argv: Optional[list[str]] = None) -> int:
         if args.stop_after == "resilience":
             return _finish()
 
-        if args.mode == "audit-fake":
-            report["audit"] = phase_audit_fake(
-                stand, operator, worker, worker_id=worker_id, revision=revision
+        if args.mode in (MODE_AUDIT_FAKE, *BRIDGE_MODES):
+            # Снимок продового дерева ДО аудита. Импорт результата пишет в дерево
+            # версии, и писать он обязан в копию внутри стенда; сверяется именно
+            # ПРОДОВЫЙ путь, потому что о нём копия не говорит ничего.
+            production_before = production_source_hash(args.real_document)
+            timeout_kwargs = (
+                {"timeout": args.audit_timeout_sec} if args.audit_timeout_sec else {}
             )
+            if args.mode == MODE_AUDIT_FAKE:
+                report["audit"] = phase_audit_fake(
+                    stand, operator, worker, worker_id=worker_id, revision=revision,
+                    real_document=args.real_document, **timeout_kwargs,
+                )
+            else:
+                report["audit"] = phase_audit_provider(
+                    stand, operator, worker, worker_id=worker_id, mode=args.mode,
+                    paths=provider_paths, provider_model=args.provider_model,
+                    real_document=args.real_document, **timeout_kwargs,
+                )
+            if args.real_document:
+                check(production_source_hash(args.real_document) == production_before,
+                      "продовое дерево документа не изменилось за прогон",
+                      production_before[:24] + "…")
             if args.stop_after == "audit":
                 return _finish()
 

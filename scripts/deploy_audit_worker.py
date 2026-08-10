@@ -801,8 +801,12 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--user", required=True, help="SSH-пользователь")
         p.add_argument("--remote-root", default="/home/coder/audit-worker",
                        help="корень установки на воркере")
-        p.add_argument("--units", nargs="*",
-                       default=["audit-worker-agent.service", "audit-worker-executor.service"])
+        # Пустой список = «вывести из --remote-root» (см. `units_for_root`).
+        # Фиксированное умолчание разворачивало ВТОРУЮ установку и
+        # перезапускало юниты ПЕРВОЙ: имена были константами, а корень —
+        # параметром. Инцидент воспроизведён на 11G, поэтому умолчание теперь
+        # производное, а явный список остаётся для нестандартных установок.
+        p.add_argument("--units", nargs="*", default=[])
         p.add_argument("--dry-run", action="store_true")
 
     def add_build_opts(p: argparse.ArgumentParser) -> None:
@@ -848,8 +852,28 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def units_for_root(root: str) -> list[str]:
+    """Юниты ЭТОЙ установки. Умолчание выводится из корня, а не зашито.
+
+    Корень `…/audit-worker` сохраняет прежние имена дословно — уже стоящие
+    юниты и их журналы никуда не переезжают. Любой другой корень получает
+    собственную пару имён, и развёртывание второго экземпляра перестаёт
+    трогать первый.
+    """
+    name = Path(root).name
+    if name == "audit-worker":
+        return ["audit-worker-agent.service", "audit-worker-executor.service"]
+    suffix = name.removeprefix("audit-worker-") or name
+    return [
+        f"audit-worker-{suffix}-agent.service",
+        f"audit-worker-{suffix}-executor.service",
+    ]
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
+    if hasattr(args, "units") and not args.units:
+        args.units = units_for_root(args.remote_root)
     return int(args.func(args))
 
 
