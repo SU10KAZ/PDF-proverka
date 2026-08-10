@@ -401,6 +401,7 @@ class Stand:
 
     def central_env(
         self, *, revision: str, bootstrap_secret: str, stop_at_boundary: bool = False,
+        central_tail_cli: str = "",
     ) -> dict[str, str]:
         from backend.app.core import portal_auth
 
@@ -440,6 +441,9 @@ class Stand:
                 "CLAUDE_CLI_BIN": str(self.providers / "claude"),
                 "AUDIT_CODEX_CLI_PATH": str(self.providers / "codex"),
                 "CODEX_CLI_PATH": str(self.providers / "codex"),
+                # Модели ЦЕНТРАЛЬНЫХ этапов. Файл кладётся в app_data стенда до
+                # старта: `config` читает его на импорте, и правка через API
+                # после старта до уже импортированного модуля не дошла бы.
                 "AUDIT_WORKER_FAKE_PROVIDER_DIR": str(self.providers),
                 "AUDIT_WORKER_FAKE_CALL_LOG": str(self.evidence / "central_provider_calls.jsonl"),
                 "BATCH_AUTO_RESUME_ENABLED": "true",
@@ -453,7 +457,28 @@ class Stand:
             # не делает.
             env["AUDIT_HANDOFF_TEST_PAUSE_AT"] = "before_central_tail"
             env["AUDIT_HANDOFF_TEST_PAUSE_DIR"] = str(self.evidence / "handoff_pause")
-        env["PATH"] = os.pathsep.join([str(self.providers), env.get("PATH", "")])
+        if central_tail_cli:
+            # РЕЖИМ НАСТОЯЩЕГО ЦЕНТРАЛЬНОГО ХВОСТА (этап 11H).
+            #
+            # Прежде центр стенда всегда работал на подделках CLI: этапы
+            # 11F/11G останавливались на границе, и центральные этапы не
+            # выполнялись вовсе. 11H обязан довести аудит до конца, а
+            # `norm_verify` на подделке — это не «нормы проверены», это
+            # «подделка ответила». Поэтому здесь центр получает НАСТОЯЩИЙ
+            # Codex CLI машины центра.
+            #
+            # Каталог подделок при этом уходит из PATH целиком: оставленный,
+            # он перехватил бы `codex`/`claude`, найденные по имени, и прогон
+            # снова оказался бы на заглушках — молча.
+            env["AUDIT_CODEX_CLI_PATH"] = central_tail_cli
+            env["CODEX_CLI_PATH"] = central_tail_cli
+            # Claude на центре не используется вовсе: в 11H runtime-провайдер
+            # ровно один. Путь оставлен указывающим на подделку намеренно —
+            # если какой-то этап всё же попробует Claude, он получит подделку
+            # и это будет ВИДНО в журнале подделок, а не тихо оплачено.
+            env["CLAUDE_CLI_BIN"] = str(self.providers / "claude")
+        else:
+            env["PATH"] = os.pathsep.join([str(self.providers), env.get("PATH", "")])
         return env
 
     def stop_all(self) -> None:
@@ -728,6 +753,69 @@ def copy_production_version(source_version_dir: Path, target_v2_root: Path):
         version_id=version_id,
         section=section,
     )
+
+
+def _find_central_codex_cli() -> str:
+    """Настоящий Codex CLI ЦЕНТРА — штатным резолвером платформы.
+
+    Не `command -v`: на этой машине Codex приезжает вместе с расширением
+    редактора и в PATH не попадает вовсе, а `codex_runner.find_codex_cli`
+    знает все штатные места установки. Спрашиваем ровно тот код, которым
+    центральные этапы и будут его искать.
+    """
+    from backend.app.services.llm.codex_runner import find_codex_cli
+
+    return find_codex_cli() or ""
+
+
+#: Модели центральных этапов по умолчанию в режиме `--central-tail`.
+#:
+#: Все — Codex: в 11H runtime-провайдер ровно один, и центральный хвост не
+#: исключение. `codex/` — не украшение имени, а признак диспетчеризации
+#: (`config.is_codex_model`): значение без префикса ушло бы в OpenRouter-ветку
+#: с несуществующим идентификатором.
+#: Идентификатор берётся ИЗ КОДА центра (`CODEX_STAGE_MODEL_ID`), а не пишется
+#: литералом: гейт запуска (`validate_stage_model_choice`) сверяет выбор со
+#: списком `AVAILABLE_MODELS`, который собирается из той же константы. Литерал
+#: `codex/gpt-5.6-sol`, поставленный мимо неё, отверг бы запуск аудита с
+#: «unknown model» — что и случилось на репетиции этого режима.
+def central_tail_stage_models() -> dict[str, str]:
+    from backend.app.core.config import CODEX_STAGE_MODEL_ID
+
+    return {
+        "norm_verify": CODEX_STAGE_MODEL_ID,
+        "norm_fix": CODEX_STAGE_MODEL_ID,
+        "norm_requote": CODEX_STAGE_MODEL_ID,
+        # Критик и корректор замечаний — этапы ВОРКЕРА, но их модель входит в
+        # список, который центр валидирует перед запуском (CRITICAL_STAGE_
+        # MODEL_STAGES). Оставить им умолчание значило бы объявить центру
+        # Claude там, где Claude в этом прогоне не используется вовсе.
+        "findings_critic": CODEX_STAGE_MODEL_ID,
+        "findings_corrector": CODEX_STAGE_MODEL_ID,
+        "findings_merge": CODEX_STAGE_MODEL_ID,
+        "text_analysis": CODEX_STAGE_MODEL_ID,
+        "optimization": CODEX_STAGE_MODEL_ID,
+        "optimization_critic": CODEX_STAGE_MODEL_ID,
+        "optimization_corrector": CODEX_STAGE_MODEL_ID,
+    }
+
+
+def _write_central_stage_models(stand: Stand, override: str = "") -> dict:
+    """Положить модели центральных этапов в app_data стенда ДО старта центра.
+
+    Именно до старта: `backend.app.core.config` читает `stage_models.json` на
+    импорте, и запись после подъёма backend'а не дошла бы до уже
+    импортированного модуля — этапы молча пошли бы на умолчаниях (Claude).
+    """
+    models = dict(central_tail_stage_models())
+    if override:
+        models.update(json.loads(override))
+    path = stand.central_app_data / "stage_models.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(models, ensure_ascii=False, indent=2), encoding="utf-8")
+    check(True, "модели центральных этапов заданы (все — Codex)",
+          ", ".join(f"{k}={v}" for k, v in sorted(models.items())))
+    return models
 
 
 def center_max_inferences() -> int:
@@ -1645,6 +1733,7 @@ def phase_test_job(
 def phase_network_outage(
     stand: Stand, operator: Operator, worker: Worker, *, worker_id: str,
     revision: str, bootstrap_secret: str, stop_at_boundary: bool = False,
+    central_tail_cli: str = "",
 ) -> dict:
     """Обрыв связи посреди задания.
 
@@ -1703,7 +1792,7 @@ echo "CHILD=$(pgrep -c -f 'audit_worker.test_process|test_runner' || true)"
     # этапа, то есть за границу, которую этап 11G обязан не переходить.
     env = stand.central_env(
         revision=revision, bootstrap_secret=bootstrap_secret,
-        stop_at_boundary=stop_at_boundary,
+        stop_at_boundary=stop_at_boundary, central_tail_cli=central_tail_cli,
     )
     start_backend(stand, env=env, tag="after_outage")
     check(_wait_for(lambda: backend_ready(stand), timeout=180),
@@ -1801,12 +1890,19 @@ def phase_executor_restart(operator: Operator, worker: Worker, *, worker_id: str
           f"{agent_before.get(AGENT_UNIT, {}).get('pid')} → {after.get(AGENT_UNIT, {}).get('pid')}")
 
     tree_after = worker.read("pgrep -af 'audit_worker' | head -20").stdout
+    # Считаются исполнители ТОЛЬКО ЭТОЙ установки. На машине живут корни
+    # прошлых этапов (`audit-worker-11g` и старше), и подсчёт по одному слову
+    # «executor» объявлял дублем чужой процесс из соседнего корня — при том
+    # что у него свой центр, своя worker.db и к этой попытке он отношения не
+    # имеет. Тот же класс, что и коллизия имён юнитов, исправленная на 11G:
+    # корень установки обязан входить в признак.
     duplicates = [
         line for line in tree_after.splitlines()
-        if "executor" in line and "python" in line
+        if "python" in line and " -m audit_worker executor" in line
+        and worker.root in line
     ]
-    check(len(duplicates) <= 1, "второго исполнителя не появилось",
-          f"{len(duplicates)} процесс(ов)")
+    check(len(duplicates) <= 1, "второго исполнителя ЭТОЙ установки не появилось",
+          f"{len(duplicates)} процесс(ов) в {worker.root}")
 
     ok = _wait_for(
         lambda: str(_job_row(operator, job_id).get("state", "")).lower()
@@ -2586,6 +2682,7 @@ def phase_audit_provider(
     stand: Stand, operator: Operator, worker: Worker, *,
     worker_id: str, mode: str, paths: dict[str, str],
     provider_model: str = DEFAULT_PROVIDER_MODEL,
+    stop_at_boundary: bool = True,
     real_document: str = "", timeout: float = 4800,
 ) -> dict:
     """audit_pipeline_v1 через БОЕВОЙ мост провайдера.
@@ -2618,7 +2715,8 @@ def phase_audit_provider(
     out: dict[str, Any] = {"mode": mode}
     run = launch_remote_audit(
         stand, operator, worker, worker_id=worker_id, timeout=timeout,
-        real_document=real_document, clone_local=False, stop_at_boundary=True,
+        real_document=real_document, clone_local=False,
+        stop_at_boundary=stop_at_boundary,
     )
     if run is None:
         return {"launched": False, **out}
@@ -2774,11 +2872,23 @@ def phase_audit_provider(
     # то, что запрещает комментарий в `_run_central_tail_after_remote`.
     center_next = str(row.get("central_resume_stage") or "")
     worker_hint = str(result_manifest.get("resume_hint") or "")
-    check(center_next in central,
-          "следующий по решению ЦЕНТРА этап — центральный (норм-верификация)",
-          f"центр={center_next!r} (подсказка воркера была {worker_hint!r})")
-    check(center_next in forbidden,
-          "и он на воркере действительно не выполнялся", center_next or "нет")
+    if stop_at_boundary:
+        check(center_next in central,
+              "следующий по решению ЦЕНТРА этап — центральный (норм-верификация)",
+              f"центр={center_next!r} (подсказка воркера была {worker_hint!r})")
+        check(center_next in forbidden,
+              "и он на воркере действительно не выполнялся", center_next or "нет")
+    else:
+        # Хвост заказан и уже выполнен: `central_resume_stage` к этому моменту
+        # либо пуст, либо указывает на последний центральный этап. Утверждение
+        # о границе здесь другое и проверяется по РЕЗУЛЬТАТУ: центральные этапы
+        # прошли, но прошли ОНИ НА ЦЕНТРЕ — на воркере их в журнале нет.
+        check(str(row.get("central_handoff_state", "")).lower() == "completed",
+              "центральный хвост доведён до конца",
+              str(row.get("central_handoff_state")))
+        check(not violations,
+              "и ни один центральный этап не выполнился на воркере",
+              ", ".join(violations) or "0")
     out["center_next_stage"] = center_next
     out["worker_resume_hint"] = worker_hint
 
@@ -3171,6 +3281,22 @@ def build_parser() -> argparse.ArgumentParser:
               "которое центр вправе прислать"),
     )
     parser.add_argument(
+        "--central-tail", action="store_true",
+        help=("довести аудит до конца НА ЦЕНТРЕ: norm_verify и остальные "
+              "центральные этапы вместо остановки на границе. Требует "
+              "настоящего CLI центра (см. --central-tail-cli)"),
+    )
+    parser.add_argument(
+        "--central-tail-cli", default="",
+        help=("путь к настоящему Codex CLI ЦЕНТРА для центральных этапов. "
+              "Пусто — найти штатным резолвером платформы"),
+    )
+    parser.add_argument(
+        "--central-stage-models", default="",
+        help=("JSON {этап: модель} для центральных этапов; кладётся в "
+              "app_data стенда до старта центра"),
+    )
+    parser.add_argument(
         "--audit-timeout-sec", type=float, default=0.0,
         help="потолок ожидания аудита; 0 — умолчание режима",
     )
@@ -3260,12 +3386,20 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         print("\n── Подъём пилотного центра ─────────────────────────────────────")
         prepare_central_assets(stand)
+        central_tail_cli = ""
+        if args.central_tail:
+            central_tail_cli = args.central_tail_cli or _find_central_codex_cli()
+            check(bool(central_tail_cli) and Path(central_tail_cli).exists(),
+                  "настоящий Codex CLI центра найден для центральных этапов",
+                  central_tail_cli or "не найден")
+            _write_central_stage_models(stand, args.central_stage_models)
         env = stand.central_env(
             revision=revision, bootstrap_secret=bootstrap_secret,
-            # Останавливаться на границе — только в режимах моста: там 11G
-            # доказывает саму границу. В `test`/`audit-fake` центральный хвост
-            # остаётся частью проверки (он и раньше ей был).
-            stop_at_boundary=args.mode in BRIDGE_MODES,
+            # Останавливаться на границе — только в режимах моста И только пока
+            # центральный хвост не заказан явно. 11G доказывал саму границу и
+            # дальше не шёл; 11H обязан довести аудит до конца (§30).
+            stop_at_boundary=args.mode in BRIDGE_MODES and not args.central_tail,
+            central_tail_cli=central_tail_cli,
         )
         start_backend(stand, env=env, tag="first")
         check(_wait_for(lambda: backend_ready(stand), timeout=180),
@@ -3320,7 +3454,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         report["outage"] = phase_network_outage(
             stand, operator, worker, worker_id=worker_id,
             revision=revision, bootstrap_secret=bootstrap_secret,
-            stop_at_boundary=args.mode in BRIDGE_MODES,
+            stop_at_boundary=args.mode in BRIDGE_MODES and not args.central_tail,
+            central_tail_cli=central_tail_cli,
         )
         report["agent_restart"] = phase_agent_restart(operator, worker, worker_id=worker_id)
         report["executor_restart"] = phase_executor_restart(
@@ -3348,7 +3483,8 @@ def main(argv: Optional[list[str]] = None) -> int:
                 report["audit"] = phase_audit_provider(
                     stand, operator, worker, worker_id=worker_id, mode=args.mode,
                     paths=provider_paths, provider_model=args.provider_model,
-                    real_document=args.real_document, **timeout_kwargs,
+                    real_document=args.real_document,
+                    stop_at_boundary=not args.central_tail, **timeout_kwargs,
                 )
             if args.real_document:
                 check(production_source_hash(args.real_document) == production_before,

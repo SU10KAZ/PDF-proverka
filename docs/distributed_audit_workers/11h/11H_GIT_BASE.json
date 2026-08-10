@@ -1,0 +1,40 @@
+{
+ "stage": "11H",
+ "question": "от какого фактического коммита ведётся ветка 11H",
+ "how_established": "git worktree list + git log ветки 11G; tip проверен на наличие всех четырёх коммитов 11G",
+ "base_branch": "feat/distributed-audit-workers-network-e2e",
+ "base_commit": "d1563a6c997429199ffad2dc915c8b2bed688fca",
+ "base_commit_subject": "docs(воркеры 11G): доказательная база сетевых прогонов, контракт и бюджет",
+ "base_contains_11g_commits": [
+  "2aef0564 центр формулирует требование к провайдеру штатным путём",
+  "a4420040 сетевой прогон через боевой мост провайдера + переносимость md_file",
+  "138850ad центр объявлял завершённым аудит без нормативного этапа",
+  "d1563a6c доказательная база сетевых прогонов, контракт и бюджет"
+ ],
+ "branch": "feat/distributed-audit-workers-codex-real-project-e2e",
+ "worktree": ".claude/worktrees/distributed-audit-workers-codex-real-project-e2e",
+ "head_at_creation": "d1563a6c997429199ffad2dc915c8b2bed688fca",
+ "uncommitted_11g_artifacts_carried_over": {
+  "why": "на ветке 11G остались незакоммиченными 7 JSON/MD доказательной базы и правка frontend/static/js/audit-workers.js; они скопированы в worktree 11H, чтобы контекст 11G был полон",
+  "files": [
+   "docs/distributed_audit_workers/11g/11G_AUTOMATIC_BINDING.json",
+   "docs/distributed_audit_workers/11g/11G_AUTOMATIC_GRANTS.json",
+   "docs/distributed_audit_workers/11g/11G_FAKE_FAILURE_MATRIX.json",
+   "docs/distributed_audit_workers/11g/11G_NETWORK_RUNTIME_BEFORE.json",
+   "docs/distributed_audit_workers/11g/11G_NETWORK_RUNTIME_BEFORE.md",
+   "docs/distributed_audit_workers/11g/11G_UI_VISIBILITY.json",
+   "docs/distributed_audit_workers/11g/11G_WORKER_RESOLUTION.json",
+   "frontend/static/js/audit-workers.js"
+  ],
+  "source_worktree_untouched": true
+ },
+ "not_done": [
+  "push",
+  "merge",
+  "rebase",
+  "reset",
+  "clean",
+  "удаление чужих worktree"
+ ],
+ "production_backend_worktree": "/home/coder/projects/PDF-proverka (ветка feature/block-vector-graphs) — НЕ трогается"
+}

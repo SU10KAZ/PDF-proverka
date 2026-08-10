@@ -1,0 +1,199 @@
+{
+ "stage": "11H",
+ "question": "какие model-стадии worker-участка Codex может выполнить, и что для этого пришлось сделать",
+ "source_of_truth": "код на ветке 11H, а не документация: WORKER_STAGE_PLAN + FORBIDDEN_STAGES + *_provider_transport",
+ "verdict": "все восемь стадий worker-участка Codex-совместимы ПОСЛЕ правок 11H; до правок — НИ ОДНА",
+ "two_gaps_closed": [
+  {
+   "gap": "явное назначение модели",
+   "was": "structured_inference возвращал ERR_MODEL_MISMATCH на любой model",
+   "why_it_blocked_everything": "pipeline_bridge._preflight отказывает при пустой binding.model, а политика воркера всегда её задаёт → Codex не мог выполнить НИ ОДНОЙ стадии",
+   "now": "--model=<id> из локальной политики + сверка фактически применённой модели (fail closed)"
+  },
+  {
+   "gap": "вложения",
+   "was": "нет метода structured_inference_multimodal → мост отвергал block_analysis",
+   "now": "codex exec --image=<файл> в изолированном per-call каталоге внутри runtime, sha256-сверка, удаление после вызова"
+  }
+ ],
+ "not_changed": [
+  "промпты этапов — ни один не переписан «под Codex» (§15 задания)",
+  "бизнес-контракт ответа — тот же JSON, что читают следующие этапы",
+  "граница worker/center",
+  "белый список стадий привязки"
+ ],
+ "stages": [
+  {
+   "stage": "crop_blocks",
+   "model_calls": 0,
+   "input": "result.json + crop_url/PDF",
+   "output": "PNG-кропы + index.json",
+   "modality": "—",
+   "provider_adapter": "не участвует",
+   "claude_supported": true,
+   "codex_supported": true,
+   "required_capability": null,
+   "classification": "DETERMINISTIC_PORTABLE",
+   "changes_for_11h": "нет"
+  },
+  {
+   "stage": "block_context",
+   "model_calls": 0,
+   "input": "кропы + вектор-слой",
+   "output": "block_context_summary.json",
+   "modality": "—",
+   "provider_adapter": "не участвует",
+   "claude_supported": true,
+   "codex_supported": true,
+   "required_capability": null,
+   "classification": "DETERMINISTIC_PORTABLE",
+   "changes_for_11h": "нет"
+  },
+  {
+   "stage": "block_analysis",
+   "model_calls": "1 на графический блок (41 у пилотного документа)",
+   "input": "PNG кроп (байты) + block_context + page_text",
+   "output": "01_blocks_analysis.json",
+   "modality": "МУЛЬТИМОДАЛЬНАЯ",
+   "structured_output": "{'findings': [...]}, поля из боевой JSON-схемы Stage 01",
+   "provider_adapter": "pipeline_bridge.run_stage_inference(images=[(image/png, bytes)]) → structured_inference_multimodal",
+   "claude_supported": true,
+   "codex_supported": true,
+   "codex_status_before_11h": "НЕТ: у CodexProviderAdapter отсутствовал structured_inference_multimodal; мост отвергал вызов ДО заявки в журнале",
+   "codex_mechanism_11h": "codex exec --image=<файл> …; файл пишется в mkdtemp внутри home.runtime (0700), сверяется по sha256, удаляется в finally",
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "реализован structured_inference_multimodal в codex_adapter"
+  },
+  {
+   "stage": "text_analysis",
+   "model_calls": 1,
+   "input": "document.md + компактная проекция блоков",
+   "output": "02_text_analysis.json",
+   "modality": "текст",
+   "structured_output": "{'stage','text_source','project_params','text_findings',…}",
+   "provider_adapter": "claude_runner._run_text_analysis_via_provider → run_stage_inference",
+   "claude_supported": true,
+   "codex_supported": true,
+   "codex_status_before_11h": "НЕТ: structured_inference отказывал на любом явном model, а мост требует назначенной модели от любого провайдера",
+   "codex_mechanism_11h": "codex exec --model=<из локальной политики> -, промпт через stdin",
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "поддержано --model + сверка фактической модели"
+  },
+  {
+   "stage": "findings_merge",
+   "model_calls": 1,
+   "input": "02_text_analysis.json + 01_blocks_analysis.json",
+   "output": "03_findings.json",
+   "modality": "текст",
+   "structured_output": "{'meta','findings':[…]}",
+   "provider_adapter": "claude_runner._run_findings_merge_via_provider",
+   "claude_supported": true,
+   "codex_supported": true,
+   "codex_status_before_11h": "НЕТ (та же причина, что у text_analysis)",
+   "codex_mechanism_11h": "тот же текстовый путь",
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "те же"
+  },
+  {
+   "stage": "findings_review",
+   "model_calls": "0 в детерминированном ядре; УСЛОВНО 1+ в страже отсутствия",
+   "input": "03_findings.json + document.md",
+   "output": "03_findings_review.json",
+   "modality": "текст",
+   "structured_output": "словарь вердиктов по кандидатам отсутствия",
+   "provider_adapter": "absence_guard._verify_via_provider_bridge",
+   "claude_supported": true,
+   "codex_supported": true,
+   "codex_status_before_11h": "НЕТ (та же причина)",
+   "codex_mechanism_11h": "тот же текстовый путь",
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "те же; при MD 191 850 символов (< 300 000) чанкинга не будет — не более одного вызова"
+  },
+  {
+   "stage": "optimization",
+   "model_calls": 1,
+   "input": "03_findings.json + документ",
+   "output": "optimization.json",
+   "modality": "текст",
+   "structured_output": "{'<ключ из контракта>': [...]}",
+   "provider_adapter": "claude_runner._run_json_stage_via_provider",
+   "claude_supported": true,
+   "codex_supported": true,
+   "codex_status_before_11h": "НЕТ (та же причина)",
+   "codex_mechanism_11h": "тот же текстовый путь",
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "те же"
+  },
+  {
+   "stage": "optimization_critic",
+   "model_calls": 1,
+   "provider_adapter": "claude_runner._run_json_stage_via_provider",
+   "modality": "текст",
+   "claude_supported": true,
+   "codex_supported": true,
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "те же"
+  },
+  {
+   "stage": "optimization_corrector",
+   "model_calls": "условно 1 (только если критик нашёл дефекты)",
+   "provider_adapter": "claude_runner._run_json_stage_via_provider",
+   "modality": "текст",
+   "claude_supported": true,
+   "codex_supported": true,
+   "required_capability": "strong_audit",
+   "classification": "WORKER_TARGET",
+   "changes_for_11h": "те же"
+  },
+  {
+   "stage": "norm_verify",
+   "model_calls": "несколько + MCP-верификация по базе норм",
+   "modality": "текст + база норм",
+   "claude_supported": true,
+   "codex_supported": "НЕ ПРИМЕНИМО",
+   "classification": "CENTER_ONLY",
+   "why": "база норм на воркер не передаётся; двойной запрет — env-гейт manager._central_stage_blocked и сверка журнала в remote_audit_runner ПОСЛЕ прогона"
+  },
+  {
+   "stage": "debt_control",
+   "classification": "CENTER_ONLY",
+   "codex_supported": "НЕ ПРИМЕНИМО"
+  },
+  {
+   "stage": "decision_carryover",
+   "classification": "CENTER_ONLY",
+   "codex_supported": "НЕ ПРИМЕНИМО"
+  },
+  {
+   "stage": "excel",
+   "model_calls": 0,
+   "classification": "CENTER_ONLY",
+   "codex_supported": "НЕ ПРИМЕНИМО"
+  },
+  {
+   "stage": "provider_selfcheck",
+   "model_calls": 1,
+   "classification": "WORKER_TARGET, но ВНЕ боевого аудита",
+   "codex_supported": true,
+   "why_not_in_run": "отдельный action, в WORKER_STAGE_PLAN не входит; требует фикстуру «## Контрольный фрагмент 11C» в MD версии, которой у боевого документа нет"
+  }
+ ],
+ "natural_calls_for_target_document": {
+  "block_analysis": 41,
+  "text_analysis": 1,
+  "findings_merge": 1,
+  "findings_review": "0..1",
+  "optimization": 1,
+  "optimization_critic": 1,
+  "optimization_corrector": "0..1",
+  "total_min": 45,
+  "total_max": 47,
+  "center_formula": "41 графических блока + 6 фиксированных текстовых этапов = 47"
+ }
+}

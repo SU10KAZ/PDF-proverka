@@ -1,0 +1,243 @@
+{
+  "stage": "11G",
+  "question": "матрица отказов §19 — что и чем доказано ДО единого обращения к настоящей модели",
+  "honesty_note": "Разделено намеренно на три способа доказательства. «live» — наблюдалось в сетевом прогоне между двумя машинами. «unit» — доказано тестом, потому что живьём это состояние достижимо только порчей конфигурации, и портить её на чужой машине ради одной проверки дороже, чем закрепить тестом. «inherited» — доказано прогоном прошлого этапа и с тех пор код не менялся; такие пункты названы, а не выданы за новые.",
+  "cases": [
+    {
+      "case": "A",
+      "name": "требование просит вызовы, но не назвало capability → fail closed",
+      "how_proven": "unit",
+      "evidence": [
+        "tests/test_distributed_workers_network_e2e_11g.py::test_c_provider_required_without_capability_is_refused_by_all_three"
+      ],
+      "verdict": "PASS",
+      "note": "отказ на ТРЁХ рубежах: схема центра, форма воркера, резолвер воркера"
+    },
+    {
+      "case": "B",
+      "name": "неизвестная capability → fail closed",
+      "how_proven": "unit",
+      "evidence": [
+        "…::test_i_unsupported_capability_is_refused_on_both_sides",
+        "…::test_center_capabilities_are_a_subset_of_the_worker_policy"
+      ],
+      "verdict": "PASS",
+      "note": "реестр центра обязан быть подмножеством реестра воркера — иначе центр заказал бы способность, которую никто не разрешит"
+    },
+    {
+      "case": "C",
+      "name": "неподдерживаемый провайдер → fail closed",
+      "how_proven": "unit",
+      "evidence": [
+        "…::test_h_unsupported_provider_is_refused_on_both_sides"
+      ],
+      "verdict": "PASS",
+      "note": "на центре — Literal схемы; на воркере — резолвер. Рубеж ФОРМЫ (audit_runner) провайдера по существу не знает намеренно: провайдерский слой ему импортировать запрещено"
+    },
+    {
+      "case": "D",
+      "name": "авторизация провайдера недоступна → обращений к модели нет",
+      "how_proven": "unit",
+      "evidence": [
+        "tests/test_distributed_workers_pipeline_provider.py::TestProviderSelection::test_unauthorized_provider_is_refused"
+      ],
+      "verdict": "PASS",
+      "note": "резолвер отказывает ДО списания разрешения и до запуска процесса"
+    },
+    {
+      "case": "E",
+      "name": "ревизия воркера не совпала с центром → задание не создаётся",
+      "how_proven": "inherited+unit",
+      "evidence": [
+        "audit_job_service.compatibility_report → code_revision_mismatch",
+        "phase_revision_mismatch в стенде (в прогонах 11G не запускалась: --stop-after audit)"
+      ],
+      "verdict": "PASS",
+      "note": "проверяет ЦЕНТР до создания задания; в 11G фактические ревизии совпадали (11g/11g)"
+    },
+    {
+      "case": "F",
+      "name": "повторный claim → второго исполнения нет",
+      "how_proven": "live",
+      "evidence": [
+        "fake [59] «дубля попытки не появилось»",
+        "bridge [71] «второго исполнителя не появилось»"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "G",
+      "name": "повторная доставка события → идемпотентно",
+      "how_proven": "live",
+      "evidence": [
+        "fake [48]/[51] накопленные события досланы, last_seen_seq не растёт (I-04)"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "H",
+      "name": "повторный чанк загрузки → идемпотентно",
+      "how_proven": "inherited",
+      "evidence": [
+        "upload_service: дедуп чанков по индексу и хэшу; смоук 09"
+      ],
+      "verdict": "PASS",
+      "note": "в 11G не воспроизводился отдельно — код загрузки не менялся"
+    },
+    {
+      "case": "I",
+      "name": "рестарт воркера → продолжение",
+      "how_proven": "live",
+      "evidence": [
+        "fake [52]-[59]",
+        "bridge [52]-[60]"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "J",
+      "name": "рестарт Agent → Executor не теряется",
+      "how_proven": "live",
+      "evidence": [
+        "fake [56] «Executor НЕ перезапустился вместе с агентом»",
+        "bridge [59]"
+      ],
+      "verdict": "PASS",
+      "note": "связей Requires=/PartOf= между юнитами нет намеренно"
+    },
+    {
+      "case": "K",
+      "name": "рестарт Executor → журнал/восстановление",
+      "how_proven": "live",
+      "evidence": [
+        "fake [70] «задание пережило рестарт исполнителя (KillMode=process)»",
+        "bridge [72]-[74]"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "L",
+      "name": "центр временно недоступен → воркер продолжает локально",
+      "how_proven": "live",
+      "evidence": [
+        "fake [44] «Executor жив при недоступном центре»",
+        "fake [45] события копятся в дисковом outbox 36→62"
+      ],
+      "verdict": "PASS",
+      "note": "рвётся ровно транспорт «агент↔центр»: SSH и туннель не трогаются"
+    },
+    {
+      "case": "M",
+      "name": "восстановление связи → outbox догоняет центр",
+      "how_proven": "live",
+      "evidence": [
+        "fake [47]/[48] задание доехало до completed, 43 события досланы"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "N",
+      "name": "обрыв загрузки → докачка",
+      "how_proven": "live+inherited",
+      "evidence": [
+        "fake [41]-[48]: загрузка результата пережила падение центра",
+        "uploader: сессия загрузки и чанки переживают рестарт"
+      ],
+      "verdict": "PASS",
+      "note": "докачка Range проверялась смоуком 09; здесь наблюдалась как часть обрыва"
+    },
+    {
+      "case": "O",
+      "name": "повторный импорт на центре → идемпотентно",
+      "how_proven": "inherited",
+      "evidence": [
+        "result_import: журнал применения + откат; тесты test_distributed_workers_central_handoff.py"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "P",
+      "name": "ACK не получен → воркер НЕ удаляет результат",
+      "how_proven": "live",
+      "evidence": [
+        "fake [87] «неподтверждённые результаты НЕ попали в кандидаты на удаление»"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "Q",
+      "name": "ACK получен → срок хранения выставлен",
+      "how_proven": "live",
+      "evidence": [
+        "fake [40]/[43] retention_until проставлен после подтверждения приёма"
+      ],
+      "verdict": "PASS",
+      "note": "политика — 30 суток (AUDIT_WORKER_RETENTION_DAYS=30)"
+    },
+    {
+      "case": "R",
+      "name": "центральный этап на воркере → запрещён",
+      "how_proven": "live",
+      "evidence": [
+        "bridge [131] forbidden_stages_not_run = все четыре",
+        "bridge [132] нарушений границы 0",
+        "bridge [134] norm_verify на воркере не выполнялся"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    }
+  ],
+  "additional_11g_cases": [
+    {
+      "case": "§20",
+      "name": "оператор НЕ создавал привязку и разрешение",
+      "how_proven": "live+structural",
+      "evidence": [
+        "bridge [120] все разрешения auto-*",
+        "bridge [123] сам прогон разрешений не выписывает (проверка по исходнику харнеса)"
+      ],
+      "verdict": "PASS",
+      "note": "HARD GATE этапа"
+    },
+    {
+      "case": "§6",
+      "name": "центр не передаёт точную модель",
+      "how_proven": "live+unit",
+      "evidence": [
+        "bridge [113] маркеров модели в нагрузке нет",
+        "…::test_k_no_model_identifier_reaches_the_requirement_or_its_builders"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "§9",
+      "name": "потолок машины нельзя превысить и нельзя тихо урезать",
+      "how_proven": "unit",
+      "evidence": [
+        "…::test_auto_grant_refuses_without_a_machine_ceiling",
+        "…::test_auto_grant_refuses_to_silently_trim_the_request"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "case": "§33",
+      "name": "exactly-once через сеть",
+      "how_proven": "live",
+      "evidence": [
+        "bridge [125] начато=завершено, неизвестных 0",
+        "bridge [128] обращений к заглушке ровно столько же, сколько вызовов в журнале"
+      ],
+      "verdict": "PASS",
+      "note": ""
+    }
+  ]
+}

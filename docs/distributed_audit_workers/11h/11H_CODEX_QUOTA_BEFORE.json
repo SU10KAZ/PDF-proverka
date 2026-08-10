@@ -1,0 +1,39 @@
+{
+ "stage": "11H",
+ "question": "сколько ресурса подписки Codex доступно ДО боевого прогона",
+ "taken_at_utc": "2026-08-10T13:49:57Z",
+ "zero_inference": true,
+ "source": "official_app_server_rpc",
+ "source_official": "codex app-server → account/rateLimits/read (JSON-RPC 2.0 по stdio)",
+ "source_stability": "experimental",
+ "parser_version": "codex-appserver-1",
+ "account_group_id": null,
+ "account_fingerprint": "428b185e6d53ff28",
+ "plan_type": "pro",
+ "quota_state": "ready",
+ "raw_remaining_supported": true,
+ "primary_window": {
+  "window_id": "codex:primary",
+  "used_pct": 6.0,
+  "remaining_pct": 94.0,
+  "reset_at": 1786888622.0,
+  "duration_sec": 604800,
+  "source": "official_app_server_rpc",
+  "confidence": "high"
+ },
+ "secondary_windows": [
+  {
+   "window_id": "codex_bengalfox:primary",
+   "used_pct": 0.0,
+   "remaining_pct": 100.0,
+   "reset_at": 1786973735.0,
+   "duration_sec": 604800,
+   "source": "official_app_server_rpc",
+   "confidence": "high"
+  }
+ ],
+ "next_reset_at": 1786888622.0,
+ "estimated_remaining_pct": 94.0,
+ "detail": "limit_id=codex",
+ "caveat": "машина .31 используется не только аудитом: в ~/.codex активные сессии Codex постороннего происхождения (logs_2.sqlite 1,4 ГБ, обновлялся в день снимка). Дельта before/after поэтому показывает расход ПОДПИСКИ за период, а не только расход этого прогона"
+}

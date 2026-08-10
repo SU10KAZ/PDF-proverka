@@ -1,0 +1,448 @@
+{
+  "stage": "11G",
+  "question": "как выглядела ПОЛНАЯ цепочка удалённого аудита (центр → сеть → воркер → сеть → центр) ДО правок этапа 11G, и в каких именно точках она была разорвана настолько, что штатное распределённое задание было невозможно",
+  "base_commit": "09afc6b9",
+  "base_commit_subject": "fix(воркеры 11F): потолок кропа под предел провайдера + сборщик доказательств",
+  "scope_note": "Все file:line относятся к дереву на 09afc6b9. Файлы, изменённые первым коммитом 11G (2aef0564), читались через `git show 09afc6b9:<файл>`; остальные совпадают с рабочим деревом.",
+  "chain": [
+    {
+      "step": 1,
+      "name": "PipelineManager: очередь берёт элемент",
+      "function": "PipelineManager._batch_slot_worker → PipelineManager._execute_item",
+      "file": "backend/app/pipeline/manager.py",
+      "line": "6147-6151 → 6288-6336",
+      "input": "BatchQueueItem из batch_queue.json + AuditJob",
+      "output": "либо локальный self._dispatch_action (быстрый путь, L6310-6316), либо backend.run(request, ctx) (L6327) и затем _run_central_tail_after_remote (L6332)",
+      "persisted_state": "batch_queue.json: item.status, item.execution_mode, item.worker_id, item.execution_profile, item.execution_handle",
+      "network_endpoint": null,
+      "idempotency": "дедуп на входе в очередь: manager.py:6934-6949 (тот же project+version в pending/running) и manager.py:6951-6974 (любой remote-элемент, включая interrupted) → RuntimeError → 409",
+      "gap_before_11g": null
+    },
+    {
+      "step": 2,
+      "name": "Выбор ExecutionBackend",
+      "function": "execution_registry.item_execution_mode → select_backend → build_request",
+      "file": "backend/app/pipeline/execution/registry.py",
+      "line": "78-102 (режим), 105-126 (выбор), 47-55 (рубеж флагов), 129-154 (сборка запроса)",
+      "input": "BatchQueueItem (источник истины — сам сохранённый элемент, не глобальная настройка)",
+      "output": "RemoteWorkerExecutionBackend(manager) + ExecutionRequest",
+      "persisted_state": "нет; флаги перечитываются на каждый вызов (registry.py:36-38)",
+      "network_endpoint": null,
+      "idempotency": "чистые функции; REMOTE_WORKER без worker_id молча понижается до LOCAL (L90-93), LOCAL с разбираемым execution_handle повышается до REMOTE_WORKER, чтобы select_backend отказал ГРОМКО (L94-101)",
+      "gap_before_11g": "Контракт запроса не умеет выразить требование к провайдеру. AuditExecutionOptions (backend/app/pipeline/execution/contracts.py:81-95, extra='forbid') несёт только action / retry_stage / include_optimization / include_norms / start_from; build_request (registry.py:139-153) заполняет из элемента очереди семь полей и НЕ заполняет pipeline_revision и ничего провайдерского. Значит ниже по цепочке требование взять неоткуда — это не забытый аргумент, а отсутствующее место в контракте."
+    },
+    {
+      "step": 3,
+      "name": "RemoteWorkerExecutionBackend.prepare",
+      "function": "RemoteWorkerExecutionBackend.prepare",
+      "file": "backend/app/pipeline/execution/remote.py",
+      "line": "135-196 (вызов create_audit_job — 171-183, запись ссылки — _persist 198-211)",
+      "input": "ExecutionRequest + ExecutionContext (ctx.extra['actor'] из item.extra_params['remote_actor'])",
+      "output": "ExecutionHandle(attempt_id, remote_job_id, worker_id, execution_profile)",
+      "persisted_state": "item.execution_handle = handle.model_dump(); item.execution_mode='remote_worker'; item.worker_id; item.execution_profile → _persist_queue() в try/except (fail-soft)",
+      "network_endpoint": null,
+      "idempotency": "remote.py:152-160 — если сохранённый handle указывает на живую и не отозванную попытку (_handle_still_valid, remote.py:93-104), возвращается ОН, второе задание не создаётся (E-04, E-05)",
+      "gap_before_11g": "ГЛАВНЫЙ РАЗРЫВ. provider_requirement в create_audit_job не передаётся вовсе: список аргументов remote.py:171-183 заканчивается settings=settings. Значение по умолчанию (audit_job_service.py:349) — None → wants_inference=False (audit_job_service.py:406-408) → build_runtime_snapshot(provider_mode='fake') (audit_job_service.py:414). Любое боевое задание уезжало на воркер со словами «модель не нужна». Побочно теряются object_id, execution_profile, pipeline_revision, correlation_id и options.start_from (сверка contracts.py:98-112 с remote.py:171-183)."
+    },
+    {
+      "step": 4,
+      "name": "Создание задания на центре",
+      "function": "audit_job_service.create_audit_job (+ build_audit_source_package)",
+      "file": "backend/app/services/distributed_workers/audit_job_service.py",
+      "line": "340-503 (сборка пакета — 506-614)",
+      "input": "worker_id, project_id, version_id, version_dir, action, include_optimization, retry_stage, actor, display_name, settings",
+      "output": "строка представления remote_jobs + '_execution_token_plain' + '_manifest' + '_params'; на диске — архив исходников",
+      "persisted_state": "logical_jobs (payload = JSON с params), job_attempts, job_state_transitions; <data_dir>/source_packages/<job_uuid>/<attempt_uuid>/<package_id>.tar.gz (identifiers.attempt_dir, identifiers.py:113-125 — внешнего кода проекта в пути нет, I-11)",
+      "network_endpoint": null,
+      "idempotency": "schema.py:261-263 ux_logical_jobs_active_project → repositories.ActiveJobExists (I-18); schema.py:311-312 ux_attempts_one_active",
+      "gap_before_11g": "expected_source_tree_hash уезжает в ПАКЕТ плейсхолдером. params строится с 'sha256:'+'0'*64 (audit_job_service.py:433), этим же объектом собирается пакет (L462-473), snapshot/job.json пишет params.model_dump() (L526-543), и лишь потом params.model_copy подставляет настоящий хэш и переписывает logical_jobs.payload (L476-483). Копия параметров внутри пакета и копия в БД расходятся по этому полю навсегда."
+    },
+    {
+      "step": 5,
+      "name": "ProviderRequirementPayload — контракт требования к провайдеру",
+      "function": "ProviderRequirementPayload / AuditPipelineParams.provider_requirement",
+      "file": "backend/app/models/distributed_workers.py",
+      "line": "442-471 (модель), 524 (поле-контейнер), 483 (extra='forbid' у контейнера)",
+      "input": "dict от create_audit_job (audit_job_service.py:441)",
+      "output": "валидированная модель → params.model_dump() → JSON",
+      "persisted_state": "вложенный ключ внутри logical_jobs.payload (schema.py:252). Отдельной колонки и CHECK-ограничения нет нигде — добавление поля не требует миграции БД",
+      "network_endpoint": null,
+      "idempotency": "неприменимо (модель данных)",
+      "gap_before_11g": "Поля capability нет (:454-463) при extra='forbid' (:452) → передача {'capability':'strong_audit'} падает ValidationError ещё на центре. Второй, независимый отказ — при обратном разборе нагрузки в момент выдачи задания: audit_worker_agent.py:706-716 строит AuditPipelineParams(**raw), то есть /jobs/next отдал бы 500. Обратный сценарий не лучше: без capability резолвер оставляет binding.model=None (audit_worker/providers/resolver.py:406-417), и pipeline_bridge._preflight (audit_worker/providers/pipeline_bridge.py:387-410) отказывает КАЖДОМУ рабочему вызову — «в привязке нет назначенной модели». Оба конца тупиковые. Поле model формально принимается центром (:456), но воркер отвергает его безусловно (resolver.py:128-140)."
+    },
+    {
+      "step": 6,
+      "name": "Реестр воркеров на центре",
+      "function": "registration_service.register_worker / claim_token / approve_worker; worker_registry.record_heartbeat / can_receive_jobs; audit_job_service.compatibility_report",
+      "file": "backend/app/services/distributed_workers/registration_service.py, worker_registry.py, audit_job_service.py",
+      "line": "registration_service.py:32-122, 125-178, 226-248; worker_registry.py:39-101, 314-333; audit_job_service.py:99-207",
+      "input": "bootstrap-секрет → claim_secret → одобрение оператора → wtk_-токен; далее heartbeat с capability-блоком",
+      "output": "worker_id + токен; compatibility_report с закрытым списком причин отказа",
+      "persisted_state": "таблицы workers, worker_tokens, resource_snapshots, worker_provider_states, provider_quota_snapshots",
+      "network_endpoint": "POST /api/v1/worker/register, POST /api/v1/worker/claim, POST /api/v1/worker/heartbeat, POST /api/workers/{id}/approve",
+      "idempotency": "повторная регистрация НЕ перевыпускает claim_secret (registration_service.py:73-87); claim одноразовый, проверка и сжигание в одной транзакции, повтор → 409 (:139-177)",
+      "gap_before_11g": "Воркер не сообщал центру ни одной логической способности: в heartbeat_payload (audit_worker/providers/manager.py:260-346) поля provider_capabilities нет (grep по базе = 0 вхождений). Центр видит provider_mode, real_inference_allowed, pipeline_bridge_enabled — но не знает, разрешима ли 'strong_audit' локальной политикой машины. Проверить это ДО создания задания было нечем, и несовпадение всплывало уже на воркере — после списания разрешения: consume идёт на executor.py:852-855, resolve на :872-889, и возврат разрешения явно не делается (:883-889)."
+    },
+    {
+      "step": 7,
+      "name": "Опрос и захват задания агентом",
+      "function": "JobPullClient.poll → jobs_next → repositories.claim_next_job_for_worker",
+      "file": "audit_worker/job_poller.py; backend/app/api/routers/audit_worker_agent.py; backend/app/services/distributed_workers/repositories.py",
+      "line": "job_poller.py:22-73; audit_worker_agent.py:493-703; repositories.py:591-736",
+      "input": "{free_slots, accepts.compressions, wait_sec} + Bearer worker-токен + X-Worker-Id + X-Instance-Id + X-Protocol-Version",
+      "output": "JobAssignment (models/distributed_workers.py:549-565) с params, package.url, execution_token; либо 204; либо 409",
+      "persisted_state": "job_attempts.execution_state: assigned → source_uploading (CAS); job_attempts.execution_token_hash; job_state_transitions; idempotency_keys",
+      "network_endpoint": "POST /api/v1/worker/jobs/next (long-poll до settings.long_poll_sec=25 с)",
+      "idempotency": "Idempotency-Key = свежий uuid4 на каждый нормальный опрос, тот же ключ переиспользуется ТОЛЬКО после транспортного сбоя (job_poller.py:60, 68-71); на центре — кэш ответа с перевыпуском execution_token на КЭШИРОВАННУЮ попытку (audit_worker_agent.py:517-577); захват — условный UPDATE assigned→source_uploading внутри BEGIN IMMEDIATE (repositories.py:715-727), проигравший видит rowcount!=1 (I-05)",
+      "gap_before_11g": "Маршрута физически не существовало на боевом центре: роутер /api/v1/worker/* регистрируется только под DISTRIBUTED_WORKERS_ENABLED (backend/app/main.py:254), флаг по умолчанию False (backend/app/core/config.py:1260) и на боевом центре не задан → любой запрос воркера даёт 404, а не 403. Постоянный HTTPS-ingress имеет статус not_ready с этапа 10 (docs/distributed_audit_workers/11_provider_auth_quota_gate.md:1055-1064): quick-туннель cloudflared меняет URL при каждом перезапуске, nginx-location требует sudo, прямой порт режет провайдер."
+    },
+    {
+      "step": 8,
+      "name": "Скачивание и проверка пакета исходников",
+      "function": "CenterClient.download_source → package_io.verify_and_unpack → WorkerAgent._download_and_verify",
+      "file": "audit_worker/client.py; audit_worker/package_io.py; audit_worker/agent.py",
+      "line": "client.py:201-229; package_io.py:203-361 (портируемость — 66-127); agent.py:855-907",
+      "input": "URL пакета из JobAssignment.package + X-Execution-Token; ожидаемый sha256 и манифест",
+      "output": "распакованные секции AUDIT_PACKAGE_SECTIONS (package_io.py:47-55) в каталоге попытки; событие source_verified; local_state=verified",
+      "persisted_state": "<root>/jobs/<job_uuid>/<attempt_uuid>/{source_package,unpack_staging,project,snapshot,runtime,discipline_profile,metadata}",
+      "network_endpoint": "GET /api/v1/worker/jobs/{job_id}/source (FileResponse, ETag = source_package_hash, поддержка Range)",
+      "idempotency": "докачка через <dest>.part и Range: bytes=<offset>-, дописывание только на 206, 416 → удалить part (client.py:201-229); распаковка в .staging-<pid>-<ms> и публикация через os.replace (package_io.py:250, 358-360); распаковка идёт в unpack_staging, а не в work/, чтобы не снести logs/, metadata/ и накопленный outbox (agent.py:882-887)",
+      "gap_before_11g": "Этой ноги на 11F не было вовсе. Пакет исходников собирал операторский scripts/build_11f_source_package.py (весь файл), переносился scp вручную (docs/distributed_audit_workers/11f/11F_DEPLOYMENT_REPORT.md:57-61), раскладку попытки и перенос секций делал харнес (scripts/run_11f_worker_slice.py:285-361, особенно 327-354). Боевого прогона audit_pipeline_v1 через этот endpoint не существует."
+    },
+    {
+      "step": 9,
+      "name": "Исполнитель: захват попытки и диспетчеризация по типу задания",
+      "function": "Executor._tick → local_db.claim_next → Executor.run_attempt → run_audit_attempt",
+      "file": "audit_worker/executor.py",
+      "line": "280-314 (тик), 485-501 (диспетчер), 900+ (аудит-ветка), 682-707 (взаимоисключение реального аудита и тестовых заданий, REAL_AUDIT_MAX_SLOTS=1 на :56)",
+      "input": "строка execution_queue в worker.db",
+      "output": "запуск конвейера, completed.marker, пакет результата",
+      "persisted_state": "worker.db: execution_queue, process_registry, executor_instances (SQLite WAL, SCHEMA_VERSION=2, local_db.py:31)",
+      "network_endpoint": null,
+      "idempotency": "ёмкость считается ВНУТРИ той же транзакции, проигравший видит rowcount==0 (local_db.py:366-417); стартовый CAS set_queue_state(expect_states=(CLAIMED,)) (executor.py:939-947) — проигрыш означает отмену, процесс не стартует",
+      "gap_before_11g": "Исполнитель на 11F не участвовал: конвейер запускал харнес напрямую через subprocess.run (scripts/run_11f_worker_slice.py:496-544, :529-536), пакет результата собирал он же (:600-664). Значит слот-контроль, стартовый CAS, completed.marker (executor.py:1011-1022) и правило «нулевой код возврата при отсутствующем обязательном артефакте — всё равно FAILED» (executor.py:1040-1067) боевым аудитом не проверялись."
+    },
+    {
+      "step": 10,
+      "name": "Попытка (attempt): строка очереди воркера и строка job_attempts центра",
+      "function": "local_db.claim_next / set_queue_state / adopt_claim; repositories.create_job (создание attempt) + job_service.transition",
+      "file": "audit_worker/local_db.py; backend/app/services/distributed_workers/repositories.py, job_service.py",
+      "line": "local_db.py:366-417, 419-440, 450-498; repositories.py:322-331; job_service.py:230-326",
+      "input": "job_id + attempt_id (оба UUID; paths.require_storage_key, audit_worker/paths.py:45-52, не пускает в путь ничего кроме UUID)",
+      "output": "переходы execution_state с записью в job_state_transitions",
+      "persisted_state": "центр: job_attempts (+ шесть колонок central_handoff_*, schema.py:600-604); воркер: execution_queue",
+      "network_endpoint": null,
+      "idempotency": "на воркере SQL-уровнем запрещён уход из терминального состояния, включая терминальное→терминальное (local_db.py:450-498); на центре роль актора и таблица ALLOWED_TRANSITIONS (job_service.py:268-278) — ребра running→failed для роли 'center' нет (I-02), running→assigned нет вовсе (I-03)",
+      "gap_before_11g": "Вторая попытка того же audit-задания технически невозможна. attempt_service.create_attempt (backend/app/services/distributed_workers/attempt_service.py:570) берёт параметры через job_service.job_params (backend/app/services/distributed_workers/job_service.py:343-350), а тот БЕЗУСЛОВНО строит TestJobParams(**payload['params']) при extra='forbid' (backend/app/models/distributed_workers.py:432) → ValidationError на любом audit_pipeline_v1; следом собрался бы ТЕСТОВЫЙ пакет (job_service.build_source_package, job_service.py:432-437). Как следствие provider_requirement из сохранённой нагрузки при пересоздании попытки не перечитывается никогда."
+    },
+    {
+      "step": 11,
+      "name": "Привязка провайдера",
+      "function": "Executor.prepare_provider_binding",
+      "file": "audit_worker/executor.py",
+      "line": "782-898 (вызов из run_audit_attempt — :921); проверка формы требования — audit_worker/audit_runner.py:210-272; разбор — audit_worker/providers/resolver.py:84-159; резолв способности в модель — resolver.py:358-438",
+      "input": "params.provider_requirement из задания",
+      "output": "metadata/provider_binding.json (chmod 0600, resolver.py:310-322) либо None",
+      "persisted_state": "файл привязки в каталоге попытки; self._bound_providers[attempt_id]",
+      "network_endpoint": null,
+      "idempotency": "привязка перезаписывается в каталоге попытки; повторный вход при уже списанном разрешении не бесплатен — единица тратится за попытку, а не за успех (executor.py:883-889)",
+      "gap_before_11g": "Требования нет — ветка выходит на первой же строке: executor.py:801-803 (`if not requirement_payload or int(...max_inferences...) <= 0: return None`). Привязка не пишется, AUDIT_WORKER_PROVIDER_BINDING не выставляется, pipeline_bridge.active() (audit_worker/providers/pipeline_bridge.py:98-125) отдаёт False, и claude_runner уходит на прямой запуск `claude -p` — то есть на транспорт ДО 11C. Именно поэтому привязку на 11D/11E/11F выписывал оператор скриптом, причём 11F конструировал ProviderBinding НАПРЯМУЮ (scripts/run_11f_worker_slice.py:405-422), минуя ProviderResolver и его проверки «установлен / не заблокирован политикой / auth_state == logged_in»."
+    },
+    {
+      "step": 12,
+      "name": "Разрешение оператора на оплачиваемые вызовы (grant)",
+      "function": "inference_grant.consume (из executor.prepare_provider_binding)",
+      "file": "audit_worker/providers/inference_grant.py",
+      "line": "293-351 (consume), 354-402 (issue), 62 и 115-116 (файл <worker_root>/config/allow_synthetic_inference), 123-146 (проверка владельца и режима файла), 219-243 (fcntl-замок); списание — audit_worker/executor.py:852-855",
+      "input": "provider + task_id=job_id",
+      "output": "GrantRecord с уменьшенным остатком; grant_id уезжает в привязку и обязателен мосту (pipeline_bridge.py:285-289)",
+      "persisted_state": "JSON-файл разрешений, атомарная перезапись под замком",
+      "network_endpoint": null,
+      "idempotency": "атомарное уменьшение под fcntl; повторно списать исчерпанное нельзя; exactly-once самого ВЫЗОВА обеспечивает не grant, а журнал (I-P9: audit_worker/providers/inference_ledger.py + pipeline_bridge.run_stage_inference, pipeline_bridge.py:221-340)",
+      "gap_before_11g": "Разрешение мог выписать ТОЛЬКО человек. issue() помечена «ТОЛЬКО для оператора и тестов, не для воркера» (inference_grant.py:365-369); функции issue_for_job в базе нет вовсе (grep=0); структурный тест tests/test_distributed_workers_pipeline_provider.py:965-979 грепает executor.py, agent.py, pipeline_bridge.py и manager.py на строку inference_grant.issue. Задание с max_inferences>0 без вручную созданного файла упирается в _GrantPending (executor.py:856-864) либо AuditJobRejected (:865-867). Потолка МАШИНЫ на автовыдачу тоже не существовало: переменной AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES в audit_worker/config.py нет (grep=0)."
+    },
+    {
+      "step": 13,
+      "name": "Дочерний процесс конвейера",
+      "function": "audit_runner.run_audit_job → python -u -m backend.app.pipeline.remote_audit_runner <spec>",
+      "file": "audit_worker/audit_runner.py; backend/app/pipeline/remote_audit_runner.py",
+      "line": "audit_runner.py:538-695 (запуск), 419-424 (фиксированный argv), 427-487 (окружение с нуля), 555-588 (run_spec.json); remote_audit_runner.py:440-479 (bind_providers), :29 (FORBIDDEN_STAGES), :876-882 (WORKER_STAGE_PLAN)",
+      "input": "metadata/run_spec.json (несёт provider_requirement дословно, путь к привязке, allow_real_llm и все хэши снимков)",
+      "output": "артефакты этапов в каталоге попытки, JSONL-события на stdout, work/process_exit.json",
+      "persisted_state": "03_analysis/*, work/pipeline_log.json, usage/usage_report.json, logs/*",
+      "network_endpoint": null,
+      "idempotency": "два независимых маркера завершения: completed.marker исполнителя (executor.py:95-119) и work/process_exit.json самого процесса (читается executor.py:122-146) — рестарт исполнителя узнаёт исход, не перезапуская работу",
+      "gap_before_11g": "На 11F спеку писал харнес целиком (scripts/run_11f_worker_slice.py:438-493) и ПАТЧИЛ её после записи, принудительно проставляя provider_mode='real' и служебное поле _11f_fake_cli (:758-766); окружение собиралось руками белым списком (:508-527). Кроме того, в харнесе жёстко зашиты таблица моделей этапов (:73-95) и белый список этапов привязки (:63-71) — то, что по контракту обязано приезжать из snapshot/stage_models.json пакета и из provider_requirement.allowed_stages."
+    },
+    {
+      "step": 14,
+      "name": "EventOutbox → события на центр",
+      "function": "EventOutbox.append / pending_batch / ack → WorkerAgent._flush_outbox_locked → event_service.ingest_batch",
+      "file": "audit_worker/event_outbox.py; audit_worker/agent.py; backend/app/api/routers/audit_worker_agent.py",
+      "line": "event_outbox.py:189-259 (запись + редактирование секретов), 425-469 (батч), 471-481 (ack/rewind); agent.py:1250-1295; audit_worker_agent.py:824-878",
+      "input": "структурные события и log_line от исполнителя и агента (двух РАЗНЫХ процессов)",
+      "output": "EventBatchResponse с курсором; на центре — worker_events, progress_json попытки",
+      "persisted_state": "outbox-%04d.jsonl (ротация 64 МиБ / 50 000 строк), cursor.json писателя и ack.json читателя — раздельно, чтобы процессы не затирали поля друг друга (event_outbox.py:71-75)",
+      "network_endpoint": "POST /api/v1/worker/events",
+      "idempotency": "seq выдаёт SQLite, а не файловый счётчик (local_db.allocate_event_sequence, local_db.py:733-771, PRIMARY KEY(job_id, attempt_id, sequence)); на центре — курсор + UNIQUE(job_id, attempt_id, sequence) в одной транзакции (I-04); 409 sequence_gap → rewind_to (event_outbox.py:478-481); дыры выданных, но не записанных номеров залечиваются явным events_truncated (event_outbox.py:261-323) — потеря видна, поток не встаёт",
+      "gap_before_11g": "Ни одного события боевого audit-задания в сеть не ушло: у харнеса 11F нет ни outbox, ни отправителя — во всём main() (scripts/run_11f_worker_slice.py:669-811) нет ни одного сетевого шага. Прогресс удалённого аудита в UI центра не появлялся в принципе."
+    },
+    {
+      "step": 15,
+      "name": "Загрузка пакета результата",
+      "function": "Executor._package → uploader.upload_result → WorkerAgent._upload_archive",
+      "file": "audit_worker/executor.py; audit_worker/uploader.py; audit_worker/package_io.py; audit_worker/agent.py",
+      "line": "executor.py:1119-1234; uploader.py:25-102 (ретраи чанка — 105-127); package_io.py:422-677 (сборка пакета, _PROJECT_RETURN_PREFIXES = ('03_analysis/','99_service/') на :379); agent.py:1039-1114",
+      "input": "tar.gz результата + его sha256 + манифест",
+      "output": "UploadCompleteResponse с retention_until",
+      "persisted_state": "uploads/<upload_id>/state.json на воркере (пишется ДО отправки, uploader.py:60-73); на центре — upload_sessions, upload_chunks, data_dir/incoming/<upload_id>",
+      "network_endpoint": "POST /api/v1/worker/uploads → PUT /api/v1/worker/uploads/{upload_id}/chunks/{idx} → POST /api/v1/worker/uploads/{upload_id}/complete",
+      "idempotency": "сессия ищется по (job, attempt, expected_hash) и возвращается с replayed=True (upload_service.py:65-69); Idempotency-Key загрузки включает expected_hash (client.py:255-264); чанк с тем же хэшем — 'replayed', с другим — 409 ChunkConflict (upload_service.py:121-130); повторный complete при status=='verified' отдаёт тот же ответ (audit_worker_agent.py:1041-1050) (I-06)",
+      "gap_before_11g": "Возврат пакета на 11F делался scp вручную: docs/distributed_audit_workers/11f/11F_RESULT_PACKAGE.json:31-35 — 'method': 'scp вручную (§34: production ingress НЕ включался)'."
+    },
+    {
+      "step": 16,
+      "name": "Приём и валидация на центре (staging)",
+      "function": "upload_service.assemble → package_service.validate_result_package",
+      "file": "backend/app/services/distributed_workers/upload_service.py; package_service.py",
+      "line": "upload_service.py:152-203 (сборка), 227-242 (проверка места); package_service.py:355-460 (четыре упорядоченные проверки)",
+      "input": "все чанки ровно list(range(total)) + заявленные sha256 и размер",
+      "output": "<data_dir>/result_staging/<job>/<attempt>/result.tar.gz + отчёт валидации",
+      "persisted_state": "result_staging/, при отказе — rejected_results/",
+      "network_endpoint": "внутренняя часть POST /api/v1/worker/uploads/{upload_id}/complete",
+      "idempotency": "лизинг сборки repositories.claim_upload_for_assembly (repositories.py:835-869, ASSEMBLY_LEASE_SEC=1800) — два одновременных complete больше не портят один tmp-файл; запись через .assembling + os.replace",
+      "gap_before_11g": null
+    },
+    {
+      "step": 17,
+      "name": "ACK (подтверждение приёма)",
+      "function": "job_service.finalize_result (или store_unpublished_result для отозванных попыток)",
+      "file": "backend/app/services/distributed_workers/job_service.py",
+      "line": "772-886 (retention_until выставляется ТОЛЬКО здесь — :874-877), 674-768 (хранение непубликуемого результата), 936-944 (retention_unconfirmed)",
+      "input": "собранный архив + заявленные хэш и размер",
+      "output": "state=COMPLETED, validated_at, retention_until = now + 30 суток, result_acknowledged_at",
+      "persisted_state": "job_attempts.retention_until / retention_state / result_package_hash / result_storage_class",
+      "network_endpoint": "отдельного маршрута ACK НЕТ; подтверждение доезжает тремя каналами: UploadCompleteResponse.retention_until (audit_worker_agent.py:1049, 1114, 1171, 1193), HeartbeatResponse.retention_updates (:432-445), ReconcileJobVerdict.result_accepted (:1456-1479)",
+      "idempotency": "повторный complete отдаёт тот же retention_until; на воркере признаком приёма считается ИМЕННО непустой retention_until (agent.py:1090-1106), иначе состояние остаётся completed_locally и попытка переотправки повторится",
+      "gap_before_11g": "На 11F ACK не выдавался вовсе: пакет ушёл scp, retention_until не приезжал, и по построению воркер остался в состоянии retention_unconfirmed. Удаление у него при этом запрещено даже ручной командой оператора (audit_worker/retention.py:185-201) — без сетевого ACK жизненный цикл пакета на воркере не закрывается никогда (I-08, I-21)."
+    },
+    {
+      "step": 18,
+      "name": "Импортёр: применение артефактов в версию проекта",
+      "function": "RemoteWorkerExecutionBackend.wait → collect_result → result_import.import_result_for_attempt → apply_result_package",
+      "file": "backend/app/pipeline/execution/remote.py; backend/app/services/distributed_workers/result_import.py",
+      "line": "remote.py:328-376 (ожидание), 456-498 (сбор); result_import.py:89-168 (идемпотентность), 240-278 (валидация манифеста), 186-237 (классификация путей и план изменений), 326-478 (применение), 481-531 (журнал и откат), 597-617 (resume_stage)",
+      "input": "строка попытки в состоянии completed + архив из result_staging",
+      "output": "ExecutionResult(success, returned_artifacts, resume_stage, resume_hint, usage_report)",
+      "persisted_state": "файлы в version_dir проекта; apply_journal.json + backup/ в staging; поля попытки result_import_state / hash / at / report; ось central_handoff",
+      "network_endpoint": null,
+      "idempotency": "result_import_state=='applied' и тот же хэш → {'applied':True,'replayed':True} (result_import.py:100-111); другой хэш → ResultImportConflict (:105-109); usage применяется один раз под usage_applied_at (:535-593); любое непустое множество rejected обрывает импорт целиком и пишет rejected_results/<job>/<attempt>/import_rejection.json (:396-401, 662-681) (I-07)",
+      "gap_before_11g": "Боевой приём 11F выполнял отдельный локальный скрипт scripts/verify_11f_handoff_import.py, а не путь wait → collect_result → import_result_for_attempt. То есть импортёр как ЗВЕНО ЦЕПОЧКИ — то, после которого центральный хвост стартует САМ, — на реальном аудите не проверялся; проверялась только его функция как утилиты."
+    },
+    {
+      "step": 19,
+      "name": "Возобновление центрального хвоста",
+      "function": "PipelineManager._run_central_tail_after_remote → _detect_central_resume_stage → resume_detector.detect_resume_stage",
+      "file": "backend/app/pipeline/manager.py",
+      "line": "6338-6470 (хвост), 6358-6371 (короткое замыкание по central_handoff_state=='completed'), 6451-6486 (проверка по артефактам)",
+      "input": "ExecutionResult + ExecutionHandle",
+      "output": "выполнение norm_verify → debt_control → decision_carryover → excel; job.status=COMPLETED",
+      "persisted_state": "артефакты центральных этапов в версии проекта; ось central_handoff (backend/app/services/distributed_workers/central_handoff.py:144-190)",
+      "network_endpoint": null,
+      "idempotency": "рестарт центра ПОСЛЕ выполненного хвоста не повторяет его: state=='completed' закрывает элемент очереди без второго перехода (manager.py:6358-6371) — импорт идемпотентен, а норм-этап и Excel нет, они стоят денег и перезаписывают финальные артефакты",
+      "gap_before_11g": "Звено ни разу не запускалось от пакета РЕАЛЬНОГО прогона. Оно доказано только на стенде 09 с поддельными CLI (scripts/smoke_distributed_audit_central_handoff_e2e.py, включая принудительный рестарт центра посреди хвоста), а 11F завершился на границе передачи (docs/distributed_audit_workers/11f/11F_HANDOFF_CONTRACT.json: next_expected_central_stage = norm_verify) и дальше пошёл через локальный импортёр."
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G-01",
+      "title": "Центр не формулировал требование к провайдеру — штатное задание уезжало «без модели»",
+      "where": "backend/app/pipeline/execution/remote.py:171-183 (аргументы create_audit_job); значение по умолчанию — backend/app/services/distributed_workers/audit_job_service.py:349",
+      "consequence": "wants_inference=False (audit_job_service.py:406-408) → provider_mode='fake' в снимке рантайма (:414) → на воркере prepare_provider_binding выходит на executor.py:801-803 и привязку не пишет → мост неактивен (pipeline_bridge.py:98-125) → конвейер уходит на прямой `claude -p`, то есть на транспорт ДО 11C. Ни одно боевое задание не могло дойти до ProviderAdapter.",
+      "severity": "блокер"
+    },
+    {
+      "id": "G-02",
+      "title": "Контракт центра не знает слова capability, а без него мост отказывает каждому вызову",
+      "where": "backend/app/models/distributed_workers.py:442-471 (нет поля, extra='forbid' на :452); повторный отказ при выдаче задания — backend/app/api/routers/audit_worker_agent.py:706-716",
+      "consequence": "Передать способность нельзя ни через API, ни впрыском в JSON нагрузки (обратный разбор AuditPipelineParams(**raw) уронил бы /jobs/next). Передать точную модель тоже нельзя: воркер отвергает provider_requirement.model безусловно (audit_worker/providers/resolver.py:128-140). Требование БЕЗ capability доезжает, но даёт binding.model=None (resolver.py:406-417), и pipeline_bridge._preflight отказывает каждому рабочему вызову (pipeline_bridge.py:387-410). Оба конца тупиковые.",
+      "severity": "блокер"
+    },
+    {
+      "id": "G-03",
+      "title": "Ни одной операторской поверхности, через которую требование можно было бы задать",
+      "where": "RemoteAuditLaunchRequest (backend/app/models/distributed_workers.py:877-889, extra='forbid'); AuditExecutionOptions (backend/app/pipeline/execution/contracts.py:81-95, extra='forbid'); build_request (backend/app/pipeline/execution/registry.py:129-154); маршрут POST /api/workers/audit/launch (backend/app/api/routers/audit_workers_admin.py:395-462)",
+      "consequence": "Единственный производитель provider_requirement во всём дереве — скрипт scripts/smoke_distributed_audit_pipeline_provider_e2e.py:905-919, и он ЯВНО обходит HTTP, вызывая audit_job_service.create_audit_job в подпроцессе (докстринг :890-897). Действие 'provider_selfcheck' принимается моделью параметров (models:490) и сервисом (audit_job_service.py:417), но не принимается операторским маршрутом (Literal['full','audit','resume']).",
+      "severity": "блокер"
+    },
+    {
+      "id": "G-04",
+      "title": "Разрешение на оплачиваемые вызовы мог выписать только человек",
+      "where": "audit_worker/providers/inference_grant.py:354-402 (issue, докстринг :365-369 «ТОЛЬКО для оператора и тестов»); отсутствие issue_for_job (grep=0); структурный запрет tests/test_distributed_workers_pipeline_provider.py:965-979; списание — audit_worker/executor.py:852-855",
+      "consequence": "Задание с max_inferences>0, приехавшее по сети, встаёт в _GrantPending (executor.py:856-864) и по истечении pipeline_provider_grant_wait_sec (по умолчанию 0.0) отклоняется (:865-867). Автоматической выдаче не на что было опереться: потолка машины (AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES) в audit_worker/config.py не существовало.",
+      "severity": "блокер"
+    },
+    {
+      "id": "G-05",
+      "title": "Воркер не объявлял центру свои логические способности",
+      "where": "audit_worker/providers/manager.py:260-346 (heartbeat_payload) — ключа provider_capabilities нет (grep=0)",
+      "consequence": "Центр не мог проверить ДО создания задания, разрешима ли требуемая способность локальной политикой воркера (audit_worker/providers/model_policy.py:80-81, KNOWN_CAPABILITIES=('strong_audit',)). Несовпадение всплывало на воркере уже ПОСЛЕ списания разрешения: consume на executor.py:852-855, resolve на :872-889, возврат явно не делается (:883-889).",
+      "severity": "существенный"
+    },
+    {
+      "id": "G-06",
+      "title": "Повторная попытка audit-задания падает на разборе параметров и собрала бы тестовый пакет",
+      "where": "backend/app/services/distributed_workers/attempt_service.py:570 → job_service.job_params (backend/app/services/distributed_workers/job_service.py:343-350) → TestJobParams (backend/app/models/distributed_workers.py:432, extra='forbid')",
+      "consequence": "Операторское действие «создать новую попытку» неприменимо к audit_pipeline_v1: ValidationError, а дальше job_service.build_source_package (job_service.py:432-437) собрал бы ТЕСТОВЫЙ пакет вместо проектного. Сохранённое в нагрузке provider_requirement при пересоздании попытки не перечитывается никогда.",
+      "severity": "существенный"
+    },
+    {
+      "id": "G-07",
+      "title": "Ingress не включён: сетевой контур физически отсутствует на боевом центре",
+      "where": "backend/app/core/config.py:1260 (DISTRIBUTED_WORKERS_ENABLED=False) → backend/app/main.py:254 (роутер регистрируется только под флагом); backend/app/core/config.py:1309 (DISTRIBUTED_AUDIT_EXECUTION_ENABLED=False) → backend/app/pipeline/execution/registry.py:47-55, 113-122; статус постоянного ingress — docs/distributed_audit_workers/11_provider_auth_quota_gate.md:1055-1064",
+      "consequence": "Любой запрос воркера на боевой центр даёт 404, а не 403 — маршрута нет в приложении. Постоянного HTTPS-входа нет с этапа 10: quick-туннель cloudflared меняет URL при перезапуске, nginx-location требует sudo (его нет ни на одной машине), прямой порт режет провайдер (проходят только 22/80/443/3389). План включения (docs/distributed_audit_workers/11c/11C_CENTER_INGRESS_CUTOVER.md) имеет статус НЕ ПРИМЕНЁН.",
+      "severity": "блокер"
+    },
+    {
+      "id": "G-08",
+      "title": "Пустая AUDIT_PIPELINE_REVISION запирает удалённый аудит дважды",
+      "where": "backend/app/core/config.py:1318 (по умолчанию пустая строка); backend/app/services/distributed_workers/audit_job_service.py:113-127 (reason center_revision_missing) и backend/app/api/routers/audit_workers_admin.py:416-426 (409 worker_incompatible); backend/app/models/distributed_workers.py:497 (pipeline_revision min_length=1)",
+      "consequence": "Даже при поднятых флагах запуск возвращает 409 на проверке совместимости, а если бы проверку обошли — конструирование AuditPipelineParams упало бы. Ревизия должна быть выставлена на центре и совпасть с AUDIT_WORKER_PIPELINE_REVISION воркера (audit_worker/audit_runner.py:297-308). Подгонять ревизию центра под воркера прямо запрещено (11C_CENTER_INGRESS_CUTOVER.md §13).",
+      "severity": "операционный"
+    },
+    {
+      "id": "G-09",
+      "title": "В пакете исходников уезжает плейсхолдер вместо хэша дерева",
+      "where": "backend/app/services/distributed_workers/audit_job_service.py:433 (placeholder 'sha256:'+'0'*64), :462-473 (пакет собирается этим объектом), :526-543 (snapshot/job.json пишет params.model_dump()), :476-483 (настоящий хэш подставляется ПОСЛЕ)",
+      "consequence": "Копия параметров внутри пакета и копия в logical_jobs.payload расходятся по expected_source_tree_hash. Настоящее значение доезжает до воркера только через нагрузку задания (JobAssignment.params), а не через snapshot/job.json — любой потребитель, читающий пакет как источник истины, получит нули.",
+      "severity": "латентный"
+    },
+    {
+      "id": "G-10",
+      "title": "Опции удалённого запуска молча теряются",
+      "where": "backend/app/pipeline/execution/remote.py:171-183 против backend/app/pipeline/execution/contracts.py:98-112 и backend/app/pipeline/execution/registry.py:139-154",
+      "consequence": "На удалённом пути выброшены object_id, execution_profile, pipeline_revision, correlation_id и options.start_from (сервис жёстко ставит REMOTE_AUDIT_PILOT_V1, свою ревизию и include_norms=False). «Продолжить с этапа N» удалённо выразить нечем; execution_profile из запроса не влияет ни на что. Плюс build_request никогда не заполняет include_optimization/include_norms — они всегда остаются значениями по умолчанию.",
+      "severity": "латентный"
+    },
+    {
+      "id": "G-11",
+      "title": "Сетевые звенья аудита не имеют ни одного боевого прогона",
+      "where": "scripts/run_11f_worker_slice.py:669-811 (весь main() без единого сетевого шага); docs/distributed_audit_workers/11f/11F_RESULT_PACKAGE.json:31-35; docs/distributed_audit_workers/11f/11F_DEPLOYMENT_REPORT.md:57-61; docs/distributed_audit_workers/11f/11F_CHECKLIST.md:49-55",
+      "consequence": "Шаги 7, 8, 14, 15, 17, 18 цепочки на реальном audit_pipeline_v1 не исполнялись ни разу: пакет туда и обратно ехал scp, событий не было, ACK не выдавался, приём делал локальный скрипт. Доказаны они только на смоуках с ПОДДЕЛЬНЫМИ моделями (09 и 11C) и на тестовых заданиях.",
+      "severity": "блокер доказательной базы"
+    },
+    {
+      "id": "G-12",
+      "title": "Исполнитель и агент воркера в боевом прогоне не участвовали",
+      "where": "scripts/run_11f_worker_slice.py:285-361 (замена агента), :438-493 и :758-766 (run_spec и его патч), :496-544 (замена audit_runner), :600-664 (замена сборщика пакета); systemd-юниты не ставились — docs/distributed_audit_workers/11f/11F_DEPLOYMENT_REPORT.md:59-61",
+      "consequence": "Слот-контроль (audit_worker/executor.py:682-707), стартовый CAS (:939-947), маркеры завершения (:1011-1022, :122-146), правило «нулевой код при отсутствующем артефакте = FAILED» (:1040-1067) и восстановление после рестарта (:362-446) на реальном аудите не проверялись. Прогон шёл в отдельном корне ~/audit-worker-11f со своей provider_policy.json, изолированной от продовой установки.",
+      "severity": "блокер доказательной базы"
+    }
+  ],
+  "flags": [
+    {
+      "name": "DISTRIBUTED_WORKERS_ENABLED",
+      "file": "backend/app/core/config.py:1260",
+      "default": false,
+      "what_it_gates": "Регистрацию роутера /api/v1/worker/* (backend/app/main.py:254 — при выключенном флаге маршрута НЕТ, ответ 404, а не 403), операторский /api/workers/* кроме status_router, и создание SQLite с каталогами (database.ensure_ready → settings.require_enabled). Второй рубеж — сам require_worker отдаёт 404."
+    },
+    {
+      "name": "DISTRIBUTED_AUDIT_EXECUTION_ENABLED",
+      "file": "backend/app/core/config.py:1309",
+      "default": false,
+      "what_it_gates": "Право выбрать удалённый backend и создать задание audit_pipeline_v1. remote_execution_available (backend/app/pipeline/execution/registry.py:47-55) требует И его, И settings.enabled; select_backend (registry.py:113-122) при отказе бросает ExecutionError и НИКОГДА не откатывается в локальный режим. Отдельное решение от ingress — включать одновременно прямо запрещено (11C_CENTER_INGRESS_CUTOVER.md §13)."
+    },
+    {
+      "name": "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET",
+      "file": "backend/app/core/config.py:1273-1275",
+      "default": "",
+      "what_it_gates": "Регистрацию НОВЫХ воркеров. require_bootstrap_secret требует не менее 16 символов (backend/app/services/distributed_workers/settings.py:115-133), иначе 503. Пустой секрет — способ включить ingress, не открывая приём новых машин; выданные токены при этом продолжают работать."
+    },
+    {
+      "name": "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN",
+      "file": "backend/app/core/config.py:1301-1303",
+      "default": false,
+      "what_it_gates": "Подъём операторского роутера /api/workers/* без портальной аутентификации (backend/app/main.py:265-278). Собственной аутентификации у операторского контура нет — без портальной он отдал бы rotate-token любому."
+    },
+    {
+      "name": "AUDIT_PIPELINE_REVISION",
+      "file": "backend/app/core/config.py:1318",
+      "default": "",
+      "what_it_gates": "Не булев флаг, но такой же жёсткий рубеж: пустое значение даёт reason center_revision_missing (audit_job_service.py:113-127) → 409 worker_incompatible на POST /api/workers/audit/launch (audit_workers_admin.py:416-426), и одновременно AuditPipelineParams.pipeline_revision имеет min_length=1 (models/distributed_workers.py:497). Должна совпадать с AUDIT_WORKER_PIPELINE_REVISION воркера."
+    },
+    {
+      "name": "AUDIT_WORKER_AUDIT_PIPELINE_ENABLED",
+      "file": "audit_worker/config.py:396",
+      "default": false,
+      "what_it_gates": "Право воркера вообще исполнять audit_pipeline_v1 (проверяется в audit_runner.validate_params, audit_worker/audit_runner.py:309-312)."
+    },
+    {
+      "name": "AUDIT_WORKER_ALLOW_REAL_LLM",
+      "file": "audit_worker/config.py:397",
+      "default": false,
+      "what_it_gates": "Настоящие модели на машине. При false обязателен каталог подделок с маркером PROVIDERS.json{mode:fake} — fail-closed в executor._provider_dir (audit_worker/executor.py:723-754). Зеркало на центре: backend/app/core/config.py:1328 + runtime_config.assert_compatible (backend/app/services/distributed_workers/runtime_config.py:306-310)."
+    },
+    {
+      "name": "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED",
+      "file": "audit_worker/config.py:450-452",
+      "default": false,
+      "what_it_gates": "Рубеж МАШИНЫ для моста конвейер→провайдер. Проверяется ПЕРВЫМ в prepare_provider_binding (audit_worker/executor.py:816-821) — раньше режима, раньше резолва, раньше списания."
+    },
+    {
+      "name": "AUDIT_WORKER_PIPELINE_PROVIDER_GRANT_WAIT_SEC",
+      "file": "audit_worker/config.py:453-455",
+      "default": 0.0,
+      "what_it_gates": "Сколько ждать разрешения оператора, прежде чем отклонить задание. Ноль = отказ сразу (audit_worker/executor.py:856-867); ожидание — состояние очереди, а не провал (:922-927)."
+    },
+    {
+      "name": "AUDIT_WORKER_PROVIDER_BINDING",
+      "file": "audit_worker/audit_runner.py:59 (зеркало — audit_worker/providers/resolver.py:58)",
+      "default": null,
+      "what_it_gates": "Единственный активатор моста: pipeline_bridge.active() (audit_worker/providers/pipeline_bridge.py:98-125). Переменную ставит ТОЛЬКО исполнитель в окружение дочернего процесса (audit_runner.py:481-489); если она задана, а файла нет — функция бросает, а не молча уходит на несанкционированный CLI. На центре переменной не бывает никогда."
+    },
+    {
+      "name": "AUDIT_WORKER_PIPELINE_REVISION",
+      "file": "audit_worker/config.py:385-387",
+      "default": null,
+      "what_it_gates": "Обязана совпасть с pipeline_revision задания (audit_worker/audit_runner.py:297-308), иначе задание отклоняется на воркере."
+    },
+    {
+      "name": "AUDIT_WORKER_RETENTION_DELETE_ENABLED",
+      "file": "audit_worker/config.py:371-373",
+      "default": false,
+      "what_it_gates": "Физическое удаление принятых пакетов. При false sweep выдаёт только сухой отчёт (audit_worker/retention.py:102-127, 218-230). Само разрешение на удаление в любом случае требует непустого retention_until (retention.py:185-201) — отказ действует даже для ручной команды оператора."
+    },
+    {
+      "name": "verify_tls (константа, не переменная)",
+      "file": "audit_worker/config.py:464-467",
+      "default": true,
+      "what_it_gates": "Проверку сертификата центра. Переменной для отключения нет НАМЕРЕННО. Единственное послабление — http на localhost под AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST (audit_worker/config.py:468-470, правила транспорта — :484-511)."
+    },
+    {
+      "name": "<worker_root>/config/allow_synthetic_inference (файл, не переменная)",
+      "file": "audit_worker/providers/inference_grant.py:62, 115-116",
+      "default": null,
+      "what_it_gates": "Право конвейера на оплачиваемые вызовы: JSON со схемой v1, файл обязан принадлежать текущему uid и иметь режим не шире 0600 (:123-146); списание атомарно под fcntl (:293-351). До 11G создавался исключительно руками оператора."
+    }
+  ],
+  "footnotes": [
+    {
+      "id": "F-1",
+      "claim_in_report": "docs/distributed_audit_workers/11c/11C_CENTER_INGRESS_CUTOVER.md:59 и 11C_RUNTIME_PATH.md:31,250 называют маршрут POST /api/v1/worker/jobs/{id}/result",
+      "source_says": "Такого маршрута в backend/app/api/routers/audit_worker_agent.py нет. Загрузка результата идёт тремя маршрутами: POST /api/v1/worker/uploads (:881), PUT /api/v1/worker/uploads/{upload_id}/chunks/{idx} (:970), POST /api/v1/worker/uploads/{upload_id}/complete (:1019). GET /jobs/{job_id}/result существует только в ОПЕРАТОРСКОМ роутере (backend/app/api/routers/audit_workers_admin.py:978).",
+      "resolution": "Принят исходник. Для reverse-proxy это не критично (правило пишется на префикс /api/v1/worker/*), но список маршрутов в плане включения ingress неточен."
+    },
+    {
+      "id": "F-2",
+      "claim_in_report": "seg1 указывает декораторные строки маршрутов агента (719 download_source, 738 accept_job)",
+      "source_says": "Определения функций на строку ниже: download_source :720, accept_job :739, jobs_next :494 при декораторе :493.",
+      "resolution": "В таблицах указаны диапазоны, включающие и декоратор, и тело."
+    },
+    {
+      "id": "F-3",
+      "claim_in_report": "seg1: ExecutionResult принимает resume_hint",
+      "source_says": "Поле resume_hint не объявлено в ExecutionResult (backend/app/pipeline/execution/contracts.py:152-164); оно проходит только потому, что у модели model_config extra='allow'. Читатель — manager.py:6338+ через getattr(result,'resume_hint',None).",
+      "resolution": "Принят исходник: связь держится на нестрогой модели, а не на контракте."
+    }
+  ]
+}

@@ -45,8 +45,11 @@ aren't supported for production workloads». Поэтому снимок нес�
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import shutil
+import tempfile
 import time
 from pathlib import Path
 from typing import Any, Optional, Sequence
@@ -550,10 +553,6 @@ class CodexProviderAdapter(ProviderAdapter):
         соседний файл» она может только через команду, а команду ей выполнять
         нечем.
         """
-        import hashlib
-        import shutil
-        import tempfile
-
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
             return blocked

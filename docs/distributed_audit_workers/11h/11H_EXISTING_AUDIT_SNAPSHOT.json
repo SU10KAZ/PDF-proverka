@@ -1,0 +1,88 @@
+{
+ "stage": "11H",
+ "question": "что у документа было ДО прогона 11H — и что обязано уцелеть",
+ "taken_at_utc": "2026-08-10T13:33:46Z",
+ "version_json": {
+  "schema_version": 1,
+  "version_id": "v001",
+  "version_no": 1,
+  "label": "V1",
+  "legacy_folder_name": "СТ26_01-14-АР5-2-РД_V1",
+  "legacy_folder_path": "/tmp/v2upload_wlum9gsg/256. Примавера К14 (Спартак)/AR/СТ26_01-14-АР5-2-РД_V1",
+  "source": "plain",
+  "status": "active",
+  "analysis_run_id": "run_20260807T095126",
+  "analysis_status": "none",
+  "missing_analysis_files": [
+   "02_text_analysis.json",
+   "01_blocks_analysis.json",
+   "03_findings.json"
+  ],
+  "migrated_at": "2026-08-07T09:51:26"
+ },
+ "existing_audit": {
+  "analysis_status": "none",
+  "analysis_run_id": "run_20260807T095126",
+  "missing_analysis_files": [
+   "02_text_analysis.json",
+   "01_blocks_analysis.json",
+   "03_findings.json"
+  ],
+  "03_analysis_files": 0,
+  "04_review_files": 0,
+  "05_export_files": 0,
+  "99_service_files": 0,
+  "verdict": "АУДИТА НЕТ. analysis_status='none', каталоги 03_analysis/04_review/05_export/99_service пусты. Перезаписывать нечего — 11H даёт ПЕРВЫЙ результат по этому документу",
+  "consequence": "требование §33 «не перезатереть старый результат» выполняется тривиально; тем не менее хэши входов фиксируются и сверяются после прогона"
+ },
+ "immutable_inputs": {
+  "01_input": {
+   "input_manifest.json": {
+    "sha256": "0219684803544e675585007e5873a847503b17e4b75651a73158b8dae67a4a43",
+    "bytes": 1280
+   },
+   "project_info.json": {
+    "sha256": "d12b4ee1c42fdedcd7f625bb4684ea77ebd02565d66679ac568275729d602ab4",
+    "bytes": 688
+   },
+   "СТ26_01-14-АР5-2-РД_V1.pdf": {
+    "sha256": "24341c648bddbe2ea0eef9d2dc1ea0da475d09291840e8845e828bb7981efbdb",
+    "bytes": 11722852
+   },
+   "СТ26_01-14-АР5-2-РД_V1_blocks.json": {
+    "sha256": "2059d361f3821aa5192756dac94f2f56db244e3606b807c2b2e0a5c5d8f1d27d",
+    "bytes": 49418
+   },
+   "СТ26_01-14-АР5-2-РД_V1_results.html": {
+    "sha256": "893009cae41782550d9607f20c260c0a7aea0f95cbac80e9ae3295d63b39be76",
+    "bytes": 365248
+   },
+   "СТ26_01-14-АР5-2-РД_V1_results.md": {
+    "sha256": "3f846aef06a498ff9058853d0de0bb915b6777a5ebf87ecb1c698bce8a583b23",
+    "bytes": 306798
+   }
+  },
+  "02_work": {
+   "blocks.json": {
+    "sha256": "2059d361f3821aa5192756dac94f2f56db244e3606b807c2b2e0a5c5d8f1d27d",
+    "bytes": 49418
+   },
+   "document.md": {
+    "sha256": "3f846aef06a498ff9058853d0de0bb915b6777a5ebf87ecb1c698bce8a583b23",
+    "bytes": 306798
+   },
+   "document.pdf": {
+    "sha256": "24341c648bddbe2ea0eef9d2dc1ea0da475d09291840e8845e828bb7981efbdb",
+    "bytes": 11722852
+   },
+   "ocr.html": {
+    "sha256": "893009cae41782550d9607f20c260c0a7aea0f95cbac80e9ae3295d63b39be76",
+    "bytes": 365248
+   },
+   "result.json": {
+    "sha256": "ce3016f235d130bf095c0878a1a0341a8aa956292a7b38ae19c0c0d8b5552731",
+    "bytes": 410674
+   }
+  }
+ }
+}

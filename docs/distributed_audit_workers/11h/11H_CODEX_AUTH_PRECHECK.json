@@ -1,0 +1,37 @@
+{
+ "stage": "11H",
+ "question": "готов ли Codex на 176.12.77.31 к боевому прогону — БЕЗ единого обращения к модели",
+ "taken_at_utc": "2026-08-10T13:49:57Z",
+ "host": "andrewuzun3.hlab.kz (176.12.77.31)",
+ "unix_user": "coder",
+ "how": "штатной подкомандой воркера `python -m audit_worker providers` на релизе 11G с AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE=ambient_user и корнем данных во ВРЕМЕННОМ каталоге (11h-precheck), чтобы не трогать состояние 11G. Обращений к модели ноль: подкоманда конструирует адаптер с inference_allowed=False",
+ "credentials_read_by_code": false,
+ "credentials_note": "auth.json НЕ открывался: адаптер снимает только stat (режим, владелец)",
+ "cli": {
+  "installed": true,
+  "version": "0.147.0",
+  "path": "/home/coder/.local/bin/codex → ~/.codex/packages/standalone/current/bin/codex"
+ },
+ "auth": {
+  "state": "logged_in",
+  "method": "chatgpt",
+  "mode": "ambient_user",
+  "plan_type": "pro",
+  "account_fingerprint": "428b185e6d53ff28",
+  "note": "отпечаток локальный (соль в metadata воркера); e-mail и токены наружу не выходят"
+ },
+ "credential_file_facts": {
+  "present": true,
+  "mode": "0600",
+  "group_readable": false,
+  "world_readable": false,
+  "owner_is_current_user": true
+ },
+ "manual_check": {
+  "command": "codex login status",
+  "stdout": "Logged in using ChatGPT",
+  "exit_code": 0
+ },
+ "login_performed": false,
+ "verdict": "готов: CLI 0.147.0, вход выполнен через ChatGPT, план pro, файл учётных данных 0600 и принадлежит coder"
+}
