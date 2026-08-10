@@ -26,6 +26,7 @@
     "branch": "feat/distributed-audit-workers-findings-merge-retry",
     "worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-findings-merge-retry",
     "base_commit": "7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f",
+    "artifacts_commit": "05ff6baf25533b9c27ff2a99a5ddcf3853a16d6d",
     "push": "НЕ выполнялся"
   },
   "code_identity_11e_final_vs_deployed": {

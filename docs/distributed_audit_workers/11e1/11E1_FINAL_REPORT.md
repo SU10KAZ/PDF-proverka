@@ -253,6 +253,10 @@ Claude real inference — **1**. Codex — **0**. Автоповтора не б
 
 ## Артефакты
 
+Ветка `feat/distributed-audit-workers-findings-merge-retry`, база
+`7a32e2e16fa4779ab4fdff8deb0fa91a4d38f43f`, коммит артефактов
+`05ff6baf25533b9c27ff2a99a5ddcf3853a16d6d`. Push не выполнялся.
+
 | Файл | Что внутри |
 |---|---|
 | `11E1_GIT_BASE.json` | база Git, тождество развёрнутого кода финалу 11E |
