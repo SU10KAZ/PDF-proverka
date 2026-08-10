@@ -462,3 +462,35 @@ def test_broken_stream_output_is_not_reported_as_success():
     # В потоке есть только init-событие: итогового `result` нет.
     stdout = '{"type":"system","subtype":"init","session_id":"abc","tools":["Read"]}\n'
     assert parse_stream_json(stdout) is None
+
+
+# ─── 12. Дефект, найденный БОЕВЫМ прогоном ───────────────────────────────────
+
+def test_provider_block_timeout_is_not_the_openrouter_transport_limit():
+    """Срок блочного вызова через провайдера — не 200 с ноги OpenRouter.
+
+    Боевой прогон 11F убил вызов на 200-й секунде сигналом 143, когда модель
+    уже отдала 74 090 байт потокового ответа: `DEFAULT_TIMEOUT_S = 200` — это
+    лимит ожидания HTTP-ответа GPT-5.4, а провайдерский путь ходит в локальный
+    CLI к Opus. Оплата состоялась, результат выброшен, этап упал.
+
+    Проверяется по коду, а не по прогону: срок обязан браться от срока ТОГО ЖЕ
+    этапа для CLI-провайдера, и внешний backstop обязан быть шире внутреннего.
+    """
+    from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+        BLOCK_HARD_TIMEOUT_BUFFER_S,
+        DEFAULT_TIMEOUT_S,
+    )
+
+    assert CLAUDE_BLOCK_ANALYSIS_TIMEOUT > DEFAULT_TIMEOUT_S, (
+        "срок CLI-этапа обязан быть больше транспортного лимита HTTP-ноги"
+    )
+    src = (
+        ROOT / "backend/app/pipeline/stages/block_analysis/gemma_findings_only.py"
+    ).read_text(encoding="utf-8")
+    assert "effective_timeout = max(float(timeout), float(CLAUDE_BLOCK_ANALYSIS_TIMEOUT))" in src
+    assert "timeout_sec=effective_timeout," in src
+    # Backstop шире внутреннего срока — иначе он убьёт работающий вызов.
+    assert "int(_cbt) + BLOCK_HARD_TIMEOUT_BUFFER_S" in src
+    assert BLOCK_HARD_TIMEOUT_BUFFER_S > 0

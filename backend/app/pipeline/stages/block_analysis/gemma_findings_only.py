@@ -1142,7 +1142,23 @@ async def call_provider_for_block(
 
     from audit_worker.providers import pipeline_bridge
     from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT
     from backend.app.pipeline.stages.block_analysis import provider_transport as _pt
+
+    # Срок берётся НЕ от аргумента `timeout`, а от срока CLI-этапа.
+    #
+    # `timeout` здесь — `DEFAULT_TIMEOUT_S = 200`, транспортный лимит ноги
+    # OpenRouter: столько ждут HTTP-ответа от GPT-5.4. Провайдерский путь ходит
+    # не в HTTP, а в локальный CLI к Opus, который на сложном чертеже думает
+    # дольше. Цена ошибки измерена боевым прогоном 11F: вызов был убит на
+    # 200-й секунде сигналом 143, УЖЕ получив 74 090 байт потокового ответа —
+    # то есть модель работала, оплата состоялась, а результат выброшен.
+    #
+    # `CLAUDE_BLOCK_ANALYSIS_TIMEOUT` (1800 с) — срок ТОГО ЖЕ этапа для ветки
+    # Claude CLI, то есть значение, уже выбранное под этот провайдер. Берётся
+    # максимум: если вызывающий задал больший срок осознанно, урезать его
+    # незачем.
+    effective_timeout = max(float(timeout), float(CLAUDE_BLOCK_ANALYSIS_TIMEOUT))
 
     started = time.monotonic()
     block_id = str(block.get("block_id") or "")
@@ -1192,7 +1208,7 @@ async def call_provider_for_block(
                 purpose=f"block_analysis:{block_id}",
                 required_result_fields=_pt.REQUIRED_RESULT_FIELDS,
                 field_types=_pt.FIELD_TYPES,
-                timeout_sec=float(timeout),
+                timeout_sec=effective_timeout,
                 images=[(_pt.CROP_MEDIA_TYPE, image)],
             )
         )
@@ -2138,6 +2154,16 @@ async def run_findings_only_for_project(
     # timeout обойдён (trickle keepalive). При превышении блок помечается
     # неудачным, семафор освобождается, стадия продолжается.
     block_hard_timeout_s = timeout_s + BLOCK_HARD_TIMEOUT_BUFFER_S
+    if use_provider_bridge:
+        # Внешний backstop обязан быть ШИРЕ внутреннего срока вызова, иначе он
+        # убивает работающий вызов раньше, чем тот успевает завершиться, — и
+        # оплата уже состоялась. Провайдерский путь ждёт CLAUDE_BLOCK_ANALYSIS_TIMEOUT,
+        # значит backstop считается от него же.
+        from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT as _cbt
+
+        block_hard_timeout_s = max(
+            block_hard_timeout_s, int(_cbt) + BLOCK_HARD_TIMEOUT_BUFFER_S,
+        )
     completed_count = 0
     completed_lock = asyncio.Lock()
     results: list[dict] = []
