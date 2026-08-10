@@ -1519,18 +1519,37 @@ async def _run_findings_merge_via_provider(
     # объявлял три действия — то есть удалённый прогон «Full Codex» давал свод
     # без усилителей, а бюджет их считал. Расхождение было измеримым и
     # задокументированным, но от этого не переставало быть другим аудитом.
-    return await _run_targeted_findings_merge_via_provider(
-        project_info=project_info,
-        project_id=project_id,
-        on_output=on_output,
-        output_dir=output_dir,
-        version_dir=version_dir,
-        version_id=version_id,
-        resolved_output_dir=resolved_output_dir,
-        attempt_dir=attempt_dir,
-        base_payload=payload,
-        base_result=cli_result,
-    )
+    try:
+        return await _run_targeted_findings_merge_via_provider(
+            project_info=project_info,
+            project_id=project_id,
+            on_output=on_output,
+            output_dir=output_dir,
+            version_dir=version_dir,
+            version_id=version_id,
+            resolved_output_dir=resolved_output_dir,
+            attempt_dir=attempt_dir,
+            base_payload=payload,
+            base_result=cli_result,
+        )
+    except Exception:                                # noqa: BLE001 — см. ниже
+        # Контракт «targeted-провалы нефатальны» — дословно тот же, что в ветке
+        # прямого `codex exec`. Базовый свод УЖЕ оплачен, проверен и записан в
+        # 03_findings.json; исключение усилителя (диск кончился, каталог
+        # попытки эвакуирован, journal не пишется) не имеет права превратить
+        # выполненный этап в провалившийся. Без этой обёртки стоимость ошибки
+        # была бы асимметричной: усилитель дешевле базового свода на порядок, а
+        # ронял бы его целиком.
+        logger.exception(
+            "targeted-проходы свода через мост: исключение — остаётся базовый "
+            "свод (%s)", project_id,
+        )
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы прерваны исключением — "
+            "остаётся базовый свод",
+        )
+        return 0, cli_result.result_text, cli_result
 
 
 #: Имя targeted-прохода (`CodexTargetedPass.stage`) → роль действия плана.
@@ -1676,10 +1695,16 @@ async def _run_targeted_findings_merge_via_provider(
             })
             continue
         usage = dict(outcome.provider_result.usage)
-        total_in += int(usage.get("input_tokens", 0) or 0)
-        total_out += int(usage.get("output_tokens", 0) or 0)
-        total_ms += int(outcome.provider_result.duration_ms or 0)
-        total_cost += float(usage.get("total_cost_usd", 0.0) or 0.0)
+        if outcome.performed:
+            # Расход считается ТОЛЬКО за фактический вызов. Результат, взятый
+            # из журнала попытки, уже был учтён при первом прогоне: сложив его
+            # снова, отчёт показал бы вторую оплату там, где её не было, — и
+            # сверка «бюджет против следа» перестала бы что-либо доказывать
+            # ровно на повторах, ради которых журнал и заведён.
+            total_in += int(usage.get("input_tokens", 0) or 0)
+            total_out += int(usage.get("output_tokens", 0) or 0)
+            total_ms += int(outcome.provider_result.duration_ms or 0)
+            total_cost += float(usage.get("total_cost_usd", 0.0) or 0.0)
         payload = outcome.provider_result.result
         ok = bool(outcome.ok and isinstance(payload, dict))
         reports.append({
@@ -1732,6 +1757,12 @@ async def _run_targeted_findings_merge_via_provider(
         duration_ms=total_ms,
         input_tokens=total_in,
         output_tokens=total_out,
+        # Токены кеша переносятся из базового свода, а не обнуляются. Провайдер
+        # отдаёт их отдельными полями, и `CLIResult` без них означал бы, что
+        # успешный targeted-проход СНИЖАЕТ учтённый расход этапа — то есть
+        # усилитель выглядел бы экономией.
+        cache_creation_tokens=int(base_result.cache_creation_tokens or 0),
+        cache_read_tokens=int(base_result.cache_read_tokens or 0),
         cost_usd=total_cost,
     )
     _save_audit_trail(
