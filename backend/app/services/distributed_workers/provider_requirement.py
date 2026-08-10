@@ -38,10 +38,20 @@ from backend.app.models.distributed_workers import (
     ProviderRequirementPayload,
 )
 
-#: Провайдер профиля `remote_audit_pilot_v1`. Константа профиля, а не поле
-#: запроса: реализация worker-участка написана против Claude-адаптера, и
-#: «выбери провайдера сам» здесь означало бы «выполни неизвестно чем».
-AUDIT_PROVIDER = "claude"
+#: Провайдер профиля `remote_audit_pilot_v1` по умолчанию. Полем ЗАПРОСА он не
+#: становится и на 11H: «выбери провайдера сам» по-прежнему означало бы «выполни
+#: неизвестно чем». Но и константой он быть перестал — до 11H строка `claude`
+#: была вписана в код, и заказать Codex-воркера было нечем при полностью готовом
+#: Codex-адаптере.
+#:
+#: Источник значения — настройка ЦЕНТРА (`DISTRIBUTED_AUDIT_PROVIDER`), то есть
+#: решение администратора платформы, а не данные задания и не выбор клиента API.
+#: Список закрыт схемой `ProviderRequirementPayload.provider`; неизвестное имя —
+#: отказ при сборке требования, а не тихий возврат к умолчанию.
+DEFAULT_AUDIT_PROVIDER = "claude"
+
+#: Провайдеры, которых центр умеет заказывать. Совпадает со схемой нагрузки.
+SUPPORTED_AUDIT_PROVIDERS: tuple[str, ...] = ("claude", "codex")
 
 #: Способность, которую требует боевой аудит.
 AUDIT_CAPABILITY = CAPABILITY_STRONG_AUDIT
@@ -67,17 +77,36 @@ AUDIT_MODEL_STAGES: tuple[str, ...] = (
 #: optimization(1) + optimization_critic(1) + optimization_corrector(1).
 _FIXED_STAGE_CALLS = 6
 
-#: Запас на технические повторы. Ровно два (§27 задания 11G): один повтор на
-#: одно неудавшееся логическое действие, не более двух на задание.
-_TECHNICAL_RETRY_HEADROOM = 2
-
 #: Потолок, когда структуру документа прочитать не удалось. Не «побольше на
 #: всякий случай»: это худший случай, который центр готов авторизовать вслепую.
 _BLIND_BLOCK_ESTIMATE = 12
 
-#: Жёсткая верхняя граница центра. Схема допускает 64; столько центр не
-#: заказывает никогда — это рубеж, а не рабочее значение.
-CENTER_MAX_INFERENCES = 24
+#: Жёсткая верхняя граница центра — она же граница схемы нагрузки.
+#:
+#: До 11H здесь стояло 24, и это был не рубеж, а работающий обрыв: документ с
+#: сорока графическими блоками получал бюджет 24 и упирался в потолок на
+#: середине аудита, УЖЕ оплатив две трети вызовов. Рубеж обязан быть выше
+#: любого честно посчитанного бюджета, иначе он превращается в скрытый лимит
+#: на размер документа. Ограничивает же реальный расход не он, а формула
+#: `estimate_inferences` и потолок локальной политики воркера — тот всегда у́же.
+CENTER_MAX_INFERENCES = 64
+
+
+def technical_retry_headroom(natural_calls: int) -> int:
+    """Запас на ТЕХНИЧЕСКИЕ повторы: `max(3, ceil(N × 0.10))`.
+
+    До 11H здесь стояла константа 2. Для документа на восемь вызовов это
+    осмысленный запас, для документа на полсотни — нет: одна сорвавшаяся сеть
+    на десятый блок съедала половину запаса, вторая обрывала аудит целиком.
+
+    Повторы по КАЧЕСТВУ этим запасом не покрываются и покрываться не могут:
+    в бюджет входят только повторы после таймаута, обрыва транспорта и ответа,
+    непригодного к разбору. «Мне не понравился результат» — не техническая
+    причина, и второго оплаченного вызова за неё не бывает.
+    """
+    import math
+
+    return max(3, math.ceil(max(0, int(natural_calls)) * 0.10))
 
 
 class ProviderRequirementError(RuntimeError):
@@ -109,35 +138,72 @@ def _iter_blocks(payload: Any) -> list[dict[str, Any]]:
     return blocks
 
 
+#: Где у версии лежит структура блоков. Порядок — порядок доверия.
+#:
+#: `02_work/result.json` стоит ПЕРВЫМ, потому что это канонический вход
+#: конвейера: именно его читает кропинг (`crop_blocks/blocks.py`), и именно по
+#: нему считает блоки Stage 02. Раньше искали только `01_input/*_result.json`, и
+#: на новом трёхфайловом комплекте портала (pdf + `_results.md` + `_results.html`
+#: + `_blocks.json`, БЕЗ `result.json`) поиск не находил ничего — оценка молча
+#: уходила в слепые 12 блоков при фактических сорока с лишним.
+_BLOCK_STRUCTURE_CANDIDATES: tuple[str, ...] = (
+    "02_work/result.json",
+    "01_input/result.json",
+)
+
+#: Типы блока, которые Stage 02 отдаёт модели поштучно.
+_GRAPHIC_BLOCK_TYPES = ("image", "figure", "picture", "chart", "drawing")
+
+
+def _graphic_blocks_in(payload: Any) -> Optional[int]:
+    """Сколько блоков этой структуры дойдут до Stage 02. `None` — не разобрали.
+
+    Правило отбора списано с фактического кода кропинга, а не придумано заново:
+    блок обязан быть графическим, иметь кроп (`crop_url`) или координаты для
+    офлайн-рендера — и НЕ быть штампом.
+
+    Штампы отсеиваются по `category_code`, как это делает
+    `crop_blocks/blocks.py`. Без этой строки оценка завышалась ровно на число
+    штампов (у пилотного документа 11H — на 13 из 54), а завышенный бюджет
+    открывает чужую подписку шире, чем нужно.
+    """
+    blocks = _iter_blocks(payload)
+    if not blocks:
+        return None
+    graphic = 0
+    for block in blocks:
+        kind = str(block.get("type") or block.get("block_type") or "").lower()
+        if kind and kind not in _GRAPHIC_BLOCK_TYPES:
+            continue
+        if str(block.get("category_code") or "").lower() == "stamp":
+            continue
+        if block.get("crop_url") or block.get("coords") or block.get("coords_px") or block.get("bbox"):
+            graphic += 1
+    return graphic
+
+
 def count_graphic_blocks(version_dir: Path) -> Optional[int]:
     """Сколько блоков потребуют отдельного обращения к модели.
 
     Возвращает `None`, если структуру прочитать не удалось — и это ЧЕСТНЫЙ
     ответ, а не ноль. Ноль означал бы «графики нет», то есть бюджет без
     `block_analysis`, и первый же блок упёрся бы в потолок.
-
-    Считаются блоки с `crop_url` ЛИБО с координатами: и то и другое даёт кроп
-    (сеть или офлайн-рендер из PDF), а архитектура Stage 02 — строго «один
-    блок = один вызов».
     """
-    root = Path(version_dir) / "01_input"
-    candidates = sorted(root.glob("*_result.json")) if root.is_dir() else []
+    root = Path(version_dir)
+    candidates: list[Path] = [root / rel for rel in _BLOCK_STRUCTURE_CANDIDATES]
+    input_dir = root / "01_input"
+    if input_dir.is_dir():
+        candidates.extend(sorted(input_dir.glob("*_result.json")))
     for path in candidates:
+        if not path.is_file():
+            continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        blocks = _iter_blocks(payload)
-        if not blocks:
-            continue
-        graphic = 0
-        for block in blocks:
-            kind = str(block.get("type") or block.get("block_type") or "").lower()
-            if kind and kind not in ("image", "figure", "picture", "chart", "drawing"):
-                continue
-            if block.get("crop_url") or block.get("coords") or block.get("bbox"):
-                graphic += 1
-        return graphic
+        found = _graphic_blocks_in(payload)
+        if found is not None:
+            return found
     return None
 
 
@@ -147,21 +213,27 @@ def estimate_inferences(version_dir: Path) -> dict[str, Any]:
     blind = blocks is None
     effective_blocks = _BLIND_BLOCK_ESTIMATE if blind else int(blocks)
     natural = effective_blocks + _FIXED_STAGE_CALLS
+    headroom = technical_retry_headroom(natural)
     ceiling = max(1, min(CENTER_MAX_INFERENCES, _env_int(
         "DISTRIBUTED_AUDIT_MAX_INFERENCES", CENTER_MAX_INFERENCES
     )))
-    budget = min(ceiling, natural + _TECHNICAL_RETRY_HEADROOM)
+    budget = min(ceiling, natural + headroom)
     return {
         "graphic_blocks": None if blind else int(blocks),
         "blind_estimate": blind,
         "natural_calls": natural,
-        "technical_retry_headroom": _TECHNICAL_RETRY_HEADROOM,
+        "technical_retry_headroom": headroom,
         "center_ceiling": ceiling,
         "max_inferences": budget,
+        # Бюджет, УРЕЗАННЫЙ потолком, — отдельное наблюдаемое утверждение, а не
+        # деталь строки `formula`. Обрыв аудита на середине из-за потолка
+        # выглядит в журнале как ошибка этапа, и связать его с настройкой центра
+        # задним числом можно только по этому полю.
+        "clamped_by_ceiling": bool(natural + headroom > ceiling),
         "formula": (
             f"{effective_blocks} графических блоков + {_FIXED_STAGE_CALLS} "
-            f"текстовых этапов + {_TECHNICAL_RETRY_HEADROOM} на технические "
-            f"повторы, зажато потолком центра {ceiling}"
+            f"текстовых этапов + {headroom} на технические повторы "
+            f"(max(3, ceil(N×0.10))), зажато потолком центра {ceiling}"
         ),
     }
 
@@ -203,6 +275,24 @@ def worker_supports(worker: dict[str, Any], *, provider: str, capability: str) -
     return True, ""
 
 
+def audit_provider() -> str:
+    """Какого провайдера заказывает ЭТОТ центр. Настройка платформы, не задания.
+
+    Неизвестное имя — отказ. Молчаливый возврат к умолчанию означал бы, что
+    оператор, опечатавшийся в настройке, получает Claude-задание там, где
+    рассчитывал на Codex, и узнаёт об этом из счёта за подписку.
+    """
+    raw = (os.environ.get("DISTRIBUTED_AUDIT_PROVIDER") or "").strip().lower()
+    if not raw:
+        return DEFAULT_AUDIT_PROVIDER
+    if raw not in SUPPORTED_AUDIT_PROVIDERS:
+        raise ProviderRequirementError(
+            f"DISTRIBUTED_AUDIT_PROVIDER={raw!r}: центр умеет заказывать только "
+            f"{list(SUPPORTED_AUDIT_PROVIDERS)}"
+        )
+    return raw
+
+
 def build_audit_requirement(
     *,
     version_dir: Path,
@@ -220,21 +310,26 @@ def build_audit_requirement(
         raise ProviderRequirementError(
             f"способность {AUDIT_CAPABILITY!r} исчезла из реестра центра"
         )
+    provider = audit_provider()
     estimate = estimate_inferences(Path(version_dir))
     if worker is not None:
         ok, why = worker_supports(
-            worker, provider=AUDIT_PROVIDER, capability=AUDIT_CAPABILITY
+            worker, provider=provider, capability=AUDIT_CAPABILITY
         )
         if not ok:
             raise ProviderRequirementError(why)
     requirement = ProviderRequirementPayload(
-        provider=AUDIT_PROVIDER,
+        provider=provider,
         capability=AUDIT_CAPABILITY,
         allowed_stages=list(AUDIT_MODEL_STAGES),
         max_inferences=int(estimate["max_inferences"]),
     )
     rationale = {
-        "provider": AUDIT_PROVIDER,
+        "provider": provider,
+        "provider_source": (
+            "DISTRIBUTED_AUDIT_PROVIDER" if os.environ.get("DISTRIBUTED_AUDIT_PROVIDER")
+            else "умолчание профиля"
+        ),
         "capability": AUDIT_CAPABILITY,
         "action": action,
         "allowed_stages": list(AUDIT_MODEL_STAGES),

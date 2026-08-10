@@ -1151,8 +1151,18 @@ class TestCodexNotInvoked:
         assert code == 0
         assert called == []
 
-    def test_ai2_codex_adapter_refuses_explicit_model(self, monkeypatch, tmp_path):
-        """Явное назначение модели для codex не реализовано — и молчать нельзя."""
+    def test_ai2_codex_adapter_accepts_explicit_model_but_needs_accepted_list(
+        self, monkeypatch, tmp_path
+    ):
+        """Явная модель для codex РЕАЛИЗОВАНА (11H) — но без сверки не работает.
+
+        До 11H адаптер отказывал на любой `model`: «реализовано только для
+        Claude». Отказ был честнее молчаливого игнорирования, но он же делал
+        Codex непригодным для конвейера — мост требует назначенной модели от
+        ЛЮБОГО провайдера. Теперь строка уходит в `--model=…`, а прежняя
+        гарантия переезжает на своё место: назначить модель и не назначить, с
+        чем сверять ответ, по-прежнему нельзя.
+        """
         home = tmp_path / "ambient"
         _ambient_home(monkeypatch, home)
         adapter = CodexProviderAdapter(
@@ -1160,10 +1170,21 @@ class TestCodexNotInvoked:
                          auth_mode=AUTH_MODE_AMBIENT_USER, ambient_home=home),
             executable=tmp_path / "codex", timeout_sec=30.0, inference_allowed=True,
         )
+        # Модель назначена, а сверять не с чем — отказ ДО запуска CLI.
+        result = adapter.structured_inference(
+            "тест", purpose="t", model="gpt-5.4", accepted_reported_models=(),
+        )
+        assert result.error_code == errors.ERR_MODEL_MISMATCH
+        # Со списком допустимых вызов доходит до CLI (которого здесь нет —
+        # значит `cli_missing`, а не отказ по модели).
         result = adapter.structured_inference(
             "тест", purpose="t", model="gpt-5.4", accepted_reported_models=("gpt-5.4",),
         )
-        assert result.error_code == errors.ERR_MODEL_MISMATCH
+        assert result.error_code == errors.ERR_CLI_MISSING
+        # И строка модели попадает в argv в форме `--флаг=значение`.
+        from audit_worker.providers.codex_adapter import _inference_argv
+
+        assert "--model=gpt-5.4" in _inference_argv("gpt-5.4")
 
 
 # ═════════════ Рубеж формы требования центра ═════════════════════════════════

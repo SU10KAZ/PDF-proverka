@@ -408,8 +408,13 @@ def test_d_backend_passes_the_requirement_into_create_audit_job(
     assert requirement["capability"] == CAPABILITY
     assert requirement["model"] is None
     # Бюджет посчитан от структуры документа, а не взят круглым числом:
-    # 2 графических блока + 6 текстовых этапов + 2 на технические повторы.
-    assert requirement["max_inferences"] == 10
+    # 2 графических блока + 6 текстовых этапов + запас на технические повторы.
+    #
+    # Запас с 11H пропорционален размеру: `max(3, ceil(N × 0.10))`. Константа 2,
+    # стоявшая здесь до этого, для восьми вызовов ещё работала, а для полусотни
+    # означала обрыв аудита на середине — уже после того, как две трети вызовов
+    # оплачены. Для N=8 запас равен 3, то есть 11.
+    assert requirement["max_inferences"] == 11
     assert "block_analysis" in requirement["allowed_stages"]
 
 

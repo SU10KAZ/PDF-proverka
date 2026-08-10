@@ -212,19 +212,243 @@ sys.exit(0)
 '''
 
 
-def materialize(target_dir: Path) -> Path:
+#: Имя бинаря Codex-заглушки. Отдельный файл, а не ветка внутри claude-скрипта:
+#: адаптеры запускают их по РАЗНЫМ путям (у каждого свой
+#: `AUDIT_WORKER_PROVIDER_<X>_EXECUTABLE`), и «один файл на двоих» означало бы,
+#: что подстановка одного провайдера молча меняет поведение другого.
+CODEX_STUB_NAME = "codex"
+
+_CODEX_SCRIPT = r'''#!/usr/bin/env python3
+"""Заглушка Codex CLI для сетевого прогона через мост. Сети не касается.
+
+Воспроизводит ЧЕТЫРЕ фактических контракта настоящего `codex` 0.147.0, потому
+что все четыре делает боевой код `CodexProviderAdapter`:
+
+    codex --version                    → "codex-cli 0.147.0"
+    codex login status                 → строка + код возврата 0
+    codex app-server                   → JSON-RPC по stdio: account/read,
+                                         account/rateLimits/read
+    codex exec --json … -              → JSONL: thread.started (МОДЕЛЬ),
+                                         item.completed (ответ), turn.completed
+                                         (usage)
+
+Модальность здесь определяется НЕ форматом ввода (как у Claude), а наличием
+флагов `--image=…`: у `codex exec` изображение приходит файлом. Заглушка эти
+файлы ЧИТАЕТ и считает их размер — иначе «мультимодальный вызов прошёл» не
+означало бы, что вложение вообще существовало и было доступно процессу CLI.
+"""
+import json
+import os
+import re
+import sys
+import time
+
+CALL_LOG = os.environ.get("{call_log_env}", "")
+MODEL = os.environ.get("{model_env}", "gpt-5.6-sol")
+
+argv = sys.argv[1:]
+
+
+def _log(kind, extra=None):
+    if not CALL_LOG:
+        return
+    row = {{"ts": time.time(), "kind": kind, "argv": argv}}
+    row.update(extra or {{}})
+    try:
+        os.makedirs(os.path.dirname(CALL_LOG) or ".", exist_ok=True)
+        with open(CALL_LOG, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
+# ─── 1. Версия ───────────────────────────────────────────────────────────────
+if "--version" in argv or "-V" in argv:
+    _log("version")
+    sys.stdout.write("codex-cli 0.147.0\n")
+    sys.exit(0)
+
+# ─── 2. Состояние авторизации ────────────────────────────────────────────────
+if argv[:2] == ["login", "status"]:
+    _log("auth")
+    sys.stdout.write("Logged in using ChatGPT\n")
+    sys.exit(0)
+
+# ─── 3. app-server: JSON-RPC по stdio (0 обращений к модели) ─────────────────
+if argv[:1] == ["app-server"]:
+    _log("app_server")
+    now = int(time.time())
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            message = json.loads(line)
+        except ValueError:
+            continue
+        request_id = message.get("id")
+        method = message.get("method")
+        if request_id is None:
+            continue
+        if method == "initialize":
+            result = {{"userAgent": "codex-stub/0.147.0"}}
+        elif method == "account/read":
+            result = {{
+                "account": {{"type": "chatgpt", "planType": "pro",
+                             "email": "stub@example.invalid"}},
+                "requiresOpenaiAuth": True,
+            }}
+        elif method == "account/rateLimits/read":
+            result = {{"rateLimits": {{
+                "limitId": "codex-stub",
+                "primary": {{"usedPercent": 1.0, "windowDurationMins": 10080,
+                             "resetsAt": now + 604800}},
+            }}}}
+        else:
+            continue
+        sys.stdout.write(json.dumps({{"id": request_id, "result": result}},
+                                    ensure_ascii=False) + "\n")
+        sys.stdout.flush()
+    sys.exit(0)
+
+# ─── 4. Обращение «к модели» ─────────────────────────────────────────────────
+images = []
+for arg in argv:
+    if arg.startswith("--image="):
+        images.append(arg[len("--image="):])
+    elif arg.startswith("-i="):
+        images.append(arg[len("-i="):])
+
+# Вложения ЧИТАЮТСЯ: сам факт, что путь дошёл до процесса CLI и файл открылся,
+# и есть предмет проверки. Недоступное вложение — отказ с кодом 1, а не тихий
+# текстовый ответ: молчаливая деградация здесь означала бы «анализ чертежа без
+# чертежа», ровно то, что мост запрещает.
+image_bytes = 0
+for path in images:
+    try:
+        with open(path, "rb") as fh:
+            image_bytes += len(fh.read())
+    except OSError as exc:
+        _log("inference_error", {{"reason": "attachment_unreadable", "detail": str(exc)}})
+        sys.stderr.write("stub: attachment unreadable: %s\n" % exc)
+        sys.exit(1)
+
+# Заглушка ПРЕДСТАВЛЯЕТСЯ моделью из своего окружения, а не той, которую
+# попросили. Эхо запрошенного значения сделало бы сверку модели тождественно
+# истинной: мы проверяли бы, что наша же строка вернулась обратно, и сценарий
+# «CLI молча ответил другой моделью» стал бы непроверяемым.
+model = MODEL
+requested_model = ""
+for arg in argv:
+    if arg.startswith("--model="):
+        requested_model = arg[len("--model="):]
+
+prompt = sys.stdin.read()
+
+
+def payload_for(body):
+    """Схема ответа выбирается по МАРКЕРУ ЭТАПА — как в claude-заглушке."""
+    if "SOURCE DOCUMENT (inlined by the pipeline)" in body:
+        return {{
+            "stage": "text_analysis",
+            "text_source": "md",
+            "project_params": {{}},
+            "text_findings": [{{
+                "id": "T-001",
+                "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+                "category": "заглушка",
+                "finding": "Ответ заглушки Codex CLI: обращения к модели не было",
+                "sheet": None, "page": None,
+            }}],
+            "normative_refs_found": [],
+            "items_verified_from_blocks": [],
+        }}
+    if "findings_merge" in body or "СВОД ЗАМЕЧАНИЙ" in body.upper() or "MERGE" in body.upper():
+        return {{
+            "meta": {{"total_findings": 1}},
+            "findings": [{{
+                "id": "F-001",
+                "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+                "category": "заглушка",
+                "sheet": None, "page": None,
+                "problem": "Ответ заглушки Codex CLI: обращения к модели не было",
+                "description": "Сетевой прогон 11H через мост провайдера",
+                "norm": None, "norm_quote": None,
+                "solution": "—", "risk": "—",
+                "source_finding_ids": ["T-001", "G-001"],
+                "source_block_ids": [], "related_block_ids": [],
+                "evidence_text_refs": [], "evidence": [], "highlight_regions": [],
+            }}],
+        }}
+    match = re.search(r'Объект обязан содержать ключ "([A-Za-z_]+)"', body)
+    if match:
+        return {{match.group(1): [{{
+            "id": "OPT-001",
+            "title": "Ответ заглушки Codex CLI: обращения к модели не было",
+            "description": "Сетевой прогон 11H через мост провайдера",
+            "category": "заглушка",
+            "verdict": "accepted",
+        }}]}}
+    return {{"findings": []}}
+
+
+answer = payload_for(prompt)
+if images:
+    answer = {{"findings": [{{
+        "id": "G-001",
+        "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
+        "category": "заглушка",
+        "finding": "Ответ заглушки Codex по вложению (%d шт., %d байт)" % (
+            len(images), image_bytes),
+        "value_found": "",
+        "norm_quote": None,
+    }}]}}
+answer_text = json.dumps(answer, ensure_ascii=False)
+_log("inference", {{"images": len(images), "image_bytes": image_bytes,
+                   "prompt_chars": len(prompt), "model": model,
+                   "requested_model": requested_model}})
+
+# Порядок событий — как у настоящего `codex exec --json`: модель объявляется в
+# служебном событии начала нити, ответ приходит элементом, расход — в итоге.
+sys.stdout.write(json.dumps({{
+    "type": "codex.thread.started",
+    "thread": {{"thread_id": "stub-thread", "model": model}},
+}}, ensure_ascii=False) + "\n")
+sys.stdout.write(json.dumps({{
+    "type": "item.completed",
+    "item": {{"type": "agent_message", "text": answer_text}},
+}}, ensure_ascii=False) + "\n")
+sys.stdout.write(json.dumps({{
+    "type": "turn.completed",
+    "usage": {{"input_tokens": 1000, "output_tokens": 16,
+              "cached_input_tokens": 0, "reasoning_output_tokens": 0}},
+}}, ensure_ascii=False) + "\n")
+sys.exit(0)
+'''
+
+
+def materialize(target_dir: Path, *, provider: str = "claude") -> Path:
     """Положить заглушку в каталог и вернуть путь к самому файлу.
 
     Возвращается путь БИНАРЯ, а не каталога: заглушка подставляется явным
-    указанием администратора (`AUDIT_WORKER_PROVIDER_CLAUDE_EXECUTABLE`), а не
+    указанием администратора (`AUDIT_WORKER_PROVIDER_<X>_EXECUTABLE`), а не
     префиксом PATH. Разница существенна — поиска по PATH в адаптере нет
     намеренно, и «положили в каталог» ничего бы не изменило.
+
+    `provider` появился на 11H вместе с Codex-заглушкой. Умолчание `claude`
+    сохраняет прежние вызовы дословно.
     """
     target_dir = Path(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
-    path = target_dir / STUB_NAME
+    if provider == "codex":
+        name, script = CODEX_STUB_NAME, _CODEX_SCRIPT
+    elif provider == "claude":
+        name, script = STUB_NAME, _SCRIPT
+    else:
+        raise ValueError(f"нет заглушки для провайдера {provider!r}")
+    path = target_dir / name
     path.write_text(
-        _SCRIPT.format(call_log_env=CALL_LOG_ENV, model_env=MODEL_ENV),
+        script.format(call_log_env=CALL_LOG_ENV, model_env=MODEL_ENV),
         encoding="utf-8",
     )
     path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
@@ -232,7 +456,7 @@ def materialize(target_dir: Path) -> Path:
         json.dumps(
             {
                 "mode": "provider_bridge_stub",
-                "binary": STUB_NAME,
+                "binary": name,
                 "python": sys.executable,
                 "note": (
                     "Мост провайдера боевой; подделан только сам бинарь. "

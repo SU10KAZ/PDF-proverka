@@ -143,6 +143,23 @@ DEFAULT_REAL_DOCUMENT = (
 #: а этот скрипт выступает здесь администратором VPS, а не центром.
 DEFAULT_PROVIDER_MODEL = "claude-opus-5"
 
+#: То же для Codex (этап 11H). Отдельная константа, а не «подставим что-нибудь»:
+#: у провайдеров разные пространства имён моделей, и умолчание одного, попавшее
+#: в политику другого, дало бы отказ уже на первом вызове — после сборки пакета,
+#: выдачи задания и списанного разрешения.
+DEFAULT_CODEX_PROVIDER_MODEL = "gpt-5.6-sol"
+
+#: Провайдеры, которых умеет обслуживать этот стенд.
+PROVIDER_CLAUDE = "claude"
+PROVIDER_CODEX = "codex"
+SUPPORTED_PROVIDERS = (PROVIDER_CLAUDE, PROVIDER_CODEX)
+
+#: Какого провайдера обслуживает ТЕКУЩИЙ прогон. Глобаль, а не аргумент каждой
+#: функции: фаз, которым он нужен, восемь, и протаскивание его через все
+#: сигнатуры сделало бы диф нечитаемым. Значение выставляется один раз в
+#: `main()` до первой фазы — ровно как имена юнитов.
+PROVIDER = PROVIDER_CLAUDE
+
 AGENT_UNIT = "audit-worker-agent.service"
 EXECUTOR_UNIT = "audit-worker-executor.service"
 
@@ -412,6 +429,12 @@ class Stand:
                 "DISTRIBUTED_AUDIT_EXECUTION_ENABLED": "true",
                 "DISTRIBUTED_WORKERS_DATA_DIR": str(self.central_workers),
                 "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": bootstrap_secret,
+                # Какого провайдера заказывает ЭТОТ центр (этап 11H). Настройка
+                # платформы, а не поле задания: строка уходит в
+                # `provider_requirement.audit_provider()`, а в саму нагрузку
+                # попадает только имя провайдера — точной модели там нет и быть
+                # не может.
+                "DISTRIBUTED_AUDIT_PROVIDER": PROVIDER,
                 "AUDIT_PIPELINE_REVISION": revision,
                 "PAID_API_ENABLED": "false",
                 "CLAUDE_CLI_BIN": str(self.providers / "claude"),
@@ -788,6 +811,7 @@ def worker_env_file(
     poll_wait_sec: int = 10,
     provider_mode: str = PROVIDER_ENV_FAKE,
     claude_executable: str = "",
+    provider: str = PROVIDER_CLAUDE,
     max_inferences: int = 0,
     grant_ttl_sec: int = 6 * 3600,
     stub_call_log: str = "",
@@ -854,20 +878,26 @@ def worker_env_file(
             "# падения попытки уже ПОСЛЕ сборки и выдачи пакета, причём",
             "# `enforce_fake_providers` к тому моменту успел бы перенаправить",
             "# CLAUDE_CLI_BIN на подделку.",
-            "AUDIT_WORKER_PROVIDER_CLAUDE_AUTH_MODE=ambient_user",
-            "# Codex объявлен НЕДОСТУПНЫМ явно. Умолчание",
-            "# (isolated_provider_home) означало бы «учётные данные где-то есть,",
-            "# просто мы их не нашли», и адаптер честно рапортовал бы сломанный",
-            "# провайдер вместо отсутствующего.",
-            "AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE=unavailable",
+            # Используемый провайдер работает в ambient-режиме (учётные данные
+            # лежат в личном каталоге владельца машины), НЕиспользуемый
+            # объявлен недоступным ЯВНО. Умолчание (isolated_provider_home)
+            # означало бы «учётные данные где-то есть, просто мы их не нашли»,
+            # и адаптер честно рапортовал бы сломанный провайдер вместо
+            # отсутствующего.
+            f"AUDIT_WORKER_PROVIDER_{provider.upper()}_AUTH_MODE=ambient_user",
         ]
+        for other in SUPPORTED_PROVIDERS:
+            if other != provider:
+                lines.append(
+                    f"AUDIT_WORKER_PROVIDER_{other.upper()}_AUTH_MODE=unavailable"
+                )
         if claude_executable:
             lines += [
                 "# Путь к бинарю задаёт АДМИНИСТРАТОР машины (I-P5): ни центр,",
                 "# ни задание сюда дотянуться не могут. В режиме audit-provider",
                 "# здесь стоит заглушка; в audit-real строки нет вовсе, и",
                 "# адаптер берёт путь официального установщика сам.",
-                f"AUDIT_WORKER_PROVIDER_CLAUDE_EXECUTABLE={claude_executable}",
+                f"AUDIT_WORKER_PROVIDER_{provider.upper()}_EXECUTABLE={claude_executable}",
             ]
         if stub_call_log:
             lines += [
@@ -921,13 +951,17 @@ def worker_provider_paths(root: str) -> dict[str, str]:
 
     data_root = f"{root}/data"
     stub_dir = f"{root}/provider_stub"
+    stub_name = (
+        provider_bridge_stub.CODEX_STUB_NAME if PROVIDER == PROVIDER_CODEX
+        else provider_bridge_stub.STUB_NAME
+    )
     return {
         "data_root": data_root,
         "stub_dir": stub_dir,
-        "stub_binary": f"{stub_dir}/{provider_bridge_stub.STUB_NAME}",
-        # Обёртка НЕ называется `claude`: рядом лежит сама заглушка с этим
+        "stub_binary": f"{stub_dir}/{stub_name}",
+        # Обёртка НЕ называется именем бинаря: рядом лежит сама заглушка с этим
         # именем, и совпадение имён означало бы, что один файл затирает другой.
-        "stub_wrapper": f"{stub_dir}/claude-with-call-log",
+        "stub_wrapper": f"{stub_dir}/{stub_name}-with-call-log",
         "stub_call_log": f"{root}/logs/provider_stub_calls.jsonl",
         "policy": f"{data_root}/{model_policy.POLICY_FILENAME}",
         "grant": f"{data_root}/config/{inference_grant.GRANT_FILENAME}",
@@ -955,10 +989,11 @@ from audit_worker.providers import model_policy
 from backend.app.pipeline.execution import provider_bridge_stub as stub
 
 model = os.environ["PROVIDER_MODEL"]
+provider = os.environ.get("PROVIDER_NAME", "claude")
 policy_path = Path(os.environ["POLICY_PATH"])
 policy = {
     "policy_version": model_policy.POLICY_SCHEMA_VERSION,
-    "claude": {
+    provider: {
         "auth_mode": "ambient_user",
         "capabilities": {model_policy.CAPABILITY_STRONG_AUDIT: {"model": model}},
     },
@@ -973,11 +1008,11 @@ policy_path.write_text(
 parsed = model_policy.parse_policy(
     json.loads(policy_path.read_text(encoding="utf-8")), source_path=policy_path
 )
-resolved = parsed.resolve("claude", model_policy.CAPABILITY_STRONG_AUDIT)
+resolved = parsed.resolve(provider, model_policy.CAPABILITY_STRONG_AUDIT)
 print("POLICY_OK model=%s mode=%o" % (resolved.model, policy_path.stat().st_mode & 0o777))
 
 if os.environ.get("USE_STUB") == "1":
-    binary = stub.materialize(Path(os.environ["STUB_DIR"]))
+    binary = stub.materialize(Path(os.environ["STUB_DIR"]), provider=provider)
     if not stub.looks_like_stub(binary):
         raise SystemExit("каталог заглушки без маркера PROVIDER_STUB.json")
     print("STUB_OK path=%s mode=%o" % (binary, binary.stat().st_mode & 0o777))
@@ -1110,10 +1145,10 @@ echo "LISTEN=$(ss -tlnH 2>/dev/null | awk '$4 !~ /127\\.0\\.0\\.1|\\[::1\\]/ {{p
     # держалось на том, что мы не туда смотрели: на .31 claude 2.1.220 стоит с
     # 11F и всё это время был виден воркеру (адаптер берёт его по пути
     # установщика, а не из PATH). Спрашиваем тот же путь, что и адаптер.
-    claude_present = info.get("claude", "absent") != "absent"
+    claude_present = info.get(PROVIDER, "absent") != "absent"
     if require_real_cli:
-        check(claude_present, "настоящий claude на воркере установлен",
-              info.get("claude", ""))
+        check(claude_present, f"настоящий {PROVIDER} на воркере установлен",
+              info.get(PROVIDER, ""))
     else:
         # ПОЧЕМУ ЭТО НЕ ПРОВЕРКА, А СПРАВКА. Раньше здесь стояло утверждение
         # «настоящего CLI на машине нет», и оно проходило только потому, что
@@ -1126,8 +1161,8 @@ echo "LISTEN=$(ss -tlnH 2>/dev/null | awk '$4 !~ /127\\.0\\.0\\.1|\\[::1\\]/ {{p
         # результата — и обе эти проверки в прогоне есть. Требовать вдобавок
         # отсутствия бинаря значит запретить машине быть той же, на которой
         # пойдёт боевой прогон.
-        print(f"    справка: настоящий claude на воркере — "
-              f"{info.get('claude', 'absent')} (в этом режиме не используется; "
+        print(f"    справка: настоящий {PROVIDER} на воркере — "
+              f"{info.get(PROVIDER, 'absent')} (в этом режиме не используется; "
               f"доказательство — журнал подделок ниже)")
     if info.get("codex", "absent") != "absent":
         print(f"    справка: настоящий codex на воркере — {info.get('codex')} "
@@ -1215,6 +1250,7 @@ def phase_configure_worker(
         display_name=display_name,
         provider_mode=PROVIDER_ENV_BRIDGE if bridge else PROVIDER_ENV_FAKE,
         claude_executable=paths["stub_wrapper"] if use_stub else "",
+        provider=PROVIDER,
         max_inferences=max_inferences,
         stub_call_log=paths["stub_call_log"] if use_stub else "",
     )
@@ -1228,6 +1264,7 @@ def phase_configure_worker(
         # локальная политика моделей и, для audit-provider, заглушка CLI.
         provider_setup = f"""export WORKER_INSTALL_ROOT="$root"
 export POLICY_PATH={shlex.quote(paths["policy"])}
+export PROVIDER_NAME={shlex.quote(PROVIDER)}
 export STUB_DIR={shlex.quote(paths["stub_dir"])}
 export PROVIDER_MODEL={shlex.quote(provider_model)}
 export USE_STUB={"1" if use_stub else "0"}
@@ -2604,9 +2641,9 @@ def phase_audit_provider(
     check(bool(requirement),
           "в нагрузке задания есть provider_requirement",
           json.dumps(requirement, ensure_ascii=False)[:200] or "поля нет")
-    check(str(requirement.get("provider")) == "claude"
+    check(str(requirement.get("provider")) == PROVIDER
           and str(requirement.get("capability")) == "strong_audit",
-          "центр потребовал провайдера claude и способность strong_audit",
+          f"центр потребовал провайдера {PROVIDER} и способность strong_audit",
           f"provider={requirement.get('provider')!r} "
           f"capability={requirement.get('capability')!r}")
     check(int(requirement.get("max_inferences") or 0) > 0,
@@ -2630,14 +2667,14 @@ def phase_audit_provider(
           and str(binding.get("attempt_id")) == attempt_id,
           "привязка относится ИМЕННО к этому заданию и этой попытке",
           f"job={binding.get('job_id')!r} attempt={binding.get('attempt_id')!r}")
-    check(str(binding.get("provider")) == "claude"
+    check(str(binding.get("provider")) == PROVIDER
           and str(binding.get("capability")) == "strong_audit",
           "привязка относится к тому же провайдеру и той же способности",
           f"provider={binding.get('provider')!r} "
           f"capability={binding.get('capability')!r}")
     policy = _first_json_object(worker_read_file(worker, paths["policy"]))
     policy_model = str(
-        (((policy.get("claude") or {}).get("capabilities") or {})
+        (((policy.get(PROVIDER) or {}).get("capabilities") or {})
          .get("strong_audit") or {}).get("model") or ""
     )
     # Сверка идёт с ФАЙЛОМ ПОЛИТИКИ, а не с литералом в этом скрипте: литерал
@@ -3116,9 +3153,16 @@ def build_parser() -> argparse.ArgumentParser:
               "копируется в стенд; продовое не изменяется (проверяется хэшем)"),
     )
     parser.add_argument(
-        "--provider-model", default=DEFAULT_PROVIDER_MODEL,
+        "--provider", choices=SUPPORTED_PROVIDERS, default=PROVIDER_CLAUDE,
+        help=("какого провайдера заказывает центр и обслуживает стенд. "
+              "Умолчание claude сохраняет поведение этапов 11F/11G дословно"),
+    )
+    parser.add_argument(
+        "--provider-model", default="",
         help=("точная модель для способности strong_audit в ЛОКАЛЬНОЙ политике "
-              "воркера. Значение принадлежит машине: центр его не видит"),
+              "воркера. Значение принадлежит машине: центр его не видит. "
+              f"Умолчание зависит от провайдера: {DEFAULT_PROVIDER_MODEL} для "
+              f"claude, {DEFAULT_CODEX_PROVIDER_MODEL} для codex"),
     )
     parser.add_argument(
         "--max-inferences", type=int, default=0,
@@ -3173,8 +3217,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     # Имена юнитов — свойство УСТАНОВКИ, а не константа модуля (см. unit_names).
     # Присваивание глобалей здесь, до первой фазы: ниже они читаются из тел
     # функций на каждом вызове, поэтому одного присваивания достаточно.
-    global AGENT_UNIT, EXECUTOR_UNIT
+    global AGENT_UNIT, EXECUTOR_UNIT, PROVIDER
     AGENT_UNIT, EXECUTOR_UNIT = unit_names(args.worker_root)
+    # Провайдер прогона — тоже глобаль, и по той же причине: его читают восемь
+    # фаз, а меняется он один раз за прогон.
+    PROVIDER = args.provider
+    if not args.provider_model:
+        args.provider_model = (
+            DEFAULT_CODEX_PROVIDER_MODEL if PROVIDER == PROVIDER_CODEX
+            else DEFAULT_PROVIDER_MODEL
+        )
 
     root = Path(args.root) if args.root else Path(tempfile.mkdtemp(prefix="real_vps_pilot_"))
     stand = Stand(root=root, port=args.central_port or _free_port())

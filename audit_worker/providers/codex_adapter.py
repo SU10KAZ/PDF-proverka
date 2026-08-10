@@ -46,7 +46,9 @@ aren't supported for production workloads». Поэтому снимок нес�
 from __future__ import annotations
 
 import json
+import os
 import time
+from pathlib import Path
 from typing import Any, Optional, Sequence
 
 from audit_worker.providers import errors, quota
@@ -89,6 +91,59 @@ _INFERENCE_ARGV: tuple[str, ...] = (
     "--ignore-user-config",
     "-",
 )
+
+#: Хвост argv БЕЗ терминатора `-`: между флагами нейтрализации и `-` вставляются
+#: значения, вычисленные самим адаптером (модель локальной политики, пути
+#: вложений). Порядок обязателен: `codex exec` берёт промпт позиционно, и любой
+#: флаг со значением обязан стоять ДО него.
+_INFERENCE_ARGV_HEAD: tuple[str, ...] = _INFERENCE_ARGV[:-1]
+
+
+def _inference_argv(
+    model: Optional[str] = None,
+    image_paths: Sequence[Path] = (),
+) -> list[str]:
+    """argv рабочего вызова: константы модуля + значения локальной политики.
+
+    ПОЧЕМУ ПОЯВИЛСЯ `--model`, хотя до 11H его у Codex не было. До этого этапа
+    адаптер ОТКАЗЫВАЛ на любом явном `model`: «реализовано и проверено только
+    для Claude». Отказ был честнее молчаливого игнорирования, но он же делал
+    Codex непригодным для конвейера — мост (`pipeline_bridge._preflight`)
+    требует назначенной модели у ЛЮБОГО провайдера, иначе ответила бы модель
+    учётной записи по умолчанию и ни одна проверка этого не заметила бы.
+
+    Источник строки тот же, что у Claude на 11D: ЛОКАЛЬНАЯ политика воркера
+    (`model_policy`), файл администратора машины. Данные задания в argv
+    по-прежнему не попадают, то есть I-P5 сохраняется дословно.
+
+    ФОРМА ЗАПИСИ. `--model` у Codex не вариадический (`-m, --model <MODEL>`),
+    но пишется через `=` по тому же правилу, что у Claude: форма `--флаг=значение`
+    снимает класс «значение начинается с дефиса и разбирается как флаг».
+
+    `--image` же вариадический ДОСЛОВНО (`-i, --image <FILE>...`), и вот здесь
+    форма с `=` не стилистика, а обязательное условие: `--image /a/b.png -` съел
+    бы терминатор `-` как второе имя файла, и промпт перестал бы читаться со
+    стандартного ввода. Ровно этот класс ошибки уже дал незапланированный запрос
+    к модели на подготовке 11b (см. `claude_adapter._probe_argv`).
+    """
+    argv: list[str] = [*_INFERENCE_ARGV_HEAD]
+    if model:
+        argv.append(f"--model={model}")
+    for path in image_paths:
+        argv.append(f"--image={path}")
+    argv.append("-")
+    return argv
+
+#: Типы вложений, которые адаптер соглашается записать на диск, и расширение
+#: файла для каждого. Список ЗАКРЫТ: расширение уходит в имя файла, а имя — в
+#: argv, поэтому «возьмём из media_type всё после слэша» означало бы позволить
+#: вызывающему влиять на имя файла в командной строке.
+_SUPPORTED_IMAGE_MEDIA_TYPES: dict[str, str] = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
 
 #: Имя клиента в `initialize`. Документация просит идентифицировать интеграцию
 #: (`clientInfo.name`) — так на стороне провайдера видно, кто спрашивает.
@@ -411,21 +466,6 @@ class CodexProviderAdapter(ProviderAdapter):
         blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
         if blocked is not None:
             return blocked
-        if model:
-            # Явное назначение модели реализовано и проверено на 11D только для
-            # Claude. Принять параметр и молча его проигнорировать значило бы
-            # выдать непроверенное за проверенное: вызывающий считал бы, что
-            # модель назначена, а фактически шла бы модель по умолчанию — ровно
-            # та подмена, ради устранения которой параметр и появился.
-            return ProviderInferenceResult(
-                provider=self.provider, model=None, status=STATUS_ERROR,
-                auth_mode=self.home.auth_mode,
-                error_code=errors.ERR_MODEL_MISMATCH,
-                detail=(
-                    "явное назначение модели для codex не реализовано: "
-                    f"требование {model!r} не может быть исполнено"
-                ),
-            )
         text = str(prompt or "")
         if not text.strip():
             return ProviderInferenceResult(
@@ -433,8 +473,25 @@ class CodexProviderAdapter(ProviderAdapter):
                 auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
                 detail="пустой промпт: рабочий вызов не выполняется",
             )
+        requested_model = str(model).strip() if model else ""
+        accepted = tuple(
+            str(x).strip() for x in accepted_reported_models if str(x).strip()
+        )
+        if requested_model and not accepted:
+            # Назначить модель и не назначить, с чем сверять ответ, — значит
+            # получить приказ без проверки. Отказ ДО запуска бесплатен, вызов на
+            # непроверяемых условиях — нет. Дословно то же правило, что у Claude.
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MODEL_MISMATCH,
+                detail=(
+                    f"модель {requested_model!r} назначена, но список допустимых "
+                    "фактических идентификаторов пуст: сверять ответ не с чем"
+                ),
+            )
         result = self.run(
-            list(_INFERENCE_ARGV),
+            _inference_argv(requested_model or None),
             # Явный срок вызывающего ПОБЕЖДАЕТ. У контрольного запроса стоит
             # пол в 120 с, потому что там срок ничей: команду даёт человек и
             # бюджета этапа не существует. У рабочего вызова бюджет есть, его
@@ -447,6 +504,182 @@ class CodexProviderAdapter(ProviderAdapter):
             stdin_text=text,
             purpose=purpose,
         )
+        return self._finalize_inference(
+            result, requested_model=requested_model, accepted=accepted,
+        )
+
+    # ─── Рабочий вызов С ИЗОБРАЖЕНИЕМ (этап 11H) ─────────────────────────────
+    def structured_inference_multimodal(
+        self,
+        prompt: str,
+        *,
+        images: Sequence[tuple[str, bytes]],
+        purpose: str,
+        timeout_sec: Optional[float] = None,
+        model: Optional[str] = None,
+        accepted_reported_models: Sequence[str] = (),
+    ) -> ProviderInferenceResult:
+        """То же, что `structured_inference`, но с вложенными изображениями.
+
+        ПОЧЕМУ ЧЕРЕЗ ФАЙЛ, А НЕ БАЙТАМИ В ТЕЛЕ ЗАПРОСА, как у Claude. Это не
+        выбор из двух равных: у `codex exec` официальный способ отдать картинку
+        ровно один — `-i, --image <FILE>...`. Формата потокового ввода с
+        content-блоком `type=image` у него нет вовсе, а `--output-schema`
+        описывает форму ОТВЕТА и к вложениям отношения не имеет.
+
+        Раз путь неизбежен, вопрос становится другим: КАКОЙ каталог видит CLI.
+        Ответ — только каталог этого вызова и ничего больше:
+
+          * файлы кладутся в свежий `mkdtemp` ВНУТРИ `home.runtime` (0700,
+            владелец — воркер). `runtime` уже служит и `cwd`, и `TMPDIR`
+            подпроцесса, то есть новых мест, куда CLI имеет доступ, не
+            появляется;
+          * в каталоге лежат ТОЛЬКО вложения этого вызова. Ни соседних кропов,
+            ни артефактов задания, ни репозитория, ни личного каталога человека
+            там нет — вложение попадает туда копией байтов, а не ссылкой на
+            файл задания;
+          * записанное СВЕРЯЕТСЯ ПО SHA256 с тем, что передал вызывающий, до
+            запуска CLI. Расхождение — отказ без обращения к модели: анализ
+            чертежа по чужому файлу хуже, чем несостоявшийся анализ;
+          * каталог удаляется в `finally` — и после успеха, и после отказа, и
+            после исключения.
+
+        Песочница `--sandbox read-only` остаётся: она ограничивает КОМАНДЫ,
+        которые модель попросила бы выполнить, и к чтению вложения отношения не
+        имеет. Инструментов модели не даётся ни одного — то есть «прочитать
+        соседний файл» она может только через команду, а команду ей выполнять
+        нечем.
+        """
+        import hashlib
+        import shutil
+        import tempfile
+
+        blocked = self._inference_gate(confirmed_by_caller=True, purpose=purpose)
+        if blocked is not None:
+            return blocked
+        text = str(prompt or "")
+        if not text.strip():
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail="пустой промпт: рабочий вызов не выполняется",
+            )
+        if not images:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                detail=(
+                    "мультимодальный вызов без изображений: молчаливый переход "
+                    "на текстовый путь запрещён — этап получил бы анализ чертежа "
+                    "без чертежа"
+                ),
+            )
+        requested_model = str(model).strip() if model else ""
+        accepted = tuple(
+            str(x).strip() for x in accepted_reported_models if str(x).strip()
+        )
+        if requested_model and not accepted:
+            return ProviderInferenceResult(
+                provider=self.provider, model=None, status=STATUS_ERROR,
+                auth_mode=self.home.auth_mode,
+                error_code=errors.ERR_MODEL_MISMATCH,
+                detail=(
+                    f"модель {requested_model!r} назначена, но список допустимых "
+                    "фактических идентификаторов пуст: сверять ответ не с чем"
+                ),
+            )
+        for media_type, blob in images:
+            if not blob:
+                return ProviderInferenceResult(
+                    provider=self.provider, model=None, status=STATUS_ERROR,
+                    auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                    detail="пустое изображение во вложении: вызов не выполняется",
+                )
+            if str(media_type) not in _SUPPORTED_IMAGE_MEDIA_TYPES:
+                return ProviderInferenceResult(
+                    provider=self.provider, model=None, status=STATUS_ERROR,
+                    auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                    detail=(
+                        f"неподдерживаемый тип вложения {media_type!r}; "
+                        f"допустимы {sorted(_SUPPORTED_IMAGE_MEDIA_TYPES)}"
+                    ),
+                )
+        try:
+            self.home.ensure_dirs()
+        except OSError:
+            pass
+        workspace: Optional[Path] = None
+        try:
+            try:
+                workspace = Path(
+                    tempfile.mkdtemp(prefix="attach-", dir=str(self.home.runtime))
+                )
+                os.chmod(workspace, 0o700)
+            except OSError as exc:
+                return ProviderInferenceResult(
+                    provider=self.provider, model=None, status=STATUS_ERROR,
+                    auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                    detail=f"не создать каталог вложений вызова: {exc}",
+                )
+            paths: list[Path] = []
+            for index, (media_type, blob) in enumerate(images):
+                suffix = _SUPPORTED_IMAGE_MEDIA_TYPES[str(media_type)]
+                # Имя файла порядковое и НЕ несёт данных задания: ни block_id,
+                # ни имени проекта в нём нет. Путь всё равно уезжает в argv, а
+                # argv видно в `ps` любому пользователю машины.
+                path = workspace / f"attachment-{index:03d}{suffix}"
+                try:
+                    path.write_bytes(blob)
+                    os.chmod(path, 0o600)
+                except OSError as exc:
+                    return ProviderInferenceResult(
+                        provider=self.provider, model=None, status=STATUS_ERROR,
+                        auth_mode=self.home.auth_mode, error_code=errors.ERR_UNKNOWN,
+                        detail=f"вложение не записано: {exc}",
+                    )
+                expected = hashlib.sha256(blob).hexdigest()
+                actual = hashlib.sha256(path.read_bytes()).hexdigest()
+                if actual != expected:
+                    return ProviderInferenceResult(
+                        provider=self.provider, model=None, status=STATUS_ERROR,
+                        auth_mode=self.home.auth_mode,
+                        error_code=errors.ERR_MALFORMED_STATUS,
+                        detail=(
+                            "хэш записанного вложения не совпал с переданным: "
+                            "вызов не выполняется"
+                        ),
+                    )
+                paths.append(path)
+            result = self.run(
+                _inference_argv(requested_model or None, paths),
+                timeout_sec=(
+                    float(timeout_sec) if timeout_sec
+                    else max(120.0, float(self.timeout_sec))
+                ),
+                stdin_text=text,
+                purpose=purpose,
+            )
+        finally:
+            if workspace is not None:
+                shutil.rmtree(workspace, ignore_errors=True)
+        return self._finalize_inference(
+            result, requested_model=requested_model, accepted=accepted,
+        )
+
+    def _finalize_inference(
+        self,
+        result: Any,
+        *,
+        requested_model: str,
+        accepted: Sequence[str],
+    ) -> ProviderInferenceResult:
+        """Разбор потока `codex exec --json`, общий для обоих рабочих вызовов.
+
+        Вынесен намеренно: текстовый и мультимодальный путь отличаются только
+        тем, как собран argv, а сверка модели обязана быть буквально одним и тем
+        же кодом. Иначе строгий гейт существовал бы на одном пути и отсутствовал
+        на другом — ровно тот дефект, который 11F закрывал у Claude.
+        """
         duration_ms = int(result.duration_sec * 1000)
         if result.timed_out:
             return ProviderInferenceResult(
@@ -457,7 +690,7 @@ class CodexProviderAdapter(ProviderAdapter):
                 raw_sha256=sha256_text(result.stdout or ""),
                 raw_bytes=len((result.stdout or "").encode("utf-8", "replace")),
             )
-        messages, usage, model = _collect_exec_stream(result.stdout or "")
+        messages, usage, reported_model = _collect_exec_stream(result.stdout or "")
         payload = None
         # Ответы перебираются С КОНЦА: последнее сообщение агента и есть его
         # итог, а более ранние могут содержать рассуждение с примером JSON.
@@ -467,9 +700,28 @@ class CodexProviderAdapter(ProviderAdapter):
                 break
         answer_text = messages[-1] if messages else (result.stdout or "")
         ok = result.ok and payload is not None
+        # Сверка фактической модели — последний и самый строгий гейт (11D у
+        # Claude, 11H у Codex). Стоит ПОСЛЕ разбора: вызов уже оплачен, его
+        # обязан записать журнал, но объявлять успехом ответ чужой модели
+        # нельзя. Отсутствующий идентификатор — тоже несовпадение: «не знаем,
+        # кто ответил» и «ответила назначенная» — разные утверждения.
+        model_mismatch = ""
+        if requested_model:
+            reported = (reported_model or "").strip()
+            if not reported:
+                model_mismatch = (
+                    f"CLI не сообщил фактическую модель; назначена {requested_model!r}"
+                )
+            elif reported not in accepted:
+                model_mismatch = (
+                    f"фактическая модель {reported!r} не входит в допустимые "
+                    f"{list(accepted)} для назначенной {requested_model!r}"
+                )
+        if model_mismatch:
+            ok = False
         return ProviderInferenceResult(
             provider=self.provider,
-            model=model,
+            model=reported_model,
             status=STATUS_SUCCESS if ok else STATUS_ERROR,
             result=payload or {},
             usage=usage,
@@ -478,13 +730,22 @@ class CodexProviderAdapter(ProviderAdapter):
             auth_mode=self.home.auth_mode,
             error_code=(
                 None if ok
-                else (result.error_code() if not result.ok else errors.ERR_MALFORMED_STATUS)
+                else (
+                    result.error_code() if not result.ok
+                    else (
+                        errors.ERR_MODEL_MISMATCH if model_mismatch
+                        else errors.ERR_MALFORMED_STATUS
+                    )
+                )
             ),
             detail=(
                 None if ok
                 else (
-                    "CLI завершился ошибкой" if not result.ok
-                    else "ответ модели не содержит JSON-объекта"
+                    _cli_failure_detail(result, answer_text) if not result.ok
+                    else (
+                        model_mismatch if model_mismatch
+                        else "ответ модели не содержит JSON-объекта"
+                    )
                 )
             ),
             raw_sha256=sha256_text(answer_text),
@@ -530,6 +791,8 @@ def _collect_exec_stream(stdout: str) -> tuple[list[str], dict[str, Any], Option
             value = legacy.get("message") or legacy.get("text")
             if isinstance(value, str) and value.strip():
                 messages.append(value)
+            if not model:
+                model = _model_from_event(legacy)
         if kind in ("turn.completed", "turn.failed"):
             raw = event.get("usage")
             if isinstance(raw, dict):
@@ -537,13 +800,79 @@ def _collect_exec_stream(stdout: str) -> tuple[list[str], dict[str, Any], Option
                     {k: v for k, v in raw.items() if isinstance(v, (int, float))}
                 )
         if not model:
-            for key in ("model", "model_slug"):
-                if isinstance(event.get(key), str):
-                    model = event[key]
-                    break
+            model = _model_from_event(event)
     if not messages and plain:
         messages.append("\n".join(plain))
     return messages, usage, model
+
+
+#: Ключи, под которыми `codex exec --json` называет фактически применённую
+#: модель. Поиск ведётся ТОЛЬКО по этому списку и только на ограниченной
+#: глубине: «найдём любое поле, похожее на модель» рано или поздно подобрало бы
+#: чужое значение (имя модели из текста ответа, конфигурацию MCP-сервера), и
+#: гейт сверки молча начал бы проходить на чём попало.
+_MODEL_KEYS: tuple[str, ...] = ("model", "model_slug", "modelSlug", "model_id")
+
+#: Контейнеры, внутрь которых имеет смысл заглянуть. Опять же закрытый список.
+_MODEL_CONTAINERS: tuple[str, ...] = (
+    "thread", "session", "turn", "config", "configuration", "payload", "data",
+)
+
+
+def _model_from_event(event: Any, *, depth: int = 0) -> Optional[str]:
+    """Фактическая модель из одного события потока. `None`, если её там нет.
+
+    Зачем понадобился отдельный разбор. До 11H поиск смотрел только верхний
+    уровень события и поле `item.model`, а `codex exec` объявляет модель в
+    служебном событии начала нити (`codex.thread.started` и родня), где она
+    лежит на уровень глубже. Пустой результат здесь означает `model=None`, а
+    `None` в сверке — отказ вызова, то есть цена «не нашли» максимальна.
+
+    Глубина ограничена двумя уровнями намеренно: этого достаточно для всех
+    известных форм события и мало для того, чтобы дотянуться до содержимого
+    ответа модели.
+    """
+    if not isinstance(event, dict) or depth > 2:
+        return None
+    for key in _MODEL_KEYS:
+        value = event.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    for key in _MODEL_CONTAINERS:
+        nested = event.get(key)
+        if isinstance(nested, dict):
+            found = _model_from_event(nested, depth=depth + 1)
+            if found:
+                return found
+    return None
+
+
+#: Сколько символов сообщения CLI попадает в `detail`. Тот же рубеж, что у
+#: Claude, и по той же причине: ошибка провайдера — короткая служебная строка, а
+#: развёрнутая ошибка запроса теоретически способна процитировать кусок входа.
+_CLI_FAILURE_DETAIL_MAX_CHARS = 400
+
+
+def _cli_failure_detail(result: Any, answer_text: str) -> str:
+    """Почему CLI завершился ошибкой — СЛОВАМИ САМОГО CLI.
+
+    Константа «CLI завершился ошибкой» на её месте стояла до 11H, и цена этой
+    экономии уже измерена на 11E: боевой вызов отказал за 32 секунды, а текст
+    ошибки был выброшен адаптером — причина отказа осталась неустановимой
+    навсегда. Текст уже прошёл редактор секретов в `ProviderAdapter.run`,
+    поэтому здесь остаётся только выбрать источник и обрезать длину.
+    """
+    for candidate in (
+        getattr(result, "stderr", "") or "",
+        answer_text or "",
+        getattr(result, "stdout", "") or "",
+    ):
+        text = " ".join(str(candidate).split())
+        if text:
+            if len(text) > _CLI_FAILURE_DETAIL_MAX_CHARS:
+                text = text[:_CLI_FAILURE_DETAIL_MAX_CHARS] + "…"
+            return f"CLI завершился ошибкой: {text}"
+    return "CLI завершился ошибкой без диагностики"
 
 
 # ─── Разбор ответов app-server ───────────────────────────────────────────────
