@@ -7,6 +7,7 @@ import signal
 
 from backend.app.agent_gateway.config import GatewayConfig
 from backend.app.agent_gateway.server import GatewayServer
+from backend.app.security.issuer_rpc import UnixSocketRenewalAuthority
 
 
 async def _main() -> None:
@@ -15,7 +16,11 @@ async def _main() -> None:
         level=getattr(logging, config.log_level),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
-    server = GatewayServer(config)
+    renewal = (
+        UnixSocketRenewalAuthority(config.issuer_socket_path)
+        if config.issuer_socket_path is not None else None
+    )
+    server = GatewayServer(config, renewal_authority=renewal)
     stopped = asyncio.Event()
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):

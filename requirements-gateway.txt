@@ -4,3 +4,4 @@
 grpcio==1.82.1
 grpcio-health-checking==1.82.1
 protobuf==7.35.1
+cryptography>=41.0.0,<47

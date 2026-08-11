@@ -80,6 +80,8 @@ class BootstrapRemote(Protocol):
     def install_provider_cli(self, provider: str) -> dict[str, Any]: ...
     def register(self, registration_token: str) -> dict[str, Any]: ...
     def claim(self) -> dict[str, Any]: ...
+    def prepare_mtls_csr(self, worker_id: str) -> bytes: ...
+    def install_mtls_identity(self, certificate_chain_pem: bytes, trust_bundle_pem: bytes) -> dict[str, Any]: ...
     def health(self) -> dict[str, Any]: ...
     def rollback(self, release_id: str | None) -> dict[str, Any]: ...
     def uninstall(self) -> dict[str, Any]: ...
@@ -402,6 +404,16 @@ sha256sum "$root/current/audit_worker/provider_policy.approved.json" | awk '{{pr
             "LC_ALL": "C.UTF-8",
             "PYTHONUNBUFFERED": "1",
         }
+        if self.request.gateway_security_mode == "mtls":
+            identity_root = f"{root}/data/machine-identity"
+            gateway_host = str(self.request.gateway_target).rsplit(":", 1)[0].strip("[]")
+            values.update({
+                "AUDIT_WORKER_GRPC_CA_BUNDLE": f"{identity_root}/ca-bundle.pem",
+                "AUDIT_WORKER_GRPC_CLIENT_CERT": f"{identity_root}/client-cert.pem",
+                "AUDIT_WORKER_GRPC_KEY_STORE_DIR": identity_root,
+                "AUDIT_WORKER_GRPC_KEY_STORE_BACKEND": "linux_permissions",
+                "AUDIT_WORKER_GRPC_SERVER_IDENTITY": gateway_host,
+            })
         content = "".join(
             f"{key}={shlex.quote(str(value))}\n" for key, value in values.items()
         )
@@ -436,6 +448,72 @@ echo CONFIG_OK
             "policy_version": 1,
             "policy_sha256": policy_hash,
         }
+
+    def prepare_mtls_csr(self, worker_id: str) -> bytes:
+        """Generate/reuse the P-256 key on Worker; return public CSR only."""
+        if self.request.gateway_security_mode != "mtls":
+            raise RemoteFailure("certificate_not_requested", "mTLS is not selected")
+        if not re.fullmatch(r"[A-Za-z0-9._-]{1,128}", worker_id):
+            raise RemoteFailure("worker_identity_invalid", "unsafe worker_id")
+        root = self.request.install_root
+        result = self._run(
+            f"""set -euo pipefail
+root={shlex.quote(root)}
+worker_id={shlex.quote(worker_id)}
+"$root/venv/bin/python" - "$root/data/machine-identity" "$worker_id" <<'PY'
+import base64,sys
+from pathlib import Path
+from audit_worker.key_store import LinuxPermissionKeyStore
+from audit_worker.mtls_identity import make_csr
+store=LinuxPermissionKeyStore(Path(sys.argv[1]))
+key=store.generate()
+print(base64.b64encode(make_csr(key, sys.argv[2])).decode('ascii'))
+PY
+"""
+        )
+        try:
+            return __import__("base64").b64decode(result.stdout.strip(), validate=True)
+        except Exception as exc:
+            raise RemoteFailure("certificate_csr_invalid", "Worker returned invalid CSR") from exc
+
+    def install_mtls_identity(
+        self, certificate_chain_pem: bytes, trust_bundle_pem: bytes
+    ) -> dict[str, Any]:
+        root = self.request.install_root
+        payload = __import__("json").dumps({
+            "certificate": __import__("base64").b64encode(certificate_chain_pem).decode(),
+            "trust": __import__("base64").b64encode(trust_bundle_pem).decode(),
+        }, separators=(",", ":"))
+        encoded = __import__("base64").b64encode(payload.encode()).decode()
+        result = self._run(
+            f"""set -euo pipefail
+root={shlex.quote(root)}
+identity="$root/data/machine-identity"
+umask 077
+mkdir -p "$identity"
+chmod 700 "$identity"
+"$root/venv/bin/python" - "$identity" {shlex.quote(encoded)} <<'PY'
+import base64,json,os,sys,tempfile
+from pathlib import Path
+data=json.loads(base64.b64decode(sys.argv[2])); root=Path(sys.argv[1])
+for name,key in [('client-cert.pem','certificate'),('ca-bundle.pem','trust')]:
+    raw=base64.b64decode(data[key], validate=True)
+    fd,tmp=tempfile.mkstemp(prefix='.'+name+'.', dir=root)
+    try:
+        os.fchmod(fd,0o644); os.write(fd,raw); os.fsync(fd); os.close(fd)
+        os.replace(tmp,root/name); os.chmod(root/name,0o644)
+    except BaseException:
+        try: os.close(fd)
+        except OSError: pass
+        try: os.unlink(tmp)
+        except OSError: pass
+        raise
+fd=os.open(root,os.O_RDONLY|getattr(os,'O_DIRECTORY',0)); os.fsync(fd); os.close(fd)
+PY
+stat -c 'KEY_MODE=%a KEY_OWNER=%U CERT_MODE=%a' "$identity/client-key.pem" "$identity/client-cert.pem"
+"""
+        )
+        return {"installed": True, "permissions": result.stdout.strip()[-200:]}
 
     def install_services(self) -> dict[str, Any]:
         root = self.request.install_root

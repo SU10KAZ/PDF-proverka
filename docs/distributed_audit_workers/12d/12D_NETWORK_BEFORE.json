@@ -1,0 +1,13 @@
+{
+  "center_public_ip": "176.12.77.128",
+  "worker_public_ip": "176.12.77.31",
+  "center_8443_listener": false,
+  "worker_agent_inbound_listener": false,
+  "center_reverse_proxy": "nginx",
+  "caddy_present": false,
+  "firewall_technology_commands": ["ufw", "nft", "iptables"],
+  "firewall_rules_readable_without_interactive_root": false,
+  "firewall_changed": false,
+  "preexisting_unrelated_cloudflared_observed": true,
+  "used_by_12d": false
+}

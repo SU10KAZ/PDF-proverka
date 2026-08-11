@@ -1,0 +1,8 @@
+{
+  "before_rules_readable": false,
+  "reason": "interactive root authentication required",
+  "before_8443_listener": false,
+  "rule_added": false,
+  "unrelated_ports_changed": false,
+  "after_snapshot_pending_physical_test": true
+}

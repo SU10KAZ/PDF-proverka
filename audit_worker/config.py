@@ -206,7 +206,14 @@ class WorkerConfig:
     # is explicit and never falls back to polling after a stream failure.
     control_transport: Literal["polling", "grpc"] = "polling"
     grpc_target: str | None = None
-    grpc_security_mode: Literal["test_insecure"] = "test_insecure"
+    grpc_security_mode: Literal["test_insecure", "mtls"] = "test_insecure"
+    grpc_ca_bundle_path: Path | None = None
+    grpc_client_certificate_path: Path | None = None
+    grpc_key_store_dir: Path | None = None
+    grpc_key_store_backend: Literal["auto", "linux_permissions", "windows_dpapi"] = "auto"
+    grpc_server_identity: str | None = None
+    grpc_renew_before_sec: float = 7 * 86400.0
+    grpc_renew_jitter: float = 0.2
     grpc_connect_timeout_sec: float = 15.0
     grpc_heartbeat_interval_override_sec: float | None = None
     grpc_reconnect_min_delay_sec: float = 1.0
@@ -660,6 +667,30 @@ def load_config(
         grpc_security_mode=os.environ.get(
             "AUDIT_WORKER_GRPC_SECURITY_MODE", "test_insecure"
         ).strip().lower(),
+        grpc_ca_bundle_path=(
+            Path(os.environ["AUDIT_WORKER_GRPC_CA_BUNDLE"]).expanduser().resolve()
+            if os.environ.get("AUDIT_WORKER_GRPC_CA_BUNDLE", "").strip() else None
+        ),
+        grpc_client_certificate_path=(
+            Path(os.environ["AUDIT_WORKER_GRPC_CLIENT_CERT"]).expanduser().resolve()
+            if os.environ.get("AUDIT_WORKER_GRPC_CLIENT_CERT", "").strip() else None
+        ),
+        grpc_key_store_dir=(
+            Path(os.environ["AUDIT_WORKER_GRPC_KEY_STORE_DIR"]).expanduser().resolve()
+            if os.environ.get("AUDIT_WORKER_GRPC_KEY_STORE_DIR", "").strip() else None
+        ),
+        grpc_key_store_backend=os.environ.get(
+            "AUDIT_WORKER_GRPC_KEY_STORE_BACKEND", "auto"
+        ).strip().lower(),
+        grpc_server_identity=(
+            os.environ.get("AUDIT_WORKER_GRPC_SERVER_IDENTITY", "").strip() or None
+        ),
+        grpc_renew_before_sec=max(
+            300.0, _env_float("AUDIT_WORKER_GRPC_RENEW_BEFORE_SEC", 7 * 86400.0)
+        ),
+        grpc_renew_jitter=min(
+            1.0, max(0.0, _env_float("AUDIT_WORKER_GRPC_RENEW_JITTER", 0.2))
+        ),
         grpc_connect_timeout_sec=max(
             1.0, _env_float("AUDIT_WORKER_GRPC_CONNECT_TIMEOUT_SEC", 15.0)
         ),
@@ -752,10 +783,8 @@ def validate_control_transport(config: "WorkerConfig") -> None:
         raise InsecureTransportError(
             "AUDIT_WORKER_GRPC_TARGET обязателен для grpc control transport"
         )
-    if config.grpc_security_mode != "test_insecure":
-        raise InsecureTransportError(
-            "12C поддерживает только test_insecure; защищённый gRPC/mTLS относится к 12D"
-        )
+    if config.grpc_security_mode not in {"test_insecure", "mtls"}:
+        raise InsecureTransportError("неподдерживаемый gRPC security mode")
     if config.grpc_protocol_versions != (1,):
         raise InsecureTransportError(
             "12C поддерживает только Agent Stream protocol version 1"
@@ -772,19 +801,47 @@ def validate_control_transport(config: "WorkerConfig") -> None:
         config.grpc_outbound_queue_max,
     ) <= 0:
         raise InsecureTransportError("gRPC client limits должны быть положительными")
-    match = __import__("re").fullmatch(
-        r"(?P<host>localhost|127\.0\.0\.1|\[::1\]):(?P<port>[0-9]{1,5})",
+    target_match = __import__("re").fullmatch(
+        r"(?P<host>[A-Za-z0-9.-]+|\[[0-9A-Fa-f:]+\]):(?P<port>[0-9]{1,5})",
         config.grpc_target,
     )
-    if match is None or not 1 <= int(match.group("port")) <= 65535:
+    if target_match is None or not 1 <= int(target_match.group("port")) <= 65535:
+        raise InsecureTransportError("gRPC target должен иметь вид host:port")
+    host = target_match.group("host").strip("[]").lower()
+    if config.grpc_security_mode == "test_insecure":
+        if host not in LOCALHOST_HOSTS:
+            raise InsecureTransportError(
+                "test_insecure gRPC разрешён только к loopback; внешний endpoint запрещён"
+            )
+        if any((
+            config.grpc_ca_bundle_path, config.grpc_client_certificate_path,
+            config.grpc_key_store_dir, config.grpc_server_identity,
+        )):
+            raise InsecureTransportError("test_insecure не принимает mTLS identity settings")
+        return
+    required = {
+        "AUDIT_WORKER_GRPC_CA_BUNDLE": config.grpc_ca_bundle_path,
+        "AUDIT_WORKER_GRPC_CLIENT_CERT": config.grpc_client_certificate_path,
+        "AUDIT_WORKER_GRPC_KEY_STORE_DIR": config.grpc_key_store_dir,
+        "AUDIT_WORKER_GRPC_SERVER_IDENTITY": config.grpc_server_identity,
+    }
+    missing = [name for name, value in required.items() if not value]
+    if missing:
+        raise InsecureTransportError("mTLS config missing: " + ", ".join(missing))
+    if str(config.grpc_server_identity).lower() != host:
         raise InsecureTransportError(
-            "test_insecure gRPC target должен быть loopback host:port"
+            "mTLS server identity must equal gateway target host; overrides are forbidden"
         )
-    host = match.group("host").strip("[]").lower()
-    if host not in LOCALHOST_HOSTS:
-        raise InsecureTransportError(
-            "test_insecure gRPC разрешён только к loopback; внешний endpoint запрещён"
-        )
+    for label, path in (
+        ("CA bundle", config.grpc_ca_bundle_path),
+        ("client certificate", config.grpc_client_certificate_path),
+    ):
+        if path is None or not path.is_file():
+            raise InsecureTransportError(f"mTLS {label} file is unavailable")
+    if config.grpc_key_store_backend not in {
+        "auto", "linux_permissions", "windows_dpapi"
+    }:
+        raise InsecureTransportError("unknown Worker key-store backend")
 
 
 def python_executable() -> str:

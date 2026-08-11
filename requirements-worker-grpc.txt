@@ -3,3 +3,4 @@
 -r requirements-worker.txt
 grpcio==1.82.1
 protobuf==7.35.1
+cryptography>=41.0.0,<47

@@ -39,6 +39,7 @@ class BootstrapStep(str, Enum):
     REGISTRATION = "registration"
     STARTING = "starting"
     SELF_TEST = "self_test"
+    CERTIFICATE_ENROLLMENT = "certificate_enrollment"
     READY = "ready"
     ROLLING_BACK = "rolling_back"
     FAILED = "failed"
@@ -109,7 +110,7 @@ class BootstrapRequest(BaseModel):
     transport_mode: Literal["polling", "grpc_stream"] = "polling"
     gateway_target: str | None = None
     protocol_versions: list[int] = Field(default_factory=lambda: [1], min_length=1)
-    gateway_security_mode: Literal["test_insecure"] = "test_insecure"
+    gateway_security_mode: Literal["test_insecure", "mtls"] = "test_insecure"
 
     @field_validator("host", "ssh_user", "ssh_auth_ref")
     @classmethod
@@ -164,13 +165,23 @@ class BootstrapRequest(BaseModel):
         if self.transport_mode == "polling":
             if self.gateway_target is not None:
                 raise ValueError("gateway_target допустим только для grpc_stream")
+            if self.gateway_security_mode != "test_insecure":
+                raise ValueError("gateway_security_mode применим только к grpc_stream")
             return self
         target = (self.gateway_target or "").strip()
-        match = re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\]):([0-9]{1,5})", target)
-        if not match or not 1 <= int(match.group(1)) <= 65535:
-            raise ValueError(
-                "12C test_insecure gateway_target обязан быть loopback host:port"
-            )
+        match = re.fullmatch(
+            r"(?P<host>[A-Za-z0-9.-]+|\[[0-9A-Fa-f:]+\]):(?P<port>[0-9]{1,5})",
+            target,
+        )
+        if not match or not 1 <= int(match.group("port")) <= 65535:
+            raise ValueError("gateway_target обязан иметь вид host:port")
+        host = match.group("host").strip("[]").lower()
+        if self.gateway_security_mode == "test_insecure" and host not in {
+            "localhost", "127.0.0.1", "::1"
+        }:
+            raise ValueError("test_insecure gateway_target обязан быть loopback host:port")
+        if self.gateway_security_mode == "mtls" and not target:
+            raise ValueError("mTLS gateway_target обязателен")
         self.gateway_target = target
         return self
 

@@ -31,6 +31,9 @@ class GatewaySession:
     sent_offers: set[str] = field(default_factory=set)
     sent_commands: set[str] = field(default_factory=set)
     sent_results: set[str] = field(default_factory=set)
+    certificate_serial: str | None = None
+    certificate_fingerprint: str | None = None
+    certificate_not_after: float | None = None
 
     @property
     def free_slots(self) -> int:

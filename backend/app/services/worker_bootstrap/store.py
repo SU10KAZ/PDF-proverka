@@ -33,6 +33,10 @@ _REQUEST_FIELDS = {
     "bundle_sha256",
     "bootstrap_instance_id",
     "worker_id",
+    "transport_mode",
+    "gateway_target",
+    "protocol_versions",
+    "gateway_security_mode",
 }
 
 

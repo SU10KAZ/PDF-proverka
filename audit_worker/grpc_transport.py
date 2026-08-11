@@ -22,6 +22,8 @@ from audit_worker.client import CenterError, SequenceGapError, backoff_delays
 from audit_worker.local_store import (
     LocalJobStore, WorkerStateStore, atomic_write_json, read_json,
 )
+from audit_worker.key_store import platform_key_store
+from audit_worker.mtls_identity import load_identity
 from contracts.agent_stream.v1 import adapters
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
 from contracts.agent_stream.v1 import agent_stream_pb2_grpc as stream_grpc
@@ -51,6 +53,9 @@ WORKER_METRIC_NAMES = (
     "result_ready_sent",
     "result_acks_received",
     "protocol_errors",
+    "mtls_handshakes_total",
+    "mtls_handshake_failures",
+    "certificate_rotations",
 )
 
 
@@ -122,6 +127,7 @@ class GrpcStreamControlTransport:
         self._metrics_lock = threading.Lock()
         self._connection_attempts = 0
         self._last_event_batch: dict[tuple[str, str], int] = {}
+        self._last_certificate_serial = ""
 
     @property
     def heartbeat_interval_sec(self) -> float:
@@ -182,24 +188,12 @@ class GrpcStreamControlTransport:
                 self._stream_sequence = 0
                 self._center_stream_sequence = 0
             try:
-                # 12C permits plaintext gRPC only on loopback; config validation
-                # rejects every external target. HTTPS package TLS remains on.
-                self._channel = grpc.insecure_channel(
-                    self.target,
-                    options=(
-                        (
-                            "grpc.max_receive_message_length",
-                            int(self.config.grpc_max_receive_message_bytes),
-                        ),
-                        (
-                            "grpc.max_send_message_length",
-                            int(self.config.grpc_max_send_message_bytes),
-                        ),
-                    ),
-                )
+                self._channel = self._open_channel()
                 grpc.channel_ready_future(self._channel).result(
                     timeout=float(self.config.grpc_connect_timeout_sec)
                 )
+                if self.config.grpc_security_mode == "mtls":
+                    self._metric("mtls_handshakes_total")
                 stub = stream_grpc.AgentStreamServiceStub(self._channel)
                 responses = stub.Connect(self._request_iterator(epoch), wait_for_ready=False)
                 for response in responses:
@@ -224,6 +218,8 @@ class GrpcStreamControlTransport:
                 self._fail_waiters(exc)
                 return
             except Exception as exc:  # noqa: BLE001 - reconnect is the contract
+                if self.config.grpc_security_mode == "mtls" and not self._ready.is_set():
+                    self._metric("mtls_handshake_failures")
                 if self._ready.is_set():
                     self._metric("grpc_disconnects")
                 self._log(
@@ -251,6 +247,45 @@ class GrpcStreamControlTransport:
                 if self._channel is not None:
                     self._channel.close()
                     self._channel = None
+
+    def _open_channel(self) -> grpc.Channel:
+        options = (
+            (
+                "grpc.max_receive_message_length",
+                int(self.config.grpc_max_receive_message_bytes),
+            ),
+            (
+                "grpc.max_send_message_length",
+                int(self.config.grpc_max_send_message_bytes),
+            ),
+        )
+        if self.config.grpc_security_mode == "test_insecure":
+            # Config validation restricts this branch to loopback.
+            return grpc.insecure_channel(self.target, options=options)
+        store = platform_key_store(
+            self.config.grpc_key_store_dir, self.config.grpc_key_store_backend
+        )
+        identity = load_identity(
+            key_store=store,
+            certificate_path=self.config.grpc_client_certificate_path,
+            trust_bundle_path=self.config.grpc_ca_bundle_path,
+            worker_id=self.worker_id,
+        )
+        if self._last_certificate_serial and self._last_certificate_serial != identity.serial_hex:
+            self._metric("certificate_rotations")
+        self._last_certificate_serial = identity.serial_hex
+        self._log(
+            "grpc mTLS identity "
+            f"serial={identity.serial_hex} fingerprint={identity.fingerprint_sha256}"
+        )
+        credentials = grpc.ssl_channel_credentials(
+            root_certificates=identity.trust_bundle_pem,
+            private_key=identity.private_key_pem,
+            certificate_chain=identity.certificate_chain_pem,
+        )
+        # Deliberately no grpc.ssl_target_name_override: gRPC verifies the
+        # configured target host/IP against the server certificate SAN.
+        return grpc.secure_channel(self.target, credentials, options=options)
 
     def _request_iterator(self, epoch: int):
         yield self._envelope(

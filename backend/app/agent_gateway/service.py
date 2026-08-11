@@ -10,11 +10,22 @@ import uuid
 from contextlib import suppress
 from typing import AsyncIterator
 
+import grpc
+
+from backend.app.agent_gateway.auth import (
+    AuthenticatedPeer,
+    PeerAuthenticationError,
+    authenticated_peer,
+)
 from backend.app.agent_gateway.config import GatewayConfig
 from backend.app.agent_gateway.domain import DomainViolation, GatewayDomainAdapter
 from backend.app.agent_gateway.metrics import GatewayMetrics
 from backend.app.agent_gateway.registry import GatewayConnectionRegistry, GatewaySession
 from backend.app.services.distributed_workers import database, gateway_repository
+from backend.app.services.distributed_workers.certificate_registry import (
+    CertificateRegistry,
+    CertificateRegistryError,
+)
 from contracts.agent_stream.v1 import adapters
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
 from contracts.agent_stream.v1 import agent_stream_pb2_grpc as stream_grpc
@@ -35,18 +46,53 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
         domain: GatewayDomainAdapter,
         registry: GatewayConnectionRegistry,
         metrics: GatewayMetrics,
+        certificate_registry: CertificateRegistry | None = None,
     ) -> None:
         self.config = config
         self.domain = domain
         self.registry = registry
         self.metrics = metrics
+        self.certificate_registry = certificate_registry
         self.draining = False
 
     async def Connect(self, request_iterator, context) -> AsyncIterator[stream_pb.CenterToAgent]:
         session: GatewaySession | None = None
         reader: asyncio.Task | None = None
         poller: asyncio.Task | None = None
+        certificate_watcher: asyncio.Task | None = None
+        peer_identity: AuthenticatedPeer | None = None
         try:
+            if self.config.security_mode == "mtls":
+                try:
+                    peer_identity = authenticated_peer(context)
+                    if self.certificate_registry is None:
+                        raise PeerAuthenticationError("certificate registry unavailable")
+                    await database.run_db(
+                        self.certificate_registry.validate_presented,
+                        serial_hex=peer_identity.serial_hex,
+                        fingerprint_sha256=peer_identity.fingerprint_sha256,
+                        worker_id=peer_identity.worker_id,
+                    )
+                    self.metrics.inc("mtls_handshakes_total")
+                except (PeerAuthenticationError, CertificateRegistryError) as exc:
+                    self.metrics.inc("mtls_handshake_failures")
+                    reason = str(exc)
+                    if "REVOKED" in reason or "REPLACED" in reason:
+                        self.metrics.inc("cert_revoked_rejections")
+                    if "expired" in reason.lower() or "EXPIRED" in reason:
+                        self.metrics.inc("cert_expired_rejections")
+                    if self.certificate_registry is not None:
+                        with suppress(Exception):
+                            await database.run_db(
+                                self.certificate_registry.record_rejection,
+                                "AUTH_REJECTED",
+                                worker_id=getattr(peer_identity, "worker_id", None),
+                                serial_hex=getattr(peer_identity, "serial_hex", None),
+                                fingerprint=getattr(peer_identity, "fingerprint_sha256", None),
+                                reason=reason,
+                            )
+                    await context.abort(grpc.StatusCode.UNAUTHENTICATED, "mTLS peer rejected")
+                    return
             try:
                 first = await request_iterator.__anext__()
             except StopAsyncIteration:
@@ -75,6 +121,24 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 self.metrics.inc("connection_rejects", labels={"reason": "identity"})
                 yield self._bare_error(
                     first, common_pb.ERROR_CODE_UNAUTHORIZED, "invalid worker identity"
+                )
+                return
+            if peer_identity is not None and hello.worker_id != peer_identity.worker_id:
+                self.metrics.inc("cert_identity_mismatches")
+                self.metrics.inc("connection_rejects", labels={"reason": "cert_identity"})
+                if self.certificate_registry is not None:
+                    with suppress(Exception):
+                        await database.run_db(
+                            self.certificate_registry.record_rejection,
+                            "IDENTITY_MISMATCH",
+                            worker_id=hello.worker_id,
+                            serial_hex=peer_identity.serial_hex,
+                            fingerprint=peer_identity.fingerprint_sha256,
+                            reason="AgentHello worker_id differs from verified certificate SAN",
+                        )
+                await context.abort(
+                    grpc.StatusCode.PERMISSION_DENIED,
+                    "AgentHello identity does not match client certificate",
                 )
                 return
             if not _ID_RE.fullmatch(hello.worker_instance_id):
@@ -119,6 +183,9 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 active_slots=len(hello.active_attempts),
                 last_stream_sequence=int(first.stream_sequence),
                 outbound=asyncio.Queue(maxsize=self.config.max_outbound_queue),
+                certificate_serial=(peer_identity.serial_hex if peer_identity else None),
+                certificate_fingerprint=(peer_identity.fingerprint_sha256 if peer_identity else None),
+                certificate_not_after=(peer_identity.not_after if peer_identity else None),
             )
             old = await self.registry.register(session)
             if old is not None:
@@ -160,6 +227,10 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
 
             reader = asyncio.create_task(self._read_loop(request_iterator, session))
             poller = asyncio.create_task(self._outbound_loop(session))
+            if peer_identity is not None:
+                certificate_watcher = asyncio.create_task(
+                    self._certificate_watch_loop(session, peer_identity)
+                )
             while True:
                 if session.closing.is_set() and session.outbound.empty():
                     break
@@ -175,10 +246,10 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                     continue
                 yield outgoing
         finally:
-            for task in (reader, poller):
+            for task in (reader, poller, certificate_watcher):
                 if task is not None:
                     task.cancel()
-            for task in (reader, poller):
+            for task in (reader, poller, certificate_watcher):
                 if task is not None:
                     with suppress(asyncio.CancelledError, Exception):
                         await task
@@ -193,8 +264,55 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 self.metrics.inc("stream_disconnects")
                 logger.info(
                     "stream disconnected",
-                    extra={"worker_id": session.worker_id, "connection_id": session.connection_id},
+                    extra={
+                        "worker_id": session.worker_id,
+                        "connection_id": session.connection_id,
+                        "certificate_serial": session.certificate_serial,
+                        "certificate_fingerprint": session.certificate_fingerprint,
+                    },
                 )
+
+    async def _certificate_watch_loop(
+        self, session: GatewaySession, peer: AuthenticatedPeer
+    ) -> None:
+        assert self.certificate_registry is not None
+        interval = float(self.config.certificate_check_interval_sec)
+        while not session.closing.is_set():
+            deadline = max(0.0, peer.not_after - time.time())
+            if deadline <= 0:
+                self.metrics.inc("cert_expired_rejections")
+                session.closing.set()
+                return
+            try:
+                await asyncio.wait_for(
+                    session.closing.wait(), timeout=min(interval, deadline)
+                )
+                return
+            except asyncio.TimeoutError:
+                pass
+            try:
+                await database.run_db(
+                    self.certificate_registry.validate_presented,
+                    serial_hex=peer.serial_hex,
+                    fingerprint_sha256=peer.fingerprint_sha256,
+                    worker_id=peer.worker_id,
+                )
+            except CertificateRegistryError as exc:
+                if "expired" in str(exc).lower() or "EXPIRED" in str(exc):
+                    self.metrics.inc("cert_expired_rejections")
+                else:
+                    self.metrics.inc("cert_revoked_rejections")
+                logger.warning(
+                    "authenticated stream certificate invalidated",
+                    extra={
+                        "worker_id": peer.worker_id,
+                        "connection_id": session.connection_id,
+                        "certificate_serial": peer.serial_hex,
+                        "certificate_fingerprint": peer.fingerprint_sha256,
+                    },
+                )
+                session.closing.set()
+                return
 
     async def _read_loop(self, request_iterator, session: GatewaySession) -> None:
         try:

@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 10
+SCHEMA_VERSION = 11
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -962,6 +962,54 @@ CREATE INDEX IF NOT EXISTS ix_gateway_results_worker_status
     ON gateway_result_notifications(worker_id, status, updated_at);
 """
 
+# Migration 11 (12D): machine-certificate lifecycle.  Leaf certificates are
+# public material and are retained to make retries deterministic.  Private
+# keys have no column and therefore cannot accidentally cross the trust
+# boundary into the Center database.
+_MIGRATION_11 = """
+CREATE TABLE IF NOT EXISTS worker_certificates (
+    serial_hex          TEXT PRIMARY KEY,
+    fingerprint_sha256 TEXT NOT NULL UNIQUE,
+    worker_id           TEXT NOT NULL REFERENCES workers(worker_id) ON DELETE RESTRICT,
+    instance_id         TEXT,
+    csr_sha256          TEXT NOT NULL,
+    request_id          TEXT NOT NULL UNIQUE,
+    certificate_pem     BLOB NOT NULL,
+    issuer_id           TEXT NOT NULL,
+    profile_version     INTEGER NOT NULL,
+    issued_at           REAL NOT NULL,
+    not_before          REAL NOT NULL,
+    not_after           REAL NOT NULL,
+    status              TEXT NOT NULL CHECK(status IN ('ACTIVE','REPLACED','REVOKED','EXPIRED')),
+    revoked_at          REAL,
+    revocation_reason   TEXT CHECK(revocation_reason IS NULL OR revocation_reason IN
+        ('COMPROMISED','DECOMMISSIONED','REPLACED','ADMIN_REVOKED')),
+    predecessor_serial  TEXT REFERENCES worker_certificates(serial_hex),
+    replaced_by_serial  TEXT REFERENCES worker_certificates(serial_hex),
+    created_at          REAL NOT NULL,
+    updated_at          REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_worker_certificates_worker_status
+    ON worker_certificates(worker_id, status, not_after);
+CREATE INDEX IF NOT EXISTS ix_worker_certificates_csr
+    ON worker_certificates(worker_id, csr_sha256);
+
+CREATE TABLE IF NOT EXISTS worker_certificate_security_events (
+    event_id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type          TEXT NOT NULL CHECK(event_type IN
+        ('ISSUED','RENEWED','REPLACED','REVOKED','AUTH_REJECTED','IDENTITY_MISMATCH')),
+    worker_id           TEXT,
+    serial_hex          TEXT,
+    fingerprint_sha256  TEXT,
+    connection_id       TEXT,
+    reason              TEXT,
+    detail_json         TEXT NOT NULL DEFAULT '{}',
+    occurred_at         REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_worker_certificate_events_time
+    ON worker_certificate_security_events(occurred_at DESC);
+"""
+
 MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
@@ -973,6 +1021,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     8: _statements(_MIGRATION_8),
     9: _statements(_MIGRATION_9),
     10: _statements(_MIGRATION_10),
+    11: _statements(_MIGRATION_11),
 }
 
 

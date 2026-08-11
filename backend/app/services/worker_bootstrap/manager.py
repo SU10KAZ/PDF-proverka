@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import os
 import time
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Callable
 
@@ -21,6 +23,49 @@ from .remote import ActionRequired, BootstrapRemote, RemoteFailure, SSHBootstrap
 
 RemoteFactory = Callable[[BootstrapRequest, str, DistributedWorkersSettings], BootstrapRemote]
 SelfTestRunner = Callable[[str, str, DistributedWorkersSettings], dict[str, Any]]
+CertificateEnroller = Callable[..., Any]
+
+
+def _default_certificate_enroller(
+    *, worker_id: str, instance_id: str, csr_pem: bytes, request_id: str,
+    settings: DistributedWorkersSettings,
+):
+    """Issuer boundary used by bootstrap Center, never by Agent Gateway."""
+    from backend.app.security.certificate_profiles import CertificateIssuer
+    from backend.app.services.distributed_workers.certificate_lifecycle import (
+        CertificateLifecycleAuthority,
+    )
+    from backend.app.services.distributed_workers.certificate_registry import (
+        CertificateRegistry,
+    )
+
+    names = {
+        "cert": "AUDIT_WORKER_ISSUER_CERT",
+        "key": "AUDIT_WORKER_ISSUER_KEY",
+        "chain": "AUDIT_WORKER_ISSUER_CHAIN",
+    }
+    paths = {key: Path(os.environ.get(name, "")).expanduser() for key, name in names.items()}
+    if any(not str(path) or not path.is_file() for path in paths.values()):
+        raise RemoteFailure(
+            "certificate_issuer_unavailable",
+            "protected Worker certificate issuer is not configured",
+        )
+    if paths["key"].is_symlink() or paths["key"].stat().st_mode & 0o077:
+        raise RemoteFailure(
+            "certificate_issuer_permissions",
+            "issuing CA key must be a non-symlink mode-0600 file",
+        )
+    authority = CertificateLifecycleAuthority(
+        issuer=CertificateIssuer.from_files(paths["cert"], paths["key"], paths["chain"]),
+        registry=CertificateRegistry(settings),
+        worker_lifetime=timedelta(
+            days=max(1, min(90, int(os.environ.get("AUDIT_WORKER_CERT_LIFETIME_DAYS", "30"))))
+        ),
+    )
+    return authority.enroll(
+        authorized_worker_id=worker_id, instance_id=instance_id,
+        csr_pem=csr_pem, request_id=request_id,
+    )
 
 
 def _default_remote(
@@ -84,12 +129,14 @@ class BootstrapManager:
         settings: DistributedWorkersSettings | None = None,
         remote_factory: RemoteFactory = _default_remote,
         selftest_runner: SelfTestRunner = _default_runtime_selftest,
+        certificate_enroller: CertificateEnroller = _default_certificate_enroller,
         repo_root: Path | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.settings.require_enabled()
         self.remote_factory = remote_factory
         self.selftest_runner = selftest_runner
+        self.certificate_enroller = certificate_enroller
         self.repo_root = (repo_root or Path(__file__).resolve().parents[4]).resolve()
 
     def create(
@@ -298,6 +345,33 @@ class BootstrapManager:
                 configured_max_slots=request.max_slots,
                 settings=self.settings,
             )
+            if request.gateway_security_mode == "mtls":
+                self._mark(session_id, "certificate_enrollment")
+                csr_pem = remote.prepare_mtls_csr(worker_id)
+                issued_identity = self.certificate_enroller(
+                    worker_id=worker_id,
+                    instance_id=instance_id,
+                    csr_pem=csr_pem,
+                    request_id="bootstrap-cert-" + session_id,
+                    settings=self.settings,
+                )
+                installed_identity = remote.install_mtls_identity(
+                    issued_identity.certificate_chain_pem,
+                    issued_identity.trust_chain_pem,
+                )
+                self._mark(
+                    session_id,
+                    "certificate_enrolled",
+                    result={
+                        "mtls_identity": {
+                            "serial_hex": issued_identity.serial_hex,
+                            "fingerprint_sha256": issued_identity.fingerprint_sha256,
+                            "not_after": issued_identity.not_after,
+                            "installed": bool(installed_identity.get("installed")),
+                            "private_key_origin": "worker",
+                        }
+                    },
+                )
             claimed = remote.claim()
             if not claimed.get("token_stored"):
                 raise RemoteFailure("worker_claim_failed", "worker token не сохранён на VPS")

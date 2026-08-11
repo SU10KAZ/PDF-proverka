@@ -14,6 +14,11 @@ METRIC_NAMES = frozenset(
         "cancel_commands_total", "result_ready_total", "result_ack_total",
         "result_reject_total", "stream_disconnects", "protocol_errors",
         "queue_rejections", "active_connections",
+        "mtls_handshakes_total", "mtls_handshake_failures",
+        "cert_identity_mismatches", "cert_revoked_rejections",
+        "cert_expired_rejections", "certificate_renewals",
+        "certificate_renewal_failures", "certificate_rotations",
+        "active_authenticated_connections",
     }
 )
 ALLOWED_LABELS = frozenset({"protocol_version", "reason", "result"})
@@ -36,9 +41,10 @@ class GatewayMetrics:
     def set_active(self, count: int) -> None:
         with self._lock:
             for key in list(self._values):
-                if key[0] == "active_connections":
+                if key[0] in {"active_connections", "active_authenticated_connections"}:
                     del self._values[key]
             self._values[("active_connections", ())] = max(0, int(count))
+            self._values[("active_authenticated_connections", ())] = max(0, int(count))
 
     def snapshot(self) -> dict[str, int]:
         with self._lock:

@@ -4,6 +4,16 @@ from __future__ import annotations
 import ipaddress
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
+
+from backend.app.security.certificate_profiles import (
+    CertificateProfileError,
+    assert_key_matches,
+    validate_server_certificate,
+)
 
 
 class GatewayConfigError(RuntimeError):
@@ -64,6 +74,12 @@ class GatewayConfig:
     metrics_enabled: bool = True
     reflection_enabled: bool = False
     log_level: str = "INFO"
+    server_certificate_path: Path | None = None
+    server_private_key_path: Path | None = None
+    client_ca_bundle_path: Path | None = None
+    server_identity: str | None = None
+    certificate_check_interval_sec: float = 2.0
+    issuer_socket_path: Path | None = None
 
     @classmethod
     def from_env(cls) -> "GatewayConfig":
@@ -98,6 +114,28 @@ class GatewayConfig:
             metrics_enabled=_boolean("AGENT_GATEWAY_METRICS_ENABLED", True),
             reflection_enabled=_boolean("AGENT_GATEWAY_REFLECTION_ENABLED", False),
             log_level=os.environ.get("AGENT_GATEWAY_LOG_LEVEL", "INFO").strip().upper(),
+            server_certificate_path=(
+                Path(os.environ["AGENT_GATEWAY_SERVER_CERT"]).expanduser().resolve()
+                if os.environ.get("AGENT_GATEWAY_SERVER_CERT", "").strip() else None
+            ),
+            server_private_key_path=(
+                Path(os.environ["AGENT_GATEWAY_SERVER_KEY"]).expanduser().resolve()
+                if os.environ.get("AGENT_GATEWAY_SERVER_KEY", "").strip() else None
+            ),
+            client_ca_bundle_path=(
+                Path(os.environ["AGENT_GATEWAY_CLIENT_CA_BUNDLE"]).expanduser().resolve()
+                if os.environ.get("AGENT_GATEWAY_CLIENT_CA_BUNDLE", "").strip() else None
+            ),
+            server_identity=(
+                os.environ.get("AGENT_GATEWAY_SERVER_IDENTITY", "").strip() or None
+            ),
+            certificate_check_interval_sec=_float(
+                "AGENT_GATEWAY_CERT_CHECK_INTERVAL_SEC", 2.0
+            ),
+            issuer_socket_path=(
+                Path(os.environ["AGENT_GATEWAY_ISSUER_SOCKET"]).expanduser().resolve()
+                if os.environ.get("AGENT_GATEWAY_ISSUER_SOCKET", "").strip() else None
+            ),
         ).validated()
 
     def validated(self) -> "GatewayConfig":
@@ -116,7 +154,11 @@ class GatewayConfig:
         if self.security_mode == "test_insecure" and self.port == 8443:
             raise GatewayConfigError("test_insecure gateway must not bind production port 8443")
         if self.security_mode == "mtls":
-            raise GatewayConfigError("mTLS runtime is intentionally deferred to 12D")
+            self._validate_mtls_material()
+            if self.environment == "production" and (
+                self.issuer_socket_path is None or not self.issuer_socket_path.exists()
+            ):
+                raise GatewayConfigError("production mTLS requires available protected issuer socket")
         if not (0 <= self.port <= 65535):
             raise GatewayConfigError("gateway port outside valid range")
         if self.supported_protocol_versions != (1,):
@@ -132,6 +174,7 @@ class GatewayConfig:
             "offer_timeout_sec": self.offer_timeout_sec,
             "offer_poll_interval_sec": self.offer_poll_interval_sec,
             "graceful_shutdown_sec": self.graceful_shutdown_sec,
+            "certificate_check_interval_sec": self.certificate_check_interval_sec,
         }
         if any(float(value) <= 0 for value in positive.values()):
             raise GatewayConfigError("gateway limits and timeouts must be positive")
@@ -144,3 +187,40 @@ class GatewayConfig:
         if self.log_level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
             raise GatewayConfigError("unsupported gateway log level")
         return self
+
+    def _validate_mtls_material(self) -> None:
+        required = {
+            "AGENT_GATEWAY_SERVER_CERT": self.server_certificate_path,
+            "AGENT_GATEWAY_SERVER_KEY": self.server_private_key_path,
+            "AGENT_GATEWAY_CLIENT_CA_BUNDLE": self.client_ca_bundle_path,
+            "AGENT_GATEWAY_SERVER_IDENTITY": self.server_identity,
+        }
+        missing = [name for name, value in required.items() if not value]
+        if missing:
+            raise GatewayConfigError("12D mTLS config missing: " + ", ".join(missing))
+        cert_path = self.server_certificate_path
+        key_path = self.server_private_key_path
+        ca_path = self.client_ca_bundle_path
+        assert cert_path is not None and key_path is not None and ca_path is not None
+        for label, path in (("server certificate", cert_path), ("server key", key_path), ("client CA bundle", ca_path)):
+            if not path.is_file() or path.is_symlink():
+                raise GatewayConfigError(f"mTLS {label} must be a regular non-symlink file")
+        if key_path.stat().st_mode & 0o077:
+            raise GatewayConfigError("Gateway server private key must be mode 0600")
+        try:
+            cert = x509.load_pem_x509_certificate(cert_path.read_bytes())
+            key = serialization.load_pem_private_key(key_path.read_bytes(), password=None)
+            assert_key_matches(cert, key)
+            validate_server_certificate(cert, expected_identity=str(self.server_identity))
+            ca_blob = ca_path.read_bytes()
+            blocks = ca_blob.count(b"-----BEGIN CERTIFICATE-----")
+            if blocks < 1:
+                raise CertificateProfileError("client CA bundle is empty")
+            # Parse every element so malformed overlap bundles fail startup.
+            for item in ca_blob.split(b"-----END CERTIFICATE-----"):
+                if b"-----BEGIN CERTIFICATE-----" in item:
+                    ca = x509.load_pem_x509_certificate(item + b"-----END CERTIFICATE-----\n")
+                    if not ca.extensions.get_extension_for_class(x509.BasicConstraints).value.ca:
+                        raise CertificateProfileError("client trust bundle contains a non-CA leaf")
+        except (ValueError, OSError, CertificateProfileError, x509.ExtensionNotFound) as exc:
+            raise GatewayConfigError(f"invalid Gateway mTLS material: {exc}") from exc
