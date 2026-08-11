@@ -5,7 +5,7 @@
 - **BOOTSTRAP SYSTEM: PASS** for architecture/installer logic and isolated tests.
 - **REAL CLEAN FOREIGN VPS: NOT_PROVEN** — no second disposable physical VPS was available.
 
-Base: `1367bc6f8044cb24817b2ba2620e1742f629f7fa`. Final commit and immutable review verdict are filled after the immutable candidate sequence.
+Base: `1367bc6f8044cb24817b2ba2620e1742f629f7fa`. Immutable code candidate: `6431c004a61486b10687e1f8f593627b16120e04`. Seven-lens detached review: PASS. The exact docs-only evidence tip is reported in the final handoff.
 
 ## Delivered
 
@@ -16,6 +16,8 @@ Human-only steps are Claude browser auth, Codex browser/device auth and hidden O
 Claude/Codex install is automatic when the approved pinned artifacts are present in central inventory; compatible existing CLI/auth is preserved. OpenRouter provisioning is worker-local mode 0600. Registration token is TTL/scoped/one-time/hash-only/stdin. Runtime needs no inbound port and uses outbound HTTPS.
 
 Repeat install is idempotent both by request key and by a stable non-secret installation identity. Update, repair, rollback, status, validate, uninstall and deregister use the same manager; uninstall also revokes the known center identity. Provider auth/data and unrelated services are preserved by default. Credential leaks: 0 in adversarial fixtures. Production changes: NO. Real audit provider calls: 0.
+
+Evidence: 752 focused tests PASS, deterministic candidate archive/manifest hashes match across two builds, immutable security review 7/7 PASS. Repository-wide collection has only the separately documented clean-worktree fixture/setup blockers; no unexplained 11K regression is present.
 
 ## 9-line operator workflow
 
