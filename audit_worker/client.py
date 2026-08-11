@@ -208,7 +208,7 @@ class CenterClient:
 
     def download_source(
         self, job_id: str, dest: Path, execution_token: str, *, resume: bool = True,
-        transfer_id: str = "",
+        transfer_id: str = "", attempt_id: str = "",
     ) -> int:
         """Скачать пакет с докачкой через Range. Возвращает итоговый размер."""
         part = dest.with_suffix(dest.suffix + ".part")

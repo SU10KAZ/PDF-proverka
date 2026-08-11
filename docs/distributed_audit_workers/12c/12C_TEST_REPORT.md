@@ -1,6 +1,6 @@
 # Test report and A–BM coverage
 
-Final pre-candidate runs: 12C module **26 PASS** (including a real 60-second
+Latest pre-candidate runs: 12C module **29 PASS** (including a real 60-second
 idle stream); combined 12A/12B/11K/11L **126 PASS**; polling vertical slice
 **3 PASS**. The final combined invocation was **129 PASS**. All gRPC socket
 tests used isolated loopback ephemeral ports. Provider inference calls were zero.
@@ -12,7 +12,7 @@ tests used isolated loopback ephemeral ports. Provider inference calls were zero
 | H–L | real Hello metadata/attempt/cursor tests plus 12A/12B negotiation suite |
 | M–O | reconnect E2E, typed bounded backoff, and 60-second no-busy-loop test |
 | P–Q | negotiated heartbeat, capability coalescing, Worker/Gateway metrics |
-| R–U | 12A adapters, 12B offer tests, real local E2E, client dedup |
+| R–U | 12A adapters, repeated offer reaches common Agent idempotency, real local E2E |
 | V–Z | `worker.db` idempotency, no-slot test, HTTPS transfer test, real Executor E2E |
 | AA–AE | network-loss replay E2E, negotiated batch clamp, cursor rewind/upper-bound fail-safe, 12A/12B gap tests |
 | AF–AJ | existing progress adapter, real CancelCommand local-queue path, 12B cancel tests |

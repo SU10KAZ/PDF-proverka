@@ -920,7 +920,12 @@ class WorkerAgent:
 
         self.jobs.update(job_id, attempt_id, local_state="downloading")
         ctx["stage"] = "download"
-        self.client.download_source(job_id, dest, ctx["execution_token"])
+        self.client.download_source(
+            job_id,
+            dest,
+            ctx["execution_token"],
+            attempt_id=ctx["attempt_id"],
+        )
 
         try:
             info = package_io.verify_and_unpack(

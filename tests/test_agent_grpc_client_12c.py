@@ -18,13 +18,16 @@ from audit_worker.config import (
 from audit_worker.event_outbox import EventOutbox
 from audit_worker.grpc_transport import (
     WORKER_METRIC_NAMES, FatalGrpcTransportError, GrpcStreamControlTransport,
+    GrpcTransportError,
 )
 from audit_worker.local_store import LocalJobStore, WorkerStateStore, atomic_write_json
 from backend.app.agent_gateway.config import GatewayConfig
 from backend.app.agent_gateway.server import GatewayServer
 from backend.app.services.distributed_workers import database
 from backend.app.services.distributed_workers.settings import get_settings
+from contracts.agent_stream.v1 import adapters as stream_adapters
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
+from contracts.agent_stream.v1 import common_pb2 as common_pb
 from tests.distributed_workers_helpers import (
     ADMIN_USER, SyncASGITransport, enable_portal_roles, make_center_app,
     session_cookie,
@@ -230,6 +233,84 @@ def test_center_resume_cursor_rewinds_tail_and_rejects_impossible_ack(tmp_path):
         ))
 
 
+def test_duplicate_offer_reaches_agent_core_for_idempotent_response(tmp_path):
+    transport = _transport(tmp_path)
+    transport._connection_id = "gconn_0123456789abcdef"
+    offer = stream_adapters.job_offer_from_http({
+        "job_id": "job_0123456789abcdef",
+        "attempt_id": "att_0123456789abcdef",
+        "attempt_no": 1,
+        "assignment_generation": 1,
+        "worker_id": transport.worker_id,
+        "assigned_at": time.time(),
+        "assign_ttl_sec": 30,
+        "job_type": "test_pipeline_v1",
+        "project_id": "project-12c",
+        "params": {},
+        "package": {
+            "package_id": "pkg_0123456789abcdef",
+            "package_type": "source",
+            "size_bytes": 100,
+            "sha256": "a" * 64,
+            "compression": "gzip",
+            "manifest_version": 1,
+        },
+    })
+    for sequence in (1, 2):
+        transport._handle_response(stream_pb.CenterToAgent(
+            protocol_version=1,
+            stream_sequence=sequence,
+            worker_id=transport.worker_id,
+            connection_id=transport._connection_id,
+            job_offer=offer,
+        ))
+    assert transport._offers.get_nowait()["attempt_id"] == offer.attempt_id
+    assert transport._offers.get_nowait()["attempt_id"] == offer.attempt_id
+
+
+def test_protocol_version_rejection_reconnects_instead_of_stopping(tmp_path):
+    transport = _transport(tmp_path)
+    transport._connection_id = "gconn_0123456789abcdef"
+    with pytest.raises(GrpcTransportError) as raised:
+        transport._handle_response(stream_pb.CenterToAgent(
+            protocol_version=1,
+            stream_sequence=1,
+            worker_id=transport.worker_id,
+            connection_id=transport._connection_id,
+            error={
+                "code": common_pb.ERROR_CODE_PROTOCOL_VERSION_UNSUPPORTED,
+                "safe_message": "no common version",
+                "retryable": False,
+            },
+        ))
+    assert not isinstance(raised.value, FatalGrpcTransportError)
+
+
+def test_source_transfer_is_selected_by_exact_attempt(tmp_path):
+    transport = _transport(tmp_path)
+    captured = {}
+    transport.data.download_source = lambda *_args, **kwargs: captured.update(kwargs) or 1
+    job_id = "job_0123456789abcdef"
+    transport._assignments = {
+        "att_old_0123456789": {
+            "job_id": job_id,
+            "attempt_id": "att_old_0123456789",
+            "assignment_generation": 1,
+            "package": {"package_id": "pkg_old_0123456789"},
+        },
+        "att_new_0123456789": {
+            "job_id": job_id,
+            "attempt_id": "att_new_0123456789",
+            "assignment_generation": 2,
+            "package": {"package_id": "pkg_new_0123456789"},
+        },
+    }
+    transport.download_source(
+        job_id, tmp_path / "source.tar", "", attempt_id="att_new_0123456789"
+    )
+    assert captured["transfer_id"] == "pkg_new_0123456789"
+
+
 def test_p_ba_heartbeat_is_coalesced_to_latest(tmp_path):
     transport = _transport(tmp_path)
     transport.heartbeat({**_heartbeat(), "sent_at": 1.0})
@@ -293,8 +374,6 @@ def test_ab_ac_negotiated_event_batch_bound_and_ack(tmp_path):
 
 
 def test_ai_cancel_ack_waits_for_replayed_command_identity(tmp_path):
-    from audit_worker.grpc_transport import GrpcTransportError
-
     transport = _transport(tmp_path)
     with pytest.raises(GrpcTransportError, match="identity"):
         transport.ack_command(

@@ -113,7 +113,6 @@ class GrpcStreamControlTransport:
         self._assignments: dict[str, dict[str, Any]] = {}
         self._uploads: dict[str, dict[str, Any]] = {}
         self._cancel_identity: dict[str, dict[str, str]] = {}
-        self._seen_offers: set[str] = set()
         self._accepting_jobs = True
         self._fatal_error: BaseException | None = None
         self._max_events_per_batch = adapters.MAX_EVENTS_PER_BATCH
@@ -177,8 +176,8 @@ class GrpcStreamControlTransport:
             self._log(f"grpc connect attempt epoch={epoch}")
             self._ready.clear()
             self._connection_id = ""
-            self._seen_offers.clear()
             self.data.set_control_context(connection_id=None)
+            ready_since: float | None = None
             with self._sequence_lock:
                 self._stream_sequence = 0
                 self._center_stream_sequence = 0
@@ -208,13 +207,7 @@ class GrpcStreamControlTransport:
                         break
                     self._handle_response(response)
                     if response.WhichOneof("payload") == "hello":
-                        # A completed Hello is the stable-connection boundary:
-                        # the next disconnect starts again at minimum backoff.
-                        delays = backoff_delays(
-                            start=float(self.config.grpc_reconnect_min_delay_sec),
-                            cap=float(self.config.grpc_reconnect_max_delay_sec),
-                            jitter=float(self.config.grpc_reconnect_jitter),
-                        )
+                        ready_since = time.monotonic()
                 if not self._stop.is_set():
                     raise GrpcTransportError("Agent Gateway stream ended")
                 delays = backoff_delays(
@@ -237,6 +230,19 @@ class GrpcStreamControlTransport:
                     f"grpc disconnected epoch={epoch} error={type(exc).__name__}"
                 )
                 self._fail_waiters(exc)
+                # Hello alone is not a stable connection: an accept/drop loop
+                # must retain exponential backoff. Reset only after the stream
+                # survived at least one negotiated heartbeat interval.
+                stable_for = min(30.0, max(5.0, self.heartbeat_interval_sec))
+                if (
+                    ready_since is not None
+                    and time.monotonic() - ready_since >= stable_for
+                ):
+                    delays = backoff_delays(
+                        start=float(self.config.grpc_reconnect_min_delay_sec),
+                        cap=float(self.config.grpc_reconnect_max_delay_sec),
+                        jitter=float(self.config.grpc_reconnect_jitter),
+                    )
                 if not self._stop.wait(next(delays)):
                     continue
             finally:
@@ -450,9 +456,9 @@ class GrpcStreamControlTransport:
             assignment = adapters.job_offer_to_domain(response.job_offer)
             assignment["execution_token"] = ""
             self._assignments[assignment["attempt_id"]] = assignment
-            if assignment["attempt_id"] in self._seen_offers:
-                return
-            self._seen_offers.add(assignment["attempt_id"])
+            # A repeated offer must reach the Agent core. It owns durable local
+            # idempotency and may need to resend JobAccept/Decline after an ACK
+            # loss even when the gRPC connection itself remained open.
             try:
                 self._offers.put_nowait(assignment)
             except queue.Full as exc:
@@ -484,7 +490,6 @@ class GrpcStreamControlTransport:
             if waiter is not None:
                 waiter.put(response)
         fatal_codes = {
-            common_pb.ERROR_CODE_PROTOCOL_VERSION_UNSUPPORTED,
             common_pb.ERROR_CODE_PROTOCOL_VIOLATION,
             common_pb.ERROR_CODE_UNAUTHORIZED,
         }
@@ -495,6 +500,14 @@ class GrpcStreamControlTransport:
             and not response.correlation_id
         ):
             raise FatalGrpcTransportError(response.error.safe_message)
+        if (
+            kind == "error"
+            and response.error.code == common_pb.ERROR_CODE_PROTOCOL_VERSION_UNSUPPORTED
+            and not response.correlation_id
+        ):
+            # Section 11 requires close/backoff/reconnect, not a permanent
+            # client-thread stop. Active Executors remain independent.
+            raise GrpcTransportError(response.error.safe_message)
 
     def _fail_waiters(self, exc: BaseException) -> None:
         with self._waiters_lock:
@@ -664,9 +677,21 @@ class GrpcStreamControlTransport:
 
     # HTTPS package plane ------------------------------------------------------
     def download_source(self, job_id: str, dest: Any, _token: str, **kwargs: Any) -> int:
-        assignment = next(
-            (x for x in self._assignments.values() if x.get("job_id") == job_id), {}
-        )
+        attempt_id = str(kwargs.pop("attempt_id", "") or "")
+        assignment = self._assignments.get(attempt_id, {}) if attempt_id else {}
+        if not assignment:
+            candidates = [
+                item for item in self._assignments.values()
+                if item.get("job_id") == job_id
+            ]
+            assignment = max(
+                candidates,
+                key=lambda item: (
+                    int(item.get("assignment_generation") or 0),
+                    int(item.get("attempt_no") or 0),
+                ),
+                default={},
+            )
         return self.data.download_source(
             job_id, dest, "", transfer_id=str((assignment.get("package") or {}).get("package_id") or ""),
             **kwargs,
