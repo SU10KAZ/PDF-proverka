@@ -482,6 +482,16 @@ def test_canonical_json_is_stable_hash_verified_and_secret_safe():
         adapters.canonical_json_value(damaged)
     with pytest.raises(adapters.ContractViolation, match="secret-bearing"):
         adapters.canonical_json_message({"api_key": "forbidden"}, schema="test", schema_version=1)
+    with pytest.raises(adapters.ContractViolation, match="executable/admin"):
+        adapters.canonical_json_message(
+            {"command": "echo must-not-cross-control-plane"},
+            schema="audit_worker.job_params",
+            schema_version=1,
+        )
+    # Exact forbidden-key matching does not reject the typed business identity.
+    assert adapters.canonical_json_message(
+        {"command_id": "cancel-1"}, schema="audit_worker.event_payload", schema_version=1
+    )
 
 
 def test_polling_runtime_requirements_and_transport_are_unchanged():

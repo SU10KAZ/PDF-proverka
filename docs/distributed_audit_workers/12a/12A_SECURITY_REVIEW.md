@@ -8,7 +8,7 @@ No arbitrary shell, exec, eval, script, argv, filesystem path, install, edit-fil
 
 ## Parser/DoS controls
 
-Adapters enforce 1 MiB control messages, 256 KiB canonical JSON, 4 KiB flexible strings, 256 events/batch, contiguous sequence and recursive secret-bearing key rejection. `CenterHello` negotiates lower/equal production limits and unacked window. Package descriptor cannot hold bytes/URL; large content mapping fails.
+Adapters enforce 1 MiB control messages, 256 KiB canonical JSON, 4 KiB flexible strings, 256 events/batch, contiguous sequence, recursive secret-bearing key rejection and exact rejection of executable/admin JSON shapes (`command`, shell/exec/eval/argv/script/env/hook/install/edit/restart). Typed identities such as `command_id` remain valid. Downstream authoritative domain validation remains mandatory. `CenterHello` negotiates lower/equal production limits and unacked window. Package descriptor cannot hold bytes/URL; large content mapping fails.
 
 All actionable choices are closed enums with `UNSPECIFIED=0`; critical unknown action fails closed. `ErrorStatus` contains only code, safe message, retryable flag and correlation ID—no traceback/raw exception. Correlation logs may use connection/worker/job/attempt/message type, never prompt/client text/credentials.
 

@@ -39,6 +39,33 @@ _FORBIDDEN_KEY_PARTS = (
     "device_code",
 )
 
+# CanonicalJson is an escape hatch only for already-authoritative bounded
+# domain schemas.  Reject obvious executable/admin shapes at the adapter
+# boundary as defense in depth; downstream Pydantic/domain validation remains
+# mandatory and may be stricter.  Exact matching deliberately leaves safe
+# identifiers such as `command_id` and event metadata untouched.
+_FORBIDDEN_EXECUTION_KEYS = frozenset(
+    {
+        "command",
+        "shell_command",
+        "run_shell",
+        "exec",
+        "eval",
+        "argv",
+        "executable",
+        "script",
+        "python_code",
+        "source_code",
+        "cwd",
+        "env",
+        "environment",
+        "hook",
+        "install_package",
+        "edit_file",
+        "restart_service",
+    }
+)
+
 
 class ContractViolation(ValueError):
     """A control-plane payload violates the v1 application contract."""
@@ -61,6 +88,10 @@ def _assert_safe(value: Any, *, path: str = "payload") -> None:
             key = str(raw_key).lower()
             if any(part in key for part in _FORBIDDEN_KEY_PARTS):
                 raise ContractViolation(f"secret-bearing field is forbidden: {path}.{raw_key}")
+            if key in _FORBIDDEN_EXECUTION_KEYS:
+                raise ContractViolation(
+                    f"executable/admin field is forbidden: {path}.{raw_key}"
+                )
             _assert_safe(child, path=f"{path}.{raw_key}")
     elif isinstance(value, (list, tuple)):
         for index, child in enumerate(value):
