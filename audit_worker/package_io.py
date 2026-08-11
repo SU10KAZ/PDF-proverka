@@ -480,6 +480,14 @@ def collect_inference_provenance(
                 planned.get("capability") or claim.get("capability") or ""
             )
             purpose = str(claim.get("purpose") or "")
+            block_identity = ""
+            if purpose.startswith(("block_analysis:", "block_analysis_judge:")):
+                # Detector legs и следующий за barrier judge используют
+                # разные purpose-prefix, но относятся к ОДНОМУ block. В
+                # provenance нужен сам block id: иначе четвёртая logical
+                # action существует, но по block identity с тремя ногами не
+                # связывается и exactly-once topology непроверяема.
+                block_identity = purpose.split(":", 1)[1]
             status = str(result_payload.get("status") or "")
             if not status:
                 status = "indeterminate" if indeterminate_path.is_file() else "started"
@@ -491,7 +499,7 @@ def collect_inference_provenance(
                     ),
                     "action_id": action_id,
                     "logical_invocation_identity": purpose,
-                    "block_identity": purpose if purpose.startswith("block_analysis:") else "",
+                    "block_identity": block_identity,
                     "provider": provider,
                     "capability": capability,
                     "resolved_model_metadata": {

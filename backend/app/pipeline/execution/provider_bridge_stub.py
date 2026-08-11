@@ -159,7 +159,11 @@ def payload_for(body):
                 "norm": None, "norm_quote": None,
                 "solution": "—", "risk": "—",
                 "source_finding_ids": ["T-001", "G-001"],
-                "source_block_ids": [], "related_block_ids": [],
+                # Валидный block synthetic fixture: deterministic critic не
+                # понижает finding до «ПРОВЕРИТЬ ПО СМЕЖНЫМ» ДО того, как
+                # absence_guard получит кандидата. Это нужно, чтобы network
+                # trace реально прошёл conditional Claude action.
+                "source_block_ids": [], "related_block_ids": ["E2E-I1-01"],
                 "evidence_text_refs": [], "evidence": [], "highlight_regions": [],
             }}],
         }}
@@ -382,7 +386,7 @@ def payload_for(body):
                 "norm": None, "norm_quote": None,
                 "solution": "—", "risk": "—",
                 "source_finding_ids": ["T-001", "G-001"],
-                "source_block_ids": [], "related_block_ids": [],
+                "source_block_ids": [], "related_block_ids": ["E2E-I1-01"],
                 "evidence_text_refs": [], "evidence": [], "highlight_regions": [],
             }}],
         }}

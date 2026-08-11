@@ -142,7 +142,10 @@ policy = {
         "auth_mode": "isolated_provider_home",
         "capabilities": {
             "strong_audit": cap("claude-opus-5"),
-            "cheap_review": cap("claude-sonnet-5"),
+            # Один fake binary имеет фиксированный reported_model. Обе
+            # способности остаются разными в routing/ledger, а локальная
+            # тестовая policy намеренно резолвит их в один stub model.
+            "cheap_review": cap("claude-opus-5"),
         },
     },
     "codex": {
@@ -501,6 +504,7 @@ print(json.dumps({"leak_count": len(hits), "paths": hits}, ensure_ascii=False))
         f"""set -euo pipefail
 export ROOT={shlex.quote(worker.root)}
 export SECRET={shlex.quote(paths['secret'])}
+export PYTHONPATH="$ROOT/current"
 {shlex.quote(worker.root)}/venv/bin/python - <<'SECRET_SCAN_PY'
 {probe}
 SECRET_SCAN_PY
@@ -782,13 +786,13 @@ def main(argv: Optional[list[str]] = None) -> int:
             stand, operator, worker, worker_id=worker_id, paths=paths,
             timeout=args.audit_timeout_sec,
         )
-        backend_log = (stand.evidence / "backend_11j1.log").read_text(
-            encoding="utf-8", errors="replace"
-        )
-        frozen_lines = [
-            line[-500:] for line in backend_log.splitlines()
-            if "FROZEN_ROUTING_PLAN" in line
-        ]
+        frozen_lines: list[str] = []
+        for log_path in stand.central_v2.rglob("audit_log.jsonl"):
+            for line in log_path.read_text(
+                encoding="utf-8", errors="replace"
+            ).splitlines():
+                if "FROZEN_ROUTING_PLAN" in line:
+                    frozen_lines.append(line[-500:])
         base.check(any("FROZEN_ROUTING_PLAN FOUND" in line for line in frozen_lines),
                    "center log различает FROZEN_ROUTING_PLAN FOUND")
         base.check(not any("FROZEN_ROUTING_PLAN INVALID" in line for line in frozen_lines),

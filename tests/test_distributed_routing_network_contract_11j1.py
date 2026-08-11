@@ -173,7 +173,7 @@ def test_result_package_has_per_action_provenance_and_roundtrip_hash(tmp_path):
             "stage_id": "block_batch",
             "action_id": "detector_openrouter",
             "logical_invocation_identity": "block_analysis:B1",
-            "block_identity": "block_analysis:B1",
+            "block_identity": "B1",
             "provider": registry.PROVIDER_OPENROUTER,
             "capability": registry.CAP_BLOCK_DETECTOR,
             "resolved_model_metadata": {
