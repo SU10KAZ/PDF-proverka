@@ -2304,6 +2304,7 @@ def launch_remote_audit(
     stand: Stand, operator: Operator, worker: Worker, *,
     worker_id: str, timeout: float, real_document: str = "",
     clone_local: bool = True, stop_at_boundary: bool = False,
+    after_claim: Optional[Callable[[str, dict[str, Any]], None]] = None,
 ) -> Optional[RemoteAuditRun]:
     """Поставить удалённый аудит и довести его до принятого центром результата.
 
@@ -2353,11 +2354,21 @@ def launch_remote_audit(
         проекта. Связь с логическим заданием проверяется отдельно, ниже, и
         уже по строке из `workers.db`.
         """
+        fallback: Optional[dict] = None
         for path in sorted(packages_dir.rglob("package_manifest.json")):
             data = _read_json(path)
-            if data and data.get("discipline_id"):
+            if not data or not data.get("discipline_id"):
+                continue
+            if (
+                str(data.get("project_id") or "") == str(remote_fx.project_id)
+                and str(data.get("version_id") or "") == str(remote_fx.version_id)
+            ):
                 return data
-        return None
+            fallback = fallback or data
+        # Старые manifest до project_id/version_id: сохраняем прежний выбор,
+        # но новые сетевые сценарии с двумя job в одном центре выбираются по
+        # точной версии и не могут прочитать пакет соседа.
+        return fallback
 
     _wait_for(lambda: _package_manifest() is not None, timeout=600, interval=1.0)
     manifest = _package_manifest() or {}
@@ -2383,6 +2394,12 @@ def launch_remote_audit(
     # которое назвал манифест пакета, — то есть из того же источника, что и
     # проверка «пакет принадлежит этому заданию» ниже.
     run_attempt_id = attempt_id_of(operator, str(manifest.get("job_id") or ""))
+    if after_claim is not None:
+        # Стендовый freeze-hook: вызывается только ПОСЛЕ появления attempt_id,
+        # то есть после claim и получения пакета воркером. Боевой путь не знает
+        # о callback; он нужен сетевому доказательству «переключение глобального
+        # пресета после claim не меняет уже замороженный plan».
+        after_claim(run_attempt_id, dict(manifest))
     #
     # Маска привязана к ЭТОЙ попытке. Раньше стояло `*/metadata/…`, и на корне,
     # где уже проходили прогоны, первым находился файл ЧУЖОЙ попытки: реальный
@@ -2418,7 +2435,11 @@ def launch_remote_audit(
             return {}
         rows = [j for j in response.json().get("jobs", [])
                 if j.get("job_type") == "audit_pipeline_v1"]
-        return rows[0] if rows else {}
+        logical_job_id = str(manifest.get("job_id") or "")
+        return next(
+            (row for row in rows if str(row.get("job_id") or "") == logical_job_id),
+            {},
+        )
 
     if stop_at_boundary:
         # Центр остановлен ровно на границе (§38): результат принят и применён,

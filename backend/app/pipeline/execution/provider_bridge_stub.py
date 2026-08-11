@@ -151,8 +151,11 @@ def payload_for(body):
                 "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
                 "category": "заглушка",
                 "sheet": None, "page": None,
-                "problem": "Ответ заглушки CLI: обращения к модели не было",
-                "description": "Сетевой прогон 11G через мост провайдера",
+                "problem": "Отсутствует тестовая маркировка на синтетическом листе",
+                "description": (
+                    "Детерминированный absence-кандидат заглушки; "
+                    "обращения к реальной модели не было"
+                ),
                 "norm": None, "norm_quote": None,
                 "solution": "—", "risk": "—",
                 "source_finding_ids": ["T-001", "G-001"],
@@ -371,8 +374,11 @@ def payload_for(body):
                 "severity": "РЕКОМЕНДАТЕЛЬНОЕ",
                 "category": "заглушка",
                 "sheet": None, "page": None,
-                "problem": "Ответ заглушки Codex CLI: обращения к модели не было",
-                "description": "Сетевой прогон 11H через мост провайдера",
+                "problem": "Отсутствует тестовая маркировка на синтетическом листе",
+                "description": (
+                    "Детерминированный absence-кандидат Codex-заглушки; "
+                    "обращения к реальной модели не было"
+                ),
                 "norm": None, "norm_quote": None,
                 "solution": "—", "risk": "—",
                 "source_finding_ids": ["T-001", "G-001"],

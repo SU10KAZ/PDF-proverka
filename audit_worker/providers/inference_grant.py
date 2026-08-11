@@ -441,7 +441,10 @@ def issue_for_job(
             "разрешение не выписывается без логической способности: без неё "
             "точную модель выберет CLI, а не политика машины"
         )
-    grant_id = f"auto-{attempt_id}"
+    provider_name = str(provider).strip().lower()
+    if not provider_name:
+        raise InferenceGrantError("разрешение не выписывается без провайдера")
+    legacy_grant_id = f"auto-{attempt_id}"
     moment = now if now is not None else time.time()
     path = grant_path(worker_root)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -450,6 +453,22 @@ def issue_for_job(
         if problem:
             raise InferenceGrantError(problem)
         records = _parse(path.read_text(encoding="utf-8")) if path.exists() else []
+        # Single-provider попытки сохраняют исторический идентификатор
+        # ``auto-<attempt>``. У multi-provider попытки тот же attempt_id, но
+        # разрешения принадлежат РАЗНЫМ подпискам. Прежний поиск только по
+        # attempt_id возвращал Claude-запись для Codex/OpenRouter, после чего
+        # их ``consume(provider=...)`` закономерно не находил разрешения.
+        # Первый провайдер оставляет legacy ID, следующие получают безопасный
+        # суффикс провайдера. Повторный вход находит именно свою запись и не
+        # обнуляет её счётчик.
+        legacy = next(
+            (r for r in records if r.grant_id == legacy_grant_id), None
+        )
+        grant_id = (
+            legacy_grant_id
+            if legacy is None or legacy.provider == provider_name
+            else f"{legacy_grant_id}-{provider_name}"
+        )
         existing = next((r for r in records if r.grant_id == grant_id), None)
         if existing is not None:
             # Повторный вход. Возвращаем запись КАК ЕСТЬ — со всем, что уже
@@ -458,7 +477,7 @@ def issue_for_job(
             return existing
         record = GrantRecord(
             grant_id=grant_id,
-            provider=str(provider).strip().lower(),
+            provider=provider_name,
             task_id=str(job_id),
             # ВХОДЫ в канал, а не обращения к модели: см. комментарий к
             # `GRANT_MAX_ENTRIES_PER_ATTEMPT`. Потолок обращений едет в привязке

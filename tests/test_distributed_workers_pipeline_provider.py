@@ -1088,6 +1088,52 @@ class TestJobContract:
         )
         assert used.grant_id == "auto-a-2"
 
+    def test_auto_grants_are_independent_per_provider_on_one_attempt(self, worker_root):
+        """Multi-provider plan получает отдельную штатную запись на подписку."""
+        records = [
+            inference_grant.issue_for_job(
+                worker_root,
+                provider=provider,
+                job_id="job-multi",
+                attempt_id="a-multi",
+                capability="strong_audit",
+                requested_max_inferences=20,
+                machine_ceiling=40,
+                ttl_sec=600,
+            )
+            for provider in ("claude", "codex", "openrouter")
+        ]
+
+        assert [record.grant_id for record in records] == [
+            "auto-a-multi",
+            "auto-a-multi-codex",
+            "auto-a-multi-openrouter",
+        ]
+        assert {record.provider for record in records} == {
+            "claude", "codex", "openrouter",
+        }
+        consumed = {
+            inference_grant.consume(
+                worker_root, provider=provider, task_id="job-multi"
+            ).provider
+            for provider in ("claude", "codex", "openrouter")
+        }
+        assert consumed == {"claude", "codex", "openrouter"}
+
+        again = inference_grant.issue_for_job(
+            worker_root,
+            provider="openrouter",
+            job_id="job-multi",
+            attempt_id="a-multi",
+            capability="strong_audit",
+            requested_max_inferences=20,
+            machine_ceiling=40,
+            ttl_sec=600,
+        )
+        assert again.grant_id == "auto-a-multi-openrouter"
+        assert again.used == 1
+        assert len(inference_grant.read_records(worker_root)) == 3
+
 
 # ═════════════ Heartbeat ═════════════════════════════════════════════════════
 class TestHeartbeat:
