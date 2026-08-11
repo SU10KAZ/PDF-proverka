@@ -73,8 +73,12 @@ def load_identity(
     eku = cert.extensions.get_extension_for_class(x509.ExtendedKeyUsage).value
     if list(eku) != [ExtendedKeyUsageOID.CLIENT_AUTH]:
         raise WorkerIdentityError("client certificate lacks strict clientAuth EKU")
-    not_before_dt = getattr(cert, "not_valid_before_utc", cert.not_valid_before.replace(tzinfo=timezone.utc))
-    not_after_dt = getattr(cert, "not_valid_after_utc", cert.not_valid_after.replace(tzinfo=timezone.utc))
+    not_before_dt = getattr(cert, "not_valid_before_utc", None)
+    if not_before_dt is None:
+        not_before_dt = cert.not_valid_before.replace(tzinfo=timezone.utc)
+    not_after_dt = getattr(cert, "not_valid_after_utc", None)
+    if not_after_dt is None:
+        not_after_dt = cert.not_valid_after.replace(tzinfo=timezone.utc)
     now = datetime.now(timezone.utc)
     if now < not_before_dt or now >= not_after_dt:
         raise WorkerIdentityError("client certificate is outside validity")

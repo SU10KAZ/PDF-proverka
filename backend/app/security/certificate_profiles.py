@@ -48,11 +48,13 @@ def _utc(value: datetime) -> datetime:
 
 
 def cert_not_before(cert: x509.Certificate) -> datetime:
-    return _utc(getattr(cert, "not_valid_before_utc", cert.not_valid_before))
+    value = getattr(cert, "not_valid_before_utc", None)
+    return _utc(value if value is not None else cert.not_valid_before)
 
 
 def cert_not_after(cert: x509.Certificate) -> datetime:
-    return _utc(getattr(cert, "not_valid_after_utc", cert.not_valid_after))
+    value = getattr(cert, "not_valid_after_utc", None)
+    return _utc(value if value is not None else cert.not_valid_after)
 
 
 def certificate_fingerprint(cert: x509.Certificate) -> str:
