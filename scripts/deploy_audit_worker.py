@@ -484,6 +484,26 @@ class Remote:
             raise SystemExit(f"scp не удался: {result.stderr[-2000:]}")
 
 
+def remote_from_args(args: argparse.Namespace) -> Remote:
+    """Remote с опциональным явным ssh config.
+
+    Пустое значение сохраняет прежнее поведение. ``-F /dev/null`` полезен на
+    изолированном центре, где системный include SSH повреждён; это не должно
+    заставлять deploy править глобальную конфигурацию машины.
+    """
+    opts = ("-o", "BatchMode=yes", "-o", "ConnectTimeout=15")
+    ssh_config = str(getattr(args, "ssh_config", "") or "").strip()
+    if ssh_config:
+        opts = ("-F", ssh_config, *opts)
+    return Remote(
+        host=args.host,
+        user=args.user,
+        root=args.remote_root,
+        ssh_opts=opts,
+        dry_run=args.dry_run,
+    )
+
+
 def remote_bootstrap_layout(remote: Remote) -> None:
     """Создать раскладку. Идемпотентно; существующие data/ не трогает."""
     remote.run(
@@ -695,7 +715,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 
 def cmd_deploy(args: argparse.Namespace) -> int:
-    remote = Remote(host=args.host, user=args.user, root=args.remote_root, dry_run=args.dry_run)
+    remote = remote_from_args(args)
 
     if args.artifact:
         archive = Path(args.artifact).resolve()
@@ -756,7 +776,7 @@ def cmd_deploy(args: argparse.Namespace) -> int:
 
 
 def cmd_rollback(args: argparse.Namespace) -> int:
-    remote = Remote(host=args.host, user=args.user, root=args.remote_root, dry_run=args.dry_run)
+    remote = remote_from_args(args)
     releases = remote_list_releases(remote)
     current = remote_current_release(remote)
     target = args.to
@@ -776,7 +796,7 @@ def cmd_rollback(args: argparse.Namespace) -> int:
 
 
 def cmd_releases(args: argparse.Namespace) -> int:
-    remote = Remote(host=args.host, user=args.user, root=args.remote_root, dry_run=args.dry_run)
+    remote = remote_from_args(args)
     current = remote_current_release(remote)
     for name in sorted(remote_list_releases(remote)):
         print(("* " if name == current else "  ") + name)
@@ -784,7 +804,7 @@ def cmd_releases(args: argparse.Namespace) -> int:
 
 
 def cmd_status(args: argparse.Namespace) -> int:
-    remote = Remote(host=args.host, user=args.user, root=args.remote_root, dry_run=args.dry_run)
+    remote = remote_from_args(args)
     print(json.dumps(remote_health(remote, args.units), ensure_ascii=False, indent=2))
     return 0
 
@@ -799,6 +819,10 @@ def build_parser() -> argparse.ArgumentParser:
     def add_remote(p: argparse.ArgumentParser) -> None:
         p.add_argument("--host", required=True, help="адрес worker VPS (в коде не зашит)")
         p.add_argument("--user", required=True, help="SSH-пользователь")
+        p.add_argument(
+            "--ssh-config", default="",
+            help="явный файл ssh_config (например /dev/null для изолированного стенда)",
+        )
         p.add_argument("--remote-root", default="/home/coder/audit-worker",
                        help="корень установки на воркере")
         # Пустой список = «вывести из --remote-root» (см. `units_for_root`).
