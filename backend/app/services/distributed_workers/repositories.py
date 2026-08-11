@@ -540,6 +540,10 @@ class SlotLimitReached(RuntimeError):
         self.limit = limit
 
 
+class TransportOwnershipConflict(RuntimeError):
+    """A worker may receive jobs through exactly one runtime transport."""
+
+
 def _attempts_for_slots(conn, worker_id: str) -> list[dict[str, Any]]:
     """Нетерминальные попытки воркера — сырьё для предикатов занятости слота."""
     terminal = tuple(s.value for s in TERMINAL_JOB_STATES)
@@ -595,6 +599,8 @@ def claim_next_job_for_worker(
     worker_free_hint: Optional[int] = None,
     worker_busy_hint: Optional[int] = None,
     executor_status_hint: Optional[str] = None,
+    transport_mode: str = "polling",
+    gateway_offer: Optional[dict[str, Any]] = None,
     settings: DistributedWorkersSettings | None = None,
 ) -> Optional[dict[str, Any]]:
     """Атомарно взять одно задание, предназначенное этому воркеру.
@@ -626,6 +632,15 @@ def claim_next_job_for_worker(
 
     now = time.time()
     with database.write_txn(settings) as conn:
+        ownership = conn.execute(
+            "SELECT transport_mode FROM worker_transport_sessions WHERE worker_id=?",
+            (worker_id,),
+        ).fetchone()
+        durable_mode = str(ownership["transport_mode"]) if ownership is not None else "polling"
+        if durable_mode != transport_mode:
+            raise TransportOwnershipConflict(
+                f"worker transport is {durable_mode}, request came through {transport_mode}"
+            )
         # attempt_disposition = 'active' обязателен. Без него признанная
         # потерянной попытка (mark_lost не трогает execution_state) оставалась
         # текущей строкой представления и выдавалась воркеру ПОВТОРНО — вместе
@@ -732,6 +747,41 @@ def claim_next_job_for_worker(
             (job["job_id"], job["attempt_id"], JobState.ASSIGNED.value,
              JobState.SOURCE_UPLOADING.value, "worker", "jobs/next", now),
         )
+        if gateway_offer is not None:
+            connection_id = str(gateway_offer["connection_id"])
+            expires_at = float(gateway_offer["expires_at"])
+            generation = int(
+                gateway_offer.get("assignment_generation")
+                or job.get("assignment_generation")
+                or 1
+            )
+            conn.execute(
+                "INSERT INTO gateway_job_offers "
+                "(attempt_id,job_id,worker_id,connection_id,assignment_generation,status,"
+                "offered_at,expires_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?) "
+                "ON CONFLICT(attempt_id) DO UPDATE SET connection_id=excluded.connection_id, "
+                "assignment_generation=excluded.assignment_generation,status='offered', "
+                "offered_at=excluded.offered_at,expires_at=excluded.expires_at, "
+                "delivered_at=NULL,accepted_at=NULL,declined_at=NULL,decline_reason=NULL,"
+                "updated_at=excluded.updated_at",
+                (
+                    job["attempt_id"], job["job_id"], worker_id, connection_id,
+                    generation, "offered", now, expires_at, now,
+                ),
+            )
+            transfer_id = str(gateway_offer.get("transfer_id") or job.get("package_id") or "")
+            if transfer_id:
+                conn.execute(
+                    "INSERT OR REPLACE INTO gateway_transfers "
+                    "(transfer_id,worker_id,job_id,attempt_id,direction,expires_at,created_at) "
+                    "VALUES (?,?,?,?,?,?,?)",
+                    (
+                        transfer_id, worker_id, job["job_id"], job["attempt_id"],
+                        "center_to_agent", expires_at, now,
+                    ),
+                )
+            job["gateway_offer_expires_at"] = expires_at
+            job["assignment_generation"] = generation
         job["state"] = JobState.SOURCE_UPLOADING.value
     return job
 

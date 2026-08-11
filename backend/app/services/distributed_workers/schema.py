@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 9
+SCHEMA_VERSION = 10
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -895,6 +895,73 @@ CREATE INDEX IF NOT EXISTS ix_bootstrap_tokens_session
     ON worker_bootstrap_registration_tokens(session_id);
 """
 
+# Migration 10 (12B): durable transport fencing and gateway delivery metadata.
+# These tables do not duplicate jobs/events/results. They only persist facts
+# needed to recover network delivery after a gateway process crash.
+_MIGRATION_10 = """
+CREATE TABLE IF NOT EXISTS worker_transport_sessions (
+    worker_id             TEXT PRIMARY KEY REFERENCES workers(worker_id) ON DELETE CASCADE,
+    transport_mode        TEXT NOT NULL DEFAULT 'polling',
+    last_connection_epoch INTEGER NOT NULL DEFAULT 0,
+    active_connection_id  TEXT,
+    protocol_version      INTEGER,
+    connected_at          REAL,
+    last_message_at       REAL,
+    last_heartbeat_at     REAL,
+    disconnected_at       REAL,
+    updated_at            REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_transport_sessions_connection
+    ON worker_transport_sessions(active_connection_id)
+    WHERE active_connection_id IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS gateway_job_offers (
+    attempt_id            TEXT PRIMARY KEY REFERENCES job_attempts(attempt_id) ON DELETE CASCADE,
+    job_id                TEXT NOT NULL,
+    worker_id             TEXT NOT NULL,
+    connection_id         TEXT NOT NULL,
+    assignment_generation INTEGER NOT NULL DEFAULT 1,
+    status                TEXT NOT NULL,
+    offered_at            REAL NOT NULL,
+    expires_at            REAL NOT NULL,
+    delivered_at          REAL,
+    accepted_at           REAL,
+    declined_at           REAL,
+    decline_reason        TEXT,
+    updated_at            REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_gateway_offers_worker_status
+    ON gateway_job_offers(worker_id, status, expires_at);
+
+CREATE TABLE IF NOT EXISTS gateway_transfers (
+    transfer_id TEXT NOT NULL,
+    worker_id   TEXT NOT NULL,
+    job_id      TEXT NOT NULL,
+    attempt_id  TEXT NOT NULL,
+    direction   TEXT NOT NULL,
+    expires_at  REAL NOT NULL,
+    created_at  REAL NOT NULL,
+    PRIMARY KEY (transfer_id, worker_id, direction)
+);
+CREATE INDEX IF NOT EXISTS ix_gateway_transfers_attempt
+    ON gateway_transfers(job_id, attempt_id);
+
+CREATE TABLE IF NOT EXISTS gateway_result_notifications (
+    attempt_id          TEXT PRIMARY KEY REFERENCES job_attempts(attempt_id) ON DELETE CASCADE,
+    job_id              TEXT NOT NULL,
+    worker_id           TEXT NOT NULL,
+    transfer_id         TEXT NOT NULL,
+    result_sha256       TEXT NOT NULL,
+    routing_plan_hash   TEXT,
+    execution_revision  TEXT,
+    status              TEXT NOT NULL DEFAULT 'pending_validation',
+    ready_at            REAL NOT NULL,
+    updated_at          REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_gateway_results_worker_status
+    ON gateway_result_notifications(worker_id, status, updated_at);
+"""
+
 MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
@@ -905,6 +972,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     7: _statements(_MIGRATION_7),
     8: _statements(_MIGRATION_8),
     9: _statements(_MIGRATION_9),
+    10: _statements(_MIGRATION_10),
 }
 
 

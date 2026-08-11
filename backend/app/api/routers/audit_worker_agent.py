@@ -687,7 +687,7 @@ async def jobs_next(
         # обработчик пятнадцатью ошибками валидации ещё до ответа. Дефект не
         # видел ни один тест: `/jobs/next` проверялся только тестовыми
         # заданиями, а сквозного прогона удалённого аудита не было.
-        params=_assignment_params(job, payload_obj),
+        params=job_service.assignment_params(job, payload_obj),
         package=PackageRef(
             package_id=manifest["package_id"],
             package_type="source",
@@ -721,19 +721,6 @@ async def jobs_next(
             settings=settings,
         )
     return assignment
-
-
-def _assignment_params(job: dict[str, Any], payload_obj: dict[str, Any]):
-    """Разобрать нагрузку задания моделью ЕГО типа.
-
-    Обе модели с `extra="forbid"`, поэтому «попробуем одну, потом другую» здесь
-    не догадка, а точный разбор: нагрузка реального аудита не может сойти за
-    тестовую и наоборот. Тип задания при этом ведущий — он записан в базе.
-    """
-    raw = payload_obj.get("params") or {}
-    if str(job.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
-        return AuditPipelineParams(**raw)
-    return TestJobParams(**raw)
 
 
 @router.get("/jobs/{job_id}/source")

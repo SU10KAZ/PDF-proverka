@@ -22,6 +22,7 @@ def main() -> int:
         "grpc_tools.protoc",
         f"-I{ROOT}",
         f"--python_out={ROOT}",
+        f"--grpc_python_out={ROOT}",
         f"--descriptor_set_out={DESCRIPTOR}",
         "--include_imports",
         *PROTO_FILES,

@@ -1,0 +1,9 @@
+{
+  "claim_and_offer_lease_transaction": "job_attempts assigned->source_uploading, transition, gateway_job_offers, source transfer authorization",
+  "crash_before_send": "durable offered row remains; reconnect redelivers before expiry, or expiry returns attempt to assigned",
+  "disconnect_after_send_before_accept": "same recovery; delivery timestamp is diagnostic, acceptance is authoritative",
+  "accepted": "gateway_job_offers accepted and existing job_service transitions persist",
+  "declined_temporary": "attempt returns to assigned and can be offered again",
+  "declined_permanent": "existing job lifecycle transitions attempt to failed",
+  "duplicate_execution_prevention": "transport ownership plus authoritative attempt state"
+}

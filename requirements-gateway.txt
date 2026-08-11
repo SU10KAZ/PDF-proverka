@@ -1,0 +1,6 @@
+# Runtime for the separate 12B Agent Gateway process only.
+# It is intentionally not part of requirements-worker.txt: the production
+# Audit Worker remains on HTTPS polling until 12C.
+grpcio==1.82.1
+grpcio-health-checking==1.82.1
+protobuf==7.35.1

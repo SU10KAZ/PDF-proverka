@@ -142,10 +142,15 @@ def test_a_proto_files_compile_and_descriptor_is_reproducible(tmp_path):
     assert output.read_bytes() == DESCRIPTOR_PATH.read_bytes()
 
 
-def test_b_generated_python_imports_without_grpc_stub():
+def test_b_generated_python_and_12b_grpc_stub_are_available():
     assert common_pb.DESCRIPTOR.package == "auditmanager.agent_stream.v1"
     assert stream_pb.DESCRIPTOR.services_by_name["AgentStreamService"]
-    assert not (ROOT / "contracts/agent_stream/v1/agent_stream_pb2_grpc.py").exists()
+    stub_path = ROOT / "contracts/agent_stream/v1/agent_stream_pb2_grpc.py"
+    assert stub_path.is_file()
+    from contracts.agent_stream.v1 import agent_stream_pb2_grpc as stream_grpc
+
+    assert stream_grpc.AgentStreamServiceStub
+    assert stream_grpc.AgentStreamServiceServicer
 
 
 def test_c_package_and_service_are_versioned_bidi_v1():

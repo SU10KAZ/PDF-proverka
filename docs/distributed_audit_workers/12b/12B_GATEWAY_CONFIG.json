@@ -1,0 +1,26 @@
+{
+  "executable": "python -m backend.app.agent_gateway",
+  "default": {
+    "host": "127.0.0.1",
+    "port": 0,
+    "environment": "test",
+    "security_mode": "test_insecure",
+    "protocol_versions": [1],
+    "heartbeat_timeout_sec": 90,
+    "idle_timeout_sec": 120,
+    "max_inbound_bytes": 1048576,
+    "max_outbound_bytes": 1048576,
+    "max_event_batch_count": 256,
+    "max_unacked_events": 1024,
+    "max_outbound_queue": 128,
+    "offer_timeout_sec": 30,
+    "reflection_enabled": false
+  },
+  "guards": {
+    "insecure_non_loopback": "refused",
+    "insecure_port_8443": "refused",
+    "production_without_mtls": "refused",
+    "mtls_runtime": "deferred_to_12D",
+    "production_reflection": "refused"
+  }
+}

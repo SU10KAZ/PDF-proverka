@@ -1,0 +1,9 @@
+{
+  "transport": "real grpc.aio TCP sockets on 127.0.0.1 dynamic port",
+  "fake_agents": 20,
+  "per_agent": ["AgentHello/CenterHello", "JobOffer", "Heartbeat", "EventBatch", "EventAck"],
+  "assertions": ["20 registered simultaneous sessions", "20 heartbeats", "contiguous event cursor per worker", "orderly close", "no orphan RPC tasks"],
+  "result": "PASS",
+  "real_workers": 0,
+  "real_inference": 0
+}
