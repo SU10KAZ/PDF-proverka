@@ -359,6 +359,7 @@ def create_test_job(
     actor: str,
     display_name: str = "",
     settings: DistributedWorkersSettings,
+    resume_existing: bool = False,
 ) -> dict[str, Any]:
     """Создать и сразу закрепить за воркером безопасное тестовое задание.
 
@@ -392,17 +393,36 @@ def create_test_job(
         if version_id
         else None
     )
-    job = repositories.create_job(
-        job_type=JobType.TEST_PIPELINE_V1.value,
-        project_id=external_id,
-        version_id=external_version,
-        payload={"params": params.model_dump()},
-        display_name=identifiers.normalize_display_name(
-            display_name, fallback=external_id
-        ),
-        created_by=actor,
-        settings=settings,
-    )
+    try:
+        job = repositories.create_job(
+            job_type=JobType.TEST_PIPELINE_V1.value,
+            project_id=external_id,
+            version_id=external_version,
+            payload={"params": params.model_dump()},
+            display_name=identifiers.normalize_display_name(
+                display_name, fallback=external_id
+            ),
+            created_by=actor,
+            settings=settings,
+        )
+    except repositories.ActiveJobExists:
+        if not resume_existing:
+            raise
+        candidates = [
+            item
+            for item in repositories.list_jobs(limit=1000, settings=settings)
+            if item.get("project_id") == external_id
+            and (item.get("version_id") or None) == external_version
+            and (item.get("attempt_disposition") or "active") == "active"
+        ]
+        if not candidates:
+            raise JobError("Активное тестовое задание не найдено для resume")
+        job = max(candidates, key=lambda item: float(item.get("created_at") or 0.0))
+        if job.get("state") != JobState.CREATED.value:
+            assigned_worker = job.get("assigned_worker_id")
+            if assigned_worker not in {None, worker_id}:
+                raise JobError("Существующее тестовое задание назначено другому воркеру")
+            return job
 
     compression = package_service.pick_compression(caps.get("compressions"))
     manifest = build_source_package(

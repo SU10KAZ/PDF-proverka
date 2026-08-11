@@ -52,6 +52,7 @@ def _default_runtime_selftest(
         # role required by the job state machine.
         actor="center:bootstrap:" + session_id,
         settings=settings,
+        resume_existing=True,
     )
     deadline = time.monotonic() + 180.0
     last_state = job.get("state")

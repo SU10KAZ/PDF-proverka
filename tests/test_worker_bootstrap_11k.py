@@ -853,8 +853,61 @@ def test_runtime_selftest_assigns_job_with_center_role(settings, monkeypatch):
         "wrk_bootstrap_test", "wbs_same_session", settings
     )
     assert captured["actor"] == "center:bootstrap:wbs_same_session"
+    assert captured["resume_existing"] is True
     assert result["state"] == "completed"
     assert result["real_provider_calls"] == 0
+
+
+def test_zero_inference_test_job_resumes_orphan_created_before_assignment(
+    settings,
+):
+    from backend.app.models.distributed_workers import TestJobParams
+    from backend.app.services.distributed_workers import job_service
+
+    capabilities = {
+        "job_types": ["test_pipeline_v1"],
+        "compressions": ["gzip"],
+    }
+    worker, _claim_secret, _created = registration_service.register_worker(
+        instance_id="inst_boot_selftest_resume",
+        display_name_hint="Bootstrap selftest worker",
+        worker_version="11k-test",
+        protocol_version=settings.protocol_version,
+        pipeline_revision="release-11k",
+        capabilities=capabilities,
+        configured_max_slots_hint=1,
+        settings=settings,
+    )
+    registration_service.approve_worker(
+        worker_id=worker["worker_id"],
+        display_name="Bootstrap selftest worker",
+        configured_max_slots=1,
+        settings=settings,
+    )
+    orphan = repositories.create_job(
+        job_type="test_pipeline_v1",
+        project_id="bootstrap-selftest-resume-contract",
+        version_id=None,
+        payload={"params": {"label": "bootstrap-11k"}},
+        display_name="bootstrap-selftest-resume-contract",
+        created_by="bootstrap:old-contract",
+        settings=settings,
+    )
+
+    resumed = job_service.create_test_job(
+        worker_id=worker["worker_id"],
+        project_id="bootstrap-selftest-resume-contract",
+        version_id=None,
+        params=TestJobParams(
+            label="bootstrap-11k", steps=3, step_seconds=0.05, result_bytes=4096
+        ),
+        actor="center:bootstrap:wbs_same_session",
+        settings=settings,
+        resume_existing=True,
+    )
+    assert resumed["job_id"] == orphan["job_id"]
+    assert resumed["state"] == "assigned"
+    assert resumed["assigned_worker_id"] == worker["worker_id"]
 
 
 def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):
