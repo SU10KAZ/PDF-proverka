@@ -26,3 +26,7 @@ Total reproducible passing cases recorded here: **148**.
 `tests/test_distributed_workers_hardening.py::test_register_does_not_issue_token` blocked before its first assertion in the existing TestClient registration call, both alone and after the other modules, and was interrupted rather than reported as PASS. 12A changes no backend/runtime file and the center/agent regression suites plus explicit unchanged-runtime guard pass. This environment/test-harness hang is not hidden or reclassified as a protocol failure.
 
 No socket, gateway, :8443, mTLS, production operation, audit or provider inference was invoked. Real Claude/Codex/OpenRouter calls: **0**.
+
+## Immutable review tests
+
+Candidate `4b641b303ef1dd5fa7008fda464dc2907aa1c481` exposed one security defense-in-depth gap and was rejected. After fix + regression test in `095353c9dd6a9422987a81e8428ab05bb36c36e8`, a new detached worktree repeated all six lenses and the 45-test suite: PASS. Details: `12A_ADVERSARIAL_REVIEW.md`.

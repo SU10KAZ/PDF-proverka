@@ -1,6 +1,6 @@
 # 12A — final report
 
-Status before immutable review: **candidate complete**. Base: `0fc81cdbcc8f59a2925949b024338c29afbb5d13` from finalized 11L branch.
+Status: **PASS**. Base: `0fc81cdbcc8f59a2925949b024338c29afbb5d13` from finalized 11L branch. Immutable reviewed contract commit: `095353c9dd6a9422987a81e8428ab05bb36c36e8`.
 
 ## Result
 
@@ -14,6 +14,6 @@ Large packages remain resumable HTTPS via opaque transfer descriptors. The gRPC 
 
 Current HTTP polling still works and was not edited. No live gRPC server/client, listener, mTLS, :8443, production change, audit or model call was performed. Real inference: **0**.
 
-Tests: 45 protocol/compatibility cases and 103 separately reproducible existing regression cases pass; see `12A_TEST_REPORT.md`. Immutable six-lens review and exact final commit are recorded after candidate commit in the final revision.
+Tests: 45 protocol/compatibility cases and 103 separately reproducible existing regression cases pass; see `12A_TEST_REPORT.md`. First immutable candidate failed security lens because generic JSON admitted a `command` key; the adapter was hardened with a regression test. A new detached candidate repeated all six lenses: PASS; see `12A_ADVERSARIAL_REVIEW.md`.
 
 12B may proceed only after implementing and proving the unresolved gateway/mTLS/fencing/backpressure/data-plane-authorization/cutover issues listed in `12A_KNOWN_ISSUES.md`.
