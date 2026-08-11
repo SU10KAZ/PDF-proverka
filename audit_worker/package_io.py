@@ -419,6 +419,95 @@ _AUDIT_SECTIONS = ("project", "work", "result", "usage", "logs")
 _MAX_LOG_BYTES = 8 * 1024 * 1024
 
 
+def collect_inference_provenance(
+    job_dir: Path, *, routing_plan: Optional[dict[str, Any]] = None
+) -> dict[str, Any]:
+    """Безопасный per-action trace для result manifest.
+
+    Сырые ledger-файлы содержат ответ провайдера и в пакет не включаются.
+    Манифесту нужны только проверяемые поля маршрута и исхода: stage/action,
+    логическая invocation identity, provider/capability, разрешённые сведения
+    о модели и status. Значения секретов, URL, prompt и response сюда не
+    копируются по построению.
+    """
+    plan = routing_plan if isinstance(routing_plan, dict) else {}
+    actions: dict[str, dict[str, str]] = {}
+    for stage in plan.get("stages") or []:
+        if not isinstance(stage, dict):
+            continue
+        stage_id = str(stage.get("stage_id") or "")
+        for action in stage.get("actions") or []:
+            if not isinstance(action, dict):
+                continue
+            action_id = str(action.get("action_id") or "")
+            if not action_id:
+                continue
+            actions[action_id] = {
+                "stage_id": stage_id,
+                "provider": str(action.get("provider") or ""),
+                "capability": str(action.get("capability") or ""),
+            }
+
+    ledger_root = Path(job_dir) / "inference"
+    rows: list[dict[str, Any]] = []
+    if ledger_root.is_dir():
+        for claim_path in sorted(ledger_root.glob("*.claim.json")):
+            try:
+                claim = json.loads(claim_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                claim = {}
+            claim = claim if isinstance(claim, dict) else {}
+            key = claim_path.name.removesuffix(".claim.json")
+            result_path = ledger_root / f"{key}.result.json"
+            indeterminate_path = ledger_root / f"{key}.indeterminate.json"
+            result_payload: dict[str, Any] = {}
+            if result_path.is_file():
+                try:
+                    loaded = json.loads(result_path.read_text(encoding="utf-8"))
+                    if isinstance(loaded, dict) and isinstance(
+                        loaded.get("provider_result"), dict
+                    ):
+                        result_payload = loaded["provider_result"]
+                except (OSError, ValueError):
+                    result_payload = {}
+            action_id = str(claim.get("action_id") or "")
+            planned = actions.get(action_id) or {}
+            provider = str(
+                planned.get("provider") or claim.get("provider")
+                or result_payload.get("provider") or ""
+            )
+            capability = str(
+                planned.get("capability") or claim.get("capability") or ""
+            )
+            purpose = str(claim.get("purpose") or "")
+            status = str(result_payload.get("status") or "")
+            if not status:
+                status = "indeterminate" if indeterminate_path.is_file() else "started"
+            rows.append(
+                {
+                    "ledger_key": key,
+                    "stage_id": str(
+                        planned.get("stage_id") or claim.get("stage") or ""
+                    ),
+                    "action_id": action_id,
+                    "logical_invocation_identity": purpose,
+                    "block_identity": purpose if purpose.startswith("block_analysis:") else "",
+                    "provider": provider,
+                    "capability": capability,
+                    "resolved_model_metadata": {
+                        "reported_model": str(result_payload.get("model") or ""),
+                        "model_report": str(result_payload.get("model_report") or ""),
+                    },
+                    "status": status,
+                }
+            )
+    return {
+        "routing_plan_id": str(plan.get("routing_plan_id") or ""),
+        "routing_plan_hash": str(plan.get("routing_plan_hash") or ""),
+        "actions": rows,
+    }
+
+
 def build_result_package(
     *,
     dest_path: Path,
@@ -452,6 +541,7 @@ def build_result_package(
     source_integrity: Optional[dict[str, Any]] = None,
     discipline_id: Optional[str] = None,
     discipline_profile_hash: Optional[str] = None,
+    routing_plan: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Собрать TAR результата: input/ + work/ + result/ (+ project/usage/logs).
 
@@ -570,6 +660,9 @@ def build_result_package(
         )
         uncompressed += len(data)
 
+    inference_provenance = collect_inference_provenance(
+        job_dir, routing_plan=routing_plan
+    )
     manifest: dict[str, Any] = {
         "manifest_version": manifest_version,
         "package_id": f"pkg_{attempt_id}",
@@ -599,6 +692,12 @@ def build_result_package(
         "completed_stages": list(completed_stages or []),
         "forbidden_stages_not_run": list(forbidden_stages_not_run or []),
         "provider_mode": provider_mode,
+        # Frozen route и фактически начатые logical actions. Поля собраны из
+        # validated plan + safe ledger metadata; raw prompt/result/URL/secret
+        # в manifest не переносятся.
+        "routing_plan_id": inference_provenance["routing_plan_id"] or None,
+        "routing_plan_hash": inference_provenance["routing_plan_hash"] or None,
+        "provider_action_provenance": inference_provenance["actions"],
         # Дисциплина и хэш ПРИМЕНЁННОГО профиля. Центр сверяет их с тем, что
         # отправлял: расхождение означает аудит чужим профилем.
         "discipline_id": discipline_id,

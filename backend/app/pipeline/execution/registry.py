@@ -59,6 +59,10 @@ def remote_execution_available() -> tuple[bool, str]:
 CENTRAL_STAGES_DISABLED_ENV = "AUDIT_PIPELINE_CENTRAL_STAGES_DISABLED"
 
 
+class FrozenRoutingPlanError(RuntimeError):
+    """Новый distributed job потерял или повредил обязательный frozen plan."""
+
+
 def central_stages_disabled() -> bool:
     """Запрещены ли в ЭТОМ процессе этапы, которые выполняются только на центре.
 
@@ -282,15 +286,19 @@ def frozen_routing_plan(handle: Any) -> Any:
     сверяет `routing_plan_hash` с содержимым (`RoutingPlan.from_dict`), так что
     подменённая в БД запись до исполнения не доедет.
 
-    `None` — законный ответ: задание могло быть создано сборкой до 11I либо
-    вовсе не удалённым. Хвост в этом случае работает как раньше.
+    `None` — законный ответ ТОЛЬКО для явно распознанного legacy contract v0.
+    Новый job несёт ``routing_plan_contract_version=1``; отсутствие либо
+    повреждение его плана является INVALID и останавливает хвост. Иначе потеря
+    одного JSON-поля незаметно переключала уже идущее задание на live config.
     """
     job_id = getattr(handle, "remote_job_id", None)
     if not job_id:
+        # ExecutionHandle до контракта маршрутизации не нёс remote_job_id.
+        # Это наблюдаемый legacy marker, а не общий fail-open: новые handles
+        # создаются только с id и дальше проверяются по contract marker job.
         logger.info(
-            "Замороженный план не читается: у ссылки на исполнение нет "
-            "идентификатора удалённого задания — хвост пойдёт по текущей "
-            "конфигурации центра",
+            "FROZEN_ROUTING_PLAN NOT_FOUND: legacy_handle_v0 без remote_job_id; "
+            "разрешён fallback к live config"
         )
         return None
     try:
@@ -300,39 +308,65 @@ def frozen_routing_plan(handle: Any) -> Any:
 
         row = repositories.get_logical_job(str(job_id), settings=get_settings())
         if row is None:
-            # Все три «тихих» выхода логируются, и это не многословие.
-            # Утверждение этапа звучит как «хвост идёт по замороженному
-            # плану»; молчаливый возврат `None` делает «пошли по плану» и
-            # «пошли по живой конфигурации» неразличимыми в журнале, то есть
-            # само утверждение — непроверяемым.
-            logger.warning(
-                "Замороженный план не читается: задания %s нет в workers.db — "
-                "хвост пойдёт по текущей конфигурации центра", job_id,
+            logger.error(
+                "FROZEN_ROUTING_PLAN INVALID: задания %s нет в workers.db", job_id,
             )
-            return None
+            raise FrozenRoutingPlanError(
+                f"FROZEN_ROUTING_PLAN INVALID: job {job_id} отсутствует"
+            )
         payload = row.get("payload")
         if isinstance(payload, str):
             payload = json.loads(payload or "{}")
-        raw = ((payload or {}).get("params") or {}).get("routing_plan")
+        if not isinstance(payload, dict):
+            raise FrozenRoutingPlanError("payload задания не является объектом")
+        params = payload.get("params") or {}
+        if not isinstance(params, dict):
+            raise FrozenRoutingPlanError("payload.params не является объектом")
+        contract = params.get("routing_plan_contract_version")
+        raw = params.get("routing_plan")
         if not isinstance(raw, dict) or not raw:
+            if contract == 1:
+                logger.error(
+                    "FROZEN_ROUTING_PLAN NOT_FOUND: job=%s contract=v1; "
+                    "fail closed", job_id,
+                )
+                raise FrozenRoutingPlanError(
+                    "FROZEN_ROUTING_PLAN NOT_FOUND: обязательный plan отсутствует"
+                )
+            # Единственный разрешённый fallback: в нагрузке нет ни плана, ни
+            # маркера обязательности, то есть это contract v0 до 11J. Маркер
+            # пишется дословно, чтобы live-config fallback был трассируемым.
             logger.info(
-                "У задания %s нет плана маршрутизации (создано сборкой до "
-                "11I либо не удалённое) — хвост пойдёт по текущей "
-                "конфигурации центра", job_id,
+                "FROZEN_ROUTING_PLAN NOT_FOUND: job=%s legacy_contract_v0; "
+                "разрешён fallback к live config", job_id,
             )
             return None
-        return RoutingPlan.from_dict(raw)
-    except Exception as exc:                # noqa: BLE001 — см. ниже
-        # Fail-soft, и это осознанный выбор. Отказ здесь означал бы, что
-        # аудит, у которого worker-участок УЖЕ оплачен и принят, не может
-        # доиграть нормативный хвост из-за нечитаемого поля. Прежнее
-        # поведение (глобальная конфигурация) хуже замороженного плана, но
-        # несравнимо лучше потерянного прогона.
-        logger.warning(
-            "Замороженный план задания %s не прочитан, хвост пойдёт по "
-            "текущей конфигурации центра: %s", job_id, exc,
+        if contract not in (None, 1):
+            raise FrozenRoutingPlanError(
+                f"неподдерживаемый routing contract {contract!r}"
+            )
+        plan = RoutingPlan.from_dict(raw)
+        logger.info(
+            "FROZEN_ROUTING_PLAN FOUND: job=%s plan=%s hash=%s",
+            job_id, plan.routing_plan_id, plan.plan_hash(),
         )
-        return None
+        return plan
+    except FrozenRoutingPlanError as exc:
+        if "FROZEN_ROUTING_PLAN" not in str(exc):
+            logger.error(
+                "FROZEN_ROUTING_PLAN INVALID: job=%s: %s", job_id, exc,
+            )
+            raise FrozenRoutingPlanError(
+                f"FROZEN_ROUTING_PLAN INVALID: {exc}"
+            ) from exc
+        raise
+    except Exception as exc:                # noqa: BLE001 — fail closed ниже
+        logger.error(
+            "FROZEN_ROUTING_PLAN INVALID: job=%s: %s", job_id, exc,
+        )
+        raise FrozenRoutingPlanError(
+            f"FROZEN_ROUTING_PLAN INVALID: {type(exc).__name__}: {exc}"
+        ) from exc
 
 
 def handle_from_item(item: Any) -> Optional[ExecutionHandle]:

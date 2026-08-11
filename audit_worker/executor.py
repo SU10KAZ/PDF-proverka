@@ -1347,6 +1347,9 @@ class Executor:
             source_integrity=(
                 audit_manifest.get("source_integrity") if is_audit else None
             ),
+            routing_plan=(
+                (meta.get("params") or {}).get("routing_plan") if is_audit else None
+            ),
         )
         self.jobs.update(
             job_id, attempt_id,

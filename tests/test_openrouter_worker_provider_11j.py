@@ -1155,3 +1155,80 @@ def test_rev10_dead_primary_role_entries_are_absent():
         if f"{stage}:{role}" not in reachable
     ]
     assert not unreachable, f"недостижимые записи карты: {unreachable}"
+
+
+def test_rev11_transport_failure_exposes_only_safe_host(
+    provisioned, monkeypatch,
+):
+    """Полный secret-bearing URL никогда не входит в diagnostic data.
+
+    Заглушка исключения намеренно эхом возвращает URL: реальные HTTP-клиенты
+    иногда делают то же самое. Проверяется фактическая ветка адаптера, а не
+    только helper редактирования.
+    """
+    import httpx
+
+    class _BoomClient:
+        def __init__(self, **_kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def post(self, url, **_kwargs):
+            raise RuntimeError(f"controlled failure for {url}")
+
+    monkeypatch.setattr(httpx, "Client", _BoomClient)
+    monkeypatch.setenv(STUBBED_ENDPOINTS_ENV, "true")
+    cases = (
+        ("https://user:password@example.test/api", ("user", "password", "/api")),
+        ("https://user:p@ssw0rd@example.test/api", ("user", "p@ssw0rd", "/api")),
+        ("https://example.test/api?api_key=SUPER_SECRET", ("api_key", "SUPER_SECRET", "?")),
+        ("https://token@example.test/", ("token@",)),
+    )
+    for url, forbidden in cases:
+        monkeypatch.setenv(BASE_URL_ENV, url)
+        result = _call(_adapter(provisioned))
+        assert not result.ok
+        detail = str(result.detail or "")
+        assert "example.test" in detail
+        for fragment in forbidden:
+            assert fragment not in detail, (url, fragment, detail)
+
+
+def test_rev12_gateway_error_body_cannot_echo_secret_url(
+    provisioned, monkeypatch,
+):
+    """Даже ответ сервера не может протащить URL/key в exception detail."""
+    import httpx
+
+    secret_url = "https://user:p@ssw0rd@example.test/api?api_key=SUPER_SECRET"
+
+    class _Response:
+        status_code = 401
+        text = secret_url + " " + TEST_KEY
+
+    class _EchoClient:
+        def __init__(self, **_kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def post(self, _url, **_kwargs):
+            return _Response()
+
+    monkeypatch.setattr(httpx, "Client", _EchoClient)
+    monkeypatch.setenv(STUBBED_ENDPOINTS_ENV, "true")
+    monkeypatch.setenv(BASE_URL_ENV, secret_url)
+    result = _call(_adapter(provisioned))
+    serialized = json.dumps(result.as_dict(), ensure_ascii=False)
+    for fragment in ("user", "p@ssw0rd", "api_key", "SUPER_SECRET", TEST_KEY):
+        assert fragment not in serialized
+    assert result.detail == "OpenRouter HTTP 401"

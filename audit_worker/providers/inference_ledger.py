@@ -213,7 +213,8 @@ class InferenceLedger:
 
     # ── протокол ─────────────────────────────────────────────────────────────
     def begin(self, key: str, *, provider: str, purpose: str,
-              prompt_sha256: str) -> LedgerEntry:
+              prompt_sha256: str, action_id: str = "", capability: str = "",
+              stage: str = "") -> LedgerEntry:
         """Заявить вызов. Единственный победитель — тот, кто создал `claim`.
 
         Возвращает `allowed` только когда `claim` создан ЭТИМ вызовом. Любой
@@ -228,6 +229,13 @@ class InferenceLedger:
             "job_id": self.job_id,
             "attempt_id": self.attempt_id,
             "provider": provider,
+            # Без этих полей четыре независимых ноги имеют разные ХЭШИ, но
+            # result package не может объяснить, какой ключ какой ноге
+            # принадлежал. Здесь только безопасная логическая идентичность —
+            # ни промпта, ни ответа, ни credentials.
+            "stage": str(stage or ""),
+            "action_id": str(action_id or ""),
+            "capability": str(capability or ""),
             "purpose": purpose,
             "prompt_sha256": prompt_sha256,
             "claimed_at": time.time(),

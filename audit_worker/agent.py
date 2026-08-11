@@ -1017,6 +1017,7 @@ class WorkerAgent:
             manifest_version=int(assignment["package"].get("manifest_version", 1)),
             source_package_hash=assignment["package"].get("sha256"),
             exit_code=int(meta.get("exit_code", 0) or 0),
+            routing_plan=(assignment.get("params") or {}).get("routing_plan"),
         )
         result_hash = manifest["archive"]["sha256"]
         result_size = manifest["archive"]["compressed_bytes"]

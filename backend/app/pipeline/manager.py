@@ -6359,7 +6359,7 @@ class PipelineManager:
         if plan is not None:
             await self._log(
                 job,
-                "Центральный хвост идёт по замороженному плану "
+                "FROZEN_ROUTING_PLAN FOUND: центральный хвост идёт по плану "
                 f"{plan.preset_id!r} ({plan.plan_hash()[:19]}…) — смена пресета "
                 "на него уже не влияет",
                 "info",
@@ -6371,9 +6371,8 @@ class PipelineManager:
             # утверждение этапа нельзя проверить по прогону.
             await self._log(
                 job,
-                "Замороженный план задания не найден — центральный хвост идёт "
-                "по ТЕКУЩЕЙ конфигурации центра (см. предупреждение выше о "
-                "причине)",
+                "FROZEN_ROUTING_PLAN NOT_FOUND legacy_contract_v0: "
+                "центральный хвост идёт по ТЕКУЩЕЙ конфигурации центра",
                 "warn",
             )
         with _active_plan.bind_plan(plan):

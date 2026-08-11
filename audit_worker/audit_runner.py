@@ -118,6 +118,14 @@ _ENV_HTTP_PROVIDER_OPTIONAL = (
     "AUDIT_WORKER_PROVIDER_ENDPOINTS_STUBBED",
 )
 
+_ENV_PROVIDER_CONCURRENCY_OPTIONAL = (
+    # Correctness-limit каждой подписки отдельно. Значения задаёт только
+    # администратор worker; routing plan их менять не может.
+    "AUDIT_WORKER_PROVIDER_CLAUDE_MAX_CONCURRENCY",
+    "AUDIT_WORKER_PROVIDER_CODEX_MAX_CONCURRENCY",
+    "AUDIT_WORKER_PROVIDER_OPENROUTER_MAX_CONCURRENCY",
+)
+
 #: Дополнительные системные переменные, без которых интерпретатор на некоторых
 #: VPS не стартует вовсе. Секретов среди них нет, значения не путь к данным.
 _ENV_SYSTEM_OPTIONAL = ("LD_LIBRARY_PATH", "SSL_CERT_FILE", "SSL_CERT_DIR")
@@ -182,6 +190,7 @@ class SafeAuditParams:
     #: не знает и провайдерского слоя. Смысл плана проверяет процесс конвейера,
     #: которому он и адресован.
     routing_plan: Optional[dict[str, Any]] = None
+    routing_plan_contract_version: Optional[int] = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -201,6 +210,7 @@ class SafeAuditParams:
             "required_result_artifacts": list(self.required_result_artifacts),
             "provider_requirement": self.provider_requirement,
             "routing_plan": self.routing_plan,
+            "routing_plan_contract_version": self.routing_plan_contract_version,
         }
 
 
@@ -221,6 +231,7 @@ _ALLOWED_FIELDS = {
     # маршрут вернулся бы к глобальной настройке центра, которая к моменту
     # исполнения могла измениться.
     "routing_plan",
+    "routing_plan_contract_version",
 }
 
 #: Поля требования к провайдеру. Проверяются формально, без импорта
@@ -464,6 +475,16 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         )
 
     routing_plan = _validate_routing_plan(data.get("routing_plan"))
+    contract_version = data.get("routing_plan_contract_version")
+    if contract_version is not None and contract_version != 1:
+        raise AuditJobRejected(
+            "routing_plan_contract_version: эта сборка поддерживает только 1"
+        )
+    if contract_version == 1 and routing_plan is None:
+        raise AuditJobRejected(
+            "routing_plan_contract_version=1, но routing_plan отсутствует: "
+            "новое задание не имеет права откатываться к live config"
+        )
     # Fail closed (§29 задания): задание, которое собирается звать модель, без
     # плана маршрутизации не исполняется. Молчаливый возврат к прежнему
     # поведению означал бы, что маршрут снова определяется тем, какая
@@ -497,6 +518,9 @@ def validate_params(raw: dict[str, Any], *, config: Any) -> SafeAuditParams:
         required_result_artifacts=merged,
         provider_requirement=requirement,
         routing_plan=routing_plan,
+        routing_plan_contract_version=(
+            int(contract_version) if contract_version is not None else None
+        ),
     )
 
 
@@ -559,6 +583,9 @@ def build_env(
         if name in os.environ:
             env[name] = os.environ[name]
     for name in _ENV_HTTP_PROVIDER_OPTIONAL:
+        if name in os.environ:
+            env[name] = os.environ[name]
+    for name in _ENV_PROVIDER_CONCURRENCY_OPTIONAL:
         if name in os.environ:
             env[name] = os.environ[name]
     root = Path(getattr(config, "pipeline_root"))
@@ -706,6 +733,7 @@ def run_audit_job(
         # независимо посчитанных значения, совпав, доказывают, что центр и
         # воркер держат ОДИН маршрут.
         "routing_plan": params.routing_plan,
+        "routing_plan_contract_version": params.routing_plan_contract_version,
         "provider_binding": str(provider_binding) if provider_binding else None,
         "paths": {key: str(value) for key, value in layout.items()},
     }

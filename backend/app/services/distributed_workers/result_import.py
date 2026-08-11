@@ -272,10 +272,69 @@ def validate_result_manifest(
         )
 
     if str(attempt.get("job_type") or "") == JobType.AUDIT_PIPELINE_V1.value:
+        _validate_routing_provenance(manifest=manifest, attempt=attempt)
         stages = manifest.get("stage_completion") or {}
         if not isinstance(stages, dict) or not stages:
             raise ResultImportError("В манифесте нет карты завершённых этапов")
         _validate_discipline(manifest=manifest, attempt=attempt)
+
+
+def _validate_routing_provenance(
+    *, manifest: dict[str, Any], attempt: dict[str, Any]
+) -> None:
+    """Result обязан относиться к тому же frozen plan, что и job.
+
+    Сверка source package hash связывает байты входа и результата, но раньше
+    не связывала ИСПОЛНЕННЫЙ маршрут: пакет с тем же проектом и другим plan
+    принимался. Contract v1 fail-closed; legacy v0 без плана остаётся
+    совместимым и получает отдельный диагностический маркер в report/logs.
+    """
+    from backend.app.services.audit_routing.plan import RoutingPlan, RoutingPlanError
+
+    payload = _loads(attempt.get("payload"))
+    params = payload.get("params") if isinstance(payload, dict) else {}
+    params = params if isinstance(params, dict) else {}
+    contract = params.get("routing_plan_contract_version")
+    raw = params.get("routing_plan")
+    if not isinstance(raw, dict) or not raw:
+        if contract == 1:
+            raise ResultImportError(
+                "FROZEN_ROUTING_PLAN NOT_FOUND: job contract v1 потерял plan"
+            )
+        logger.info(
+            "FROZEN_ROUTING_PLAN NOT_FOUND legacy_contract_v0: result hash "
+            "не требуется для attempt %s", attempt.get("attempt_id"),
+        )
+        return
+    try:
+        plan = RoutingPlan.from_dict(raw)
+    except RoutingPlanError as exc:
+        raise ResultImportError(
+            f"FROZEN_ROUTING_PLAN INVALID в job payload: {exc}"
+        ) from exc
+    expected_hash = plan.plan_hash()
+    expected_id = plan.routing_plan_id
+    got_hash = str(manifest.get("routing_plan_hash") or "")
+    got_id = str(manifest.get("routing_plan_id") or "")
+    if got_hash != expected_hash:
+        raise ResultImportError(
+            "Routing plan hash результата не совпадает с заданием: "
+            f"ожидался {expected_hash[:23]}…, пришёл {(got_hash or '—')[:23]}…"
+        )
+    if got_id != expected_id:
+        raise ResultImportError(
+            "Routing plan id результата не совпадает с заданием: "
+            f"ожидался {expected_id!r}, пришёл {got_id or '—'!r}"
+        )
+    provenance = manifest.get("provider_action_provenance")
+    if not isinstance(provenance, list):
+        raise ResultImportError(
+            "Result manifest не содержит provider_action_provenance"
+        )
+    logger.info(
+        "FROZEN_ROUTING_PLAN FOUND: result attempt=%s hash=%s actions=%s",
+        attempt.get("attempt_id"), expected_hash, len(provenance),
+    )
 
 
 def expected_discipline(attempt: dict[str, Any]) -> tuple[str, str]:

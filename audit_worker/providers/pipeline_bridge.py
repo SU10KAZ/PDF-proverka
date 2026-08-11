@@ -30,6 +30,8 @@ CLI-подкоманде, а конвейер о нём не знал вовсе
 from __future__ import annotations
 
 import os
+import contextlib
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional, Sequence
@@ -71,6 +73,47 @@ from audit_worker.providers.resolver import (
 
 class ProviderBridgeError(RuntimeError):
     """Мост активен, но вызов невозможен. Тихого обхода не бывает."""
+
+
+_provider_limit_lock = threading.Lock()
+_provider_limiters: dict[tuple[str, int], threading.BoundedSemaphore] = {}
+
+
+def provider_concurrency_limit(provider: str) -> int:
+    """Локальный лимит конкретного провайдера; 0 означает без отдельного cap."""
+    name = f"AUDIT_WORKER_PROVIDER_{str(provider).upper()}_MAX_CONCURRENCY"
+    raw = str(os.environ.get(name, "") or "").strip()
+    if not raw:
+        return 0
+    try:
+        return max(0, min(256, int(raw)))
+    except ValueError:
+        raise ProviderBridgeError(f"{name}: ожидается целое число 0..256") from None
+
+
+@contextlib.contextmanager
+def provider_concurrency_slot(provider: str):
+    """Отдельный semaphore для Claude, Codex и OpenRouter.
+
+    Общий semaphore сделал бы лимит OpenRouter причиной сериализации Codex;
+    отсутствие semaphore позволило бы двум Codex-ногам parallel group
+    превысить machine policy. Ключ включает provider и limit, поэтому смена
+    настройки между тестовыми прогонами не переиспользует старый объект.
+    """
+    limit = provider_concurrency_limit(provider)
+    if limit <= 0:
+        yield
+        return
+    key = (str(provider), limit)
+    with _provider_limit_lock:
+        limiter = _provider_limiters.setdefault(
+            key, threading.BoundedSemaphore(limit)
+        )
+    limiter.acquire()
+    try:
+        yield
+    finally:
+        limiter.release()
 
 
 def attachments_digest(images: Sequence[tuple[str, bytes]]) -> str:
@@ -391,6 +434,9 @@ def run_stage_inference(
     claim = ledger.begin(
         key, provider=effective_provider, purpose=purpose,
         prompt_sha256=sha256_text(prompt),
+        action_id=action_id,
+        capability=(route.capability if route is not None else capability),
+        stage=stage_name,
     )
     if claim.state != STATE_ALLOWED:
         # Гонку выиграл другой процесс между `inspect` и `begin`.
@@ -440,29 +486,30 @@ def run_stage_inference(
         # ПРИВЯЗКИ (маршрута плана), а не из аргументов вызывающего: этап
         # конвейера называет СПОСОБНОСТЬ, а какой строке она соответствует на
         # этой машине, решила локальная политика до запуска процесса.
-        if images:
-            inference = getattr(adapter, "structured_inference_multimodal", None)
-            if inference is None:
-                raise ProviderBridgeError(
-                    f"провайдер {binding.provider!r} не умеет передавать "
-                    "изображения: молчаливый переход на текстовый вызов "
-                    "запрещён — этап получил бы анализ чертежа без чертежа"
+        with provider_concurrency_slot(effective_provider):
+            if images:
+                inference = getattr(adapter, "structured_inference_multimodal", None)
+                if inference is None:
+                    raise ProviderBridgeError(
+                        f"провайдер {binding.provider!r} не умеет передавать "
+                        "изображения: молчаливый переход на текстовый вызов "
+                        "запрещён — этап получил бы анализ чертежа без чертежа"
+                    )
+                result = inference(
+                    prompt, images=images, purpose=purpose, timeout_sec=timeout_sec,
+                    model=model_id,
+                    accepted_reported_models=accepted_models,
+                    model_report=report_mode,
+                    **effort_kwargs,
                 )
-            result = inference(
-                prompt, images=images, purpose=purpose, timeout_sec=timeout_sec,
-                model=model_id,
-                accepted_reported_models=accepted_models,
-                model_report=report_mode,
-                **effort_kwargs,
-            )
-        else:
-            result = adapter.structured_inference(
-                prompt, purpose=purpose, timeout_sec=timeout_sec,
-                model=model_id,
-                accepted_reported_models=accepted_models,
-                model_report=report_mode,
-                **effort_kwargs,
-            )
+            else:
+                result = adapter.structured_inference(
+                    prompt, purpose=purpose, timeout_sec=timeout_sec,
+                    model=model_id,
+                    accepted_reported_models=accepted_models,
+                    model_report=report_mode,
+                    **effort_kwargs,
+                )
     except BaseException as exc:                    # noqa: BLE001 — см. ниже
         # Исключение ПОСЛЕ заявки означает неизвестный исход: запрос мог уйти.
         # Помечаем явно и не даём повторить автоматически.

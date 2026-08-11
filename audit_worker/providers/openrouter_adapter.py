@@ -199,6 +199,18 @@ def resolve_base_url(env: Optional[dict[str, str]] = None) -> str:
     return raw
 
 
+def safe_endpoint_error(base_url: str, exc: BaseException) -> str:
+    """Диагностика transport failure: только тип ошибки и безопасный host.
+
+    Полный URL не проходит через редактор вообще. Это принципиально для
+    ``user:p@ss@host``: regex-редактор не обязан уметь однозначно разобрать
+    произвольный userinfo, query или fragment. Не положить secret-bearing URL
+    в diagnostic data надёжнее любой попытки его замазать.
+    """
+    host = urlparse(str(base_url or "")).hostname or "unknown-host"
+    return f"{type(exc).__name__}: transport failure contacting host {host}"
+
+
 class OpenRouterProviderAdapter(ProviderAdapter):
     """Провайдер без CLI: обращение к модели — HTTPS-запрос из этого процесса."""
 
@@ -356,8 +368,11 @@ class OpenRouterProviderAdapter(ProviderAdapter):
         else:
             # Хост, а не полный URL с возможными параметрами: центру нужно
             # знать «боевой шлюз или заглушка», а не раскладку прокси.
-            snapshot["endpoint_host"] = urlparse(base).hostname or ""
-            snapshot["endpoint_official"] = base.startswith(OFFICIAL_BASE_URL)
+            parsed = urlparse(base)
+            snapshot["endpoint_host"] = parsed.hostname or ""
+            snapshot["endpoint_official"] = (
+                parsed.scheme == "https" and parsed.hostname == OFFICIAL_HOST
+            )
         return snapshot
 
     # ─── Контрольный запрос ──────────────────────────────────────────────────
@@ -645,9 +660,19 @@ class OpenRouterProviderAdapter(ProviderAdapter):
                 # которые мы видели; исключение клиента способно вернуть
                 # заголовок в любом виде, включая усечённый и перекодированный,
                 # и тогда правило не сработает, а литерал сработает.
-                detail=redaction.redact(
-                    f"{type(exc).__name__}: {exc}", extra_literals=(api_key,),
-                ),
+                detail=safe_endpoint_error(base_url, exc),
+            )
+        else:
+            duration = int((time.monotonic() - started) * 1000)
+            # Выражение return вычисляется ДО finally: конкретный ключ доступен
+            # редактору тела ответа, затем ссылка немедленно удаляется.
+            return self._finalize(
+                response,
+                duration_ms=duration,
+                requested_model=str(model or ""),
+                accepted=tuple(accepted),
+                model_report=model_report,
+                extra_literals=(api_key,),
             )
         finally:
             # Значение перестаёт быть достижимым сразу после запроса. Питон не
@@ -655,14 +680,6 @@ class OpenRouterProviderAdapter(ProviderAdapter):
             # и это единственное, что здесь вообще можно сделать честно.
             del api_key
             headers.pop("Authorization", None)
-        duration = int((time.monotonic() - started) * 1000)
-        return self._finalize(
-            response,
-            duration_ms=duration,
-            requested_model=str(model or ""),
-            accepted=tuple(accepted),
-            model_report=model_report,
-        )
 
     def _finalize(
         self,
@@ -672,6 +689,7 @@ class OpenRouterProviderAdapter(ProviderAdapter):
         requested_model: str,
         accepted: Sequence[str],
         model_report: str,
+        extra_literals: Sequence[str] = (),
     ) -> ProviderInferenceResult:
         """Разбор ответа шлюза. Ни одна ветка не возвращает сырьё без редактора."""
         status_code = int(getattr(response, "status_code", 0) or 0)
@@ -686,9 +704,10 @@ class OpenRouterProviderAdapter(ProviderAdapter):
                 status=STATUS_ERROR, auth_mode=self.home.auth_mode,
                 duration_ms=duration_ms, exit_code=status_code,
                 error_code=classify_http_status(status_code, body_text),
-                # Тело ответа шлюза может содержать эхо запроса. В `detail`
-                # уходит КОД и короткая выжимка, прошедшая редактор.
-                detail=redaction.redact(f"HTTP {status_code}: {body_text[:300]}"),
+                # Тело может содержать эхо Authorization, полного URL или
+                # prompt. Оно участвует во внутренней классификации и hash,
+                # но в diagnostic data не включается вообще.
+                detail=f"OpenRouter HTTP {status_code}",
                 raw_sha256=sha256_text(body_text),
                 raw_bytes=len(body_text.encode("utf-8", errors="replace")),
             )
@@ -734,7 +753,12 @@ class OpenRouterProviderAdapter(ProviderAdapter):
                 status=STATUS_ERROR, auth_mode=self.home.auth_mode,
                 duration_ms=duration_ms, exit_code=status_code,
                 error_code=classified,
-                detail=redaction.redact(f"шлюз вернул ошибку: {str(summary)[:300]}"),
+                # Upstream message недоверенный и способен эхом вернуть URL с
+                # userinfo/query. Наружу достаточно класса и кода.
+                detail=(
+                    "OpenRouter вернул upstream error"
+                    + (f" code={code}" if code is not None else "")
+                ),
             )
 
         choices = data.get("choices")
@@ -910,4 +934,5 @@ __all__ = [
     "classify_http_status",
     "resolve_base_url",
     "stubbed_endpoints_declared",
+    "safe_endpoint_error",
 ]

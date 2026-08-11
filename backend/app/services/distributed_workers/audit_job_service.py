@@ -440,6 +440,7 @@ def create_audit_job(
         discipline_profile_hash=profile_snapshot.tree_hash,
         required_result_artifacts=required_artifacts_for(safe_action),
         provider_requirement=provider_requirement,
+        routing_plan_contract_version=(1 if routing_plan is not None else None),
         # План маршрутизации ЗАМОРАЖИВАЕТСЯ здесь и больше не меняется. Всё,
         # что оператор переключит после этой строки, относится к следующим
         # заданиям, а не к этому.
