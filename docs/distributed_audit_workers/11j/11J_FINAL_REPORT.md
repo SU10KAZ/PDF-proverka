@@ -1,188 +1,96 @@
-# Этап 11J — Executable Multi-Provider Routing Plan
+# 11J.1 — executable multi-provider routing: финальный отчёт
 
-## 1. Вердикт
+## Вердикт
 
-**PARTIAL.**
+- **ARCHITECTURE VERDICT: PASS.** Оба exact preset прошли настоящий outbound
+  HTTPS fake E2E между isolated center `.128` и test-worker `.31`.
+- **WORKER `.31` READINESS: NEEDS_OPENROUTER_PROVISIONING.** Ambient Claude и
+  Codex авторизованы; настоящий OpenRouter credential отсутствует.
 
-Архитектурная задача решена: сторонний воркер стал полноценным вычислительным
-узлом. Все три провайдера — Claude, Codex и OpenRouter — живут на нём, их
-учётные данные остаются его локальными секретами, а план маршрутизации несёт
-только пару «провайдер + способность» и никогда не несёт секрета. Центр
-координирует задание, собирает пакет, принимает результат и доигрывает
-нормативный хвост — по ТОМУ ЖЕ замороженному плану, который уехал на воркер.
+Architecture PASS не означает, что production rollout выполнен: production
+не менялся, реальные provider calls и реальный аудит запрещены и не запускались.
 
-Не «PASS» по двум причинам, и обе записаны:
-
-1. **Живой сетевой прогон «центр ↔ воркер» не выполнен** (KI-11J-1). Настоящий
-   сокет и настоящее исполнение доказаны на уровне моста, а не всего конвейера;
-2. **Воркер `.31` не имеет ключа OpenRouter**, и это состояние provisioning, а
-   не дефект кода. §44 задания прямо называет такой исход архитектурно
-   допустимым.
-
-## 2. Git
-
-| Что | Значение |
-|---|---|
-| База (tip 11I) | `58584de6` — «docs(маршрутизация 11I): отчёт о состязательном ревью и финальные числа» |
-| Ветка 11I | `feat/distributed-audit-workers-routing-plan` |
-| Ветка 11J | `feat/distributed-audit-workers-executable-routing-plan` |
-| Worktree | `.claude/worktrees/distributed-audit-workers-executable-routing-plan` |
-| Последний коммит с кодом | `9a847b2b` |
-| Tip ветки | см. `git log -1`; последние коммиты — только документация |
-| Коммитов | 9 |
-| Push / merge | **не выполнялись** (запрещены §46) |
-
-```
-9a847b2b fix(маршрутизация 11J): доисправить утечку адреса шлюза и молчание хвоста
-46bb98fc docs(маршрутизация 11J): доказательная база, границы и финальный отчёт
-687483dc fix(маршрутизация 11J): план не имеет права подменять окружение воркера
-e717c598 fix(маршрутизация 11J): targeted-проходы не имеют права ронять оплаченный свод
-b73fb325 fix(маршрутизация 11J): дефекты, найденные состязательным ревью
-dc39cb98 test(маршрутизация 11J): ансамбль этапа 01 исполняется тремя провайдерами на самом деле
-a08925ae test(маршрутизация 11J): §37 и §38 — провайдер, секрет, топология исполнения
-3187ffed feat(маршрутизация 11J): OpenRouter как полноценный провайдер воркера
-```
-
-## 3. Ответы на вопросы §45
+## Итоговая матрица
 
 | № | Вопрос | Ответ |
-|---|---|---|
-| 4 | Где теперь исполняется детектор OpenRouter | **На воркере.** `audit_worker/providers/openrouter_adapter.py`, вызов через тот же `pipeline_bridge`, что и ноги CLI |
-| 5 | Передаётся ли ключ в задании | **НЕТ.** Поля для него нет ни в `ProviderRequirementPayload`, ни в `AuditPipelineParams`; наборы закрыты (`extra="forbid"`) — задание с ключом не разбирается |
-| 6 | Где хранится ключ | Файл 0600 в каталоге ДАННЫХ воркера: `<worker_root>/providers/openrouter/home/.openrouter/credentials.json`; путь переопределяется администратором машины |
-| 7 | Видит ли центр ключ | **НЕТ.** Центру уезжает факт настройки, права файла и его источник — значения нет ни в heartbeat, ни в привязке, ни в пакете, ни в отчётах |
-| 8 | Провайдеры на `.31` сейчас | Claude и Codex — по боевой сборке 11H (политика держит `codex/strong_audit`); OpenRouter — **не настроен**, файла ключа нет ни в одной раскладке |
-| 9 | Совместим ли `.31` с точным Claude+GPT+Codex | **НЕТ** |
-| 10 | Совместим ли `.31` с точным Full Codex | **НЕТ** |
-| 11 | Чего не хватает | ключа OpenRouter; способностей `cheap_review`, `block_detector`, `block_detector_strong`, `block_judge`, `visual_reasoning` в политике; способностей Claude (страж отсутствия и основная нога оптимизации нужны в ОБОИХ пресетах); сборки воркера с 11J |
-| 12 | След 01 Blocks, пресет A | openrouter/`block_detector` ‖ codex/`block_detector` ‖ codex/`block_detector_strong` → детерминированное объединение → codex/`block_judge` |
-| 13 | След 01 Blocks, Full Codex | **тот же** — ансамбль от пресета не зависит |
-| 14 | Действий на блок | **4** (3 детектора + судья); объединение детерминированное |
-| 15 | Все ли 4 на воркере | **ДА.** `block_batch.execution_scope = worker`; центр ни одной ноги за воркера не доигрывает |
-| 16 | Targeted-проходы Full Codex исполняются | **ДА** — `claude_runner._run_targeted_findings_merge_via_provider`, по действиям плана. KI-11I-2 закрыт |
-| 17 | Страж отсутствия на воркере | **ДА**, и на Claude — в «Full Codex» тоже |
-| 18 | Оптимизация Claude+Codex на воркере | **ДА**, две ноги ‖, визуальная с `xhigh`, который теперь реально доезжает до argv |
-| 19 | Какие модельные действия остались центру | Три, все нормативные: `norm_clause_binding`, `norm_review_findings`, `norm_review_optimization` |
-| 20 | Почему они остались | Размер базы, глобальность её состояния (проверенные цитаты дописываются и переиспользуются) и асимметрия приёма: импортёр отклоняет ВЕСЬ пакет, увидев центральный артефакт |
-| 21 | Нормативная база ушла на воркер | **НЕТ** |
-| 22 | Хвост читает замороженный план | **ДА** для нормативных действий. Для `decision_carryover` — **НЕТ** (KI-11J-11), и формулировка должна читаться именно так |
-| 23 | Смена пресета влияет на идущее задание | **НЕТ** |
-| 24 | Fake network пресет A | **НЕ ВЫПОЛНЕН** (KI-11J-1) |
-| 25 | Fake network Full Codex | **НЕ ВЫПОЛНЕН** (KI-11J-1) |
-| 29 | Реальных вызовов Claude | **0** |
-| 30 | Реальных вызовов Codex | **0** |
-| 31 | Реальных вызовов OpenRouter | **0** |
-| 32 | Утечек учётных данных | **0** |
-| 33 | Прод изменён | **НЕТ** |
-| 34 | Нужно ли действие оператора | **ДА** — выдать ключ OpenRouter на `.31` |
-| 36 | Путь отчёта | `docs/distributed_audit_workers/11j/11J_FINAL_REPORT.md` |
+|---:|---|---|
+| 1 | Architecture verdict | **PASS** |
+| 2 | Worker `.31` readiness | **NEEDS_OPENROUTER_PROVISIONING** |
+| 3 | Final base commit | `069987d5a1968461ef7f690e445a6676f4d0447c` |
+| 4 | Final code commit | `3376c7a88456764971a9f4afb46bb7fbbf28a158`; docs-only evidence commit — exact `HEAD` в итоговом ответе |
+| 5 | Live HTTPS `.128 ↔ .31` | **YES**; инициатор соединения — worker `.31 → .128`, TLS verified |
+| 6 | Claude+GPT+Codex network | **PASS**, 14/14 |
+| 7 | Full Codex network | **PASS**, 17/17 |
+| 8 | Routing hash center→worker→result | **YES** для обоих jobs; mismatch test rejects |
+| 9 | Block actions per block, third leg ON | **4**: OpenRouter detector + 2 Codex detectors + Codex judge |
+| 10 | OpenRouter detector worker-side | **YES** |
+| 11 | Codex detectors worker-side | **YES**, standard и strong |
+| 12 | Judge worker-side after detector barrier | **YES** |
+| 13 | Full Codex targeted merge actually executed | **YES**: base + discipline + docnorm + mark_system = 1/1/1/1 |
+| 14 | Absence guard route | **Correct**: Claude/cheap_review в обоих presets |
+| 15 | Optimization dual-provider | **Correct**: Claude primary ‖ Codex visual `xhigh`; merge/fix deterministic |
+| 16 | Center tail frozen plan | **YES**, `FROZEN_ROUTING_PLAN FOUND` для A и B |
+| 17 | Global preset switch changed running A | **NO**; A остался `codex_exec`, B получил новый preset |
+| 18 | Grants automatic | **YES**, отдельные runtime grant IDs для Claude/Codex/OpenRouter; ручных 0 |
+| 19 | Per-action exactly-once | **PASS**, unique ledger 17/17 и 14/14 |
+| 20 | B=40 predicted | См. таблицу ниже |
+| 21 | Fake executed trace equals budget | **YES** для обоих network fixtures, включая per-provider breakdown |
+| 22 | Real OpenRouter credential `.31` | **UNCONFIGURED**; значение не читалось |
+| 23 | Claude auth `.31` | **CONFIGURED**, official zero-inference auth status |
+| 24 | Codex auth `.31` | **CONFIGURED**, official zero-inference login status |
+| 25 | Real runtime Claude calls | **0** |
+| 26 | Real runtime Codex calls | **0** |
+| 27 | Real runtime OpenRouter calls | **0** |
+| 28 | Credential leaks | **0** |
+| 29 | Secret URL fragment leaks | **0**; diagnostic содержит только parsed host/scheme |
+| 30 | Production changed by 11J.1 | **NO**; controlled hashes before=after |
+| 31 | Final immutable review | **PASS**, 6/6 lenses, confirmed defects 0 |
+| 32 | Operator action | Provision OpenRouter locally, then normal 11J rollout/re-registration |
+| 33 | Safe provisioning | `11J_OPERATOR_PROVISIONING.md`; ключ вводится только на VPS, не в чат |
+| 34 | Этот отчёт | `docs/distributed_audit_workers/11j/11J_FINAL_REPORT.md` |
+| 35 | Можно ли переходить к одному real exact-preset audit | **YES, но только после provisioning и штатного production rollout** |
+| 36 | Следующий рекомендуемый real test | Один небольшой non-sensitive AR document, preset Full Codex, B=1–3, MD+mark_system condition ON; заранее сверить plan hash/budget и остановиться после одного job |
 
-### 26. Оценка вызовов при B=40
+## B=40, worker scope
 
-| Пресет | Claude | Codex | OpenRouter | Всего |
-|---|---|---|---|---|
-| Claude+GPT+Codex | 7 | 121 | 40 | **168** |
-| Full Codex | 2 | 128 | 40 | **170** |
+Для fixture AR с MD и включённым optional `mark_system`:
 
-Третья нога выключена: 128 и 130 соответственно. Полные таблицы для B=1/3/40 —
-`11J_CALL_BUDGET.json`.
+| Preset | Third leg | Claude | Codex | OpenRouter | Total |
+|---|---:|---:|---:|---:|---:|
+| Claude+GPT+Codex | ON | 5 | 121 | 40 | **166** |
+| Claude+GPT+Codex | OFF | 5 | 81 | 40 | **126** |
+| Full Codex | ON | 2 | 127 | 40 | **169** |
+| Full Codex | OFF | 2 | 87 | 40 | **129** |
 
-### 27. Сходится ли оценка с исполнением
+Старый cap 64 не используется. Полные B=1/3/40 — в
+`11J_CALL_BUDGET_NETWORK_COMPARISON.json`.
 
-**Частично, и это честный ответ.** На уровне ТОПОЛОГИИ — да: оценка выводится
-из мультипликативности действий плана, и число действий на блок (4) совпадает с
-числом фактических обращений в исполнении (`test_all_four_ensemble_actions_…`:
-один запрос к шлюзу, три запуска подпроцесса). Сходимость на ПОЛНОМ прогоне не
-измерена, потому что полный прогон не выполнялся (KI-11J-1).
+## Network evidence
 
-### 28. Exactly-once по действию
+- code revision: `git:3376c7a88456764971a9f4afb46bb7fbbf28a158`;
+- worker id: `wrk_726eb885`;
+- safe center host: `vegetarian-floyd-thorough-exotic.trycloudflare.com`;
+- Full Codex job: `c4ed7aaa-dcc5-466b-934a-1652cfd8a35e`, hash
+  `sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be`;
+- Claude+GPT+Codex job: `d8e704e5-662a-49af-b616-c83c925e1c49`, hash
+  `sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611`;
+- harness: **111/111 PASS**;
+- source package, upload, ACK, import and center handoff: **PASS**;
+- worker inbound runtime port: **not opened**;
+- SSH transported job/package/provider data: **NO**.
 
-**PASS.** Четыре ноги одного блока дают четыре ключа журнала; повтор любой
-читается из журнала и не оплачивается (ни HTTP-запроса, ни подпроцесса);
-обращение без `action_id` при плане отвергается.
+## Production integrity
 
-### 35. Процедура provisioning без показа ключа
+Before/after совпали: production `.env`, nginx tree, batch queue и metadata
+238 941 файлов `projects_v2` (40 962 192 255 bytes). Production backend был
+запущен до теста и не перезапускался им; production worker units не трогались.
+В основной чужой ветке во время прогона появился отдельный concurrent commit
+`9168c393`; он не создан 11J worktree, не входит в controlled surfaces и
+сохранён без вмешательства. Подробности — `11J_PRODUCTION_INTEGRITY.json`.
 
-Полностью — `11J_OPERATOR_PROVISIONING.md`. Кратко: ключ вводится ТОЛЬКО в
-ssh-сессии на самой машине через `read -s` (ввод не отображается и не попадает
-в историю оболочки), пишется под `umask 077` в
-`<worker_root>/providers/openrouter/home/.openrouter/credentials.json`,
-проверяется `stat` без показа содержимого. Ключ не передаётся ни в чат, ни в
-задачу, ни в конфигурацию центра; ключ центра НЕ копируется автоматически, даже
-если счёт один.
+## Tests и review
 
-### 37. Можно ли переходить к боевой валидации точного пресета
-
-**Ещё нет.** Сначала — сетевой стенд (KI-11J-1). Оплаченный прогон, у которого
-не проверен провод, даёт результат, который нельзя ни повторить, ни объяснить.
-
-### 38. Какой реальный тест рекомендуется следующим
-
-По возрастанию цены:
-
-1. **Сетевой стенд с заглушками** — собрать четвёртый пункт KI-11J-1. Стоит
-   ноль денег и закрывает §27–§30 полностью;
-2. **Один настоящий блок через шлюз на `.31`** после provisioning: один вызов,
-   один блок, сверка ответа с центральным на том же блоке. Цена — центы,
-   доказывает, что настоящий шлюз отвечает так же, как заглушка;
-3. **Полный аудит одного небольшого документа на пресете A** со сверкой следа с
-   эталоном из `11J_FAKE_NETWORK_PRESET_A.json`.
-
-Пункт 2 важнее, чем кажется: единственное, чего заглушка не проверяет, — что
-настоящий шлюз ведёт себя так, как мы предположили. Всё остальное уже проверено
-без денег.
-
-## 4. Что изменилось по существу
-
-**До 11J** «удалённый аудит» означал аудит, у которого центр втихую доигрывал
-одну ногу за воркера. Провайдера `openrouter` на воркере не существовало как
-имени: `require_provider` отвергал строку раньше, чем вопрос доходил до
-адаптера. Ансамбль из трёх ног на удалённой машине означал ансамбль из двух — и
-заметить это по артефактам было нельзя.
-
-**После 11J** воркер исполняет весь модельный участок сам, тремя каналами
-одновременно, и каждый канал оплачивается его собственной учётной записью.
-
-Три вещи, которые план объявлял, а рантайм не выполнял, теперь выполняются:
-нога шлюза, targeted-проходы свода (KI-11I-2) и уровень усилия визуальной ноги
-оптимизации. Четвёртая — центральный хвост по замороженному плану (KI-11I-3) —
-подключена через привязку к ЗАДАЧЕ, а не к процессу: центр исполняет несколько
-проектов одним процессом, и процессный держатель затирал бы соседей.
-
-## 5. Главное, чего 11J НЕ утверждает
-
-* что настоящий шлюз ответит так же, как заглушка;
-* что многопровайдерный план проходит живой провод — проверено на настоящих
-  объектах и рубежах формы, но не на сокете;
-* что `configured` означает `verified`: воркер объявляет ключ по факту файла с
-  правами 0600, действительность не проверяется, и §7 задания решает эту
-  развилку именно так;
-* что весь центральный хвост идёт по плану: нормативные действия — да,
-  `decision_carryover` — нет (KI-11J-11).
-
-## 6. Состязательное ревью
-
-Шесть линз, 24 наблюдения: четырнадцать исправлено, девять записано. Подробности
-— `11J_ADVERSARIAL_REVIEW.md`.
-
-Отдельно стоит сказать про фазу опровержения: она шла по рабочему дереву,
-которое в это же время правилось, и её вердикты «опровергнуто» доказательством
-не являются. Один проверяющий это показал буквально — воспроизвёл находку
-против рабочего дерева, получил «опровергнуто», перепроверил против
-зафиксированного коммита и получил обратное. Он же нашёл ошибку в моём
-собственном исправлении: редактор секретов оказался смягчением, а не решением.
-
-Одно критическое: `apply_routing_flags` писала в окружение процесса конвейера
-ЛЮБОЕ имя из `feature_flags` задания. До 11J это было почти безобидно; 11J
-добавил в окружение три переменные, меняющие маршрут сетевого запроса, — и
-задание, положившее адрес шлюза в флаги, увело бы ключ владельца VPS на
-произвольный хост, выглядя при этом обычным успешным прогоном.
-
-Это ровно тот класс дефекта, ради которого ревью и проводится: изменение само
-по себе безопасно, а в сочетании с чужим кодом — нет.
-
-## 7. Артефакты
-
-`docs/distributed_audit_workers/11j/` — 24 файла. Все JSON собираются скриптом
-`scripts/build_11j_artifacts.py` из фактического кода, а не набираются руками:
-число в отчёте, набранное вручную, устаревает молча.
+Relevant suite: `1332 passed, 1 skipped, 3 failed`. Ровно те же три slow
+process-timeout теста отдельно падают на base `069987d5`; новых failures: 0.
+Detached six-lens review итогового кода: PASS. Никакой реальный audit runtime
+не вызывал Claude, Codex или OpenRouter.

@@ -1,22 +1,18 @@
 {
-  "статус": "ВЫПОЛНЕН НА НАСТОЯЩИХ ОБЪЕКТАХ, БЕЗ ЖИВОГО СОКЕТА",
-  "предмет": "§30 задания: смена глобального пресета во время идущего задания",
-  "сценарий": [
-    "1. Создан план задания A на пресете «Full Codex» (компилятор центра, боевые флаги).",
-    "2. План привязан к ЗАДАЧЕ — так же, как это делает центральный хвост после приёма результата воркера.",
-    "3. Под привязкой ГЛОБАЛЬНАЯ таблица центра переключена на Claude (config.STAGE_MODEL_CONFIG).",
-    "4. Задание A продолжает читать свой план: norm_verify и text_analysis остаются codex.",
-    "5. Создан план задания B на пресете Claude+GPT+Codex.",
-    "6. Задание B получает свой маршрут: norm_verify → claude-opus-5.",
-    "7. Хэш A не равен хэшу B.",
-    "8. Хвост A читает план A — то есть переключение пресета его не касается."
-  ],
-  "тесты": [
-    "tests/test_openrouter_worker_provider_11j.py::test_aj_global_preset_switch_cannot_change_a_running_job",
-    "tests/test_openrouter_worker_provider_11j.py::test_ai_central_norm_tail_reads_the_frozen_plan",
-    "tests/test_openrouter_worker_provider_11j.py::test_aj2_bound_plan_is_isolated_between_concurrent_tasks"
-  ],
-  "почему_изоляция_задач_отдельным_тестом": "центр исполняет несколько проектов одним процессом (BATCH_MAX_PARALLEL); процессный держатель плана означал бы, что план одного задания становится планом соседнего. Именно поэтому 11I хвост к плану не подключил",
-  "чего_НЕ_доказано": "что то же самое верно на живом сокете. Транспорт не менялся с 11G, но утверждение о нём остаётся контрактным — см. KI-11J-1",
-  "реальных_вызовов_модели": 0
+  "result": "PASS",
+  "job_A": {
+    "preset_at_create": "codex_exec",
+    "claimed_before_switch": true,
+    "routing_plan_hash": "sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be",
+    "worker_preset_after_switch": "codex_exec",
+    "center_tail_preset_after_switch": "codex_exec"
+  },
+  "global_switch": {"target": "claude_gpt_codex", "http_status": 200},
+  "job_B": {
+    "preset_at_create": "claude_gpt_codex",
+    "routing_plan_hash": "sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611"
+  },
+  "hash_A_differs_from_hash_B": true,
+  "running_job_changed": false,
+  "network_path": true
 }

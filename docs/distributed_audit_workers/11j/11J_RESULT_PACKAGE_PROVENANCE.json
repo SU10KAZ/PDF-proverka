@@ -1,0 +1,22 @@
+{
+  "result": "PASS",
+  "full_codex": {
+    "job_id": "c4ed7aaa-dcc5-466b-934a-1652cfd8a35e",
+    "routing_plan_id": "rp_10af91cefb2b4801",
+    "routing_plan_hash": "sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be",
+    "provenance_rows": 17,
+    "import_state": "applied"
+  },
+  "claude_gpt_codex": {
+    "job_id": "d8e704e5-662a-49af-b616-c83c925e1c49",
+    "routing_plan_id": "rp_f215b09ef74540dc",
+    "routing_plan_hash": "sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611",
+    "provenance_rows": 14,
+    "import_state": "applied"
+  },
+  "row_fields": ["ledger_key", "stage_id", "action_id", "logical_invocation_identity", "block_identity", "provider", "capability", "resolved_model_metadata", "status"],
+  "job_to_result_hash_equal": true,
+  "mismatch_rejected_by_importer": true,
+  "credentials_present": false,
+  "full_auth_url_present": false
+}

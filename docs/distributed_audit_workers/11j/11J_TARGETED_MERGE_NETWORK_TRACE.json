@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "job_id": "c4ed7aaa-dcc5-466b-934a-1652cfd8a35e",
+  "preset": "codex_exec",
+  "fixture": {
+    "discipline": "AR",
+    "md_present": true,
+    "mark_system_flag": true
+  },
+  "executed_in_order_after_base": {
+    "merge_base": 1,
+    "targeted_discipline": 1,
+    "targeted_docnorm": 1,
+    "targeted_mark_system": 1
+  },
+  "provider": "codex",
+  "scope": "worker",
+  "plan_only_without_execution": false
+}

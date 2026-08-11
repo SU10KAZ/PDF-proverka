@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "operator_created_grants": 0,
+  "runtime_created_grants": {
+    "full_codex_attempt": {
+      "attempt_id": "b147c7c2-2bc8-4d6b-ac54-b436b0d6a348",
+      "providers": ["codex", "claude", "openrouter"],
+      "grant_ids_unique": true
+    },
+    "claude_gpt_codex_attempt": {
+      "attempt_id": "15b6b2fb-ae0f-4860-bfc6-08a0e0baa918",
+      "providers": ["claude", "codex", "openrouter"],
+      "grant_ids_unique": true
+    }
+  },
+  "binding_created_automatically": true,
+  "action_permission_manual_step": false
+}
