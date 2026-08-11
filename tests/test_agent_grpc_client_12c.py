@@ -135,6 +135,71 @@ def test_epoch_reservation_is_thread_safe(tmp_path):
     assert sorted(found) == list(range(1, 13))
 
 
+def test_pre_dispatch_crash_recovers_once_and_late_offer_never_recreates(tmp_path):
+    from audit_worker.agent import WorkerAgent
+
+    config = _config(tmp_path)
+    config.ensure_dirs()
+    assignment = {
+        "job_id": "job_0123456789abcdef",
+        "attempt_id": "att_0123456789abcdef",
+        "job_type": "test_pipeline_v1",
+        "project_id": "project-12c",
+        "params": {"label": "pre-dispatch"},
+        "package": {
+            "package_id": "pkg_0123456789abcdef",
+            "package_type": "source",
+            "size_bytes": 100,
+            "sha256": "a" * 64,
+            "compression": "gzip",
+            "manifest_version": 1,
+        },
+        "execution_token": "",
+    }
+    agent = WorkerAgent(config, {
+        "worker_id": "wrk_0123456789abcdef",
+        "instance_id": "inst_0123456789abcdef",
+        "token": "test-token",
+    })
+    agent.jobs.create(assignment)
+    agent.jobs.update(
+        assignment["job_id"], assignment["attempt_id"], local_state="verified"
+    )
+    created_at = agent.jobs.load(
+        assignment["job_id"], assignment["attempt_id"]
+    )["created_at"]
+    calls = {"accept": 0, "dispatch": 0, "download": 0}
+    agent.client.accept_job = lambda *_args, **_kwargs: calls.__setitem__(
+        "accept", calls["accept"] + 1
+    ) or {}
+    agent._dispatch_and_wait = lambda *_args, **_kwargs: calls.__setitem__(
+        "dispatch", calls["dispatch"] + 1
+    ) or {"ok": False, "reason": "test-stop"}
+    agent._download_and_verify = lambda *_args, **_kwargs: calls.__setitem__(
+        "download", calls["download"] + 1
+    )
+    agent._flush_outbox = lambda *_args, **_kwargs: None
+
+    try:
+        agent._resume_pre_dispatch_attempts()
+        agent._job_threads[assignment["attempt_id"]].join(5)
+        assert calls == {"accept": 1, "dispatch": 1, "download": 0}
+        assert agent.jobs.load(
+            assignment["job_id"], assignment["attempt_id"]
+        )["local_state"] == "accepted"
+
+        agent.jobs.update(
+            assignment["job_id"], assignment["attempt_id"], local_state="finished"
+        )
+        agent._start_job_thread(assignment)
+        assert calls == {"accept": 2, "dispatch": 1, "download": 0}
+        assert agent.jobs.load(
+            assignment["job_id"], assignment["attempt_id"]
+        )["created_at"] == created_at
+    finally:
+        agent.shutdown()
+
+
 def test_h_i_j_agent_hello_uses_real_metadata_attempts_and_cursors(tmp_path):
     active = [{
         "job_id": "job_0123456789abcdef",

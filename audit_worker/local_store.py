@@ -208,7 +208,7 @@ class LocalJobStore:
             m
             for m in self.iter_all()
             if m.get("local_state")
-            in {"assigned", "downloading", "verified", "running", "completed_locally",
+            in {"assigned", "downloading", "verified", "accepted", "running", "completed_locally",
                 "uploading"}
         ]
 

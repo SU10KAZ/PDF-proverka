@@ -281,19 +281,36 @@ class WorkerAgent:
         забирает третье задание.
         """
         attempt_id = assignment["attempt_id"]
+        meta = self.jobs.load(assignment["job_id"], attempt_id) or {}
+        queue_item = self.db.queue_item(attempt_id)
         with self._active_lock:
             duplicate = attempt_id in self._active or (
                 attempt_id in self._job_threads
                 and self._job_threads[attempt_id].is_alive()
             )
+        if (
+            not duplicate
+            and queue_item is None
+            and meta.get("local_state") in {"verified", "accepted"}
+        ):
+            # Crash after source verification / JobAccept but before local
+            # enqueue: resume from the durable boundary, never redownload or
+            # overwrite metadata, and enqueue the attempt idempotently once.
+            self._start_recovered_attempt(meta, assignment=assignment)
+            return
+        duplicate = duplicate or queue_item is not None or meta.get("local_state") in {
+            "verified", "accepted", "running", "completed_locally",
+            "uploading", "finished", "failed", "rejected", "cancelled",
+            "executor_interrupted", "superseded",
+        }
         if duplicate:
             # A re-offer after reconnect is recovery evidence, not new work.
             # If local source verification has already completed, repeat the
             # idempotent JobAccept so an ACK lost with the old stream cannot
             # leave Center in source_uploading. Never enqueue/launch again.
-            meta = self.jobs.load(assignment["job_id"], attempt_id) or {}
             if meta.get("local_state") in {
-                "verified", "running", "completed_locally", "uploading", "finished"
+                "verified", "accepted", "running", "completed_locally",
+                "uploading", "finished",
             }:
                 try:
                     self.client.accept_job(
@@ -351,8 +368,74 @@ class WorkerAgent:
                 f"(процессы живы) — не трогаю"
             )
         self._adopt_surviving_attempts(survived)
+        self._resume_pre_dispatch_attempts()
         self._report_interrupted_attempts()
         self._reconcile_with_center()
+
+    def _resume_pre_dispatch_attempts(self) -> None:
+        """Resume the durable verify/accept → enqueue crash window."""
+        for meta in self.jobs.iter_all():
+            if meta.get("local_state") not in {"verified", "accepted"}:
+                continue
+            if self.db.queue_item(meta["attempt_id"]) is not None:
+                continue
+            self._start_recovered_attempt(meta)
+
+    def _start_recovered_attempt(
+        self,
+        meta: dict[str, Any],
+        *,
+        assignment: Optional[dict[str, Any]] = None,
+    ) -> None:
+        """Start one Agent observer from durable metadata, never a second Executor."""
+        attempt_id = meta["attempt_id"]
+        with self._active_lock:
+            if attempt_id in self._active or (
+                attempt_id in self._job_threads
+                and self._job_threads[attempt_id].is_alive()
+            ):
+                return
+        recovered = assignment or {
+            "job_id": meta["job_id"],
+            "attempt_id": attempt_id,
+            "job_type": meta.get("job_type") or "test_pipeline_v1",
+            "project_id": meta.get("project_id") or "",
+            "version_id": meta.get("version_id"),
+            "params": meta.get("params") or {},
+            "package": meta.get("package") or {},
+            "execution_token": meta.get("execution_token") or "",
+        }
+        ctx = {
+            "job_id": meta["job_id"],
+            "attempt_id": attempt_id,
+            "project_id": meta.get("project_id") or "",
+            "execution_token": meta.get("execution_token") or "",
+            "outbox": self._outbox_for(
+                meta["job_id"], attempt_id,
+                execution_token=meta.get("execution_token") or "",
+            ),
+            "stage": "verified",
+            "started_at": meta.get("started_at") or time.time(),
+            "recovered_pre_dispatch": True,
+        }
+        thread = threading.Thread(
+            target=self._run_verified_guarded,
+            args=(recovered, ctx),
+            name=f"recover-{attempt_id[:8]}",
+            daemon=True,
+        )
+        with self._active_lock:
+            self._active[attempt_id] = ctx
+            self._job_threads[attempt_id] = thread
+        thread.start()
+
+    def _run_verified_guarded(
+        self, assignment: dict[str, Any], ctx: dict[str, Any]
+    ) -> None:
+        try:
+            self.execute_job(assignment, ctx=ctx, source_already_verified=True)
+        except Exception as exc:  # pragma: no cover - execute_job contains failures
+            _log(f"recovery {assignment['job_id'][:8]} завершился ошибкой: {exc}")
 
     def _reconcile_with_center(self) -> None:
         """Сверить локальное состояние с центром и выполнить его вердикты.
@@ -858,7 +941,11 @@ class WorkerAgent:
         return ctx
 
     def execute_job(
-        self, assignment: dict[str, Any], *, ctx: Optional[dict[str, Any]] = None
+        self,
+        assignment: dict[str, Any],
+        *,
+        ctx: Optional[dict[str, Any]] = None,
+        source_already_verified: bool = False,
     ) -> dict[str, Any]:
         if ctx is None:
             ctx = self._prepare_ctx(assignment)
@@ -868,7 +955,8 @@ class WorkerAgent:
         outbox: EventOutbox = ctx["outbox"]
 
         try:
-            self._download_and_verify(assignment, ctx, job_dir)
+            if not source_already_verified:
+                self._download_and_verify(assignment, ctx, job_dir)
             self._accept(assignment, ctx)
             outcome = self._dispatch_and_wait(assignment, ctx)
             if outcome["ok"]:
@@ -967,16 +1055,32 @@ class WorkerAgent:
 
     def _accept(self, assignment: dict[str, Any], ctx: dict[str, Any]) -> None:
         job_id, attempt_id = ctx["job_id"], ctx["attempt_id"]
-        self.client.accept_job(
-            job_id,
-            {
-                "attempt_id": attempt_id,
-                "accepted_at": time.time(),
-                "source_verified": {"sha256_ok": True, "manifest_version": 1},
-                "planned_stages": ["test_pipeline_v1"],
-            },
-            ctx["execution_token"],
-        )
+        payload = {
+            "attempt_id": attempt_id,
+            "accepted_at": time.time(),
+            "source_verified": {"sha256_ok": True, "manifest_version": 1},
+            "planned_stages": ["test_pipeline_v1"],
+        }
+        delays = backoff_delays()
+        while True:
+            try:
+                self.client.accept_job(
+                    job_id, payload, ctx["execution_token"],
+                )
+                break
+            except Exception as exc:  # retry only gRPC transport loss
+                if self.config.control_transport != "grpc":
+                    raise
+                from audit_worker.grpc_transport import GrpcTransportError
+
+                if not isinstance(exc, GrpcTransportError):
+                    raise
+                if self._stop.is_set():
+                    raise UploadDeferred(
+                        "Agent stopped before JobAccept could be delivered"
+                    ) from exc
+                self._stop.wait(next(delays))
+        self.jobs.update(job_id, attempt_id, local_state="accepted")
         ctx["outbox"].append("job_accepted", {"planned_stages": ["test_pipeline_v1"]})
         self._flush_outbox(ctx)
 

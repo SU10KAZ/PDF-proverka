@@ -1,6 +1,6 @@
 # Test report and A–BM coverage
 
-Latest pre-candidate runs: 12C module **29 PASS** (including a real 60-second
+Latest pre-candidate runs: 12C module **30 PASS** (including a real 60-second
 idle stream); combined 12A/12B/11K/11L **126 PASS**; polling vertical slice
 **3 PASS**. The final combined invocation was **129 PASS**. All gRPC socket
 tests used isolated loopback ephemeral ports. Provider inference calls were zero.
@@ -20,7 +20,7 @@ tests used isolated loopback ephemeral ports. Provider inference calls were zero
 | AS–AU | Agent restart, Gateway restart and higher epoch E2Es |
 | AV–AY | multi-slot E2E, durable ownership and polling/gRPC parity artifact |
 | AZ–BC | bounded critical queue, heartbeat/capability coalescing, durable outbox replay |
-| BD–BH | crash matrix plus restart/replay/idempotent ResultAck tests |
+| BD–BH | crash matrix, durable pre-dispatch recovery, terminal re-offer guard, restart/replay/idempotent ResultAck tests |
 | BI–BK | public insecure rejection, loopback allowance, polling suite/default |
 | BL | 11K/11L 34 PASS and bootstrap transport model regression |
 | BM | config gates false; approved fake pipeline only; inference counters 0/0/0 |
