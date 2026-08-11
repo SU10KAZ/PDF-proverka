@@ -590,25 +590,80 @@ async def test_am_as_result_ready_data_plane_auth_and_validation_gate(running_ga
 
 
 @pytest.mark.asyncio
-async def test_at_av_lost_result_ack_resends_and_retention_persisted(running_gateway, gateway_env):
+async def test_aq_av_real_validation_lost_ack_resends_and_retention_persisted(
+    running_gateway, gateway_env, tmp_path
+):
+    from audit_worker import package_io
+
     _, port = running_gateway
     worker = make_worker(gateway_env)
     job = make_job(gateway_env, worker["worker_id"])
-    _create_upload(gateway_env, job)
+    job_dir = tmp_path / "fake-agent-job"
+    (job_dir / "result").mkdir(parents=True)
+    (job_dir / "work").mkdir(parents=True)
+    (job_dir / "result" / "summary.json").write_text('{"status":"ok"}', encoding="utf-8")
+    (job_dir / "result" / "run_log.txt").write_text("ok\n", encoding="utf-8")
+    archive = tmp_path / "fake-result.tar.gz"
+    manifest = package_io.build_result_package(
+        dest_path=archive,
+        job_dir=job_dir,
+        job_id=job["job_id"],
+        attempt_id=job["attempt_id"],
+        project_id=job["project_id"],
+        version_id=job.get("version_id"),
+        worker_id=worker["worker_id"],
+        worker_version="12b.test",
+        protocol_version=1,
+        manifest_version=1,
+        source_package_hash="sha256:" + SHA,
+        exit_code=0,
+    )
+    result_sha = manifest["archive"]["sha256"]
+    _create_upload(gateway_env, job, sha=result_sha)
     agent = FakeAgent(worker, port)
     await agent.connect(epoch=1)
-    await agent.read_until("job_offer")
-    ready = stream_pb.ResultReady(job_id=job["job_id"], attempt_id=job["attempt_id"], result_package=common_pb.PackageTransferDescriptor(transfer_id="upload-test", direction=common_pb.PACKAGE_DIRECTION_AGENT_TO_CENTER, protocol=common_pb.PACKAGE_TRANSFER_PROTOCOL_HTTPS_RESUMABLE_V1, package_type="result", size_bytes=100, sha256=SHA), execution_revision="rev-test", stage_status_summary=adapters.canonical_json_message({}, schema="s", schema_version=1), provider_action_ledger_summary=adapters.canonical_json_message({}, schema="l", schema_version=1), ready_at=adapters.timestamp_from_epoch(time.time()))
+    offer = (await agent.read_until("job_offer")).job_offer
+    await agent.send(
+        "job_accept",
+        stream_pb.JobAccept(
+            job_id=job["job_id"], attempt_id=job["attempt_id"],
+            worker_id=worker["worker_id"], source_sha256_verified=True,
+            source_manifest_version=1,
+        ),
+    )
+    for state in (
+        common_pb.JOB_STATE_RUNNING,
+        common_pb.JOB_STATE_COMPLETED_LOCALLY,
+        common_pb.JOB_STATE_RESULT_UPLOADING,
+        common_pb.JOB_STATE_RESULT_RECEIVED,
+    ):
+        await agent.send(
+            "job_status",
+            stream_pb.JobStatusUpdate(
+                job_id=offer.job_id, attempt_id=offer.attempt_id, state=state
+            ),
+        )
+    await asyncio.sleep(0.1)
+    assert repositories.get_attempt(job["attempt_id"], settings=gateway_env)["state"] == "result_received"
+    ready = stream_pb.ResultReady(job_id=job["job_id"], attempt_id=job["attempt_id"], result_package=common_pb.PackageTransferDescriptor(transfer_id="upload-test", direction=common_pb.PACKAGE_DIRECTION_AGENT_TO_CENTER, protocol=common_pb.PACKAGE_TRANSFER_PROTOCOL_HTTPS_RESUMABLE_V1, package_type="result", size_bytes=archive.stat().st_size, sha256=result_sha), execution_revision="rev-test", stage_status_summary=adapters.canonical_json_message({}, schema="s", schema_version=1), provider_action_ledger_summary=adapters.canonical_json_message({}, schema="l", schema_version=1), ready_at=adapters.timestamp_from_epoch(time.time()))
     await agent.send("result_ready", ready)
     await asyncio.sleep(0.1)
-    retention = time.time() + 30 * 86400
-    repositories.update_attempt_fields(job["attempt_id"], {"state": "completed", "result_package_hash": SHA, "validated_at": time.time(), "result_acknowledged_at": time.time(), "retention_until": retention}, settings=gateway_env)
+    assert await running_gateway[0].domain.pending_result_outcomes(worker["worker_id"]) == []
+    updated, report = job_service.finalize_result(
+        job=repositories.get_attempt(job["attempt_id"], settings=gateway_env),
+        archive=archive,
+        expected_hash=result_sha,
+        expected_size=archive.stat().st_size,
+        settings=gateway_env,
+    )
+    assert report.ok and updated["state"] == "completed"
+    retention = float(updated["retention_until"])
     await agent.close()  # persisted acceptance, ACK lost before delivery
     reconnect = FakeAgent(worker, port)
     await reconnect.connect(epoch=2)
     ack = (await reconnect.read_until("result_ack")).result_ack
     ack_retention = ack.retention_until.seconds + ack.retention_until.nanos / 1_000_000_000
-    assert ack.result_sha256 == SHA and ack_retention == pytest.approx(retention, abs=0.01)
+    assert ack.result_sha256 == result_sha and ack_retention == pytest.approx(retention, abs=0.01)
     await reconnect.close()
 
 
