@@ -393,6 +393,7 @@ def create_test_job(
         if version_id
         else None
     )
+    resumed_created = False
     try:
         job = repositories.create_job(
             job_type=JobType.TEST_PIPELINE_V1.value,
@@ -423,11 +424,25 @@ def create_test_job(
             if assigned_worker not in {None, worker_id}:
                 raise JobError("Существующее тестовое задание назначено другому воркеру")
             return job
+        resumed_created = True
 
     compression = package_service.pick_compression(caps.get("compressions"))
-    manifest = build_source_package(
-        job=job, params=params, compression=compression, settings=settings
+    existing_archive = (
+        source_package_path(job, settings=settings) if resumed_created else None
     )
+    if existing_archive is not None:
+        # A previous process can die after atomically publishing the package
+        # but before persisting CREATED -> ASSIGNED.  Reuse the exact archive
+        # selected by the download endpoint; rebuilding here would leave two
+        # archives and make the stored SHA refer to a different file.
+        manifest = package_service.read_manifest(existing_archive)
+        manifest["archive"] = {
+            "sha256": package_service.sha256_file(existing_archive)
+        }
+    else:
+        manifest = build_source_package(
+            job=job, params=params, compression=compression, settings=settings
+        )
 
     token = auth.generate_execution_token()
     updated = transition(

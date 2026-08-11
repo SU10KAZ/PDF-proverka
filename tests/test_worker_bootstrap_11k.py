@@ -893,6 +893,16 @@ def test_zero_inference_test_job_resumes_orphan_created_before_assignment(
         created_by="bootstrap:old-contract",
         settings=settings,
     )
+    original_manifest = job_service.build_source_package(
+        job=orphan,
+        params=TestJobParams(
+            label="bootstrap-11k", steps=3, step_seconds=0.05, result_bytes=4096
+        ),
+        compression="gzip",
+        settings=settings,
+    )
+    source_dir = job_service.source_package_path(orphan, settings=settings).parent
+    original_files = sorted(path.name for path in source_dir.iterdir())
 
     resumed = job_service.create_test_job(
         worker_id=worker["worker_id"],
@@ -908,6 +918,8 @@ def test_zero_inference_test_job_resumes_orphan_created_before_assignment(
     assert resumed["job_id"] == orphan["job_id"]
     assert resumed["state"] == "assigned"
     assert resumed["assigned_worker_id"] == worker["worker_id"]
+    assert resumed["source_package_hash"] == original_manifest["archive"]["sha256"]
+    assert sorted(path.name for path in source_dir.iterdir()) == original_files
 
 
 def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):
