@@ -31,9 +31,20 @@ class IssuerServer:
         key_path = Path(os.environ["AUDIT_WORKER_ISSUER_KEY"])
         cert_path = Path(os.environ["AUDIT_WORKER_ISSUER_CERT"])
         chain_path = Path(os.environ["AUDIT_WORKER_ISSUER_CHAIN"])
-        if key_path.is_symlink() or key_path.stat().st_mode & 0o077:
+        if (
+            key_path.is_symlink() or key_path.stat().st_mode & 0o077
+            or key_path.stat().st_uid != os.geteuid()
+        ):
             raise RuntimeError("issuing CA key must be a non-symlink mode-0600 file")
-        self.allowed_uid = int(os.environ["AUDIT_WORKER_GATEWAY_UID"])
+        raw_uids = os.environ.get(
+            "AUDIT_WORKER_ISSUER_ALLOWED_UIDS",
+            os.environ.get("AUDIT_WORKER_GATEWAY_UID", ""),
+        )
+        self.allowed_uids = {
+            int(item.strip()) for item in raw_uids.split(",") if item.strip()
+        }
+        if not self.allowed_uids:
+            raise RuntimeError("issuer allowed UID set is empty")
         self.authority = CertificateLifecycleAuthority(
             issuer=CertificateIssuer.from_files(cert_path, key_path, chain_path),
             registry=CertificateRegistry(get_settings()),
@@ -63,27 +74,36 @@ class IssuerServer:
             if sock is None or not hasattr(socket, "SO_PEERCRED"):
                 raise RuntimeError("Unix peer credentials unavailable")
             _pid, uid, _gid = struct.unpack("3i", sock.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
-            if uid != self.allowed_uid:
+            if uid not in self.allowed_uids:
                 raise PermissionError("issuer caller uid rejected")
             size = struct.unpack("!I", await reader.readexactly(4))[0]
             if size <= 0 or size > MAX_REQUEST:
                 raise ValueError("issuer request size rejected")
             request = json.loads((await reader.readexactly(size)).decode())
-            if request.get("operation") != "renew":
+            operation = request.get("operation")
+            if operation == "renew":
+                item = request["peer"]
+                peer = AuthenticatedPeer(
+                    worker_id=item["worker_id"], serial_hex=item["serial_hex"],
+                    fingerprint_sha256=item["fingerprint_sha256"], issuer_id=item["issuer_id"],
+                    not_before=float(item["not_before"]), not_after=float(item["not_after"]),
+                    peer=item["peer"],
+                    certificate_pem=base64.b64decode(item["certificate_pem"], validate=True),
+                )
+                result = self.authority.renew(
+                    peer=peer,
+                    csr_pem=base64.b64decode(request["csr_pem"], validate=True),
+                    request_id=request["request_id"],
+                )
+            elif operation == "enroll":
+                result = self.authority.enroll(
+                    authorized_worker_id=request["worker_id"],
+                    instance_id=request["instance_id"],
+                    csr_pem=base64.b64decode(request["csr_pem"], validate=True),
+                    request_id=request["request_id"],
+                )
+            else:
                 raise ValueError("issuer operation rejected")
-            item = request["peer"]
-            peer = AuthenticatedPeer(
-                worker_id=item["worker_id"], serial_hex=item["serial_hex"],
-                fingerprint_sha256=item["fingerprint_sha256"], issuer_id=item["issuer_id"],
-                not_before=float(item["not_before"]), not_after=float(item["not_after"]),
-                peer=item["peer"],
-                certificate_pem=base64.b64decode(item["certificate_pem"], validate=True),
-            )
-            result = self.authority.renew(
-                peer=peer,
-                csr_pem=base64.b64decode(request["csr_pem"], validate=True),
-                request_id=request["request_id"],
-            )
             response = {
                 "ok": True,
                 "certificate_chain_pem": base64.b64encode(result.certificate_chain_pem).decode(),

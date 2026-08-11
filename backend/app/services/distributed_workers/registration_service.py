@@ -261,6 +261,16 @@ def revoke_worker(
     if worker is None:
         raise RegistrationConflict("Воркер не найден.")
     repositories.revoke_tokens(worker_id, settings=settings)
+    # Certificate decommission is durable and closes active gRPC streams via
+    # the Gateway watcher.  Executor processes remain governed by explicit
+    # job cancellation, exactly like bearer-token revocation.
+    from backend.app.services.distributed_workers.certificate_registry import (
+        CertificateRegistry,
+        RevocationReason,
+    )
+    CertificateRegistry(settings).revoke_worker(
+        worker_id, RevocationReason.DECOMMISSIONED
+    )
     repositories.update_worker_fields(
         worker_id,
         {

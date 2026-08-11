@@ -207,6 +207,8 @@ class GatewayConfig:
                 raise GatewayConfigError(f"mTLS {label} must be a regular non-symlink file")
         if key_path.stat().st_mode & 0o077:
             raise GatewayConfigError("Gateway server private key must be mode 0600")
+        if hasattr(os, "geteuid") and key_path.stat().st_uid != os.geteuid():
+            raise GatewayConfigError("Gateway server private key owner must match service uid")
         try:
             cert = x509.load_pem_x509_certificate(cert_path.read_bytes())
             key = serialization.load_pem_private_key(key_path.read_bytes(), password=None)

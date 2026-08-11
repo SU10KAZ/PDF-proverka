@@ -22,6 +22,7 @@ from backend.app.services.distributed_workers.certificate_registry import (
     CertificateRegistryError,
     PresentedCertificate,
 )
+from backend.app.services.distributed_workers import repositories
 
 
 class CertificateLifecycleError(RuntimeError):
@@ -56,6 +57,17 @@ class CertificateLifecycleAuthority:
         self, *, authorized_worker_id: str, instance_id: str,
         csr_pem: bytes, request_id: str,
     ) -> CertificateResponse:
+        worker = repositories.get_worker(
+            authorized_worker_id, settings=self.registry.settings
+        )
+        if (
+            worker is None
+            or worker.get("registration_status") != "approved"
+            or worker.get("instance_id") != instance_id
+        ):
+            raise CertificateLifecycleError(
+                "bootstrap enrollment is not authorized for this worker/instance"
+            )
         return self._issue(
             worker_id=authorized_worker_id, instance_id=instance_id,
             csr_pem=csr_pem, request_id=request_id,

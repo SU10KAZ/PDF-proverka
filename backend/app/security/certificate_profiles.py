@@ -185,6 +185,10 @@ class CertificateIssuer:
         self._issuer_key = issuer_key
         self.chain_pem = chain_pem
         self.issuer_id = certificate_fingerprint(issuer_cert)
+        try:
+            assert_key_matches(issuer_cert, issuer_key)
+        except AttributeError as exc:
+            raise CertificateProfileError("issuer private key is unsupported") from exc
         constraints = issuer_cert.extensions.get_extension_for_class(x509.BasicConstraints).value
         if not constraints.ca:
             raise CertificateProfileError("issuer certificate is not a CA")

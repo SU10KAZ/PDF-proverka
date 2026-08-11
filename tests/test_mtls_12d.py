@@ -26,7 +26,10 @@ from audit_worker.mtls_identity import install_public_identity, make_csr
 from backend.app.agent_gateway.config import GatewayConfig, GatewayConfigError
 from backend.app.agent_gateway.server import GatewayServer
 from backend.app.security.ca_factory import create_issuing_ca, create_root_ca
-from backend.app.security.issuer_rpc import UnixSocketRenewalAuthority
+from backend.app.security.issuer_rpc import (
+    UnixSocketEnrollmentAuthority,
+    UnixSocketRenewalAuthority,
+)
 from backend.app.security.issuer_service import IssuerServer
 from backend.app.security.certificate_profiles import (
     CertificateIssuer,
@@ -40,6 +43,7 @@ from backend.app.security.certificate_profiles import (
     validate_worker_certificate,
 )
 from backend.app.services.distributed_workers import database, repositories
+from backend.app.services.distributed_workers import registration_service
 from backend.app.services.distributed_workers.certificate_lifecycle import (
     CertificateLifecycleAuthority,
     CertificateLifecycleError,
@@ -483,6 +487,52 @@ async def test_gateway_renews_through_separate_unix_issuer(
     await issuer_service.stop()
 
 
+@pytest.mark.asyncio
+async def test_initial_enrollment_uses_protected_issuer_socket(
+    center, tmp_path, monkeypatch
+):
+    pki = Pki(tmp_path / "enroll-pki")
+    worker = _worker(center)
+    issuer_dir = tmp_path / "enroll-issuer"
+    issuer_cert = _write(
+        issuer_dir / "issuing.pem",
+        pki.issuing_cert.public_bytes(serialization.Encoding.PEM),
+    )
+    issuer_key = _write(issuer_dir / "issuing.key", _pem_key(pki.issuing_key), 0o600)
+    issuer_chain = _write(issuer_dir / "chain.pem", pki.chain_pem)
+    socket_path = tmp_path / "enroll-run" / "issuer.sock"
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_SOCKET", str(socket_path))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_CERT", str(issuer_cert))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_KEY", str(issuer_key))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_CHAIN", str(issuer_chain))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_ALLOWED_UIDS", str(os.getuid()))
+    service = IssuerServer()
+    await service.start()
+    key = ec.generate_private_key(ec.SECP256R1())
+    response = await asyncio.to_thread(
+        UnixSocketEnrollmentAuthority(socket_path).enroll,
+        worker_id=worker["worker_id"], instance_id=worker["instance_id"],
+        csr_pem=make_csr(_pem_key(key), worker["worker_id"]),
+        request_id="bootstrap-cert-test",
+    )
+    assert CertificateRegistry(center).by_serial(response.serial_hex)["status"] == "ACTIVE"
+    with pytest.raises(Exception):
+        await asyncio.to_thread(
+            UnixSocketEnrollmentAuthority(socket_path).enroll,
+            worker_id=worker["worker_id"], instance_id="wrong-instance",
+            csr_pem=make_csr(_pem_key(key), worker["worker_id"]),
+            request_id="bootstrap-cert-wrong-instance",
+        )
+    await service.stop()
+
+
+def test_worker_decommission_revokes_all_active_certificates(identity, center):
+    _, worker, registry, _, _, _, row = identity
+    registration_service.revoke_worker(worker_id=worker["worker_id"], settings=center)
+    assert registry.by_serial(row["serial_hex"])["status"] == "REVOKED"
+    assert registry.by_serial(row["serial_hex"])["revocation_reason"] == "DECOMMISSIONED"
+
+
 def test_server_startup_rejects_key_mismatch_and_public_insecure(identity, tmp_path):
     pki, *_ = identity
     wrong = _write(tmp_path / "mismatch.key", _pem_key(ec.generate_private_key(ec.SECP256R1())), 0o600)
@@ -494,6 +544,16 @@ def test_server_startup_rejects_key_mismatch_and_public_insecure(identity, tmp_p
         ).validated()
     with pytest.raises(GatewayConfigError):
         GatewayConfig(host="0.0.0.0", port=8443, security_mode="test_insecure").validated()
+
+
+def test_issuer_startup_rejects_certificate_key_mismatch(identity):
+    pki, *_ = identity
+    with pytest.raises(CertificateProfileError, match="do not match"):
+        CertificateIssuer(
+            pki.issuing_cert,
+            ec.generate_private_key(ec.SECP256R1()),
+            chain_pem=pki.chain_pem,
+        )
 
 
 def test_multiple_ca_bundle_parses(identity, tmp_path):

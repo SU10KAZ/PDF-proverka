@@ -1,7 +1,9 @@
 [Unit]
 Description=AuditManager web-ocr Agent Gateway (gRPC mTLS)
 After=network-online.target
+After=web-ocr-worker-cert-issuer.service
 Wants=network-online.target
+Requires=web-ocr-worker-cert-issuer.service
 
 [Service]
 Type=simple
