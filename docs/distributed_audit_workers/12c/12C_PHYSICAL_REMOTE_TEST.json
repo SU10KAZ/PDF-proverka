@@ -5,5 +5,12 @@
   "reason": "12C permits test_insecure only on loopback; no proven TLS HTTP/2 bidi tunnel or mTLS client contract was available",
   "production_worker_changed": false,
   "port_8443_opened": false,
-  "tunnel_started": false
+  "tunnel_started": false,
+  "preexisting_11l_tunnel_cleanup": {
+    "endpoint": "https://riverside-faq-night-cassette.trycloudflare.com",
+    "target": "http://127.0.0.1:8081",
+    "used_by_12c": false,
+    "stopped": true,
+    "post_stop_http_status": 530
+  }
 }
