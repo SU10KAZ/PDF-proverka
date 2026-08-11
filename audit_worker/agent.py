@@ -72,6 +72,9 @@ def _log(message: str) -> None:
 
 class WorkerAgent:
     def __init__(self, config: WorkerConfig, identity: dict[str, Any]):
+        from audit_worker.config import validate_control_transport
+
+        validate_control_transport(config)
         self.config = config
         self.identity = identity
         self.worker_id: str = identity["worker_id"]
@@ -108,7 +111,7 @@ class WorkerAgent:
         )
         self._provider_thread: Optional[threading.Thread] = None
 
-        self.client = CenterClient(
+        data_client = CenterClient(
             config.dispatcher_url,
             token=self.token,
             worker_id=self.worker_id,
@@ -117,6 +120,21 @@ class WorkerAgent:
             verify=config.verify_tls,
             transport=config.transport,
         )
+        if config.control_transport == "grpc":
+            from audit_worker.grpc_transport import GrpcStreamControlTransport
+
+            self.client = GrpcStreamControlTransport(
+                target=str(config.grpc_target),
+                data_client=data_client,
+                state_store=self.state_store,
+                jobs=self.jobs,
+                worker_id=self.worker_id,
+                instance_id=self.instance_id,
+                config=config,
+                build_heartbeat=self._heartbeat_payload,
+            )
+        else:
+            self.client = data_client
         self.poller = JobPullClient(self.client, wait_sec=config.poll_wait_sec)
         self.heartbeat = HeartbeatClient(
             self.client,
@@ -261,6 +279,35 @@ class WorkerAgent:
         было бы окно, в котором `_free_slots` считает слот свободным и агент
         забирает третье задание.
         """
+        attempt_id = assignment["attempt_id"]
+        with self._active_lock:
+            duplicate = attempt_id in self._active or (
+                attempt_id in self._job_threads
+                and self._job_threads[attempt_id].is_alive()
+            )
+        if duplicate:
+            # A re-offer after reconnect is recovery evidence, not new work.
+            # If local source verification has already completed, repeat the
+            # idempotent JobAccept so an ACK lost with the old stream cannot
+            # leave Center in source_uploading. Never enqueue/launch again.
+            meta = self.jobs.load(assignment["job_id"], attempt_id) or {}
+            if meta.get("local_state") in {
+                "verified", "running", "completed_locally", "uploading", "finished"
+            }:
+                try:
+                    self.client.accept_job(
+                        assignment["job_id"],
+                        {
+                            "attempt_id": attempt_id,
+                            "accepted_at": time.time(),
+                            "source_verified": {"sha256_ok": True, "manifest_version": 1},
+                            "planned_stages": ["test_pipeline_v1"],
+                        },
+                        meta.get("execution_token") or "",
+                    )
+                except Exception:  # noqa: BLE001 - next re-offer/reconnect retries
+                    pass
+            return
         ctx = self._prepare_ctx(assignment)
         thread = threading.Thread(
             target=self._run_job_guarded,
@@ -788,7 +835,7 @@ class WorkerAgent:
         """Завести каталоги, метаданные и контекст задания; ЗАНЯТЬ слот."""
         job_id = assignment["job_id"]
         attempt_id = assignment["attempt_id"]
-        token = assignment["execution_token"]
+        token = assignment.get("execution_token") or ""
         self.jobs.create(assignment)
         ctx = {
             "job_id": job_id,

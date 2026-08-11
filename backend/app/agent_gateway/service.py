@@ -274,6 +274,11 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 raise DomainViolation("JobAccept worker identity mismatch", close_stream=True)
             await self.domain.accept_job(session.worker_id, envelope.job_accept)
             session.sent_offers.discard(envelope.job_accept.attempt_id)
+            # Close the gap until the next heartbeat: an accepted offer is a
+            # locally reserved slot. Without this conservative increment the
+            # scheduler immediately saw the slot as free again and could emit
+            # a third attempt to a verified two-slot worker.
+            session.active_slots = min(session.max_slots, session.active_slots + 1)
             self.metrics.inc("job_accepts_total")
         elif kind == "job_decline":
             if envelope.job_decline.worker_id != session.worker_id:
@@ -307,6 +312,7 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 session.enqueue(self._response(session, correlation_id=envelope.correlation_id, result_ack=outcome))
                 session.sent_results.add(outcome.attempt_id + ":" + outcome.result_sha256)
                 self.metrics.inc("result_ack_total", labels={"result": outcome.validation_status})
+                session.active_slots = max(0, session.active_slots - 1)
             elif isinstance(outcome, stream_pb.ResultRejected):
                 session.enqueue(self._response(session, correlation_id=envelope.correlation_id, result_rejected=outcome))
                 self.metrics.inc("result_reject_total", labels={"reason": outcome.reason})
@@ -431,7 +437,13 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                         worker_id=session.worker_id,
                         connection_id=session.connection_id,
                         free_slots=session.free_slots,
-                        busy_slots=session.active_slots,
+                        # Offers emitted on this stream already reserve center
+                        # attempts even before the next heartbeat reports them
+                        # as active. Include them in the absolute capacity hint;
+                        # otherwise free_slots subtracts the offer once and the
+                        # repository gate subtracts it a second time, pinning a
+                        # verified two-slot worker to one job.
+                        busy_slots=session.active_slots + len(session.sent_offers),
                         offer_timeout_sec=self.config.offer_timeout_sec,
                     )
                     if offer is not None:

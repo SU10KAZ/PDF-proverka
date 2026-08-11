@@ -201,6 +201,14 @@ class WorkerConfig:
     # Подмена сетевого слоя httpx. Только для end-to-end тестов (ASGITransport):
     # настоящий агент против настоящего приложения без сокетов. В проде None.
     transport: object | None = None
+    # Control plane. Polling remains the production-compatible default.  gRPC
+    # is explicit and never falls back to polling after a stream failure.
+    control_transport: str = "polling"
+    grpc_target: str | None = None
+    grpc_security_mode: str = "test_insecure"
+    grpc_connect_timeout_sec: float = 15.0
+    grpc_outbound_queue_max: int = 128
+    grpc_protocol_versions: tuple[int, ...] = (1,)
 
     @property
     def state_path(self) -> Path:
@@ -628,9 +636,40 @@ def load_config(
         allow_insecure_localhost=os.environ.get(
             "AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST", "false"
         ).lower() in {"1", "true", "yes", "on"},
+        control_transport=(
+            "grpc"
+            if os.environ.get(
+                "AUDIT_WORKER_TRANSPORT_MODE",
+                os.environ.get("AUDIT_WORKER_CONTROL_TRANSPORT", "polling"),
+            ).strip().lower() in {"grpc", "grpc_stream"}
+            else os.environ.get(
+                "AUDIT_WORKER_TRANSPORT_MODE",
+                os.environ.get("AUDIT_WORKER_CONTROL_TRANSPORT", "polling"),
+            ).strip().lower()
+        ),
+        grpc_target=(
+            os.environ.get("AUDIT_WORKER_GRPC_TARGET", "").strip() or None
+        ),
+        grpc_security_mode=os.environ.get(
+            "AUDIT_WORKER_GRPC_SECURITY_MODE", "test_insecure"
+        ).strip().lower(),
+        grpc_connect_timeout_sec=max(
+            1.0, _env_float("AUDIT_WORKER_GRPC_CONNECT_TIMEOUT_SEC", 15.0)
+        ),
+        grpc_outbound_queue_max=max(
+            8, _env_int("AUDIT_WORKER_GRPC_OUTBOUND_QUEUE_MAX", 128)
+        ),
+        grpc_protocol_versions=tuple(
+            int(item.strip())
+            for item in os.environ.get(
+                "AUDIT_WORKER_GRPC_PROTOCOL_VERSIONS", "1"
+            ).split(",")
+            if item.strip().isdigit()
+        ),
     )
     if require_dispatcher:
         validate_transport_security(config)
+        validate_control_transport(config)
     return config
 
 
@@ -668,6 +707,33 @@ def validate_transport_security(config: "WorkerConfig") -> None:
         raise InsecureTransportError(
             "HTTP к localhost требует явного AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true "
             "(dev-режим). В проде используйте https://."
+        )
+
+
+def validate_control_transport(config: "WorkerConfig") -> None:
+    """Validate the explicit control-plane selection; there is no fallback."""
+    if config.control_transport not in {"polling", "grpc"}:
+        raise InsecureTransportError(
+            "AUDIT_WORKER_CONTROL_TRANSPORT должен быть polling или grpc"
+        )
+    if config.control_transport == "polling":
+        return
+    if not config.grpc_target:
+        raise InsecureTransportError(
+            "AUDIT_WORKER_GRPC_TARGET обязателен для grpc control transport"
+        )
+    if config.grpc_security_mode != "test_insecure":
+        raise InsecureTransportError(
+            "12C поддерживает только test_insecure; защищённый gRPC/mTLS относится к 12D"
+        )
+    if config.grpc_protocol_versions != (1,):
+        raise InsecureTransportError(
+            "12C поддерживает только Agent Stream protocol version 1"
+        )
+    host = config.grpc_target.rsplit(":", 1)[0].strip("[]").lower()
+    if host not in LOCALHOST_HOSTS:
+        raise InsecureTransportError(
+            "test_insecure gRPC разрешён только к loopback; внешний endpoint запрещён"
         )
 
 

@@ -1,0 +1,13 @@
+{
+  "polling_test": "tests/test_distributed_workers_e2e.py::test_vertical_slice_full_cycle",
+  "grpc_test": "tests/test_agent_grpc_client_12c.py::test_local_real_agent_gateway_executor_eventoutbox_https_resultack",
+  "polling_result": "PASS",
+  "grpc_result": "PASS",
+  "shared_agent": "audit_worker.agent.WorkerAgent",
+  "shared_executor": "audit_worker.executor.Executor",
+  "shared_local_db": "worker.db",
+  "shared_event_outbox": true,
+  "shared_https_package_path": true,
+  "domain_outcome": {"state": "completed", "retention_confirmed": true},
+  "network_messages_identical": false
+}

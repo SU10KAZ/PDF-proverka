@@ -1,0 +1,8 @@
+{
+  "task": "12C",
+  "branch": "feat/distributed-audit-workers-agent-grpc-client",
+  "base_branch": "feat/distributed-audit-workers-agent-gateway",
+  "base_commit": "61e077549ca316ffb5974835106556eac671c571",
+  "base_worktree_clean": true,
+  "production_auditmanager_touched": false
+}

@@ -1,0 +1,12 @@
+{
+  "bootstrap_field": "transport_mode",
+  "values": ["polling", "grpc_stream"],
+  "default": "polling",
+  "gateway_target_required_for_grpc": true,
+  "protocol_versions": [1],
+  "security_mode": "test_insecure",
+  "test_insecure_scope": "loopback_only",
+  "automatic_fallback": false,
+  "https_verify_tls": true,
+  "optional_requirements": "requirements-worker-grpc.txt"
+}

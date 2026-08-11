@@ -104,6 +104,12 @@ class BootstrapRequest(BaseModel):
     bundle_sha256: str | None = None
     bootstrap_instance_id: str | None = None
     worker_id: str | None = None
+    # 12C prepares the explicit transport contract but keeps every existing
+    # session on polling unless the operator selects grpc_stream.
+    transport_mode: Literal["polling", "grpc_stream"] = "polling"
+    gateway_target: str | None = None
+    protocol_versions: list[int] = Field(default_factory=lambda: [1], min_length=1)
+    gateway_security_mode: Literal["test_insecure"] = "test_insecure"
 
     @field_validator("host", "ssh_user", "ssh_auth_ref")
     @classmethod
@@ -153,6 +159,19 @@ class BootstrapRequest(BaseModel):
     def root_is_not_runtime_users_home(self) -> "BootstrapRequest":
         if self.install_root == f"/home/{self.ssh_user}":
             raise ValueError("install_root не может быть HOME SSH user")
+        if self.protocol_versions != [1]:
+            raise ValueError("12C поддерживает только Agent Stream protocol version 1")
+        if self.transport_mode == "polling":
+            if self.gateway_target is not None:
+                raise ValueError("gateway_target допустим только для grpc_stream")
+            return self
+        target = (self.gateway_target or "").strip()
+        match = re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\]):([0-9]{1,5})", target)
+        if not match or not 1 <= int(match.group(1)) <= 65535:
+            raise ValueError(
+                "12C test_insecure gateway_target обязан быть loopback host:port"
+            )
+        self.gateway_target = target
         return self
 
 

@@ -1,0 +1,5 @@
+# Optional runtime overlay for the explicit Agent Stream v1 transport.
+# The base polling installation and its production defaults remain unchanged.
+-r requirements-worker.txt
+grpcio==1.82.1
+protobuf==7.35.1

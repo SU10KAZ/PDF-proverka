@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "max_slots": 2,
+  "streams": 1,
+  "completed_attempts": 2,
+  "third_concurrent_executor": false,
+  "server_fixes": ["outstanding offers included in busy hint", "accepted offers reserve ephemeral active slot until heartbeat"]
+}

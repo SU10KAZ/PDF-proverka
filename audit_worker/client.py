@@ -63,6 +63,13 @@ class CenterClient:
         self._client = httpx.Client(
             timeout=timeout, verify=verify, follow_redirects=False, transport=transport
         )
+        self._control_context_headers: dict[str, str] = {}
+
+    def set_control_context(self, *, connection_id: str | None = None) -> None:
+        """Bind HTTPS package requests to the current authenticated gRPC session."""
+        self._control_context_headers = (
+            {"X-Agent-Stream-Connection-Id": connection_id} if connection_id else {}
+        )
 
     def close(self) -> None:
         self._client.close()
@@ -82,6 +89,7 @@ class CenterClient:
             headers["X-Worker-Id"] = self.worker_id
         if self.instance_id:
             headers["X-Instance-Id"] = self.instance_id
+        headers.update(self._control_context_headers)
         if extra:
             headers.update({k: v for k, v in extra.items() if v is not None})
         return headers
@@ -199,13 +207,18 @@ class CenterClient:
         )
 
     def download_source(
-        self, job_id: str, dest: Path, execution_token: str, *, resume: bool = True
+        self, job_id: str, dest: Path, execution_token: str, *, resume: bool = True,
+        transfer_id: str = "",
     ) -> int:
         """Скачать пакет с докачкой через Range. Возвращает итоговый размер."""
         part = dest.with_suffix(dest.suffix + ".part")
         part.parent.mkdir(parents=True, exist_ok=True)
         offset = part.stat().st_size if (resume and part.exists()) else 0
-        headers = {"X-Execution-Token": execution_token}
+        headers = {}
+        if execution_token:
+            headers["X-Execution-Token"] = execution_token
+        if transfer_id:
+            headers["X-Package-Transfer-Id"] = transfer_id
         if offset:
             headers["Range"] = f"bytes={offset}-"
 

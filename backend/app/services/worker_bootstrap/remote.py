@@ -331,7 +331,9 @@ done
         self._copy(archive, f"{self.request.install_root}/incoming/{archive.name}")
         self._copy(manifest, f"{self.request.install_root}/incoming/{manifest.name}")
         deploy.remote_install_release(remote, archive.name, manifest.name, release, actual)
-        deploy.remote_sync_venv(remote, release)
+        deploy.remote_sync_venv(
+            remote, release, grpc=self.request.transport_mode == "grpc_stream"
+        )
         deploy.remote_selftest(remote, release)
         deploy.remote_switch_current(remote, release)
         return {"release_id": release, "previous_release_id": previous or None, "archive_sha256": actual}
@@ -363,6 +365,12 @@ sha256sum "$root/current/audit_worker/provider_policy.approved.json" | awk '{{pr
             "AUDIT_WORKER_DISPATCHER_URL": self.request.center_url,
             "AUDIT_WORKER_NAME": self.request.display_name,
             "AUDIT_WORKER_MAX_SLOTS": str(self.request.max_slots),
+            "AUDIT_WORKER_TRANSPORT_MODE": self.request.transport_mode,
+            "AUDIT_WORKER_GRPC_TARGET": self.request.gateway_target or "",
+            "AUDIT_WORKER_GRPC_PROTOCOL_VERSIONS": ",".join(
+                str(item) for item in self.request.protocol_versions
+            ),
+            "AUDIT_WORKER_GRPC_SECURITY_MODE": self.request.gateway_security_mode,
             "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS": "1",
             "AUDIT_WORKER_PIPELINE_ROOT": f"{root}/current",
             "AUDIT_WORKER_PIPELINE_PYTHON": f"{root}/venv/bin/python",

@@ -1,0 +1,9 @@
+{
+  "result": "DEFERRED_TO_12D",
+  "host": "176.12.77.31",
+  "attempted": false,
+  "reason": "12C permits test_insecure only on loopback; no proven TLS HTTP/2 bidi tunnel or mTLS client contract was available",
+  "production_worker_changed": false,
+  "port_8443_opened": false,
+  "tunnel_started": false
+}

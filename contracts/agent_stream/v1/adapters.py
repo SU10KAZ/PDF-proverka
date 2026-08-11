@@ -277,6 +277,20 @@ def heartbeat_from_http(
     )
     max_slots = int(payload.get("configured_max_slots") or 0)
     free_slots = int(payload.get("calculated_free_slots") or 0)
+    # Resource pressure can reduce calculated_free_slots without occupying an
+    # Executor slot. Encoding `max-free` as active work invented attempts and
+    # made Gateway reconciliation disagree with the durable local DB.
+    active_slots = max(
+        int(payload.get("locally_reserved_slots") or 0),
+        int(payload.get("active_local_jobs") or 0),
+        int(payload.get("running_processes") or 0),
+        len(payload.get("active_jobs") or []),
+    )
+    accepting = (
+        free_slots > 0
+        and str(payload.get("worker_state") or "")
+        not in {"draining", "drained", "revoked", "degraded"}
+    )
     capability_stub = {
         "provider_capabilities": {},
         "job_types": [],
@@ -294,7 +308,7 @@ def heartbeat_from_http(
         connection_id=connection_id,
         observed_at=timestamp_from_epoch(payload.get("sent_at")),
         worker_state=worker_state,
-        active_slots=max(0, max_slots - free_slots),
+        active_slots=max(0, min(max_slots, active_slots)),
         max_slots=max_slots,
         active_attempts=[
             _attempt_from_domain(item) for item in payload.get("active_jobs") or []
@@ -313,7 +327,7 @@ def heartbeat_from_http(
         capabilities_revision=capability_message.revision,
         capabilities_sha256=capability_message.sha256,
         capabilities_changed=False,
-        accepting_jobs=str(payload.get("worker_state") or "") not in {"draining", "drained", "revoked"},
+        accepting_jobs=accepting,
     )
 
 

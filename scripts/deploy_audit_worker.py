@@ -82,6 +82,8 @@ COMPATIBLE_EXECUTION_PROFILES = ("remote_audit_pilot_v1",)
 #:   tests/distributed_audit_e2e/  фикстура и изоляция для офлайн-smoke на VPS.
 BUNDLE_INCLUDE: tuple[str, ...] = (
     "audit_worker/",
+    "contracts/__init__.py",
+    "contracts/agent_stream/",
     "backend/__init__.py",
     "backend/app/",
     "blocks.py",
@@ -96,6 +98,7 @@ BUNDLE_INCLUDE: tuple[str, ...] = (
     "prompts/pipeline/",
     "prompts/disciplines/_registry.json",
     "requirements-worker.txt",
+    "requirements-worker-grpc.txt",
     "requirements-worker-pipeline.txt",
     "tests/distributed_audit_e2e/",
 )
@@ -148,7 +151,11 @@ DENY_SUFFIXES = (".pem", ".key", ".crt", ".p12", ".pfx", ".pid", ".sock", ".lock
 DENY_SUBSTRINGS = ("id_rsa", "id_ed25519", "credentials", "secret_key")
 
 #: Читается только чтобы посчитать хэш требований — содержимое не изменяется.
-REQUIREMENT_FILES = ("requirements-worker.txt", "requirements-worker-pipeline.txt")
+REQUIREMENT_FILES = (
+    "requirements-worker.txt",
+    "requirements-worker-grpc.txt",
+    "requirements-worker-pipeline.txt",
+)
 
 
 # ─── общее ───────────────────────────────────────────────────────────────────
@@ -602,8 +609,15 @@ echo "INSTALL_OK $rel"
     return result.stdout
 
 
-def remote_sync_venv(remote: Remote, release: str, *, python: str = "python3") -> str:
+def remote_sync_venv(
+    remote: Remote, release: str, *, python: str = "python3", grpc: bool = False
+) -> str:
     """Создать/дообновить venv. Живёт вне релиза — переживает откат."""
+    grpc_install = (
+        '"$root/venv/bin/python" -m pip install --quiet '
+        '-r "$root/app/$rel/requirements-worker-grpc.txt"'
+        if grpc else ":"
+    )
     result = remote.run(
         f"""set -euo pipefail
 root={shlex.quote(remote.root)}
@@ -614,6 +628,7 @@ fi
 "$root/venv/bin/python" -m pip install --quiet --upgrade pip >/dev/null
 "$root/venv/bin/python" -m pip install --quiet -r "$root/app/$rel/requirements-worker.txt"
 "$root/venv/bin/python" -m pip install --quiet -r "$root/app/$rel/requirements-worker-pipeline.txt"
+{grpc_install}
 echo "VENV_OK $("$root/venv/bin/python" -V 2>&1)"
 """,
         timeout=1800,

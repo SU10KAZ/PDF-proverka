@@ -21,6 +21,7 @@ import time
 import uuid
 from pathlib import Path
 from typing import Any, Iterator, Optional
+import fcntl
 
 
 def atomic_write_json(path: Path, data: Any) -> None:
@@ -60,12 +61,26 @@ class WorkerStateStore:
     def __init__(self, state_path: Path, token_path: Path):
         self.state_path = state_path
         self.token_path = token_path
+        self._epoch_lock = threading.Lock()
 
     def load(self) -> dict[str, Any]:
         return read_json(self.state_path, {}) or {}
 
     def save(self, data: dict[str, Any]) -> None:
         atomic_write_json(self.state_path, data)
+
+    def reserve_connection_epoch(self) -> int:
+        """Durably reserve a strictly increasing epoch before opening a stream."""
+        lock_path = self.state_path.with_name("worker_state.lock")
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with self._epoch_lock, lock_path.open("a+") as lock_file:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            state = self.load()
+            epoch = int(state.get("connection_epoch") or 0) + 1
+            state["connection_epoch"] = epoch
+            self.save(state)
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        return epoch
 
     def read_token(self) -> Optional[str]:
         if not self.token_path.is_file():

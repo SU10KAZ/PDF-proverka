@@ -62,6 +62,7 @@ from backend.app.services.distributed_workers import (
     auth,
     database,
     event_service,
+    gateway_repository,
     job_service,
     package_service,
     provider_accounts,
@@ -202,6 +203,35 @@ async def _resolve_attempt(
         raise HTTPException(
             status_code=403, detail="Попытка закреплена за другим воркером."
         )
+    return attempt, (attempt.get("attempt_disposition") or "active") == "active"
+
+
+async def _resolve_stream_attempt(
+    job_id: str,
+    principal: auth.WorkerPrincipal,
+    execution_token: Optional[str],
+    stream_connection_id: Optional[str],
+) -> tuple[dict[str, Any], bool]:
+    """Authorize HTTPS data-plane access by token or an active gRPC session."""
+    if execution_token:
+        return await _resolve_attempt(job_id, principal, execution_token)
+    connection_id = (stream_connection_id or "").strip()
+    if not connection_id:
+        return await _resolve_attempt(job_id, principal, execution_token)
+    session = await database.run_db(
+        gateway_repository.get_transport_session,
+        principal.worker_id,
+        settings=principal.settings,
+    )
+    if session is None or session.get("active_connection_id") != connection_id:
+        raise HTTPException(status_code=403, detail="gRPC transport session is not active")
+    attempt = await database.run_db(
+        repositories.get_job, job_id, settings=principal.settings
+    )
+    if attempt is None:
+        raise HTTPException(status_code=404, detail="Задание не найдено.")
+    if attempt.get("assigned_worker_id") != principal.worker_id:
+        raise HTTPException(status_code=403, detail="Задание закреплено за другим воркером.")
     return attempt, (attempt.get("attempt_disposition") or "active") == "active"
 
 
@@ -728,9 +758,29 @@ async def download_source(
     job_id: str,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
+    x_agent_stream_connection_id: Optional[str] = Header(default=None),
+    x_package_transfer_id: Optional[str] = Header(default=None),
 ):
     """Отдать исходный пакет. FileResponse поддерживает Range → докачка."""
-    job = await _load_job_for_worker(job_id, principal, x_execution_token)
+    if x_execution_token:
+        job = await _load_job_for_worker(job_id, principal, x_execution_token)
+    else:
+        job, active = await _resolve_stream_attempt(
+            job_id, principal, None, x_agent_stream_connection_id
+        )
+        if not active:
+            raise HTTPException(status_code=409, detail={"error": "attempt_superseded"})
+        allowed = await database.run_db(
+            gateway_repository.authorize_transfer,
+            transfer_id=(x_package_transfer_id or "").strip(),
+            worker_id=principal.worker_id,
+            job_id=job_id,
+            attempt_id=job["attempt_id"],
+            direction="center_to_agent",
+            settings=principal.settings,
+        )
+        if not allowed:
+            raise HTTPException(status_code=403, detail="source transfer is not authorized")
     archive = job_service.source_package_path(job, settings=principal.settings)
     if archive is None or not archive.is_file():
         raise HTTPException(status_code=404, detail="Исходный пакет не найден.")
@@ -890,6 +940,7 @@ async def create_upload(
     request: Request,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
+    x_agent_stream_connection_id: Optional[str] = Header(default=None),
 ):
     # Кэш идемпотентности здесь снят СОЗНАТЕЛЬНО. Ручка идемпотентна сама по
     # себе и сильнее: `open_or_create_session` ищет открытую сессию по тройке
@@ -904,17 +955,22 @@ async def create_upload(
     # `expected_hash`). Ключ выходил одинаковым для ЛЮБОГО архива одной
     # попытки, и пересобранный архив с другим хэшем получал в ответ кэш от
     # старого — сессию под чужой хэш.
-    return await _create_upload_impl(payload, principal, x_execution_token)
+    return await _create_upload_impl(
+        payload, principal, x_execution_token, x_agent_stream_connection_id
+    )
 
 
 async def _create_upload_impl(
     payload: UploadCreateRequest,
     principal: auth.WorkerPrincipal,
     x_execution_token: Optional[str],
+    stream_connection_id: Optional[str] = None,
 ) -> UploadSessionInfo:
     # Отозванная попытка тоже вправе передать готовый архив — он ляжет в
     # superseded_results и не станет результатом задания (§5.5).
-    job, _active = await _resolve_attempt(payload.job_id, principal, x_execution_token)
+    job, _active = await _resolve_stream_attempt(
+        payload.job_id, principal, x_execution_token, stream_connection_id
+    )
     if payload.attempt_id != job["attempt_id"]:
         raise HTTPException(
             status_code=409,
@@ -981,6 +1037,7 @@ async def put_chunk(
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_chunk_sha256: Optional[str] = Header(default=None),
     x_execution_token: Optional[str] = Header(default=None),
+    x_agent_stream_connection_id: Optional[str] = Header(default=None),
 ) -> dict[str, Any]:
     settings = principal.settings
     session = await database.run_db(
@@ -990,8 +1047,8 @@ async def put_chunk(
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
     # Через _resolve_attempt — так же, как все остальные ручки по заданию:
     # здесь не хватало ни привязки к принципалу, ни проверки попытки.
-    job, _active = await _resolve_attempt(
-        session["job_id"], principal, x_execution_token
+    job, _active = await _resolve_stream_attempt(
+        session["job_id"], principal, x_execution_token, x_agent_stream_connection_id
     )
     if session["attempt_id"] != job["attempt_id"]:
         raise HTTPException(
@@ -1028,6 +1085,7 @@ async def complete_upload(
     payload: UploadCompleteRequest,
     principal: auth.WorkerPrincipal = Depends(auth.require_worker),
     x_execution_token: Optional[str] = Header(default=None),
+    x_agent_stream_connection_id: Optional[str] = Header(default=None),
 ) -> UploadCompleteResponse:
     settings = principal.settings
     session = await database.run_db(
@@ -1035,8 +1093,8 @@ async def complete_upload(
     )
     if session is None:
         raise HTTPException(status_code=404, detail="Сессия загрузки не найдена.")
-    job, active = await _resolve_attempt(
-        session["job_id"], principal, x_execution_token
+    job, active = await _resolve_stream_attempt(
+        session["job_id"], principal, x_execution_token, x_agent_stream_connection_id
     )
     if session["attempt_id"] != job["attempt_id"]:
         raise HTTPException(
