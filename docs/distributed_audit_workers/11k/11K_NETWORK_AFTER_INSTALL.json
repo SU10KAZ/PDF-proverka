@@ -1,0 +1,9 @@
+{
+  "bootstrap_protocol_job": "implemented: test_pipeline_v1 after heartbeat, completion required before READY",
+  "fake_https_runtime_suite": "32 dedicated network tests passed; related provider/routing tests are in the separate 477-test group",
+  "coverage": ["HTTPS/TLS", "registration", "heartbeat", "poll", "package path", "fake routing", "EventOutbox", "upload", "ACK", "capability/revision"],
+  "transport": "outbound HTTPS",
+  "inbound_worker_port": false,
+  "real_inference": 0,
+  "composition_caveat": "runtime HTTPS suite and fake clean remote are isolated fixtures; no second physical VPS was available"
+}

@@ -491,6 +491,24 @@ def load_config(
         heartbeat_interval_sec=_env_float("AUDIT_WORKER_HEARTBEAT_SEC", 30.0),
         poll_wait_sec=_env_int("AUDIT_WORKER_POLL_WAIT_SEC", 25),
         max_slots=_max_slots_from_env(),
+        extra_capabilities={
+            "bootstrap_version": os.environ.get(
+                "AUDIT_WORKER_BOOTSTRAP_VERSION", "unknown"
+            ).strip() or "unknown",
+            "provider_policy_version": _env_int(
+                "AUDIT_WORKER_PROVIDER_POLICY_VERSION", 0
+            ),
+            "provider_policy_sha256": os.environ.get(
+                "AUDIT_WORKER_PROVIDER_POLICY_SHA256", ""
+            ).strip(),
+            "routing_compatibility": [
+                item
+                for item in os.environ.get(
+                    "AUDIT_WORKER_ROUTING_COMPATIBILITY", ""
+                ).split(",")
+                if item in {"claude_gpt_codex", "codex_exec"}
+            ],
+        },
         request_timeout_sec=_env_float("AUDIT_WORKER_TIMEOUT_SEC", 60.0),
         test_max_total_sec=_env_float("AUDIT_WORKER_TEST_MAX_SEC", 300.0),
         retention_enabled=_env_bool("AUDIT_WORKER_RETENTION_ENABLED", True),

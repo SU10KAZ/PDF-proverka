@@ -1,0 +1,9 @@
+{
+  "environment": "in-memory clean foreign-host contract with empty release/files/identity",
+  "installer_logic": "PASS",
+  "steps": ["preflight", "deploy", "config", "services", "provider gate", "scoped registration", "claim", "heartbeat", "network self-test", "ready"],
+  "repeat_deploy_count": 1,
+  "duplicate_workers": 0,
+  "real_external_vps": false,
+  "verdict": "REAL CLEAN FOREIGN VPS NOT_PROVEN"
+}

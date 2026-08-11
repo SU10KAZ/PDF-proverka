@@ -1,0 +1,9 @@
+{
+  "task": "11K one-click worker bootstrap",
+  "base_commit": "1367bc6f8044cb24817b2ba2620e1742f629f7fa",
+  "base_meaning": "final immutable 11J.1 evidence commit",
+  "branch": "feat/distributed-audit-workers-one-click-bootstrap",
+  "worktree": ".claude/worktrees/distributed-audit-workers-one-click-bootstrap",
+  "push": false,
+  "merge": false
+}

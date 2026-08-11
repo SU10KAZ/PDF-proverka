@@ -6,6 +6,7 @@ instance_id — НОВЫЙ на каждый запуск процесса: он
 """
 from __future__ import annotations
 
+import os
 import platform
 import time
 import uuid
@@ -65,6 +66,14 @@ def classify_center_failure(exc: BaseException) -> str:
 
 
 def new_instance_id() -> str:
+    # One-click registration token привязан к конкретному instance_id. Центр
+    # задаёт его для installation root через несекретный env; обычные запуски
+    # сохраняют прежнюю семантику случайного id.
+    scoped = os.environ.get("AUDIT_WORKER_BOOTSTRAP_INSTANCE_ID", "").strip()
+    if scoped:
+        if not scoped.startswith("inst_") or len(scoped) > 80:
+            raise ValueError("AUDIT_WORKER_BOOTSTRAP_INSTANCE_ID имеет неверный формат")
+        return scoped
     return f"inst_{uuid.uuid4().hex[:16]}"
 
 

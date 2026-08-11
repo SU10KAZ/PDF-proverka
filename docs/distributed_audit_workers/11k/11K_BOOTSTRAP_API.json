@@ -1,0 +1,12 @@
+{
+  "auth": "portal session + distributed_workers.admin",
+  "intent_header": "X-Worker-Bootstrap-Intent: execute",
+  "routes": [
+    {"method": "POST", "path": "/api/workers/bootstrap/sessions", "purpose": "create and start one workflow"},
+    {"method": "GET", "path": "/api/workers/bootstrap/sessions", "purpose": "list"},
+    {"method": "GET", "path": "/api/workers/bootstrap/sessions/{id}", "purpose": "status/progress"},
+    {"method": "POST", "path": "/api/workers/bootstrap/sessions/{id}/resume", "purpose": "resume same workflow"}
+  ],
+  "typed_models": ["BootstrapRequest", "BootstrapSessionView", "BootstrapStep", "BootstrapState", "BootstrapActionRequired", "BootstrapResult"],
+  "raw_secret_fields": "not accepted; invalid input values are omitted from 422 responses"
+}

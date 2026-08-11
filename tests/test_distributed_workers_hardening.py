@@ -973,7 +973,7 @@ def test_migration_2_upgrades_existing_database(tmp_path):
     # (7) плюс происхождение привязки провайдера к учётной записи (8).
     # Число здесь закреплено намеренно: молчаливый рост версии означал бы, что
     # кто-то добавил миграцию, не проверив её на СТАРОЙ базе.
-    assert version == schema.SCHEMA_VERSION == 8
+    assert version == schema.SCHEMA_VERSION == 9
     columns = {r["name"] for r in conn.execute("PRAGMA table_info(workers)")}
     assert {"claim_secret_sha256", "claim_issued_at", "claim_used_at",
             "rejected_at"} <= columns

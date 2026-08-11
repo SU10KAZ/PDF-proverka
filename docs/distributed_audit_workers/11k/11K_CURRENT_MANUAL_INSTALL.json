@@ -1,0 +1,24 @@
+{
+  "inventory_at": "2026-08-11",
+  "production_mutated": false,
+  "host": ".31 (address intentionally omitted from business artifacts)",
+  "facts": {
+    "os": "Ubuntu 24.04",
+    "user": "coder/non-root",
+    "arch": "x86_64",
+    "cpu": 8,
+    "release": "20260809T140821-c1070168cda4",
+    "token_mode": "0600",
+    "claude": "2.1.220/logged_in",
+    "codex": "0.147.0/logged_in",
+    "openrouter": "absent",
+    "agent": "disabled/inactive",
+    "executor": "disabled/inactive"
+  },
+  "manual_steps_now_automated": [
+    "preflight", "bundle", "transfer", "atomic release", "venv", "config",
+    "policy", "services", "scoped registration", "approval", "claim",
+    "provider detection", "heartbeat gate", "protocol self-test"
+  ],
+  "manual_steps_remaining": ["Claude browser auth", "Codex device auth", "OpenRouter hidden remote input"]
+}

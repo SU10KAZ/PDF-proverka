@@ -267,6 +267,8 @@ if _dw_settings().enabled:
     )
     if _dw_admin_ok:
         app.include_router(audit_workers_admin.router)
+        from backend.app.api.routers import worker_bootstrap  # noqa: E402
+        app.include_router(worker_bootstrap.router)
         print("[startup] распределённые audit-worker: ВКЛЮЧЕНЫ")
     else:
         print(

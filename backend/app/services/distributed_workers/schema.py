@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 8
+SCHEMA_VERSION = 9
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -840,6 +840,61 @@ ALTER TABLE worker_provider_states
     ADD COLUMN account_group_source TEXT NOT NULL DEFAULT 'worker';
 """
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Миграция 9 (этап 11K): журнал one-click bootstrap и одноразовые scoped token.
+#
+# Секретов в этих таблицах намеренно нет. Registration token существует в
+# открытом виде только в памяти вызывающего процесса; база получает SHA-256.
+# SSH-аутентификация хранится как ссылка на запись центрального secret-store,
+# но никогда как ключ/пароль. `request_json` перед записью проходит allowlist в
+# bootstrap_store, поэтому добавить секрет в Pydantic-модель недостаточно,
+# чтобы он случайно оказался на диске.
+_MIGRATION_9 = """
+CREATE TABLE IF NOT EXISTS worker_bootstrap_sessions (
+    session_id          TEXT PRIMARY KEY,
+    idempotency_key     TEXT UNIQUE,
+    operation           TEXT NOT NULL,
+    state               TEXT NOT NULL,
+    step                TEXT NOT NULL,
+    request_json        TEXT NOT NULL,
+    result_json         TEXT NOT NULL DEFAULT '{}',
+    error_code          TEXT,
+    error_detail        TEXT,
+    worker_id           TEXT,
+    release_id          TEXT,
+    previous_release_id TEXT,
+    created_at          REAL NOT NULL,
+    updated_at          REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_bootstrap_sessions_updated
+    ON worker_bootstrap_sessions(updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS worker_bootstrap_events (
+    event_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id     TEXT NOT NULL REFERENCES worker_bootstrap_sessions(session_id)
+                   ON DELETE CASCADE,
+    at             REAL NOT NULL,
+    step           TEXT NOT NULL,
+    state          TEXT NOT NULL,
+    code           TEXT,
+    detail_json    TEXT NOT NULL DEFAULT '{}'
+);
+CREATE INDEX IF NOT EXISTS ix_bootstrap_events_session
+    ON worker_bootstrap_events(session_id, event_id);
+
+CREATE TABLE IF NOT EXISTS worker_bootstrap_registration_tokens (
+    token_hash           TEXT PRIMARY KEY,
+    session_id           TEXT NOT NULL REFERENCES worker_bootstrap_sessions(session_id)
+                         ON DELETE CASCADE,
+    expected_instance_id TEXT NOT NULL,
+    expires_at           REAL NOT NULL,
+    used_at              REAL,
+    created_at           REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_bootstrap_tokens_session
+    ON worker_bootstrap_registration_tokens(session_id);
+"""
+
 MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
@@ -849,6 +904,7 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     6: _statements(_MIGRATION_6),
     7: _statements(_MIGRATION_7),
     8: _statements(_MIGRATION_8),
+    9: _statements(_MIGRATION_9),
 }
 
 

@@ -40,6 +40,25 @@ from audit_worker.local_store import LocalJobStore, WorkerStateStore
 from audit_worker.registration import RegistrationRequired, ensure_registered
 
 
+def _bootstrap_secret(args: argparse.Namespace) -> str | None:
+    """Считать registration secret без помещения в argv/process list.
+
+    Флаг со значением оставлен только для обратной совместимости ручного
+    контура. One-click bootstrap всегда использует stdin; одновременно задать
+    оба источника нельзя, чтобы порядок приоритета не прятал ошибку оператора.
+    """
+    from_stdin = bool(getattr(args, "bootstrap_secret_stdin", False))
+    from_argv = getattr(args, "bootstrap_secret", None)
+    if from_stdin and from_argv:
+        raise ValueError("выберите один источник bootstrap secret")
+    if not from_stdin:
+        return from_argv
+    value = sys.stdin.readline().rstrip("\r\n")
+    if not value:
+        raise ValueError("stdin не содержит bootstrap secret")
+    return value
+
+
 def _cmd_register(args: argparse.Namespace) -> int:
     config = load_config(args.root)
     config.ensure_dirs()
@@ -47,7 +66,12 @@ def _cmd_register(args: argparse.Namespace) -> int:
     # Второй этап (обмен claim-secret на токен) секрета регистрации не требует:
     # он уже лежит на диске. Требовать его снова — заставлять оператора
     # держать bootstrap-secret под рукой дольше, чем нужно.
-    if not args.bootstrap_secret and not (
+    try:
+        bootstrap_secret = _bootstrap_secret(args)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    if not bootstrap_secret and not (
         store.read_claim_secret() or store.read_token()
     ):
         print(
@@ -56,7 +80,7 @@ def _cmd_register(args: argparse.Namespace) -> int:
         )
         return 2
     try:
-        identity = ensure_registered(config, bootstrap_secret=args.bootstrap_secret)
+        identity = ensure_registered(config, bootstrap_secret=bootstrap_secret)
     except CenterError as exc:
         print(f"Центр отклонил регистрацию: {exc}", file=sys.stderr)
         return 2
@@ -471,6 +495,11 @@ def main(argv: list[str] | None = None) -> int:
         "--bootstrap-secret",
         default=None,
         help="секрет регистрации; не нужен при повторном вызове после одобрения",
+    )
+    p_reg.add_argument(
+        "--bootstrap-secret-stdin",
+        action="store_true",
+        help="прочитать секрет одной строкой из stdin (для bootstrap; не виден в ps)",
     )
     p_reg.set_defaults(func=_cmd_register)
 

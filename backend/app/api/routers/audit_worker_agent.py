@@ -76,6 +76,7 @@ from backend.app.services.distributed_workers.settings import (
     DistributedWorkersConfigError,
     get_settings,
 )
+from backend.app.services.worker_bootstrap import store as bootstrap_store
 
 router = APIRouter(prefix="/api/v1/worker", tags=["audit-worker-agent"])
 logger = logging.getLogger(__name__)
@@ -248,7 +249,26 @@ async def register(
             detail=decision.message,
             headers={"Retry-After": str(decision.retry_after_sec)},
         )
-    auth.verify_bootstrap_secret(_bearer(authorization))
+    provided_secret = _bearer(authorization)
+    if provided_secret and provided_secret.startswith(bootstrap_store.TOKEN_PREFIX):
+        try:
+            await database.run_db(
+                bootstrap_store.consume_registration_token,
+                provided_secret,
+                instance_id=payload.instance_id,
+                settings=settings,
+            )
+        except bootstrap_store.RegistrationTokenRejected as exc:
+            # Одинаковый ответ для expired/replay/wrong-instance/unknown: API
+            # не раскрывает состояние одноразового токена.
+            raise HTTPException(
+                status_code=401,
+                detail="Неверный или истёкший одноразовый registration token.",
+            ) from exc
+    else:
+        # Legacy manual flow остаётся совместимым. One-click никогда не
+        # использует глобальный секрет: только scoped TTL token выше.
+        auth.verify_bootstrap_secret(provided_secret)
     if payload.protocol_version != settings.protocol_version:
         raise HTTPException(
             status_code=426,

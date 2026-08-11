@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import gzip
 import json
 import os
 import shlex
@@ -155,6 +156,19 @@ REQUIREMENT_FILES = ("requirements-worker.txt", "requirements-worker-pipeline.tx
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _commit_timestamp(repo_root: Path, commit: str) -> str:
+    """Stable timestamp of the immutable source commit, not build wall-clock."""
+    raw = _git(repo_root, "show", "-s", "--format=%ct", commit)
+    try:
+        return datetime.fromtimestamp(int(raw), tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+    except (TypeError, ValueError, OSError):
+        # Non-git source exports may not have commit metadata. Their caller
+        # must pin created_at explicitly to obtain byte reproducibility.
+        return _utc_now()
 
 
 def _sha256_file(path: Path) -> str:
@@ -345,7 +359,7 @@ def build_manifest(
         "pipeline_revision": pipeline_revision,
         "source_commit": commit,
         "source_branch": _git(repo_root, "rev-parse", "--abbrev-ref", "HEAD"),
-        "created_at": created_at or _utc_now(),
+        "created_at": created_at or _commit_timestamp(repo_root, commit),
         "tree_hash": tree_hash(repo_root, files),
         "requirements_hash": requirements_hash(repo_root),
         "compatible_execution_profiles": list(COMPATIBLE_EXECUTION_PROFILES),
@@ -394,22 +408,7 @@ def build_artifact(
 
     manifest_bytes = json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
 
-    # mtime фиксируется, чтобы архив одного и того же дерева был байт-стабилен.
-    with tarfile.open(archive, "w:gz") as tar:
-        for rel in files:
-            info = tar.gettarinfo(str(repo_root / rel), arcname=str(rel))
-            info.uid, info.gid = 0, 0
-            info.uname, info.gname = "", ""
-            info.mtime = 0
-            with (repo_root / rel).open("rb") as handle:
-                tar.addfile(info, handle)
-        meta = tarfile.TarInfo("MANIFEST.json")
-        meta.size = len(manifest_bytes)
-        meta.mtime = 0
-        meta.mode = 0o644
-        import io
-
-        tar.addfile(meta, io.BytesIO(manifest_bytes))
+    write_bundle_archive(repo_root, files, archive, manifest_bytes)
 
     manifest["archive_sha256"] = _sha256_file(archive)
     manifest["archive_bytes"] = archive.stat().st_size
@@ -417,6 +416,34 @@ def build_artifact(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8"
     )
     return BuildResult(archive=archive, manifest_path=manifest_path, manifest=manifest, files=list(files))
+
+
+def write_bundle_archive(
+    repo_root: Path, files: Sequence[Path], archive: Path, manifest_bytes: bytes
+) -> None:
+    """Записать byte-for-byte deterministic tar.gz.
+
+    Одного `TarInfo.mtime=0` недостаточно: `tarfile.open(..., "w:gz")`
+    оставляет текущее время в GZIP header. Явный `GzipFile(mtime=0)` закрывает
+    последнюю зависимость от времени; пустой filename убирает имя output-файла.
+    """
+    with archive.open("wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed:
+            with tarfile.open(fileobj=compressed, mode="w") as tar:
+                for rel in sorted(files):
+                    info = tar.gettarinfo(str(repo_root / rel), arcname=str(rel))
+                    info.uid, info.gid = 0, 0
+                    info.uname, info.gname = "", ""
+                    info.mtime = 0
+                    with (repo_root / rel).open("rb") as handle:
+                        tar.addfile(info, handle)
+                meta = tarfile.TarInfo("MANIFEST.json")
+                meta.size = len(manifest_bytes)
+                meta.mtime = 0
+                meta.mode = 0o644
+                import io
+
+                tar.addfile(meta, io.BytesIO(manifest_bytes))
 
 
 def verify_artifact(archive: Path, manifest_path: Path) -> list[str]:
@@ -544,7 +571,30 @@ else
 fi
 cp -f "$root/incoming/{shlex.quote(manifest_name)}" "$target/MANIFEST.deploy.json"
 chmod -R go-w "$target"
-find "$target" -type f -name '*.json' -newer "$target" -print -quit >/dev/null 2>&1 || true
+python3 - "$target/MANIFEST.deploy.json" "$target" <<'TREE_VERIFY_PY'
+import hashlib, json, sys
+from pathlib import Path, PurePosixPath
+
+manifest_path, root_path = Path(sys.argv[1]), Path(sys.argv[2])
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+digest = hashlib.sha256()
+for raw in sorted(manifest.get("files") or []):
+    rel = PurePosixPath(raw)
+    if rel.is_absolute() or ".." in rel.parts:
+        raise SystemExit("TREE_PATH_INVALID")
+    path = root_path.joinpath(*rel.parts)
+    if not path.is_file() or path.is_symlink():
+        raise SystemExit("TREE_FILE_MISSING " + raw)
+    file_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+    digest.update(raw.encode("utf-8"))
+    digest.update(b" ")
+    digest.update(file_hash.encode("ascii"))
+    digest.update(b"\n")
+actual = "sha256:" + digest.hexdigest()
+if actual != manifest.get("tree_hash"):
+    raise SystemExit("TREE_HASH_MISMATCH")
+print("TREE_OK " + actual)
+TREE_VERIFY_PY
 echo "INSTALL_OK $rel"
 """,
         timeout=900,
