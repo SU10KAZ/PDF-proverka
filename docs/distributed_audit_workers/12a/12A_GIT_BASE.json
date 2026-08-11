@@ -1,0 +1,20 @@
+{
+  "task": "12A Agent Stream Protocol v1",
+  "source_branch": "feat/distributed-audit-workers-clean-userspace-bootstrap",
+  "base_commit": "0fc81cdbcc8f59a2925949b024338c29afbb5d13",
+  "base_subject": "fix(workers): reuse bootstrap selftest source package",
+  "base_committed_at": "2026-08-11T14:31:19+03:00",
+  "branch": "feat/distributed-audit-workers-agent-stream-contract-v1",
+  "worktree": ".claude/worktrees/distributed-audit-workers-agent-stream-contract-v1",
+  "discovery": [
+    "git status --short",
+    "git branch --show-current",
+    "git rev-parse HEAD",
+    "git log --graph --decorate --oneline -50",
+    "git worktree list",
+    "git show-ref --heads | grep distributed-audit-workers"
+  ],
+  "push_performed": false,
+  "merge_performed": false,
+  "reset_clean_rebase_performed": false
+}

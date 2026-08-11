@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "routing_plan_representation": "bounded canonical JSON + schema/version/hash",
+  "operations": [
+    {"operation":"handshake/registration advertisement","http_domain":["RegisterRequest","RegistrationUpdateRequest","ReconcileRequest"],"proto":["AgentHello","CenterHello"],"preserved":["worker_id","instance_id","protocol/revisions","capabilities","active attempts","event cursors"],"excluded":["claim_secret","worker_token"]},
+    {"operation":"heartbeat","http_domain":["HeartbeatRequest","HeartbeatResponse"],"proto":["Heartbeat","CapabilitiesChanged","CenterHello.resume_cursors"],"preserved":["worker state","slots","active attempts","resources","capability revision","contiguous cursors"],"note":"full provider snapshot only hello/change"},
+    {"operation":"poll/claim/job","http_domain":["JobsNextRequest","JobAssignment"],"proto":["JobOffer"],"preserved":["job/attempt/generation","worker/project/version","job type/params","routing plan/hash","revision","package metadata","requirements","lease","event start"],"excluded":["execution_token","source URL"],"note":"stream/mTLS identity and opaque data transfer replace transport credentials in future"},
+    {"operation":"accept/decline","http_domain":["AcceptRequest","RejectRequest"],"proto":["JobAccept","JobDecline"],"preserved":["job/attempt/worker","verified source","planned stages","routing/revision","safe detail"],"improved":"typed decline reason"},
+    {"operation":"progress/events","http_domain":["WorkerEventIn","EventBatchRequest","EventBatchResponse"],"proto":["ProgressUpdate","EventBatch","EventAck"],"preserved":["job/attempt","event id/type/time/schema/payload","monotonic sequence","highest contiguous ACK","duplicate counts"]},
+    {"operation":"cancel","http_domain":["WorkerCommandOut(cancel_attempt)","CommandAckRequest"],"proto":["CancelCommand","CancelAck"],"preserved":["command/job/attempt","reason/deadline","ack time/result"],"improved":"typed monotonic ACK stage"},
+    {"operation":"result","http_domain":["UploadCreateRequest","UploadSessionInfo","UploadCompleteRequest","UploadCompleteResponse"],"proto":["ResultReady","ResultAck","ResultRejected","PackageTransferDescriptor"],"preserved":["job/attempt","transfer/result hashes","size/manifest/compression","routing/revision","validation","retention"],"excluded":["package bytes","endpoint URL"]}
+  ],
+  "tests": "tests/test_agent_stream_protocol_v1.py"
+}

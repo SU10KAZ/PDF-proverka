@@ -1,0 +1,185 @@
+syntax = "proto3";
+
+package auditmanager.agent_stream.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Values deliberately mirror backend.app.models.distributed_workers.JobState.
+enum JobState {
+  JOB_STATE_UNSPECIFIED = 0;
+  JOB_STATE_CREATED = 1;
+  JOB_STATE_ASSIGNED = 2;
+  JOB_STATE_SOURCE_UPLOADING = 3;
+  JOB_STATE_SOURCE_READY = 4;
+  JOB_STATE_ACCEPTED_BY_WORKER = 5;
+  JOB_STATE_RUNNING = 6;
+  JOB_STATE_COMPLETED_LOCALLY = 7;
+  JOB_STATE_RESULT_UPLOADING = 8;
+  JOB_STATE_RESULT_RECEIVED = 9;
+  JOB_STATE_VALIDATING = 10;
+  JOB_STATE_COMPLETED = 11;
+  JOB_STATE_FAILED = 12;
+  JOB_STATE_CANCEL_REQUESTED = 13;
+  JOB_STATE_CANCELLED = 14;
+  JOB_STATE_SUPERSEDED_RESULT_RECEIVED = 15;
+}
+
+enum WorkerState {
+  WORKER_STATE_UNSPECIFIED = 0;
+  WORKER_STATE_UNREGISTERED = 1;
+  WORKER_STATE_PENDING_APPROVAL = 2;
+  WORKER_STATE_IDLE = 3;
+  WORKER_STATE_BUSY = 4;
+  WORKER_STATE_DEGRADED = 5;
+  WORKER_STATE_DRAINING = 6;
+  WORKER_STATE_DRAINED = 7;
+  WORKER_STATE_REVOKED = 8;
+}
+
+enum ProviderAvailability {
+  PROVIDER_AVAILABILITY_UNSPECIFIED = 0;
+  PROVIDER_AVAILABILITY_AVAILABLE = 1;
+  PROVIDER_AVAILABILITY_UNAVAILABLE = 2;
+  PROVIDER_AVAILABILITY_DEGRADED = 3;
+  PROVIDER_AVAILABILITY_ACTION_REQUIRED = 4;
+  PROVIDER_AVAILABILITY_DISABLED = 5;
+}
+
+enum PackageDirection {
+  PACKAGE_DIRECTION_UNSPECIFIED = 0;
+  PACKAGE_DIRECTION_CENTER_TO_AGENT = 1;
+  PACKAGE_DIRECTION_AGENT_TO_CENTER = 2;
+}
+
+enum PackageTransferProtocol {
+  PACKAGE_TRANSFER_PROTOCOL_UNSPECIFIED = 0;
+  PACKAGE_TRANSFER_PROTOCOL_HTTPS_RESUMABLE_V1 = 1;
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_PROTOCOL_VERSION_UNSUPPORTED = 1;
+  ERROR_CODE_PROTOCOL_VIOLATION = 2;
+  ERROR_CODE_UNAUTHORIZED = 3;
+  ERROR_CODE_STALE_CONNECTION = 4;
+  ERROR_CODE_REVISION_MISMATCH = 5;
+  ERROR_CODE_POLICY_MISMATCH = 6;
+  ERROR_CODE_INVALID_MESSAGE = 7;
+  ERROR_CODE_MESSAGE_TOO_LARGE = 8;
+  ERROR_CODE_BACKPRESSURE = 9;
+  ERROR_CODE_JOB_CONFLICT = 10;
+  ERROR_CODE_INTERNAL_SAFE = 11;
+}
+
+// Canonical JSON is used only where an existing, independently versioned
+// domain schema is already authoritative (routing plans and bounded event
+// metadata). Application adapters MUST validate schema and size before use.
+message CanonicalJson {
+  string schema = 1;
+  uint32 schema_version = 2;
+  bytes canonical_json = 3;
+  string sha256 = 4;
+  reserved 5 to 9;
+}
+
+message ErrorStatus {
+  ErrorCode code = 1;
+  string safe_message = 2;
+  bool retryable = 3;
+  string correlation_id = 4;
+  reserved 5 to 9;
+}
+
+message AttemptRef {
+  string job_id = 1;
+  string attempt_id = 2;
+  uint32 attempt_number = 3;
+  uint64 assignment_generation = 4;
+  JobState state = 5;
+  string stage_id = 6;
+  uint64 last_written_event_sequence = 7;
+  uint64 last_acked_event_sequence = 8;
+  google.protobuf.Timestamp started_at = 9;
+  bool result_ready = 10;
+  reserved 11 to 19;
+}
+
+message EventCursor {
+  string job_id = 1;
+  string attempt_id = 2;
+  uint64 highest_contiguous_sequence = 3;
+  reserved 4 to 9;
+}
+
+message ProviderCapabilitySnapshot {
+  string provider = 1;
+  repeated string capabilities = 2;
+  ProviderAvailability availability = 3;
+  string safe_status = 4;
+  string account_group_id = 5;
+  string account_kind = 6;
+  bool model_report_supported = 7;
+  reserved 8 to 15;
+}
+
+message CapabilitySnapshot {
+  string revision = 1;
+  string sha256 = 2;
+  uint32 provider_policy_version = 3;
+  string provider_policy_sha256 = 4;
+  repeated string job_types = 5;
+  repeated string compressions = 6;
+  repeated string routing_compatibility = 7;
+  repeated ProviderCapabilitySnapshot providers = 8;
+  bool routing_plan_v1 = 9;
+  bool accepting_jobs = 10;
+  uint32 max_verified_slots = 11;
+  uint64 max_package_bytes = 12;
+  reserved 13 to 19;
+}
+
+message ResourceSummary {
+  uint64 disk_total_bytes = 1;
+  uint64 disk_free_bytes = 2;
+  uint64 jobs_bytes = 3;
+  uint64 unconfirmed_results_bytes = 4;
+  uint32 running_processes = 5;
+  uint32 active_local_jobs = 6;
+  string disk_level = 7;
+  string executor_status = 8;
+  google.protobuf.Timestamp sampled_at = 9;
+  reserved 10 to 15;
+}
+
+message PackageTransferDescriptor {
+  string transfer_id = 1;
+  PackageDirection direction = 2;
+  PackageTransferProtocol protocol = 3;
+  string package_type = 4;
+  uint64 size_bytes = 5;
+  string sha256 = 6;
+  string tree_hash = 7;
+  string manifest_hash = 8;
+  uint32 manifest_version = 9;
+  string compression = 10;
+  uint32 chunk_size_bytes = 11;
+  // No URL or credentials: the HTTP data-plane endpoint is derived from
+  // center configuration plus this opaque transfer_id.
+  reserved 12 to 19;
+}
+
+message RoutingPlanReference {
+  string routing_plan_id = 1;
+  uint32 schema_version = 2;
+  string routing_plan_hash = 3;
+  CanonicalJson canonical_plan = 4;
+  reserved 5 to 9;
+}
+
+message ProviderRequirement {
+  string provider = 1;
+  string capability = 2;
+  repeated string allowed_stages = 3;
+  uint32 max_inferences = 4;
+  reserved 5 to 9;
+}

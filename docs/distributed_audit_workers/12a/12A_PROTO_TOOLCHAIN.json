@@ -1,0 +1,16 @@
+{
+  "purpose": "development-only protobuf compilation and contract tests",
+  "requirements_file": "requirements-proto.txt",
+  "pins": {"grpcio-tools":"1.82.1","grpcio":"1.82.1","protobuf":"7.35.1"},
+  "system_protoc_required": false,
+  "generation_command": "PYTHONPATH=/tmp/agent-stream-proto-tools-exact python3 scripts/generate_agent_stream_proto.py",
+  "generated": [
+    "contracts/agent_stream/v1/common_pb2.py",
+    "contracts/agent_stream/v1/agent_stream_pb2.py",
+    "contracts/agent_stream/v1/agent_stream_v1.desc"
+  ],
+  "descriptor_sha256": "b17f857c47e5ce904a6b6283d8b1e1c2d74b31ce4fbd6bc728823b58c0f9e324",
+  "grpc_runtime_stub_generated": false,
+  "runtime_requirements_modified": false,
+  "policy": "Generated message bindings and service descriptor are committed; no live grpc server/client dependency is enabled."
+}
