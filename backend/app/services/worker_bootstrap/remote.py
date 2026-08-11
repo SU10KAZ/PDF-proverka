@@ -496,7 +496,15 @@ echo CONFIG_OK
                     "&& echo claude_auth=ready || echo claude_auth=action_required"
                 )
             else:
-                script.append('[ -x "$p" ] && timeout 40 "$p" login status 2>/dev/null | grep -qi "logged in" && echo codex_auth=ready || echo codex_auth=action_required')
+                # `codex login status` defines authentication through its exit
+                # code.  Current Codex releases print the human-readable
+                # confirmation to stderr, so grepping stdout produces a false
+                # negative even though the command returned success.
+                script.append(
+                    'if [ -x "$p" ] && timeout 40 "$p" login status '
+                    '>/dev/null 2>&1; then echo codex_auth=ready; '
+                    'else echo codex_auth=action_required; fi'
+                )
         if "openrouter" in requested:
             credential = shlex.quote(self.request.install_root + "/data/providers/openrouter/home/.openrouter/credentials.json")
             script.append(

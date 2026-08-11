@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import time
@@ -736,6 +737,46 @@ def test_rollback_snapshots_and_restores_release_config(
     assert "worker.env.absent" in combined
     assert "provider_policy.json.absent" in combined
     assert "install -m 0600" in combined
+
+
+def test_codex_status_uses_success_exit_code_when_message_is_on_stderr(
+    settings, bundle, tmp_path, monkeypatch
+):
+    """Codex 0.147 reports a valid ChatGPT login on stderr with exit code 0."""
+    from backend.app.services.worker_bootstrap.remote import SSHBootstrapRemote
+
+    home = tmp_path / "worker-home"
+    codex = home / ".local" / "bin" / "codex"
+    codex.parent.mkdir(parents=True)
+    codex.write_text(
+        "#!/bin/sh\n"
+        "if [ \"$1\" = --version ]; then echo 'codex-cli 0.147.0'; exit 0; fi\n"
+        "if [ \"$1 $2\" = 'login status' ]; then "
+        "echo 'Logged in using ChatGPT' >&2; exit 0; fi\n"
+        "exit 2\n",
+        encoding="utf-8",
+    )
+    codex.chmod(0o755)
+    remote = SSHBootstrapRemote(
+        request=request_for(bundle, providers=["codex"]),
+        session_id="wbs_codex_status_stderr",
+        settings=settings,
+    )
+
+    def run_locally(script, **_kwargs):
+        return subprocess.run(
+            ["bash"],
+            input=script,
+            capture_output=True,
+            text=True,
+            env={**os.environ, "HOME": str(home)},
+            check=False,
+        )
+
+    monkeypatch.setattr(remote, "_run", run_locally)
+    result = remote.provider_status()
+    assert result["providers"]["codex_auth"] == "ready"
+    assert result["action_required"] == []
 
 
 def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):
