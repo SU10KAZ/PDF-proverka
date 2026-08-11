@@ -136,8 +136,23 @@ def compute_cache_key(
 
 
 def cache_dir_for_output(output_dir: Path) -> Path:
-    """<project>/_output/_stage02_paid_response_cache/."""
-    return Path(output_dir) / CACHE_DIRNAME
+    """Каталог кэша для данного output_dir. Переживает смену прогона.
+
+    Legacy-раскладка: ``<project>/_output/_stage02_paid_response_cache/`` —
+    один каталог на проект, как и задумано в docstring модуля.
+
+    v2-раскладка: ``output_dir`` — это ``<version>/03_analysis/runs/<run_id>``,
+    то есть ОДНОРАЗОВЫЙ каталог: каждый запуск этапа получает новый run_id.
+    Класть кэш внутрь него означало сделать его per-run — ровно то, от чего
+    кэш и защищает: перезапуск после сбоя платил за уже оплаченные блоки
+    заново (11.08: Stage 01 упал на 59-м из 135 блоков, и эти 59 ответов
+    остались заперты в мёртвом run-каталоге). Поднимаем на уровень
+    ``03_analysis`` — он общий для всех прогонов версии.
+    """
+    out = Path(output_dir)
+    if out.parent.name == "runs" and out.parent.parent.name == "03_analysis":
+        return out.parent.parent / CACHE_DIRNAME
+    return out / CACHE_DIRNAME
 
 
 def cache_file_for_key(output_dir: Path, cache_key: str) -> Path:

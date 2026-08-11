@@ -212,3 +212,72 @@ def test_double_hit_simulates_retry_savings(tmp_path):
     # Контентно совпадает с первым ответом:
     assert second["raw_content"] == '{"findings":[]}'
     assert second["input_tokens"] == 40517
+
+
+# ── Расположение каталога кэша (v2 vs legacy) ────────────────────────────────
+# 11.08.2026: в v2 output_dir = <version>/03_analysis/runs/<run_id> — новый
+# каталог на КАЖДЫЙ запуск этапа. Кэш, лежащий внутри него, между прогонами не
+# переиспользуется: перезапуск после сбоя платил за уже оплаченные блоки
+# заново (Stage 01 упал на 59-м из 135 блоков — 59 ответов остались в мёртвом
+# run-каталоге; всего по корпусу так заперто 22 219 ответов в 428 каталогах).
+
+
+def test_cache_dir_is_shared_across_v2_runs(tmp_path):
+    """Два прогона одной версии видят один каталог кэша."""
+    analysis = tmp_path / "versions" / "v001" / "03_analysis"
+    run_a = analysis / "runs" / "08c82eb5-9065-46ec-9e71-14f63f0ffb93"
+    run_b = analysis / "runs" / "ffe4297d-ac81-4b5a-b085-da76683277d2"
+    run_a.mkdir(parents=True)
+    run_b.mkdir(parents=True)
+
+    dir_a = cache_mod.cache_dir_for_output(run_a)
+    dir_b = cache_mod.cache_dir_for_output(run_b)
+
+    assert dir_a == dir_b
+    assert dir_a == analysis / cache_mod.CACHE_DIRNAME
+    # И главное — не внутри одноразового прогона.
+    assert run_a not in dir_a.parents
+
+
+def test_cache_survives_run_change(tmp_path):
+    """Ответ, оплаченный в упавшем прогоне, поднимается в следующем."""
+    analysis = tmp_path / "versions" / "v001" / "03_analysis"
+    crashed_run = analysis / "runs" / "run-упал"
+    fresh_run = analysis / "runs" / "run-перезапуск"
+    crashed_run.mkdir(parents=True)
+    fresh_run.mkdir(parents=True)
+    cache_key = _make_key()
+
+    cache_mod.save_to_cache(
+        crashed_run,
+        cache_key,
+        response={"ok": True, "raw_content": '{"findings":[]}'},
+        model="openai/gpt-5.4",
+        block_id="blk_1",
+        original_cost_usd=0.3227,
+    )
+
+    restored = cache_mod.try_load_cached(fresh_run, cache_key)
+    assert restored is not None
+    assert restored["from_cache"] is True
+    assert restored["cost_usd"] == 0.0
+
+
+def test_legacy_output_layout_keeps_cache_in_place(tmp_path):
+    """Legacy <project>/_output/ трогать нельзя — там кэш и так per-project."""
+    legacy_output = tmp_path / "projects" / "DOC-1" / "_output"
+    legacy_output.mkdir(parents=True)
+
+    assert cache_mod.cache_dir_for_output(legacy_output) == (
+        legacy_output / cache_mod.CACHE_DIRNAME
+    )
+
+
+def test_runs_dir_outside_03_analysis_is_not_hoisted(tmp_path):
+    """Совпадение имени «runs» вне 03_analysis не должно уводить кэш вверх."""
+    unrelated = tmp_path / "что-то" / "runs" / "r1"
+    unrelated.mkdir(parents=True)
+
+    assert cache_mod.cache_dir_for_output(unrelated) == (
+        unrelated / cache_mod.CACHE_DIRNAME
+    )

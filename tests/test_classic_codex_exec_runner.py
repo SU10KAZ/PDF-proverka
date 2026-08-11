@@ -535,6 +535,290 @@ def test_codex_json_retry_rejects_transport_and_limit_errors(text, error_message
     assert claude_runner._codex_json_broken(result) is False
 
 
+# ── Транзиентные отказы провайдера (11.08: "Selected model is at capacity") ──
+# Один такой отказ на 59-м из 135 блоков ронял весь Stage 01
+# (STAGE01_LEG_FAILURE_THRESHOLD=1). Внизу повтора не было вовсе, а верхний
+# уровень (_codex_json_broken) транспортные сбои намеренно не ретраит.
+
+_AT_CAPACITY_JSONL = (
+    '{"type":"thread.started","thread_id":"t-1"}\n'
+    '{"type":"turn.started"}\n'
+    '{"type":"error","message":"Selected model is at capacity. '
+    'Please try a different model."}\n'
+    '{"type":"turn.failed","error":{"message":"Selected model is at capacity. '
+    'Please try a different model."}}'
+)
+
+
+@pytest.fixture
+def _no_backoff_sleep(monkeypatch):
+    """Backoff не должен растягивать тесты — пауза заменяется на счётчик."""
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    slept: list[float] = []
+
+    async def fake_sleep(delay):
+        slept.append(delay)
+
+    monkeypatch.setattr(codex_runner.asyncio, "sleep", fake_sleep)
+    return slept
+
+
+@pytest.mark.parametrize(
+    ("exit_code", "stdout", "stderr", "expected"),
+    [
+        (1, _AT_CAPACITY_JSONL, "", "at capacity"),
+        (1, "", "Error: 429 Too Many Requests", "too many requests"),
+        (1, "", "upstream returned status 503", "http_503"),
+        (1, "", "stream error: connection reset by peer", "stream error"),
+        # Лимит подписки повторять нельзя: повтор сожжёт остаток квоты и
+        # оттянет честное падение стадии.
+        (1, '{"error":{"message":"usage limit reached"}}', "", ""),
+        (1, "", "401 unauthorized", ""),
+        # Таймаут стадии — не отказ провайдера.
+        (1, "", "[TIMEOUT] Процесс превысил таймаут 600 сек.", ""),
+        # Успешный запуск не разбираем вовсе.
+        (0, _AT_CAPACITY_JSONL, "", ""),
+    ],
+)
+def test_transient_failure_reason_classifies_provider_outages(
+    exit_code, stdout, stderr, expected
+):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    assert codex_runner._transient_failure_reason(exit_code, stdout, stderr) == expected
+
+
+@pytest.mark.asyncio
+async def test_codex_json_retries_at_capacity_and_succeeds(
+    monkeypatch, _no_backoff_sleep
+):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "2")
+    calls = []
+
+    async def fake_run_command(cmd, **kwargs):
+        calls.append(cmd)
+        out_file = Path(cmd[cmd.index("-o") + 1])
+        if len(calls) == 1:
+            # Провайдер перегружен: exit 1, файл `-o` не записан.
+            return 1, _AT_CAPACITY_JSONL, ""
+        out_file.write_text('{"findings": []}', encoding="utf-8")
+        return 0, '{"type":"turn.completed","usage":{"input_tokens":10}}', ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-CAP",
+        model="codex/gpt-5.6-sol",
+    )
+
+    assert len(calls) == 2
+    assert result.is_error is False
+    assert result.json_data == {"findings": []}
+    assert len(_no_backoff_sleep) == 1
+
+
+@pytest.mark.asyncio
+async def test_codex_json_reports_attempts_when_outage_outlives_retries(
+    monkeypatch, _no_backoff_sleep
+):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "2")
+    calls = []
+
+    async def fake_run_command(cmd, **kwargs):
+        calls.append(cmd)
+        return 1, _AT_CAPACITY_JSONL, ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-CAP",
+        model="codex/gpt-5.6-sol",
+    )
+
+    assert len(calls) == 3
+    assert result.is_error is True
+    # Признак затяжной перегрузки доезжает до leg_failures.error и до UI.
+    assert result.error_message == (
+        "codex_exec_exit_1; codex_json_not_found; attempts_3"
+    )
+
+
+@pytest.mark.asyncio
+async def test_codex_json_does_not_retry_usage_limit(monkeypatch, _no_backoff_sleep):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "2")
+    calls = []
+
+    async def fake_run_command(cmd, **kwargs):
+        calls.append(cmd)
+        return 1, "", '{"error":{"message":"usage limit reached"}}'
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-LIMIT",
+        model="codex/gpt-5.6-sol",
+    )
+
+    assert len(calls) == 1
+    assert _no_backoff_sleep == []
+    assert result.error_message == "codex_exec_exit_1; codex_json_not_found"
+
+
+@pytest.mark.asyncio
+async def test_codex_json_retry_disabled_by_env(monkeypatch, _no_backoff_sleep):
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "0")
+    calls = []
+
+    async def fake_run_command(cmd, **kwargs):
+        calls.append(cmd)
+        return 1, _AT_CAPACITY_JSONL, ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-OFF",
+        model="codex/gpt-5.6-sol",
+    )
+
+    assert len(calls) == 1
+    assert result.error_message == "codex_exec_exit_1; codex_json_not_found"
+
+
+@pytest.mark.asyncio
+async def test_codex_json_retry_clears_stale_out_file(monkeypatch, _no_backoff_sleep):
+    """Мусор от прошлой попытки не должен пройти как свежий ответ."""
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "1")
+    seen = []
+
+    async def fake_run_command(cmd, **kwargs):
+        out_file = Path(cmd[cmd.index("-o") + 1])
+        seen.append(out_file.read_text(encoding="utf-8"))
+        if len(seen) == 1:
+            # Оборванный ответ + отказ провайдера в одном флаконе.
+            out_file.write_text('{"findings": [', encoding="utf-8")
+            return 1, _AT_CAPACITY_JSONL, ""
+        return 1, _AT_CAPACITY_JSONL, ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    result = await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-STALE",
+        model="codex/gpt-5.6-sol",
+    )
+
+    assert seen == ["", ""]
+    assert result.is_error is True
+    assert result.json_data is None
+
+
+@pytest.mark.asyncio
+async def test_codex_exec_retries_at_capacity(monkeypatch, _no_backoff_sleep):
+    """Агентный путь (optimization и др.) страдал тем же отказом."""
+    import backend.app.services.llm.codex_runner as codex_runner
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "2")
+    calls = []
+
+    async def fake_run_command(cmd, **kwargs):
+        calls.append(cmd)
+        if len(calls) == 1:
+            return 1, _AT_CAPACITY_JSONL, ""
+        Path(cmd[cmd.index("-o") + 1]).write_text("ГОТОВО", encoding="utf-8")
+        return 0, "ok", ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    exit_code, _combined, result = await codex_runner.run_codex_exec(
+        "ЗАДАЧА",
+        timeout=60,
+        stage="optimization",
+        project_id="DOC-OPT",
+        model="codex/gpt-5.4",
+    )
+
+    assert len(calls) == 2
+    assert exit_code == 0
+    assert result.is_error is False
+    assert result.result_text == "ГОТОВО"
+
+
+@pytest.mark.asyncio
+async def test_codex_retry_releases_budget_slots_between_attempts(
+    monkeypatch, _no_backoff_sleep
+):
+    """Слот codex_cli не должен удерживаться во время паузы backoff."""
+    import backend.app.services.llm.codex_runner as codex_runner
+    from backend.app.services.common import resource_budget
+
+    monkeypatch.setattr(codex_runner, "find_codex_cli", lambda: "/usr/bin/codex")
+    monkeypatch.setenv("CODEX_TRANSIENT_RETRIES", "1")
+    held: list[int] = []
+    depth = {"n": 0}
+
+    class _FakeSlot:
+        def __init__(self, name):
+            self.name = name
+
+        async def __aenter__(self):
+            if self.name == "codex_cli":
+                depth["n"] += 1
+                held.append(depth["n"])
+
+        async def __aexit__(self, *_exc):
+            if self.name == "codex_cli":
+                depth["n"] -= 1
+
+    monkeypatch.setattr(resource_budget, "slot", lambda name: _FakeSlot(name))
+
+    async def fake_run_command(cmd, **kwargs):
+        return 1, _AT_CAPACITY_JSONL, ""
+
+    monkeypatch.setattr(codex_runner, "run_command", fake_run_command)
+
+    await codex_runner.run_codex_json_messages(
+        [{"role": "user", "content": "Верни JSON."}],
+        timeout=60,
+        stage="block_analysis",
+        project_id="DOC-SLOT",
+        model="codex/gpt-5.6-sol",
+    )
+
+    # Две попытки, и ни разу слот не был захвачен вложенно (глубина всегда 1).
+    assert held == [1, 1]
+
+
 @pytest.mark.asyncio
 async def test_run_findings_merge_codex_applies_targeted_passes(monkeypatch, tmp_path):
     import backend.app.pipeline.stages.prepare.codex_targeted_findings as targeted

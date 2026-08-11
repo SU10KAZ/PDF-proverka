@@ -8,9 +8,12 @@ workspace-write, not read-only.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
+import random
+import re
 import shutil
 import tempfile
 import time
@@ -38,6 +41,180 @@ _ALLOWED_REASONING_EFFORTS = {"minimal", "low", "medium", "high", "xhigh", "max"
 _NORMS_MCP_PREFIX = "mcp__norms__"
 _NORMS_MCP_PYTHON = ROOT_DIR / "norms" / "tools" / "venv" / "bin" / "python"
 _NORMS_MCP_SERVER = ROOT_DIR / "norms" / "tools" / "mcp_server.py"
+
+# ── Транзиентные отказы провайдера ──────────────────────────────────────────
+# 11.08: `codex exec --model gpt-5.6-sol` вернул за 6.9 с
+#   {"type":"error","message":"Selected model is at capacity. Please try a
+#    different model."}
+# и exit 1 без `-o` файла. Одна такая секундная перегрузка у провайдера роняла
+# весь Stage 01 (STAGE01_LEG_FAILURE_THRESHOLD=1): 59 обработанных блоков,
+# 17.5 минут и $2.26 уходили в никуда. Повтор — единственное, чего не хватало:
+# ни codex_runner, ни стадия не пытались запустить упавшую ногу второй раз.
+_CODEX_RETRY_ATTEMPTS_ENV = "CODEX_TRANSIENT_RETRIES"
+_CODEX_RETRY_DELAY_ENV = "CODEX_TRANSIENT_RETRY_BASE_DELAY_S"
+_DEFAULT_RETRIES = 2
+_DEFAULT_RETRY_BASE_DELAY_S = 3.0
+
+# Повтор помогает только когда отказ временный. Всё, что означает исчерпанную
+# квоту или неверную конфигурацию, повторять НЕЛЬЗЯ: это сожжёт остаток лимита
+# подписки втрое быстрее и задержит честное падение стадии. Стоп-лист
+# проверяется ПЕРВЫМ и перекрывает список транзиентов.
+_NON_RETRYABLE_MARKERS = (
+    "usage limit reached",
+    "quota",
+    "insufficient_quota",
+    "billing",
+    "unauthorized",
+    "not authenticated",
+    "invalid api key",
+    "model_not_found",
+    "unsupported model",
+    "permission denied",
+)
+
+_TRANSIENT_MARKERS = (
+    "at capacity",
+    "overloaded",
+    "rate limit",
+    "rate_limit",
+    "too many requests",
+    "service unavailable",
+    "temporarily unavailable",
+    "bad gateway",
+    "internal server error",
+    "server_error",
+    "stream error",
+    "stream disconnected",
+    "connection reset",
+    "connection refused",
+    "connection closed",
+    "econnreset",
+    "etimedout",
+)
+
+# Коды HTTP ищем отдельно: голое «503» в тексте промпта не встречается, а вот
+# формулировки провайдера («status 503», «error 429») варьируются от версии CLI.
+_TRANSIENT_STATUS_RE = re.compile(r"\b(429|500|502|503|504|529)\b")
+
+
+def _codex_retry_attempts() -> int:
+    """Сколько ДОПОЛНИТЕЛЬНЫХ попыток после первой. 0 = поведение до фикса."""
+    raw = (os.environ.get(_CODEX_RETRY_ATTEMPTS_ENV) or "").strip()
+    if not raw:
+        return _DEFAULT_RETRIES
+    try:
+        return max(0, min(5, int(raw)))
+    except ValueError:
+        return _DEFAULT_RETRIES
+
+
+def _codex_retry_base_delay() -> float:
+    raw = (os.environ.get(_CODEX_RETRY_DELAY_ENV) or "").strip()
+    if not raw:
+        return _DEFAULT_RETRY_BASE_DELAY_S
+    try:
+        return max(0.0, min(60.0, float(raw)))
+    except ValueError:
+        return _DEFAULT_RETRY_BASE_DELAY_S
+
+
+def _transient_failure_reason(exit_code: int, stdout: str, stderr: str) -> str:
+    """Маркер транзиентного отказа провайдера или "" если повторять не нужно.
+
+    Смотрим и stdout (там `--json` печатает события ``{"type":"error",...}``),
+    и stderr (туда codex кладёт тело ошибки API). Успешный exit не разбираем:
+    отказ провайдера всегда роняет процесс.
+    """
+    if exit_code == 0:
+        return ""
+    haystack = f"{stdout or ''}\n{stderr or ''}".lower()
+    if not haystack.strip():
+        return ""
+    # Таймаут стадии не транзиент провайдера: повтор удвоил бы и без того
+    # исчерпанный бюджет времени блока.
+    if "[timeout]" in haystack:
+        return ""
+    for marker in _NON_RETRYABLE_MARKERS:
+        if marker in haystack:
+            return ""
+    for marker in _TRANSIENT_MARKERS:
+        if marker in haystack:
+            return marker
+    status = _TRANSIENT_STATUS_RE.search(haystack)
+    if status:
+        return f"http_{status.group(1)}"
+    return ""
+
+
+async def _run_codex_with_transient_retry(
+    cmd: list[str],
+    *,
+    prompt: str,
+    timeout: int,
+    on_output: OnOutput,
+    env_overrides: dict,
+    project_id: str,
+    mcp_slot: str,
+    out_file: Path,
+    label: str,
+    succeeded: Callable[[int, str, str], bool],
+) -> tuple[int, str, str, int, str]:
+    """Запустить `codex exec`, повторяя ТОЛЬКО транзиентные отказы провайдера.
+
+    Возвращает ``(exit_code, stdout, stderr, attempts, last_transient_reason)``.
+    ``succeeded`` решает, считать ли попытку удачной: JSON-путь считает удачей
+    разобранный ответ, агентный — нулевой exit. Слоты resource_budget берутся
+    и отпускаются на КАЖДУЮ попытку: держать дефицитный слот во время паузы
+    backoff — верный способ подвесить соседние проекты.
+    """
+    attempts_allowed = 1 + _codex_retry_attempts()
+    base_delay = _codex_retry_base_delay()
+    exit_code, stdout, stderr = 1, "", ""
+    reason = ""
+
+    for attempt in range(1, attempts_allowed + 1):
+        if attempt > 1:
+            # Файл `-o` от прошлой попытки обнуляем: иначе успех-проверка
+            # прочитала бы чужой (в т.ч. частичный) ответ как свежий.
+            try:
+                out_file.write_text("", encoding="utf-8")
+            except OSError:
+                pass
+        async with resource_budget.slot(mcp_slot), resource_budget.slot("codex_cli"):
+            exit_code, stdout, stderr = await run_command(
+                cmd,
+                input_text=prompt,
+                timeout=timeout,
+                on_output=on_output,
+                env_overrides=env_overrides,
+                cwd=str(ROOT_DIR),
+                project_id=project_id,
+            )
+        if succeeded(exit_code, stdout, stderr):
+            if attempt > 1:
+                logger.warning(
+                    "codex_transient_retry: %s — успех с попытки %d/%d",
+                    label, attempt, attempts_allowed,
+                )
+            return exit_code, stdout, stderr, attempt, ""
+
+        reason = _transient_failure_reason(exit_code, stdout, stderr)
+        if not reason or attempt >= attempts_allowed:
+            return exit_code, stdout, stderr, attempt, reason
+
+        # Экспонента + джиттер: 20 параллельных ног, синхронно ушедших в
+        # повтор, ударили бы по перегруженной модели одной волной.
+        delay = base_delay * (2 ** (attempt - 1))
+        delay += random.uniform(0.0, delay * 0.5)
+        logger.warning(
+            "codex_transient_retry: %s — попытка %d/%d провалена (%s, exit %s), "
+            "повтор через %.1f с",
+            label, attempt, attempts_allowed, reason, exit_code, delay,
+        )
+        if delay > 0:
+            await asyncio.sleep(delay)
+
+    return exit_code, stdout, stderr, attempts_allowed, reason
 
 
 def find_codex_cli() -> str | None:
@@ -473,16 +650,20 @@ async def run_codex_exec(
     # claude_runner — расхождение дало бы взаимную блокировку.
     _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
     try:
-        async with resource_budget.slot(_mcp_slot), resource_budget.slot("codex_cli"):
-            exit_code, stdout, stderr = await run_command(
-                cmd,
-                input_text=prompt,
-                timeout=timeout,
-                on_output=on_output,
-                env_overrides=env_overrides,
-                cwd=str(ROOT_DIR),
-                project_id=project_id,
-            )
+        exit_code, stdout, stderr, _attempts, _reason = await _run_codex_with_transient_retry(
+            cmd,
+            prompt=prompt,
+            timeout=timeout,
+            on_output=on_output,
+            env_overrides=env_overrides,
+            project_id=project_id,
+            mcp_slot=_mcp_slot,
+            out_file=out_file,
+            label=f"{stage or 'audit'}/{resolved_model}/{project_id or '-'}",
+            # Агентный путь пишет артефакты сам: единственный признак успеха —
+            # нулевой exit.
+            succeeded=lambda code, _out, _err: code == 0,
+        )
         duration_ms = int((time.monotonic() - started) * 1000)
         try:
             final_text = out_file.read_text(encoding="utf-8", errors="replace")
@@ -600,17 +781,39 @@ async def run_codex_json_messages(
     # (hold-and-wait). Порядок одинаков во всех точках захвата, включая
     # claude_runner — расхождение дало бы взаимную блокировку.
     _mcp_slot = "norms_mcp" if "mcp__" in (allowed_tools or "") else "_none"
+
+    def _json_attempt_ok(code: int, out: str, _err: str) -> bool:
+        """Успех = разобранный JSON, ровно по критерию ниже по функции.
+
+        Повторять надо именно то, что стадия считает провалом, иначе ретрай
+        либо не сработает там, где нужен, либо съест попытку на успехе.
+        """
+        try:
+            attempt_text = out_file.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            attempt_text = ""
+        if _try_parse_json_content(attempt_text) is not None:
+            return True
+        if code != 0:
+            # JSON из stdout при ненулевом exit ниже помечается
+            # json_from_stdout_untrusted — то есть провал.
+            return False
+        _usage, attempt_message, _thread = _parse_codex_jsonl(out)
+        return _try_parse_json_content(attempt_message) is not None
+
     try:
-        async with resource_budget.slot(_mcp_slot), resource_budget.slot("codex_cli"):
-            exit_code, stdout, stderr = await run_command(
-                cmd,
-                input_text=prompt,
-                timeout=timeout,
-                on_output=on_output,
-                env_overrides=env_overrides,
-                cwd=str(ROOT_DIR),
-                project_id=project_id,
-            )
+        exit_code, stdout, stderr, attempts, _reason = await _run_codex_with_transient_retry(
+            cmd,
+            prompt=prompt,
+            timeout=timeout,
+            on_output=on_output,
+            env_overrides=env_overrides,
+            project_id=project_id,
+            mcp_slot=_mcp_slot,
+            out_file=out_file,
+            label=f"{stage or 'json'}/{resolved_model}/{project_id or '-'}",
+            succeeded=_json_attempt_ok,
+        )
         duration_ms = int((time.monotonic() - started) * 1000)
         try:
             final_text = out_file.read_text(encoding="utf-8", errors="replace")
@@ -642,6 +845,10 @@ async def run_codex_json_messages(
                 is_error = True
                 json_data = None
                 error = f"codex_exec_exit_{exit_code}; json_from_stdout_untrusted"
+        if error and attempts > 1:
+            # Видно в leg_failures.error и в UI: отказ пережил N попыток —
+            # значит перегрузка у провайдера не секундная, а затяжная.
+            error = f"{error}; attempts_{attempts}"
         return LLMResult(
             text=response_text or stdout or stderr or "",
             json_data=json_data,
