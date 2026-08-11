@@ -526,6 +526,37 @@ async def test_initial_enrollment_uses_protected_issuer_socket(
     await service.stop()
 
 
+@pytest.mark.asyncio
+async def test_issuer_startup_migrates_fresh_registry(tmp_path, monkeypatch):
+    pki = Pki(tmp_path / "fresh-pki")
+    issuer_dir = tmp_path / "fresh-issuer"
+    issuer_cert = _write(
+        issuer_dir / "issuing.pem",
+        pki.issuing_cert.public_bytes(serialization.Encoding.PEM),
+    )
+    issuer_key = _write(issuer_dir / "issuing.key", _pem_key(pki.issuing_key), 0o600)
+    issuer_chain = _write(issuer_dir / "chain.pem", pki.chain_pem)
+    data_dir = tmp_path / "never-started-center"
+    socket_path = tmp_path / "fresh-run" / "issuer.sock"
+    monkeypatch.setenv("DISTRIBUTED_WORKERS_ENABLED", "true")
+    monkeypatch.setenv("DISTRIBUTED_WORKERS_DATA_DIR", str(data_dir))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_SOCKET", str(socket_path))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_CERT", str(issuer_cert))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_KEY", str(issuer_key))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_CHAIN", str(issuer_chain))
+    monkeypatch.setenv("AUDIT_WORKER_ISSUER_ALLOWED_UIDS", str(os.getuid()))
+    database.reset_state_for_tests()
+    assert not (data_dir / "workers.db").exists()
+    service = IssuerServer()
+    await service.start()
+    with database.read_conn(service.authority.registry.settings) as conn:
+        assert conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='worker_certificates'"
+        ).fetchone()
+    await service.stop()
+    database.reset_state_for_tests()
+
+
 def test_worker_decommission_revokes_all_active_certificates(identity, center):
     _, worker, registry, _, _, _, row = identity
     registration_service.revoke_worker(worker_id=worker["worker_id"], settings=center)

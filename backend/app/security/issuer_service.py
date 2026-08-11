@@ -18,6 +18,7 @@ from backend.app.services.distributed_workers.certificate_lifecycle import (
     CertificateLifecycleAuthority,
 )
 from backend.app.services.distributed_workers.certificate_registry import CertificateRegistry
+from backend.app.services.distributed_workers import database
 from backend.app.services.distributed_workers.settings import get_settings
 
 
@@ -55,6 +56,12 @@ class IssuerServer:
         self.server = None
 
     async def start(self) -> None:
+        # The issuer is ordered before the public Gateway service.  It must be
+        # able to accept initial bootstrap enrollment even when no Gateway
+        # process has migrated the durable certificate registry yet.
+        await database.run_db(
+            database.ensure_ready, self.authority.registry.settings
+        )
         self.socket_path.parent.mkdir(parents=True, exist_ok=True, mode=0o750)
         if self.socket_path.exists():
             if not self.socket_path.is_socket():
