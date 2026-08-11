@@ -34,6 +34,7 @@ from backend.app.services.audit_routing import (              # noqa: E402
     registry,
 )
 from backend.app.services.audit_routing.plan import RoutingPlan  # noqa: E402
+from backend.app.core.config import CODEX_STAGE_MODEL_ID         # noqa: E402
 
 
 OPENROUTER_STUB_PORT = 18765
@@ -382,7 +383,7 @@ def _assert_trace(
     payload = base._job_payload(run.row)
     plan_payload = payload.get("routing_plan") or {}
     plan = RoutingPlan.from_dict(plan_payload)
-    plan.assert_hash(str(payload.get("routing_plan_hash") or ""))
+    plan.assert_hash(str(plan_payload.get("routing_plan_hash") or ""))
     rows = list(package.get("provider_action_provenance") or [])
     completed = [row for row in rows if str(row.get("status")) == "success"]
     providers = Counter(str(row.get("provider") or "") for row in completed)
@@ -513,7 +514,7 @@ def _launch_pair(
     stand: base.Stand, operator: base.Operator, worker: base.Worker, *,
     worker_id: str, paths: dict[str, str], timeout: float,
 ) -> dict[str, Any]:
-    codex_model = "codex/gpt-5.6-sol"
+    codex_model = CODEX_STAGE_MODEL_ID
     switched: dict[str, Any] = {}
     before_calls = {
         name: len(_read_jsonl(worker, paths[f"{name}_log"]))
@@ -643,7 +644,9 @@ def _launch_pair(
 
 
 def _write_preset(stand: base.Stand, preset_id: str) -> dict[str, str]:
-    models = presets.reference_config(preset_id, codex_model_id="codex/gpt-5.6-sol")
+    models = presets.reference_config(
+        preset_id, codex_model_id=CODEX_STAGE_MODEL_ID
+    )
     path = stand.central_app_data / "stage_models.json"
     path.write_text(json.dumps(models, ensure_ascii=False, indent=2), encoding="utf-8")
     return models

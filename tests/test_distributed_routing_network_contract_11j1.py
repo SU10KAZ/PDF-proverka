@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import threading
@@ -19,7 +20,9 @@ from audit_worker.providers.inference import ProviderInferenceResult, STATUS_SUC
 from audit_worker.providers.inference_ledger import InferenceLedger
 from audit_worker.providers import pipeline_bridge
 from backend.app.models.distributed_workers import JobType
+from backend.app.pipeline.context import PipelineStageContext
 from backend.app.pipeline.execution import registry as execution_registry
+from backend.app.pipeline.stages.norms.runner import run_norm_verification
 from backend.app.services.audit_routing import presets, registry
 from backend.app.services.distributed_workers import repositories, result_import
 from tests.test_audit_routing_plan import build_plan
@@ -227,3 +230,63 @@ def test_provider_concurrency_limits_are_independent(monkeypatch):
         thread.join(timeout=3)
         assert not thread.is_alive()
     assert peaks == {"claude": 1, "codex": 2}
+
+
+def test_zero_norms_write_authoritative_empty_handoff_marker(tmp_path):
+    """Успешный zero-norm tail создаёт обязательный norm_checks.json."""
+    output = tmp_path / "latest"
+    output.mkdir()
+    (output / "03_findings.json").write_text(
+        json.dumps(
+            {
+                "findings": [{
+                    "id": "F-TEST",
+                    "problem": "Синтетическое замечание без ссылки на норму",
+                    "norm": None,
+                }]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    log_rows: list[tuple[str, str]] = []
+    stages: list[tuple[str, str, dict]] = []
+
+    async def log(message, level="info"):
+        log_rows.append((str(level), str(message)))
+
+    async def yes():
+        return True
+
+    async def rate_limit(_reason, _output):
+        return True
+
+    async def subprocess_stub(*_args, **_kwargs):
+        raise AssertionError("zero-norm branch не должна запускать subprocess/model")
+
+    ctx = PipelineStageContext(
+        project_dir=tmp_path,
+        project_id="zero-norm-project",
+        output_dir=output,
+        log=log,
+        check_before_launch=yes,
+        check_pause=yes,
+        wait_for_rate_limit=rate_limit,
+        record_cli_usage=lambda *_args, **_kwargs: None,
+        update_pipeline_log=lambda stage, status, **kwargs: stages.append(
+            (stage, status, kwargs)
+        ),
+        run_subprocess=subprocess_stub,
+        project_info={},
+    )
+
+    result = asyncio.run(run_norm_verification(ctx))
+
+    assert result.success is True
+    marker = json.loads((output / "norm_checks.json").read_text(encoding="utf-8"))
+    assert marker["checks"] == []
+    assert marker["paragraph_checks"] == []
+    assert marker["meta"]["total_checked"] == 0
+    assert marker["meta"]["source"] == "norms_main_status_index"
+    assert stages[-1][0:2] == ("norm_verify", "done")
+    assert "authoritative empty" in stages[-1][2]["message"]
