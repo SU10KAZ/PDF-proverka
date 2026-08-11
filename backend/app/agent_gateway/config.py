@@ -32,7 +32,14 @@ def _float(name: str, default: float) -> float:
 
 def _boolean(name: str, default: bool) -> bool:
     raw = os.environ.get(name)
-    return default if raw is None else raw.strip().lower() in {"1", "true", "yes", "on"}
+    if raw is None:
+        return default
+    normalized = raw.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise GatewayConfigError(f"{name} must be a boolean")
 
 
 @dataclass(frozen=True)
@@ -56,14 +63,20 @@ class GatewayConfig:
     health_enabled: bool = True
     metrics_enabled: bool = True
     reflection_enabled: bool = False
+    log_level: str = "INFO"
 
     @classmethod
     def from_env(cls) -> "GatewayConfig":
-        versions = tuple(
-            int(item.strip())
-            for item in os.environ.get("AGENT_GATEWAY_PROTOCOL_VERSIONS", "1").split(",")
-            if item.strip()
-        )
+        try:
+            versions = tuple(
+                int(item.strip())
+                for item in os.environ.get("AGENT_GATEWAY_PROTOCOL_VERSIONS", "1").split(",")
+                if item.strip()
+            )
+        except ValueError as exc:
+            raise GatewayConfigError(
+                "AGENT_GATEWAY_PROTOCOL_VERSIONS must contain integers"
+            ) from exc
         return cls(
             host=os.environ.get("AGENT_GATEWAY_HOST", "127.0.0.1").strip(),
             port=_integer("AGENT_GATEWAY_PORT", 0),
@@ -84,6 +97,7 @@ class GatewayConfig:
             health_enabled=_boolean("AGENT_GATEWAY_HEALTH_ENABLED", True),
             metrics_enabled=_boolean("AGENT_GATEWAY_METRICS_ENABLED", True),
             reflection_enabled=_boolean("AGENT_GATEWAY_REFLECTION_ENABLED", False),
+            log_level=os.environ.get("AGENT_GATEWAY_LOG_LEVEL", "INFO").strip().upper(),
         ).validated()
 
     def validated(self) -> "GatewayConfig":
@@ -93,6 +107,8 @@ class GatewayConfig:
             raise GatewayConfigError("AGENT_GATEWAY_HOST must be an IP literal") from exc
         if self.security_mode not in {"test_insecure", "mtls"}:
             raise GatewayConfigError("unsupported gateway security mode")
+        if self.environment not in {"test", "development", "production"}:
+            raise GatewayConfigError("unsupported gateway environment")
         if self.environment == "production" and self.security_mode != "mtls":
             raise GatewayConfigError("production gateway requires mTLS")
         if self.security_mode == "test_insecure" and not address.is_loopback:
@@ -121,6 +137,10 @@ class GatewayConfig:
             raise GatewayConfigError("gateway limits and timeouts must be positive")
         if self.connection_policy != "newer_epoch_supersedes":
             raise GatewayConfigError("unsupported duplicate connection policy")
-        if self.environment == "production" and self.reflection_enabled:
-            raise GatewayConfigError("gRPC reflection is disabled in production")
+        if not self.health_enabled or not self.metrics_enabled:
+            raise GatewayConfigError("12B gateway health and metrics must remain enabled")
+        if self.reflection_enabled:
+            raise GatewayConfigError("gRPC reflection is not enabled in 12B")
+        if self.log_level not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
+            raise GatewayConfigError("unsupported gateway log level")
         return self

@@ -10,4 +10,16 @@ The review is performed against the commit candidate and repeated after any fix.
 6. Security/public-bind/no-RCE — loopback guard, no 8443, bounded semantic validation, no executable payload.
 7. Concurrency/backpressure — bounded queue/transport/batches, 20 streams and burst events pass.
 
-Review evidence is the committed diff, generated descriptor reproducibility, the A–BO integration matrix, polling regressions, stress/backpressure tests, `git diff --check`, listener inspection, and secret-pattern inspection. Final disposition is recorded after the candidate review; no push or merge is part of this task.
+Candidate reviewed: `9ad71d41d5f438ca9b76dd225497d8868ec159b7`.
+
+Findings from the first immutable pass were fixed before re-review:
+
+- config parsing now rejects malformed booleans/versions with `GatewayConfigError`;
+- environment names are allowlisted, so a production-name typo cannot bypass the guard;
+- health and metrics cannot be disabled and reflection cannot claim an unimplemented mode;
+- log level is typed and actually applied at the single startup boundary;
+- IPv6 loopback bind formatting is correct;
+- a replacement epoch clears stale durable heartbeat time;
+- `ResultReady` now validates transfer id, HTTPS protocol, direction, package type, size, and hash before domain use.
+
+Re-review disposition: all seven lenses PASS. Evidence is the committed candidate diff plus the explicit fix diff, unchanged generated descriptor SHA-256, 92 passing 12A/12B tests, polling regressions, 20-stream stress, burst backpressure, `git diff --check`, listener inspection with no `:8443`, and secret-pattern inspection. No push or merge was performed.

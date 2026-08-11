@@ -64,7 +64,7 @@ def accept_connection(
             "last_connection_epoch=excluded.last_connection_epoch, "
             "active_connection_id=excluded.active_connection_id, "
             "protocol_version=excluded.protocol_version, connected_at=excluded.connected_at, "
-            "last_message_at=excluded.last_message_at, disconnected_at=NULL, "
+            "last_message_at=excluded.last_message_at, last_heartbeat_at=NULL, disconnected_at=NULL, "
             "updated_at=excluded.updated_at",
             (
                 worker_id,

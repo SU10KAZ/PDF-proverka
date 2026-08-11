@@ -62,7 +62,8 @@ class GatewayServer:
             health_pb2_grpc.add_HealthServicer_to_server(
                 self.health_servicer, self.grpc_server
             )
-        address = f"{self.config.host}:{self.config.port}"
+        host = f"[{self.config.host}]" if ":" in self.config.host else self.config.host
+        address = f"{host}:{self.config.port}"
         port = self.grpc_server.add_insecure_port(address)
         if not port:
             raise GatewayConfigError(f"could not bind Agent Gateway to {address}")

@@ -14,13 +14,18 @@
     "max_unacked_events": 1024,
     "max_outbound_queue": 128,
     "offer_timeout_sec": 30,
-    "reflection_enabled": false
+    "reflection_enabled": false,
+    "health_enabled": true,
+    "metrics_enabled": true,
+    "log_level": "INFO"
   },
   "guards": {
     "insecure_non_loopback": "refused",
     "insecure_port_8443": "refused",
     "production_without_mtls": "refused",
     "mtls_runtime": "deferred_to_12D",
-    "production_reflection": "refused"
+    "any_reflection": "refused",
+    "unknown_environment_or_boolean": "typed_refusal",
+    "disabled_health_or_metrics": "refused"
   }
 }

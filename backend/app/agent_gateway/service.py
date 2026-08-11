@@ -353,6 +353,11 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 not math.isfinite(message.percent) or not 0 <= message.percent <= 100
             ):
                 raise DomainViolation("invalid progress percent")
+        elif kind == "heartbeat":
+            if message.max_slots < 1:
+                raise DomainViolation("heartbeat max_slots must be positive")
+            if message.worker_state == common_pb.WORKER_STATE_UNSPECIFIED:
+                raise DomainViolation("heartbeat worker state unspecified")
         elif kind == "event_batch":
             if message.first_sequence < 1 or not message.events:
                 raise DomainViolation("invalid event batch sequence/count")
@@ -374,7 +379,16 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
             if message.stage == stream_pb.CANCEL_ACK_STAGE_UNSPECIFIED:
                 raise DomainViolation("cancel ACK stage unspecified")
         elif kind == "result_ready":
-            self._validate_sha256(message.result_package.sha256, "result sha256")
+            package = message.result_package
+            if not _ID_RE.fullmatch(package.transfer_id):
+                raise DomainViolation("invalid result transfer_id")
+            if package.direction != common_pb.PACKAGE_DIRECTION_AGENT_TO_CENTER:
+                raise DomainViolation("invalid result transfer direction")
+            if package.protocol != common_pb.PACKAGE_TRANSFER_PROTOCOL_HTTPS_RESUMABLE_V1:
+                raise DomainViolation("invalid result transfer protocol")
+            if package.package_type != "result" or package.size_bytes < 1:
+                raise DomainViolation("invalid result package descriptor")
+            self._validate_sha256(package.sha256, "result sha256")
             self._validate_sha256(message.routing_plan_hash, "routing plan hash", optional=True)
         elif kind == "job_accept":
             self._validate_sha256(message.routing_plan_hash, "routing plan hash", optional=True)

@@ -239,6 +239,35 @@ def test_config_bounds_and_mtls_deferred():
         GatewayConfig(security_mode="mtls").validated()
 
 
+@pytest.mark.parametrize(
+    ("name", "value"),
+    [
+        ("AGENT_GATEWAY_PROTOCOL_VERSIONS", "one"),
+        ("AGENT_GATEWAY_HEALTH_ENABLED", "perhaps"),
+        ("AGENT_GATEWAY_METRICS_ENABLED", "maybe"),
+    ],
+)
+def test_config_environment_boundary_is_typed_and_fail_closed(monkeypatch, name, value):
+    monkeypatch.setenv(name, value)
+    with pytest.raises(GatewayConfigError):
+        GatewayConfig.from_env()
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        GatewayConfig(environment="prodution"),
+        GatewayConfig(health_enabled=False),
+        GatewayConfig(metrics_enabled=False),
+        GatewayConfig(reflection_enabled=True),
+        GatewayConfig(log_level="TRACE"),
+    ],
+)
+def test_config_rejects_unsupported_or_incomplete_runtime_modes(config):
+    with pytest.raises(GatewayConfigError):
+        config.validated()
+
+
 @pytest.mark.asyncio
 async def test_e_g_real_local_socket_hello_and_version_negotiation(running_gateway, gateway_env):
     _, port = running_gateway
@@ -591,7 +620,7 @@ async def test_wrong_result_route_and_unknown_transfer_rejected(running_gateway,
     agent = FakeAgent(worker, port)
     await agent.connect(epoch=1)
     await agent.read_until("job_offer")
-    ready = stream_pb.ResultReady(job_id=job["job_id"], attempt_id=job["attempt_id"], result_package=common_pb.PackageTransferDescriptor(transfer_id="missing", sha256=SHA), execution_revision="rev-test", ready_at=adapters.timestamp_from_epoch(time.time()))
+    ready = stream_pb.ResultReady(job_id=job["job_id"], attempt_id=job["attempt_id"], result_package=common_pb.PackageTransferDescriptor(transfer_id="missing", direction=common_pb.PACKAGE_DIRECTION_AGENT_TO_CENTER, protocol=common_pb.PACKAGE_TRANSFER_PROTOCOL_HTTPS_RESUMABLE_V1, package_type="result", size_bytes=100, sha256=SHA), execution_revision="rev-test", ready_at=adapters.timestamp_from_epoch(time.time()))
     await agent.send("result_ready", ready)
     rejected = (await agent.read_until("result_rejected")).result_rejected
     assert rejected.reason == stream_pb.RESULT_REJECT_REASON_UNEXPECTED_RESULT
