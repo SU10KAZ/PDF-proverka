@@ -1,0 +1,26 @@
+{
+  "audit_worker_present": false,
+  "captured_at_epoch": 1786431118.233865,
+  "claude_auth_present": false,
+  "codex_auth_present": false,
+  "gid": 1002,
+  "home": "/home/auditworker_11l",
+  "home_empty_before_admin_ssh": true,
+  "home_entries_after_admin_ssh": [
+    ".ssh"
+  ],
+  "job_data_present": false,
+  "openrouter_present": false,
+  "provider_cli_invoked": false,
+  "provider_policy_present": false,
+  "real_inference": {
+    "claude": 0,
+    "codex": 0,
+    "openrouter": 0
+  },
+  "repository_present": false,
+  "sudo_scope": "/usr/bin/loginctl enable-linger auditworker_11l",
+  "uid": 1002,
+  "unix_user": "auditworker_11l",
+  "worker_user_units_present": false
+}

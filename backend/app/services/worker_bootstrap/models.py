@@ -164,6 +164,19 @@ class CreateBootstrapSession(BaseModel):
     idempotency_key: str | None = Field(default=None, max_length=200)
 
 
+class UpdateBootstrapSession(BaseModel):
+    """Mutable, non-secret fields of an existing resumable session."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    center_url: str
+
+    @field_validator("center_url")
+    @classmethod
+    def https_center(cls, value: str) -> str:
+        return BootstrapRequest.https_center(value)
+
+
 class BootstrapSessionView(BaseModel):
     session_id: str
     operation: BootstrapOperation

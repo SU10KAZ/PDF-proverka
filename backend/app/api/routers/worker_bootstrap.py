@@ -13,8 +13,9 @@ from backend.app.services.worker_bootstrap.manager import BootstrapManager
 from backend.app.services.worker_bootstrap.models import (
     BootstrapSessionView,
     CreateBootstrapSession,
+    UpdateBootstrapSession,
 )
-from backend.app.services.worker_bootstrap.store import SessionNotFound
+from backend.app.services.worker_bootstrap.store import SessionNotFound, SessionUpdateConflict
 
 
 router = APIRouter(prefix="/api/workers/bootstrap", tags=["worker-bootstrap"])
@@ -42,6 +43,21 @@ def _validated_payload(raw: Any) -> CreateBootstrapSession:
     """
     try:
         return CreateBootstrapSession.model_validate(raw)
+    except ValidationError as exc:
+        safe_errors = [
+            {
+                "loc": list(item.get("loc") or ()),
+                "type": item.get("type"),
+                "message": item.get("msg"),
+            }
+            for item in exc.errors()
+        ]
+        raise HTTPException(status_code=422, detail=safe_errors) from exc
+
+
+def _validated_update(raw: Any) -> UpdateBootstrapSession:
+    try:
+        return UpdateBootstrapSession.model_validate(raw)
     except ValidationError as exc:
         safe_errors = [
             {
@@ -95,6 +111,27 @@ async def get_session(
         return await asyncio.to_thread(_manager().get, session_id)
     except SessionNotFound as exc:
         raise HTTPException(status_code=404, detail="Bootstrap session не найдена") from exc
+
+
+@router.patch("/sessions/{session_id}", response_model=BootstrapSessionView)
+async def update_session(
+    session_id: str,
+    raw_payload: Any = Body(...),
+    x_worker_bootstrap_intent: str | None = Header(default=None),
+    actor: Actor = Depends(require_admin),
+) -> dict:
+    """Update the transport endpoint of the same resumable bootstrap session."""
+    del actor
+    _intent(x_worker_bootstrap_intent)
+    payload = _validated_update(raw_payload)
+    try:
+        return await asyncio.to_thread(
+            _manager().update_center_url, session_id, payload.center_url
+        )
+    except SessionNotFound as exc:
+        raise HTTPException(status_code=404, detail="Bootstrap session не найдена") from exc
+    except SessionUpdateConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.post("/sessions/{session_id}/resume", response_model=BootstrapSessionView)

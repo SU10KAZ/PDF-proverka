@@ -589,7 +589,7 @@ for raw in sorted(manifest.get("files") or []):
     digest.update(raw.encode("utf-8"))
     digest.update(b" ")
     digest.update(file_hash.encode("ascii"))
-    digest.update(b"\n")
+    digest.update(b"\\n")
 actual = "sha256:" + digest.hexdigest()
 if actual != manifest.get("tree_hash"):
     raise SystemExit("TREE_HASH_MISMATCH")

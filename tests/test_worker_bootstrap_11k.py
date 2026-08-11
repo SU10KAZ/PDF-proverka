@@ -418,6 +418,45 @@ def test_s_to_aa_ao_at_au_provider_action_resume_skips_install(
     assert scenario["calls"].count("deploy") == 1
 
 
+def test_replace_temporary_center_url_resumes_same_session_without_reinstall(
+    settings, bundle, tmp_path
+):
+    """A dead Quick Tunnel can be replaced without losing bootstrap evidence."""
+    scenario = {"provider_action_required": ["claude"]}
+    manager, _ = manager_for(settings, tmp_path, scenario)
+    session = manager.create(
+        operation=BootstrapOperation.INSTALL,
+        request=request_for(bundle, providers=["claude"]),
+    )
+    waiting = manager.run(session["session_id"])
+    assert waiting["state"] == "action_required"
+    instance_id = waiting["request"]["bootstrap_instance_id"]
+
+    updated = manager.update_center_url(
+        session["session_id"], "https://replacement.trycloudflare.com/"
+    )
+    assert updated["session_id"] == session["session_id"]
+    assert updated["state"] == "queued"
+    assert updated["step"] == "center_url_updated"
+    assert updated["request"]["center_url"] == (
+        "https://replacement.trycloudflare.com"
+    )
+    assert updated["request"]["bootstrap_instance_id"] == instance_id
+    assert "configured" not in updated["result"]
+    assert updated["result"]["services"]["installed"] is True
+
+    scenario["provider_action_required"] = []
+    ready = manager.run(session["session_id"])
+    assert ready["state"] == "succeeded"
+    assert scenario["files"]["worker.env"]["center"] == (
+        "https://replacement.trycloudflare.com"
+    )
+    assert scenario["calls"].count("deploy") == 1
+    assert scenario["calls"].count("configure") == 2
+    assert scenario["calls"].count("install_services") == 1
+    assert scenario["calls"].count("provider_status") == 2
+
+
 def test_t_y_pinned_cli_install_path(settings, bundle, tmp_path):
     scenario = {"provider_missing": ["claude", "codex"]}
     manager, _ = manager_for(settings, tmp_path, scenario)

@@ -1,0 +1,9 @@
+{
+  "task": "11L clean userspace bootstrap proof",
+  "base_branch": "feat/distributed-audit-workers-one-click-bootstrap",
+  "base_commit": "e05f44ef4a0f732d8c3fb3b30e7dc8ed11939f4e",
+  "branch": "feat/distributed-audit-workers-clean-userspace-bootstrap",
+  "worktree": ".claude/worktrees/distributed-audit-workers-clean-userspace-bootstrap",
+  "push": false,
+  "merge": false
+}

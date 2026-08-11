@@ -108,6 +108,12 @@ class BootstrapManager:
     def list(self, *, limit: int = 100) -> list[dict[str, Any]]:
         return store.list_sessions(limit=limit, settings=self.settings)
 
+    def update_center_url(self, session_id: str, center_url: str) -> dict[str, Any]:
+        """Pin a replacement endpoint to this session and require reconfigure."""
+        return store.update_center_url(
+            session_id, center_url=center_url, settings=self.settings
+        )
+
     def run(self, session_id: str) -> dict[str, Any]:
         """Execute or resume. Repeating it is safe and advances from evidence.
 
@@ -208,9 +214,10 @@ class BootstrapManager:
                 )
                 self._mark(session_id, "configuration")
             configured = completed.get("configured")
-            services = completed.get("services")
-            if not isinstance(configured, dict) or not isinstance(services, dict):
+            if not isinstance(configured, dict):
                 configured = remote.configure()
+            services = completed.get("services")
+            if not isinstance(services, dict):
                 services = remote.install_services()
 
             self._mark(session_id, "providers", result={"configured": configured, "services": services})
@@ -253,6 +260,7 @@ class BootstrapManager:
                         ),
                     },
                     result_patch={"providers": providers},
+                    fields={"error_code": None, "error_detail": None},
                     settings=self.settings,
                 )
             requested_provider_names = {item.value for item in request.providers}

@@ -1,0 +1,18 @@
+{
+  "host": "176.12.77.31",
+  "port": 22,
+  "ssh_user": "auditworker_11l",
+  "ssh_auth_ref": "worker31-clean-user",
+  "expected_host_fingerprint": "SHA256:li7uYxQlLp+X0GBX0SvPB+I4DgAs50dgwuuyErQuAd0",
+  "install_root": "/home/auditworker_11l/audit-worker-11l",
+  "center_url": "https://throughout-cant-frederick-cardiac.trycloudflare.com",
+  "display_name": "11L clean-user worker 176.12.77.31",
+  "max_slots": 1,
+  "providers": ["claude", "codex", "openrouter"],
+  "provider_setup": "install_missing",
+  "release_id": null,
+  "bundle_path": "/tmp/audit-worker-11l-bundle-e05f44ef/audit-worker-20260811T055247-743dfe7fa00e.tar.gz",
+  "bundle_sha256": "ed522e20c5f4ff7772ddcdfac99213920e1f09e89a83567119688844b04305ca",
+  "bootstrap_instance_id": null,
+  "worker_id": null
+}

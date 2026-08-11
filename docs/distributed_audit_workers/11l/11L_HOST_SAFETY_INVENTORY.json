@@ -1,0 +1,732 @@
+{
+  "captured_at_epoch": 1786431031.2075148,
+  "coder_provider_credentials": [
+    {
+      "exists": true,
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/coder/.claude/.credentials.json",
+      "sha256": "1681753a3be08c36a7b6f114fecacd4987e506a2c27860a4e74893f6cd37548d",
+      "size": 509,
+      "uid": 1001
+    },
+    {
+      "exists": true,
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/coder/.codex/auth.json",
+      "sha256": "9300e67f83eaa2b04b0cc99d1a948590b15f5127e63175b7ebac3d8ee1ba7dae",
+      "size": 4563,
+      "uid": 1001
+    }
+  ],
+  "host": {
+    "architecture": "x86_64",
+    "hostname": "andrewuzun3.hlab.kz",
+    "identity": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "uid=1001(coder) gid=1001(coder) groups=1001(coder),27(sudo),100(users),126(docker)"
+      ]
+    },
+    "kernel": "6.8.0-136-generic",
+    "os": {
+      "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+      "HOME_URL": "https://www.ubuntu.com/",
+      "ID": "ubuntu",
+      "ID_LIKE": "debian",
+      "LOGO": "ubuntu-logo",
+      "NAME": "Ubuntu",
+      "PRETTY_NAME": "Ubuntu 24.04.4 LTS",
+      "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+      "SUPPORT_URL": "https://help.ubuntu.com/",
+      "UBUNTU_CODENAME": "noble",
+      "VERSION": "24.04.4 LTS (Noble Numbat)",
+      "VERSION_CODENAME": "noble",
+      "VERSION_ID": "24.04"
+    },
+    "uptime_seconds": 1080028.74,
+    "users": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": []
+    }
+  },
+  "network": {
+    "addresses": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "[{\"ifindex\":1,\"ifname\":\"lo\",\"flags\":[\"LOOPBACK\",\"UP\",\"LOWER_UP\"],\"mtu\":65536,\"qdisc\":\"noqueue\",\"operstate\":\"UNKNOWN\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"loopback\",\"address\":\"00:00:00:00:00:00\",\"broadcast\":\"00:00:00:00:00:00\",\"addr_info\":[{\"family\":\"inet\",\"local\":\"127.0.0.1\",\"prefixlen\":8,\"scope\":\"host\",\"label\":\"lo\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"::1\",\"prefixlen\":128,\"scope\":\"host\",\"noprefixroute\":true,\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":2,\"ifname\":\"ens3\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"mq\",\"operstate\":\"UP\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"ether\",\"address\":\"52:54:00:24:cd:45\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"altnames\":[\"enp0s3\"],\"addr_info\":[{\"family\":\"inet\",\"local\":\"176.12.77.31\",\"prefixlen\":32,\"broadcast\":\"176.12.77.31\",\"scope\":\"global\",\"label\":\"ens3\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"fe80::5054:ff:fe24:cd45\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":3,\"ifname\":\"docker0\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"noqueue\",\"operstate\":\"UP\",\"group\":\"default\",\"link_type\":\"ether\",\"address\":\"7a:04:09:bf:c6:81\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"addr_info\":[{\"family\":\"inet\",\"local\":\"172.17.0.1\",\"prefixlen\":16,\"broadcast\":\"172.17.255.255\",\"scope\":\"global\",\"label\":\"docker0\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"fe80::7804:9ff:febf:c681\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":4,\"ifname\":\"amn0\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"noqueue\",\"operstate\":\"UP\",\"group\":\"default\",\"link_type\":\"ether\",\"address\":\"26:e7:c1:7c:e4:cf\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"addr_info\":[{\"family\":\"inet\",\"local\":\"172.29.172.1\",\"prefixlen\":24,\"broadcast\":\"172.29.172.255\",\"scope\":\"global\",\"label\":\"amn0\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"fe80::24e7:c1ff:fe7c:e4cf\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":5,\"link_index\":2,\"ifname\":\"vethc78aa93\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"noqueue\",\"master\":\"amn0\",\"operstate\":\"UP\",\"group\":\"default\",\"link_type\":\"ether\",\"address\":\"32:ed:c1:8a:85:b9\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"link_netnsid\":0,\"addr_info\":[{\"family\":\"inet6\",\"local\":\"fe80::30ed:c1ff:fe8a:85b9\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":6,\"link_index\":3,\"ifname\":\"vethdd1995c\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"noqueue\",\"master\":\"docker0\",\"operstate\":\"UP\",\"group\":\"default\",\"link_type\":\"ether\",\"address\":\"02:34:a0:8b:0b:3c\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"link_netnsid\":0,\"addr_info\":[{\"family\":\"inet6\",\"local\":\"fe80::34:a0ff:fe8b:b3c\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]}]"
+      ]
+    },
+    "listening": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "udp UNCONN 0      0                                      0.0.0.0:40150 0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 172.29.172.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   172.17.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                 176.12.77.31:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                    127.0.0.1:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                   127.0.0.54:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                127.0.0.53%lo:53    0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                      0.0.0.0:54086 0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                  224.0.0.251:5353  0.0.0.0:* users:((\"chrome\",pid=842106,fd=70))         ",
+        "udp UNCONN 0      0                                  224.0.0.251:5353  0.0.0.0:* users:((\"chrome\",pid=842106,fd=64))         ",
+        "udp UNCONN 0      0                                  224.0.0.251:5353  0.0.0.0:* users:((\"chrome\",pid=842106,fd=61))         ",
+        "udp UNCONN 0      0                                      0.0.0.0:5353  0.0.0.0:*                                             ",
+        "udp UNCONN 0      0                                         [::]:40150    [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                        [::1]:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0               [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0           [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0             [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0      [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0         [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "udp UNCONN 0      0                                         [::]:53528    [::]:*                                             ",
+        "udp UNCONN 0      0                                         [::]:5353     [::]:*                                             ",
+        "tcp LISTEN 0      4096                                 127.0.0.1:9090  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      4096                             127.0.0.53%lo:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                    127.0.0.1:953   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      4096                                 127.0.0.1:631   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                176.12.77.31:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      70                                   127.0.0.1:33060 0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                   127.0.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                      0.0.0.0:4330  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      511                               176.12.77.31:1501  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      500                               176.12.77.31:1500  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      128                                  127.0.0.1:34821 0.0.0.0:* users:((\"code-e4c7e7b1d6\",pid=191050,fd=11))",
+        "tcp LISTEN 0      151                                  127.0.0.1:3306  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                172.29.172.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10                                  172.17.0.1:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      4096                                 127.0.0.1:45643 0.0.0.0:*                                             ",
+        "tcp LISTEN 0      100                                    0.0.0.0:995   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      100                                    0.0.0.0:993   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      20                                     0.0.0.0:587   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      20                                     0.0.0.0:465   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      511                                    0.0.0.0:443   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      100                                    0.0.0.0:143   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      100                                    0.0.0.0:110   0.0.0.0:*                                             ",
+        "tcp LISTEN 0      511                                    0.0.0.0:80    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      20                                     0.0.0.0:25    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      4096                                   0.0.0.0:22    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      128                                    0.0.0.0:44322 0.0.0.0:*                                             ",
+        "tcp LISTEN 0      128                                    0.0.0.0:44323 0.0.0.0:*                                             ",
+        "tcp LISTEN 0      5                                      0.0.0.0:44321 0.0.0.0:*                                             ",
+        "tcp LISTEN 0      511                                  127.0.0.1:8080  0.0.0.0:*                                             ",
+        "tcp LISTEN 0      4096                                127.0.0.54:53    0.0.0.0:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      10              [fe80::5054:ff:fe24:cd45]%ens3:53       [::]:*                                             ",
+        "tcp LISTEN 0      2                                        [::1]:3350     [::]:*                                             ",
+        "tcp LISTEN 0      5                                         [::]:4330     [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      5                                        [::1]:953      [::]:*                                             ",
+        "tcp LISTEN 0      4096                                     [::1]:631      [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10            [fe80::24e7:c1ff:fe7c:e4cf]%amn0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10        [fe80::34:a0ff:fe8b:b3c]%vethdd1995c:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10          [fe80::7804:9ff:febf:c681]%docker0:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10                                       [::1]:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      10     [fe80::30ed:c1ff:fe8a:85b9]%vethc78aa93:53       [::]:*                                             ",
+        "tcp LISTEN 0      20                                        [::]:587      [::]:*                                             ",
+        "tcp LISTEN 0      20                                        [::]:465      [::]:*                                             ",
+        "tcp LISTEN 0      511                                       [::]:443      [::]:*                                             ",
+        "tcp LISTEN 0      511                                       [::]:80       [::]:*                                             ",
+        "tcp LISTEN 0      20                                        [::]:25       [::]:*                                             ",
+        "tcp LISTEN 0      4096                                      [::]:22       [::]:*                                             ",
+        "tcp LISTEN 0      128                                          *:21          *:*                                             ",
+        "tcp LISTEN 0      2                                            *:3389        *:*                                             ",
+        "tcp LISTEN 0      128                                       [::]:44322    [::]:*                                             ",
+        "tcp LISTEN 0      128                                       [::]:44323    [::]:*                                             ",
+        "tcp LISTEN 0      5                                         [::]:44321    [::]:*                                             "
+      ]
+    },
+    "resolver": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "Global",
+        "         Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported",
+        "  resolv.conf mode: stub",
+        "Current DNS Server: 8.8.8.8",
+        "       DNS Servers: 8.8.8.8",
+        "",
+        "Link 2 (ens3)",
+        "    Current Scopes: DNS",
+        "         Protocols: +DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported",
+        "Current DNS Server: 8.8.8.8",
+        "       DNS Servers: 8.8.8.8",
+        "",
+        "Link 3 (docker0)",
+        "    Current Scopes: none",
+        "         Protocols: -DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported",
+        "",
+        "Link 4 (amn0)",
+        "    Current Scopes: none",
+        "         Protocols: -DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported",
+        "",
+        "Link 5 (vethc78aa93)",
+        "    Current Scopes: none",
+        "         Protocols: -DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported",
+        "",
+        "Link 6 (vethdd1995c)",
+        "    Current Scopes: none",
+        "         Protocols: -DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported"
+      ]
+    },
+    "routes": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "[{\"dst\":\"default\",\"gateway\":\"10.0.0.1\",\"dev\":\"ens3\",\"flags\":[\"onlink\"]},{\"dst\":\"172.17.0.0/16\",\"dev\":\"docker0\",\"protocol\":\"kernel\",\"scope\":\"link\",\"prefsrc\":\"172.17.0.1\",\"flags\":[]},{\"dst\":\"172.29.172.0/24\",\"dev\":\"amn0\",\"protocol\":\"kernel\",\"scope\":\"link\",\"prefsrc\":\"172.29.172.1\",\"flags\":[]}]"
+      ]
+    }
+  },
+  "resources": {
+    "cpu_count": 8,
+    "disk": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "Filesystem     Type     1024-blocks     Used Available Capacity Mounted on",
+        "tmpfs          tmpfs        2428404     1468   2426936       1% /run",
+        "tmpfs          tmpfs           5120        0      5120       0% /run/lock",
+        "/dev/vda3      ext4       123741820 58516616  58922944      50% /",
+        "tmpfs          tmpfs        6071008   582468   5488540      10% /dev/shm",
+        "efivarfs       efivarfs         256       19       233       8% /sys/firmware/efi/efivars",
+        "/dev/vda2      vfat          102156     4404     97752       5% /boot/efi",
+        "tmpfs          tmpfs        1214200      112   1214088       1% /run/user/1001"
+      ]
+    },
+    "memory": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "               total        used        free      shared  buff/cache   available",
+        "Mem:     12433424384  3332521984  1046097920   623226880  9014525952  9100902400",
+        "Swap:     8589930496   766722048  7823208448"
+      ]
+    },
+    "mounts": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "/run tmpfs tmpfs rw,nosuid,nodev,size=2428404k,nr_inodes=819200,mode=755,inode64",
+        "/run/lock tmpfs tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k,inode64",
+        "/ /dev/vda3 ext4 rw,relatime,quota,usrquota,grpquota",
+        "/dev devtmpfs devtmpfs rw,nosuid,size=4096k,nr_inodes=1508370,mode=755,inode64",
+        "/dev/shm tmpfs tmpfs rw,nosuid,nodev,inode64",
+        "/dev/pts devpts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000",
+        "/sys sysfs sysfs rw,nosuid,nodev,noexec,relatime",
+        "/sys/kernel/security securityfs securityfs rw,nosuid,nodev,noexec,relatime",
+        "/sys/fs/cgroup cgroup2 cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot",
+        "/sys/fs/pstore pstore pstore rw,nosuid,nodev,noexec,relatime",
+        "/sys/firmware/efi/efivars efivarfs efivarfs rw,nosuid,nodev,noexec,relatime",
+        "/sys/fs/bpf bpf bpf rw,nosuid,nodev,noexec,relatime,mode=700",
+        "/sys/kernel/config configfs configfs rw,nosuid,nodev,noexec,relatime",
+        "/proc proc proc rw,nosuid,nodev,noexec,relatime",
+        "/proc/sys/fs/binfmt_misc systemd-1 autofs rw,relatime,fd=30,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=19924",
+        "/dev/hugepages hugetlbfs hugetlbfs rw,nosuid,nodev,relatime,pagesize=2M",
+        "/dev/mqueue mqueue mqueue rw,nosuid,nodev,noexec,relatime",
+        "/sys/kernel/debug debugfs debugfs rw,nosuid,nodev,noexec,relatime",
+        "/sys/kernel/tracing tracefs tracefs rw,nosuid,nodev,noexec,relatime",
+        "/sys/fs/fuse/connections fusectl fusectl rw,nosuid,nodev,noexec,relatime",
+        "/boot/efi /dev/vda2 vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro",
+        "/proc/sys/fs/binfmt_misc binfmt_misc binfmt_misc rw,nosuid,nodev,noexec,relatime",
+        "/var/lib/docker/rootfs/overlayfs/5ae302f074556bf80a6aa8cb5937b3326d90929d4104fc6d2298168d3252a2ab overlay overlay rw,relatime,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/37/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/30/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/27/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/26/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/23/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/22/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/19/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/18/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/15/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/14/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/11/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/7/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/3/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/2/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/38/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/38/work,nouserxattr",
+        "/run/docker/netns/d77978abe4ad nsfs[net:[4026532423]] nsfs rw",
+        "/run/user/1001 tmpfs tmpfs rw,nosuid,nodev,relatime,size=1214200k,nr_inodes=303550,mode=700,uid=1001,gid=1001,inode64",
+        "/run/user/1001/doc portal fuse.portal rw,nosuid,nodev,relatime,user_id=1001,group_id=1001"
+      ]
+    }
+  },
+  "safety": {
+    "provider_cli_invoked": false,
+    "real_inference": {
+      "claude": 0,
+      "codex": 0,
+      "openrouter": 0
+    },
+    "secret_values_collected": false
+  },
+  "services": {
+    "audit_system": [],
+    "audit_user": [
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "audit-worker-11g-agent.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "audit-worker-11g-executor.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "audit-worker-11h-agent.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "audit-worker-11h-executor.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "enabled",
+        "unit": "audit-worker-11j1-agent.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "enabled",
+        "unit": "audit-worker-11j1-executor.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "enabled",
+        "unit": "audit-worker-11j1-openrouter-stub.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "disabled",
+        "unit": "audit-worker-agent.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "disabled",
+        "unit": "audit-worker-executor.service"
+      }
+    ],
+    "protected": [
+      {
+        "active": "inactive",
+        "enabled": "disabled",
+        "unit": "apache-htcacheclean.service"
+      },
+      {
+        "active": "unknown",
+        "enabled": "disabled",
+        "unit": "apache-htcacheclean@.service"
+      },
+      {
+        "active": "unknown",
+        "enabled": "disabled",
+        "unit": "apache2-isp@.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "apache2.service"
+      },
+      {
+        "active": "unknown",
+        "enabled": "disabled",
+        "unit": "apache2@.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "dovecot.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "static",
+        "unit": "exim4-base.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "exim4.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "ihttpd.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "mysql.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "disabled",
+        "unit": "named-resolvconf.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "named.service"
+      },
+      {
+        "active": "active",
+        "enabled": "enabled",
+        "unit": "nginx.service"
+      },
+      {
+        "active": "inactive",
+        "enabled": "static",
+        "unit": "systemd-hostnamed.service"
+      }
+    ],
+    "running": {
+      "rc": 0,
+      "stderr_tail": [],
+      "stdout": [
+        "  accounts-daemon.service     loaded active running Accounts Service",
+        "  apache2.service             loaded active running The Apache HTTP Server",
+        "  atd.service                 loaded active running Deferred execution scheduler",
+        "  avahi-daemon.service        loaded active running Avahi mDNS/DNS-SD Stack",
+        "  colord.service              loaded active running Manage, Install and Generate Color Profiles",
+        "  containerd.service          loaded active running containerd container runtime",
+        "  cron.service                loaded active running Regular background program processing daemon",
+        "  cups-browsed.service        loaded active running Make remote CUPS printers available locally",
+        "  cups.service                loaded active running CUPS Scheduler",
+        "  dbus.service                loaded active running D-Bus System Message Bus",
+        "  docker.service              loaded active running Docker Application Container Engine",
+        "  dovecot.service             loaded active running Dovecot IMAP/POP3 email server",
+        "  exim4.service               loaded active running exim Mail Transport Agent",
+        "  fail2ban.service            loaded active running Fail2Ban Service",
+        "  getty@tty1.service          loaded active running Getty on tty1",
+        "  ihttpd.service              loaded active running Internal HTTP server for ispmanager",
+        "  ModemManager.service        loaded active running Modem Manager",
+        "  mysql.service               loaded active running MySQL Community Server",
+        "  named.service               loaded active running BIND Domain Name Server",
+        "  NetworkManager.service      loaded active running Network Manager",
+        "  nginx.service               loaded active running A high performance web server and a reverse proxy server",
+        "  php-fpm74.service           loaded active running The PHP FastCGI Process Manager",
+        "  php8.3-fpm.service          loaded active running The PHP 8.3 FastCGI Process Manager",
+        "  pmcd.service                loaded active running Performance Metrics Collector Daemon",
+        "  pmie.service                loaded active running Performance Metrics Inference Engine",
+        "  pmie_farm.service           loaded active running pmie farm service",
+        "  pmlogger.service            loaded active running Performance Metrics Archive Logger",
+        "  pmlogger_farm.service       loaded active running pmlogger farm service",
+        "  pmproxy.service             loaded active running Proxy for Performance Metrics Collector Daemon",
+        "  polkit.service              loaded active running Authorization Manager",
+        "  proftpd.service             loaded active running ProFTPD FTP Server",
+        "  qemu-guest-agent.service    loaded active running QEMU Guest Agent",
+        "  rsyslog.service             loaded active running System Logging Service",
+        "  rtkit-daemon.service        loaded active running RealtimeKit Scheduling Policy Service",
+        "  ssh.service                 loaded active running OpenBSD Secure Shell server",
+        "  systemd-journald.service    loaded active running Journal Service",
+        "  systemd-logind.service      loaded active running User Login Management",
+        "  systemd-resolved.service    loaded active running Network Name Resolution",
+        "  systemd-timesyncd.service   loaded active running Network Time Synchronization",
+        "  systemd-udevd.service       loaded active running Rule-based Manager for Device Events and Files",
+        "  tuned.service               loaded active running Dynamic System Tuning Daemon",
+        "  udisks2.service             loaded active running Disk Manager",
+        "  unattended-upgrades.service loaded active running Unattended Upgrades Shutdown",
+        "  upower.service              loaded active running Daemon for power management",
+        "  user@1001.service           loaded active running User Manager for UID 1001",
+        "  wpa_supplicant.service      loaded active running WPA supplicant",
+        "  xrdp-sesman.service         loaded active running xrdp session manager",
+        "  xrdp.service                loaded active running xrdp daemon"
+      ]
+    }
+  },
+  "worker": {
+    "active_processes": [
+      "1103333 coder    Ssl  Mon Aug 10 15:18:24 2026 /home/coder/audit-worker-11g/venv/bin/python -m audit_worker executor",
+      "1103705 coder    Ssl  Mon Aug 10 15:19:26 2026 /home/coder/audit-worker-11g/venv/bin/python -m audit_worker agent",
+      "1126966 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.resource_tracker import main;main(10)",
+      "1126967 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=15) --multiprocessing-fork",
+      "1126970 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=17) --multiprocessing-fork",
+      "1126971 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=19) --multiprocessing-fork",
+      "1126972 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=21) --multiprocessing-fork",
+      "1126973 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=23) --multiprocessing-fork",
+      "1126974 coder    S    Mon Aug 10 17:20:50 2026 /home/coder/audit-worker-11h/venv/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=11, pipe_handle=25) --multiprocessing-fork",
+      "1141712 coder    Ssl  Mon Aug 10 17:29:07 2026 /home/coder/audit-worker-11h/venv/bin/python -m audit_worker executor",
+      "1141775 coder    Ssl  Mon Aug 10 17:29:07 2026 /home/coder/audit-worker-11h/venv/bin/python -m audit_worker agent"
+    ],
+    "roots": [
+      {
+        "db": {
+          "active_count": 0,
+          "error": "OperationalError",
+          "exists": true,
+          "state_counts": {},
+          "tables": [
+            "event_journal",
+            "event_sequences",
+            "execution_queue",
+            "executor_instances",
+            "local_commands",
+            "process_registry",
+            "schema_migrations"
+          ]
+        },
+        "path": "/home/coder/audit-worker",
+        "release": "20260809T140821-c1070168cda4",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "exists": false,
+          "state_counts": {},
+          "tables": []
+        },
+        "path": "/home/coder/audit-worker-11d",
+        "release": "20260809T175252-b44146f141ed",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "exists": false,
+          "state_counts": {},
+          "tables": []
+        },
+        "path": "/home/coder/audit-worker-11d2",
+        "release": "20260809T210739-6e764b890b75",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "exists": false,
+          "state_counts": {},
+          "tables": []
+        },
+        "path": "/home/coder/audit-worker-11e",
+        "release": "20260810T054528-56f0b6efe13f",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "exists": false,
+          "state_counts": {},
+          "tables": []
+        },
+        "path": "/home/coder/audit-worker-11f",
+        "release": "20260810T095135-d8942bf9c4e3",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "error": "OperationalError",
+          "exists": true,
+          "state_counts": {},
+          "tables": [
+            "event_journal",
+            "event_sequences",
+            "execution_queue",
+            "executor_instances",
+            "local_commands",
+            "process_registry",
+            "schema_migrations"
+          ]
+        },
+        "path": "/home/coder/audit-worker-11g",
+        "release": "20260810T121536-44d172044f78",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "error": "OperationalError",
+          "exists": true,
+          "state_counts": {},
+          "tables": [
+            "event_journal",
+            "event_sequences",
+            "execution_queue",
+            "executor_instances",
+            "local_commands",
+            "process_registry",
+            "schema_migrations"
+          ]
+        },
+        "path": "/home/coder/audit-worker-11h",
+        "release": "20260810T142831-8592ab7ddae7",
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "exists": false,
+          "state_counts": {},
+          "tables": []
+        },
+        "path": "/home/coder/audit-worker-11h-precheck",
+        "release": null,
+        "uid": 1001
+      },
+      {
+        "db": {
+          "active_count": 0,
+          "error": "OperationalError",
+          "exists": true,
+          "state_counts": {},
+          "tables": [
+            "event_journal",
+            "event_sequences",
+            "execution_queue",
+            "executor_instances",
+            "local_commands",
+            "process_registry",
+            "schema_migrations"
+          ]
+        },
+        "path": "/home/coder/audit-worker-11j1",
+        "release": "20260811T041236-5cf10a826226",
+        "uid": 1001
+      }
+    ]
+  }
+}

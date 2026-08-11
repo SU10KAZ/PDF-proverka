@@ -44,6 +44,10 @@ class RegistrationTokenRejected(RuntimeError):
     """Неверный, просроченный, чужой или повторно использованный token."""
 
 
+class SessionUpdateConflict(RuntimeError):
+    """The persisted workflow is currently executing and cannot be mutated."""
+
+
 def _request_payload(request: BootstrapRequest) -> dict[str, Any]:
     raw = request.model_dump(mode="json")
     # Allowlist важнее redaction: секретоподобное новое поле не попадёт в БД,
@@ -149,6 +153,91 @@ def list_sessions(
             (max(1, min(limit, 500)),),
         ).fetchall()
         return [_session(dict(row), conn=conn, with_events=False) for row in rows]
+
+
+def update_center_url(
+    session_id: str,
+    *,
+    center_url: str,
+    settings: DistributedWorkersSettings,
+) -> dict[str, Any]:
+    """Replace a temporary center endpoint without creating a new session.
+
+    The installation identity and successful immutable steps remain pinned to
+    the session. Only configuration is invalidated so the next normal resume
+    rewrites ``worker.env`` before registration/heartbeat. Any outstanding
+    one-time registration token is closed as part of the same transaction.
+    """
+    now = time.time()
+    with database.write_txn(settings) as conn:
+        row = conn.execute(
+            "SELECT * FROM worker_bootstrap_sessions WHERE session_id = ?", (session_id,)
+        ).fetchone()
+        if row is None:
+            raise SessionNotFound(session_id)
+        current = dict(row)
+        if current["state"] == BootstrapState.RUNNING.value:
+            raise SessionUpdateConflict("running bootstrap session cannot be updated")
+
+        request_payload = json.loads(current["request_json"])
+        previous_url = str(request_payload.get("center_url") or "")
+        validated = BootstrapRequest.model_validate(
+            {**request_payload, "center_url": center_url}
+        )
+        if validated.center_url == previous_url:
+            return _session(current, conn=conn)
+
+        # model_validate preserves the explicit bootstrap_instance_id already
+        # stored for this installation; a tunnel hostname is transport, not
+        # worker identity.
+        request_payload = _request_payload(validated)
+        result = json.loads(current.get("result_json") or "{}")
+        result.pop("configured", None)
+        conn.execute(
+            """UPDATE worker_bootstrap_sessions
+               SET state = ?, step = ?, request_json = ?, result_json = ?,
+                   error_code = NULL, error_detail = NULL, updated_at = ?
+               WHERE session_id = ?""",
+            (
+                BootstrapState.QUEUED.value,
+                "center_url_updated",
+                json.dumps(request_payload, ensure_ascii=False, sort_keys=True),
+                json.dumps(result, ensure_ascii=False, sort_keys=True),
+                now,
+                session_id,
+            ),
+        )
+        conn.execute(
+            """UPDATE worker_bootstrap_registration_tokens
+               SET used_at = COALESCE(used_at, ?) WHERE session_id = ?""",
+            (now, session_id),
+        )
+        conn.execute(
+            """INSERT INTO worker_bootstrap_events
+               (session_id,at,step,state,code,detail_json) VALUES (?,?,?,?,?,?)""",
+            (
+                session_id,
+                now,
+                "center_url_updated",
+                BootstrapState.QUEUED.value,
+                "center_endpoint_replaced",
+                json.dumps(
+                    redact(
+                        {
+                            "previous_center_url": previous_url,
+                            "center_url": validated.center_url,
+                            "resume_required": True,
+                        }
+                    ),
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+            ),
+        )
+        updated = conn.execute(
+            "SELECT * FROM worker_bootstrap_sessions WHERE session_id = ?", (session_id,)
+        ).fetchone()
+        return _session(dict(updated), conn=conn)
 
 
 def transition(

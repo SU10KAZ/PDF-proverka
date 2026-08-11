@@ -53,6 +53,12 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_update_center_url(args: argparse.Namespace) -> int:
+    session = BootstrapManager().update_center_url(args.session_id, args.center_url)
+    _print(session)
+    return 0
+
+
 def cmd_provider_auth(args: argparse.Namespace) -> int:
     manager = BootstrapManager()
     session = manager.get(args.session_id)
@@ -80,6 +86,10 @@ def build_parser() -> argparse.ArgumentParser:
     resume = sub.add_parser("resume")
     resume.add_argument("session_id")
     resume.set_defaults(func=cmd_resume)
+    update_center = sub.add_parser("update-center-url")
+    update_center.add_argument("session_id")
+    update_center.add_argument("center_url")
+    update_center.set_defaults(func=cmd_update_center_url)
     status = sub.add_parser("session-status")
     status.add_argument("session_id", nargs="?")
     status.add_argument("--limit", type=int, default=100)

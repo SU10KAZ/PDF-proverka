@@ -237,7 +237,7 @@ server_epoch=$(date -d "$date_header" +%s 2>/dev/null)
 local_epoch=$(date +%s)
 if [ -n "$server_epoch" ]; then skew=$((local_epoch-server_epoch)); [ "$skew" -lt 0 ] && skew=$((-skew)); echo CLOCK_SKEW_SEC=$skew; else echo CLOCK_SKEW_SEC=unknown; fi
 XDG_RUNTIME_DIR=/run/user/$(id -u) systemctl --user show-environment >/dev/null 2>&1; echo USER_SYSTEMD_RC=$?
-sudo -n true >/dev/null 2>&1; echo SUDO_NONINTERACTIVE_RC=$?
+sudo -n -l /usr/bin/loginctl enable-linger "$(id -un)" >/dev/null 2>&1; echo SUDO_LINGER_RC=$?
 loginctl show-user "$(id -un)" -p Linger --value 2>/dev/null | sed 's/^/LINGER=/'
 command -v ss >/dev/null && echo LISTEN_COUNT=$(ss -tlnH | wc -l) || echo LISTEN_COUNT=unknown
 if [ -L "$root/current" ]; then echo EXISTING_RELEASE=$(basename "$(readlink -f "$root/current")"); else echo EXISTING_RELEASE=none; fi
@@ -286,10 +286,11 @@ done
             raise RemoteFailure("user_systemd_unavailable", "systemd --user недоступен для SSH user")
         if values.get("uid") == "0":
             raise RemoteFailure("root_worker_forbidden", "укажите non-root SSH user для provider runtime")
-        if values.get("linger") != "yes" and values.get("sudo_noninteractive_rc") != "0":
+        if values.get("linger") != "yes" and values.get("sudo_linger_rc") != "0":
             raise RemoteFailure(
                 "sudo_required",
-                "для autostart нужен linger; SSH user не имеет passwordless sudo для loginctl",
+                "для autostart нужен linger; SSH user не имеет passwordless sudo "
+                "ровно для /usr/bin/loginctl enable-linger <user>",
             )
         skew = values.get("clock_skew_sec")
         if skew not in {None, "unknown"} and int(skew) > 300:
@@ -460,7 +461,7 @@ echo CONFIG_OK
         commands = [
             "set -euo pipefail",
             "export XDG_RUNTIME_DIR=/run/user/$(id -u)",
-            "if [ \"$(loginctl show-user \"$(id -un)\" -p Linger --value 2>/dev/null)\" != yes ]; then sudo -n loginctl enable-linger \"$(id -un)\"; fi",
+            "if [ \"$(loginctl show-user \"$(id -un)\" -p Linger --value 2>/dev/null)\" != yes ]; then sudo -n /usr/bin/loginctl enable-linger \"$(id -un)\"; fi",
             f"mkdir -p {unit_dir} {shlex.quote(root + '/logs')}",
         ]
         import base64
