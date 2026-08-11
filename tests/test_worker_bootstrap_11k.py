@@ -830,6 +830,33 @@ def test_ready_waits_for_fresh_post_start_heartbeat(
     assert sleep_calls == [1]
 
 
+def test_runtime_selftest_assigns_job_with_center_role(settings, monkeypatch):
+    from backend.app.services.distributed_workers import job_service
+    from backend.app.services.worker_bootstrap.manager import _default_runtime_selftest
+
+    captured = {}
+
+    def create_test_job(**kwargs):
+        captured.update(kwargs)
+        return {"job_id": "job_bootstrap_selftest", "state": "assigned"}
+
+    monkeypatch.setattr(job_service, "create_test_job", create_test_job)
+    monkeypatch.setattr(
+        repositories,
+        "get_job",
+        lambda *_args, **_kwargs: {
+            "job_id": "job_bootstrap_selftest",
+            "state": "completed",
+        },
+    )
+    result = _default_runtime_selftest(
+        "wrk_bootstrap_test", "wbs_same_session", settings
+    )
+    assert captured["actor"] == "center:bootstrap:wbs_same_session"
+    assert result["state"] == "completed"
+    assert result["real_provider_calls"] == 0
+
+
 def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):
     from audit_worker.config import load_config
 

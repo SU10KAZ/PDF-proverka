@@ -47,7 +47,10 @@ def _default_runtime_selftest(
         params=TestJobParams(
             label="bootstrap-11k", steps=3, step_seconds=0.05, result_bytes=4096
         ),
-        actor="bootstrap:" + session_id,
+        # Assignment is a center-owned state transition.  Keep bootstrap in
+        # the actor identity for the audit trail while retaining the `center`
+        # role required by the job state machine.
+        actor="center:bootstrap:" + session_id,
         settings=settings,
     )
     deadline = time.monotonic() + 180.0
