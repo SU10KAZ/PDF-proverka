@@ -183,7 +183,9 @@ class FakeCleanRemote:
             display_name_hint=self.request.display_name,
             worker_version="11k-test",
             protocol_version=self.settings.protocol_version,
-            pipeline_revision="release-11k",
+            pipeline_revision=self.scenario.get(
+                "registration_pipeline_revision", "release-11k"
+            ),
             capabilities=capabilities,
             configured_max_slots_hint=self.request.max_slots,
             settings=self.settings,
@@ -206,6 +208,8 @@ class FakeCleanRemote:
 
     def start_services(self):
         self.calls.append("start_services")
+        if self.scenario.get("delay_heartbeat"):
+            return {"started": True}
         from backend.app.services.distributed_workers import worker_registry
 
         worker_registry.record_heartbeat(
@@ -777,6 +781,53 @@ def test_codex_status_uses_success_exit_code_when_message_is_on_stderr(
     result = remote.provider_status()
     assert result["providers"]["codex_auth"] == "ready"
     assert result["action_required"] == []
+
+
+def test_ready_waits_for_fresh_post_start_heartbeat(
+    settings, bundle, tmp_path, monkeypatch
+):
+    """Registration's online row is not evidence that Agent has started."""
+    from backend.app.services.distributed_workers import worker_registry
+    from backend.app.services.worker_bootstrap import manager as manager_module
+
+    scenario = {
+        "registration_pipeline_revision": "stale-registration-revision",
+        "delay_heartbeat": True,
+    }
+    manager, _ = manager_for(settings, tmp_path, scenario)
+    sleep_calls = []
+
+    def deliver_fresh_heartbeat(_seconds):
+        sleep_calls.append(1)
+        worker_id = scenario["worker_id"]
+        worker = repositories.get_worker(worker_id, settings=settings)
+        assert worker is not None
+        repositories.update_worker_fields(
+            worker_id,
+            {"pipeline_revision": "release-11k"},
+            settings=settings,
+        )
+        worker_registry.record_heartbeat(
+            worker_id=worker_id,
+            instance_id=worker["instance_id"],
+            worker_state="idle",
+            configured_max_slots=1,
+            calculated_free_slots=1,
+            active_jobs=[],
+            resource_snapshot={"at": time.time()},
+            warnings=[],
+            settings=settings,
+        )
+
+    monkeypatch.setattr(manager_module.time, "sleep", deliver_fresh_heartbeat)
+    session = manager.create(
+        operation=BootstrapOperation.INSTALL,
+        request=request_for(bundle),
+    )
+    result = manager.run(session["session_id"])
+    assert result["state"] == "succeeded"
+    assert result["step"] == "ready"
+    assert sleep_calls == [1]
 
 
 def test_provider_metadata_is_advertised_without_secret(monkeypatch, tmp_path):

@@ -300,6 +300,7 @@ class BootstrapManager:
             # start_services deliberately runs only after claim; at this point
             # starting enabled units cannot race registration.
             self._mark(session_id, "starting")
+            startup_started_at = time.time()
             remote.start_services()
             health = remote.health()
             units = health.get("units") or []
@@ -314,10 +315,22 @@ class BootstrapManager:
             deadline = time.monotonic() + 45.0
             while time.monotonic() < deadline:
                 center_worker = repositories.get_worker(worker_id, settings=self.settings)
-                if center_worker and center_worker.get("connection_status") == "online":
+                heartbeat_at = float(
+                    (center_worker or {}).get("last_seen_at") or 0.0
+                )
+                if (
+                    center_worker
+                    and center_worker.get("connection_status") == "online"
+                    and heartbeat_at >= startup_started_at
+                ):
                     break
                 time.sleep(1.0)
-            if not center_worker or center_worker.get("connection_status") != "online":
+            heartbeat_at = float((center_worker or {}).get("last_seen_at") or 0.0)
+            if (
+                not center_worker
+                or center_worker.get("connection_status") != "online"
+                or heartbeat_at < startup_started_at
+            ):
                 raise RemoteFailure("heartbeat_missing", "Agent active, но heartbeat не пришёл на center")
             if center_worker.get("pipeline_revision") != configured.get("pipeline_revision"):
                 raise RemoteFailure("execution_revision_mismatch", "heartbeat revision не совпала с worker.env")
