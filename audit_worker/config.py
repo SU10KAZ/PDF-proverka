@@ -6,6 +6,7 @@ import platform
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlparse
 
 from audit_worker import PROTOCOL_VERSION, __version__
@@ -203,10 +204,16 @@ class WorkerConfig:
     transport: object | None = None
     # Control plane. Polling remains the production-compatible default.  gRPC
     # is explicit and never falls back to polling after a stream failure.
-    control_transport: str = "polling"
+    control_transport: Literal["polling", "grpc"] = "polling"
     grpc_target: str | None = None
-    grpc_security_mode: str = "test_insecure"
+    grpc_security_mode: Literal["test_insecure"] = "test_insecure"
     grpc_connect_timeout_sec: float = 15.0
+    grpc_heartbeat_interval_override_sec: float | None = None
+    grpc_reconnect_min_delay_sec: float = 1.0
+    grpc_reconnect_max_delay_sec: float = 30.0
+    grpc_reconnect_jitter: float = 0.2
+    grpc_max_send_message_bytes: int = 1024 * 1024
+    grpc_max_receive_message_bytes: int = 1024 * 1024
     grpc_outbound_queue_max: int = 128
     grpc_protocol_versions: tuple[int, ...] = (1,)
 
@@ -656,6 +663,29 @@ def load_config(
         grpc_connect_timeout_sec=max(
             1.0, _env_float("AUDIT_WORKER_GRPC_CONNECT_TIMEOUT_SEC", 15.0)
         ),
+        grpc_heartbeat_interval_override_sec=(
+            max(
+                5.0,
+                _env_float("AUDIT_WORKER_GRPC_HEARTBEAT_OVERRIDE_SEC", 30.0),
+            )
+            if os.environ.get("AUDIT_WORKER_GRPC_HEARTBEAT_OVERRIDE_SEC", "").strip()
+            else None
+        ),
+        grpc_reconnect_min_delay_sec=max(
+            0.5, _env_float("AUDIT_WORKER_GRPC_RECONNECT_MIN_SEC", 1.0)
+        ),
+        grpc_reconnect_max_delay_sec=max(
+            0.5, _env_float("AUDIT_WORKER_GRPC_RECONNECT_MAX_SEC", 30.0)
+        ),
+        grpc_reconnect_jitter=min(
+            1.0, max(0.0, _env_float("AUDIT_WORKER_GRPC_RECONNECT_JITTER", 0.2))
+        ),
+        grpc_max_send_message_bytes=max(
+            1024, _env_int("AUDIT_WORKER_GRPC_MAX_SEND_BYTES", 1024 * 1024)
+        ),
+        grpc_max_receive_message_bytes=max(
+            1024, _env_int("AUDIT_WORKER_GRPC_MAX_RECEIVE_BYTES", 1024 * 1024)
+        ),
         grpc_outbound_queue_max=max(
             8, _env_int("AUDIT_WORKER_GRPC_OUTBOUND_QUEUE_MAX", 128)
         ),
@@ -730,7 +760,27 @@ def validate_control_transport(config: "WorkerConfig") -> None:
         raise InsecureTransportError(
             "12C поддерживает только Agent Stream protocol version 1"
         )
-    host = config.grpc_target.rsplit(":", 1)[0].strip("[]").lower()
+    if config.grpc_reconnect_max_delay_sec < config.grpc_reconnect_min_delay_sec:
+        raise InsecureTransportError(
+            "gRPC reconnect max delay не может быть меньше min delay"
+        )
+    if not 0.0 <= config.grpc_reconnect_jitter <= 1.0:
+        raise InsecureTransportError("gRPC reconnect jitter должен быть в диапазоне 0..1")
+    if min(
+        config.grpc_max_send_message_bytes,
+        config.grpc_max_receive_message_bytes,
+        config.grpc_outbound_queue_max,
+    ) <= 0:
+        raise InsecureTransportError("gRPC client limits должны быть положительными")
+    match = __import__("re").fullmatch(
+        r"(?P<host>localhost|127\.0\.0\.1|\[::1\]):(?P<port>[0-9]{1,5})",
+        config.grpc_target,
+    )
+    if match is None or not 1 <= int(match.group("port")) <= 65535:
+        raise InsecureTransportError(
+            "test_insecure gRPC target должен быть loopback host:port"
+        )
+    host = match.group("host").strip("[]").lower()
     if host not in LOCALHOST_HOSTS:
         raise InsecureTransportError(
             "test_insecure gRPC разрешён только к loopback; внешний endpoint запрещён"

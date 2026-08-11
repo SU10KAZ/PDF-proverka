@@ -633,14 +633,31 @@ def claim_next_job_for_worker(
     now = time.time()
     with database.write_txn(settings) as conn:
         ownership = conn.execute(
-            "SELECT transport_mode FROM worker_transport_sessions WHERE worker_id=?",
+            "SELECT transport_mode, active_connection_id FROM worker_transport_sessions "
+            "WHERE worker_id=?",
             (worker_id,),
         ).fetchone()
         durable_mode = str(ownership["transport_mode"]) if ownership is not None else "polling"
         if durable_mode != transport_mode:
-            raise TransportOwnershipConflict(
-                f"worker transport is {durable_mode}, request came through {transport_mode}"
-            )
+            # Controlled grpc_stream → polling switch: the old Gateway stream
+            # must already be durably disconnected. This happens only on an
+            # explicit polling Agent startup; gRPC failures never call the
+            # polling endpoint, so this is not an automatic fallback.
+            if (
+                transport_mode == "polling"
+                and durable_mode == "grpc_stream"
+                and ownership is not None
+                and not ownership["active_connection_id"]
+            ):
+                conn.execute(
+                    "UPDATE worker_transport_sessions SET transport_mode='polling', "
+                    "updated_at=? WHERE worker_id=? AND active_connection_id IS NULL",
+                    (now, worker_id),
+                )
+            else:
+                raise TransportOwnershipConflict(
+                    f"worker transport is {durable_mode}, request came through {transport_mode}"
+                )
         # attempt_disposition = 'active' обязателен. Без него признанная
         # потерянной попытка (mark_lost не трогает execution_state) оставалась
         # текущей строкой представления и выдавалась воркеру ПОВТОРНО — вместе

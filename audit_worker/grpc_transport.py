@@ -11,6 +11,7 @@ import re
 import threading
 import time
 import uuid
+from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -35,11 +36,30 @@ class FatalGrpcTransportError(GrpcTransportError):
     pass
 
 
+WORKER_METRIC_NAMES = (
+    "grpc_connect_attempts",
+    "grpc_connect_success",
+    "grpc_disconnects",
+    "grpc_reconnects",
+    "heartbeats_sent",
+    "job_offers_received",
+    "job_accepts",
+    "job_declines",
+    "event_batches_sent",
+    "event_replays",
+    "cancel_commands_received",
+    "result_ready_sent",
+    "result_acks_received",
+    "protocol_errors",
+)
+
+
 @dataclass
 class _Outbound:
     kind: str
     message: Any
     correlation_id: str = ""
+    delivered: threading.Event | None = None
 
 
 class GrpcStreamControlTransport:
@@ -56,6 +76,7 @@ class GrpcStreamControlTransport:
         instance_id: str,
         config: Any,
         build_heartbeat: Callable[[], dict[str, Any]],
+        log: Callable[[str], None] | None = None,
     ) -> None:
         self.target = target
         self.data = data_client
@@ -65,6 +86,7 @@ class GrpcStreamControlTransport:
         self.instance_id = instance_id
         self.config = config
         self.build_heartbeat = build_heartbeat
+        self._log = log or (lambda _message: None)
         self._critical: queue.Queue[_Outbound] = queue.Queue(
             maxsize=int(config.grpc_outbound_queue_max)
         )
@@ -94,6 +116,31 @@ class GrpcStreamControlTransport:
         self._seen_offers: set[str] = set()
         self._accepting_jobs = True
         self._fatal_error: BaseException | None = None
+        self._max_events_per_batch = adapters.MAX_EVENTS_PER_BATCH
+        self._max_control_message_bytes = int(config.grpc_max_send_message_bytes)
+        self._server_heartbeat_interval_sec: float | None = None
+        self._metrics: Counter[str] = Counter({name: 0 for name in WORKER_METRIC_NAMES})
+        self._metrics_lock = threading.Lock()
+        self._connection_attempts = 0
+        self._last_event_batch: dict[tuple[str, str], int] = {}
+
+    @property
+    def heartbeat_interval_sec(self) -> float:
+        override = self.config.grpc_heartbeat_interval_override_sec
+        if override is not None:
+            return float(override)
+        if self._server_heartbeat_interval_sec is not None:
+            return self._server_heartbeat_interval_sec
+        return float(self.config.heartbeat_interval_sec)
+
+    def metrics_snapshot(self) -> dict[str, int]:
+        """Return low-cardinality worker-side counters for diagnostics/export."""
+        with self._metrics_lock:
+            return dict(self._metrics)
+
+    def _metric(self, name: str, value: int = 1) -> None:
+        with self._metrics_lock:
+            self._metrics[name] += value
 
     def _ensure_started(self) -> None:
         if self._fatal_error is not None:
@@ -116,9 +163,18 @@ class GrpcStreamControlTransport:
         self.data.close()
 
     def _connection_loop(self) -> None:
-        delays = backoff_delays()
+        delays = backoff_delays(
+            start=float(self.config.grpc_reconnect_min_delay_sec),
+            cap=float(self.config.grpc_reconnect_max_delay_sec),
+            jitter=float(self.config.grpc_reconnect_jitter),
+        )
         while not self._stop.is_set():
+            self._connection_attempts += 1
+            self._metric("grpc_connect_attempts")
+            if self._connection_attempts > 1:
+                self._metric("grpc_reconnects")
             epoch = self.state_store.reserve_connection_epoch()
+            self._log(f"grpc connect attempt epoch={epoch}")
             self._ready.clear()
             self._connection_id = ""
             self._seen_offers.clear()
@@ -132,8 +188,14 @@ class GrpcStreamControlTransport:
                 self._channel = grpc.insecure_channel(
                     self.target,
                     options=(
-                        ("grpc.max_receive_message_length", 1024 * 1024),
-                        ("grpc.max_send_message_length", 1024 * 1024),
+                        (
+                            "grpc.max_receive_message_length",
+                            int(self.config.grpc_max_receive_message_bytes),
+                        ),
+                        (
+                            "grpc.max_send_message_length",
+                            int(self.config.grpc_max_send_message_bytes),
+                        ),
                     ),
                 )
                 grpc.channel_ready_future(self._channel).result(
@@ -145,14 +207,35 @@ class GrpcStreamControlTransport:
                     if self._stop.is_set():
                         break
                     self._handle_response(response)
+                    if response.WhichOneof("payload") == "hello":
+                        # A completed Hello is the stable-connection boundary:
+                        # the next disconnect starts again at minimum backoff.
+                        delays = backoff_delays(
+                            start=float(self.config.grpc_reconnect_min_delay_sec),
+                            cap=float(self.config.grpc_reconnect_max_delay_sec),
+                            jitter=float(self.config.grpc_reconnect_jitter),
+                        )
                 if not self._stop.is_set():
                     raise GrpcTransportError("Agent Gateway stream ended")
-                delays = backoff_delays()
+                delays = backoff_delays(
+                    start=float(self.config.grpc_reconnect_min_delay_sec),
+                    cap=float(self.config.grpc_reconnect_max_delay_sec),
+                    jitter=float(self.config.grpc_reconnect_jitter),
+                )
             except FatalGrpcTransportError as exc:
+                self._metric("protocol_errors")
+                self._log(
+                    f"grpc protocol stop epoch={epoch} error={type(exc).__name__}"
+                )
                 self._fatal_error = exc
                 self._fail_waiters(exc)
                 return
             except Exception as exc:  # noqa: BLE001 - reconnect is the contract
+                if self._ready.is_set():
+                    self._metric("grpc_disconnects")
+                self._log(
+                    f"grpc disconnected epoch={epoch} error={type(exc).__name__}"
+                )
                 self._fail_waiters(exc)
                 if not self._stop.wait(next(delays)):
                     continue
@@ -178,6 +261,8 @@ class GrpcStreamControlTransport:
                 yield self._envelope(
                     item.kind, item.message, correlation_id=item.correlation_id
                 )
+                if item.delivered is not None:
+                    item.delivered.set()
                 continue
             with self._heartbeat_lock:
                 capabilities = self._latest_capabilities
@@ -190,6 +275,7 @@ class GrpcStreamControlTransport:
             if heartbeat is not None:
                 heartbeat.connection_id = self._connection_id
                 yield self._envelope("heartbeat", heartbeat)
+                self._metric("heartbeats_sent")
                 continue
             self._wake.wait(0.25)
             self._wake.clear()
@@ -209,6 +295,8 @@ class GrpcStreamControlTransport:
         )
         getattr(message, kind).CopyFrom(payload)
         adapters.validate_control_message(message)
+        if message.ByteSize() > self._max_control_message_bytes:
+            raise GrpcTransportError("outbound control message exceeds negotiated limit")
         return message
 
     def _hello(self, epoch: int) -> stream_pb.AgentHello:
@@ -285,6 +373,29 @@ class GrpcStreamControlTransport:
             if response.hello.accepted_protocol_version != PROTOCOL_VERSION:
                 raise GrpcTransportError("gateway selected unsupported protocol")
             self._connection_id = response.hello.connection_id
+            self._metric("grpc_connect_success")
+            self._log(
+                f"grpc ready connection_id={self._connection_id} "
+                f"protocol={response.hello.accepted_protocol_version}"
+            )
+            self._max_events_per_batch = max(
+                1,
+                min(
+                    adapters.MAX_EVENTS_PER_BATCH,
+                    int(response.hello.max_events_per_batch or adapters.MAX_EVENTS_PER_BATCH),
+                ),
+            )
+            self._max_control_message_bytes = min(
+                int(self.config.grpc_max_send_message_bytes),
+                int(
+                    response.hello.max_control_message_bytes
+                    or self.config.grpc_max_send_message_bytes
+                ),
+            )
+            heartbeat = response.hello.heartbeat_interval
+            negotiated_heartbeat = float(heartbeat.seconds) + float(heartbeat.nanos) / 1e9
+            if negotiated_heartbeat > 0:
+                self._server_heartbeat_interval_sec = max(5.0, negotiated_heartbeat)
             required_revision = response.hello.required_execution_revision
             revision_ok = not (
                 required_revision
@@ -304,16 +415,26 @@ class GrpcStreamControlTransport:
             )
             self._accepting_jobs = revision_ok and policy_ok
             for cursor in response.hello.resume_cursors:
-                path = (
+                events_dir = (
                     self.jobs.job_dir(cursor.job_id, cursor.attempt_id)
-                    / "events" / "ack.json"
+                    / "events"
                 )
-                current = read_json(path, {}) or {}
-                acknowledged = max(
-                    int(current.get("last_acked_seq") or 0),
-                    int(cursor.highest_contiguous_sequence or 0),
+                written = int(
+                    (read_json(events_dir / "cursor.json", {}) or {}).get(
+                        "last_written_seq", 0
+                    )
                 )
-                atomic_write_json(path, {"last_acked_seq": acknowledged})
+                acknowledged = int(cursor.highest_contiguous_sequence or 0)
+                if acknowledged > written:
+                    raise FatalGrpcTransportError(
+                        "Center resume cursor exceeds locally written event sequence"
+                    )
+                # A lower Center cursor is authoritative for replay. EventOutbox
+                # keeps compacted segments under events/acked, so the tail is
+                # still available after this durable rewind.
+                atomic_write_json(
+                    events_dir / "ack.json", {"last_acked_seq": acknowledged}
+                )
             self.data.set_control_context(connection_id=self._connection_id)
             self._ready.set()
             self._wake.set()
@@ -321,6 +442,11 @@ class GrpcStreamControlTransport:
         if response.connection_id != self._connection_id:
             raise GrpcTransportError("stale gateway connection response")
         if kind == "job_offer":
+            self._metric("job_offers_received")
+            self._log(
+                f"grpc JobOffer job_id={response.job_offer.job_id} "
+                f"attempt_id={response.job_offer.attempt_id}"
+            )
             assignment = adapters.job_offer_to_domain(response.job_offer)
             assignment["execution_token"] = ""
             self._assignments[assignment["attempt_id"]] = assignment
@@ -332,6 +458,7 @@ class GrpcStreamControlTransport:
             except queue.Full as exc:
                 raise GrpcTransportError("bounded JobOffer queue is full") from exc
         elif kind == "cancel":
+            self._metric("cancel_commands_received")
             command = {
                 "command_id": response.cancel.command_id,
                 "command_type": "cancel_attempt",
@@ -356,7 +483,17 @@ class GrpcStreamControlTransport:
                 waiter = self._waiters.get(response.correlation_id)
             if waiter is not None:
                 waiter.put(response)
-        if kind == "error" and not response.error.retryable:
+        fatal_codes = {
+            common_pb.ERROR_CODE_PROTOCOL_VERSION_UNSUPPORTED,
+            common_pb.ERROR_CODE_PROTOCOL_VIOLATION,
+            common_pb.ERROR_CODE_UNAUTHORIZED,
+        }
+        if (
+            kind == "error"
+            and not response.error.retryable
+            and response.error.code in fatal_codes
+            and not response.correlation_id
+        ):
             raise FatalGrpcTransportError(response.error.safe_message)
 
     def _fail_waiters(self, exc: BaseException) -> None:
@@ -377,13 +514,16 @@ class GrpcStreamControlTransport:
         if waiter is not None:
             with self._waiters_lock:
                 self._waiters[correlation] = waiter
+        delivered = threading.Event() if not wait_response else None
         try:
             self._critical.put(
-                _Outbound(kind, message, correlation),
+                _Outbound(kind, message, correlation, delivered),
                 timeout=float(self.config.request_timeout_sec),
             )
             self._wake.set()
             if waiter is None:
+                if not delivered.wait(float(self.config.request_timeout_sec)):
+                    raise GrpcTransportError("control message was not consumed by gRPC")
                 return {}
             outcome = waiter.get(timeout=float(self.config.request_timeout_sec))
             if isinstance(outcome, BaseException):
@@ -438,27 +578,38 @@ class GrpcStreamControlTransport:
             routing_plan_hash=str(routing.get("routing_plan_hash") or ""),
             execution_revision=str(self.config.pipeline_revision or ""),
         )
-        return self._send("job_accept", message)
+        response = self._send("job_accept", message)
+        self._metric("job_accepts")
+        return response
 
     def reject_job(self, job_id: str, payload: dict[str, Any], _token: str) -> dict[str, Any]:
-        return self._send(
+        response = self._send(
             "job_decline",
             adapters.job_decline_from_http(payload, job_id=job_id, worker_id=self.worker_id),
         )
+        self._metric("job_declines")
+        return response
 
     def post_events(
         self, job_id: str, attempt_id: str, first_seq: int,
         events: list[dict[str, Any]], _token: str,
     ) -> dict[str, Any]:
+        bounded_events = events[: self._max_events_per_batch]
+        key = (job_id, attempt_id)
+        previous_first = self._last_event_batch.get(key)
+        if previous_first is not None and first_seq <= previous_first:
+            self._metric("event_replays")
+        self._last_event_batch[key] = first_seq
         response = self._send(
             "event_batch",
             adapters.event_batch_from_http(
                 {"job_id": job_id, "attempt_id": attempt_id,
-                 "first_seq": first_seq, "events": events},
+                 "first_seq": first_seq, "events": bounded_events},
                 worker_id=self.worker_id,
             ),
             wait_response=True,
         )
+        self._metric("event_batches_sent")
         if response.WhichOneof("payload") == "error":
             match = re.search(r"(?:expected|sequence)\D+(\d+)", response.error.safe_message)
             if match:
@@ -488,6 +639,10 @@ class GrpcStreamControlTransport:
             stage = stream_pb.CANCEL_ACK_STAGE_CANCELLED
         # command identity is retained in a small side map when delivered.
         identity = self._cancel_identity.get(command_id, {})
+        if not identity.get("job_id") or not identity.get("attempt_id"):
+            raise GrpcTransportError(
+                "CancelCommand identity has not been replayed on this connection yet"
+            )
         message = stream_pb.CancelAck(
             command_id=command_id,
             job_id=str(identity.get("job_id") or ""),
@@ -556,11 +711,13 @@ class GrpcStreamControlTransport:
             ),
             wait_response=True,
         )
+        self._metric("result_ready_sent")
         kind = response.WhichOneof("payload")
         if kind == "result_rejected":
             raise CenterError(422, response.result_rejected.safe_detail)
         if kind == "error":
             raise CenterError(409, response.error.safe_message)
+        self._metric("result_acks_received")
         return adapters.result_ack_to_http(response.result_ack)
 
     def update_registration(self, payload: dict[str, Any]) -> dict[str, Any]:

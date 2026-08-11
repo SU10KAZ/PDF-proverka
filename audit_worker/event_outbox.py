@@ -404,9 +404,13 @@ class EventOutbox:
             self.active_segment = max(
                 self.active_segment, int(cursor.get("active_segment", 1))
             )
-            self.last_acked_seq = max(
-                self.last_acked_seq,
-                int(ack.get("last_acked_seq", cursor.get("last_acked_seq", 0))),
+            # ACK is normally monotonic, but Agent Stream CenterHello may
+            # authoritatively rewind it after Center lost an uncommitted tail.
+            # Compacted segments are retained under events/acked specifically
+            # so this safe replay remains possible. A stale local writer can at
+            # worst cause duplicate delivery, which Center deduplicates.
+            self.last_acked_seq = int(
+                ack.get("last_acked_seq", cursor.get("last_acked_seq", 0))
             )
             if self._db is not None:
                 try:

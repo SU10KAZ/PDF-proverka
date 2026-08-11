@@ -15,7 +15,10 @@ from audit_worker.client import CenterClient
 from audit_worker.config import (
     InsecureTransportError, WorkerConfig, validate_control_transport,
 )
-from audit_worker.grpc_transport import GrpcStreamControlTransport
+from audit_worker.event_outbox import EventOutbox
+from audit_worker.grpc_transport import (
+    WORKER_METRIC_NAMES, FatalGrpcTransportError, GrpcStreamControlTransport,
+)
 from audit_worker.local_store import LocalJobStore, WorkerStateStore, atomic_write_json
 from backend.app.agent_gateway.config import GatewayConfig
 from backend.app.agent_gateway.server import GatewayServer
@@ -97,6 +100,10 @@ def test_b_grpc_config_is_explicit_and_local(tmp_path):
     config = _config(tmp_path, control_transport="grpc")
     validate_control_transport(config)
     assert config.grpc_target == "127.0.0.1:12345"
+    assert config.grpc_reconnect_min_delay_sec <= config.grpc_reconnect_max_delay_sec
+    assert 0 <= config.grpc_reconnect_jitter <= 1
+    assert config.grpc_max_send_message_bytes == 1024 * 1024
+    assert config.grpc_max_receive_message_bytes == 1024 * 1024
 
 
 def test_c_d_polling_and_grpc_are_single_owner_modes(tmp_path):
@@ -159,11 +166,68 @@ def test_k_l_center_hello_parsing_binds_https_context(tmp_path):
         hello=stream_pb.CenterHello(
             accepted_protocol_version=1,
             connection_id="gconn_0123456789abcdef",
+            heartbeat_interval={"seconds": 7},
+            max_control_message_bytes=65536,
         ),
     )
     transport._handle_response(response)
     assert transport._ready.is_set()
     assert transport.data.connection_id == "gconn_0123456789abcdef"
+    assert transport.heartbeat_interval_sec == 7
+    assert transport._max_control_message_bytes == 65536
+    assert transport.metrics_snapshot()["grpc_connect_success"] == 1
+    assert set(transport.metrics_snapshot()) == set(WORKER_METRIC_NAMES)
+
+
+def test_center_resume_cursor_rewinds_tail_and_rejects_impossible_ack(tmp_path):
+    transport = _transport(tmp_path)
+    job_id = "job_0123456789abcdef"
+    attempt_id = "att_0123456789abcdef"
+    transport.jobs.create({
+        "job_id": job_id, "attempt_id": attempt_id,
+        "job_type": "test_pipeline_v1", "execution_token": "",
+    })
+    events = transport.jobs.job_dir(job_id, attempt_id) / "events"
+    outbox = EventOutbox(events)
+    for index in range(1, 8):
+        assert outbox.append("stage_progress", {"index": index}) == index
+    outbox.ack(5)
+
+    transport._handle_response(stream_pb.CenterToAgent(
+        protocol_version=1,
+        stream_sequence=1,
+        worker_id=transport.worker_id,
+        connection_id="gconn_0123456789abcdef",
+        hello=stream_pb.CenterHello(
+            accepted_protocol_version=1,
+            connection_id="gconn_0123456789abcdef",
+            resume_cursors=[{
+                "job_id": job_id,
+                "attempt_id": attempt_id,
+                "highest_contiguous_sequence": 3,
+            }],
+        ),
+    ))
+    outbox.reload()
+    assert outbox.last_acked_seq == 3
+    assert [item["seq"] for item in outbox.pending_batch()] == [4, 5, 6, 7]
+
+    with pytest.raises(FatalGrpcTransportError, match="exceeds"):
+        transport._handle_response(stream_pb.CenterToAgent(
+            protocol_version=1,
+            stream_sequence=2,
+            worker_id=transport.worker_id,
+            connection_id="gconn_0123456789abcdef",
+            hello=stream_pb.CenterHello(
+                accepted_protocol_version=1,
+                connection_id="gconn_0123456789abcdef",
+                resume_cursors=[{
+                    "job_id": job_id,
+                    "attempt_id": attempt_id,
+                    "highest_contiguous_sequence": 8,
+                }],
+            ),
+        ))
 
 
 def test_p_ba_heartbeat_is_coalesced_to_latest(tmp_path):
@@ -187,6 +251,56 @@ def test_q_bb_capabilities_change_is_coalesced(tmp_path):
 def test_az_bounded_critical_queue(tmp_path):
     transport = _transport(tmp_path, queue_max=8)
     assert transport._critical.maxsize == 8
+
+
+def test_ab_ac_negotiated_event_batch_bound_and_ack(tmp_path):
+    transport = _transport(tmp_path)
+    transport._max_events_per_batch = 17
+    captured = {}
+
+    def send(_kind, message, **_kwargs):
+        captured["count"] = len(message.events)
+        return stream_pb.CenterToAgent(
+            protocol_version=1,
+            stream_sequence=1,
+            worker_id=transport.worker_id,
+            connection_id="gconn_0123456789abcdef",
+            event_ack=stream_pb.EventAck(
+                job_id=message.job_id,
+                attempt_id=message.attempt_id,
+                highest_contiguous_sequence=17,
+                accepted=17,
+            ),
+        )
+
+    transport._send = send
+    events = [
+        {
+            "seq": index,
+            "event_id": f"ev_{index:016d}",
+            "event_type": "stage_progress",
+            "occurred_at": time.time(),
+            "schema_version": 1,
+            "payload": {"index": index},
+        }
+        for index in range(1, 301)
+    ]
+    response = transport.post_events(
+        "job_0123456789abcdef", "att_0123456789abcdef", 1, events, ""
+    )
+    assert captured["count"] == 17
+    assert response["last_seen_seq"] == 17
+
+
+def test_ai_cancel_ack_waits_for_replayed_command_identity(tmp_path):
+    from audit_worker.grpc_transport import GrpcTransportError
+
+    transport = _transport(tmp_path)
+    with pytest.raises(GrpcTransportError, match="identity"):
+        transport.ack_command(
+            "cmd_0123456789abcdef",
+            {"status": "ok", "detail": {"outcome": "cancelled"}},
+        )
 
 
 def test_x_https_source_uses_opaque_transfer_and_active_stream_headers(tmp_path):
@@ -368,6 +482,7 @@ def _registered_grpc_agent(env, port, *, slots=1):
         control_transport="grpc",
         grpc_target=f"127.0.0.1:{port}",
         grpc_connect_timeout_sec=5,
+        grpc_heartbeat_interval_override_sec=5,
         pipeline_revision=None,
     )
     config.ensure_dirs()
@@ -390,6 +505,28 @@ def _registered_grpc_agent(env, port, *, slots=1):
         },
     }
     return config, agent, admin, identity
+
+
+def test_idle_stream_for_one_minute_has_no_reconnect_or_busy_loop(grpc_e2e_env):
+    """A healthy idle stream stays on one epoch while periodic heartbeats flow."""
+    gateway = _GatewayThread(grpc_e2e_env[1])
+    port = gateway.start()
+    config, agent, _admin, _identity = _registered_grpc_agent(grpc_e2e_env, port)
+
+    try:
+        agent.heartbeat.start()
+        assert _wait_until(lambda: agent.client._ready.is_set(), 10)
+        epoch = json.loads(config.state_path.read_text())["connection_epoch"]
+        time.sleep(60)
+        metrics = gateway.server.metrics.snapshot()
+        assert agent.client._ready.is_set()
+        assert json.loads(config.state_path.read_text())["connection_epoch"] == epoch
+        assert metrics.get("connections_total{protocol_version=1}") == 1
+        assert metrics.get("stream_disconnects", 0) == 0
+        assert metrics.get("heartbeats_total", 0) >= 10
+    finally:
+        agent.shutdown()
+        gateway.stop()
 
 
 def test_local_real_agent_gateway_executor_eventoutbox_https_resultack(
@@ -554,7 +691,11 @@ def test_agent_restart_adopts_live_executor_higher_epoch_no_duplicate(grpc_e2e_e
                 "running", "finished"
             }
 
-            agent2 = WorkerAgent(config, identity)
+            from audit_worker.registration import ensure_registered
+
+            identity2 = ensure_registered(config)
+            assert identity2["instance_id"] != identity["instance_id"]
+            agent2 = WorkerAgent(config, identity2)
             agent2.monitor.snapshot = lambda **_: {
                 "at": time.time(),
                 "slots": {"calculated_free": 0, "binding_constraint": "active"},
@@ -637,4 +778,56 @@ def test_multi_slot_two_real_attempts_one_stream_no_third(grpc_e2e_env):
         assert gateway.server.metrics.snapshot().get("active_connections") == 1
     finally:
         agent.shutdown()
+        gateway.stop()
+
+
+def test_controlled_grpc_to_polling_switch_requires_disconnected_stream(grpc_e2e_env):
+    gateway = _GatewayThread(grpc_e2e_env[1])
+    port = gateway.start()
+    config, agent, admin, identity = _registered_grpc_agent(grpc_e2e_env, port)
+    from audit_worker.registration import ensure_registered
+    from backend.app.services.distributed_workers import gateway_repository
+
+    try:
+        agent.heartbeat.beat_once()
+        assert _wait_until(lambda: agent.client._ready.is_set(), 10)
+        created = admin.post(
+            "/api/workers/jobs",
+            json={"worker_id": identity["worker_id"], "project_id": "12c-switch",
+                  "params": {"label": "switch", "steps": 2, "step_seconds": 0.01}},
+        )
+        assert created.status_code == 200, created.text
+        agent.shutdown()
+        assert _wait_until(
+            lambda: not (
+                gateway_repository.get_transport_session(
+                    identity["worker_id"], settings=grpc_e2e_env[1]
+                ) or {}
+            ).get("active_connection_id"),
+            10,
+        )
+        polling_identity = ensure_registered(config)
+        client = CenterClient(
+            "http://center",
+            token=polling_identity["token"],
+            worker_id=polling_identity["worker_id"],
+            instance_id=polling_identity["instance_id"],
+            transport=grpc_e2e_env[2],
+        )
+        try:
+            assignment = client.next_job(
+                {"free_slots": 1, "busy_slots": 0,
+                 "accepts": {"compressions": ["gzip"]}, "wait_sec": 0,
+                 "executor_status": "online"}
+            )
+        finally:
+            client.close()
+        assert assignment is not None
+        session = gateway_repository.get_transport_session(
+            identity["worker_id"], settings=grpc_e2e_env[1]
+        )
+        assert session["transport_mode"] == "polling"
+    finally:
+        if not agent._stop.is_set():
+            agent.shutdown()
         gateway.stop()

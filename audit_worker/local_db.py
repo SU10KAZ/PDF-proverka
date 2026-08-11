@@ -642,6 +642,15 @@ class LocalDB:
                 (local_command_id,),
             )
 
+    def retry_reported_command(self, local_command_id: str) -> None:
+        """A repeated central command proves the prior ACK was not committed."""
+        with self.write() as conn:
+            conn.execute(
+                "UPDATE local_commands SET status = 'done' "
+                "WHERE local_command_id = ? AND status = 'reported'",
+                (local_command_id,),
+            )
+
     def pending_local_command_count(self) -> int:
         row = self.read().execute(
             "SELECT COUNT(*) AS n FROM local_commands WHERE status IN "

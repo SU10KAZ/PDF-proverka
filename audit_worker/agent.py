@@ -132,6 +132,7 @@ class WorkerAgent:
                 instance_id=self.instance_id,
                 config=config,
                 build_heartbeat=self._heartbeat_payload,
+                log=_log,
             )
         else:
             self.client = data_client
@@ -780,13 +781,19 @@ class WorkerAgent:
             ctype = command.get("command_type")
             body = command.get("payload") or {}
             if ctype in self._LOCAL_COMMANDS:
-                self.db.enqueue_local_command(
+                local = self.db.enqueue_local_command(
                     command_type=ctype,
                     job_id=body.get("job_id") or command.get("job_id"),
                     attempt_id=body.get("attempt_id") or command.get("attempt_id"),
                     payload=body,
                     central_command_id=command["command_id"],
                 )
+                if local and local.get("status") == "reported":
+                    # Center can re-emit only an unacknowledged command. A
+                    # duplicate after reconnect therefore proves the previous
+                    # fire-and-stream ACK was lost before commit; make its
+                    # durable result reportable again without re-executing it.
+                    self.db.retry_reported_command(local["local_command_id"])
                 continue
             # Закрытый набор: неизвестное не исполняем и честно говорим об этом.
             self._ack_center(

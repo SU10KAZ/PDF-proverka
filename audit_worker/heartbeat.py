@@ -62,7 +62,13 @@ class HeartbeatClient:
         while not self._stop.is_set():
             try:
                 self.beat_once()
-                wait = self._interval
+                # A streaming transport can negotiate the CenterHello policy.
+                # Polling clients do not expose this property and retain the
+                # configured legacy interval.
+                wait = max(
+                    5.0,
+                    float(getattr(self._client, "heartbeat_interval_sec", self._interval)),
+                )
                 delays = backoff_delays()
             except Exception as exc:  # noqa: BLE001 — сеть не повод падать
                 self.consecutive_failures += 1

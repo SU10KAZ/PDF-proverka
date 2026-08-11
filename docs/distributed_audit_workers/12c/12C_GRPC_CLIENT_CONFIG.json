@@ -6,6 +6,12 @@
   "protocol_versions": [1],
   "security_mode": "test_insecure",
   "test_insecure_scope": "loopback_only",
+  "connect_timeout_sec": 15,
+  "heartbeat_policy": "CenterHello unless explicit local override",
+  "reconnect": {"min_sec": 1, "max_sec": 30, "jitter": 0.2},
+  "max_send_message_bytes": 1048576,
+  "max_receive_message_bytes": 1048576,
+  "outbound_queue_max": 128,
   "automatic_fallback": false,
   "https_verify_tls": true,
   "optional_requirements": "requirements-worker-grpc.txt"
