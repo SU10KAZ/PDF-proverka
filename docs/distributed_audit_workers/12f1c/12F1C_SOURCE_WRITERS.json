@@ -1,0 +1,43 @@
+{
+  "schema": "auditmanager.12f1c.source_writers.v1",
+  "observed_at": "2026-08-12T21:15:42+03:00",
+  "production_root": "/home/coder/projects/PDF-proverka",
+  "production_branch": "feature/block-vector-graphs",
+  "production_status_path_count": 105,
+  "suspected_writer": {
+    "writer_class": "PARALLEL_CODING_AGENT",
+    "tool": "Claude",
+    "pid": 1630609,
+    "parent_pid": 1279211,
+    "started": "2026-08-12T07:22:24+03:00",
+    "working_directory": "/home/coder/projects/PDF-proverka",
+    "branch": "feature/block-vector-graphs",
+    "production_checkout": true,
+    "isolated_worktree": false,
+    "confidence": "HIGH",
+    "active_at_check": true,
+    "mutation_capable": true
+  },
+  "file_level_attribution": {
+    "all_seven_12f1b_deltas_proven_to_be_written_by_this_pid": false,
+    "evidence": "Process identity, cwd and branch prove a mutation-capable Claude is active in production root. No file-level audit/inotify/process-open evidence ties this PID to every individual delta.",
+    "claim": "NOT_MADE"
+  },
+  "other_coding_agents": {
+    "production_root_agents_confirmed": [],
+    "agents_with_other_cwds": [
+      {"pid": 1276831, "tool": "Claude", "cwd": "/home/coder/Uzun/Uzun L/Normirovanie"},
+      {"pid": 1839408, "tool": "Claude", "cwd": "/home/coder/projects/OSA/Repnikov"},
+      {"pid": 1856883, "tool": "Claude", "cwd": "/home/coder/projects/OSA/Grivapsch"},
+      {"pid": 1868175, "tool": "Claude", "cwd": "/home/coder/projects/OSA/Repnikov"},
+      {"pid": 2044497, "tool": "Claude", "cwd": "/home/coder/projects/OSA/Alexandra"}
+    ],
+    "idle_shells_language_servers_production_runtime_and_orphan_workers": "OBSERVED_BUT_NOT_CLASSIFIED_AS_SOURCE_WRITERS_WITHOUT_WRITE_EVIDENCE",
+    "final_absence_check": "NOT_PERFORMABLE_UNTIL_PARALLEL_CLAUDE_IS_STOPPED"
+  },
+  "parallel_production_coding_agent_stopped": false,
+  "other_source_writers_absent": "NOT_PROVEN",
+  "production_source_writers_final_count": "AT_LEAST_1",
+  "production_source_quiescent": false,
+  "processes_signalled_or_killed": false
+}

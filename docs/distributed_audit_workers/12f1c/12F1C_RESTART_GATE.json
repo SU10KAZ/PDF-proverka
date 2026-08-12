@@ -1,0 +1,39 @@
+{
+  "schema": "auditmanager.12f1c.restart_gate.v1",
+  "ready_for_operator_restart": false,
+  "checks": {
+    "parallel_production_coding_agent_stopped": false,
+    "other_source_writers_absent": false,
+    "quiescence_20min_pass": false,
+    "source_changes_during_window_zero": false,
+    "authoritative_snapshot_complete": false,
+    "all_new_deltas_resolved": false,
+    "final_baseline_equivalence": false,
+    "unexplained_source_diffs_zero": false,
+    "final_baseline_immutable": false,
+    "rollback_release_immutable": false,
+    "final_candidate_immutable": false,
+    "baseline_boot_pass": false,
+    "candidate_boot_pass": false,
+    "production_core_regression_pass": false,
+    "stage_comparison_regression_pass": false,
+    "distributed_regressions_pass": false,
+    "polling_compatibility_pass": false,
+    "scheduler_safe_default_in_provisional_candidate": true,
+    "role_mapping_ready_in_provisional_candidate": true,
+    "persistent_state_external_in_provisional_candidate": true,
+    "bootstrap_auth_secure_in_provisional_candidate": true,
+    "rollback_dry_run_pass_for_provisional_artifacts": true,
+    "baseline_review_pass": false,
+    "candidate_review_pass": false,
+    "provider_inference_zero": true,
+    "production_unchanged": true,
+    "operator_restart_authorization": false
+  },
+  "blockers": [
+    "Claude PID 1630609 remains active with cwd equal to the production Git root.",
+    "Other-source-writer absence must be re-audited only after the known production-root writer is stopped.",
+    "The required fresh 20-minute hash quiescence window has not started.",
+    "No new authoritative snapshot, final baseline, final candidate or final releases may be built before those gates pass."
+  ]
+}
