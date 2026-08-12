@@ -177,7 +177,10 @@ def create_job(args: argparse.Namespace) -> int:
     job = job_service.create_test_job(
         worker_id=context["worker_id"], project_id=args.project_id, version_id=None,
         params=TestJobParams(label=args.label, steps=args.steps, step_seconds=args.step_seconds),
-        actor="12e-isolated-harness", settings=get_settings(),
+        # ``create_test_job`` immediately performs CREATED -> ASSIGNED.  The
+        # transition policy accepts only the typed Center/operator roles; keep
+        # the physical harness inside that same authorization boundary.
+        actor="center:12e-isolated-harness", settings=get_settings(),
     )
     result = {key: job.get(key) for key in ("job_id", "attempt_id", "state", "assigned_worker_id", "package_id")}
     _write_json(root / "jobs" / (str(job["job_id"]) + ".json"), result)
