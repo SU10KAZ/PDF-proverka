@@ -66,6 +66,9 @@ def grpc_failure_reason_code(exc: BaseException) -> str:
     descriptions can contain infrastructure details and stay in local logs;
     the durable operator snapshot records only a typed reason.
     """
+    text = str(exc).upper()
+    if "CENTER_DB_UNAVAILABLE" in text:
+        return "CENTER_DB_UNAVAILABLE"
     if isinstance(exc, FatalGrpcTransportError):
         return "PROTOCOL_MISMATCH"
     if isinstance(exc, grpc.RpcError):
@@ -76,7 +79,6 @@ def grpc_failure_reason_code(exc: BaseException) -> str:
             return "GRPC_UNAVAILABLE"
         if code is grpc.StatusCode.DEADLINE_EXCEEDED:
             return "TCP_FAILED"
-    text = str(exc).upper()
     if "CERTIFICATE" in text or "SSL" in text or "TLS" in text:
         return "TLS_FAILED"
     if "AUTH" in text:
@@ -642,6 +644,13 @@ class GrpcStreamControlTransport:
         ):
             # Section 11 requires close/backoff/reconnect, not a permanent
             # client-thread stop. Active Executors remain independent.
+            raise GrpcTransportError(response.error.safe_message)
+        if (
+            kind == "error"
+            and response.error.retryable
+            and not response.correlation_id
+            and response.error.safe_message == "CENTER_DB_UNAVAILABLE"
+        ):
             raise GrpcTransportError(response.error.safe_message)
 
     def _fail_waiters(self, exc: BaseException) -> None:

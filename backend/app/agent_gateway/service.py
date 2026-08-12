@@ -5,6 +5,7 @@ import asyncio
 import logging
 import math
 import re
+import sqlite3
 import time
 import uuid
 from contextlib import suppress
@@ -36,6 +37,8 @@ logger = logging.getLogger("agent-gateway")
 _ID_RE = re.compile(r"^[A-Za-z0-9._-]{1,128}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _MAX_CLOCK_SKEW_SEC = 30 * 86400
+_CENTER_DB_UNAVAILABLE = "CENTER_DB_UNAVAILABLE"
+_DB_ERRORS = (sqlite3.Error, OSError)
 
 
 class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
@@ -74,6 +77,11 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                         worker_id=peer_identity.worker_id,
                     )
                     self.metrics.inc("mtls_handshakes_total")
+                except _DB_ERRORS:
+                    self.metrics.inc("connection_rejects", labels={"reason": "center_db"})
+                    logger.exception("mTLS registry unavailable")
+                    await context.abort(grpc.StatusCode.UNAVAILABLE, _CENTER_DB_UNAVAILABLE)
+                    return
                 except (PeerAuthenticationError, CertificateRegistryError) as exc:
                     self.metrics.inc("mtls_handshake_failures")
                     reason = str(exc)
@@ -168,6 +176,11 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                 _, old_connection_id = await self.domain.accept_hello(
                     hello, connection_id=connection_id, protocol_version=version
                 )
+            except _DB_ERRORS:
+                self.metrics.inc("connection_rejects", labels={"reason": "center_db"})
+                logger.exception("Center DB unavailable during AgentHello")
+                await context.abort(grpc.StatusCode.UNAVAILABLE, _CENTER_DB_UNAVAILABLE)
+                return
             except DomainViolation as exc:
                 self.metrics.inc("connection_rejects", labels={"reason": "fence"})
                 yield self._bare_error(first, exc.code, str(exc))
@@ -215,9 +228,15 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
             )
             hello_response.max_events_per_batch = self.config.max_event_batch_count
             hello_response.max_unacked_event_window = self.config.max_unacked_event_window
-            hello_response.resume_cursors.extend(
-                await self.domain.resume_cursors(session.worker_id)
-            )
+            try:
+                hello_response.resume_cursors.extend(
+                    await self.domain.resume_cursors(session.worker_id)
+                )
+            except _DB_ERRORS:
+                self.metrics.inc("connection_rejects", labels={"reason": "center_db"})
+                logger.exception("Center DB unavailable during stream resume")
+                await context.abort(grpc.StatusCode.UNAVAILABLE, _CENTER_DB_UNAVAILABLE)
+                return
             session.enqueue(self._response(session, correlation_id=first.correlation_id, hello=hello_response))
             self.metrics.inc("connections_total", labels={"protocol_version": version})
             logger.info(
@@ -254,13 +273,20 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                     with suppress(asyncio.CancelledError, Exception):
                         await task
             if session is not None:
-                await database.run_db(
-                    gateway_repository.disconnect_connection,
-                    session.worker_id,
-                    session.connection_id,
-                    settings=self.domain.settings,
-                )
-                await self.registry.unregister(session)
+                try:
+                    await database.run_db(
+                        gateway_repository.disconnect_connection,
+                        session.worker_id,
+                        session.connection_id,
+                        settings=self.domain.settings,
+                    )
+                except _DB_ERRORS:
+                    # The durable fencing row remains fail-closed.  In-memory
+                    # cleanup must still happen or every DB outage leaks a
+                    # stale session and prevents deterministic drain/restart.
+                    logger.exception("Center DB unavailable during stream disconnect")
+                finally:
+                    await self.registry.unregister(session)
                 self.metrics.inc("stream_disconnects")
                 logger.info(
                     "stream disconnected",
@@ -297,6 +323,17 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                     fingerprint_sha256=peer.fingerprint_sha256,
                     worker_id=peer.worker_id,
                 )
+            except _DB_ERRORS:
+                logger.exception("Center DB unavailable during certificate revalidation")
+                await self._error(
+                    session,
+                    None,
+                    common_pb.ERROR_CODE_INTERNAL_SAFE,
+                    _CENTER_DB_UNAVAILABLE,
+                    retryable=True,
+                    close=True,
+                )
+                return
             except CertificateRegistryError as exc:
                 if "expired" in str(exc).lower() or "EXPIRED" in str(exc):
                     self.metrics.inc("cert_expired_rejections")
@@ -358,6 +395,19 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
                     await self._error(session, envelope, common_pb.ERROR_CODE_INVALID_MESSAGE, str(exc)[:300])
         except asyncio.CancelledError:
             raise
+        except _DB_ERRORS:
+            logger.exception(
+                "Center DB unavailable in inbound dispatcher",
+                extra={"worker_id": session.worker_id, "connection_id": session.connection_id},
+            )
+            await self._error(
+                session,
+                None,
+                common_pb.ERROR_CODE_INTERNAL_SAFE,
+                _CENTER_DB_UNAVAILABLE,
+                retryable=True,
+                close=True,
+            )
         except Exception:
             logger.exception(
                 "inbound dispatcher failed",
@@ -528,21 +578,21 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
         while not session.closing.is_set():
             await asyncio.sleep(self.config.offer_poll_interval_sec)
             now = time.time()
-            durable = await database.run_db(
-                gateway_repository.get_transport_session,
-                session.worker_id,
-                settings=self.domain.settings,
-            )
-            if durable is None or durable.get("active_connection_id") != session.connection_id:
-                session.closing.set()
-                return
-            if now - session.last_heartbeat_at > self.config.heartbeat_timeout_sec:
-                await self._error(session, None, common_pb.ERROR_CODE_STALE_CONNECTION, "heartbeat timeout", retryable=True, close=True)
-                return
-            if now - session.last_message_at > self.config.idle_timeout_sec:
-                await self._error(session, None, common_pb.ERROR_CODE_STALE_CONNECTION, "connection idle timeout", retryable=True, close=True)
-                return
             try:
+                durable = await database.run_db(
+                    gateway_repository.get_transport_session,
+                    session.worker_id,
+                    settings=self.domain.settings,
+                )
+                if durable is None or durable.get("active_connection_id") != session.connection_id:
+                    session.closing.set()
+                    return
+                if now - session.last_heartbeat_at > self.config.heartbeat_timeout_sec:
+                    await self._error(session, None, common_pb.ERROR_CODE_STALE_CONNECTION, "heartbeat timeout", retryable=True, close=True)
+                    return
+                if now - session.last_message_at > self.config.idle_timeout_sec:
+                    await self._error(session, None, common_pb.ERROR_CODE_STALE_CONNECTION, "connection idle timeout", retryable=True, close=True)
+                    return
                 await self.domain.recover_expired_offers()
                 for offer in await self.domain.outstanding_offers(session.worker_id):
                     if offer.attempt_id not in session.sent_offers:
@@ -588,6 +638,20 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
             except asyncio.QueueFull:
                 self.metrics.inc("queue_rejections")
                 session.closing.set()
+                return
+            except _DB_ERRORS:
+                logger.exception(
+                    "Center DB unavailable in outbound scheduler",
+                    extra={"worker_id": session.worker_id, "connection_id": session.connection_id},
+                )
+                await self._error(
+                    session,
+                    None,
+                    common_pb.ERROR_CODE_INTERNAL_SAFE,
+                    _CENTER_DB_UNAVAILABLE,
+                    retryable=True,
+                    close=True,
+                )
                 return
             except Exception:
                 logger.exception(

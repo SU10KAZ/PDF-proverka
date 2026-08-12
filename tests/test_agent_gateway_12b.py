@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import os
+import sqlite3
 import time
 import uuid
 from pathlib import Path
@@ -828,6 +829,78 @@ async def test_backpressure_many_event_batches_remain_durable(running_gateway, g
         assert ack.highest_contiguous_sequence == seq
     assert repositories.get_cursor(job["job_id"], job["attempt_id"], settings=gateway_env) == 50
     await agent.close()
+
+
+@pytest.mark.asyncio
+async def test_c28_center_db_outage_is_typed_fail_closed_and_recovers(
+    running_gateway, gateway_env, monkeypatch
+):
+    """C28: never acknowledge an event whose required DB touch could not persist."""
+    server, port = running_gateway
+    worker = make_worker(gateway_env)
+    job = make_job(gateway_env, worker["worker_id"])
+    agent = FakeAgent(worker, port)
+    await agent.connect(epoch=1)
+    await agent.read_until("job_offer")
+    batch = adapters.event_batch_from_http(
+        {
+            "job_id": job["job_id"],
+            "attempt_id": job["attempt_id"],
+            "first_seq": 1,
+            "events": [
+                {
+                    "seq": 1,
+                    "event_id": "c28-event-1",
+                    "event_type": "resource_warning",
+                    "occurred_at": time.time(),
+                    "payload": {"fault": "isolated_center_db_unavailable"},
+                }
+            ],
+        },
+        worker_id=worker["worker_id"],
+    )
+    original_run_db = database.run_db
+
+    async def unavailable_touch(fn, *args, **kwargs):
+        if fn is gateway_repository.touch_connection:
+            raise sqlite3.OperationalError("simulated isolated Center DB outage")
+        return await original_run_db(fn, *args, **kwargs)
+
+    monkeypatch.setattr(database, "run_db", unavailable_touch)
+    await agent.send("event_batch", batch, correlation_id="c28-event")
+    error = await agent.read_until("error")
+    assert error.error.code == common_pb.ERROR_CODE_INTERNAL_SAFE
+    assert error.error.retryable is True
+    assert error.error.safe_message == "CENTER_DB_UNAVAILABLE"
+    assert repositories.get_cursor(
+        job["job_id"], job["attempt_id"], settings=gateway_env
+    ) == 0
+
+    monkeypatch.setattr(database, "run_db", original_run_db)
+    await agent.close()
+    for _ in range(100):
+        if await server.registry.count() == 0:
+            break
+        await asyncio.sleep(0.01)
+    assert await server.registry.count() == 0
+
+    reconnect = FakeAgent(worker, port)
+    hello = await reconnect.connect(epoch=2)
+    assert hello.WhichOneof("payload") == "hello"
+    await reconnect.read_until("job_offer")
+    await reconnect.send("event_batch", batch, correlation_id="c28-retry")
+    ack = (await reconnect.read_until("event_ack")).event_ack
+    assert ack.highest_contiguous_sequence == 1
+    assert ack.accepted == 1
+    assert repositories.get_cursor(
+        job["job_id"], job["attempt_id"], settings=gateway_env
+    ) == 1
+    events = repositories.list_events(
+        job["job_id"], attempt_id=job["attempt_id"], settings=gateway_env
+    )
+    assert [event["sequence"] for event in events] == [1]
+    assert await server.registry.count() == 1
+    await reconnect.close()
 
 
 def test_bo_no_provider_inference_or_production_deploy_surface():

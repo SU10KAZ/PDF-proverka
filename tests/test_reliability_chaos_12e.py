@@ -165,6 +165,10 @@ def test_12e_typed_disconnect_reasons_are_stable():
     assert grpc_failure_reason_code(FatalGrpcTransportError("bad protocol")) == "PROTOCOL_MISMATCH"
     assert grpc_failure_reason_code(RuntimeError("TLS certificate verify failed")) == "TLS_FAILED"
     assert grpc_failure_reason_code(RuntimeError("stream ended")) == "GRPC_UNAVAILABLE"
+    assert (
+        grpc_failure_reason_code(RuntimeError("CENTER_DB_UNAVAILABLE"))
+        == "CENTER_DB_UNAVAILABLE"
+    )
     assert grpc_failure_reason_code(RuntimeError("unclassified")) == "UNKNOWN"
 
 

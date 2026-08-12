@@ -5,6 +5,7 @@ No HTTP loopback calls and no duplicate scheduler/state machine live here.
 from __future__ import annotations
 
 import json
+import sqlite3
 import time
 from typing import Any, Optional
 
@@ -93,6 +94,8 @@ class GatewayDomainAdapter:
                 capabilities=capabilities,
                 settings=self.settings,
             )
+        except (sqlite3.Error, OSError):
+            raise
         except Exception as exc:
             raise DomainViolation("capabilities/revision update rejected") from exc
         await self._record_provider_snapshots(hello.worker_id, hello.capabilities)
