@@ -156,6 +156,24 @@ def test_b_external_data_plane_rejects_non_https(tmp_path):
         validate_transport_security(config)
 
 
+def test_b_configured_data_plane_ca_bundle_fails_closed(tmp_path):
+    from audit_worker.config import (
+        InsecureTransportError,
+        WorkerConfig,
+        data_plane_tls_verify,
+    )
+
+    config = WorkerConfig(
+        dispatcher_url="https://control.example",
+        data_plane_base_url="https://data.example:9443",
+        data_plane_ca_bundle_path=tmp_path / "missing-ca.pem",
+        root=tmp_path,
+        display_name="data-plane-ca",
+    )
+    with pytest.raises(InsecureTransportError, match="DATA_PLANE_CA_BUNDLE"):
+        data_plane_tls_verify(config)
+
+
 def test_c_d_polling_and_grpc_are_single_owner_modes(tmp_path):
     assert _config(tmp_path).control_transport == "polling"
     assert _config(tmp_path, control_transport="grpc").control_transport == "grpc"

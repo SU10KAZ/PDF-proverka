@@ -42,7 +42,7 @@ from audit_worker.client import (
     SequenceGapError,
     backoff_delays,
 )
-from audit_worker.config import WorkerConfig
+from audit_worker.config import WorkerConfig, data_plane_tls_verify
 from audit_worker.event_outbox import EventOutbox
 from audit_worker.heartbeat import HeartbeatClient
 from audit_worker.job_poller import JobPullClient
@@ -118,7 +118,7 @@ class WorkerAgent:
             worker_id=self.worker_id,
             instance_id=self.instance_id,
             timeout=config.request_timeout_sec,
-            verify=config.verify_tls,
+            verify=data_plane_tls_verify(config),
             transport=config.transport,
         )
         if config.control_transport == "grpc":

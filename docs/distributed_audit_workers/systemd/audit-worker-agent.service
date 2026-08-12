@@ -20,6 +20,7 @@ Environment=AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.example
 # Optional separate HTTPS origin for source/result package bytes. Omit to keep
 # the production-compatible default above.
 # Environment=AUDIT_WORKER_DATA_PLANE_BASE_URL=https://data.auditmanager.example
+# Environment=AUDIT_WORKER_DATA_PLANE_CA_BUNDLE=/etc/audit-worker/data-plane-ca.pem
 Environment=AUDIT_WORKER_NAME=%H
 # Число слотов ставится в ОБОИХ юнитах и должно совпадать. С этапа
 # пред-пайплайнового гейта агент отдаёт своё значение центру в heartbeat, а

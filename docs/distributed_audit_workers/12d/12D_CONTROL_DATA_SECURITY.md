@@ -12,5 +12,8 @@ that optional typed setting is present. Its production-compatible default is
 the existing `AUDIT_WORKER_DISPATCHER_URL`, so deployments with a single HTTPS
 origin are unchanged. Both origins independently enforce HTTPS (the existing
 explicit localhost-only development exception remains the only HTTP path).
+An isolated origin may use a private trust root through
+`AUDIT_WORKER_DATA_PLANE_CA_BUNDLE`; if omitted, the normal system trust store
+is unchanged. A configured but unreadable/invalid bundle fails startup.
 Transfer descriptors remain URL- and credential-free; no Proto change is
 required.

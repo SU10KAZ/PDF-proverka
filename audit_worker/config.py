@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import platform
+import ssl
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -70,6 +71,9 @@ class WorkerConfig:
     # HTTPS data plane may be exposed independently from registration/control.
     # None preserves the production behavior: package traffic uses dispatcher_url.
     data_plane_base_url: str | None = None
+    # Optional private CA for an independently exposed HTTPS data plane.
+    # None keeps the system production trust store.
+    data_plane_ca_bundle_path: Path | None = None
     heartbeat_interval_sec: float = 30.0
     poll_wait_sec: int = 25
     event_flush_interval_sec: float = 1.0
@@ -519,6 +523,13 @@ def load_config(
             .rstrip("/")
             or None
         ),
+        data_plane_ca_bundle_path=(
+            Path(os.environ["AUDIT_WORKER_DATA_PLANE_CA_BUNDLE"])
+            .expanduser()
+            .resolve()
+            if os.environ.get("AUDIT_WORKER_DATA_PLANE_CA_BUNDLE", "").strip()
+            else None
+        ),
         heartbeat_interval_sec=_env_float("AUDIT_WORKER_HEARTBEAT_SEC", 30.0),
         poll_wait_sec=_env_int("AUDIT_WORKER_POLL_WAIT_SEC", 25),
         max_slots=_max_slots_from_env(),
@@ -790,6 +801,24 @@ def validate_transport_security(config: "WorkerConfig") -> None:
             setting_name="AUDIT_WORKER_DATA_PLANE_BASE_URL",
             allow_insecure_localhost=config.allow_insecure_localhost,
         )
+    if config.data_plane_ca_bundle_path:
+        data_plane_tls_verify(config)
+
+
+def data_plane_tls_verify(config: "WorkerConfig") -> bool | ssl.SSLContext:
+    """Return system trust or a fail-closed SSL context for the data plane."""
+    bundle = config.data_plane_ca_bundle_path
+    if bundle is None:
+        return True
+    try:
+        if not bundle.is_file():
+            raise OSError("not a regular file")
+        return ssl.create_default_context(cafile=str(bundle))
+    except (OSError, ssl.SSLError) as exc:
+        raise InsecureTransportError(
+            f"AUDIT_WORKER_DATA_PLANE_CA_BUNDLE={bundle}: "
+            "не удалось загрузить CA bundle"
+        ) from exc
 
 
 def validate_control_transport(config: "WorkerConfig") -> None:
