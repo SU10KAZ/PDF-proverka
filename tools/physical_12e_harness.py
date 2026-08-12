@@ -62,6 +62,10 @@ def _context(root: Path) -> dict[str, Any]:
     return json.loads((root / "context.json").read_text(encoding="utf-8"))
 
 
+def _sequential_label(index: int) -> str:
+    return f"12E-sequential-{index:02d}"
+
+
 def prepare_center(args: argparse.Namespace) -> int:
     root = _safe_root(args.root, must_be_new=True)
     root.mkdir(mode=0o700)
@@ -188,6 +192,119 @@ def create_job(args: argparse.Namespace) -> int:
     return 0
 
 
+def sequential_jobs(args: argparse.Namespace) -> int:
+    """Run isolated synthetic jobs one at a time and require durable ResultAck."""
+    root = _safe_root(args.root)
+    if not 1 <= args.count <= 100:
+        raise SystemExit("sequential count must be between 1 and 100")
+    if args.steps < 1 or args.step_seconds < 0 or args.timeout_seconds <= 0:
+        raise SystemExit("sequential timing values are outside the safe test bounds")
+    _center_env(root)
+    context = _context(root)
+    from backend.app.models.distributed_workers import TestJobParams
+    from backend.app.services.distributed_workers import database, job_service, repositories
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    settings = get_settings()
+    started_at = time.time()
+    prefix = args.project_prefix or f"project-12e-sequential-{int(started_at)}"
+    completed: list[dict[str, Any]] = []
+    for index in range(1, args.count + 1):
+        project_id = f"{prefix}-{index:02d}"
+        job = job_service.create_test_job(
+            worker_id=context["worker_id"],
+            project_id=project_id,
+            version_id=None,
+            params=TestJobParams(
+                label=_sequential_label(index),
+                steps=args.steps,
+                step_seconds=args.step_seconds,
+            ),
+            actor="center:12e-isolated-harness",
+            settings=settings,
+        )
+        attempt_id = str(job["attempt_id"])
+        deadline = time.monotonic() + args.timeout_seconds
+        current: dict[str, Any] | None = None
+        while time.monotonic() < deadline:
+            current = repositories.get_attempt(attempt_id, settings=settings)
+            if (
+                current is not None
+                and current.get("state") == "completed"
+                and current.get("result_acknowledged_at") is not None
+            ):
+                break
+            if current is not None and current.get("state") in {
+                "cancelled", "failed", "lost", "superseded"
+            }:
+                break
+            time.sleep(0.2)
+        if current is None or current.get("state") != "completed" or not current.get(
+            "result_acknowledged_at"
+        ):
+            report = {
+                "schema": 1,
+                "status": "FAIL",
+                "started_at": started_at,
+                "ended_at": time.time(),
+                "requested_count": args.count,
+                "completed": completed,
+                "failed": {
+                    "project_id": project_id,
+                    "job_id": job["job_id"],
+                    "attempt_id": attempt_id,
+                    "state": (current or {}).get("state"),
+                },
+                "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+            }
+            _write_json(root / "evidence" / "sequential-jobs.json", report)
+            print(json.dumps(report, sort_keys=True))
+            return 2
+        with database.read_conn(settings) as conn:
+            event_rows, distinct_sequences = conn.execute(
+                "SELECT COUNT(*), COUNT(DISTINCT sequence) FROM worker_events "
+                "WHERE attempt_id=?",
+                (attempt_id,),
+            ).fetchone()
+            offer_count = conn.execute(
+                "SELECT COUNT(*) FROM gateway_job_offers WHERE attempt_id=?",
+                (attempt_id,),
+            ).fetchone()[0]
+        item = {
+            "ordinal": index,
+            "project_id": project_id,
+            "job_id": job["job_id"],
+            "attempt_id": attempt_id,
+            "state": current["state"],
+            "last_event_seq": current.get("last_event_seq"),
+            "event_rows": int(event_rows),
+            "distinct_sequences": int(distinct_sequences),
+            "offer_count": int(offer_count),
+            "result_storage_class": current.get("result_storage_class"),
+            "result_acknowledged_at": current.get("result_acknowledged_at"),
+            "retention_until": current.get("retention_until"),
+        }
+        completed.append(item)
+        print(json.dumps({"kind": "sequential_job", **item}, sort_keys=True), flush=True)
+
+    ended_at = time.time()
+    report = {
+        "schema": 1,
+        "status": "PASS",
+        "started_at": started_at,
+        "ended_at": ended_at,
+        "duration_seconds": ended_at - started_at,
+        "requested_count": args.count,
+        "completed_count": len(completed),
+        "unique_attempt_count": len({item["attempt_id"] for item in completed}),
+        "jobs": completed,
+        "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+    }
+    _write_json(root / "evidence" / "sequential-jobs.json", report)
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
 def worker_init(args: argparse.Namespace) -> int:
     root = _safe_root(args.root, must_be_new=True)
     handoff = json.loads(Path(args.handoff).read_text(encoding="utf-8"))
@@ -241,6 +358,14 @@ def parser() -> argparse.ArgumentParser:
     job.add_argument("--steps", type=int, default=10)
     job.add_argument("--step-seconds", type=float, default=0.1)
     job.set_defaults(func=create_job)
+    sequential = commands.add_parser("sequential-jobs")
+    sequential.add_argument("--root", required=True)
+    sequential.add_argument("--count", type=int, default=10)
+    sequential.add_argument("--project-prefix")
+    sequential.add_argument("--steps", type=int, default=8)
+    sequential.add_argument("--step-seconds", type=float, default=0.1)
+    sequential.add_argument("--timeout-seconds", type=float, default=120.0)
+    sequential.set_defaults(func=sequential_jobs)
     worker = commands.add_parser("worker-init")
     worker.add_argument("--root", required=True)
     worker.add_argument("--handoff", required=True)

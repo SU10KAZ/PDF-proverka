@@ -73,6 +73,24 @@ def _worker_env(root: Path, *, url: str | None = None) -> dict[str, str]:
     return env
 
 
+def _isolate_host_capacity_policy(root: Path, env: dict[str, str]) -> None:
+    """Keep this process-lifecycle test independent from live host swap use.
+
+    Resource-monitor policy has focused tests elsewhere.  Here an available
+    slot is a precondition for proving that killing the Agent neither kills nor
+    duplicates the Executor child.  Hiding optional psutil exercises the
+    monitor's documented unavailable-telemetry path without changing the host
+    or weakening the production threshold.
+    """
+    shim_dir = root / "test-pythonpath"
+    shim_dir.mkdir(parents=True, exist_ok=True)
+    (shim_dir / "psutil.py").write_text(
+        'raise ImportError("isolated process-lifecycle test")\n',
+        encoding="utf-8",
+    )
+    env["PYTHONPATH"] = os.pathsep.join((str(shim_dir), str(_ROOT)))
+
+
 def _spawn_executor(root: Path, **extra_env) -> subprocess.Popen:
     env = _worker_env(root)
     env.update({k: str(v) for k, v in extra_env.items()})
@@ -495,6 +513,7 @@ def test_killing_agent_does_not_stop_the_audit(tmp_path, live_center):
     root = tmp_path / "worker"
     root.mkdir(parents=True, exist_ok=True)
     env = _worker_env(root, url=live_center)
+    _isolate_host_capacity_policy(root, env)
     admin = _admin_client(live_center)
 
     # 1. Регистрация настоящим агентом, 2. одобрение, 3. получение токена.
@@ -513,7 +532,7 @@ def test_killing_agent_does_not_stop_the_audit(tmp_path, live_center):
     )
     assert claim.returncode == 0, claim.stderr
 
-    executor = _spawn_executor(root)
+    executor = _spawn_executor(root, PYTHONPATH=env["PYTHONPATH"])
     agent = subprocess.Popen(  # noqa: S603
         [PY, "-m", "audit_worker", "agent", "--root", str(root), "--max-jobs", "1"],
         env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import queue
+import random
 import threading
 from pathlib import Path
 
@@ -16,6 +17,7 @@ import httpx
 import pytest
 
 from audit_worker import agent as agent_module
+from audit_worker import client as client_module
 from audit_worker.agent import WorkerAgent
 from audit_worker.client import CenterClient
 from audit_worker.__main__ import main
@@ -248,6 +250,25 @@ def test_c34_twelve_grpc_failures_never_fall_back_to_polling(tmp_path, monkeypat
     state = transport.state_store.load()["runtime_diagnostics"]
     assert state["grpc_connection_state"] == "disconnected"
     assert state["last_disconnect_reason"] == "GRPC_UNAVAILABLE"
+
+
+def test_c36_twenty_reconnect_candidates_use_bounded_jitter(monkeypatch):
+    """C36: a reconnect herd does not share one deterministic retry instant."""
+    monkeypatch.setattr(client_module, "random", random.Random(12036))
+    candidates = [
+        client_module.backoff_delays(start=1.0, cap=30.0, jitter=0.2)
+        for _ in range(20)
+    ]
+    first = [next(delays) for delays in candidates]
+    second = [next(delays) for delays in candidates]
+    third = [next(delays) for delays in candidates]
+
+    assert all(0.8 <= value <= 1.2 for value in first)
+    assert all(1.6 <= value <= 2.4 for value in second)
+    assert all(3.2 <= value <= 4.8 for value in third)
+    assert len({round(value, 3) for value in first}) >= 15
+    assert len({round(value, 3) for value in second}) >= 15
+    assert len({round(value, 3) for value in third}) >= 15
 
 
 def test_c14_interrupted_source_body_resumes_from_durable_part(tmp_path, monkeypatch):

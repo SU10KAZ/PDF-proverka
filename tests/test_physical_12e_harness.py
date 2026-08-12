@@ -7,6 +7,13 @@ from backend.app.services.distributed_workers import settings as worker_settings
 from tools import physical_12e_harness
 
 
+def test_sequential_job_label_obeys_test_job_contract():
+    from backend.app.models.distributed_workers import TestJobParams
+
+    label = physical_12e_harness._sequential_label(1)
+    assert TestJobParams(label=label, steps=1, step_seconds=0).label == label
+
+
 def test_create_job_uses_an_authorized_center_actor(tmp_path, monkeypatch):
     root = tmp_path / "isolated-12e"
     captured = {}
