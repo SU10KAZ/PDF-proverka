@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "cutover_allowed": false,
+  "reason": "12E chaos/physical gates remain incomplete; this document does not authorize production cutover.",
+  "gates": {
+    "gateway_ready": "NOT_FINAL",
+    "mtls_valid": "12D_PROVEN_REQUIRES_12E_ACTIVE_JOB_EVIDENCE",
+    "cert_not_near_expiry": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "worker_ready": false,
+    "provider_status_ready": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "worker_zero_active_jobs": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "event_outbox_empty_or_consistent": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "no_pending_cancel": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "no_pending_result": "NOT_CHECKED_FOR_FUTURE_CANARY",
+    "data_plane_ready": "NOT_FINAL",
+    "center_db_ready": "NOT_FINAL",
+    "transport_ownership_consistent": "PASS_LOCAL_ONLY",
+    "polling_agent_can_be_restored": "RUNBOOK_DRAFT_ONLY",
+    "rollback_config_known": true,
+    "firewall_8443_correct": "12D_PROVEN_RECHECK_REQUIRED",
+    "observability_ready": "IMPLEMENTED_LOCAL_DOCTOR"
+  }
+}

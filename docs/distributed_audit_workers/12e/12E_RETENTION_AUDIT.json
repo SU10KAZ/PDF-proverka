@@ -1,0 +1,6 @@
+{
+  "status": "PARTIAL_LOCAL",
+  "local_evidence": ["lost ResultAck is replayed", "retention starts only after validated acceptance", "unconfirmed result has no deletion timer"],
+  "physical_evidence": "NOT_RUN",
+  "premature_deletion_count": null
+}

@@ -1,0 +1,9 @@
+{
+  "status": "PENDING_AFTER_SNAPSHOT",
+  "before_snapshot": "12E_PRODUCTION_BEFORE.json",
+  "production_backend_127_0_0_1_8081": "DO_NOT_TOUCH",
+  "production_database": "DO_NOT_TOUCH",
+  "production_polling_agent_31": "DO_NOT_TOUCH",
+  "production_executor_31": "DO_NOT_TOUCH",
+  "preexisting_production_cloudflared": {"state": "PRESENT", "target": "127.0.0.1:8081", "used_by_12e": false}
+}

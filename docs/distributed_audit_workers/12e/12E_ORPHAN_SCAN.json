@@ -1,0 +1,6 @@
+{
+  "status": "NOT_RUN",
+  "reason": "No 12E physical synthetic Center/Worker state exists yet.",
+  "checks": ["stuck assigned", "offered forever", "running without local attempt", "local attempt without Center", "uploaded result without status", "pending accepted result", "unacked EventOutbox", "stale ownership"],
+  "unexplained_count": null
+}

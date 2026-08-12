@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "stage": "12E",
+  "overall_status": "IN_PROGRESS",
+  "hard_invariants": ["I-01", "I-02", "I-03", "I-04", "I-05", "I-06", "I-07", "I-08", "I-09", "I-10"],
+  "categories": {
+    "CONTROL": {"scenarios": ["C01", "C02", "C03", "C04", "C05", "C06"], "result": "PARTIAL"},
+    "AGENT": {"scenarios": ["C07", "C08", "C09", "C10"], "result": "PARTIAL"},
+    "EVENTOUTBOX": {"scenarios": ["C11", "C12", "C13"], "result": "PARTIAL"},
+    "DATA_PLANE": {"scenarios": ["C14", "C15", "C16", "C17", "C18", "C19", "C20"], "result": "PARTIAL"},
+    "CANCEL": {"scenarios": ["C21", "C22", "C23", "C24"], "result": "PARTIAL"},
+    "CERTIFICATE": {"scenarios": ["C25", "C26", "C27"], "result": "PARTIAL"},
+    "CENTER": {"scenarios": ["C28", "C29"], "result": "PENDING"},
+    "MULTI_SLOT": {"scenarios": ["C30", "C31", "C32"], "result": "PARTIAL"},
+    "OWNERSHIP": {"scenarios": ["C33", "C34"], "result": "PASS_LOCAL"},
+    "BACKPRESSURE": {"scenarios": ["C35", "C36"], "result": "PARTIAL"},
+    "RESOURCE": {"scenarios": ["C37", "C38"], "result": "PARTIAL"},
+    "DUPLICATES": {"scenarios": ["C39", "C40", "C41"], "result": "PARTIAL"}
+  },
+  "forbidden_workarounds": ["production backend stop", "production DB", "tunnel", "SSH forwarding", "automatic grpc-to-polling fallback", "mTLS disable", "killing Executor on stream loss"]
+}

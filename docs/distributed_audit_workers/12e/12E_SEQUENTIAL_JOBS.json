@@ -1,0 +1,6 @@
+{
+  "status": "NOT_STARTED",
+  "required_count": 10,
+  "completed_count": 0,
+  "requirements": ["unique attempts", "ResultAck per job", "zero duplicate Executor", "zero stuck job", "outbox convergence", "Claude=0", "Codex=0", "OpenRouter=0"]
+}

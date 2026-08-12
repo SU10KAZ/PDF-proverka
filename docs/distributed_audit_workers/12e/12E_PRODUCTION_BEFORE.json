@@ -1,0 +1,104 @@
+{
+  "captured_at_center": "2026-08-12T11:07:40+03:00",
+  "captured_at_worker": "2026-08-12T11:08:00+03:00",
+  "scope": "read_only_pre_12e_snapshot",
+  "center": {
+    "host": "adm.hlab.kz",
+    "production_backend": {
+      "endpoint": "127.0.0.1:8081",
+      "pid": 277145,
+      "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+      "started_at": "2026-08-11T07:19:58+03:00",
+      "api_info_http_status": 200,
+      "state": "ACTIVE_LISTENING",
+      "allowed_to_modify_in_12e": false
+    },
+    "firewall": {
+      "ufw_state": "active/enabled",
+      "persisted_ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+      "persisted_ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+      "tcp_8443": "source-scoped: 176.12.77.31 only",
+      "tcp_9443": "no rule"
+    },
+    "listeners": {
+      "8443": false,
+      "9443": false,
+      "127.0.0.1:8081": true
+    },
+    "web_services": {
+      "nginx": "active/enabled",
+      "caddy": "inactive/not-found"
+    },
+    "cloudflared": [
+      {
+        "pid": 1263127,
+        "started_at": "2026-08-11T19:52:01+03:00",
+        "target": "http://127.0.0.1:8081",
+        "metrics_listener": "127.0.0.1:20251",
+        "pre_existing": true,
+        "used_by_12e": false,
+        "targets_or_listens_8443": false,
+        "targets_or_listens_9443": false
+      },
+      {
+        "pid": 1712985,
+        "target": "http://localhost:5050",
+        "metrics_listener": "127.0.0.1:20241",
+        "pre_existing_or_unrelated": true,
+        "used_by_12e": false,
+        "targets_or_listens_8443": false,
+        "targets_or_listens_9443": false
+      }
+    ],
+    "capacity": {
+      "memory_available_bytes_approx": 41750000000,
+      "root_free_bytes_approx": 184000000000
+    }
+  },
+  "physical_worker_176_12_77_31": {
+    "production_polling_agent": {
+      "pid": 1575036,
+      "started_at": "2026-08-12T04:47:12+03:00",
+      "command": "/home/auditworker_11l/audit-worker-11l/venv/bin/python -m audit_worker agent --root /home/auditworker_11l/audit-worker-11l/data",
+      "state": "active",
+      "allowed_to_modify_in_12e": false
+    },
+    "production_executor": {
+      "pid": 1384880,
+      "started_at": "2026-08-11T14:31:30+03:00",
+      "command": "/home/auditworker_11l/audit-worker-11l/venv/bin/python -m audit_worker executor --root /home/auditworker_11l/audit-worker-11l/data",
+      "state": "active",
+      "allowed_to_modify_in_12e": false
+    },
+    "standard_systemd_unit_names_checked": [
+      "audit-worker-agent.service: inactive/not present",
+      "audit-worker-executor.service: inactive/not present"
+    ],
+    "production_runtime_identity": "process/path evidence above is authoritative; no production process was inferred inactive from those absent unit aliases.",
+    "worker_listeners_8443_or_9443": false,
+    "isolated_12e_worker_directory_present_before_test": false,
+    "provider_inference_processes": {
+      "claude": 0,
+      "codex": 0,
+      "openrouter": 0
+    },
+    "capacity": {
+      "memory_available_bytes_approx": 9400000000,
+      "root_free_bytes_approx": 57400000000
+    }
+  },
+  "isolation_assertions": {
+    "production_database_used": false,
+    "production_backend_8081_used": false,
+    "production_polling_agent_touched": false,
+    "production_executor_touched": false,
+    "cloudflared_touched": false,
+    "tunnel_used": false,
+    "ssh_forwarding_used": false,
+    "inference_calls": {
+      "claude": 0,
+      "codex": 0,
+      "openrouter": 0
+    }
+  }
+}

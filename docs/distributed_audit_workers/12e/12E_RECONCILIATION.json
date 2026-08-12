@@ -1,0 +1,6 @@
+{
+  "status": "NOT_RUN",
+  "reason": "Physical 12E synthetic jobs have not started; therefore no terminal-job reconciliation may be claimed.",
+  "required_dimensions": ["center attempt", "worker attempt", "executor identity", "event sequence", "result identity", "ResultAck", "retention"],
+  "unexplained_orphans": null
+}

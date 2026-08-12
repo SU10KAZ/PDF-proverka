@@ -1,0 +1,7 @@
+{
+  "status": "NOT_STARTED",
+  "minimum_duration_minutes": 15,
+  "preferred_duration_minutes": 30,
+  "path": "176.12.77.31 -> 176.12.77.128:8443 direct gRPC+mTLS",
+  "requirements": ["isolated 12E worker identity/state", "isolated Center DB", "no tunnel", "periodic benign events", "no reconnect storm", "zero inference"]
+}
