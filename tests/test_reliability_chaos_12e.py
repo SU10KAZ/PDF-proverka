@@ -8,10 +8,12 @@ diagnostic update.
 from __future__ import annotations
 
 import json
+import queue
 import threading
 from pathlib import Path
 
 import httpx
+import pytest
 
 from audit_worker import agent as agent_module
 from audit_worker.agent import WorkerAgent
@@ -26,6 +28,9 @@ from audit_worker.grpc_transport import (
     grpc_failure_reason_code,
 )
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
+from audit_worker import uploader
+from audit_worker.uploader import UploadFailed, upload_result
+from contracts.agent_stream.v1 import adapters
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
 
 
@@ -263,3 +268,100 @@ def test_c14_interrupted_source_body_resumes_from_durable_part(tmp_path, monkeyp
     assert len(requests) == 2
     assert worker.jobs.updates[-1]["local_state"] == "verified"
     assert context["outbox"].events[-1][0] == "source_verified"
+
+
+def test_c16_result_upload_resumes_same_session_after_data_plane_interruption(
+    tmp_path, monkeypatch
+):
+    archive = tmp_path / "result.tar.gz"
+    archive.write_bytes(b"abcdefgh")
+
+    class Client:
+        received: set[int] = set()
+        create_calls = 0
+        chunk_calls: list[int] = []
+        outage = True
+
+        def create_upload(self, _payload, _token):
+            self.create_calls += 1
+            return {
+                "upload_id": "upl_0123456789abcdef",
+                "chunk_size": 4,
+                "chunks_total": 2,
+                "received_chunks": sorted(self.received),
+            }
+
+        def put_chunk(self, _upload_id, idx, _data, _sha, execution_token=""):
+            self.chunk_calls.append(idx)
+            if idx == 1 and self.outage:
+                raise httpx.ConnectError("isolated data plane interrupted")
+            self.received.add(idx)
+            return {"status": "accepted"}
+
+        def complete_upload(self, _upload_id, _payload, _token):
+            assert self.received == {0, 1}
+            return {"state": "completed", "retention_until": 1234.0}
+
+    client = Client()
+    monkeypatch.setattr(uploader.time, "sleep", lambda _seconds: None)
+    arguments = {
+        "client": client,
+        "job_id": "job_0123456789abcdef",
+        "attempt_id": "att_0123456789abcdef",
+        "archive": archive,
+        "execution_token": "token",
+        "uploads_dir": tmp_path / "uploads",
+    }
+
+    with pytest.raises(UploadFailed):
+        upload_result(**arguments)
+    assert client.received == {0}
+    assert client.chunk_calls == [0, 1, 1, 1]
+
+    client.outage = False
+    result = upload_result(**arguments)
+
+    assert result["retention_until"] == 1234.0
+    assert client.create_calls == 2
+    assert client.chunk_calls == [0, 1, 1, 1, 1]
+
+
+def test_c41_duplicate_result_ack_never_blocks_grpc_reader(tmp_path):
+    transport = GrpcStreamControlTransport(
+        target="localhost:12345",
+        data_client=_NullData(),
+        state_store=WorkerStateStore(tmp_path / "state.json", tmp_path / "token"),
+        jobs=LocalJobStore(tmp_path / "jobs"),
+        worker_id="wrk_0123456789abcdef",
+        instance_id="inst_0123456789abcdef",
+        config=_config(tmp_path, transport="grpc"),
+        build_heartbeat=lambda: {"active_jobs": [], "providers": []},
+    )
+    transport._connection_id = "gconn_0123456789abcdef"
+    correlation = "corr_0123456789abcdef"
+    waiter: queue.Queue = queue.Queue(maxsize=1)
+    transport._waiters[correlation] = waiter
+
+    def response(sequence: int) -> stream_pb.CenterToAgent:
+        return stream_pb.CenterToAgent(
+            protocol_version=1,
+            message_id=f"msg_{sequence:016d}",
+            correlation_id=correlation,
+            worker_id=transport.worker_id,
+            connection_id=transport._connection_id,
+            stream_sequence=sequence,
+            result_ack=stream_pb.ResultAck(
+                job_id="job_0123456789abcdef",
+                attempt_id="att_0123456789abcdef",
+                result_sha256="a" * 64,
+                retention_until=adapters.timestamp_from_epoch(1234.0),
+            ),
+        )
+
+    transport._handle_response(response(1))
+    transport._handle_response(response(2))
+
+    accepted = waiter.get_nowait()
+    assert accepted.result_ack.retention_until.seconds == 1234
+    assert waiter.empty()
+    assert transport._center_stream_sequence == 2

@@ -615,7 +615,15 @@ class GrpcStreamControlTransport:
             with self._waiters_lock:
                 waiter = self._waiters.get(response.correlation_id)
             if waiter is not None:
-                waiter.put(response)
+                # A replayed ACK can arrive before the synchronous sender has
+                # consumed the first one.  Blocking on its size-one queue
+                # would deadlock the sole gRPC reader and therefore every
+                # heartbeat/command/result behind it.  The first response is
+                # authoritative; later copies are semantic duplicates.
+                try:
+                    waiter.put_nowait(response)
+                except queue.Full:
+                    pass
         fatal_codes = {
             common_pb.ERROR_CODE_PROTOCOL_VIOLATION,
             common_pb.ERROR_CODE_UNAUTHORIZED,
