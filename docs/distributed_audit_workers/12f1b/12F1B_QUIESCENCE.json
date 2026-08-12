@@ -1,0 +1,67 @@
+{
+  "schema": "auditmanager.12f1b.quiescence.v1",
+  "production_root": "/home/coder/projects/PDF-proverka",
+  "production_head": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+  "initial_confirmed_observation": {
+    "result": "PASS_AT_CAPTURE_TIME",
+    "samples": 3,
+    "bounded_interval_seconds": 69,
+    "digest_prefix": "137b02af",
+    "captured_at": "2026-08-12T19:29:38.548035+03:00",
+    "stable_disk_snapshot_id": "12f1b-stable-disk-20260812T192938+0300-137b02af",
+    "complete_inventory": "12F1B_STABLE_DISK_INVENTORY.json",
+    "inventory_sha256": "9a8227030271ffe2f1df1308e6425f193f5c16191c30f4ec5543630f822b22fc",
+    "total_paths": 100,
+    "release_scope_paths": 79,
+    "unknown_paths": 0
+  },
+  "final_read_only_recheck": {
+    "result": "FAIL_MOVING_SOURCE",
+    "checked_at": "2026-08-12T20:53:35+03:00",
+    "captured_inventory_mismatches": 2,
+    "new_paths_after_capture": 5,
+    "current_release_scope_deltas": 7,
+    "bounded_samples": [
+      {
+        "at": "2026-08-12T20:52:50.661933+03:00",
+        "paths": 84,
+        "digest": "64e449641ebd3c9078f25f78222210912ee8c5fb10e49f069a4fb370214633d5"
+      },
+      {
+        "at": "2026-08-12T20:53:05.675755+03:00",
+        "paths": 84,
+        "digest": "64e449641ebd3c9078f25f78222210912ee8c5fb10e49f069a4fb370214633d5"
+      },
+      {
+        "at": "2026-08-12T20:53:20.688908+03:00",
+        "paths": 84,
+        "digest": "93f1930722182429da3cad4ae744425f170b67fbab8154f03b79eb4f965856ba"
+      },
+      {
+        "at": "2026-08-12T20:53:35.702258+03:00",
+        "paths": 84,
+        "digest": "93f1930722182429da3cad4ae744425f170b67fbab8154f03b79eb4f965856ba"
+      }
+    ],
+    "changed_during_observation": {
+      "path": "backend/app/services/stage_comparison/semantic_diff_v6a2.py",
+      "mtime": "2026-08-12T20:53:13.097323017+03:00",
+      "size_bytes": 19050
+    },
+    "changed_captured_paths": [
+      "backend/app/api/routers/stage_comparison.py",
+      "backend/app/services/stage_comparison/store.py"
+    ],
+    "new_paths": [
+      "backend/app/services/stage_comparison/semantic_diff_v6a1.py",
+      "backend/app/services/stage_comparison/semantic_diff_v6a2.py",
+      "backend/scripts/run_semantic_diff_v6a1.py",
+      "backend/tests/test_semantic_diff_v6a1.py",
+      "backend/tests/test_semantic_diff_v6a2.py"
+    ]
+  },
+  "production_worktree_quiescent_now": false,
+  "baseline_freeze": "BLOCKED",
+  "reason": "The operator hard gate says to stop if SOURCE_CODE continues changing. The release-scope digest changed during the final bounded observation.",
+  "production_files_modified_by_12f1b": false
+}

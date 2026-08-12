@@ -1,0 +1,26 @@
+{
+  "schema": "auditmanager.release.v1",
+  "release_id": "candidate-965337f1",
+  "status": "IMMUTABLE_TESTED_ARTIFACT_REQUIRES_REBASE_ON_NEW_AUTHORITATIVE_BASELINE",
+  "kind": "integrated_distributed_worker_candidate",
+  "built_at": "2026-08-12T20:43:44+03:00",
+  "commit": "965337f11382b8bf0bac0ed81c560eff24a83cdb",
+  "git_tree_sha1": "378fe8702261a4a67c2f8699269010db264a2484",
+  "git_archive_tar_sha256": "a7038ae5e0312e98303302b0399221c156b6d9a07502fb74c02d2c858dac9a4d",
+  "dependency_freeze_sha256": "0f3b123e82b9ee78a20584dac911e2ce7bfb1f29d9b9cca0d06107aff781bd24",
+  "dependency_count": 132,
+  "venv_canonical_tar_sha256": "6622538cbcd590182471318d362f0c959026f17b54dfab524c04821a943d0571",
+  "manifest_sha256": "e66fd983656feb0081bf86946a997c2e271ac6183daf7bbd299bc3ee6b468df2",
+  "path": "/tmp/12f1b-releases/candidate-965337f1",
+  "stable_polling_endpoint": "https://auditmanager.app",
+  "persistent_state_root": "/var/lib/auditmanager/distributed_workers",
+  "safe_defaults": {
+    "distributed_workers_enabled": false,
+    "distributed_audit_execution_enabled": false,
+    "real_llm_allowed": false,
+    "new_worker_intake_enabled": false
+  },
+  "reusable_bootstrap_secret_fallback": "REMOVED",
+  "production_install_performed": false,
+  "production_restart_performed": false
+}

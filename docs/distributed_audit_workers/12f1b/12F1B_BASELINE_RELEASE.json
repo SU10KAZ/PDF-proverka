@@ -1,0 +1,22 @@
+{
+  "schema": "auditmanager.release.v1",
+  "release_id": "baseline-8cf5c673",
+  "status": "IMMUTABLE_HISTORICAL_CAPTURE_NOT_CURRENT_RESTART_TARGET",
+  "kind": "stable_production_polling_rollback",
+  "built_at": "2026-08-12T20:43:44+03:00",
+  "commit": "8cf5c6738b37d27c54dfa63fd1b7b2e186078a34",
+  "git_tree_sha1": "2a59ca933d0368628740783dc19a085e370fcc92",
+  "git_archive_tar_sha256": "9b0eecd750cf4154e01ce13cb386a250619b7e54190e905e337a9cadfb75c692",
+  "dependency_freeze_sha256": "030c88577d9737be3d03986b99fb48461bb7c266fefa0ab9bc0af3b21416b575",
+  "dependency_count": 128,
+  "venv_canonical_tar_sha256": "81310902767c126a9af4e29b0ecbb1f8fb600bc59001be2345e189f05657e656",
+  "manifest_sha256": "1d133c00beb8c641d607905d84fb7905f2bff94ad903b5829e6d8b198e3e4cf0",
+  "path": "/tmp/12f1b-releases/baseline-8cf5c673",
+  "polling_endpoint": "https://auditmanager.app",
+  "persistent_state_policy": "external_to_release_and_preserved_on_switch",
+  "historical_running_pid_equivalence": "NOT_FULLY_REPRODUCIBLE",
+  "captured_stable_disk_baseline_equivalence": "PASS",
+  "current_disk_baseline_equivalence": "FAIL_LATER_DRIFT",
+  "production_install_performed": false,
+  "production_restart_performed": false
+}

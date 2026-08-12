@@ -1,0 +1,24 @@
+{
+  "schema": "auditmanager.12f1b.role_mapping.v1",
+  "role_hierarchy": {
+    "viewer": ["distributed_workers.view"],
+    "operator": ["distributed_workers.view", "distributed_workers.operate"],
+    "admin": ["distributed_workers.view", "distributed_workers.operate", "distributed_workers.admin"]
+  },
+  "portal_subject_mapping": [
+    {"subject": "andrey", "candidate_role": "admin"},
+    {"subject": "igor", "candidate_role": "viewer"},
+    {"subject": "alexey", "candidate_role": "viewer"},
+    {"subject": "filipp", "candidate_role": "viewer"},
+    {"subject": "marina", "candidate_role": "viewer"},
+    {"subject": "alexandra", "candidate_role": "viewer"}
+  ],
+  "operator_subjects": [],
+  "mapping_basis": "Existing production portal metadata gives andrey administrative access and the other five subjects ordinary read access; candidate fixtures/config preserve that distinction without mutating production users.",
+  "human_drain_action": true,
+  "human_drain_authorization": "operator_or_admin",
+  "human_drain_audit_logged": true,
+  "machine_identity_separate_from_portal_auth": true,
+  "production_users_or_roles_modified": false,
+  "status": "READY_IN_CAPTURED_CANDIDATE"
+}
