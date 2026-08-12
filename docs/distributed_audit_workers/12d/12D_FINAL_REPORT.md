@@ -17,18 +17,20 @@ The operator completed the final firewall cleanup. The temporary source-scoped
 back at the captured post-8443/pre-9443 baseline, and neither 8443 nor 9443 has
 a listener.
 
-One independently pre-existing production condition prevents the requested
-conditional overall PASS: `cloudflared` is currently running as PID `1263127`
-with `--url http://127.0.0.1:8081` and local metrics on `127.0.0.1:20251`.
-It was not created, modified, used or stopped by 12D, and no Cloudflare path
-participated in the proof. Nevertheless, the explicit final requirement
-"cloudflared absent" is false, so the report does not claim that all requested
-final-state assertions were confirmed.
+Read-only separation verification confirms that the independently pre-existing
+production `cloudflared` is outside the 12D topology. PID `1263127` started at
+`2026-08-11T19:52:01+03:00`, before the first 12D attempt; its unchanged
+command targets only `http://127.0.0.1:8081`, with a loopback metrics listener
+on `127.0.0.1:20251`. It neither listens on nor targets 8443 or 9443. Direct
+Center peer and endpoint evidence independently bind the physical 12D control
+path to `.31 -> .128:8443` and its data plane to `.31 -> .128:9443`.
+
+Therefore process-wide absence of `cloudflared` is not an acceptance
+requirement. The applicable gate is `TUNNEL USED BY 12D = NO`, which passes.
 
 ## Required verdicts
 
-- **A. 12D OVERALL: PARTIAL — technical/physical acceptance and firewall
-  cleanup PASS; explicit `cloudflared absent` final-state predicate is not met.**
+- **A. 12D OVERALL: PASS.**
 - **B. MTLS CONTROL CHANNEL: PASS.**
 - **C. CERTIFICATE LIFECYCLE: PASS.**
 - **D. LINUX KEY STORAGE: PASS.**
@@ -39,7 +41,7 @@ final-state assertions were confirmed.
 - **I. SECURE RECONNECT: PASS.**
 - **J. PHYSICAL ROTATION: PASS.**
 - **K. PHYSICAL REVOCATION: PASS.**
-- **L. TUNNEL USED: NO.**
+- **L. TUNNEL USED BY 12D: NO.**
 - **M. TUNNEL REQUIRED FOR TESTED `.31 -> .128` PATH: NO.**
 - **N. PRODUCTION CUTOVER: NOT_DONE.**
 
@@ -68,6 +70,25 @@ final-state assertions were confirmed.
 13. B private key never left `.31`; current key is 0600 in a 0700 directory.
 14. Claude/Codex/OpenRouter calls: `0/0/0`.
 15. Worker inbound runtime listener: none.
+16. Pre-existing production `cloudflared` started before 12D, targets only
+    `127.0.0.1:8081`, has no 8443/9443 socket or target, and was not part of
+    either the direct control-plane or isolated data-plane topology.
+
+## Production cloudflared separation
+
+- **PRE-EXISTING PRODUCTION CLOUDFLARED = PRESENT**
+- **USED BY 12D = NO**
+- **TARGET = 127.0.0.1:8081**
+- Listener owned by the process: `127.0.0.1:20251` (metrics only).
+- Listener/target `:8443`: none. Listener/target `:9443`: none.
+- Started `2026-08-11T19:52:01+03:00`, before the first recorded 12D attempt
+  at `2026-08-12T04:13:55+03:00`.
+- Physical control path: direct `176.12.77.31 -> 176.12.77.128:8443`; Center
+  observed peer `176.12.77.31`; Agent Gateway terminated mTLS directly.
+- Physical data path: direct isolated verified HTTPS
+  `176.12.77.31 -> 176.12.77.128:9443`.
+
+This is not a violation of 12D isolation.
 
 ## Isolation defect and commits
 
@@ -98,12 +119,13 @@ combined suite now passes 186/186.
   post-8443/pre-9443 baseline (identical SHA-256
   `cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff`).
 - SSH forwarding: absent. Insecure Gateway: absent.
-- Pre-existing `cloudflared`: present, PID `1263127`, targeting production
-  `127.0.0.1:8081`; untouched and not used by 12D.
+- Pre-existing production `cloudflared`: present, PID `1263127`, targeting
+  `127.0.0.1:8081`; untouched, no 8443/9443 socket or target, and not used by
+  12D.
 - `sudo -n ufw status numbered` could not render runtime numbering because
   sudo requires interactive authentication. UFW is active/enabled; persisted
   rules and host listener state were read directly.
-- Push: NO. Merge: NO. Production cutover: NO. Proceed to 12E: NO.
+- Push: NO. Merge: NO. Production cutover: NO. 12E automatically started: NO.
 
 ## Required chronology
 

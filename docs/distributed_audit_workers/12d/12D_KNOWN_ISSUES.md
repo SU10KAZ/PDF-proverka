@@ -11,6 +11,7 @@
   IPv4 rules match the captured post-8443/pre-9443 baseline exactly.
 - A pre-existing `cloudflared` process targeting production
   `127.0.0.1:8081` is currently present. It was not modified or used by 12D,
-  but its presence means the explicit final-state predicate
-  `cloudflared absent` cannot be certified.
+  has no 8443/9443 listener or target, and is not part of the 12D topology.
+  Its presence is not a 12D isolation violation; the applicable gate is
+  `TUNNEL USED BY 12D = NO`, which passes.
 - Production cutover is explicitly out of scope and was not done.

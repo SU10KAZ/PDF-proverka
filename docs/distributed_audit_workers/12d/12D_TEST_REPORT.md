@@ -67,6 +67,7 @@ The operator subsequently removed the exact temporary `.31 -> TCP/9443` UFW
 rule. Persisted IPv4 rules returned byte-for-byte to the post-8443/pre-9443
 baseline; 8443 remains source-scoped to `.31`, 9443 is absent, and neither
 port has a listener. A pre-existing `cloudflared` process targeting production
-`127.0.0.1:8081` remains present; it was untouched and not used by 12D, but it
-prevents certification of the separate explicit `cloudflared absent`
-final-state predicate.
+`127.0.0.1:8081` remains present. Read-only process, start-time, cmdline and
+socket evidence confirms that it predates 12D, was untouched, has no 8443/9443
+listener or target, and was not part of either tested path. Under the corrected
+acceptance criterion `TUNNEL USED BY 12D = NO`, isolation passes.

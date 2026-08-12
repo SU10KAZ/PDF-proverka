@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-08-12T09:59:49+03:00",
+  "verification_mode": "read-only",
+  "production_cloudflared": {
+    "state": "PRESENT_PREEXISTING",
+    "pid": 1263127,
+    "ppid": 1,
+    "user": "coder",
+    "started_at": "2026-08-11T19:52:01+03:00",
+    "first_12d_attempt_at": "2026-08-12T04:13:55+03:00",
+    "started_before_12d": true,
+    "executable": "/home/coder/.local/bin/cloudflared",
+    "command": "/home/coder/.local/bin/cloudflared tunnel --url http://127.0.0.1:8081 --protocol http2 --no-autoupdate --metrics 127.0.0.1:20251",
+    "target": "http://127.0.0.1:8081",
+    "listener": "127.0.0.1:20251",
+    "listener_purpose": "metrics",
+    "established_cloudflare_transport": "176.12.77.128:23982 -> 198.41.192.107:7844",
+    "listens_or_targets_8443": false,
+    "listens_or_targets_9443": false,
+    "pid_or_command_changed_by_12d": false,
+    "production_process_modified": false
+  },
+  "historical_evidence": {
+    "network_before": "12D_NETWORK_BEFORE.json recorded preexisting_unrelated_cloudflared_observed=true and used_by_12d=false",
+    "network_before_commit": "4d4b0d56",
+    "physical_completion_commit": "49cfc717",
+    "firewall_cleanup_commit": "f7c09e91"
+  },
+  "control_plane": {
+    "source": "176.12.77.31",
+    "destination": "176.12.77.128:8443",
+    "transport": "direct real grpcio over mTLS",
+    "center_observed_peer": "176.12.77.31",
+    "mtls_termination": "Agent Gateway directly bound to 8443",
+    "cloudflared_used": false,
+    "reverse_proxy_used": false,
+    "ssh_forwarding_used": false,
+    "overlay_vpn_used": false
+  },
+  "data_plane": {
+    "endpoint": "https://176.12.77.128:9443",
+    "transport": "direct isolated verified HTTPS",
+    "typed_endpoint_configuration": "AUDIT_WORKER_DATA_PLANE_BASE_URL",
+    "cloudflared_used": false,
+    "cloudflare_url_used": false,
+    "quick_tunnel_used": false,
+    "reverse_proxy_used": false,
+    "ssh_forwarding_used": false,
+    "overlay_vpn_used": false
+  },
+  "production_cloudflared_part_of_12d_topology": false,
+  "tunnel_used_by_12d": false,
+  "isolation_gate": "PASS",
+  "verdict": "PASS"
+}

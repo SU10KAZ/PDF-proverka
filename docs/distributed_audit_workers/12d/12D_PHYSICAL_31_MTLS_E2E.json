@@ -5,6 +5,8 @@
   "candidate_commit": "1913d92f2c35bf6b23e845530b1ccce396519cea",
   "control_plane": "direct gRPC bidi + mTLS at 176.12.77.128:8443",
   "data_plane": "isolated HTTPS resumable at 176.12.77.128:9443",
+  "control_plane_center_observed_peer": "176.12.77.31",
+  "control_plane_mtls_terminated_by": "Agent Gateway directly bound to 8443",
   "production_8081_used": false,
   "production_database_used": false,
   "isolated_database": "/tmp/audit-worker-11l-center-e05f44ef/workers",
@@ -65,5 +67,11 @@
   },
   "worker_inbound_runtime_port_added": false,
   "tunnel_used": false,
+  "cloudflared_used": false,
+  "cloudflare_url_or_quick_tunnel_used": false,
+  "ssh_forwarding_used": false,
+  "reverse_proxy_used": false,
+  "overlay_vpn_used": false,
+  "preexisting_production_cloudflared_part_of_test_topology": false,
   "verdict": "PASS"
 }
