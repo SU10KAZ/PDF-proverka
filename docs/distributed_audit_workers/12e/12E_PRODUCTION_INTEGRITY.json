@@ -1,9 +1,25 @@
 {
-  "status": "PENDING_AFTER_SNAPSHOT",
-  "before_snapshot": "12E_PRODUCTION_BEFORE.json",
-  "production_backend_127_0_0_1_8081": "DO_NOT_TOUCH",
-  "production_database": "DO_NOT_TOUCH",
-  "production_polling_agent_31": "DO_NOT_TOUCH",
-  "production_executor_31": "DO_NOT_TOUCH",
-  "preexisting_production_cloudflared": {"state": "PRESENT", "target": "127.0.0.1:8081", "used_by_12e": false}
+  "status": "PASS_WITH_OBSERVED_EXTERNAL_BACKEND_PID_CHURN",
+  "production_changes_attributable_to_12e": 0,
+  "checks": {
+    "backend_127_0_0_1_8081_active_http_200": true,
+    "backend_command_bind_and_data_roots_consistent": true,
+    "backend_pid_same_as_before": false,
+    "backend_pid_change_caused_by_12e": false,
+    "production_db_used_or_modified_by_12e": false,
+    "production_polling_agent_pid_1575036_active_untouched": true,
+    "production_executor_pid_1384880_active_untouched": true,
+    "production_cloudflared_pid_1263127_target_8081_active_untouched": true,
+    "nginx_unchanged": true,
+    "caddy_unchanged": true,
+    "ufw_persisted_hashes_match_before": true,
+    "unrelated_firewall_rules_changed": false,
+    "temporary_9443_rule_removed": true,
+    "temporary_8443_and_9443_listeners_stopped": true,
+    "source_scoped_8443_rule_preserved": true,
+    "provider_auth_touched": false,
+    "production_cutover_done": false
+  },
+  "explanation": "The production backend was independently restarted during the long observation window (before PID 1851904 became current). 12E issued no signal/config/write to production. Final service identity, loopback bind, HTTP 200 and production data roots are healthy; this external PID churn is recorded, not hidden.",
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
 }

@@ -1,9 +1,11 @@
-# Multi-slot failures
+# Multi-slot failure evidence
 
-The executed real-Agent local test proves that `max_slots=2` can complete two
-attempts through one stream without a third concurrent Executor. The required
-chaos variants remain C30 (stream loss for both), C31 (cancel A without
-affecting B) and C32 (last-slot offer race).
+Verdict: `PASS` for C30–C32.
 
-Physical `.31` testing will use at most two synthetic slots and never increase
-production Worker concurrency.
+C30 ran two physical fake Executors through one stream, removed the Gateway,
+and verified both continued and reconciled without a third process. C31
+cancelled A while B completed unaffected. C32 uses 20 simultaneous contenders
+for one remaining slot under `BEGIN IMMEDIATE`; exactly one claim succeeds.
+
+Physical concurrency never exceeded two isolated slots and did not change the
+production Worker's concurrency or processes.

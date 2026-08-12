@@ -1,10 +1,10 @@
 # Backpressure and reconnect herd
 
-The control client has a bounded critical queue; heartbeat and capability
-updates coalesce. Gateway local tests accepted and acknowledged 50 ordered
-event batches and the completed 12B suite includes 20 concurrent fake Worker
-connections.
+Verdict: `PASS` for C35/C36.
 
-The remaining C36 test must add an observed Gateway-unavailable/recovery phase
-to those clients and record reconnect timing/jitter. It must not turn into a
-host-wide load test.
+The client critical queue is bounded; heartbeats and capability snapshots
+coalesce. Fifty ordered event batches converge durably under a slow consumer.
+Twenty reconnect candidates use exponential backoff with ±20% jitter: every
+sample remained inside the 1/2/4-second bounds and at least 15/20 distinct
+millisecond buckets appeared in each round. The 12-failure transport test also
+records 12 gRPC attempts, 11 reconnects and exactly zero polling calls.

@@ -1,21 +1,30 @@
 {
   "schema": 1,
-  "stage": "12E",
-  "overall_status": "IN_PROGRESS",
-  "hard_invariants": ["I-01", "I-02", "I-03", "I-04", "I-05", "I-06", "I-07", "I-08", "I-09", "I-10"],
+  "overall_status": "PASS",
+  "critical_scenarios_passed": 41,
+  "critical_scenarios_total": 41,
   "categories": {
-    "CONTROL": {"scenarios": ["C01", "C02", "C03", "C04", "C05", "C06"], "result": "PARTIAL"},
-    "AGENT": {"scenarios": ["C07", "C08", "C09", "C10"], "result": "PARTIAL"},
-    "EVENTOUTBOX": {"scenarios": ["C11", "C12", "C13"], "result": "PARTIAL"},
-    "DATA_PLANE": {"scenarios": ["C14", "C15", "C16", "C17", "C18", "C19", "C20"], "result": "PARTIAL"},
-    "CANCEL": {"scenarios": ["C21", "C22", "C23", "C24"], "result": "PARTIAL"},
-    "CERTIFICATE": {"scenarios": ["C25", "C26", "C27"], "result": "PARTIAL"},
-    "CENTER": {"scenarios": ["C28", "C29"], "result": "PENDING"},
-    "MULTI_SLOT": {"scenarios": ["C30", "C31", "C32"], "result": "PARTIAL"},
-    "OWNERSHIP": {"scenarios": ["C33", "C34"], "result": "PASS_LOCAL"},
-    "BACKPRESSURE": {"scenarios": ["C35", "C36"], "result": "PARTIAL"},
-    "RESOURCE": {"scenarios": ["C37", "C38"], "result": "PARTIAL"},
-    "DUPLICATES": {"scenarios": ["C39", "C40", "C41"], "result": "PARTIAL"}
+    "CONTROL": {"scenarios": ["C01", "C02", "C03", "C04", "C05", "C06"], "result": "PASS"},
+    "CENTER": {"scenarios": ["C28", "C29"], "result": "PASS"},
+    "AGENT_EXECUTOR": {"scenarios": ["C07", "C08", "C09", "C10"], "result": "PASS"},
+    "EVENTOUTBOX": {"scenarios": ["C11", "C12", "C13"], "result": "PASS"},
+    "DATA_PLANE_RESULT": {"scenarios": ["C14", "C15", "C16", "C17", "C18", "C19", "C20"], "result": "PASS"},
+    "CANCEL": {"scenarios": ["C21", "C22", "C23", "C24"], "result": "PASS"},
+    "CERTIFICATE": {"scenarios": ["C25", "C26", "C27"], "result": "PASS"},
+    "MULTI_SLOT": {"scenarios": ["C30", "C31", "C32"], "result": "PASS"},
+    "OWNERSHIP": {"scenarios": ["C33", "C34"], "result": "PASS"},
+    "BACKPRESSURE": {"scenarios": ["C35", "C36"], "result": "PASS"},
+    "RESOURCE": {"scenarios": ["C37", "C38"], "result": "PASS"},
+    "DUPLICATES": {"scenarios": ["C39", "C40", "C41"], "result": "PASS"},
+    "ROLLBACK": {"result": "READY_ZERO_ACTIVE_ONLY"}
   },
-  "forbidden_workarounds": ["production backend stop", "production DB", "tunnel", "SSH forwarding", "automatic grpc-to-polling fallback", "mTLS disable", "killing Executor on stream loss"]
+  "hard_metrics": {
+    "job_loss": 0,
+    "duplicate_executor": 0,
+    "premature_deletion": 0,
+    "unrecoverable_eventoutbox_loss": 0,
+    "unauthorized_connection_accepted": 0,
+    "cross_worker_transfer_accepted": 0,
+    "silent_polling_fallback": 0
+  }
 }

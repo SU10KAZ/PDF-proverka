@@ -1,23 +1,32 @@
 {
-  "schema": 1,
-  "cutover_allowed": false,
-  "reason": "12E chaos/physical gates remain incomplete; this document does not authorize production cutover.",
-  "gates": {
-    "gateway_ready": "NOT_FINAL",
-    "mtls_valid": "12D_PROVEN_REQUIRES_12E_ACTIVE_JOB_EVIDENCE",
-    "cert_not_near_expiry": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "worker_ready": false,
-    "provider_status_ready": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "worker_zero_active_jobs": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "event_outbox_empty_or_consistent": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "no_pending_cancel": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "no_pending_result": "NOT_CHECKED_FOR_FUTURE_CANARY",
-    "data_plane_ready": "NOT_FINAL",
-    "center_db_ready": "NOT_FINAL",
-    "transport_ownership_consistent": "PASS_LOCAL_ONLY",
-    "polling_agent_can_be_restored": "RUNBOOK_DRAFT_ONLY",
+  "schema": 2,
+  "readiness_contract": "PASS",
+  "production_cutover_authorized_by_12e": false,
+  "reason": "12E proves readiness and defines gates; an explicit 12F authorization and fresh live preflight are still mandatory.",
+  "isolated_evidence": {
+    "gateway_ready": true,
+    "mtls_valid": true,
+    "certificate_lifecycle_recovery": true,
+    "data_plane_ready": true,
+    "center_db_recovery": true,
+    "transport_ownership_consistent": true,
+    "polling_agent_restore_contract_tested": true,
     "rollback_config_known": true,
-    "firewall_8443_correct": "12D_PROVEN_RECHECK_REQUIRED",
-    "observability_ready": "IMPLEMENTED_LOCAL_DOCTOR"
-  }
+    "firewall_8443_source_scoped": true,
+    "observability_ready": true
+  },
+  "mandatory_live_12f_preflight": {
+    "cert_not_near_expiry": null,
+    "worker_ready": null,
+    "provider_status_ready": null,
+    "worker_zero_active_jobs": null,
+    "event_outbox_empty_or_consistent": null,
+    "no_pending_cancel": null,
+    "no_pending_result": null,
+    "data_plane_ready": null,
+    "center_db_ready": null,
+    "gateway_release_and_certificate_verified": null,
+    "production_backup_or_snapshot_decision_recorded": null
+  },
+  "rule": "Any false or null live preflight at execution time blocks cutover."
 }

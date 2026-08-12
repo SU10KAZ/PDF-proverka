@@ -1,28 +1,40 @@
-# 12E test report — interim
+# 12E test report
 
-Executed in the isolated worktree/test environment (no production backend,
-production DB, `.31` production process, tunnel or provider inference):
+Final relevant-suite result: `660 passed, 1 skipped`, counting each listed
+file group once. Targeted reruns used during defect isolation overlap these
+groups and are not added again.
 
-| Suite | Result |
+| Non-overlapping suite group | Result |
 | --- | --- |
-| 12A protocol descriptors | 45 passed (after adding test-only `grpcio-tools` to `/tmp/12e-grpc-venv`) |
-| 12B Gateway | 47 passed |
+| 12A protocol descriptors | 45 passed |
+| 12B Gateway, including C28/C32 | 49 passed |
 | 12C real Agent gRPC | 33 passed |
 | 12D mTLS/security | 27 passed |
-| 12E unit reliability | 6 passed |
-| 12E process Gateway C01/C02 | 2 passed |
+| New 12E reliability/process/harness | 15 passed |
+| 11K bootstrap/repair | 31 passed |
+| 11L bootstrap/repair | 3 passed |
+| Worker Agent | 38 passed |
 | Worker hardening | 70 passed |
 | Center/polling E2E | 34 passed |
-| Worker agent | 38 passed |
-| 11K bootstrap | 31 passed |
-| 11L bootstrap | 3 passed |
+| Execution backend | 128 passed, 1 skipped |
+| Executor/flag-off/review/step35/central-handoff | 187 passed |
 
-Two stale fixed-number schema assertions were discovered in legacy tests during
-this work and corrected to assert the authoritative `SCHEMA_VERSION`; both
-preserve the substantive old-DB migration test. The first real C02 failure was
-a stale gRPC request iterator consuming post-reconnect work; it has a direct
-regression and was fixed in commit `043a28f4`.
+The expanded group initially exposed two environment-only constraints. The
+host's live swap correctly reduced production-style slots to zero, so the
+process-lifecycle test now hides optional telemetry only inside its subprocess;
+the production threshold is unchanged. Four route probes were run with the
+project Python/FastAPI environment because the auxiliary gRPC venv contains
+FastAPI 0.141, whose included-router representation differs from the project's
+version. Results are reported as 183 passed in the gRPC environment plus those
+four project-environment passes, i.e. 187 unique tests.
 
-A subsequent planned combined regression launch was rejected by the execution
-environment before it ran; no partial output from that run is counted. The
-remaining suites and physical phase are pending.
+Real defects found, reproduced, fixed and regressed:
+
+- stale gRPC request iterator consuming work after reconnect (`043a28f4`);
+- source download restart from zero instead of durable range resume
+  (`489d2448`);
+- result acknowledgement/upload recovery hardening (`bd5ee589`);
+- Center DB failure escaping Gateway fail-closed handling (`8e206a00`).
+
+No test used production `:8081`, production DB, production Agent/Executor,
+tunnel, real project or provider inference.

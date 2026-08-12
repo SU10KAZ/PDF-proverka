@@ -1,19 +1,23 @@
 # Control and Center failure evidence
 
-- C01: `test_12e_gateway_graceful_stop_recovery_is_persistence_only` passed
-  against a clean, loopback-only Gateway process. It waits for a running
-  Executor, sends process-scoped SIGTERM, observes a higher durable epoch on a
-  replacement process, then verifies completed result, retention and unique
-  event sequences.
-- C02: the sibling SIGKILL test passed with the same persistence assertions.
-  It previously exposed the stale request-iterator race; commit `043a28f4`
-  fences an obsolete gRPC iterator by connection epoch.
-- C03/C04: 12B scheduler/offered-attempt persistence and expiry recovery
-  regressions passed in the completed 12B suite. Exact process crash
-  instrumentation is still required before a final PASS.
-- C05: duplicate/gap event tests pass locally, but the exact persisted-event /
-  lost-ack process window remains pending.
-- C06: the 12B result validation/lost-ack reconnect regression passed locally.
+Verdict: `PASS` for C01–C06, C28, C29 and Center restart recovery.
 
-No item here used production `:8081`, the production DB, a tunnel or a public
-test listener.
+- C01/C02 ran as real separate grpcio Gateway processes. Graceful SIGTERM and
+  SIGKILL both preserved the Executor, advanced the durable connection epoch,
+  replayed events, completed the same attempt and delivered ResultAck.
+- C03/C04 use deterministic persisted-offer fault seams: a claim/offer survives
+  lost delivery, and a delivered-but-unaccepted offer is reconciled without a
+  conflicting attempt.
+- C05 replays an event persisted before its ACK. `(attempt_id, sequence)` stays
+  unique and the cursor remains contiguous. C06 replays ResultAck from durable
+  accepted-result state after reconnect.
+- C28 exposed and fixed a real defect: DB failures could previously escape the
+  stream handler. The Gateway now returns typed `CENTER_DB_UNAVAILABLE`, sends
+  no unsafe ACK, drops transient ownership, and accepts the event once after
+  recovery (`8e206a00`).
+- C29 physically held `BEGIN IMMEDIATE` on only the isolated DB for 8.000175 s.
+  The Gateway stayed alive, reported one bounded `database is locked`, and the
+  same attempt/Executor completed with sequence 216 and ResultAck. SQLite
+  `integrity_check=ok`.
+
+Production `:8081`, its DB and production processes were never fault targets.

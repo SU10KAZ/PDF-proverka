@@ -1,15 +1,18 @@
 # Agent / Executor failure evidence
 
-The established real-Agent test `test_agent_restart_adopts_live_executor_higher_epoch_no_duplicate`
-proves graceful Agent shutdown/restart while the Executor keeps its PID. It
-checks a higher connection epoch, adoption of the same process record and a
-terminal validated result.
+Verdict: `PASS` for C07–C10.
 
-Remaining gates are intentionally not inferred from it:
+- C07 physical graceful restart: isolated Agent stopped while its fake Executor
+  continued; reconnect used a higher epoch and completed the same attempt.
+- C08 physical hard Agent death: the isolated Executor survived, the restarted
+  Agent reconciled it, and no duplicate process appeared.
+- C09 deterministic pre-dispatch crash recovery launches the durable accepted
+  attempt exactly once; a late repeated offer cannot recreate it.
+- C10 real process regression kills the Agent after Executor launch and proves
+  the audit child remains live, its outbox grows, and restart creates no second
+  Executor. The regression is isolated from live host swap policy so it tests
+  process ownership rather than host capacity.
 
-- C08: SIGKILL of an isolated Agent while its Executor runs;
-- C09: crash after durable accept and before launch;
-- C10: crash immediately after launch and before the next Agent persistence.
-
-They must use a separate isolated Agent process; production polling Agent and
-Executor are out of scope and must never be signalled.
+Historical isolated PID `1692566` was already absent at final inspection and
+was not signalled again. Production Agent `1575036` and Executor `1384880`
+were never signalled and remained active after cleanup.

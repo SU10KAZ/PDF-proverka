@@ -1,10 +1,14 @@
-# Cancel failures
+# Cancel failure evidence
 
-`command_id` is the cancellation idempotency boundary. Local regressions prove
-that an unacknowledged CancelCommand is replayed after reconnect and that the
-same acknowledgement is not a second semantic cancellation.
+Verdict: `PASS` for C21–C24.
 
-The still-open C23 fault is a process-scoped Gateway SIGKILL after central
-command persistence and before delivery. C24 is held pending its relevant
-executor regression rerun; it must preserve a finished result when a late
-cancel arrives.
+The durable `command_id` is the idempotency boundary. Online cancel stops only
+the process whose PID/start identity/fingerprint matches. Offline and
+Gateway-restart cases replay the same pending command after reconnect. A late
+cancel of a terminal attempt returns the typed already-completed outcome and
+preserves its result.
+
+Physical C31 cancelled only job A (`3f99a4ed-47b5-4d95-9924-6b0306e9bbba`);
+concurrent job B (`d3a51e17-7479-42d2-8244-f77b187fffc1`) completed with
+sequence 216, validated ResultAck and retention. Final local state contains one
+reported cancel command and no pending command.

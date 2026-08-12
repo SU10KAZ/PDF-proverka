@@ -1,4 +1,27 @@
 {
-  "status": "NOT_CAPTURED",
-  "reason": "12E physical phase has not started; no after-state can truthfully be asserted. Production was not modified by local tests."
+  "captured_at": "2026-08-12T15:18:07+03:00",
+  "status": "CAPTURED",
+  "center": {
+    "production_backend": {"pid": 1851904, "state": "ACTIVE_LISTENING", "endpoint": "127.0.0.1:8081", "api_info_http_status": 200, "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081", "started_at": "2026-08-12T14:30:18+03:00"},
+    "production_backend_pid_note": "PID changed externally during the observation window; 12E never signalled, restarted, configured or used this process. Command, bind, HTTP health and production data roots are intact.",
+    "cloudflared": {"pid": 1263127, "started_at": "2026-08-11T19:52:01+03:00", "target": "http://127.0.0.1:8081", "state": "ACTIVE_UNTOUCHED", "used_by_12e": false},
+    "nginx": "active/enabled",
+    "caddy": "inactive/not-found",
+    "ufw": {"state": "active", "ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff", "ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1", "tcp_8443": "ALLOW IN from 176.12.77.31 only", "tcp_9443": "ABSENT", "unrelated_rules_changed": false},
+    "listeners": {"127.0.0.1:8081": true, "8443": false, "9443": false},
+    "isolated_processes": {"gateway_1855872": "STOPPED", "issuer_1826339": "STOPPED", "data_plane_1798004": "STOPPED"}
+  },
+  "worker_176_12_77_31": {
+    "production_polling_agent": {"pid": 1575036, "state": "ACTIVE", "started_at": "2026-08-12T04:47:12+03:00"},
+    "production_executor": {"pid": 1384880, "state": "ACTIVE", "started_at": "2026-08-11T14:31:30+03:00"},
+    "isolated_agent": {"pid": 1724350, "state": "STOPPED"},
+    "isolated_executor": {"pid": 1716999, "state": "STOPPED"},
+    "historical_isolated_agent_1692566": "ALREADY_ABSENT_READ_ONLY_CONFIRMED",
+    "provider_auth": "PRESERVED_BY_NO_TOUCH_AND_PRODUCTION_PROCESS_CONTINUITY",
+    "capacity": {"root_free_bytes": 57119481856, "memory_available_bytes": 9441579008}
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "tunnel_used_by_12e": false,
+  "ssh_forwarding_used_by_12e": false,
+  "production_cutover": "NOT_DONE"
 }

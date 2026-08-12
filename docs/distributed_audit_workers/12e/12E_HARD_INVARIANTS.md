@@ -17,6 +17,8 @@ workaround.
 | I-09 | Certificate authentication is not job authorization; identity, attempt and transfer checks remain separate. |
 | I-10 | Polling and `grpc_stream` ownership cannot lease work for the same Worker simultaneously. |
 
-The local C01/C02 process tests explicitly checked I-01, I-02, I-04, I-05,
-I-06 and I-07. The physical phase must re-check the same invariants on the
-direct `.31 → .128` route.
+Final result: all ten invariants pass. Physical C01/C02/C07/C08/C25–C31 and
+the ten sequential jobs re-checked I-01, I-02, I-04–I-09 on the direct
+`.31 → .128` route. Deterministic concurrency/ownership/action-ledger tests
+cover I-03 and I-10. Reconciliation found zero job loss, duplicate Executor,
+premature deletion, unexplained orphan or ownership conflict.

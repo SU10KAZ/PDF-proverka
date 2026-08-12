@@ -14,7 +14,14 @@ guess: local queue reaches `running`, process death is observed, replacement
 Gateway listener is ready, persisted connection epoch rises, executor identity
 is unchanged, and terminal result/retention/events converge.
 
-The harness has no route to production `127.0.0.1:8081`, production DB,
-Cloudflared, SSH forwarding or a physical Worker.  The later physical phase
-uses a separately provisioned 12E identity/config and evidence capture; it
-does not reuse this loopback fixture.
+`tools/physical_12e_harness.py` supplies the physical half: it provisions only
+an explicit safe test root, isolated Center DB/PKI/identity, direct secure
+Gateway, isolated HTTPS data plane, synthetic jobs and deterministic evidence.
+Its sequential runner waits for durable `completed + result_acknowledged_at`
+rather than sleeping and records event uniqueness, offer count and retention.
+
+The physical topology used `.31` only through its isolated coder-owned runtime
+and `.128` only through `/tmp/12e-center-20260812-1245/runtime`. It had no route
+to production `127.0.0.1:8081`, production DB, Cloudflared or SSH forwarding.
+All isolated processes/listeners are stopped and the temporary :9443 rule is
+removed.
