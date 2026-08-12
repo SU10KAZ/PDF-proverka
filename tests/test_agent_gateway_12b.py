@@ -289,6 +289,7 @@ async def test_f_hello_required_first(running_gateway, gateway_env):
     await call.write(stream_pb.AgentToCenter(protocol_version=1, worker_id=worker["worker_id"], stream_sequence=1, heartbeat=stream_pb.Heartbeat(worker_id=worker["worker_id"])))
     response = await asyncio.wait_for(call.read(), 3)
     assert response.error.code == common_pb.ERROR_CODE_PROTOCOL_VIOLATION
+    assert response.stream_sequence == 1
     call.cancel()
     await channel.close()
 

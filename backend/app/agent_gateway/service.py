@@ -641,11 +641,16 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
         )
 
     def _bare_error(self, request: stream_pb.AgentToCenter, code: int, message: str) -> stream_pb.CenterToAgent:
+        # A rejected first envelope has no GatewaySession yet, but it is still
+        # a real Center→Agent stream message.  ``0`` is protobuf's default
+        # and violates the Agent's monotonic-stream invariant, masking the
+        # typed rejection as a generic sequence failure in real grpcio.
         return stream_pb.CenterToAgent(
             protocol_version=1,
             message_id="gmsg_" + uuid.uuid4().hex,
             worker_id=request.worker_id,
             sent_at=adapters.timestamp_from_epoch(time.time()),
+            stream_sequence=1,
             correlation_id=request.correlation_id,
             error=common_pb.ErrorStatus(code=code, safe_message=message[:300], retryable=False),
         )
