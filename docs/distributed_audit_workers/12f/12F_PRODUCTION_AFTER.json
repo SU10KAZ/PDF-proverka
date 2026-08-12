@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "captured_at": "2026-08-12T16:41:36+03:00",
+  "reason": "Integrity snapshot after fail-closed preflight; no production mutation occurred.",
+  "center_backend_pid": 1931160,
+  "center_backend_active": true,
+  "listener_8443": false,
+  "listener_9443": false,
+  "ufw_worker_8443_rule": "176.12.77.31 -> TCP/8443 ALLOW IN",
+  "ufw_changed": false,
+  "production_cloudflared_pid": 1263127,
+  "production_cloudflared_modified": false,
+  "worker_polling_agent_pid": 1575036,
+  "worker_polling_agent_active": true,
+  "worker_executor_pid": 1384880,
+  "worker_executor_active": true,
+  "worker_transport": "POLLING_UNCHANGED",
+  "worker_active_attempts": 0,
+  "production_changes": 0,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}
