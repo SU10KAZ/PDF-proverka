@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "12f_allowed": false,
-  "decision_state": "AWAITING_IMMUTABLE_REVIEW_ONLY",
+  "12f_allowed": true,
+  "decision_state": "ALLOWED",
   "hard_gates": {
     "12a_pass": true,
     "12b_pass": true,
@@ -25,8 +25,8 @@
     "observability_ready": true,
     "production_integrity_pass": true,
     "provider_inference_zero": true,
-    "immutable_review_pass": false
+    "immutable_review_pass": true
   },
-  "blockers": ["immutable exact-commit adversarial review not yet recorded"],
+  "blockers": [],
   "note": "ALLOWED means eligible to begin a separately authorized 12F preflight; it never authorizes production cutover by itself."
 }
