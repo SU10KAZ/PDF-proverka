@@ -80,7 +80,9 @@ def prepare_center(args: argparse.Namespace) -> int:
     chain_pem = issuing_cert.public_bytes(serialization.Encoding.PEM) + root_pem
     issuer = CertificateIssuer(issuing_cert, issuing_key, chain_pem=chain_pem)
     server_key = ec.generate_private_key(ec.SECP256R1())
-    server = issuer.issue_server(server_key.public_key(), identity=args.server_identity)
+    server = issuer.issue_server(
+        server_key.public_key(), identity=args.server_identity, lifetime=timedelta(days=30)
+    )
     pki = root / "pki"
     _write(pki / "server.key", _pem_key(server_key), 0o600)
     _write(pki / "server.pem", server.certificate_pem + chain_pem, 0o644)
