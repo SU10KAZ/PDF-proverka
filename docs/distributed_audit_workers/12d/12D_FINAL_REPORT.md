@@ -1,77 +1,94 @@
-# 12D final report
+# 12D final report — physical completion
 
-1. **12D overall:** FAIL acceptance gate; implementation/local security PASS,
-   direct physical network gate failed at TCP.
-2. **mTLS control channel:** PARTIAL — complete and locally proven, not physical.
-3. **Certificate lifecycle:** PARTIAL — complete/local PASS; physical rotation
-   and rejection not reached.
-4. **Linux key storage:** PASS, including physical `.31` creation and modes.
-5. **Windows DPAPI:** IMPLEMENTED_NOT_PHYSICALLY_PROVEN.
-6. **Direct `.31 → Center`:** FAIL, `PORT_BLOCKED`.
-7. **Tunnel required:** UNKNOWN. No tunnel was used or added.
-8. **Production cutover:** NOT_DONE.
-9. **Base commit:** `0ba50e7cfcc3b495148b40b731660d3c46b85aaa`.
-10. **Reviewed implementation commit:**
-    `f0ca3260213efdf9bf1b9605c35f3d27ec15c8ba`.
-11. **CA architecture:** offline root → protected online intermediate → leaves.
-12. **Gateway access to CA signing key:** NO.
-13. **Worker private key origin:** Worker only, platform KeyStore.
-14. **Private key sent to Center:** NO; only CSR crossed SSH/admin plane.
-15. **Certificate identity:** `urn:auditmanager:worker:<worker_id>` URI SAN.
-16. **worker_id ↔ certificate binding:** PASS_LOCAL and enrollment PASS.
-17. **Missing client cert:** rejected at TLS.
-18. **Wrong CA:** rejected locally; external physical not reached.
-19. **Wrong worker identity:** rejected before domain dispatch.
-20. **Expired/not-yet-valid cert:** rejected; active expiry closes boundedly.
-21. **Renewal:** PASS_LOCAL, automatic Agent scheduler included.
-22. **Key rotation:** PASS_LOCAL; PHYSICAL_NOT_TESTED.
-23. **Revocation:** PASS_LOCAL; temporary unused physical cert revoked at cleanup.
-24. **Active revoked stream:** closes boundedly in real-grpcio local test.
-25. **Server certificate rotation:** PASS_LOCAL.
-26. **CA trust rotation:** overlapping old+new bundle, reissue, then remove old.
-27. **Linux mechanism:** dedicated owner, directory 0700, PKCS#8 file 0600,
-    atomic replace/fsync and regular-file/owner/symlink validation.
-28. **Windows status:** DPAPI machine scope, memory-only plaintext; not physical.
-29. **Public bind used:** YES, temporary secure `0.0.0.0:8443`.
-30. **Endpoint:** `176.12.77.128:8443`.
-31. **Caddy involved:** NO; inactive and unchanged. nginx unchanged.
-32. **Tunnel involved:** NO. Pre-existing unrelated cloudflared was untouched and
-    was not in the 8443 path.
-33. **SSH runtime involved:** NO; SSH only performed bootstrap/deploy/diagnostics.
-34. **Worker inbound runtime port:** NO new listener.
-35. **Real physical grpcio mTLS stream:** NO, TCP gate failed.
-36. **Zero-inference E2E:** NOT_TESTED; inference count nevertheless 0.
-37. **Secure reconnect:** NOT_TESTED_PHYSICAL; PASS_LOCAL.
-38. **Physical certificate rotation:** NOT_TESTED.
-39. **Physical revocation rejection:** NOT_TESTED.
-40. **Source/result byte transport:** HTTPS by design; physical transfer not run.
-41. **Control transport:** gRPC+mTLS implementation; original Worker remains polling.
-42. **Cross-worker transfer:** PASS_LOCAL, tuple-bound authorization denies it.
-43. **Default Worker transport:** polling.
-44. **Automatic fallback:** NO.
-45. **Production 8443 left running:** NO; temporary process stopped after failure.
-46. **Firewall final:** unchanged; no 8443 rule, no temporary rule applied.
-47. **Caddy final:** inactive/unchanged; nginx active/unchanged.
-48. **Provider auth preserved:** YES; existing homes/config were not modified.
-49. **Claude calls:** 0.
-50. **Codex calls:** 0.
-51. **OpenRouter calls:** 0.
-52. **Secret leaks:** 0 detected; no tracked private-key artifact.
-53. **Tests:** 183/183 immutable combined; 27/27 12D mTLS.
-54. **Immutable review:** software PASS; direct-public lens FAIL_EXTERNAL.
-55. **Report path:** this file.
-56. **Proceed to 12E:** NO for physical reliability/cutover claims; first unblock
-    source-scoped TCP/8443 and rerun 12D stages D–I.
-57. **Cutover blockers:** authorized UFW change, direct TCP/TLS/mTLS/grpc proof,
-    zero-inference E2E, reconnect, physical rotation/revocation, operator-approved
-    service installation and final firewall policy.
+## Outcome
 
-## Required security verdicts
+The already implemented 12D control channel and certificate lifecycle are now
+physically proven on the tested path `176.12.77.31 -> 176.12.77.128:8443`.
+No tunnel, SSH forwarding, proxy, VPN overlay, Cloudflare path or model
+inference participated.
 
-- A. MTLS CONTROL CHANNEL: **PARTIAL**
-- B. CERTIFICATE LIFECYCLE: **PARTIAL**
-- C. LINUX KEY STORAGE: **PASS**
-- D. WINDOWS DPAPI: **IMPLEMENTED_NOT_PHYSICALLY_PROVEN**
-- E. DIRECT `.31 → CENTER :8443`: **FAIL**
-- F. TUNNEL REQUIRED: **UNKNOWN**
-- G. PRODUCTION CUTOVER: **NOT_DONE**
+The first attempt remains `PORT_BLOCKED`. After the operator added the exact
+source-scoped UFW allow, the second attempt passed direct TCP, server TLS,
+mTLS, real grpcio bidi, Hello, heartbeat, zero-inference HTTPS E2E, live
+reconnect, new-key rotation, old-certificate revocation and negative identity.
+
+One cleanup-only item prevents an unconditional overall PASS: the temporary
+source-scoped `.31 -> TCP/9443` rule is still persisted because sudo requires
+interactive authentication. The isolated 9443 listener is stopped, so the
+rule currently exposes no service. No physical security proof needs rerun after
+the operator removes that exact rule.
+
+## Required verdicts
+
+- **A. 12D OVERALL: PARTIAL — technical/physical acceptance PASS; one inert
+  operator firewall-cleanup item remains.**
+- **B. MTLS CONTROL CHANNEL: PASS.**
+- **C. CERTIFICATE LIFECYCLE: PASS.**
+- **D. DIRECT `.31 -> CENTER :8443`: PROVEN.**
+- **E. PHYSICAL REAL GRPCIO: PROVEN.**
+- **F. ZERO-INFERENCE PHYSICAL E2E: PASS.**
+- **G. SECURE RECONNECT: PASS.**
+- **H. PHYSICAL KEY/CERT ROTATION: PASS.**
+- **I. PHYSICAL REVOCATION: PASS.**
+- **J. TUNNEL USED: NO.**
+- **K. TUNNEL REQUIRED FOR TESTED `.31 -> .128` PATH: NO.**
+- **L. PRODUCTION CUTOVER: NOT_DONE.**
+
+## Evidence summary
+
+1. Control endpoint: direct `176.12.77.128:8443`, production-mode mTLS.
+2. Server certificate: trusted private CA, exact IP SAN `176.12.77.128`,
+   serverAuth EKU, TLS 1.3; no hostname override or disabled verification.
+3. Valid Worker cert accepted; no-cert and untrusted-cert paths rejected.
+4. Certificate URI identity and `AgentHello.worker_id` matched
+   `wrk_19c87718`; Center observed direct peer `176.12.77.31`.
+5. Heartbeat was persisted fresh with active grpc stream epoch 4.
+6. Package bytes stayed off gRPC and used isolated verified HTTPS `:9443`.
+7. Zero-inference job completed through JobOffer, source transfer, Executor,
+   durable events, result upload, validation, ResultAck and retention.
+8. During live Gateway loss, the same test process survived and the outbox
+   grew. Epoch increased from 7 to 10, events replayed uniquely, no duplicate
+   Executor/process appeared, and ResultAck completed.
+9. Worker generated keypair B locally. Authenticated renewal activated serial
+   `1537971d8aa0afc18d614c0700304b2f2d481f00`; epoch increased 10 to 11.
+10. Old A serial `23523e...d7227` is `REVOKED/ADMIN_REVOKED` and receives
+    `UNAUTHENTICATED`; B remains `ACTIVE` and its authenticated RPC succeeds.
+11. Cert B with `AgentHello.worker_id=wrk_a55031f2` received
+    `PERMISSION_DENIED` before transport session or job scheduling.
+12. Cross-worker HTTPS transfer authorization returned HTTP 403.
+13. B private key never left `.31`; current key is 0600 in a 0700 directory.
+14. Claude/Codex/OpenRouter calls: `0/0/0`.
+15. Worker inbound runtime listener: none.
+
+## Isolation defect and commits
+
+The physical run found that package requests could not select an origin
+separate from `dispatcher_url`. The fix is intentionally narrow:
+
+- `a1003f45` — optional typed `AUDIT_WORKER_DATA_PLANE_BASE_URL`, defaulting to
+  the unchanged dispatcher origin;
+- `1913d92f` — optional fail-closed `AUDIT_WORKER_DATA_PLANE_CA_BUNDLE`,
+  defaulting to the system trust store.
+
+No Proto, Gateway, scheduling or certificate-lifecycle design changed. The
+combined suite now passes 186/186.
+
+## Production integrity and final network state
+
+- Production `127.0.0.1:8081`: untouched, PID `277145`.
+- Production polling Agent: active, PID `1575036`.
+- Production Executor: active, PID `1384880`.
+- nginx: active and unchanged; Caddy: inactive and unchanged.
+- Provider auth: unchanged; real audit: not run.
+- Isolated Agent/Executor/API/issuer/Gateway: stopped.
+- Final listeners on 8443/9443: none.
+- `UFW_RULE_8443_FINAL_STATE = PRESENT` (source `.31` only).
+- `UFW_RULE_9443_FINAL_STATE = PRESENT_INERT_PENDING_OPERATOR_REMOVAL`.
+- Push: NO. Merge: NO. Production cutover: NO. Proceed to 12E: NO.
+
+Operator cleanup command:
+
+```bash
+sudo ufw delete allow proto tcp from 176.12.77.31 to any port 9443
+sudo ufw status numbered
+```

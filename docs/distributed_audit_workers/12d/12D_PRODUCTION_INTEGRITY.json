@@ -1,20 +1,42 @@
 {
-  "production_audit_jobs_changed": false,
-  "real_audit_executed": false,
-  "original_polling_agent_final": "active",
-  "original_executor_final": "active",
+  "captured_at": "2026-08-12T09:22:47+03:00",
+  "production_backend_127_0_0_1_8081": {
+    "touched_or_restarted": false,
+    "pid_before_after": 277145,
+    "state": "LISTENING"
+  },
+  "production_database_used_for_12d1": false,
+  "original_polling_agent": {
+    "state": "active",
+    "pid": 1575036
+  },
+  "original_executor": {
+    "state": "active",
+    "pid": 1384880
+  },
+  "isolated_agent_final": "stopped",
+  "isolated_executor_final": "stopped",
+  "isolated_https_9443_final": "stopped",
+  "public_gateway_8443_final": "stopped",
+  "issuer_final": "stopped",
+  "nginx": {
+    "state": "active",
+    "config_mtime": "2026-08-04T14:20:39.348502400+03:00",
+    "config_sha256": "a6d64f789c0f9d3cd91d9c492a7638d269a3cdd1f5fd17176b049525f3f54ca2",
+    "modified_by_12d1": false
+  },
+  "caddy": "inactive_unchanged",
   "provider_auth_modified": false,
+  "real_audit_executed": false,
   "claude_calls": 0,
   "codex_calls": 0,
   "openrouter_calls": 0,
   "tunnel_added": false,
-  "preexisting_unrelated_cloudflared_modified": false,
-  "nginx_final": "active_unchanged",
-  "caddy_final": "inactive_unchanged",
-  "firewall_changed": false,
-  "public_8443_final": "stopped",
-  "gateway_service_enabled": false,
-  "issuer_service_enabled": false,
+  "ssh_forwarding_added": false,
+  "preexisting_unrelated_cloudflared_modified_or_used": false,
   "worker_inbound_runtime_listener_added": false,
-  "verdict": "PASS"
+  "current_certificate_b_private_key": "preserved on Worker, mode 0600",
+  "temporary_tokens_and_revoked_a_backup": "removed",
+  "temporary_9443_ufw_rule_cleanup": "OPERATOR_ACTION_REQUIRED_NO_LISTENER",
+  "verdict": "PASS_WITH_INERT_FIREWALL_CLEANUP_ITEM"
 }

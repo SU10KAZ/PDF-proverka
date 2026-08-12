@@ -40,3 +40,12 @@ Earlier candidates were rejected and replaced, never edited in place:
 
 Software security review verdict: **PASS**. 12D physical acceptance verdict:
 **FAIL (`PORT_BLOCKED`)**. These are deliberately separate verdicts.
+
+## 12D.1 continuation (later chronology)
+
+The verdict above is the immutable record of the first attempt. After the
+operator added the source-scoped 8443 rule, the direct physical path and all
+deferred stages passed. The continuation also found and fixed the isolated
+HTTPS-origin configuration defect in `a1003f45`/`1913d92f`; the updated
+six-file suite passes 186/186. See `12D_FINAL_REPORT.md` for the second-attempt
+verdict and the remaining temporary-9443-rule cleanup item.

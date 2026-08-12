@@ -2,11 +2,12 @@
 
 - Windows DPAPI is implemented and platform-guard tested, but no Windows host
   was available: `IMPLEMENTED_NOT_PHYSICALLY_PROVEN`.
-- Direct `.31 → 176.12.77.128:8443` timed out while `.31 → :22` succeeded.
-  Center UFW is active and its persisted policy has no 8443 allow rule.
-- Applying the authorized source-scoped temporary rule required interactive
-  sudo authentication unavailable to this run; no firewall state was changed.
-- Therefore physical grpcio stream, zero-inference E2E, reconnect, rotation and
-  old-certificate rejection were not run. Their local tests pass, but physical
-  verdicts remain `NOT_TESTED` rather than inferred.
+- The first physical attempt remains historical `PORT_BLOCKED`: Center UFW did
+  not yet allow `.31 -> TCP/8443`. After the operator added the source-scoped
+  rule, direct TCP/TLS/mTLS/grpcio, heartbeat, HTTPS E2E, live reconnect,
+  rotation, revocation and identity rejection all passed physically.
+- The temporary source-scoped `.31 -> TCP/9443` data-plane rule is still
+  present because non-interactive removal failed with interactive sudo
+  authentication required. Its listener is stopped, so it is inert; the
+  operator must delete that exact rule to close the final cleanup item.
 - Production cutover is explicitly out of scope and was not done.

@@ -1,18 +1,34 @@
 {
-  "technology": "ufw (active, enabled; nftables backend)",
-  "runtime_rules_readable": false,
-  "runtime_rules_reason": "root and interactive sudo authentication required",
-  "persisted_rules_readable": true,
+  "technology": "ufw (active, nftables backend)",
+  "runtime_status_numbered_readable": false,
+  "runtime_status_reason": "interactive sudo authentication required",
   "persisted_rules_path": "/etc/ufw/user.rules",
-  "persisted_rules_mtime": "2026-08-05T13:11:47.680338560+03:00",
-  "persisted_rules_sha256_after": "f6af844ba21d895f3418dd1f3f2725b5e6b4383205284a4cbfbc2eaf1f7dd5b2",
-  "before_8443_listener": false,
-  "temporary_secure_8443_listener_started": true,
-  "attempted_rule": "allow from 176.12.77.31 to any port 8443 proto tcp",
-  "attempt_result": "NOT_APPLIED_INTERACTIVE_SUDO_REQUIRED",
-  "rule_added": false,
+  "persisted_rules_readable": true,
+  "chronology": {
+    "first_attempt_rule_8443_present": false,
+    "first_attempt_result": "PORT_BLOCKED",
+    "operator_added_8443": "allow TCP/8443 only from 176.12.77.31",
+    "operator_added_9443": "temporary allow TCP/9443 only from 176.12.77.31"
+  },
+  "persisted_rules_mtime_after_operator_actions": "2026-08-12T09:00:03.335303960+03:00",
+  "persisted_rules_sha256_after_operator_actions": "70164962dd289fbd250ca8b09e7dbffae91f247727fee5584dc113ca5608f4f3",
+  "allow_8443": {
+    "source": "176.12.77.31",
+    "protocol": "tcp",
+    "destination_port": 8443,
+    "global_0_0_0_0_source_allow": false,
+    "final_rule_state": "PRESENT"
+  },
+  "allow_9443": {
+    "source": "176.12.77.31",
+    "protocol": "tcp",
+    "destination_port": 9443,
+    "global_0_0_0_0_source_allow": false,
+    "final_rule_state": "PRESENT_INERT_OPERATOR_REMOVAL_REQUIRED",
+    "automatic_removal_result": "FAILED_INTERACTIVE_SUDO_REQUIRED"
+  },
   "final_8443_listener": false,
-  "final_8443_rule_present": false,
-  "unrelated_ports_changed": false,
-  "verdict": "UNCHANGED"
+  "final_9443_listener": false,
+  "unrelated_rules_changed_by_codex": false,
+  "verdict": "PARTIAL_TEMP_9443_RULE_CLEANUP_ONLY"
 }
