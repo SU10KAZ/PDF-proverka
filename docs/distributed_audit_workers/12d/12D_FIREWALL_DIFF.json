@@ -1,8 +1,18 @@
 {
-  "before_rules_readable": false,
-  "reason": "interactive root authentication required",
+  "technology": "ufw (active, enabled; nftables backend)",
+  "runtime_rules_readable": false,
+  "runtime_rules_reason": "root and interactive sudo authentication required",
+  "persisted_rules_readable": true,
+  "persisted_rules_path": "/etc/ufw/user.rules",
+  "persisted_rules_mtime": "2026-08-05T13:11:47.680338560+03:00",
+  "persisted_rules_sha256_after": "f6af844ba21d895f3418dd1f3f2725b5e6b4383205284a4cbfbc2eaf1f7dd5b2",
   "before_8443_listener": false,
+  "temporary_secure_8443_listener_started": true,
+  "attempted_rule": "allow from 176.12.77.31 to any port 8443 proto tcp",
+  "attempt_result": "NOT_APPLIED_INTERACTIVE_SUDO_REQUIRED",
   "rule_added": false,
+  "final_8443_listener": false,
+  "final_8443_rule_present": false,
   "unrelated_ports_changed": false,
-  "after_snapshot_pending_physical_test": true
+  "verdict": "UNCHANGED"
 }

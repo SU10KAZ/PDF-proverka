@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-08-12T04:13:55+03:00",
+  "source": "176.12.77.31",
+  "destination": "176.12.77.128",
+  "tunnel_used": false,
+  "ssh_forwarding_used": false,
+  "center_secure_listener": "0.0.0.0:8443",
+  "center_listener_process_commit": "b9351c50b1a5b353acafc56458051584f09f6907",
+  "control_test_22_rc": 0,
+  "tcp_8443_rc": 124,
+  "tcp_8443_timeout_seconds": 5,
+  "dns_stage": "NOT_APPLICABLE_IP_LITERAL",
+  "tcp_stage": "FAIL_TIMEOUT",
+  "tls_server_auth_stage": "NOT_REACHED",
+  "mtls_client_auth_stage": "NOT_REACHED",
+  "http2_stage": "NOT_REACHED",
+  "grpc_stage": "NOT_REACHED",
+  "classification": "PORT_BLOCKED",
+  "firewall_evidence": "active UFW persisted rules allow 22/80/443 and omit 8443",
+  "temporary_rule_applied": false,
+  "temporary_rule_blocker": "interactive sudo authentication required",
+  "verdict": "FAIL"
+}

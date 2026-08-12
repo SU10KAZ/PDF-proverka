@@ -1,0 +1,20 @@
+{
+  "production_audit_jobs_changed": false,
+  "real_audit_executed": false,
+  "original_polling_agent_final": "active",
+  "original_executor_final": "active",
+  "provider_auth_modified": false,
+  "claude_calls": 0,
+  "codex_calls": 0,
+  "openrouter_calls": 0,
+  "tunnel_added": false,
+  "preexisting_unrelated_cloudflared_modified": false,
+  "nginx_final": "active_unchanged",
+  "caddy_final": "inactive_unchanged",
+  "firewall_changed": false,
+  "public_8443_final": "stopped",
+  "gateway_service_enabled": false,
+  "issuer_service_enabled": false,
+  "worker_inbound_runtime_listener_added": false,
+  "verdict": "PASS"
+}

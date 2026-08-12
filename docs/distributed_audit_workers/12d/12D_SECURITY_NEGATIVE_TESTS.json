@@ -1,0 +1,29 @@
+{
+  "local_suite": {
+    "tests": 27,
+    "passed": 27,
+    "missing_client_certificate": "PASS_REJECTED",
+    "untrusted_client_ca": "PASS_REJECTED",
+    "untrusted_server_ca": "PASS_REJECTED",
+    "wrong_server_san": "PASS_REJECTED",
+    "certificate_a_hello_b": "PASS_REJECTED",
+    "expired_client": "PASS_REJECTED",
+    "not_yet_valid_client": "PASS_REJECTED",
+    "wrong_eku": "PASS_REJECTED",
+    "revoked_reconnect": "PASS_REJECTED",
+    "public_insecure_config": "PASS_REFUSED"
+  },
+  "center_public_listener": {
+    "production_test_insecure": "PASS_REFUSED_BEFORE_BIND",
+    "mtls_bind_0_0_0_0_8443": "PASS_STARTED",
+    "tls_version_center_loopback": "TLSv1.3",
+    "server_ip_san_verification_center_loopback": "PASS",
+    "connection_without_client_certificate": "REJECTED_PEER_DID_NOT_RETURN_CERTIFICATE"
+  },
+  "physical_external": {
+    "random_self_signed_client": "NOT_TESTED_TCP_BLOCKED",
+    "correct_31_certificate": "NOT_TESTED_TCP_BLOCKED",
+    "revoked_certificate_reconnect": "NOT_TESTED_TCP_BLOCKED"
+  },
+  "verdict": "PARTIAL_PHYSICAL_NETWORK_BLOCKED"
+}

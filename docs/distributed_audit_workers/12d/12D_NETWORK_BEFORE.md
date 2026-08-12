@@ -5,8 +5,8 @@ public listeners on 22/80/443 and no listener on 8443. nginx was active. No
 Agent protocol listener was present on Worker. The existing Worker initiated
 outbound HTTPS polling.
 
-`ufw` and `nft` inventory require interactive root authentication on Center,
-so rule contents could not be read. This is recorded as an evidence limitation;
-no firewall rule was changed before or during local tests. A pre-existing
+Runtime `ufw`/`nft` inventory requires interactive root authentication. The
+world-readable persisted UFW policy was later inspected: it allows 22/80/443
+but contains no 8443 rule. No firewall rule was changed. A pre-existing
 unrelated `cloudflared` process was observed on Center; 12D does not use or
 modify it, and physical peer evidence must point directly to `176.12.77.128:8443`.

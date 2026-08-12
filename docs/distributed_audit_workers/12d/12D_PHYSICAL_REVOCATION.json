@@ -1,0 +1,11 @@
+{
+  "worker": "176.12.77.31 / wrk_19c87718",
+  "temporary_serial": "1e48e746a09532adef930aa4a4d02a7d0bbeb33e",
+  "cleanup_registry_status": "REVOKED",
+  "cleanup_reason": "ADMIN_REVOKED",
+  "old_certificate_network_rejection": "NOT_TESTED",
+  "current_certificate_continues": "NOT_TESTED",
+  "reason": "direct TCP/8443 network gate failed before gRPC",
+  "local_revocation_and_active_stream_tests": "PASS",
+  "verdict": "NOT_TESTED"
+}

@@ -1,0 +1,11 @@
+{
+  "worker": "176.12.77.31 / wrk_19c87718",
+  "old_certificate_enrolled": true,
+  "new_key_generated": false,
+  "renewal_rpc": "NOT_TESTED",
+  "new_certificate_reconnect": "NOT_TESTED",
+  "connection_epoch_increased": "NOT_TESTED",
+  "reason": "direct TCP/8443 network gate failed before gRPC",
+  "local_rotation_tests": "PASS",
+  "verdict": "NOT_TESTED"
+}
